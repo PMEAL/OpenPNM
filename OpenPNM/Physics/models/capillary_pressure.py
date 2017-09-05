@@ -21,7 +21,7 @@ def _get_key_props(phase=None, diameter='throat.diameter',
     To do:
         Check for method to convert throat to pore data
     """
-    entity = diameter.split('.')[0]
+    element = diameter.split('.')[0]
     if (surface_tension.split('.')[0] == 'pore' and
        diameter.split('.')[0] == 'throat'):
         sigma = phase[surface_tension]
@@ -34,7 +34,7 @@ def _get_key_props(phase=None, diameter='throat.diameter',
         theta = phase.interpolate_data(data=theta)
     else:
         theta = phase[contact_angle]
-    return entity, sigma, theta
+    return element, sigma, theta
 
 
 def _handle_zeros(array, mode='max', value=None):
@@ -91,15 +91,15 @@ def washburn(physics, phase, network, surface_tension='pore.surface_tension',
     suitable for highly non-wetting invading phases in most materials.
 
     """
-    entity, sigma, theta = _get_key_props(phase=phase,
-                                          diameter=diameter,
-                                          surface_tension=surface_tension,
-                                          contact_angle=contact_angle)
+    element, sigma, theta = _get_key_props(phase=phase,
+                                           diameter=diameter,
+                                           surface_tension=surface_tension,
+                                           contact_angle=contact_angle)
     r = network[diameter]/2
     # Take care of any zeros - Boundary pores should be invaded with ease
     r = _handle_zeros(r, mode='max')
     value = -2*sigma*_sp.cos(_sp.radians(theta))/r
-    if entity == 'throat':
+    if element == 'throat':
         value = value[phase.throats(physics.name)]
     else:
         value = value[phase.pores(physics.name)]
@@ -152,10 +152,10 @@ def purcell(physics, phase, network, r_toroid,
     TODO: Triple check the accuracy of this equation
     """
 
-    entity, sigma, theta = _get_key_props(phase=phase,
-                                          diameter=diameter,
-                                          surface_tension=surface_tension,
-                                          contact_angle=contact_angle)
+    element, sigma, theta = _get_key_props(phase=phase,
+                                           diameter=diameter,
+                                           surface_tension=surface_tension,
+                                           contact_angle=contact_angle)
     r = network[diameter]/2
     # Take care of any zeros - Boundary pores should be invaded with ease
     r = _handle_zeros(r, mode='max')
@@ -164,7 +164,7 @@ def purcell(physics, phase, network, r_toroid,
     value = (-2*sigma/r) * \
         (_sp.cos(_sp.radians(theta - alpha)) /
             (1 + R/r*(1 - _sp.cos(_sp.radians(alpha)))))
-    if entity == 'throat':
+    if element == 'throat':
         value = value[phase.throats(physics.name)]
     else:
         value = value[phase.pores(physics.name)]
@@ -301,10 +301,10 @@ def cuboid(physics, phase, network,
     interfacial area in two-phase flow: dynamic pore-network modelling
 
     """
-    entity, sigma, theta = _get_key_props(phase=phase,
-                                          diameter=diameter,
-                                          surface_tension=surface_tension,
-                                          contact_angle=contact_angle)
+    element, sigma, theta = _get_key_props(phase=phase,
+                                           diameter=diameter,
+                                           surface_tension=surface_tension,
+                                           contact_angle=contact_angle)
     # Convert theta to rad
     theta *= 2*_sp.pi/360
     rad = network[diameter]/2
@@ -314,7 +314,7 @@ def cuboid(physics, phase, network,
              (_sp.cos(theta)-_sp.sqrt(_sp.pi/4-theta+_sp.sin(theta) *
               _sp.cos(theta))))
     value = (sigma/rad)*Theta
-    if entity == 'throat':
+    if element == 'throat':
         value = value[phase.throats(physics.name)]
     else:
         value = value[phase.pores(physics.name)]
