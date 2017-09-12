@@ -5,6 +5,7 @@ import scipy as _sp
 import numpy as _np
 import pandas as _pd
 import yaml as _yaml
+import networkx as _nx
 import OpenPNM
 from OpenPNM.Utilities import misc as _misc
 from OpenPNM.Base import logging
@@ -854,7 +855,7 @@ class NetworkX(GenericIO):
     """
 
     @classmethod
-    def load(cls, filename, network=None, return_geometry=False):
+    def load(cls, G, network=None, return_geometry=False):
         r"""
         Add data to an OpenPNM Network from a NetworkX generated YAML file.
 
@@ -887,29 +888,30 @@ class NetworkX(GenericIO):
         """
         net = {}
 
-        # Open file and read first line, to prevent NetworkX instantiation
-        with cls._read_file(filename=filename, ext='yaml') as f:
-            line = f.readline()
-            if line.startswith('!!python/object:networkx.classes.graph.Graph'):
-                a = _yaml.safe_load(f)
-            else:
-                raise ('Provided file does not appear to be a NetworkX file')
+        # Ensure G is a networkx object and that the graph is undirected.
+        if not isinstance(G, _nx.Graph):
+            raise ('Provided graph is not a NetworkX graph')
+        if _nx.is_directed(G):
+            raise ('Provided graph is directed. Convert to undirected graph.')
 
         # Parsing node data
-        Np = len(a['node'])
+        Np = len(G)
         net.update({'pore.all': _sp.ones((Np,), dtype=bool)})
-        for n in a['node'].keys():
-            props = a['node'][n]
+        for n,props in G.nodes(data = True):
             for item in props.keys():
-                val = a['node'][n][item]
+                val = props[item]
                 dtype = type(val)
                 # Remove prepended pore. and pore_ if present
                 for b in ['pore.', 'pore_']:
                     item = item.replace(b, '')
                 # Create arrays for subsequent indexing, if not present already
                 if 'pore.'+item not in net.keys():
-                    if dtype is list:
+                    if dtype == str: # handle strings of arbitrary length
+                        net['pore.'+item] = _sp.ndarray((Np,), dtype='object') 
+                    elif dtype is list:
                         dtype = type(val[0])
+                        if dtype == str:
+                            dtype = 'object'
                         cols = len(val)
                         net['pore.'+item] = _sp.ndarray((Np, cols), dtype=dtype)
                     else:
@@ -919,13 +921,9 @@ class NetworkX(GenericIO):
         # Parsing edge data
         # Deal with conns explicitly
 
-        conns = []
-        for n in a['edge'].keys():
-            neighbors = a['edge'][n].keys()
-            conns.extend([sorted([i, n]) for i in neighbors])
-        # Remove duplicate pairs from conns and sort
+        conns = G.edges()
         conns.sort()
-        conns = list(conns for conns, _ in _itertools.groupby(conns))
+
         # Add conns to Network
         Nt = len(conns)
         net.update({'throat.all': _sp.ones(Nt, dtype=bool)})
@@ -934,7 +932,7 @@ class NetworkX(GenericIO):
         # Scan through each edge and extract all its properties
         i = 0
         for t in conns:
-            props = a['edge'][t[0]][t[1]]
+            props = G[t[0]][t[1]]
             for item in props:
                 val = props[item]
                 dtype = type(val)
@@ -943,8 +941,12 @@ class NetworkX(GenericIO):
                     item = item.replace(b, '')
                 # Create arrays for subsequent indexing, if not present already
                 if 'throat.'+item not in net.keys():
+                    if dtype == str:
+                        net['throat.'+item] = _sp.ndarray((Nt,), dtype='object')
                     if dtype is list:
                         dtype = type(val[0])
+                        if dtype == str:
+                            dtype = 'object'
                         cols = len(val)
                         net['throat.'+item] = _sp.ndarray((Nt, cols), dtype=dtype)
                     else:
