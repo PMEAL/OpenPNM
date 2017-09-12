@@ -826,14 +826,12 @@ class CSV(GenericIO):
 class NetworkX(GenericIO):
     r"""
     This class is meant specifcally for exchanging data with NetworkX, which
-    is a common tool for dealing with network structures.  A network object
-    in NetworkX has a ``to_yaml`` method which produces the correct file format
-    for use here.
+    is a common tool for dealing with network structures.
 
     Notes
     -----
-    1. Each node in a NetworkX object (i.e. ``net``) can be assigned properties
-    using syntax like ``net.node[n]['diameter'] = 0.5`` where ``n`` is the
+    1. Each node in a NetworkX object (i.e. ``G``) can be assigned properties
+    using syntax like ``G.node[n]['diameter'] = 0.5`` where ``n`` is the
     node number.  There is no need to precede the property name with any
     indication that it is pore data such as \'pore\_\'.  OpenPNM will prepend
     \'pore.\' to each property name.
@@ -843,7 +841,7 @@ class NetworkX(GenericIO):
     each node should be a 3x1 list.
 
     3. Edges in a NetworkX object are accessed using the index numbers of the
-    two nodes it connects, such as ``net.edge[2][3]['length'] = 0.1``
+    two nodes it connects, such as ``G.edge[2][3]['length'] = 0.1``
     indicating the edge that connects nodes 2 and 3.  There is no need to
     precede the property name with any indication that it is throat data such
     as \'throat\_\'.  OpenPNM will prepend \'throat.\' to each property name.
@@ -857,12 +855,15 @@ class NetworkX(GenericIO):
     @classmethod
     def load(cls, G, network=None, return_geometry=False):
         r"""
-        Add data to an OpenPNM Network from a NetworkX generated YAML file.
+        Add data to an OpenPNM Network from a undirected NetworkX graph.
 
         Parameters
         ----------
-        filename : string
-            The yaml file containing the NetworkX data
+        G : networkx.classes.graph.Graph Object
+            The NetworkX graph. G should be undirected. The numbering of nodes 
+            should be numeric (int's), zero-based and should not contain any 
+            gaps, i.e. ``G.nodes() = [0,1,3,4,5]`` is not allowed and should be 
+            mapped to ``G.nodes() = [0,1,2,3,4]``.
 
         network : OpenPNM Network Object
             The OpenPNM Network onto which the data should be loaded.  If no
@@ -888,11 +889,18 @@ class NetworkX(GenericIO):
         """
         net = {}
 
-        # Ensure G is a networkx object and that the graph is undirected.
+        # Ensure G is an undirected networkX graph with numerically numbered 
+        # nodes for which the numbering starts at 0 and does not contain any gaps
         if not isinstance(G, _nx.Graph):
-            raise ('Provided graph is not a NetworkX graph')
+            raise ('Provided object is not a NetworkX graph.')
         if _nx.is_directed(G):
             raise ('Provided graph is directed. Convert to undirected graph.')
+        if not all(isinstance(n, int) for n in G.nodes()):
+            raise ('Node numbering is not numeric. Convert to int.')
+        if min(G.nodes()) != 0:
+            raise ('Node numbering does not start at zero.')
+        if max(G.nodes()) + 1 != len(G.nodes()):
+            raise ('Node numbering contains gaps. Map nodes to remove gaps.')
 
         # Parsing node data
         Np = len(G)
@@ -920,7 +928,6 @@ class NetworkX(GenericIO):
 
         # Parsing edge data
         # Deal with conns explicitly
-
         conns = G.edges()
         conns.sort()
 
