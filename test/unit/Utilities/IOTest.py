@@ -1,5 +1,6 @@
 import OpenPNM as op
 import scipy as sp
+import networkx as nx
 import os
 import OpenPNM.Utilities.IO as io
 import pytest
@@ -144,12 +145,20 @@ class IOTest:
         assert [True for item in net.keys() if 'diffusive_conductance' in item]
 
     def test_load_networkx(self):
-        fname = os.path.join(FIXTURE_DIR, 'test_load_yaml.yaml')
-        net = io.NetworkX.load(filename=fname)
-        assert net.Np == 9
-        assert net.Nt == 12
-        assert sp.shape(net['pore.coords']) == (9, 3)
-        assert sp.shape(net['throat.conns']) == (12, 2)
+        G = nx.complete_graph(10)
+        pos = nx.random_layout(G, dim = 3)
+        nx.set_node_attributes(G, 'coords', {n: list(pos[n]) for n in pos})
+        nx.set_node_attributes(G, 'area', 1.123)
+        nx.set_node_attributes(G, 'diameter', 1.123)
+        nx.set_edge_attributes(G, 'length', 1.123)
+        nx.set_edge_attributes(G, 'perimeter', 1.123)
+        net = opnm.Utilities.IO.NetworkX.load(G=G)
+        num_nodes = len(G.nodes())
+        num_edges = len(G.edges())
+        assert net.Np == num_nodes
+        assert net.Nt == num_edges
+        assert sp.shape(net['pore.coords']) == (num_nodes, 3)
+        assert sp.shape(net['throat.conns']) == (num_edges, 2)
         a = {'pore.area', 'pore.diameter', 'throat.length', 'throat.perimeter'}
         assert a.issubset(net.props())
 
