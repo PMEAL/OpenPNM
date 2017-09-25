@@ -838,7 +838,7 @@ class NetworkX(GenericIO):
 
     2. Since \'pore.coords\' is so central to OpenPNM it should be specified
     in the NetworkX object as \'coords\', and the [X, Y, Z] coordinates of
-    each node should be a 3x1 list.
+    each node should be a 1x3 list.
 
     3. Edges in a NetworkX object are accessed using the index numbers of the
     two nodes it connects, such as ``G.edge[2][3]['length'] = 0.1``
@@ -860,9 +860,9 @@ class NetworkX(GenericIO):
         Parameters
         ----------
         G : networkx.classes.graph.Graph Object
-            The NetworkX graph. G should be undirected. The numbering of nodes 
-            should be numeric (int's), zero-based and should not contain any 
-            gaps, i.e. ``G.nodes() = [0,1,3,4,5]`` is not allowed and should be 
+            The NetworkX graph. G should be undirected. The numbering of nodes
+            should be numeric (int's), zero-based and should not contain any
+            gaps, i.e. ``G.nodes() = [0,1,3,4,5]`` is not allowed and should be
             mapped to ``G.nodes() = [0,1,2,3,4]``.
 
         network : OpenPNM Network Object
@@ -889,7 +889,7 @@ class NetworkX(GenericIO):
         """
         net = {}
 
-        # Ensure G is an undirected networkX graph with numerically numbered 
+        # Ensure G is an undirected networkX graph with numerically numbered
         # nodes for which the numbering starts at 0 and does not contain any gaps
         if not isinstance(G, _nx.Graph):
             raise ('Provided object is not a NetworkX graph.')
@@ -905,7 +905,7 @@ class NetworkX(GenericIO):
         # Parsing node data
         Np = len(G)
         net.update({'pore.all': _sp.ones((Np,), dtype=bool)})
-        for n,props in G.nodes(data = True):
+        for n, props in G.nodes(data=True):
             for item in props.keys():
                 val = props[item]
                 dtype = type(val)
@@ -914,8 +914,8 @@ class NetworkX(GenericIO):
                     item = item.replace(b, '')
                 # Create arrays for subsequent indexing, if not present already
                 if 'pore.'+item not in net.keys():
-                    if dtype == str: # handle strings of arbitrary length
-                        net['pore.'+item] = _sp.ndarray((Np,), dtype='object') 
+                    if dtype == str:  # handle strings of arbitrary length
+                        net['pore.'+item] = _sp.ndarray((Np,), dtype='object')
                     elif dtype is list:
                         dtype = type(val[0])
                         if dtype == str:
