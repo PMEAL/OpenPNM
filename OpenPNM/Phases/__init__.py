@@ -29,8 +29,16 @@ Classes
 .. autoclass:: Mercury
    :members:
 
+.. autoclass:: Hydrogen
+   :members:
+
+.. autoclass:: WaterVapor
+   :members:
 """
+
 from .__GenericPhase__ import GenericPhase
+from .__Hydrogen__ import Hydrogen
+from .__WaterVapor__ import WaterVapor
 from .__Air__ import Air
 from .__Water__ import Water
 from .__Mercury__ import Mercury
