@@ -7,6 +7,87 @@ Submodule -- capillary_pressure
 
 import scipy as _sp
 
+def butterfly(physics, phase, network, surface_tension='pore.surface_tension',
+             contact_angle='pore.contact_angle', throat_diameter='throat.diameter',
+             **kwargs):
+    r"""
+    Computes the capillary entry pressure assuming the throat in a hourglass tube.
+
+    Parameters
+    ----------
+    network : OpenPNM Network Object
+        The Network object is
+    phase : OpenPNM Phase Object
+        Phase object for the invading phases containing the surface tension and
+        contact angle values.
+    sigma : dict key (string)
+        The dictionary key containing the surface tension values to be used. If
+        a pore property is given, it is interpolated to a throat list.
+    theta : dict key (string)
+        The dictionary key containing the contact angle values to be used. If
+        a pore property is given, it is interpolated to a throat list.
+    throat_diameter : dict key (string)
+        The dictionary key containing the throat diameter values to be used.
+
+    Notes
+    -----
+    The Butterfly equation is:
+
+    .. math::
+        P_c = -\frac{2\sigma(cos(arctan(max(dr/dx)) + \theta))}{r}
+
+
+    """
+    fibreRadius = 4.5e-6
+    constLength = 1.5e-5
+    
+    print("Calculating Capillary Pressures...")
+    
+    if surface_tension.split('.')[0] == 'pore':
+        sigma = phase[surface_tension]
+        sigma = phase.interpolate_data(data=sigma)
+    else:
+        sigma = phase[surface_tension]
+    if contact_angle.split('.')[0] == 'pore':
+        theta = phase[contact_angle]
+        theta = phase.interpolate_data(data=theta)
+    else:
+        theta = phase[contact_angle]
+    # Base radius (not including fibre)
+    r = network[throat_diameter]/2
+    
+    r = r[:,_sp.newaxis]
+    x = _sp.linspace(0, constLength, 100)
+    f = lambda y: fibreRadius*_sp.sin(10*y/(constLength*_sp.pi))
+    df = lambda y: (10*fibreRadius/(constLength*_sp.pi))*_sp.cos(10*y/(constLength*_sp.pi))
+    r = r - f(x)
+    # -2*sigma*cos(theta)/radius
+    drdx=_sp.absolute(df(x))
+    value = []
+    
+    for i in range(len(r)):
+        if i%1000 == 0:
+            print(i)
+        radii = r[i]
+        caps = []
+        deg = theta[i]
+        sig = sigma[i]
+        caps = []
+            
+        caps = [-2*sig*_sp.cos(_sp.arctan(drdx[j]) + _sp.radians(deg))/radii[j] for j in range(len(x))]
+        maxcap = min(caps)
+        
+        value.append(maxcap)
+    
+    '''    
+    value = -2*sigma*_sp.cos(_sp.radians(theta))/r
+    if throat_diameter.split('.')[0] == 'throat':
+        value = value[phase.throats(physics.name)]
+    else:
+        value = value[phase.pores(physics.name)]
+    value[_sp.absolute(value) == _sp.inf] = 0
+    '''
+    return value
 
 def washburn(physics, phase, network, surface_tension='pore.surface_tension',
              contact_angle='pore.contact_angle', throat_diameter='throat.diameter',
@@ -41,6 +122,7 @@ def washburn(physics, phase, network, surface_tension='pore.surface_tension',
     suitable for highly non-wetting invading phases in most materials.
 
     """
+  
     if surface_tension.split('.')[0] == 'pore':
         sigma = phase[surface_tension]
         sigma = phase.interpolate_data(data=sigma)
