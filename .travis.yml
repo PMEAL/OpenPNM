@@ -33,7 +33,6 @@ deploy:
   distribution: sdist
   user: jgostick
   password:
-    secure: SInoWqd5ayXQAXWr4tbXJNIaNl8Im0vOTGWNiLLlaQZYL/RZCQ5NqUyoi87lIJyjiKApMExOm/RwKKe/bHoSRHLXX/6U0u+4otSC6ZyeAJAhEXqohNmJhGUHhADlqYAhg2vlfjh7CxwNSObvr0SdlTUA5l5ivcofBXiYfxk3i/o=
-  on:
+    secure: kFTCsi4mSzZgasxKRIjAk2/Y/GvasoecrwCDiwoxFSwpbW6K1TPiSHZgBrlwFyZt3F7/1zXA+Ji5Oi6jXfhdpIiyOk70Ht1G9DRQ/yBvVKjLUM87qxAYRGDrXNQor4oRsWg2J+VdYUx3tUck2vp8hh873HP0uAGmcaWNHv3TxhA=
     tags: true
     branch: master
