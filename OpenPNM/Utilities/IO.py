@@ -966,42 +966,43 @@ class NetworkX(GenericIO):
         network = cls._update_network(network=network, net=net,
                                       return_geometry=return_geometry)
         return network
-    
+
     @classmethod
     def save(cls, network, phases=[]):
         r"""
         Write Network to a NetworkX object.
-    
+
         Parameters
         ----------
         network : OpenPNM Network Object
             The OpenPNM Network to be exported to a NetworkX object
-    
+
         phases : list of phase objects ([])
             Phases that have properties we want to write to NetworkX object
-    
+
         Returns
         -------
         A NetworkX object with all pore/throat properties attached to it
-         
+
         """
         # Ensure phases is a list
-        if type(phases) is not list:  
+        if type(phases) is not list:
             phases = [phases]
         # Ensure network is an OpenPNM Network object.
-        if not isinstance(network, OpenPNM.Network.__GenericNetwork__.GenericNetwork):
+        if not isinstance(network,
+                          OpenPNM.Network.__GenericNetwork__.GenericNetwork):
             raise('Provided network is not an OpenPNM Network.')
-    
+
         G = _nx.Graph()
-    
+
         # Extracting node list and connectivity matrix from Network
         nodes = map(int, network.Ps)
         conns = network['throat.conns']
-    
+
         # Explicitly add nodes and connectivity matrix
         G.add_nodes_from(nodes)
         G.add_edges_from(conns)
-    
+
         # Attach Network properties to G
         for prop in network.props(mode=['all', 'deep']) + network.labels():
             if 'pore.' in prop:
@@ -1013,7 +1014,7 @@ class NetworkX(GenericIO):
             if 'throat.' in prop:
                 val = {tuple(conn): network[prop][i] for i, conn in enumerate(conns)}
                 _nx.set_edge_attributes(G, prop[7:], val)
-    
+
         # Attach Phase properties to G
         for phase in phases:
             props = phase.props(mode=['all', 'deep']) + phase.labels()
@@ -1022,7 +1023,8 @@ class NetworkX(GenericIO):
                     val = {i: phase[prop][i] for i in network.Ps}
                     _nx.set_node_attributes(G, prop[5:], val)
                 if 'throat.' in prop:
-                    val = {tuple(conn): phase[prop][i] for i, conn in enumerate(conns)}
+                    val = {tuple(conn): phase[prop][i] for i, conn in \
+                           enumerate(conns)}
                     _nx.set_edge_attributes(G, prop[7:], val)
         return G
 
