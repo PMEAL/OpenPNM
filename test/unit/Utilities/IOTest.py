@@ -179,7 +179,7 @@ class IOTest:
         assert sp.shape(net['throat.conns']) == (54, 2)
         assert [True for item in net.keys() if 'temperature' in item]
         assert [True for item in net.keys() if 'diffusive_conductance' in item]
-    
+        
     def test_load_imorph(self):
         path = os.path.join(FIXTURE_DIR, 'iMorph-Sandstone')
         net = io.iMorph.load(path)

@@ -976,7 +976,7 @@ class NetworkX(GenericIO):
         ----------
         network : OpenPNM Network Object
             The OpenPNM Network to be exported to a NetworkX object
-    
+
         phases : list of phase objects ([])
             Phases that have properties we want to write to NetworkX object
             
@@ -1005,7 +1005,6 @@ class NetworkX(GenericIO):
         # Attach Network properties to G
         for prop in network.props(mode=['all', 'deep']) + network.labels():
             if 'pore.' in prop:
-                print(prop)
                 _nx.set_node_attributes(G, prop[5:], {i: network[prop][i] for i in nodes})
             if 'throat.' in prop:
                 val = {tuple(conn): network[prop][i] for i, conn in enumerate(conns)}
