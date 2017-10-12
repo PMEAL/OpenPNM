@@ -161,7 +161,25 @@ class IOTest:
         assert sp.shape(net['throat.conns']) == (num_edges, 2)
         a = {'pore.area', 'pore.diameter', 'throat.length', 'throat.perimeter'}
         assert a.issubset(net.props())
-
+        
+    def test_save_and_load_networkx_no_phases(self):
+        G = io.NetworkX.save(network=self.net)
+        net = io.NetworkX.load(G)
+        assert net.Np == 27
+        assert net.Nt == 54
+        assert sp.shape(net['pore.coords']) == (27, 3)
+        assert sp.shape(net['throat.conns']) == (54, 2)
+    
+    def test_save_and_load_networkx_w_phases(self):
+        G = io.NetworkX.save(network=self.net, phases=self.phase)
+        net = io.NetworkX.load(G)
+        assert net.Np == 27
+        assert net.Nt == 54
+        assert sp.shape(net['pore.coords']) == (27, 3)
+        assert sp.shape(net['throat.conns']) == (54, 2)
+        assert [True for item in net.keys() if 'temperature' in item]
+        assert [True for item in net.keys() if 'diffusive_conductance' in item]
+    
     def test_load_imorph(self):
         path = os.path.join(FIXTURE_DIR, 'iMorph-Sandstone')
         net = io.iMorph.load(path)
