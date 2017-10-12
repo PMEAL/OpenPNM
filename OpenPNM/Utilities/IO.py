@@ -1023,7 +1023,7 @@ class NetworkX(GenericIO):
                     val = {i: phase[prop][i] for i in network.Ps}
                     _nx.set_node_attributes(G, prop[5:], val)
                 if 'throat.' in prop:
-                    val = {tuple(conn): phase[prop][i] for i, conn in \
+                    val = {tuple(conn): phase[prop][i] for i, conn in
                            enumerate(conns)}
                     _nx.set_edge_attributes(G, prop[7:], val)
         return G
