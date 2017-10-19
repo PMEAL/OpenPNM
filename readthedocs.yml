@@ -1,5 +1,12 @@
+formats:
+    - epub
+    - pdf
+
 conda:
-    file: env.yml
+    file: environment.yml
 
 python:
    version: 3
+
+python:
+   pip_install: true
