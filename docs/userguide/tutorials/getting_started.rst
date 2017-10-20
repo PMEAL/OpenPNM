@@ -379,7 +379,7 @@ To determine the permeability coefficient, we must invoke Darcy's law: Q = KA/uL
 
 .. code-block:: python
 
-	>>> Q = alg.rate(pores=pn.pores('top'))
+	>>> Q = alg.rate(pores=pn.pores('front'))
 	>>> A = 0.0001*3*1  # Cross-sectional area for flow
 	>>> L = 0.0001*4  # Length of flow path
 	>>> del_P = 101325  # Specified pressure gradient
