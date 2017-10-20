@@ -971,7 +971,7 @@ class NetworkX(GenericIO):
     def save(cls, network, phases=[]):
         r"""
         Write Network to a NetworkX object.
-
+        Write OpenPNM Network to a NetworkX object.
         Parameters
         ----------
         network : OpenPNM Network Object
