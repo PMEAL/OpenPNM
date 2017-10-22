@@ -1,0 +1,10 @@
+name: test-env
+dependencies:
+- python>=3.5
+- scipy
+- matplotlib
+- pandas
+- numpy
+- networkx
+- pip:
+  - transforms3d

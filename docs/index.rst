@@ -80,30 +80,3 @@ The drainage curve can be visualized with ``MIP.plot_drainage_curve()`` giving s
    :align: center
 
 A collection of examples has been started as a new Github repository: `OpenPNM-Examples <https://www.github.com/PMEAL/OpenPNM-Examples>`_.
-
-===============================================================================
-Related Links
-===============================================================================
-
-.. list-table::
-
-    * - OpenPNM Homepage
-      - http://openpnm.org
-    * - Github is used to host the code
-      - https://www.github.com/PMEAL/OpenPNM
-    * - Github is also used as the project's issue and bug tracker
-      - https://www.github.com/PMEAL/OpenPNM/issues
-    * - A collection of examples using OpenPNM is available in a separate repository
-      - https://www.github.com/PMEAL/OpenPNM-Examples
-    * - Scipy is a major component of OpenPNM
-      - http://www.scipy.org
-    * - Anaconda is the most general way to setup a numerical Python environment
-      - https://www.continuum.io/downloads
-    * - WinPython is a slightly easier way to use numerical Python on Windows
-      - https://github.com/winpython/winpython
-    * - Spyder is the recommended IDE when working with OpenPNM
-      - https://github.com/spyder-ide/spyder
-    * - Paraview is suggested for visualizing OpenPNM data
-      - http://www.paraview.org
-    * - OpenPNM is offered under an MIT License
-      - http://opensource.org/licenses/MIT
