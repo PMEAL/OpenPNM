@@ -853,7 +853,7 @@ class NetworkX(GenericIO):
     """
 
     @classmethod
-    def load(cls, G, network=None, return_geometry=False):
+    def load(cls, G, filename=None, network=None, return_geometry=False):
         r"""
         Add data to an OpenPNM Network from a undirected NetworkX graph object.
 
@@ -864,6 +864,12 @@ class NetworkX(GenericIO):
             should be numeric (int's), zero-based and should not contain any
             gaps, i.e. ``G.nodes() = [0,1,3,4,5]`` is not allowed and should be
             mapped to ``G.nodes() = [0,1,2,3,4]``.
+
+        filename : string
+            This is kept for legacy reasons.  It used to accept location of
+            a YAML file produced by networkx, but now it throws an error
+            with instructions to convert the YAML file into a proper networkx
+            object and pass in as ``G``.
 
         network : OpenPNM Network Object
             The OpenPNM Network onto which the data should be loaded.  If no
@@ -888,6 +894,10 @@ class NetworkX(GenericIO):
 
         """
         net = {}
+
+        if filename is not None:
+            raise Exception('YAML files are no longer accepted.  Pass in a ' +
+                            'proper networkx graph object as G instead')
 
         # Ensure G is an undirected networkX graph with numerically numbered
         # nodes for which the numbering starts at 0 and does not contain any gaps
@@ -928,7 +938,10 @@ class NetworkX(GenericIO):
 
         # Parsing edge data
         # Deal with conns explicitly
-        conns = G.adj()
+        try:
+            conns = list(G.edges)  # NetworkX V2
+        except:
+            conns = G.edges()  # NetworkX V1
         conns.sort()
 
         # Add conns to Network
