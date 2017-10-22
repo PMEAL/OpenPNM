@@ -841,21 +841,21 @@ class NetworkX(GenericIO):
     each node should be a 1x3 list.
 
     3. Edges in a NetworkX object are accessed using the index numbers of the
-    two nodes it connects, such as ``G.edge[2][3]['length'] = 0.1``
+    two nodes it connects, such as ``G.adj[2][3]['length'] = 0.1``
     indicating the edge that connects nodes 2 and 3.  There is no need to
     precede the property name with any indication that it is throat data such
     as \'throat\_\'.  OpenPNM will prepend \'throat.\' to each property name.
 
     4. The \'throat.conns\' property is essential to OpenPNM, but this does NOT
     need to be specified explicitly as a property in NetworkX.  The
-    connectivity is embedded into the network representation in the 'yaml' file
-    and is extracted by OpenPNM.
+    connectivity is embedded into the network representation and is extracted
+    by OpenPNM.
     """
 
     @classmethod
     def load(cls, G, network=None, return_geometry=False):
         r"""
-        Add data to an OpenPNM Network from a undirected NetworkX graph.
+        Add data to an OpenPNM Network from a undirected NetworkX graph object.
 
         Parameters
         ----------
@@ -928,7 +928,7 @@ class NetworkX(GenericIO):
 
         # Parsing edge data
         # Deal with conns explicitly
-        conns = G.edges()
+        conns = G.adj()
         conns.sort()
 
         # Add conns to Network
