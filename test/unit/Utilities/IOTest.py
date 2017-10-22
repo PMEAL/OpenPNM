@@ -147,7 +147,8 @@ class IOTest:
     def test_load_networkx(self):
         G = nx.complete_graph(10)
         pos = nx.random_layout(G, dim=3)
-        nx.set_node_attributes(G, name='coords', values={n: list(pos[n]) for n in pos})
+        val = {n: list(pos[n]) for n in pos}
+        nx.set_node_attributes(G, name='coords', values=val)
         nx.set_node_attributes(G, name='area', values=1.123)
         nx.set_node_attributes(G, name='diameter', values=1.123)
         nx.set_edge_attributes(G, name='length', values=1.123)
