@@ -853,7 +853,7 @@ class NetworkX(GenericIO):
     """
 
     @classmethod
-    def load(cls, G, filename=None, network=None, return_geometry=False):
+    def load(cls, G, network=None, return_geometry=False):
         r"""
         Add data to an OpenPNM Network from a undirected NetworkX graph object.
 
@@ -864,12 +864,6 @@ class NetworkX(GenericIO):
             should be numeric (int's), zero-based and should not contain any
             gaps, i.e. ``G.nodes() = [0,1,3,4,5]`` is not allowed and should be
             mapped to ``G.nodes() = [0,1,2,3,4]``.
-
-        filename : string
-            This is kept for legacy reasons.  It used to accept location of
-            a YAML file produced by networkx, but now it throws an error
-            with instructions to convert the YAML file into a proper networkx
-            object and pass in as ``G``.
 
         network : OpenPNM Network Object
             The OpenPNM Network onto which the data should be loaded.  If no
@@ -892,15 +886,20 @@ class NetworkX(GenericIO):
         If return_geometry is True, then a tuple is returned containing both
         the network and a geometry object.
 
+        Notes
+        -----
+        This function used to accept a path to a YAML file that was created by
+        NetworkX.  The functionality has been changed, so that now you pass
+        an actual NetworkX graph object.  If you have a network saved as a
+        YAML file, you can open it in NetworkX first then pass the resulting
+        object to this function.  This change was made since NetworkX moved to
+        version 2 and the YAML file format changed.
+
         """
         net = {}
 
-        if filename is not None:
-            raise Exception('YAML files are no longer accepted.  Pass in a ' +
-                            'proper networkx graph object as G instead')
-
         # Ensure G is an undirected networkX graph with numerically numbered
-        # nodes for which the numbering starts at 0 and does not contain any gaps
+        # nodes for which numbering starts at 0 and does not contain any gaps
         if not isinstance(G, _nx.Graph):
             raise ('Provided object is not a NetworkX graph.')
         if _nx.is_directed(G):
