@@ -1,4 +1,7 @@
 import OpenPNM as op
+# Initialize workspace, and clear it just to be safe
+ws = op.Base.Workspace()
+ws.clear()
 
 # Create Topological Network object
 pn = op.Network.Cubic(shape=[15, 5, 5], spacing=1, name='net')

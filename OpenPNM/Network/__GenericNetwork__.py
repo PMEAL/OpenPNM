@@ -8,6 +8,7 @@ GenericNetwork: Abstract class to construct pore networks
 import itertools
 import scipy as sp
 import scipy.sparse as sprs
+from scipy.sparse import csgraph
 import scipy.spatial as sptl
 import OpenPNM.Utilities.misc as misc
 from OpenPNM.Utilities import topology
@@ -661,8 +662,8 @@ class GenericNetwork(Core):
         temp = self.create_adjacency_matrix(data=temp,
                                             sprsfmt='csr',
                                             dropzeros=True)
-        clusters = sprs.csgraph.connected_components(csgraph=temp,
-                                                     directed=False)[1]
+        clusters = csgraph.connected_components(csgraph=temp,
+                                                directed=False)[1]
         return clusters
 
     def find_clusters2(self, mask=[], t_labels=False):
@@ -761,8 +762,8 @@ class GenericNetwork(Core):
         csr = self.create_adjacency_matrix(data=tmask,
                                            sprsfmt='csr',
                                            dropzeros=True)
-        clusters = sprs.csgraph.connected_components(csgraph=csr,
-                                                     directed=False)[1]
+        clusters = csgraph.connected_components(csgraph=csr,
+                                                directed=False)[1]
 
         # Adjust cluster numbers such that non-invaded pores are labelled -1
         # Note: The following line also takes care of assigning cluster numbers
@@ -785,8 +786,8 @@ class GenericNetwork(Core):
         csr = self.create_adjacency_matrix(data=tmask,
                                            sprsfmt='csr',
                                            dropzeros=True)
-        clusters = sprs.csgraph.connected_components(csgraph=csr,
-                                                     directed=False)[1]
+        clusters = csgraph.connected_components(csgraph=csr,
+                                                directed=False)[1]
 
         # Convert clusters to a more usable output:
         # Find pores attached to each invaded throats
