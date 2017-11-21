@@ -135,7 +135,8 @@ def _get_fibre_image(network, cpores, vox_len, fibre_rad):
     cverts = []
     for i in cthroats:
         try:
-            cverts.append(_sp.asarray(list(network["throat.vert_index"][i].values())))
+            cv = list(network["throat.vert_index"][i].values())
+            cverts.append(_sp.asarray(cv))
         except:
             # Throat was not part of the original Delaunay network
             pass
@@ -438,7 +439,8 @@ def in_hull_volume(network, geometry, fibre_rad, vox_len=1e-6, **kwargs):
     for pore in nbps:
         logger.info("Processing Pore: "+str(pore+1)+" of "+str(len(nbps)))
         if network["pore.vert_index"][pore] is not None:
-            verts = np.asarray([i for i in network["pore.vert_index"][pore].values()])
+            vi = [i for i in network["pore.vert_index"][pore].values()]
+            verts = np.asarray(vi)
             verts = np.asarray(misc.unique_list(np.around(verts, 6)))
             verts /= vox_len
             pore_vox[pore], fibre_vox[pore] = inhull(geometry, verts, pore)

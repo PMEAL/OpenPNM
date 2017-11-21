@@ -86,11 +86,11 @@ class Workspace(dict):
 
     loglevel = property(fget=_getloglevel, fset=_setloglevel)
 
-    def clear(self):
-        for item in self.values():
-            del item.network, item.geometries, item.phases, item.physics
-            del item.workspace
-        super().clear()
+#    def clear(self):
+#        for item in self.values():
+#            del item.network, item.geometries, item.phases, item.physics
+#            del item.workspace
+#        super().clear()
 
     def networks(self):
         r"""
