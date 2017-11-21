@@ -4,7 +4,7 @@ ws = op.Base.Workspace()
 ws.clear()
 
 # Create Topological Network object
-pn = op.Network.Cubic(shape=[15, 5, 5], spacing=1, name='net')
+pn = op.Network.Cubic(shape=[15, 5, 5], spacing=1)
 pn.add_boundaries()
 
 # Create Geometry object for internal pores

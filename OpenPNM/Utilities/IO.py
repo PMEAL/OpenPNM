@@ -5,6 +5,7 @@ import scipy as _sp
 import numpy as _np
 import pandas as _pd
 import yaml as _yaml
+import networkx as _nx
 import OpenPNM
 from OpenPNM.Utilities import misc as _misc
 from OpenPNM.Base import logging
@@ -825,43 +826,44 @@ class CSV(GenericIO):
 class NetworkX(GenericIO):
     r"""
     This class is meant specifcally for exchanging data with NetworkX, which
-    is a common tool for dealing with network structures.  A network object
-    in NetworkX has a ``to_yaml`` method which produces the correct file format
-    for use here.
+    is a common tool for dealing with network structures.
 
     Notes
     -----
-    1. Each node in a NetworkX object (i.e. ``net``) can be assigned properties
-    using syntax like ``net.node[n]['diameter'] = 0.5`` where ``n`` is the
+    1. Each node in a NetworkX object (i.e. ``G``) can be assigned properties
+    using syntax like ``G.node[n]['diameter'] = 0.5`` where ``n`` is the
     node number.  There is no need to precede the property name with any
     indication that it is pore data such as \'pore\_\'.  OpenPNM will prepend
     \'pore.\' to each property name.
 
     2. Since \'pore.coords\' is so central to OpenPNM it should be specified
     in the NetworkX object as \'coords\', and the [X, Y, Z] coordinates of
-    each node should be a 3x1 list.
+    each node should be a 1x3 list.
 
     3. Edges in a NetworkX object are accessed using the index numbers of the
-    two nodes it connects, such as ``net.edge[2][3]['length'] = 0.1``
+    two nodes it connects, such as ``G.adj[2][3]['length'] = 0.1``
     indicating the edge that connects nodes 2 and 3.  There is no need to
     precede the property name with any indication that it is throat data such
     as \'throat\_\'.  OpenPNM will prepend \'throat.\' to each property name.
 
     4. The \'throat.conns\' property is essential to OpenPNM, but this does NOT
     need to be specified explicitly as a property in NetworkX.  The
-    connectivity is embedded into the network representation in the 'yaml' file
-    and is extracted by OpenPNM.
+    connectivity is embedded into the network representation and is extracted
+    by OpenPNM.
     """
 
     @classmethod
-    def load(cls, filename, network=None, return_geometry=False):
+    def load(cls, G, network=None, return_geometry=False):
         r"""
-        Add data to an OpenPNM Network from a NetworkX generated YAML file.
+        Add data to an OpenPNM Network from a undirected NetworkX graph object.
 
         Parameters
         ----------
-        filename : string
-            The yaml file containing the NetworkX data
+        G : networkx.classes.graph.Graph Object
+            The NetworkX graph. G should be undirected. The numbering of nodes
+            should be numeric (int's), zero-based and should not contain any
+            gaps, i.e. ``G.nodes() = [0,1,3,4,5]`` is not allowed and should be
+            mapped to ``G.nodes() = [0,1,2,3,4]``.
 
         network : OpenPNM Network Object
             The OpenPNM Network onto which the data should be loaded.  If no
@@ -884,32 +886,49 @@ class NetworkX(GenericIO):
         If return_geometry is True, then a tuple is returned containing both
         the network and a geometry object.
 
+        Notes
+        -----
+        This function used to accept a path to a YAML file that was created by
+        NetworkX.  The functionality has been changed, so that now you pass
+        an actual NetworkX graph object.  If you have a network saved as a
+        YAML file, you can open it in NetworkX first then pass the resulting
+        object to this function.  This change was made since NetworkX moved to
+        version 2 and the YAML file format changed.
+
         """
         net = {}
 
-        # Open file and read first line, to prevent NetworkX instantiation
-        with cls._read_file(filename=filename, ext='yaml') as f:
-            line = f.readline()
-            if line.startswith('!!python/object:networkx.classes.graph.Graph'):
-                a = _yaml.safe_load(f)
-            else:
-                raise ('Provided file does not appear to be a NetworkX file')
+        # Ensure G is an undirected networkX graph with numerically numbered
+        # nodes for which numbering starts at 0 and does not contain any gaps
+        if not isinstance(G, _nx.Graph):
+            raise ('Provided object is not a NetworkX graph.')
+        if _nx.is_directed(G):
+            raise ('Provided graph is directed. Convert to undirected graph.')
+        if not all(isinstance(n, int) for n in G.nodes()):
+            raise ('Node numbering is not numeric. Convert to int.')
+        if min(G.nodes()) != 0:
+            raise ('Node numbering does not start at zero.')
+        if max(G.nodes()) + 1 != len(G.nodes()):
+            raise ('Node numbering contains gaps. Map nodes to remove gaps.')
 
         # Parsing node data
-        Np = len(a['node'])
+        Np = len(G)
         net.update({'pore.all': _sp.ones((Np,), dtype=bool)})
-        for n in a['node'].keys():
-            props = a['node'][n]
+        for n, props in G.nodes(data=True):
             for item in props.keys():
-                val = a['node'][n][item]
+                val = props[item]
                 dtype = type(val)
                 # Remove prepended pore. and pore_ if present
                 for b in ['pore.', 'pore_']:
                     item = item.replace(b, '')
                 # Create arrays for subsequent indexing, if not present already
                 if 'pore.'+item not in net.keys():
-                    if dtype is list:
+                    if dtype == str:  # handle strings of arbitrary length
+                        net['pore.'+item] = _sp.ndarray((Np,), dtype='object')
+                    elif dtype is list:
                         dtype = type(val[0])
+                        if dtype == str:
+                            dtype = 'object'
                         cols = len(val)
                         net['pore.'+item] = _sp.ndarray((Np, cols), dtype=dtype)
                     else:
@@ -918,14 +937,12 @@ class NetworkX(GenericIO):
 
         # Parsing edge data
         # Deal with conns explicitly
-
-        conns = []
-        for n in a['edge'].keys():
-            neighbors = a['edge'][n].keys()
-            conns.extend([sorted([i, n]) for i in neighbors])
-        # Remove duplicate pairs from conns and sort
+        try:
+            conns = list(G.edges)  # NetworkX V2
+        except:
+            conns = G.edges()  # NetworkX V1
         conns.sort()
-        conns = list(conns for conns, _ in _itertools.groupby(conns))
+
         # Add conns to Network
         Nt = len(conns)
         net.update({'throat.all': _sp.ones(Nt, dtype=bool)})
@@ -934,7 +951,7 @@ class NetworkX(GenericIO):
         # Scan through each edge and extract all its properties
         i = 0
         for t in conns:
-            props = a['edge'][t[0]][t[1]]
+            props = G[t[0]][t[1]]
             for item in props:
                 val = props[item]
                 dtype = type(val)
@@ -943,8 +960,12 @@ class NetworkX(GenericIO):
                     item = item.replace(b, '')
                 # Create arrays for subsequent indexing, if not present already
                 if 'throat.'+item not in net.keys():
+                    if dtype == str:
+                        net['throat.'+item] = _sp.ndarray((Nt,), dtype='object')
                     if dtype is list:
                         dtype = type(val[0])
+                        if dtype == str:
+                            dtype = 'object'
                         cols = len(val)
                         net['throat.'+item] = _sp.ndarray((Nt, cols), dtype=dtype)
                     else:
@@ -957,6 +978,67 @@ class NetworkX(GenericIO):
         network = cls._update_network(network=network, net=net,
                                       return_geometry=return_geometry)
         return network
+
+    @classmethod
+    def save(cls, network, phases=[]):
+        r"""
+        Write Network to a NetworkX object.
+        Write OpenPNM Network to a NetworkX object.
+        Parameters
+        ----------
+        network : OpenPNM Network Object
+            The OpenPNM Network to be exported to a NetworkX object
+
+        phases : list of phase objects ([])
+            Phases that have properties we want to write to NetworkX object
+
+        Returns
+        -------
+        A NetworkX object with all pore/throat properties attached to it
+
+        """
+        # Ensure phases is a list
+        if type(phases) is not list:
+            phases = [phases]
+        # Ensure network is an OpenPNM Network object.
+        if not isinstance(network,
+                          OpenPNM.Network.__GenericNetwork__.GenericNetwork):
+            raise('Provided network is not an OpenPNM Network.')
+
+        G = _nx.Graph()
+
+        # Extracting node list and connectivity matrix from Network
+        nodes = map(int, network.Ps)
+        conns = network['throat.conns']
+
+        # Explicitly add nodes and connectivity matrix
+        G.add_nodes_from(nodes)
+        G.add_edges_from(conns)
+
+        # Attach Network properties to G
+        for prop in network.props(mode=['all', 'deep']) + network.labels():
+            if 'pore.' in prop:
+                if len(network[prop].shape) > 1:
+                    val = {i: list(network[prop][i]) for i in network.Ps}
+                else:
+                    val = {i: network[prop][i] for i in network.Ps}
+                _nx.set_node_attributes(G, name=prop[5:], values=val)
+            if 'throat.' in prop:
+                val = {tuple(conn): network[prop][i] for i, conn in enumerate(conns)}
+                _nx.set_edge_attributes(G, name=prop[7:], values=val)
+
+        # Attach Phase properties to G
+        for phase in phases:
+            props = phase.props(mode=['all', 'deep']) + phase.labels()
+            for prop in props:
+                if 'pore.' in prop:
+                    val = {i: phase[prop][i] for i in network.Ps}
+                    _nx.set_node_attributes(G, name=prop[5:], values=val)
+                if 'throat.' in prop:
+                    val = {tuple(conn): phase[prop][i] for i, conn in
+                           enumerate(conns)}
+                    _nx.set_edge_attributes(G, name=prop[7:], values=val)
+        return G
 
 
 class iMorph(GenericIO):

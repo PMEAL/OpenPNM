@@ -1,5 +1,6 @@
 import OpenPNM as op
 import scipy as sp
+import networkx as nx
 import os
 import OpenPNM.Utilities.IO as io
 import pytest
@@ -144,14 +145,41 @@ class IOTest:
         assert [True for item in net.keys() if 'diffusive_conductance' in item]
 
     def test_load_networkx(self):
-        fname = os.path.join(FIXTURE_DIR, 'test_load_yaml.yaml')
-        net = io.NetworkX.load(filename=fname)
-        assert net.Np == 9
-        assert net.Nt == 12
-        assert sp.shape(net['pore.coords']) == (9, 3)
-        assert sp.shape(net['throat.conns']) == (12, 2)
+        G = nx.complete_graph(10)
+        pos = nx.random_layout(G, dim=3)
+        val = {n: list(pos[n]) for n in pos}
+        nx.set_node_attributes(G, name='coords', values=val)
+        nx.set_node_attributes(G, name='area', values=1.123)
+        nx.set_node_attributes(G, name='diameter', values=1.123)
+        nx.set_edge_attributes(G, name='length', values=1.123)
+        nx.set_edge_attributes(G, name='perimeter', values=1.123)
+        net = io.NetworkX.load(G=G)
+        num_nodes = len(G.nodes())
+        num_edges = len(G.edges())
+        assert net.Np == num_nodes
+        assert net.Nt == num_edges
+        assert sp.shape(net['pore.coords']) == (num_nodes, 3)
+        assert sp.shape(net['throat.conns']) == (num_edges, 2)
         a = {'pore.area', 'pore.diameter', 'throat.length', 'throat.perimeter'}
         assert a.issubset(net.props())
+
+    def test_save_and_load_networkx_no_phases(self):
+        G = io.NetworkX.save(network=self.net)
+        net = io.NetworkX.load(G)
+        assert net.Np == 27
+        assert net.Nt == 54
+        assert sp.shape(net['pore.coords']) == (27, 3)
+        assert sp.shape(net['throat.conns']) == (54, 2)
+
+    def test_save_and_load_networkx_w_phases(self):
+        G = io.NetworkX.save(network=self.net, phases=self.phase)
+        net = io.NetworkX.load(G)
+        assert net.Np == 27
+        assert net.Nt == 54
+        assert sp.shape(net['pore.coords']) == (27, 3)
+        assert sp.shape(net['throat.conns']) == (54, 2)
+        assert [True for item in net.keys() if 'temperature' in item]
+        assert [True for item in net.keys() if 'diffusive_conductance' in item]
 
     def test_load_imorph(self):
         path = os.path.join(FIXTURE_DIR, 'iMorph-Sandstone')
