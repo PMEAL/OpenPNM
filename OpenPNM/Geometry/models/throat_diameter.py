@@ -131,5 +131,23 @@ def minpore(network, geometry, factor=1, **kwargs):
         pDs[_sp.isnan(pDs)] = 0.0
     value = _sp.amin(pDs, axis=1)*factor
     value[value == 0.0] = _sp.amax(pDs, axis=1)[value == 0.0]
+    if factor is not None:
+        value *= factor
+    return value
 
+
+def meanpore(network, geometry, factor=None, **kwargs):
+    r"""
+    Assign the throat diameter to be equal to the mean of the connecting pore
+    diameters. If zero (in case of boundaries) take it to be the maximum of
+    the connecting pore diameters
+    """
+    import numpy as np
+    gTs = geometry.throats()
+    nTs = geometry.map_throats(network, gTs)
+    pDs = network["pore.diameter"][network["throat.conns"][nTs]]
+    value = np.mean(pDs, axis=1)
+    value[value == 0.0] = np.max(pDs, axis=1)[value == 0.0]
+    if factor is not None:
+        value *= factor
     return value

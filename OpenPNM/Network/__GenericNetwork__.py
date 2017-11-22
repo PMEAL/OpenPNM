@@ -786,8 +786,8 @@ class GenericNetwork(Core):
         csr = self.create_adjacency_matrix(data=tmask,
                                            sprsfmt='csr',
                                            dropzeros=True)
-        clusters = sprs.csgraph.connected_components(csgraph=csr,
-                                                     directed=False)[1]
+        clusters = csgraph.connected_components(csgraph=csr,
+                                                directed=False)[1]
 
         # Convert clusters to a more usable output:
         # Find pores attached to each invaded throats

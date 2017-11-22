@@ -132,10 +132,14 @@ def _get_fibre_image(network, cpores, vox_len, fibre_rad):
     # Below method copied from geometry model throat.vertices
     # Needed now as network may not have all throats assigned to geometry
     # i.e network['throat.vertices'] could return garbage
-    verts = _sp.ndarray(network.num_throats(), dtype=object)
-    for i in range(len(verts)):
-        verts[i] = _sp.asarray(list(network["throat.vert_index"][i].values()))
-    cverts = verts[cthroats]
+    cverts = []
+    for i in cthroats:
+        try:
+            cv = list(network["throat.vert_index"][i].values())
+            cverts.append(_sp.asarray(cv))
+        except:
+            # Throat was not part of the original Delaunay network
+            pass
     [vxmin, vxmax, vymin, vymax, vzmin, vzmax] = _get_vertex_range(cverts)
     # Translate vertices so that minimum occurs at the origin
     for index in range(len(cverts)):
@@ -434,10 +438,12 @@ def in_hull_volume(network, geometry, fibre_rad, vox_len=1e-6, **kwargs):
     geometry._hull_image = hull_image
     for pore in nbps:
         logger.info("Processing Pore: "+str(pore+1)+" of "+str(len(nbps)))
-        verts = np.asarray([i for i in network["pore.vert_index"][pore].values()])
-        verts = np.asarray(misc.unique_list(np.around(verts, 6)))
-        verts /= vox_len
-        pore_vox[pore], fibre_vox[pore] = inhull(geometry, verts, pore)
+        if network["pore.vert_index"][pore] is not None:
+            vi = [i for i in network["pore.vert_index"][pore].values()]
+            verts = np.asarray(vi)
+            verts = np.asarray(misc.unique_list(np.around(verts, 6)))
+            verts /= vox_len
+            pore_vox[pore], fibre_vox[pore] = inhull(geometry, verts, pore)
 
     volume = pore_vox*voxel
     geometry["pore.fibre_voxels"] = fibre_vox[geom_pores]
