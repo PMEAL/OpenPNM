@@ -8,6 +8,7 @@ Submodule -- capillary_pressure
 import scipy as _sp
 import numpy as np
 from OpenPNM.Base import logging
+from transforms3d import _gohlketransforms as tr
 logger = logging.getLogger(__name__)
 
 
