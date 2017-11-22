@@ -589,3 +589,169 @@ def ransohoff_snap_off(physics, phase, network,
                 + "% of throats")
     return value[phase.throats(physics.name)]
 
+
+def filling_angle_new(physics, phase, network, r_toroid,
+                  surface_tension='pore.surface_tension',
+                  contact_angle='pore.contact_angle',
+                  diameter='throat.diameter',
+                  Pc=1e3,
+                  **kwargs):
+    r"""
+    Calculate the filling angle (alpha) for a given capillary pressure
+
+    Parameters
+    ----------
+    network : OpenPNM Network Object
+        The Network on which to apply the calculation
+    sigma : dict key (string)
+        The dictionary key containing the surface tension values to be used. If
+        a pore property is given, it is interpolated to a throat list.
+    theta : dict key (string)
+        The dictionary key containing the contact angle values to be used. If
+        a pore property is given, it is interpolated to a throat list.
+    throat_diameter : dict key (string)
+        The dictionary key containing the throat diameter values to be used.
+    r_toroid : float or array_like
+        The radius of the toroid surrounding the pore
+
+    Notes
+    -----
+    This approach accounts for the converging-diverging nature of many throat
+    types.  Advancing the meniscus beyond the apex of the toroid requires an
+    increase in capillary pressure beyond that for a cylindical tube of the
+    same radius. The details of this equation are described by Mason and
+    Morrow [1]_, and explored by Gostick [2]_ in the context of a pore network
+    model.
+
+    !!! Takes mean contact angle and surface tension !!!
+    
+    References
+    ----------
+
+    .. [1] G. Mason, N. R. Morrow, Effect of contact angle on capillary displacement
+           curvatures in pore throats formed by spheres. J. Colloid Interface
+           Sci. 168, 130 (1994).
+    .. [2] J. Gostick, Random pore network modeling of fibrous PEMFC gas diffusion
+           media using Voronoi and Delaunay tessellations. J. Electrochem.
+           Soc. 160, F731 (2013).
+
+    """
+    from scipy import ndimage
+    entity = diameter.split('.')[0]
+    if surface_tension.split('.')[0] == 'pore' and entity == 'throat':
+        sigma = phase[surface_tension]
+        sigma = phase.interpolate_data(data=sigma)
+    else:
+        sigma = phase[surface_tension]
+    if contact_angle.split('.')[0] == 'pore' and entity == 'throat':
+        theta = phase[contact_angle]
+        theta = phase.interpolate_data(data=theta)
+    else:
+        theta = phase[contact_angle]
+    theta = 180 - theta #Mason and Morrow have the definitions switched
+    theta = _sp.deg2rad(theta)
+    rt = network[diameter]/2
+    R = r_toroid
+    ratios = rt/R
+    a_max = theta - np.arcsin((np.sin(theta))/(1+ratios))
+    
+    def purcell_pressure(ratio, fill_angle, theta, sigma, R):
+        
+        a_max = theta - np.arcsin((np.sin(theta))/(1+ratio))
+        fill_angle[fill_angle>a_max] = a_max
+        r_men = R*(1+(ratio)-_sp.cos(fill_angle))/_sp.cos(theta-fill_angle)
+        Pc = 2*sigma/r_men
+        return Pc
+    
+    fill_angle = _sp.deg2rad(np.linspace(-30,150,1001))
+    
+    alpha = np.zeros_like(ratios)
+    for T, ratio in enumerate(ratios):
+        mask = np.zeros_like(fill_angle, dtype=bool)
+        nudge = 100
+        all_Pc = purcell_pressure(ratio, fill_angle, theta[T], sigma[T], R)
+        if Pc > all_Pc.max():
+            # Target Pc out of range
+            lowest = fill_angle[np.argwhere(all_Pc == all_Pc.max())[0][0]]
+        else:
+            while np.sum(mask) == 0:
+                plus_mask = all_Pc < Pc + nudge
+                minus_mask = all_Pc > Pc - nudge
+                mask = np.logical_and(plus_mask, minus_mask)
+                #plt.plot(x[mask], y[mask], '*r')
+                if np.sum(mask) == 0:
+                    nudge += 10
+    
+            regions = ndimage.find_objects(ndimage.label(mask)[0])
+            root_x = np.asarray([np.mean(fill_angle[regions[r]]) for r in range(len(regions))])
+            lowest = np.min(root_x)
+        alpha[T]=lowest
+
+    logger.info('Filling angles calculated for Pc: '+str(Pc))
+    physics['throat.alpha_max'] = a_max
+    return _sp.rad2deg(alpha)
+
+def _prop_parser(obj, prop, entity):
+    r'''
+    Helper function to get data in pore or throat format depending on what 
+    you want
+    '''
+    if (prop.split('.')[0] == 'pore' and
+        entity.split('.')[0] == 'throat'):
+        value = obj[prop]
+        value = obj.interpolate_data(data=value)
+    else:
+        value = obj[prop]
+    return value
+
+def meniscus_radius(physics, phase, network, r_toroid,
+                    contact_angle='pore.contact_angle',
+                    filling_angle='throat.alpha',
+                    diameter='throat.diameter',
+                    **kwargs):
+    r"""
+    Function to return the radius of curvature for the sphere whose spherical
+    cap forms the meniscus inside a throat as per the Purcell model.
+    Assumes angles are stored in degrees
+    """
+    theta = _prop_parser(phase, contact_angle, diameter)
+    theta = 180 - theta #Mason and Morrow have the definitions switched
+    alpha = _prop_parser(phase, filling_angle, diameter)
+    theta = np.deg2rad(theta)
+    alpha = np.deg2rad(alpha)
+    R = r_toroid
+    rt = network[diameter]/2
+    f = theta-alpha
+    # Handle potential divide by zero
+    f[np.abs(f)==np.pi/2] = f[np.abs(f)==np.pi/2]*0.999
+    r_men = R*(1 +rt/R - np.cos(alpha))/np.cos((f))
+    return r_men
+
+def meniscus_center(physics, phase, network, r_toroid,
+                    contact_angle='pore.contact_angle',
+                    filling_angle='throat.alpha',
+                    men_rad='throat.meniscus_radius',
+                    normal='throat.normal',
+                    center='throat.centroid',
+                    **kwargs):
+    r"""
+    Function to return the center offset of the sphere whose spherical
+    cap forms the meniscus inside a throat as per the Purcell model.
+    """
+    theta = _prop_parser(phase, contact_angle, men_rad)
+    theta = 180 - theta #Mason and Morrow have the definitions switched
+    alpha = _prop_parser(phase, filling_angle, men_rad)
+    theta = np.deg2rad(theta)
+    alpha = np.deg2rad(alpha)
+    #Radius of meniscus between fibres
+    r_men = physics[men_rad]
+    #Vertical adjustment for centre of circle
+    y_off = r_toroid*np.sin(alpha)
+    #Angle between contact point - centre - vertical
+    zeta = (theta-alpha-np.pi/2)
+    #Store this for coop filling analysis
+    physics['throat.zeta']=zeta
+    # Distance that center of meniscus is below the plane of the throat
+    value = y_off - r_men*np.cos(zeta)
+    
+    return value
