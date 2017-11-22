@@ -28,7 +28,7 @@ def cylinder(target, throat_diameter='throat.diameter',
     """
     D = target[throat_diameter]
     L = target[throat_length]
-    value = _sp.constants.pi*D*L
+    value = _sp.pi*D*L
     return value
 
 

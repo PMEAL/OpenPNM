@@ -168,33 +168,7 @@ def unique_list(input_list):
                 elif dim == 1:
                     if i[0] == j[0]:
                         match = True
-            if match is False:
-                output_list.append(i)
     return output_list
-
-
-def interpolate_data(target, data):
-    mro = [c.__name__ for c in target.__class__.__mro__]
-    network = target.simulation.network
-    if 'GenericPhysics' in mro:
-        source = target.simulation.find_phase(target)
-        throats = source.throats(target.name)
-        P12 = network.find_connected_pores(throats)
-        P1 = topotools.map_indices(source=source, target=target, pores=P12[:, 0])
-        P2 = topotools.map_indices(source=source, target=target, pores=P12[:, 1])
-        P12 = _sp.vstack([P1[target.name], P2[target.name]]).T
-    elif 'GenericGeometry' in mro:
-        source = network
-        throats = source.throats(target.name)
-        P12 = network.find_connected_pores(throats)
-        P1 = topotools.map_indices(source=source, target=target, pores=P12[:, 0])
-        P2 = topotools.map_indices(source=source, target=target, pores=P12[:, 1])
-        P12 = _sp.vstack([P1[target.name], P2[target.name]]).T
-    else:
-        P12 = network['throat.conns']
-    pvalues = data[P12]
-    values = _sp.mean(pvalues, axis=1)
-    return values
 
 
 def amalgamate_data(objs=[], delimiter='_'):

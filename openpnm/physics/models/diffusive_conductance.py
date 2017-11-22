@@ -6,7 +6,7 @@ Submodule -- diffusive_conductance
 """
 
 import scipy as _sp
-import OpenPNM.Utilities.misc as misc
+import openpnm.utils.misc as misc
 
 
 def bulk_diffusion(target, molar_density='pore.molar_density',

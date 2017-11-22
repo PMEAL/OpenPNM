@@ -23,7 +23,7 @@ def cylinder(target, throat_diameter='throat.diameter'):
 
     """
     diams = target[throat_diameter]
-    value = _sp.constants.pi/4*(diams)**2
+    value = _sp.pi/4*(diams)**2
     return value
 
 

@@ -1,7 +1,7 @@
 import numpy as np
 from scipy.spatial import ConvexHull
 from transforms3d import _gohlketransforms as tr
-from OpenPNM.Base import logging
+from openpnm.core import logging
 logger = logging.getLogger(__name__)
 
 

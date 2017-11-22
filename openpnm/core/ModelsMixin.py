@@ -1,4 +1,5 @@
 import inspect
+import copy
 
 
 class ModelsDict(dict):
@@ -47,8 +48,11 @@ class ModelsMixin():
         elif type(propnames) is str:
             propnames = [propnames]
         for item in propnames:
-            if self.models[item]['regen_mode'] is not 'constant':
-                self._regen(item)
+            if self.models[item]['regen_mode'] == 'constant':
+                if item not in self.keys():
+                    self._regen(item)
+            else:
+                    self._regen(item)
 
     def _regen(self, propname):
         f = self.models[propname]['model']
@@ -61,4 +65,7 @@ class ModelsMixin():
             self._dict = ModelsDict()
         return self._dict
 
-    models = property(fget=_get_models)
+    def _set_models(self, _dict):
+        self._dict = copy.deepcopy(_dict)
+
+    models = property(fget=_get_models, fset=_set_models)

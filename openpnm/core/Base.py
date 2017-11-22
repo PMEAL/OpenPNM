@@ -959,7 +959,7 @@ class Base(dict):
         r"""
         """
         # Initialize things
-        locations = self._parse_locations(locations=locations)
+        locations = self._parse_indices(indices=locations)
         mapping = {}
 
         # Analyze input object's relationship
@@ -968,6 +968,8 @@ class Base(dict):
             master = self.simulation.network
         if 'GenericPhysics' in mro:
             master = self.simulation.find_phase(self)
+        else:
+            master = self.simulation.network
         maskS = master[element+'.'+self.name]
         maskT = master[element+'.'+target.name]
 

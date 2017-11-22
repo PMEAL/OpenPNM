@@ -6,7 +6,7 @@ Submodule -- hydraulic_conductance
 """
 
 import scipy as _sp
-import OpenPNM.Utilities.misc as misc
+import openpnm.utils.misc as misc
 
 
 def hagen_poiseuille(physics, phase, network,

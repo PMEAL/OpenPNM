@@ -30,10 +30,6 @@ phys2['throat.capillary_pressure'] = sp.rand(geom2.Nt)
 
 a = pn.simulation
 
-mip = op.algorithms.Drainage(network=pn)
-mip.setup(invading_phase=mercury)
-mip.set_inlets(pores=pn.pores('surface'))
-
 
 class CubicWithModels(op.network.Cubic, op.core.ModelsMixin):
     pass

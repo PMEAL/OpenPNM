@@ -5,7 +5,7 @@ pore_topology -- functions for monitoring and adjusting topology
 
 """
 import scipy as _sp
-from OpenPNM.Base import logging
+from openpnm.core import logging
 logger = logging.getLogger(__name__)
 
 

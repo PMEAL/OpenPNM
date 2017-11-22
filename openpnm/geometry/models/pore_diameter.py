@@ -4,7 +4,7 @@ pore_diameter
 ===============================================================================
 
 """
-from OpenPNM.Base import logging
+from openpnm.core import logging
 from . import misc as _misc
 import scipy as _sp
 _logger = logging.getLogger(__name__)
