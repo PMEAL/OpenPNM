@@ -171,6 +171,119 @@ def purcell(physics, phase, network, r_toroid,
     return value
 
 
+def purcell_bi(physics, phase, network, r_toroid,
+            surface_tension='pore.surface_tension',
+            contact_angle='pore.contact_angle',
+            diameter='throat.diameter',
+            h_max='pore.diameter',
+            max_dist=True,
+            **kwargs):
+    r"""
+    Computes the throat capillary entry pressure assuming the throat is a toroid.
+
+    Parameters
+    ----------
+    network : OpenPNM Network Object
+        The Network on which to apply the calculation
+    sigma : dict key (string)
+        The dictionary key containing the surface tension values to be used. If
+        a pore property is given, it is interpolated to a throat list.
+    theta : dict key (string)
+        The dictionary key containing the contact angle values to be used. If
+        a pore property is given, it is interpolated to a throat list.
+    throat_diameter : dict key (string)
+        The dictionary key containing the throat diameter values to be used.
+    r_toroid : float or array_like
+        The radius of the toroid surrounding the pore
+
+    Notes
+    -----
+    This approach accounts for the converging-diverging nature of many throat
+    types.  Advancing the meniscus beyond the apex of the toroid requires an
+    increase in capillary pressure beyond that for a cylindical tube of the
+    same radius. The details of this equation are described by Mason and
+    Morrow [1]_, and explored by Gostick [2]_ in the context of a pore network
+    model.
+
+    References
+    ----------
+
+    .. [1] G. Mason, N. R. Morrow, Effect of contact angle on capillary displacement
+           curvatures in pore throats formed by spheres. J. Colloid Interface
+           Sci. 168, 130 (1994).
+    .. [2] J. Gostick, Random pore network modeling of fibrous PEMFC gas diffusion
+           media using Voronoi and Delaunay tessellations. J. Electrochem.
+           Soc. 160, F731 (2013).
+
+    TODO: Triple check the accuracy of this equation
+    """
+    entity = diameter.split('.')[0]
+    if surface_tension.split('.')[0] == 'pore' and entity == 'throat':
+        sigma = phase[surface_tension]
+        sigma = phase.interpolate_data(data=sigma)
+    else:
+        sigma = phase[surface_tension]
+    if contact_angle.split('.')[0] == 'pore' and entity == 'throat':
+        theta = phase[contact_angle]
+        theta = phase.interpolate_data(data=theta)
+    else:
+        theta = phase[contact_angle]
+    theta = 180 - theta #Mason and Morrow have the definitions switched
+    th = _sp.deg2rad(theta)
+    rt = network[diameter]/2
+    R = r_toroid
+    a_min = th -np.pi + np.arcsin((np.sin(th))/(1+rt/R))
+    a_max = th - np.arcsin((np.sin(th))/(1+rt/R))
+    if max_dist and entity == 'throat':
+        #Perform analysis for entry into both pores
+        r_max = np.zeros([network.Nt,2])
+        for j in range(2):
+            Pj = network['throat.conns'][:,j]
+            dj = network[h_max][Pj]
+            max_reached = np.zeros(network.Nt, dtype=bool)
+            alpha_reached = np.zeros(network.Nt)
+            "With increasing filling angle assess whether interface has passed the"
+            "critical distance and record the critical angle"
+            a_space = _sp.linspace(1e-3, _sp.pi, 181)
+            nudge = 0.001
+            for a_test in a_space:
+                nudgers = network.throats()[np.around(th-a_test,0) == 90]
+                if len(nudgers) > 0:
+                    th[nudgers]+=nudge
+                r = R*(1+(rt/R)-_sp.cos(a_test))/_sp.cos(th-a_test)
+                #Vertical adjustment for centre of circle
+                y_off = R*np.sin(a_test)
+                #Angle between contact point - centre - vertical
+                zeta = (th-a_test-(np.pi/2))
+                c = y_off - r*np.cos(zeta)
+                y_max = c+r
+                ts = network.throats()[(y_max > (dj)) * (~max_reached)]
+                if len(ts) > 0:
+                    max_reached[ts]=True
+                    alpha_reached[ts]=a_test
+                if len(nudgers) > 0:
+                    th[nudgers]-=nudge
+            "Any interfaces that never reach a wall are ok"
+            alpha_reached[~max_reached] = a_max[~max_reached]
+            print("Percentage max before BT",100*np.sum(max_reached[_sp.absolute(a_max)>_sp.absolute(alpha_reached)])/len(a_max))
+            "Any interfaces that can expand to maximum curvature before hitting a"
+            "pore wall are ok"
+            alpha_reached[_sp.absolute(a_max)<_sp.absolute(alpha_reached)] = \
+                          a_max[_sp.absolute(a_max)<_sp.absolute(alpha_reached)]
+            r_max[:,j] = R*(1+(rt/R)-_sp.cos(alpha_reached))/_sp.cos(th-alpha_reached)
+            #r_max = R*(1+(rt/R)-_sp.cos(alpha_reached))/_sp.cos(th-alpha_reached)
+
+        value= (2*np.vstack((sigma,sigma)).T)/r_max
+    else:
+        r_max = R*(1+(rt/R)-_sp.cos(a_max))/_sp.cos(th-a_max)
+        value = 2*sigma/r_max
+
+    if entity == 'throat':
+        value = value[phase.throats(physics.name)]
+    else:
+        value = value[phase.pores(physics.name)]
+    return value
+
 def static_pressure(network,
                     physics,
                     phase,
@@ -379,3 +492,5 @@ def kelvin(physics, phase, network, diameter='pore.diameter',
     R = 8.314
     value = P0*np.exp((M*2*gamma)/(rho*R*T*r))
     return value
+
+
