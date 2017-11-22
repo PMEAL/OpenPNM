@@ -493,4 +493,98 @@ def kelvin(physics, phase, network, diameter='pore.diameter',
     value = P0*np.exp((M*2*gamma)/(rho*R*T*r))
     return value
 
+def ransohoff_snap_off(physics, phase, network,
+                       shape_factor=2.0,
+                       require_pair=True,
+                       contact_angle='pore.contact_angle',
+                       surface_tension='pore.surface_tension',
+                       throat_diameter='throat.diameter',
+                       wavelength=5e-6,
+                       vertices='throat.offset_vertices',
+                       **kwargs):
+    r"""
+    Computes the capillary snap-off pressure assuming the throat is cylindrical
+    with converging-diverging change in diamater - like the Purcell model.
+    The wavelength of the change in diamater is the fiber radius.
+    Ref: Ransohoff, T.C., Gauglitz, P.A. and Radke, C.J., 1987. Snap‐off of gas
+    bubbles in smoothly constricted noncircular capillaries. AIChE Journal,
+    33(5), pp.753-765.
+
+    Parameters
+    ----------
+    network : OpenPNM Network Object
+        The Network object is
+    phase : OpenPNM Phase Object
+        Phase object for the invading phases containing the surface tension and
+        contact angle values.
+    shape_factor :
+        constant dependent on the shape of throat cross-section 1.75 - 2.0, see
+        Ref
+    sigma : dict key (string)
+        The dictionary key containing the surface tension values to be used. If
+        a pore property is given, it is interpolated to a throat list.
+    throat_diameter : dict key (string)
+        The dictionary key containing the throat diameter values to be used.
+    wavelength :
+        The dictionary key containing the radius of the transverse interfacial
+        radius of curvature at the neck (fiber radius in fibrous media)
+
+    Notes
+    -----
+    This equation should be used to calculate the snap off capillary pressure
+    in fribrous media
+
+    """
+    if (surface_tension.split('.')[0] == 'pore'):
+        sigma = phase[surface_tension]
+        sigma = phase.interpolate_data(data=sigma)
+    else:
+        sigma = phase[surface_tension]
+    if (contact_angle.split('.')[0] == 'pore'):
+        theta = phase[contact_angle]
+        theta = phase.interpolate_data(data=theta)
+    else:
+        theta = phase[contact_angle]
+    try:
+        geometry = network.geometries(network.geometries()[0])[0]
+        all_verts = geometry[vertices]
+    except:
+        logger.error("Model will only work if geometry has property: "+
+                     vertices)
+    # Work out whether throat geometry can support at least one pair of
+    # adjacent arc menisci that can grow and merge to form snap-off
+    # Only works if throat vertices are in convex hull order
+    angles_ok = np.zeros(network.Nt, dtype=bool)
+    for T in range(network.Nt):
+        verts = all_verts[T]
+        x = verts[:,0]
+        y = verts[:,1]
+        z = verts[:,2]
+        verts_plus = np.vstack((np.roll(x,1), np.roll(y,1), np.roll(z,1))).T
+        verts_minus = np.vstack((np.roll(x,-1), np.roll(y,-1), np.roll(z,-1))).T
+        v1 = verts_plus - verts
+        v2 = verts_minus - verts
+        corner_angles = np.rad2deg(tr.angle_between_vectors(v1, v2, axis=1))
+        # Logical test for existence of arc menisci
+        am = theta[T] <= 90 - corner_angles/2
+        if require_pair:
+            # Logical test for two adjacent arc menisci
+            am_pair = np.any(np.logical_or(np.logical_and(am, np.roll(am, +1)),
+                                           np.logical_and(am, np.roll(am, -1))))
+            angles_ok[T] = am_pair
+        else:
+            # Logical test for any arc menisci
+            angles_ok[T] = np.any(am)
+        
+    # Condition for arc menisci to form in corners 
+    rad_Ts = network[throat_diameter]/2
+    # Ransohoff and Radke eq. 4
+    C = 1/rad_Ts - 1/wavelength
+    value = sigma*C
+    # Only throats that can support arc menisci can snap-off
+    value[~angles_ok] = np.nan
+    logger.info("Snap off pressures calculated for "
+                +str(np.around(100*np.sum(angles_ok)/np.size(angles_ok),0))
+                + "% of throats")
+    return value[phase.throats(physics.name)]
 
