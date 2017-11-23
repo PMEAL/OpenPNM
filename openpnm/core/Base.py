@@ -768,17 +768,17 @@ class Base(dict):
             raise Exception('Can only filter either pores OR labels per call')
         if sp.size(pores) > 0:
             element = 'pore'
-            locations = self._parse_locations(pores)
+            locations = self._parse_indices(pores)
         elif sp.size(throats) > 0:
             element = 'throat'
-            locations = self._parse_locations(throats)
+            locations = self._parse_indices(throats)
         else:
             return(sp.array([], dtype=int))
         # Do it
         labels = self._parse_labels(labels=labels, element=element)
         labels = [element+'.'+item.split('.')[-1] for item in labels]
         all_locs = self._get_indices(element=element, labels=labels, mode=mode)
-        mask = self._tomask(locations=all_locs, element=element)
+        mask = self._tomask(indices=all_locs, element=element)
         ind = mask[locations]
         return locations[ind]
 

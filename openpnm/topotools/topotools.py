@@ -51,7 +51,7 @@ def extend(network, pore_coords=[], throat_conns=[], labels=[]):
     moment it throws an error is there are any associated Phases.
 
     '''
-    if (network._phases != []):
+    if len(network.simulation.phases) > 0:
         raise Exception('Network has active Phases, cannot proceed')
 
     logger.info('Extending network')
@@ -111,8 +111,6 @@ def extend(network, pore_coords=[], throat_conns=[], labels=[]):
                 if 'throat.'+label not in network.labels():
                     network['throat.'+label] = False
                 network['throat.'+label][Ts] = True
-    # Regnerate the adjacency matrices
-    network._update_network()
 
 
 def trim(network, pores=[], throats=[]):
