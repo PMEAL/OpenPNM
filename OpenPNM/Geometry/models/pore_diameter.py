@@ -235,26 +235,27 @@ def centroids(geometry, throat_centroid='throat.centroid',
 
 def from_fibres(network, geometry, **kwargs):
     r"""
-    Calculate an indiameter by distance transforming sections of the 
+    Calculate an indiameter by distance transforming sections of the
     fibre image. By definition the maximum value will be the largest radius
     of an inscribed sphere inside the fibrous hull
     """
     import numpy as np
     from scipy.ndimage import distance_transform_edt
     from OpenPNM.Utilities import misc
-    
+
     inrads = np.zeros(network.Np)
     try:
         vox_len = geometry._vox_len
     except:
-        logger.error("This method can only be applied to a Voronoi geometry" +
-        " where an image of the fibres exists")
+        _logger.error("This method can only be applied to a Voronoi geometry" +
+                      " where an image of the fibres exists")
         return inrads
 
     for pore in np.unique(geometry._hull_image):
-        logger.info("Processing pore: "+str(pore))
-        #Chunk the domain
-        verts = np.asarray([i for i in network["pore.vert_index"][pore].values()])
+        _logger.info("Processing pore: "+str(pore))
+        # Chunk the domain
+        verts = [i for i in network["pore.vert_index"][pore].values()]
+        verts = np.asarray(verts)
         verts = np.asarray(misc.unique_list(np.around(verts, 6)))
         xyz = verts/vox_len
         # Work out range to span over
@@ -268,12 +269,12 @@ def from_fibres(network, geometry, **kwargs):
         # start index
         si = np.floor(origin).astype(int)
         bin_img = geometry._fibre_image[si[0]:si[0]+xr,
-                                    si[1]:si[1]+yr,
-                                    si[2]:si[2]+zr]
+                                        si[1]:si[1]+yr,
+                                        si[2]:si[2]+zr]
 
         dt = distance_transform_edt(bin_img)
-        inrads[pore]=dt.max()
+        inrads[pore] = dt.max()
         del dt
         del bin_img
 
-    return inrads * vox_len
+    return inrads*vox_len

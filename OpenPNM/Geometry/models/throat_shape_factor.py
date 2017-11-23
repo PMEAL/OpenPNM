@@ -10,11 +10,11 @@ import scipy as _sp
 def compactness(geometry, throat_perimeter='throat.perimeter',
                 throat_area='throat.area', **kwargs):
     r"""
-    Mortensen et al. have shown that the Hagen-Poiseuille hydraluic resistance is
-    linearly dependent on the compactness. Defined as perimeter^2/area.
+    Mortensen et al. have shown that the Hagen-Poiseuille hydraluic resistance
+    is linearly dependent on the compactness. Defined as perimeter^2/area.
     The dependence is not universal as shapes with sharp corners provide more
-    resistance than those that are more elliptical. Count the number of vertices
-    and apply the right correction.
+    resistance than those that are more elliptical. Count the number of
+    vertices and apply the right correction.
     """
     # Only apply to throats with an area
     ts = geometry.throats()[geometry[throat_area] > 0]
@@ -41,8 +41,9 @@ def compactness(geometry, throat_perimeter='throat.perimeter',
 
     return alpha
 
+
 def mason_morrow(geometry, throat_perimeter='throat.perimeter',
-                throat_area='throat.area', **kwargs):
+                 throat_area='throat.area', **kwargs):
     r"""
     Mason and Morrow relate the capillary pressure to the shaped factor in a
     Similar way to Mortensen but for triangles.
@@ -59,6 +60,7 @@ def mason_morrow(geometry, throat_perimeter='throat.perimeter',
     value[ts] = 1/(4*_sp.pi)
     return value
 
+
 def jenkins_rao(geometry, throat_perimeter='throat.perimeter',
                 throat_area='throat.area',
                 throat_diameter='throat.indiameter',
@@ -73,6 +75,6 @@ def jenkins_rao(geometry, throat_perimeter='throat.perimeter',
     P = geometry[throat_perimeter]
     A = geometry[throat_area]
     r = geometry[throat_diameter]/2
-    #normalized by value for perfect circle
+    # Normalized by value for perfect circle
     value = (P/A)/(2/r)
     return value
