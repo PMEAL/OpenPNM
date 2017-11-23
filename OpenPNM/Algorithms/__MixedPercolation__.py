@@ -18,7 +18,7 @@ import OpenPNM.Utilities.vertexops as vo
 import time
 
 
-class InvasionPercolationTT(GenericAlgorithm):
+class MixedPercolation(GenericAlgorithm):
     r"""
     A classic/basic invasion percolation algorithm optimized for speed.
 
