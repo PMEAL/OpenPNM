@@ -91,13 +91,13 @@ class DelaunayGeometry(GenericGeometry):
 #        self.add_model(propname='pore.centroid',
 #                       model=gm.pore_centroid.voronoi)
 #        self.add_model(propname='pore.diameter',
-#                       model=gm.pore_diameter.equivalent_sphere)
+#                       model=gm.pore_size.equivalent_sphere)
 #        self.add_model(propname='pore.indiameter',
-#                       model=gm.pore_diameter.centroids)
+#                       model=gm.pore_size.centroids)
 #        self.add_model(propname='pore.area',
 #                       model=gm.pore_area.spherical)
 #        self.add_model(propname='throat.diameter',
-#                       model=gm.throat_diameter.equivalent_circle)
+#                       model=gm.throat_size.equivalent_circle)
 #        self['throat.volume'] = 0.0
 #        self['throat.length'] = self._fibre_rad*2
 #        self.add_model(propname='throat.surface_area',

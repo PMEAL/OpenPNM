@@ -51,9 +51,9 @@ def bulk_diffusion(target, molar_density='pore.molar_density',
     tlen = network[throat_length]
     # Interpolate pore phase property values to throats
     cp = phase[molar_density]
-    ct = phase.interpolate_data(data=cp)
+    ct = phase.interpolate_data(propname=molar_density)
     DABp = phase[diffusivity]
-    DABt = phase.interpolate_data(data=DABp)
+    DABt = phase.interpolate_data(propname=diffusivity)
     if calc_pore_len:
         lengths = misc.conduit_lengths(network, mode='centroid')
         plen1 = lengths[:, 0]

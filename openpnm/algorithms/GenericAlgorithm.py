@@ -10,7 +10,7 @@ It inherits from Core, so is Python Dict with the OpenPNM data control methods.
 """
 from openpnm.core import Base
 from openpnm.core import logging
-logger = logging.getLogger(__name__)
+logger = logging.getLogger()
 
 
 class GenericAlgorithm(Base):
@@ -40,49 +40,4 @@ class GenericAlgorithm(Base):
         # Initialize label 'all' in the object's own info dictionaries
         self['pore.all'] = network['pore.all']
         self['throat.all'] = network['throat.all']
-
-    def set_boundary_conditions(self, **kwargs):
-        r"""
-        Not implemented
-        """
-        raise NotImplementedError('This method must be implemeted by each ' +
-                                  'specific Algorithm class')
-
-    def run(self, **params):
-        r"""
-        Main run command for the algorithm
-        """
-        self._do_outer_iteration_stage()
-
-    def _do_outer_iteration_stage(self):
-        r"""
-        Executes the outer iteration stage
-        """
-        self._do_one_outer_iteration()
-
-    def _do_one_outer_iteration(self):
-        r"""
-        One iteration of an outer iteration loop for an algorithm
-        (e.g. time or parametric study)
-        """
-        self._do_inner_iteration_stage()
-
-    def _do_inner_iteration_stage(self):
-        r"""
-        Executes the inner iteration stage
-        """
-        self._do_one_inner_iteration()
-
-    def _do_one_inner_iteration(self):
-        r"""
-        Executes one inner iteration
-        """
-        raise NotImplementedError('This method must be implemeted by each ' +
-                                  'specific Algorithm class')
-
-    def return_results(self, **kwargs):
-        r"""
-        Not implemented
-        """
-        raise NotImplementedError('This method must be implemeted by each ' +
-                                  'specific Algorithm class')
+        network.simulation.add_algorithm(self)

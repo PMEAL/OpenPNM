@@ -43,19 +43,19 @@ class Mercury(GenericPhase):
                        A=9.85767, B=3007.129, C=-10.001)
         self.add_model(propname='pore.density',                        # kg/m3
                        model=fm.misc.linear,
-                       poreprop='pore.temperature',
+                       prop='pore.temperature',
                        b=14280.9, m=-2.47004)
         self.add_model(propname='pore.molar_density',
                        model=fm.molar_density.standard)                # mol/m3
         self.add_model(propname='pore.surface_tension',                # N/m
                        model=fm.misc.linear,
-                       poreprop='pore.temperature',
+                       prop='pore.temperature',
                        b=0.56254, m=-0.00028)
         self.add_model(propname='pore.thermal_conductivity',           # W/m.K
                        model=fm.misc.polynomial,
-                       poreprop='pore.temperature',
+                       prop='pore.temperature',
                        a=[3.98691, 0.0170967, -0.0000063862])
         self.add_model(propname='pore.viscosity',                      # kg/m.s
                        model=fm.misc.polynomial,
-                       poreprop='pore.temperature',
+                       prop='pore.temperature',
                        a=[0.00355837, -0.0000100131, 1.23684E-08, -5.1684E-12])

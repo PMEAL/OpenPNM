@@ -30,7 +30,7 @@ def young(target, sigma_sg, sigma_sl, surface_tension='pore.surface_tension'):
     """
     if surface_tension.split('.')[0] == 'pore':
         sigma = target[surface_tension]
-        sigma = target.interpolate_data(data=sigma)
+        sigma = target.interpolate_data(propname=surface_tension)
     else:
         sigma = target[surface_tension]
     theta = sp.arccos((sigma_sg - sigma_sl)/target[surface_tension])

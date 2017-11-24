@@ -46,7 +46,7 @@ class BaseTest:
                                                  throats=Ts)
 
     def teardown_class(self):
-        mgr = op.Base.Workspace()
+        mgr = op.core.Workspace()
         mgr.clear()
 
     def test_pores(self):
@@ -614,7 +614,7 @@ class BaseTest:
         geom2 = op.geometry.GenericGeometry(network=net, pores=Ps)
         # Ensure Falses return in missing places
         geom1['pore.blah'] = True
-        # assert sp.all(~geom2['pore.blah'])
+        assert sp.all(~geom2['pore.blah'])
         assert sp.sum(net['pore.blah']) == 4
         # Ensure all Trues returned now
         geom2['pore.blah'] = True
@@ -631,7 +631,7 @@ class BaseTest:
         # Ensure ints are returned geom1
         assert 'int' in geom1['pore.blah'].dtype.name
         # Ensure nans are returned on geom2
-        # assert sp.all(sp.isnan(geom2['pore.blah']))
+        assert sp.all(sp.isnan(geom2['pore.blah']))
         # Ensure interleaved array is float with nans
         assert 'float' in net['pore.blah'].dtype.name
         # Ensure missing values are floats
@@ -647,7 +647,7 @@ class BaseTest:
         # Ensure flaots are returned geom1
         assert 'float' in geom1['pore.blah'].dtype.name
         # Ensure nans are returned on geom2
-        # assert sp.all(sp.isnan(geom2['pore.blah']))
+        assert sp.all(sp.isnan(geom2['pore.blah']))
         # Ensure interleaved array is float with nans
         assert 'float' in net['pore.blah'].dtype.name
         # Ensure missing values are floats

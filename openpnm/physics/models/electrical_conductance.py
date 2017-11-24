@@ -16,22 +16,16 @@ def series_resistors(target, conductivity='pore.electrical_conductivity',
 
     Parameters
     ----------
-    mro = [c.__name__ for c in physics.__class__.__mro__]
 
-    Notes
-    -----
-    (1) This function requires that all the necessary phase properties already
-    be calculated.
-
-    (2) This function calculates the specified property for the *entire*
-    network then extracts the values for the appropriate throats at the end.
 
     """
+    network = target.simulation.network
+    phase = target.simulation.find_phase(target)
     # Get Nt-by-2 list of pores connected to each throat
     Ps = network['throat.conns']
     # Get properties in every pore in the network
-    sigmap = phase[pore_conductivity]
-    sigmat = phase.interpolate_data(sigmap)
+    sigmap = phase[conductivity]
+    sigmat = phase.interpolate_data(conductivity)
     # Find g for half of pore 1
     parea = network[pore_area]
     pdia = network[pore_diameter]
@@ -47,5 +41,5 @@ def series_resistors(target, conductivity='pore.electrical_conductivity',
     tlen[tlen <= 0] = 0
     gt = sigmat*tarea/tlen
     value = (1/gt + 1/gp1 + 1/gp2)**(-1)
-    value = value[phase.throats(physics.name)]
+    value = value[phase.throats(target.name)]
     return value

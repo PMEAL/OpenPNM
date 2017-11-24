@@ -9,14 +9,12 @@ import scipy as _sp
 import openpnm.utils.misc as misc
 
 
-def hagen_poiseuille(physics, phase, network,
+def hagen_poiseuille(target, viscosity='pore.viscosity',
                      pore_diameter='pore.diameter',
-                     pore_viscosity='pore.viscosity',
                      throat_length='throat.length',
                      throat_diameter='throat.diameter',
                      shape_factor='throat.shape_factor',
-                     calc_pore_len=False,
-                     **kwargs):
+                     calc_pore_len=False):
     r"""
     Calculates the hydraulic conductivity of throat assuming cylindrical
     geometry using the Hagen-Poiseuille model
@@ -33,10 +31,12 @@ def hagen_poiseuille(physics, phase, network,
     then extracts the values for the appropriate throats at the end.
 
     """
+    network = target.simulation.network
+    phase = target.simulation.find_phase(target)
     # Get Nt-by-2 list of pores connected to each throat
     Ps = network['throat.conns']
     # Get properties in every pore in the network
-    mup = phase[pore_viscosity]
+    mup = phase[viscosity]
     mut = phase.interpolate_data(mup)
     pdia = network[pore_diameter]
     if calc_pore_len:
@@ -72,5 +72,5 @@ def hagen_poiseuille(physics, phase, network,
     gt = (1/sf)*_sp.pi*(tdia)**4/(128*tlen*mut)
     gt[~(gt > 0)] = _sp.inf  # Set 0 conductance pores (boundaries) to inf
     value = (1/gt + 1/gp1 + 1/gp2)**(-1)
-    value = value[phase.throats(physics.name)]
+    value = value[phase.throats(target.name)]
     return value

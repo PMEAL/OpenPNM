@@ -8,7 +8,7 @@ import scipy as sp
 
 class PrintableList(list):
     def __str__(self):
-        horizontal_rule = '-' * 60
+        horizontal_rule = '―' * 60
         lines = [horizontal_rule]
         self.sort()
         for i, item in enumerate(self):
@@ -34,7 +34,7 @@ class PrintableDict(OrderedDict):
         return text
 
     def __str__(self):
-        horizontal_rule = '-' * 60
+        horizontal_rule = '―' * 60
         lines = [horizontal_rule]
         lines.append('{0:<25s} {1}'.format('key', self._header))
         lines.append(horizontal_rule)

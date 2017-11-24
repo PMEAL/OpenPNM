@@ -1,6 +1,7 @@
 import scipy as sp
 import numpy as np
 import matplotlib.pyplot as plt
+from scipy.sparse import csgraph as csg
 from openpnm.algorithms import GenericAlgorithm
 from openpnm.core import logging
 logger = logging.getLogger(__name__)
@@ -37,7 +38,8 @@ class Drainage(GenericAlgorithm):
     >>> pn.add_boundary_pores(pores=pn.pores('top'),
     ...                       offset=[0, 0, 10],
     ...                       apply_label='boundary_top')
-    >>> geo = op.Geometry.Stick_and_Ball(network=pn, pores=pn.Ps, throats=pn.Ts)
+    >>> geo = op.Geometry.Stick_and_Ball(network=pn, pores=pn.Ps,
+    ...                                  throats=pn.Ts)
     >>> water = op.Phases.Water(network=pn)
     >>> air = op.Phases.Air(network=pn)
     >>> phys = op.Physics.Standard(network=pn, phase=water, geometry=geo)
@@ -437,27 +439,34 @@ class Drainage(GenericAlgorithm):
         Determine which pores and throats are invaded at a given applied
         capillary pressure.  This method is called by ``run``.
         """
+        net = self.simulation.network
         # Generate a list containing boolean values for throat state
         Tinvaded = self['throat.entry_pressure'] <= inv_val
         # Add residual throats, if any, to list of invaded throats
         Tinvaded = Tinvaded + self['throat.residual']
-        # Find all pores that can be invaded at specified pressure
-        net = self.simulation.network
-        [pclusters, tclusters] = net.find_clusters2(mask=Tinvaded,
-                                                    t_labels=True)
-
+        # Perform the clustering using scipy.csgraph
+        csr = net.create_adjacency_matrix(data=Tinvaded, fmt='csr')
+        clusters = csg.connected_components(csgraph=csr, directed=False)[1]
+        # Find pores attached to each invaded throats
+        Ps = net.find_connected_pores(throats=Tinvaded, flatten=True)
+        # Adjust cluster numbers such that non-invaded pores are labelled -0
+        p_clusters = (clusters + 1)*(net.tomask(pores=Ps).astype(int)) - 1
+        # Label invaded throats with their neighboring pore's label
+        t_clusters = clusters[net['throat.conns']][:, 0]
+        # Label non-invaded throats with -1
+        t_clusters[~Tinvaded] = -1
         # Identify clusters connected to inlet sites
-        inv_clusters = sp.unique(pclusters[self['pore.inlets']])
+        inv_clusters = sp.unique(p_clusters[self['pore.inlets']])
         inv_clusters = inv_clusters[inv_clusters >= 0]
 
         # Find pores on the invading clusters
-        pmask = np.in1d(pclusters, inv_clusters)
+        pmask = sp.in1d(p_clusters, inv_clusters)
         # Store current applied pressure in newly invaded pores
         pinds = (self['pore.inv_Pc'] == sp.inf) * (pmask)
         self['pore.inv_Pc'][pinds] = inv_val
 
         # Find throats on the invading clusters
-        tmask = np.in1d(tclusters, inv_clusters)
+        tmask = sp.in1d(t_clusters, inv_clusters)
         # Store current applied pressure in newly invaded throats
         tinds = (self['throat.inv_Pc'] == sp.inf) * (tmask)
         self['throat.inv_Pc'][tinds] = inv_val

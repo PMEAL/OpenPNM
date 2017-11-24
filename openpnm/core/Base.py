@@ -1,6 +1,4 @@
-from openpnm.core import Workspace, Simulation, logging, utils, ModelsMixin
-import string
-import random
+from openpnm.core import Workspace, Simulation, logging, utils
 import scipy as sp
 logger = logging.getLogger()
 ws = Workspace()
@@ -15,11 +13,11 @@ class Base(dict):
         super().__init__()
         self.update({'pore.all': sp.array([], ndmin=1, dtype=bool)})
         self.update({'throat.all': sp.array([], ndmin=1, dtype=bool)})
-        self._name = None
-        self.name = name
         if simulation is None:
             simulation = Simulation()
         self.simulation = simulation
+        self._name = None
+        self.name = name
 
     def __repr__(self):
         return '<%s.%s object at %s>' % (
@@ -40,7 +38,6 @@ class Base(dict):
         the integrity of the network.  Specifically, this means only Np or Nt
         long arrays can be written, and they must be called 'pore.___' or
         'throat.___'.  Also, any scalars are cast into full length vectors.
-
 
         Example
         -------
@@ -98,10 +95,22 @@ class Base(dict):
         if name in ws.keys():
             raise Exception('An object named '+name+' already exists')
         elif name is None:
-            name = ''.join(random.choice(string.ascii_uppercase +
-                                         string.ascii_lowercase +
-                                         string.digits) for _ in range(5))
-            # name = self.__class__.__name__ + '_' + name
+            if 'GenericNetwork' in self.mro():
+                num = str(1).zfill(3)
+                prefix = 'net'
+            elif 'GenericGeometry' in self.mro():
+                num = str(len(self.simulation.geometries.keys())+1).zfill(3)
+                prefix = 'geo'
+            elif 'GenericPhase' in self.mro():
+                num = str(len(self.simulation.phases.keys())+1).zfill(3)
+                prefix = 'phase'
+            elif 'GenericPhysics' in self.mro():
+                num = str(len(self.simulation.physics.keys())+1).zfill(3)
+                prefix = 'phys'
+            elif 'GenericAlgorithm' in self.mro():
+                num = str(len(self.simulation.algorithms.keys())+1).zfill(3)
+                prefix = 'alg'
+            name = prefix + num
         elif self._name is not None:
             logger.info('Changing the name of '+self.name+' to '+name)
             # Check if name collides with any arrays in the simulation
@@ -1266,7 +1275,7 @@ class Base(dict):
         return mode
 
     def __str__(self):
-        horizonal_rule = '-' * 60
+        horizonal_rule = '―' * 60
         lines = [horizonal_rule]
         lines.append(self.__module__.replace('__', '') + ': \t' + self.name)
         lines.append(horizonal_rule)

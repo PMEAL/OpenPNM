@@ -41,3 +41,14 @@ class GenericPhysics(Base):
         self['throat.all'] = sp.ones(shape=sp.size(geometry.Ts), dtype=bool)
         network.simulation.add_physics(physics=self, geometry=geometry,
                                        phase=phase)
+
+    def __getitem__(self, key):
+        phase = self.simulation.find_phase(self)
+        element = key.split('.')[0]
+        # Convert self.name into 'all'
+        if key.split('.')[-1] == self.name:
+            key = element + '.all'
+        if key in self.keys():  # Look for data on self...
+            return super(GenericPhysics, self).__getitem__(key)
+        else:  # ...Then check Network
+            return phase[key][phase[element + '.' + self.name]]

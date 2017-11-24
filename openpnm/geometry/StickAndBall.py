@@ -45,7 +45,7 @@ class StickAndBall(GenericGeometry):
                        seed=1, num_range=[0, 0.1],
                        regen_mode='constant')
         self.add_model(propname='pore.diameter',
-                       model=gm.pore_diameter.normal,
+                       model=gm.pore_size.normal,
                        loc=spacing/2,
                        scale=spacing/10)
         self.add_model(propname='pore.volume',
@@ -61,3 +61,4 @@ class StickAndBall(GenericGeometry):
                        model=gm.throat_area.cylinder)
         self.add_model(propname='throat.surface_area',
                        model=gm.throat_surface_area.cylinder)
+        self.regenerate_models()

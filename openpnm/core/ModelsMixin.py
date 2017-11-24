@@ -17,6 +17,19 @@ class ModelsDict(dict):
         [unique.append(item) for item in tree if item not in unique]
         return unique
 
+    def __str__(self):
+        horizontal_rule = '-' * 60
+        lines = [horizontal_rule]
+        lines.append('{0:<5s} {1:<30s} {2}'.format('#',
+                                                   'Property Name',
+                                                   'Regeneration Mode'))
+        lines.append(horizontal_rule)
+        for i, item in enumerate(self.keys()):
+            str = '{0:<5d} {1:<30s} {2:<20s}'
+            lines.append(str.format(i + 1, item, self[item]['regen_mode']))
+        lines.append(horizontal_rule)
+        return '\n'.join(lines)
+
 
 class ModelsMixin():
 
@@ -69,3 +82,4 @@ class ModelsMixin():
         self._dict = copy.deepcopy(_dict)
 
     models = property(fget=_get_models, fset=_set_models)
+

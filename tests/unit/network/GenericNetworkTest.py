@@ -7,7 +7,7 @@ class GenericNetworkTest:
         self.net = op.network.Cubic(shape=[10, 10, 10])
 
     def teardown_class(self):
-        mgr = op.Core.Workspace()
+        mgr = op.core.Workspace()
         mgr.clear()
 
     def test_find_connected_pores_numeric_not_flattend(self):

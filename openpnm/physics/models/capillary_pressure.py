@@ -47,13 +47,11 @@ def washburn(target, surface_tension='pore.surface_tension',
     network = target.simulation.network
     phase = target.simulation.find_phase(target)
     if surface_tension.split('.')[0] == 'pore':
-        sigma = phase[surface_tension]
-        sigma = phase.interpolate_data(data=sigma)
+        sigma = phase.interpolate_data(propname=surface_tension)
     else:
         sigma = phase[surface_tension]
     if contact_angle.split('.')[0] == 'pore':
-        theta = phase[contact_angle]
-        theta = phase.interpolate_data(data=theta)
+        theta = phase.interpolate_data(propname=contact_angle)
     else:
         theta = phase[contact_angle]
     r = network[diameter]/2
@@ -118,12 +116,12 @@ def purcell(target, r_toroid, surface_tension='pore.surface_tension',
     phase = target.simulation.find_phase(target)
     if surface_tension.split('.')[0] == 'pore':
         sigma = phase[surface_tension]
-        sigma = phase.interpolate_data(data=sigma)
+        sigma = phase.interpolate_data(propname=surface_tension)
     else:
         sigma = phase[surface_tension]
     if contact_angle.split('.')[0] == 'pore':
         theta = phase[contact_angle]
-        theta = phase.interpolate_data(data=theta)
+        theta = phase.interpolate_data(propname=contact_angle)
     else:
         theta = phase[contact_angle]
     r = network[diameter]/2

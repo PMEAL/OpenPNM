@@ -2,12 +2,12 @@ import itertools
 import scipy as sp
 import scipy.sparse as sprs
 import scipy.spatial as sptl
-from openpnm.core import Base, Workspace, logging, utils
+from openpnm.core import Base, Workspace, ModelsMixin, logging, utils
 logger = logging.getLogger(__name__)
 ws = Workspace()
 
 
-class GenericNetwork(Base):
+class GenericNetwork(Base, ModelsMixin):
     r"""
     GenericNetwork - Base class to construct pore networks
 
@@ -56,7 +56,7 @@ class GenericNetwork(Base):
         mode = self._parse_mode(mode=mode, allowed=modes, single=False)
         prop_list = utils.PrintableList()
         if deep:
-            for geom in self._geometries:
+            for geom in self.simulation.geometries:
                 prop_list.extend(geom.props(element=element, mode=mode))
             # Get unique values
             prop_list = utils.PrintableList(set(prop_list))
