@@ -82,3 +82,21 @@ class Workspace(dict):
             print(key, ': ', self._comments[key])
 
     comments = property(fget=_get_comments, fset=_set_comments)
+
+    def __str__(self):
+        s = []
+        hr = '―'*80
+        s.append(hr)
+        for item in self.values():
+            s.append(' '  + item.name)
+            s.append(item.__str__())
+        return '\n'.join(s)
+
+
+
+
+
+
+
+
+

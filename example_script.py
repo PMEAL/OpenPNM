@@ -3,13 +3,13 @@ import scipy as sp
 import openpnm.geometry.models as gm
 ws = op.core.Workspace()
 
-pn = op.network.Cubic(shape=[25, 25, 25], spacing=0.0001)
+pn = op.network.Cubic(shape=[15, 15, 15], spacing=0.0001)
 Ps = pn.pores(['top', 'bottom', 'left', 'right', 'front', 'back'])
 pn['pore.surface'] = pn.tomask(pores=Ps)
 Ts = pn.find_neighbor_throats(pores=Ps, mode='intersection')
 pn['throat.surface'] = pn.tomask(throats=Ts)
 geom1 = op.geometry.StickAndBall(network=pn, pores=pn.pores('surface'),
-                                    throats=pn.throats('surface'))
+                                 throats=pn.throats('surface'))
 geom1['pore.num'] = 1
 Ps = pn.pores('surface', mode='not')
 pn['pore.internal'] = pn.tomask(pores=Ps)

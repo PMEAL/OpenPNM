@@ -2,8 +2,8 @@ import itertools
 import scipy as sp
 import scipy.sparse as sprs
 import scipy.spatial as sptl
-from openpnm.core import Base, Workspace, ModelsMixin, logging, utils
-logger = logging.getLogger(__name__)
+from openpnm.core import Base, Simulation, Workspace, ModelsMixin, logging, utils
+logger = logging.getLogger()
 ws = Workspace()
 
 
@@ -18,13 +18,14 @@ class GenericNetwork(Base, ModelsMixin):
 
     """
     def __init__(self, simulation=None, **kwargs):
+        if simulation is None:
+            simulation = Simulation()
         super().__init__(simulation=simulation, **kwargs)
         logger.name = self.name
 
         # Initialize adjacency and incidence matrix dictionaries
         self._im = {}
         self._am = {}
-        self.simulation.add_network(self)
 
     def __setitem__(self, prop, value):
         if prop == 'throat.conns':

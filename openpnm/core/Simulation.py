@@ -3,7 +3,7 @@ from openpnm.core import Workspace
 ws = Workspace()
 
 
-class Simulation(dict):
+class Simulation(list):
 
     def __init__(self, name=None):
         super().__init__()
@@ -12,6 +12,11 @@ class Simulation(dict):
         self.name = name
         self._grid = {}
         ws.update({name: self})
+
+    def __getitem__(self, key):
+        for obj in self:
+            if obj.name == key:
+                return obj
 
     def find_phase(self, physics):
         mro = [c.__name__ for c in physics.__class__.__mro__]
@@ -32,81 +37,59 @@ class Simulation(dict):
         name = self.grid[geometry.name][phase.name]
         return self[name]
 
-    def add_network(self, network):
-        if self.network is not None:
-            raise Exception("This simulation already has a Network")
-        self.update({network.name: network})
-
-    def add_phase(self, phase):
-        if phase in self.phases.values():
-            raise Exception("A Phase with that name has already been added")
-        self.update({phase.name: phase})
-
-    def add_geometry(self, geometry):
-        if geometry in self.geometries.values():
-            raise Exception("A Geometry with that name has already been added")
-        self.update({geometry.name: geometry})
-
-    def add_physics(self, physics, geometry, phase):
-        if physics in self.physics.values():
-            raise Exception("A Physics with that name has already been added")
-        self.update({physics.name: physics})
-
-    def add_item(self, item):
-        if item in self:
-            raise Exception("An object with that name is already present " +
-                            "in this simulation")
-
-    def add_algorithm(self, algorithm):
-        self.update({algorithm.name: algorithm})
-
     def validate_name(self, name):
         flag = True
-        if name in self.keys():
+        names = [i.name for i in self]
+        if name in names:
             flag = False
         return flag
 
     def _get_net(self):
-        for item in self.values():
+        for item in self:
             mro = [c.__name__ for c in item.__class__.__mro__]
             if 'GenericNetwork' in mro:
                 return item
+
     network = property(fget=_get_net)
 
     def _get_geoms(self):
         _dict = {}
-        for item in self.values():
+        for item in self:
             mro = [c.__name__ for c in item.__class__.__mro__]
             if 'GenericGeometry' in mro:
                 _dict.update({item.name: item})
         return _dict
+
     geometries = property(fget=_get_geoms)
 
     def _get_phases(self):
         _dict = {}
-        for item in self.values():
+        for item in self:
             mro = [c.__name__ for c in item.__class__.__mro__]
             if 'GenericPhase' in mro:
                 _dict.update({item.name: item})
         return _dict
+
     phases = property(fget=_get_phases)
 
     def _get_physics(self):
         _dict = {}
-        for item in self.values():
+        for item in self:
             mro = [c.__name__ for c in item.__class__.__mro__]
             if 'GenericPhysics' in mro:
                 _dict.update({item.name: item})
         return _dict
+
     physics = property(fget=_get_physics)
 
     def _get_algorithms(self):
         _dict = {}
-        for item in self.values():
+        for item in self:
             mro = [c.__name__ for c in item.__class__.__mro__]
             if 'GenericAlgorithm' in mro:
                 _dict.update({item.name: item})
         return _dict
+
     algorithms = property(fget=_get_algorithms)
 
     def _set_comments(self, string):
@@ -138,6 +121,19 @@ class Simulation(dict):
         return grid
 
     grid = property(fget=_get_grid)
+
+    def __str__(self):
+        s = []
+        hr = '―'*80
+        s.append(hr)
+        s.append(' {0:<15} '.format('Object Name') +
+                 '{0:<65}'.format('Object ID'))
+        s.append(hr)
+        for item in self:
+            s.append(' {0:<15} '.format(item.name) +
+                     '{0:<65}'.format(item.__repr__()))
+        s.append(hr)
+        return '\n'.join(s)
 
 
 class Grid(dict):

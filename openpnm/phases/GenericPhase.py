@@ -23,11 +23,9 @@ class GenericPhase(Base, ModelsMixin):
     def __init__(self, network, name=None):
         super().__init__(name=name, simulation=network.simulation)
         logger.name = self.name
-
         # Initialize label 'all' in the object's own info dictionaries
         self['pore.all'] = network['pore.all']
         self['throat.all'] = network['throat.all']
-        network.simulation.add_phase(self)
         # Set standard conditions on the fluid to get started
         self['pore.temperature'] = 298.0
         self['pore.pressure'] = 101325.0

@@ -43,7 +43,6 @@ class GenericGeometry(Base, ModelsMixin):
         network['pore.'+self.name][pores] = True
         network['throat.'+self.name] = False
         network['throat.'+self.name][throats] = True
-        network.simulation.add_geometry(self)
 
     def __getitem__(self, key):
         net = self.simulation.network

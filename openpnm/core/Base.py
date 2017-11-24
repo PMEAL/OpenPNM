@@ -13,16 +13,13 @@ class Base(dict):
         super().__init__()
         self.update({'pore.all': sp.array([], ndmin=1, dtype=bool)})
         self.update({'throat.all': sp.array([], ndmin=1, dtype=bool)})
-        if simulation is None:
-            simulation = Simulation()
-        self.simulation = simulation
         self._name = None
+        simulation.append(self)
         self.name = name
 
     def __repr__(self):
-        return '<%s.%s object at %s>' % (
+        return '<%s object at %s>' % (
             self.__class__.__module__,
-            self.__class__.__name__,
             hex(id(self)))
 
     def __eq__(self, other):
@@ -99,16 +96,16 @@ class Base(dict):
                 num = str(1).zfill(3)
                 prefix = 'net'
             elif 'GenericGeometry' in self.mro():
-                num = str(len(self.simulation.geometries.keys())+1).zfill(3)
+                num = str(len(self.simulation.geometries.keys())).zfill(3)
                 prefix = 'geo'
             elif 'GenericPhase' in self.mro():
-                num = str(len(self.simulation.phases.keys())+1).zfill(3)
+                num = str(len(self.simulation.phases.keys())).zfill(3)
                 prefix = 'phase'
             elif 'GenericPhysics' in self.mro():
-                num = str(len(self.simulation.physics.keys())+1).zfill(3)
+                num = str(len(self.simulation.physics.keys())).zfill(3)
                 prefix = 'phys'
             elif 'GenericAlgorithm' in self.mro():
-                num = str(len(self.simulation.algorithms.keys())+1).zfill(3)
+                num = str(len(self.simulation.algorithms.keys())).zfill(3)
                 prefix = 'alg'
             name = prefix + num
         elif self._name is not None:
@@ -116,7 +113,7 @@ class Base(dict):
             # Check if name collides with any arrays in the simulation
             if self.simulation.validate_name(name):
                 # Rename any label arrays
-                for item in self.simulation.get_all_objects():
+                for item in self.simulation:
                     if 'pore.'+self.name in item.keys():
                         item['pore.'+name] = item.pop('pore.'+self.name)
                     if 'throat.'+self.name in item.keys():
@@ -129,6 +126,12 @@ class Base(dict):
         return self._name
 
     name = property(_get_name, _set_name)
+
+    def _get_simulation(self):
+        for sim in ws.values():
+            if self in sim:
+                return sim
+    simulation = property(fget=_get_simulation)
 
     # -------------------------------------------------------------------------
     """Data Query Methods"""

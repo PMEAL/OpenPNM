@@ -18,8 +18,7 @@ class GenericPhysics(Base):
 
     geometry : OpenPNM Geometry object
         The Geometry object that defines the pores/throats where this Physics
-        should be applied.  If this argument is supplied, then pores and
-        throats cannot be specified.
+        should be applied.
 
     name : str, optional
         A unique string name to identify the Physics object, typically same as
@@ -30,7 +29,6 @@ class GenericPhysics(Base):
 
     def __init__(self, network=None, phase=None, geometry=None, name=None):
         super().__init__(name=name, simulation=network.simulation)
-        logger.name = self.name
 
         # Initialize a label dictionary in the associated phase and network
         phase['pore.'+self.name] = False
@@ -39,8 +37,6 @@ class GenericPhysics(Base):
         phase['throat.'+self.name][network.throats(geometry.name)] = True
         self['pore.all'] = sp.ones(shape=sp.size(geometry.Ps), dtype=bool)
         self['throat.all'] = sp.ones(shape=sp.size(geometry.Ts), dtype=bool)
-        network.simulation.add_physics(physics=self, geometry=geometry,
-                                       phase=phase)
 
     def __getitem__(self, key):
         phase = self.simulation.find_phase(self)
