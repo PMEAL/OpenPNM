@@ -3,6 +3,7 @@ import time as _time
 import scipy.sparse as _sprs
 import OpenPNM as _op
 from scipy.spatial.distance import cdist as dist
+import csv
 
 
 def find_path(network, pore_pairs, weights=None):
@@ -284,3 +285,17 @@ def conduit_lengths(network, throats=None, mode='pore'):
         plen2 = lengths*(1-fractions)
 
     return _sp.vstack((plen1, network['throat.length'], plen2)).T[throats]
+
+
+def dict_to_csv(data=None, filename='test.csv'):
+    r'''
+    Utility function to write a dictionary to a csv file
+    Uses dictionary keys as column headers
+    Data should all be same length
+    '''
+    data_list = [data[key] for key in data.keys()]
+    zipper = list(zip(*data_list))
+    with open(filename, 'w') as f:
+        w = csv.writer(f, lineterminator='\n')
+        w.writerow(data.keys())
+        w.writerows(zipper)
