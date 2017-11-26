@@ -140,15 +140,15 @@ class VTK(GenericIO):
     '''.strip()
 
     @classmethod
-    def save(cls, network, filename='', phases=[], legacy=True):
+    def save(cls, simulation, filename='', phases=[]):
         r"""
         Save network and phase data to a single vtp file for visualizing in
         Paraview
 
         Parameters
         ----------
-        network : OpenPNM Network Object
-            The Network containing the data to be written
+        simulation : OpenPNM Simulation Object
+            The Simulation containing the data to be written
 
         filename : string, optional
             Filename to write data.  If no name is given the file is named
@@ -158,15 +158,8 @@ class VTK(GenericIO):
             A list contain OpenPNM Phase object(s) containing data to be
             written
 
-        legacy : boolean
-            If True (default) the property names will be of the format
-            \'pore.Cubic_asd43_diameter'\, while if False they will be
-            \'pore.diameter|Cubic_asd43\'.  The latter style is consistent
-            with all of the other IO methods, while the former is compatible
-            with existing code, such as Paraview State files.   Eventually,
-            this option will be derprecated and removed.
-
         """
+        network = simulation.network
 
         if filename == '':
             filename = network.name
@@ -180,15 +173,14 @@ class VTK(GenericIO):
         for phase in phases:
             objs.append(phase)
         objs.append(network)
-        if legacy:
-            am = _misc.amalgamate_data(objs=objs)
-        else:
-            am = {i: network[i] for i in
-                  network.props(mode=['all', 'deep']) + network.labels()}
-            for phase in phases:
-                dict_ = {i+'|'+phase.name: phase[i] for i in
-                         phase.props(mode=['all', 'deep']) + phase.labels()}
-                am.update(dict_)
+
+        am = {i: network[i] for i in
+              network.props(mode=['all', 'deep']) + network.labels()}
+        for phase in phases:
+            dict_ = {i+'|'+phase.name: phase[i] for i in
+                     phase.props(mode=['all', 'deep']) + phase.labels()}
+            am.update(dict_)
+
         key_list = list(sorted(am.keys()))
         points = network['pore.coords']
         pairs = network['throat.conns']

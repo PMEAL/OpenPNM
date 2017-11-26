@@ -7,11 +7,26 @@ class Simulation(list):
 
     def __init__(self, name=None):
         super().__init__()
-        if name is None:
-            name = 'sim'+str(len(ws.keys())+1).zfill(3)
+        self._name = None
         self.name = name
         self._grid = {}
-        ws.update({name: self})
+        ws.update({self.name: self})
+
+    def _set_name(self, name):
+        if name is None:
+            name = ws._gen_name()
+        if name in ws.keys():
+            raise Exception("A simulation with that name already exists")
+        if self.name is not None:
+            old_name = self.name
+            ws.pop(old_name, None)
+            ws.update({name: self})
+        self._name = name
+
+    def _get_name(self):
+        return self._name
+
+    name = property(fget=_get_name, fset=_set_name)
 
     def __getitem__(self, key):
         for obj in self:

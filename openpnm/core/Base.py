@@ -13,8 +13,8 @@ class Base(dict):
         super().__init__()
         self.update({'pore.all': sp.array([], ndmin=1, dtype=bool)})
         self.update({'throat.all': sp.array([], ndmin=1, dtype=bool)})
-        self._name = None
         simulation.append(self)
+        self._name = None
         self.name = name
 
     def __repr__(self):

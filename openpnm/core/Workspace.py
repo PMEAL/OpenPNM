@@ -1,6 +1,7 @@
 import pickle
 import openpnm
 import time
+import copy
 from openpnm.core import logging
 logger = logging.getLogger()
 
@@ -69,6 +70,51 @@ class Workspace(dict):
             self[sim.name] = sim
         else:
             raise Exception('A simulation with that name is already present')
+
+    def copy_simulation(self, simulation, new_name=None):
+        r"""
+        Make a copy of an existing simulation object
+
+        Parameters
+        ----------
+        simulation : Simulation Object
+            The Simulation object to be copied
+
+        name : string, optional
+            A name for the new copy of the Simulation.  If not supplied, then
+            one will be generated.
+
+        Returns
+        -------
+        This returns nothing, but adds the new simulation obaject to the
+        current workspace.
+
+        """
+        new_sim = copy.deepcopy(simulation)
+        new_sim._name = hex(id(new_sim))  # Assign temporary name
+        new_sim.name = new_name
+
+    def export_data(self, simulation, filename=None, fileformat='vtp'):
+        r"""
+        """
+        if filename is None:
+            filename = simulation.name + '_' + time.strftime('%Y%b%d_%H%M%p')
+        if fileformat.lower() == 'vtp':
+            openpnm.io.VTK.save(simulation, filename=filename)
+        if fileformat.lower() == 'csv':
+            openpnm.io.CSV.save(simulation, filename=filename)
+        if fileformat.lower() == 'networkx':
+            openpnm.io.NetworkX.save(simulation, filename=filename)
+        if fileformat.lower() == 'mat':
+            openpnm.io.MAT.save(simulation, filename=filename)
+
+    def _gen_name(self):
+        n = [0]
+        for item in self.keys():
+            if item.startswith('sim_'):
+                n.append(int(item.split('sim_')[1]))
+        name = 'sim_'+str(max(n)+1).zfill(3)
+        return name
 
     def _set_comments(self, string):
         if hasattr(self, '_comments') is False:
