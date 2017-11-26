@@ -64,3 +64,60 @@ class GenericGeometry(Base, ModelsMixin):
             return conns
         else:  # ...Then check Network
             return net[key][net[element+'.'+self.name]]
+
+    def set_locations(self, pores=None, throats=None, mode='add'):
+        r"""
+        """
+        net = self.simulation.network
+        sim = self.simulation
+        if pores is not None:
+            element = 'pore'
+            indices = self._parse_indices(pores)
+        elif throats is not None:
+            element = 'throats'
+            indices = self._parse_indices(throats)
+        else:
+            raise Exception('Can\'t set pores and throats at the same time')
+
+        if mode == 'add':
+            # Ensure indices are not already assigned to another object
+            temp = sp.zeros(shape=[net._count(element=element), ], dtype=bool)
+            for item in sim.geometries.keys():
+                temp += net[element+'.'+item]
+            if sp.any(temp[indices]):
+                raise Exception('Some of the given '+element+' are already ' +
+                                'assigned to an existing object')
+
+            # Create new 'all' label for new size
+            new_len = self._count(element=element) + sp.size(indices)
+            self.update({element+'.all': sp.ones((new_len, ), dtype=bool)})
+
+            # Update indices in network and ph
+            inds_orig = net._get_indices(element=element, labels=self.name)
+            if element+'.'+self.name not in net.keys():
+                net[element+'.'+self.name] = False
+            net[element+'.'+self.name][indices] = True
+            inds_new = net._get_indices(element=element, labels=self.name)
+
+            # Increase size of labels (add False at new indices)
+            labels = self.labels()
+            labels.remove(element+'.all')
+            for item in labels:
+                if item.split('.')[0] == element:
+                    net[element+'.'+'blank'] = False
+                    net[element+'.'+'blank'][inds_orig] = self[item]
+                    self[item] = net[element+'.'+'blank'][inds_new]
+            net.pop(element+'.'+'blank', None)
+
+        if mode == 'remove':
+            # Change the labeling in the boss object
+            net[element+'.'+self.name][indices] = False
+            # Convert network indices to obj-specific indices
+            obj_inds = net._map(element=element,
+                                locations=indices,
+                                target=self)
+            keep = ~self._tomask(indices=obj_inds, element=element)
+            for item in list(self.keys()):
+                if item.split('.')[0] == element:
+                    temp = self[item][keep]
+                    self.update({item: temp})

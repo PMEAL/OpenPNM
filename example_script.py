@@ -50,5 +50,3 @@ water2.add_model(propname='throat.capillary_pressure',
                  model=op.physics.models.capillary_pressure.washburn)
 
 b = pn2.simulation
-
-

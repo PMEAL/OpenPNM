@@ -88,15 +88,6 @@ class Workspace(dict):
         hr = '―'*80
         s.append(hr)
         for item in self.values():
-            s.append(' '  + item.name)
+            s.append(' ' + item.name)
             s.append(item.__str__())
         return '\n'.join(s)
-
-
-
-
-
-
-
-
-

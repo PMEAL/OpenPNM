@@ -1,7 +1,7 @@
 import openpnm as op
 from openpnm.algorithms import GenericAlgorithm, Drainage
 from openpnm.core import logging
-logger = logging.getLogger(__name__)
+logger = logging.getLogger()
 
 
 class MIP(GenericAlgorithm):
