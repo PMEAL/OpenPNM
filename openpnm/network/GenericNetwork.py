@@ -57,7 +57,7 @@ class GenericNetwork(Base, ModelsMixin):
         mode = self._parse_mode(mode=mode, allowed=modes, single=False)
         prop_list = utils.PrintableList()
         if deep:
-            for geom in self.simulation.geometries:
+            for geom in self.simulation.geometries.values():
                 prop_list.extend(geom.props(element=element, mode=mode))
             # Get unique values
             prop_list = utils.PrintableList(set(prop_list))

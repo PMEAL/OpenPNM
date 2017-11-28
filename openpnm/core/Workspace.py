@@ -94,6 +94,15 @@ class Workspace(dict):
         new_sim._name = hex(id(new_sim))  # Assign temporary name
         new_sim.name = new_name
 
+    def import_data(self, filename):
+        r"""
+        """
+        fileformat = filename.split('.')[-1]
+        if fileformat.lower() == 'yaml':
+            import networkx as nx
+            obj = nx.read_yaml(filename)
+            openpnm.io.NetworkX.load(obj)
+
     def export_data(self, simulation, filename=None, fileformat='vtp'):
         r"""
         """
@@ -103,12 +112,20 @@ class Workspace(dict):
             openpnm.io.VTK.save(simulation, filename=filename)
         if fileformat.lower() == 'csv':
             openpnm.io.CSV.save(simulation, filename=filename)
+        if fileformat.lower() == 'yaml':
+            import networkx as nx
+            obj = openpnm.io.NetworkX.save(simulation)
+            nx.write_yaml(obj, filename)
         if fileformat.lower() == 'networkx':
-            openpnm.io.NetworkX.save(simulation, filename=filename)
+            obj = openpnm.io.NetworkX.save(simulation)
+            return obj
         if fileformat.lower() == 'mat':
             openpnm.io.MAT.save(simulation, filename=filename)
 
     def _gen_name(self):
+        r"""
+        Generates a valid name for simulations
+        """
         n = [0]
         for item in self.keys():
             if item.startswith('sim_'):

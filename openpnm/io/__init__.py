@@ -1,8 +1,9 @@
-from .IO import VTK
-from .IO import CSV
-from .IO import NetworkX
-from .IO import MAT
-from .IO import iMorph
-from .IO import MARock
-from .IO import Statoil
-
+from .GenericIO import GenericIO
+from .VTK import VTK
+from .CSV import CSV
+from .NetworkX import NetworkX
+from .MAT import MAT
+from .iMorph import iMorph
+from .MARock import MARock
+from .Statoil import Statoil
+from .Pandas import Pandas
