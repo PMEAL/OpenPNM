@@ -1,4 +1,4 @@
-from openpnm.core import Base, Workspace, logging, utils
+from openpnm.core import Base, Workspace, logging
 import scipy as sp
 logger = logging.getLogger(__name__)
 ws = Workspace()

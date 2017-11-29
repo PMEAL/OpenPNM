@@ -2,45 +2,141 @@ import scipy as _sp
 import numpy as _np
 import scipy.ndimage as _spim
 import scipy.sparse as sprs
+from scipy.sparse import csgraph
 from openpnm.core import logging
+from openpnm.utils.misc import PrintableDict
 logger = logging.getLogger()
 
 
-def map_indices(source, target, pores=None, throats=None):
+def find_path(network, pore_pairs, weights=None):
+    r"""
+    Find the shortest path between pairs of pores.
+
+    Parameters
+    ----------
+    network : OpenPNM Network Object
+        The Network object on which the search should be performed
+
+    pore_pairs : array_like
+        An N x 2 array containing N pairs of pores for which the shortest
+        path is sought.
+
+    weights : array_like, optional
+        An Nt-long list of throat weights for the search.  Typically this
+        would be the throat lengths, but could also be used to represent
+        the phase configuration.  If no weights are given then the
+        standard topological connections of the Network are used.
+
+    Returns
+    -------
+    A dictionary containing both the pores and throats that define the
+    shortest path connecting each pair of input pores.
+
+    Notes
+    -----
+    The shortest path is found using Dijkstra's algorithm included in the
+    scipy.sparse.csgraph module
+
+    TODO: The returned throat path contains the correct values, but not
+    necessarily in the true order
+
+    Examples
+    --------
+    >>> import OpenPNM
+    >>> import OpenPNM.Utilities.misc as misc
+    >>> pn = OpenPNM.Network.Cubic(shape=[3, 3, 3])
+    >>> a = misc.find_path(network=pn, pore_pairs=[[0, 4], [0, 10]])
+    >>> a['pores']
+    [array([0, 1, 4]), array([ 0,  1, 10])]
+    >>> a['throats']
+    [array([ 0, 19]), array([ 0, 37])]
+    """
+    Ps = _sp.array(pore_pairs, ndmin=2)
+    if weights is None:
+        weights = _sp.ones_like(network.Ts)
+    graph = network.create_adjacency_matrix(data=weights,
+                                            sprsfmt='csr',
+                                            dropzeros=False)
+    paths = csgraph.dijkstra(csgraph=graph, indices=Ps[:, 0],
+                             return_predecessors=True)[1]
+    pores = []
+    throats = []
+    for row in range(0, _sp.shape(Ps)[0]):
+        j = Ps[row][1]
+        ans = []
+        while paths[row][j] > -9999:
+            ans.append(j)
+            j = paths[row][j]
+        ans.append(Ps[row][0])
+        ans.reverse()
+        pores.append(_sp.array(ans))
+        throats.append(network.find_neighbor_throats(pores=ans,
+                                                     mode='intersection'))
+    pdict = PrintableDict
+    dict_ = pdict({'pores': pores, 'throats': throats})
+    return dict_
+
+
+def iscoplanar(coords):
     r'''
+    Determines if given pores are coplanar with each other
+
+    Parameters
+    ----------
+    coords : array_like
+        List of pore coords to check for coplanarity.  At least 3 pores are
+        required.
+
+    Returns
+    -------
+    A boolean value of whether given points are coplanar (True) or not (False)
     '''
-    mapping = {}
-    network = source.simulation.network
-    assert target.simulation.network is network
-    if pores is not None:
-        indices = pores
-        temp = -1*_sp.ones(source.Np, dtype=int)
-        temp[source['pore.'+target.name]] = target.Ps
-    elif throats is not None:
-        indices = throats
-        temp = -1*_sp.ones(network.Nt, dtype=int)
-        temp[source['throat.'+target.name]] = target.Ts
-    mapped = temp[indices]
-    ind = _sp.where(mapped >= 0)[0]
-    mapping[source.name] = source.toindices(indices)[ind]
-    mapping[target.name] = mapped[ind]
-    return mapping
+    coords = _sp.array(coords, ndmin=1)
+    if _sp.shape(coords)[0] < 3:
+        raise Exception('At least 3 input pores are required')
+
+    Px = coords[:, 0]
+    Py = coords[:, 1]
+    Pz = coords[:, 2]
+
+    # Do easy check first, for common coordinate
+    if _sp.shape(_sp.unique(Px))[0] == 1:
+        return True
+    if _sp.shape(_sp.unique(Py))[0] == 1:
+        return True
+    if _sp.shape(_sp.unique(Pz))[0] == 1:
+        return True
+
+    # Perform rigorous check using vector algebra
+    n1 = _sp.array((Px[1] - Px[0], Py[1] - Py[0], Pz[1] - Pz[0])).T
+    n2 = _sp.array((Px[2] - Px[1], Py[2] - Py[1], Pz[2] - Pz[1])).T
+    n = _sp.cross(n1, n2)
+    r = _sp.array((Px[1:-1] - Px[0], Py[1:-1] - Py[0], Pz[1:-1] - Pz[0]))
+
+    n_dot = _sp.dot(n, r)
+
+    if _sp.sum(n_dot) == 0:
+        return True
+    else:
+        return False
 
 
 def extend(network, pore_coords=[], throat_conns=[], labels=[]):
     r'''
     Add individual pores and/or throats to the network from a list of coords
-    or conns.  This is an in-place operation, meaning the received Network
-    object will be altered directly.
+    or conns.
 
     Parameters
     ----------
     network : OpenPNM Network Object
         The Network to which pores or throats should be added
+
     pore_coords : array_like
         The coordinates of the pores to add
+
     throat_conns : array_like
         The throat connections to add
+
     labels : string, or list of strings, optional
         A list of labels to apply to the new pores and throats
 
@@ -49,6 +145,10 @@ def extend(network, pore_coords=[], throat_conns=[], labels=[]):
     This needs to be enhanced so that it increases the size of all pore
     and throat props and labels on ALL associated Phase objects.  At the
     moment it throws an error is there are any associated Phases.
+
+    This is an in-place operation, meaning the received Network object will
+    be altered directly.
+
 
     '''
     if len(network.simulation.phases) > 0:
@@ -115,13 +215,13 @@ def extend(network, pore_coords=[], throat_conns=[], labels=[]):
 
 def trim(network, pores=[], throats=[]):
     '''
-    Remove pores or throats from the network.  This is an in-place operation,
-    meaning the received Network object will be altered directly.
+    Remove pores or throats from the network.
 
     Parameters
     ----------
     network : OpenPNM Network Object
         The Network from which pores or throats should be removed
+
     pores (or throats) : array_like
         A boolean mask of length Np (or Nt) or a list of indices of the
         pores (or throats) to be removed.
@@ -131,6 +231,10 @@ def trim(network, pores=[], throats=[]):
     Trimming only adjusts Phase, Geometry, and Physics objects. Trimming a
     Network that has already been used to run simulations will break those
     simulation objects.
+
+    This is an in-place operation, meaning the received Network object will
+    be altered directly.
+
 
     Examples
     --------
@@ -245,10 +349,13 @@ def clone_pores(network, pores, apply_label=['clone'], mode='parents'):
     ----------
     network : OpenPNM Network Object
         The Network object to which the new pores are to be added
+
     pores : array_like
         List of pores to clone
+
     apply_labels : string, or list of strings
         The labels to apply to the clones, default is 'clone'
+
     mode : string
         Controls the connections between parents and clones.  Options are:
 
@@ -497,7 +604,7 @@ def find_centroid(coords=None, mode='geometric'):
 
 def find_pores_distance(network, pores1=None, pores2=None):
     r'''
-    It finds the distance between two group of pores.
+    Find the distance between two group of pores.
     '''
     from scipy.spatial.distance import cdist
     p1 = _sp.array(pores1, ndmin=1)
@@ -1229,7 +1336,6 @@ def generate_base_points(num_points, domain_size, prob=None):
         base_pts = _sp.vstack((base_pts, [1, 1, -1]*orig_pts))
     return base_pts
 
-
     def find_interface_throats(self, labels=[]):
         r"""
         Finds the throats that join two pore labels.
@@ -1262,21 +1368,21 @@ def generate_base_points(num_points, domain_size, prob=None):
 
         TODO: It might be a good idea to allow overlapping regions
         """
-        Tind = sp.array([], ndmin=1)
-        if sp.shape(labels)[0] != 2:
+        Tind = _sp.array([], ndmin=1)
+        if _sp.shape(labels)[0] != 2:
             logger.error('Exactly two labels must be given')
             pass
         else:
             P1 = self.pores(labels=labels[0])
             P2 = self.pores(labels=labels[1])
             # Check if labels overlap
-            if sp.sum(sp.in1d(P1, P2)) > 0:
+            if _sp.sum(_sp.in1d(P1, P2)) > 0:
                 logger.error('Some labels overlap, iterface cannot be found')
                 pass
             else:
                 T1 = self.find_neighbor_throats(P1)
                 T2 = self.find_neighbor_throats(P2)
-                Tmask = sp.in1d(T1, T2)
+                Tmask = _sp.in1d(T1, T2)
                 Tind = T1[Tmask]
         return Tind
 
@@ -1301,15 +1407,15 @@ def generate_base_points(num_points, domain_size, prob=None):
         find_clusters2
 
         """
-        if sp.size(mask) == self.num_throats():
+        if _sp.size(mask) == self.num_throats():
             # Convert to boolean mask if not already
-            temp = sp.zeros((self.num_throats(),), dtype=bool)
+            temp = _sp.zeros((self.num_throats(),), dtype=bool)
             temp[mask] = True
-        elif sp.size(mask) == self.num_pores():
+        elif _sp.size(mask) == self.num_pores():
             conns = self.find_connected_pores(throats=self.throats())
             conns[:, 0] = mask[conns[:, 0]]
             conns[:, 1] = mask[conns[:, 1]]
-            temp = sp.array(conns[:, 0]*conns[:, 1], dtype=bool)
+            temp = _sp.array(conns[:, 0]*conns[:, 1], dtype=bool)
         else:
             raise Exception('Mask received was neither Nt nor Np long')
         temp = self.create_adjacency_matrix(data=temp,
@@ -1503,11 +1609,11 @@ def add_boundary_pores(network, pores, offset, apply_label='boundary'):
     True
     """
     # Parse the input pores
-    Ps = sp.array(pores, ndmin=1)
+    Ps = _sp.array(pores, ndmin=1)
     if Ps.dtype is bool:
         Ps = self.toindices(Ps)
-    if sp.size(pores) == 0:  # Handle an empty array if given
-        return sp.array([], dtype=sp.int64)
+    if _sp.size(pores) == 0:  # Handle an empty array if given
+        return _sp.array([], dtype=_sp.int64)
     # Clone the specifed pores
     self.clone_pores(pores=Ps)
     newPs = self.pores('pore.clone')

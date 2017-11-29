@@ -1,4 +1,5 @@
 import sys as _sys
+import logging as _logging
 
 # Check Python version
 if _sys.version_info < (3, 5):
@@ -17,3 +18,8 @@ from . import utils
 from . import io
 from . import materials
 #from .core import Workspace
+
+# Set up logging to file - see previous section for more details
+log_format = \
+    '%(asctime)s | %(levelname)-8s | %(name)s.%(funcName)s | %(message)s'
+_logging.basicConfig(level=_logging.WARNING, format=log_format)

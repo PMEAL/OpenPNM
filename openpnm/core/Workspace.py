@@ -33,6 +33,15 @@ class Workspace(dict):
 
     loglevel = property(fget=_getloglevel, fset=_setloglevel)
 
+    def _create_console_handles(self, simulation):
+        r"""
+        Adds all objects in the simulation to the console as variables with
+        the handle equal to the object's name.
+        """
+        import __main__
+        for item in simulation:
+            __main__.__dict__[item.name] = item
+
     def save_simulation(self, simulation, filename=''):
         r"""
         Save a single simulation to a 'net' file, including all of its

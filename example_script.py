@@ -3,7 +3,7 @@ import scipy as sp
 import openpnm.geometry.models as gm
 ws = op.core.Workspace()
 
-pn = op.network.Cubic(shape=[15, 15, 15], spacing=0.0001)
+pn = op.network.Cubic(shape=[15, 15, 15], spacing=0.0001, name='pn')
 Ps = pn.pores(['top', 'bottom', 'left', 'right', 'front', 'back'])
 pn['pore.surface'] = pn.tomask(pores=Ps)
 Ts = pn.find_neighbor_throats(pores=Ps, mode='intersection')

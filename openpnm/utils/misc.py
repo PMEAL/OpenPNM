@@ -1,122 +1,64 @@
 import scipy as _sp
 import time as _time
-import scipy.sparse as _sprs
-from openpnm.core.utils import PrintableDict
-import openpnm.topotools as topotools
+from collections import OrderedDict
 
 
-def find_path(network, pore_pairs, weights=None):
+class PrintableList(list):
+    def __str__(self):
+        horizontal_rule = '―' * 60
+        lines = [horizontal_rule]
+        self.sort()
+        for i, item in enumerate(self):
+            if '._' not in item:
+                lines.append('{0}\t: {1}'.format(i + 1, item))
+        lines.append(horizontal_rule)
+        return '\n'.join(lines)
+
+    def __repr__(self):
+        self.sort()
+        return super().__repr__()
+
+
+class PrintableDict(OrderedDict):
+    def __init__(self, *args, **kwargs):
+        self._header = 'value'
+        if 'header' in kwargs:
+            self._header = kwargs.pop('header')
+        super().__init__(*args, **kwargs)
+
+    def __repr__(self):
+        text = dict(self).__str__()
+        return text
+
+    def __str__(self):
+        horizontal_rule = '―' * 60
+        lines = [horizontal_rule]
+        lines.append('{0:<25s} {1}'.format('key', self._header))
+        lines.append(horizontal_rule)
+        for item in list(self.keys()):
+            lines.append('{0:<25s} {1}'.format(item, self[item]))
+        lines.append(horizontal_rule)
+        return '\n'.join(lines)
+
+
+class HealthDict(PrintableDict):
     r"""
-    Find the shortest path between pairs of pores.
-
-    Parameters
-    ----------
-    network : OpenPNM Network Object
-        The Network object on which the search should be performed
-
-    pore_pairs : array_like
-        An N x 2 array containing N pairs of pores for which the shortest
-        path is sought.
-
-    weights : array_like, optional
-        An Nt-long list of throat weights for the search.  Typically this
-        would be the throat lengths, but could also be used to represent
-        the phase configuration.  If no weights are given then the
-        standard topological connections of the Network are used.
-
-    Returns
-    -------
-    A dictionary containing both the pores and throats that define the
-    shortest path connecting each pair of input pores.
-
-    Notes
-    -----
-    The shortest path is found using Dijkstra's algorithm included in the
-    scipy.sparse.csgraph module
-
-    TODO: The returned throat path contains the correct values, but not
-    necessarily in the true order
-
-    Examples
-    --------
-    >>> import OpenPNM
-    >>> import OpenPNM.Utilities.misc as misc
-    >>> pn = OpenPNM.Network.Cubic(shape=[3, 3, 3])
-    >>> a = misc.find_path(network=pn, pore_pairs=[[0, 4], [0, 10]])
-    >>> a['pores']
-    [array([0, 1, 4]), array([ 0,  1, 10])]
-    >>> a['throats']
-    [array([ 0, 19]), array([ 0, 37])]
+    This class adds a 'health' check to a standard dictionary.  This check
+    looks into the dict values, and considers empty lists as healthy and all
+    else as unhealthy.  If one or more entries is 'unhealthy' the health method
+    returns False.
     """
-    Ps = _sp.array(pore_pairs, ndmin=2)
-    if weights is None:
-        weights = _sp.ones_like(network.Ts)
-    graph = network.create_adjacency_matrix(data=weights,
-                                            sprsfmt='csr',
-                                            dropzeros=False)
-    paths = _sprs.csgraph.dijkstra(csgraph=graph,
-                                   indices=Ps[:, 0],
-                                   return_predecessors=True)[1]
-    pores = []
-    throats = []
-    for row in range(0, _sp.shape(Ps)[0]):
-        j = Ps[row][1]
-        ans = []
-        while paths[row][j] > -9999:
-            ans.append(j)
-            j = paths[row][j]
-        ans.append(Ps[row][0])
-        ans.reverse()
-        pores.append(_sp.array(ans))
-        throats.append(network.find_neighbor_throats(pores=ans,
-                                                     mode='intersection'))
-    pdict = PrintableDict
-    dict_ = pdict({'pores': pores, 'throats': throats})
-    return dict_
+    def __init__(self, header='status', **kwargs):
+        super().__init__(header=header, **kwargs)
 
+    def _get_health(self):
+        health = True
+        for item in list(self.keys()):
+            if self[item] != []:
+                health = False
+        return health
 
-def iscoplanar(coords):
-    r'''
-    Determines if given pores are coplanar with each other
-
-    Parameters
-    ----------
-    coords : array_like
-        List of pore coords to check for coplanarity.  At least 3 pores are
-        required.
-
-    Returns
-    -------
-    A boolean value of whether given points are coplanar (True) or not (False)
-    '''
-    coords = _sp.array(coords, ndmin=1)
-    if _sp.shape(coords)[0] < 3:
-        raise Exception('At least 3 input pores are required')
-
-    Px = coords[:, 0]
-    Py = coords[:, 1]
-    Pz = coords[:, 2]
-
-    # Do easy check first, for common coordinate
-    if _sp.shape(_sp.unique(Px))[0] == 1:
-        return True
-    if _sp.shape(_sp.unique(Py))[0] == 1:
-        return True
-    if _sp.shape(_sp.unique(Pz))[0] == 1:
-        return True
-
-    # Perform rigorous check using vector algebra
-    n1 = _sp.array((Px[1] - Px[0], Py[1] - Py[0], Pz[1] - Pz[0])).T
-    n2 = _sp.array((Px[2] - Px[1], Py[2] - Py[1], Pz[2] - Pz[1])).T
-    n = _sp.cross(n1, n2)
-    r = _sp.array((Px[1:-1] - Px[0], Py[1:-1] - Py[0], Pz[1:-1] - Pz[0]))
-
-    n_dot = _sp.dot(n, r)
-
-    if _sp.sum(n_dot) == 0:
-        return True
-    else:
-        return False
+    health = property(fget=_get_health)
 
 
 def tic():

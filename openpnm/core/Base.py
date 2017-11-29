@@ -1,4 +1,5 @@
-from openpnm.core import Workspace, logging, utils
+from openpnm.core import Workspace, logging
+from openpnm.utils.misc import PrintableList
 import scipy as sp
 logger = logging.getLogger()
 ws = Workspace()
@@ -192,7 +193,7 @@ class Base(dict):
         element = self._parse_element(element=element)
         # Prepare lists of each type of array
         props = [item for item in self.keys() if self[item].dtype != bool]
-        vals = utils.PrintableList()
+        vals = PrintableList()
         # Execute desired array lookup
         if 'all' in mode:
             temp = [item for item in props if item.split('.')[0] in element]
@@ -235,15 +236,15 @@ class Base(dict):
         if mode in ['union']:
             temp = labels[sp.sum(arr, axis=0) > 0]
             temp.tolist()
-            return utils.PrintableList(temp)
+            return PrintableList(temp)
         if mode in ['intersection']:
             temp = labels[sp.sum(arr, axis=0) == sp.shape(locations, )[0]]
             temp.tolist()
-            return utils.PrintableList(temp)
+            return PrintableList(temp)
         if mode in ['not', 'difference']:
             temp = labels[sp.sum(arr, axis=0) != sp.shape(locations, )[0]]
             temp.tolist()
-            return utils.PrintableList(temp)
+            return PrintableList(temp)
         if mode in ['mask']:
             return arr
         if mode in ['none']:
@@ -303,7 +304,7 @@ class Base(dict):
         >>> pn.labels(pores=[0, 1, 5, 6], mode='intersection')
         ['pore.all', 'pore.bottom']
         """
-        labels = utils.PrintableList()
+        labels = PrintableList()
         # Short-circuit query when no pores or throats are given
         if (sp.size(pores) == 0) and (sp.size(throats) == 0):
             element = self._parse_element(element=element)
