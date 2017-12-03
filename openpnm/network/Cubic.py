@@ -47,7 +47,6 @@ class Cubic(GenericNetwork):
     """
     def __init__(self, shape, spacing=[1, 1, 1], connectivity=6, name=None,
                  simulation=None):
-        super().__init__(name=name, simulation=simulation)
 
         arr = np.atleast_3d(np.empty(shape))
 
@@ -105,10 +104,8 @@ class Cubic(GenericNetwork):
 
         self['pore.coords'] = points
         self['throat.conns'] = pairs
-        self['pore.all'] = np.ones(len(self['pore.coords']), dtype=bool)
-        self['throat.all'] = np.ones(len(self['throat.conns']), dtype=bool)
-        self['pore.index'] = sp.arange(0, len(self['pore.coords']))
 
+        super().__init__(name=name, simulation=simulation)
         self._label_surfaces()
 
     def _label_surfaces(self):
@@ -167,11 +164,26 @@ class Cubic(GenericNetwork):
         scale['bottom'] = scale['top'] = [1, 1, 0]
 
         for label in labels:
-            ps = self.pores(label)
-            self.clone_pores(pores=ps, apply_label=[label+'_boundary',
+            Ps = self.pores(label)
+            self.clone_pores(pores=Ps, apply_label=[label+'_boundary',
                                                     'boundary'])
             # Translate cloned pores
             ind = self.pores(label+'_boundary')
             coords = self['pore.coords'][ind]
             coords = coords*scale[label] + offset[label]
             self['pore.coords'][ind] = coords
+
+    def _get_spacing(self):
+        # Find Network spacing
+        P1 = self['throat.conns'][:, 0]
+        P2 = self['throat.conns'][:, 1]
+        C1 = self['pore.coords'][P1]
+        C2 = self['pore.coords'][P2]
+        E = np.sqrt(np.sum((C1-C2)**2, axis=1))  # Euclidean distance
+        if np.allclose(E, E[0]):
+            spacing = E[0]
+        else:
+            raise Exception('A unique value of spacing could not be inferred')
+        return spacing
+
+    spacing = property(fget=_get_spacing)

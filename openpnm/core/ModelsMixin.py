@@ -1,5 +1,8 @@
 import inspect
 import copy
+import numpy as np
+from openpnm.core import Workspace
+ws = Workspace()
 
 
 class ModelsDict(dict):
@@ -69,7 +72,25 @@ class ModelsMixin():
 
     def _regen(self, propname):
         f = self.models[propname]['model']
-        self[propname] = f(target=self, **self.models[propname]['kwargs'])
+        values = f(target=self, **self.models[propname]['kwargs'])
+        if ws.settings.toms_way:
+            element = propname.split('.')[0]
+            if 'GenericNetwork' in self.mro():
+                boss = self.simulation.network
+            elif 'GenericGeometry' in self.mro():
+                boss = self.simulation.network
+            elif 'GenericPhase' in self.mro():
+                boss = self
+            elif 'GenericPhysics' in self.mro():
+                boss = self.simulation.get_phase(self)
+            ind = boss._get_indices(element=element, labels=self.name)
+            if propname not in boss.keys():
+                shape = list(values.shape)
+                shape[0] = boss._count(element)
+                boss[propname] = np.empty(shape=shape, dtype=float)*np.nan
+            boss[propname][ind] = values
+        else:
+            self[propname] = values
 
     # The use of a property attribute here is because I can't just set
     # self.models= {} in the init, since the damn init won't run!
@@ -82,4 +103,3 @@ class ModelsMixin():
         self._dict = copy.deepcopy(_dict)
 
     models = property(fget=_get_models, fset=_set_models)
-

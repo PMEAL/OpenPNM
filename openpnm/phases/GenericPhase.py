@@ -31,11 +31,14 @@ class GenericPhase(Base, ModelsMixin):
         self['pore.pressure'] = 101325.0
 
     def __getitem__(self, key):
+        element = key.split('.')[0]
+        if key.split('.')[-1] == '_id':
+            net = self.simulation.network
+            return net[element+'._id']
         if key.split('.')[-1] == self.name:
-            element = key.split('.')[0]
             return self[element+'.all']
         if key not in self.keys():
             logger.debug(key + ' not on Phase, constructing data from Physics')
-            return self._interleave_data(key, self.simulation.physics)
+            return self._interleave_data(key, self.simulation.physics.values())
         else:
             return super().__getitem__(key)

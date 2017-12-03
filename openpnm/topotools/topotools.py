@@ -8,117 +8,80 @@ from openpnm.utils.misc import PrintableDict
 logger = logging.getLogger()
 
 
-def find_path(network, pore_pairs, weights=None):
-    r"""
-    Find the shortest path between pairs of pores.
+def trim(network, pores=[], throats=[]):
+    '''
+    Remove pores or throats from the network.
 
     Parameters
     ----------
     network : OpenPNM Network Object
-        The Network object on which the search should be performed
+        The Network from which pores or throats should be removed
 
-    pore_pairs : array_like
-        An N x 2 array containing N pairs of pores for which the shortest
-        path is sought.
-
-    weights : array_like, optional
-        An Nt-long list of throat weights for the search.  Typically this
-        would be the throat lengths, but could also be used to represent
-        the phase configuration.  If no weights are given then the
-        standard topological connections of the Network are used.
-
-    Returns
-    -------
-    A dictionary containing both the pores and throats that define the
-    shortest path connecting each pair of input pores.
+    pores (or throats) : array_like
+        The indices of the of the pores or throats to be removed from the
+        network.
 
     Notes
     -----
-    The shortest path is found using Dijkstra's algorithm included in the
-    scipy.sparse.csgraph module
+    This is an in-place operation, meaning the received Network object will
+    be altered directly.
 
-    TODO: The returned throat path contains the correct values, but not
-    necessarily in the true order
 
     Examples
     --------
     >>> import OpenPNM
-    >>> import OpenPNM.Utilities.misc as misc
-    >>> pn = OpenPNM.Network.Cubic(shape=[3, 3, 3])
-    >>> a = misc.find_path(network=pn, pore_pairs=[[0, 4], [0, 10]])
-    >>> a['pores']
-    [array([0, 1, 4]), array([ 0,  1, 10])]
-    >>> a['throats']
-    [array([ 0, 19]), array([ 0, 37])]
-    """
-    Ps = _sp.array(pore_pairs, ndmin=2)
-    if weights is None:
-        weights = _sp.ones_like(network.Ts)
-    graph = network.create_adjacency_matrix(data=weights,
-                                            sprsfmt='csr',
-                                            dropzeros=False)
-    paths = csgraph.dijkstra(csgraph=graph, indices=Ps[:, 0],
-                             return_predecessors=True)[1]
-    pores = []
-    throats = []
-    for row in range(0, _sp.shape(Ps)[0]):
-        j = Ps[row][1]
-        ans = []
-        while paths[row][j] > -9999:
-            ans.append(j)
-            j = paths[row][j]
-        ans.append(Ps[row][0])
-        ans.reverse()
-        pores.append(_sp.array(ans))
-        throats.append(network.find_neighbor_throats(pores=ans,
-                                                     mode='intersection'))
-    pdict = PrintableDict
-    dict_ = pdict({'pores': pores, 'throats': throats})
-    return dict_
+    >>> pn = OpenPNM.Network.TestNet()
+    >>> pn.Np
+    125
+    >>> pn.Nt
+    300
+    >>> pn.trim(pores=[1])
+    >>> pn.Np
+    124
+    >>> pn.Nt
+    296
 
-
-def iscoplanar(coords):
-    r'''
-    Determines if given pores are coplanar with each other
-
-    Parameters
-    ----------
-    coords : array_like
-        List of pore coords to check for coplanarity.  At least 3 pores are
-        required.
-
-    Returns
-    -------
-    A boolean value of whether given points are coplanar (True) or not (False)
     '''
-    coords = _sp.array(coords, ndmin=1)
-    if _sp.shape(coords)[0] < 3:
-        raise Exception('At least 3 input pores are required')
+    pores = _sp.array(pores, ndmin=1)
+    throats = _sp.array(throats, ndmin=1)
+    Pkeep = _sp.copy(network['pore.all'])
+    Tkeep = _sp.copy(network['throat.all'])
+    if _sp.size(pores) > 0:
+        Pkeep[pores] = False
+        Ts = network.find_neighbor_throats(pores)
+        if len(Ts) > 0:
+            Tkeep[Ts] = False
+    if _sp.size(throats) > 0:
+        Tkeep[throats] = False
 
-    Px = coords[:, 0]
-    Py = coords[:, 1]
-    Pz = coords[:, 2]
+    # Store throat conns ids for processing later
+    network['throat._id_conns'] = network['pore._id'][network['throat.conns']]
 
-    # Do easy check first, for common coordinate
-    if _sp.shape(_sp.unique(Px))[0] == 1:
-        return True
-    if _sp.shape(_sp.unique(Py))[0] == 1:
-        return True
-    if _sp.shape(_sp.unique(Pz))[0] == 1:
-        return True
+    # Delete specified pores and throats from all objects
+    for item in reversed(network.simulation):
+        Ps = item.map_pores(ids=network['pore._id'][Pkeep])
+        Ts = item.map_throats(ids=network['throat._id'][Tkeep])
+        item.update({'pore.all': _sp.ones((_sp.size(Ps),), dtype=bool)})
+        item.update({'throat.all': _sp.ones((_sp.size(Ts),), dtype=bool)})
+        for key in list(item.keys()):
+            if key.split('.')[1] not in ['all']:
+                temp = item.pop(key)
+                if key.split('.')[0] == 'throat':
+                    item[key] = temp[Ts]
+                if key.split('.')[0] == 'pore':
+                    item[key] = temp[Ps]
 
-    # Perform rigorous check using vector algebra
-    n1 = _sp.array((Px[1] - Px[0], Py[1] - Py[0], Pz[1] - Pz[0])).T
-    n2 = _sp.array((Px[2] - Px[1], Py[2] - Py[1], Pz[2] - Pz[1])).T
-    n = _sp.cross(n1, n2)
-    r = _sp.array((Px[1:-1] - Px[0], Py[1:-1] - Py[0], Pz[1:-1] - Pz[0]))
+    # Update the throat conn list using ids
+    id_map = dict(zip(network['pore._id'], network.Ps))
+    conns = network['throat._id_conns']
+    temp = [(id_map.get(i[0], -1), id_map.get(i[1], -1)) for i in conns]
+    network.update({'throat.conns': _sp.array(temp)})
+    del network['throat._id_conns']
 
-    n_dot = _sp.dot(n, r)
+    network._am.clear()
+    network._im.clear()
 
-    if _sp.sum(n_dot) == 0:
-        return True
-    else:
-        return False
+    return network
 
 
 def extend(network, pore_coords=[], throat_conns=[], labels=[]):
@@ -149,10 +112,10 @@ def extend(network, pore_coords=[], throat_conns=[], labels=[]):
     This is an in-place operation, meaning the received Network object will
     be altered directly.
 
-
     '''
     if len(network.simulation.phases) > 0:
-        raise Exception('Network has active Phases, cannot proceed')
+        raise Exception('Network has active Phases, copy network to a new ' +
+                        'simulation and try again')
 
     logger.info('Extending network')
     Np_old = network.num_pores()
@@ -163,6 +126,7 @@ def extend(network, pore_coords=[], throat_conns=[], labels=[]):
     del network['pore.all'], network['throat.all']
     network['pore.all'] = _sp.ones((Np,), dtype=bool)
     network['throat.all'] = _sp.ones((Nt,), dtype=bool)
+    network
     # Add coords and conns
     if _sp.size(pore_coords) > 0:
         coords = _sp.vstack((network['pore.coords'], pore_coords))
@@ -213,132 +177,47 @@ def extend(network, pore_coords=[], throat_conns=[], labels=[]):
                 network['throat.'+label][Ts] = True
 
 
-def trim(network, pores=[], throats=[]):
-    '''
-    Remove pores or throats from the network.
+def reduece_coordination(network, z):
+    r"""
+    """
+    # Find minimum spanning tree using random weights
+    am = network.create_adjacency_matrix(sym=False, data=_sp.rand(network.Nt))
+    mst = csgraph.minimum_spanning_tree(am, overwrite=True)
+    mst = mst.tocoo()
+
+    # Label throats on spanning tree to avoid deleting them
+    Ts = network.find_connecting_throat(mst.row, mst.col)
+    Ts = _sp.hstack(Ts)
+    network['throat.mst'] = False
+    network['throat.mst'][Ts] = True
+
+    # Trim throats not on the spanning tree to acheive desired coordination
+    z = 3.5
+    Ts = _sp.random.permutation(network.throats('mst', mode='not'))
+    Ts = Ts[:int(network.Nt - network.Np*(z/2))]
+    network.trim(throats=Ts)
+
+
+def label_faces(network):
+    r"""
+    Finds pores on the surface of the network and labels them according to
+    whether they are on the *top*, *bottom*, etc.  This function assumes the
+    network is cubic in shape (i.e. with six flat sides)
 
     Parameters
     ----------
-    network : OpenPNM Network Object
-        The Network from which pores or throats should be removed
-
-    pores (or throats) : array_like
-        A boolean mask of length Np (or Nt) or a list of indices of the
-        pores (or throats) to be removed.
-
-    Notes
-    -----
-    Trimming only adjusts Phase, Geometry, and Physics objects. Trimming a
-    Network that has already been used to run simulations will break those
-    simulation objects.
-
-    This is an in-place operation, meaning the received Network object will
-    be altered directly.
-
-
-    Examples
-    --------
-    >>> import OpenPNM
-    >>> pn = OpenPNM.Network.TestNet()
-    >>> pn.Np
-    125
-    >>> pn.Nt
-    300
-    >>> pn.trim(pores=[1])
-    >>> pn.Np
-    124
-    >>> pn.Nt
-    296
-
-    '''
-    if (_sp.size(pores) > 0) and (_sp.size(throats) > 0):
-        raise Exception('Cannot delete pores and throats simultaneously')
-    elif _sp.size(pores) > 0:
-        pores = _sp.array(pores, ndmin=1)
-        Pkeep = _sp.copy(network['pore.all'])
-        Pkeep[pores] = False
-        Tkeep = _sp.copy(network['throat.all'])
-        Ts = network.find_neighbor_throats(pores)
-        if len(Ts) > 0:
-            Tkeep[Ts] = False
-    elif _sp.size(throats) > 0:
-        throats = _sp.array(throats, ndmin=1)
-        Tkeep = _sp.copy(network['throat.all'])
-        Tkeep[throats] = False
-        Pkeep = _sp.copy(network['pore.all'])
-    else:
-        logger.warning('No pores or throats recieved')
-        return
-
-    sim = network.simulation
-
-    # Trim associated geometry
-    for item in sim.geometries.values():
-        Ps = map_indices(network, item, pores=Pkeep)[item.name]
-        Ts = map_indices(network, item, throats=Tkeep)[item.name]
-        item.update({'pore.all': _sp.ones((_sp.size(Ps),), dtype=bool)})
-        item.update({'throat.all': _sp.ones((_sp.size(Ts),), dtype=bool)})
-        for key in list(item.keys()):
-            if key.split('.')[1] not in ['all']:
-                temp = item.pop(key)
-                if key.split('.')[0] == 'throat':
-                    item[key] = temp[Ts]
-                if key.split('.')[0] == 'pore':
-                    item[key] = temp[Ps]
-
-    # Trim associated physics objects
-    for item in sim.physics.values():
-        phase = sim.find_phase(item)
-        Ps = map_indices(phase, item, pores=Pkeep)[item.name]
-        Ts = map_indices(phase, item, throats=Tkeep)[item.name]
-        item.update({'pore.all': _sp.ones((_sp.size(Ps),), dtype=bool)})
-        item.update({'throat.all': _sp.ones((_sp.size(Ts),), dtype=bool)})
-        for key in list(item.keys()):
-            if key.split('.')[1] not in ['all']:
-                temp = item.pop(key)
-                if key.split('.')[0] == 'throat':
-                    item[key] = temp[Ts]
-                if key.split('.')[0] == 'pore':
-                    item[key] = temp[Ps]
-
-    # Trim associated phase objects
-    for item in sim.phases.values():
-        Ps = _sp.where(Pkeep)[0]
-        Ts = _sp.where(Tkeep)[0]
-        item.update({'pore.all': _sp.ones((_sp.size(Ps),), dtype=bool)})
-        item.update({'throat.all': _sp.ones((_sp.size(Ts),), dtype=bool)})
-        for key in list(item.keys()):
-            if key.split('.')[1] not in ['all']:
-                temp = item.pop(key)
-                if key.split('.')[0] == 'throat':
-                    item[key] = temp[Ts]
-                if key.split('.')[0] == 'pore':
-                    item[key] = temp[Ps]
-
-    # Remap throat connections
-    Pmap = _sp.ones((network.Np,), dtype=int)*-1
-    Pmap[Pkeep] = _sp.arange(0, _sp.sum(Pkeep))
-    tpore1 = network['throat.conns'][:, 0]
-    tpore2 = network['throat.conns'][:, 1]
-    Tnew1 = Pmap[tpore1[Tkeep]]
-    Tnew2 = Pmap[tpore2[Tkeep]]
-    # Write 'all' label specifically
-    network.update({'throat.all': _sp.ones((_sp.sum(Tkeep),), dtype=bool)})
-    network.update({'pore.all': _sp.ones((_sp.sum(Pkeep),), dtype=bool)})
-    # Write throat connections specifically
-    network.update({'throat.conns': _sp.vstack((Tnew1, Tnew2)).T})
-    # Overwrite remaining data and info
-    for item in list(network.keys()):
-        if item.split('.')[-1] not in ['conns', 'all']:
-            temp = network.pop(item)
-            if item.split('.')[0] == 'throat':
-                network[item] = temp[Tkeep]
-            if item.split('.')[0] == 'pore':
-                network[item] = temp[Pkeep]
-    network._am.clear()
-    network._im.clear()
-
-    return network
+    network : OpenPNM Network object
+        The network to apply the labels
+    """
+    find_surface_pores(network)
+    Ps = network['pore.surface']
+    crds = network['pore.coords']
+    network['pore.top'] = (crds[:, 2] > 0.9*_sp.amax(crds[:, 2])) * Ps
+    network['pore.bottom'] = (crds[:, 2] < 0.1*_sp.amax(crds[:, 2])) * Ps
+    network['pore.right'] = (crds[:, 1] > 0.9*_sp.amax(crds[:, 1])) * Ps
+    network['pore.left'] = (crds[:, 1] < 0.1*_sp.amax(crds[:, 1])) * Ps
+    network['pore.back'] = (crds[:, 0] > 0.9*_sp.amax(crds[:, 0])) * Ps
+    network['pore.front'] = (crds[:, 0] < 0.1*_sp.amax(crds[:, 0])) * Ps
 
 
 def clone_pores(network, pores, apply_label=['clone'], mode='parents'):
@@ -775,17 +654,8 @@ def trim_occluded_throats(network, mask='all'):
     """
     occluded_ts = network['throat.area'] == 0
     if _sp.sum(occluded_ts) > 0:
-        # Apply mask
         occluded_ts *= network["throat."+mask]
         trim(network=network, throats=occluded_ts)
-    # Also get rid of isolated pores
-#    isolated_ps = network.check_network_health()['isolated_pores']
-#    if _sp.size(isolated_ps) > 0:
-#        # Convert to Bool array and apply mask
-#        temp_array = _sp.zeros(network.num_pores()).astype(bool)
-#        temp_array[isolated_ps] = True
-#        isolated_ps = temp_array * network["pore."+mask]
-#        trim(network=network, pores=isolated_ps)
 
 
 def merge_pores(network, pores, labels=['merged']):
@@ -1336,175 +1206,175 @@ def generate_base_points(num_points, domain_size, prob=None):
         base_pts = _sp.vstack((base_pts, [1, 1, -1]*orig_pts))
     return base_pts
 
-    def find_interface_throats(self, labels=[]):
-        r"""
-        Finds the throats that join two pore labels.
+def find_interface_throats(self, labels=[]):
+    r"""
+    Finds the throats that join two pore labels.
 
-        Parameters
-        ----------
-        labels : list of strings
-            The labels of the two pore groups whose interface is sought
+    Parameters
+    ----------
+    labels : list of strings
+        The labels of the two pore groups whose interface is sought
 
-        Returns
-        -------
-        An array of throat numbers that connect the given pore groups
+    Returns
+    -------
+    An array of throat numbers that connect the given pore groups
 
-        Notes
-        -----
-        This method is meant to find interfaces between TWO groups, regions or
-        clusters of pores (as defined by their label).  If the input labels
-        overlap or are not adjacent, an empty array is returned.
+    Notes
+    -----
+    This method is meant to find interfaces between TWO groups, regions or
+    clusters of pores (as defined by their label).  If the input labels
+    overlap or are not adjacent, an empty array is returned.
 
-        Examples
-        --------
-        >>> import OpenPNM
-        >>> pn = OpenPNM.Network.TestNet()
-        >>> pn['pore.domain1'] = False
-        >>> pn['pore.domain2'] = False
-        >>> pn['pore.domain1'][[0, 1, 2]] = True
-        >>> pn['pore.domain2'][[5, 6, 7]] = True
-        >>> pn.find_interface_throats(labels=['domain1', 'domain2'])
-        array([1, 4, 7])
+    Examples
+    --------
+    >>> import OpenPNM
+    >>> pn = OpenPNM.Network.TestNet()
+    >>> pn['pore.domain1'] = False
+    >>> pn['pore.domain2'] = False
+    >>> pn['pore.domain1'][[0, 1, 2]] = True
+    >>> pn['pore.domain2'][[5, 6, 7]] = True
+    >>> pn.find_interface_throats(labels=['domain1', 'domain2'])
+    array([1, 4, 7])
 
-        TODO: It might be a good idea to allow overlapping regions
-        """
-        Tind = _sp.array([], ndmin=1)
-        if _sp.shape(labels)[0] != 2:
-            logger.error('Exactly two labels must be given')
+    TODO: It might be a good idea to allow overlapping regions
+    """
+    Tind = _sp.array([], ndmin=1)
+    if _sp.shape(labels)[0] != 2:
+        logger.error('Exactly two labels must be given')
+        pass
+    else:
+        P1 = self.pores(labels=labels[0])
+        P2 = self.pores(labels=labels[1])
+        # Check if labels overlap
+        if _sp.sum(_sp.in1d(P1, P2)) > 0:
+            logger.error('Some labels overlap, iterface cannot be found')
             pass
         else:
-            P1 = self.pores(labels=labels[0])
-            P2 = self.pores(labels=labels[1])
-            # Check if labels overlap
-            if _sp.sum(_sp.in1d(P1, P2)) > 0:
-                logger.error('Some labels overlap, iterface cannot be found')
-                pass
-            else:
-                T1 = self.find_neighbor_throats(P1)
-                T2 = self.find_neighbor_throats(P2)
-                Tmask = _sp.in1d(T1, T2)
-                Tind = T1[Tmask]
-        return Tind
+            T1 = self.find_neighbor_throats(P1)
+            T2 = self.find_neighbor_throats(P2)
+            Tmask = _sp.in1d(T1, T2)
+            Tind = T1[Tmask]
+    return Tind
 
-    def find_clusters(self, mask=[]):
-        r"""
-        Identify connected clusters of pores in the network.
+def find_clusters(self, mask=[]):
+    r"""
+    Identify connected clusters of pores in the network.
 
-        Parameters
-        ----------
-        mask : array_like, boolean
-            A list of active nodes.  This method will automatically search
-            for clusters based on site or bond connectivity depending on
-            wheather the received mask is Np or Nt long.
+    Parameters
+    ----------
+    mask : array_like, boolean
+        A list of active nodes.  This method will automatically search
+        for clusters based on site or bond connectivity depending on
+        wheather the received mask is Np or Nt long.
 
-        Returns
-        -------
-        clusters : array_like
-            An Np long list of clusters numbers
+    Returns
+    -------
+    clusters : array_like
+        An Np long list of clusters numbers
 
-        See Also
-        --------
-        find_clusters2
+    See Also
+    --------
+    find_clusters2
 
-        """
-        if _sp.size(mask) == self.num_throats():
-            # Convert to boolean mask if not already
-            temp = _sp.zeros((self.num_throats(),), dtype=bool)
-            temp[mask] = True
-        elif _sp.size(mask) == self.num_pores():
-            conns = self.find_connected_pores(throats=self.throats())
-            conns[:, 0] = mask[conns[:, 0]]
-            conns[:, 1] = mask[conns[:, 1]]
-            temp = _sp.array(conns[:, 0]*conns[:, 1], dtype=bool)
-        else:
-            raise Exception('Mask received was neither Nt nor Np long')
-        temp = self.create_adjacency_matrix(data=temp,
-                                            sprsfmt='csr',
-                                            dropzeros=True)
-        clusters = sprs.csgraph.connected_components(csgraph=temp,
-                                                     directed=False)[1]
-        return clusters
+    """
+    if _sp.size(mask) == self.num_throats():
+        # Convert to boolean mask if not already
+        temp = _sp.zeros((self.num_throats(),), dtype=bool)
+        temp[mask] = True
+    elif _sp.size(mask) == self.num_pores():
+        conns = self.find_connected_pores(throats=self.throats())
+        conns[:, 0] = mask[conns[:, 0]]
+        conns[:, 1] = mask[conns[:, 1]]
+        temp = _sp.array(conns[:, 0]*conns[:, 1], dtype=bool)
+    else:
+        raise Exception('Mask received was neither Nt nor Np long')
+    temp = self.create_adjacency_matrix(data=temp,
+                                        sprsfmt='csr',
+                                        dropzeros=True)
+    clusters = sprs.csgraph.connected_components(csgraph=temp,
+                                                 directed=False)[1]
+    return clusters
 
-    def find_clusters2(self, mask=[], t_labels=False):
-        r"""
-        Identify connected clusters of pores in the network.  This method can
-        also return a list of throat cluster numbers, which correspond to the
-        cluster numbers of the pores to which the throat is connected.  Either
-        site and bond percolation can be consider, see description of input
-        arguments for details.
+def find_clusters2(self, mask=[], t_labels=False):
+    r"""
+    Identify connected clusters of pores in the network.  This method can
+    also return a list of throat cluster numbers, which correspond to the
+    cluster numbers of the pores to which the throat is connected.  Either
+    site and bond percolation can be consider, see description of input
+    arguments for details.
 
-        Parameters
-        ----------
-        mask : array_like, boolean
-            A list of active bonds or sites (throats or pores).  If the mask is
-            Np long, then the method will perform a site percolation, and if
-            the mask is Nt long bond percolation will be performed.
+    Parameters
+    ----------
+    mask : array_like, boolean
+        A list of active bonds or sites (throats or pores).  If the mask is
+        Np long, then the method will perform a site percolation, and if
+        the mask is Nt long bond percolation will be performed.
 
-        t_labels : boolean (default id False)
-            Indicates if throat cluster numbers should also be returned. If
-            true then a tuple containing both p_clusters and t_clusters is
-            returned.
+    t_labels : boolean (default id False)
+        Indicates if throat cluster numbers should also be returned. If
+        true then a tuple containing both p_clusters and t_clusters is
+        returned.
 
-        Returns
-        -------
-        A Np long list of pore clusters numbers, unless t_labels is True in
-        which case a tuple containing both pore and throat cluster labels is
-        returned.  The label numbers correspond such that pores and throats
-        with the same label are part of the same cluster.
+    Returns
+    -------
+    A Np long list of pore clusters numbers, unless t_labels is True in
+    which case a tuple containing both pore and throat cluster labels is
+    returned.  The label numbers correspond such that pores and throats
+    with the same label are part of the same cluster.
 
-        Examples
-        --------
-        >>> import OpenPNM
-        >>> pn = OpenPNM.Network.Cubic(shape=[25, 25, 1])
-        >>> geom = OpenPNM.Geometry.GenericGeometry(network=pn,
-        ...                                         pores=pn.Ps,
-        ...                                         throats=pn.Ts)
-        >>> geom['pore.seed'] = sp.rand(pn.Np)
-        >>> geom['throat.seed'] = sp.rand(pn.Nt)
+    Examples
+    --------
+    >>> import OpenPNM
+    >>> pn = OpenPNM.Network.Cubic(shape=[25, 25, 1])
+    >>> geom = OpenPNM.Geometry.GenericGeometry(network=pn,
+    ...                                         pores=pn.Ps,
+    ...                                         throats=pn.Ts)
+    >>> geom['pore.seed'] = sp.rand(pn.Np)
+    >>> geom['throat.seed'] = sp.rand(pn.Nt)
 
-        Bond percolation is achieved by sending a list of invaded throats:
+    Bond percolation is achieved by sending a list of invaded throats:
 
-        >>> (p_bond,t_bond) = pn.find_clusters2(mask=geom['throat.seed'] < 0.3,
-        ...                                     t_labels=True)
+    >>> (p_bond,t_bond) = pn.find_clusters2(mask=geom['throat.seed'] < 0.3,
+    ...                                     t_labels=True)
 
-        Site percolation is achieved by sending a list of invaded pores:
+    Site percolation is achieved by sending a list of invaded pores:
 
-        >>> (p_site,t_site) = pn.find_clusters2(mask=geom['pore.seed'] < 0.3,
-        ...                                     t_labels=True)
+    >>> (p_site,t_site) = pn.find_clusters2(mask=geom['pore.seed'] < 0.3,
+    ...                                     t_labels=True)
 
-        To visualize the invasion pattern, use matplotlib's matshow method
-        along with the Cubic Network's asarray method which converts list based
-        data to square arrays:
+    To visualize the invasion pattern, use matplotlib's matshow method
+    along with the Cubic Network's asarray method which converts list based
+    data to square arrays:
 
-        .. code-block:: python
+    .. code-block:: python
 
-            import matplotlib.pyplot as plt
-            im_bond = pn.asarray(p_bond)[:, :, 0]
-            im_site = pn.asarray(p_site)[:, :, 0]
-            plt.subplot(1, 2, 1)
-            plt.imshow(im_site, interpolation='none')
-            plt.subplot(1, 2, 2)
-            plt.imshow(im_bond, interpolation='none')
+        import matplotlib.pyplot as plt
+        im_bond = pn.asarray(p_bond)[:, :, 0]
+        im_site = pn.asarray(p_site)[:, :, 0]
+        plt.subplot(1, 2, 1)
+        plt.imshow(im_site, interpolation='none')
+        plt.subplot(1, 2, 2)
+        plt.imshow(im_bond, interpolation='none')
 
-        """
-        # Parse the input arguments
-        mask = sp.array(mask, ndmin=1)
-        if mask.dtype != bool:
-            raise Exception('Mask must be a boolean array of Np or Nt length')
+    """
+    # Parse the input arguments
+    mask = sp.array(mask, ndmin=1)
+    if mask.dtype != bool:
+        raise Exception('Mask must be a boolean array of Np or Nt length')
 
-        # If pore mask was given perform site percolation
-        if sp.size(mask) == self.Np:
-            (p_clusters, t_clusters) = self._site_percolation(mask)
-        # If pore mask was given perform bond percolation
-        elif sp.size(mask) == self.Nt:
-            (p_clusters, t_clusters) = self._bond_percolation(mask)
-        else:
-            raise Exception('Mask received was neither Nt nor Np long')
+    # If pore mask was given perform site percolation
+    if sp.size(mask) == self.Np:
+        (p_clusters, t_clusters) = self._site_percolation(mask)
+    # If pore mask was given perform bond percolation
+    elif sp.size(mask) == self.Nt:
+        (p_clusters, t_clusters) = self._bond_percolation(mask)
+    else:
+        raise Exception('Mask received was neither Nt nor Np long')
 
-        if t_labels:
-            return (p_clusters, t_clusters)
-        else:
-            return p_clusters
+    if t_labels:
+        return (p_clusters, t_clusters)
+    else:
+        return p_clusters
 
 def _site_percolation(self, pmask):
     r"""
@@ -1537,6 +1407,7 @@ def _site_percolation(self, pmask):
 
     return (p_clusters, t_clusters)
 
+
 def _bond_percolation(self, tmask):
     r"""
     This private method is called by 'find_clusters2'
@@ -1560,6 +1431,7 @@ def _bond_percolation(self, tmask):
 
     return (p_clusters, t_clusters)
 
+
 def _compress_labels(self, label_array):
     # Make cluster number contiguous
     array = sp.array(label_array)
@@ -1574,6 +1446,7 @@ def _compress_labels(self, label_array):
     temp[nums] = sp.arange(0, sp.size(nums))
     array = temp[array].astype(array.dtype)
     return array
+
 
 def add_boundary_pores(network, pores, offset, apply_label='boundary'):
     r"""
@@ -1626,3 +1499,116 @@ def add_boundary_pores(network, pores, offset, apply_label='boundary'):
     logger.debug('The label \''+label+'\' has been applied')
     self[label] = False
     self[label][newPs] = True
+
+
+def find_path(network, pore_pairs, weights=None):
+    r"""
+    Find the shortest path between pairs of pores.
+
+    Parameters
+    ----------
+    network : OpenPNM Network Object
+        The Network object on which the search should be performed
+
+    pore_pairs : array_like
+        An N x 2 array containing N pairs of pores for which the shortest
+        path is sought.
+
+    weights : array_like, optional
+        An Nt-long list of throat weights for the search.  Typically this
+        would be the throat lengths, but could also be used to represent
+        the phase configuration.  If no weights are given then the
+        standard topological connections of the Network are used.
+
+    Returns
+    -------
+    A dictionary containing both the pores and throats that define the
+    shortest path connecting each pair of input pores.
+
+    Notes
+    -----
+    The shortest path is found using Dijkstra's algorithm included in the
+    scipy.sparse.csgraph module
+
+    TODO: The returned throat path contains the correct values, but not
+    necessarily in the true order
+
+    Examples
+    --------
+    >>> import OpenPNM
+    >>> import OpenPNM.Utilities.misc as misc
+    >>> pn = OpenPNM.Network.Cubic(shape=[3, 3, 3])
+    >>> a = misc.find_path(network=pn, pore_pairs=[[0, 4], [0, 10]])
+    >>> a['pores']
+    [array([0, 1, 4]), array([ 0,  1, 10])]
+    >>> a['throats']
+    [array([ 0, 19]), array([ 0, 37])]
+    """
+    Ps = _sp.array(pore_pairs, ndmin=2)
+    if weights is None:
+        weights = _sp.ones_like(network.Ts)
+    graph = network.create_adjacency_matrix(data=weights,
+                                            sprsfmt='csr',
+                                            dropzeros=False)
+    paths = csgraph.dijkstra(csgraph=graph, indices=Ps[:, 0],
+                             return_predecessors=True)[1]
+    pores = []
+    throats = []
+    for row in range(0, _sp.shape(Ps)[0]):
+        j = Ps[row][1]
+        ans = []
+        while paths[row][j] > -9999:
+            ans.append(j)
+            j = paths[row][j]
+        ans.append(Ps[row][0])
+        ans.reverse()
+        pores.append(_sp.array(ans))
+        throats.append(network.find_neighbor_throats(pores=ans,
+                                                     mode='intersection'))
+    pdict = PrintableDict
+    dict_ = pdict({'pores': pores, 'throats': throats})
+    return dict_
+
+
+def iscoplanar(coords):
+    r'''
+    Determines if given pores are coplanar with each other
+
+    Parameters
+    ----------
+    coords : array_like
+        List of pore coords to check for coplanarity.  At least 3 pores are
+        required.
+
+    Returns
+    -------
+    A boolean value of whether given points are coplanar (True) or not (False)
+    '''
+    coords = _sp.array(coords, ndmin=1)
+    if _sp.shape(coords)[0] < 3:
+        raise Exception('At least 3 input pores are required')
+
+    Px = coords[:, 0]
+    Py = coords[:, 1]
+    Pz = coords[:, 2]
+
+    # Do easy check first, for common coordinate
+    if _sp.shape(_sp.unique(Px))[0] == 1:
+        return True
+    if _sp.shape(_sp.unique(Py))[0] == 1:
+        return True
+    if _sp.shape(_sp.unique(Pz))[0] == 1:
+        return True
+
+    # Perform rigorous check using vector algebra
+    n1 = _sp.array((Px[1] - Px[0], Py[1] - Py[0], Pz[1] - Pz[0])).T
+    n2 = _sp.array((Px[2] - Px[1], Py[2] - Py[1], Pz[2] - Pz[1])).T
+    n = _sp.cross(n1, n2)
+    r = _sp.array((Px[1:-1] - Px[0], Py[1:-1] - Py[0], Pz[1:-1] - Pz[0]))
+
+    n_dot = _sp.dot(n, r)
+
+    if _sp.sum(n_dot) == 0:
+        return True
+    else:
+        return False

@@ -1,4 +1,5 @@
 import itertools
+import uuid
 import scipy as sp
 import scipy.sparse as sprs
 import scipy.spatial as sptl
@@ -22,6 +23,10 @@ class GenericNetwork(Base, ModelsMixin):
         if simulation is None:
             simulation = Simulation()
         super().__init__(simulation=simulation, **kwargs)
+        self['pore.all'] = sp.ones(len(self['pore.coords']), dtype=bool)
+        self['throat.all'] = sp.ones(len(self['throat.conns']), dtype=bool)
+        self['pore._id'] = [str(uuid.uuid4()) for i in self.Ps]
+        self['throat._id'] = [str(uuid.uuid4()) for i in self.Ts]
         logger.name = self.name
 
         # Initialize adjacency and incidence matrix dictionaries
@@ -49,7 +54,7 @@ class GenericNetwork(Base, ModelsMixin):
             return self[element+'.all']
         if key not in self.keys():
             logger.debug(key + ' not on Network, constructing data from Geometries')
-            return self._interleave_data(key, self.simulation.geometries)
+            return self._interleave_data(key, self.simulation.geometries.values())
         else:
             return super().__getitem__(key)
 

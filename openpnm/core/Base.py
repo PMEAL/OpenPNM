@@ -1,3 +1,4 @@
+from collections import namedtuple
 from openpnm.core import Workspace, logging
 from openpnm.utils.misc import PrintableList
 import scipy as sp
@@ -134,10 +135,46 @@ class Base(dict):
                 return sim
     simulation = property(fget=_get_simulation)
 
+    def clear(self, element=None, mode='all'):
+        r"""
+        A subclassed version of the standard dict's clear method.  This can be
+        used to selectively clear certain aspects of the object, including
+        properties, labels and/or models.  It can also clear everything,
+        except for the 'pore.all' and 'throat.all' labels which are required
+        for object to remain functional.
+
+        Parameters
+        ----------
+        mode : string of list of strings
+            This controls what is cleared from the object.  Options are:
+
+            **'props'** : Removes all numerical property values from the object
+            dictionary.
+
+            **'labels'** : Removes all labels from the object dictionary
+
+            **'all'** : Removes all of the above AND sets the \'pore.all\'
+            and \'throat.all\' labels to zero length.  This also removes any
+            pore and throat locations that were previously set.  This mode
+            should be used carefully since it can break some subtle aspects
+            of the framework; it is meant for advanced users and developers.
+
+        Notes
+        -----
+        The first three modes listed can be combined by sending a list
+        containing all desired modes.  The \'complete\' mode essentially calls
+        all three so need not be combined with any other modes.
+        """
+        allowed = ['constants', 'labels', 'models', 'all']
+        mode = self._parse_mode(mode=mode, allowed=allowed)
+        for item in self.props(mode=mode, element=element):
+            if item not in ['pore.all', 'throat.all']:
+                del self[item]
+
     # -------------------------------------------------------------------------
     """Data Query Methods"""
     # -------------------------------------------------------------------------
-    def props(self, element=None, mode='all'):
+    def props(self, element=None, mode='all', deep=False):
         r"""
         Returns a list containing the names of all defined pore or throat
         properties.
@@ -159,7 +196,7 @@ class Base(dict):
             **'constants'** : Returns only properties that are set as constant
             values
 
-        deep : Boolean (default if False)
+        deep : Boolean (default is False)
             If True, all properties on the object and all sub-objects are
             returned. For instance, all Geometry properties will be returned
             along with all Network properties, and all Physics properties will
@@ -471,6 +508,24 @@ class Base(dict):
         """
         return sp.arange(0, self.Nt)
 
+    def _map(self, ids, element, filtered):
+        locations = self._get_indices(element=element)
+        hash_map = dict(zip(self[element+'._id'], locations))
+        ind = sp.array([hash_map.get(i, -1) for i in ids])
+        mask = sp.zeros(shape=ids.shape, dtype=bool)
+        mask[sp.where(ind >= 0)[0]] = True
+        if filtered:
+            return ind[mask]
+        else:
+            t = namedtuple('index_map', ('indices', 'mask'))
+            return t(ind, mask)
+
+    def map_pores(self, ids, filtered=True):
+        return self._map(element='pore', ids=ids, filtered=filtered)
+
+    def map_throats(self, ids, filtered=True):
+        return self._map(element='throat', ids=ids, filtered=filtered)
+
     def _tomask(self, indices, element):
         r"""
         This is a generalized version of tomask that accepts a string of
@@ -525,7 +580,7 @@ class Base(dict):
 
     def toindices(self, mask):
         r"""
-        Convert a boolean mask a list of pore or throat indices
+        Convert a boolean mask to a list of pore or throat indices
 
         Parameters
         ----------
@@ -611,16 +666,9 @@ class Base(dict):
         element = self._parse_element(prop.split('.')[0], single=True)
         N = self.simulation.network._count(element)
 
-        # Make sure sources contains objects, not just names of objects
-        temp_sources = []
-        for item in sources:
-            if type(item) is str:
-                item = self.simulation[item]
-            temp_sources.append(item)
-        sources = temp_sources
-
         # Attempt to fetch the requested prop array from each object
-        arrs = [item.get(prop) for item in sources]
+        # Use super version of getitem to avoid recursive look-ups
+        arrs = [super(Base, item).__getitem__(prop) for item in sources]
         locs = [self._get_indices(element, item.name) for item in sources]
         sizes = [sp.size(a) for a in arrs]
         if all([item is None for item in arrs]):  # prop not found anywhere
@@ -967,142 +1015,6 @@ class Base(dict):
         if len(temp) == 1:
             temp = list(temp.values())[0]
         return temp
-
-    def _map(self, element, locations, target, return_mapping=False):
-        r"""
-        """
-        # Initialize things
-        locations = self._parse_indices(indices=locations)
-        mapping = {}
-
-        # Analyze input object's relationship
-        mro = [c.__name__ for c in self.__class__.__mro__]
-        if 'GenericGeometry' in mro:
-            master = self.simulation.network
-        if 'GenericPhysics' in mro:
-            master = self.simulation.find_phase(self)
-        else:
-            master = self.simulation.network
-        maskS = master[element+'.'+self.name]
-        maskT = master[element+'.'+target.name]
-
-        # Convert source locations to Network indices
-        temp = sp.zeros(sp.shape(maskS), dtype=int)-1
-        temp[maskS] = self._get_indices(element=element)
-        locsS = sp.where(sp.in1d(temp, locations))[0]
-        mapping['source'] = locations
-
-        # Find locations in target
-        temp = sp.zeros(sp.shape(maskT), dtype=int)-1
-        temp[maskT] = target._get_indices(element=element)
-        locsT = temp[locsS]
-        mapping['target'] = locsT
-
-        # Find overlapping locations in source and target to define mapping
-        keep = (locsS >= 0)*(locsT >= 0)
-        mapping['source'] = mapping['source'][keep]
-        mapping['target'] = mapping['target'][keep]
-
-        # Return results as an arrary or one-to-one mapping if requested
-        if return_mapping is True:
-            return mapping
-        else:
-            if sp.sum(locsS >= 0) < sp.shape(sp.unique(locations))[0]:
-                raise Exception('Some locations not found on Source object')
-            if sp.sum(locsT >= 0) < sp.shape(sp.unique(locations))[0]:
-                raise Exception('Some locations not found on Target object')
-            return mapping['target']
-
-    def map_pores(self, target=None, pores=None, return_mapping=False):
-        r"""
-        Accepts a list of pores from the caller object and maps them onto the
-        given target object
-
-        Parameters
-        ----------
-        pores : array_like
-            The list of pores on the caller object.  If no pores are supplied
-            then all the pores of the calling object are used.
-        target : OpenPNM object, optional
-            The object for which a list of pores is desired.  If no object is
-            supplied then the object's associated Network is used.
-        return_mapping : boolean (default is False)
-            If True, a dictionary containing 'source' locations, and 'target'
-            locations is returned.  Any 'source' locations not found in the
-            'target' object are removed from the list.
-        Returns
-        -------
-        pores : array_like
-            A list of pores mapped onto the target object
-        Examples
-        --------
-        >>> import OpenPNM
-        >>> pn = OpenPNM.Network.TestNet()
-        >>> Ps = pn.pores(labels=['top', 'left'], mode='intersection')
-        >>> Ps
-        array([100, 101, 102, 103, 104])
-        >>> geom = OpenPNM.Geometry.GenericGeometry(network=pn, pores=Ps)
-        >>> geom.Ps
-        array([0, 1, 2, 3, 4])
-        >>> geom.map_pores(target=pn, pores=geom.Ps)
-        array([100, 101, 102, 103, 104])
-        >>> pn.map_pores(target=geom, pores=Ps)
-        array([0, 1, 2, 3, 4])
-        """
-        if pores is None:
-            pores = self.Ps
-        if target is None:
-            target = self.simulation.network
-        Ps = self._map(element='pore',
-                       locations=pores,
-                       target=target,
-                       return_mapping=return_mapping)
-        return Ps
-
-    def map_throats(self, target=None, throats=None, return_mapping=False):
-        r"""
-        Accepts a list of throats from the caller object and maps them onto the
-        given target object
-        Parameters
-        ----------
-        throats : array_like
-            The list of throats on the caller object.  If no throats are
-            supplied then all the throats of the calling object are used.
-        target : OpenPNM object, optional
-            The object for which a list of pores is desired.  If no object is
-            supplied then the object's associated Network is used.
-        return_mapping : boolean (default is False)
-            If True, a dictionary containing 'source' locations, and 'target'
-            locations is returned.  Any 'source' locations not found in the
-            'target' object are removed from the list.
-        Returns
-        -------
-        throats : array_like
-            A list of throats mapped onto the target object
-        Examples
-        --------
-        >>> import OpenPNM
-        >>> pn = OpenPNM.Network.TestNet()
-        >>> Ts = pn.throats(labels=['top', 'left'], mode='intersection')
-        >>> Ts
-        array([260, 262, 264, 266])
-        >>> geom = OpenPNM.Geometry.GenericGeometry(network=pn, throats=Ts)
-        >>> geom.Ts
-        array([0, 1, 2, 3])
-        >>> geom.map_throats(target=pn, throats=geom.Ts)
-        array([260, 262, 264, 266])
-        >>> pn.map_throats(target=geom, throats=Ts)
-        array([0, 1, 2, 3])
-        """
-        if throats is None:
-            throats = self.Ts
-        if target is None:
-            target = self.simulation.network
-        Ts = self._map(element='throat',
-                       locations=throats,
-                       target=target,
-                       return_mapping=return_mapping)
-        return Ts
 
     def _parse_indices(self, indices):
         r"""

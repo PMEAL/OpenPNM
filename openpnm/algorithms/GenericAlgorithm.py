@@ -32,5 +32,7 @@ class GenericAlgorithm(Base):
         logger.name = self.name
 
         # Initialize label 'all' in the object's own info dictionaries
+        self['pore._id'] = network['pore._id']
+        self['throat._id'] = network['throat._id']
         self['pore.all'] = network['pore.all']
         self['throat.all'] = network['throat.all']

@@ -19,11 +19,18 @@ def singleton(cls):
     return getinstance
 
 
+class Settings(dict):
+    def __init__(self):
+        self.__dict__ = self
+        self.toms_way = True
+
+
 @singleton
 class Workspace(dict):
     def __init__(self):
         super().__init__()
         self.comments = 'Using OpenPNM ' + openpnm.__version__
+        self.settings = Settings()
 
     def _setloglevel(self, level):
         logger.setLevel(level)
