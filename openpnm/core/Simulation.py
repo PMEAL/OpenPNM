@@ -1,5 +1,6 @@
 import time
 from openpnm.core import Workspace
+import numpy as np
 ws = Workspace()
 
 
@@ -123,15 +124,14 @@ class Simulation(list):
     def _get_grid(self):
         net = self.network
         grid = Grid()
-        for geo in self.geometries.values():
-            grid[geo.name] = {}
-            Pg = net.pores(geo.name)[0]
+        for geo in self.geometries.keys():
+            grid[geo] = {}
             for phase in self.phases.values():
-                grid[geo.name][phase.name] = ''
-                for phys in self.physics.values():
-                    if 'pore.'+phys.name in phase.keys():
-                        if phase.pores(phys.name)[0] == Pg:
-                            grid[geo.name][phase.name] = phys.name
+                grid[geo][phase.name] = ''
+                for phys in self.physics.keys():
+                    if phys in [n.split('.')[1] for n in phase.keys()]:
+                        if np.sum(net['pore.'+geo][phase.pores(phys)]) > 0:
+                            grid[geo][phase.name] = phys
         self._grid = grid
         return grid
 

@@ -39,15 +39,20 @@ class GenericPhysics(Base, ModelsMixin):
         phase['throat.'+self.name][network.throats(geometry.name)] = True
 
     def __getitem__(self, key):
-        phase = self.simulation.find_phase(self)
         element = key.split('.')[0]
         if key.split('.')[-1] == '_id':
+            phase = self.simulation.find_phase(self)
             inds = phase._get_indices(element=element, labels=self.name)
-            return phase[element+'._id'][inds]
+            vals = phase[element+'._id'][inds]
         # Convert self.name into 'all'
-        if key.split('.')[-1] == self.name:
-            key = element + '.all'
-        if key in self.keys():  # Look for data on self...
-            return super(GenericPhysics, self).__getitem__(key)
-        else:  # ...Then check Phase
-            return phase[key][phase[element + '.' + self.name]]
+        elif key.split('.')[-1] in [self.name]:
+            vals = self[element+'.all']
+        # Get prop or label if present
+        elif key in self.keys():
+            vals = super(Base, self).__getitem__(key)
+        # Otherwise retrieve from network
+        else:
+            phase = self.simulation.find_phase(self)
+            inds = phase._get_indices(element=element, labels=self.name)
+            vals = phase[key][inds]
+        return vals

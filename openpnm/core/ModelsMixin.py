@@ -82,7 +82,7 @@ class ModelsMixin():
             elif 'GenericPhase' in self.mro():
                 boss = self
             elif 'GenericPhysics' in self.mro():
-                boss = self.simulation.get_phase(self)
+                boss = self.simulation.find_phase(self)
             ind = boss._get_indices(element=element, labels=self.name)
             if propname not in boss.keys():
                 shape = list(values.shape)

@@ -133,6 +133,7 @@ class Base(dict):
         for sim in ws.values():
             if self in sim:
                 return sim
+
     simulation = property(fget=_get_simulation)
 
     def clear(self, element=None, mode='all'):
@@ -159,11 +160,6 @@ class Base(dict):
             should be used carefully since it can break some subtle aspects
             of the framework; it is meant for advanced users and developers.
 
-        Notes
-        -----
-        The first three modes listed can be combined by sending a list
-        containing all desired modes.  The \'complete\' mode essentially calls
-        all three so need not be combined with any other modes.
         """
         allowed = ['constants', 'labels', 'models', 'all']
         mode = self._parse_mode(mode=mode, allowed=allowed)
@@ -215,21 +211,23 @@ class Base(dict):
 
         Examples
         --------
-        >>> import OpenPNM
-        >>> pn = OpenPNM.Network.TestNet()
+        >>> import openpnm as op
+        >>> pn = op.network.Cubic(shape=[3, 3, 3])
         >>> pn.props('pore')
         ['pore.coords']
         >>> pn.props('throat')
         ['throat.conns']
-        >>> #pn.props()
+        >>> pn.props()
         ['pore.coords', 'pore.index', 'throat.conns']
         """
         # Parse Inputs
-        allowed = ['all', 'models', 'constants', 'deep']
+        allowed = ['all', 'models', 'constants']
         mode = self._parse_mode(mode=mode, allowed=allowed)
         element = self._parse_element(element=element)
-        # Prepare lists of each type of array
-        props = [item for item in self.keys() if self[item].dtype != bool]
+        # Prepare lists of each type of array, start by select element
+        props = [i for i in self.keys() if i.split('.')[0] in element]
+        # Remove labels
+        props = [i for i in props if self[i].dtype != bool]
         vals = PrintableList()
         # Execute desired array lookup
         if 'all' in mode:
@@ -258,7 +256,7 @@ class Base(dict):
         mode = self._parse_mode(mode=mode, allowed=allowed, single=True)
         element = self._parse_element(element=element)
         # Collect list of all pore OR throat labels
-        a = set([k for k in self.keys() if k.split('.')[0] == element[0]])
+        a = set([k for k in self.keys() if k.split('.')[0] in element])
         b = set([k for k in self.keys() if self[k].dtype == bool])
         labels = list(a.intersection(b))
         labels.sort()
@@ -329,13 +327,13 @@ class Base(dict):
 
         Returns
         -------
-        A list containing the dictionary keys on the object limited by the
+        A list containing the dictionary keys on the object, limited by the
         specified ``mode``.
 
         Examples
         --------
-        >>> import OpenPNM
-        >>> pn = OpenPNM.Network.TestNet()
+        >>> import openpnm as op
+        >>> pn = op.network.Cubic(shape=[3, 3, 3])
         >>> pn.labels(pores=[0, 1, 5, 6])
         ['pore.all', 'pore.bottom', 'pore.front', 'pore.left']
         >>> pn.labels(pores=[0, 1, 5, 6], mode='intersection')
@@ -439,10 +437,10 @@ class Base(dict):
 
         Examples
         --------
-        >>> import OpenPNM
-        >>> pn = OpenPNM.Network.TestNet()
-        >>> pind = pn.get_pores(labels=['top', 'front'], mode='any')
-        >>> pind[[0, 1, 2, -3, -2, -1]]
+        >>> import openpnm as op
+        >>> pn = op.network.Cubic(shape=[3, 3, 3])
+        >>> Ps = pn.get_pores(labels=['top', 'front'], mode='any')
+        >>> PS[[0, 1, 2, -3, -2, -1]]
         array([  0,   5,  10, 122, 123, 124])
         >>> pn.get_pores(labels=['top', 'front'], mode='all')
         array([100, 105, 110, 115, 120])
@@ -492,9 +490,9 @@ class Base(dict):
         Examples
         --------
         >>> import openpnm as op
-        >>> pn = op.network.cubic(shape=[3, 3, 3])
-        >>> Tind = pn.get_throats()
-        >>> Tind[0:5]
+        >>> pn = op.network.Cubic(shape=[3, 3, 3])
+        >>> Ts = pn.get_throats()
+        >>> Ts[0:5]
         array([0, 1, 2, 3, 4])
 
         """
@@ -558,8 +556,8 @@ class Base(dict):
 
         Examples
         --------
-        >>> import OpenPNM as op
-        >>> pn = op.Network.Cubic(shape=[3, 3, 3])
+        >>> import openpnm as op
+        >>> pn = op.network.Cubic(shape=[3, 3, 3])
         >>> mask = pn.tomask(pores=[0, 10, 20])
         >>> sum(mask)  # 3 non-zero elements exist in the mask (0, 10 and 20)
         3
@@ -597,8 +595,8 @@ class Base(dict):
         Notes
         -----
         This behavior could just as easily be accomplished by using the mask
-        in ``pn.get_pores()[mask]`` or ``pn.get_throats()[mask]``.  This method
-        is just a thin convenience function and is a compliment to ``tomask``.
+        in ``pn.pores()[mask]`` or ``pn.throats()[mask]``.  This method is
+        just a convenience function and is a compliment to ``tomask``.
 
         """
         indices = self._parse_indices(mask)
@@ -631,19 +629,19 @@ class Base(dict):
 
         Examples
         --------
-        >>> import OpenPNM
-        >>> pn = OpenPNM.Network.TestNet()
-        >>> Ps = pn.get_pores('top',mode='not')
+        >>> import openpnm asop
+        >>> pn = op.network.Cubic(shape=[3, 3, 3])
+        >>> Ps = pn.get_pores('top', mode='not')
         >>> Ts = pn.find_neighbor_throats(pores=Ps,
         ...                               mode='intersection',
         ...                               flatten=True)
-        >>> geom = OpenPNM.Geometry.TestGeometry(network=pn,
-        ...                                      pores=Ps,
-        ...                                      throats=Ts)
+        >>> geom = op.geometry.GenericGeometry(network=pn,
+        ...                                    pores=Ps,
+        ...                                    throats=Ts)
         >>> Ps = pn.get_pores('top')
         >>> Ts = pn.find_neighbor_throats(pores=Ps,
         ...                               mode='not_intersection')
-        >>> boun = OpenPNM.Geometry.Boundary(network=pn, pores=Ps, throats=Ts)
+        >>> boun = op.geometry.Boundary(network=pn, pores=Ps, throats=Ts)
         >>> geom['pore.test_float'] = sp.random.random(geom.Np)
         >>> print(sp.sum(~sp.isnan(pn['pore.test_float'])) == geom.Np)
         True
@@ -734,7 +732,6 @@ class Base(dict):
         -----
         - This uses an unweighted average, without attempting to account for
         distances or sizes of pores and throats.
-        - Only one of pores, throats OR data are accepted
         """
         mro = [module.__name__ for module in self.__class__.__mro__]
         if 'GenericNetwork' in mro:
@@ -811,10 +808,11 @@ class Base(dict):
         A list of pores (or throats) that have been filtered according the
         given criteria.  The returned list is a subset of the received list of
         pores (or throats).
+
         Examples
         --------
-        >>> import OpenPNM
-        >>> pn = OpenPNM.Network.TestNet()
+        >>> import openpnm as op
+        >>> pn = op.network.Cubic(shape=[3, 3, 3])
         >>> pn.filter_by_label(pores=[0,1,5,6], labels='left')
         array([0, 1])
         >>> Ps = pn.pores(['top', 'bottom', 'front'], mode='union')
@@ -922,10 +920,10 @@ class Base(dict):
         mode : string, optional
             Specifies how the count should be performed.  The options are:
 
-            **'any'** : (default) All throats with ANY of the given labels
+            **'union'** : (default) All throats with ANY of the given labels
             are counted.
 
-            **'all'** : Only throats with ALL the given labels are
+            **'intersection'** : Only throats with ALL the given labels are
             counted.
 
             **'one'** : Only throats with exactly one of the given

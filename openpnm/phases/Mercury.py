@@ -59,3 +59,4 @@ class Mercury(GenericPhase):
                        model=fm.misc.polynomial,
                        prop='pore.temperature',
                        a=[0.00355837, -0.0000100131, 1.23684E-08, -5.1684E-12])
+        self.regenerate_models()

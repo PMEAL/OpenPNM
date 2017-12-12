@@ -24,10 +24,14 @@ air2 = op.phases.Air(network=pn)
 mercury = op.phases.Mercury(network=pn, name='Hg')
 water1 = op.phases.Water(network=pn)
 phys1 = op.physics.GenericPhysics(network=pn, geometry=geom1, phase=mercury)
+
 phys2 = op.physics.GenericPhysics(network=pn, geometry=geom2, phase=mercury)
-mercury.add_model(propname='throat.capillary_pressure',
-                  model=op.physics.models.capillary_pressure.washburn)
-mercury.regenerate_models()
+phys1.add_model(propname='throat.capillary_pressure',
+                model=op.physics.models.capillary_pressure.washburn)
+phys2.add_model(propname='throat.capillary_pressure',
+                model=op.physics.models.capillary_pressure.washburn)
+phys1.regenerate_models()
+phys2.regenerate_models()
 
 a = pn.simulation
 
