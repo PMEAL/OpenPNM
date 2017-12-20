@@ -1188,6 +1188,12 @@ class Base(dict):
                 mode = mode[0]
         return mode
 
+    def _parse_prop(self, propname, element):
+        r"""
+        """
+        return element + '.' + propname.split('.')[-1]
+
+
     def __str__(self):
         horizonal_rule = '―' * 60
         lines = [horizonal_rule]
