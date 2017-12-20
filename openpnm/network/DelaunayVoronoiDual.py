@@ -102,7 +102,6 @@ class DelaunayVoronoiDual(GenericNetwork):
 
     def __init__(self, num_points=None, points=None, shape=[1, 1, 1],
                  trim_domain=True, **kwargs):
-        super().__init__(**kwargs)
 
         if points is None:
             if num_points is None:
@@ -110,8 +109,16 @@ class DelaunayVoronoiDual(GenericNetwork):
             points = topotools.generate_base_points(num_points=num_points,
                                                     domain_size=shape)
 
+        # Deal with points that are only 2D...they break Delaunay
+        if points.shape[1] == 3 and len(sp.unique(points[:, 2])) == 1:
+            points = points[:, :2]
+
         # Perform tessellation
+        tri = sptl.Delaunay(points=points)
         vor = sptl.Voronoi(points=points)
+
+        self._tri = tri
+        self._vor = vor
 
         # Combine points
         pts_vor = vor.vertices
@@ -151,7 +158,12 @@ class DelaunayVoronoiDual(GenericNetwork):
         self.update({'pore.all': sp.ones((Np, ), dtype=bool)})
         self.update({'throat.all': sp.ones((Nt, ), dtype=bool)})
         self['throat.conns'] = conns
+        if coords.shape[1] == 2:  # Make points 3D if necessary
+            coords = sp.vstack((coords.T, sp.zeros((coords.shape[0], )))).T
+        self['pore.coords'] = coords
         self['pore.coords'] = sp.around(coords, decimals=10)
+
+        super().__init__(**kwargs)
 
         # Label all pores and throats by type
         self['pore.delaunay'] = False

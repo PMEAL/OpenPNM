@@ -126,7 +126,6 @@ def extend(network, pore_coords=[], throat_conns=[], labels=[]):
     del network['pore.all'], network['throat.all']
     network['pore.all'] = _sp.ones((Np,), dtype=bool)
     network['throat.all'] = _sp.ones((Nt,), dtype=bool)
-    network
     # Add coords and conns
     if _sp.size(pore_coords) > 0:
         coords = _sp.vstack((network['pore.coords'], pore_coords))
@@ -134,29 +133,17 @@ def extend(network, pore_coords=[], throat_conns=[], labels=[]):
     if _sp.size(throat_conns) > 0:
         conns = _sp.vstack((network['throat.conns'], throat_conns))
         network['throat.conns'] = conns
-    # Increase size of any prop or label arrays on Network
+
+    # Increase size of any prop or label arrays aready on Network
     for item in list(network.keys()):
         if item.split('.')[1] not in ['coords', 'conns', 'all']:
-            if item.split('.')[0] == 'pore':
-                N = Np
-            else:
-                N = Nt
-            if network[item].dtype == bool:
-                temp = _sp.where(network[item])[0]
-                network[item] = _sp.zeros((N,), dtype=bool)
-                network[item][temp] = True
-            elif network[item].dtype == object:
-                temp = network[item]
-                network[item] = _sp.ndarray((N,), dtype=object)
-                network[item][_sp.arange(0, _sp.shape(temp)[0])] = temp
-            else:
-                temp = network[item]
-                try:
-                    network[item] = _sp.ones((N, _sp.shape(temp)[1]),
-                                             dtype=float)*_sp.nan
-                except:
-                    network[item] = _sp.ones((N,), dtype=float)*_sp.nan
-                network[item][_sp.arange(0, _sp.shape(temp)[0])] = temp
+            N = network._count(element=item.split('.')[0])
+            arr = network.pop(item)
+            s = arr.shape
+            network[item] = _sp.empty(shape=(N, *s[1:]), dtype=arr.dtype)
+            # This is a temporary work-around until I learn to handle 2+ dims
+            network[item][:arr.shape[0]] = arr
+
     # Apply labels, if supplied
     if labels != []:
         # Convert labels to list if necessary
@@ -177,7 +164,7 @@ def extend(network, pore_coords=[], throat_conns=[], labels=[]):
                 network['throat.'+label][Ts] = True
 
 
-def reduece_coordination(network, z):
+def reduce_coordination(network, z):
     r"""
     """
     # Find minimum spanning tree using random weights
@@ -927,16 +914,21 @@ def plot_connections(network, throats=None, fig=None, **kwargs):
 
     """
     import matplotlib.pyplot as plt
-    from mpl_toolkits.mplot3d import Axes3D
 
     if throats is None:
         Ts = network.Ts
     else:
         Ts = network._parse_indices(locations=throats)
 
+    ThreeD = False
+    if len(_sp.unique(network['pore.coords'][:, 2])) > 1:
+        from mpl_toolkits.mplot3d import Axes3D
+        ThreeD = True
+
     if fig is None:
         fig = plt.figure()
-        ax = fig.add_subplot(111, projection='3d')
+        if ThreeD:
+            ax = fig.add_subplot(111, projection='3d')
     else:
         ax = fig.get_axes()[0]
 
@@ -950,14 +942,18 @@ def plot_connections(network, throats=None, fig=None, **kwargs):
     X = network['pore.coords'][Ps, 0]
     Y = network['pore.coords'][Ps, 1]
     Z = network['pore.coords'][Ps, 2]
-    _scale_3d_axes(ax=ax, X=X, Y=Y, Z=Z)
+    if ThreeD:
+        _scale_3d_axes(ax=ax, X=X, Y=Y, Z=Z)
 
     # Add sp.inf to the last element of pore.coords (i.e. -1)
     inf = _sp.array((_sp.inf,))
     X = _sp.hstack([network['pore.coords'][:, 0], inf])
     Y = _sp.hstack([network['pore.coords'][:, 1], inf])
     Z = _sp.hstack([network['pore.coords'][:, 2], inf])
-    ax.plot(xs=X[i], ys=Y[i], zs=Z[i], **kwargs)
+    if ThreeD:
+        ax.plot(xs=X[i], ys=Y[i], zs=Z[i], **kwargs)
+    else:
+        plt.plot(X[i], Y[i], **kwargs)
 
     return fig
 
