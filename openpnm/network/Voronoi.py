@@ -23,3 +23,5 @@ class Voronoi(DelaunayVoronoiDual):
         del self['throat.interconnect']
         del self['throat.delaunay']
         del self['pore.delaunay']
+        del self['pore.voronoi']
+        del self['throat.voronoi']

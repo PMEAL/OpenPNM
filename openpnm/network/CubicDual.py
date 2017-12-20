@@ -6,9 +6,9 @@ CubicDual: Generate a cubic lattice with an interpentrating dual network
 
 """
 import scipy as sp
-from OpenPNM.Network.tools import stitch
-from OpenPNM.Network import GenericNetwork, Cubic
-from OpenPNM.Base import logging
+from openpnm.network import GenericNetwork, Cubic
+from openpnm import topotools
+from openpnm.core import logging
 logger = logging.getLogger(__name__)
 
 
@@ -48,7 +48,8 @@ class CubicDual(GenericNetwork):
         spacing = sp.array(spacing)
         shape = sp.array(shape)
         # Deal with non-3D shape arguments
-        shape = sp.pad(shape, [0, 3-shape.size], mode='constant', constant_values=1)
+        shape = sp.pad(shape, [0, 3-shape.size], mode='constant',
+                       constant_values=1)
         net = Cubic(shape=shape, spacing=[1, 1, 1])
         net['throat.'+label_1] = True
         net['pore.'+label_1] = True
@@ -64,7 +65,8 @@ class CubicDual(GenericNetwork):
         dual['throat.'+label_2] = True
         # Shift coordinates prior to stitching
         dual['pore.coords'] += 0.5*(~single_dim)
-        stitch(net, dual, P_network=net.Ps, P_donor=dual.Ps, len_max=1)
+        topotools.stitch(net, dual, P_network=net.Ps, P_donor=dual.Ps,
+                         len_max=1)
         net['throat.interconnect'] = net['throat.stitched']
         del net['throat.stitched']
         net['pore.coords'] *= spacing
