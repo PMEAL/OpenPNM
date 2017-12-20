@@ -35,7 +35,7 @@ phys2.regenerate_models()
 
 a = pn.simulation
 
-mip = op.algorithms.MIP(network=pn)
+mip = op.algorithms.MIP(network=pn, phase=mercury)
 
 
 pn2 = op.network.Cubic(shape=[6, 6, 6])

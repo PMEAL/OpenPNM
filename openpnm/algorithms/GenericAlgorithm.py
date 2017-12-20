@@ -27,7 +27,7 @@ class GenericAlgorithm(Base):
 
     """
 
-    def __init__(self, network, **kwargs):
+    def __init__(self, network, phase, **kwargs):
         super().__init__(simulation=network.simulation, **kwargs)
         logger.name = self.name
 

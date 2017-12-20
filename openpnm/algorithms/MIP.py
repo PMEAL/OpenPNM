@@ -6,8 +6,8 @@ logger = logging.getLogger()
 
 class MIP(GenericAlgorithm):
 
-    def __init__(self, network, **kwargs):
-        super().__init__(network=network, **kwargs)
+    def __init__(self, network, phase, **kwargs):
+        super().__init__(network=network, phase=phase, **kwargs)
 
         Hg = op.phases.Mercury(network=network)
         Hg['throat.surface_tension'] = 0.480
@@ -17,7 +17,7 @@ class MIP(GenericAlgorithm):
                      surface_tension='throat.surface_tension',
                      contact_angle='throat.contact_angle',
                      regen_mode='normal')
-        mip = Drainage(network)
+        mip = Drainage(network, phase)
         mip.setup(invading_phase=Hg)
         if 'pore.surface' not in network.keys():
             op.topotools.find_surface_pores(network=network)
