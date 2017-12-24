@@ -66,11 +66,11 @@ class VTK(GenericIO):
             objs.append(phase)
         objs.append(network)
 
-        am = {i: network[i] for i in
+        am = {network.name+'|'+i: network[i] for i in
               network.props(deep=True) + network.labels()}
         for phase in phases:
-            dict_ = {i+'|'+phase.name: phase[i] for i in
-                     phase.props(mode=['all', 'deep']) + phase.labels()}
+            dict_ = {phase.name+'|'+i: phase[i] for i in
+                     phase.props(deep=True) + phase.labels()}
             am.update(dict_)
 
         key_list = list(sorted(am.keys()))
@@ -102,7 +102,8 @@ class VTK(GenericIO):
             if array.size != num_points:
                 continue
             element = VTK._array_to_element(key, array)
-            point_data_node.append(element)
+            if element is not None:
+                point_data_node.append(element)
 
         cell_data_node = piece_node.find('CellData')
         for key in key_list:
@@ -112,7 +113,8 @@ class VTK(GenericIO):
             if array.size != num_throats:
                 continue
             element = VTK._array_to_element(key, array)
-            cell_data_node.append(element)
+            if element is not None:
+                cell_data_node.append(element)
 
         tree = ET.ElementTree(root)
         tree.write(filename)
@@ -207,11 +209,13 @@ class VTK(GenericIO):
             'float64': 'Float64',
             'str': 'String',
         }
-        element = ET.Element('DataArray')
-        element.set("Name", name)
-        element.set("NumberOfComponents", str(n))
-        element.set("type", dtype_map[str(array.dtype)])
-        element.text = '\t'.join(map(str, array.ravel()))
+        element = None
+        if str(array.dtype) in dtype_map.keys():
+            element = ET.Element('DataArray')
+            element.set("Name", name)
+            element.set("NumberOfComponents", str(n))
+            element.set("type", dtype_map[str(array.dtype)])
+            element.text = '\t'.join(map(str, array.ravel()))
         return element
 
     @staticmethod
