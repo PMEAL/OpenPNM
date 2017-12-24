@@ -3,6 +3,7 @@ import openpnm
 import time
 import copy
 from openpnm.core import logging
+from openpnm.utils.misc import PrintableDict
 logger = logging.getLogger()
 
 
@@ -19,10 +20,17 @@ def singleton(cls):
     return getinstance
 
 
-class Settings(dict):
+class Settings():
     def __init__(self):
-        self.__dict__ = self
         self.toms_way = True
+
+    def __str__(self):
+        temp = PrintableDict(self.__dict__)
+        return temp.__str__()
+
+    def __repr__(self):
+        temp = PrintableDict(self.__dict__)
+        return temp.__str__()
 
 
 @singleton
