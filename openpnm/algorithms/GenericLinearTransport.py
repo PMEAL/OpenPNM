@@ -86,12 +86,12 @@ class GenericLinearTransport(GenericAlgorithm):
             raise Exception('The number of boundary values must match the ' +
                             'number of locations')
         # Label pores where a boundary condition will be applied
-        if 'pore.'+bctype not in self.keys() or mode == 'overwrite':
+        if ('pore.'+bctype not in self.keys()) or (mode == 'overwrite'):
             self['pore.'+bctype] = False
         self['pore.'+bctype][pores] = True
 
         # Store boundary values
-        if 'pore.'+bctype+'_value' not in self.keys() or mode == 'overwrite':
+        if ('pore.'+bctype+'_value' not in self.keys()) or (mode == 'overwrite'):
             self['pore.'+bctype+'_value'] = sp.nan
         self['pore.'+bctype+'_value'][pores] = values
 
@@ -119,7 +119,7 @@ class GenericLinearTransport(GenericAlgorithm):
         # Providing conductance values for the algorithm from the Physics name
         self.settings['throat.conductance'] = self._parse_prop(conductance,
                                                                'throat')
-        self.setting['pore.quantity'] = self._parse_prop(quantity, 'pore')
+        self.settings['pore.quantity'] = self._parse_prop(quantity, 'pore')
         if reset:
             self.pop('pore.dirichlet', None)
             self.pop('pore.dirichlet_values', None)
@@ -127,10 +127,8 @@ class GenericLinearTransport(GenericAlgorithm):
             self.pop('pore.neumann_values', None)
         # Check health of conductance vector
         phase = self.simulation.phases[self.settings['phase']]
-        if sp.any(sp.isnan(phase[self.setings['throat.conductance']])):
+        if sp.any(sp.isnan(phase[self.settings['throat.conductance']])):
             raise Exception('The provided throat conductance contains NaNs')
-        self.build_A
-        self.build_b
 
     def build_A(self):
         r"""
@@ -183,6 +181,8 @@ class GenericLinearTransport(GenericAlgorithm):
         the iterative solvers found under *scipy.sparse.linalg* such as ``cg``.
 
         """
+        self.build_A()
+        self.build_b()
         x = sprs.linalg.spsolve(A=self.A, b=self.b)
         self[self.settings['pore.quantity']] = x
 
