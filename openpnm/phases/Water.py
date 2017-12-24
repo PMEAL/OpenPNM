@@ -45,3 +45,4 @@ class Water(GenericPhase):
                        A=8.088, B=1750.71, C=236.191)
         self.add_model(propname='pore.viscosity',
                        model=fm.viscosity.water)             # kg/m.s
+        self.regenerate_models()
