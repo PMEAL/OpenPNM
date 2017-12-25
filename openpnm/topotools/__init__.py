@@ -1,3 +1,4 @@
+from .topotools import clone_pores
 from .topotools import extend
 from .topotools import find_surface_pores
 from .topotools import label_faces

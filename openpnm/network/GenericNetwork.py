@@ -131,7 +131,7 @@ class GenericNetwork(Base, ModelsMixin):
             raise Exception('Received weights are incorrect length')
 
         # Append row & col to each other, and data to itself
-        ind = data > 0
+        ind = data != 0
         conn = self['throat.conns'][ind]
         row = conn[:, 0]
         col = conn[:, 1]

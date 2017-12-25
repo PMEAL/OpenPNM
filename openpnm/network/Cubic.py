@@ -8,6 +8,7 @@ Cubic: Generate lattice-like networks
 import numpy as np
 import scipy as sp
 from openpnm.network import GenericNetwork
+from openpnm import topotools
 
 
 class Cubic(GenericNetwork):
@@ -165,8 +166,8 @@ class Cubic(GenericNetwork):
 
         for label in labels:
             Ps = self.pores(label)
-            self.clone_pores(pores=Ps, apply_label=[label+'_boundary',
-                                                    'boundary'])
+            topotools.clone_pores(network=self, pores=Ps,
+                                  labels=label+'_boundary')
             # Translate cloned pores
             ind = self.pores(label+'_boundary')
             coords = self['pore.coords'][ind]

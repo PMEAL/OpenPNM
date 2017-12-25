@@ -139,7 +139,7 @@ def extend(network, pore_coords=[], throat_conns=[], labels=[]):
             N = network._count(element=item.split('.')[0])
             arr = network.pop(item)
             s = arr.shape
-            network[item] = sp.empty(shape=(N, *s[1:]), dtype=arr.dtype)
+            network[item] = sp.zeros(shape=(N, *s[1:]), dtype=arr.dtype)
             # This is a temporary work-around until I learn to handle 2+ dims
             network[item][:arr.shape[0]] = arr
 
@@ -284,7 +284,7 @@ def find_surface_pores(network, markers=None, label='surface'):
         network['pore.'+label][neighbors] = True
 
 
-def clone_pores(network, pores, apply_label=['clone'], mode='parents'):
+def clone_pores(network, pores, labels=['clone'], mode='parents'):
     r'''
     Clones the specified pores and adds them to the network
 
@@ -296,7 +296,7 @@ def clone_pores(network, pores, apply_label=['clone'], mode='parents'):
     pores : array_like
         List of pores to clone
 
-    apply_labels : string, or list of strings
+    labels : string, or list of strings
         The labels to apply to the clones, default is 'clone'
 
     mode : string
@@ -307,17 +307,17 @@ def clone_pores(network, pores, apply_label=['clone'], mode='parents'):
                       manner as parents were connected
         - 'isolated': No connections between parents or siblings
     '''
-    if (network._geometries != []):
+    if len(network.simulation.geometries) > 0:
         logger.warning('Network has active Geometries, new pores must be \
                         assigned a Geometry')
-    if (network._phases != []):
+    if len(network.simulation.phases) > 0:
         raise Exception('Network has active Phases, cannot proceed')
 
     logger.debug('Cloning pores')
-    apply_label = list(apply_label)
+    apply_label = [labels]
+    Np = network.Np
+    Nt = network.Nt
     # Clone pores
-    Np = network.num_pores()
-    Nt = network.num_throats()
     parents = sp.array(pores, ndmin=1)
     pcurrent = network['pore.coords']
     pclone = pcurrent[pores, :]
@@ -326,10 +326,8 @@ def clone_pores(network, pores, apply_label=['clone'], mode='parents'):
     clones = sp.arange(Np, Npnew)
     # Add clone labels to network
     for item in apply_label:
-        if 'pore.' + item not in network.keys():
-            network['pore.'+item] = False
-        if 'throat.' + item not in network.keys():
-            network['throat.'+item] = False
+        network['pore.'+item] = False
+        network['throat.'+item] = False
     # Add connections between parents and clones
     if mode == 'parents':
         tclone = sp.vstack((parents, clones)).T
@@ -346,7 +344,8 @@ def clone_pores(network, pores, apply_label=['clone'], mode='parents'):
         network['throat.'+item][network.throats('all') >= Nt] = True
 
     # Any existing adjacency and incidence matrices will be invalid
-    network._update_network()
+    network._am.clear()
+    network._im.clear()
 
 
 def stitch(network, donor, P_network, P_donor, method='nearest',
