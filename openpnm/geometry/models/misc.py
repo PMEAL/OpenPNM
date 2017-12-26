@@ -8,6 +8,15 @@ import scipy as _sp
 import scipy.stats as _spts
 
 
+def product(target, **props):
+    r"""
+    """
+    value = 1.0
+    for item in props.values():
+        value *= target[item]
+    return value
+
+
 def random(target, element, seed=None, num_range=[0, 1]):
     r"""
     Create an array of random numbers of a specified size.
