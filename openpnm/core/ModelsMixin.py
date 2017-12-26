@@ -1,8 +1,30 @@
 import inspect
 import copy
 import numpy as np
+import matplotlib.pyplot as plt
 from openpnm.core import Workspace
+from openpnm.utils.misc import PrintableDict
 ws = Workspace()
+
+
+class ModelWrapper(PrintableDict):
+
+    def run(self):
+        target = self._find_self()
+        vals = self['model'](target=target, **self['kwargs'])
+        return vals
+
+    def show_hist(self, fig=None):
+        if fig is None:
+            fig = plt.figure()
+        plt.hist(self.run())
+        return fig
+
+    def _find_self(self):
+        for sim in ws.values():
+            for obj in sim:
+                if self in obj.models.values():
+                    return obj
 
 
 class ModelsDict(dict):
@@ -21,7 +43,7 @@ class ModelsDict(dict):
         return unique
 
     def __str__(self):
-        horizontal_rule = '-' * 60
+        horizontal_rule = '―' * 60
         lines = [horizontal_rule]
         lines.append('{0:<5s} {1:<30s} {2}'.format('#',
                                                    'Property Name',
@@ -37,7 +59,7 @@ class ModelsDict(dict):
 class ModelsMixin():
 
     def add_model(self, propname, model, regen_mode='deferred', **kwargs):
-        self.models[propname] = {}
+        self.models[propname] = ModelWrapper()
         self.models[propname]['model'] = model
         if regen_mode in ['normal', 'deferred', 'constant']:
             self.models[propname]['regen_mode'] = regen_mode

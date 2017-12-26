@@ -183,7 +183,7 @@ class GenericLinearTransport(GenericAlgorithm):
         """
         self.build_A()
         self.build_b()
-        x = sprs.linalg.spsolve(A=self.A, b=self.b)
+        x = sprs.linalg.spsolve(A=self.A.tocsr(), b=self.b)
         self[self.settings['pore.quantity']] = x
 
     def rate(self, pores=None, mode='group'):
