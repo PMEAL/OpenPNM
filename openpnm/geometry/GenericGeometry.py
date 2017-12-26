@@ -1,4 +1,5 @@
 import scipy as sp
+import matplotlib.pyplot as plt
 from openpnm.core import Base, ModelsMixin
 from openpnm.core import logging, Workspace
 logger = logging.getLogger(__name__)
@@ -47,8 +48,13 @@ class GenericGeometry(Base, ModelsMixin):
         # Get prop or label if present
         elif key in self.keys():
             vals = super(Base, self).__getitem__(key)
+        # Run model if present
+#        elif key in self.models.keys():
+#            self.regenerate_models(propnames=[key])
+#            vals = super(Base, self).__getitem__(key)
         # Otherwise retrieve from network
         else:
+            # If not found on network a key error will be raised
             vals = net[key][inds]
         return vals
 
@@ -110,3 +116,23 @@ class GenericGeometry(Base, ModelsMixin):
         inds = net._get_indices(element=element, labels=self.name)
         for item in self.props(element=element):
             self.update({item: net[item][inds]})
+
+    def show_hist(self, props=['pore.diameter'], bins=20, fig=None, **kwargs):
+        if fig is None:
+            fig = plt.figure()
+        if type(props) is str:
+            props = [props]
+        N = len(props)
+        if N == 1:
+            r = 1
+            c = 1
+        elif N < 4:
+            r = 1
+            c = N
+        else:
+            r = int(sp.ceil(N**0.5))
+            c = int(sp.floor(N**0.5))
+
+        for i in range(len(props)):
+            plt.subplot(r, c, i+1)
+            plt.hist(self[props[i]], bins=bins, **kwargs)
