@@ -58,18 +58,6 @@ class GenericNetwork(Base, ModelsMixin):
         else:
             return super().__getitem__(key)
 
-    def props(self, element=None, mode='all', deep=False):
-        modes = ['all', 'models', 'constants']
-        mode = self._parse_mode(mode=mode, allowed=modes, single=False)
-        prop_list = PrintableList()
-        if deep:
-            for geom in self.simulation.geometries.values():
-                prop_list.extend(geom.props(element=element, mode=mode))
-            # Get unique values
-            prop_list = PrintableList(set(prop_list))
-        prop_list.extend(super().props(element=element, mode=mode))
-        return prop_list
-
     def get_adjacency_matrix(self, fmt='coo'):
         # Retrieve existing matrix if available
         if fmt in self._am.keys():
