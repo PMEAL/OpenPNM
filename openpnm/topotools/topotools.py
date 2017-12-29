@@ -58,8 +58,8 @@ def trim(network, pores=[], throats=[]):
 
     # Delete specified pores and throats from all objects
     for item in reversed(network.simulation):
-        Ps = item.map_pores(ids=network['pore._id'][Pkeep])
-        Ts = item.map_throats(ids=network['throat._id'][Tkeep])
+        Ps = item.map_pores(ids=network.Ps[Pkeep])
+        Ts = item.map_throats(ids=network.Ts[Tkeep])
         item.update({'pore.all': sp.ones((sp.size(Ps),), dtype=bool)})
         item.update({'throat.all': sp.ones((sp.size(Ts),), dtype=bool)})
         for key in list(item.keys()):

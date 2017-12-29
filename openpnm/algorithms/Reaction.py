@@ -25,7 +25,7 @@ class GenericReaction(GenericAlgorithm, ModelsMixin):
         # Fetch algorithm object from simulaiton
         alg = self.simulation[self.settings['algorithm']]
         # Identify which pores this object applies to
-        Ps = self.map_pores(self['pore._id'])
+        Ps = self.map_pores()
         # Retrieve info from settings and store on self
         self[self.settings['quantity']] = alg[self.settings['quantity']][Ps]
         # Run models to generate slope and intercept of Taylor series

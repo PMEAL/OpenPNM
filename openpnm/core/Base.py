@@ -518,7 +518,7 @@ class Base(dict):
             t = namedtuple('index_map', ('indices', 'mask'))
             return t(ind, mask)
 
-    def map_pores(self, ids, filtered=True):
+    def map_pores(self, pores=None, filtered=True):
         r"""
         Translates the pore indices of the caller object to those of the
         complete network.
@@ -532,22 +532,28 @@ class Base(dict):
             If ``True`` then a ND-array of indices is returned, otherwise
             a named-tuple containing the ``indices`` and the ???
         """
+        if pores is None:
+            pores = self.Ps
+        ids = self['pore._id'][pores]
         return self._map(element='pore', ids=ids, filtered=filtered)
 
-    def map_throats(self, ids, filtered=True):
+    def map_throats(self, throats=None, filtered=True):
         r"""
         Translates the throat indices of the caller object to those of the
         complete network.
 
         Parameters
         ----------
-        thraots : array_like
+        throats : array_like
             The throat indices for which full network indices are sought
 
         filtered : boolean (default is ``True``)
             If ``True`` then a ND-array of indices is returned, otherwise
             a named-tuple containing the ``indices`` and the ???
         """
+        if throats is None:
+            throats = self.Ts
+        ids = self['throat._id'][throats]
         return self._map(element='throat', ids=ids, filtered=filtered)
 
     def _tomask(self, indices, element):
