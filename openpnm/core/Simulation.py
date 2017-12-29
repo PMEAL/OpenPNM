@@ -12,6 +12,7 @@ class Simulation(list):
         self.name = name
         self._grid = {}
         ws.update({self.name: self})
+        self.settings = ws.settings.copy()
 
     def _set_name(self, name):
         if name is None:
@@ -34,13 +35,16 @@ class Simulation(list):
             if obj.name == key:
                 return obj
 
-    def find_phase(self, physics):
-        mro = [c.__name__ for c in physics.__class__.__mro__]
+    def find_phase(self, obj):
+        mro = [c.__name__ for c in obj.__class__.__mro__]
         if 'GenericPhase'in mro:
-            return physics
+            return obj
+        if 'GenericAlgorithm' in mro:
+            phase = self.phases[obj.settings['phase']]
+            return phase
         for g in self.geometries.values():
             for p in self.phases.values():
-                if physics.name == self.grid[g.name][p.name]:
+                if obj.name == self.grid[g.name][p.name]:
                     return p
 
     def find_geometry(self, physics):

@@ -13,9 +13,9 @@ class Base(dict):
 
     def __init__(self, name=None, simulation=None):
         super().__init__()
+        simulation.append(self)
         self.update({'pore.all': sp.array([], ndmin=1, dtype=bool)})
         self.update({'throat.all': sp.array([], ndmin=1, dtype=bool)})
-        simulation.append(self)
         self._name = None
         self.name = name
 
@@ -133,6 +133,7 @@ class Base(dict):
         for sim in ws.values():
             if self in sim:
                 return sim
+        print(ws)
 
     simulation = property(fget=_get_simulation)
 
@@ -227,13 +228,14 @@ class Base(dict):
         if 'data' in mode:
             temp = {i: None for i in self.keys()}  # Using dict avoids dupes
             vals.update(temp)
-        if 'models' in mode:
-            temp = {i: None for i in self.models.keys()}
-            vals.update(temp)
-        if 'constants' in mode:
-            constants = [i for i in self.keys() if i not in self.models.keys()]
-            temp = {i: None for i in constants}
-            vals.update(temp)
+        if hasattr(self, 'models'):
+            if 'models' in mode:
+                temp = {i: None for i in self.models.keys()}
+                vals.update(temp)
+            if 'constants' in mode:
+                constants = [i for i in self.keys() if i not in self.models.keys()]
+                temp = {i: None for i in constants}
+                vals.update(temp)
         # Remove values of the wrong element select element
         vals = [i for i in vals.keys() if i.split('.')[0] in element]
         # Remove labels
@@ -517,9 +519,35 @@ class Base(dict):
             return t(ind, mask)
 
     def map_pores(self, ids, filtered=True):
+        r"""
+        Translates the pore indices of the caller object to those of the
+        complete network.
+
+        Parameters
+        ----------
+        pores : array_like
+            The pore indices for which full network indices are sought
+
+        filtered : boolean (default is ``True``)
+            If ``True`` then a ND-array of indices is returned, otherwise
+            a named-tuple containing the ``indices`` and the ???
+        """
         return self._map(element='pore', ids=ids, filtered=filtered)
 
     def map_throats(self, ids, filtered=True):
+        r"""
+        Translates the throat indices of the caller object to those of the
+        complete network.
+
+        Parameters
+        ----------
+        thraots : array_like
+            The throat indices for which full network indices are sought
+
+        filtered : boolean (default is ``True``)
+            If ``True`` then a ND-array of indices is returned, otherwise
+            a named-tuple containing the ``indices`` and the ???
+        """
         return self._map(element='throat', ids=ids, filtered=filtered)
 
     def _tomask(self, indices, element):

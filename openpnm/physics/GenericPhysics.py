@@ -56,3 +56,19 @@ class GenericPhysics(Base, ModelsMixin):
             inds = phase._get_indices(element=element, labels=self.name)
             vals = phase[key][inds]
         return vals
+
+    def __setitem__(self, key, value):
+        if self.settings['local_data']:
+            super().__setitem__(key, value)
+        else:
+            phase = self.simulation.find_phase(self)
+            element = self._parse_element(key.split('.')[0], single=True)
+            inds = self._map(ids=self[element+'._id'], element=element,
+                             filtered=True)
+            # If array not in network, create it first
+            if key not in phase.keys():
+                if value.dtype == bool:
+                    phase[key] = False
+                else:
+                    phase[key] = sp.zeros_like(value)*sp.nan
+            phase[key][inds] = value

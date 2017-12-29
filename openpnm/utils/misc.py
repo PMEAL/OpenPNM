@@ -31,13 +31,13 @@ class PrintableDict(OrderedDict):
         return text
 
     def __str__(self):
-        horizontal_rule = '―' * 60
-        lines = [horizontal_rule]
+        header = '―' * 60
+        lines = [header]
         lines.append('{0:<25s} {1}'.format('key', self._header))
-        lines.append(horizontal_rule)
+        lines.append(header)
         for item in list(self.keys()):
             lines.append('{0:<25s} {1}'.format(item, self[item]))
-        lines.append(horizontal_rule)
+        lines.append(header)
         return '\n'.join(lines)
 
 

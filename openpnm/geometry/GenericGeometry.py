@@ -34,6 +34,7 @@ class GenericGeometry(Base, ModelsMixin):
     def __init__(self, network, pores=[], throats=[], name=None):
         super().__init__(name=name, simulation=network.simulation)
         self.add_locations(pores=pores, throats=throats)
+        self.settings = {'local_data': self.simulation.settings['local_data']}
 
     def __getitem__(self, key):
         net = self.simulation.network
@@ -48,15 +49,26 @@ class GenericGeometry(Base, ModelsMixin):
         # Get prop or label if present
         elif key in self.keys():
             vals = super(Base, self).__getitem__(key)
-        # Run model if present
-#        elif key in self.models.keys():
-#            self.regenerate_models(propnames=[key])
-#            vals = super(Base, self).__getitem__(key)
-        # Otherwise retrieve from network
         else:
             # If not found on network a key error will be raised
             vals = net[key][inds]
         return vals
+
+    def __setitem__(self, key, value):
+        if self.settings['local_data']:
+            super().__setitem__(key, value)
+        else:
+            network = self.simulation.network
+            element = self._parse_element(key.split('.')[0], single=True)
+            inds = self._map(ids=self[element+'._id'], element=element,
+                             filtered=True)
+            # If array not in network, create it first
+            if key not in network.keys():
+                if value.dtype == bool:
+                    network[key] = False
+                else:
+                    network[key] = sp.zeros_like(value)*sp.nan
+            network[key][inds] = value
 
     def add_locations(self, pores=[], throats=[]):
         r"""

@@ -3,7 +3,7 @@ import openpnm
 import time
 import copy
 from openpnm.core import logging
-from openpnm.utils.misc import PrintableDict
+from openpnm.utils import Settings
 logger = logging.getLogger()
 
 
@@ -20,21 +20,9 @@ def singleton(cls):
     return getinstance
 
 
-class Settings():
-    def __init__(self):
-        self.toms_way = True
-
-    def __str__(self):
-        temp = PrintableDict(self.__dict__)
-        return temp.__str__()
-
-    def __repr__(self):
-        temp = PrintableDict(self.__dict__)
-        return temp.__str__()
-
-
 @singleton
 class Workspace(dict):
+
     def __init__(self):
         super().__init__()
         self.comments = 'Using OpenPNM ' + openpnm.__version__
