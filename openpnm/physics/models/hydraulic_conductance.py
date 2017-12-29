@@ -63,9 +63,9 @@ def hagen_poiseuille(target, viscosity='pore.viscosity',
     # Remove any non-positive lengths
     tlen[tlen <= 0] = 1e-12
     # Get shape factor
-    try:
+    if shape_factor in network.keys():
         sf = network[shape_factor]
-    except:
+    else:
         sf = _sp.ones(network.num_throats())
     sf[_sp.isnan(sf)] = 1.0
     gt = (1/sf)*_sp.pi*(tdia)**4/(128*tlen*mut)

@@ -19,9 +19,25 @@ class GenericLinearTransport(GenericAlgorithm):
     def __init__(self, phase, **kwargs):
         super().__init__(phase=phase, **kwargs)
         self.settings = PrintableDict({'phase': phase.name,
-                                       'throat.conductance': None,
-                                       'pore.quantity': None,
-                                       'solver': None})
+                                       'conductance': None,
+                                       'quantity': None,
+                                       'solver': None,
+                                       'sources': []})
+
+    def set_dirchlet_BC(self, pores, values):
+        r"""
+        """
+        self.set_boundary_conditions(pores=pores, bctype='dirichlet',
+                                     bcvalues=values, mode='merge')
+
+    def set_neumann_BC(self, pores, values):
+        r"""
+        """
+        self.set_boundary_conditions(pores=pores, bctype='neumann',
+                                     bcvalues=values, mode='merge')
+
+    def set_source_term(self, source):
+        self.settings['sources'].append(source.name)
 
     def set_boundary_conditions(self, pores, bctype, bcvalues=None,
                                 mode='merge'):
@@ -67,7 +83,8 @@ class GenericLinearTransport(GenericAlgorithm):
 
         """
         # Hijack the parse_mode function to verify bctype argument
-        bctype = self._parse_mode(bctype, allowed=['dirichlet', 'neumann'],
+        bctype = self._parse_mode(bctype, allowed=['dirichlet', 'neumann',
+                                                   'neumann_group'],
                                   single=True)
         mode = self._parse_mode(mode, allowed=['merge', 'overwrite', 'remove'],
                                 single=True)
@@ -75,11 +92,8 @@ class GenericLinearTransport(GenericAlgorithm):
 
         # If mode is 'remove', use a different method
         if mode == 'remove':
-            self._remove_bcs(pores=pores, bctype=bctype)
+            self.remove_BC(pores=pores)
             return
-        elif bcvalues is None:
-            raise Exception('When setting boundary conditions, values must ' +
-                            'be given')
 
         values = sp.array(bcvalues)
         if values.size > 1 and values.size != pores.size:
@@ -91,15 +105,32 @@ class GenericLinearTransport(GenericAlgorithm):
         self['pore.'+bctype][pores] = True
 
         # Store boundary values
-        if ('pore.'+bctype+'_value' not in self.keys()) or (mode == 'overwrite'):
+        if ('pore.'+bctype+'_value' not in self.keys()) or \
+           (mode == 'overwrite'):
             self['pore.'+bctype+'_value'] = sp.nan
         self['pore.'+bctype+'_value'][pores] = values
 
-    def _remove_bcs(self, pores, bctype):
-        self['pore.'+bctype][pores] = False
-        self['pore.'+bctype+'_value'][pores] = sp.nan
+    def remove_BC(self, pores=None):
+        r"""
+        Removes all boundary conditions assigned to the specified pores
 
-    def setup(self, conductance, quantity, reset=True):
+        Parameters
+        ----------
+        pores : array_like
+            The pores from which boundary conditions are to be removed.  If no
+            pores are specified, then BCs are removed from all pores. No error
+            is thrown if the provided pores do not have any BCs assigned.
+        """
+        if pores is None:
+            pores = self.Ps
+        if 'pore.dirichlet' in self.keys():
+            self['pore.dirichlet'][pores] = False
+            self['pore.dirichlet_value'][pores] = sp.nan
+        if 'pore.neumann' in self.keys():
+            self['pore.neumann'][pores] = False
+            self['pore.neumann_value'][pores] = sp.nan
+
+    def setup(self, conductance, quantity):
         r"""
         Specifies the necessary parameters
 
@@ -117,17 +148,12 @@ class GenericLinearTransport(GenericAlgorithm):
 
         """
         # Providing conductance values for the algorithm from the Physics name
-        self.settings['throat.conductance'] = self._parse_prop(conductance,
-                                                               'throat')
-        self.settings['pore.quantity'] = self._parse_prop(quantity, 'pore')
-        if reset:
-            self.pop('pore.dirichlet', None)
-            self.pop('pore.dirichlet_values', None)
-            self.pop('pore.neumann', None)
-            self.pop('pore.neumann_values', None)
+        self.settings['conductance'] = self._parse_prop(conductance, 'throat')
+        self.settings['quantity'] = self._parse_prop(quantity, 'pore')
+
         # Check health of conductance vector
         phase = self.simulation.phases[self.settings['phase']]
-        if sp.any(sp.isnan(phase[self.settings['throat.conductance']])):
+        if sp.any(sp.isnan(phase[self.settings['conductance']])):
             raise Exception('The provided throat conductance contains NaNs')
 
     def build_A(self):
@@ -135,10 +161,11 @@ class GenericLinearTransport(GenericAlgorithm):
         """
         network = self.simulation.network
         phase = self.simulation.phases[self.settings['phase']]
-        g = phase[self.settings['throat.conductance']]
+        g = phase[self.settings['conductance']]
         am = network.create_adjacency_matrix(data=-g, fmt='coo')
         A = spgr.laplacian(am)
-
+        if 'pore.neumann' in self.keys():
+            pass  # Do nothing to A, only b changes by adding flux BC to RHS
         if 'pore.dirichlet' in self.keys():
             # Find all entries on rows associated with dirichlet pores
             P_bc = self.toindices(self['pore.dirichlet'])
@@ -165,7 +192,6 @@ class GenericLinearTransport(GenericAlgorithm):
         if 'pore.neumann' in self.keys():
             ind = self['pore.neumann']
             b[ind] = -self['pore.neumann_value'][ind]
-
         self.b = b
         return b
 
@@ -184,7 +210,7 @@ class GenericLinearTransport(GenericAlgorithm):
         self.build_A()
         self.build_b()
         x = sprs.linalg.spsolve(A=self.A.tocsr(), b=self.b)
-        self[self.settings['pore.quantity']] = x
+        self[self.settings['quantity']] = x
 
     def rate(self, pores=None, mode='group'):
         r"""
@@ -210,8 +236,8 @@ class GenericLinearTransport(GenericAlgorithm):
         """
         network = self.simulation.network
         phase = self.simulation.phases[self.settings['phase']]
-        conductance = phase[self.settings['throat.conductance']]
-        quantity = self[self.settings['pore.quantity']]
+        conductance = phase[self.settings['conductance']]
+        quantity = self[self.settings['quantity']]
         pores = self._parse_indices(pores)
         R = []
         if mode == 'group':
@@ -249,7 +275,7 @@ class GenericLinearTransport(GenericAlgorithm):
         proper boundary conditions, inlets and outlets.
         """
         network = self.simulation.network
-        if self.settings['pore.quantity'] not in self.keys():
+        if self.settings['quantity'] not in self.keys():
             raise Exception('The algorit hm has not been run yet. Cannot ' +
                             'calculate effective property.')
 
