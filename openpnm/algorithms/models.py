@@ -9,7 +9,7 @@ def standard_kinetics(target, quantity, prefactor, exponent):
     A = target[prefactor]
     b = target[exponent]
 
-    S1 = A*b*X**(b - 1)
-    S2 = A*X**b*(1 - b)
+    S1 = A*b*(X**(b - 1))
+    S2 = A*(1 - b)*(X**b)
     S = sp.vstack((S1, S2)).T
     return S

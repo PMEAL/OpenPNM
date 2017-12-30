@@ -37,6 +37,7 @@ class GenericPhysics(Base, ModelsMixin):
         phase['pore.'+self.name][network.pores(geometry.name)] = True
         phase['throat.'+self.name] = False
         phase['throat.'+self.name][network.throats(geometry.name)] = True
+        self.settings = {'local_data': self.simulation.settings['local_data']}
 
     def __getitem__(self, key):
         element = key.split('.')[0]

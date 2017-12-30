@@ -207,8 +207,6 @@ class GenericLinearTransport(GenericAlgorithm):
         the iterative solvers found under *scipy.sparse.linalg* such as ``cg``.
 
         """
-        self.build_A()
-        self.build_b()
         x = sprs.linalg.spsolve(A=self.A.tocsr(), b=self.b)
         self[self.settings['quantity']] = x
 

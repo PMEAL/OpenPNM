@@ -84,7 +84,7 @@ class ModelsMixin():
         # If no props give, then regenerate them all
         if propnames is None:
             propnames = list(self.models.dependency_tree())
-        # If only one prop give, as string, put into a list
+        # If only one prop given, as string, put into a list
         elif type(propnames) is str:
             propnames = [propnames]
         for item in propnames:
