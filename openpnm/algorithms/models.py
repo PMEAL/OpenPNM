@@ -1,7 +1,7 @@
 import scipy as sp
 
 
-def standard_kinetics(target, quantity, prefactor, exponent):
+def standard_kinetics(target, quantity, prefactor, exponent, rate=True):
     r"""
 
     """
@@ -9,7 +9,10 @@ def standard_kinetics(target, quantity, prefactor, exponent):
     A = target[prefactor]
     b = target[exponent]
 
-    S1 = A*b*(X**(b - 1))
-    S2 = A*(1 - b)*(X**b)
-    S = sp.vstack((S1, S2)).T
-    return S
+    if rate:
+        values = A*(X**b)
+    else:
+        S1 = A*b*(X**(b - 1))
+        S2 = A*(1 - b)*(X**b)
+        values = sp.vstack((S1, S2)).T
+    return values

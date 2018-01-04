@@ -10,7 +10,7 @@ import scipy.sparse.csgraph as spgr
 from openpnm.algorithms import GenericAlgorithm
 from openpnm.utils.misc import PrintableDict
 from openpnm.core import logging
-logger = logging.getLogger()
+logger = logging.getLogger(__name__)
 
 
 class GenericLinearTransport(GenericAlgorithm):
@@ -21,7 +21,7 @@ class GenericLinearTransport(GenericAlgorithm):
         self.settings = PrintableDict({'phase': phase.name,
                                        'conductance': None,
                                        'quantity': None,
-                                       'solver': None,
+                                       'solver': 'spsolve',
                                        'sources': []})
 
     def set_dirchlet_BC(self, pores, values):
@@ -156,6 +156,9 @@ class GenericLinearTransport(GenericAlgorithm):
         if sp.any(sp.isnan(phase[self.settings['conductance']])):
             raise Exception('The provided throat conductance contains NaNs')
 
+        # Create quantity vector
+        self[quantity] = 0.5
+
     def build_A(self):
         r"""
         """
@@ -165,7 +168,7 @@ class GenericLinearTransport(GenericAlgorithm):
         am = network.create_adjacency_matrix(data=-g, fmt='coo')
         A = spgr.laplacian(am)
         if 'pore.neumann' in self.keys():
-            pass  # Do nothing to A, only b changes by adding flux BC to RHS
+            pass  # Do nothing to A, only b changes
         if 'pore.dirichlet' in self.keys():
             # Find all entries on rows associated with dirichlet pores
             P_bc = self.toindices(self['pore.dirichlet'])
@@ -197,7 +200,24 @@ class GenericLinearTransport(GenericAlgorithm):
 
     def run(self):
         r"""
-        Sends the A and b matrices to Scipy's default solver
+        Builds the A and b matrices, and calls the solver specified in the
+        ``settings`` attribute.
+
+        """
+        self.build_A()
+        self.build_b()
+        self[self.settings['quantity']] = self.solve()
+
+    def solve(self, A=None, b=None, solver=None):
+        r"""
+        Sends the A and b matrices to the specified solver.
+
+        Parameters
+        ----------
+        solver : string
+            The name of the solver to use from ``scipy.sparse.linalg``.  This
+            argument will override the value in the ``settings`` attribute. The
+            default is ``spsolve``.
 
         Notes
         -----
@@ -207,8 +227,13 @@ class GenericLinearTransport(GenericAlgorithm):
         the iterative solvers found under *scipy.sparse.linalg* such as ``cg``.
 
         """
-        x = sprs.linalg.spsolve(A=self.A.tocsr(), b=self.b)
-        self[self.settings['quantity']] = x
+        if A is None:
+            A = self.A
+        if b is None:
+            b = self.b
+        solver = getattr(sprs.linalg, self.settings['solver'])
+        x = solver(A=A.tocsr(), b=b)
+        return x
 
     def rate(self, pores=None, mode='group'):
         r"""
@@ -222,10 +247,10 @@ class GenericLinearTransport(GenericAlgorithm):
         mode : string, optional
             Controls how to return the rate.  Options are:
 
-            **'group'**: (default) Teturns the cumulative rate of material
+            *'group'*: (default) Teturns the cumulative rate of material
             moving into the given set of pores
 
-            **'single'** : Calculates the rate for each pore individually
+            *'single'* : Calculates the rate for each pore individually
 
         Notes
         -----

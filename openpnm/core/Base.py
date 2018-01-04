@@ -2,7 +2,7 @@ from collections import namedtuple
 from openpnm.core import Workspace, logging
 from openpnm.utils.misc import PrintableList
 import scipy as sp
-logger = logging.getLogger()
+logger = logging.getLogger(__name__)
 ws = Workspace()
 
 
