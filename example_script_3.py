@@ -27,9 +27,8 @@ alg.build_A()
 alg.build_b()
 
 Ps = [888, 889]
-rxn = op.algorithms.GenericReaction(network=pn, algorithm=alg)
-rxn['pore.A'] = 0.0
-rxn['pore.A'][Ps] = 1e-5
+rxn = op.algorithms.GenericReaction(network=pn, algorithm=alg, pores=Ps)
+rxn['pore.A'] = 1e-5
 rxn['pore.b'] = 2
 rxn.add_model(propname='pore.rate',
               model=op.algorithms.models.standard_kinetics,
