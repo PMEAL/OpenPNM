@@ -25,19 +25,17 @@ alg.set_boundary_conditions(pores=pn.pores('top'), bctype='dirichlet',
 
 alg.build_A()
 alg.build_b()
+# alg.solve()
 
 Ps = [888, 889]
 rxn = op.algorithms.GenericReaction(network=pn, algorithm=alg, pores=Ps)
+rxn.setup(quantity='pore.mole_fraction')
 rxn['pore.A'] = 1e-5
-rxn['pore.b'] = 2
+rxn['pore.b'] = 1
 rxn.add_model(propname='pore.rate',
               model=op.algorithms.models.standard_kinetics,
               quantity='pore.mole_fraction',
               prefactor='pore.A', exponent='pore.b')
-rxn.setup(quantity='pore.mole_fraction')
 rxn.solve()
-
-# x = alg['pore.pressure']
-# water['pore.pressure'] = x
 
 # op.io.VTK.save(simulation=pn.simulation, phases=[water])
