@@ -3,7 +3,6 @@ import uuid
 import scipy as sp
 import scipy.sparse as sprs
 import scipy.spatial as sptl
-from openpnm.utils.misc import PrintableList
 from openpnm.core import Base, Simulation, Workspace, ModelsMixin, logging
 logger = logging.getLogger()
 ws = Workspace()
@@ -23,8 +22,6 @@ class GenericNetwork(Base, ModelsMixin):
         if simulation is None:
             simulation = Simulation()
         super().__init__(simulation=simulation, **kwargs)
-        self['pore.all'] = sp.ones(len(self['pore.coords']), dtype=bool)
-        self['throat.all'] = sp.ones(len(self['throat.conns']), dtype=bool)
         self['pore._id'] = [str(uuid.uuid4()) for i in self.Ps]
         self['throat._id'] = [str(uuid.uuid4()) for i in self.Ts]
         logger.name = self.name

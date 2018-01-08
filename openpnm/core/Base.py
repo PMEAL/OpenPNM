@@ -11,11 +11,11 @@ class Base(dict):
     Contains methods for working with the data in the OpenPNM dictionaries
     """
 
-    def __init__(self, name=None, simulation=None):
+    def __init__(self, Np=0, Nt=0, name=None, simulation=None):
         super().__init__()
         simulation.append(self)
-        self.update({'pore.all': sp.array([], ndmin=1, dtype=bool)})
-        self.update({'throat.all': sp.array([], ndmin=1, dtype=bool)})
+        self.update({'pore.all': sp.ones(shape=(Np, ), dtype=bool)})
+        self.update({'throat.all': sp.ones(shape=(Nt, ), dtype=bool)})
         self._name = None
         self.name = name
 
