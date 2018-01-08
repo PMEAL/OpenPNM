@@ -2,8 +2,9 @@ import scipy as sp
 import scipy.ndimage as spim
 import scipy.sparse as sprs
 from scipy.sparse import csgraph
-from openpnm.core import logging
+from openpnm.core import logging, Workspace
 from openpnm.utils.misc import PrintableDict
+ws = Workspace()
 logger = logging.getLogger()
 
 
@@ -406,7 +407,7 @@ def stitch(network, donor, P_network, P_donor, method='nearest',
 
     '''
     # Ensure Networks have no associated objects yet
-    if (len(network._simulation()) > 1) or (len(donor._simulation()) > 1):
+    if (len(network.simulation) > 1) or (len(donor.simulation) > 1):
         raise Exception('Cannot stitch a Network with active sibling objects')
     network['throat.stitched'] = False
     # Get the initial number of pores and throats
@@ -456,8 +457,9 @@ def stitch(network, donor, P_network, P_donor, method='nearest',
 
     # Remove donor from Workspace, if present
     # This check allows for the reuse of a donor Network multiple times
-    if donor in _mgr.values():
-        _mgr.purge_object(donor)
+    for sim in ws.values():
+        if donor in sim:
+            del ws[sim.name]
 
 
 def connect_pores(network, pores1, pores2, labels=[], add_conns=True):

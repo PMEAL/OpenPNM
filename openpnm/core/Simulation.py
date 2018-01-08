@@ -31,9 +31,12 @@ class Simulation(list):
     name = property(fget=_get_name, fset=_set_name)
 
     def __getitem__(self, key):
-        for obj in self:
-            if obj.name == key:
-                return obj
+        if type(key) == str:
+            for obj in self:
+                if obj.name == key:
+                    return obj
+        else:
+            return super().__getitem__(key)
 
     def find_phase(self, obj):
         mro = [c.__name__ for c in obj.__class__.__mro__]
