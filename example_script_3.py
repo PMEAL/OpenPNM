@@ -30,12 +30,12 @@ alg.build_b()
 Ps = [888, 889]
 rxn = op.algorithms.GenericReaction(network=pn, algorithm=alg, pores=Ps)
 rxn.setup(quantity='pore.mole_fraction')
-rxn['pore.A'] = 1e-5
+rxn['pore.A'] = 1e-15
 rxn['pore.b'] = 1
 rxn.add_model(propname='pore.rate',
               model=op.algorithms.models.standard_kinetics,
               quantity='pore.mole_fraction',
-              prefactor='pore.A', exponent='pore.b')
-rxn.solve()
+              prefactor='pore.A', exponent='pore.b', rate=False)
+rxn.run()
 
 # op.io.VTK.save(simulation=pn.simulation, phases=[water])
