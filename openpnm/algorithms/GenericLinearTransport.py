@@ -156,9 +156,6 @@ class GenericLinearTransport(GenericAlgorithm):
         if sp.any(sp.isnan(phase[self.settings['conductance']])):
             raise Exception('The provided throat conductance contains NaNs')
 
-        # Create quantity vector
-        self[quantity] = 0.5
-
     def build_A(self):
         r"""
         """

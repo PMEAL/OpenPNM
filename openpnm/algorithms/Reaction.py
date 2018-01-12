@@ -1,5 +1,4 @@
 import scipy as sp
-from scipy.optimize import newton_krylov, anderson, broyden1, broyden2
 from openpnm.core import ModelsMixin
 from openpnm.utils.misc import PrintableDict
 from openpnm.algorithms import GenericAlgorithm
@@ -24,33 +23,9 @@ class GenericReaction(GenericAlgorithm, ModelsMixin):
             self.settings['quantity'] = quantity
         # Fetch algorithm object from simulation
         alg = self.simulation[self.settings['algorithm']]
-        # Fetch a copy of b from algorithm object
+        # Fetch a copy of A and b from algorithm object
         self.b = alg.b.copy()
         self.A = alg.A.copy()
-        self.A.diag_ind = sp.where(self.A.col == self.A.row)[0]
-
-    def solve(self, x0=None):
-        if x0 is None:
-            x0 = 0.5*sp.ones(shape=(self.Np, ))
-#        x = newton_krylov(F=self._residual, xin=x0, method='gmres', verbose=1)
-        x = anderson(F=self._residual, xin=x0, verbose=1)
-#        x = broyden1(F=self._residual, xin=x0, verbose=1)
-#        x = broyden2(F=self._residual, xin=x0, verbose=1)
-        return x
-
-    def _residual(self, x):
-        net = self.simulation.network
-        Ps = net.map_pores(self['pore._id'])
-        # Fetch algorithm object from simulation
-        alg = self.simulation[self.settings['algorithm']]
-        self[self.settings['quantity']] = x
-        # Regenerate models with new guess
-        self.regenerate_models()
-        # Adjust b vector with rate based on new guess of x
-        alg.b[Ps] = self.b[Ps] + self['pore.rate'][:, 0]
-        x_new = alg.solve()[Ps]
-        res = x_new - x
-        return res
 
     def run(self, x=None, tol=0.001):
         if x is None:
@@ -62,13 +37,17 @@ class GenericReaction(GenericAlgorithm, ModelsMixin):
         self[self.settings['quantity']] = x
         # Regenerate models with new guess
         self.regenerate_models()
-        # Adjust b vector with rate based on new guess of x
+        # Add S1 to diagonal of A
         datadiag = self.A.diagonal()
         datadiag[Ps] = datadiag[Ps] + self['pore.rate'][:, 1]
         alg.A.setdiag(datadiag)
+        # Add S2 to b
         alg.b[Ps] = self.b[Ps] - self['pore.rate'][:, 2]
+        # Call the solver on the algorithm
         x_new = alg.solve()[Ps]
-        res = sp.sum(sp.absolute(x_new - x))
+        # Check the residual difference between current x and previous value
+        res = sp.sum(sp.absolute(x_new**2 - x**2))
+        # Recursively call self.run until desired tolerance is met
         if res < tol:
             print('Tolerance met, current residual: '+str(res))
             return x
