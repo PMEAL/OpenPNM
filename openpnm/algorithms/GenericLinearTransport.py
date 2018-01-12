@@ -93,7 +93,7 @@ class GenericLinearTransport(GenericAlgorithm):
         # If mode is 'remove', use a different method
         if mode == 'remove':
             self.remove_BC(pores=pores)
-            return
+            return None
 
         values = sp.array(bcvalues)
         if values.size > 1 and values.size != pores.size:
@@ -172,15 +172,15 @@ class GenericLinearTransport(GenericAlgorithm):
         if 'pore.dirichlet' in self.keys():
             # Find all entries on rows associated with dirichlet pores
             P_bc = self.toindices(self['pore.dirichlet'])
-            indr = sp.in1d(A.row, P_bc, invert=True)
+            indrow = sp.in1d(A.row, P_bc)
             # Remove entries from A for all BC rows
-            A.col = A.col[indr]
-            A.row = A.row[indr]
-            A.data = A.data[indr]
+            A.data[indrow] = 0
             # Add diagonal entries back into A
-            A.row = sp.concatenate([A.row, P_bc])
-            A.col = sp.concatenate([A.col, P_bc])
-            A.data = sp.concatenate([A.data, sp.ones_like(P_bc)])
+            datadiag = A.diagonal()
+            datadiag[P_bc] = sp.ones_like(P_bc, dtype=float)
+            A.setdiag(datadiag)
+            # Remove 0 entries
+            A.eliminate_zeros()
         self.A = A
         return A
 
@@ -191,7 +191,7 @@ class GenericLinearTransport(GenericAlgorithm):
         b = sp.zeros(shape=(self.Np, ), dtype=float)
         if 'pore.dirichlet' in self.keys():
             ind = self['pore.dirichlet']
-            b[ind] = self['pore.dirichlet_value'][ind]
+            b[ind] = -self['pore.dirichlet_value'][ind]
         if 'pore.neumann' in self.keys():
             ind = self['pore.neumann']
             b[ind] = -self['pore.neumann_value'][ind]
@@ -208,23 +208,22 @@ class GenericLinearTransport(GenericAlgorithm):
         self.build_b()
         self[self.settings['quantity']] = self.solve()
 
-    def solve(self, A=None, b=None, solver=None):
+    def solve(self, A=None, b=None):
         r"""
         Sends the A and b matrices to the specified solver.
 
         Parameters
         ----------
-        solver : string
-            The name of the solver to use from ``scipy.sparse.linalg``.  This
-            argument will override the value in the ``settings`` attribute. The
-            default is ``spsolve``.
+        A : sparse matrix
+            The coefficient matrix in sparse format
+
+        b : ND-array
+            The RHS matrix in any format
 
         Notes
         -----
-        Scipy ships with SuperLU as the default solver.  However, if
-        *scikit-umfpack* is installed Scipy will use it automatically, which
-        is much faster.  For even better performance, consider using one of
-        the iterative solvers found under *scipy.sparse.linalg* such as ``cg``.
+        The solver used here is specified in the ``settings`` attribute of the
+        algorithm.
 
         """
         if A is None:

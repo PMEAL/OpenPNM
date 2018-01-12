@@ -47,12 +47,12 @@ class GenericReaction(GenericAlgorithm, ModelsMixin):
         # Regenerate models with new guess
         self.regenerate_models()
         # Adjust b vector with rate based on new guess of x
-        alg.b[Ps] = self.b[Ps] + self['pore.rate']
+        alg.b[Ps] = self.b[Ps] + self['pore.rate'][:, 0]
         x_new = alg.solve()[Ps]
         res = x_new - x
         return res
 
-    def run(self, x=None):
+    def run(self, x=None, tol=0.001):
         if x is None:
             x = sp.zeros_like(self.Ps)
         net = self.simulation.network
@@ -63,12 +63,13 @@ class GenericReaction(GenericAlgorithm, ModelsMixin):
         # Regenerate models with new guess
         self.regenerate_models()
         # Adjust b vector with rate based on new guess of x
-        inds = self.A.diag_ind[Ps]
-        alg.A.data[inds] = self.A.data[inds] + self['pore.rate'][:, 0]
-        alg.b[Ps] = self.b[Ps] - self['pore.rate'][:, 1]
+        datadiag = self.A.diagonal()
+        datadiag[Ps] = datadiag[Ps] + self['pore.rate'][:, 1]
+        alg.A.setdiag(datadiag)
+        alg.b[Ps] = self.b[Ps] - self['pore.rate'][:, 2]
         x_new = alg.solve()[Ps]
-        res = sp.absolute(x_new - x)
-        if sp.sum(res) < 0.001:
+        res = sp.sum(sp.absolute(x_new - x))
+        if res < tol:
             print('Tolerance met, current residual: '+str(res))
             return x
         else:
