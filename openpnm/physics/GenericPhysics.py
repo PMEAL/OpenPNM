@@ -31,13 +31,13 @@ class GenericPhysics(Base, ModelsMixin):
         super().__init__(name=name, simulation=network.simulation)
 
         # Initialize a label dictionary in the associated phase and network
+        self.settings = {'local_data': self.simulation.settings['local_data']}
         self['pore.all'] = sp.ones(shape=sp.size(geometry.Ps), dtype=bool)
         self['throat.all'] = sp.ones(shape=sp.size(geometry.Ts), dtype=bool)
         phase['pore.'+self.name] = False
         phase['pore.'+self.name][network.pores(geometry.name)] = True
         phase['throat.'+self.name] = False
         phase['throat.'+self.name][network.throats(geometry.name)] = True
-        self.settings = {'local_data': self.simulation.settings['local_data']}
 
     def __getitem__(self, key):
         element = key.split('.')[0]
