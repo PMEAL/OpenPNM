@@ -33,8 +33,8 @@ class GenericGeometry(Base, ModelsMixin):
 
     def __init__(self, network, pores=[], throats=[], name=None):
         super().__init__(name=name, simulation=network.simulation)
-        self.add_locations(pores=pores, throats=throats)
         self.settings = {'local_data': self.simulation.settings['local_data']}
+        self.add_locations(pores=pores, throats=throats)
 
     def __getitem__(self, key):
         net = self.simulation.network

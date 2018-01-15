@@ -42,6 +42,9 @@ class ModelsDict(dict):
         [unique.append(item) for item in tree if item not in unique]
         return unique
 
+    def copy(self):
+        return copy.deepcopy(self)
+
     def __str__(self):
         horizontal_rule = '―' * 60
         lines = [horizontal_rule]

@@ -17,30 +17,31 @@ class GenericLinearTransport(GenericAlgorithm):
     r"""
     """
     def __init__(self, phase, **kwargs):
-        super().__init__(phase=phase, **kwargs)
+        super().__init__(**kwargs)
         self.settings = PrintableDict({'phase': phase.name,
                                        'conductance': None,
                                        'quantity': None,
                                        'solver': 'spsolve',
-                                       'sources': []})
+                                       'sources': [],
+                                       'tolerance': 0.001})
 
     def set_dirchlet_BC(self, pores, values):
         r"""
         """
-        self.set_boundary_conditions(pores=pores, bctype='dirichlet',
-                                     bcvalues=values, mode='merge')
+        self.set_BC(pores=pores, bctype='dirichlet', bcvalues=values,
+                    mode='merge')
 
     def set_neumann_BC(self, pores, values):
         r"""
         """
-        self.set_boundary_conditions(pores=pores, bctype='neumann',
-                                     bcvalues=values, mode='merge')
+        self.set_BC(pores=pores, bctype='neumann', bcvalues=values,
+                    mode='merge')
 
-    def set_source_term(self, source):
+    def set_source(self, source):
         self.settings['sources'].append(source.name)
+        source.setup(algorithm=self)
 
-    def set_boundary_conditions(self, pores, bctype, bcvalues=None,
-                                mode='merge'):
+    def set_BC(self, pores, bctype, bcvalues=None, mode='merge'):
         r"""
         Apply boundary conditions to specified pores
 
@@ -68,8 +69,6 @@ class GenericLinearTransport(GenericAlgorithm):
             - *'merge'*: (Default) Adds supplied boundary conditions to already
             existing conditions.
 
-            - *'remove'*: Removes boundary conditions from specified locations
-
         Notes
         -----
         It is not possible to have multiple boundary conditions for a
@@ -89,11 +88,6 @@ class GenericLinearTransport(GenericAlgorithm):
         mode = self._parse_mode(mode, allowed=['merge', 'overwrite', 'remove'],
                                 single=True)
         pores = self._parse_indices(pores)
-
-        # If mode is 'remove', use a different method
-        if mode == 'remove':
-            self.remove_BC(pores=pores)
-            return None
 
         values = sp.array(bcvalues)
         if values.size > 1 and values.size != pores.size:
@@ -195,15 +189,36 @@ class GenericLinearTransport(GenericAlgorithm):
         self.b = b
         return b
 
-    def run(self):
+    def run(self, x=None):
         r"""
         Builds the A and b matrices, and calls the solver specified in the
         ``settings`` attribute.
 
+        Parameters
+        ----------
+        x0 : ND-array
+            Initial guess of unknown variable
+
         """
         self.build_A()
         self.build_b()
-        self[self.settings['quantity']] = self.solve()
+        if x is None:
+            x = sp.zeros(shape=[self.Np, ], dtype=float)
+        # Scan through all source objects registered on algorithm
+        for item in self.settings['sources']:
+            # Obtain handle to source object
+            source = self.simulation[item]
+            # Apply source object to update A and b
+            source.apply()
+        x_new = self.solve()
+        self[self.settings['quantity']] = x_new
+        res = sp.sum(sp.absolute(x**2 - x_new**2))
+        if res < self.settings['tolerance']:
+            print('Tolerance met, solution converged')
+            return
+        else:
+            print('Tolerance not met: ', res)
+            self.run(x=x_new)
 
     def solve(self, A=None, b=None):
         r"""

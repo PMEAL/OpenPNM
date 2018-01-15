@@ -23,9 +23,8 @@ class GenericAlgorithm(Base):
 
     """
 
-    def __init__(self, network, phase, **kwargs):
+    def __init__(self, network, **kwargs):
         super().__init__(simulation=network.simulation, **kwargs)
-        logger.name = self.name
 
         # Initialize label 'all' in the object's own info dictionaries
         self['pore._id'] = network['pore._id']

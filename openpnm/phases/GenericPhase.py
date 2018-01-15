@@ -1,4 +1,5 @@
 from openpnm.core import Base, Workspace, logging, ModelsMixin
+from openpnm.utils import PrintableDict
 logger = logging.getLogger(__name__)
 ws = Workspace()
 
@@ -22,7 +23,7 @@ class GenericPhase(Base, ModelsMixin):
     """
     def __init__(self, network, name=None):
         super().__init__(name=name, simulation=network.simulation)
-        logger.name = self.name
+        self.settings = PrintableDict()
         # Initialize label 'all' in the object's own info dictionaries
         self['pore.all'] = network['pore.all']
         self['throat.all'] = network['throat.all']
