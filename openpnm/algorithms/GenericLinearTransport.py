@@ -196,7 +196,7 @@ class GenericLinearTransport(GenericAlgorithm):
 
         Parameters
         ----------
-        x0 : ND-array
+        x : ND-array
             Initial guess of unknown variable
 
         """

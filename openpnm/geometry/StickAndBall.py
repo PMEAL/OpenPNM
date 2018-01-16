@@ -5,6 +5,7 @@ Stick_and_Ball -- A standard 'stick & ball' geometrical model
 ===============================================================================
 
 """
+from openpnm.core import ModelWrapper, ModelsDict
 from openpnm.geometry import models as gm
 from openpnm.geometry import GenericGeometry
 
@@ -56,4 +57,50 @@ class StickAndBall(GenericGeometry):
                        model=gm.throat_area.cylinder)
         self.add_model(propname='throat.surface_area',
                        model=gm.throat_surface_area.cylinder)
+#        self.models = self.get_recipe()
         self.regenerate_models()
+
+    @classmethod
+    def get_recipe(cls):
+        return ModelsDict(r)
+
+    @classmethod
+    def recipe(cls):
+        r = {'pore.seed': {'model': gm.pore_misc.random,
+                           'num_range': [0, 0.1],
+                           'seed': None},
+
+             'pore.max_size': {'model': gm.pore_size.largest_sphere,
+                               'iters': 10,
+                               'pore_diameter': 'pore.diameter'},
+
+             'pore.diameter': {'model': gm.misc.product,
+                               'arg1': 'pore.max_size',
+                               'arg2': 'pore.seed'},
+
+             'pore.volume': {'model': gm.pore_volume.sphere,
+                             'pore_diameter': 'pore.diameter'},
+
+             'throat.area': {'model': gm.throat_area.cylinder,
+                             'throat_diameter': 'throat.diameter'},
+
+             'throat.diameter': {'model': gm.misc.scaled,
+                                 'factor': 0.5,
+                                 'prop': 'throat.max_size'},
+
+             'throat.length': {'model': gm.throat_length.straight,
+                               'L_negative': 1e-09,
+                               'pore_diameter': 'pore.diameter'},
+
+             'throat.max_size': {'model': gm.throat_misc.neighbor,
+                                 'mode': 'min',
+                                 'pore_prop': 'pore.diameter'},
+
+             'throat.surface_area': {'model': gm.throat_surface_area.cylinder,
+                                     'throat_diameter': 'throat.diameter',
+                                     'throat_length': 'throat.length'},
+
+             'throat.volume': {'model': gm.throat_volume.cylinder,
+                               'throat_diameter': 'throat.diameter',
+                               'throat_length': 'throat.length'}}
+        return r

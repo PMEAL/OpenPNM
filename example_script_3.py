@@ -8,17 +8,16 @@ pn = op.network.Cubic(shape=[15, 15, 15], spacing=0.0001, name='pn')
 # pn.add_boundaries()
 
 geom = op.geometry.StickAndBall(network=pn, pores=pn.Ps, throats=pn.Ts)
+geom
 
 water = op.phases.Water(network=pn)
 water['throat.viscosity'] = water['pore.viscosity'][0]
 
-
 phys_water = op.physics.GenericPhysics(network=pn, phase=water, geometry=geom)
-m = op.physics.models.hydraulic_conductance.hagen_poiseuille
+mod = op.physics.models.hydraulic_conductance.hagen_poiseuille
 phys_water.add_model(propname='throat.conductance',
-                     model=m, viscosity='throat.viscosity')
+                     model=mod, viscosity='throat.viscosity')
 phys_water.regenerate_models()
-
 
 alg = op.algorithms.FickianDiffusion(network=pn, phase=water)
 alg.setup(conductance='throat.conductance', quantity='pore.mole_fraction')
@@ -29,7 +28,7 @@ alg.set_BC(pores=pn.pores('bottom'), bctype='dirichlet',
 
 rxn = op.algorithms.GenericReaction(network=pn, pores=[70, 71])
 rxn['pore.k'] = 1e-1
-rxn['pore.alpha'] = 2
+rxn['pore.alpha'] = 3
 rxn.add_model(propname='pore.rxn_rate',
               model=op.algorithms.models.standard_kinetics,
               quantity='pore.mole_fraction',
@@ -46,4 +45,4 @@ alg.set_source(source=rxn2)
 
 alg.run()
 
-# op.io.VTK.save(simulation=pn.simulation, phases=[water])
+#op.io.VTK.save(simulation=pn.simulation, phases=[water])

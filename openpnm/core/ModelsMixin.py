@@ -1,6 +1,5 @@
 import inspect
 import copy
-import numpy as np
 import matplotlib.pyplot as plt
 from openpnm.core import Workspace
 from openpnm.utils.misc import PrintableDict
@@ -8,6 +7,24 @@ ws = Workspace()
 
 
 class ModelWrapper(PrintableDict):
+
+    def __init__(self, dict_={}):
+        super().__init__()
+        # Insepct model to extract arguments and default values
+        model = dict_.pop('model', None)
+        if model and model.__defaults__ is not None:
+            vals = list(inspect.getargspec(model).defaults)
+            keys = inspect.getargspec(model).args[-len(vals):]
+            # Put defaults into dict_
+            for k, v in zip(keys, vals):
+                # Skip if argument was given in kwargs
+                if k not in dict_:
+                    dict_.update({k: v})
+        self['model'] = model
+        # Set regeneration mode
+        self['regen_mode'] = dict_.pop('regen_mode', 'deferred')
+        # Put the remaining keyword arguments in 'kwargs'
+        self['kwargs'] = dict_
 
     def run(self):
         target = self._find_self()
@@ -62,45 +79,34 @@ class ModelsDict(dict):
 class ModelsMixin():
 
     def add_model(self, propname, model, regen_mode='deferred', **kwargs):
-        self.models[propname] = ModelWrapper()
-        self.models[propname]['model'] = model
-        if regen_mode in ['normal', 'deferred', 'constant']:
-            self.models[propname]['regen_mode'] = regen_mode
-        else:
-            raise Exception('Unexpected regeneration mode')
-
-        # Insepct model and extract arguments and default values
-        if model.__defaults__ is not None:
-            vals = list(inspect.getargspec(model).defaults)
-            keys = inspect.getargspec(model).args[-len(vals):]
-            # Put defaults into the dict
-            for k, v in zip(keys, vals):
-                # Skip if argument was given in kwargs
-                if k not in kwargs:
-                    kwargs.update({k: v})
-
-        self.models[propname]['kwargs'] = kwargs
-        if regen_mode in ['normal', 'constant']:
+        # Add model and regen_mode to kwargs dictionary
+        kwargs.update({'model': model, 'regen_mode': regen_mode})
+        # Send whole dictionary to ModelWrapper's init
+        self.models[propname] = ModelWrapper(kwargs)
+        # Regenerate model values is necessary
+        if self.models[propname]['regen_mode'] in ['normal', 'constant']:
             self._regen(propname)
 
     def regenerate_models(self, propnames=None):
-        # If no props give, then regenerate them all
+        # If no props given, then regenerate them all
         if propnames is None:
             propnames = list(self.models.dependency_tree())
         # If only one prop given, as string, put into a list
         elif type(propnames) is str:
             propnames = [propnames]
         for item in propnames:
+            # Only regenerate constant items if not already present
             if self.models[item]['regen_mode'] == 'constant':
                 if item not in self.keys():
                     self._regen(item)
+            # Regenerate everything else
             else:
-                    self._regen(item)
+                self._regen(item)
 
     def _regen(self, propname):
         f = self.models[propname]['model']
-        values = f(target=self, **self.models[propname]['kwargs'])
-        self[propname] = values
+        vals = f(target=self, **self.models[propname]['kwargs'])
+        self[propname] = vals
 
     # The use of a property attribute here is because I can't just set
     # self.models= {} in the init, since the damn init won't run!
@@ -110,6 +116,8 @@ class ModelsMixin():
         return self._dict
 
     def _set_models(self, _dict):
-        self._dict = copy.deepcopy(_dict)
+#        if not hasattr(self, '_dict'):
+#            self._dict = ModelsDict()
+        self._dict = ModelsDict(copy.deepcopy(_dict))
 
     models = property(fget=_get_models, fset=_set_models)
