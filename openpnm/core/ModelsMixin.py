@@ -11,10 +11,10 @@ class ModelsDict(dict):
         for propname in self.keys():
             if propname not in tree:
                 tree.append(propname)
-            args = self[propname].copy()
-            args.pop('model')
-            args.pop('regen_mode', None)
-            for dependency in args:
+            kwargs = self[propname].copy()
+            kwargs.pop('model')
+            kwargs.pop('regen_mode', None)
+            for dependency in kwargs.values():
                 if dependency in list(self.keys()):
                     tree.insert(tree.index(propname), dependency)
 
@@ -52,8 +52,8 @@ class ModelsMixin():
                     kwargs.update({k: v})
         # Store all keyword argumnents in model
         self.models[propname] = kwargs
-        # Regenerate model values is necessary
-        if self.models[propname]['regen_mode'] in ['normal', 'constant']:
+        # Regenerate model values if necessary
+        if regen_mode != 'deferred':
             self._regen(propname)
 
     def regenerate_models(self, propnames=None):
@@ -77,7 +77,7 @@ class ModelsMixin():
         if regen_mode == 'constant':
             if prop not in self.keys():
                 self[prop] = model(target=self, **kwargs)
-        elif regen_mode in ['normal', 'deferred']:
+        else:
             self[prop] = model(target=self, **kwargs)
 
     # The use of a property attribute here is because I can't just set

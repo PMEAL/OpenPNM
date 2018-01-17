@@ -1,14 +1,13 @@
 import openpnm as op
 import scipy as sp
 ws = op.core.Workspace()
-ws.settings['local_data'] = True
+ws.settings['local_data'] = False
 
 sp.random.seed(0)
 pn = op.network.Cubic(shape=[15, 15, 15], spacing=0.0001, name='pn')
 # pn.add_boundaries()
 
 geom = op.geometry.StickAndBall(network=pn, pores=pn.Ps, throats=pn.Ts)
-geom
 
 water = op.phases.Water(network=pn)
 water['throat.viscosity'] = water['pore.viscosity'][0]
@@ -23,8 +22,7 @@ alg = op.algorithms.FickianDiffusion(network=pn, phase=water)
 alg.setup(conductance='throat.conductance', quantity='pore.mole_fraction')
 alg.set_BC(pores=pn.pores('top'), bctype='dirichlet', bcvalues=0.5)
 alg['pore.mole_fraction'] = 0
-alg.set_BC(pores=pn.pores('bottom'), bctype='dirichlet',
-           bcvalues=0.0)
+alg.set_BC(pores=pn.pores('bottom'), bctype='dirichlet', bcvalues=0.0)
 
 rxn = op.algorithms.GenericReaction(network=pn, pores=[70, 71])
 rxn['pore.k'] = 1e-1
