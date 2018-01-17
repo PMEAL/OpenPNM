@@ -5,7 +5,7 @@ Stick_and_Ball -- A standard 'stick & ball' geometrical model
 ===============================================================================
 
 """
-from openpnm.core import ModelWrapper, ModelsDict
+from openpnm.core import ModelsDict
 from openpnm.geometry import models as gm
 from openpnm.geometry import GenericGeometry
 
@@ -57,12 +57,8 @@ class StickAndBall(GenericGeometry):
                        model=gm.throat_area.cylinder)
         self.add_model(propname='throat.surface_area',
                        model=gm.throat_surface_area.cylinder)
-#        self.models = self.get_recipe()
+#        self.models.update(self.recipe())
         self.regenerate_models()
-
-    @classmethod
-    def get_recipe(cls):
-        return ModelsDict(r)
 
     @classmethod
     def recipe(cls):
