@@ -259,8 +259,8 @@ def purcell_bi(physics, phase, network, r_toroid,
             # Any interfaces that never reach a wall are ok"
             alpha_reached[~max_reached] = a_max[~max_reached]
             temp = max_reached[np.abs(a_max) > np.abs(alpha_reached)]
-            temp_sum = 100*np.sum(temp)/len(a_max)
-            logger.info("Percentage max before BT" + str(temp_sum))
+            temp_sum = np.around(100*np.sum(temp)/len(a_max), 2)
+            logger.info("Percentage max before BT " + str(temp_sum))
             # Any interfaces that can expand to maximum curvature before
             # hitting a pore wall are ok
             mask = np.abs(a_max) < np.abs(alpha_reached)
@@ -591,12 +591,12 @@ def ransohoff_snap_off(physics, phase, network,
     return value[phase.throats(physics.name)]
 
 
-def filling_angle_new(physics, phase, network, r_toroid,
-                      surface_tension='pore.surface_tension',
-                      contact_angle='pore.contact_angle',
-                      diameter='throat.diameter',
-                      Pc=1e3,
-                      **kwargs):
+def filling_angle(physics, phase, network, r_toroid,
+                  surface_tension='pore.surface_tension',
+                  contact_angle='pore.contact_angle',
+                  diameter='throat.diameter',
+                  Pc=1e3,
+                  **kwargs):
     r"""
     Calculate the filling angle (alpha) for a given capillary pressure
 
