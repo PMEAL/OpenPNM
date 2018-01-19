@@ -108,6 +108,8 @@ class DelaunayVoronoiDual(GenericNetwork):
                 raise Exception('Must specify either "points" or "num_points"')
             points = topotools.generate_base_points(num_points=num_points,
                                                     domain_size=shape)
+        elif len(shape) == 3:
+            points = topotools.reflect_base_points(points, shape)
 
         # Deal with points that are only 2D...they break Delaunay
         if points.shape[1] == 3 and len(sp.unique(points[:, 2])) == 1:
@@ -149,12 +151,12 @@ class DelaunayVoronoiDual(GenericNetwork):
         am = sp.sparse.triu(A=am, k=1, format='csr')
         # Convert to COO format for OpenPNM compatibility
         am = am.tocoo()
-
         # Translate adjacency matrix and points to OpenPNM format
         coords = pts_all
         conns = sp.vstack((am.row, am.col)).T
         Np = sp.size(coords, axis=0)
         Nt = sp.size(conns, axis=0)
+        super().__init__(Np=Np, Nt=Nt, **kwargs)
         self.update({'pore.all': sp.ones((Np, ), dtype=bool)})
         self.update({'throat.all': sp.ones((Nt, ), dtype=bool)})
         self['throat.conns'] = conns
@@ -162,8 +164,6 @@ class DelaunayVoronoiDual(GenericNetwork):
             coords = sp.vstack((coords.T, sp.zeros((coords.shape[0], )))).T
         self['pore.coords'] = coords
         self['pore.coords'] = sp.around(coords, decimals=10)
-
-        super().__init__(**kwargs)
 
         # Label all pores and throats by type
         self['pore.delaunay'] = False

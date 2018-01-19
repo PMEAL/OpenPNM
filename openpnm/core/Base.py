@@ -501,7 +501,7 @@ class Base(dict, ParsersMixin):
         Parameters
         ----------
         ids : array_like
-            The ids of the pores whose indices are sourgh
+            The ids of the pores whose indices are sought
 
         filtered : boolean (default is ``True``)
             If ``True`` then a ND-array of indices is returned, otherwise

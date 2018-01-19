@@ -54,13 +54,13 @@ def trim(network, pores=[], throats=[]):
     if sp.size(throats) > 0:
         Tkeep[throats] = False
 
-    # Store throat conns ids for processing later
+    # Temporarily store throat conns ids for processing later
     network['throat._id_conns'] = network['pore._id'][network['throat.conns']]
 
     # Delete specified pores and throats from all objects
     for item in reversed(network.simulation):
-        Ps = item.map_pores(ids=network.Ps[Pkeep])
-        Ts = item.map_throats(ids=network.Ts[Tkeep])
+        Ps = item.map_pores(ids=network['pore._id'][Pkeep])
+        Ts = item.map_throats(ids=network['throat._id'][Tkeep])
         item.update({'pore.all': sp.ones((sp.size(Ps),), dtype=bool)})
         item.update({'throat.all': sp.ones((sp.size(Ts),), dtype=bool)})
         for key in list(item.keys()):
@@ -77,7 +77,6 @@ def trim(network, pores=[], throats=[]):
     temp = [(id_map.get(i[0], -1), id_map.get(i[1], -1)) for i in conns]
     network.update({'throat.conns': sp.array(temp)})
     del network['throat._id_conns']
-
     network._am.clear()
     network._im.clear()
 
@@ -1167,23 +1166,42 @@ def generate_base_points(num_points, domain_size, prob=None):
         Z = z
         base_pts = sp.vstack([X, Y, Z]).T
     elif len(domain_size) == 3:  # Rectilinear
-        domain_size = sp.array(domain_size)
-        Nx, Ny, Nz = domain_size
         if prob is None:
             prob = sp.ones([10, 10, 10], dtype=float)
         base_pts = _try_points(num_points, prob)
         base_pts = base_pts*domain_size
-        # Reflect base points about all 6 faces
-        orig_pts = base_pts
-        base_pts = sp.vstack((base_pts, [-1, 1, 1]*orig_pts +
-                                        [2.0*Nx, 0, 0]))
-        base_pts = sp.vstack((base_pts, [1, -1, 1]*orig_pts +
-                                        [0, 2.0*Ny, 0]))
-        base_pts = sp.vstack((base_pts, [1, 1, -1]*orig_pts +
-                                        [0, 0, 2.0*Nz]))
-        base_pts = sp.vstack((base_pts, [-1, 1, 1]*orig_pts))
-        base_pts = sp.vstack((base_pts, [1, -1, 1]*orig_pts))
-        base_pts = sp.vstack((base_pts, [1, 1, -1]*orig_pts))
+        # Add reflected points
+        base_pts = reflect_base_points(base_pts, domain_size)
+    return base_pts
+
+
+def reflect_base_points(base_pts=None, domain_size=None):
+    r'''
+    Helper function for relecting a set of points about the faces of a
+    rectangular domain
+
+    Parameters
+    ----------
+    base_pts : 3d array
+        The coordinates of the base_pts to be reflected
+
+    domain_size : list or array of length 3
+        The upper coordinate of the face normal to the reflection along
+        each axis. Lower bound is assumed to be zero
+    '''
+    domain_size = sp.array(domain_size)
+    Nx, Ny, Nz = domain_size
+    # Reflect base points about all 6 faces
+    orig_pts = base_pts
+    base_pts = sp.vstack((base_pts, [-1, 1, 1]*orig_pts +
+                                    [2.0*Nx, 0, 0]))
+    base_pts = sp.vstack((base_pts, [1, -1, 1]*orig_pts +
+                                    [0, 2.0*Ny, 0]))
+    base_pts = sp.vstack((base_pts, [1, 1, -1]*orig_pts +
+                                    [0, 0, 2.0*Nz]))
+    base_pts = sp.vstack((base_pts, [-1, 1, 1]*orig_pts))
+    base_pts = sp.vstack((base_pts, [1, -1, 1]*orig_pts))
+    base_pts = sp.vstack((base_pts, [1, 1, -1]*orig_pts))
     return base_pts
 
 

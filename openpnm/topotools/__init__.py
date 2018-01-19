@@ -9,3 +9,5 @@ from .topotools import stitch
 from .topotools import template_disc_ring
 from .topotools import template_sphere_shell
 from .topotools import trim
+from .topotools import generate_base_points
+from .topotools import reflect_base_points
