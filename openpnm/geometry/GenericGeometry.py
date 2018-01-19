@@ -1,4 +1,5 @@
 import scipy as sp
+import numpy as np
 import matplotlib.pyplot as plt
 from openpnm.core import Base, ModelsMixin
 from openpnm.core import logging, Workspace
@@ -63,14 +64,26 @@ class GenericGeometry(Base, ModelsMixin):
         else:
             network = self.simulation.network
             element = self._parse_element(key.split('.')[0], single=True)
-            inds = self._map(ids=self[element+'._id'], element=element,
-                             filtered=True)
+            inds = network._map(ids=self[element+'._id'], element=element,
+                                filtered=True)
             # If array not in network, create it first
             if key not in network.keys():
                 if value.dtype == bool:
                     network[key] = False
                 else:
-                    network[key] = sp.zeros_like(value)*sp.nan
+                    dtype = value.dtype
+                    if dtype.name == 'object':
+                        network[key] = np.zeros(1, dtype=object)
+                    else:
+                        Nt = len(network[element+'.all'])
+                        dim = np.size(value[0])
+                        if dim > 1:
+                            arr = np.zeros(dim, dtype=dtype)
+                            temp = np.tile(arr, reps=(Nt, 1))*np.nan
+                        else:
+                            temp = np.zeros(Nt)*np.nan
+                        network[key] = temp
+
             network[key][inds] = value
 
     def add_locations(self, pores=[], throats=[]):
