@@ -4,8 +4,8 @@ ws = op.core.Workspace()
 ws.settings['local_data'] = True
 
 sp.random.seed(0)
-pn = op.network.Cubic(shape=[15, 15, 15], spacing=0.0001, name='pn')
-# pn.add_boundaries()
+pn = op.network.Cubic(shape=[15, 15, 15], spacing=0.0001, name='pn11')
+pn.add_boundary_pores()
 
 geom = op.geometry.StickAndBall(network=pn, pores=pn.Ps, throats=pn.Ts)
 

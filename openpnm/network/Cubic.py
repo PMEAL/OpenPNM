@@ -109,7 +109,6 @@ class Cubic(GenericNetwork):
         super().__init__(Np=points.shape[0], Nt=pairs.shape[0], name=name,
                          simulation=simulation)
 
-
         self._label_surfaces()
 
     def _label_surfaces(self):
@@ -134,8 +133,8 @@ class Cubic(GenericNetwork):
         self['pore.bottom'][z <= z.min()] = True
         self['pore.top'][z >= z.max()] = True
 
-    def add_boundaries(self, labels=['top', 'bottom', 'front', 'back', 'left',
-                       'right']):
+    def add_boundary_pores(self, labels=['top', 'bottom', 'front', 'back',
+                                         'left', 'right']):
         r"""
         Add pores to the faces of the network for use as boundary pores.  Pores
         are offset from the faces by 1/2 a lattice spacing such that they lie
