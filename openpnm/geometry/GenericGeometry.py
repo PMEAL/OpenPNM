@@ -31,9 +31,12 @@ class GenericGeometry(Base, ModelsMixin):
     >>> geom = op.geometry.GenericGeometry(network=pn, pores=Ps, throats=Ts)
     """
 
-    def __init__(self, network, pores=[], throats=[], name=None):
-        super().__init__(name=name, simulation=network.simulation)
-        self.settings = {'local_data': self.simulation.settings['local_data']}
+    _prefix = 'geo'
+
+    def __init__(self, network, pores=[], throats=[], **kwargs):
+        super().__init__(simulation=network.simulation, **kwargs)
+        self.settings.update({'prefix': 'geo'})
+        self.settings['local_data'] = self.simulation.settings['local_data']
         self.add_locations(pores=pores, throats=throats)
 
     def __getitem__(self, key):

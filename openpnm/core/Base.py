@@ -1,23 +1,25 @@
 from collections import namedtuple
-from openpnm.core import Workspace, logging
-from openpnm.utils.misc import PrintableList
+from openpnm.core import Workspace, logging, ParsersMixin
+from openpnm.utils.misc import PrintableList, PrintableDict
 import scipy as sp
 logger = logging.getLogger(__name__)
 ws = Workspace()
 
 
-class Base(dict):
+class Base(dict, ParsersMixin):
     r"""
     Contains methods for working with the data in the OpenPNM dictionaries
     """
 
+    _prefix = 'base'
+
     def __init__(self, Np=0, Nt=0, name=None, simulation=None):
         super().__init__()
         simulation.append(self)
+        self.settings = PrintableDict()
+        self.name = name
         self.update({'pore.all': sp.ones(shape=(Np, ), dtype=bool)})
         self.update({'throat.all': sp.ones(shape=(Nt, ), dtype=bool)})
-        self._name = None
-        self.name = name
 
     def __repr__(self):
         return '<%s object at %s>' % (
@@ -38,17 +40,8 @@ class Base(dict):
         long arrays can be written, and they must be called 'pore.___' or
         'throat.___'.  Also, any scalars are cast into full length vectors.
 
-        Example
-        -------
-        >>> import openpnm as op
-        >>> pn = op.network.Cubic(shape=[5, 5, 5])
-        >>> pn['pore.example_property'] = 100
-        >>> pn['pore.example_property'][0]
-        100
-
         """
-        # Convert value to an ndarray
-        value = sp.array(value, ndmin=1)
+        value = sp.array(value, ndmin=1)  # Convert value to an ndarray
 
         # Enforce correct dict naming
         element = key.split('.')[0]
@@ -62,19 +55,19 @@ class Base(dict):
         if key in ['pore.coords', 'throat.conns']:
             super(Base, self).__setitem__(key, value)
             return
+
         # Skip checks for protected props, and prevent changes if defined
         protected_keys = ['all']
         if key.split('.')[1] in protected_keys:
             if key in self.keys():
                 if sp.shape(self[key]) == (0, ):
-                    logger.debug(key+' is being defined.')
                     super(Base, self).__setitem__(key, value)
                 else:
                     logger.warning(key+' is already defined.')
             else:
-                logger.debug(key+' is being defined.')
                 super(Base, self).__setitem__(key, value)
             return
+
         # Write value to dictionary
         if sp.shape(value)[0] == 1:  # If value is scalar
             logger.debug('Broadcasting scalar value into vector: '+key)
@@ -87,44 +80,28 @@ class Base(dict):
             if self._count(element) == 0:
                 self.update({key: value})
             else:
-                raise Exception('Cannot write vector with an array of the ' +
-                                'wrong length: '+key)
+                raise Exception('Cannot write an array, wrong length: '+key)
 
     def _set_name(self, name):
-        if name in ws.keys():
+        if not hasattr(self, '_name'):
+            self._name = None
+        if name is None:
+            name = self.simulation._generate_name(self)
+        elif not self.simulation._validate_name(name):
             raise Exception('An object named '+name+' already exists')
-        elif name is None:
-            if 'GenericNetwork' in self.mro():
-                num = str(1).zfill(3)
-                prefix = 'net'
-            elif 'GenericGeometry' in self.mro():
-                num = str(len(self.simulation.geometries.keys())).zfill(3)
-                prefix = 'geo'
-            elif 'GenericPhase' in self.mro():
-                num = str(len(self.simulation.phases.keys())).zfill(3)
-                prefix = 'phase'
-            elif 'GenericPhysics' in self.mro():
-                num = str(len(self.simulation.physics.keys())).zfill(3)
-                prefix = 'phys'
-            elif 'GenericAlgorithm' in self.mro():
-                num = str(len(self.simulation.algorithms.keys())).zfill(3)
-                prefix = 'alg'
-            name = prefix + num
         elif self._name is not None:
             logger.info('Changing the name of '+self.name+' to '+name)
-            # Check if name collides with any arrays in the simulation
-            if self.simulation.validate_name(name):
-                # Rename any label arrays
-                for item in self.simulation:
-                    if 'pore.'+self.name in item.keys():
-                        item['pore.'+name] = item.pop('pore.'+self.name)
-                    if 'throat.'+self.name in item.keys():
-                        item['throat.'+name] = item.pop('throat.'+self.name)
-            else:
-                raise Exception('The provided name is already in use')
+            # Rename any label arrays in other objects
+            for item in self.simulation:
+                if 'pore.'+self.name in item.keys():
+                    item['pore.'+name] = item.pop('pore.'+self.name)
+                if 'throat.'+self.name in item.keys():
+                    item['throat.'+name] = item.pop('throat.'+self.name)
         self._name = name
 
     def _get_name(self):
+        if not hasattr(self, '_name'):
+            self._name = None
         return self._name
 
     name = property(_get_name, _set_name)
@@ -133,7 +110,6 @@ class Base(dict):
         for sim in ws.values():
             if self in sim:
                 return sim
-        print(ws)
 
     simulation = property(fget=_get_simulation)
 
@@ -1038,192 +1014,12 @@ class Base(dict):
             temp = list(temp.values())[0]
         return temp
 
-    def _parse_indices(self, indices):
-        r"""
-        This private method accepts a list of pores or throats and returns a
-        properly structured Numpy array of indices.
-
-        Parameters
-        ----------
-        indices : multiple options
-            This argument can accept numerous different data types including
-            boolean masks, integers and arrays.
-
-        Returns
-        -------
-        A Numpy array of indices.
-
-        Notes
-        -----
-        This method should only be called by the method that is actually using
-        the locations, to avoid calling it multiple times.
-        """
-        if indices is None:
-            indices = sp.array([], ndmin=1, dtype=int)
-        locs = sp.array(indices, ndmin=1)
-        if sp.issubdtype(locs.dtype, sp.number) or \
-           sp.issubdtype(locs.dtype, sp.bool_):
-            pass
-        else:
-            raise Exception('Invalid data type received as indices, ' +
-                            ' must be boolean or numeric')
-        if locs.dtype == bool:
-            if sp.size(locs) == self.Np:
-                locs = self.Ps[locs]
-            elif sp.size(locs) == self.Nt:
-                locs = self.Ts[locs]
-            else:
-                raise Exception('Boolean list of locations must be either ' +
-                                'Np nor Nt long')
-        locs = locs.astype(dtype=int)
-        return locs
-
-    def _parse_element(self, element, single=False):
-        r"""
-        This private method is used to parse the keyword \'element\' in many
-        of the above methods.
-
-        Parameters
-        ----------
-        element : string or list of strings
-            The element argument to check.  If is None is recieved, then a list
-            containing both \'pore\' and \'throat\' is returned.
-
-        single : boolean (default is False)
-            When set to True only a single element is allowed and it will also
-            return a string containing the element.
-
-        Returns
-        -------
-        When ``single`` is False (default) a list contain the element(s) is
-        returned.  When ``single`` is True a bare string containing the element
-        is returned.
-        """
-        if element is None:
-            element = ['pore', 'throat']
-        # Convert element to a list for subsequent processing
-        if type(element) is str:
-            element = [element]
-        # Convert 'pore.prop' and 'throat.prop' into just 'pore' and 'throat'
-        element = [item.split('.')[0] for item in element]
-        # Make sure all are lowercase
-        element = [item.lower() for item in element]
-        # Deal with an plurals
-        element = [item.rsplit('s', maxsplit=1)[0] for item in element]
-        for item in element:
-            if item not in ['pore', 'throat']:
-                raise Exception('Invalid element received: '+item)
-        # Remove duplicates if any
-        [element.remove(L) for L in element if element.count(L) > 1]
-        if single:
-            if len(element) > 1:
-                raise Exception('Both elements recieved when single element ' +
-                                'allowed')
-            else:
-                element = element[0]
-        return element
-
-    def _parse_labels(self, labels, element):
-        r"""
-        This private method is used for converting \'labels\' to a proper
-        format, including dealing with wildcards (\*).
-
-        Parameters
-        ----------
-        labels : string or list of strings
-            The label or list of labels to be parsed. Note that the \* can be
-            used as a wildcard.
-
-        Returns
-        -------
-        A list of label strings, with all wildcard matches included if
-        applicable.
-        """
-        if labels is None:
-            raise Exception('Labels cannot be None')
-        if type(labels) is str:
-            labels = [labels]
-        # Parse the labels list
-        parsed_labels = []
-        for label in labels:
-            # Remove element from label, if present
-            if element in label:
-                label = label.split('.')[-1]
-            # Deal with wildcards
-            if '*' in label:
-                Ls = [L.split('.')[-1] for L in self.labels(element=element)]
-                if label.startswith('*'):
-                    temp = [L for L in Ls if L.endswith(label.strip('*'))]
-                if label.endswith('*'):
-                    temp = [L for L in Ls if L.startswith(label.strip('*'))]
-                temp = [element+'.'+L for L in temp]
-            elif element+'.'+label in self.keys():
-                temp = [element+'.'+label]
-            else:
-                # TODO: The following Error should/could be raised but it
-                # breaks the net-geom and phase-phys look-up logic
-                # raise KeyError('\''+element+'.'+label+'\''+' not found')
-                logger.warning('\''+element+'.'+label+'\''+' not found')
-                temp = [element+'.'+label]
-            parsed_labels.extend(temp)
-            # Remove duplicates if any
-            [parsed_labels.remove(L) for L in parsed_labels
-             if parsed_labels.count(L) > 1]
-        return parsed_labels
-
-    def _parse_mode(self, mode, allowed=None, single=False):
-        r"""
-        This private method is for checking the \'mode\' used in the calling
-        method.
-
-        Parameters
-        ----------
-        mode : string or list of strings
-            The mode(s) to be parsed
-
-        allowed : list of strings
-            A list containing the allowed modes.  This list is defined by the
-            calling method.  If any of the received modes are not in the
-            allowed list an exception is raised.
-
-        single : boolean (default is False)
-            Indicates if only a single mode is allowed.  If this argument is
-            True than a string is returned rather than a list of strings, which
-            makes it easier to work with in the caller method.
-
-        Returns
-        -------
-        A list containing the received modes as strings, checked to ensure they
-        are all within the allowed set (if provoided).  Also, if the ``single``
-        argument was True, then a string is returned.
-        """
-        if type(mode) is str:
-            mode = [mode]
-        for item in mode:
-            if (allowed is not None) and (item not in allowed):
-                raise Exception('\'mode\' must be one of the following: ' +
-                                allowed.__str__())
-        # Remove duplicates, if any
-        [mode.remove(L) for L in mode if mode.count(L) > 1]
-        if single:
-            if len(mode) > 1:
-                raise Exception('Multiple modes received when only one mode ' +
-                                'allowed')
-            else:
-                mode = mode[0]
-        return mode
-
-    def _parse_prop(self, propname, element):
-        r"""
-        """
-        return element + '.' + propname.split('.')[-1]
-
     def __str__(self):
-        horizonal_rule = '―' * 60
+        horizonal_rule = '―' * 78
         lines = [horizonal_rule]
         lines.append(self.__module__.replace('__', '') + ': \t' + self.name)
         lines.append(horizonal_rule)
-        lines.append("{0:<5s} {1:<35s} {2:<10s}".format('#',
+        lines.append("{0:<5s} {1:<45s} {2:<10s}".format('#',
                                                         'Properties',
                                                         'Valid Values'))
         lines.append(horizonal_rule)
@@ -1237,16 +1033,16 @@ class Base(dict):
             if self[item].dtype == object:  # Print objects differently
                 invalid = [i for i in self[item] if i is None]
                 defined = sp.size(self[item]) - len(invalid)
-                fmt = "{0:<5d} {1:<35s} {2:>5d} / {3:<5d}"
+                fmt = "{0:<5d} {1:<45s} {2:>5d} / {3:<5d}"
                 lines.append(fmt.format(i + 1, prop, defined, required))
             elif '._' not in prop:
                 a = sp.isnan(self[item])
                 defined = sp.shape(self[item])[0] \
                     - a.sum(axis=0, keepdims=(a.ndim-1) == 0)[0]
-                fmt = "{0:<5d} {1:<35s} {2:>5d} / {3:<5d}"
+                fmt = "{0:<5d} {1:<45s} {2:>5d} / {3:<5d}"
                 lines.append(fmt.format(i + 1, prop, defined, required))
         lines.append(horizonal_rule)
-        lines.append("{0:<5s} {1:<35s} {2:<10s}".format('#',
+        lines.append("{0:<5s} {1:<45s} {2:<10s}".format('#',
                                                         'Labels',
                                                         'Assigned Locations'))
         lines.append(horizonal_rule)
@@ -1257,7 +1053,7 @@ class Base(dict):
             if len(prop) > 35:
                 prop = prop[0:32] + '...'
             if '._' not in prop:
-                fmt = "{0:<5d} {1:<35s} {2:<10d}"
+                fmt = "{0:<5d} {1:<45s} {2:<10d}"
                 lines.append(fmt.format(i + 1, prop, sp.sum(self[item])))
         lines.append(horizonal_rule)
         return '\n'.join(lines)

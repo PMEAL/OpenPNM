@@ -8,7 +8,6 @@ import scipy as sp
 import scipy.sparse as sprs
 import scipy.sparse.csgraph as spgr
 from openpnm.algorithms import GenericAlgorithm
-from openpnm.utils.misc import PrintableDict
 from openpnm.core import logging
 logger = logging.getLogger(__name__)
 
@@ -16,14 +15,17 @@ logger = logging.getLogger(__name__)
 class GenericLinearTransport(GenericAlgorithm):
     r"""
     """
+
+    _prefix = 'alg'
+
     def __init__(self, phase, **kwargs):
         super().__init__(**kwargs)
-        self.settings = PrintableDict({'phase': phase.name,
-                                       'conductance': None,
-                                       'quantity': None,
-                                       'solver': 'spsolve',
-                                       'sources': [],
-                                       'tolerance': 0.001})
+        self.settings.update({'phase': phase.name,
+                              'conductance': None,
+                              'quantity': None,
+                              'solver': 'spsolve',
+                              'sources': [],
+                              'tolerance': 0.001})
 
     def set_dirchlet_BC(self, pores, values):
         r"""
@@ -93,6 +95,7 @@ class GenericLinearTransport(GenericAlgorithm):
         if values.size > 1 and values.size != pores.size:
             raise Exception('The number of boundary values must match the ' +
                             'number of locations')
+
         # Label pores where a boundary condition will be applied
         if ('pore.'+bctype not in self.keys()) or (mode == 'overwrite'):
             self['pore.'+bctype] = False
@@ -164,22 +167,18 @@ class GenericLinearTransport(GenericAlgorithm):
             # Find all entries on rows associated with dirichlet pores
             P_bc = self.toindices(self['pore.dirichlet'])
             indrow = sp.in1d(A.row, P_bc)
-            # Remove entries from A for all BC rows
-            A.data[indrow] = 0
-            # Add diagonal entries back into A
-            datadiag = A.diagonal()
+            A.data[indrow] = 0  # Remove entries from A for all BC rows
+            datadiag = A.diagonal()  # Add diagonal entries back into A
             datadiag[P_bc] = sp.ones_like(P_bc, dtype=float)
             A.setdiag(datadiag)
-            # Remove 0 entries
-            A.eliminate_zeros()
+            A.eliminate_zeros()  # Remove 0 entries
         self.A = A
         return A
 
     def build_b(self):
         r"""
         """
-        # Create b matrix
-        b = sp.zeros(shape=(self.Np, ), dtype=float)
+        b = sp.zeros(shape=(self.Np, ), dtype=float)  # Create b matrix of 0's
         if 'pore.dirichlet' in self.keys():
             ind = self['pore.dirichlet']
             b[ind] = -self['pore.dirichlet_value'][ind]
@@ -206,10 +205,8 @@ class GenericLinearTransport(GenericAlgorithm):
             x = sp.zeros(shape=[self.Np, ], dtype=float)
         # Scan through all source objects registered on algorithm
         for item in self.settings['sources']:
-            # Obtain handle to source object
-            source = self.simulation[item]
-            # Apply source object to update A and b
-            source.apply()
+            source = self.simulation[item]  # Obtain handle to source object
+            source.apply()  # Apply source object to update A and b
         x_new = self.solve()
         self[self.settings['quantity']] = x_new
         res = sp.sum(sp.absolute(x**2 - x_new**2))

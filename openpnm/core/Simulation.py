@@ -60,12 +60,27 @@ class Simulation(list):
         name = self.grid[geometry.name][phase.name]
         return self[name]
 
-    def validate_name(self, name):
+    def _validate_name(self, name):
         flag = True
         names = [i.name for i in self]
         if name in names:
             flag = False
         return flag
+
+    def _generate_name(self, obj):
+        prefix = obj._prefix
+        if 'GenericNetwork' in obj.mro():
+            num = str(1).zfill(3)
+        elif 'GenericGeometry' in obj.mro():
+            num = str(len(self.geometries.keys())).zfill(3)
+        elif 'GenericPhase' in obj.mro():
+            num = str(len(self.phases.keys())).zfill(3)
+        elif 'GenericPhysics' in obj.mro():
+            num = str(len(self.physics.keys())).zfill(3)
+        elif 'GenericAlgorithm' in obj.mro():
+            num = str(len(self.algorithms.keys())).zfill(3)
+        name = prefix + '_' + num
+        return name
 
     def _get_net(self):
         for item in self:
@@ -146,7 +161,7 @@ class Simulation(list):
 
     def __str__(self):
         s = []
-        hr = '―'*80
+        hr = '―'*78
         s.append(hr)
         s.append(' {0:<15} '.format('Object Name') +
                  '{0:<65}'.format('Object ID'))

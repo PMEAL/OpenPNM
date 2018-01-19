@@ -23,16 +23,20 @@ class ModelsDict(dict):
         return unique
 
     def __str__(self):
-        horizontal_rule = '―' * 60
+        horizontal_rule = '―' * 78
         lines = [horizontal_rule]
-        lines.append('{0:<5s} {1:<30s} {2}'.format('#',
-                                                   'Property Name',
-                                                   'Regeneration Mode'))
+        strg = '{0:<3s} {1:<25s} {2:<25s} {3}'
+        lines.append(strg.format('#', 'Property Name', 'Parameter', 'Value'))
         lines.append(horizontal_rule)
         for i, item in enumerate(self.keys()):
-            str = '{0:<5d} {1:<30s} {2:<20s}'
-            lines.append(str.format(i + 1, item, self[item]['regen_mode']))
-        lines.append(horizontal_rule)
+            temp = self[item].copy()
+            regen_mode = temp.pop('regen_mode')
+            model = str(temp.pop('model')).split(' ')[1]
+            lines.append(strg.format(str(i+1), item, 'model:', model))
+            for param in temp.keys():
+                lines.append(strg.format('', '', param+':', temp[param]))
+            lines.append(strg.format('', '', 'regeneration mode:', regen_mode))
+            lines.append(horizontal_rule)
         return '\n'.join(lines)
 
 
@@ -83,12 +87,12 @@ class ModelsMixin():
     # The use of a property attribute here is because I can't just set
     # self.models= {} in the init, since the damn init won't run!
     def _get_models(self):
-        if not hasattr(self, '_dict'):
-            self._dict = ModelsDict()
-        return self._dict
+        if not hasattr(self, '_models_dict'):
+            self._models_dict = ModelsDict()
+        return self._models_dict
 
     def _set_models(self, dict_):
-        self._dict = ModelsDict()
-        self._dict.update(dict_)
+        self._models_dict = ModelsDict()
+        self._models_dict.update(dict_)
 
     models = property(fget=_get_models, fset=_set_models)

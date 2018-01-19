@@ -160,7 +160,7 @@ class Workspace(dict):
 
     def __str__(self):
         s = []
-        hr = '―'*80
+        hr = '―'*78
         s.append(hr)
         for item in self.values():
             s.append(' ' + item.name)

@@ -21,6 +21,9 @@ class GenericPhase(Base, ModelsMixin):
         instance name but can be anything.
 
     """
+
+    _prefix = 'phase'
+
     def __init__(self, network, name=None):
         super().__init__(name=name, simulation=network.simulation)
         self.settings = PrintableDict()

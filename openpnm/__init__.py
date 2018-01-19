@@ -17,9 +17,10 @@ from . import algorithms
 from . import utils
 from . import io
 from . import materials
-#from .core import Workspace
+from .core import Workspace
 
 # Set up logging to file - see previous section for more details
 log_format = \
     '%(asctime)s | %(levelname)-8s | %(name)s.%(funcName)s | %(message)s'
 _logging.basicConfig(level=_logging.WARNING, format=log_format)
+del log_format

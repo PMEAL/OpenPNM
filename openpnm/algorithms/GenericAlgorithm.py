@@ -5,8 +5,7 @@ module __GenericAlgorithm__: Base class to build custom algorithms
 ===============================================================================
 
 """
-from openpnm.core import Base
-from openpnm.core import logging
+from openpnm.core import Base, logging
 logger = logging.getLogger()
 
 
@@ -19,9 +18,11 @@ class GenericAlgorithm(Base):
         The network object to which this algorithm will apply.
 
     name : string, optional
-        Name of this algorithm
+        Name of the algorithm
 
     """
+
+    _prefix = 'alg'
 
     def __init__(self, network, **kwargs):
         super().__init__(simulation=network.simulation, **kwargs)

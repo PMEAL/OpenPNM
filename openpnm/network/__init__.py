@@ -9,3 +9,4 @@ from .DelaunayVoronoiDual import DelaunayVoronoiDual
 from .Empty import Empty
 from .Gabriel import Gabriel
 from .Voronoi import Voronoi
+from . import models

@@ -18,13 +18,15 @@ class GenericNetwork(Base, ModelsMixin):
         Unique name for Network object
 
     """
+
+    _prefix = 'net'
+
     def __init__(self, simulation=None, **kwargs):
         if simulation is None:
             simulation = Simulation()
         super().__init__(simulation=simulation, **kwargs)
         self['pore._id'] = [str(uuid.uuid4()) for i in self.Ps]
         self['throat._id'] = [str(uuid.uuid4()) for i in self.Ts]
-        logger.name = self.name
 
         # Initialize adjacency and incidence matrix dictionaries
         self._im = {}
@@ -285,7 +287,7 @@ class GenericNetwork(Base, ModelsMixin):
         [[], [3], []]
 
         TODO: This now works on 'vector' inputs, but is not actually vectorized
-        in the Numpy sense, so could be slow with large P1,P2 inputs
+        in the Numpy sense, so could be slow with large P1, P2 inputs
         """
         P1 = self._parse_indices(P1)
         P2 = self._parse_indices(P2)
@@ -336,7 +338,7 @@ class GenericNetwork(Base, ModelsMixin):
         Returns
         -------
         neighborPs : 1D array (if flatten is True) or ndarray of ndarrays (if
-        flatten if False)
+        ``flatten`` is ``False``)
 
         Examples
         --------
@@ -558,7 +560,7 @@ class GenericNetwork(Base, ModelsMixin):
             num = int(num)
         return num
 
-    def find_nearby_pores(self, pores, distance, flatten=False, excl_self=True):
+    def find_nearby_pores(self, pores, R, flatten=False, excl_self=True):
         r"""
         Find all pores within a given radial distance of the input pore(s)
         regardless of whether or not they are toplogically connected.
@@ -568,8 +570,8 @@ class GenericNetwork(Base, ModelsMixin):
         pores : array_like
             The list of pores for whom nearby neighbors are to be found
 
-        distance : scalar
-            The maximum distance within which the search should be performed
+        R : scalar
+            The maximum radius within which the search should be performed
 
         excl_self : bool
             Controls whether the input pores should be included in the returned
@@ -601,7 +603,7 @@ class GenericNetwork(Base, ModelsMixin):
         # Handle an empty array if given
         if sp.size(pores) == 0:
             return sp.array([], dtype=sp.int64)
-        if distance <= 0:
+        if R <= 0:
             logger.error('Provided distances should be greater than 0')
             if flatten:
                 Pn = sp.array([])
@@ -612,7 +614,7 @@ class GenericNetwork(Base, ModelsMixin):
         kd = sptl.cKDTree(self['pore.coords'])
         kd_pores = sptl.cKDTree(self['pore.coords'][pores])
         # Perform search
-        Pn = kd_pores.query_ball_tree(kd, r=distance)
+        Pn = kd_pores.query_ball_tree(kd, r=R)
         # Sort the indices in each list
         [Pn[i].sort() for i in range(0, sp.size(pores))]
         if flatten:  # Convert list of lists to a flat nd-array

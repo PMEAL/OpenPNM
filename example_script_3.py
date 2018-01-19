@@ -1,7 +1,7 @@
 import openpnm as op
 import scipy as sp
 ws = op.core.Workspace()
-ws.settings['local_data'] = False
+ws.settings['local_data'] = True
 
 sp.random.seed(0)
 pn = op.network.Cubic(shape=[15, 15, 15], spacing=0.0001, name='pn')
@@ -21,12 +21,12 @@ phys_water.regenerate_models()
 alg = op.algorithms.FickianDiffusion(network=pn, phase=water)
 alg.setup(conductance='throat.conductance', quantity='pore.mole_fraction')
 alg.set_BC(pores=pn.pores('top'), bctype='dirichlet', bcvalues=0.5)
-alg['pore.mole_fraction'] = 0
 alg.set_BC(pores=pn.pores('bottom'), bctype='dirichlet', bcvalues=0.0)
+alg['pore.mole_fraction'] = 0
 
 rxn = op.algorithms.GenericReaction(network=pn, pores=[70, 71])
 rxn['pore.k'] = 1e-1
-rxn['pore.alpha'] = 3
+rxn['pore.alpha'] = 1
 rxn.add_model(propname='pore.rxn_rate',
               model=op.algorithms.models.standard_kinetics,
               quantity='pore.mole_fraction',
@@ -38,9 +38,9 @@ rxn2 = op.algorithms.GenericReaction(network=pn, pores=[50, 51])
 rxn2.models = rxn.models.copy()
 rxn2.settings['rate_model'] = 'pore.rxn_rate'
 rxn2['pore.k'] = 1e-5
-rxn2['pore.alpha'] = 1
+rxn2['pore.alpha'] = 2
 alg.set_source(source=rxn2)
 
 alg.run()
 
-#op.io.VTK.save(simulation=pn.simulation, phases=[water])
+# op.io.VTK.save(simulation=pn.simulation, phases=[water])
