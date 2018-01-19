@@ -110,6 +110,8 @@ def unique_list(input_list):
                 elif dim == 1:
                     if i[0] == j[0]:
                         match = True
+            if match is False:
+                output_list.append(i)
     return output_list
 
 

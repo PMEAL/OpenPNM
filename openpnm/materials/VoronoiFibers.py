@@ -4,13 +4,17 @@ import openpnm.utils.vertexops as vo
 import scipy.sparse as sprs
 import scipy.spatial as sptl
 import matplotlib.pyplot as plt
-from scipy.io import savemat
 from transforms3d import _gohlketransforms as tr
+from scipy import ndimage
+import math
+from skimage.morphology import convex_hull_image
+from skimage.measure import regionprops
 from openpnm import topotools
 from openpnm.network import DelaunayVoronoiDual
 from openpnm.core import logging
 from openpnm.geometry import models as gm
 from openpnm.geometry import GenericGeometry
+from openpnm.utils.misc import unique_list
 logger = logging.getLogger(__name__)
 
 
@@ -64,15 +68,10 @@ class VoronoiGeometry(GenericGeometry):
         t_coords = np.array([network['pore.coords'][t] for t in vertices],
                             dtype=object)
         self['throat.vertices'] = t_coords
+        # Once vertices are saved we no longer need the voronoi network
         topotools.trim(network=network, pores=network.pores('voronoi'))
         topotools.trim(network=network, throats=network.throats('voronoi'))
         self['throat.normal'] = self._t_normals(t_coords)
-#        temp = self._t_normals(t_coords)
-#        print(temp[-1])
-#        self['throat.normal'] = temp
-#        print(self['throat.normal'][-1])
-#        print(np.allclose(network.throats('dual_del'),
-#                          network.throats('delaunay')))
         self._throat_props(network, offset=fibre_rad)
         topotools.trim_occluded_throats(network=network, mask=self.name)
 
@@ -134,12 +133,6 @@ class VoronoiGeometry(GenericGeometry):
         Use the Voronoi vertices and perform image analysis to obtain throat
         properties
         """
-        import math
-        import numpy as np
-        from skimage.morphology import convex_hull_image
-        from skimage.measure import regionprops
-        from scipy import ndimage
-
         mask = self['throat.delaunay']
         Nt = len(mask)
         net_Nt = network.num_throats()
@@ -244,45 +237,48 @@ class VoronoiGeometry(GenericGeometry):
                         # Distance transform the eroded facet to find the
                         # incentre and inradius
                         dt = ndimage.distance_transform_edt(eroded)
-                        inx0, iny0 = \
-                            np.asarray(np.unravel_index(dt.argmax(), dt.shape)) \
-                              .astype(float)
+                        temp = np.unravel_index(dt.argmax(), dt.shape)
+                        inx0, iny0 = np.asarray(temp).astype(float)
                         incentre2d = [inx0, iny0]
-                        # Undo the translation, scaling and truncation on the incentre
+                        # Undo the translation, scaling and truncation on the
+                        # incentre
                         incentre2d /= f
                         incentre2d += (translation)
                         incentre3d = np.concatenate((incentre2d, z_plane))
-                        # The offset vertices will be those in the coords that are
-                        # closest to the originals"
+                        # The offset vertices will be those in the coords that
+                        # are closest to the originals
                         offset_verts = []
                         for pt in int_pts:
-                            vert = np.argmin(np.sum(np.square(coords-pt), axis=1))
+                            vert = np.argmin(np.sum(np.square(coords-pt),
+                                                    axis=1))
                             if vert not in offset_verts:
                                 offset_verts.append(vert)
-                        # If we are left with less than 3 different vertices then the
-                        # throat is fully occluded as we can't make a shape with
-                        # non-zero area
+                        # If we are left with less than 3 different vertices
+                        # then the throat is fully occluded as we can't make a
+                        # shape with non-zero area
                         if len(offset_verts) >= 3:
                             offset_coords = coords[offset_verts].astype(float)
-                            # Undo the translation, scaling and truncation on the
-                            # offset_verts
+                            # Undo the translation, scaling and truncation on
+                            # the offset_verts
                             offset_coords /= f
                             offset_coords_3d = \
                                 np.vstack((offset_coords[:, 0]+translation[0],
                                            offset_coords[:, 1]+translation[1],
-                                           np.ones(len(offset_verts))*z_plane)).T
-                            # Get matrix to un-rotate the co-ordinates back to the
-                            # original orientation if we rotated in the first place
+                                           np.ones(len(offset_verts))*z_plane))
+                            oc_3d = offset_coords_3d.T
+                            # Get matrix to un-rotate the co-ordinates back to
+                            # the original orientation if we rotated in the
+                            # first place
                             if rotate_facet:
                                 MI = tr.inverse_matrix(M)
                                 # Unrotate the offset coordinates
                                 incentre[i] = np.dot(incentre3d, MI[:3, :3].T)
                                 centroid[i] = np.dot(centroid3d, MI[:3, :3].T)
-                                eroded_verts[i] = np.dot(offset_coords_3d, MI[:3, :3].T)
+                                eroded_verts[i] = np.dot(oc_3d, MI[:3, :3].T)
                             else:
                                 incentre[i] = incentre3d
                                 centroid[i] = centroid3d
-                                eroded_verts[i] = offset_coords_3d
+                                eroded_verts[i] = oc_3d
 
                             inradius[i] = dt.max()
                             # Undo scaling on other parameters
@@ -302,6 +298,111 @@ class VoronoiGeometry(GenericGeometry):
         self['throat.indiameter'] = inradius*2
         self['throat.incentre'] = incentre
         self['throat.offset_vertices'] = eroded_verts
+
+    def inhull(self, geometry, xyz, pore, tol=1e-7):
+        r"""
+        Tests whether points lie within a convex hull or not.
+        Computes a tesselation of the hull works out the normals of the facets.
+        Then tests whether dot(x.normals) < dot(a.normals) where a is the the
+        first vertex of the facets
+        """
+        xyz = np.around(xyz, 10)
+        # Work out range to span over for pore hull
+        xmin = xyz[:, 0].min()
+        xr = (np.ceil(xyz[:, 0].max())-np.floor(xmin)).astype(int)+1
+        ymin = xyz[:, 1].min()
+        yr = (np.ceil(xyz[:, 1].max())-np.floor(ymin)).astype(int)+1
+        zmin = xyz[:, 2].min()
+        zr = (np.ceil(xyz[:, 2].max())-np.floor(zmin)).astype(int)+1
+
+        origin = np.array([xmin, ymin, zmin])
+        # start index
+        si = np.floor(origin).astype(int)
+        xyz -= origin
+        dom = np.zeros([xr, yr, zr], dtype=np.uint8)
+        indx, indy, indz = np.indices((xr, yr, zr))
+        # Calculate the tesselation of the points
+        hull = sptl.ConvexHull(xyz)
+        # Assume 3d for now
+        # Calc normals from the vector cross product of the vectors defined
+        # by joining points in the simplices
+        vab = xyz[hull.simplices[:, 0]]-xyz[hull.simplices[:, 1]]
+        vac = xyz[hull.simplices[:, 0]]-xyz[hull.simplices[:, 2]]
+        nrmls = np.cross(vab, vac)
+        # Scale normal vectors to unit length
+        nrmlen = np.sum(nrmls**2, axis=-1)**(1./2)
+        nrmls = nrmls*np.tile((1/nrmlen), (3, 1)).T
+        # Center of Mass
+        center = np.mean(xyz, axis=0)
+        # Any point from each simplex
+        a = xyz[hull.simplices[:, 0]]
+        # Make sure all normals point inwards
+        dp = np.sum((np.tile(center, (len(a), 1))-a)*nrmls, axis=-1)
+        k = dp < 0
+        nrmls[k] = -nrmls[k]
+        # Now we want to test whether dot(x,N) >= dot(a,N)
+        aN = np.sum(nrmls*a, axis=-1)
+        for plane_index in range(len(a)):
+            eqx = nrmls[plane_index][0]*(indx)
+            eqy = nrmls[plane_index][1]*(indy)
+            eqz = nrmls[plane_index][2]*(indz)
+            xN = eqx + eqy + eqz
+            dom[xN - aN[plane_index] >= 0-tol] += 1
+        dom[dom < len(a)] = 0
+        dom[dom == len(a)] = 1
+        ds = np.shape(dom)
+        temp_arr = np.zeros_like(geometry._hull_image, dtype=bool)
+        temp_arr[si[0]:si[0]+ds[0], si[1]:si[1]+ds[1], si[2]:si[2]+ds[2]] = dom
+        geometry._hull_image[temp_arr] = pore
+        hull_num = np.sum(dom)
+        dom = dom * geometry._fibre_image[si[0]:si[0]+ds[0], si[1]:si[1]+ds[1],
+                                          si[2]:si[2]+ds[2]]
+        pore_num = np.sum(dom)
+        fibre_num = hull_num - pore_num
+        del temp_arr
+        return pore_num, fibre_num
+
+    def in_hull_volume(self, network, geometry, fibre_rad, vox_len=1e-6,
+                       **kwargs):
+        r"""
+        Work out the voxels inside the convex hull of the voronoi vertices of
+        each pore
+        """
+        Np = network.num_pores()
+        geom_pores = geometry.map_pores(network, geometry.pores())
+        volume = sp.zeros(Np)
+        pore_vox = sp.zeros(Np, dtype=int)
+        fibre_vox = sp.zeros(Np, dtype=int)
+        voxel = vox_len**3
+        try:
+            nbps = network.pores('boundary', mode='not')
+        except KeyError:
+            # Boundaries have not been generated
+            nbps = network.pores()
+        # Voxel length
+        fibre_rad = np.around((fibre_rad-(vox_len/2))/vox_len, 0).astype(int)
+
+        # Get the fibre image
+        fibre_image = self._get_fibre_image(network, geom_pores, vox_len,
+                                            fibre_rad)
+        # Save as private variables
+        geometry._fibre_image = fibre_image
+        hull_image = np.ones_like(fibre_image, dtype=np.uint16)*-1
+        geometry._hull_image = hull_image
+        for pore in nbps:
+            logger.info("Processing Pore: "+str(pore+1)+" of "+str(len(nbps)))
+            if network["pore.vert_index"][pore] is not None:
+                vi = [i for i in network["pore.vert_index"][pore].values()]
+                verts = np.asarray(vi)
+                verts = np.asarray(unique_list(np.around(verts, 6)))
+                verts /= vox_len
+                pore_vox[pore], fibre_vox[pore] = self.inhull(geometry, verts,
+                                                              pore)
+
+        volume = pore_vox*voxel
+        self["pore.fibre_voxels"] = fibre_vox[geom_pores]
+        self["pore.pore_voxels"] = pore_vox[geom_pores]
+        self['pore.volume'] = volume[geom_pores]
 
     def make_fibre_image(self, fibre_rad=None, vox_len=1e-6):
         r"""
@@ -331,10 +432,58 @@ class VoronoiGeometry(GenericGeometry):
                                                                 vox_len,
                                                                 fibre_rad)
 
-    def _get_fibre_image(self, vox_len, fibre_rad):
+    def _get_vertex_range(self, verts):
+        # Find the extent of the vetrices
+        vxmin = vymin = vzmin = 1e20
+        vxmax = vymax = vzmax = -1e20
+        for vert in verts:
+            if np.min(vert[:, 0]) < vxmin:
+                vxmin = np.min(vert[:, 0])
+            if np.max(vert[:, 0]) > vxmax:
+                vxmax = np.max(vert[:, 0])
+            if np.min(vert[:, 1]) < vymin:
+                vymin = np.min(vert[:, 1])
+            if np.max(vert[:, 1]) > vymax:
+                vymax = np.max(vert[:, 1])
+            if np.min(vert[:, 2]) < vzmin:
+                vzmin = np.min(vert[:, 2])
+            if np.max(vert[:, 2]) > vzmax:
+                vzmax = np.max(vert[:, 2])
+        return [vxmin, vxmax, vymin, vymax, vzmin, vzmax]
+
+    def _bresenham(self, faces, dx):
+        line_points = []
+        for face in faces:
+            # Get in hull order
+            fx = face[:, 0]
+            fy = face[:, 1]
+            fz = face[:, 2]
+            # Find the axis with the smallest spread and remove it to make 2D
+            if (np.std(fx) < np.std(fy)) and (np.std(fx) < np.std(fz)):
+                f2d = np.vstack((fy, fz)).T
+            elif (np.std(fy) < np.std(fx)) and (np.std(fy) < np.std(fz)):
+                f2d = np.vstack((fx, fz)).T
+            else:
+                f2d = np.vstack((fx, fy)).T
+            hull = sptl.ConvexHull(f2d, qhull_options='QJ Pp')
+            face = np.around(face[hull.vertices], 6)
+            for i in range(len(face)):
+                vec = face[i]-face[i-1]
+                vec_length = np.linalg.norm(vec)
+                increments = np.ceil(vec_length/dx)
+                check_p_old = np.array([-1, -1, -1])
+                for x in np.linspace(0, 1, increments):
+                    check_p_new = face[i-1]+(vec*x)
+                    if np.sum(check_p_new - check_p_old) != 0:
+                        line_points.append(check_p_new)
+                        check_p_old = check_p_new
+        return np.asarray(line_points)
+
+    def _get_fibre_image(self, cpores, vox_len, fibre_rad):
         r"""
-        Produce image by filling in voxels along throat edges using Bresenham line
-        Then performing distance transform on fibre voxels to erode the pore space
+        Produce image by filling in voxels along throat edges using Bresenham
+        line then performing distance transform on fibre voxels to erode the
+        pore space
         """
         network = self.simulation.network
         cthroats = network.find_neighbor_throats(pores=cpores)
@@ -342,11 +491,10 @@ class VoronoiGeometry(GenericGeometry):
         # Below method copied from geometry model throat.vertices
         # Needed now as network may not have all throats assigned to geometry
         # i.e network['throat.vertices'] could return garbage
-        verts = _sp.ndarray(network.num_throats(), dtype=object)
-        for i in range(len(verts)):
-            verts[i] = _sp.asarray(list(network["throat.vert_index"][i].values()))
+        verts = self['throat.vertices']
         cverts = verts[cthroats]
-        [vxmin, vxmax, vymin, vymax, vzmin, vzmax] = _get_vertex_range(cverts)
+        [vxmin, vxmax, vymin,
+         vymax, vzmin, vzmax] = self._get_vertex_range(cverts)
         # Translate vertices so that minimum occurs at the origin
         for index in range(len(cverts)):
             cverts[index] -= np.array([vxmin, vymin, vzmin])
@@ -354,7 +502,7 @@ class VoronoiGeometry(GenericGeometry):
         cdomain = np.around(np.array([(vxmax-vxmin),
                                       (vymax-vymin),
                                       (vzmax-vzmin)]), 6)
-        logger.info("Creating fibre domain range: " + str(np.around(cdomain, 5)))
+        logger.info("Creating fibres in range: " + str(np.around(cdomain, 5)))
         lx = np.int(np.around(cdomain[0]/vox_len)+1)
         ly = np.int(np.around(cdomain[1]/vox_len)+1)
         lz = np.int(np.around(cdomain[2]/vox_len)+1)
@@ -367,8 +515,8 @@ class VoronoiGeometry(GenericGeometry):
             cx = cy = cz = 1
             chunk_len = np.max(np.shape(pore_space))
         except:
-            logger.info("Domain too large to fit into memory so chunking domain"
-                        "to process image, this may take some time")
+            logger.info("Domain too large to fit into memory so chunking " +
+                        "domain to process image, this may take some time")
             # Do chunking
             chunk_len = 100
             if (lx > chunk_len):
@@ -385,7 +533,7 @@ class VoronoiGeometry(GenericGeometry):
                 cz = 1
 
         # Get image of the fibres
-        line_points = bresenham(cverts, vox_len/2)
+        line_points = self._bresenham(cverts, vox_len/2)
         line_ints = (np.around((line_points/vox_len), 0)).astype(int)
         for x, y, z in line_ints:
             try:
@@ -415,9 +563,10 @@ class VoronoiGeometry(GenericGeometry):
                         cymax = ly
                     if czmax > lz:
                         czmax = lz
-                    dt = ndimage.distance_transform_edt(pore_space[cxmin:cxmax,
-                                                                   cymin:cymax,
-                                                                   czmin:czmax])
+                    dt_edt = ndimage.distance_transform_edt
+                    dt = dt_edt(pore_space[cxmin:cxmax,
+                                           cymin:cymax,
+                                           czmin:czmax])
                     fibre_space[cxmin:cxmax,
                                 cymin:cymax,
                                 czmin:czmax][dt <= fibre_rad] = 0
@@ -429,28 +578,11 @@ class VoronoiGeometry(GenericGeometry):
         del pore_space
         return fibre_space
 
-    def _export_fibre_image(self, mat_file='OpenPNMFibres'):
-        r"""
-        If the voronoi voxel method was implemented to calculate pore volumes
-        an image of the fibre space has already been calculated and stored on
-        the geometry.
-
-        Parameters
-        ----------
-        mat_file : string
-        Filename of Matlab file to save fibre image
-        """
-        if hasattr(self, '_fibre_image') is False:
-            logger.warning('This method only works when a fibre image exists, ' +
-                           'please run make_fibre_image')
-            return
-        matlab_dict = {"fibres": self._fibre_image}
-        savemat(mat_file, matlab_dict, format='5', long_field_names=True)
-
     def _get_fibre_slice(self, plane=None, index=None):
         r"""
         Plot an image of a slice through the fibre image
-        plane contains percentage values of the length of the image in each axis
+        plane contains percentage values of the length of the image in each
+        axis
 
         Parameters
         ----------
@@ -460,14 +592,14 @@ class VoronoiGeometry(GenericGeometry):
         the non-zero axis
 
         index : array_like
-        similar to plane but instead of the fraction an index of the image is used
+        similar to plane but instead of the fraction an index of the image is
+        used
         """
         if hasattr(self, '_fibre_image') is False:
-            logger.warning('This method only works when a fibre image exists, ' +
-                           'please run make_fibre_image')
+            logger.warning('This method only works when a fibre image exists')
             return None
         if plane is None and index is None:
-            logger.warning('Please provide either a plane array or index array')
+            logger.warning('Please provide a plane array or index array')
             return None
         if self._fibre_image is None:
             self.make_fibre_image()
@@ -513,11 +645,11 @@ class VoronoiGeometry(GenericGeometry):
         the non-zero axis
 
         index : array_like
-        similar to plane but instead of the fraction an index of the image is used
+        similar to plane but instead of the fraction an index of the image is
+        used
         """
         if hasattr(self, '_fibre_image') is False:
-            logger.warning('This method only works when a fibre image exists, ' +
-                           'please run make_fibre_image')
+            logger.warning('This method only works when a fibre image exists')
             return
         slice_image = self._get_fibre_slice(plane, index)
         if slice_image is not None:
@@ -534,8 +666,7 @@ class VoronoiGeometry(GenericGeometry):
         the voxel volumes in consectutive slices.
         """
         if hasattr(self, '_fibre_image') is False:
-            logger.warning('This method only works when a fibre image exists, ' +
-                           'please run make_fibre_image')
+            logger.warning('This method only works when a fibre image exists')
             return
         if self._fibre_image is None:
             self.make_fibre_image()
@@ -567,91 +698,3 @@ class VoronoiGeometry(GenericGeometry):
         ax.legend(handles, labels, loc=1)
         plt.legend(bbox_to_anchor=(1, 1), loc=2, borderaxespad=0.)
         return fig
-
-    def compress_geometry(self, factor=None, preserve_fibres=False):
-        r"""
-        Adjust the vertices and recalculate geometry. Save fibre voxels before
-        and after then put them back into the image to preserve fibre volume.
-        Shape will not be conserved. Also make adjustments to the pore and throat
-        properties given an approximate volume change from adding the missing fibre
-        voxels back in
-
-        Parameters
-        ----------
-        factor : array_like
-        List of 3 values, [x,y,z], 2 must be one and the other must be between
-        zero and one representing the fraction of the domain height to compress
-        to.
-
-        preserve_fibres : boolean
-        If the fibre image has been generated and used to calculate pore volumes
-        then preserve fibre volume artificially by adjusting pore and throat sizes
-        """
-        if factor is None:
-            logger.warning('Please supply a compression factor in the form ' +
-                           '[1,1,CR], with CR < 1')
-            return
-        if sp.any(sp.asarray(factor) > 1):
-            logger.warning('The supplied compression factor is greater than 1, ' +
-                           'the method is not tested for stretching')
-            return
-        # uncompressed number of fibre voxels in each pore
-        fvu = self["pore.fibre_voxels"]
-        r1 = self["pore.diameter"]/2
-        # Most likely boundary pores - prevents divide by zero (vol change zero)
-        r1[r1 == 0] = 1
-        vo.scale(network=self._net, scale_factor=factor, preserve_vol=False)
-        self.models.regenerate()
-
-        if preserve_fibres and self._voxel_vol:
-            # compressed number of fibre voxels in each pore
-            fvc = self["pore.fibre_voxels"]
-            # amount to adjust pore volumes by
-            # (based on 1 micron cubed voxels for volume calc)
-            vol_diff = (fvu-fvc)*1e-18
-            # don't account for positive volume changes
-            vol_diff[vol_diff < 0] = 0
-            pv1 = self["pore.volume"].copy()
-            self["pore.volume"] -= vol_diff
-            self["pore.volume"][self["pore.volume"] < 0.0] = 0.0
-            pv2 = self["pore.volume"].copy()
-            "Now need to adjust the pore diameters"
-            from scipy.special import cbrt
-            rdiff = cbrt(3*np.abs(vol_diff)/(4*sp.pi))
-
-            self["pore.diameter"] -= 2*rdiff*sp.sign(vol_diff)
-            "Now as a crude approximation adjust all the throat areas and diameters"
-            "by the same ratio as the increase in a spherical pore surface area"
-            spd = np.ones(len(fvu))
-            spd[fvu > 0] = (pv2[fvu > 0]/pv1[fvu > 0])**(2/3)
-            spd[spd > 1.0] = 1.0
-            tconns = self._net["throat.conns"][self.map_throats(self._net,
-                                                                self.throats())]
-            # Need to work out the average volume change for the two pores
-            # connected by each throat Boundary pores will be connected to a
-            # throat outside this geometry if there are multiple geoms so get mapping
-            mapping = self._net.map_pores(self, self._net.pores(),
-                                          return_mapping=True)
-            source = list(mapping['source'])
-            target = list(mapping['target'])
-            ta_diff_avg = np.ones(len(tconns))
-            for i in np.arange(len(tconns)):
-                np1, np2 = tconns[i]
-                if np1 in source and np2 in source:
-                    gp1 = target[source.index(np1)]
-                    gp2 = target[source.index(np2)]
-                    ta_diff_avg[i] = (spd[gp1] + spd[gp2]) / 2
-                elif np1 in source:
-                    gp1 = target[source.index(np1)]
-                    ta_diff_avg[i] = spd[gp1]
-                elif np2 in source:
-                    gp2 = target[source.index(np2)]
-                    ta_diff_avg[i] = spd[gp2]
-            self["throat.area"] *= ta_diff_avg
-            self["throat.area"][self["throat.area"] < 0] = 0
-            self["throat.diameter"] = 2*sp.sqrt(self["throat.area"]/sp.pi)
-            self["throat.indiameter"] *= sp.sqrt(ta_diff_avg)
-        else:
-            logger.warning('Fibre volume is not be conserved under compression')
-        # Remove pores with zero throats
-        topotools.trim_occluded_throats(self._net)
