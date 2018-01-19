@@ -5,6 +5,7 @@ import scipy.sparse as sprs
 import scipy.spatial as sptl
 import matplotlib.pyplot as plt
 from scipy.io import savemat
+from transforms3d import _gohlketransforms as tr
 from openpnm import topotools
 from openpnm.network import DelaunayVoronoiDual
 from openpnm.core import logging
@@ -20,12 +21,12 @@ class VoronoiFibers(DelaunayVoronoiDual):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        DelaunayGeometry(network=self, pores=self.pores('delaunay'),
-                         throats=self.throats('delaunay'),
-                         name=self.name+'_del')
+        VoronoiGeometry(network=self, pores=self.pores('delaunay'),
+                        throats=self.throats('delaunay'),
+                        name=self.name+'_del')
 
 
-class DelaunayGeometry(GenericGeometry):
+class VoronoiGeometry(GenericGeometry):
     r"""
     Voronoi subclass of GenericGeometry.
 
@@ -41,9 +42,9 @@ class DelaunayGeometry(GenericGeometry):
     voxel_vol : boolean
         Determines whether to calculate pore volumes by creating a voxel image
         or to use the offset vertices of the throats. Voxel method is slower
-        and may run into memory issues but is more accurate and allows manipulation
-        of the image. N.B. many of the class methods are dependent on the voxel
-        image.
+        and may run into memory issues but is more accurate and allows
+        manipulation of the image.
+        N.B. many of the class methods are dependent on the voxel image.
     """
 
     def __init__(self, network, fibre_rad=3e-06, voxel_vol=True, **kwargs):
@@ -54,22 +55,25 @@ class DelaunayGeometry(GenericGeometry):
             self._vox_len = kwargs['vox_len']
         else:
             self._vox_len = 1e-6
-
         # Set all the required models
         vertices = network.find_pore_hulls()
-        coords = [network['pore.coords'][p] for p in vertices]
-        self['pore.vertices'] = coords
+        p_coords = np.array([network['pore.coords'][p] for p in vertices],
+                            dtype=object)
+        self['pore.vertices'] = p_coords
         vertices = network.find_throat_facets()
-        coords = [network['pore.coords'][t] for t in vertices]
-        self['throat.vertices'] = coords
-
-        self.add_model(propname='throat.normal',
-                       model=gm.throat_normal.voronoi)
-        self.add_model(propname='throat.offset_vertices',
-                       model=gm.throat_offset_vertices.distance_transform,
-                       offset=self._fibre_rad,
-                       set_dependent=True)
-
+        t_coords = np.array([network['pore.coords'][t] for t in vertices],
+                            dtype=object)
+        self['throat.vertices'] = t_coords
+        topotools.trim(network=network, pores=network.pores('voronoi'))
+        topotools.trim(network=network, throats=network.throats('voronoi'))
+        self['throat.normal'] = self._t_normals(t_coords)
+#        temp = self._t_normals(t_coords)
+#        print(temp[-1])
+#        self['throat.normal'] = temp
+#        print(self['throat.normal'][-1])
+#        print(np.allclose(network.throats('dual_del'),
+#                          network.throats('delaunay')))
+        self._throat_props(network, offset=fibre_rad)
         topotools.trim_occluded_throats(network=network, mask=self.name)
 
 #        if self._voxel_vol:
@@ -104,6 +108,200 @@ class DelaunayGeometry(GenericGeometry):
 #                       model=gm.throat_surface_area.extrusion)
 #        self.add_model(propname='throat.c2c',
 #                       model=gm.throat_length.c2c)
+
+    def _t_normals(self, verts):
+        r"""
+        Update the throat normals from the voronoi vertices
+        """
+        value = sp.zeros([len(verts), 3])
+        for i in range(len(verts)):
+            if len(sp.unique(verts[i][:, 0])) == 1:
+                verts_2d = sp.vstack((verts[i][:, 1], verts[i][:, 2])).T
+            elif len(sp.unique(verts[i][:, 1])) == 1:
+                verts_2d = sp.vstack((verts[i][:, 0], verts[i][:, 2])).T
+            else:
+                verts_2d = sp.vstack((verts[i][:, 0], verts[i][:, 1])).T
+            hull = sptl.ConvexHull(verts_2d, qhull_options='QJ Pp')
+            sorted_verts = verts[i][hull.vertices]
+            v1 = sorted_verts[1]-sorted_verts[0]
+            v2 = sorted_verts[-1]-sorted_verts[0]
+            value[i] = sp.cross(v1, v2)
+
+        return value
+
+    def _throat_props(self, network, offset):
+        r"""
+        Use the Voronoi vertices and perform image analysis to obtain throat
+        properties
+        """
+        import math
+        import numpy as np
+        from skimage.morphology import convex_hull_image
+        from skimage.measure import regionprops
+        from scipy import ndimage
+
+        mask = self['throat.delaunay']
+        Nt = len(mask)
+        net_Nt = network.num_throats()
+        if Nt == net_Nt:
+            centroid = sp.zeros([Nt, 3])
+            incentre = sp.zeros([Nt, 3])
+        else:
+            centroid = sp.ndarray(Nt, dtype=object)
+            incentre = sp.ndarray(Nt, dtype=object)
+        area = sp.zeros(Nt)
+        perimeter = sp.zeros(Nt)
+        inradius = sp.zeros(Nt)
+        equiv_diameter = sp.zeros(Nt)
+        eroded_verts = sp.ndarray(Nt, dtype=object)
+
+        res = 200
+        vertices = self['throat.vertices']
+        normals = self['throat.normal']
+        z_axis = [0, 0, 1]
+
+        for i in self.throats('delaunay'):
+            logger.info("Processing throat " + str(i+1)+" of "+str(Nt))
+            # For boundaries some facets will already be aligned with the axis
+            # if this is the case a rotation is unnecessary
+            angle = tr.angle_between_vectors(normals[i], z_axis)
+            if angle == 0.0 or angle == np.pi:
+                # We are already aligned
+                rotate_facet = False
+                facet = vertices[i]
+            else:
+                rotate_facet = True
+                M = tr.rotation_matrix(tr.angle_between_vectors(normals[i],
+                                                                z_axis),
+                                       tr.vector_product(normals[i], z_axis))
+                facet = np.dot(vertices[i], M[:3, :3].T)
+            x = facet[:, 0]
+            y = facet[:, 1]
+            z = facet[:, 2]
+            # Get points in 2d for image analysis
+            pts = np.column_stack((x, y))
+            # Translate points so min sits at the origin
+            translation = [pts[:, 0].min(), pts[:, 1].min()]
+            pts -= translation
+            order = np.int(math.ceil(-np.log10(np.max(pts))))
+            # Normalise and scale the points so that largest span equals the
+            # resolution to save on memory and create clear image
+            max_factor = np.max([pts[:, 0].max(), pts[:, 1].max()])
+            f = res/max_factor
+            # Scale the offset and define a structuring element with radius
+            r = f*offset
+            # Only proceed if r is less than half the span of the image"
+            if r <= res/2:
+                pts *= f
+                minp1 = pts[:, 0].min()
+                minp2 = pts[:, 1].min()
+                maxp1 = pts[:, 0].max()
+                maxp2 = pts[:, 1].max()
+                img = np.zeros([np.int(math.ceil(maxp1-minp1)+1),
+                                np.int(math.ceil(maxp2-minp2)+1)])
+                int_pts = np.around(pts, 0).astype(int)
+                for pt in int_pts:
+                    img[pt[0]][pt[1]] = 1
+                # Pad with zeros all the way around the edges
+                img_pad = np.zeros([np.shape(img)[0]+2, np.shape(img)[1]+2])
+                img_pad[1:np.shape(img)[0]+1, 1:np.shape(img)[1]+1] = img
+                # All points should lie on this plane but could be some
+                # rounding errors so use the order parameter
+                z_plane = sp.unique(np.around(z, order+2))
+                if len(z_plane) > 1:
+                    logger.error('Rotation for image analysis failed')
+                    temp_arr = np.ones(1)
+                    temp_arr.fill(np.mean(z_plane))
+                    z_plane = temp_arr
+                "Fill in the convex hull polygon"
+                convhullimg = convex_hull_image(img_pad)
+                # Perform a Distance Transform and black out points less than r
+                # to create binary erosion. This is faster than performing an
+                # erosion and dt can also be used later to find incircle
+                eroded = ndimage.distance_transform_edt(convhullimg)
+                eroded[eroded <= r] = 0
+                eroded[eroded > r] = 1
+                # If we are left with less than 3 non-zero points then the
+                # throat is fully occluded
+                if np.sum(eroded) >= 3:
+                    # Do some image analysis to extract the key properties
+                    cropped = eroded[1:np.shape(img)[0]+1,
+                                     1:np.shape(img)[1]+1].astype(int)
+                    regions = regionprops(cropped)
+                    # Change this to cope with genuine multi-region throats
+                    if len(regions) == 1:
+                        for props in regions:
+                            x0, y0 = props.centroid
+                            equiv_diameter[i] = props.equivalent_diameter
+                            area[i] = props.area
+                            perimeter[i] = props.perimeter
+                            coords = props.coords
+                        # Undo the translation, scaling and truncation on the
+                        # centroid
+                        centroid2d = [x0, y0]/f
+                        centroid2d += (translation)
+                        centroid3d = np.concatenate((centroid2d, z_plane))
+                        # Distance transform the eroded facet to find the
+                        # incentre and inradius
+                        dt = ndimage.distance_transform_edt(eroded)
+                        inx0, iny0 = \
+                            np.asarray(np.unravel_index(dt.argmax(), dt.shape)) \
+                              .astype(float)
+                        incentre2d = [inx0, iny0]
+                        # Undo the translation, scaling and truncation on the incentre
+                        incentre2d /= f
+                        incentre2d += (translation)
+                        incentre3d = np.concatenate((incentre2d, z_plane))
+                        # The offset vertices will be those in the coords that are
+                        # closest to the originals"
+                        offset_verts = []
+                        for pt in int_pts:
+                            vert = np.argmin(np.sum(np.square(coords-pt), axis=1))
+                            if vert not in offset_verts:
+                                offset_verts.append(vert)
+                        # If we are left with less than 3 different vertices then the
+                        # throat is fully occluded as we can't make a shape with
+                        # non-zero area
+                        if len(offset_verts) >= 3:
+                            offset_coords = coords[offset_verts].astype(float)
+                            # Undo the translation, scaling and truncation on the
+                            # offset_verts
+                            offset_coords /= f
+                            offset_coords_3d = \
+                                np.vstack((offset_coords[:, 0]+translation[0],
+                                           offset_coords[:, 1]+translation[1],
+                                           np.ones(len(offset_verts))*z_plane)).T
+                            # Get matrix to un-rotate the co-ordinates back to the
+                            # original orientation if we rotated in the first place
+                            if rotate_facet:
+                                MI = tr.inverse_matrix(M)
+                                # Unrotate the offset coordinates
+                                incentre[i] = np.dot(incentre3d, MI[:3, :3].T)
+                                centroid[i] = np.dot(centroid3d, MI[:3, :3].T)
+                                eroded_verts[i] = np.dot(offset_coords_3d, MI[:3, :3].T)
+                            else:
+                                incentre[i] = incentre3d
+                                centroid[i] = centroid3d
+                                eroded_verts[i] = offset_coords_3d
+
+                            inradius[i] = dt.max()
+                            # Undo scaling on other parameters
+                            area[i] /= f*f
+                            perimeter[i] /= f
+                            equiv_diameter[i] /= f
+                            inradius[i] /= f
+                        else:
+                            area[i] = 0
+                            perimeter[i] = 0
+                            equiv_diameter[i] = 0
+
+        self['throat.area'] = area
+        self['throat.perimeter'] = perimeter
+        self['throat.centroid'] = centroid
+        self['throat.diameter'] = equiv_diameter
+        self['throat.indiameter'] = inradius*2
+        self['throat.incentre'] = incentre
+        self['throat.offset_vertices'] = eroded_verts
 
     def make_fibre_image(self, fibre_rad=None, vox_len=1e-6):
         r"""
