@@ -106,7 +106,10 @@ class GenericGeometry(Base, ModelsMixin):
         r"""
         """
         element = self._parse_element(element=element, single=True)
-        indices = self._parse_indices(indices)
+        # Use the network's _parse_indices, since indicies could be 'network'
+        # length boolean masks
+        network = self.simulation.network
+        indices = network._parse_indices(indices)
 
         net = self.simulation.network
         sim = self.simulation
