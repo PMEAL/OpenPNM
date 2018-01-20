@@ -33,6 +33,7 @@ class GenericPhysics(Base, ModelsMixin):
         super().__init__(name=name, simulation=network.simulation)
         # Create a settings attribute
         self.settings['local_data'] = network.simulation.settings['local_data']
+        self.settings['boss'] = phase.name
         # Initialize a label dictionary in the associated phase and network
         phase['pore.'+self.name] = False
         phase['pore.'+self.name][network.pores(geometry.name)] = True
@@ -45,10 +46,10 @@ class GenericPhysics(Base, ModelsMixin):
 
     def __getitem__(self, key):
         element = key.split('.')[0]
+        boss = self.simulation[self.settings['boss']]
         if key.split('.')[-1] == '_id':
-            phase = self.simulation.find_phase(self)
-            inds = phase._get_indices(element=element, labels=self.name)
-            vals = phase[element+'._id'][inds]
+            inds = boss._get_indices(element=element, labels=self.name)
+            vals = boss[element+'._id'][inds]
         # Convert self.name into 'all'
         elif key.split('.')[-1] in [self.name]:
             vals = self[element+'.all']
@@ -57,23 +58,33 @@ class GenericPhysics(Base, ModelsMixin):
             vals = super(Base, self).__getitem__(key)
         # Otherwise retrieve from network
         else:
-            phase = self.simulation.find_phase(self)
-            inds = phase._get_indices(element=element, labels=self.name)
-            vals = phase[key][inds]
+            inds = boss._get_indices(element=element, labels=self.name)
+            vals = boss[key][inds]
         return vals
 
     def __setitem__(self, key, value):
         if self.settings['local_data']:
             super().__setitem__(key, value)
         else:
-            phase = self.simulation.find_phase(self)
+            boss = self.simulation[self.settings['boss']]
             element = self._parse_element(key.split('.')[0], single=True)
-            inds = self._map(ids=self[element+'._id'], element=element,
+            inds = boss._map(ids=self[element+'._id'], element=element,
                              filtered=True)
-            # If array not in network, create it first
-            if key not in phase.keys():
+            # If array not in phase, create it first
+            if key not in boss.keys():
                 if value.dtype == bool:
-                    phase[key] = False
+                    boss[key] = False
                 else:
-                    phase[key] = sp.zeros_like(value)*sp.nan
-            phase[key][inds] = value
+                    dtype = value.dtype
+                    if dtype.name == 'object':
+                        boss[key] = sp.zeros(1, dtype=object)
+                    else:
+                        Nt = len(boss[element+'.all'])
+                        dim = sp.size(value[0])
+                        if dim > 1:
+                            arr = sp.zeros(dim, dtype=dtype)
+                            temp = sp.tile(arr, reps=(Nt, 1))*sp.nan
+                        else:
+                            temp = sp.zeros(Nt)*sp.nan
+                        boss[key] = temp
+            boss[key][inds] = value
