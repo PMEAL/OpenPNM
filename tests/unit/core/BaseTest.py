@@ -6,6 +6,8 @@ import pytest
 class BaseTest:
 
     def setup_class(self):
+        ws = op.Workspace()
+        ws.settings['local_data'] = True
         self.net = op.network.Cubic(shape=[3, 3, 3])
         self.geo = op.geometry.GenericGeometry(network=self.net,
                                                pores=self.net.Ps,
@@ -686,9 +688,9 @@ class BaseTest:
 if __name__ == '__main__':
 
     t = BaseTest()
-    t.setup_class()
-    for item in t.__dir__():
-        if item.startswith('test'):
-            print('running test: '+item)
-            t.__getattribute__(item)()
-    self = t
+#    t.setup_class()
+#    for item in t.__dir__():
+#        if item.startswith('test'):
+#            print('running test: '+item)
+#            t.__getattribute__(item)()
+#    self = t
