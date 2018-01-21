@@ -216,6 +216,8 @@ class Base(dict, ParsersMixin):
         vals = [i for i in vals.keys() if i.split('.')[0] in element]
         # Remove labels
         vals = [i for i in vals if self[i].dtype != bool]
+        # Remove hidden props
+        vals = [i for i in vals if not i.split('.')[1].startswith('_')]
         # Convert to nice list for printing
         vals = PrintableList(vals)
         return vals
@@ -395,7 +397,7 @@ class Base(dict, ParsersMixin):
         mode : string
             Specifies how the query should be performed.  The options are:
 
-            **'any'** : (default) All pores with ANY of the given labels are
+            **'union'** : (default) All pores with ANY of the given labels are
             returned.
 
             **'all'** : Only pore with ALL the given labels are
@@ -415,10 +417,10 @@ class Base(dict, ParsersMixin):
         --------
         >>> import openpnm as op
         >>> pn = op.network.Cubic(shape=[3, 3, 3])
-        >>> Ps = pn.get_pores(labels=['top', 'front'], mode='any')
-        >>> PS[[0, 1, 2, -3, -2, -1]]
+        >>> Ps = pn.pores(labels=['top', 'front'], mode='union')
+        >>> ps[[0, 1, 2, -3, -2, -1]]
         array([  0,   5,  10, 122, 123, 124])
-        >>> pn.get_pores(labels=['top', 'front'], mode='all')
+        >>> pn.pores(labels=['top', 'front'], mode='all')
         array([100, 105, 110, 115, 120])
         """
         ind = self._get_indices(element='pore', labels=labels, mode=mode)
@@ -446,7 +448,7 @@ class Base(dict, ParsersMixin):
         mode : string
             Specifies how the query should be performed.  The options are:
 
-            **'any'** : (default) All throats with ANY of the given labels
+            **'union'** : (default) All throats with ANY of the given labels
             are returned.
 
             **'all'** : Only throats with ALL the given labels are
@@ -467,7 +469,7 @@ class Base(dict, ParsersMixin):
         --------
         >>> import openpnm as op
         >>> pn = op.network.Cubic(shape=[3, 3, 3])
-        >>> Ts = pn.get_throats()
+        >>> Ts = pn.throats()
         >>> Ts[0:5]
         array([0, 1, 2, 3, 4])
 
@@ -629,16 +631,16 @@ class Base(dict, ParsersMixin):
 
         Examples
         --------
-        >>> import openpnm asop
+        >>> import openpnm as op
         >>> pn = op.network.Cubic(shape=[3, 3, 3])
-        >>> Ps = pn.get_pores('top', mode='not')
+        >>> Ps = pn.pores('top', mode='not')
         >>> Ts = pn.find_neighbor_throats(pores=Ps,
         ...                               mode='intersection',
         ...                               flatten=True)
         >>> geom = op.geometry.GenericGeometry(network=pn,
         ...                                    pores=Ps,
         ...                                    throats=Ts)
-        >>> Ps = pn.get_pores('top')
+        >>> Ps = pn.pores('top')
         >>> Ts = pn.find_neighbor_throats(pores=Ps,
         ...                               mode='not_intersection')
         >>> boun = op.geometry.Boundary(network=pn, pores=Ps, throats=Ts)
@@ -881,13 +883,13 @@ class Base(dict, ParsersMixin):
 
         Examples
         --------
-        >>> import OpenPNM
-        >>> pn = OpenPNM.Network.TestNet()
+        >>> import openpnm as op
+        >>> pn = op.network.Cubic(shape=[5, 5, 5])
         >>> pn.num_pores()
         125
         >>> pn.num_pores(labels=['top'])
         25
-        >>> pn.num_pores(labels=['top', 'front'], mode='any')
+        >>> pn.num_pores(labels=['top', 'front'], mode='union')
         45
         >>> pn.num_pores(labels=['top', 'front'], mode='all')
         5
@@ -944,8 +946,8 @@ class Base(dict, ParsersMixin):
 
         Examples
         --------
-        >>> import OpenPNM
-        >>> pn = OpenPNM.Network.TestNet()
+        >>> import openpnm as op
+        >>> pn = op.network.Cubic(shape=[5, 5, 5])
         >>> pn.num_throats()
         300
         >>> pn.num_throats(labels=['top'])
@@ -1000,8 +1002,8 @@ class Base(dict, ParsersMixin):
 
         Examples
         --------
-        >>> import OpenPNM
-        >>> pn = OpenPNM.Network.TestNet()
+        >>> import openpnm as op
+        >>> pn = op.network.Cubic(shape=[5, 5, 5])
         >>> pn._count('pore')
         125
         >>> pn._count('throat')

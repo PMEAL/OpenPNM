@@ -103,8 +103,8 @@ class GenericNetwork(Base, ModelsMixin):
 
         Examples
         --------
-        >>> import OpenPNM
-        >>> pn = OpenPNM.Network.TestNet()
+        >>> import openpnm as op
+        >>> pn = op.network.Cubic(shape=[5, 5, 5])
         >>> vals = sp.rand(pn.num_throats(),) < 0.5
         >>> temp = pn.create_adjacency_matrix(data=vals, fmt='csr')
 
@@ -177,8 +177,8 @@ class GenericNetwork(Base, ModelsMixin):
 
         Examples
         --------
-        >>> import OpenPNM
-        >>> pn = OpenPNM.Network.TestNet()
+        >>> import openpnm as op
+        >>> pn = op.network.Cubic(shape=[5, 5, 5])
         >>> vals = sp.rand(pn.num_throats(),) < 0.5
         >>> temp = pn.create_incidence_matrix(data=vals,sprsfmt='csr')
         """
@@ -241,8 +241,8 @@ class GenericNetwork(Base, ModelsMixin):
 
         Examples
         --------
-        >>> import OpenPNM
-        >>> pn = OpenPNM.Network.TestNet()
+        >>> import openpnm as op
+        >>> pn = op.network.Cubic(shape=[5, 5, 5])
         >>> pn.find_connected_pores(throats=[0,1])
         array([[0, 1],
                [0, 5]])
@@ -281,8 +281,8 @@ class GenericNetwork(Base, ModelsMixin):
 
         Examples
         --------
-        >>> import OpenPNM
-        >>> pn = OpenPNM.Network.TestNet()
+        >>> import openpnm as op
+        >>> pn = op.network.Cubic(shape=[5, 5, 5])
         >>> pn.find_connecting_throat([0, 1, 2], [2, 2, 2])
         [[], [3], []]
 
@@ -342,8 +342,8 @@ class GenericNetwork(Base, ModelsMixin):
 
         Examples
         --------
-        >>> import OpenPNM
-        >>> pn = OpenPNM.Network.TestNet()
+        >>> import openpnm as op
+        >>> pn = op.network.Cubic(shape=[5, 5, 5])
         >>> pn.find_neighbor_pores(pores=[0, 2])
         array([ 1,  3,  5,  7, 25, 27])
         >>> pn.find_neighbor_pores(pores=[0, 1])
@@ -394,8 +394,8 @@ class GenericNetwork(Base, ModelsMixin):
 
         Examples
         --------
-        >>> import OpenPNM
-        >>> pn = OpenPNM.Network.TestNet()
+        >>> import openpnm as op
+        >>> pn = op.network.Cubic(shape=[5, 5, 5])
         >>> pn.find_neighbor_throats(pores=[0, 1])
         array([0, 1, 2, 3, 4, 5])
         >>> pn.find_neighbor_throats(pores=[0, 1],flatten=False)
@@ -538,8 +538,8 @@ class GenericNetwork(Base, ModelsMixin):
 
         Examples
         --------
-        >>> import OpenPNM
-        >>> pn = OpenPNM.Network.TestNet()
+        >>> import openpnm as op
+        >>> pn = op.network.Cubic(shape=[5, 5, 5])
         >>> pn.num_neighbors(pores=[0, 1], flatten=False)
         array([3, 4])
         >>> pn.num_neighbors(pores=[0, 1], flatten=True)
@@ -560,7 +560,7 @@ class GenericNetwork(Base, ModelsMixin):
             num = int(num)
         return num
 
-    def find_nearby_pores(self, pores, R, flatten=False, excl_self=True):
+    def find_nearby_pores(self, pores, r, flatten=False, excl_self=True):
         r"""
         Find all pores within a given radial distance of the input pore(s)
         regardless of whether or not they are toplogically connected.
@@ -570,7 +570,7 @@ class GenericNetwork(Base, ModelsMixin):
         pores : array_like
             The list of pores for whom nearby neighbors are to be found
 
-        R : scalar
+        r : scalar
             The maximum radius within which the search should be performed
 
         excl_self : bool
@@ -592,18 +592,18 @@ class GenericNetwork(Base, ModelsMixin):
 
         Examples
         --------
-        >>> import OpenPNM
-        >>> pn = OpenPNM.Network.TestNet()
-        >>> pn.find_nearby_pores(pores=[0, 1], distance=1)
+        >>> import openpnm as op
+        >>> pn = op.network.Cubic(shape=[3, 3, 3])
+        >>> pn.find_nearby_pores(pores=[0, 1], r=1)
         array([array([ 1,  5, 25]), array([ 0,  2,  6, 26])], dtype=object)
-        >>> pn.find_nearby_pores(pores=[0, 1], distance=0.5)
+        >>> pn.find_nearby_pores(pores=[0, 1], r=0.5)
         array([], shape=(2, 0), dtype=int64)
         """
         pores = self._parse_indices(pores)
         # Handle an empty array if given
         if sp.size(pores) == 0:
             return sp.array([], dtype=sp.int64)
-        if R <= 0:
+        if r <= 0:
             logger.error('Provided distances should be greater than 0')
             if flatten:
                 Pn = sp.array([])
@@ -614,7 +614,7 @@ class GenericNetwork(Base, ModelsMixin):
         kd = sptl.cKDTree(self['pore.coords'])
         kd_pores = sptl.cKDTree(self['pore.coords'][pores])
         # Perform search
-        Pn = kd_pores.query_ball_tree(kd, r=R)
+        Pn = kd_pores.query_ball_tree(kd, r=r)
         # Sort the indices in each list
         [Pn[i].sort() for i in range(0, sp.size(pores))]
         if flatten:  # Convert list of lists to a flat nd-array

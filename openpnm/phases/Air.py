@@ -24,9 +24,9 @@ class Air(GenericPhase):
 
     Examples
     --------
-    >>> import OpenPNM
-    >>> pn = OpenPNM.Network.TestNet()
-    >>> air = OpenPNM.Phases.Air(network=pn)
+    >>> import openpnm as op
+    >>> pn = op.network.Cubic(shape=[5, 5, 5])
+    >>> air = op.phases.Air(network=pn)
 
     """
     def __init__(self, network, name=None):
