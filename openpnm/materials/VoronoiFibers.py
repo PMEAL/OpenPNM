@@ -1,7 +1,5 @@
 import scipy as sp
 import numpy as np
-import openpnm.utils.vertexops as vo
-import scipy.sparse as sprs
 import scipy.spatial as sptl
 import matplotlib.pyplot as plt
 from transforms3d import _gohlketransforms as tr
@@ -25,9 +23,9 @@ class VoronoiFibers(DelaunayVoronoiDual):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        VoronoiGeometry(network=self, pores=self.pores('delaunay'),
-                        throats=self.throats('delaunay'),
-                        name=self.name+'_del')
+        self.geom = VoronoiGeometry(network=self, pores=self.pores('delaunay'),
+                                    throats=self.throats('delaunay'),
+                                    name=self.name+'_del')
 
 
 class VoronoiGeometry(GenericGeometry):
@@ -51,10 +49,10 @@ class VoronoiGeometry(GenericGeometry):
         N.B. many of the class methods are dependent on the voxel image.
     """
 
-    def __init__(self, network, fibre_rad=3e-06, voxel_vol=True, **kwargs):
+    def __init__(self, network, fibre_rad=3e-06, **kwargs):
         super().__init__(network=network, **kwargs)
+        self._net = network
         self._fibre_rad = fibre_rad
-        self._voxel_vol = voxel_vol
         if 'vox_len' in kwargs.keys():
             self._vox_len = kwargs['vox_len']
         else:
@@ -71,20 +69,15 @@ class VoronoiGeometry(GenericGeometry):
         # Once vertices are saved we no longer need the voronoi network
         topotools.trim(network=network, pores=network.pores('voronoi'))
         topotools.trim(network=network, throats=network.throats('voronoi'))
-        self['throat.normal'] = self._t_normals(t_coords)
+        self.in_hull_volume(network, fibre_rad=fibre_rad,
+                            vox_len=self._vox_len)
+        self['throat.normal'] = self._t_normals()
+        self['throat.centroid'] = self._centroids(verts=t_coords)
+        self['pore.centroid'] = self._centroids(verts=p_coords)
         self._throat_props(network, offset=fibre_rad)
         topotools.trim_occluded_throats(network=network, mask=self.name)
+        # Configurable Models
 
-#        if self._voxel_vol:
-#            self.add_model(propname='pore.volume',
-#                           model=gm.pore_volume.in_hull_volume,
-#                           fibre_rad=self._fibre_rad,
-#                           vox_len=self._vox_len)
-#        else:
-#            self.add_model(propname='pore.volume',
-#                           model=gm.pore_volume.voronoi)
-#        self.add_model(propname='throat.shape_factor',
-#                       model=gm.throat_shape_factor.compactness)
 #        self.add_model(propname='pore.seed',
 #                       model=gm.pore_misc.random)
 #        self.add_model(propname='throat.seed',
@@ -107,11 +100,27 @@ class VoronoiGeometry(GenericGeometry):
 #                       model=gm.throat_surface_area.extrusion)
 #        self.add_model(propname='throat.c2c',
 #                       model=gm.throat_length.c2c)
+        self.models = self.recipe()
+        self.regenerate_models()
 
-    def _t_normals(self, verts):
+    @classmethod
+    def recipe(cls):
+        r = {'throat.shape_factor': {'model': gm.throat_shape_factor.compactness},
+
+             'pore.seed': {'model': gm.pore_misc.random,
+                           'num_range': [0, 0.1],
+                           'seed': None},
+             'throat.seed': {'model': gm.throat_misc.neighbor,
+                             'pore_prop': 'pore.seed',
+                             'mode': 'min'},
+             }
+        return r
+
+    def _t_normals(self):
         r"""
         Update the throat normals from the voronoi vertices
         """
+        verts = self['throat.vertices']
         value = sp.zeros([len(verts), 3])
         for i in range(len(verts)):
             if len(sp.unique(verts[i][:, 0])) == 1:
@@ -125,7 +134,16 @@ class VoronoiGeometry(GenericGeometry):
             v1 = sorted_verts[1]-sorted_verts[0]
             v2 = sorted_verts[-1]-sorted_verts[0]
             value[i] = sp.cross(v1, v2)
+        return value
 
+    def _centroids(self, verts):
+        r'''
+        Function to calculate the centroid as the mean of a set of vertices.
+        Used for pore and throat.
+        '''
+        value = sp.zeros([len(verts), 3])
+        for i, i_verts in enumerate(verts):
+            value[i] = np.mean(i_verts, axis=0)
         return value
 
     def _throat_props(self, network, offset):
@@ -299,7 +317,7 @@ class VoronoiGeometry(GenericGeometry):
         self['throat.incentre'] = incentre
         self['throat.offset_vertices'] = eroded_verts
 
-    def inhull(self, geometry, xyz, pore, tol=1e-7):
+    def inhull(self, xyz, pore, tol=1e-7):
         r"""
         Tests whether points lie within a convex hull or not.
         Computes a tesselation of the hull works out the normals of the facets.
@@ -351,58 +369,51 @@ class VoronoiGeometry(GenericGeometry):
         dom[dom < len(a)] = 0
         dom[dom == len(a)] = 1
         ds = np.shape(dom)
-        temp_arr = np.zeros_like(geometry._hull_image, dtype=bool)
+        temp_arr = np.zeros_like(self._hull_image, dtype=bool)
         temp_arr[si[0]:si[0]+ds[0], si[1]:si[1]+ds[1], si[2]:si[2]+ds[2]] = dom
-        geometry._hull_image[temp_arr] = pore
+        self._hull_image[temp_arr] = pore
         hull_num = np.sum(dom)
-        dom = dom * geometry._fibre_image[si[0]:si[0]+ds[0], si[1]:si[1]+ds[1],
-                                          si[2]:si[2]+ds[2]]
+        dom = dom * self._fibre_image[si[0]:si[0]+ds[0], si[1]:si[1]+ds[1],
+                                      si[2]:si[2]+ds[2]]
         pore_num = np.sum(dom)
         fibre_num = hull_num - pore_num
         del temp_arr
         return pore_num, fibre_num
 
-    def in_hull_volume(self, network, geometry, fibre_rad, vox_len=1e-6,
-                       **kwargs):
+    def in_hull_volume(self, network, fibre_rad=5e-6, vox_len=1e-6):
         r"""
         Work out the voxels inside the convex hull of the voronoi vertices of
         each pore
         """
-        Np = network.num_pores()
-        geom_pores = geometry.map_pores(network, geometry.pores())
-        volume = sp.zeros(Np)
-        pore_vox = sp.zeros(Np, dtype=int)
-        fibre_vox = sp.zeros(Np, dtype=int)
+        Ps = network.pores('internal')
+        Np = len(Ps)
+        net_num_Ps = network.num_pores()
+        inds = network._map(ids=self['pore._id'][Ps], element='pore',
+                            filtered=True)
+        volume = sp.zeros(net_num_Ps)
+        pore_vox = sp.zeros(net_num_Ps, dtype=int)
+        fibre_vox = sp.zeros(net_num_Ps, dtype=int)
+        # Voxel volume
         voxel = vox_len**3
-        try:
-            nbps = network.pores('boundary', mode='not')
-        except KeyError:
-            # Boundaries have not been generated
-            nbps = network.pores()
-        # Voxel length
+        # Voxel length of fibre radius
         fibre_rad = np.around((fibre_rad-(vox_len/2))/vox_len, 0).astype(int)
-
         # Get the fibre image
-        fibre_image = self._get_fibre_image(network, geom_pores, vox_len,
-                                            fibre_rad)
+        fibre_image = self._get_fibre_image(network, inds, vox_len, fibre_rad)
         # Save as private variables
-        geometry._fibre_image = fibre_image
+        self._fibre_image = fibre_image
         hull_image = np.ones_like(fibre_image, dtype=np.uint16)*-1
-        geometry._hull_image = hull_image
-        for pore in nbps:
-            logger.info("Processing Pore: "+str(pore+1)+" of "+str(len(nbps)))
-            if network["pore.vert_index"][pore] is not None:
-                vi = [i for i in network["pore.vert_index"][pore].values()]
-                verts = np.asarray(vi)
-                verts = np.asarray(unique_list(np.around(verts, 6)))
-                verts /= vox_len
-                pore_vox[pore], fibre_vox[pore] = self.inhull(geometry, verts,
-                                                              pore)
+        self._hull_image = hull_image
+        for pore in Ps:
+            logger.info("Processing Pore: "+str(pore+1)+" of "+str(Np))
+            verts = self['pore.vertices'][pore]
+            verts = np.asarray(unique_list(np.around(verts, 6)))
+            verts /= vox_len
+            pore_vox[pore], fibre_vox[pore] = self.inhull(verts, pore)
 
         volume = pore_vox*voxel
-        self["pore.fibre_voxels"] = fibre_vox[geom_pores]
-        self["pore.pore_voxels"] = pore_vox[geom_pores]
-        self['pore.volume'] = volume[geom_pores]
+        self['pore.fibre_voxels'] = fibre_vox
+        self['pore.pore_voxels'] = pore_vox
+        self['pore.volume'] = volume
 
     def make_fibre_image(self, fibre_rad=None, vox_len=1e-6):
         r"""
@@ -479,15 +490,13 @@ class VoronoiGeometry(GenericGeometry):
                         check_p_old = check_p_new
         return np.asarray(line_points)
 
-    def _get_fibre_image(self, cpores, vox_len, fibre_rad):
+    def _get_fibre_image(self, network, cpores, vox_len, fibre_rad):
         r"""
         Produce image by filling in voxels along throat edges using Bresenham
         line then performing distance transform on fibre voxels to erode the
         pore space
         """
-        network = self.simulation.network
         cthroats = network.find_neighbor_throats(pores=cpores)
-
         # Below method copied from geometry model throat.vertices
         # Needed now as network may not have all throats assigned to geometry
         # i.e network['throat.vertices'] could return garbage
