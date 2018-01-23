@@ -35,7 +35,7 @@ def trim(network, pores=[], throats=[]):
     125
     >>> pn.Nt
     300
-    >>> op.topotools.trim(pores=[1])
+    >>> op.topotools.trim(network=pn, pores=[1])
     >>> pn.Np
     124
     >>> pn.Nt
@@ -399,8 +399,9 @@ def stitch(network, donor, P_network, P_donor, method='nearest',
     >>> [pn2.Np, pn2.Nt]
     [125, 300]
     >>> pn2['pore.coords'][:, 2] += 5.0
-    >>> pn.stitch(donor=pn2, P_network=pn.pores('top'),
-    ...           P_donor=pn2.pores('bottom'), method='nearest', len_max=1.0)
+    >>> op.topotools.stitch(donor=pn2, P_network=pn.pores('top'),
+    ...                     P_donor=pn2.pores('bottom'), method='nearest',
+    ...                     len_max=1.0)
     >>> [pn.Np, pn.Nt]
     [250, 625]
 
@@ -497,7 +498,8 @@ def connect_pores(network, pores1, pores2, labels=[], add_conns=True):
     >>> pn = op.network.Cubic(shape=[5, 5, 5])
     >>> pn.Nt
     300
-    >>> pn.connect_pores(pores1=[22, 32], pores2=[16, 80, 68])
+    >>> op.topotools.connect_pores(network=pn, pores1=[22, 32],
+    ...                            pores2=[16, 80, 68])
     >>> pn.Nt
     306
     >>> pn['throat.conns'][300:306]
@@ -556,7 +558,8 @@ def subdivide(network, pores, shape, labels=[]):
     >>> pn.Np
     150
     >>> nano_pores = [2,13,14,15]
-    >>> pn.subdivide(pores=nano_pores, shape=[4,7,3], labels='nano')
+    >>> op.topotools.subdivide(network=pn, pores=nano_pores, shape=[4,7,3],
+    ...                        labels='nano')
     >>> pn.Np
     482
     >>> assert pn.Np == (150+4*(4*7*3)-4)
@@ -598,7 +601,7 @@ def subdivide(network, pores, shape, labels=[]):
                 dim = single_dim
             div[dim] = 1
             div[-sp.array(div, ndmin=1, dtype=bool)] = sp.array(shape,
-                                                                  ndmin=1)
+                                                                ndmin=1)
 
     # Creating small network and handling labels
     networkspacing = network.spacing
@@ -724,9 +727,8 @@ def merge_pores(network, pores, labels=['merged']):
     --------
     >>> import openpnm as op
     >>> pn = op.network.Cubic(shape=[20,20,1])
-    >>> topo = op.utils.topology()
     >>> P = pn.find_nearby_pores(pores=111, r=5, flatten=True)
-    >>> topo.merge_pores(network=pn, pores=P, labels=['merged'])
+    >>> op.topotools.merge_pores(network=pn, pores=P, labels=['merged'])
     >>> print(pn.Np)
     321
     >>> pn.pores('merged')

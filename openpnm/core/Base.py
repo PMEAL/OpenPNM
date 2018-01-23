@@ -87,9 +87,8 @@ class Base(dict, ParsersMixin):
             self._name = None
         if name is None:
             name = self.simulation._generate_name(self)
-        elif not self.simulation._validate_name(name):
-            raise Exception('An object named '+name+' already exists')
-        elif self._name is not None:
+        self.simulation._validate_name(name)
+        if self._name is not None:
             logger.info('Changing the name of '+self.name+' to '+name)
             # Rename any label arrays in other objects
             for item in self.simulation:
@@ -192,7 +191,7 @@ class Base(dict, ParsersMixin):
         >>> pn.props('throat')
         ['throat.conns']
         >>> pn.props()
-        ['pore.coords', 'pore.index', 'throat.conns']
+        ['pore.coords', 'throat.conns']
         """
         # Parse Inputs
         allowed_modes = ['all', 'data', 'models', 'constants']
@@ -416,11 +415,11 @@ class Base(dict, ParsersMixin):
         Examples
         --------
         >>> import openpnm as op
-        >>> pn = op.network.Cubic(shape=[3, 3, 3])
+        >>> pn = op.network.Cubic(shape=[5, 5, 5])
         >>> Ps = pn.pores(labels=['top', 'front'], mode='union')
-        >>> ps[[0, 1, 2, -3, -2, -1]]
+        >>> Ps[[0, 1, 2, -3, -2, -1]]
         array([  0,   5,  10, 122, 123, 124])
-        >>> pn.pores(labels=['top', 'front'], mode='all')
+        >>> pn.pores(labels=['top', 'front'], mode='intersection')
         array([100, 105, 110, 115, 120])
         """
         ind = self._get_indices(element='pore', labels=labels, mode=mode)
@@ -814,8 +813,8 @@ class Base(dict, ParsersMixin):
         Examples
         --------
         >>> import openpnm as op
-        >>> pn = op.network.Cubic(shape=[3, 3, 3])
-        >>> pn.filter_by_label(pores=[0,1,5,6], labels='left')
+        >>> pn = op.network.Cubic(shape=[5, 5, 5])
+        >>> pn.filter_by_label(pores=[0, 1, 5, 6], labels='left')
         array([0, 1])
         >>> Ps = pn.pores(['top', 'bottom', 'front'], mode='union')
         >>> pn.filter_by_label(pores=Ps, labels=['top', 'front'],
@@ -859,10 +858,10 @@ class Base(dict, ParsersMixin):
         mode : string, optional
             Specifies how the count should be performed.  The options are:
 
-            **'any'** : (default) All pores with ANY of the given labels are
+            **'union'** : (default) All pores with ANY of the given labels are
             counted.
 
-            **'all'** : Only pores with ALL the given labels are
+            **intersection** : Only pores with ALL the given labels are
             counted.
 
             **'one'** : Only pores with exactly one of the given
@@ -891,9 +890,9 @@ class Base(dict, ParsersMixin):
         25
         >>> pn.num_pores(labels=['top', 'front'], mode='union')
         45
-        >>> pn.num_pores(labels=['top', 'front'], mode='all')
+        >>> pn.num_pores(labels=['top', 'front'], mode='intersection')
         5
-        >>> pn.num_pores(labels=['top', 'front'], mode='one')
+        >>> pn.num_pores(labels=['top', 'front'], mode='not_intersection')
         40
 
         """
