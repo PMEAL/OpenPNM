@@ -22,3 +22,4 @@ from . import throat_perimeter
 from . import throat_seed
 from . import throat_surface_area
 from . import throat_volume
+from . import throat_shape_factor
