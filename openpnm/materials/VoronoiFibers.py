@@ -74,29 +74,22 @@ class VoronoiGeometry(GenericGeometry):
         self['throat.normal'] = self._t_normals()
         self['throat.centroid'] = self._centroids(verts=t_coords)
         self['pore.centroid'] = self._centroids(verts=p_coords)
-        self['pore.indiameter'] = self._in_diameter()
+        (self['pore.indiameter'],
+         self['pore.incenter']) = self._indiameter_from_fibres()
         self._throat_props(network, offset=fibre_rad)
         topotools.trim_occluded_throats(network=network, mask=self.name)
+        self['throat.volume'] = sp.zeros(1, dtype=float)
+        self['throat.length'] = sp.ones(1, dtype=float)*self._fibre_rad*2
+        self['throat.c2c'] = self._throat_c2c()
         # Configurable Models
-#        self.add_model(propname='pore.indiameter',
-#                       model=gm.pore_size.centroids)
-#        self.add_model(propname='pore.area',
-#                       model=gm.pore_area.spherical)
-#        self.add_model(propname='throat.diameter',
-#                       model=gm.throat_size.equivalent_circle)
-#        self['throat.volume'] = 0.0
-#        self['throat.length'] = self._fibre_rad*2
-#        self.add_model(propname='throat.surface_area',
-#                       model=gm.throat_surface_area.extrusion)
-#        self.add_model(propname='throat.c2c',
-#                       model=gm.throat_length.c2c)
         self.models = self.recipe()
         self.regenerate_models()
 
     @classmethod
     def recipe(cls):
-        r = {'throat.shape_factor': {'model': gm.throat_shape_factor.compactness},
-
+        sf_mod = gm.throat_shape_factor.compactness
+        sa_mod = gm.throat_surface_area.extrusion
+        r = {'throat.shape_factor': {'model': sf_mod},
              'pore.seed': {'model': gm.pore_misc.random,
                            'num_range': [0, 0.1],
                            'seed': None},
@@ -104,6 +97,9 @@ class VoronoiGeometry(GenericGeometry):
                              'pore_prop': 'pore.seed',
                              'mode': 'min'},
              'pore.diameter': {'model': gm.pore_size.equivalent_sphere},
+             'pore.area': {'model': gm.pore_area.spherical,
+                           'pore_diameter': 'pore.diameter'},
+             'throat.surface_area': {'model': sa_mod},
              }
         return r
 
@@ -137,26 +133,71 @@ class VoronoiGeometry(GenericGeometry):
             value[i] = np.mean(i_verts, axis=0)
         return value
 
-    def _in_diameter(self):
+#    def _indiameter_from_centroids(self):
+#        r"""
+#        Calculate the diameter representing an inclosed sphere as the average
+#        distance from the pore centroid to the throat centroid.
+#        """
+#        network = self._net
+#        Np = network.num_pores()
+#        value = sp.zeros(Np)
+#        t_cen = self['throat.centroid']
+#        p_cen = self['pore.centroid']
+#        element = 'pore'
+#        inds = network._map(ids=self[element+'._id'], element=element,
+#                            filtered=True)
+#        for pore in inds:
+#            Ts = network.find_neighbor_throats(pore)
+#            tcs = t_cen[Ts]
+#            pc = p_cen[pore]
+#            value[pore] = sp.mean(sp.sqrt(((tcs-pc)*(tcs-pc))[:, 0] +
+#                                          ((tcs-pc)*(tcs-pc))[:, 1] +
+#                                          ((tcs-pc)*(tcs-pc))[:, 2]))*2
+#        return value
+
+    def _indiameter_from_fibres(self):
         r"""
-        Calculate the diameter representing an inclosed sphere as the average
-        distance from the pore centroid to the throat centroid.
+        Calculate an indiameter by distance transforming sections of the
+        fibre image. By definition the maximum value will be the largest radius
+        of an inscribed sphere inside the fibrous hull
         """
-        network = self._net
-        Np = network.num_pores()
-        value = sp.zeros(Np)
-        t_cen = self['throat.centroid']
+        Np = self._net.num_pores()
+        indiam = np.zeros(Np, dtype=float)
+        incen = np.zeros([Np, 3], dtype=float)
+        hull_pores = np.unique(self._hull_image)
+        (Lx, Ly, Lz) = np.shape(self._hull_image)
+        (indx, indy, indz) = np.indices([Lx, Ly, Lz])
+        indx = indx.flatten()
+        indy = indy.flatten()
+        indz = indz.flatten()
+        for i, pore in enumerate(hull_pores):
+            logger.info("Processing pore: "+str(i)+" of "+str(len(hull_pores)))
+            dt_pore = self._dt_image*(self._hull_image == pore)
+            indiam[pore] = dt_pore.max()*2
+            max_ind = np.argmax(dt_pore)
+            incen[pore, 0] = indx[max_ind]
+            incen[pore, 1] = indy[max_ind]
+            incen[pore, 2] = indz[max_ind]
+        indiam *= self._vox_len
+        incen *= self._vox_len
+        return (indiam, incen)
+
+    def _throat_c2c(self):
+        r"""
+        Calculate the centre to centre distance from centroid of pore1 to
+        centroid of throat to centroid of pore2.
+        """
+        Nt = self._net.num_throats()
         p_cen = self['pore.centroid']
-        element = 'pore'
-        inds = network._map(ids=self[element+'._id'], element=element,
-                            filtered=True)
-        for pore in inds:
-            Ts = network.find_neighbor_throats(pore)
-            tcs = t_cen[Ts]
-            pc = p_cen[pore]
-            value[pore] = sp.mean(sp.sqrt(((tcs-pc)*(tcs-pc))[:, 0] +
-                                          ((tcs-pc)*(tcs-pc))[:, 1] +
-                                          ((tcs-pc)*(tcs-pc))[:, 2]))*2
+        t_cen = self['throat.centroid']
+        conns = self._net['throat.conns']
+        p1 = conns[:, 0]
+        p2 = conns[:, 1]
+        v1 = t_cen-p_cen[p1]
+        v2 = t_cen-p_cen[p2]
+        value = sp.zeros(Nt, dtype=float)
+        for i in range(Nt):
+            value[i] = sp.linalg.norm(v1[i])+sp.linalg.norm(v2[i])
         return value
 
     def _throat_props(self, network, offset):
@@ -561,10 +602,10 @@ class VoronoiGeometry(GenericGeometry):
                                             czmin:czmax])
                     fibre_space[cxmin:cxmax,
                                 cymin:cymax,
-                                czmin:czmax][dt <= fibre_rad] = 0
+                                czmin:czmax][dtc <= fibre_rad] = 0
                     fibre_space[cxmin:cxmax,
                                 cymin:cymax,
-                                czmin:czmax][dt > fibre_rad] = 1
+                                czmin:czmax][dtc > fibre_rad] = 1
                     dt[cxmin:cxmax,
                        cymin:cymax,
                        czmin:czmax] = dtc - fibre_rad
