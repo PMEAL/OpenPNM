@@ -108,3 +108,24 @@ def largest_sphere(target, pore_diameter='pore.diameter', iters=10):
         _logger.warning('Negative pore diameters found!  Neighboring pores' +
                         ' must be larger than the pore spacing.')
     return D[network.pores(target.name)]
+
+
+def equivalent_sphere(target, pore_volume='pore.volume'):
+    r"""
+    Calculate pore diameter as the diameter of a sphere with an equivalent
+    volume.
+
+    Parameters
+    ----------
+    target : OpenPNM Geometry Object
+        The Geometry object which this model is associated with. This controls
+        the length of the calculated array, and also provides access to other
+        necessary geometric properties.
+
+    pore_volume : string
+        The dictionary key containing the pore volume values
+    """
+    from scipy.special import cbrt
+    pore_vols = target[pore_volume]
+    value = cbrt(6*pore_vols/_sp.pi)
+    return value

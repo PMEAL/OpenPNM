@@ -14,7 +14,7 @@ np.random.seed(1)
 scale = 1e-4
 coords = np.random.random([100, 3])*scale
 ws = op.core.Workspace()
-ws.loglevel = 30
+ws.loglevel = 20
 sh = [scale, scale, scale]
 vor = op.materials.VoronoiFibers(points=coords, shape=sh, name='dual')
 geom = vor.geom

@@ -74,20 +74,10 @@ class VoronoiGeometry(GenericGeometry):
         self['throat.normal'] = self._t_normals()
         self['throat.centroid'] = self._centroids(verts=t_coords)
         self['pore.centroid'] = self._centroids(verts=p_coords)
+        self['pore.indiameter'] = self._in_diameter()
         self._throat_props(network, offset=fibre_rad)
         topotools.trim_occluded_throats(network=network, mask=self.name)
         # Configurable Models
-
-#        self.add_model(propname='pore.seed',
-#                       model=gm.pore_misc.random)
-#        self.add_model(propname='throat.seed',
-#                       model=gm.throat_misc.neighbor,
-#                       pore_prop='pore.seed',
-#                       mode='min')
-#        self.add_model(propname='pore.centroid',
-#                       model=gm.pore_centroid.voronoi)
-#        self.add_model(propname='pore.diameter',
-#                       model=gm.pore_size.equivalent_sphere)
 #        self.add_model(propname='pore.indiameter',
 #                       model=gm.pore_size.centroids)
 #        self.add_model(propname='pore.area',
@@ -113,6 +103,7 @@ class VoronoiGeometry(GenericGeometry):
              'throat.seed': {'model': gm.throat_misc.neighbor,
                              'pore_prop': 'pore.seed',
                              'mode': 'min'},
+             'pore.diameter': {'model': gm.pore_size.equivalent_sphere},
              }
         return r
 
@@ -144,6 +135,28 @@ class VoronoiGeometry(GenericGeometry):
         value = sp.zeros([len(verts), 3])
         for i, i_verts in enumerate(verts):
             value[i] = np.mean(i_verts, axis=0)
+        return value
+
+    def _in_diameter(self):
+        r"""
+        Calculate the diameter representing an inclosed sphere as the average
+        distance from the pore centroid to the throat centroid.
+        """
+        network = self._net
+        Np = network.num_pores()
+        value = sp.zeros(Np)
+        t_cen = self['throat.centroid']
+        p_cen = self['pore.centroid']
+        element = 'pore'
+        inds = network._map(ids=self[element+'._id'], element=element,
+                            filtered=True)
+        for pore in inds:
+            Ts = network.find_neighbor_throats(pore)
+            tcs = t_cen[Ts]
+            pc = p_cen[pore]
+            value[pore] = sp.mean(sp.sqrt(((tcs-pc)*(tcs-pc))[:, 0] +
+                                          ((tcs-pc)*(tcs-pc))[:, 1] +
+                                          ((tcs-pc)*(tcs-pc))[:, 2]))*2
         return value
 
     def _throat_props(self, network, offset):
@@ -398,10 +411,8 @@ class VoronoiGeometry(GenericGeometry):
         # Voxel length of fibre radius
         fibre_rad = np.around((fibre_rad-(vox_len/2))/vox_len, 0).astype(int)
         # Get the fibre image
-        fibre_image = self._get_fibre_image(network, inds, vox_len, fibre_rad)
-        # Save as private variables
-        self._fibre_image = fibre_image
-        hull_image = np.ones_like(fibre_image, dtype=np.uint16)*-1
+        self._get_fibre_image(network, inds, vox_len, fibre_rad)
+        hull_image = np.ones_like(self._fibre_image, dtype=np.uint16)*-1
         self._hull_image = hull_image
         for pore in Ps:
             logger.info("Processing Pore: "+str(pore+1)+" of "+str(Np))
@@ -414,34 +425,6 @@ class VoronoiGeometry(GenericGeometry):
         self['pore.fibre_voxels'] = fibre_vox
         self['pore.pore_voxels'] = pore_vox
         self['pore.volume'] = volume
-
-    def make_fibre_image(self, fibre_rad=None, vox_len=1e-6):
-        r"""
-        If the voronoi voxel method was implemented to calculate pore volumes
-        an image of the fibre space has already been calculated and stored on
-        the geometry. If not generate it
-
-        Parameters
-        ----------
-        fibre_rad : float
-        Fibre radius to apply to Voronoi edges when calculating pore and throat
-        sizes
-
-        vox_len : float
-        Length of voxel edge when dividing domain
-        """
-
-        if hasattr(self, '_fibre_image'):
-            logger.info('fibre image already created')
-            return
-        else:
-            if fibre_rad is None:
-                fibre_rad = self._fibre_rad
-            fibre_rad /= vox_len
-            self._fibre_image = gm.pore_volume._get_fibre_image(self._net,
-                                                                self.pores(),
-                                                                vox_len,
-                                                                fibre_rad)
 
     def _get_vertex_range(self, verts):
         # Find the extent of the vetrices
@@ -573,19 +556,23 @@ class VoronoiGeometry(GenericGeometry):
                     if czmax > lz:
                         czmax = lz
                     dt_edt = ndimage.distance_transform_edt
-                    dt = dt_edt(pore_space[cxmin:cxmax,
-                                           cymin:cymax,
-                                           czmin:czmax])
+                    dtc = dt_edt(pore_space[cxmin:cxmax,
+                                            cymin:cymax,
+                                            czmin:czmax])
                     fibre_space[cxmin:cxmax,
                                 cymin:cymax,
                                 czmin:czmax][dt <= fibre_rad] = 0
                     fibre_space[cxmin:cxmax,
                                 cymin:cymax,
                                 czmin:czmax][dt > fibre_rad] = 1
-                    del dt
+                    dt[cxmin:cxmax,
+                       cymin:cymax,
+                       czmin:czmax] = dtc - fibre_rad
                     cnum += 1
         del pore_space
-        return fibre_space
+        self._fibre_image = fibre_space
+        dt[dt < 0] = 0
+        self._dt_image = dt
 
     def _get_fibre_slice(self, plane=None, index=None):
         r"""
@@ -610,8 +597,6 @@ class VoronoiGeometry(GenericGeometry):
         if plane is None and index is None:
             logger.warning('Please provide a plane array or index array')
             return None
-        if self._fibre_image is None:
-            self.make_fibre_image()
 
         if plane is not None:
             if 'array' not in plane.__class__.__name__:
@@ -677,8 +662,7 @@ class VoronoiGeometry(GenericGeometry):
         if hasattr(self, '_fibre_image') is False:
             logger.warning('This method only works when a fibre image exists')
             return
-        if self._fibre_image is None:
-            self.make_fibre_image()
+
         l = sp.asarray(sp.shape(self._fibre_image))
         px = sp.zeros(l[0])
         py = sp.zeros(l[1])
