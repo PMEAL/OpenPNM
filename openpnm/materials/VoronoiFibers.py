@@ -13,6 +13,7 @@ from openpnm.core import logging
 from openpnm.geometry import models as gm
 from openpnm.geometry import GenericGeometry
 from openpnm.utils.misc import unique_list
+from scipy.stats import itemfreq
 logger = logging.getLogger(__name__)
 
 
@@ -69,8 +70,7 @@ class VoronoiGeometry(GenericGeometry):
         # Once vertices are saved we no longer need the voronoi network
         topotools.trim(network=network, pores=network.pores('voronoi'))
         topotools.trim(network=network, throats=network.throats('voronoi'))
-        self.in_hull_volume(network, fibre_rad=fibre_rad,
-                            vox_len=self._vox_len)
+        self.in_hull_volume(network, fibre_rad=fibre_rad)
         self['throat.normal'] = self._t_normals()
         self['throat.centroid'] = self._centroids(verts=t_coords)
         self['pore.centroid'] = self._centroids(verts=p_coords)
@@ -426,28 +426,20 @@ class VoronoiGeometry(GenericGeometry):
         temp_arr = np.zeros_like(self._hull_image, dtype=bool)
         temp_arr[si[0]:si[0]+ds[0], si[1]:si[1]+ds[1], si[2]:si[2]+ds[2]] = dom
         self._hull_image[temp_arr] = pore
-        hull_num = np.sum(dom)
-        dom = dom * self._fibre_image[si[0]:si[0]+ds[0], si[1]:si[1]+ds[1],
-                                      si[2]:si[2]+ds[2]]
-        pore_num = np.sum(dom)
-        fibre_num = hull_num - pore_num
         del temp_arr
-        return pore_num, fibre_num
 
-    def in_hull_volume(self, network, fibre_rad=5e-6, vox_len=1e-6):
+    def in_hull_volume(self, network, fibre_rad=5e-6):
         r"""
         Work out the voxels inside the convex hull of the voronoi vertices of
         each pore
         """
         Ps = network.pores('internal')
         Np = len(Ps)
-        net_num_Ps = network.num_pores()
+
         inds = network._map(ids=self['pore._id'][Ps], element='pore',
                             filtered=True)
-        volume = sp.zeros(net_num_Ps)
-        pore_vox = sp.zeros(net_num_Ps, dtype=int)
-        fibre_vox = sp.zeros(net_num_Ps, dtype=int)
         # Voxel volume
+        vox_len = self._vox_len
         voxel = vox_len**3
         # Voxel length of fibre radius
         fibre_rad = np.around((fibre_rad-(vox_len/2))/vox_len, 0).astype(int)
@@ -460,12 +452,32 @@ class VoronoiGeometry(GenericGeometry):
             verts = self['pore.vertices'][pore]
             verts = np.asarray(unique_list(np.around(verts, 6)))
             verts /= vox_len
-            pore_vox[pore], fibre_vox[pore] = self.inhull(verts, pore)
+            self.inhull(verts, pore)
+        self._process_pore_voxels(network)
+        self['pore.volume'] = self['pore.pore_voxels']*voxel
 
-        volume = pore_vox*voxel
+    def _process_pore_voxels(self, network):
+        r'''
+        Function to count the number of voxels in the pore and fibre space
+        Which are assigned to each hull volume
+        '''
+        net_num_Ps = network.num_pores()
+        pore_vox = sp.zeros(net_num_Ps, dtype=int)
+        fibre_vox = sp.zeros(net_num_Ps, dtype=int)
+        pore_space = self._hull_image.copy()
+        fibre_space = self._hull_image.copy()
+        pore_space[self._fibre_image == 0] = -1
+        fibre_space[self._fibre_image == 1] = -1
+        freq_pore_vox = itemfreq(pore_space)
+        freq_pore_vox = freq_pore_vox[freq_pore_vox[:, 0] > -1]
+        freq_fibre_vox = itemfreq(fibre_space)
+        freq_fibre_vox = freq_fibre_vox[freq_fibre_vox[:, 0] > -1]
+        pore_vox[freq_pore_vox[:, 0]] = freq_pore_vox[:, 1]
+        fibre_vox[freq_fibre_vox[:, 0]] = freq_fibre_vox[:, 1]
         self['pore.fibre_voxels'] = fibre_vox
         self['pore.pore_voxels'] = pore_vox
-        self['pore.volume'] = volume
+        del pore_space
+        del fibre_space
 
     def _get_vertex_range(self, verts):
         # Find the extent of the vetrices
