@@ -68,17 +68,17 @@ class Simulation(list):
         return flag
 
     def _generate_name(self, obj):
-        prefix = obj._prefix
+        prefix = obj.settings['prefix']
         if 'GenericNetwork' in obj.mro():
             num = str(1).zfill(3)
         elif 'GenericGeometry' in obj.mro():
-            num = str(len(self.geometries.keys())).zfill(3)
+            num = str(len(self.geometries.keys())).zfill(2)
         elif 'GenericPhase' in obj.mro():
-            num = str(len(self.phases.keys())).zfill(3)
+            num = str(len(self.phases.keys())).zfill(2)
         elif 'GenericPhysics' in obj.mro():
-            num = str(len(self.physics.keys())).zfill(3)
+            num = str(len(self.physics.keys())).zfill(2)
         elif 'GenericAlgorithm' in obj.mro():
-            num = str(len(self.algorithms.keys())).zfill(3)
+            num = str(len(self.algorithms.keys())).zfill(2)
         name = prefix + '_' + num
         return name
 

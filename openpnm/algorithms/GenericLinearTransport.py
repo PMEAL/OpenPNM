@@ -16,16 +16,18 @@ class GenericLinearTransport(GenericAlgorithm):
     r"""
     """
 
-    _prefix = 'alg'
-
-    def __init__(self, phase, **kwargs):
-        super().__init__(**kwargs)
+    def __init__(self, network, phase, settings={}, **kwargs):
         self.settings.update({'phase': phase.name,
                               'conductance': None,
                               'quantity': None,
                               'solver': 'spsolve',
                               'sources': [],
                               'tolerance': 0.001})
+        self.settings.update(settings)
+        super().__init__(Np=network.Np, Nt=network.Nt, network=network, **kwargs)
+        # Initialize label 'all' in the object's own info dictionaries
+        self['pore._id'] = network['pore._id']
+        self['throat._id'] = network['throat._id']
 
     def set_dirchlet_BC(self, pores, values):
         r"""

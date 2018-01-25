@@ -13,10 +13,14 @@ class Base(dict, ParsersMixin):
 
     _prefix = 'base'
 
+    def __new__(cls, *args, **kwargs):
+        cls.settings = PrintableDict()
+        instance = super(Base, cls).__new__(cls, *args, **kwargs)
+        return instance
+
     def __init__(self, Np=0, Nt=0, name=None, simulation=None):
         super().__init__()
         simulation.append(self)
-        self.settings = PrintableDict()
         self.name = name
         self.update({'pore.all': sp.ones(shape=(Np, ), dtype=bool)})
         self.update({'throat.all': sp.ones(shape=(Nt, ), dtype=bool)})

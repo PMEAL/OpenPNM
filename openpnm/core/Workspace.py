@@ -106,6 +106,10 @@ class Workspace(dict):
         new_sim._name = hex(id(new_sim))  # Assign temporary name
         new_sim.name = new_name
 
+    def new_simuation(self, name=None):
+        sim = Simulation(name=name)
+        return sim
+
     def import_data(self, filename):
         r"""
         """
@@ -142,7 +146,7 @@ class Workspace(dict):
         for item in self.keys():
             if item.startswith('sim_'):
                 n.append(int(item.split('sim_')[1]))
-        name = 'sim_'+str(max(n)+1).zfill(3)
+        name = 'sim_'+str(max(n)+1).zfill(2)
         return name
 
     def _set_comments(self, string):
