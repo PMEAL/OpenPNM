@@ -24,23 +24,28 @@ class VoronoiFibers(DelaunayVoronoiDual):
     """
 
     def __init__(self, **kwargs):
+        if 'fiber_rad' not in kwargs.keys():
+            logger.exception(msg='Please initialize class with a fiber_rad')
+        self._fiber_rad = kwargs['fiber_rad']
+        del kwargs['fiber_rad']
         super().__init__(**kwargs)
-        VoronoiGeometry(network=self, pores=self.pores('delaunay'),
-                        throats=self.throats('delaunay'),
-                        name=self.name+'_del')
+        DelaunayGeometry(network=self, pores=self.pores('delaunay'),
+                         throats=self.throats('delaunay'),
+                         name=self.name+'_del')
 
 
-class VoronoiGeometry(GenericGeometry):
+class DelaunayGeometry(GenericGeometry):
     r"""
-    Voronoi subclass of GenericGeometry.
+    Subclass of GenericGeometry for the pores connected by throats formed from
+    the Delaunay tesselation.
 
     Parameters
     ----------
     name : string
         A unique name for the network
 
-    fibre_rad: float
-        Fibre radius to apply to Voronoi edges when calculating pore and throat
+    fiber_rad: float
+        fiber radius to apply to Voronoi edges when calculating pore and throat
         sizes
 
     voxel_vol : boolean
@@ -51,9 +56,9 @@ class VoronoiGeometry(GenericGeometry):
         N.B. many of the class methods are dependent on the voxel image.
     """
 
-    def __init__(self, network, fibre_rad=3e-06, **kwargs):
+    def __init__(self, network, **kwargs):
         super().__init__(network=network, **kwargs)
-        self._fibre_rad = fibre_rad
+        self._fiber_rad = network._fiber_rad
         if 'vox_len' in kwargs.keys():
             self._vox_len = kwargs['vox_len']
         else:
@@ -70,16 +75,16 @@ class VoronoiGeometry(GenericGeometry):
         # Once vertices are saved we no longer need the voronoi network
 #        topotools.trim(network=network, pores=network.pores('voronoi'))
 #        topotools.trim(network=network, throats=network.throats('voronoi'))
-        self.in_hull_volume(fibre_rad=fibre_rad)
+        self.in_hull_volume(fiber_rad=self._fiber_rad)
         self['throat.normal'] = self._t_normals()
         self['throat.centroid'] = self._centroids(verts=t_coords)
         self['pore.centroid'] = self._centroids(verts=p_coords)
         (self['pore.indiameter'],
-         self['pore.incenter']) = self._indiameter_from_fibres()
-        self._throat_props(offset=fibre_rad)
+         self['pore.incenter']) = self._indiameter_from_fibers()
+        self._throat_props(offset=self._fiber_rad)
         topotools.trim_occluded_throats(network=network, mask=self.name)
         self['throat.volume'] = sp.zeros(1, dtype=float)
-        self['throat.length'] = sp.ones(1, dtype=float)*self._fibre_rad*2
+        self['throat.length'] = sp.ones(1, dtype=float)*self._fiber_rad*2
         self['throat.c2c'] = self._throat_c2c()
         # Configurable Models
         self.models = self.recipe()
@@ -133,10 +138,10 @@ class VoronoiGeometry(GenericGeometry):
             value[i] = np.mean(i_verts, axis=0)
         return value
 
-    def _indiameter_from_fibres(self):
+    def _indiameter_from_fibers(self):
         r"""
         Calculate an indiameter by distance transforming sections of the
-        fibre image. By definition the maximum value will be the largest radius
+        fiber image. By definition the maximum value will be the largest radius
         of an inscribed sphere inside the fibrous hull
         """
         Np = self.num_pores()
@@ -409,7 +414,7 @@ class VoronoiGeometry(GenericGeometry):
         self._hull_image[temp_arr] = pore
         del temp_arr
 
-    def in_hull_volume(self, fibre_rad=5e-6):
+    def in_hull_volume(self, fiber_rad=5e-6):
         r"""
         Work out the voxels inside the convex hull of the voronoi vertices of
         each pore
@@ -420,11 +425,11 @@ class VoronoiGeometry(GenericGeometry):
         # Voxel volume
         vox_len = self._vox_len
         voxel = vox_len**3
-        # Voxel length of fibre radius
-        fibre_rad = np.around((fibre_rad-(vox_len/2))/vox_len, 0).astype(int)
-        # Get the fibre image
-        self._get_fibre_image(inds, vox_len, fibre_rad)
-        hull_image = np.ones_like(self._fibre_image, dtype=np.uint16)*-1
+        # Voxel length of fiber radius
+        fiber_rad = np.around((fiber_rad-(vox_len/2))/vox_len, 0).astype(int)
+        # Get the fiber image
+        self._get_fiber_image(inds, vox_len, fiber_rad)
+        hull_image = np.ones_like(self._fiber_image, dtype=np.uint16)*-1
         self._hull_image = hull_image
         for pore in Ps:
             logger.info("Processing Pore: "+str(pore+1)+" of "+str(len(Ps)))
@@ -437,26 +442,26 @@ class VoronoiGeometry(GenericGeometry):
 
     def _process_pore_voxels(self):
         r'''
-        Function to count the number of voxels in the pore and fibre space
+        Function to count the number of voxels in the pore and fiber space
         Which are assigned to each hull volume
         '''
         num_Ps = self.num_pores()
         pore_vox = sp.zeros(num_Ps, dtype=int)
-        fibre_vox = sp.zeros(num_Ps, dtype=int)
+        fiber_vox = sp.zeros(num_Ps, dtype=int)
         pore_space = self._hull_image.copy()
-        fibre_space = self._hull_image.copy()
-        pore_space[self._fibre_image == 0] = -1
-        fibre_space[self._fibre_image == 1] = -1
+        fiber_space = self._hull_image.copy()
+        pore_space[self._fiber_image == 0] = -1
+        fiber_space[self._fiber_image == 1] = -1
         freq_pore_vox = itemfreq(pore_space)
         freq_pore_vox = freq_pore_vox[freq_pore_vox[:, 0] > -1]
-        freq_fibre_vox = itemfreq(fibre_space)
-        freq_fibre_vox = freq_fibre_vox[freq_fibre_vox[:, 0] > -1]
+        freq_fiber_vox = itemfreq(fiber_space)
+        freq_fiber_vox = freq_fiber_vox[freq_fiber_vox[:, 0] > -1]
         pore_vox[freq_pore_vox[:, 0]] = freq_pore_vox[:, 1]
-        fibre_vox[freq_fibre_vox[:, 0]] = freq_fibre_vox[:, 1]
-        self['pore.fibre_voxels'] = fibre_vox
+        fiber_vox[freq_fiber_vox[:, 0]] = freq_fiber_vox[:, 1]
+        self['pore.fiber_voxels'] = fiber_vox
         self['pore.pore_voxels'] = pore_vox
         del pore_space
-        del fibre_space
+        del fiber_space
 
     def _bresenham(self, faces, dx):
         line_points = []
@@ -486,10 +491,10 @@ class VoronoiGeometry(GenericGeometry):
                         check_p_old = check_p_new
         return np.asarray(line_points)
 
-    def _get_fibre_image(self, cpores, vox_len, fibre_rad):
+    def _get_fiber_image(self, cpores, vox_len, fiber_rad):
         r"""
         Produce image by filling in voxels along throat edges using Bresenham
-        line then performing distance transform on fibre voxels to erode the
+        line then performing distance transform on fiber voxels to erode the
         pore space
         """
         net = self.network
@@ -505,14 +510,14 @@ class VoronoiGeometry(GenericGeometry):
         cdomain = np.around(np.array([(vxmax-vxmin),
                                       (vymax-vymin),
                                       (vzmax-vzmin)]), 6)
-        logger.info("Creating fibres in range: " + str(np.around(cdomain, 5)))
+        logger.info("Creating fibers in range: " + str(np.around(cdomain, 5)))
         lx = np.int(np.around(cdomain[0]/vox_len)+1)
         ly = np.int(np.around(cdomain[1]/vox_len)+1)
         lz = np.int(np.around(cdomain[2]/vox_len)+1)
         # Try to create all the arrays we will need at total domain size
         try:
             pore_space = np.ones([lx, ly, lz], dtype=np.uint8)
-            fibre_space = np.zeros(shape=[lx, ly, lz], dtype=np.uint8)
+            fiber_space = np.zeros(shape=[lx, ly, lz], dtype=np.uint8)
             dt = np.zeros([lx, ly, lz], dtype=float)
             # Only need one chunk
             cx = cy = cz = 1
@@ -535,7 +540,7 @@ class VoronoiGeometry(GenericGeometry):
             else:
                 cz = 1
 
-        # Get image of the fibres
+        # Get image of the fibers
         line_points = self._bresenham(verts, vox_len/2)
         line_ints = (np.around((line_points/vox_len), 0)).astype(int)
         for x, y, z in line_ints:
@@ -551,14 +556,14 @@ class VoronoiGeometry(GenericGeometry):
             for cj in range(cy):
                 for ck in range(cz):
                     # Work out chunk range
-                    logger.info("Processing Fibre Chunk: "+str(cnum)+" of " +
+                    logger.info("Processing fiber Chunk: "+str(cnum)+" of " +
                                 str(num_chunks))
                     cxmin = ci*chunk_len
-                    cxmax = np.int(np.ceil((ci+1)*chunk_len + 5*fibre_rad))
+                    cxmax = np.int(np.ceil((ci+1)*chunk_len + 5*fiber_rad))
                     cymin = cj*chunk_len
-                    cymax = np.int(np.ceil((cj+1)*chunk_len + 5*fibre_rad))
+                    cymax = np.int(np.ceil((cj+1)*chunk_len + 5*fiber_rad))
                     czmin = ck*chunk_len
-                    czmax = np.int(np.ceil((ck+1)*chunk_len + 5*fibre_rad))
+                    czmax = np.int(np.ceil((ck+1)*chunk_len + 5*fiber_rad))
                     # Don't overshoot
                     if cxmax > lx:
                         cxmax = lx
@@ -570,24 +575,24 @@ class VoronoiGeometry(GenericGeometry):
                     dtc = dt_edt(pore_space[cxmin:cxmax,
                                             cymin:cymax,
                                             czmin:czmax])
-                    fibre_space[cxmin:cxmax,
+                    fiber_space[cxmin:cxmax,
                                 cymin:cymax,
-                                czmin:czmax][dtc <= fibre_rad] = 0
-                    fibre_space[cxmin:cxmax,
+                                czmin:czmax][dtc <= fiber_rad] = 0
+                    fiber_space[cxmin:cxmax,
                                 cymin:cymax,
-                                czmin:czmax][dtc > fibre_rad] = 1
+                                czmin:czmax][dtc > fiber_rad] = 1
                     dt[cxmin:cxmax,
                        cymin:cymax,
-                       czmin:czmax] = dtc - fibre_rad
+                       czmin:czmax] = dtc - fiber_rad
                     cnum += 1
         del pore_space
-        self._fibre_image = fibre_space
+        self._fiber_image = fiber_space
         dt[dt < 0] = 0
         self._dt_image = dt
 
-    def _get_fibre_slice(self, plane=None, index=None):
+    def _get_fiber_slice(self, plane=None, index=None):
         r"""
-        Plot an image of a slice through the fibre image
+        Plot an image of a slice through the fiber image
         plane contains percentage values of the length of the image in each
         axis
 
@@ -602,8 +607,8 @@ class VoronoiGeometry(GenericGeometry):
         similar to plane but instead of the fraction an index of the image is
         used
         """
-        if hasattr(self, '_fibre_image') is False:
-            logger.warning('This method only works when a fibre image exists')
+        if hasattr(self, '_fiber_image') is False:
+            logger.warning('This method only works when a fiber image exists')
             return None
         if plane is None and index is None:
             logger.warning('Please provide a plane array or index array')
@@ -616,7 +621,7 @@ class VoronoiGeometry(GenericGeometry):
                 logger.warning('Plane argument must have two zero valued ' +
                                'elements to produce a planar slice')
                 return None
-            l = sp.asarray(sp.shape(self._fibre_image))
+            l = sp.asarray(sp.shape(self._fiber_image))
             s = sp.around(plane*l).astype(int)
         elif index is not None:
             if 'array' not in index.__class__.__name__:
@@ -630,17 +635,17 @@ class VoronoiGeometry(GenericGeometry):
             s = index
 
         if s[0] != 0:
-            slice_image = self._fibre_image[s[0], :, :]
+            slice_image = self._fiber_image[s[0], :, :]
         elif s[1] != 0:
-            slice_image = self._fibre_image[:, s[1], :]
+            slice_image = self._fiber_image[:, s[1], :]
         else:
-            slice_image = self._fibre_image[:, :, s[2]]
+            slice_image = self._fiber_image[:, :, s[2]]
 
         return slice_image
 
-    def plot_fibre_slice(self, plane=None, index=None, fig=None):
+    def plot_fiber_slice(self, plane=None, index=None, fig=None):
         r"""
-        Plot one slice from the fibre image
+        Plot one slice from the fiber image
 
         Parameters
         ----------
@@ -653,10 +658,10 @@ class VoronoiGeometry(GenericGeometry):
         similar to plane but instead of the fraction an index of the image is
         used
         """
-        if hasattr(self, '_fibre_image') is False:
-            logger.warning('This method only works when a fibre image exists')
+        if hasattr(self, '_fiber_image') is False:
+            logger.warning('This method only works when a fiber image exists')
             return
-        slice_image = self._get_fibre_slice(plane, index)
+        slice_image = self._get_fiber_slice(plane, index)
         if slice_image is not None:
             if fig is None:
                 plt.figure()
@@ -670,24 +675,24 @@ class VoronoiGeometry(GenericGeometry):
         Return a porosity profile in all orthogonal directions by summing
         the voxel volumes in consectutive slices.
         """
-        if hasattr(self, '_fibre_image') is False:
-            logger.warning('This method only works when a fibre image exists')
+        if hasattr(self, '_fiber_image') is False:
+            logger.warning('This method only works when a fiber image exists')
             return
 
-        l = sp.asarray(sp.shape(self._fibre_image))
+        l = sp.asarray(sp.shape(self._fiber_image))
         px = sp.zeros(l[0])
         py = sp.zeros(l[1])
         pz = sp.zeros(l[2])
 
         for x in sp.arange(l[0]):
-            px[x] = sp.sum(self._fibre_image[x, :, :])
-            px[x] /= sp.size(self._fibre_image[x, :, :])
+            px[x] = sp.sum(self._fiber_image[x, :, :])
+            px[x] /= sp.size(self._fiber_image[x, :, :])
         for y in sp.arange(l[1]):
-            py[y] = sp.sum(self._fibre_image[:, y, :])
-            py[y] /= sp.size(self._fibre_image[:, y, :])
+            py[y] = sp.sum(self._fiber_image[:, y, :])
+            py[y] /= sp.size(self._fiber_image[:, y, :])
         for z in sp.arange(l[2]):
-            pz[z] = sp.sum(self._fibre_image[:, :, z])
-            pz[z] /= sp.size(self._fibre_image[:, :, z])
+            pz[z] = sp.sum(self._fiber_image[:, :, z])
+            pz[z] /= sp.size(self._fiber_image[:, :, z])
 
         if fig is None:
             fig = plt.figure()

@@ -18,7 +18,8 @@ ws.loglevel = 20
 sim = op.core.Simulation()
 sh = [scale, scale, scale]
 vor = op.materials.VoronoiFibers(points=coords, shape=sh, name='dual',
-                                 simulation=sim)
+                                 simulation=sim,
+                                 fiber_rad=3e-6)
 geom = sim.geometries['dual_del']
 geom.plot_porosity_profile()
 plt.figure()
