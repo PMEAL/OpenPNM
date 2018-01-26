@@ -20,30 +20,6 @@ logger = logging.getLogger(__name__)
 
 class VoronoiFibers(DelaunayVoronoiDual):
     r"""
-
-    """
-
-    def __init__(self, **kwargs):
-        if 'fiber_rad' not in kwargs.keys():
-            logger.exception(msg='Please initialize class with a fiber_rad')
-        self._fiber_rad = kwargs['fiber_rad']
-        del kwargs['fiber_rad']
-        super().__init__(**kwargs)
-        DelaunayGeometry(network=self, pores=self.pores('delaunay'),
-                         throats=self.throats('delaunay'),
-                         name=self.name+'_del')
-
-
-class DelaunayGeometry(GenericGeometry):
-    r"""
-    Subclass of GenericGeometry for the pores connected by throats formed from
-    the Delaunay tesselation.
-
-    Parameters
-    ----------
-    name : string
-        A unique name for the network
-
     fiber_rad: float
         fiber radius to apply to Voronoi edges when calculating pore and throat
         sizes
@@ -56,13 +32,33 @@ class DelaunayGeometry(GenericGeometry):
         N.B. many of the class methods are dependent on the voxel image.
     """
 
+    def __init__(self, fiber_rad=None, vox_len=1e-6, **kwargs):
+        if fiber_rad is None:
+            logger.exception(msg='Please initialize class with a fiber_rad')
+        self.fiber_rad = fiber_rad
+        self.vox_len = vox_len
+        super().__init__(**kwargs)
+        DelaunayGeometry(network=self, pores=self.pores('delaunay'),
+                         throats=self.throats('delaunay'),
+                         name=self.name+'_del')
+        VoronoiGeometry(network=self, pores=self.pores('voronoi'),
+                        throats=self.throats('voronoi'),
+                        name=self.name+'_vor')
+
+
+class DelaunayGeometry(GenericGeometry):
+    r"""
+    Subclass of GenericGeometry for the pores connected by throats formed from
+    the Delaunay tesselation.
+
+    Parameters
+    ----------
+    name : string
+        A unique name for the network
+    """
+
     def __init__(self, network, **kwargs):
         super().__init__(network=network, **kwargs)
-        self._fiber_rad = network._fiber_rad
-        if 'vox_len' in kwargs.keys():
-            self._vox_len = kwargs['vox_len']
-        else:
-            self._vox_len = 1e-6
         # Set all the required models
         vertices = network.find_pore_hulls()
         p_coords = np.array([network['pore.coords'][p] for p in vertices],
@@ -75,16 +71,17 @@ class DelaunayGeometry(GenericGeometry):
         # Once vertices are saved we no longer need the voronoi network
 #        topotools.trim(network=network, pores=network.pores('voronoi'))
 #        topotools.trim(network=network, throats=network.throats('voronoi'))
-        self.in_hull_volume(fiber_rad=self._fiber_rad)
+        self.in_hull_volume()
         self['throat.normal'] = self._t_normals()
         self['throat.centroid'] = self._centroids(verts=t_coords)
         self['pore.centroid'] = self._centroids(verts=p_coords)
         (self['pore.indiameter'],
          self['pore.incenter']) = self._indiameter_from_fibers()
-        self._throat_props(offset=self._fiber_rad)
+        self._throat_props()
         topotools.trim_occluded_throats(network=network, mask=self.name)
         self['throat.volume'] = sp.zeros(1, dtype=float)
-        self['throat.length'] = sp.ones(1, dtype=float)*self._fiber_rad*2
+        self['throat.length'] = sp.ones(1, dtype=float)
+        self['throat.length'] *= self.network.fiber_rad*2
         self['throat.c2c'] = self._throat_c2c()
         # Configurable Models
         self.models = self.recipe()
@@ -161,8 +158,8 @@ class DelaunayGeometry(GenericGeometry):
             incen[pore, 0] = indx[max_ind]
             incen[pore, 1] = indy[max_ind]
             incen[pore, 2] = indz[max_ind]
-        indiam *= self._vox_len
-        incen *= self._vox_len
+        indiam *= self.network.vox_len
+        incen *= self.network.vox_len
         return (indiam, incen)
 
     def _throat_c2c(self):
@@ -186,11 +183,12 @@ class DelaunayGeometry(GenericGeometry):
                 value[i] = sp.linalg.norm(v1[i])+sp.linalg.norm(v2[i])
         return value[net.throats(self.name)]
 
-    def _throat_props(self, offset):
+    def _throat_props(self):
         r"""
         Use the Voronoi vertices and perform image analysis to obtain throat
         properties
         """
+        offset = self.network.fiber_rad
         mask = self['throat.delaunay']
         Nt = len(mask)
         net_Nt = self.num_throats()
@@ -414,7 +412,7 @@ class DelaunayGeometry(GenericGeometry):
         self._hull_image[temp_arr] = pore
         del temp_arr
 
-    def in_hull_volume(self, fiber_rad=5e-6):
+    def in_hull_volume(self):
         r"""
         Work out the voxels inside the convex hull of the voronoi vertices of
         each pore
@@ -422,23 +420,18 @@ class DelaunayGeometry(GenericGeometry):
         Ps = self.network.pores(['internal', 'delaunay'], mode='intersection')
         inds = self.network._map(ids=self['pore._id'][Ps], element='pore',
                                  filtered=True)
-        # Voxel volume
-        vox_len = self._vox_len
-        voxel = vox_len**3
-        # Voxel length of fiber radius
-        fiber_rad = np.around((fiber_rad-(vox_len/2))/vox_len, 0).astype(int)
         # Get the fiber image
-        self._get_fiber_image(inds, vox_len, fiber_rad)
+        self._get_fiber_image(inds)
         hull_image = np.ones_like(self._fiber_image, dtype=np.uint16)*-1
         self._hull_image = hull_image
         for pore in Ps:
             logger.info("Processing Pore: "+str(pore+1)+" of "+str(len(Ps)))
             verts = self['pore.vertices'][pore]
             verts = np.asarray(unique_list(np.around(verts, 6)))
-            verts /= vox_len
+            verts /= self.network.vox_len
             self.inhull(verts, pore)
         self._process_pore_voxels()
-        self['pore.volume'] = self['pore.pore_voxels']*voxel
+        self['pore.volume'] = self['pore.pore_voxels']*self.network.vox_len**3
 
     def _process_pore_voxels(self):
         r'''
@@ -491,12 +484,16 @@ class DelaunayGeometry(GenericGeometry):
                         check_p_old = check_p_new
         return np.asarray(line_points)
 
-    def _get_fiber_image(self, cpores, vox_len, fiber_rad):
+    def _get_fiber_image(self, cpores):
         r"""
         Produce image by filling in voxels along throat edges using Bresenham
         line then performing distance transform on fiber voxels to erode the
         pore space
         """
+        fiber_rad = self.network.fiber_rad
+        vox_len = self.network.vox_len
+        # Voxel length of fiber radius
+        fiber_rad = np.around((fiber_rad-(vox_len/2))/vox_len, 0).astype(int)
         net = self.network
         verts = self['throat.vertices']
         [vxmin, vxmax, vymin,
@@ -707,3 +704,15 @@ class DelaunayGeometry(GenericGeometry):
         ax.legend(handles, labels, loc=1)
         plt.legend(bbox_to_anchor=(1, 1), loc=2, borderaxespad=0.)
         return fig
+
+
+class VoronoiGeometry(GenericGeometry):
+    r"""
+    Subclass of GenericGeometry for the pores connected by throats formed from
+    the Delaunay tesselation.
+
+    Parameters
+    ----------
+    name : string
+        A unique name for the network
+    """
