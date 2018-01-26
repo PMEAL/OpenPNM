@@ -34,8 +34,7 @@ class GenericPhysics(Base, ModelsMixin):
         super().__init__(Np=geometry.Np, Nt=geometry.Nt,
                          simulation=network.simulation, **kwargs)
         self.settings['local_data'] = self.simulation.settings['local_data']
-        # Create a settings attribute
-        # Initialize a label dictionary in the associated phase and network
+        # Initialize a label array in the associated phase
         phase['pore.'+self.name] = False
         phase['pore.'+self.name][network.pores(geometry.name)] = True
         phase['throat.'+self.name] = False

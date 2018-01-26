@@ -27,8 +27,8 @@ class GenericGeometry(Base, ModelsMixin):
     --------
     >>> import openpnm as op
     >>> pn = op.network.Cubic(shape=[5, 5, 5])
-    >>> Ps = pn.pores()  # Get all pores
-    >>> Ts = pn.throats()  # Get all throats
+    >>> Ps = pn.pores('all')  # Get all pores
+    >>> Ts = pn.throats('all')  # Get all throats
     >>> geom = op.geometry.GenericGeometry(network=pn, pores=Ps, throats=Ts)
     """
 

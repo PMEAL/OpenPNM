@@ -38,8 +38,8 @@ class Workspace(dict):
 
     def _create_console_handles(self, simulation):
         r"""
-        Adds all objects in the simulation to the console as variables with
-        the handle equal to the object's name.
+        Adds all objects in the given Simulation to the console as variables
+        with handle names taken from each object's name.
         """
         import __main__
         for item in simulation:
@@ -68,7 +68,7 @@ class Workspace(dict):
 
     def load_simulation(self, filename):
         r"""
-        Loads a simulation from the specified 'net' file and adds it
+        Loads a Simulation from the specified 'net' file and adds it
         to the Workspace
 
         Parameters
@@ -85,29 +85,44 @@ class Workspace(dict):
 
     def copy_simulation(self, simulation, new_name=None):
         r"""
-        Make a copy of an existing simulation object
+        Make a copy of an existing Simulation object
 
         Parameters
         ----------
-        simulation : Simulation Object
+        simulation : Simulation object
             The Simulation object to be copied
 
         name : string, optional
             A name for the new copy of the Simulation.  If not supplied, then
-            one will be generated.
+            one will be generated (e.g. 'sim_02')
 
         Returns
         -------
-        This returns nothing, but adds the new simulation obaject to the
-        current workspace.
+        The new Simulation object
 
         """
         new_sim = copy.deepcopy(simulation)
         new_sim._name = hex(id(new_sim))  # Assign temporary name
         new_sim.name = new_name
+        return new_sim
 
     def new_simuation(self, name=None):
-        sim = Simulation(name=name)
+        r"""
+        Creates a new, empty simulation object
+
+        Parameters
+        ----------
+        name : string (optional)
+            The unique name to give to the Simulation.  If none is given, one
+            will be automatically generated (e.g. 'sim_01`)
+
+        Returns
+        -------
+        An empty Simulation object, suitable for passing into a Network
+        generator
+
+        """
+        sim = openpnm.core.Simulation(name=name)
         return sim
 
     def import_data(self, filename):
