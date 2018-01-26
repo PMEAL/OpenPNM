@@ -38,6 +38,9 @@ class VoronoiFibers(DelaunayVoronoiDual):
         self.fiber_rad = fiber_rad
         self.vox_len = vox_len
         super().__init__(**kwargs)
+        self['pore.vertices'] = sp.ones(self.Np, dtype=object)*np.nan
+        self['throat.vertices'] = sp.ones(self.Nt, dtype=object)*np.nan
+        self['throat.offset_vertices'] = sp.ones(self.Nt, dtype=object)*np.nan
         DelaunayGeometry(network=self, pores=self.pores('delaunay'),
                          throats=self.throats('delaunay'),
                          name=self.name+'_del')
@@ -716,3 +719,33 @@ class VoronoiGeometry(GenericGeometry):
     name : string
         A unique name for the network
     """
+    def __init__(self, network, **kwargs):
+        super().__init__(network=network, **kwargs)
+        rm = 'normal'
+        self['pore.diameter'] = sp.ones(self.Np)*network.fiber_rad*2
+        self.add_model(propname='pore.volume',
+                       model=gm.pore_volume.sphere,
+                       regen_mode=rm)
+        self.add_model(propname='pore.area',
+                       model=gm.pore_area.spherical,
+                       regen_mode=rm)
+        self['throat.diameter'] = sp.ones(self.Nt)*network.fiber_rad*2
+        self.add_model(propname='throat.area',
+                       model=gm.throat_area.cylinder,
+                       regen_mode=rm)
+        self.add_model(propname='throat.length',
+                       model=gm.throat_length.straight,
+                       L_negative=network.fiber_rad/100,
+                       regen_mode=rm)
+        self.add_model(propname='throat.volume',
+                       model=gm.throat_volume.cylinder,
+                       regen_mode=rm)
+        self.add_model(propname='throat.perimeter',
+                       model=gm.throat_perimeter.cylinder,
+                       regen_mode=rm)
+        self.add_model(propname='throat.surface_area',
+                       model=gm.throat_surface_area.cylinder,
+                       regen_mode=rm)
+        self.add_model(propname='throat.shape_factor',
+                       model=gm.throat_shape_factor.compactness,
+                       regen_mode=rm)
