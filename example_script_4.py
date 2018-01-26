@@ -15,9 +15,11 @@ scale = 1e-4
 coords = np.random.random([100, 3])*scale
 ws = op.core.Workspace()
 ws.loglevel = 20
+sim = op.core.Simulation()
 sh = [scale, scale, scale]
-vor = op.materials.VoronoiFibers(points=coords, shape=sh, name='dual')
-geom = vor.geom
+vor = op.materials.VoronoiFibers(points=coords, shape=sh, name='dual',
+                                 simulation=sim)
+geom = sim.geometries['dual_del']
 geom.plot_porosity_profile()
 plt.figure()
 plt.imshow(geom._fibre_image[:, :, 50])
