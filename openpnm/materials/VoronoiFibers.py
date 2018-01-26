@@ -13,6 +13,7 @@ from openpnm.core import logging
 from openpnm.geometry import models as gm
 from openpnm.geometry import GenericGeometry
 from openpnm.utils.misc import unique_list
+import openpnm.utils.vertexops as vo
 from scipy.stats import itemfreq
 logger = logging.getLogger(__name__)
 
@@ -67,8 +68,8 @@ class VoronoiGeometry(GenericGeometry):
                             dtype=object)
         self['throat.vertices'] = t_coords
         # Once vertices are saved we no longer need the voronoi network
-        topotools.trim(network=network, pores=network.pores('voronoi'))
-        topotools.trim(network=network, throats=network.throats('voronoi'))
+#        topotools.trim(network=network, pores=network.pores('voronoi'))
+#        topotools.trim(network=network, throats=network.throats('voronoi'))
         self.in_hull_volume(fibre_rad=fibre_rad)
         self['throat.normal'] = self._t_normals()
         self['throat.centroid'] = self._centroids(verts=t_coords)
@@ -138,7 +139,7 @@ class VoronoiGeometry(GenericGeometry):
         fibre image. By definition the maximum value will be the largest radius
         of an inscribed sphere inside the fibrous hull
         """
-        Np = self.network.num_pores()
+        Np = self.num_pores()
         indiam = np.zeros(Np, dtype=float)
         incen = np.zeros([Np, 3], dtype=float)
         hull_pores = np.unique(self._hull_image)
@@ -164,18 +165,21 @@ class VoronoiGeometry(GenericGeometry):
         Calculate the centre to centre distance from centroid of pore1 to
         centroid of throat to centroid of pore2.
         """
-        Nt = self.network.num_throats()
-        p_cen = self['pore.centroid']
-        t_cen = self['throat.centroid']
-        conns = self.network['throat.conns']
+        net = self.network
+        Nt = net.num_throats()
+        p_cen = net['pore.centroid']
+        t_cen = net['throat.centroid']
+        conns = net['throat.conns']
         p1 = conns[:, 0]
         p2 = conns[:, 1]
         v1 = t_cen-p_cen[p1]
         v2 = t_cen-p_cen[p2]
-        value = sp.zeros(Nt, dtype=float)
+        check_nan = ~sp.any(sp.isnan(v1 + v2), axis=1)
+        value = sp.ones(Nt, dtype=float)*sp.nan
         for i in range(Nt):
-            value[i] = sp.linalg.norm(v1[i])+sp.linalg.norm(v2[i])
-        return value
+            if check_nan[i]:
+                value[i] = sp.linalg.norm(v1[i])+sp.linalg.norm(v2[i])
+        return value[net.throats(self.name)]
 
     def _throat_props(self, offset):
         r"""
@@ -184,7 +188,7 @@ class VoronoiGeometry(GenericGeometry):
         """
         mask = self['throat.delaunay']
         Nt = len(mask)
-        net_Nt = self.network.num_throats()
+        net_Nt = self.num_throats()
         if Nt == net_Nt:
             centroid = sp.zeros([Nt, 3])
             incentre = sp.zeros([Nt, 3])
@@ -410,9 +414,7 @@ class VoronoiGeometry(GenericGeometry):
         Work out the voxels inside the convex hull of the voronoi vertices of
         each pore
         """
-        Ps = self.network.pores('internal')
-        Np = len(Ps)
-
+        Ps = self.network.pores(['internal', 'delaunay'], mode='intersection')
         inds = self.network._map(ids=self['pore._id'][Ps], element='pore',
                                  filtered=True)
         # Voxel volume
@@ -425,7 +427,7 @@ class VoronoiGeometry(GenericGeometry):
         hull_image = np.ones_like(self._fibre_image, dtype=np.uint16)*-1
         self._hull_image = hull_image
         for pore in Ps:
-            logger.info("Processing Pore: "+str(pore+1)+" of "+str(Np))
+            logger.info("Processing Pore: "+str(pore+1)+" of "+str(len(Ps)))
             verts = self['pore.vertices'][pore]
             verts = np.asarray(unique_list(np.around(verts, 6)))
             verts /= vox_len
@@ -438,9 +440,9 @@ class VoronoiGeometry(GenericGeometry):
         Function to count the number of voxels in the pore and fibre space
         Which are assigned to each hull volume
         '''
-        net_num_Ps = self.network.num_pores()
-        pore_vox = sp.zeros(net_num_Ps, dtype=int)
-        fibre_vox = sp.zeros(net_num_Ps, dtype=int)
+        num_Ps = self.num_pores()
+        pore_vox = sp.zeros(num_Ps, dtype=int)
+        fibre_vox = sp.zeros(num_Ps, dtype=int)
         pore_space = self._hull_image.copy()
         fibre_space = self._hull_image.copy()
         pore_space[self._fibre_image == 0] = -1
@@ -455,25 +457,6 @@ class VoronoiGeometry(GenericGeometry):
         self['pore.pore_voxels'] = pore_vox
         del pore_space
         del fibre_space
-
-    def _get_vertex_range(self, verts):
-        # Find the extent of the vetrices
-        vxmin = vymin = vzmin = 1e20
-        vxmax = vymax = vzmax = -1e20
-        for vert in verts:
-            if np.min(vert[:, 0]) < vxmin:
-                vxmin = np.min(vert[:, 0])
-            if np.max(vert[:, 0]) > vxmax:
-                vxmax = np.max(vert[:, 0])
-            if np.min(vert[:, 1]) < vymin:
-                vymin = np.min(vert[:, 1])
-            if np.max(vert[:, 1]) > vymax:
-                vymax = np.max(vert[:, 1])
-            if np.min(vert[:, 2]) < vzmin:
-                vzmin = np.min(vert[:, 2])
-            if np.max(vert[:, 2]) > vzmax:
-                vzmax = np.max(vert[:, 2])
-        return [vxmin, vxmax, vymin, vymax, vzmin, vzmax]
 
     def _bresenham(self, faces, dx):
         line_points = []
@@ -509,17 +492,15 @@ class VoronoiGeometry(GenericGeometry):
         line then performing distance transform on fibre voxels to erode the
         pore space
         """
-        cthroats = self.network.find_neighbor_throats(pores=cpores)
-        # Below method copied from geometry model throat.vertices
-        # Needed now as network may not have all throats assigned to geometry
-        # i.e network['throat.vertices'] could return garbage
+        net = self.network
         verts = self['throat.vertices']
-        cverts = verts[cthroats]
         [vxmin, vxmax, vymin,
-         vymax, vzmin, vzmax] = self._get_vertex_range(cverts)
+         vymax, vzmin, vzmax] = vo.vertex_dimension(net,
+                                                    net.pores('delaunay'),
+                                                    parm='minmax')
         # Translate vertices so that minimum occurs at the origin
-        for index in range(len(cverts)):
-            cverts[index] -= np.array([vxmin, vymin, vzmin])
+        for index in range(len(verts)):
+            verts[index] -= np.array([vxmin, vymin, vzmin])
         # Find new size of image array
         cdomain = np.around(np.array([(vxmax-vxmin),
                                       (vymax-vymin),
@@ -555,7 +536,7 @@ class VoronoiGeometry(GenericGeometry):
                 cz = 1
 
         # Get image of the fibres
-        line_points = self._bresenham(cverts, vox_len/2)
+        line_points = self._bresenham(verts, vox_len/2)
         line_ints = (np.around((line_points/vox_len), 0)).astype(int)
         for x, y, z in line_ints:
             try:
