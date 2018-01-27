@@ -166,29 +166,29 @@ class GenericNetworkTest:
         op.topotools.trim(network=self.net, throats=self.net.Ts[-2:])
 
     def test_find_nearby_pores_distance_1(self):
-        a = self.net.find_nearby_pores(pores=[0, 1], distance=1)
+        a = self.net.find_nearby_pores(pores=[0, 1], r=1)
         b = self.net.find_neighbor_pores(pores=[0, 1], flatten=False)
         assert sp.all([sp.all(a[i] == b[i]) for i in range(0, len(a))])
 
     def test_find_nearby_pores_distance_2(self):
-        a = self.net.find_nearby_pores(pores=[0, 1], distance=2)
+        a = self.net.find_nearby_pores(pores=[0, 1], r=2)
         assert sp.all([sp.size(a[i]) for i in [0, 1]] == [10, 14])
 
     def test_find_nearby_pores_distance_0(self):
-        a = self.net.find_nearby_pores(pores=[0, 1], distance=0)
+        a = self.net.find_nearby_pores(pores=[0, 1], r=0)
         assert sp.shape(a) == (2, 0)
 
     def test_find_nearby_pores_distance_1_flattened(self):
-        a = self.net.find_nearby_pores(pores=[0, 1], distance=1, flatten=True)
+        a = self.net.find_nearby_pores(pores=[0, 1], r=1, flatten=True)
         b = self.net.find_neighbor_pores(pores=[0, 1])
         assert sp.all(a == b)
 
     def test_find_nearby_pores_distance_2_flattened(self):
-        a = self.net.find_nearby_pores(pores=[0, 1], distance=2, flatten=True)
+        a = self.net.find_nearby_pores(pores=[0, 1], r=2, flatten=True)
         assert sp.size(a) == 15
 
     def test_find_nearby_pores_distance_2_flattened_inclself(self):
-        a = self.net.find_nearby_pores(pores=[0, 1], distance=2,
+        a = self.net.find_nearby_pores(pores=[0, 1], r=2,
                                        flatten=True, excl_self=False)
         assert sp.size(a) == 17
         assert sp.all(sp.in1d([0, 1], a))

@@ -90,9 +90,8 @@ class Base(dict):
             self._name = None
         if name is None:
             name = self.simulation._generate_name(self)
-        elif not self.simulation._validate_name(name):
-            raise Exception('An object named '+name+' already exists')
-        elif self._name is not None:
+        self.simulation._validate_name(name)
+        if self._name is not None:
             logger.info('Changing the name of '+self.name+' to '+name)
             # Rename any label arrays in other objects
             for item in self.simulation:
@@ -195,7 +194,7 @@ class Base(dict):
         >>> pn.props('throat')
         ['throat.conns']
         >>> pn.props()
-        ['pore.coords', 'pore.index', 'throat.conns']
+        ['pore.coords', 'throat.conns']
         """
         # Parse Inputs
         allowed_modes = ['all', 'data', 'models', 'constants']
@@ -219,6 +218,8 @@ class Base(dict):
         vals = [i for i in vals.keys() if i.split('.')[0] in element]
         # Remove labels
         vals = [i for i in vals if self[i].dtype != bool]
+        # Remove hidden props
+        vals = [i for i in vals if not i.split('.')[1].startswith('_')]
         # Convert to nice list for printing
         vals = PrintableList(vals)
         return vals
@@ -398,8 +399,8 @@ class Base(dict):
         mode : string
             Specifies how the query should be performed.  The options are:
 
-            **'any'** : (default) Pores with at least one of the given labels
-            are returned.  This is equivalent to ``union`` which is deprecated.
+            **'union'** : (default) All pores with ANY of the given labels are
+            returned.
 
             **'all'** : Only pore with ALL the given labels are returned. This
             is equivalent to ``intersection`` which is deprecated.
@@ -418,11 +419,11 @@ class Base(dict):
         Examples
         --------
         >>> import openpnm as op
-        >>> pn = op.network.Cubic(shape=[3, 3, 3])
-        >>> Ps = pn.get_pores(labels=['top', 'front'], mode='any')
-        >>> PS[[0, 1, 2, -3, -2, -1]]
+        >>> pn = op.network.Cubic(shape=[5, 5, 5])
+        >>> Ps = pn.pores(labels=['top', 'front'], mode='union')
+        >>> Ps[[0, 1, 2, -3, -2, -1]]
         array([  0,   5,  10, 122, 123, 124])
-        >>> pn.get_pores(labels=['top', 'front'], mode='all')
+        >>> pn.pores(labels=['top', 'front'], mode='intersection')
         array([100, 105, 110, 115, 120])
         """
         ind = self._get_indices(element='pore', labels=labels, mode=mode)
@@ -450,7 +451,7 @@ class Base(dict):
         mode : string
             Specifies how the query should be performed.  The options are:
 
-            **'any'** : (default) All throats with ANY of the given labels
+            **'union'** : (default) All throats with ANY of the given labels
             are returned.
 
             **'all'** : Only throats with ALL the given labels are
@@ -471,7 +472,7 @@ class Base(dict):
         --------
         >>> import openpnm as op
         >>> pn = op.network.Cubic(shape=[3, 3, 3])
-        >>> Ts = pn.get_throats()
+        >>> Ts = pn.throats()
         >>> Ts[0:5]
         array([0, 1, 2, 3, 4])
 
@@ -633,16 +634,16 @@ class Base(dict):
 
         Examples
         --------
-        >>> import openpnm asop
+        >>> import openpnm as op
         >>> pn = op.network.Cubic(shape=[3, 3, 3])
-        >>> Ps = pn.get_pores('top', mode='not')
+        >>> Ps = pn.pores('top', mode='not')
         >>> Ts = pn.find_neighbor_throats(pores=Ps,
         ...                               mode='intersection',
         ...                               flatten=True)
         >>> geom = op.geometry.GenericGeometry(network=pn,
         ...                                    pores=Ps,
         ...                                    throats=Ts)
-        >>> Ps = pn.get_pores('top')
+        >>> Ps = pn.pores('top')
         >>> Ts = pn.find_neighbor_throats(pores=Ps,
         ...                               mode='not_intersection')
         >>> boun = op.geometry.Boundary(network=pn, pores=Ps, throats=Ts)
@@ -816,8 +817,8 @@ class Base(dict):
         Examples
         --------
         >>> import openpnm as op
-        >>> pn = op.network.Cubic(shape=[3, 3, 3])
-        >>> pn.filter_by_label(pores=[0,1,5,6], labels='left')
+        >>> pn = op.network.Cubic(shape=[5, 5, 5])
+        >>> pn.filter_by_label(pores=[0, 1, 5, 6], labels='left')
         array([0, 1])
         >>> Ps = pn.pores(['top', 'bottom', 'front'], mode='union')
         >>> pn.filter_by_label(pores=Ps, labels=['top', 'front'],
@@ -861,10 +862,10 @@ class Base(dict):
         mode : string, optional
             Specifies how the count should be performed.  The options are:
 
-            **'any'** : (default) All pores with ANY of the given labels are
+            **'union'** : (default) All pores with ANY of the given labels are
             counted.
 
-            **'all'** : Only pores with ALL the given labels are
+            **intersection** : Only pores with ALL the given labels are
             counted.
 
             **'one'** : Only pores with exactly one of the given
@@ -885,17 +886,17 @@ class Base(dict):
 
         Examples
         --------
-        >>> import OpenPNM
-        >>> pn = OpenPNM.Network.TestNet()
+        >>> import openpnm as op
+        >>> pn = op.network.Cubic(shape=[5, 5, 5])
         >>> pn.num_pores()
         125
         >>> pn.num_pores(labels=['top'])
         25
-        >>> pn.num_pores(labels=['top', 'front'], mode='any')
+        >>> pn.num_pores(labels=['top', 'front'], mode='union')
         45
-        >>> pn.num_pores(labels=['top', 'front'], mode='all')
+        >>> pn.num_pores(labels=['top', 'front'], mode='intersection')
         5
-        >>> pn.num_pores(labels=['top', 'front'], mode='one')
+        >>> pn.num_pores(labels=['top', 'front'], mode='not_intersection')
         40
 
         """
@@ -948,8 +949,8 @@ class Base(dict):
 
         Examples
         --------
-        >>> import OpenPNM
-        >>> pn = OpenPNM.Network.TestNet()
+        >>> import openpnm as op
+        >>> pn = op.network.Cubic(shape=[5, 5, 5])
         >>> pn.num_throats()
         300
         >>> pn.num_throats(labels=['top'])
@@ -1004,8 +1005,8 @@ class Base(dict):
 
         Examples
         --------
-        >>> import OpenPNM
-        >>> pn = OpenPNM.Network.TestNet()
+        >>> import openpnm as op
+        >>> pn = op.network.Cubic(shape=[5, 5, 5])
         >>> pn._count('pore')
         125
         >>> pn._count('throat')

@@ -33,21 +33,21 @@ class Drainage(GenericAlgorithm):
 
     Examples
     --------
-    >>> import OpenPNM as op
-    >>> pn = op.Network.Cubic(shape=[20, 20, 20], spacing=10)
+    >>> import openpnm as op
+    >>> pn = op.network.Cubic(shape=[20, 20, 20], spacing=10)
     >>> pn.add_boundary_pores(pores=pn.pores('top'),
     ...                       offset=[0, 0, 10],
     ...                       apply_label='boundary_top')
-    >>> geo = op.Geometry.Stick_and_Ball(network=pn, pores=pn.Ps,
+    >>> geo = op.geometry.Stick_and_Ball(network=pn, pores=pn.Ps,
     ...                                  throats=pn.Ts)
-    >>> water = op.Phases.Water(network=pn)
-    >>> air = op.Phases.Air(network=pn)
-    >>> phys = op.Physics.Standard(network=pn, phase=water, geometry=geo)
+    >>> water = op.phases.Water(network=pn)
+    >>> air = op.phases.Air(network=pn)
+    >>> phys = op.physics.Standard(network=pn, phase=water, geometry=geo)
 
     Once the basic Core objects are setup, the Algorithm can be created and
     and run as follows:
 
-    >>> alg = op.Algorithms.Drainage(network=pn)
+    >>> alg = op.algorithms.Drainage(network=pn)
     >>> alg.setup(invading_phase=water, defending_phase=air)
     >>> alg.set_inlets(pores=pn.pores('boundary_top'))
     >>> alg.run()

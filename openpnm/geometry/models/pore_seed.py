@@ -67,12 +67,12 @@ def spatially_correlated(target, weights=None, strel=None):
 
     Examples
     --------
-    >>> import OpenPNM
-    >>> pn = OpenPNM.Network.Cubic(shape=[50, 50, 50])
-    >>> geom = OpenPNM.Geometry.GenericGeometry(network=pn,
-    ...                                         pores=pn.Ps,
-    ...                                         throats=pn.Ts)
-    >>> mod = OpenPNM.Geometry.models.pore_seed.spatially_correlated
+    >>> import openpnm as op
+    >>> pn = op.network.Cubic(shape=[50, 50, 50])
+    >>> geom = op.geometry.GenericGeometry(network=pn,
+    ...                                    pores=pn.Ps,
+    ...                                    throats=pn.Ts)
+    >>> mod = op.geometry.models.pore_seed.spatially_correlated
     >>> geom.add_model(propname='pore.seed',
     ...                model=mod,
     ...                weights=[2, 2, 2])
@@ -134,15 +134,15 @@ def location_adjusted(target, image=None):
 
     Examples
     ----------
-    >>> import OpenPNM
-    >>> pn = OpenPNM.Network.Cubic(shape=[6,6,6])
-    >>> geom = OpenPNM.Geometry.GenericGeometry(network=pn, pores=pn.Ps,
-    ...                                         throats=pn.Ts)
+    >>> import openpnm as op
+    >>> pn = op.network.Cubic(shape=[6,6,6])
+    >>> geom = op.geometry.GenericGeometry(network=pn, pores=pn.Ps,
+    ...                                    throats=pn.Ts)
     >>> import numpy as np
     >>> im = np.ones([3,3,3])
     >>> im[:,:,0] = 0.5
     >>> im[:,:,1] = 0.75
-    >>> model = OpenPNM.Geometry.models.pore_seed.location_adjusted
+    >>> model = op.geometry.models.pore_seed.location_adjusted
     >>> geom.add_model(propname='pore.seed', model=model, image=im)
     """
     # Generate the random seed values

@@ -29,13 +29,13 @@ def trim(network, pores=[], throats=[]):
 
     Examples
     --------
-    >>> import OpenPNM
-    >>> pn = OpenPNM.Network.TestNet()
+    >>> import openpnm as op
+    >>> pn = op.network.Cubic(shape=[5, 5, 5])
     >>> pn.Np
     125
     >>> pn.Nt
     300
-    >>> pn.trim(pores=[1])
+    >>> op.topotools.trim(network=pn, pores=[1])
     >>> pn.Np
     124
     >>> pn.Nt
@@ -243,9 +243,9 @@ def find_surface_pores(network, markers=None, label='surface'):
 
     Examples
     --------
-    >>> import OpenPNM as op
-    >>> net = op.Network.Cubic(shape=[5, 5, 5])
-    >>> op.Network.tools.find_surface_pores(network=net)
+    >>> import openpnm as op
+    >>> net = op.network.Cubic(shape=[5, 5, 5])
+    >>> op.topotools.find_surface_pores(network=net)
     >>> net.num_pores('surface')
     98
 
@@ -391,16 +391,17 @@ def stitch(network, donor, P_network, P_donor, method='nearest',
 
     Examples
     --------
-    >>> import OpenPNM
-    >>> pn = OpenPNM.Network.TestNet()
-    >>> pn2 = OpenPNM.Network.TestNet()
+    >>> import openpnm as op
+    >>> pn = op.network.Cubic(shape=[5, 5, 5])
+    >>> pn2 = op.network.Cubic(shape=[5, 5, 5])
     >>> [pn.Np, pn.Nt]
     [125, 300]
     >>> [pn2.Np, pn2.Nt]
     [125, 300]
     >>> pn2['pore.coords'][:, 2] += 5.0
-    >>> pn.stitch(donor=pn2, P_network=pn.pores('top'),
-    ...           P_donor=pn2.pores('bottom'), method='nearest', len_max=1.0)
+    >>> op.topotools.stitch(donor=pn2, P_network=pn.pores('top'),
+    ...                     P_donor=pn2.pores('bottom'), method='nearest',
+    ...                     len_max=1.0)
     >>> [pn.Np, pn.Nt]
     [250, 625]
 
@@ -493,11 +494,12 @@ def connect_pores(network, pores1, pores2, labels=[], add_conns=True):
 
     Examples
     --------
-    >>> import OpenPNM
-    >>> pn = OpenPNM.Network.TestNet()
+    >>> import openpnm as op
+    >>> pn = op.network.Cubic(shape=[5, 5, 5])
     >>> pn.Nt
     300
-    >>> pn.connect_pores(pores1=[22, 32], pores2=[16, 80, 68])
+    >>> op.topotools.connect_pores(network=pn, pores1=[22, 32],
+    ...                            pores2=[16, 80, 68])
     >>> pn.Nt
     306
     >>> pn['throat.conns'][300:306]
@@ -551,12 +553,13 @@ def subdivide(network, pores, shape, labels=[]):
 
     Examples
     --------
-    >>> import OpenPNM
-    >>> pn = OpenPNM.Network.Cubic(shape=[5,6,5], spacing=0.001)
+    >>> import openpnm as op
+    >>> pn = op.network.Cubic(shape=[5,6,5], spacing=0.001)
     >>> pn.Np
     150
     >>> nano_pores = [2,13,14,15]
-    >>> pn.subdivide(pores=nano_pores, shape=[4,7,3], labels='nano')
+    >>> op.topotools.subdivide(network=pn, pores=nano_pores, shape=[4,7,3],
+    ...                        labels='nano')
     >>> pn.Np
     482
     >>> assert pn.Np == (150+4*(4*7*3)-4)
@@ -565,7 +568,7 @@ def subdivide(network, pores, shape, labels=[]):
     mro = [item.__name__ for item in network.__class__.__mro__]
     if 'Cubic' not in mro:
         raise Exception('Subdivide is only supported for Cubic Networks')
-    from OpenPNM.Network import Cubic
+    from op.network.Cubic import Cubic
     pores = sp.array(pores, ndmin=1)
 
     # Checks to find boundary pores in the selected pores
@@ -598,7 +601,7 @@ def subdivide(network, pores, shape, labels=[]):
                 dim = single_dim
             div[dim] = 1
             div[-sp.array(div, ndmin=1, dtype=bool)] = sp.array(shape,
-                                                                  ndmin=1)
+                                                                ndmin=1)
 
     # Creating small network and handling labels
     networkspacing = network.spacing
@@ -722,11 +725,10 @@ def merge_pores(network, pores, labels=['merged']):
 
     Examples
     --------
-    >>> import OpenPNM as op
-    >>> pn = op.Network.Cubic(shape=[20,20,1])
-    >>> topo = op.Utilities.topology()
-    >>> P = pn.find_nearby_pores(pores=111, distance=5, flatten=True)
-    >>> topo.merge_pores(network=pn, pores=P, labels=['merged'])
+    >>> import openpnm as op
+    >>> pn = op.network.Cubic(shape=[20,20,1])
+    >>> P = pn.find_nearby_pores(pores=111, r=5, flatten=True)
+    >>> op.topotools.merge_pores(network=pn, pores=P, labels=['merged'])
     >>> print(pn.Np)
     321
     >>> pn.pores('merged')
@@ -875,16 +877,16 @@ def plot_connections(network, throats=None, fig=None, **kwargs):
 
     Examples
     --------
-    >>> import OpenPNM as op
-    >>> pn = op.Network.Cubic(shape=[10, 10, 3])
+    >>> import openpnm as op
+    >>> pn = op.network.Cubic(shape=[10, 10, 3])
     >>> pn.add_boundaries()
     >>> Ts = pn.throats('*boundary', mode='not')
     >>> # Create figure showing boundary throats
-    >>> fig = op.Network.tools.plot_connections(network=pn, throats=Ts)
+    >>> fig = op.topotools.plot_connections(network=pn, throats=Ts)
     >>> Ts = pn.throats('*boundary')
     >>> # Pass existing fig back into function to plot additional throats
-    >>> fig = op.Network.tools.plot_connections(network=pn, throats=Ts,
-    ...                                         fig=fig, color='r')
+    >>> fig = op.topotools.plot_connections(network=pn, throats=Ts,
+    ...                                     fig=fig, color='r')
 
     """
     import matplotlib.pyplot as plt
@@ -965,15 +967,15 @@ def plot_coordinates(network, pores=None, fig=None, **kwargs):
 
     Examples
     --------
-    >>> import OpenPNM as op
-    >>> pn = op.Network.Cubic(shape=[10, 10, 3])
+    >>> import openpnm as op
+    >>> pn = op.network.Cubic(shape=[10, 10, 3])
     >>> pn.add_boundaries()
     >>> Ps = pn.pores('internal')
     >>> # Create figure showing internal pores
-    >>> fig = op.Network.tools.plot_coordinates(network=pn, pores=Ps, c='b')
+    >>> fig = op.topotools.plot_coordinates(network=pn, pores=Ps, c='b')
     >>> Ps = pn.pores('*boundary')
     >>> # Pass existing fig back into function to plot boundary pores
-    >>> fig = op.Network.tools.plot_coordinates(network=pn, pores=Ps, fig=fig,
+    >>> fig = op.topotools.plot_coordinates(network=pn, pores=Ps, fig=fig,
     ...                                         c='r')
 
     """
@@ -1084,7 +1086,7 @@ def generate_base_points(num_points, domain_size, prob=None):
     applying a power, with values higher than 1 resulting in higher values in
     the core, and fractional values smoothinging them out a bit.
 
-    >>> import OpenPNM as op
+    >>> import openpnm as op
     >>> import scipy as sp
     >>> import scipy.ndimage as spim
     >>> im = sp.ones([21, 21, 21], dtype=int)
@@ -1092,10 +1094,10 @@ def generate_base_points(num_points, domain_size, prob=None):
     >>> im = spim.distance_transform_edt(im) <= 20  # Create sphere of 1's
     >>> prob = spim.distance_transform_edt(im)
     >>> prob = prob / sp.amax(prob)  # Normalize between 0 and 1
-    >>> pts = op.Network.tools.generate_base_points(num_points=50,
-    ...                                             domain_size=[2],
-    ...                                             prob=prob)
-    >>> net = op.Network.DelaunayVoronoiDual(points=pts, domain_size=[2])
+    >>> pts = op.topotools.generate_base_points(num_points=50,
+    ...                                         domain_size=[2],
+    ...                                         prob=prob)
+    >>> net = op.network.DelaunayVoronoiDual(points=pts, domain_size=[2])
     """
     def _try_points(num_points, prob):
         prob = sp.array(prob)/sp.amax(prob)  # Ensure prob is normalized
@@ -1234,11 +1236,11 @@ def find_clusters(self, mask=[], t_labels=False):
 
     Examples
     --------
-    >>> import OpenPNM
-    >>> pn = OpenPNM.Network.Cubic(shape=[25, 25, 1])
-    >>> geom = OpenPNM.Geometry.GenericGeometry(network=pn,
-    ...                                         pores=pn.Ps,
-    ...                                         throats=pn.Ts)
+    >>> import openpnm as op
+    >>> pn = op.network.Cubic(shape=[25, 25, 1])
+    >>> geom = op.geometry.GenericGeometry(network=pn,
+    ...                                    pores=pn.Ps,
+    ...                                    throats=pn.Ts)
     >>> geom['pore.seed'] = sp.rand(pn.Np)
     >>> geom['throat.seed'] = sp.rand(pn.Nt)
 
@@ -1381,8 +1383,8 @@ def add_boundary_pores(network, pores, offset, apply_label='boundary'):
 
     Examples
     --------
-    >>> import OpenPNM as op
-    >>> pn = op.Network.Cubic(shape=[5, 5, 5])
+    >>> import openpnm as op
+    >>> pn = op.network.Cubic(shape=[5, 5, 5])
     >>> print(pn.Np)  # Confirm initial Network size
     125
     >>> Ps = pn.pores('top')  # Select pores on top face
@@ -1446,9 +1448,9 @@ def find_path(network, pore_pairs, weights=None):
 
     Examples
     --------
-    >>> import OpenPNM
-    >>> import OpenPNM.Utilities.misc as misc
-    >>> pn = OpenPNM.Network.Cubic(shape=[3, 3, 3])
+    >>> import openpnm as op
+    >>> import openpnm.utils.misc as misc
+    >>> pn = op.network.Cubic(shape=[3, 3, 3])
     >>> a = misc.find_path(network=pn, pore_pairs=[[0, 4], [0, 10]])
     >>> a['pores']
     [array([0, 1, 4]), array([ 0,  1, 10])]

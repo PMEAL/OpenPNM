@@ -61,11 +61,13 @@ class Simulation(list):
         return self[name]
 
     def _validate_name(self, name):
-        flag = True
         names = [i.name for i in self]
         if name in names:
-            flag = False
-        return flag
+            raise Exception('An object with that name already exists!')
+        for item in self:
+            for key in item.keys():
+                if key.split('.')[1] == name:
+                    raise Exception('A property/label already uses that name')
 
     def _generate_name(self, obj):
         prefix = obj.settings['prefix']

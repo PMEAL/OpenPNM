@@ -72,10 +72,10 @@ def scale(network, scale_factor=[1, 1, 1], preserve_vol=False,
 
     Example
     ---------
-    >>> import OpenPNM
+    >>> import openpnm as op
     >>> import OpenPNM.Utilities.vertexops as vo
     >>> import numpy as np
-    >>> pn = OpenPNM.Network.Delaunay(num_pores=100, domain_size=[3,2,1])
+    >>> pn = op.network.Delaunay(num_pores=100, domain_size=[3,2,1])
     >>> pn.add_boundaries()
     >>> B1 = pn.pores("left_boundary")
     >>> B2 = pn.pores("right_boundary")
@@ -170,9 +170,9 @@ def vertex_dimension(network, face1=[], face2=[], parm='volume'):
 
     Example
     ----------
-    >>> import OpenPNM
+    >>> import openpnm as op
     >>> import OpenPNM.Utilities.vertexops as vo
-    >>> pn = OpenPNM.Network.Delaunay(num_pores=100, domain_size=[3, 2, 1])
+    >>> pn = op.network.Delaunay(num_pores=100, domain_size=[3, 2, 1])
     >>> pn.add_boundaries()
     >>> B1 = pn.pores('left_boundary')
     >>> B2 = pn.pores('right_boundary')
