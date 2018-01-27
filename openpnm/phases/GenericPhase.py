@@ -22,14 +22,11 @@ class GenericPhase(Base, ModelsMixin):
 
     """
 
-    _prefix = 'phase'
-
-    def __init__(self, network, name=None):
-        super().__init__(name=name, simulation=network.simulation)
-        self.settings = PrintableDict()
-        # Initialize label 'all' in the object's own info dictionaries
-        self['pore.all'] = network['pore.all']
-        self['throat.all'] = network['throat.all']
+    def __init__(self, network, settings={}, **kwargs):
+        self.settings.setdefault('prefix', 'phase')
+        self.settings.update(settings)
+        super().__init__(Np=network.Np, Nt=network.Nt,
+                         simulation=network.simulation, **kwargs)
         # Set standard conditions on the fluid to get started
         self['pore.temperature'] = 298.0
         self['pore.pressure'] = 101325.0

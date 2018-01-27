@@ -26,9 +26,9 @@ class Mercury(GenericPhase):
 
     Examples
     --------
-    >>> import OpenPNM
-    >>> pn = OpenPNM.Network.TestNet()
-    >>> hg = OpenPNM.Phases.Mercury(network=pn)
+    >>> import openpnm as op
+    >>> pn = op.network.Cubic(shape=[5, 5, 5])
+    >>> hg = op.phases.Mercury(network=pn)
 
     """
     def __init__(self, name=None, **kwargs):

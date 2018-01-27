@@ -22,13 +22,7 @@ class GenericAlgorithm(Base):
 
     """
 
-    _prefix = 'alg'
-
-    def __init__(self, network, **kwargs):
+    def __init__(self, network, settings={}, **kwargs):
+        self.settings.setdefault('prefix', 'alg')
+        self.settings.update(settings)
         super().__init__(simulation=network.simulation, **kwargs)
-
-        # Initialize label 'all' in the object's own info dictionaries
-        self['pore._id'] = network['pore._id']
-        self['throat._id'] = network['throat._id']
-        self['pore.all'] = network['pore.all']
-        self['throat.all'] = network['throat.all']

@@ -19,9 +19,9 @@ class Water(GenericPhase):
 
     Examples
     --------
-    >>> import OpenPNM
-    >>> pn = OpenPNM.Network.TestNet()
-    >>> water = OpenPNM.Phases.Water(network=pn)
+    >>> import openpnm as op
+    >>> pn = op.network.Cubic(shape=[5, 5, 5])
+    >>> water = op.phases.Water(network=pn)
     """
     def __init__(self, network, name=None, **kwargs):
         super().__init__(network=network, name=name)

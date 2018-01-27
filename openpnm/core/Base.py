@@ -1,22 +1,25 @@
 from collections import namedtuple
-from openpnm.core import Workspace, logging, ParsersMixin
+from openpnm.core import Workspace, logging
 from openpnm.utils.misc import PrintableList, PrintableDict
 import scipy as sp
 logger = logging.getLogger(__name__)
 ws = Workspace()
 
 
-class Base(dict, ParsersMixin):
+class Base(dict):
     r"""
-    Contains methods for working with the data in the OpenPNM dictionaries
+    Contains methods for working with the data in the OpenPNM dict objects
     """
 
-    _prefix = 'base'
+    def __new__(cls, *args, **kwargs):
+        cls.settings = PrintableDict()
+        instance = super(Base, cls).__new__(cls, *args, **kwargs)
+        return instance
 
     def __init__(self, Np=0, Nt=0, name=None, simulation=None):
+        self.settings.setdefault('prefix', 'base')
         super().__init__()
         simulation.append(self)
-        self.settings = PrintableDict()
         self.name = name
         self.update({'pore.all': sp.ones(shape=(Np, ), dtype=bool)})
         self.update({'throat.all': sp.ones(shape=(Nt, ), dtype=bool)})
@@ -87,9 +90,8 @@ class Base(dict, ParsersMixin):
             self._name = None
         if name is None:
             name = self.simulation._generate_name(self)
-        elif not self.simulation._validate_name(name):
-            raise Exception('An object named '+name+' already exists')
-        elif self._name is not None:
+        self.simulation._validate_name(name)
+        if self._name is not None:
             logger.info('Changing the name of '+self.name+' to '+name)
             # Rename any label arrays in other objects
             for item in self.simulation:
@@ -192,7 +194,7 @@ class Base(dict, ParsersMixin):
         >>> pn.props('throat')
         ['throat.conns']
         >>> pn.props()
-        ['pore.coords', 'pore.index', 'throat.conns']
+        ['pore.coords', 'throat.conns']
         """
         # Parse Inputs
         allowed_modes = ['all', 'data', 'models', 'constants']
@@ -216,6 +218,8 @@ class Base(dict, ParsersMixin):
         vals = [i for i in vals.keys() if i.split('.')[0] in element]
         # Remove labels
         vals = [i for i in vals if self[i].dtype != bool]
+        # Remove hidden props
+        vals = [i for i in vals if not i.split('.')[1].startswith('_')]
         # Convert to nice list for printing
         vals = PrintableList(vals)
         return vals
@@ -395,16 +399,17 @@ class Base(dict, ParsersMixin):
         mode : string
             Specifies how the query should be performed.  The options are:
 
-            **'any'** : (default) All pores with ANY of the given labels are
+            **'union'** : (default) All pores with ANY of the given labels are
             returned.
 
-            **'all'** : Only pore with ALL the given labels are
-            returned.
+            **'all'** : Only pore with ALL the given labels are returned. This
+            is equivalent to ``intersection`` which is deprecated.
 
-            **'one'** : Only pores with exactly ONE of the given
-            labels are returned.
+            **'one'** : Only pores with exactly ONE of the given labels are
+            returned.
 
             **'none'** : Only pores with NONE of the given labels are returned.
+            This is equivalent to ``not_intersection`` which is deprecated.
 
         Returns
         -------
@@ -414,11 +419,11 @@ class Base(dict, ParsersMixin):
         Examples
         --------
         >>> import openpnm as op
-        >>> pn = op.network.Cubic(shape=[3, 3, 3])
-        >>> Ps = pn.get_pores(labels=['top', 'front'], mode='any')
-        >>> PS[[0, 1, 2, -3, -2, -1]]
+        >>> pn = op.network.Cubic(shape=[5, 5, 5])
+        >>> Ps = pn.pores(labels=['top', 'front'], mode='union')
+        >>> Ps[[0, 1, 2, -3, -2, -1]]
         array([  0,   5,  10, 122, 123, 124])
-        >>> pn.get_pores(labels=['top', 'front'], mode='all')
+        >>> pn.pores(labels=['top', 'front'], mode='intersection')
         array([100, 105, 110, 115, 120])
         """
         ind = self._get_indices(element='pore', labels=labels, mode=mode)
@@ -446,7 +451,7 @@ class Base(dict, ParsersMixin):
         mode : string
             Specifies how the query should be performed.  The options are:
 
-            **'any'** : (default) All throats with ANY of the given labels
+            **'union'** : (default) All throats with ANY of the given labels
             are returned.
 
             **'all'** : Only throats with ALL the given labels are
@@ -467,7 +472,7 @@ class Base(dict, ParsersMixin):
         --------
         >>> import openpnm as op
         >>> pn = op.network.Cubic(shape=[3, 3, 3])
-        >>> Ts = pn.get_throats()
+        >>> Ts = pn.throats()
         >>> Ts[0:5]
         array([0, 1, 2, 3, 4])
 
@@ -629,16 +634,16 @@ class Base(dict, ParsersMixin):
 
         Examples
         --------
-        >>> import openpnm asop
+        >>> import openpnm as op
         >>> pn = op.network.Cubic(shape=[3, 3, 3])
-        >>> Ps = pn.get_pores('top', mode='not')
+        >>> Ps = pn.pores('top', mode='not')
         >>> Ts = pn.find_neighbor_throats(pores=Ps,
         ...                               mode='intersection',
         ...                               flatten=True)
         >>> geom = op.geometry.GenericGeometry(network=pn,
         ...                                    pores=Ps,
         ...                                    throats=Ts)
-        >>> Ps = pn.get_pores('top')
+        >>> Ps = pn.pores('top')
         >>> Ts = pn.find_neighbor_throats(pores=Ps,
         ...                               mode='not_intersection')
         >>> boun = op.geometry.Boundary(network=pn, pores=Ps, throats=Ts)
@@ -812,8 +817,8 @@ class Base(dict, ParsersMixin):
         Examples
         --------
         >>> import openpnm as op
-        >>> pn = op.network.Cubic(shape=[3, 3, 3])
-        >>> pn.filter_by_label(pores=[0,1,5,6], labels='left')
+        >>> pn = op.network.Cubic(shape=[5, 5, 5])
+        >>> pn.filter_by_label(pores=[0, 1, 5, 6], labels='left')
         array([0, 1])
         >>> Ps = pn.pores(['top', 'bottom', 'front'], mode='union')
         >>> pn.filter_by_label(pores=Ps, labels=['top', 'front'],
@@ -857,10 +862,10 @@ class Base(dict, ParsersMixin):
         mode : string, optional
             Specifies how the count should be performed.  The options are:
 
-            **'any'** : (default) All pores with ANY of the given labels are
+            **'union'** : (default) All pores with ANY of the given labels are
             counted.
 
-            **'all'** : Only pores with ALL the given labels are
+            **intersection** : Only pores with ALL the given labels are
             counted.
 
             **'one'** : Only pores with exactly one of the given
@@ -881,17 +886,17 @@ class Base(dict, ParsersMixin):
 
         Examples
         --------
-        >>> import OpenPNM
-        >>> pn = OpenPNM.Network.TestNet()
+        >>> import openpnm as op
+        >>> pn = op.network.Cubic(shape=[5, 5, 5])
         >>> pn.num_pores()
         125
         >>> pn.num_pores(labels=['top'])
         25
-        >>> pn.num_pores(labels=['top', 'front'], mode='any')
+        >>> pn.num_pores(labels=['top', 'front'], mode='union')
         45
-        >>> pn.num_pores(labels=['top', 'front'], mode='all')
+        >>> pn.num_pores(labels=['top', 'front'], mode='intersection')
         5
-        >>> pn.num_pores(labels=['top', 'front'], mode='one')
+        >>> pn.num_pores(labels=['top', 'front'], mode='not_intersection')
         40
 
         """
@@ -944,8 +949,8 @@ class Base(dict, ParsersMixin):
 
         Examples
         --------
-        >>> import OpenPNM
-        >>> pn = OpenPNM.Network.TestNet()
+        >>> import openpnm as op
+        >>> pn = op.network.Cubic(shape=[5, 5, 5])
         >>> pn.num_throats()
         300
         >>> pn.num_throats(labels=['top'])
@@ -1000,8 +1005,8 @@ class Base(dict, ParsersMixin):
 
         Examples
         --------
-        >>> import OpenPNM
-        >>> pn = OpenPNM.Network.TestNet()
+        >>> import openpnm as op
+        >>> pn = op.network.Cubic(shape=[5, 5, 5])
         >>> pn._count('pore')
         125
         >>> pn._count('throat')
@@ -1013,6 +1018,186 @@ class Base(dict, ParsersMixin):
         if len(temp) == 1:
             temp = list(temp.values())[0]
         return temp
+
+    def _parse_indices(self, indices):
+        r"""
+        This private method accepts a list of pores or throats and returns a
+        properly structured Numpy array of indices.
+
+        Parameters
+        ----------
+        indices : multiple options
+            This argument can accept numerous different data types including
+            boolean masks, integers and arrays.
+
+        Returns
+        -------
+        A Numpy array of indices.
+
+        Notes
+        -----
+        This method should only be called by the method that is actually using
+        the locations, to avoid calling it multiple times.
+        """
+        if indices is None:
+            indices = sp.array([], ndmin=1, dtype=int)
+        locs = sp.array(indices, ndmin=1)
+        if sp.issubdtype(locs.dtype, sp.number) or \
+           sp.issubdtype(locs.dtype, sp.bool_):
+            pass
+        else:
+            raise Exception('Invalid data type received as indices, ' +
+                            ' must be boolean or numeric')
+        if locs.dtype == bool:
+            if sp.size(locs) == self.Np:
+                locs = self.Ps[locs]
+            elif sp.size(locs) == self.Nt:
+                locs = self.Ts[locs]
+            else:
+                raise Exception('Boolean list of locations must be either ' +
+                                'Np nor Nt long')
+        locs = locs.astype(dtype=int)
+        return locs
+
+    def _parse_element(self, element, single=False):
+        r"""
+        This private method is used to parse the keyword \'element\' in many
+        of the above methods.
+
+        Parameters
+        ----------
+        element : string or list of strings
+            The element argument to check.  If is None is recieved, then a list
+            containing both \'pore\' and \'throat\' is returned.
+
+        single : boolean (default is False)
+            When set to True only a single element is allowed and it will also
+            return a string containing the element.
+
+        Returns
+        -------
+        When ``single`` is False (default) a list contain the element(s) is
+        returned.  When ``single`` is True a bare string containing the element
+        is returned.
+        """
+        if element is None:
+            element = ['pore', 'throat']
+        # Convert element to a list for subsequent processing
+        if type(element) is str:
+            element = [element]
+        # Convert 'pore.prop' and 'throat.prop' into just 'pore' and 'throat'
+        element = [item.split('.')[0] for item in element]
+        # Make sure all are lowercase
+        element = [item.lower() for item in element]
+        # Deal with an plurals
+        element = [item.rsplit('s', maxsplit=1)[0] for item in element]
+        for item in element:
+            if item not in ['pore', 'throat']:
+                raise Exception('Invalid element received: '+item)
+        # Remove duplicates if any
+        [element.remove(L) for L in element if element.count(L) > 1]
+        if single:
+            if len(element) > 1:
+                raise Exception('Both elements recieved when single element ' +
+                                'allowed')
+            else:
+                element = element[0]
+        return element
+
+    def _parse_labels(self, labels, element):
+        r"""
+        This private method is used for converting \'labels\' to a proper
+        format, including dealing with wildcards (\*).
+
+        Parameters
+        ----------
+        labels : string or list of strings
+            The label or list of labels to be parsed. Note that the \* can be
+            used as a wildcard.
+
+        Returns
+        -------
+        A list of label strings, with all wildcard matches included if
+        applicable.
+        """
+        if labels is None:
+            raise Exception('Labels cannot be None')
+        if type(labels) is str:
+            labels = [labels]
+        # Parse the labels list
+        parsed_labels = []
+        for label in labels:
+            # Remove element from label, if present
+            if element in label:
+                label = label.split('.')[-1]
+            # Deal with wildcards
+            if '*' in label:
+                Ls = [L.split('.')[-1] for L in self.labels(element=element)]
+                if label.startswith('*'):
+                    temp = [L for L in Ls if L.endswith(label.strip('*'))]
+                if label.endswith('*'):
+                    temp = [L for L in Ls if L.startswith(label.strip('*'))]
+                temp = [element+'.'+L for L in temp]
+            elif element+'.'+label in self.keys():
+                temp = [element+'.'+label]
+            else:
+                # TODO: The following Error should/could be raised but it
+                # breaks the net-geom and phase-phys look-up logic
+                # raise KeyError('\''+element+'.'+label+'\''+' not found')
+                logger.warning('\''+element+'.'+label+'\''+' not found')
+                temp = [element+'.'+label]
+            parsed_labels.extend(temp)
+            # Remove duplicates if any
+            [parsed_labels.remove(L) for L in parsed_labels
+             if parsed_labels.count(L) > 1]
+        return parsed_labels
+
+    def _parse_mode(self, mode, allowed=None, single=False):
+        r"""
+        This private method is for checking the \'mode\' used in the calling
+        method.
+
+        Parameters
+        ----------
+        mode : string or list of strings
+            The mode(s) to be parsed
+
+        allowed : list of strings
+            A list containing the allowed modes.  This list is defined by the
+            calling method.  If any of the received modes are not in the
+            allowed list an exception is raised.
+
+        single : boolean (default is False)
+            Indicates if only a single mode is allowed.  If this argument is
+            True than a string is returned rather than a list of strings, which
+            makes it easier to work with in the caller method.
+
+        Returns
+        -------
+        A list containing the received modes as strings, checked to ensure they
+        are all within the allowed set (if provoided).  Also, if the ``single``
+        argument was True, then a string is returned.
+        """
+        if type(mode) is str:
+            mode = [mode]
+        for item in mode:
+            if (allowed is not None) and (item not in allowed):
+                raise Exception('\'mode\' must be one of the following: ' +
+                                allowed.__str__())
+        # Remove duplicates, if any
+        [mode.remove(L) for L in mode if mode.count(L) > 1]
+        if single:
+            if len(mode) > 1:
+                raise Exception('Multiple modes received when only one mode ' +
+                                'allowed')
+            else:
+                mode = mode[0]
+        return mode
+
+    def _parse_prop(self, propname, element):
+        r"""
+        """
+        return element + '.' + propname.split('.')[-1]
 
     def __str__(self):
         horizonal_rule = '―' * 78

@@ -27,22 +27,18 @@ class GenericPhysics(Base, ModelsMixin):
 
     """
 
-    _prefix = 'phys'
-
-    def __init__(self, network=None, phase=None, geometry=None, name=None):
-        super().__init__(name=name, simulation=network.simulation)
-        # Create a settings attribute
-        self.settings['local_data'] = network.simulation.settings['local_data']
-        self.settings['boss'] = phase.name
-        # Initialize a label dictionary in the associated phase and network
+    def __init__(self, network, phase, geometry, settings={}, **kwargs):
+        self.settings.setdefault('prefix', 'phys')
+        self.settings.update({'boss': phase.name})
+        self.settings.update(settings)
+        super().__init__(Np=geometry.Np, Nt=geometry.Nt,
+                         simulation=network.simulation, **kwargs)
+        self.settings['local_data'] = self.simulation.settings['local_data']
+        # Initialize a label array in the associated phase
         phase['pore.'+self.name] = False
         phase['pore.'+self.name][network.pores(geometry.name)] = True
         phase['throat.'+self.name] = False
         phase['throat.'+self.name][network.throats(geometry.name)] = True
-        self.update({'pore.all':
-                     sp.ones(shape=sp.size(geometry.Ps), dtype=bool)})
-        self.update({'throat.all':
-                     sp.ones(shape=sp.size(geometry.Ts), dtype=bool)})
 
     def __getitem__(self, key):
         element = key.split('.')[0]

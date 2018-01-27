@@ -27,16 +27,15 @@ class GenericGeometry(Base, ModelsMixin):
     --------
     >>> import openpnm as op
     >>> pn = op.network.Cubic(shape=[5, 5, 5])
-    >>> Ps = pn.pores()  # Get all pores
-    >>> Ts = pn.throats()  # Get all throats
+    >>> Ps = pn.pores('all')  # Get all pores
+    >>> Ts = pn.throats('all')  # Get all throats
     >>> geom = op.geometry.GenericGeometry(network=pn, pores=Ps, throats=Ts)
     """
 
-    _prefix = 'geo'
-
-    def __init__(self, network, pores=[], throats=[], **kwargs):
+    def __init__(self, network, pores=[], throats=[], settings={}, **kwargs):
+        self.settings.setdefault('prefix', 'geo')
+        self.settings.update(settings)
         super().__init__(simulation=network.simulation, **kwargs)
-        self.settings.update({'prefix': 'geo'})
         self.settings['local_data'] = self.simulation.settings['local_data']
         self.add_locations(pores=pores, throats=throats)
 

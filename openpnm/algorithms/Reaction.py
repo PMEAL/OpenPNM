@@ -5,13 +5,11 @@ from openpnm.algorithms import GenericAlgorithm
 
 class GenericReaction(GenericAlgorithm, ModelsMixin):
 
-    _prefix = 'rxn'
-
-    def __init__(self, network, pores, **kwargs):
-        super().__init__(network=network, **kwargs)
-        self.settings.update({'rate_model': 'pore.rate'})
-        self.update({'pore.all': sp.ones_like(pores, dtype=bool)})
-        self.update({'throat.all': sp.ones(shape=(0, ), dtype=bool)})
+    def __init__(self, network, pores, settings={}, **kwargs):
+        self.settings.update({'rate_model': 'pore.rate',
+                              'prefix': 'rxn'})
+        self.settings.update(settings)
+        super().__init__(Np=sp.size(pores), network=network, **kwargs)
         self['pore._id'] = network['pore._id'][pores]
 
     def setup(self, algorithm):

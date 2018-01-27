@@ -26,13 +26,13 @@ class Cubic(GenericNetwork):
 
     connectivity : int
         The number of connections to neighboring pores.  Connections are made
-        symmetrically to any combination of face, edge or corners neighbors.
+        symmetrically to any combination of face, edge, or corners neighbors.
 
         Options are:
 
         - 6: Faces only
         - 8: Corners only
-        - 12: Edges Only
+        - 12: Edges only
         - 14: Faces and Corners
         - 18: Faces and Edges
         - 20: Edges and Corners
@@ -40,8 +40,8 @@ class Cubic(GenericNetwork):
 
     Examples
     --------
-    >>> import OpenPNM
-    >>> pn = OpenPNM.Network.Cubic(shape=[3,4,5])
+    >>> import openpnm as op
+    >>> pn = op.network.Cubic(shape=[3,4,5])
     >>> pn.Np
     60
 
