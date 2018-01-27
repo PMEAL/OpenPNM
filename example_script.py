@@ -1,57 +1,47 @@
 import openpnm as op
 import scipy as sp
-import openpnm.geometry.models as gm
 ws = op.core.Workspace()
-ws.settings.toms_way = True
+ws.settings['local_data'] = True
 
-pn = op.network.Cubic(shape=[15, 15, 15], spacing=0.0001, name='pn')
+sp.random.seed(0)
+pn = op.network.Cubic(shape=[15, 15, 15], spacing=0.0001, name='pn11')
+pn.add_boundary_pores()
 
-Ps = pn.pores(['top', 'bottom', 'left', 'right', 'front', 'back'])
-pn['pore.surface'] = pn.tomask(pores=Ps)
-Ts = pn.find_neighbor_throats(pores=pn.pores('surface'), mode='intersection')
-pn['throat.surface'] = pn.tomask(throats=Ts)
-geom1 = op.geometry.StickAndBall(network=pn, pores=pn.pores('surface'),
-                                 throats=pn.throats('surface'))
-Ps = pn.pores('surface', mode='not')
-pn['pore.internal'] = pn.tomask(pores=Ps)
-Ts = pn.throats('surface', mode='not')
-pn['throat.internal'] = pn.tomask(throats=Ts)
-geom2 = op.geometry.StickAndBall(network=pn, pores=pn.pores('internal'),
-                                 throats=pn.throats('internal'))
+geom = op.geometry.StickAndBall(network=pn, pores=pn.Ps, throats=pn.Ts,
+                                settings={'test': 1})
 
-air1 = op.phases.Air(network=pn)
-air2 = op.phases.Air(network=pn)
-mercury = op.phases.Mercury(network=pn, name='Hg')
-water1 = op.phases.Water(network=pn)
-phys1 = op.physics.GenericPhysics(network=pn, geometry=geom1, phase=mercury)
+water = op.phases.Water(network=pn)
+water['throat.viscosity'] = water['pore.viscosity'][0]
 
-phys2 = op.physics.GenericPhysics(network=pn, geometry=geom2, phase=mercury)
-phys1.add_model(propname='throat.capillary_pressure',
-                model=op.physics.models.capillary_pressure.washburn)
-phys2.add_model(propname='throat.capillary_pressure',
-                model=op.physics.models.capillary_pressure.washburn)
-phys1.regenerate_models()
-phys2.regenerate_models()
+phys_water = op.physics.GenericPhysics(network=pn, phase=water, geometry=geom)
+mod = op.physics.models.hydraulic_conductance.hagen_poiseuille
+phys_water.add_model(propname='throat.conductance',
+                     model=mod, viscosity='throat.viscosity')
+phys_water.regenerate_models()
 
-a = pn.simulation
+alg = op.algorithms.FickianDiffusion(network=pn, phase=water)
+alg.setup(conductance='throat.conductance', quantity='pore.mole_fraction')
+alg.set_BC(pores=pn.pores('top'), bctype='dirichlet', bcvalues=0.5)
+alg.set_BC(pores=pn.pores('bottom'), bctype='dirichlet', bcvalues=0.0)
+alg['pore.mole_fraction'] = 0
 
-mip = op.algorithms.MIP(network=pn, phase=mercury)
+rxn = op.algorithms.GenericReaction(network=pn, pores=[70, 71])
+rxn['pore.k'] = 1e-1
+rxn['pore.alpha'] = 1
+rxn.add_model(propname='pore.rxn_rate',
+              model=op.algorithms.models.standard_kinetics,
+              quantity='pore.mole_fraction',
+              prefactor='pore.k', exponent='pore.alpha')
+rxn.settings['rate_model'] = 'pore.rxn_rate'
+alg.set_source(source=rxn)
 
+rxn2 = op.algorithms.GenericReaction(network=pn, pores=[50, 51])
+rxn2.models = rxn.models.copy()
+rxn2.settings['rate_model'] = 'pore.rxn_rate'
+rxn2['pore.k'] = 1e-5
+rxn2['pore.alpha'] = 2
+alg.set_source(source=rxn2)
 
-pn2 = op.network.Cubic(shape=[6, 6, 6])
-pn2.add_model(propname='pore.seed',
-              model=gm.pore_misc.random,
-              seed=1, num_range=[0, 0.1],
-              regen_mode='deferred')
-pn2.add_model(propname='pore.diameter',
-              model=gm.pore_size.weibull,
-              shape=5, scale=0.5, loc=0.1,
-              regen_mode='deferred')
-pn2.add_model(propname='pore.volume',
-              model=gm.pore_volume.sphere,
-              regen_mode='deferred')
-water2 = op.phases.Water(network=pn2)
-water2.add_model(propname='throat.capillary_pressure',
-                 model=op.physics.models.capillary_pressure.washburn)
+alg.run()
 
-b = pn2.simulation
+# op.io.VTK.save(simulation=pn.simulation, phases=[water])

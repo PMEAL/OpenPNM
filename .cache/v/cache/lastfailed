@@ -1,6 +1,0 @@
-{
-  "openpnm/algorithms/Drainage.py": true,
-  "openpnm/io/IO.py": true,
-  "openpnm/network/CubicDual.py": true,
-  "openpnm/network/Delaunay.py": true
-}
