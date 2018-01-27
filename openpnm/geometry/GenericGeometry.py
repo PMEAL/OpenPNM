@@ -166,3 +166,11 @@ class GenericGeometry(Base, ModelsMixin):
         for i in range(len(props)):
             plt.subplot(r, c, i+1)
             plt.hist(self[props[i]], bins=bins, **kwargs)
+
+    @property
+    def network(self):
+        r"""
+        A shortcut to get a handle to the associated network
+        There can only be one so this works
+        """
+        return self.simulation.network

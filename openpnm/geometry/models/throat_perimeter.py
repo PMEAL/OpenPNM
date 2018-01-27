@@ -21,7 +21,7 @@ def cylinder(target, throat_diameter='throat.diameter'):
     throat_diameter : string
         The dictionary key of the array containing the throat diameter values
     """
-    return target[throat_diameter]*_sp.constants.pi
+    return target[throat_diameter]*_sp.pi
 
 
 def cuboid(target, throat_diameter='throat.diameter'):

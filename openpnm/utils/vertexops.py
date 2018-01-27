@@ -2,13 +2,14 @@ import numpy as np
 from scipy.spatial import ConvexHull
 from transforms3d import _gohlketransforms as tr
 from openpnm.core import logging
+import matplotlib.pyplot as plt
 logger = logging.getLogger(__name__)
 
 
 def PolyArea2D(pts):
     r"""
-    returns the area of a 2D polygon given the set of points defining the convex hull
-    in correct order
+    returns the area of a 2D polygon given the set of points defining the
+    convex hull in correct order
     Example
     ---------
     >>> import OpenPNM.Utilities.vertexops as vo
@@ -23,8 +24,8 @@ def PolyArea2D(pts):
 
 def PolyPerimeter2D(pts):
     r"""
-    returns the perimeter of a 2D polygon given the set of points defining the convex
-    hull in correct order
+    returns the perimeter of a 2D polygon given the set of points defining the
+    convex hull in correct order
     Example
     ---------
     >>> import OpenPNM.Utilities.vertexops as vo
@@ -39,8 +40,8 @@ def PolyPerimeter2D(pts):
 
 def PolyWeightedCentroid2D(pts):
     r"""
-    returns the centroid of a 2D polygon given the set of points defining the convex
-    hull in correct order
+    returns the centroid of a 2D polygon given the set of points defining the
+    convex hull in correct order
     Example
     ---------
     >>> import OpenPNM.Utilities.vertexops as vo
@@ -67,7 +68,8 @@ def PolyWeightedCentroid2D(pts):
 def scale(network, scale_factor=[1, 1, 1], preserve_vol=False,
           linear_scaling=[False, False, False]):
     r"""
-    A method for scaling the coordinates and vertices to create anisotropic networks
+    A method for scaling the coordinates and vertices to create anisotropic
+    networks.
     The original domain volume can be preserved by setting preserve_vol = True
 
     Example
@@ -93,7 +95,8 @@ def scale(network, scale_factor=[1, 1, 1], preserve_vol=False,
     from scipy.special import cbrt
     import scipy as sp
     minmax = np.around(vertex_dimension(network=network,
-                                        face1=network.pores(), parm='minmax'), 10)
+                                        face1=network.pores(),
+                                        parm='minmax'), 10)
     scale_factor = np.asarray(scale_factor)
     if preserve_vol is True:
         scale_factor = scale_factor/(cbrt(sp.prod(scale_factor)))
@@ -118,7 +121,8 @@ def scale(network, scale_factor=[1, 1, 1], preserve_vol=False,
     # Scale the vertices on the voronoi diagram stored on the network
     # These are used for adding boundaries on the Delaunay network class
     vert = network._vor.vertices
-    vert_scale = _linear_scale_factor(vert, minmax, scale_factor, linear_scaling)
+    vert_scale = _linear_scale_factor(vert, minmax, scale_factor,
+                                      linear_scaling)
     network._vor.vertices = vert*vert_scale
 
 
@@ -128,11 +132,11 @@ def _linear_scale_factor(points=None,
                          linear_scaling=[False, False, False]):
     r"""
     Work out the linear scale factor of a point or set of points based on the
-    domain extent, an absolute scale factor and linear_scaling booleans for each
+    domain extent, an absolute scale factor and linear_scaling bools for each
     coordinate. If all False the absolute scaling is applied equally across the
     domain. If one linear_scaling boolean is True then a linear function is
-    applied to scaling the co-ordinates along that axis. If more than one boolean
-    is true then a combined linear function is applied
+    applied to scaling the co-ordinates along that axis. If more than one
+    boolean is true then a combined linear function is applied
     """
     [xmin, xmax, ymin, ymax, zmin, zmax] = minmax
     max_array = np.array([(xmax-xmin), (ymax-ymin), (zmax-zmin)])
@@ -188,7 +192,9 @@ def vertex_dimension(network, face1=[], face2=[], parm='volume'):
     2.0
     >>> vo.vertex_dimension(pn, B1, B2, 'area_xz')
     3.0
-    >>> vo.vertex_dimension(pn, B1, B2, 'minmax') == [0.0, 3.0, 0.0, 2.0, 0.0, 1.0]
+    >>> vo.vertex_dimension(pn, B1, B2, 'minmax') == [0.0, 3.0,
+                                                      0.0, 2.0,
+                                                      0.0, 1.0]
     True
     """
     pores = np.array([], dtype=int)
@@ -216,10 +222,10 @@ def vertex_dimension(network, face1=[], face2=[], parm='volume'):
     else:
         return 0
 
-    if 'pore.vert_index' in network.props():
+    if 'pore.vertices' in network.props():
         verts = []
         for pore in pores:
-            for vert in np.asarray(list(network['pore.vert_index'][pore].values())):
+            for vert in np.asarray(list(network['pore.vertices'][pore])):
                 verts.append(vert)
         verts = np.asarray(verts)
     else:
@@ -258,8 +264,8 @@ def vertex_dimension(network, face1=[], face2=[], parm='volume'):
 
 def porosity(network):
     r"""
-    Return the porosity of the domain - sum of the pore volumes divided by domain
-    volume
+    Return the porosity of the domain - sum of the pore volumes divided by
+    domain volume
     """
     domain_vol = vertex_dimension(network, network.pores(), parm='volume')
     try:
@@ -288,7 +294,8 @@ def pore2centroid(network):
 
 def tortuosity(network=None):
     r"""
-    Calculate the tortuosity from the angle between throat vectors and principle axes
+    Calculate the tortuosity from the angle between throat vectors and
+    principle axes
     """
     conns = network['throat.conns']
     va = network['throat.centroid'] - network['pore.centroid'][conns[:, 0]]
@@ -323,7 +330,6 @@ def plot_throat(geometry, throats, fig=None):
     the z-axis and then printed in 2D
     e.g vo.print_throat(geom, [34, 65, 99])
     """
-    import matplotlib.pyplot as plt
     throat_list = []
     for throat in throats:
         if throat in range(geometry.num_throats()):
@@ -345,7 +351,8 @@ def plot_throat(geometry, throats, fig=None):
             vert_2D = rotate_and_chop(verts[i], normals[i], [0, 0, 1])
             hull = ConvexHull(vert_2D, qhull_options='QJ Pp')
             for simplex in hull.simplices:
-                plt.plot(vert_2D[simplex, 0], vert_2D[simplex, 1], 'k-', linewidth=2)
+                plt.plot(vert_2D[simplex, 0], vert_2D[simplex, 1], 'k-',
+                         linewidth=2)
             plt.scatter(vert_2D[:, 0], vert_2D[:, 1])
             offset_2D = rotate_and_chop(offsets[i], normals[i], [0, 0, 1])
             offset_hull = ConvexHull(offset_2D, qhull_options='QJ Pp')
@@ -353,8 +360,8 @@ def plot_throat(geometry, throats, fig=None):
                 plt.plot(offset_2D[simplex, 0], offset_2D[simplex, 1],
                          'g-', linewidth=2)
             plt.scatter(offset_2D[:, 0], offset_2D[:, 1])
-            # Make sure the plot looks nice by finding the greatest range of points
-            # and setting the plot to look square
+            # Make sure the plot looks nice by finding the greatest range of
+            # points and setting the plot to look square
             xmax = vert_2D[:, 0].max()
             xmin = vert_2D[:, 0].min()
             ymax = vert_2D[:, 1].max()
@@ -369,11 +376,13 @@ def plot_throat(geometry, throats, fig=None):
             upper_bound_x = xmin + my_range*1.5
             lower_bound_y = ymin - my_range*0.5
             upper_bound_y = ymin + my_range*1.5
-            plt.axis((lower_bound_x, upper_bound_x, lower_bound_y, upper_bound_y))
+            plt.axis((lower_bound_x, upper_bound_x, lower_bound_y,
+                      upper_bound_y))
             plt.grid(b=True, which='major', color='b', linestyle='-')
             centroid = rotate_and_chop(coms[i], normals[i], [0, 0, 1])
             incent = rotate_and_chop(incentre[i], normals[i], [0, 0, 1])
             plt.scatter(centroid[0][0], centroid[0][1])
+            plt.scatter(incent[0][0], incent[0][1], c='r')
             # Plot incircle
             t = np.linspace(0, 2*np.pi, 200)
             u = inradius[i]*np.cos(t)+incent[0][0]
@@ -386,7 +395,8 @@ def plot_throat(geometry, throats, fig=None):
     return fig
 
 
-def plot_pore(geometry, pores, fig=None, axis_bounds=None, include_points=False):
+def plot_pore(geometry, pores, fig=None, axis_bounds=None,
+              include_points=False):
     r"""
     Print all throats around a given pore or list of pores accepted
     as [1, 2, 3, ..., n]
@@ -397,17 +407,14 @@ def plot_pore(geometry, pores, fig=None, axis_bounds=None, include_points=False)
     pore_range = np.arange(0,n-1,1)
     vo.print_pore(geom, pore_range)
     """
-    import matplotlib.pyplot as plt
-    from mpl_toolkits.mplot3d import Axes3D
     from mpl_toolkits.mplot3d.art3d import Poly3DCollection
     if len(pores) > 0:
-        net_pores = geometry.map_pores(geometry._net, pores)
+        net = geometry._net
+        net_pores = net.map_pores(geometry['pore._id'][pores])
         centroids = geometry['pore.centroid'][pores]
         coords = geometry._net['pore.coords'][net_pores]
-        net_throats = geometry._net.find_neighbor_throats(pores=net_pores)
-        throats = geometry._net.map_throats(geometry,
-                                            net_throats,
-                                            return_mapping=True)['target']
+        net_throats = net.find_neighbor_throats(pores=net_pores)
+        throats = geometry.map_throats(net['throat._id'][net_throats])
         tcentroids = geometry["throat.centroid"][throats]
         # Can't create volume from one throat
         if 1 <= len(throats):
@@ -428,7 +435,7 @@ def plot_pore(geometry, pores, fig=None, axis_bounds=None, include_points=False)
             # Get domain extents for setting axis
             if axis_bounds is None:
                 [xmin, xmax, ymin, ymax, zmin, zmax] = \
-                    vertex_dimension(geometry._net, pores, parm='minmax')
+                    vertex_dimension(geometry._net, net_pores, parm='minmax')
             else:
                 [xmin, xmax, ymin, ymax, zmin, zmax] = axis_bounds
             if fig is None:
@@ -448,8 +455,13 @@ def plot_pore(geometry, pores, fig=None, axis_bounds=None, include_points=False)
             ax.set_ylim(ymin, ymax)
             ax.set_zlim(zmin, zmax)
             if include_points:
-                ax.scatter(centroids[:, 0], centroids[:, 1], centroids[:, 2], c='y')
-                ax.scatter(tcentroids[:, 0], tcentroids[:, 1], tcentroids[:, 2],
+                ax.scatter(centroids[:, 0],
+                           centroids[:, 1],
+                           centroids[:, 2],
+                           c='y')
+                ax.scatter(tcentroids[:, 0],
+                           tcentroids[:, 1],
+                           tcentroids[:, 2],
                            c='r')
                 ax.scatter(coords[:, 0], coords[:, 1], coords[:, 2], c='b')
             ax.ticklabel_format(style='sci', scilimits=(0, 0))
@@ -466,8 +478,8 @@ def rotate_and_chop(verts, normal, axis=[0, 0, 1]):
     Method to rotate a set of vertices (or coords) to align with an axis
     points must be coplanar and normal must be given
     Chops axis coord to give vertices back in 2D
-    Used to prepare verts for printing or calculating convex hull in order to arrange
-    them in hull order for calculations and printing
+    Used to prepare verts for printing or calculating convex hull in order to
+    arrange them in hull order for calculations and printing
     """
     xaxis = [1, 0, 0]
     yaxis = [0, 1, 0]
