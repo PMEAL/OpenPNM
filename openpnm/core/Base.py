@@ -1019,7 +1019,7 @@ class Base(dict):
             temp = list(temp.values())[0]
         return temp
 
-def _parse_indices(self, indices):
+    def _parse_indices(self, indices):
         r"""
         This private method accepts a list of pores or throats and returns a
         properly structured Numpy array of indices.
