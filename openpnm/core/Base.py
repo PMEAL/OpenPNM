@@ -146,6 +146,37 @@ class Base(dict):
             if item not in ['pore.all', 'throat.all']:
                 del self[item]
 
+    def keys(self, element=None, mode='all'):
+        r"""
+        This subclass works exactly like ``keys`` when no arguments are passed,
+        but optionally accepts an ``element`` and/or a ``mode``, which filters
+        the output to only the requested keys.
+
+        Parameters
+        ----------
+        element : string (optional, default is None)
+            Can be either 'pore' or 'throat', which limits the returned list of
+            keys to only 'pore' or 'throat' keys.
+
+        mode : string (optional, default is 'all')
+            Can be 'labels' or 'props', which limits the returned list of keys
+            to only 'labels' (boolean arrays) or 'props' (numerical arrays).
+        """
+        element = self._parse_element(element=element)
+        allowed = ['props', 'labels']
+        if mode == 'all':
+            mode = allowed
+        mode = self._parse_mode(mode=mode, allowed=allowed)
+        keys = super().keys()
+        temp = []
+        if 'props' in mode:
+            temp.extend([i for i in keys if self.get(i).dtype != bool])
+        if 'labels' in mode:
+            temp.extend([i for i in keys if self.get(i).dtype == bool])
+        if element:
+            temp = [i for i in temp if i.split('.')[0] in element]
+        return temp
+
     # -------------------------------------------------------------------------
     """Data Query Methods"""
     # -------------------------------------------------------------------------
