@@ -347,32 +347,26 @@ class GenericNetwork(Base, ModelsMixin):
 
         Returns
         -------
-        Tnum : list of list of int
-            Returns throat number(s), or empty array if pores are not connected
+        Returns a list the same length as P1 (and P2) with the each element
+        containing the throat number that connects the corresponding pores,
+        or `None`` if pores are not connected.
+
+        Notes
+        -----
+        The returned list can be converted to an ND-array, which will convert
+        the ``None`` values to ``nan``.  These can then be found using
+        ``scipy.isnan``.
 
         Examples
         --------
         >>> import openpnm as op
         >>> pn = op.network.Cubic(shape=[5, 5, 5])
         >>> pn.find_connecting_throat([0, 1, 2], [2, 2, 2])
-        [[], [3], []]
-
-        TODO: This now works on 'vector' inputs, but is not actually vectorized
-        in the Numpy sense, so could be slow with large P1, P2 inputs
+        [None, 1, None]
         """
-        P1 = self._parse_indices(P1)
-        P2 = self._parse_indices(P2)
-        Ts1 = self.find_neighbor_throats(P1, flatten=False)
-        Ts2 = self.find_neighbor_throats(P2, flatten=False)
-        Ts = []
-
-        for row in range(0, len(P1)):
-            if P1[row] == P2[row]:
-                throat = []
-            else:
-                throat = sp.intersect1d(Ts1[row], Ts2[row]).tolist()
-            Ts.insert(0, throat)
-        Ts.reverse()
+        mapping = {tuple(self['throat.conns'][i]): i for i in self.Ts}
+        z = tuple(zip(P1, P2))
+        Ts = [mapping.get(z[i]) for i in range(len(z))]
         return Ts
 
     def find_neighbor_pores(self, pores, mode='union', flatten=True,
@@ -561,22 +555,19 @@ class GenericNetwork(Base, ModelsMixin):
         >>> pn = op.network.Cubic(shape=[5, 5, 5])
         >>> pn.num_neighbors(pores=[0, 1], flatten=False)
         array([3, 4])
-        >>> pn.num_neighbors(pores=[0, 1], flatten=True)
-        5
         >>> pn.num_neighbors(pores=[0, 2], flatten=True)
         6
-        >>> pn.num_neighbors(pores=[0, 1], element='throat', mode='union',
-        ...                  flatten=True)
-        6
+        >>> pn.num_neighbors(pores=[0, 2], mode='intersection', flatten=True)
+        1
         """
         pores = self._parse_indices(pores)
         # Count number of neighbors
         num = self._find_neighbors(pores, element=element, flatten=flatten,
                                    mode=mode)
-        num = sp.array([sp.size(i) for i in num], dtype=int)
         if flatten:
-            num = sp.sum(num)
-            num = int(num)
+            num = sp.size(num)
+        else:
+            num = sp.array([sp.size(i) for i in num], dtype=int)
         return num
 
     def find_nearby_pores(self, pores, r, flatten=False, excl_self=True):
