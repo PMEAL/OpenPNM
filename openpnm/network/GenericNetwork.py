@@ -4,6 +4,7 @@ import scipy as sp
 import scipy.sparse as sprs
 import scipy.spatial as sptl
 from openpnm.core import Base, Simulation, Workspace, ModelsMixin, logging
+from openpnm import topotools
 logger = logging.getLogger()
 ws = Workspace()
 
@@ -75,7 +76,7 @@ class GenericNetwork(Base, ModelsMixin):
 
     am = property(fget=get_adjacency_matrix)
 
-    def create_adjacency_matrix(self, data=None, fmt='coo'):
+    def create_adjacency_matrix(self, data=None, fmt='coo', triu=False):
         r"""
         Generates a weighted adjacency matrix in the desired sparse format
 
@@ -96,6 +97,10 @@ class GenericNetwork(Base, ModelsMixin):
             **'lil'** : Enables row-wise slice of data
 
             **'csr'** : Favored by most linear algebra routines
+
+        triu : boolean (default is ``False``)
+            If ``True``, the returned sparse matrix only contains the upper-
+            triangular elements.
 
         Returns
         -------
@@ -130,14 +135,11 @@ class GenericNetwork(Base, ModelsMixin):
         # Generate sparse adjacency matrix in 'coo' format
         temp = sprs.coo_matrix((data, (row, col)), (self.Np, self.Np))
 
-        # Save the 'clean' matrix on object for future use
+        # Save the 'clean' matrix on Network object for future use
         if data_flag:
-            if 'coo' in self._am.keys():
-                self._am['coo'] = temp
-            if 'csr' in self._am.keys():
-                self._am['csr'] = temp.tocsr()
-            if 'lil' in self._am.keys():
-                self._am['lil'] = temp.tolil()
+            self._am['coo'] = temp
+            self._am['csr'] = temp.tocsr()
+            self._am['lil'] = temp.tolil()
 
         # Convert to requested format
         if fmt == 'coo':
@@ -219,7 +221,7 @@ class GenericNetwork(Base, ModelsMixin):
 
         return temp
 
-    def find_connected_pores(self, throats=[], flatten=False):
+    def find_connected_pores(self, throats=[], flatten=False, mode='union'):
         r"""
         Return a list of pores connected to the given list of throats
 
@@ -233,6 +235,16 @@ class GenericNetwork(Base, ModelsMixin):
             is returned. If flatten is False each location in the the returned
             array contains a sub-arras of neighboring pores for each input
             throat, in the order they were sent.
+
+        mode : string, optional
+            Specifies which neighbors should be returned.  The options are:
+
+            **'union'** : (default) All neighbors of the input pores
+
+            **'intersection'** : Only neighbors shared by all input pores
+
+            **'exclusive_or'** : Only neighbors not shared by any input
+            pores
 
         Returns
         -------
@@ -256,13 +268,9 @@ class GenericNetwork(Base, ModelsMixin):
         stacks the two columns and eliminate non-unique values.
         """
         Ts = self._parse_indices(throats)
-        Ps = self['throat.conns'][Ts]
-        if flatten:
-            if sp.shape(Ps) == (0, 2):
-                Ps = sp.array([], ndmin=1, dtype=int)
-            else:
-                Ps = sp.unique(sp.hstack(Ps))
-        return Ps
+        pores = topotools.find_connected_sites(bonds=Ts, am=self.am,
+                                               flatten=flatten, logic=mode)
+        return pores
 
     def find_connecting_throat(self, P1, P2):
         r"""
@@ -304,7 +312,8 @@ class GenericNetwork(Base, ModelsMixin):
         Ts.reverse()
         return Ts
 
-    def find_neighbor_pores(self, pores, mode='union', flatten=True, excl_self=True):
+    def find_neighbor_pores(self, pores, mode='union', flatten=True,
+                            excl_self=True):
         r"""
         Returns a list of pores neighboring the given pore(s)
 
@@ -328,17 +337,24 @@ class GenericNetwork(Base, ModelsMixin):
         mode : string, optional
             Specifies which neighbors should be returned.  The options are:
 
-            **'union'** : All neighbors of the input pores
+            **'union'** : (default) All neighbors of the input pores
 
             **'intersection'** : Only neighbors shared by all input pores
 
-            **'not_intersection'** : Only neighbors not shared by any input
+            **'exclusive_or'** : Only neighbors not shared by any input
             pores
 
         Returns
         -------
-        neighborPs : 1D array (if flatten is True) or ndarray of ndarrays (if
-        ``flatten`` is ``False``)
+        If ``flatten`` is ``True``, returns a 1D array of pore indices filtered
+        according to the specified mode.  If ``flatten`` is ``False``, returns
+        a list of lists, where each list contains the neighbors of the
+        corresponding input pores.
+
+        Notes
+        -----
+        If ``flatten`` is ``False``, then ``mode`` and ``excl_self`` are
+        ignored.
 
         Examples
         --------
@@ -357,9 +373,10 @@ class GenericNetwork(Base, ModelsMixin):
         >>> pn.find_neighbor_pores(pores=[0, 2], mode='not_intersection')
         array([ 3,  5,  7, 25, 27])
         """
-        neighbors = self._find_neighbors(pores=pores, element='pore',
-                                         mode=mode, flatten=flatten,
-                                         excl_self=excl_self)
+        pores = self._parse_indices(pores)
+        neighbors = topotools.find_neighbor_sites(sites=pores, logic=mode,
+                                                  am=self.am, flatten=flatten,
+                                                  exclude_input=excl_self)
         return neighbors
 
     def find_neighbor_throats(self, pores, mode='union', flatten=True):
@@ -380,7 +397,7 @@ class GenericNetwork(Base, ModelsMixin):
         mode : string, optional
             Specifies which neighbors should be returned.  The options are:
 
-            **'union'** : All neighbors of the input pores
+            **'union'** : (default) All neighbors of the input pores
 
             **'intersection'** : Only neighbors shared by all input pores
 
@@ -401,87 +418,19 @@ class GenericNetwork(Base, ModelsMixin):
         >>> pn.find_neighbor_throats(pores=[0, 1],flatten=False)
         array([array([0, 1, 2]), array([0, 3, 4, 5])], dtype=object)
         """
-        neighbors = self._find_neighbors(pores=pores, mode=mode,
-                                         element='throat', flatten=flatten,
-                                         excl_self=False)
+        pores = self._parse_indices(pores)
+        neighbors = topotools.find_neighbor_bonds(sites=pores, logic=mode,
+                                                  im=self.im, flatten=flatten)
         return neighbors
 
-    def _find_neighbors(self, pores, element, mode, flatten, excl_self):
-        r"""
-        Private method for finding the neighboring pores or throats connected
-        directly to given set of pores.
-
-        Parameters
-        ----------
-        pores : array_like
-            The list of pores whose neighbors are sought
-
-        element : string, either 'pore' or 'throat'
-            Whether to find neighboring pores or throats
-
-        mode : string
-            Controls how the neighbors are filtered.  Options are:
-
-            **'union'** : All neighbors of the input pores
-
-            **'intersection'** : Only neighbors shared by all input pores
-
-            **'not_intersection'** : Only neighbors not shared by any input
-            pores
-
-        flatten : boolean
-            If flatten is True (default) a 1D array of unique neighbors is
-            returned. If flatten is False the returned array contains arrays
-            of neighboring throat ID numbers for each input pore, in the order
-            they were sent.
-
-        excl_self : bool
-            When True the input pores are not included in the returned list of
-            neighboring pores.  This option only applies when input pores are
-            in fact neighbors to each other, otherwise they are not part of the
-            returned list anyway.  This is ignored with the element is
-            'throats'.
-
-        See Also
-        --------
-        find_neighbor_pores
-        find_neighbor_throats
-        num_neighors
-
-        """
+    def _find_neighbors(self, pores, element, **kwargs):
         element = self._parse_element(element=element, single=True)
-        pores = self._parse_indices(pores)
         if sp.size(pores) == 0:
             return sp.array([], ndmin=1, dtype=int)
-
-        # Test for existence of incidence or adjacency matrix
         if element == 'pore':
-            temp = self.get_adjacency_matrix(fmt='lil')
-            neighbors = temp.rows[[pores]]
-        elif element == 'throat':
-            temp = self.get_incidence_matrix(fmt='lil')
-            neighbors = temp.rows[[pores]]
-
-        if flatten:
-            # Convert rows of lil into single flat list
-            neighbors = itertools.chain.from_iterable(neighbors)
-            if element == 'pore':  # Add input pores to list
-                neighbors = itertools.chain.from_iterable([neighbors, pores])
-            # Convert list to numpy array
-            neighbors = sp.fromiter(neighbors, dtype=int)
-            if mode == 'not_intersection':
-                neighbors = sp.unique(sp.where(sp.bincount(neighbors) == 1)[0])
-            elif mode == 'union':
-                neighbors = sp.unique(neighbors)
-            elif mode == 'intersection':
-                neighbors = sp.unique(sp.where(sp.bincount(neighbors) > 1)[0])
-            if excl_self and element == 'pore':  # Remove input pores from list
-                neighbors = neighbors[~sp.in1d(neighbors, pores)]
-            neighbors = sp.array(neighbors, ndmin=1, dtype=int)
+            neighbors = self.find_neighbor_pores(pores=pores, **kwargs)
         else:
-            # Convert lists in array to numpy arrays
-            neighbors = [sp.array(neighbors[i]) for i in range(0, len(pores))]
-            neighbors = sp.array(neighbors, ndmin=1)
+            neighbors = self.find_neighbor_throats(pores=pores, **kwargs)
         return neighbors
 
     def num_neighbors(self, pores, element='pore', flatten=False,
@@ -516,7 +465,7 @@ class GenericNetwork(Base, ModelsMixin):
             **'intersection'** : The number of neighboring pores that are
             shared by all input pores.
 
-            **'not_intersection'** : The number of neighboring pores that are
+            **'exclusive_or'** : The number of neighboring pores that are
             NOT shared by any input pores.
 
         Returns

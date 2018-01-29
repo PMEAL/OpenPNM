@@ -8,6 +8,128 @@ ws = Workspace()
 logger = logging.getLogger()
 
 
+def find_neighbor_sites(sites, am, flatten=True, exclude_input=True, logic='union'):
+    if am.format != 'lil':
+        am = am.tolil(copy=False)
+    neighbors = [am.rows[i] for i in sp.array(sites)]
+    if flatten:
+        neighbors.append(sites)
+        neighbors = sp.hstack(neighbors)
+        neighbors = apply_logic(neighbors=neighbors, logic=logic)
+        if exclude_input:
+            neighbors = neighbors[sp.in1d(neighbors, sites,
+                                          assume_unique=True,
+                                          invert=True)]
+    return neighbors
+
+
+def find_neighbor_bonds(sites, im, flatten=True, logic='union'):
+    if im.shape[0] > im.shape[1]:
+        print('Warning: Recived matrix has more sites than bonds!')
+    if im.format != 'lil':
+        im = im.tolil(copy=False)
+    neighbors = [im.rows[i] for i in sp.array(sites)]
+    if flatten:
+        neighbors = sp.hstack(neighbors)
+        neighbors = apply_logic(neighbors=neighbors, logic=logic)
+    return neighbors
+
+
+def find_connected_sites(bonds, am, flatten=True, logic='union'):
+    if am.format != 'coo':
+        am = am.tocoo(copy=False)
+    bonds = sp.array(bonds)
+    if flatten:
+        neighbors = sp.hstack((am.row[bonds], am.col[bonds]))
+        neighbors = apply_logic(neighbors=neighbors, logic=logic)
+    else:
+        neighbors = sp.vstack((am.row[bonds], am.col[bonds])).T
+    return neighbors
+
+
+def apply_logic(neighbors, logic):
+    if neighbors.ndim > 1:
+        neighbors = sp.hstack(neighbors)
+    if logic == 'union':
+        neighbors = sp.unique(neighbors)
+    elif logic == 'exclusive_or':
+        # neighbors that occur only once are NOT shared with other sites
+        neighbors = sp.unique(sp.where(sp.bincount(neighbors) == 1)[0])
+    elif logic == 'intersection':
+        # neighbors that occur more than once ARE shared with other sites
+        neighbors = sp.unique(sp.where(sp.bincount(neighbors) > 1)[0])
+    else:
+        raise Exception('Unsupported logic type: '+logic)
+    return neighbors
+
+
+def istriu(am):
+    if am.shape[0] != am.shape[1]:
+        print('Matrix is not square, triangularity is not relevant')
+        return False
+    if am.format != 'coo':
+        am = am.tocoo(copy=False)
+    return sp.all(am.row < am.col)
+
+
+def istril(am):
+    if am.shape[0] != am.shape[1]:
+        print('Matrix is not square, triangularity is not relevant')
+        return False
+    if am.format != 'coo':
+        am = am.tocoo(copy=False)
+    return sp.all(am.row > am.col)
+
+
+def istriangular(am):
+    if am.format != 'coo':
+        am = am.tocoo(copy=False)
+    return (istril(am) + istriu(am))
+
+
+def issymmetric(am):
+    if am.shape[0] != am.shape[1]:
+        print('Matrix is not square, symmetrical is not relevant')
+        return False
+    if am.format != 'coo':
+        am = am.tocoo(copy=False)
+    inds_up = am.row < am.col
+    inds_lo = am.row > am.col
+    # Check if locations of non-zeros are symmetrically distributed
+    if inds_up.size != inds_lo.size:
+        return False
+    # Then check if values are also symmetric
+    data_up = am.data[inds_up]
+    data_lo = am.data[inds_lo]
+    return sp.allclose(data_up, data_lo)
+
+
+def am_to_im(am):
+    if am.shape[0] != am.shape[1]:
+        raise Exception('Adjacency matrices must be square')
+    if am.format != 'coo':
+        am = am.tocoo(copy=False)
+    conn = sp.vstack((am.row, am.col)).T
+    row = conn[:, 0]
+    data = am.data
+    col = sp.arange(sp.size(am.data))
+    if istriangular(am):
+        row = sp.append(row, conn[:, 1])
+        data = sp.append(data, data)
+        col = sp.append(col, col)
+    im = sprs.coo.coo_matrix((data, (row, col)), (row.max()+1, col.max()+1))
+    return im
+
+
+def im_to_am(im):
+    if im.shape[0] == im.shape[1]:
+        print('Warning: Received matrix is square which is unlikely')
+    if im.shape[0] > im.shape[1]:
+        print('Warning: Received matrix has more sites than bonds')
+    if im.format != 'coo':
+        im = im.tocoo(copy=False)
+
+
 def trim(network, pores=[], throats=[]):
     '''
     Remove pores or throats from the network.
