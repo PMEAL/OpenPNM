@@ -8,7 +8,8 @@ ws = Workspace()
 logger = logging.getLogger()
 
 
-def find_neighbor_sites(sites, am, flatten=True, exclude_input=True, logic='union'):
+def find_neighbor_sites(sites, am, flatten=True, exclude_input=True,
+                        logic='union'):
     if am.format != 'lil':
         am = am.tolil(copy=False)
     neighbors = [am.rows[i] for i in sp.array(sites)]

@@ -58,43 +58,46 @@ class GenericNetwork(Base, ModelsMixin):
         else:
             return super().__getitem__(key)
 
-    def get_adjacency_matrix(self, fmt='coo'):
+    def get_adjacency_matrix(self, fmt='lil'):
         # Retrieve existing matrix if available
         if fmt in self._am.keys():
             return self._am[fmt]
         else:
             am = self.create_adjacency_matrix(fmt=fmt)
+            self._am[fmt] = am
         return am
 
-    def get_incidence_matrix(self, fmt='coo'):
+    def get_incidence_matrix(self, fmt='lil'):
         if fmt in self._im.keys():
             return self._im[fmt]
-        im = self.create_incidence_matrix(fmt=fmt)
+        else:
+            im = self.create_incidence_matrix(fmt=fmt)
+            self._im[fmt] = im
         return im
 
     im = property(fget=get_incidence_matrix)
 
     am = property(fget=get_adjacency_matrix)
 
-    def create_adjacency_matrix(self, data=None, fmt='coo', triu=False):
+    def create_adjacency_matrix(self, weights=None, fmt='coo', triu=False,
+                                drop_zeros=False):
         r"""
         Generates a weighted adjacency matrix in the desired sparse format
 
         Parameters
         ----------
-        data : array_like, optional
+        weights : array_like, optional
             An Nt-long array containing the throat values to enter into the
             matrix (in graph theory these are known as the 'weights').  If
             omitted, ones are used to create a standard adjacency matrix
-            representing connectivity only.  Zero values are dropped from the
-            matrix.
+            representing connectivity only.
 
         fmt : string, optional
             The sparse storage format to return.  Options are:
 
             **'coo'** : (default) This is the native format of OpenPNM data
 
-            **'lil'** : Enables row-wise slice of data
+            **'lil'** : Enables row-wise slice of the matrix
 
             **'csr'** : Favored by most linear algebra routines
 
@@ -102,114 +105,120 @@ class GenericNetwork(Base, ModelsMixin):
             If ``True``, the returned sparse matrix only contains the upper-
             triangular elements.
 
+        drop_zeros : boolean (default is ``False``)
+            If ``True``, applies the ``eliminate_zeros`` method of the sparse
+            array to remove all zero locations.
+
         Returns
         -------
-        Returns an adjacency matrix in the specified Scipy sparse format
+        An adjacency matrix in the specified Scipy sparse format.
 
         Examples
         --------
         >>> import openpnm as op
         >>> pn = op.network.Cubic(shape=[5, 5, 5])
-        >>> vals = sp.rand(pn.num_throats(),) < 0.5
-        >>> temp = pn.create_adjacency_matrix(data=vals, fmt='csr')
+        >>> weights = sp.rand(pn.num_throats(), ) < 0.5
+        >>> temp = pn.create_adjacency_matrix(weights=weights, fmt='csr')
 
         """
         # Check if provided data is valid
-        data_flag = False
-        if data is None:
-            data = sp.ones((self.Nt,))
-            data_flag = True
-        elif sp.shape(data)[0] != self.Nt:
+        if weights is None:
+            weights = sp.ones((self.Nt,))
+        elif sp.shape(weights)[0] != self.Nt:
             raise Exception('Received weights are incorrect length')
 
         # Append row & col to each other, and data to itself
-        ind = data != 0
-        conn = self['throat.conns'][ind]
+        conn = self['throat.conns']
         row = conn[:, 0]
         col = conn[:, 1]
-        data = data[ind]
-        row = sp.append(row, conn[:, 1])
-        col = sp.append(col, conn[:, 0])
-        data = sp.append(data, data)
+        if not triu:
+            row = sp.append(row, conn[:, 1])
+            col = sp.append(col, conn[:, 0])
+            weights = sp.append(weights, weights)
 
         # Generate sparse adjacency matrix in 'coo' format
-        temp = sprs.coo_matrix((data, (row, col)), (self.Np, self.Np))
+        temp = sprs.coo_matrix((weights, (row, col)), (self.Np, self.Np))
 
-        # Save the 'clean' matrix on Network object for future use
-        if data_flag:
-            self._am['coo'] = temp
-            self._am['csr'] = temp.tocsr()
-            self._am['lil'] = temp.tolil()
+        if drop_zeros:
+            temp.eliminate_zeros()
 
         # Convert to requested format
         if fmt == 'coo':
             pass  # temp is already in coo format
-        if fmt == 'csr':
+        elif fmt == 'csr':
             temp = temp.tocsr()
-        if fmt == 'lil':
+        elif fmt == 'lil':
             temp = temp.tolil()
 
         return temp
 
-    def create_incidence_matrix(self, data=None, fmt='coo'):
+    def create_incidence_matrix(self, weights=None, fmt='coo',
+                                drop_zeros=False):
         r"""
-        Creates an incidence matrix filled with supplied throat values
+        Creates a weighted incidence matrix in the desired sparse format
 
         Parameters
         ----------
-        data : array_like, optional
+        weights : array_like, optional
             An array containing the throat values to enter into the matrix (In
             graph theory these are known as the 'weights').  If omitted, ones
             are used to create a standard incidence matrix representing
-            connectivity only.  Zero values are dropped from the matrix.
+            connectivity only.
 
         fmt : string, optional
             The sparse storage format to return.  Options are:
 
             **'coo'** : (default) This is the native format of OpenPNMs data
 
-            **'lil'** : Enables row-wise slice of data
+            **'lil'** : Enables row-wise slice of the matrix
 
             **'csr'** : Favored by most linear algebra routines
 
+        drop_zeros : boolean (default is ``False``)
+            If ``True``, applies the ``eliminate_zeros`` method of the sparse
+            array to remove all zero locations.
+
         Returns
         -------
-        An incidence matrix (a cousin to the adjacency matrix, useful for
-        finding throats of given a pore)
+        An incidence matrix in the specified sparse format
+
+        Notes
+        -----
+        This incidence matrix is a cousin to the adjacency matrix, and used by
+        OpenPNM for finding the throats connected to a give pore or set of
+        pores.  Specifically, an incidence matrix has Np rows and Nt columns,
+        and each row represents a pore, containing non-zero values at the
+        locations corresponding to the indices of the throats connected to that
+        pore.  The ``weights`` argument indicates what value to place at each
+        location, with the default being 1's to simply indicate connections.
+        Another useful option is throat indices, such that the data values
+        on each row indicate which throats are connected to the pore, though
+        this is redundant as it is identical to the locations of non-zeros.
 
         Examples
         --------
         >>> import openpnm as op
         >>> pn = op.network.Cubic(shape=[5, 5, 5])
-        >>> vals = sp.rand(pn.num_throats(),) < 0.5
-        >>> temp = pn.create_incidence_matrix(data=vals,sprsfmt='csr')
+        >>> weights = sp.rand(pn.num_throats(), ) < 0.5
+        >>> temp = pn.create_incidence_matrix(weights=weights, sprsfmt='csr')
         """
         # Check if provided data is valid
-        data_flag = False
-        if data is None:
-            data = sp.ones((self.Nt,))
-            data_flag
-        elif sp.shape(data)[0] != self.Nt:
+        if weights is None:
+            weights = sp.ones((self.Nt,))
+        elif sp.shape(weights)[0] != self.Nt:
             raise Exception('Received dataset of incorrect length')
 
-        ind = data > 0
-        conn = self['throat.conns'][ind]
+        conn = self['throat.conns']
         row = conn[:, 0]
         row = sp.append(row, conn[:, 1])
-        col = self.throats('all')[ind]
+        col = sp.arange(self.Nt)
         col = sp.append(col, col)
-        data = sp.append(data[ind], data[ind])
+        weights = sp.append(weights, weights)
 
-        temp = sprs.coo.coo_matrix((data, (row, col)), (self.Np, self.Nt))
+        temp = sprs.coo.coo_matrix((weights, (row, col)), (self.Np, self.Nt))
 
-        # Save the 'clean' matrix on object for future use
-        if data_flag:
-            if 'coo' in self._am.keys():
-                self._im['coo'] = temp
-            if 'csr' in self._am.keys():
-                self._im['csr'] = temp.tocsr()
-            if 'lil' in self._am.keys():
-                self._im['lil'] = temp.tolil()
+        if drop_zeros:
+            temp.eliminate_zeros()
 
         # Convert to requested format
         if fmt == 'coo':
