@@ -167,7 +167,7 @@ class DelaunayGeometry(GenericGeometry):
 
     def _throat_c2c(self):
         r"""
-        Calculate the centre to centre distance from centroid of pore1 to
+        Calculate the center to center distance from centroid of pore1 to
         centroid of throat to centroid of pore2.
         """
         net = self.network
@@ -197,10 +197,10 @@ class DelaunayGeometry(GenericGeometry):
         net_Nt = self.num_throats()
         if Nt == net_Nt:
             centroid = sp.zeros([Nt, 3])
-            incentre = sp.zeros([Nt, 3])
+            incenter = sp.zeros([Nt, 3])
         else:
             centroid = sp.ndarray(Nt, dtype=object)
-            incentre = sp.ndarray(Nt, dtype=object)
+            incenter = sp.ndarray(Nt, dtype=object)
         area = sp.zeros(Nt)
         perimeter = sp.zeros(Nt)
         inradius = sp.zeros(Nt)
@@ -294,16 +294,16 @@ class DelaunayGeometry(GenericGeometry):
                         centroid2d += (translation)
                         centroid3d = np.concatenate((centroid2d, z_plane))
                         # Distance transform the eroded facet to find the
-                        # incentre and inradius
+                        # incenter and inradius
                         dt = ndimage.distance_transform_edt(eroded)
                         temp = np.unravel_index(dt.argmax(), dt.shape)
                         inx0, iny0 = np.asarray(temp).astype(float)
-                        incentre2d = [inx0, iny0]
+                        incenter2d = [inx0, iny0]
                         # Undo the translation, scaling and truncation on the
-                        # incentre
-                        incentre2d /= f
-                        incentre2d += (translation)
-                        incentre3d = np.concatenate((incentre2d, z_plane))
+                        # incenter
+                        incenter2d /= f
+                        incenter2d += (translation)
+                        incenter3d = np.concatenate((incenter2d, z_plane))
                         # The offset vertices will be those in the coords that
                         # are closest to the originals
                         offset_verts = []
@@ -331,11 +331,11 @@ class DelaunayGeometry(GenericGeometry):
                             if rotate_facet:
                                 MI = tr.inverse_matrix(M)
                                 # Unrotate the offset coordinates
-                                incentre[i] = np.dot(incentre3d, MI[:3, :3].T)
+                                incenter[i] = np.dot(incenter3d, MI[:3, :3].T)
                                 centroid[i] = np.dot(centroid3d, MI[:3, :3].T)
                                 eroded_verts[i] = np.dot(oc_3d, MI[:3, :3].T)
                             else:
-                                incentre[i] = incentre3d
+                                incenter[i] = incenter3d
                                 centroid[i] = centroid3d
                                 eroded_verts[i] = oc_3d
 
@@ -355,7 +355,7 @@ class DelaunayGeometry(GenericGeometry):
         self['throat.centroid'] = centroid
         self['throat.diameter'] = equiv_diameter
         self['throat.indiameter'] = inradius*2
-        self['throat.incentre'] = incentre
+        self['throat.incenter'] = incenter
         self['throat.offset_vertices'] = eroded_verts
 
     def inhull(self, xyz, pore, tol=1e-7):
@@ -434,7 +434,6 @@ class DelaunayGeometry(GenericGeometry):
             verts /= self.network.vox_len
             self.inhull(verts, pore)
         self._process_pore_voxels()
-        self['pore.volume'] = self['pore.pore_voxels']*self.network.vox_len**3
 
     def _process_pore_voxels(self):
         r'''
@@ -454,8 +453,7 @@ class DelaunayGeometry(GenericGeometry):
         freq_fiber_vox = freq_fiber_vox[freq_fiber_vox[:, 0] > -1]
         pore_vox[freq_pore_vox[:, 0]] = freq_pore_vox[:, 1]
         fiber_vox[freq_fiber_vox[:, 0]] = freq_fiber_vox[:, 1]
-        self['pore.fiber_voxels'] = fiber_vox
-        self['pore.pore_voxels'] = pore_vox
+        self['pore.volume'] = pore_vox*self.network.vox_len**3
         del pore_space
         del fiber_space
 
@@ -514,6 +512,7 @@ class DelaunayGeometry(GenericGeometry):
         lx = np.int(np.around(cdomain[0]/vox_len)+1)
         ly = np.int(np.around(cdomain[1]/vox_len)+1)
         lz = np.int(np.around(cdomain[2]/vox_len)+1)
+        logger.info("Voxels: " + str(lx) + " " + str(ly) + " " + str(lz))
         # Try to create all the arrays we will need at total domain size
         try:
             pore_space = np.ones([lx, ly, lz], dtype=np.uint8)
@@ -722,7 +721,12 @@ class VoronoiGeometry(GenericGeometry):
     def __init__(self, network, **kwargs):
         super().__init__(network=network, **kwargs)
         rm = 'normal'
+        net_Ps = network.pores(self.name)
         self['pore.diameter'] = sp.ones(self.Np)*network.fiber_rad*2
+        self['pore.indiameter'] = self['pore.diameter']
+        self['pore.incenter'] = network['pore.coords'][net_Ps]
+        self['pore.centroid'] = network['pore.coords'][net_Ps]
+        self._throat_props()
         self.add_model(propname='pore.volume',
                        model=gm.pore_volume.sphere,
                        regen_mode=rm)
@@ -730,13 +734,15 @@ class VoronoiGeometry(GenericGeometry):
                        model=gm.pore_area.spherical,
                        regen_mode=rm)
         self['throat.diameter'] = sp.ones(self.Nt)*network.fiber_rad*2
+        self['throat.indiameter'] = self['throat.diameter']
         self.add_model(propname='throat.area',
                        model=gm.throat_area.cylinder,
                        regen_mode=rm)
         self.add_model(propname='throat.length',
                        model=gm.throat_length.straight,
-                       L_negative=network.fiber_rad/100,
+                       L_negative=network.fiber_rad/1e6,
                        regen_mode=rm)
+        self['throat.c2c'] = self['throat.length']+network.fiber_rad*2
         self.add_model(propname='throat.volume',
                        model=gm.throat_volume.cylinder,
                        regen_mode=rm)
@@ -749,3 +755,28 @@ class VoronoiGeometry(GenericGeometry):
         self.add_model(propname='throat.shape_factor',
                        model=gm.throat_shape_factor.compactness,
                        regen_mode=rm)
+        self.add_model(propname='pore.seed',
+                       model=gm.pore_misc.random,
+                       num_range=[0, 0.1],
+                       seed=None,
+                       regen_mode=rm)
+        self.add_model(propname='throat.seed',
+                       model=gm.throat_misc.neighbor,
+                       pore_prop='pore.seed',
+                       mode='min',
+                       regen_mode=rm)
+
+    def _throat_props(self):
+        r'''
+        Helper Function to calculate the throat normal vectors
+        '''
+        network = self.network
+        net_Ts = network.throats(self.name)
+        conns = network['throat.conns'][net_Ts]
+        p1 = conns[:, 0]
+        p2 = conns[:, 1]
+        coords = network['pore.coords']
+        normals = tr.unit_vector(coords[p2]-coords[p1])
+        self['throat.normal'] = normals
+        self['throat.centroid'] = (coords[p1] + coords[p2])/2
+        self['throat.incenter'] = self['throat.centroid']

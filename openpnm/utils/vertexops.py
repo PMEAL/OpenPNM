@@ -341,7 +341,7 @@ def plot_throat(geometry, throats, fig=None):
         offsets = geometry['throat.offset_vertices'][throat_list]
         normals = geometry['throat.normal'][throat_list]
         coms = geometry['throat.centroid'][throat_list]
-        incentre = geometry['throat.incentre'][throat_list]
+        incentre = geometry['throat.incenter'][throat_list]
         inradius = 0.5*geometry['throat.indiameter'][throat_list]
         row_col = np.ceil(np.sqrt(len(throat_list)))
         for i in range(len(throat_list)):
@@ -409,10 +409,10 @@ def plot_pore(geometry, pores, fig=None, axis_bounds=None,
     """
     from mpl_toolkits.mplot3d.art3d import Poly3DCollection
     if len(pores) > 0:
-        net = geometry._net
+        net = geometry.network
         net_pores = net.map_pores(geometry['pore._id'][pores])
         centroids = geometry['pore.centroid'][pores]
-        coords = geometry._net['pore.coords'][net_pores]
+        coords = net['pore.coords'][net_pores]
         net_throats = net.find_neighbor_throats(pores=net_pores)
         throats = geometry.map_throats(net['throat._id'][net_throats])
         tcentroids = geometry["throat.centroid"][throats]
@@ -435,7 +435,7 @@ def plot_pore(geometry, pores, fig=None, axis_bounds=None,
             # Get domain extents for setting axis
             if axis_bounds is None:
                 [xmin, xmax, ymin, ymax, zmin, zmax] = \
-                    vertex_dimension(geometry._net, net_pores, parm='minmax')
+                    vertex_dimension(net, net_pores, parm='minmax')
             else:
                 [xmin, xmax, ymin, ymax, zmin, zmax] = axis_bounds
             if fig is None:
