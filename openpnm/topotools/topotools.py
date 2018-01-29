@@ -10,6 +10,36 @@ logger = logging.getLogger()
 
 def find_neighbor_sites(sites, am, flatten=True, exclude_input=True,
                         logic='union'):
+    r"""
+    Given a symmetric adjacency matrix, finds all sites that are connected
+    to the input sites.
+
+    Parameters
+    ----------
+    am : scipy.sparse matrix
+        The adjacency matrix of the network.  Must be symmetrical such that if
+        sites *i* and *j* are connected, the matrix contains non-zero values
+        at locations (i, j) and (j, i).
+
+    flatten : boolean (default is ``True``)
+        Indicates whether the returned result is a compressed array of all
+        neighbors, or a list of lists with each sub-list containing the
+        neighbors for each input site.
+
+    exclude_input : boolean (default is ``True``)
+        If ``flatten`` is ``True``, then this flag will remove the input sites
+        from the result, otherwise it's ignored.
+
+    logic : string
+        Specifies logic to apply to a flattened list.  Options are:
+
+        **'union'** : (default) All neighbors of the input sites
+
+        **'intersection'** : Only neighbors shared by all input sites
+
+        **'exclusive_or'** : Only neighbors not shared by any input sites
+
+    """
     if am.format != 'lil':
         am = am.tolil(copy=False)
     neighbors = [am.rows[i] for i in sp.array(sites)]
@@ -18,15 +48,39 @@ def find_neighbor_sites(sites, am, flatten=True, exclude_input=True,
         neighbors = sp.hstack(neighbors)
         neighbors = apply_logic(neighbors=neighbors, logic=logic)
         if exclude_input:
-            neighbors = neighbors[sp.in1d(neighbors, sites,
-                                          assume_unique=True,
-                                          invert=True)]
+            neighbors = neighbors[sp.in1d(neighbors, sites, invert=True,
+                                          assume_unique=True)]
     return neighbors
 
 
 def find_neighbor_bonds(sites, im, flatten=True, logic='union'):
+    r"""
+    Given an incidence matrix, finds all sites that are connected to the
+    input sites.
+
+    Parameters
+    ----------
+    im : scipy.sparse matrix
+        The incidence matrix of the network.  Must be shaped as (N-sites,
+        N-bonds), with non-zeros indicating which bonds are connected.
+
+    flatten : boolean (default is ``True``)
+        Indicates whether the returned result is a compressed array of all
+        neighbors, or a list of lists with each sub-list containing the
+        neighbors for each input site.
+
+    logic : string
+        Specifies logic to apply to a flattened list.  Options are:
+
+        **'union'** : (default) All neighbors of the input sites
+
+        **'intersection'** : Only neighbors shared by all input sites
+
+        **'exclusive_or'** : Only neighbors not shared by any input sites
+
+    """
     if im.shape[0] > im.shape[1]:
-        print('Warning: Recived matrix has more sites than bonds!')
+        print('Warning: Received matrix has more sites than bonds!')
     if im.format != 'lil':
         im = im.tolil(copy=False)
     neighbors = [im.rows[i] for i in sp.array(sites)]
@@ -37,6 +91,31 @@ def find_neighbor_bonds(sites, im, flatten=True, logic='union'):
 
 
 def find_connected_sites(bonds, am, flatten=True, logic='union'):
+    r"""
+    Given an adjacency matrix, finds whichsites are connected to the input
+    bonds.
+
+    Parameters
+    ----------
+    am : scipy.sparse matrix
+        The adjacency matrix of the network.  Must be symmetrical such that if
+        sites *i* and *j* are connected, the matrix contains non-zero values
+        at locations (i, j) and (j, i).
+
+    flatten : boolean (default is ``True``)
+        Indicates whether the returned result is a compressed array of all
+        neighbors, or a list of lists with each sub-list containing the
+        neighbors for each input site.
+
+    logic : string
+        Specifies logic to apply to a flattened list.  Options are:
+
+        **'union'** : (default) All neighbors of the input sites
+
+        **'intersection'** : Only neighbors shared by all input sites
+
+        **'exclusive_or'** : Only neighbors not shared by any input sites
+    """
     if am.format != 'coo':
         am = am.tocoo(copy=False)
     bonds = sp.array(bonds)

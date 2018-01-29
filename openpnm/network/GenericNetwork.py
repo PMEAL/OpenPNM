@@ -176,7 +176,7 @@ class GenericNetwork(Base, ModelsMixin):
         """
         # Check if provided data is valid
         if weights is None:
-            weights = sp.ones((self.Nt,))
+            weights = sp.ones((self.Nt,), dtype=int)
         elif sp.shape(weights)[0] != self.Nt:
             raise Exception('Received weights are incorrect length')
 
@@ -257,7 +257,7 @@ class GenericNetwork(Base, ModelsMixin):
         """
         # Check if provided data is valid
         if weights is None:
-            weights = sp.ones((self.Nt,))
+            weights = sp.ones((self.Nt,), dtype=int)
         elif sp.shape(weights)[0] != self.Nt:
             raise Exception('Received dataset of incorrect length')
 
@@ -469,8 +469,15 @@ class GenericNetwork(Base, ModelsMixin):
 
         Returns
         -------
-        neighborTs : 1D array (if flatten is True) or ndarray of arrays (if
-            flatten if False)
+        If ``flatten`` is ``True``, returns a 1D array of throat indices
+        filtered according to the specified mode.  If ``flatten`` is ``False``,
+        returns a list of lists, where each list contains the neighbors of the
+        corresponding input pores.
+
+        Notes
+        -----
+        If ``flatten`` is ``False``, then ``mode`` and ``excl_self`` are
+        ignored.
 
         Examples
         --------
