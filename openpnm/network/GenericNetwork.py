@@ -59,6 +59,31 @@ class GenericNetwork(Base, ModelsMixin):
             return super().__getitem__(key)
 
     def get_adjacency_matrix(self, fmt='lil'):
+        r"""
+        Returns an adjacency matrix in the specified sparse format, with 1's
+        indicating the non-zero values.
+
+        Parameters
+        ----------
+        fmt : string, optional
+            The sparse storage format to return.  Options are:
+
+            **'coo'** : (default) This is the native format of OpenPNM data
+
+            **'lil'** : Enables row-wise slice of the matrix
+
+            **'csr'** : Favored by most linear algebra routines
+
+        Notes
+        -----
+        This method will only create the requested matrix in the specified
+        format if one is not already saved on the object.  If not present,
+        this method will create and return the matrix, as well as store it
+        for future use.
+
+        To obtain a matrix with weights other than ones at each non-zero
+        location use ``create_adjacency_matrix``.
+        """
         # Retrieve existing matrix if available
         if fmt in self._am.keys():
             return self._am[fmt]
@@ -68,6 +93,31 @@ class GenericNetwork(Base, ModelsMixin):
         return am
 
     def get_incidence_matrix(self, fmt='lil'):
+        r"""
+        Returns an incidence matrix in the specified sparse format, with 1's
+        indicating the non-zero values.
+
+        Parameters
+        ----------
+        fmt : string, optional
+            The sparse storage format to return.  Options are:
+
+            **'coo'** : (default) This is the native format of OpenPNM data
+
+            **'lil'** : Enables row-wise slice of the matrix
+
+            **'csr'** : Favored by most linear algebra routines
+
+        Notes
+        -----
+        This method will only create the requested matrix in the specified
+        format if one is not already saved on the object.  If not present,
+        this method will create and return the matrix, as well as store it
+        for future use.
+
+        To obtain a matrix with weights other than ones at each non-zero
+        location use ``create_incidence_matrix``.
+        """
         if fmt in self._im.keys():
             return self._im[fmt]
         else:
@@ -112,6 +162,18 @@ class GenericNetwork(Base, ModelsMixin):
         Returns
         -------
         An adjacency matrix in the specified Scipy sparse format.
+
+        Notes
+        -----
+        The adjacency matrix is used by OpenPNM for finding the pores
+        connected to a give pore or set of pores.  Specifically, an adjacency
+        matrix has Np rows and Np columns.  Each row represents a pore,
+        containing non-zero values at the locations corresponding to the
+        indices of the pores connected to that pore.  The ``weights`` argument
+        indicates what value to place at each location, with the default
+        being 1's to simply indicate connections. Another useful option is
+        throat indices, such that the data values on each row indicate which
+        throats are connected to the pore.
 
         Examples
         --------
@@ -184,7 +246,7 @@ class GenericNetwork(Base, ModelsMixin):
 
         Notes
         -----
-        This incidence matrix is a cousin to the adjacency matrix, and used by
+        The incidence matrix is a cousin to the adjacency matrix, and used by
         OpenPNM for finding the throats connected to a give pore or set of
         pores.  Specifically, an incidence matrix has Np rows and Nt columns,
         and each row represents a pore, containing non-zero values at the
@@ -277,7 +339,8 @@ class GenericNetwork(Base, ModelsMixin):
         stacks the two columns and eliminate non-unique values.
         """
         Ts = self._parse_indices(throats)
-        pores = topotools.find_connected_sites(bonds=Ts, am=self.am,
+        am = self.get_adjacency_matrix(fmt='coo')
+        pores = topotools.find_connected_sites(bonds=Ts, am=am,
                                                flatten=flatten, logic=mode)
         return pores
 
@@ -376,10 +439,10 @@ class GenericNetwork(Base, ModelsMixin):
         >>> pn.find_neighbor_pores(pores=[0, 1], mode='union', excl_self=False)
         array([ 0,  1,  2,  5,  6, 25, 26])
         >>> pn.find_neighbor_pores(pores=[0, 2], flatten=False)
-        array([array([ 1,  5, 25]), array([ 1,  3,  7, 27])], dtype=object)
+        [[ 1,  5, 25], [ 1,  3,  7, 27]]
         >>> pn.find_neighbor_pores(pores=[0, 2], mode='intersection')
         array([1])
-        >>> pn.find_neighbor_pores(pores=[0, 2], mode='not_intersection')
+        >>> pn.find_neighbor_pores(pores=[0, 2], mode='exclusive_or')
         array([ 3,  5,  7, 25, 27])
         """
         pores = self._parse_indices(pores)
@@ -410,7 +473,7 @@ class GenericNetwork(Base, ModelsMixin):
 
             **'intersection'** : Only neighbors shared by all input pores
 
-            **'not_intersection'** : Only neighbors not shared by any input
+            **'exclusive_or'** : Only neighbors not shared by any input
             pores
 
         Returns
@@ -424,7 +487,7 @@ class GenericNetwork(Base, ModelsMixin):
         >>> pn = op.network.Cubic(shape=[5, 5, 5])
         >>> pn.find_neighbor_throats(pores=[0, 1])
         array([0, 1, 2, 3, 4, 5])
-        >>> pn.find_neighbor_throats(pores=[0, 1],flatten=False)
+        >>> pn.find_neighbor_throats(pores=[0, 1], flatten=False)
         array([array([0, 1, 2]), array([0, 3, 4, 5])], dtype=object)
         """
         pores = self._parse_indices(pores)
@@ -511,7 +574,7 @@ class GenericNetwork(Base, ModelsMixin):
         pores = self._parse_indices(pores)
         # Count number of neighbors
         num = self._find_neighbors(pores, element=element, flatten=flatten,
-                                   mode=mode, excl_self=True)
+                                   mode=mode)
         num = sp.array([sp.size(i) for i in num], dtype=int)
         if flatten:
             num = sp.sum(num)
