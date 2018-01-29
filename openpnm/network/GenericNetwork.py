@@ -3,7 +3,7 @@ import uuid
 import scipy as sp
 import scipy.sparse as sprs
 import scipy.spatial as sptl
-from openpnm.core import Base, Simulation, Workspace, ModelsMixin, logging
+from openpnm.core import Base, Workspace, ModelsMixin, logging
 from openpnm import topotools
 logger = logging.getLogger()
 ws = Workspace()
@@ -13,18 +13,12 @@ class GenericNetwork(Base, ModelsMixin):
     r"""
     GenericNetwork - Base class to construct pore networks
 
-    Parameters
-    ----------
-    name : string
-        Unique name for Network object
-
     """
-
     def __init__(self, simulation=None, settings={}, **kwargs):
         self.settings.setdefault('prefix', 'net')
         self.settings.update(settings)
         if simulation is None:
-            simulation = Simulation()
+            simulation = ws.new_simulation()
         super().__init__(simulation=simulation, **kwargs)
         self['pore._id'] = [str(uuid.uuid4()) for i in self.Ps]
         self['throat._id'] = [str(uuid.uuid4()) for i in self.Ts]
@@ -38,14 +32,10 @@ class GenericNetwork(Base, ModelsMixin):
             if sp.shape(value)[1] != 2:
                 logger.error('Wrong size for throat conns!')
             else:
-                mask = value[:, 0] > value[:, 1]
-                if mask.any():
-                    logger.debug('The first column in (throat.conns) should be \
-                                  smaller than the second one.')
-                    v1 = sp.copy(value[:, 0][mask])
-                    v2 = sp.copy(value[:, 1][mask])
-                    value[:, 0][mask] = v2
-                    value[:, 1][mask] = v1
+                if sp.any(value[:, 0] > value[:, 1]):
+                    logger.warning('Converting throat.conns to be upper \
+                                    triangular')
+                    value = sp.sort(value, axis=1)
         super().__setitem__(prop, value)
 
     def __getitem__(self, key):
@@ -53,8 +43,9 @@ class GenericNetwork(Base, ModelsMixin):
             element = key.split('.')[0]
             return self[element+'.all']
         if key not in self.keys():
-            logger.debug(key + ' not on Network, constructing data from Geometries')
-            return self._interleave_data(key, self.simulation.geometries.values())
+            logger.debug(key + ' not on Network, check on Geometries')
+            geoms = self.simulation.geometries.values()
+            return self._interleave_data(key, geoms)
         else:
             return super().__getitem__(key)
 
@@ -619,18 +610,15 @@ class GenericNetwork(Base, ModelsMixin):
         array([array([ 1,  5, 25]), array([ 0,  2,  6, 26])], dtype=object)
         >>> pn.find_nearby_pores(pores=[0, 1], r=0.5)
         array([], shape=(2, 0), dtype=int64)
+        >>> pn.find_nearby_pores(pores=[0, 1], r=1, flatten=True)
+        array([ 2,  5,  6, 25, 26])
         """
         pores = self._parse_indices(pores)
         # Handle an empty array if given
         if sp.size(pores) == 0:
             return sp.array([], dtype=sp.int64)
         if r <= 0:
-            logger.error('Provided distances should be greater than 0')
-            if flatten:
-                Pn = sp.array([])
-            else:
-                Pn = sp.array([sp.array([]) for i in range(0, len(pores))])
-            return Pn.astype(sp.int64)
+            raise Exception('Provided distances should be greater than 0')
         # Create kdTree objects
         kd = sptl.cKDTree(self['pore.coords'])
         kd_pores = sptl.cKDTree(self['pore.coords'][pores])
@@ -639,16 +627,14 @@ class GenericNetwork(Base, ModelsMixin):
         # Sort the indices in each list
         [Pn[i].sort() for i in range(0, sp.size(pores))]
         if flatten:  # Convert list of lists to a flat nd-array
-            temp = []
-            [temp.extend(Ps) for Ps in Pn]
-            Pn = sp.unique(temp)
+            temp = sp.hstack(Pn)
+            Pn = sp.unique(Pn)
             if excl_self:  # Remove inputs if necessary
                 Pn = Pn[~sp.in1d(Pn, pores)]
         else:  # Convert list of lists to an nd-array of nd-arrays
             if excl_self:  # Remove inputs if necessary
                 [Pn[i].remove(pores[i]) for i in range(0, sp.size(pores))]
-            temp = []
-            [temp.append(sp.array(Pn[i])) for i in range(0, sp.size(pores))]
+            temp = [sp.array(Pn[i]) for i in range(0, sp.size(pores))]
             Pn = sp.array(temp)
         if Pn.dtype == float:
             Pn = Pn.astype(sp.int64)

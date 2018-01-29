@@ -106,7 +106,7 @@ class Workspace(dict):
         new_sim.name = new_name
         return new_sim
 
-    def new_simuation(self, name=None):
+    def new_simulation(self, name=None):
         r"""
         Creates a new, empty simulation object
 

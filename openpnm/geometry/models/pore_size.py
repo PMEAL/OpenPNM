@@ -102,7 +102,7 @@ def largest_sphere(target, pore_diameter='pore.diameter', iters=10):
     while iters >= 0:
         iters -= 1
         Lt = L - _sp.sum(D[network['throat.conns']], axis=1)/2
-        am = network.create_adjacency_matrix(data=Lt, fmt='lil')
+        am = network.create_adjacency_matrix(weights=Lt, fmt='lil')
         D[Ps] = D[Ps] + _sp.array([_sp.amin(row) for row in am.data])[Ps]*0.95
     if _sp.any(D < 0):
         _logger.warning('Negative pore diameters found!  Neighboring pores' +
