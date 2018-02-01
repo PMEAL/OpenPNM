@@ -771,6 +771,7 @@ def sinusoidal(physics, phase, network,
                throat_diameter='throat.diameter',
                throat_length='throat.length',
                throat_normal='throat.normal',
+               throat_centroid='throat.centroid',
                **kwargs):
     r"""
     The profile of a throat is approximated with a sinusoidal function
@@ -882,6 +883,8 @@ def sinusoidal(physics, phase, network,
     poreRad = np.mean(network[pore_diameter][network['throat.conns']], axis=1)
     poreRad /= 2
     throatRad = network[throat_diameter]/2
+    throatNormal = network[throat_normal]
+    throatCentroid = network[throat_centroid]
     Nt = network.Nt
     # Model ouputs
     offset = np.zeros(Nt)
@@ -969,12 +972,14 @@ def sinusoidal(physics, phase, network,
                           offset)
     men_cen = pos - np.sign(target)*men_a
     if mode == 'center':
+        men_cen = throatCentroid + throatNormal*men_cen[:, np.newaxis]
         return men_cen
     elif mode == 'radius':
         return men_R
     elif mode == 'gamma':
         return men_gamma
     elif mode == 'position':
+        pos = throatCentroid + throatNormal*pos[:, np.newaxis]
         return pos
     else:
         return men_r
