@@ -884,15 +884,15 @@ class MixedPercolation(GenericAlgorithm):
             # Dictionary with keys of pore id
             pore_data = {}
             phys.add_model(propname=filling_model,
-                           model=pm.capillary_pressure.filling_angle,
+                           model=pm.capillary_pressure.purcell_filling_angle,
                            r_toroid=radius,
                            Pc=Pc)
             phys.add_model(propname='throat.meniscus_radius',
-                           model=pm.capillary_pressure.meniscus_radius,
+                           model=pm.capillary_pressure.purcell_meniscus_radius,
                            r_toroid=radius,
                            filling_angle=filling_model)
             phys.add_model(propname='throat.meniscus_center',
-                           model=pm.capillary_pressure.meniscus_center,
+                           model=pm.capillary_pressure.purcell_meniscus_center,
                            r_toroid=radius,
                            filling_angle=filling_model)
 
