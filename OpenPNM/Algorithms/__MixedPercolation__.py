@@ -214,6 +214,10 @@ class MixedPercolation(GenericAlgorithm):
                          " setup method")
         self._coop_fill = False
         if 'coop_fill' in self._key_words.keys():
+            if 'fill_radius' in self._key_words.keys():
+                fill_rad = self._key_words['fill_radius']
+            else:
+                logger.exception('please set filling radius with coop filling')
             if self._key_words['coop_fill']:
                 self._coop_fill = True
                 try:
@@ -221,7 +225,8 @@ class MixedPercolation(GenericAlgorithm):
                 except:
                     inv_points = None
                 self._setup_coop_filling(filling_model='throat.alpha',
-                                         inv_points=inv_points)
+                                         inv_points=inv_points,
+                                         radius=fill_rad)
         if max_pressure is None:
             max_pressure = sp.inf
         if len(self.queue.items()) == 0:
@@ -770,7 +775,7 @@ class MixedPercolation(GenericAlgorithm):
         occupied = np.array([1], dtype=occ_type)
         occ_Ps = self._phase['pore.occupancy'] == occupied
         occ_Ts = self._phase['throat.occupancy'] == occupied
-        low_val = -999999
+        low_val = -np.inf
         if np.sum(occ_Ps) > 0:
             logger.warn("Applying partial saturation to " +
                         str(np.sum(occ_Ps)) + " pores")
@@ -834,7 +839,7 @@ class MixedPercolation(GenericAlgorithm):
         return intersection
 
     def _setup_coop_filling(self, inv_points=None, filling_model=None,
-                            pores=None):
+                            pores=None, radius=None):
         r"""
         Evaluate the cooperative pore filling condition that the combined
         filling angle in next neighbor throats cannot exceed the geometric
@@ -851,10 +856,7 @@ class MixedPercolation(GenericAlgorithm):
                 phys = self._phase.physics(self._phase.physics()[0])[0]
             except:
                 logger.error('Phase has no Physics object associated')
-        try:
-            geom = self._net.geometries(self._net.geometries()[0])[0]
-        except:
-            logger.error('Model only works with Voronoi geometry... so far')
+
         if inv_points is None:
             inv_points = np.arange(0, 30100, 500)
         if pores is None:
@@ -865,31 +867,44 @@ class MixedPercolation(GenericAlgorithm):
         # Dictionary with keys of capillary pressure
         self.coop_data = {}
         start = time.time()
+        try:
+            # The following properties will all be there for Voronoi
+            p_centroids = self._net['pore.centroid']
+            t_centroids = self._net['throat.centroid']
+            p_diam = self._net['pore.indiameter']
+            t_norms = self._net['throat.normal']
+        except:
+            # Chances are this isn't Voronoi so calculate or replace all
+            p_centroids = self._net['pore.coords']
+            temp = self._net['pore.coords'][self._net['throat.conns']]
+            t_centroids = np.mean(temp, axis=1)
+            p_diam = self._net['pore.diameter']
+            t_norms = temp[:, 1] - temp[:, 0]
         for Pc in inv_points:
             # Dictionary with keys of pore id
             pore_data = {}
             phys.add_model(propname=filling_model,
                            model=pm.capillary_pressure.filling_angle,
-                           r_toroid=geom._fibre_rad,
+                           r_toroid=radius,
                            Pc=Pc)
             phys.add_model(propname='throat.meniscus_radius',
                            model=pm.capillary_pressure.meniscus_radius,
-                           r_toroid=geom._fibre_rad,
+                           r_toroid=radius,
                            filling_angle=filling_model)
             phys.add_model(propname='throat.meniscus_center',
                            model=pm.capillary_pressure.meniscus_center,
-                           r_toroid=geom._fibre_rad,
+                           r_toroid=radius,
                            filling_angle=filling_model)
 
             for pore in pores:
                 # Dictionary with keys of throat id
                 throat_data = {}
-                p_cen = self._net['pore.centroid'][pore]
-                p_rad = self._net['pore.indiameter'][pore]/2
+                p_cen = p_centroids[pore]
+                p_rad = p_diam[pore]/2
                 throats = self._net.find_neighbor_throats(pores=pore,
                                                           flatten=True)
-                throat_centres = self._net['throat.centroid'][throats]
-                throat_normals = self._net['throat.normal'][throats]
+                throat_centres = t_centroids[throats]
+                throat_normals = t_norms[throats]
                 unit = np.linalg.norm(throat_normals, axis=1)
                 throat_normals /= np.vstack((unit, unit, unit)).T
                 v = p_cen - throat_centres

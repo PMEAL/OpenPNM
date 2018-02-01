@@ -545,38 +545,45 @@ def ransohoff_snap_off(physics, phase, network,
     try:
         geometry = network.geometries(network.geometries()[0])[0]
         all_verts = geometry[vertices]
+        # Work out whether throat geometry can support at least one pair of
+        # adjacent arc menisci that can grow and merge to form snap-off
+        # Only works if throat vertices are in convex hull order
+        angles_ok = np.zeros(network.Nt, dtype=bool)
+        for T in range(network.Nt):
+            verts = all_verts[T]
+            x = verts[:, 0]
+            y = verts[:, 1]
+            z = verts[:, 2]
+            # PLus
+            p = 1
+            # Minus
+            m = -1
+            verts_p = np.vstack((np.roll(x, p),
+                                 np.roll(y, p),
+                                 np.roll(z, p))).T
+            verts_m = np.vstack((np.roll(x, m),
+                                 np.roll(y, m),
+                                 np.roll(z, m))).T
+            v1 = verts_p - verts
+            v2 = verts_m - verts
+            corner_angles = np.rad2deg(tr.angle_between_vectors(v1,
+                                                                v2,
+                                                                axis=1))
+            # Logical test for existence of arc menisci
+            am = theta[T] <= 90 - corner_angles/2
+            if require_pair:
+                # Logical test for two adjacent arc menisci
+                pair_p = np.logical_and(am, np.roll(am, + p))
+                pair_m = np.logical_and(am, np.roll(am, + m))
+                am_pair = np.any(np.logical_or(pair_p, pair_m))
+                angles_ok[T] = am_pair
+            else:
+                # Logical test for any arc menisci
+                angles_ok[T] = np.any(am)
     except:
-        logger.error("Model will only work if geometry has property: " +
-                     vertices)
-    # Work out whether throat geometry can support at least one pair of
-    # adjacent arc menisci that can grow and merge to form snap-off
-    # Only works if throat vertices are in convex hull order
-    angles_ok = np.zeros(network.Nt, dtype=bool)
-    for T in range(network.Nt):
-        verts = all_verts[T]
-        x = verts[:, 0]
-        y = verts[:, 1]
-        z = verts[:, 2]
-        # PLus
-        p = 1
-        # Minus
-        m = -1
-        verts_p = np.vstack((np.roll(x, p), np.roll(y, p), np.roll(z, p))).T
-        verts_m = np.vstack((np.roll(x, m), np.roll(y, m), np.roll(z, m))).T
-        v1 = verts_p - verts
-        v2 = verts_m - verts
-        corner_angles = np.rad2deg(tr.angle_between_vectors(v1, v2, axis=1))
-        # Logical test for existence of arc menisci
-        am = theta[T] <= 90 - corner_angles/2
-        if require_pair:
-            # Logical test for two adjacent arc menisci
-            pair_p = np.logical_and(am, np.roll(am, + p))
-            pair_m = np.logical_and(am, np.roll(am, + m))
-            am_pair = np.any(np.logical_or(pair_p, pair_m))
-            angles_ok[T] = am_pair
-        else:
-            # Logical test for any arc menisci
-            angles_ok[T] = np.any(am)
+        logger.warning("Model is designed to work with property: " +
+                       vertices)
+        angles_ok = np.ones(network.Nt, dtype=bool)
 
     # Condition for arc menisci to form in corners
     rad_Ts = network[throat_diameter]/2
