@@ -16,18 +16,22 @@ class GenericReaction(GenericAlgorithm, ModelsMixin):
         self.settings['algorithm'] = algorithm.name
         self.settings['quantity'] = algorithm.settings['quantity']
 
-    def apply(self):
+    def apply(self, A=None, b=None):
         net = self.simulation.network
         Ps = net.map_pores(self['pore._id'])
         # Fetch algorithm object from simulation
         alg = self.simulation[self.settings['algorithm']]
+        if A is None:
+            A = alg.A
+        if b is None:
+            b = alg.b
         quantity = alg.settings['quantity']
         x = alg[quantity].copy()
         self[quantity] = x[Ps]
         # Regenerate models with new guess
         self.regenerate_models()
         # Add S1 to diagonal of A
-        datadiag = alg.A.diagonal()
+        datadiag = A.diagonal()
         datadiag[Ps] = datadiag[Ps] + self[self.settings['rate_model']][:, 1]
-        alg.A.setdiag(datadiag)
-        alg.b[Ps] = alg.b[Ps] - self[self.settings['rate_model']][:, 2]
+        A.setdiag(datadiag)
+        b[Ps] = b[Ps] - self[self.settings['rate_model']][:, 2]
