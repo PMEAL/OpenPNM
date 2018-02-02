@@ -83,6 +83,11 @@ class Workspace(dict):
         else:
             raise Exception('A simulation with that name is already present')
 
+    def close_simulation(self, simulation):
+        r"""
+        """
+        del self[simulation.name]
+
     def copy_simulation(self, simulation, new_name=None):
         r"""
         Make a copy of an existing Simulation object
