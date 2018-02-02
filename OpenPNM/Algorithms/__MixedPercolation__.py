@@ -66,6 +66,8 @@ class MixedPercolation(GenericAlgorithm):
         self['pore.entry_pressure'] = phase['pore.capillary_pressure']
         self.reset_invasion_info()
         self._key_words = kwargs
+        # Need to setup cooperative pore filling seperately
+        self._coop_fill = False
 
     def reset_invasion_info(self):
         r'''
@@ -212,21 +214,7 @@ class MixedPercolation(GenericAlgorithm):
         else:
             logger.error("Either 'inlets' or 'clusters' must be passed to" +
                          " setup method")
-        self._coop_fill = False
-        if 'coop_fill' in self._key_words.keys():
-            if 'fill_radius' in self._key_words.keys():
-                fill_rad = self._key_words['fill_radius']
-            else:
-                logger.exception('please set filling radius with coop filling')
-            if self._key_words['coop_fill']:
-                self._coop_fill = True
-                try:
-                    inv_points = kwargs['inv_points']
-                except:
-                    inv_points = None
-                self._setup_coop_filling(filling_model='throat.alpha',
-                                         inv_points=inv_points,
-                                         radius=fill_rad)
+
         if max_pressure is None:
             max_pressure = sp.inf
         if len(self.queue.items()) == 0:
@@ -838,8 +826,8 @@ class MixedPercolation(GenericAlgorithm):
 
         return intersection
 
-    def _setup_coop_filling(self, inv_points=None, filling_model=None,
-                            pores=None, radius=None):
+    def setup_coop_filling(self, inv_points=None, capillary_model='purcell',
+                           pores=None, radius=None):
         r"""
         Evaluate the cooperative pore filling condition that the combined
         filling angle in next neighbor throats cannot exceed the geometric
@@ -848,25 +836,24 @@ class MixedPercolation(GenericAlgorithm):
         connected to a pore
         """
         from OpenPNM.Physics import models as pm
-        if filling_model is None:
-            logger.error("Please supply a model to calculate the " +
-                         "filling angle")
-        else:
-            try:
-                phys = self._phase.physics(self._phase.physics()[0])[0]
-            except:
-                logger.error('Phase has no Physics object associated')
-
+        try:
+            phys = self._phase.physics(self._phase.physics()[0])[0]
+        except:
+            logger.error('Phase has no Physics object associated')
+        self._coop_fill = True
         if inv_points is None:
             inv_points = np.arange(0, 30100, 500)
         if pores is None:
             pores = range(self.Np)
-
+        # Throat-Throat cooperative filling pressure
         self.tt_Pc = np.ndarray([self.Nt, self.Nt], dtype=float)
         self.tt_Pc.fill(sp.nan)
         # Dictionary with keys of capillary pressure
         self.coop_data = {}
         start = time.time()
+        tfill_angle = 'throat.filling_angle'
+        tmen_rad = 'throat.meniscus_radius'
+        tmen_cen = 'throat.meniscus_center'
         try:
             # The following properties will all be there for Voronoi
             p_centroids = self._net['pore.centroid']
@@ -879,22 +866,48 @@ class MixedPercolation(GenericAlgorithm):
             temp = self._net['pore.coords'][self._net['throat.conns']]
             t_centroids = np.mean(temp, axis=1)
             p_diam = self._net['pore.diameter']
-            t_norms = temp[:, 1] - temp[:, 0]
+            t_norms = self._net['throat.normal']
+
+        if capillary_model == 'purcell':
+            angle_model = pm.capillary_pressure.purcell_filling_angle
+            radius_model = pm.capillary_pressure.purcell_meniscus_radius
+            center_model = pm.capillary_pressure.purcell_meniscus_center
+        elif capillary_model == 'sinusoidal':
+            angle_model = pm.capillary_pressure.sinusoidal
+            radius_model = pm.capillary_pressure.sinusoidal
+            center_model = pm.capillary_pressure.sinusoidal
+        else:
+            logger.exception('capillary model '+capillary_model+' not valid')
+
         for Pc in inv_points:
             # Dictionary with keys of pore id
             pore_data = {}
-            phys.add_model(propname=filling_model,
-                           model=pm.capillary_pressure.purcell_filling_angle,
-                           r_toroid=radius,
-                           Pc=Pc)
-            phys.add_model(propname='throat.meniscus_radius',
-                           model=pm.capillary_pressure.purcell_meniscus_radius,
-                           r_toroid=radius,
-                           filling_angle=filling_model)
-            phys.add_model(propname='throat.meniscus_center',
-                           model=pm.capillary_pressure.purcell_meniscus_center,
-                           r_toroid=radius,
-                           filling_angle=filling_model)
+            if capillary_model == 'purcell':
+                phys.add_model(propname=tfill_angle,
+                               model=angle_model,
+                               r_toroid=radius,
+                               Pc=Pc)
+                phys.add_model(propname=tmen_rad,
+                               model=radius_model,
+                               r_toroid=radius,
+                               filling_angle=tfill_angle)
+                phys.add_model(propname=tmen_cen,
+                               model=center_model,
+                               r_toroid=radius,
+                               filling_angle=tfill_angle)
+            elif capillary_model == 'sinusoidal':
+                phys.add_model(propname=tfill_angle,
+                               model=angle_model,
+                               mode='alpha',
+                               target=Pc)
+                phys.add_model(propname=tmen_rad,
+                               model=radius_model,
+                               mode='radius',
+                               target=Pc)
+                phys.add_model(propname=tmen_cen,
+                               model=center_model,
+                               mode='center',
+                               target=Pc)
 
             for pore in pores:
                 # Dictionary with keys of throat id
@@ -909,16 +922,16 @@ class MixedPercolation(GenericAlgorithm):
                 throat_normals /= np.vstack((unit, unit, unit)).T
                 v = p_cen - throat_centres
                 sign = np.sign(np.sum(v*throat_normals, axis=1))
-                cen = phys['throat.meniscus_center'][throats]
+                cen = phys[tmen_cen][throats]
                 c3 = np.vstack((cen*sign, cen*sign, cen*sign)).T
                 men_cen = throat_centres + c3*throat_normals
                 pairs = []
                 for i, T in enumerate(throats):
                     men_data = {}
                     men_data['cen'] = men_cen[i]
-                    men_data['rad'] = phys['throat.meniscus_radius'][T]
-                    men_data['offset'] = phys['throat.meniscus_center'][T]
-                    men_data['alpha'] = phys[filling_model][T]
+                    men_data['rad'] = phys[tmen_rad][T]
+                    men_data['offset'] = phys[tmen_cen][T]
+                    men_data['alpha'] = phys[tfill_angle][T]
                     throat_data[T] = men_data
                 for ni in range(len(throats)):
                     for nj in range(len(throats))[ni+1:]:
@@ -931,17 +944,21 @@ class MixedPercolation(GenericAlgorithm):
                     dist = np.linalg.norm(c2c, axis=1)
                     t1 = throats[pairs[:, 0]]
                     t2 = throats[pairs[:, 1]]
-                    r1 = phys['throat.meniscus_radius'][t1]
-                    r2 = phys['throat.meniscus_radius'][t2]
+                    r1 = phys[tmen_rad][t1]
+                    r2 = phys[tmen_rad][t2]
                     check_pos = np.logical_and(r1 > 0, r2 > 0)
-                    check_alpha_t1 = ~sp.isnan(phys[filling_model][t1])
-                    check_alpha_t2 = ~sp.isnan(phys[filling_model][t2])
-                    check_alpha = check_alpha_t1*check_alpha_t2
-                    check_nans = sp.isnan(self.tt_Pc[t1, t2])
+                    # simple initial distance check on sphere rads
                     check_rads = (r1+r2) >= dist
+                    # check whether the filling angle is ok at this Pc
+                    check_alpha_t1 = ~sp.isnan(phys[tfill_angle][t1])
+                    check_alpha_t2 = ~sp.isnan(phys[tfill_angle][t2])
+                    check_alpha = check_alpha_t1*check_alpha_t2
+                    # check whether this throat pair already has a coop value
+                    check_nans = sp.isnan(self.tt_Pc[t1, t2])
                     mask = check_pos*check_alpha*check_nans*check_rads
+                    # if all checks pass
                     if np.any(mask):
-                        " Check if intersecting circle lies within pore "
+                        # Check if intersecting circle lies within pore
                         inter = self._check_intersection(c1=c1[mask],
                                                          c2=c2[mask],
                                                          r1=r1[mask],
@@ -958,8 +975,8 @@ class MixedPercolation(GenericAlgorithm):
             # Pc
             self.coop_data[Pc] = pore_data
         # Finished
-        logger.info("Co-operative pore filling finished in " +
-                    str(time.time()-start) + "s")
+        logger.info("Coop filling finished in " +
+                    str(np.around(time.time()-start, 2)) + " s")
 
     def _check_coop(self, pore, queue):
         r"""

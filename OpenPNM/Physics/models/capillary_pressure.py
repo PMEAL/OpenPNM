@@ -741,6 +741,7 @@ def purcell_meniscus_center(physics, phase, network, r_toroid,
     r"""
     Function to return the center offset of the sphere whose spherical
     cap forms the meniscus inside a throat as per the Purcell model.
+    N.B to be multiplied by the throat normal vector
     """
     theta = _prop_parser(phase, contact_angle, men_rad)
     # Mason and Morrow have the definitions switched
@@ -794,6 +795,7 @@ def sinusoidal(physics, phase, network,
         require a target pressure - all others do.
         'center' : meniscus center at target pressure
         'radius' : meniscus radius at target pressure
+        'alpha'  : filling angle (approximate)
         'gamma'  : angle between throat normal and line between meniscus center
                    and contact point at target pressure
         'position' : contact point along throat at target pressure
@@ -877,6 +879,7 @@ def sinusoidal(physics, phase, network,
     Pc_prime = syp.lambdify((x, rp, rt, l, s, t, off), fprime, 'numpy')
     rad_curve = syp.lambdify((x, rp, rt, l, s, t, off), R, 'numpy')
     c2x = syp.lambdify((x, rp, rt, l, s, t, off), a, 'numpy')
+    fill_angle = syp.lambdify((x, rp, rt, l), alpha, 'numpy')
     cap_angle = syp.lambdify((x, rp, rt, l, s, t, off), gamma, 'numpy')
     # Network properties
     throatLength = network[throat_length]
@@ -970,16 +973,20 @@ def sinusoidal(physics, phase, network,
                       offset)
     men_gamma = cap_angle(pos, poreRad, throatRad, throatLength, sigma, theta,
                           offset)
+    men_alpha = fill_angle(pos, poreRad, throatRad, throatLength)
     men_cen = pos - np.sign(target)*men_a
+    logger.info(mode+' calculated for Pc: '+str(target))
     if mode == 'center':
-        men_cen = throatCentroid + throatNormal*men_cen[:, np.newaxis]
+#        men_cen = throatCentroid + throatNormal*men_cen[:, np.newaxis]
         return men_cen
     elif mode == 'radius':
         return men_R
+    elif mode == 'alpha':
+        return _sp.rad2deg(men_alpha)
     elif mode == 'gamma':
-        return men_gamma
+        return _sp.rad2deg(men_gamma)
     elif mode == 'position':
-        pos = throatCentroid + throatNormal*pos[:, np.newaxis]
+#        pos = throatCentroid + throatNormal*pos[:, np.newaxis]
         return pos
     else:
         return men_r
