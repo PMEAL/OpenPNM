@@ -42,7 +42,7 @@ class ModelsDict(dict):
 
 class ModelsMixin():
 
-    def add_model(self, propname, model, regen_mode='deferred', **kwargs):
+    def add_model(self, propname, model, regen_mode='normal', **kwargs):
         # Add model and regen_mode to kwargs dictionary
         kwargs.update({'model': model, 'regen_mode': regen_mode})
         # Insepct model to extract arguments and default values
@@ -60,13 +60,14 @@ class ModelsMixin():
         if regen_mode != 'deferred':
             self._regen(propname)
 
-    def regenerate_models(self, propnames=None):
+    def regenerate_models(self, propnames=None, exclude=[]):
         # If no props given, then regenerate them all
         if propnames is None:
             propnames = list(self.models.dependency_tree())
         # If only one prop given, as string, put into a list
         elif type(propnames) is str:
             propnames = [propnames]
+        propname = [propnames.remove(i) for i in exclude if i in propnames]
         # Scan through list of propnames and regenerate each one
         for item in propnames:
             self._regen(item)

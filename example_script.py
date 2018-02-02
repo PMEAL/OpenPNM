@@ -31,7 +31,8 @@ rxn['pore.alpha'] = 1
 rxn.add_model(propname='pore.rxn_rate',
               model=op.algorithms.models.standard_kinetics,
               quantity='pore.mole_fraction',
-              prefactor='pore.k', exponent='pore.alpha')
+              prefactor='pore.k', exponent='pore.alpha',
+              regen_mode='deferred')
 rxn.settings['rate_model'] = 'pore.rxn_rate'
 alg.set_source(source=rxn)
 
