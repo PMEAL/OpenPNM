@@ -11,9 +11,6 @@ import numpy as np
 from OpenPNM.Algorithms import GenericAlgorithm
 from OpenPNM.Base import logging
 import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
-from mpl_toolkits.mplot3d.art3d import Poly3DCollection
-import OpenPNM.Utilities.vertexops as vo
 import time
 logger = logging.getLogger(__name__)
 
@@ -941,6 +938,11 @@ class MixedPercolation(GenericAlgorithm):
                     t2 = throats[pairs[:, 1]]
                     r1 = phys[tmen_rad][t1]
                     r2 = phys[tmen_rad][t2]
+                    # nans may exist if pressure is outside the range
+                    # set these to zero to be ignored by next step without
+                    # causing RuntimeWarning
+                    r1[sp.isnan(r1)] = 0
+                    r2[sp.isnan(r2)] = 0
                     check_pos = np.logical_and(r1 > 0, r2 > 0)
                     # simple initial distance check on sphere rads
                     check_rads = (r1+r2) >= dist

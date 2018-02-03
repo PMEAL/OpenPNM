@@ -12,7 +12,7 @@ class MixedPercolationTest:
     def setup_class(self):
         # Create Topological Network object
 
-        self.fiber_rad = 5e-6
+        self.fiber_rad = 2e-6
         self.net = op.Network.Delaunay(num_pores=25,
                                        domain_size=[50e-6, 50e-6, 50e-6])
         self.net.add_boundaries()
@@ -44,7 +44,7 @@ class MixedPercolationTest:
         self.Swp_star = 0.25  # late pore filling
         self.air["pore.contact_angle"] = 70
         self.air["pore.surface_tension"] = self.water["pore.surface_tension"]
-        self.inv_points = np.linspace(0, 20000, 21)
+        self.inv_points = np.linspace(0, 30000, 31)
 
     def process_physics(self, model='purcell', snap_off=True):
         # Clean up already made phys
