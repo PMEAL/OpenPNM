@@ -65,6 +65,7 @@ def centre_of_mass(geometry, vertices='throat.offset_vertices', **kwargs):
 
     return value
 
+
 def pore_coords(network, geometry, **kwargs):
     r"""
     Unit vector from P1 to P2 as defined in throat.conns
