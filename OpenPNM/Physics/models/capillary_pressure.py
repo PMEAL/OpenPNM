@@ -10,6 +10,7 @@ import numpy as np
 from OpenPNM.Base import logging
 from transforms3d import _gohlketransforms as tr
 import sympy as syp
+import pandas as pd
 logger = logging.getLogger(__name__)
 
 
@@ -790,15 +791,9 @@ def sinusoidal(physics, phase, network,
     mode : string (Default is 'max')
         Determines what information to send back. Options are:
         'max' : the maximum capillary pressure along the throat axis, does not
-        require a target pressure - all others do.
-        'center' : meniscus center at target pressure
-        'radius' : meniscus radius at target pressure
-        'alpha'  : filling angle (approximate)
-        'gamma'  : angle between throat normal and line between meniscus center
-                   and contact point at target pressure
-        'position' : contact point along throat at target pressure
+        'men' : return the meniscus info for a target pressure
     target : float (Default is None)
-        The target capillary pressure for use with modes other than 'max'
+        The target capillary pressure for use with mode 'men'
     surface_tension : dict key (string)
         The dictionary key containing the surface tension values to be used. If
         a pore property is given, it is interpolated to a throat list.
@@ -959,25 +954,19 @@ def sinusoidal(physics, phase, network,
         return root
 
     # Now find the positions of the menisci along each throat axis
+    men_data = {}
     pos = get_root(target)
-    men_r = rx(pos, poreRad, throatRad, throatLength)
-    men_a = c2x(pos, poreRad, throatRad, throatLength, sigma, theta, offset)
-    men_R = rad_curve(pos, poreRad, throatRad, throatLength, sigma, theta,
-                      offset)
-    men_gamma = cap_angle(pos, poreRad, throatRad, throatLength, sigma, theta,
-                          offset)
-    men_alpha = fill_angle(pos, poreRad, throatRad, throatLength)
-    men_cen = pos - np.sign(target)*men_a
+    men_data['pos'] = pos
+    men_data['rx'] = rx(pos, poreRad, throatRad, throatLength)
+    men_data['alpha'] = fill_angle(pos, poreRad, throatRad, throatLength)
+    men_data['beta'] = c2x(pos, poreRad, throatRad, throatLength,
+                           sigma, theta, offset)
+    men_data['gamma'] = cap_angle(pos, poreRad, throatRad, throatLength,
+                                  sigma, theta, offset)
+    men_data['rad'] = rad_curve(pos, poreRad, throatRad, throatLength,
+                                sigma, theta, offset)
+    men_data['cen'] = pos - np.sign(target)*men_data['alpha']
+    df = pd.DataFrame(men_data)
+    rec_arr = df.to_records(index=False)
     logger.info(mode+' calculated for Pc: '+str(target))
-    if mode == 'center':
-        return men_cen
-    elif mode == 'radius':
-        return men_R
-    elif mode == 'alpha':
-        return _sp.rad2deg(men_alpha)
-    elif mode == 'gamma':
-        return _sp.rad2deg(men_gamma)
-    elif mode == 'position':
-        return pos
-    else:
-        return men_r
+    return rec_arr

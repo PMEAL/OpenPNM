@@ -896,18 +896,13 @@ class MixedPercolation(GenericAlgorithm):
                                r_toroid=radius,
                                filling_angle=tfill_angle)
             elif capillary_model == 'sinusoidal':
-                phys.add_model(propname=tfill_angle,
+                phys.add_model(propname='throat.men_data',
                                model=angle_model,
-                               mode='alpha',
+                               mode='men',
                                target=Pc)
-                phys.add_model(propname=tmen_rad,
-                               model=radius_model,
-                               mode='radius',
-                               target=Pc)
-                phys.add_model(propname=tmen_cen,
-                               model=center_model,
-                               mode='center',
-                               target=Pc)
+                phys[tfill_angle] = phys['throat.men_data']['alpha']
+                phys[tmen_rad] = phys['throat.men_data']['rad']
+                phys[tmen_cen] = phys['throat.men_data']['cen']
 
             for pore in pores:
                 # Dictionary with keys of throat id
