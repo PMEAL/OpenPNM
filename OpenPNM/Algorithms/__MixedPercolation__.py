@@ -371,139 +371,24 @@ class MixedPercolation(GenericAlgorithm):
 
         """
         P12 = self._net['throat.conns']
-        a = self['throat.inv_seq']
-        b = sp.argsort(self['throat.inv_seq'])
+        aa = self['throat.inv_seq']
+        bb = sp.argsort(self['throat.inv_seq'])
         P12_inv = self['pore.inv_seq'][P12]
         # Find if the connected pores were invaded with or before each throat
-        P1_inv = P12_inv[:, 0] == a
-        P2_inv = P12_inv[:, 1] == a
-        c = sp.column_stack((P1_inv, P2_inv))
+        P1_inv = P12_inv[:, 0] <= aa
+        P2_inv = P12_inv[:, 1] <= aa
+        cc = sp.column_stack((P1_inv, P2_inv))
         # List of Pores invaded with each throat
-        d = sp.sum(c, axis=1, dtype=bool)
+        dd = sp.sum(cc, axis=1, dtype=bool)
         # Find volume of these pores
-        P12_vol = sp.zeros((self.Nt,))
-        P12_vol[d] = self._net['pore.volume'][P12[c]]
+        P12_vol = sp.sum(self._net['pore.volume'][P12]*cc, axis=1)*dd
         # Add invaded throat volume to pore volume (if invaded)
         T_vol = P12_vol + self._net['throat.volume']
         # Cumulative sum on the sorted throats gives cumulated inject volume
-        e = sp.cumsum(T_vol[b] / flowrate)
+        ee = sp.cumsum(T_vol[bb] / flowrate)
         t = sp.zeros((self.Nt,))
-        t[b] = e  # Convert back to original order
+        t[bb] = ee  # Convert back to original order
         self._phase['throat.invasion_time'] = t
-
-    def apply_pc(self, Pc):
-        r"""
-        Invasion sequence runs concurrently for all clusters so must assess
-        each one individually to determine the pressure threshold condition.
-        N.B This may not work as clusters could have merged before pressure
-        condition is met...
-        """
-        # If occupancy data not found on object initialise it ready for
-        # filling with cluster data that will need to index into it
-        if 'throat.occupancy' not in self.keys():
-            self['throat.occupancy'] = False
-        if 'pore.occupancy' not in self.keys():
-            self['pore.occupancy'] = False
-        for cluster in np.unique(self['pore.cluster']):
-            self._apply_pc_to_cluster(Pc, cluster)
-
-    def _apply_pc_to_cluster(self, Pc, cluster):
-        r"""
-        Inspect the invasion sequence and apply a capillary pressure.
-        Update the fluid occupancy based on invading up to this pressure.
-        Effectively discount any pores or throats with invasion sequence
-        after the first invaded element with pressure exceeding this value
-        including that element.
-        """
-        Ps = self['pore.cluster'] == cluster
-        Ts = self['throat.cluster'] == cluster
-        # Ignore totally uninvaded
-        Ps *= self['pore.inv_seq'] >= 0
-        Ts *= self['throat.inv_seq'] >= 0
-        p_entry = self['pore.entry_pressure']
-        p_seq = self['pore.inv_seq']
-        t_entry = self['throat.entry_pressure']
-        t_seq = self['throat.inv_seq']
-        if (np.sum(Ts) + np.sum(Ps)) > 0:
-            # Filter univaded pores and throats for this cluster only
-            Ps = p_seq[Ps][p_entry[Ps] > Pc]
-            Ts = t_seq[Ts][t_entry[Ts] > Pc]
-            # Assess whether the cluster is partially invaded at this pressure
-            # Break points in the pore and throat invasion sequence will exist
-            # Otherwise
-            break_p = []
-            break_t = []
-            # Remove inlets and those that have still not been invaded by
-            # running the algorithm i.e. those with sequence -1 may not have
-            # been reached if max steps or max pressure was reached
-            if np.size(Ps) > 0:
-                break_p = Ps[Ps > 0]
-            if np.size(Ts) > 0:
-                break_t = Ts[Ts > 0]
-            if (np.size(break_p) > 0) or (np.size(break_t) > 0):
-                if (np.size(break_p) == 0):
-                    break_seq = break_t.min()
-                elif (np.size(break_t) == 0):
-                    break_seq = break_p.min()
-                else:
-                    break_seq = np.min((break_p.min(), break_t.min()))
-                self['throat.occupancy'][Ts] = (t_seq[Ts] < break_seq)
-                self['pore.occupancy'][Ps] = (p_seq[Ps] < break_seq)
-            else:
-                # Applied pressure exceeds all entry pressures in network
-                if np.sum(Ts) > 0:
-                    self['throat.occupancy'][Ts] = True
-                    self['throat.occupancy'][Ts][t_seq[Ts] < 0] = False
-                if np.sum(Ps) > 0:
-                    self['pore.occupancy'][Ps] = True
-                    self['pore.occupancy'][Ps][p_seq[Ps] < 0] = False
-        else:
-            logger.warning("Cluster " + str(cluster) + " has no invaded " +
-                           "elements at Pressure: " + str(Pc))
-
-    def extract_drainage(self, inv_points=None,
-                         npts=100, trapping_outlets=None):
-        r"""
-        Extract quasi-static drainage data by applying a set of capillary
-        pressures
-        """
-        if "pore.inv_seq" not in self.props():
-            logger.error("Cannot plot drainage curve. Please run " +
-                         " algorithm first")
-        if inv_points is None:
-            t_entry = self['throat.entry_pressure']
-            t_entry = t_entry[self['throat.inv_seq'] >= 0]
-            p_entry = self['pore.entry_pressure']
-            p_entry = p_entry[self['pore.inv_seq'] >= 0]
-            pmin = np.min((t_entry.min(), p_entry.min()))
-            pmax = np.max((t_entry.max(), p_entry.max()))
-            inv_points = np.linspace(pmin, pmax, npts)
-        inv_Pc_p = np.ones(self._net.Np)*sp.inf
-        inv_Pc_t = np.ones(self._net.Nt)*sp.inf
-        inv_Sat_p = np.ones(self._net.Np)*sp.inf
-        inv_Sat_t = np.ones(self._net.Nt)*sp.inf
-        pvol = np.sum(self._net['pore.volume'])
-        tvol = np.sum(self._net['throat.volume'])
-        tot_vol = pvol + tvol
-        saturation = np.zeros(len(inv_points))
-        for i, Pc in enumerate(inv_points):
-            logger.info("Extracting Drainage at Pc: "+str(Pc))
-            self['pore.occupancy'] = self['pore.inv_Pc'] <= Pc
-            self['throat.occupancy'] = self['throat.inv_Pc'] <= Pc
-            inv_Pc_p[sp.isinf(inv_Pc_p)*self['pore.occupancy']] = Pc
-            inv_Pc_t[sp.isinf(inv_Pc_t)*self['throat.occupancy']] = Pc
-            pSat = np.sum(self._net['pore.volume'][self['pore.occupancy']])
-            tSat = np.sum(self._net['throat.volume'][self['throat.occupancy']])
-            Sat = (pSat + tSat)/tot_vol
-            saturation[i] = Sat
-            inv_Sat_p[sp.isinf(inv_Sat_p)*self['pore.occupancy']] = Sat
-            inv_Sat_t[sp.isinf(inv_Sat_t)*self['throat.occupancy']] = Sat
-
-        self['pore.inv_Pc'] = inv_Pc_p
-        self['throat.inv_Pc'] = inv_Pc_t
-        self['pore.inv_sat'] = inv_Sat_p
-        self['throat.inv_sat'] = inv_Sat_t
-        return saturation
 
     def plot_drainage_curve(self, fig=None, inv_points=None, npts=100,
                             lpf=False, trapping_outlets=None):
@@ -511,7 +396,8 @@ class MixedPercolation(GenericAlgorithm):
         Plot a simple drainage curve
         """
         if "pore.inv_Pc" not in self.props():
-            self.extract_drainage(inv_points, npts, trapping_outlets)
+            logger.error("Cannot plot drainage curve. Please run " +
+             " algorithm first")
         if inv_points is None:
             ok_Pc = self['throat.inv_Pc'][~sp.isnan(self['throat.inv_Pc'])]
             inv_points = np.unique(ok_Pc)

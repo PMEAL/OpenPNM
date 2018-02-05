@@ -201,6 +201,22 @@ class MixedPercolationTest:
                                 cap_model='sinusoidal')
         assert np.abs(np.sum(t.sinu[1] - t.sinu_coop[1])) > 0
 
+    def test_apply_flow_rate(self):
+        t = self
+        pvol = np.sum(t.net['pore.volume'])
+        tvol = np.sum(t.net['throat.volume'])
+        tot = pvol+tvol
+        t.process_physics(model='purcell', snap_off=False)
+        IP_1 = op.Algorithms.MixedPercolation(network=self.net)
+        inlets = t.net.pores(labels=['bottom_boundary'])
+        outlets = t.net.pores(labels=['top_boundary'])
+        IP_1.setup(phase=t.water,
+                   def_phase=t.air,
+                   inlets=inlets)
+        IP_1.run(outlets=outlets)
+        IP_1.apply_flow(flowrate=tot)
+        assert 'throat.invasion_time' in self.water.props()
+
 if __name__ == '__main__':
     wrk.loglevel = 20
     t = MixedPercolationTest()
@@ -212,3 +228,4 @@ if __name__ == '__main__':
     t.test_purcell_bi()
     t.test_sinusoidal()
     t.test_sinusoidal_coop()
+    t.test_apply_flow_rate()
