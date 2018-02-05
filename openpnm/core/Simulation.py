@@ -200,7 +200,7 @@ class Grid(dict):
 
     network = property(fget=_get_net)
 
-    def __str__(self):
+    def __repr__(self):
         s = []
         hr = '―'*(16*(len(self.phases)+1))
         s.append(hr)
