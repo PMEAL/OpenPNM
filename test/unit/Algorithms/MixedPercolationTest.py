@@ -11,10 +11,14 @@ class MixedPercolationTest:
 
     def setup_class(self):
         # Create Topological Network object
-
+        dom_size = 5e-5
         self.fiber_rad = 2e-6
-        self.net = op.Network.Delaunay(num_pores=25,
-                                       domain_size=[50e-6, 50e-6, 50e-6])
+        np.random.seed(1)
+        base_points = np.random.random([25, 3])*dom_size
+        self.net = op.Network.Delaunay(base_points=base_points,
+                                       domain_size=[dom_size,
+                                                    dom_size,
+                                                    dom_size])
         self.net.add_boundaries()
 
         Ps = self.net.pores()
