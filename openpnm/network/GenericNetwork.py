@@ -77,8 +77,16 @@ class GenericNetwork(Base, ModelsMixin):
         """
         # Retrieve existing matrix if available
         if fmt in self._am.keys():
-            return self._am[fmt]
+            logger.info('Desired adjacency matrix already present')
+            am = self._am[fmt]
+        elif self._am.keys():
+            logger.info('Desired adjacency matrix not present, converting...')
+            am = self._am[list(self._am.keys())[0]]
+            tofmt = getattr(am, 'to'+fmt)
+            am = tofmt()
+            self._am[fmt] = am
         else:
+            logger.info('No Adjacency Matrix not present, building...')
             am = self.create_adjacency_matrix(fmt=fmt)
             self._am[fmt] = am
         return am
@@ -110,7 +118,12 @@ class GenericNetwork(Base, ModelsMixin):
         location use ``create_incidence_matrix``.
         """
         if fmt in self._im.keys():
-            return self._im[fmt]
+            im = self._im[fmt]
+        elif self._im.keys():
+            im = self._am[list(self._im.keys())[0]]
+            tofmt = getattr(im, 'to'+fmt)
+            im = tofmt()
+            self._im[fmt] = im
         else:
             im = self.create_incidence_matrix(fmt=fmt)
             self._im[fmt] = im
@@ -364,10 +377,19 @@ class GenericNetwork(Base, ModelsMixin):
         >>> pn.find_connecting_throat([0, 1, 2], [2, 2, 2])
         [None, 1, None]
         """
-        mapping = {tuple(self['throat.conns'][i]): i for i in self.Ts}
+        mapping = self._get_conn_map
         z = tuple(zip(P1, P2))
         Ts = [mapping.get(z[i]) for i in range(len(z))]
         return Ts
+
+    @property
+    def _get_conn_map(self):
+        if not hasattr(self, '_conn_mapping'):
+            logger.info('Mapping not presenting, generating...')
+            am = self.get_adjacency_matrix(fmt='coo')
+            conns = sp.vstack((am.row, am.col)).T
+            self._conn_mapping = {tuple(conns[i]): i for i in self.Ts}
+        return self._conn_mapping
 
     def find_neighbor_pores(self, pores, mode='union', flatten=True,
                             excl_self=True):
