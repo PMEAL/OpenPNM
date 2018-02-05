@@ -6,6 +6,7 @@ Submodule -- diffusive_conductance
 """
 
 import scipy as _sp
+import scipy.constants as _const
 import openpnm.utils.misc as misc
 
 
@@ -86,3 +87,40 @@ def bulk_diffusion(target, molar_density='pore.molar_density',
     value = (1/gt + 1/gp1 + 1/gp2)**(-1)
     value = value[phase.throats(target.name)]
     return value
+
+
+def mixed_diffusion(target, DABo,
+                    molecular_weight='pore.molecular_weight',
+                    pore_diameter='pore.diameter',
+                    temperature='pore.temperature'):
+    r"""
+    Uses Knudsen model to adjust the diffusion coefficients to account for the from
+    first principles at conditions of interest.
+
+    Parameters
+    ----------
+    target : OpenPNM Object
+        The object for which these values are being calculated.  This
+        controls the length of the calculated array, and also provides
+        access to other necessary thermofluid properties.
+    
+    DABo : float, array_like
+        Diffusion coefficient at reference conditions
+    
+    molecular_weight : float, array_like
+        Molecular weight of component A [kg/mol]
+
+    temperature : string
+        The dictionary key containing the temperature values in Kelvin (K)
+
+    pore_size : string
+        The dictionary key containing the pore diameter values in meters (m)
+    """
+    network = target.simulation.network
+    T = target[temperature]
+    MA = target[molecular_weight]
+    dp = network[pore_diameter]
+    DKA = dp/3 * _sp.sqrt((8*_const.R*T)/(_const.pi*MA))
+    De = 1/(1/DKA + 1/DABo)
+    target['pore.mixed_diffusivity'] = De
+    return bulk_diffusion(target, diffusivity='pore.mixed_diffusivity')
