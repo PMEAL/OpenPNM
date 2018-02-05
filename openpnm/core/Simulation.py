@@ -216,7 +216,7 @@ class Grid(dict):
             col.append(self[geo][phase.name])
         return col
 
-    def __repr__(self):
+    def __str__(self):
         s = []
         hr = '―'*(16*(len(self.phases)+1))
         s.append(hr)
