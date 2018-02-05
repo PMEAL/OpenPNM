@@ -180,6 +180,12 @@ class Base(dict):
     # -------------------------------------------------------------------------
     """Data Query Methods"""
     # -------------------------------------------------------------------------
+    def get_data(self, props):
+        d = {}
+        for item in props:
+            d.update({item: self[item]})
+        return d
+
     def props(self, element=None, mode='all', deep=False):
         r"""
         Returns a list containing the names of all defined pore or throat
