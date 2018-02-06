@@ -126,6 +126,7 @@ def test_OP_plotting():
 
 def test_MixedPercolation():
     from OpenPNM.Physics import models as pm
+    from OpenPNM.Geometry import models as gm
     import numpy as np
     mgr.clear()
     mgr.loglevel = 50
@@ -136,6 +137,10 @@ def test_MixedPercolation():
     Ts = pn.throats()
     geom = OpenPNM.Geometry.Toray090(network=pn, pores=Ps, throats=Ts,
                                      name='geom')
+    geom.models.add(propname='throat.centroid',
+                    model=gm.throat_centroid.pore_coords)
+    geom.models.add(propname='throat.normal',
+                    model=gm.throat_normal.pore_coords)
     # Phases
     air = OpenPNM.Phases.Air(network=pn, name='air')
     water = OpenPNM.Phases.Water(network=pn, name='water')

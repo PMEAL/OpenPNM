@@ -69,3 +69,17 @@ class PoreDiameterTest:
                          iters=15)
         assert sp.all(geom2['pore.diameter'] == 1.0)
         assert sp.all(sp.ceil(sp.unique(geom1['pore.diameter'])) == [3.0, 5.0])
+
+    def test_equivalent_cube(self):
+        net = OpenPNM.Network.Cubic(shape=[5, 5, 5], spacing=[0.1, 0.2, 0.3])
+        geo = OpenPNM.Geometry.GenericGeometry(network=net, pores=net.Ps,
+                                               throats=net.Ts)
+        geo['pore.volume'] = 8.0
+        geo.models.add(propname='pore.diameter',
+                       model=mods.equivalent_cube)
+        assert sp.all(geo['pore.diameter'] == 2.0)
+
+if __name__ == '__main__':
+    t = PoreDiameterTest()
+    t.setup_class()
+    t.test_equivalent_cube()

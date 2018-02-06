@@ -349,6 +349,6 @@ class Voronoi(GenericGeometry):
             self["throat.diameter"] = 2*sp.sqrt(self["throat.area"]/sp.pi)
             self["throat.indiameter"] *= sp.sqrt(ta_diff_avg)
         else:
-            logger.warning('Fibre volume is not be conserved under compression')
+            logger.warning('Fibre volume is not conserved under compression')
         # Remove pores with zero throats
         topo.trim_occluded_throats(self._net)
