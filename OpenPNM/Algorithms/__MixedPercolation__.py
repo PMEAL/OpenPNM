@@ -397,7 +397,7 @@ class MixedPercolation(GenericAlgorithm):
         """
         if "pore.inv_Pc" not in self.props():
             logger.error("Cannot plot drainage curve. Please run " +
-             " algorithm first")
+                         " algorithm first")
         if inv_points is None:
             ok_Pc = self['throat.inv_Pc'][~sp.isnan(self['throat.inv_Pc'])]
             inv_points = np.unique(ok_Pc)
