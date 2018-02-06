@@ -8,6 +8,249 @@ ws = Workspace()
 logger = logging.getLogger()
 
 
+def find_neighbor_sites(sites, am, flatten=True, exclude_input=True,
+                        logic='union'):
+    r"""
+    Given a symmetric adjacency matrix, finds all sites that are connected
+    to the input sites.
+
+    Parameters
+    ----------
+    am : scipy.sparse matrix
+        The adjacency matrix of the network.  Must be symmetrical such that if
+        sites *i* and *j* are connected, the matrix contains non-zero values
+        at locations (i, j) and (j, i).
+
+    flatten : boolean (default is ``True``)
+        Indicates whether the returned result is a compressed array of all
+        neighbors, or a list of lists with each sub-list containing the
+        neighbors for each input site.
+
+    exclude_input : boolean (default is ``True``)
+        If ``flatten`` is ``True``, then this flag will remove the input sites
+        from the result, otherwise it's ignored.
+
+    logic : string
+        Specifies logic to apply to a flattened list.  Options are:
+
+        **'union'** : (default) All neighbors of the input sites
+
+        **'intersection'** : Only neighbors shared by all input sites
+
+        **'exclusive_or'** : Only neighbors not shared by any input sites
+
+    """
+    if am.format != 'lil':
+        am = am.tolil(copy=False)
+    neighbors = [am.rows[i] for i in sp.array(sites)]
+    if flatten:
+        neighbors.append(sites)
+        neighbors = sp.hstack(neighbors)
+        neighbors = apply_logic(neighbors=neighbors, logic=logic)
+        if exclude_input:
+            neighbors = neighbors[sp.in1d(neighbors, sites, invert=True,
+                                          assume_unique=True)]
+    return neighbors
+
+
+def find_neighbor_bonds(sites, im, flatten=True, logic='union'):
+    r"""
+    Given an incidence matrix, finds all sites that are connected to the
+    input sites.
+
+    Parameters
+    ----------
+    im : scipy.sparse matrix
+        The incidence matrix of the network.  Must be shaped as (N-sites,
+        N-bonds), with non-zeros indicating which bonds are connected.
+
+    flatten : boolean (default is ``True``)
+        Indicates whether the returned result is a compressed array of all
+        neighbors, or a list of lists with each sub-list containing the
+        neighbors for each input site.
+
+    logic : string
+        Specifies logic to apply to a flattened list.  Options are:
+
+        **'union'** : (default) All neighbors of the input sites
+
+        **'intersection'** : Only neighbors shared by all input sites
+
+        **'exclusive_or'** : Only neighbors not shared by any input sites
+
+    """
+    if im.shape[0] > im.shape[1]:
+        print('Warning: Received matrix has more sites than bonds!')
+    if im.format != 'lil':
+        im = im.tolil(copy=False)
+    neighbors = [im.rows[i] for i in sp.array(sites)]
+    if flatten:
+        neighbors = sp.hstack(neighbors)
+        neighbors = apply_logic(neighbors=neighbors, logic=logic)
+    return neighbors
+
+
+def find_connected_sites(bonds, am, flatten=True, logic='union'):
+    r"""
+    Given an adjacency matrix, finds whichsites are connected to the input
+    bonds.
+
+    Parameters
+    ----------
+    am : scipy.sparse matrix
+        The adjacency matrix of the network.  Must be symmetrical such that if
+        sites *i* and *j* are connected, the matrix contains non-zero values
+        at locations (i, j) and (j, i).
+
+    flatten : boolean (default is ``True``)
+        Indicates whether the returned result is a compressed array of all
+        neighbors, or a list of lists with each sub-list containing the
+        neighbors for each input site.
+
+    logic : string
+        Specifies logic to apply to a flattened list.  Options are:
+
+        **'union'** : (default) All neighbors of the input sites
+
+        **'intersection'** : Only neighbors shared by all input sites
+
+        **'exclusive_or'** : Only neighbors not shared by any input sites
+    """
+    if am.format != 'coo':
+        am = am.tocoo(copy=False)
+    bonds = sp.array(bonds)
+    if flatten:
+        neighbors = sp.hstack((am.row[bonds], am.col[bonds]))
+        neighbors = apply_logic(neighbors=neighbors, logic=logic)
+    else:
+        neighbors = sp.vstack((am.row[bonds], am.col[bonds])).T
+    return neighbors
+
+
+def find_connecting_bonds(sites, am):
+    r"""
+    Given pairs of sites, finds the bonds which connects each pair.
+
+    Parameters
+    ----------
+    sites : array_like
+        A 2-column vector containing pairs of site indices on each row.
+
+    am : scipy.sparse matrix
+        The adjacency matrix of the network.  Must be symmetrical such that if
+        sites *i* and *j* are connected, the matrix contains non-zero values
+        at locations (i, j) and (j, i).
+
+    Returns
+    -------
+    Returns a list the same length as P1 (and P2) with the each element
+    containing the throat number that connects the corresponding pores,
+    or `None`` if pores are not connected.
+
+    Notes
+    -----
+    The returned list can be converted to an ND-array, which will convert
+    the ``None`` values to ``nan``.  These can then be found using
+    ``scipy.isnan``.
+
+    Examples
+    --------
+    >>> import openpnm as op
+    >>> pn = op.network.Cubic(shape=[5, 5, 5])
+    >>> sites = sp.vstack(([0, 1, 2], [2, 2, 2])).T
+    >>> op.topotools.find_connecting_bonds(sites=sites, am=pn.am)
+        [None, 1, None]
+    """
+    if am.format != 'dok':
+        am = am.todok(copy=False)
+    z = tuple(zip(sites[:, 0], sites[:, 1]))
+    neighbors = [am.get(z[i], None) for i in range(len(z))]
+    return neighbors
+
+
+def apply_logic(neighbors, logic):
+    if neighbors.ndim > 1:
+        neighbors = sp.hstack(neighbors)
+    if logic == 'union':
+        neighbors = sp.unique(neighbors)
+    elif logic == 'exclusive_or':
+        # neighbors that occur only once are NOT shared with other sites
+        neighbors = sp.unique(sp.where(sp.bincount(neighbors) == 1)[0])
+    elif logic == 'intersection':
+        # neighbors that occur more than once ARE shared with other sites
+        neighbors = sp.unique(sp.where(sp.bincount(neighbors) > 1)[0])
+    else:
+        raise Exception('Unsupported logic type: '+logic)
+    return neighbors
+
+
+def istriu(am):
+    if am.shape[0] != am.shape[1]:
+        print('Matrix is not square, triangularity is not relevant')
+        return False
+    if am.format != 'coo':
+        am = am.tocoo(copy=False)
+    return sp.all(am.row < am.col)
+
+
+def istril(am):
+    if am.shape[0] != am.shape[1]:
+        print('Matrix is not square, triangularity is not relevant')
+        return False
+    if am.format != 'coo':
+        am = am.tocoo(copy=False)
+    return sp.all(am.row > am.col)
+
+
+def istriangular(am):
+    if am.format != 'coo':
+        am = am.tocoo(copy=False)
+    return (istril(am) + istriu(am))
+
+
+def issymmetric(am):
+    if am.shape[0] != am.shape[1]:
+        print('Matrix is not square, symmetrical is not relevant')
+        return False
+    if am.format != 'coo':
+        am = am.tocoo(copy=False)
+    inds_up = am.row < am.col
+    inds_lo = am.row > am.col
+    # Check if locations of non-zeros are symmetrically distributed
+    if inds_up.size != inds_lo.size:
+        return False
+    # Then check if values are also symmetric
+    data_up = am.data[inds_up]
+    data_lo = am.data[inds_lo]
+    return sp.allclose(data_up, data_lo)
+
+
+def am_to_im(am):
+    if am.shape[0] != am.shape[1]:
+        raise Exception('Adjacency matrices must be square')
+    if am.format != 'coo':
+        am = am.tocoo(copy=False)
+    conn = sp.vstack((am.row, am.col)).T
+    row = conn[:, 0]
+    data = am.data
+    col = sp.arange(sp.size(am.data))
+    if istriangular(am):
+        row = sp.append(row, conn[:, 1])
+        data = sp.append(data, data)
+        col = sp.append(col, col)
+    im = sprs.coo.coo_matrix((data, (row, col)), (row.max()+1, col.max()+1))
+    return im
+
+
+def im_to_am(im):
+    if im.shape[0] == im.shape[1]:
+        print('Warning: Received matrix is square which is unlikely')
+    if im.shape[0] > im.shape[1]:
+        print('Warning: Received matrix has more sites than bonds')
+    if im.format != 'coo':
+        im = im.tocoo(copy=False)
+
+
 def trim(network, pores=[], throats=[]):
     '''
     Remove pores or throats from the network.

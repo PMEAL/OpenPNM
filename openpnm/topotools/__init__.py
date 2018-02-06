@@ -12,3 +12,7 @@ from .topotools import trim
 from .topotools import generate_base_points
 from .topotools import reflect_base_points
 from .topotools import trim_occluded_throats
+from .topotools import find_neighbor_sites
+from .topotools import find_neighbor_bonds
+from .topotools import find_connected_sites
+from .topotools import find_connecting_bonds

@@ -3,7 +3,8 @@ import uuid
 import scipy as sp
 import scipy.sparse as sprs
 import scipy.spatial as sptl
-from openpnm.core import Base, Simulation, Workspace, ModelsMixin, logging
+from openpnm.core import Base, Workspace, ModelsMixin, logging
+from openpnm import topotools
 logger = logging.getLogger()
 ws = Workspace()
 
@@ -12,18 +13,12 @@ class GenericNetwork(Base, ModelsMixin):
     r"""
     GenericNetwork - Base class to construct pore networks
 
-    Parameters
-    ----------
-    name : string
-        Unique name for Network object
-
     """
-
     def __init__(self, simulation=None, settings={}, **kwargs):
         self.settings.setdefault('prefix', 'net')
         self.settings.update(settings)
         if simulation is None:
-            simulation = Simulation()
+            simulation = ws.new_simulation()
         super().__init__(simulation=simulation, **kwargs)
         self['pore._id'] = [str(uuid.uuid4()) for i in self.Ps]
         self['throat._id'] = [str(uuid.uuid4()) for i in self.Ts]
@@ -37,14 +32,10 @@ class GenericNetwork(Base, ModelsMixin):
             if sp.shape(value)[1] != 2:
                 logger.error('Wrong size for throat conns!')
             else:
-                mask = value[:, 0] > value[:, 1]
-                if mask.any():
-                    logger.debug('The first column in (throat.conns) should be \
-                                  smaller than the second one.')
-                    v1 = sp.copy(value[:, 0][mask])
-                    v2 = sp.copy(value[:, 1][mask])
-                    value[:, 0][mask] = v2
-                    value[:, 1][mask] = v1
+                if sp.any(value[:, 0] > value[:, 1]):
+                    logger.warning('Converting throat.conns to be upper \
+                                    triangular')
+                    value = sp.sort(value, axis=1)
         super().__setitem__(prop, value)
 
     def __getitem__(self, key):
@@ -52,174 +43,272 @@ class GenericNetwork(Base, ModelsMixin):
             element = key.split('.')[0]
             return self[element+'.all']
         if key not in self.keys():
-            logger.debug(key + ' not on Network, constructing data from Geometries')
-            return self._interleave_data(key, self.simulation.geometries.values())
+            logger.debug(key + ' not on Network, check on Geometries')
+            geoms = self.simulation.geometries.values()
+            return self._interleave_data(key, geoms)
         else:
             return super().__getitem__(key)
 
     def get_adjacency_matrix(self, fmt='coo'):
+        r"""
+        Returns an adjacency matrix in the specified sparse format, with 1's
+        indicating the non-zero values.
+
+        Parameters
+        ----------
+        fmt : string, optional
+            The sparse storage format to return.  Options are:
+
+            **'coo'** : (default) This is the native format of OpenPNM data
+
+            **'lil'** : Enables row-wise slice of the matrix
+
+            **'csr'** : Favored by most linear algebra routines
+
+            **'dok'** : Enables subscript access of locations
+
+        Notes
+        -----
+        This method will only create the requested matrix in the specified
+        format if one is not already saved on the object.  If not present,
+        this method will create and return the matrix, as well as store it
+        for future use.
+
+        To obtain a matrix with weights other than ones at each non-zero
+        location use ``create_adjacency_matrix``.
+        """
         # Retrieve existing matrix if available
         if fmt in self._am.keys():
-            return self._am[fmt]
+            logger.info('Desired adjacency matrix already present')
+            am = self._am[fmt]
+        elif self._am.keys():
+            logger.info('Desired adjacency matrix not present, converting...')
+            am = self._am[list(self._am.keys())[0]]
+            tofmt = getattr(am, 'to'+fmt)
+            am = tofmt()
+            self._am[fmt] = am
         else:
-            am = self.create_adjacency_matrix(fmt=fmt)
+            logger.info('No Adjacency Matrix not present, building...')
+            am = self.create_adjacency_matrix(weights=self.Ts, fmt=fmt)
+            self._am[fmt] = am
         return am
 
     def get_incidence_matrix(self, fmt='coo'):
+        r"""
+        Returns an incidence matrix in the specified sparse format, with 1's
+        indicating the non-zero values.
+
+        Parameters
+        ----------
+        fmt : string, optional
+            The sparse storage format to return.  Options are:
+
+            **'coo'** : (default) This is the native format of OpenPNM data
+
+            **'lil'** : Enables row-wise slice of the matrix
+
+            **'csr'** : Favored by most linear algebra routines
+
+            **'dok'** : Enables subscript access of locations
+
+        Notes
+        -----
+        This method will only create the requested matrix in the specified
+        format if one is not already saved on the object.  If not present,
+        this method will create and return the matrix, as well as store it
+        for future use.
+
+        To obtain a matrix with weights other than ones at each non-zero
+        location use ``create_incidence_matrix``.
+        """
         if fmt in self._im.keys():
-            return self._im[fmt]
-        im = self.create_incidence_matrix(fmt=fmt)
+            im = self._im[fmt]
+        elif self._im.keys():
+            im = self._am[list(self._im.keys())[0]]
+            tofmt = getattr(im, 'to'+fmt)
+            im = tofmt()
+            self._im[fmt] = im
+        else:
+            im = self.create_incidence_matrix(weights=self.Ts, fmt=fmt)
+            self._im[fmt] = im
         return im
 
     im = property(fget=get_incidence_matrix)
 
     am = property(fget=get_adjacency_matrix)
 
-    def create_adjacency_matrix(self, data=None, fmt='coo'):
+    def create_adjacency_matrix(self, weights=None, fmt='coo', triu=False,
+                                drop_zeros=False):
         r"""
         Generates a weighted adjacency matrix in the desired sparse format
 
         Parameters
         ----------
-        data : array_like, optional
+        weights : array_like, optional
             An Nt-long array containing the throat values to enter into the
             matrix (in graph theory these are known as the 'weights').  If
             omitted, ones are used to create a standard adjacency matrix
-            representing connectivity only.  Zero values are dropped from the
-            matrix.
+            representing connectivity only.
 
         fmt : string, optional
             The sparse storage format to return.  Options are:
 
             **'coo'** : (default) This is the native format of OpenPNM data
 
-            **'lil'** : Enables row-wise slice of data
+            **'lil'** : Enables row-wise slice of the matrix
 
             **'csr'** : Favored by most linear algebra routines
 
+            **'dok'** : Enables subscript access of locations
+
+        triu : boolean (default is ``False``)
+            If ``True``, the returned sparse matrix only contains the upper-
+            triangular elements.
+
+        drop_zeros : boolean (default is ``False``)
+            If ``True``, applies the ``eliminate_zeros`` method of the sparse
+            array to remove all zero locations.
+
         Returns
         -------
-        Returns an adjacency matrix in the specified Scipy sparse format
+        An adjacency matrix in the specified Scipy sparse format.
+
+        Notes
+        -----
+        The adjacency matrix is used by OpenPNM for finding the pores
+        connected to a give pore or set of pores.  Specifically, an adjacency
+        matrix has Np rows and Np columns.  Each row represents a pore,
+        containing non-zero values at the locations corresponding to the
+        indices of the pores connected to that pore.  The ``weights`` argument
+        indicates what value to place at each location, with the default
+        being 1's to simply indicate connections. Another useful option is
+        throat indices, such that the data values on each row indicate which
+        throats are connected to the pore.
 
         Examples
         --------
         >>> import openpnm as op
         >>> pn = op.network.Cubic(shape=[5, 5, 5])
-        >>> vals = sp.rand(pn.num_throats(),) < 0.5
-        >>> temp = pn.create_adjacency_matrix(data=vals, fmt='csr')
+        >>> weights = sp.rand(pn.num_throats(), ) < 0.5
+        >>> temp = pn.create_adjacency_matrix(weights=weights, fmt='csr')
 
         """
         # Check if provided data is valid
-        data_flag = False
-        if data is None:
-            data = sp.ones((self.Nt,))
-            data_flag = True
-        elif sp.shape(data)[0] != self.Nt:
+        if weights is None:
+            weights = sp.ones((self.Nt,), dtype=int)
+        elif sp.shape(weights)[0] != self.Nt:
             raise Exception('Received weights are incorrect length')
 
         # Append row & col to each other, and data to itself
-        ind = data != 0
-        conn = self['throat.conns'][ind]
+        conn = self['throat.conns']
         row = conn[:, 0]
         col = conn[:, 1]
-        data = data[ind]
-        row = sp.append(row, conn[:, 1])
-        col = sp.append(col, conn[:, 0])
-        data = sp.append(data, data)
+        if not triu:
+            row = sp.append(row, conn[:, 1])
+            col = sp.append(col, conn[:, 0])
+            weights = sp.append(weights, weights)
 
         # Generate sparse adjacency matrix in 'coo' format
-        temp = sprs.coo_matrix((data, (row, col)), (self.Np, self.Np))
+        temp = sprs.coo_matrix((weights, (row, col)), (self.Np, self.Np))
 
-        # Save the 'clean' matrix on object for future use
-        if data_flag:
-            if 'coo' in self._am.keys():
-                self._am['coo'] = temp
-            if 'csr' in self._am.keys():
-                self._am['csr'] = temp.tocsr()
-            if 'lil' in self._am.keys():
-                self._am['lil'] = temp.tolil()
+        if drop_zeros:
+            temp.eliminate_zeros()
 
         # Convert to requested format
         if fmt == 'coo':
             pass  # temp is already in coo format
-        if fmt == 'csr':
+        elif fmt == 'csr':
             temp = temp.tocsr()
-        if fmt == 'lil':
+        elif fmt == 'lil':
             temp = temp.tolil()
+        elif fmt == 'dok':
+            temp = temp.todok()
 
         return temp
 
-    def create_incidence_matrix(self, data=None, fmt='coo'):
+    def create_incidence_matrix(self, weights=None, fmt='coo',
+                                drop_zeros=False):
         r"""
-        Creates an incidence matrix filled with supplied throat values
+        Creates a weighted incidence matrix in the desired sparse format
 
         Parameters
         ----------
-        data : array_like, optional
+        weights : array_like, optional
             An array containing the throat values to enter into the matrix (In
             graph theory these are known as the 'weights').  If omitted, ones
             are used to create a standard incidence matrix representing
-            connectivity only.  Zero values are dropped from the matrix.
+            connectivity only.
 
         fmt : string, optional
             The sparse storage format to return.  Options are:
 
             **'coo'** : (default) This is the native format of OpenPNMs data
 
-            **'lil'** : Enables row-wise slice of data
+            **'lil'** : Enables row-wise slice of the matrix
 
             **'csr'** : Favored by most linear algebra routines
 
+            **'dok'** : Enables subscript access of locations
+
+        drop_zeros : boolean (default is ``False``)
+            If ``True``, applies the ``eliminate_zeros`` method of the sparse
+            array to remove all zero locations.
+
         Returns
         -------
-        An incidence matrix (a cousin to the adjacency matrix, useful for
-        finding throats of given a pore)
+        An incidence matrix in the specified sparse format
+
+        Notes
+        -----
+        The incidence matrix is a cousin to the adjacency matrix, and used by
+        OpenPNM for finding the throats connected to a give pore or set of
+        pores.  Specifically, an incidence matrix has Np rows and Nt columns,
+        and each row represents a pore, containing non-zero values at the
+        locations corresponding to the indices of the throats connected to that
+        pore.  The ``weights`` argument indicates what value to place at each
+        location, with the default being 1's to simply indicate connections.
+        Another useful option is throat indices, such that the data values
+        on each row indicate which throats are connected to the pore, though
+        this is redundant as it is identical to the locations of non-zeros.
 
         Examples
         --------
         >>> import openpnm as op
         >>> pn = op.network.Cubic(shape=[5, 5, 5])
-        >>> vals = sp.rand(pn.num_throats(),) < 0.5
-        >>> temp = pn.create_incidence_matrix(data=vals,sprsfmt='csr')
+        >>> weights = sp.rand(pn.num_throats(), ) < 0.5
+        >>> temp = pn.create_incidence_matrix(weights=weights, sprsfmt='csr')
         """
         # Check if provided data is valid
-        data_flag = False
-        if data is None:
-            data = sp.ones((self.Nt,))
-            data_flag
-        elif sp.shape(data)[0] != self.Nt:
+        if weights is None:
+            weights = sp.ones((self.Nt,), dtype=int)
+        elif sp.shape(weights)[0] != self.Nt:
             raise Exception('Received dataset of incorrect length')
 
-        ind = data > 0
-        conn = self['throat.conns'][ind]
+        conn = self['throat.conns']
         row = conn[:, 0]
         row = sp.append(row, conn[:, 1])
-        col = self.throats('all')[ind]
+        col = sp.arange(self.Nt)
         col = sp.append(col, col)
-        data = sp.append(data[ind], data[ind])
+        weights = sp.append(weights, weights)
 
-        temp = sprs.coo.coo_matrix((data, (row, col)), (self.Np, self.Nt))
+        temp = sprs.coo.coo_matrix((weights, (row, col)), (self.Np, self.Nt))
 
-        # Save the 'clean' matrix on object for future use
-        if data_flag:
-            if 'coo' in self._am.keys():
-                self._im['coo'] = temp
-            if 'csr' in self._am.keys():
-                self._im['csr'] = temp.tocsr()
-            if 'lil' in self._am.keys():
-                self._im['lil'] = temp.tolil()
+        if drop_zeros:
+            temp.eliminate_zeros()
 
         # Convert to requested format
         if fmt == 'coo':
             pass  # temp is already in coo format
-        if fmt == 'csr':
+        elif fmt == 'csr':
             temp = temp.tocsr()
-        if fmt == 'lil':
+        elif fmt == 'lil':
             temp = temp.tolil()
+        elif fmt == 'dok':
+            temp = temp.todok()
 
         return temp
 
-    def find_connected_pores(self, throats=[], flatten=False):
+    def find_connected_pores(self, throats=[], flatten=False, mode='union'):
         r"""
         Return a list of pores connected to the given list of throats
 
@@ -233,6 +322,16 @@ class GenericNetwork(Base, ModelsMixin):
             is returned. If flatten is False each location in the the returned
             array contains a sub-arras of neighboring pores for each input
             throat, in the order they were sent.
+
+        mode : string, optional
+            Specifies which neighbors should be returned.  The options are:
+
+            **'union'** : (default) All neighbors of the input pores
+
+            **'intersection'** : Only neighbors shared by all input pores
+
+            **'exclusive_or'** : Only neighbors not shared by any input
+            pores
 
         Returns
         -------
@@ -256,13 +355,10 @@ class GenericNetwork(Base, ModelsMixin):
         stacks the two columns and eliminate non-unique values.
         """
         Ts = self._parse_indices(throats)
-        Ps = self['throat.conns'][Ts]
-        if flatten:
-            if sp.shape(Ps) == (0, 2):
-                Ps = sp.array([], ndmin=1, dtype=int)
-            else:
-                Ps = sp.unique(sp.hstack(Ps))
-        return Ps
+        am = self.get_adjacency_matrix(fmt='coo')
+        pores = topotools.find_connected_sites(bonds=Ts, am=am,
+                                               flatten=flatten, logic=mode)
+        return pores
 
     def find_connecting_throat(self, P1, P2):
         r"""
@@ -276,35 +372,30 @@ class GenericNetwork(Base, ModelsMixin):
 
         Returns
         -------
-        Tnum : list of list of int
-            Returns throat number(s), or empty array if pores are not connected
+        Returns a list the same length as P1 (and P2) with the each element
+        containing the throat number that connects the corresponding pores,
+        or `None`` if pores are not connected.
+
+        Notes
+        -----
+        The returned list can be converted to an ND-array, which will convert
+        the ``None`` values to ``nan``.  These can then be found using
+        ``scipy.isnan``.
 
         Examples
         --------
         >>> import openpnm as op
         >>> pn = op.network.Cubic(shape=[5, 5, 5])
         >>> pn.find_connecting_throat([0, 1, 2], [2, 2, 2])
-        [[], [3], []]
-
-        TODO: This now works on 'vector' inputs, but is not actually vectorized
-        in the Numpy sense, so could be slow with large P1, P2 inputs
+        [None, 1, None]
         """
-        P1 = self._parse_indices(P1)
-        P2 = self._parse_indices(P2)
-        Ts1 = self.find_neighbor_throats(P1, flatten=False)
-        Ts2 = self.find_neighbor_throats(P2, flatten=False)
-        Ts = []
-
-        for row in range(0, len(P1)):
-            if P1[row] == P2[row]:
-                throat = []
-            else:
-                throat = sp.intersect1d(Ts1[row], Ts2[row]).tolist()
-            Ts.insert(0, throat)
-        Ts.reverse()
+        am = self.create_adjacency_matrix(weights=self.Ts, fmt='coo')
+        sites = sp.vstack((P1, P2)).T
+        Ts = topotools.find_connecting_bonds(sites=sites, am=am)
         return Ts
 
-    def find_neighbor_pores(self, pores, mode='union', flatten=True, excl_self=True):
+    def find_neighbor_pores(self, pores, mode='union', flatten=True,
+                            excl_self=True):
         r"""
         Returns a list of pores neighboring the given pore(s)
 
@@ -328,17 +419,24 @@ class GenericNetwork(Base, ModelsMixin):
         mode : string, optional
             Specifies which neighbors should be returned.  The options are:
 
-            **'union'** : All neighbors of the input pores
+            **'union'** : (default) All neighbors of the input pores
 
             **'intersection'** : Only neighbors shared by all input pores
 
-            **'not_intersection'** : Only neighbors not shared by any input
+            **'exclusive_or'** : Only neighbors not shared by any input
             pores
 
         Returns
         -------
-        neighborPs : 1D array (if flatten is True) or ndarray of ndarrays (if
-        ``flatten`` is ``False``)
+        If ``flatten`` is ``True``, returns a 1D array of pore indices filtered
+        according to the specified mode.  If ``flatten`` is ``False``, returns
+        a list of lists, where each list contains the neighbors of the
+        corresponding input pores.
+
+        Notes
+        -----
+        If ``flatten`` is ``False``, then ``mode`` and ``excl_self`` are
+        ignored.
 
         Examples
         --------
@@ -351,15 +449,16 @@ class GenericNetwork(Base, ModelsMixin):
         >>> pn.find_neighbor_pores(pores=[0, 1], mode='union', excl_self=False)
         array([ 0,  1,  2,  5,  6, 25, 26])
         >>> pn.find_neighbor_pores(pores=[0, 2], flatten=False)
-        array([array([ 1,  5, 25]), array([ 1,  3,  7, 27])], dtype=object)
+        [[ 1,  5, 25], [ 1,  3,  7, 27]]
         >>> pn.find_neighbor_pores(pores=[0, 2], mode='intersection')
         array([1])
-        >>> pn.find_neighbor_pores(pores=[0, 2], mode='not_intersection')
+        >>> pn.find_neighbor_pores(pores=[0, 2], mode='exclusive_or')
         array([ 3,  5,  7, 25, 27])
         """
-        neighbors = self._find_neighbors(pores=pores, element='pore',
-                                         mode=mode, flatten=flatten,
-                                         excl_self=excl_self)
+        pores = self._parse_indices(pores)
+        neighbors = topotools.find_neighbor_sites(sites=pores, logic=mode,
+                                                  am=self.am, flatten=flatten,
+                                                  exclude_input=excl_self)
         return neighbors
 
     def find_neighbor_throats(self, pores, mode='union', flatten=True):
@@ -380,17 +479,24 @@ class GenericNetwork(Base, ModelsMixin):
         mode : string, optional
             Specifies which neighbors should be returned.  The options are:
 
-            **'union'** : All neighbors of the input pores
+            **'union'** : (default) All neighbors of the input pores
 
             **'intersection'** : Only neighbors shared by all input pores
 
-            **'not_intersection'** : Only neighbors not shared by any input
+            **'exclusive_or'** : Only neighbors not shared by any input
             pores
 
         Returns
         -------
-        neighborTs : 1D array (if flatten is True) or ndarray of arrays (if
-            flatten if False)
+        If ``flatten`` is ``True``, returns a 1D array of throat indices
+        filtered according to the specified mode.  If ``flatten`` is ``False``,
+        returns a list of lists, where each list contains the neighbors of the
+        corresponding input pores.
+
+        Notes
+        -----
+        If ``flatten`` is ``False``, then ``mode`` and ``excl_self`` are
+        ignored.
 
         Examples
         --------
@@ -398,90 +504,22 @@ class GenericNetwork(Base, ModelsMixin):
         >>> pn = op.network.Cubic(shape=[5, 5, 5])
         >>> pn.find_neighbor_throats(pores=[0, 1])
         array([0, 1, 2, 3, 4, 5])
-        >>> pn.find_neighbor_throats(pores=[0, 1],flatten=False)
+        >>> pn.find_neighbor_throats(pores=[0, 1], flatten=False)
         array([array([0, 1, 2]), array([0, 3, 4, 5])], dtype=object)
         """
-        neighbors = self._find_neighbors(pores=pores, mode=mode,
-                                         element='throat', flatten=flatten,
-                                         excl_self=False)
+        pores = self._parse_indices(pores)
+        neighbors = topotools.find_neighbor_bonds(sites=pores, logic=mode,
+                                                  im=self.im, flatten=flatten)
         return neighbors
 
-    def _find_neighbors(self, pores, element, mode, flatten, excl_self):
-        r"""
-        Private method for finding the neighboring pores or throats connected
-        directly to given set of pores.
-
-        Parameters
-        ----------
-        pores : array_like
-            The list of pores whose neighbors are sought
-
-        element : string, either 'pore' or 'throat'
-            Whether to find neighboring pores or throats
-
-        mode : string
-            Controls how the neighbors are filtered.  Options are:
-
-            **'union'** : All neighbors of the input pores
-
-            **'intersection'** : Only neighbors shared by all input pores
-
-            **'not_intersection'** : Only neighbors not shared by any input
-            pores
-
-        flatten : boolean
-            If flatten is True (default) a 1D array of unique neighbors is
-            returned. If flatten is False the returned array contains arrays
-            of neighboring throat ID numbers for each input pore, in the order
-            they were sent.
-
-        excl_self : bool
-            When True the input pores are not included in the returned list of
-            neighboring pores.  This option only applies when input pores are
-            in fact neighbors to each other, otherwise they are not part of the
-            returned list anyway.  This is ignored with the element is
-            'throats'.
-
-        See Also
-        --------
-        find_neighbor_pores
-        find_neighbor_throats
-        num_neighors
-
-        """
+    def _find_neighbors(self, pores, element, **kwargs):
         element = self._parse_element(element=element, single=True)
-        pores = self._parse_indices(pores)
         if sp.size(pores) == 0:
             return sp.array([], ndmin=1, dtype=int)
-
-        # Test for existence of incidence or adjacency matrix
         if element == 'pore':
-            temp = self.get_adjacency_matrix(fmt='lil')
-            neighbors = temp.rows[[pores]]
-        elif element == 'throat':
-            temp = self.get_incidence_matrix(fmt='lil')
-            neighbors = temp.rows[[pores]]
-
-        if flatten:
-            # Convert rows of lil into single flat list
-            neighbors = itertools.chain.from_iterable(neighbors)
-            if element == 'pore':  # Add input pores to list
-                neighbors = itertools.chain.from_iterable([neighbors, pores])
-            # Convert list to numpy array
-            neighbors = sp.fromiter(neighbors, dtype=int)
-            if mode == 'not_intersection':
-                neighbors = sp.unique(sp.where(sp.bincount(neighbors) == 1)[0])
-            elif mode == 'union':
-                neighbors = sp.unique(neighbors)
-            elif mode == 'intersection':
-                neighbors = sp.unique(sp.where(sp.bincount(neighbors) > 1)[0])
-            if excl_self and element == 'pore':  # Remove input pores from list
-                neighbors = neighbors[~sp.in1d(neighbors, pores)]
-            neighbors = sp.array(neighbors, ndmin=1, dtype=int)
+            neighbors = self.find_neighbor_pores(pores=pores, **kwargs)
         else:
-            # Convert lists in array to numpy arrays
-            neighbors = [sp.array(neighbors[i]) for i in range(0, len(pores))]
-            neighbors = sp.array(neighbors, ndmin=1)
+            neighbors = self.find_neighbor_throats(pores=pores, **kwargs)
         return neighbors
 
     def num_neighbors(self, pores, element='pore', flatten=False,
@@ -516,7 +554,7 @@ class GenericNetwork(Base, ModelsMixin):
             **'intersection'** : The number of neighboring pores that are
             shared by all input pores.
 
-            **'not_intersection'** : The number of neighboring pores that are
+            **'exclusive_or'** : The number of neighboring pores that are
             NOT shared by any input pores.
 
         Returns
@@ -542,22 +580,19 @@ class GenericNetwork(Base, ModelsMixin):
         >>> pn = op.network.Cubic(shape=[5, 5, 5])
         >>> pn.num_neighbors(pores=[0, 1], flatten=False)
         array([3, 4])
-        >>> pn.num_neighbors(pores=[0, 1], flatten=True)
-        5
         >>> pn.num_neighbors(pores=[0, 2], flatten=True)
         6
-        >>> pn.num_neighbors(pores=[0, 1], element='throat', mode='union',
-        ...                  flatten=True)
-        6
+        >>> pn.num_neighbors(pores=[0, 2], mode='intersection', flatten=True)
+        1
         """
         pores = self._parse_indices(pores)
         # Count number of neighbors
         num = self._find_neighbors(pores, element=element, flatten=flatten,
-                                   mode=mode, excl_self=True)
-        num = sp.array([sp.size(i) for i in num], dtype=int)
+                                   mode=mode)
         if flatten:
-            num = sp.sum(num)
-            num = int(num)
+            num = sp.size(num)
+        else:
+            num = sp.array([sp.size(i) for i in num], dtype=int)
         return num
 
     def find_nearby_pores(self, pores, r, flatten=False, excl_self=True):
@@ -598,18 +633,15 @@ class GenericNetwork(Base, ModelsMixin):
         array([array([ 1,  5, 25]), array([ 0,  2,  6, 26])], dtype=object)
         >>> pn.find_nearby_pores(pores=[0, 1], r=0.5)
         array([], shape=(2, 0), dtype=int64)
+        >>> pn.find_nearby_pores(pores=[0, 1], r=1, flatten=True)
+        array([ 2,  5,  6, 25, 26])
         """
         pores = self._parse_indices(pores)
         # Handle an empty array if given
         if sp.size(pores) == 0:
             return sp.array([], dtype=sp.int64)
         if r <= 0:
-            logger.error('Provided distances should be greater than 0')
-            if flatten:
-                Pn = sp.array([])
-            else:
-                Pn = sp.array([sp.array([]) for i in range(0, len(pores))])
-            return Pn.astype(sp.int64)
+            raise Exception('Provided distances should be greater than 0')
         # Create kdTree objects
         kd = sptl.cKDTree(self['pore.coords'])
         kd_pores = sptl.cKDTree(self['pore.coords'][pores])
@@ -618,16 +650,14 @@ class GenericNetwork(Base, ModelsMixin):
         # Sort the indices in each list
         [Pn[i].sort() for i in range(0, sp.size(pores))]
         if flatten:  # Convert list of lists to a flat nd-array
-            temp = []
-            [temp.extend(Ps) for Ps in Pn]
-            Pn = sp.unique(temp)
+            temp = sp.hstack(Pn)
+            Pn = sp.unique(Pn)
             if excl_self:  # Remove inputs if necessary
                 Pn = Pn[~sp.in1d(Pn, pores)]
         else:  # Convert list of lists to an nd-array of nd-arrays
             if excl_self:  # Remove inputs if necessary
                 [Pn[i].remove(pores[i]) for i in range(0, sp.size(pores))]
-            temp = []
-            [temp.append(sp.array(Pn[i])) for i in range(0, sp.size(pores))]
+            temp = [sp.array(Pn[i]) for i in range(0, sp.size(pores))]
             Pn = sp.array(temp)
         if Pn.dtype == float:
             Pn = Pn.astype(sp.int64)

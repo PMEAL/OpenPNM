@@ -161,7 +161,7 @@ class GenericLinearTransport(GenericAlgorithm):
         network = self.simulation.network
         phase = self.simulation.phases[self.settings['phase']]
         g = phase[self.settings['conductance']]
-        am = network.create_adjacency_matrix(data=-g, fmt='coo')
+        am = network.create_adjacency_matrix(weights=-g, fmt='coo')
         A = spgr.laplacian(am)
         if 'pore.neumann' in self.keys():
             pass  # Do nothing to A, only b changes
