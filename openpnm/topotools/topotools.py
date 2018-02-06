@@ -127,6 +127,47 @@ def find_connected_sites(bonds, am, flatten=True, logic='union'):
     return neighbors
 
 
+def find_connecting_bonds(sites, am):
+    r"""
+    Given pairs of sites, finds the bonds which connects each pair.
+
+    Parameters
+    ----------
+    sites : array_like
+        A 2-column vector containing pairs of site indices on each row.
+
+    am : scipy.sparse matrix
+        The adjacency matrix of the network.  Must be symmetrical such that if
+        sites *i* and *j* are connected, the matrix contains non-zero values
+        at locations (i, j) and (j, i).
+
+    Returns
+    -------
+    Returns a list the same length as P1 (and P2) with the each element
+    containing the throat number that connects the corresponding pores,
+    or `None`` if pores are not connected.
+
+    Notes
+    -----
+    The returned list can be converted to an ND-array, which will convert
+    the ``None`` values to ``nan``.  These can then be found using
+    ``scipy.isnan``.
+
+    Examples
+    --------
+    >>> import openpnm as op
+    >>> pn = op.network.Cubic(shape=[5, 5, 5])
+    >>> sites = sp.vstack(([0, 1, 2], [2, 2, 2])).T
+    >>> op.topotools.find_connecting_bonds(sites=sites, am=pn.am)
+        [None, 1, None]
+    """
+    if am.format != 'dok':
+        am = am.todok(copy=False)
+    z = tuple(zip(sites[:, 0], sites[:, 1]))
+    neighbors = [am.get(z[i], None) for i in range(len(z))]
+    return neighbors
+
+
 def apply_logic(neighbors, logic):
     if neighbors.ndim > 1:
         neighbors = sp.hstack(neighbors)

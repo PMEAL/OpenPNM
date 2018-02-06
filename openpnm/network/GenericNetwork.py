@@ -49,7 +49,7 @@ class GenericNetwork(Base, ModelsMixin):
         else:
             return super().__getitem__(key)
 
-    def get_adjacency_matrix(self, fmt='lil'):
+    def get_adjacency_matrix(self, fmt='coo'):
         r"""
         Returns an adjacency matrix in the specified sparse format, with 1's
         indicating the non-zero values.
@@ -87,11 +87,11 @@ class GenericNetwork(Base, ModelsMixin):
             self._am[fmt] = am
         else:
             logger.info('No Adjacency Matrix not present, building...')
-            am = self.create_adjacency_matrix(fmt=fmt)
+            am = self.create_adjacency_matrix(weights=self.Ts, fmt=fmt)
             self._am[fmt] = am
         return am
 
-    def get_incidence_matrix(self, fmt='lil'):
+    def get_incidence_matrix(self, fmt='coo'):
         r"""
         Returns an incidence matrix in the specified sparse format, with 1's
         indicating the non-zero values.
@@ -125,7 +125,7 @@ class GenericNetwork(Base, ModelsMixin):
             im = tofmt()
             self._im[fmt] = im
         else:
-            im = self.create_incidence_matrix(fmt=fmt)
+            im = self.create_incidence_matrix(weights=self.Ts, fmt=fmt)
             self._im[fmt] = im
         return im
 
@@ -377,19 +377,10 @@ class GenericNetwork(Base, ModelsMixin):
         >>> pn.find_connecting_throat([0, 1, 2], [2, 2, 2])
         [None, 1, None]
         """
-        mapping = self._get_conn_map
-        z = tuple(zip(P1, P2))
-        Ts = [mapping.get(z[i]) for i in range(len(z))]
+        am = self.create_adjacency_matrix(weights=self.Ts, fmt='coo')
+        sites = sp.vstack((P1, P2)).T
+        Ts = topotools.find_connecting_bonds(sites=sites, am=am)
         return Ts
-
-    @property
-    def _get_conn_map(self):
-        if not hasattr(self, '_conn_mapping'):
-            logger.info('Mapping not presenting, generating...')
-            am = self.get_adjacency_matrix(fmt='coo')
-            conns = sp.vstack((am.row, am.col)).T
-            self._conn_mapping = {tuple(conns[i]): i for i in self.Ts}
-        return self._conn_mapping
 
     def find_neighbor_pores(self, pores, mode='union', flatten=True,
                             excl_self=True):

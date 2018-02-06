@@ -15,3 +15,4 @@ from .topotools import trim_occluded_throats
 from .topotools import find_neighbor_sites
 from .topotools import find_neighbor_bonds
 from .topotools import find_connected_sites
+from .topotools import find_connecting_bonds
