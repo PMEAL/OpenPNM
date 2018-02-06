@@ -65,6 +65,8 @@ class GenericNetwork(Base, ModelsMixin):
 
             **'csr'** : Favored by most linear algebra routines
 
+            **'dok'** : Enables subscript access of locations
+
         Notes
         -----
         This method will only create the requested matrix in the specified
@@ -106,6 +108,8 @@ class GenericNetwork(Base, ModelsMixin):
             **'lil'** : Enables row-wise slice of the matrix
 
             **'csr'** : Favored by most linear algebra routines
+
+            **'dok'** : Enables subscript access of locations
 
         Notes
         -----
@@ -154,6 +158,8 @@ class GenericNetwork(Base, ModelsMixin):
             **'lil'** : Enables row-wise slice of the matrix
 
             **'csr'** : Favored by most linear algebra routines
+
+            **'dok'** : Enables subscript access of locations
 
         triu : boolean (default is ``False``)
             If ``True``, the returned sparse matrix only contains the upper-
@@ -215,6 +221,8 @@ class GenericNetwork(Base, ModelsMixin):
             temp = temp.tocsr()
         elif fmt == 'lil':
             temp = temp.tolil()
+        elif fmt == 'dok':
+            temp = temp.todok()
 
         return temp
 
@@ -239,6 +247,8 @@ class GenericNetwork(Base, ModelsMixin):
             **'lil'** : Enables row-wise slice of the matrix
 
             **'csr'** : Favored by most linear algebra routines
+
+            **'dok'** : Enables subscript access of locations
 
         drop_zeros : boolean (default is ``False``)
             If ``True``, applies the ``eliminate_zeros`` method of the sparse
@@ -289,10 +299,12 @@ class GenericNetwork(Base, ModelsMixin):
         # Convert to requested format
         if fmt == 'coo':
             pass  # temp is already in coo format
-        if fmt == 'csr':
+        elif fmt == 'csr':
             temp = temp.tocsr()
-        if fmt == 'lil':
+        elif fmt == 'lil':
             temp = temp.tolil()
+        elif fmt == 'dok':
+            temp = temp.todok()
 
         return temp
 
