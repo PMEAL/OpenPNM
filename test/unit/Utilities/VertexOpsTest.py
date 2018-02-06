@@ -67,7 +67,7 @@ class VertexOpsTest:
         del fig2
         plt.close('all')
         pass
-    
+
 if __name__ == '__main__':
     a = VertexOpsTest()
     a.setup_class()
