@@ -11,7 +11,8 @@ import openpnm.utils.misc as misc
 
 
 def bulk_diffusion(target, molar_density='pore.molar_density',
-                   diffusivity='pore.diffusivity',
+                   pore_diffusivity='pore.diffusivity',
+                   throat_diffusivity=None,
                    pore_area='pore.area',
                    pore_diameter='pore.diameter',
                    throat_area='throat.area',
@@ -53,8 +54,11 @@ def bulk_diffusion(target, molar_density='pore.molar_density',
     # Interpolate pore phase property values to throats
     cp = phase[molar_density]
     ct = phase.interpolate_data(propname=molar_density)
-    DABp = phase[diffusivity]
-    DABt = phase.interpolate_data(propname=diffusivity)
+    DABp = phase[pore_diffusivity]
+    if throat_diffusivity is None:
+        DABt = phase.interpolate_data(propname=pore_diffusivity)
+    else:
+        DABt = phase[throat_diffusivity]
     if calc_pore_len:
         lengths = misc.conduit_lengths(network, mode='centroid')
         plen1 = lengths[:, 0]
@@ -89,10 +93,8 @@ def bulk_diffusion(target, molar_density='pore.molar_density',
     return value
 
 
-def mixed_diffusion(target, DABo,
-                    molecular_weight='pore.molecular_weight',
-                    pore_diameter='pore.diameter',
-                    temperature='pore.temperature'):
+def mixed_diffusion(target, pore_mixed_diffusivity='pore.mixed_diffusivity',
+                    throat_mixed_diffusivity='throat_mixed_diffusivity'):
     r"""
     Uses Knudsen model to adjust the diffusion coefficients to account for the from
     first principles at conditions of interest.
@@ -104,23 +106,19 @@ def mixed_diffusion(target, DABo,
         controls the length of the calculated array, and also provides
         access to other necessary thermofluid properties.
     
-    DABo : float, array_like
-        Diffusion coefficient at reference conditions
+    pore_mixed_diffusivity : string
+        The dictionary key containing the pore mixed diffusivity values to be used.
     
-    molecular_weight : float, array_like
-        Molecular weight of component A [kg/mol]
-
-    temperature : string
-        The dictionary key containing the temperature values in Kelvin (K)
-
-    pore_size : string
-        The dictionary key containing the pore diameter values in meters (m)
+    throat_mixed_diffusivity : string
+        The dictionary key containing the throat mixed diffusivity values to be used.
+    
+    Notes
+    -----
+    (1) This model is only valid for dilute systems. Otherwise, the diffusivity
+    becomes dependant on concentration and you need to iterate for accuracy.
+    
+    (2) This model requires `knudsen` model to have already been added to `target`.
+    
     """
-    network = target.simulation.network
-    T = target[temperature]
-    MA = target[molecular_weight]
-    dp = network[pore_diameter]
-    DKA = dp/3 * _sp.sqrt((8*_const.R*T)/(_const.pi*MA))
-    De = 1/(1/DKA + 1/DABo)
-    target['pore.mixed_diffusivity'] = De
-    return bulk_diffusion(target, diffusivity='pore.mixed_diffusivity')
+    return bulk_diffusion(target, pore_diffusivity=pore_mixed_diffusivity,
+                          throat_diffusivity=throat_mixed_diffusivity)
