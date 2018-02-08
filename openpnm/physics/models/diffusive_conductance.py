@@ -120,5 +120,8 @@ def mixed_diffusion(target, pore_mixed_diffusivity='pore.mixed_diffusivity',
     (2) This model requires `knudsen` model to have already been added to `target`.
     
     """
+    phase = target.simulation.find_phase(target)
+    phase._interleave_data(prop=pore_mixed_diffusivity, sources=[target])
+    phase._interleave_data(prop=throat_mixed_diffusivity, sources=[target])
     return bulk_diffusion(target, pore_diffusivity=pore_mixed_diffusivity,
                           throat_diffusivity=throat_mixed_diffusivity)
