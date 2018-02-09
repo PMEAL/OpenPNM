@@ -49,7 +49,7 @@ def polynomial(target, a, prop, **kwargs):
         list corresponds to a0 and so on.  Note that no entries can be skipped
         so 0 coefficients must be sent as 0.
 
-    poreprop : string
+    prop : string
         The dictionary key containing the independent variable or phase
         property to be used in the correlation.
 
