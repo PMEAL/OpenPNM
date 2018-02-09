@@ -1,14 +1,3 @@
-r"""
-*******************************************************************************
-models -- Classes for calculating pore-scale properties
-*******************************************************************************
-
-Contents
---------
-Contains Models for applying pore and throat geometry
-
-"""
-
 from . import pore_size
 from . import pore_misc
 from . import pore_seed

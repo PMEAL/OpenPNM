@@ -1,14 +1,3 @@
-r"""
-===============================================================================
-models -- Functions for calculating thermofluid properties
-===============================================================================
-
-Contents
---------
-This module contains methods for estimating phase properties
-
-"""
-
 from . import contact_angle
 from . import density
 from . import diffusivity
