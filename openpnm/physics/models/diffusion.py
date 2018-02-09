@@ -68,7 +68,17 @@ def knudsen_scaling(target, diffusivity='pore.diffusivity',
         to be used.
     
     """
+    # Verify that the arguments are both pore or throat properties.
+    if diffusivity.split('.')[0] != knudsen_diffusivity.split('.')[0]:
+        raise Exception('The passed arguments (' + diffusivity + ', ' + \
+                        knudsen_diffusivity + ') must be ' + 'both either a ' + \
+                        'pore or a throat property!')  
     phase = target.simulation.find_phase(target)
+    # Interpolate data for `throat.diffusivity`
+    if diffusivity.split('.')[0] == 'throat':
+        Db = phase.interpolate_data(propname='pore.'+diffusivity.split('.')[1])
+    else:
+        Db = phase[diffusivity]
     # Add `knudsen` model to `physics` if not already there.
     if 'pore.knudsen_diffusivity' not in target.keys():
         target.add_model(propname='pore.knudsen_diffusivity', model=knudsen,
@@ -78,11 +88,6 @@ def knudsen_scaling(target, diffusivity='pore.diffusivity',
                          diameter='throat.diameter')
     target.regenerate_models(propnames=['pore.knudsen_diffusivity',
                                         'throat.knudsen_diffusivity'])
-    # Interpolate for 'throat.diffusivity'
-    if diffusivity.split('.')[0] == 'throat':
-        Db = phase.interpolate_data(propname='pore.'+diffusivity.split('.')[1])
-    else:
-        Db = phase[diffusivity]
     DK = target[knudsen_diffusivity]
     De = 1 / (1/DK + 1/Db)
     if diffusivity.split('.')[0] == 'pore':

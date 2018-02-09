@@ -8,6 +8,7 @@ Submodule -- diffusive_conductance
 import scipy as _sp
 import scipy.constants as _const
 import openpnm.utils.misc as misc
+import openpnm as pnm
 
 
 def bulk_diffusion(target, molar_density='pore.molar_density',
@@ -94,7 +95,7 @@ def bulk_diffusion(target, molar_density='pore.molar_density',
 
 
 def mixed_diffusion(target, pore_mixed_diffusivity='pore.mixed_diffusivity',
-                    throat_mixed_diffusivity='throat_mixed_diffusivity'):
+                    throat_mixed_diffusivity='throat.mixed_diffusivity'):
     r"""
     Uses Knudsen model to adjust the diffusion coefficients to account for the from
     first principles at conditions of interest.
@@ -121,6 +122,20 @@ def mixed_diffusion(target, pore_mixed_diffusivity='pore.mixed_diffusivity',
     
     """
     phase = target.simulation.find_phase(target)
+    # Add `knudsen_scaling` model to phase if `mixed_diffusivity` is not found
+    if 'pore.mixed_diffusivity' not in phase.keys():
+        knudsen_scaling = pnm.physics.models.diffusion.knudsen_scaling
+        target.add_model(propname='pore.mixed_diffusivity',
+                         model=knudsen_scaling,
+                         diffusivity='pore.diffusivity',
+                         knudsen_diffusivity='pore.knudsen_diffusivity')
+        target.add_model(propname='throat.mixed_diffusivity',
+                         model=knudsen_scaling,
+                         diffusivity='throat.diffusivity',
+                         knudsen_diffusivity='throat.knudsen_diffusivity')
+    target.regenerate_models(propnames=['pore.mixed_diffusivity',
+                                        'throat.mixed_diffusivity'])
+    # Interleave data to give phase access to `pore/throat.mixed_diffusivity` data
     phase._interleave_data(prop=pore_mixed_diffusivity, sources=[target])
     phase._interleave_data(prop=throat_mixed_diffusivity, sources=[target])
     return bulk_diffusion(target, pore_diffusivity=pore_mixed_diffusivity,
