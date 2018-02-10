@@ -6,8 +6,8 @@ logger = logging.getLogger(__name__)
 
 class Pandas():
 
-    @staticmethod
-    def get_data_frames(simulation, phases=[]):
+    @classmethod
+    def get_data_frames(cls, simulation):
         r"""
         Convert the Network (and optionally Phase) data to Pandas DataFrames.
 
@@ -26,9 +26,6 @@ class Pandas():
         """
         network = simulation.network
 
-        if type(phases) is not list:  # Ensure it's a list
-            phases = [phases]
-
         # Initialize pore and throat data dictionary with conns and coords
         pdata = {}
         tdata = {}
@@ -44,19 +41,6 @@ class Pandas():
             pdata.update({item: network[item]})
         for item in tprops:
             tdata.update({item: network[item]})
-
-        # Gather list of prop names from phases and physics
-        for phase in phases:
-            # Gather list of prop names
-            pprops = set(phase.props(element='pore', mode=['all', 'deep']) +
-                         phase.labels(element='pore'))
-            tprops = set(phase.props(element='throat', mode=['all', 'deep']) +
-                         phase.labels(element='throat'))
-            # Add props to tdata and pdata
-            for item in pprops:
-                pdata.update({item+'|'+phase.name: phase[item]})
-            for item in tprops:
-                tdata.update({item+'|'+phase.name: phase[item]})
 
         # Scan data and convert non-1d arrays to strings
         for item in list(pdata.keys()):
