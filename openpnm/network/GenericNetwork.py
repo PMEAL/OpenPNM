@@ -1,4 +1,3 @@
-import itertools
 import uuid
 import scipy as sp
 import scipy.sparse as sprs
@@ -20,8 +19,7 @@ class GenericNetwork(Base, ModelsMixin):
         if simulation is None:
             simulation = ws.new_simulation()
         super().__init__(simulation=simulation, **kwargs)
-        self['pore._id'] = [str(uuid.uuid4()) for i in self.Ps]
-        self['throat._id'] = [str(uuid.uuid4()) for i in self.Ts]
+        self._gen_ids()
 
         # Initialize adjacency and incidence matrix dictionaries
         self._im = {}
@@ -48,6 +46,12 @@ class GenericNetwork(Base, ModelsMixin):
             return self._interleave_data(key, geoms)
         else:
             return super().__getitem__(key)
+
+    def _gen_ids(self):
+        if 'pore._id' not in self.keys() or self['pore._id'].size == 0:
+            self['pore._id'] = [str(uuid.uuid4()) for i in self.Ps]
+        if 'throat._id' not in self.keys() or self['throat._id'].size == 0:
+            self['throat._id'] = [str(uuid.uuid4()) for i in self.Ts]
 
     def get_adjacency_matrix(self, fmt='coo'):
         r"""
