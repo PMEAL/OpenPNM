@@ -1,6 +1,5 @@
 import pickle
-import scipy as sp
-from openpnm.core import logging
+from openpnm.core import logging, Simulation
 from openpnm.network import GenericNetwork
 from openpnm.utils import PrintableDict
 from openpnm.io import GenericIO
@@ -13,7 +12,7 @@ class Dict(GenericIO):
     """
 
     @classmethod
-    def get(cls, simulation, phases=[]):
+    def get(cls, simulation, phases=True):
         r"""
 
         """
@@ -29,15 +28,16 @@ class Dict(GenericIO):
                 if network.name+'.'+key not in d.keys():
                     # This relies on automatic interleaving of data
                     d[network.name+'.'+key] = network[key]
-        for phase in phases:
-            for key in phase.keys():
-                d[phase.name+'.'+key] = phase[key]
-            for phys in simulation.find_physics(phase=phase):
-                physics = simulation.physics[phys]
-                for key in physics.keys():
-                    if phase.name+'.'+key not in d.keys():
-                        # This relies on automatic interleaving of data
-                        d[phase.name+'.'+key] = phase[key]
+        if phases:
+            for phase in phases:
+                for key in phase.keys():
+                    d[phase.name+'.'+key] = phase[key]
+                for phys in simulation.find_physics(phase=phase):
+                    physics = simulation.physics[phys]
+                    for key in physics.keys():
+                        if phase.name+'.'+key not in d.keys():
+                            # This relies on automatic interleaving of data
+                            d[phase.name+'.'+key] = phase[key]
         return d
 
     @classmethod
@@ -56,13 +56,15 @@ class Dict(GenericIO):
         pickle.dump(d, open(filename + '.dct', 'wb'))
 
     @classmethod
-    def load(cls, filename):
+    def load(cls, filename, simulation=None):
         r"""
 
         """
         with cls._read_file(filename=filename, ext='dct', mode='rb') as f:
             net = pickle.load(f)
 
-        network = GenericNetwork()
+        if simulation is None:
+            simulation = Simulation(name=filename.split('.')[0])
+        network = GenericNetwork(simulation=simulation)
         network = cls._update_network(network=network, net=net)
-        return network.simulation
+        return simulation
