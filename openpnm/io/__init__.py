@@ -1,4 +1,5 @@
 from .GenericIO import GenericIO
+from .Dict import Dict
 from .VTK import VTK
 from .CSV import CSV
 from .NetworkX import NetworkX

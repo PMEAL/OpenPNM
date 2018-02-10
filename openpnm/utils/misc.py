@@ -36,7 +36,10 @@ class PrintableDict(OrderedDict):
         lines.append('{0:<35s} {1}'.format('key', self._header))
         lines.append(header)
         for item in list(self.keys()):
-            lines.append('{0:<35s} {1}'.format(item, self[item]))
+            if type(self[item]) == _sp.ndarray:
+                lines.append('{0:<35s} {1}'.format(item, _sp.shape(self[item])))
+            else:
+                lines.append('{0:<35s} {1}'.format(item, self[item]))
         lines.append(header)
         return '\n'.join(lines)
 

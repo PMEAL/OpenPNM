@@ -67,25 +67,22 @@ class GenericIO():
         for item in net.keys():
             # Try to infer array types and change if necessary
             # Chcek for booleans disguised and 1's and 0's
-            num0s = sp.sum(net[item] == 0)
-            num1s = sp.sum(net[item] == 1)
-            if (num1s + num0s) == sp.shape(net[item])[0]:
+            if (net[item].dtype is int) and (net[item].max() == 1):
                 net[item] = net[item].astype(bool)
             # Write data to network object
-            if item not in network:
-                network.update({item: net[item]})
-            else:
-                logger.warning('\''+item+'\' already present')
+            if item in network:
+                logger.warning('\''+item+'\' already present...overwriting')
+            network.update({item: net[item]})
+
         if return_geometry:
             geometry = cls.split_geometry(network)
             network = (network, geometry)
+
         return network
 
     @classmethod
     def _write_file(cls, filename, ext):
         ext = ext.replace('.', '').lower()
-        if ext not in ['csv', 'yaml', 'mat', 'vtp', 'dat']:
-            raise Exception(ext+' is not a supported file extension')
         filename = filename.rstrip('.'+ext)
         filename = filename+'.'+ext
         try:
@@ -97,11 +94,9 @@ class GenericIO():
         return f
 
     @classmethod
-    def _read_file(cls, filename, ext):
+    def _read_file(cls, filename, ext, mode='r'):
         ext = ext.replace('.', '').lower()
-        if ext not in ['csv', 'yaml', 'mat', 'vtp', 'dat']:
-            raise Exception(ext+' is not a supported file extension')
         if not filename.endswith('.'+ext):
             filename = filename+'.'+ext
-        f = open(filename, mode='r')
+        f = open(filename, mode=mode)
         return f
