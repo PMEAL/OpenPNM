@@ -45,7 +45,7 @@ class GenericIO():
         return geom
 
     @classmethod
-    def _update_network(cls, network, net, return_geometry=False):
+    def _update_network(cls, network, net):
         # Infer Np and Nt from length of given prop arrays in file
         for el in ['pore', 'throat']:
             N = [sp.shape(net[i])[0] for i in net.keys() if i.startswith(el)]
@@ -74,9 +74,7 @@ class GenericIO():
                 logger.warning('\''+item+'\' already present...overwriting')
             network.update({item: net[item]})
 
-        if return_geometry:
-            geometry = cls.split_geometry(network)
-            network = (network, geometry)
+        network._gen_ids()
 
         return network
 

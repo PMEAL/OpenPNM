@@ -119,4 +119,4 @@ class CSV(GenericIO):
             simulation = Simulation(name=filename.split('.')[0])
         network = GenericNetwork(simulation=simulation)
         network = cls._update_network(network=network, net=net)
-        return network
+        return simulation

@@ -117,7 +117,6 @@ class MARock(GenericIO):
             simulation = Simulation(name=path)
         network = GenericNetwork(simulation=simulation)
         network = cls._update_network(network=network, net=net)
-        network._gen_ids()
 
         # Trim headless throats before returning
         ind = sp.where(network['throat.conns'][:, 0] == -1)[0]
