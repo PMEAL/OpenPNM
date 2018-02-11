@@ -13,11 +13,11 @@ class Dict(GenericIO):
 
     @classmethod
     def get(cls, network, phases=[], element=['pore', 'throat'],
-            interleave=True, flatten=True):
+            interleave=True, flatten=True, categorize=False):
         r"""
         Returns a single dictionary object containing data from the given
-        objects.  The dictionary keys are organized differently depending on
-        optional arguments.
+        objects, with the keys organized differently depending on optional
+        arguments.
 
         Parameters
         ----------
@@ -45,6 +45,13 @@ class Dict(GenericIO):
             parent object.  If ``interleave`` is ``True`` this argument is
             ignored.
 
+        categorize : boolean (default is ``False``)
+            If ``True`` the dictionary keys will be stored under a general
+            level corresponding to their type (e.g. 'network/net_01/pore.all').
+            If  ``interleave`` is ``True`` then only the only categories are
+            *network* and *phase*, since *geometry* and *physics* data get
+            stored under their respective *network* and *phase*.
+
         Returns
         -------
         This returns a special dictionary type called a FlatDict (from the
@@ -62,7 +69,8 @@ class Dict(GenericIO):
 
         Notes
         -----
-        The choice of '/' as a delimiter is chosen to work with the hdf5 format
+        The choice of '/' as a delimiter is chosen to work with the hdf5
+        format.
 
         """
         if type(phases) is not list:  # Ensure it's a list
@@ -71,26 +79,33 @@ class Dict(GenericIO):
         simulation = network.simulation
         d = FlatDict(delimiter='/')
         # This all still relies on automatic interleaving of data
+        prefix = ''
         for key in network.keys(element=element):
+            if categorize:
+                prefix = 'network/'
             if interleave:
-                d[network.name+'/'+key] = network[key]
+                d[prefix+network.name+'/'+key] = network[key]
             else:
-                d[network.name+'/'+key] = network[key]
+                d[prefix+network.name+'/'+key] = network[key]
         for geo in simulation.geometries.values():
             for key in geo.keys(element=element):
                 if interleave:
-                    d[network.name+'/'+key] = network[key]
+                    d[prefix+network.name+'/'+key] = network[key]
                 else:
                     if flatten:
-                        d[geo.name+'/'+key] = geo[key]
+                        if categorize:
+                            prefix = 'geometry/'
+                        d[prefix+geo.name+'/'+key] = geo[key]
                     else:
-                        d[network.name+'/'+geo.name+'/'+key] = geo[key]
+                        d[prefix+network.name+'/'+geo.name+'/'+key] = geo[key]
         for phase in phases:
             for key in phase.keys(element=element):
+                if categorize:
+                    prefix = 'phase/'
                 if interleave:
-                    d[phase.name+'/'+key] = phase[key]
+                    d[prefix+phase.name+'/'+key] = phase[key]
                 else:
-                    d[phase.name+'/'+key] = phase[key]
+                    d[prefix+phase.name+'/'+key] = phase[key]
             for physics in simulation.find_physics(phase=phase):
                 phys = simulation.physics[physics]
                 for key in phys.keys(element=element):
@@ -98,14 +113,37 @@ class Dict(GenericIO):
                         d[phase.name+'/'+key] = phase[key]
                     else:
                         if flatten:
-                            d[phys.name+'/'+key] = phys[key]
+                            if categorize:
+                                prefix = 'physics/'
+                            d[prefix+phys.name+'/'+key] = phys[key]
                         else:
-                            d[phase.name+'/'+phys.name+'/'+key] = phys[key]
+                            d[prefix+phase.name+'/'+phys.name+'/'+key] = phys[key]
         return d
 
     @classmethod
     def save(cls, network, phases=[], filename=''):
         r"""
+        Saves data from the given objects into the specified file.
+
+        Parameters
+        ----------
+        network : OpenPNM Network Object
+            The network containing the desired data
+
+        phases : list of OpenPNM Phase Objects (optional, default is none)
+            A list of phase objects whose data are to be included
+
+        Notes
+        -----
+        This function enforces a specific dictionary format, so that it
+        can be consistently interpreted by the ``load`` function.  To get
+        a dictionary with a different format use the ``get`` method, and then
+        optionally save it to a file manually using the ``pickle`` standard
+        library.
+
+        This method only saves the data, not any of the pore-scale models or
+        other attributes.  To save an actual OpenPNM Simulation use the
+        ``Workspace`` object.
 
         """
         simulation = network.simulation
@@ -122,6 +160,22 @@ class Dict(GenericIO):
     @classmethod
     def load(cls, filename, simulation=None):
         r"""
+        Load data from the specified file into an OpenPNM simulation
+
+        Parameters
+        ----------
+        filname : string
+            The path to the file to be openned
+
+        simulation : OpenPNM Simulation object
+            A GenericNetwork is created and added to the specified Simulation.
+            If no Simulation object is supplied then one will be created and
+            returned.
+
+        Notes
+        -----
+        This function is designed to open files creating using the ``save``
+        function, which have a specific format.
 
         """
         with cls._read_file(filename=filename, ext='dct', mode='rb') as f:
