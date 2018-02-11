@@ -1,10 +1,9 @@
 from xml.etree import ElementTree as ET
 import numpy as np
-from openpnm.core import logging, Workspace
+from openpnm.core import logging, Simulation
 from openpnm.network import GenericNetwork
 from openpnm.io import GenericIO
 logger = logging.getLogger(__name__)
-mgr = Workspace()
 
 
 class VTK(GenericIO):
@@ -128,7 +127,7 @@ class VTK(GenericIO):
             f.write(string)
 
     @classmethod
-    def load(cls, filename, network=None, return_geometry=False):
+    def load(cls, filename, simulation=None):
         r"""
         Read in pore and throat data from a saved VTK file.
 
@@ -138,25 +137,11 @@ class VTK(GenericIO):
             The name of the file containing the data to import.  The formatting
             of this file is outlined below.
 
-        network : OpenPNM Network Object
-            The Network object onto which the data should be loaded.  If no
-            Network is supplied than one will be created and returned.
+        simulation : OpenPNM Simulation object
+            A GenericNetwork is created and added to the specified Simulation.
+            If no Simulation object is supplied then one will be created and
+            returned.
 
-        return_geometry : Boolean
-            If True, then all geometrical related properties are removed from
-            the Network object and added to a GenericGeometry object.  In this
-            case the method returns a tuple containing (network, geometry). If
-            False (default) then the returned Network will contain all
-            properties that were in the original file.  In this case, the user
-            can call the ```split_geometry``` method explicitly to perform the
-            separation.
-
-        Returns
-        -------
-        If no Network object is supplied then one will be created and returned.
-
-        If return_geometry is True, then a tuple is returned containing both
-        the network and a geometry object.
         """
         net = {}
 
@@ -188,11 +173,11 @@ class VTK(GenericIO):
             propname = key.split('.')[1]
             net.update({element+'.'+propname: array})
 
-        if network is None:
-            network = GenericNetwork()
-        network = cls._update_network(network=network, net=net,
-                                      return_geometry=return_geometry)
-        return network
+        if simulation is None:
+            simulation = Simulation(name=filename.split('.')[0])
+        network = GenericNetwork(simulation=simulation)
+        network = cls._update_network(network=network, net=net)
+        return simulation
 
     @staticmethod
     def _array_to_element(name, array, n=1):

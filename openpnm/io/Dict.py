@@ -54,30 +54,23 @@ class Dict(GenericIO):
 
         Returns
         -------
-        This returns a special dictionary type called a FlatDict (from the
-        *flatdict* package), that is designed to access hierarchical (i.e.
-        nested) dictionaries .  A FlatDict can use normal dict syntax such as:
-
-        ``>>> array = flatdict['top_dict']['inner_dict']['value']``
-
-        but can also use a single key syntax such as:
-
-        ``>>> array = flatdict['top_dict/inner_dict/value']``
-
-        Importantly, the ``keys`` attribute returns the latter values so one
-        can directly visualize the hierarchical structure.
+        A dictionary with all the data stored at the top level, but with the
+        keys chosen to represent the hierarchical data structure.  The actual
+        format of the keys depends on the arguments to the function.
 
         Notes
         -----
         The choice of '/' as a delimiter is chosen to work with the hdf5
         format.
 
+        There is a handy package called *flatdict* that can be used to
+        access this dictionary using normal dictionary syntax if so desired.
+
         """
-        if type(phases) is not list:  # Ensure it's a list
-            phases = [phases]
+        phases = cls._parse_phases(phases=phases)
 
         simulation = network.simulation
-        d = FlatDict(delimiter='/')
+        d = PrintableDict()
         # This all still relies on automatic interleaving of data
         prefix = ''
         for key in network.keys(element=element):
@@ -110,7 +103,7 @@ class Dict(GenericIO):
                 phys = simulation.physics[physics]
                 for key in phys.keys(element=element):
                     if interleave:
-                        d[phase.name+'/'+key] = phase[key]
+                        d[prefix+phase.name+'/'+key] = phase[key]
                     else:
                         if flatten:
                             if categorize:

@@ -53,9 +53,7 @@ setup(
         'matplotlib',
         'scikit-image',
         'transforms3d',
-        'dill',
-        'pandas',
-        'pyyaml'
+        'pandas'
     ],
     author='OpenPNM Team',
     author_email='jgostick@uwaterloo.ca',

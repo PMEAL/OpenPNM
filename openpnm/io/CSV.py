@@ -1,3 +1,4 @@
+import re
 import scipy as sp
 import pandas as pd
 from openpnm.core import logging, Simulation
@@ -23,6 +24,10 @@ class CSV(GenericIO):
     2. The property names should be in the usual OpenPNM format, such as
     of *pore.volume* or *throat.surface_area*.
 
+    3. It's possible to sub-categorize each property by prefixing the
+    category to the property name, separated by forward slashes (/).  Ex:
+    ``'pore.diameter'`` can be associated with a certain network using
+
     3. Each column represents a specific property.  For Np x 1 or Nt x 1
     data such as *pore.volume* this is straightforward.  For Np x *m* or
     Nt x *m* data, it must be entered in as a set of values NOT separated by
@@ -38,15 +43,18 @@ class CSV(GenericIO):
     """
 
     @classmethod
-    def save(cls, simulation, filename=''):
+    def save(cls, network, phases=[], filename=''):
         r"""
         Save all the pore and throat property data on the Network (and
         optionally on any Phases objects) to CSV files.
 
         Parameters
         ----------
-        simulation : OpenPNM Simulation
-            The Simulation containing the data to be stored
+        network : OpenPNM Network
+            The Network containing the data to be stored
+
+        phases : list of OpenPNM Phases (optional)
+            The Phases whose data should be stored.
 
         filename : string
             The name of the file to store the data
@@ -56,16 +64,16 @@ class CSV(GenericIO):
         The data from all Geometry objects is added to the file automatically.
 
         """
-        dataframes = Pandas.get_data_frames(simulation=simulation)
-        dfp = dataframes['pore.DataFrame']
-        dft = dataframes['throat.DataFrame']
-        b = dft.join(other=dfp, how='left')
+        phases = cls._parse_phases(phases=phases)
+        simulation = network.simulation
+
+        df = Pandas.get(network=network, phases=phases, join=True)
 
         # Write to file
         if filename == '':
             filename = simulation.name
         with cls._write_file(filename=filename, ext='csv') as f:
-            b.to_csv(f, index=False)
+            df.to_csv(f, index=False)
 
     @classmethod
     def load(cls, filename, simulation=None):
@@ -91,29 +99,29 @@ class CSV(GenericIO):
                               sep=',',
                               skipinitialspace=True,
                               index_col=False,
-                              true_values=['T', 't', 'True', 'true',
-                                           'TRUE'],
+                              true_values=['T', 't', 'True', 'true', 'TRUE'],
                               false_values=['F', 'f', 'False', 'false',
                                             'FALSE'])
 
-        # Now parse through all the other items
-        for item in a.keys():
-            element = item.split('.')[0]
-            prop = item.split('.', maxsplit=1)[1]
-            data = sp.array(a[item].dropna())
-            if type(data[0]) is str:
-                N = sp.shape(data)[0]
-                if '.' in data[0].split(' ')[0]:  # Decimal means float
-                    dtype = float
-                else:
-                    dtype = int
-                temp = sp.empty(sp.shape(data), dtype=object)
-                for row in range(N):
-                    temp[row] = sp.fromstring(data[row], sep=' ', dtype=dtype)
-                data = sp.vstack(temp)
+        net = {}
+        # Now parse through all the items and clean-up
+        pat = r'\[.\]'  # This pattern is used to find columns with indices
+        keys = list(a.keys())  # Use a list so it can be mutated inside loop
+        for item in keys:
+            # Deal with arrays that have been split into multiple columns
+            m = re.search(pat, item)
+            if m:  # m is None if pattern not found, otherwise merge occurences
+                pname = re.split(pat, item)[0]  # Get base propname
+                # Find all other keys with same base propname
+                all_keys = sorted([k for k in keys if k.startswith(pname)])
+                # Rerieve and remove arrays with same base propname
+                all_arrays = [a.pop(k) for k in all_keys]
+                # Remove other keys with same base propname
+                keys = [keys.pop(keys.index(k)) for k in all_keys]
+                # Merge arrays into multi-column array and store in DataFrame
+                net[pname] = sp.vstack(all_arrays).T
             else:
-                dtype = type(data[0])
-            net[element+'.'+prop] = data.astype(dtype)
+                net[item] = sp.array(a[item].dropna())
 
         if simulation is None:
             simulation = Simulation(name=filename.split('.')[0])

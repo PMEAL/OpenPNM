@@ -145,9 +145,9 @@ class Workspace(dict):
         if filename is None:
             filename = simulation.name + '_' + time.strftime('%Y%b%d_%H%M%p')
         if fileformat.lower() == 'vtp':
-            openpnm.io.VTK.save(simulation, filename=filename)
+            openpnm.io.VTK.save(simulation=simulation, filename=filename)
         if fileformat.lower() == 'csv':
-            openpnm.io.CSV.save(simulation, filename=filename)
+            openpnm.io.CSV.save(simulation=simulation, filename=filename)
         if fileformat.lower() == 'yaml':
             import networkx as nx
             obj = openpnm.io.NetworkX.save(simulation)

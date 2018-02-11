@@ -98,3 +98,9 @@ class GenericIO():
             filename = filename+'.'+ext
         f = open(filename, mode=mode)
         return f
+
+    @classmethod
+    def _parse_phases(cls, phases):
+        if type(phases) is not list:  # Ensure it's a list
+            phases = [phases]
+        return phases
