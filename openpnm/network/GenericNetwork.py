@@ -48,10 +48,20 @@ class GenericNetwork(Base, ModelsMixin):
             return super().__getitem__(key)
 
     def _gen_ids(self):
-        if 'pore._id' not in self.keys() or self['pore._id'].size == 0:
+        if 'pore._id' not in self.keys():
             self['pore._id'] = [str(uuid.uuid4()) for i in self.Ps]
-        if 'throat._id' not in self.keys() or self['throat._id'].size == 0:
+        else:
+            if sp.any(self['pore._id'] == ''):
+                inds = sp.where(self['pore._id'] == '')[0]
+                temp = [str(uuid.uuid4()) for i in range(len(inds))]
+                self['pore._id'][inds] = temp
+        if 'throat._id' not in self.keys():
             self['throat._id'] = [str(uuid.uuid4()) for i in self.Ts]
+        else:
+            if sp.any(self['pore._id'] == ''):
+                inds = sp.where(self['throat._id'] == '')[0]
+                temp = [str(uuid.uuid4()) for i in range(len(inds))]
+                self['throat._id'][inds] = temp
 
     def get_adjacency_matrix(self, fmt='coo'):
         r"""
