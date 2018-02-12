@@ -19,6 +19,8 @@ class Base(dict):
     def __init__(self, Np=0, Nt=0, name=None, simulation=None):
         self.settings.setdefault('prefix', 'base')
         super().__init__()
+        if simulation is None:
+            simulation = ws.new_simulation()
         simulation.append(self)
         self.name = name
         self.update({'pore.all': sp.ones(shape=(Np, ), dtype=bool)})

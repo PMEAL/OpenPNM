@@ -16,8 +16,6 @@ class GenericNetwork(Base, ModelsMixin):
     def __init__(self, simulation=None, settings={}, **kwargs):
         self.settings.setdefault('prefix', 'net')
         self.settings.update(settings)
-        if simulation is None:
-            simulation = ws.new_simulation()
         super().__init__(simulation=simulation, **kwargs)
         self._gen_ids()
 
