@@ -18,7 +18,7 @@ class Base(dict):
 
     def __init__(self, kv={}, Np=0, Nt=0, name=None, simulation=None):
         self.settings.setdefault('prefix', 'base')
-        super().__init__(kv)
+        super().__init__()
         if simulation is None:
             simulation = ws.new_simulation()
         simulation.append(self)

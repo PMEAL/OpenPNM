@@ -40,7 +40,7 @@ class GenericNetwork(Base, ModelsMixin):
             return self[element+'.all']
         if key not in self.keys():
             logger.debug(key + ' not on Network, check on Geometries')
-            geoms = self.simulation.geometries.values()
+            geoms = self.simulation.geometries().values()
             return self._interleave_data(key, geoms)
         else:
             return super().__getitem__(key)

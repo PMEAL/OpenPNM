@@ -40,6 +40,6 @@ class GenericPhase(Base, ModelsMixin):
             return self[element+'.all']
         if key not in self.keys():
             logger.debug(key + ' not on Phase, constructing data from Physics')
-            return self._interleave_data(key, self.simulation.physics.values())
+            return self._interleave_data(key, self.simulation.physics().values())
         else:
             return super().__getitem__(key)

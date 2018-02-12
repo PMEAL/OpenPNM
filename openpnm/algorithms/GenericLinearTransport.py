@@ -151,7 +151,7 @@ class GenericLinearTransport(GenericAlgorithm):
         self.settings['quantity'] = self._parse_prop(quantity, 'pore')
 
         # Check health of conductance vector
-        phase = self.simulation.phases[self.settings['phase']]
+        phase = self.simulation.phases()[self.settings['phase']]
         if sp.any(sp.isnan(phase[self.settings['conductance']])):
             raise Exception('The provided throat conductance contains NaNs')
 
@@ -159,7 +159,7 @@ class GenericLinearTransport(GenericAlgorithm):
         r"""
         """
         network = self.simulation.network
-        phase = self.simulation.phases[self.settings['phase']]
+        phase = self.simulation.phases()[self.settings['phase']]
         g = phase[self.settings['conductance']]
         am = network.create_adjacency_matrix(weights=-g, fmt='coo')
         A = spgr.laplacian(am)

@@ -25,12 +25,9 @@ class Dict(GenericIO):
             simulation = Simulation()
 
         for item in sim.keys():
-            if 'throat.conns' in sim[item].keys():
-                net = GenericNetwork(kv=sim[item], simulation=simulation,
-                                     name=item)
-            else:
-                obj = Base(sim[item], simulation=simulation)
-                obj._name = item
+            obj = Base(simulation=simulation)
+            obj.update(sim[item])
+            obj._name = item
 
         return simulation
 
@@ -104,7 +101,7 @@ class Dict(GenericIO):
                 d[prefix][network.name][key] = network[key]
             else:
                 d[prefix][network.name][key] = network[key]
-        for geo in simulation.geometries.values():
+        for geo in simulation.geometries().values():
             for key in geo.keys(element=element):
                 if interleave:
                     d[prefix][network.name][key] = network[key]
@@ -124,7 +121,7 @@ class Dict(GenericIO):
                 else:
                     d[prefix][phase.name][key] = phase[key]
             for physics in simulation.find_physics(phase=phase):
-                phys = simulation.physics[physics]
+                phys = simulation.physics()[physics]
                 for key in phys.keys(element=element):
                     if interleave:
                         d[prefix][phase.name][key] = phase[key]
