@@ -16,9 +16,9 @@ class Base(dict):
         instance = super(Base, cls).__new__(cls, *args, **kwargs)
         return instance
 
-    def __init__(self, Np=0, Nt=0, name=None, simulation=None):
+    def __init__(self, kv={}, Np=0, Nt=0, name=None, simulation=None):
         self.settings.setdefault('prefix', 'base')
-        super().__init__()
+        super().__init__(kv)
         if simulation is None:
             simulation = ws.new_simulation()
         simulation.append(self)

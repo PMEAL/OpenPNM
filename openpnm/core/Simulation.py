@@ -88,6 +88,8 @@ class Simulation(list):
             num = str(len(self.physics.keys())).zfill(2)
         elif 'GenericAlgorithm' in obj.mro():
             num = str(len(self.algorithms.keys())).zfill(2)
+        else:
+            num = str(len(self)).zfill(2)
         name = prefix + '_' + num
         return name
 
