@@ -3,13 +3,14 @@ from collections import namedtuple
 import pandas as _pd
 from openpnm.core import logging
 from openpnm.io import Dict
+from openpnm.utils import FlatDict
 logger = logging.getLogger(__name__)
 
 
 class Pandas():
 
     @classmethod
-    def get(cls, network, phases=[], join=False):
+    def to_dataframe(cls, network, phases=[], join=False):
         r"""
         Convert the Network (and optionally Phase) data to Pandas DataFrames.
 
@@ -33,10 +34,12 @@ class Pandas():
         A named Tuple containing a DataFrame for ``pore`` and ``throat`` data.
         """
         # Initialize pore and throat data dictionary using Dict class
-        pdata = Dict.get(network=network, phases=phases, element='pore',
-                         interleave=True, categorize=True)
-        tdata = Dict.get(network=network, phases=phases, element='throat',
-                         interleave=True, categorize=True)
+        pdata = Dict.to_dict(network=network, phases=phases, element='pore',
+                             interleave=True, categorize=True)
+        tdata = Dict.get_dict(network=network, phases=phases, element='throat',
+                              interleave=True, categorize=True)
+        pdata = FlatDict(pdata, delimiter='/')
+        tdata = FlatDict(tdata, delimiter='/')
 
         # Scan data and convert non-1d arrays to multiple columns
         for key in list(pdata.keys()):

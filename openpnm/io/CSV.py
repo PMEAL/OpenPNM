@@ -67,7 +67,7 @@ class CSV(GenericIO):
         phases = cls._parse_phases(phases=phases)
         simulation = network.simulation
 
-        df = Pandas.get(network=network, phases=phases, join=True)
+        df = Pandas.to_dataframe(network=network, phases=phases, join=True)
 
         # Write to file
         if filename == '':
@@ -103,25 +103,24 @@ class CSV(GenericIO):
                               false_values=['F', 'f', 'False', 'false',
                                             'FALSE'])
 
-        net = {}
-        # Now parse through all the items and clean-up
-        pat = r'\[.\]'  # This pattern is used to find columns with indices
-        keys = list(a.keys())  # Use a list so it can be mutated inside loop
+        dct = {}
+        # First parse through all the items and clean-up`
+        keys = sorted(list(a.keys()))
         for item in keys:
-            # Deal with arrays that have been split into multiple columns
-            m = re.search(pat, item)
-            if m:  # m is None if pattern not found, otherwise merge occurences
-                pname = re.split(pat, item)[0]  # Get base propname
+            # Merge arrays that have been split into multiple columns
+            m = re.search(r'\[.\]', item)
+            if m:  # m is None if pattern not found, otherwise merge cols
+                pname = re.split(r'\[.\]', item)[0]  # Get base propname
                 # Find all other keys with same base propname
-                all_keys = sorted([k for k in keys if k.startswith(pname)])
+                merge_keys = [k for k in a.keys() if k.startswith(pname)]
                 # Rerieve and remove arrays with same base propname
-                all_arrays = [a.pop(k) for k in all_keys]
-                # Remove other keys with same base propname
-                keys = [keys.pop(keys.index(k)) for k in all_keys]
+                merge_cols = [a.pop(k) for k in merge_keys]
                 # Merge arrays into multi-column array and store in DataFrame
-                net[pname] = sp.vstack(all_arrays).T
+                dct[pname] = sp.vstack(merge_cols).T
+                # Remove key from list of keys
+                [keys.pop(keys.index(k)) for k in keys if k.startswith(pname)]
             else:
-                net[item] = sp.array(a[item].dropna())
+                dct[item] = sp.array(a.pop(item))
 
         if simulation is None:
             simulation = Simulation(name=filename.split('.')[0])

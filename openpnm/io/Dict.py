@@ -1,7 +1,7 @@
 import pickle
-from openpnm.core import logging, Simulation
+from openpnm.core import logging, Simulation, Base
 from openpnm.network import GenericNetwork
-from openpnm.utils import FlatDict, PrintableDict
+from openpnm.utils import NestedDict, FlatDict
 from openpnm.io import GenericIO
 logger = logging.getLogger(__name__)
 
@@ -12,8 +12,31 @@ class Dict(GenericIO):
     """
 
     @classmethod
-    def get(cls, network, phases=[], element=['pore', 'throat'],
-            interleave=True, flatten=True, categorize=False):
+    def from_dict(cls, dct, simulation=None):
+
+        # Now parse through dict and put values on correct objects
+        dct = FlatDict(dct, delimiter='/')
+        sim = NestedDict()
+        for item in dct.keys():
+            level = item.split('/')
+            sim[level[-2]][level[-1]] = dct[item]
+
+        if simulation is None:
+            simulation = Simulation()
+
+        for item in sim.keys():
+            if 'throat.conns' in sim[item].keys():
+                net = GenericNetwork(kv=sim[item], simulation=simulation,
+                                     name=item)
+            else:
+                obj = Base(sim[item], simulation=simulation)
+                obj._name = item
+
+        return simulation
+
+    @classmethod
+    def to_dict(cls, network, phases=[], element=['pore', 'throat'],
+                interleave=True, flatten=True, categorize=False):
         r"""
         Returns a single dictionary object containing data from the given
         objects, with the keys organized differently depending on optional
@@ -54,63 +77,66 @@ class Dict(GenericIO):
 
         Returns
         -------
-        A dictionary with all the data stored at the top level, but with the
-        keys chosen to represent the hierarchical data structure.  The actual
-        format of the keys depends on the arguments to the function.
+        A dictionary with the data stored in a hierarchical data structure, the
+        actual format of which depends on the arguments to the function.
 
         Notes
         -----
-        The choice of '/' as a delimiter is chosen to work with the hdf5
-        format.
-
         There is a handy package called *flatdict* that can be used to
-        access this dictionary using normal dictionary syntax if so desired.
+        access this dictionary using a single key such that:
+
+        ``d[level_1][level_2] == d[level_1:level_2]``
+
+        Furthermore, the ``keys`` function on the ``FlatDict`` returns
+        a single list of all such keys.
 
         """
         phases = cls._parse_phases(phases=phases)
 
         simulation = network.simulation
-        d = PrintableDict()
+        d = NestedDict()
         # This all still relies on automatic interleaving of data
-        prefix = ''
+        prefix = 'root'
         for key in network.keys(element=element):
             if categorize:
-                prefix = 'network/'
+                prefix = 'network'
             if interleave:
-                d[prefix+network.name+'/'+key] = network[key]
+                d[prefix][network.name][key] = network[key]
             else:
-                d[prefix+network.name+'/'+key] = network[key]
+                d[prefix][network.name][key] = network[key]
         for geo in simulation.geometries.values():
             for key in geo.keys(element=element):
                 if interleave:
-                    d[prefix+network.name+'/'+key] = network[key]
+                    d[prefix][network.name][key] = network[key]
                 else:
                     if flatten:
                         if categorize:
-                            prefix = 'geometry/'
-                        d[prefix+geo.name+'/'+key] = geo[key]
+                            prefix = 'geometry'
+                        d[prefix][geo.name][key] = geo[key]
                     else:
-                        d[prefix+network.name+'/'+geo.name+'/'+key] = geo[key]
+                        d[prefix][network.name][geo.name][key] = geo[key]
         for phase in phases:
             for key in phase.keys(element=element):
                 if categorize:
-                    prefix = 'phase/'
+                    prefix = 'phase'
                 if interleave:
-                    d[prefix+phase.name+'/'+key] = phase[key]
+                    d[prefix][phase.name][key] = phase[key]
                 else:
-                    d[prefix+phase.name+'/'+key] = phase[key]
+                    d[prefix][phase.name][key] = phase[key]
             for physics in simulation.find_physics(phase=phase):
                 phys = simulation.physics[physics]
                 for key in phys.keys(element=element):
                     if interleave:
-                        d[prefix+phase.name+'/'+key] = phase[key]
+                        d[prefix][phase.name][key] = phase[key]
                     else:
                         if flatten:
                             if categorize:
-                                prefix = 'physics/'
-                            d[prefix+phys.name+'/'+key] = phys[key]
+                                prefix = 'physics'
+                            d[prefix][phys.name][key] = phys[key]
                         else:
-                            d[prefix+phase.name+'/'+phys.name+'/'+key] = phys[key]
+                            d[prefix][phase.name][phys.name][key] = phys[key]
+        if 'root' in d.keys():
+            d = d['root']
         return d
 
     @classmethod
