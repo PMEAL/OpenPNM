@@ -68,13 +68,16 @@ class Simulation(list):
     def find_physics(self, geometry=None, phase=None):
         if geometry and phase:
             name = self.grid[geometry.name][phase.name]
-            return self[name]
+            phys = self[name]
         elif geometry:
-            return self.grid.row(geometry)
+            phys = self.grid.row(geometry)
         elif phase:
-            return self.grid.col(phase)
+            phys = self.grid.col(phase)
         else:
             raise Exception('Must specify at least one of geometry or phase')
+        if phys == ['']:
+            phys = []
+        return phys
 
     def _validate_name(self, name):
         names = [i.name for i in self]

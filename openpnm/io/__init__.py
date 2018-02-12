@@ -8,3 +8,4 @@ from .iMorph import iMorph
 from .MARock import MARock
 from .Statoil import Statoil
 from .Pandas import Pandas
+from .HDF5 import HDF5

@@ -11,6 +11,7 @@ sim = pn.simulation
 geom = op.geometry.StickAndBall(network=pn, pores=pn.Ps, throats=pn.Ts,
                                 settings={'test': 1})
 
+air = op.phases.Air(network=pn)
 water = op.phases.Water(network=pn)
 water['throat.viscosity'] = water['pore.viscosity'][0]
 

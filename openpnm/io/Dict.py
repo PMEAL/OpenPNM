@@ -167,7 +167,8 @@ class Dict(GenericIO):
             filename = simulation.name
         else:
             filename = filename.rsplit('.dct', 1)[0]
-        d = cls.get(simulation=simulation, phases=phases, interleave=True)
+        d = cls.to_dict(simulation=simulation, phases=phases,
+                        interleave=True, categorize=False)
         for item in list(d.keys()):
             new_name = item.split('.')
             d[new_name[1] + '.' + new_name[2]] = d.pop(item)
