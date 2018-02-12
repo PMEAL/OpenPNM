@@ -53,7 +53,8 @@ setup(
         'matplotlib',
         'scikit-image',
         'transforms3d',
-        'pandas'
+        'pandas',
+        'flatdict'
     ],
     author='OpenPNM Team',
     author_email='jgostick@uwaterloo.ca',

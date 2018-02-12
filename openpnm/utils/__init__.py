@@ -1,6 +1,7 @@
 from . import misc
 from .misc import PrintableDict
 from .misc import PrintableList
+from .misc import NestedDict
 from flatdict import FlatDict
 
 

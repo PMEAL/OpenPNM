@@ -44,6 +44,12 @@ class PrintableDict(OrderedDict):
         return '\n'.join(lines)
 
 
+class NestedDict(PrintableDict):
+    def __missing__(self, key):
+        self[key] = NestedDict()
+        return self[key]
+
+
 class HealthDict(PrintableDict):
     r"""
     This class adds a 'health' check to a standard dictionary.  This check
