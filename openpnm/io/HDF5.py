@@ -35,8 +35,8 @@ class HDF5(GenericIO):
                     temp = item.split('/')
                     if arr.dtype == bool:
                         temp = '/'.join(temp[:-1]) + '/label/' + temp[-1]
-                        f.create_dataset(name=temp, shape=arr.shape, dtype=bool,
-                                         data=arr)
+                        f.create_dataset(name=temp, shape=arr.shape,
+                                         dtype=bool, data=arr)
                     else:
                         temp = '/'.join(temp[:-1]) + '/property/' + temp[-1]
                         f.create_dataset(name=temp, shape=arr.shape,
@@ -95,7 +95,7 @@ class HDF5(GenericIO):
         function, which have a specific format.
 
         """
-        raise NotImplemented()
+        raise NotImplementedError()
 
     def print_hierarchy(f):
         def print_hdf5(f, p='', indent='―'):
