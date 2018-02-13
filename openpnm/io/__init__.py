@@ -9,3 +9,4 @@ from .MARock import MARock
 from .Statoil import Statoil
 from .Pandas import Pandas
 from .HDF5 import HDF5
+from .XDMF import XDMF
