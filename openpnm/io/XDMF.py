@@ -18,72 +18,61 @@ class XDMF:
         filename = f.filename.split('.')[0]
 
         # Add coordinate and connection information to top of HDF5 file
-        f["coordinates/pore"] = network["pore.coords"]
-        f["connections/throat"] = network["throat.conns"]
+        f["coordinates"] = network["pore.coords"]
+        f["connections"] = network["throat.conns"]
 
         # setup xdmf file
-        root = ET.Element("xdmf")
+        root = create_root('Xdmf')
         domain = create_domain()
         grid = create_grid(Name="Structure", GridType="Uniform")
 
         # geometry coordinates
-        col, row = f["coordinates/pore"].shape
-        dims = create_dimension(network["pore.coords"].shape)
-        hdf_loc = f.filename + ":coordinates/pore"
+        row, col = f["coordinates"].shape
+        dims = str(col) + ' ' + str(row) + ' '
+        hdf_loc = f.filename + ":coordinates"
         geo_data = create_data_item(value=hdf_loc, Dimensions=dims,
                                     Format='HDF', NumberType="Float")
         geo = create_geometry(GeometryType="XYZ")
         geo.append(geo_data)
 
         # topolgy connections
-        row, col = f["connections/throat"].shape  # col first then row
-        dims = str(row) + " " + str(col)
-        hdf_loc = f.filename + ":connections/throat"
-        top_data = create_data_item(value=hdf_loc, Dimensions=dims,
-                                    Format="HDF", NumberType="Int")
+        row, col = f["connections"].shape  # col first then row
+        dims = str(row) + ' ' + str(col) + ' '
+        hdf_loc = f.filename + ":connections"
+        topo_data = create_data_item(value=hdf_loc, Dimensions=dims,
+                                     Format="HDF", NumberType="Int")
         topo = create_topology(TopologyType="Polyline",
                                NumberOfElements=str(row))
-        topo.append(top_data)
+        topo.append(topo_data)
 
-        # attributes
-#        for key in network.labels():
-#            shape = f["labels/" + "/".join(key.split("."))].shape
-#            dimensions = create_dimension(shape)
-#            hdf_loc = network.name + ".h5:labels/" + "/".join(key.split("."))
-#            scalar = create_data_item(value=hdf_loc,
-#                                      Dimensions=str(dimensions),
-#                                      Format='HDF')
-#            el_attr = create_attribute(Name=key)
-#            el_attr.append(scalar)
-#            grid.append(el_attr)
-
-        # properties, same method as create Prop
+        # Add pore and throat properties
         for obj in f.keys():
-            for propname in f[obj].keys():
-                shape = f[obj + '/' + propname].shape
-                dimensions = create_dimension(shape)
-                hdf_loc = f.filename + ":" + obj + '/' + propname
-                scalar = create_data_item(value=hdf_loc,
-                                          Dimensions=str(dimensions),
-                                          Format='HDF',
-                                          Precision='8',
-                                          NumberType='Float')
-                el_attr = create_attribute(Name=propname)
-                el_attr.append(scalar)
-                grid.append(el_attr)
+            if obj not in ['coordinates', 'connections']:
+                for propname in f[obj].keys():
+                    shape = f[obj + '/' + propname].shape
+                    dims = ''.join([str(i) + ' ' for i in list(shape)[::-1]])
+                    hdf_loc = f.filename + ":" + obj + '/' + propname
+                    scalar = create_data_item(value=hdf_loc,
+                                              Dimensions=dims,
+                                              Format='HDF',
+                                              Precision='8',
+                                              NumberType='Float')
+                    el_attr = create_attribute(Name=propname)
+                    el_attr.append(scalar)
+                    grid.append(el_attr)
 
         grid.append(topo)
         grid.append(geo)
         domain.append(grid)
         root.append(domain)
 
-        with open(filename+'.xdmf', 'w') as file:
+        with open(filename+'.xmf', 'w') as file:
             file.write(cls.header)
             file.write(ET.tostring(root).decode("utf-8"))
 
 
-def create_dimension(shape):
-    return ''.join([str(i) + ' ' for i in list(shape)[::-1]])
+def create_root(Name):
+    return ET.Element(Name)
 
 
 def create_domain():

@@ -27,6 +27,7 @@ class HDF5(GenericIO):
             filename = network.simulation.name
         f = h5py.File(filename+".hdf5", "w")
         for item in d.keys():
+            tempname = '_'.join(item.split('.'))
             arr = d[item]
             if 'U' in str(arr[0].dtype):
                 pass
@@ -42,7 +43,7 @@ class HDF5(GenericIO):
                         f.create_dataset(name=temp, shape=arr.shape,
                                          dtype=arr.dtype, data=arr)
                 else:
-                    f.create_dataset(name='/'+item, shape=arr.shape,
+                    f.create_dataset(name='/'+tempname, shape=arr.shape,
                                      dtype=arr.dtype, data=arr)
         return f
 
