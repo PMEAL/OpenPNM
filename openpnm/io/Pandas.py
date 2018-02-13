@@ -35,9 +35,9 @@ class Pandas():
         """
         # Initialize pore and throat data dictionary using Dict class
         pdata = Dict.to_dict(network=network, phases=phases, element='pore',
-                             interleave=True, categorize=True)
+                             interleave=True, categorize_objects=True)
         tdata = Dict.get_dict(network=network, phases=phases, element='throat',
-                              interleave=True, categorize=True)
+                              interleave=True, categorize_objects=True)
         pdata = FlatDict(pdata, delimiter='/')
         tdata = FlatDict(tdata, delimiter='/')
 

@@ -17,11 +17,53 @@ class HDF5(GenericIO):
                 filename='', interleave=True, flatten=False,
                 categorize_objects=False, categorize_data=False):
         r"""
+        Creates an HDF5 file containing data from the specified objects,
+        and categorized according to the given arguments.
+
+        Parameters
+        ----------
+        network : OpenPNM Network Object
+            The network containing the desired data
+
+        phases : list of OpenPNM Phase Objects (optional, default is none)
+            A list of phase objects whose data are to be included
+
+        element : string or list of strings
+            An indication of whether 'pore' and/or 'throat' data are desired.
+            The default is both.
+
+        interleave : boolean (default is ``True``)
+            When ``True`` (default) the data from all Geometry objects (and
+            Physics objects if ``phases`` are given) is interleaved into
+            a single array and stored as a network property (or Phase
+            property for Physics data). When ``False``, the data for each
+            object are stored under their own dictionary key, the structuring
+            of which depends on the value of the ``flatten`` argument.
+
+        flatten : boolean (default is ``True``)
+            When ``True``, all objects are accessible from the top level
+            of the dictionary.  When ``False`` objects are nested under their
+            parent object.  If ``interleave`` is ``True`` this argument is
+            ignored.
+
+        categorize_objects : boolean (default is ``False``)
+            If ``True`` the dictionary keys will be stored under a general
+            level corresponding to their type (e.g. 'network/net_01/pore.all').
+            If  ``interleave`` is ``True`` then only the only categories are
+            *network* and *phase*, since *geometry* and *physics* data get
+            stored under their respective *network* and *phase*.
+
+        categorize_data : boolean (default is ``False)
+            If ``True`` the data arrays are additionally categorized by
+            ``label`` and ``property`` to separate *boolean* from *numeric*
+            data.
+
+        categorize_elements : boolean (default is ``False)
 
         """
         dct = Dict.to_dict(network=network, phases=phases, element=element,
                            interleave=interleave, flatten=flatten,
-                           categorize=categorize_objects)
+                           categorize_objects=categorize_objects)
         d = FlatDict(dct, delimiter='/')
         if filename == '':
             filename = network.simulation.name
@@ -99,13 +141,16 @@ class HDF5(GenericIO):
         raise NotImplementedError()
 
     def print_hierarchy(f):
-        def print_hdf5(f, p='', indent='―'):
+        def print_level(f, p='', indent='―'):
             for item in f.keys():
                 if hasattr(f[item], 'keys'):
-                    p = print_hdf5(f[item], p=p, indent=indent + indent[0])
+                    p = print_level(f[item], p=p, indent=indent + indent[0])
                 elif indent[-1] != ' ':
                     indent = indent + '| '
                 p = indent + item + '\n' + p
             return(p)
-        p = print_hdf5(f)
+        p = print_level(f)
         print(p)
+
+    def print_flattened(f):
+        f.visit(print)

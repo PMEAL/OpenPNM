@@ -8,6 +8,10 @@ logger = logging.getLogger(__name__)
 
 class Dict(GenericIO):
     r"""
+    This is the most important class in the ``io`` module.  It is used to
+    generate hierarchical ``dicts`` in a given format for use in many of the
+    the other classes (e.g. ``Pandas`` and ``HDF5``, which are subsequently
+    used in ``CSV`` and ``XDMF``, and so forth).
 
     """
 
@@ -33,11 +37,12 @@ class Dict(GenericIO):
 
     @classmethod
     def to_dict(cls, network, phases=[], element=['pore', 'throat'],
-                interleave=True, flatten=True, categorize=False):
+                interleave=True, flatten=True, categorize_objects=False,
+                categorize_data=False):
         r"""
         Returns a single dictionary object containing data from the given
-        objects, with the keys organized differently depending on optional
-        arguments.
+        OpenPNM objects, with the keys organized differently depending on
+        optional arguments.
 
         Parameters
         ----------
@@ -65,12 +70,21 @@ class Dict(GenericIO):
             parent object.  If ``interleave`` is ``True`` this argument is
             ignored.
 
-        categorize : boolean (default is ``False``)
+        categorize_objects : boolean (default is ``False``)
             If ``True`` the dictionary keys will be stored under a general
             level corresponding to their type (e.g. 'network/net_01/pore.all').
             If  ``interleave`` is ``True`` then only the only categories are
             *network* and *phase*, since *geometry* and *physics* data get
             stored under their respective *network* and *phase*.
+
+        categorize_data : boolean (default is ``False)
+            If ``True`` the data arrays are additionally categorized by
+            ``label`` and ``property`` to separate *boolean* from *numeric*
+            data.
+
+        categorize_elements : boolean (default is ``False)
+            If ``True`` the data arrays are additionally categorized by
+            ``pore`` and ``throat``.
 
         Returns
         -------
@@ -82,11 +96,11 @@ class Dict(GenericIO):
         There is a handy package called *flatdict* that can be used to
         access this dictionary using a single key such that:
 
-        ``d[level_1][level_2] == d[level_1:level_2]``
+        ``d[level_1][level_2] == d[level_1/level_2]``
 
-        Furthermore, the ``keys`` function on the ``FlatDict`` returns
-        a single list of all such keys.
-
+        Importantly, converting to a *flatdict* allows it be converted to an
+        *HDF5* file directly, since the hierarchy is dictated by the placement
+        of '/' characters.
         """
         phases = cls._parse_phases(phases=phases)
 
@@ -95,7 +109,7 @@ class Dict(GenericIO):
         # This all still relies on automatic interleaving of data
         prefix = 'root'
         for key in network.keys(element=element):
-            if categorize:
+            if categorize_objects:
                 prefix = 'network'
             if interleave:
                 d[prefix][network.name][key] = network[key]
@@ -107,14 +121,14 @@ class Dict(GenericIO):
                     d[prefix][network.name][key] = network[key]
                 else:
                     if flatten:
-                        if categorize:
+                        if categorize_objects:
                             prefix = 'geometry'
                         d[prefix][geo.name][key] = geo[key]
                     else:
                         d[prefix][network.name][geo.name][key] = geo[key]
         for phase in phases:
             for key in phase.keys(element=element):
-                if categorize:
+                if categorize_objects:
                     prefix = 'phase'
                 if interleave:
                     d[prefix][phase.name][key] = phase[key]
@@ -127,7 +141,7 @@ class Dict(GenericIO):
                         d[prefix][phase.name][key] = phase[key]
                     else:
                         if flatten:
-                            if categorize:
+                            if categorize_objects:
                                 prefix = 'physics'
                             d[prefix][phys.name][key] = phys[key]
                         else:

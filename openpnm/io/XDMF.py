@@ -7,11 +7,26 @@ class XDMF:
     header = '''<?xml version="1.0" ?>
                 <!DOCTYPE Xdmf SYSTEM "Xdmf.dtd" []>'''
 
-    def __init__(self, Version="2.0"):
-        self.Version = Version
-
     @classmethod
     def save(cls, network, phases=[], filename=''):
+        r"""
+        Saves data from the given objects into the specified file.
+
+        Parameters
+        ----------
+        network : OpenPNM Network Object
+            The network containing the desired data
+
+        phases : list of OpenPNM Phase Objects (optional, default is none)
+            A list of phase objects whose data are to be included
+
+        Notes
+        -----
+        This method only saves the data, not any of the pore-scale models or
+        other attributes.  To save an actual OpenPNM Simulation use the
+        ``Workspace`` object.
+
+        """
         f = HDF5.to_hdf5(network, phases=phases, filename=filename,
                          interleave=True, flatten=False,
                          categorize_objects=False, categorize_data=False)
