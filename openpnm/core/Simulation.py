@@ -14,6 +14,15 @@ class Simulation(list):
         ws.update({self.name: self})
         self.settings = ws.settings.copy()
 
+    def append(self, obj):
+        if 'openpnm' in str(type(obj)):
+            if 'GenericNetwork' in obj.mro():
+                if self.network:
+                    raise Exception('Simulation already has a network')
+            super().append(obj)
+        else:
+            raise Exception('Only OpenPNM objects can be added')
+
     def _set_name(self, name):
         if name is None:
             name = ws._gen_name()
@@ -43,29 +52,32 @@ class Simulation(list):
         if 'GenericPhase'in mro:
             return obj
         if 'GenericAlgorithm' in mro:
-            phase = self.phases[obj.settings['phase']]
+            phase = self.phases()[obj.settings['phase']]
             return phase
-        for g in self.geometries.values():
-            for p in self.phases.values():
+        for g in self.geometries().values():
+            for p in self.phases().values():
                 if obj.name == self.grid[g.name][p.name]:
                     return p
 
     def find_geometry(self, physics):
-        for g in self.geometries.values():
-            for p in self.phases.values():
+        for g in self.geometries().values():
+            for p in self.phases().values():
                 if physics.name == self.grid[g.name][p.name]:
                     return g
 
     def find_physics(self, geometry=None, phase=None):
         if geometry and phase:
             name = self.grid[geometry.name][phase.name]
-            return self[name]
+            phys = self[name]
         elif geometry:
-            return self.grid.row(geometry)
+            phys = self.grid.row(geometry)
         elif phase:
-            return self.grid.col(phase)
+            phys = self.grid.col(phase)
         else:
             raise Exception('Must specify at least one of geometry or phase')
+        if phys == ['']:
+            phys = []
+        return phys
 
     def _validate_name(self, name):
         names = [i.name for i in self]
@@ -79,15 +91,17 @@ class Simulation(list):
     def _generate_name(self, obj):
         prefix = obj.settings['prefix']
         if 'GenericNetwork' in obj.mro():
-            num = str(1).zfill(3)
+            num = str(1).zfill(2)
         elif 'GenericGeometry' in obj.mro():
-            num = str(len(self.geometries.keys())).zfill(2)
+            num = str(len(self.geometries().keys())).zfill(2)
         elif 'GenericPhase' in obj.mro():
-            num = str(len(self.phases.keys())).zfill(2)
+            num = str(len(self.phases().keys())).zfill(2)
         elif 'GenericPhysics' in obj.mro():
-            num = str(len(self.physics.keys())).zfill(2)
+            num = str(len(self.physics().keys())).zfill(2)
         elif 'GenericAlgorithm' in obj.mro():
-            num = str(len(self.algorithms.keys())).zfill(2)
+            num = str(len(self.algorithms().keys())).zfill(2)
+        else:
+            num = str(len(self)).zfill(2)
         name = prefix + '_' + num
         return name
 
@@ -99,7 +113,7 @@ class Simulation(list):
 
     network = property(fget=_get_net)
 
-    def _get_geoms(self):
+    def geometries(self):
         _dict = {}
         for item in self:
             mro = [c.__name__ for c in item.__class__.__mro__]
@@ -107,9 +121,7 @@ class Simulation(list):
                 _dict.update({item.name: item})
         return _dict
 
-    geometries = property(fget=_get_geoms)
-
-    def _get_phases(self):
+    def phases(self):
         _dict = {}
         for item in self:
             mro = [c.__name__ for c in item.__class__.__mro__]
@@ -117,9 +129,7 @@ class Simulation(list):
                 _dict.update({item.name: item})
         return _dict
 
-    phases = property(fget=_get_phases)
-
-    def _get_physics(self):
+    def physics(self):
         _dict = {}
         for item in self:
             mro = [c.__name__ for c in item.__class__.__mro__]
@@ -127,17 +137,13 @@ class Simulation(list):
                 _dict.update({item.name: item})
         return _dict
 
-    physics = property(fget=_get_physics)
-
-    def _get_algorithms(self):
+    def algorithms(self):
         _dict = {}
         for item in self:
             mro = [c.__name__ for c in item.__class__.__mro__]
             if 'GenericAlgorithm' in mro:
                 _dict.update({item.name: item})
         return _dict
-
-    algorithms = property(fget=_get_algorithms)
 
     def _set_comments(self, string):
         if hasattr(self, '_comments') is False:
@@ -155,11 +161,11 @@ class Simulation(list):
     def _get_grid(self):
         net = self.network
         grid = Grid()
-        for geo in self.geometries.keys():
+        for geo in self.geometries().keys():
             grid[geo] = {}
-            for phase in self.phases.values():
+            for phase in self.phases().values():
                 grid[geo][phase.name] = ''
-                for phys in self.physics.keys():
+                for phys in self.physics().keys():
                     if phys in [n.split('.')[1] for n in phase.keys()]:
                         if np.sum(net['pore.'+geo][phase.pores(phys)]) > 0:
                             grid[geo][phase.name] = phys
@@ -191,13 +197,13 @@ class Grid(dict):
 
     def _get_geometries(self):
         sim = self._get_sim()
-        return list(sim.geometries.keys())
+        return list(sim.geometries().keys())
 
     geometries = property(fget=_get_geometries)
 
     def _get_phases(self):
         sim = self._get_sim()
-        return list(sim.phases.keys())
+        return list(sim.phases().keys())
 
     phases = property(fget=_get_phases)
 

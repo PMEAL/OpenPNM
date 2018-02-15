@@ -1,8 +1,9 @@
 import os as os
 import scipy as sp
-from openpnm.core import logging
+from openpnm.core import logging, Simulation
 from openpnm.network import GenericNetwork
 from openpnm.io import GenericIO
+from openpnm.topotools import trim
 logger = logging.getLogger(__name__)
 
 
@@ -20,7 +21,7 @@ class MARock(GenericIO):
     """
 
     @classmethod
-    def load(cls, path, network=None, voxel_size=1, return_geometry=False):
+    def load(cls, path, voxel_size=1, simulation=None):
         r"""
         Load data from a 3DMA-Rock extracted network.  This format consists of
         two files: 'rockname.np2th' and 'rockname.th2pn'.  They should be
@@ -44,27 +45,16 @@ class MARock(GenericIO):
             scale the voxel counts to actual dimension. It is recommended that
             this value be in SI units [m] to work well with OpenPNM.
 
-        return_geometry : Boolean
-            If True, then all geometrical related properties are removed from
-            the Network object and added to a GenericGeometry object.  In this
-            case the method returns a tuple containing (network, geometry). If
-            False (default) then the returned Network will contain all
-            properties that were in the original file.  In this case, the user
-            can call the ```split_geometry``` method explicitly to perform the
-            separation.
-
-        Returns
-        -------
-        If no Network object is supplied then one will be created and returned.
-
-        If return_geometry is True, then a tuple is returned containing both
-        the network and a geometry object.
+        simulation : OpenPNM Simulation object
+            A GenericNetwork is created and added to the specified Simulation.
+            If no Simulation object is supplied then one will be created and
+            returned.
 
         """
 
         net = {}
 
-        for file in _os.listdir(path):
+        for file in os.listdir(path):
             if file.endswith(".np2th"):
                 np2th_file = os.path.join(path, file)
             elif file.endswith(".th2np"):
@@ -123,13 +113,13 @@ class MARock(GenericIO):
         net['throat.area'] = (voxel_size**2)*net['throat.area']
         net['pore.volume'] = (voxel_size**3)*net['pore.volume']
 
-        if network is None:
-            network = GenericNetwork()
-        network = cls._update_network(network=network, net=net,
-                                      return_geometry=return_geometry)
+        if simulation is None:
+            simulation = Simulation(name=path)
+        network = GenericNetwork(simulation=simulation)
+        network = cls._update_network(network=network, net=net)
 
         # Trim headless throats before returning
         ind = sp.where(network['throat.conns'][:, 0] == -1)[0]
-        network.trim(throats=ind)
+        trim(network=network, throats=ind)
 
-        return network
+        return simulation

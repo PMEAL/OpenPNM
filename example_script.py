@@ -6,10 +6,12 @@ ws.settings['local_data'] = True
 sp.random.seed(0)
 pn = op.network.Cubic(shape=[5, 5, 5], spacing=0.0001, name='pn11')
 pn.add_boundary_pores()
+sim = pn.simulation
 
 geom = op.geometry.StickAndBall(network=pn, pores=pn.Ps, throats=pn.Ts,
                                 settings={'test': 1})
 
+air = op.phases.Air(network=pn)
 water = op.phases.Water(network=pn)
 water['throat.viscosity'] = water['pore.viscosity'][0]
 

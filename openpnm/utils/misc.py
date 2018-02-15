@@ -36,9 +36,57 @@ class PrintableDict(OrderedDict):
         lines.append('{0:<35s} {1}'.format('key', self._header))
         lines.append(header)
         for item in list(self.keys()):
-            lines.append('{0:<35s} {1}'.format(item, self[item]))
+            if type(self[item]) == _sp.ndarray:
+                lines.append('{0:<35s} {1}'.format(item, _sp.shape(self[item])))
+            else:
+                lines.append('{0:<35s} {1}'.format(item, self[item]))
         lines.append(header)
         return '\n'.join(lines)
+
+
+class NestedDict(PrintableDict):
+
+    def __init__(self, delimiter='/', **kwargs):
+        super().__init__()
+        self.delimiter = delimiter
+        for item in kwargs:
+            self[item] = kwargs[item]
+
+    def __setitem__(self, key, value):
+        path = key.split(self.delimiter)
+        if len(path) > 1:
+            key = path.pop(0)
+            self[key][self.delimiter.join(path)] = value
+        else:
+            super().__setitem__(key, value)
+
+    def __missing__(self, key):
+        self[key] = NestedDict()
+        return self[key]
+
+    def keys(self, dicts=True, values=True):
+        k = list(super().keys())
+        new_keys = []
+        for item in k:
+            if hasattr(self[item], 'keys'):
+                if dicts:
+                    new_keys.append(item)
+            else:
+                if values:
+                    new_keys.append(item)
+        return new_keys
+
+    def __str__(self):
+        def print_level(self, p='', indent='-'):
+            for item in self.keys():
+                if hasattr(self[item], 'keys'):
+                    p = print_level(self[item], p=p, indent=indent + indent[0])
+                elif indent[-1] != ' ':
+                    indent = indent + ''
+                p = indent + item + '\n' + p
+            return(p)
+        p = print_level(self)
+        return p
 
 
 class HealthDict(PrintableDict):

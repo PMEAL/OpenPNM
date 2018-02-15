@@ -1,4 +1,3 @@
-import itertools
 import uuid
 import scipy as sp
 import scipy.sparse as sprs
@@ -17,11 +16,8 @@ class GenericNetwork(Base, ModelsMixin):
     def __init__(self, simulation=None, settings={}, **kwargs):
         self.settings.setdefault('prefix', 'net')
         self.settings.update(settings)
-        if simulation is None:
-            simulation = ws.new_simulation()
         super().__init__(simulation=simulation, **kwargs)
-        self['pore._id'] = [str(uuid.uuid4()) for i in self.Ps]
-        self['throat._id'] = [str(uuid.uuid4()) for i in self.Ts]
+        self._gen_ids()
 
         # Initialize adjacency and incidence matrix dictionaries
         self._im = {}
@@ -44,10 +40,28 @@ class GenericNetwork(Base, ModelsMixin):
             return self[element+'.all']
         if key not in self.keys():
             logger.debug(key + ' not on Network, check on Geometries')
-            geoms = self.simulation.geometries.values()
+            geoms = self.simulation.geometries().values()
             return self._interleave_data(key, geoms)
         else:
             return super().__getitem__(key)
+
+    def _gen_ids(self):
+        if 'pore._id' not in self.keys():
+            self['pore._id'] = [str(uuid.uuid4()) for i in self.Ps]
+        else:
+            # If ids are missing it will from the end of the array...hopefully
+            if self['pore._id'][-1] == '':
+                inds = sp.where(self['pore._id'] == '')[0]
+                temp = [str(uuid.uuid4()) for i in range(len(inds))]
+                self['pore._id'][inds] = temp
+        if 'throat._id' not in self.keys():
+            self['throat._id'] = [str(uuid.uuid4()) for i in self.Ts]
+        else:
+            # If ids are missing it will from the end of the array...hopefully
+            if self['throat._id'][-1] == '':
+                inds = sp.where(self['throat._id'] == '')[0]
+                temp = [str(uuid.uuid4()) for i in range(len(inds))]
+                self['throat._id'][inds] = temp
 
     def get_adjacency_matrix(self, fmt='coo'):
         r"""

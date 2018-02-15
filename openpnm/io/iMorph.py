@@ -79,6 +79,8 @@ class iMorph(GenericIO):
                     network['pore.'+vals[2]] = False
                 network['pore.'+vals[2]][int(vals[0])] = True
 
+        network._gen_ids()
+
         if voxel_size is None:
             voxel_size = vox_size * 1.0E-6  # file stores value in microns
 

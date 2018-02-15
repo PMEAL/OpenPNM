@@ -355,7 +355,7 @@ def extend(network, pore_coords=[], throat_conns=[], labels=[]):
     be altered directly.
 
     '''
-    if len(network.simulation.phases) > 0:
+    if len(network.simulation.phases()) > 0:
         raise Exception('Network has active Phases, copy network to a new ' +
                         'simulation and try again')
 
@@ -550,10 +550,10 @@ def clone_pores(network, pores, labels=['clone'], mode='parents'):
                       manner as parents were connected
         - 'isolated': No connections between parents or siblings
     '''
-    if len(network.simulation.geometries) > 0:
+    if len(network.simulation.geometries()) > 0:
         logger.warning('Network has active Geometries, new pores must be \
                         assigned a Geometry')
-    if len(network.simulation.phases) > 0:
+    if len(network.simulation.phases()) > 0:
         raise Exception('Network has active Phases, cannot proceed')
 
     logger.debug('Cloning pores')

@@ -1,81 +1,71 @@
 import scipy as _sp
+from collections import namedtuple
 import pandas as _pd
 from openpnm.core import logging
+from openpnm.io import Dict
+from openpnm.utils import FlatDict
 logger = logging.getLogger(__name__)
 
 
 class Pandas():
 
-    @staticmethod
-    def get_data_frames(simulation, phases=[]):
+    @classmethod
+    def to_dataframe(cls, network, phases=[], join=False):
         r"""
         Convert the Network (and optionally Phase) data to Pandas DataFrames.
 
         Parameters
         ----------
-        simulation : OpenPNM Simulation Object
-            The simulation containing the data to be stored
+        network: OpenPNM Network Object
+            The network containing the data to be stored
 
         phases : list of OpenPNM Phase Objects
-            The data on each supplied phase will be added to the CSV file
+            The data on each supplied phase will be added to DataFrame
+
+        join : boolean
+            If ``False`` (default), two DataFrames are returned with *pore*
+            data in one, and *throat* data in the other.  If ``True`` the pore
+            and throat data are combined into a single DataFrame.  This can be
+            problematic as it will put NaNs into all the *pore* columns which
+            are shorter than the *throat* columns.
 
         Returns
         -------
-        A dict containing 2 Pandas DataFrames with 'pore' and 'throat' data in
-        each.
+        A named Tuple containing a DataFrame for ``pore`` and ``throat`` data.
         """
-        network = simulation.network
+        # Initialize pore and throat data dictionary using Dict class
+        pdata = Dict.to_dict(network=network, phases=phases, element='pore',
+                             interleave=True, categorize_objects=True)
+        tdata = Dict.get_dict(network=network, phases=phases, element='throat',
+                              interleave=True, categorize_objects=True)
+        pdata = FlatDict(pdata, delimiter='/')
+        tdata = FlatDict(tdata, delimiter='/')
 
-        if type(phases) is not list:  # Ensure it's a list
-            phases = [phases]
+        # Scan data and convert non-1d arrays to multiple columns
+        for key in list(pdata.keys()):
+            if _sp.shape(pdata[key]) != (network.Np,):
+                arr = pdata.pop(key)
+                tmp = _sp.split(arr, arr.shape[1], axis=1)
+                cols = range(len(tmp))
+                pdata.update({key+'['+str(i)+']': tmp[i].squeeze()
+                              for i in cols})
+        for key in list(tdata.keys()):
+            if _sp.shape(tdata[key]) != (network.Nt,):
+                arr = tdata.pop(key)
+                tmp = _sp.split(arr, arr.shape[1], axis=1)
+                cols = range(len(tmp))
+                tdata.update({key+'['+str(i)+']': tmp[i].squeeze()
+                              for i in cols})
 
-        # Initialize pore and throat data dictionary with conns and coords
-        pdata = {}
-        tdata = {}
+        # Convert sanitized dictionaries to DataFrames
+        pdata = _pd.DataFrame(pdata)
+        tdata = _pd.DataFrame(tdata)
 
-        # Gather list of prop names from network and geometries
-        pprops = set(network.props(element='pore', deep=True) +
-                     network.labels(element='pore'))
-        tprops = set(network.props(element='throat', deep=True) +
-                     network.labels(element='throat'))
-
-        # Select data from network and geometries using keys
-        for item in pprops:
-            pdata.update({item: network[item]})
-        for item in tprops:
-            tdata.update({item: network[item]})
-
-        # Gather list of prop names from phases and physics
-        for phase in phases:
-            # Gather list of prop names
-            pprops = set(phase.props(element='pore', mode=['all', 'deep']) +
-                         phase.labels(element='pore'))
-            tprops = set(phase.props(element='throat', mode=['all', 'deep']) +
-                         phase.labels(element='throat'))
-            # Add props to tdata and pdata
-            for item in pprops:
-                pdata.update({item+'|'+phase.name: phase[item]})
-            for item in tprops:
-                tdata.update({item+'|'+phase.name: phase[item]})
-
-        # Scan data and convert non-1d arrays to strings
-        for item in list(pdata.keys()):
-            if _sp.shape(pdata[item]) != (network.Np,):
-                array = pdata.pop(item)
-                temp = _sp.empty((_sp.shape(array)[0], ), dtype=object)
-                for row in range(temp.shape[0]):
-                    temp[row] = str(array[row, :]).strip('[]')
-                pdata.update({item: temp})
-
-        for item in list(tdata.keys()):
-            if _sp.shape(tdata[item]) != (network.Nt,):
-                array = tdata.pop(item)
-                temp = _sp.empty((_sp.shape(array)[0], ), dtype=object)
-                for row in range(temp.shape[0]):
-                    temp[row] = str(array[row, :]).strip('[]')
-                tdata.update({item: temp})
-
-        data = {'pore.DataFrame': _pd.DataFrame.from_dict(pdata),
-                'throat.DataFrame': _pd.DataFrame.from_dict(tdata)}
+        # Prepare DataFrames to be returned
+        if join:
+            data = tdata.join(other=pdata, how='left')
+        else:
+            data = namedtuple('dataframes', ('pore', 'throat'))
+            data(pore=pdata, throat=tdata)
 
         return data

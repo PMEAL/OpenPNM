@@ -119,7 +119,7 @@ class GenericGeometry(Base, ModelsMixin):
         if mode == 'add':
             # Ensure indices are not already assigned to another object
             temp = sp.zeros(shape=[net._count(element=element), ], dtype=bool)
-            for item in sim.geometries.keys():
+            for item in sim.geometries().keys():
                 temp += net[element+'.'+item]
             if sp.any(temp[indices]):
                 raise Exception('Some of the given '+element+' are already ' +
@@ -129,7 +129,7 @@ class GenericGeometry(Base, ModelsMixin):
             set_flag = False
 
         # Change lables of all associated physics in their respective phases
-        for phase in sim.phases.values():
+        for phase in sim.phases().values():
             phys = sim.find_physics(geometry=self, phase=phase)
             if phys:
                 if element+'.'+phys.name not in phase.keys():
