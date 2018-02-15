@@ -50,7 +50,10 @@ class StickAndBall(GenericGeometry):
              'pore.diameter': {'model': gm.misc.product,
                                'arg1': 'pore.max_size',
                                'arg2': 'pore.seed'},
-
+                               
+             'pore.area': {'model': gm.pore_area.spherical,
+                             'pore_diameter': 'pore.diameter'},                               
+                               
              'throat.max_size': {'model': gm.throat_misc.neighbor,
                                  'mode': 'min',
                                  'pore_prop': 'pore.diameter'},

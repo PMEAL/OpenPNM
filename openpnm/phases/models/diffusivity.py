@@ -5,6 +5,7 @@ Submodule -- diffusivity
 
 """
 import scipy as _sp
+import scipy.constants as _const
 
 
 def fuller(target, MA, MB, vA, vB, temperature='pore.temperature',
