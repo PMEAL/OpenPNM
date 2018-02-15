@@ -37,8 +37,7 @@ class Dict(GenericIO):
 
     @classmethod
     def to_dict(cls, network, phases=[], element=['pore', 'throat'],
-                interleave=True, flatten=True, categorize_objects=False,
-                categorize_data=False):
+                interleave=True, flatten=True, categorize_by=[]):
         r"""
         Returns a single dictionary object containing data from the given
         OpenPNM objects, with the keys organized differently depending on
@@ -70,21 +69,25 @@ class Dict(GenericIO):
             parent object.  If ``interleave`` is ``True`` this argument is
             ignored.
 
-        categorize_objects : boolean (default is ``False``)
-            If ``True`` the dictionary keys will be stored under a general
-            level corresponding to their type (e.g. 'network/net_01/pore.all').
-            If  ``interleave`` is ``True`` then only the only categories are
-            *network* and *phase*, since *geometry* and *physics* data get
-            stored under their respective *network* and *phase*.
+        categorize_by : string or list of strings
+            Indicates how the dictionaries should be organized.  The list can
+            contain any, all or none of the following strings:
 
-        categorize_data : boolean (default is ``False)
-            If ``True`` the data arrays are additionally categorized by
-            ``label`` and ``property`` to separate *boolean* from *numeric*
-            data.
+            **'object'** : If specified the dictionary keys will be stored
+            under a general level corresponding to their type (e.g.
+            'network/net_01/pore.all'). If  ``interleave`` is ``True`` then
+            only the only categories are *network* and *phase*, since
+            *geometry* and *physics* data get stored under their respective
+            *network* and *phase*.
 
-        categorize_elements : boolean (default is ``False)
-            If ``True`` the data arrays are additionally categorized by
-            ``pore`` and ``throat``.
+            **'data'** : If specified the data arrays are additionally
+            categorized by ``label`` and ``property`` to separate *boolean*
+            from *numeric* data.
+
+            **'element'** : If specified the data arrays are
+            additionally categorized by ``pore`` and ``throat``, meaning
+            that the propnames are no longer prepended by a 'pore.' or
+            'throat.'
 
         Returns
         -------
@@ -103,49 +106,68 @@ class Dict(GenericIO):
         of '/' characters.
         """
         phases = cls._parse_phases(phases=phases)
-
         simulation = network.simulation
+
         d = NestedDict()
-        # This all still relies on automatic interleaving of data
-        prefix = 'root'
+        delim = '/'
+
+        def build_path(obj, key):
+            propname = delim + key
+            prefix = 'root'
+            datatype = ''
+            arr = obj[key]
+            if 'object' in categorize_by:
+                prefix = obj.isa()
+            if 'element' in categorize_by:
+                propname = delim + key.replace('.', delim)
+            if 'data' in categorize_by:
+                if arr.dtype == bool:
+                    datatype = delim + 'labels'
+                else:
+                    datatype = delim + 'properties'
+            path = prefix + delim + obj.name + datatype + propname
+            return path
+
         for key in network.keys(element=element):
-            if categorize_objects:
-                prefix = 'network'
-            if interleave:
-                d[prefix][network.name][key] = network[key]
-            else:
-                d[prefix][network.name][key] = network[key]
+            path = build_path(obj=network, key=key,)
+            d[path] = network[key]
+
         for geo in simulation.geometries().values():
             for key in geo.keys(element=element):
                 if interleave:
-                    d[prefix][network.name][key] = network[key]
+                    path = build_path(obj=network, key=key)
+                    d[path] = network[key]
                 else:
+                    path = build_path(obj=geo, key=key)
                     if flatten:
-                        if categorize_objects:
-                            prefix = 'geometry'
-                        d[prefix][geo.name][key] = geo[key]
-                    else:
-                        d[prefix][network.name][geo.name][key] = geo[key]
+                        d[path] = geo[key]
+                    elif 'object' not in categorize_by:
+                        path = path.split(delim)
+                        path.insert(1, network.name)
+                        path = delim.join(path)
+                    d[path] = geo[key]
+
         for phase in phases:
             for key in phase.keys(element=element):
-                if categorize_objects:
-                    prefix = 'phase'
-                if interleave:
-                    d[prefix][phase.name][key] = phase[key]
-                else:
-                    d[prefix][phase.name][key] = phase[key]
+                path = build_path(obj=phase, key=key)
+                d[path] = phase[key]
+
             for physics in simulation.find_physics(phase=phase):
                 phys = simulation.physics()[physics]
                 for key in phys.keys(element=element):
                     if interleave:
-                        d[prefix][phase.name][key] = phase[key]
+                        path = build_path(obj=phase, key=key)
+                        d[path] = phase[key]
                     else:
+                        path = build_path(obj=phys, key=key)
                         if flatten:
-                            if categorize_objects:
-                                prefix = 'physics'
-                            d[prefix][phys.name][key] = phys[key]
-                        else:
-                            d[prefix][phase.name][phys.name][key] = phys[key]
+                            d[path] = phys[key]
+                        elif 'object' not in categorize_by:
+                            path = path.split(delim)
+                            path.insert(1, phase.name)
+                            path = delim.join(path)
+                        d[path] = phys[key]
+
         if 'root' in d.keys():
             d = d['root']
         return d
