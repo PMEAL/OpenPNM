@@ -1,7 +1,7 @@
 from openpnm.core import logging, Simulation
 from openpnm.network import Cubic
 from openpnm.geometry import GenericGeometry
-from openpnm.geometry import models as gm
+import openpnm.models.geometry as gm
 logger = logging.getLogger(__name__)
 
 

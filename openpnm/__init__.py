@@ -8,6 +8,7 @@ if _sys.version_info < (3, 5):
 __version__ = '2.0.0-b'
 
 from . import core
+from . import models
 from . import network
 from . import topotools
 from . import geometry
@@ -18,6 +19,7 @@ from . import utils
 from . import io
 from . import materials
 from .core import Workspace
+
 
 # Set up logging to file - see previous section for more details
 log_format = \

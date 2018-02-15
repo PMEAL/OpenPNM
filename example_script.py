@@ -15,8 +15,8 @@ air = op.phases.Air(network=pn)
 water = op.phases.Water(network=pn)
 water['throat.viscosity'] = water['pore.viscosity'][0]
 
+mod = op.models.physics.hydraulic_conductance.hagen_poiseuille
 phys_water = op.physics.GenericPhysics(network=pn, phase=water, geometry=geom)
-mod = op.physics.models.hydraulic_conductance.hagen_poiseuille
 phys_water.add_model(propname='throat.conductance',
                      model=mod, viscosity='throat.viscosity')
 phys_water.regenerate_models()

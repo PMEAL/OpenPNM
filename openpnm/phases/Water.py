@@ -1,5 +1,5 @@
 from openpnm.phases import GenericPhase
-from openpnm.phases import models as fm
+import openpnm.models.phase as fm
 
 
 class Water(GenericPhase):
@@ -13,9 +13,8 @@ class Water(GenericPhase):
 
     Notes
     -----
-    This explicit association is necessary so the Phase object can initialize
-    data arrays of the correct size to store network data.
-    The initial properties are all at std conditions of T = 298 K and P = 1 atm.
+    The initial properties are all at std conditions of T = 298 K and
+    P = 1 atm.
 
     Examples
     --------

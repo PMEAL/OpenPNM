@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from openpnm.phases import GenericPhase
-from openpnm.phases import models as fm
+import openpnm.models.phase as fm
 
 
 class Air(GenericPhase):
@@ -14,7 +14,8 @@ class Air(GenericPhase):
 
     Notes
     -----
-    The initial properties are all at std conditions of T = 298 K and P = 1 atm.
+    The initial properties are all at std conditions of T = 298 K and
+    P = 1 atm.
 
     References
     ----------

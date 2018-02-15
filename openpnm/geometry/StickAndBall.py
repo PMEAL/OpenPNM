@@ -1,12 +1,5 @@
 # -*- coding: utf-8 -*-
-"""
-===============================================================================
-Stick_and_Ball -- A standard 'stick & ball' geometrical model
-===============================================================================
-
-"""
-from openpnm.core import ModelsDict
-from openpnm.geometry import models as gm
+import openpnm.models.geometry as gm
 from openpnm.geometry import GenericGeometry
 
 
