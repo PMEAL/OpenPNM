@@ -54,11 +54,13 @@ class Delaunay(GenericNetwork):
             points = sp.vstack((points.T, sp.zeros((points.shape[0], )))).T
         self['pore.coords'] = points
 
-        # coords and conns are needed to initialize GenericNetwork
-        super().__init__(**kwargs)
 
         # Attach delaunay object in case someone needs it?
         self._tri = tri
+
+        super().__init__(Np=points.shape[0], Nt=conns.shape[0], **kwargs)
+
+        # coords and conns are needed to initialize GenericNetwork
 
         # Determine which throats constitute the Gabriel graph, for other uses
         # Find centroid of each pair of nodes

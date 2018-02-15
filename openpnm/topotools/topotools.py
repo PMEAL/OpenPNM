@@ -1269,8 +1269,59 @@ def _scale_3d_axes(ax, X, Y, Z):
         ax.set_ylim(mid_y - max_range, mid_y + max_range)
         ax.set_zlim(mid_z - max_range, mid_z + max_range)
 
+def plot_networkx(network, plot_throats=True, labels=None, colors=None, scale=10):
+    r'''
+    Returns a pretty 2d plot for 2d OpenPNM networks.
 
-def generate_base_points(num_points, domain_size, prob=None):
+    Parameters
+    ----------
+    network : OpenPNM Network object
+
+    plot_throats : boolean
+        Plots throats as well as pores, if True.
+
+    labels : list
+        List of OpenPNM labels
+
+    colors : list
+        List of corresponding colors to the given `labels`.
+
+    scale : float
+        Scale factor for size of pores.
+    '''
+    import networkx as nx
+    x, y, z = network['pore.coords'].T
+    x, y = [j for j in [x, y, z] if len(sp.unique(j)) > 1]
+
+    G = nx.Graph()
+    pos = {network.Ps[i]: [x[i], y[i]] for i in range(network.Np)}
+    if 'pore.diameter' in network.keys():
+        node_size = scale * network['pore.diameter']
+    else:
+        node_size = scale
+    node_color = sp.array(['r'] * len(network.Ps))
+
+    if labels:
+        if type(labels) is not list:
+            labels = [labels]
+        if type(colors) is not list:
+            colors = [colors]
+        if len(labels) != len(colors):
+            raise('len(colors) must be equal to len(labels)!')
+        for label, color in zip(labels, colors):
+            node_color[network.pores(label)] = color
+
+    nx.draw_networkx_nodes(G, pos=pos, nodelist=network.Ps.tolist(),
+                           node_color=node_color, edge_color='r',
+                           node_size=node_size)
+    if plot_throats:
+        nx.draw_networkx_edges(G, pos=pos, edge_color='k', alpha=0.8,
+                               edgelist=network['throat.conns'].tolist())
+    return G
+
+
+
+def generate_base_points(num_points, domain_size, prob=None, reflect=True):
     r"""
     Generates a set of base points for passing into the DelaunayVoronoiDual
     class.  The points can be distributed in spherical, cylindrical, or
@@ -1371,10 +1422,11 @@ def generate_base_points(num_points, domain_size, prob=None):
         inds = r <= domain_size[0]
         [r, theta, phi] = [r[inds], theta[inds], phi[inds]]
         # Reflect base points across perimeter
-        new_r = 2*domain_size - r
-        r = sp.hstack([r, new_r])
-        theta = sp.hstack([theta, theta])
-        phi = sp.hstack([phi, phi])
+        if reflect:
+            new_r = 2*domain_size - r
+            r = sp.hstack([r, new_r])
+            theta = sp.hstack([theta, theta])
+            phi = sp.hstack([phi, phi])
         # Convert to Cartesean coordinates
         X = r*sp.cos(theta)*sp.sin(phi)
         Y = r*sp.sin(theta)*sp.sin(phi)
@@ -1384,8 +1436,8 @@ def generate_base_points(num_points, domain_size, prob=None):
         domain_size = sp.array(domain_size)
         if prob is None:
             prob = sp.ones([41, 41, 41])
-            prob[20, 20, :] = 0
-            prob = spim.distance_transform_bf(prob) <= 20
+#            prob[20, 20, :] = 0
+#            prob = spim.distance_transform_bf(prob) <= 20
         base_pts = _try_points(num_points, prob)
         # Convert to cylindrical coordinates
         [X, Y, Z] = sp.array(base_pts - [0.5, 0.5, 0]).T  # Center on z-axis
@@ -1397,14 +1449,16 @@ def generate_base_points(num_points, domain_size, prob=None):
         [r, theta, z] = [r[inds], theta[inds], z[inds]]
         inds = ~((z > domain_size[1]) + (z < 0))
         [r, theta, z] = [r[inds], theta[inds], z[inds]]
-        # Reflect base points about faces and perimeter
-        new_r = 2*domain_size[0] - r
-        r = sp.hstack([r, new_r])
-        theta = sp.hstack([theta, theta])
-        z = sp.hstack([z, z])
-        r = sp.hstack([r, r, r])
-        theta = sp.hstack([theta, theta, theta])
-        z = sp.hstack([z, -z, 2-z])
+        if reflect:
+            # Reflect base points about faces and perimeter
+            new_r = 2*domain_size[0] - r
+            r = sp.hstack([r, new_r])
+            theta = sp.hstack([theta, theta])
+            z = sp.hstack([z, z])
+            if len(sp.unique(z)) > 1:  # If not a disk
+                r = sp.hstack([r, r, r])
+                theta = sp.hstack([theta, theta, theta])
+                z = sp.hstack([z, -z, 2-z])
         # Convert to Cartesean coordinates
         X = r*sp.cos(theta)
         Y = r*sp.sin(theta)
@@ -1416,7 +1470,8 @@ def generate_base_points(num_points, domain_size, prob=None):
         base_pts = _try_points(num_points, prob)
         base_pts = base_pts*domain_size
         # Add reflected points
-        base_pts = reflect_base_points(base_pts, domain_size)
+        if reflect:
+            base_pts = reflect_base_points(base_pts, domain_size)
     return base_pts
 
 
