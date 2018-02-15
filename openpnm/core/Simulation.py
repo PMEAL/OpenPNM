@@ -91,7 +91,7 @@ class Simulation(list):
     def _generate_name(self, obj):
         prefix = obj.settings['prefix']
         if 'GenericNetwork' in obj.mro():
-            num = str(1).zfill(3)
+            num = str(1).zfill(2)
         elif 'GenericGeometry' in obj.mro():
             num = str(len(self.geometries().keys())).zfill(2)
         elif 'GenericPhase' in obj.mro():

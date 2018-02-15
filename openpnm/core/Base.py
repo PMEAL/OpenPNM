@@ -1285,3 +1285,26 @@ class Base(dict):
     def mro(self):
         mro = [c.__name__ for c in self.__class__.__mro__]
         return mro
+
+    def isa(self, obj_type=None):
+        if obj_type is None:
+            if 'GenericNetwork' in self.mro():
+                prefix = 'network'
+            elif 'GenericGeometry' in self.mro():
+                prefix = 'geometry'
+            elif 'GenericPhase' in self.mro():
+                prefix = 'phase'
+            elif 'GenericPhysics' in self.mro():
+                prefix = 'physics'
+            elif 'GenericAlgorithm' in self.mro():
+                prefix = 'algorithm'
+            return prefix
+        else:
+            mro = [s.lower() for s in self.mro()]
+            temp = [s.replace('generic', '') for s in mro
+                    if s.startswith('generic')]
+            mro.extend(temp)
+            flag = False
+            if obj_type.lower() in mro:
+                flag = True
+            return flag
