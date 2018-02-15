@@ -1,11 +1,13 @@
 import xml.etree.cElementTree as ET
-from openpnm.io import HDF5
+from openpnm.io import Dict
+from openpnm.utils import FlatDict
+import h5py
 
 
 class XDMF:
 
-    header = '''<?xml version="1.0" ?>
-                <!DOCTYPE Xdmf SYSTEM "Xdmf.dtd" []>'''
+    _header = '''<?xml version="1.0" ?>
+                 <!DOCTYPE Xdmf SYSTEM "Xdmf.dtd" []>'''
 
     @classmethod
     def save(cls, network, phases=[], filename=''):
@@ -27,11 +29,21 @@ class XDMF:
         ``Workspace`` object.
 
         """
-        f = HDF5.to_hdf5(network, phases=phases, filename=filename,
-                         interleave=True, flatten=False,
-                         categorize_objects=False, categorize_data=False)
-        filename = f.filename.split('.')[0]
+        if filename == '':
+            filename = network.simulation.name
+        f = h5py.File(filename+".hdf5", "w")
 
+        d = Dict.to_dict(network, phases=phases, interleave=True,
+                         flatten=False, categorize_by=['element', 'data'])
+
+        # Make HDF5 file with all datasets, and no groups
+        D = FlatDict(d, delimiter=' | ')
+        for item in D.keys():
+            if 'U' in str(D[item][0].dtype):
+                pass
+            else:
+                f.create_dataset(name='/'+item, shape=D[item].shape,
+                                 dtype=D[item].dtype, data=D[item])
         # Add coordinate and connection information to top of HDF5 file
         f["coordinates"] = network["pore.coords"]
         f["connections"] = network["throat.conns"]
@@ -61,20 +73,20 @@ class XDMF:
         topo.append(topo_data)
 
         # Add pore and throat properties
-        for obj in f.keys():
-            if obj not in ['coordinates', 'connections']:
-                for propname in f[obj].keys():
-                    shape = f[obj + '/' + propname].shape
-                    dims = ''.join([str(i) + ' ' for i in list(shape)[::-1]])
-                    hdf_loc = f.filename + ":" + obj + '/' + propname
-                    scalar = create_data_item(value=hdf_loc,
-                                              Dimensions=dims,
-                                              Format='HDF',
-                                              Precision='8',
-                                              NumberType='Float')
-                    el_attr = create_attribute(Name=propname)
-                    el_attr.append(scalar)
-                    grid.append(el_attr)
+        for item in f.keys():
+            if item not in ['coordinates', 'connections']:
+                attr_type = 'Scalar'
+                shape = f[item].shape
+                dims = ''.join([str(i) + ' ' for i in list(shape)[::-1]])
+                hdf_loc = f.filename + ":" + item
+                attr = create_data_item(value=hdf_loc,
+                                        Dimensions=dims,
+                                        Format='HDF',
+                                        Precision='8',
+                                        NumberType='Float')
+                el_attr = create_attribute(Name=item, AttributeType=attr_type)
+                el_attr.append(attr)
+                grid.append(el_attr)
 
         grid.append(topo)
         grid.append(geo)
@@ -82,7 +94,7 @@ class XDMF:
         root.append(domain)
 
         with open(filename+'.xmf', 'w') as file:
-            file.write(cls.header)
+            file.write(cls._header)
             file.write(ET.tostring(root).decode("utf-8"))
 
 

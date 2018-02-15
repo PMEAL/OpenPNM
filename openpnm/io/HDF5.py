@@ -14,8 +14,7 @@ class HDF5(GenericIO):
 
     @classmethod
     def to_hdf5(cls, network, phases=[], element=['pore', 'throat'],
-                filename='', interleave=True, flatten=False,
-                categorize_objects=False, categorize_data=False):
+                filename='', interleave=True, flatten=False, categorize_by=[]):
         r"""
         Creates an HDF5 file containing data from the specified objects,
         and categorized according to the given arguments.
@@ -46,24 +45,30 @@ class HDF5(GenericIO):
             parent object.  If ``interleave`` is ``True`` this argument is
             ignored.
 
-        categorize_objects : boolean (default is ``False``)
-            If ``True`` the dictionary keys will be stored under a general
-            level corresponding to their type (e.g. 'network/net_01/pore.all').
-            If  ``interleave`` is ``True`` then only the only categories are
-            *network* and *phase*, since *geometry* and *physics* data get
-            stored under their respective *network* and *phase*.
+        categorize_by : string or list of strings
+            Indicates how the dictionaries should be organized.  The list can
+            contain any, all or none of the following strings:
 
-        categorize_data : boolean (default is ``False)
-            If ``True`` the data arrays are additionally categorized by
-            ``label`` and ``property`` to separate *boolean* from *numeric*
-            data.
+            **'objects'** : If specified the dictionary keys will be stored
+            under a general level corresponding to their type (e.g.
+            'network/net_01/pore.all'). If  ``interleave`` is ``True`` then
+            only the only categories are *network* and *phase*, since
+            *geometry* and *physics* data get stored under their respective
+            *network* and *phase*.
 
-        categorize_elements : boolean (default is ``False)
+            **'data'** : If specified the data arrays are additionally
+            categorized by ``label`` and ``property`` to separate *boolean*
+            from *numeric* data.
+
+            **'categorize_elements'** : If specified the data arrays are
+            additionally categorized by ``pore`` and ``throat``, meaning
+            that the propnames are no longer prepended by a 'pore.' or
+            'throat.'
 
         """
         dct = Dict.to_dict(network=network, phases=phases, element=element,
                            interleave=interleave, flatten=flatten,
-                           categorize_objects=categorize_objects)
+                           categorize_by=categorize_by)
         d = FlatDict(dct, delimiter='/')
         if filename == '':
             filename = network.simulation.name
@@ -74,19 +79,8 @@ class HDF5(GenericIO):
             if 'U' in str(arr[0].dtype):
                 pass
             else:
-                if categorize_data:
-                    temp = item.split('/')
-                    if arr.dtype == bool:
-                        temp = '/'.join(temp[:-1]) + '/label/' + temp[-1]
-                        f.create_dataset(name=temp, shape=arr.shape,
-                                         dtype=bool, data=arr)
-                    else:
-                        temp = '/'.join(temp[:-1]) + '/property/' + temp[-1]
-                        f.create_dataset(name=temp, shape=arr.shape,
-                                         dtype=arr.dtype, data=arr)
-                else:
-                    f.create_dataset(name='/'+tempname, shape=arr.shape,
-                                     dtype=arr.dtype, data=arr)
+                f.create_dataset(name='/'+tempname, shape=arr.shape,
+                                 dtype=arr.dtype, data=arr)
         return f
 
     @classmethod
@@ -141,12 +135,12 @@ class HDF5(GenericIO):
         raise NotImplementedError()
 
     def print_hierarchy(f):
-        def print_level(f, p='', indent='―'):
+        def print_level(f, p='', indent='-'):
             for item in f.keys():
                 if hasattr(f[item], 'keys'):
                     p = print_level(f[item], p=p, indent=indent + indent[0])
                 elif indent[-1] != ' ':
-                    indent = indent + '| '
+                    indent = indent + ''
                 p = indent + item + '\n' + p
             return(p)
         p = print_level(f)
