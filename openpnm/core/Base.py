@@ -16,7 +16,7 @@ class Base(dict):
         instance = super(Base, cls).__new__(cls, *args, **kwargs)
         return instance
 
-    def __init__(self, kv={}, Np=0, Nt=0, name=None, simulation=None):
+    def __init__(self, Np=0, Nt=0, name=None, simulation=None):
         self.settings.setdefault('prefix', 'base')
         super().__init__()
         if simulation is None:
@@ -1288,6 +1288,7 @@ class Base(dict):
 
     def isa(self, obj_type=None):
         if obj_type is None:
+            prefix = 'base'
             if 'GenericNetwork' in self.mro():
                 prefix = 'network'
             elif 'GenericGeometry' in self.mro():
