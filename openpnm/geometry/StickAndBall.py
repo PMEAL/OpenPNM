@@ -29,10 +29,9 @@ class StickAndBall(GenericGeometry):
 
     """
 
-    def __init__(self, network, **kwargs):
-        super().__init__(network, **kwargs)
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
         self.models = self.recipe()
-        self.regenerate_models()
 
     @classmethod
     def recipe(cls):

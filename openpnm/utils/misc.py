@@ -44,6 +44,12 @@ class PrintableDict(OrderedDict):
         return '\n'.join(lines)
 
 
+class SettingsDict(PrintableDict):
+    def __missing__(self, key):
+        self[key] = None
+        return self[key]
+
+
 class NestedDict(PrintableDict):
 
     def __init__(self, delimiter='/', **kwargs):

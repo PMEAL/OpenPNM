@@ -29,8 +29,8 @@ class Air(GenericPhase):
     >>> air = op.phases.Air(network=pn)
 
     """
-    def __init__(self, network, name=None):
-        super().__init__(network=network, name=name)
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
 
         self['pore.molecular_weight'] = 0.02896            # kg/mol
         self['pore.critical_pressure'] = 3.786E6           # Pa

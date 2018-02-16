@@ -23,8 +23,8 @@ class Water(GenericPhase):
     >>> pn = op.network.Cubic(shape=[5, 5, 5])
     >>> water = op.phases.Water(network=pn)
     """
-    def __init__(self, network, name=None, **kwargs):
-        super().__init__(network=network, name=name)
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
 
         self['pore.molecular_weight'] = 0.01802               # kg/mol
         self['pore.critical_pressure'] = 2.2064E7             # Pa

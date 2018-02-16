@@ -32,11 +32,23 @@ class GenericGeometry(Base, ModelsMixin):
     >>> geom = op.geometry.GenericGeometry(network=pn, pores=Ps, throats=Ts)
     """
 
-    def __init__(self, network, pores=[], throats=[], settings={}, **kwargs):
-        self.settings.setdefault('prefix', 'geo')
+    def __init__(self, network=None, simulation=None, pores=[], throats=[],
+                 settings={}, **kwargs):
+        # Define some default settings
+        self.settings.update({'prefix': 'geo'})
+        # Overwrite with user supplied settings, if any
         self.settings.update(settings)
-        super().__init__(simulation=network.simulation, **kwargs)
-        self.settings['local_data'] = self.simulation.settings['local_data']
+
+        # Deal with network or simulation arguments
+        if network is not None:
+            simulation = network.simulation
+        elif simulation is not None:
+            pass
+        else:
+            raise Exception('Must specify either a network or a simulation')
+
+        super().__init__(simulation=simulation, **kwargs)
+
         self.add_locations(pores=pores, throats=throats)
 
     def __getitem__(self, key):
@@ -56,34 +68,6 @@ class GenericGeometry(Base, ModelsMixin):
             # If not found on network a key error will be raised
             vals = net[key][inds]
         return vals
-
-    def __setitem__(self, key, value):
-        if self.settings['local_data']:
-            super().__setitem__(key, value)
-        else:
-            network = self.simulation.network
-            element = self._parse_element(key.split('.')[0], single=True)
-            inds = network._map(ids=self[element+'._id'], element=element,
-                                filtered=True)
-            # If array not in network, create it first
-            if key not in network.keys():
-                if value.dtype == bool:
-                    network[key] = False
-                else:
-                    dtype = value.dtype
-                    if dtype.name == 'object':
-                        network[key] = np.zeros(1, dtype=object)
-                    else:
-                        Nt = len(network[element+'.all'])
-                        dim = np.size(value[0])
-                        if dim > 1:
-                            arr = np.zeros(dim, dtype=dtype)
-                            temp = np.tile(arr, reps=(Nt, 1))*np.nan
-                        else:
-                            temp = np.zeros(Nt)*np.nan
-                        network[key] = temp
-
-            network[key][inds] = value
 
     def add_locations(self, pores=[], throats=[]):
         r"""
