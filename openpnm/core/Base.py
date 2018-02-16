@@ -1,6 +1,6 @@
 from collections import namedtuple
 from openpnm.core import Workspace, logging
-from openpnm.utils.misc import PrintableList, PrintableDict
+from openpnm.utils.misc import PrintableList, PrintableDict, SettingsDict
 import scipy as sp
 logger = logging.getLogger(__name__)
 ws = Workspace()
@@ -12,7 +12,7 @@ class Base(dict):
     """
 
     def __new__(cls, *args, **kwargs):
-        cls.settings = PrintableDict()
+        cls.settings = SettingsDict()
         instance = super(Base, cls).__new__(cls, *args, **kwargs)
         return instance
 

@@ -4,7 +4,7 @@ from openpnm.utils.misc import PrintableDict
 ws = Workspace()
 
 
-class ModelsDict(dict):
+class ModelsDict(PrintableDict):
 
     def dependency_tree(self):
         tree = []
@@ -30,7 +30,7 @@ class ModelsDict(dict):
         lines.append(horizontal_rule)
         for i, item in enumerate(self.keys()):
             temp = self[item].copy()
-            regen_mode = temp.pop('regen_mode')
+            regen_mode = temp.pop('regen_mode', None)
             model = str(temp.pop('model')).split(' ')[1]
             lines.append(strg.format(str(i+1), item, 'model:', model))
             for param in temp.keys():
@@ -67,7 +67,7 @@ class ModelsMixin():
         # If only one prop given, as string, put into a list
         elif type(propnames) is str:
             propnames = [propnames]
-        propname = [propnames.remove(i) for i in exclude if i in propnames]
+        [propnames.remove(i) for i in exclude if i in propnames]
         # Scan through list of propnames and regenerate each one
         for item in propnames:
             self._regen(item)
@@ -85,8 +85,6 @@ class ModelsMixin():
         else:
             self[prop] = model(target=self, **kwargs)
 
-    # The use of a property attribute here is because I can't just set
-    # self.models= {} in the init, since the damn init won't run!
     def _get_models(self):
         if not hasattr(self, '_models_dict'):
             self._models_dict = ModelsDict()
@@ -95,5 +93,13 @@ class ModelsMixin():
     def _set_models(self, dict_):
         self._models_dict = ModelsDict()
         self._models_dict.update(dict_)
+        # Renerate all models in new dict if regen mode says so
+        for model in dict_:
+            # In case regen mode is not set, do it now
+            dict_[model].setdefault('regen_mode', 'normal')
+        if self.settings['freeze_models']:
+            pass
+        else:
+            self.regenerate_models()
 
     models = property(fget=_get_models, fset=_set_models)

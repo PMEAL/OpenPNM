@@ -97,6 +97,9 @@ class XDMF:
             file.write(cls._header)
             file.write(ET.tostring(root).decode("utf-8"))
 
+        # CLose the HDF5 file
+        f.close()
+
 
 def create_root(Name):
     return ET.Element(Name)

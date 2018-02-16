@@ -72,7 +72,7 @@ class HDF5(GenericIO):
         d = FlatDict(dct, delimiter='/')
         if filename == '':
             filename = network.simulation.name
-        f = h5py.File(filename+".hdf5", "w")
+        f = h5py.File(filename+".hdf", "w")
         for item in d.keys():
             tempname = '_'.join(item.split('.'))
             arr = d[item]
@@ -84,7 +84,7 @@ class HDF5(GenericIO):
         return f
 
     @classmethod
-    def save(cls, network, phases=[], filename=''):
+    def save(cls, network, phases=[], filename='', **kwargs):
         r"""
         Saves data from the given objects into the specified file.
 
@@ -95,6 +95,13 @@ class HDF5(GenericIO):
 
         phases : list of OpenPNM Phase Objects (optional, default is none)
             A list of phase objects whose data are to be included
+
+        filename : string
+
+        **kwargs : key-word arguments
+            These additional arguments are passed on to the ``to_hdf5``
+            function to controls the hierarchy of the data.  Refer to that
+            method's docstring for more info.
 
         Notes
         -----
@@ -107,8 +114,9 @@ class HDF5(GenericIO):
         if filename == '':
             filename = simulation.name
         else:
-            filename = filename.rsplit('.hdf5', 1)[0]
-        f = cls.to_hdf5(network=network, phases=phases, interleave=True)
+            filename = filename.rsplit('.hdf', 1)[0]
+        f = cls.to_hdf5(network=network, phases=phases, interleave=True,
+                        **kwargs)
         f.close()
 
     @classmethod

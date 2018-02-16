@@ -2,6 +2,7 @@ from openpnm.core import Base, Workspace, logging, ModelsMixin
 from openpnm.utils import PrintableDict
 logger = logging.getLogger(__name__)
 ws = Workspace()
+from numpy import ones
 
 
 class GenericPhase(Base, ModelsMixin):
@@ -22,11 +23,27 @@ class GenericPhase(Base, ModelsMixin):
 
     """
 
-    def __init__(self, network, settings={}, **kwargs):
-        self.settings.setdefault('prefix', 'phase')
+    def __init__(self, network=None, simulation=None, settings={}, **kwargs):
+        # Define some default settings
+        self.settings.update({'prefix': 'phase'})
+        # Overwrite with user supplied settings, if any
         self.settings.update(settings)
-        super().__init__(Np=network.Np, Nt=network.Nt,
-                         simulation=network.simulation, **kwargs)
+
+        # Deal with network or simulation arguments
+        if network is not None:
+            simulation = network.simulation
+        elif simulation is not None:
+            pass
+        else:
+            raise Exception('Must specify either a network or a simulation')
+
+        super().__init__(simulation=simulation, **kwargs)
+
+        # If simulation has a network object, adjust pore and throat sizes
+        if simulation.network:
+            self['pore.all'] = ones((simulation.network.Np, ), dtype=bool)
+            self['throat.all'] = ones((simulation.network.Nt, ), dtype=bool)
+
         # Set standard conditions on the fluid to get started
         self['pore.temperature'] = 298.0
         self['pore.pressure'] = 101325.0

@@ -1,5 +1,5 @@
 from openpnm.core import Base, Workspace, ModelsMixin, logging
-import scipy as sp
+from numpy import ones
 logger = logging.getLogger(__name__)
 ws = Workspace()
 
@@ -27,13 +27,37 @@ class GenericPhysics(Base, ModelsMixin):
 
     """
 
-    def __init__(self, network, phase, geometry, settings={}, **kwargs):
-        self.settings.setdefault('prefix', 'phys')
-        self.settings.update({'boss': phase.name})
+    def __init__(self, simulation=None, network=None, phase=None,
+                 geometry=None, settings={}, **kwargs):
+
+        # Define some default settings
+        self.settings.update({'prefix': 'phys'})
+        # Overwrite with user supplied settings, if any
         self.settings.update(settings)
-        super().__init__(Np=geometry.Np, Nt=geometry.Nt,
-                         simulation=network.simulation, **kwargs)
-        self.settings['local_data'] = self.simulation.settings['local_data']
+
+        # Deal with network or simulation arguments
+        if network is not None:
+            simulation = network.simulation
+        elif simulation is not None:
+            pass
+        else:
+            raise Exception('Must specify either a network or a simulation')
+
+        super().__init__(simulation=simulation, **kwargs)
+
+        if phase is not None:
+            self.settings['phase'] = phase.name
+        if geometry is not None:
+            self.set_locations(geometry)
+
+    def set_locations(self, geometry):
+        phase = self.simulation.phases()[self.settings['phase']]
+        network = self.simulation.network
+
+        # Adjust array sizes
+        self['pore.all'] = ones((geometry.Np, ), dtype=bool)
+        self['throat.all'] = ones((geometry.Nt, ), dtype=bool)
+
         # Initialize a label array in the associated phase
         phase['pore.'+self.name] = False
         phase['pore.'+self.name][network.pores(geometry.name)] = True
@@ -42,7 +66,7 @@ class GenericPhysics(Base, ModelsMixin):
 
     def __getitem__(self, key):
         element = key.split('.')[0]
-        boss = self.simulation[self.settings['boss']]
+        boss = self.simulation.find_phase(self)
         if key.split('.')[-1] == '_id':
             inds = boss._get_indices(element=element, labels=self.name)
             vals = boss[element+'._id'][inds]
@@ -52,35 +76,8 @@ class GenericPhysics(Base, ModelsMixin):
         # Get prop or label if present
         elif key in self.keys():
             vals = super(Base, self).__getitem__(key)
-        # Otherwise retrieve from network
+        # Otherwise retrieve from phase
         else:
             inds = boss._get_indices(element=element, labels=self.name)
             vals = boss[key][inds]
         return vals
-
-    def __setitem__(self, key, value):
-        if self.settings['local_data']:
-            super().__setitem__(key, value)
-        else:
-            boss = self.simulation[self.settings['boss']]
-            element = self._parse_element(key.split('.')[0], single=True)
-            inds = boss._map(ids=self[element+'._id'], element=element,
-                             filtered=True)
-            # If array not in phase, create it first
-            if key not in boss.keys():
-                if value.dtype == bool:
-                    boss[key] = False
-                else:
-                    dtype = value.dtype
-                    if dtype.name == 'object':
-                        boss[key] = sp.zeros(1, dtype=object)
-                    else:
-                        Nt = len(boss[element+'.all'])
-                        dim = sp.size(value[0])
-                        if dim > 1:
-                            arr = sp.zeros(dim, dtype=dtype)
-                            temp = sp.tile(arr, reps=(Nt, 1))*sp.nan
-                        else:
-                            temp = sp.zeros(Nt)*sp.nan
-                        boss[key] = temp
-            boss[key][inds] = value
