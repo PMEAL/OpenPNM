@@ -133,30 +133,77 @@ class Workspace(dict):
     def import_data(self, filename):
         r"""
         """
-        fileformat = filename.split('.')[-1]
-        if fileformat.lower() == 'yaml':
-            import networkx as nx
-            obj = nx.read_yaml(filename)
-            openpnm.io.NetworkX.load(obj)
+        raise NotImplementedError()
 
-    def export_data(self, simulation, filename=None, fileformat='vtp'):
+    def export_data(self, network, phases=[], filename=None, filetype='vtp'):
         r"""
+        Export the pore and throat data from the given object(s) into the
+        specified file and format.
+
+        Parameters
+        ----------
+        network: OpenPNM Network Object
+            The network containing the data to be stored
+
+        phases : list of OpenPNM Phase Objects
+            The data on each supplied phase will be added to file
+
+        filename : string
+            The file name to use.  If none is supplied then one will be
+            automatically generated based on the name of the Simulation
+            containing the supplied Network, with the date and time appended.
+
+        filetype : string
+            Which file format to store the data.  Option are:
+
+            **'vtk'** : (default) The Visualization Toolkit format, used by
+            various softwares such as Paraview.  This actually produces a 'vtp'
+            file.  NOTE: This can be quite slow since all the data is written
+            to a simple text file.  For large data simulations consider
+            'xdmf'.
+
+            **'csv'** : The comma-separated values format, which is easily
+            openned in any spreadsheet program.  The column names represent
+            the property name, including the type and name of the object to
+            which they belonged, all separated by the pipe character.
+
+            **'xmf'** : The extensible data markup format, is a very efficient
+            format for large data sets.  This actually results in the creation
+            of two files, the *xmf* file and an associated *hdf* file.  The
+            *xmf* file contains instructions for looking into the *hdf* file.
+            Paraview opens the *xmf* format natively, and is very fast.  NOTE:
+            This is using *xmf* version 2.
+
+            **'mat'** : Matlab 'mat-file', which can be openned in Matlab as
+            a structured variable, with field names corresponding to the
+            property names.
+
+        Notes
+        -----
+        This is a helper function for the actual functions in the IO module.
+        For more control over the format of the output, and more information
+        about the format refer to ``openpnm.io``.
+
         """
+        simulation = network.simulation
         if filename is None:
             filename = simulation.name + '_' + time.strftime('%Y%b%d_%H%M%p')
-        if fileformat.lower() == 'vtp':
-            openpnm.io.VTK.save(simulation=simulation, filename=filename)
-        if fileformat.lower() == 'csv':
-            openpnm.io.CSV.save(simulation=simulation, filename=filename)
-        if fileformat.lower() == 'yaml':
-            import networkx as nx
-            obj = openpnm.io.NetworkX.save(simulation)
-            nx.write_yaml(obj, filename)
-        if fileformat.lower() == 'networkx':
-            obj = openpnm.io.NetworkX.save(simulation)
-            return obj
-        if fileformat.lower() == 'mat':
-            openpnm.io.MAT.save(simulation, filename=filename)
+        if filetype.lower() in ['vtp', 'vtp', 'vtu']:
+            openpnm.io.VTK.save(network=network, phases=phases,
+                                filename=filename)
+        if filetype.lower() == 'csv':
+            openpnm.io.CSV.save(network=network, phases=phases,
+                                filename=filename)
+        if filetype.lower() in ['xmf', 'xdmf']:
+            openpnm.io.XDMF.save(network=network, phases=phases,
+                                 filename=filename)
+        if filetype.lower() in ['hdf5', 'hdf', 'h5']:
+            f = openpnm.io.HDF5.to_hdf5(network=network, phases=phases,
+                                        filename=filename)
+            f.close()
+        if filetype.lower() == 'mat':
+            openpnm.io.MAT.save(network=network, phases=phases,
+                                filename=filename)
 
     def _gen_name(self):
         r"""
