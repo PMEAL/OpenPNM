@@ -38,16 +38,13 @@ class GenericPhysics(Base, ModelsMixin):
         # Deal with network or simulation arguments
         if network is not None:
             simulation = network.simulation
-        elif simulation is not None:
-            pass
-        else:
-            raise Exception('Must specify either a network or a simulation')
 
         super().__init__(simulation=simulation, **kwargs)
 
         if phase is not None:
             self.settings['phase'] = phase.name
         if geometry is not None:
+            self.settings['geometry'] = geometry.name
             self.set_locations(geometry)
 
     def set_locations(self, geometry):

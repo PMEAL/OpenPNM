@@ -25,7 +25,7 @@ alg = op.algorithms.FickianDiffusion(network=pn, phase=water)
 alg.setup(conductance='throat.conductance', quantity='pore.mole_fraction')
 alg.set_BC(pores=pn.pores('top'), bctype='dirichlet', bcvalues=0.5)
 alg.set_BC(pores=pn.pores('bottom'), bctype='dirichlet', bcvalues=0.0)
-alg['pore.mole_fraction'] = 0
+alg['pore.mole_fraction'] = 1
 
 rxn = op.algorithms.GenericReaction(network=pn, pores=[70, 71])
 rxn['pore.k'] = 1e-1
@@ -39,10 +39,14 @@ rxn.settings['rate_model'] = 'pore.rxn_rate'
 alg.set_source(source=rxn)
 
 rxn2 = op.algorithms.GenericReaction(network=pn, pores=[50, 51])
-rxn2.models = rxn.models.copy()
 rxn2.settings['rate_model'] = 'pore.rxn_rate'
-rxn2['pore.k'] = 1e-5
+rxn2['pore.k'] = 1e-1
 rxn2['pore.alpha'] = 2
+rxn2.add_model(propname='pore.rxn_rate',
+               model=op.algorithms.models.standard_kinetics,
+               quantity='pore.mole_fraction',
+               prefactor='pore.k', exponent='pore.alpha',
+               regen_mode='deferred')
 alg.set_source(source=rxn2)
 
 alg.run()

@@ -42,10 +42,6 @@ class GenericGeometry(Base, ModelsMixin):
         # Deal with network or simulation arguments
         if network is not None:
             simulation = network.simulation
-        elif simulation is not None:
-            pass
-        else:
-            raise Exception('Must specify either a network or a simulation')
 
         super().__init__(simulation=simulation, **kwargs)
 
