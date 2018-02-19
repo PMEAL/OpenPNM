@@ -1,5 +1,5 @@
 import h5py
-from openpnm.core import logging, Simulation
+from openpnm.core import logging, Project
 from openpnm.io import Dict
 from openpnm.network import GenericNetwork
 from openpnm.utils import FlatDict
@@ -66,14 +66,14 @@ class HDF5(GenericIO):
             'throat.'
 
         """
-        simulation, network, phases = cls._parse_args(network=network,
-                                                      phases=phases)
+        project, network, phases = cls._parse_args(network=network,
+                                                   phases=phases)
         dct = Dict.to_dict(network=network, phases=phases, element=element,
                            interleave=interleave, flatten=flatten,
                            categorize_by=categorize_by)
         d = FlatDict(dct, delimiter='/')
         if filename == '':
-            filename = simulation.name
+            filename = project.name
         f = h5py.File(filename+".hdf", "w")
         for item in d.keys():
             tempname = '_'.join(item.split('.'))
@@ -108,15 +108,15 @@ class HDF5(GenericIO):
         Notes
         -----
         This method only saves the data, not any of the pore-scale models or
-        other attributes.  To save an actual OpenPNM Simulation use the
+        other attributes.  To save an actual OpenPNM Project use the
         ``Workspace`` object.
 
         """
-        simulation, network, phases = cls._parse_args(network=network,
-                                                      phases=phases)
+        project, network, phases = cls._parse_args(network=network,
+                                                   phases=phases)
 
         if filename == '':
-            filename = simulation.name
+            filename = project.name
         else:
             filename = filename.rsplit('.hdf', 1)[0]
         f = cls.to_hdf5(network=network, phases=phases, interleave=True,
@@ -124,18 +124,18 @@ class HDF5(GenericIO):
         f.close()
 
     @classmethod
-    def load(cls, filename, simulation=None):
+    def load(cls, filename, project=None):
         r"""
-        Load data from the specified file into an OpenPNM simulation
+        Load data from the specified file into an OpenPNM project
 
         Parameters
         ----------
         filname : string
             The path to the file to be openned
 
-        simulation : OpenPNM Simulation object
-            A GenericNetwork is created and added to the specified Simulation.
-            If no Simulation object is supplied then one will be created and
+        project : OpenPNM Project object
+            A GenericNetwork is created and added to the specified Project.
+            If no Project is supplied then one will be created and
             returned.
 
         Notes

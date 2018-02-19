@@ -61,7 +61,7 @@ def neighbor(target, pore_prop='pore.seed', mode='min'):
         'max' and 'mean'.
 
     """
-    network = target.simulation.network
+    network = target.project.network
     throats = network.throats(target.name)
     P12 = network.find_connected_pores(throats)
     pvalues = network[pore_prop][P12]

@@ -27,7 +27,7 @@ class GenericPhysics(Base, ModelsMixin):
 
     """
 
-    def __init__(self, simulation=None, network=None, phase=None,
+    def __init__(self, project=None, network=None, phase=None,
                  geometry=None, settings={}, **kwargs):
 
         # Define some default settings
@@ -35,11 +35,11 @@ class GenericPhysics(Base, ModelsMixin):
         # Overwrite with user supplied settings, if any
         self.settings.update(settings)
 
-        # Deal with network or simulation arguments
+        # Deal with network or project arguments
         if network is not None:
-            simulation = network.simulation
+            project = network.project
 
-        super().__init__(simulation=simulation, **kwargs)
+        super().__init__(project=project, **kwargs)
 
         if phase is not None:
             self.settings['phase'] = phase.name
@@ -48,8 +48,8 @@ class GenericPhysics(Base, ModelsMixin):
             self.set_locations(geometry)
 
     def set_locations(self, geometry):
-        phase = self.simulation.phases()[self.settings['phase']]
-        network = self.simulation.network
+        phase = self.project.phases()[self.settings['phase']]
+        network = self.project.network
 
         # Adjust array sizes
         self['pore.all'] = ones((geometry.Np, ), dtype=bool)
@@ -63,7 +63,7 @@ class GenericPhysics(Base, ModelsMixin):
 
     def __getitem__(self, key):
         element = key.split('.')[0]
-        boss = self.simulation.find_phase(self)
+        boss = self.project.find_phase(self)
         if key.split('.')[-1] == '_id':
             inds = boss._get_indices(element=element, labels=self.name)
             vals = boss[element+'._id'][inds]

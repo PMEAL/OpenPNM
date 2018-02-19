@@ -301,7 +301,7 @@ def trim(network, pores=[], throats=[]):
     network['throat._id_conns'] = network['pore._id'][network['throat.conns']]
 
     # Delete specified pores and throats from all objects
-    for item in reversed(network.simulation):
+    for item in reversed(network.project):
         Ps = item.map_pores(ids=network['pore._id'][Pkeep])
         Ts = item.map_throats(ids=network['throat._id'][Tkeep])
         item.update({'pore.all': sp.ones((sp.size(Ps),), dtype=bool)})
@@ -355,9 +355,9 @@ def extend(network, pore_coords=[], throat_conns=[], labels=[]):
     be altered directly.
 
     '''
-    if len(network.simulation.phases()) > 0:
+    if len(network.project.phases()) > 0:
         raise Exception('Network has active Phases, copy network to a new ' +
-                        'simulation and try again')
+                        'project and try again')
 
     logger.info('Extending network')
     Np_old = network.num_pores()
@@ -550,10 +550,10 @@ def clone_pores(network, pores, labels=['clone'], mode='parents'):
                       manner as parents were connected
         - 'isolated': No connections between parents or siblings
     '''
-    if len(network.simulation.geometries()) > 0:
+    if len(network.project.geometries()) > 0:
         logger.warning('Network has active Geometries, new pores must be \
                         assigned a Geometry')
-    if len(network.simulation.phases()) > 0:
+    if len(network.project.phases()) > 0:
         raise Exception('Network has active Phases, cannot proceed')
 
     logger.debug('Cloning pores')
@@ -650,7 +650,7 @@ def stitch(network, donor, P_network, P_donor, method='nearest',
 
     '''
     # Ensure Networks have no associated objects yet
-    if (len(network.simulation) > 1) or (len(donor.simulation) > 1):
+    if (len(network.project) > 1) or (len(donor.project) > 1):
         raise Exception('Cannot stitch a Network with active sibling objects')
     network['throat.stitched'] = False
     # Get the initial number of pores and throats

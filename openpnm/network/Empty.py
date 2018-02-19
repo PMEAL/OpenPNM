@@ -14,10 +14,10 @@ class Empty(GenericNetwork):
     r"""
 
     """
-    def __init__(self, name=None, simulation=None):
+    def __init__(self, name=None, project=None):
         self['pore.coords'] = sp.ndarray(shape=(0, 3), dtype=float)
         self['throat.conns'] = sp.ndarray(shape=(0, 2), dtype=int)
-        super().__init__(name=name, simulation=simulation)
+        super().__init__(name=name, project=project)
 
     def _set_Np(self, Np):
         self.update({'pore.all': sp.ones(shape=(Np, ), dtype=bool)})

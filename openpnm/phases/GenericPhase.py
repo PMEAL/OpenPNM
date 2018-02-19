@@ -23,22 +23,22 @@ class GenericPhase(Base, ModelsMixin):
 
     """
 
-    def __init__(self, network=None, simulation=None, settings={}, **kwargs):
+    def __init__(self, network=None, project=None, settings={}, **kwargs):
         # Define some default settings
         self.settings.update({'prefix': 'phase'})
         # Overwrite with user supplied settings, if any
         self.settings.update(settings)
 
-        # Deal with network or simulation arguments
+        # Deal with network or project arguments
         if network is not None:
-            simulation = network.simulation
+            project = network.project
 
-        super().__init__(simulation=simulation, **kwargs)
+        super().__init__(project=project, **kwargs)
 
-        # If simulation has a network object, adjust pore and throat sizes
-        if simulation.network:
-            self['pore.all'] = ones((simulation.network.Np, ), dtype=bool)
-            self['throat.all'] = ones((simulation.network.Nt, ), dtype=bool)
+        # If project has a network object, adjust pore and throat sizes
+        if project.network:
+            self['pore.all'] = ones((project.network.Np, ), dtype=bool)
+            self['throat.all'] = ones((project.network.Nt, ), dtype=bool)
 
         # Set standard conditions on the fluid to get started
         self['pore.temperature'] = 298.0
@@ -47,14 +47,14 @@ class GenericPhase(Base, ModelsMixin):
     def __getitem__(self, key):
         element = key.split('.')[0]
         if key.split('.')[-1] == '_id':
-            net = self.simulation.network
+            net = self.project.network
             return net[element+'._id']
         if key.split('.')[-1] == self.name:
             return self[element+'.all']
         if key not in self.keys():
             logger.debug(key + ' not on Phase, constructing data from Physics')
-            names = self.simulation.find_physics(phase=self)
-            physics = [self.simulation.physics()[i] for i in names]
+            names = self.project.find_physics(phase=self)
+            physics = [self.project.physics()[i] for i in names]
             return self._interleave_data(key, physics)
         else:
             return super().__getitem__(key)

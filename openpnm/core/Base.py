@@ -16,12 +16,12 @@ class Base(dict):
         instance = super(Base, cls).__new__(cls, *args, **kwargs)
         return instance
 
-    def __init__(self, Np=0, Nt=0, name=None, simulation=None):
+    def __init__(self, Np=0, Nt=0, name=None, project=None):
         self.settings.setdefault('prefix', 'base')
         super().__init__()
-        if simulation is None:
-            simulation = ws.new_simulation()
-        simulation.append(self)
+        if project is None:
+            project = ws.new_project()
+        project.append(self)
         self.name = name
         self.update({'pore.all': sp.ones(shape=(Np, ), dtype=bool)})
         self.update({'throat.all': sp.ones(shape=(Nt, ), dtype=bool)})
@@ -98,12 +98,12 @@ class Base(dict):
         if not hasattr(self, '_name'):
             self._name = None
         if name is None:
-            name = self.simulation._generate_name(self)
-        self.simulation._validate_name(name)
+            name = self.project._generate_name(self)
+        self.project._validate_name(name)
         if self._name is not None:
             logger.info('Changing the name of '+self.name+' to '+name)
             # Rename any label arrays in other objects
-            for item in self.simulation:
+            for item in self.project:
                 if 'pore.'+self.name in item.keys():
                     item['pore.'+name] = item.pop('pore.'+self.name)
                 if 'throat.'+self.name in item.keys():
@@ -117,12 +117,12 @@ class Base(dict):
 
     name = property(_get_name, _set_name)
 
-    def _get_simulation(self):
-        for sim in ws.values():
-            if self in sim:
-                return sim
+    def _get_project(self):
+        for proj in ws.values():
+            if self in proj:
+                return proj
 
-    simulation = property(fget=_get_simulation)
+    project = property(fget=_get_project)
 
     def clear(self, element=None, mode='all'):
         r"""
@@ -725,7 +725,7 @@ class Base(dict):
         True
         """
         element = self._parse_element(prop.split('.')[0], single=True)
-        N = self.simulation.network._count(element)
+        N = self.project.network._count(element)
 
         # Attempt to fetch the requested prop array from each object
         # Use super version of getitem to avoid recursive look-ups
@@ -803,12 +803,12 @@ class Base(dict):
             Ps = net.pores()
             label = 'all'
         elif ('GenericPhase' in mro) or ('GenericAlgorithm' in mro):
-            net = self.simulation.network
+            net = self.project.network
             Ts = net.throats()
             Ps = net.pores()
             label = 'all'
         elif ('GenericGeometry' in mro) or ('GenericPhysics' in mro):
-            net = self.simulation.network
+            net = self.project.network
             Ts = net.throats(self.name)
             Ps = net.pores(self.name)
             label = self.name

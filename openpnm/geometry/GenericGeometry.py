@@ -32,23 +32,23 @@ class GenericGeometry(Base, ModelsMixin):
     >>> geom = op.geometry.GenericGeometry(network=pn, pores=Ps, throats=Ts)
     """
 
-    def __init__(self, network=None, simulation=None, pores=[], throats=[],
+    def __init__(self, network=None, project=None, pores=[], throats=[],
                  settings={}, **kwargs):
         # Define some default settings
         self.settings.update({'prefix': 'geo'})
         # Overwrite with user supplied settings, if any
         self.settings.update(settings)
 
-        # Deal with network or simulation arguments
+        # Deal with network or project arguments
         if network is not None:
-            simulation = network.simulation
+            project = network.project
 
-        super().__init__(simulation=simulation, **kwargs)
+        super().__init__(project=project, **kwargs)
 
         self.add_locations(pores=pores, throats=throats)
 
     def __getitem__(self, key):
-        net = self.simulation.network
+        net = self.project.network
         element = key.split('.')[0]
         inds = net._get_indices(element=element, labels=self.name)
         # Get uuid from network
@@ -87,11 +87,11 @@ class GenericGeometry(Base, ModelsMixin):
         element = self._parse_element(element=element, single=True)
         # Use the network's _parse_indices, since indicies could be 'network'
         # length boolean masks
-        network = self.simulation.network
+        network = self.project.network
         indices = network._parse_indices(indices)
 
-        net = self.simulation.network
-        sim = self.simulation
+        net = self.project.network
+        proj = self.project
 
         if element+'.'+self.name not in net.keys():
             net[element+'.'+self.name] = False
@@ -99,7 +99,7 @@ class GenericGeometry(Base, ModelsMixin):
         if mode == 'add':
             # Ensure indices are not already assigned to another object
             temp = sp.zeros(shape=[net._count(element=element), ], dtype=bool)
-            for item in sim.geometries().keys():
+            for item in proj.geometries().keys():
                 temp += net[element+'.'+item]
             if sp.any(temp[indices]):
                 raise Exception('Some of the given '+element+' are already ' +
@@ -109,8 +109,8 @@ class GenericGeometry(Base, ModelsMixin):
             set_flag = False
 
         # Change lables of all associated physics in their respective phases
-        for phase in sim.phases().values():
-            phys = sim.find_physics(geometry=self, phase=phase)
+        for phase in proj.phases().values():
+            phys = proj.find_physics(geometry=self, phase=phase)
             if phys:
                 if element+'.'+phys.name not in phase.keys():
                     phase[element+'.'+phys.name] = False
@@ -153,4 +153,4 @@ class GenericGeometry(Base, ModelsMixin):
         A shortcut to get a handle to the associated network
         There can only be one so this works
         """
-        return self.simulation.network
+        return self.project.network

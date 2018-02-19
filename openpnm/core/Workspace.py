@@ -28,12 +28,12 @@ class Workspace(dict):
         self.comments = 'Using OpenPNM ' + openpnm.__version__
         self.settings = Settings()
 
-    def __setitem__(self, name, simulation):
+    def __setitem__(self, name, project):
         if name in self.keys():
-            raise Exception("A simulation named " + name + " already exists")
+            raise Exception("A project named " + name + " already exists")
         if name is None:
             name = self._gen_name()
-        super().__setitem__(name, simulation)
+        super().__setitem__(name, project)
 
     def _setloglevel(self, level):
         logger.setLevel(level)
@@ -43,13 +43,13 @@ class Workspace(dict):
 
     loglevel = property(fget=_getloglevel, fset=_setloglevel)
 
-    def _create_console_handles(self, simulation):
+    def _create_console_handles(self, project):
         r"""
-        Adds all objects in the given Simulation to the console as variables
+        Adds all objects in the given project to the console as variables
         with handle names taken from each object's name.
         """
         import __main__
-        for item in simulation:
+        for item in project:
             __main__.__dict__[item.name] = item
 
     def save_workspace(self, filename=''):
@@ -68,90 +68,90 @@ class Workspace(dict):
         r"""
         """
         self.clear()
-        self.load_simulation(filename=filename)
+        self.load_project(filename=filename)
 
-    def save_simulation(self, simulation, filename=''):
+    def save_project(self, project, filename=''):
         r"""
-        Save given simulation to a 'pnm' file, including all of associated
+        Save given project to a 'pnm' file, including all of associated
         objects, but not Algorithms.
 
         Parameters
         ----------
-        simulation : OpenPNM Simulation
-            The simulation to save
+        project : OpenPNM Project
+            The project to save
 
         filename : string, optional
-            If no filename is given, the given simulation name is used
+            If no filename is given, the given project name is used
         """
         if filename == '':
-            filename = simulation.name
+            filename = project.name
         else:
             filename = filename.rsplit('.pnm', 1)[0]
 
         # Save dictionary as pickle
-        d = {simulation.name: simulation}
+        d = {project.name: project}
         pickle.dump(d, open(filename + '.pnm', 'wb'))
 
-    def load_simulation(self, filename):
+    def load_project(self, filename):
         r"""
-        Loads a Simulation from the specified 'pnm' file and adds it
+        Loads a project from the specified 'pnm' file and adds it
         to the Workspace
 
         Parameters
         ----------
         filename : string
-            The name of the file containing the Network simulation to load
+            The name of the file containing the Network project to load
         """
         filename = filename.rsplit('.pnm', 1)[0]
         d = pickle.load(open(filename + '.pnm', 'rb'))
         for name in d.keys():
             self[name] = d[name]
 
-    def close_simulation(self, simulation):
+    def close_project(self, project):
         r"""
         """
-        del self[simulation.name]
+        del self[project.name]
 
-    def copy_simulation(self, simulation, new_name=None):
+    def copy_project(self, project, new_name=None):
         r"""
-        Make a copy of an existing Simulation object
+        Make a copy of an existing project
 
         Parameters
         ----------
-        simulation : Simulation object
-            The Simulation object to be copied
+        project : Project object
+            The Project object to be copied
 
         name : string, optional
-            A name for the new copy of the Simulation.  If not supplied, then
-            one will be generated (e.g. 'sim_02')
+            A name for the new copy of the project.  If not supplied, then
+            one will be generated (e.g. 'proj_02')
 
         Returns
         -------
-        The new Simulation object
+        The new Project object
 
         """
-        new_sim = copy.deepcopy(simulation)
+        new_sim = copy.deepcopy(project)
         new_sim._name = hex(id(new_sim))  # Assign temporary name
         new_sim.name = new_name
         return new_sim
 
-    def new_simulation(self, name=None):
+    def new_project(self, name=None):
         r"""
-        Creates a new, empty simulation object
+        Creates a new, empty project object
 
         Parameters
         ----------
         name : string (optional)
-            The unique name to give to the Simulation.  If none is given, one
+            The unique name to give to the project.  If none is given, one
             will be automatically generated (e.g. 'sim_01`)
 
         Returns
         -------
-        An empty Simulation object, suitable for passing into a Network
+        An empty project object, suitable for passing into a Network
         generator
 
         """
-        sim = openpnm.core.Simulation(name=name)
+        sim = openpnm.core.Project(name=name)
         return sim
 
     def import_data(self, filename):
@@ -175,7 +175,7 @@ class Workspace(dict):
 
         filename : string
             The file name to use.  If none is supplied then one will be
-            automatically generated based on the name of the Simulation
+            automatically generated based on the name of the project
             containing the supplied Network, with the date and time appended.
 
         filetype : string
@@ -210,9 +210,9 @@ class Workspace(dict):
         about the format refer to ``openpnm.io``.
 
         """
-        simulation = network.simulation
+        project = network.project
         if filename is None:
-            filename = simulation.name + '_' + time.strftime('%Y%b%d_%H%M%p')
+            filename = project.name + '_' + time.strftime('%Y%b%d_%H%M%p')
         if filetype.lower() in ['vtp', 'vtp', 'vtu']:
             openpnm.io.VTK.save(network=network, phases=phases,
                                 filename=filename)
@@ -232,7 +232,7 @@ class Workspace(dict):
 
     def _gen_name(self):
         r"""
-        Generates a valid name for simulations
+        Generates a valid name for projects
         """
         n = [0]
         for item in self.keys():

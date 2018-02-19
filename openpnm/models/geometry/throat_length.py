@@ -25,7 +25,7 @@ def straight(target, pore_diameter='pore.diameter', L_negative=1e-9):
         default is 1 nm.  To accept negative throat lengths, set this value to
         ``None``.
     """
-    network = target.simulation.network
+    network = target.project.network
     # Initialize throat_property['length']
     throats = network.throats(target.name)
     pore1 = network['throat.conns'][:, 0]

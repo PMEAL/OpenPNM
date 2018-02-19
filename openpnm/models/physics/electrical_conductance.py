@@ -19,8 +19,8 @@ def series_resistors(target, conductivity='pore.electrical_conductivity',
 
 
     """
-    network = target.simulation.network
-    phase = target.simulation.find_phase(target)
+    network = target.project.network
+    phase = target.project.find_phase(target)
     # Get Nt-by-2 list of pores connected to each throat
     Ps = network['throat.conns']
     # Get properties in every pore in the network

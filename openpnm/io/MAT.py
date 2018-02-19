@@ -25,13 +25,13 @@ class MAT(GenericIO):
     """
 
     @classmethod
-    def save(cls, simulation, filename='', phases=[]):
+    def save(cls, network, phases=[], filename=''):
         r"""
         Write Network to a Mat file for exporting to Matlab.
 
         Parameters
         ----------
-        simulation : OpenPNM Network Object
+        network : OpenPNM Network Object
 
         filename : string
             Desired file name, defaults to network name if not given
@@ -40,7 +40,6 @@ class MAT(GenericIO):
             Phases that have properties we want to write to file
 
         """
-        network = simulation.network
         if filename == '':
             filename = network.name
         filename = filename.replace('.mat', '') + '.mat'

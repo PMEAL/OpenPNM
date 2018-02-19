@@ -36,7 +36,7 @@ class FickianDiffusion(GenericLinearTransport):
         This calculates the effective diffusivity in this linear transport
         algorithm.
         """
-        phase = self.simulation.phases[self['phase']]
+        phase = self.project.phases[self['phase']]
         d_normal = self._calc_eff_prop()
         self._eff_property = d_normal / sp.mean(phase['pore.molar_density'])
         return self._eff_property

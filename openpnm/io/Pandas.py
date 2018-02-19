@@ -30,8 +30,8 @@ class Pandas():
             are shorter than the *throat* columns.
 
         """
-        simulation, network, phases = cls._parse_args(network=network,
-                                                      phases=phases)
+        project, network, phases = cls._parse_args(network=network,
+                                                   phases=phases)
 
         # Initialize pore and throat data dictionary using Dict class
         pdata = Dict.to_dict(network=network, phases=phases, element='pore',

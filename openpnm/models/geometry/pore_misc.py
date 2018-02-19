@@ -86,7 +86,7 @@ def neighbor(target, throat_prop='throat.seed', mode='min'):
         Controls how the pore property is calculated.  Options are 'min',
         'max' and 'mean'.
     """
-    network = target.simulation.network
+    network = target.project.network
     Ps = target.pores()
     data = target[throat_prop]
     neighborTs = network.find_neighbor_throats(pores=Ps,

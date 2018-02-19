@@ -1,17 +1,17 @@
-from openpnm.core import logging, Simulation
+from openpnm.core import logging, Project
 from openpnm.network import Cubic
 from openpnm.geometry import GenericGeometry
 import openpnm.models.geometry as gm
 logger = logging.getLogger(__name__)
 
 
-class BereaCubic(Simulation):
+class BereaCubic(Project):
 
     def __init__(self, shape, name='BereaCubic', **kwargs):
         super().__init__(name=name)
 
         net = Cubic(shape=shape, spacing=1e-4, connectivity=26,
-                    simulation=self, **kwargs)
+                    project=self, **kwargs)
 
         geom = GenericGeometry(network=net, pores=net.Ps, throats=net.Ts)
 

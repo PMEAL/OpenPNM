@@ -84,7 +84,7 @@ def spatially_correlated(target, weights=None, strel=None):
 
     """
     import scipy.ndimage as spim
-    network = target.simulation.network
+    network = target.project.network
     # The following will only work on Cubic networks
     x = network._shape[0]
     y = network._shape[1]
@@ -146,7 +146,7 @@ def location_adjusted(target, image=None):
     >>> geom.add_model(propname='pore.seed', model=model, image=im)
     """
     # Generate the random seed values
-    network = target.simulation.network
+    network = target.project.network
     value = _sp.random.rand(target.num_pores(),)
     if image is not None:
         if _sp.any(image < 0) or _sp.any(image > 1):

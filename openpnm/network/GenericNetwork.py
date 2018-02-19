@@ -13,10 +13,10 @@ class GenericNetwork(Base, ModelsMixin):
     GenericNetwork - Base class to construct pore networks
 
     """
-    def __init__(self, simulation=None, settings={}, **kwargs):
+    def __init__(self, project=None, settings={}, **kwargs):
         self.settings.setdefault('prefix', 'net')
         self.settings.update(settings)
-        super().__init__(simulation=simulation, **kwargs)
+        super().__init__(project=project, **kwargs)
         self._gen_ids()
 
         # Initialize adjacency and incidence matrix dictionaries
@@ -40,7 +40,7 @@ class GenericNetwork(Base, ModelsMixin):
             return self[element+'.all']
         if key not in self.keys():
             logger.debug(key + ' not on Network, check on Geometries')
-            geoms = self.simulation.geometries().values()
+            geoms = self.project.geometries().values()
             return self._interleave_data(key, geoms)
         else:
             return super().__getitem__(key)

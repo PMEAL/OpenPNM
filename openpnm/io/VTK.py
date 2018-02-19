@@ -1,6 +1,6 @@
 from xml.etree import ElementTree as ET
 import numpy as np
-from openpnm.core import logging, Simulation
+from openpnm.core import logging, Project
 from openpnm.network import GenericNetwork
 from openpnm.io import GenericIO
 logger = logging.getLogger(__name__)
@@ -50,11 +50,11 @@ class VTK(GenericIO):
             after ther network
 
         """
-        simulation, network, phases = cls._parse_args(network=network,
-                                                      phases=phases)
+        project, network, phases = cls._parse_args(network=network,
+                                                   phases=phases)
 
         if filename == '':
-            filename = simulation.name
+            filename = project.name
         if ~filename.endswith('.vtp'):
             filename = filename+'.vtp'
 
@@ -128,7 +128,7 @@ class VTK(GenericIO):
             f.write(string)
 
     @classmethod
-    def load(cls, filename, simulation=None):
+    def load(cls, filename, project=None):
         r"""
         Read in pore and throat data from a saved VTK file.
 
@@ -138,10 +138,9 @@ class VTK(GenericIO):
             The name of the file containing the data to import.  The formatting
             of this file is outlined below.
 
-        simulation : OpenPNM Simulation object
-            A GenericNetwork is created and added to the specified Simulation.
-            If no Simulation object is supplied then one will be created and
-            returned.
+        project : OpenPNM Project object
+            A GenericNetwork is created and added to the specified Project.
+            If no Project is supplied then one will be created and returned.
 
         """
         net = {}
@@ -174,11 +173,11 @@ class VTK(GenericIO):
             propname = key.split('.')[1]
             net.update({element+'.'+propname: array})
 
-        if simulation is None:
-            simulation = Simulation(name=filename.split('.')[0])
-        network = GenericNetwork(simulation=simulation)
+        if project is None:
+            project = Project(name=filename.split('.')[0])
+        network = GenericNetwork(project=project)
         network = cls._update_network(network=network, net=net)
-        return simulation
+        return project
 
     @staticmethod
     def _array_to_element(name, array, n=1):

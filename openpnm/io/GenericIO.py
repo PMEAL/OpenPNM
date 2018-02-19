@@ -109,12 +109,12 @@ class GenericIO():
         # Ensure phases is a list, even if empty
         if type(phases) is not list:
             phases = [phases]
-        # Get handle to simulation object
+        # Get handle to project object
         if len(network) == 0:
             if len(phases) == 0:
                 raise Exception('Must specify one of network or phase')
             else:
-                simulation = phases[0].simulation
+                project = phases[0].project
         else:
-            simulation = network[0].simulation
-        return (simulation, network, phases)
+            project = network[0].project
+        return (project, network, phases)

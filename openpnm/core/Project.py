@@ -4,7 +4,7 @@ import numpy as np
 ws = Workspace()
 
 
-class Simulation(list):
+class Project(list):
 
     def __init__(self, name=None):
         super().__init__()
@@ -17,7 +17,7 @@ class Simulation(list):
         if 'openpnm' in str(type(obj)):
             if 'GenericNetwork' in obj.mro():
                 if self.network:
-                    raise Exception('Simulation already has a network')
+                    raise Exception('Project already has a network')
             super().append(obj)
         else:
             raise Exception('Only OpenPNM objects can be added')

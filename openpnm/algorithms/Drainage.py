@@ -405,7 +405,7 @@ class Drainage(GenericAlgorithm):
         Determine which pores and throats are trapped by invading phase.  This
         method is called by ``run`` if 'trapping' is set to True.
         """
-        net = self.simulation.network
+        net = self.project.network
         # Generate a list containing boolean values for throat state
         Tinvaded = self['throat.inv_Pc'] < sp.inf
         # Add residual throats, if any, to list of invaded throats
@@ -439,7 +439,7 @@ class Drainage(GenericAlgorithm):
         Determine which pores and throats are invaded at a given applied
         capillary pressure.  This method is called by ``run``.
         """
-        net = self.simulation.network
+        net = self.project.network
         # Generate a list containing boolean values for throat state
         Tinvaded = self['throat.entry_pressure'] <= inv_val
         # Add residual throats, if any, to list of invaded throats
@@ -497,7 +497,7 @@ class Drainage(GenericAlgorithm):
         the keys 'pore.volume' and 'throat.volume'.  This cannot be customized
         at this time.
         """
-        net = self.simulation.network
+        net = self.project.network
         # Infer list of applied capillary pressures
         PcPoints = self._inv_points
         if PcPoints[-1] == sp.inf:  # Remove infinity from PcPoints if present
@@ -560,7 +560,7 @@ class Drainage(GenericAlgorithm):
         The 'pore(throat)_filling' model must accept the applied capillary
         pressure as 'Pc'.  This is not customizable at the moment.
         """
-        net = self.simulation.network
+        net = self.project.network
         if element == 'pore':
             key = self._pore_filling
             vol = self._pore_volume
@@ -643,7 +643,7 @@ class Drainage(GenericAlgorithm):
         partial occupancy so that summing occupancy for both phases equals
         1.0 for every pore.
         """
-        net = self.simulation.network
+        net = self.project.network
         Psatn = self['pore.inv_Pc'] <= Pc
         Tsatn = self['throat.inv_Pc'] <= Pc
         self._inv_phase['pore.occupancy'] = sp.array(Psatn, dtype=float)

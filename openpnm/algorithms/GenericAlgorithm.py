@@ -22,9 +22,9 @@ class GenericAlgorithm(Base):
 
     """
 
-    def __init__(self, network=None, simulation=None, settings={}, **kwargs):
+    def __init__(self, network=None, project=None, settings={}, **kwargs):
         self.settings.setdefault('prefix', 'alg')
         self.settings.update(settings)
         if network is not None:
-            simulation = network.simulation
-        super().__init__(simulation=simulation, **kwargs)
+            project = network.project
+        super().__init__(project=project, **kwargs)

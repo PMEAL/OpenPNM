@@ -1,5 +1,5 @@
 import pickle
-from openpnm.core import logging, Simulation, Base
+from openpnm.core import logging, Project, Base
 from openpnm.network import GenericNetwork
 from openpnm.utils import NestedDict, FlatDict
 from openpnm.io import GenericIO
@@ -16,7 +16,7 @@ class Dict(GenericIO):
     """
 
     @classmethod
-    def from_dict(cls, dct, simulation=None):
+    def from_dict(cls, dct, project=None):
 
         # Now parse through dict and put values on correct objects
         dct = FlatDict(dct, delimiter='/')
@@ -25,15 +25,15 @@ class Dict(GenericIO):
             level = item.split('/')
             sim[level[-2]][level[-1]] = dct[item]
 
-        if simulation is None:
-            simulation = Simulation()
+        if project is None:
+            project = Project()
 
         for item in sim.keys():
-            obj = Base(simulation=simulation)
+            obj = Base(project=project)
             obj.update(sim[item])
             obj._name = item
 
-        return simulation
+        return project
 
     @classmethod
     def to_dict(cls, network=None, phases=[], element=['pore', 'throat'],
@@ -105,8 +105,8 @@ class Dict(GenericIO):
         *HDF5* file directly, since the hierarchy is dictated by the placement
         of '/' characters.
         """
-        simulation, network, phases = cls._parse_args(network=network,
-                                                      phases=phases)
+        project, network, phases = cls._parse_args(network=network,
+                                                   phases=phases)
 
         d = NestedDict()
         delim = '/'
@@ -133,7 +133,7 @@ class Dict(GenericIO):
                 path = build_path(obj=net, key=key,)
                 d[path] = net[key]
 
-            for geo in simulation.geometries().values():
+            for geo in project.geometries().values():
                 for key in geo.keys(element=element):
                     if interleave:
                         path = build_path(obj=net, key=key)
@@ -153,8 +153,8 @@ class Dict(GenericIO):
                 path = build_path(obj=phase, key=key)
                 d[path] = phase[key]
 
-            for physics in simulation.find_physics(phase=phase):
-                phys = simulation.physics()[physics]
+            for physics in project.find_physics(phase=phase):
+                phys = project.physics()[physics]
                 for key in phys.keys(element=element):
                     if interleave:
                         path = build_path(obj=phase, key=key)
@@ -195,16 +195,16 @@ class Dict(GenericIO):
         library.
 
         This method only saves the data, not any of the pore-scale models or
-        other attributes.  To save an actual OpenPNM Simulation use the
+        other attributes.  To save an actual OpenPNM Project use the
         ``Workspace`` object.
 
         """
-        simulation = network.simulation
+        project = network.project
         if filename == '':
-            filename = simulation.name
+            filename = project.name
         else:
             filename = filename.rsplit('.dct', 1)[0]
-        d = cls.to_dict(simulation=simulation, phases=phases,
+        d = cls.to_dict(project=project, phases=phases,
                         interleave=True, categorize=False)
         for item in list(d.keys()):
             new_name = item.split('.')
@@ -212,18 +212,18 @@ class Dict(GenericIO):
         pickle.dump(d, open(filename + '.dct', 'wb'))
 
     @classmethod
-    def load(cls, filename, simulation=None):
+    def load(cls, filename, project=None):
         r"""
-        Load data from the specified file into an OpenPNM simulation
+        Load data from the specified file into an OpenPNM project
 
         Parameters
         ----------
         filname : string
             The path to the file to be openned
 
-        simulation : OpenPNM Simulation object
-            A GenericNetwork is created and added to the specified Simulation.
-            If no Simulation object is supplied then one will be created and
+        project : OpenPNM Project object
+            A GenericNetwork is created and added to the specified Project.
+            If no Project object is supplied then one will be created and
             returned.
 
         Notes
@@ -234,8 +234,8 @@ class Dict(GenericIO):
         """
         with cls._read_file(filename=filename, ext='dct', mode='rb') as f:
             net = pickle.load(f)
-        if simulation is None:
-            simulation = Simulation(name=filename.split('.')[0])
-        network = GenericNetwork(simulation=simulation)
+        if project is None:
+            project = Project(name=filename.split('.')[0])
+        network = GenericNetwork(project=project)
         network = cls._update_network(network=network, net=net)
-        return simulation
+        return project

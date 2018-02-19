@@ -55,7 +55,7 @@ class StokesFlow(GenericLinearTransport):
         This calculates the effective permeability in this linear
         transport algorithm.
         """
-        phase = self.simulation.phases[self['phase']]
+        phase = self.project.phases[self['phase']]
         d_normal = self._calc_eff_prop()
         self._eff_property = d_normal / sp.mean(phase['pore.viscosity'])
         return self._eff_property

@@ -44,8 +44,8 @@ def washburn(target, surface_tension='pore.surface_tension',
     suitable for highly non-wetting invading phases in most materials.
 
     """
-    network = target.simulation.network
-    phase = target.simulation.find_phase(target)
+    network = target.project.network
+    phase = target.project.find_phase(target)
     if surface_tension.split('.')[0] == 'pore':
         sigma = phase.interpolate_data(propname=surface_tension)
     else:
@@ -112,8 +112,8 @@ def purcell(target, r_toroid, surface_tension='pore.surface_tension',
            Electrochem. Soc. 160, F731 (2013).
 
     """
-    network = target.simulation.network
-    phase = target.simulation.find_phase(target)
+    network = target.project.network
+    phase = target.project.find_phase(target)
     if surface_tension.split('.')[0] == 'pore':
         sigma = phase[surface_tension]
         sigma = phase.interpolate_data(propname=surface_tension)

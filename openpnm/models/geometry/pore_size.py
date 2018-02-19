@@ -88,7 +88,7 @@ def largest_sphere(target, pore_diameter='pore.diameter', iters=10):
     again.
 
     """
-    network = target.simulation.network
+    network = target.project.network
     try:
         D = network[pore_diameter]
         nans = _sp.isnan(D)

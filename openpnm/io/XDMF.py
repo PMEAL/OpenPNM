@@ -25,15 +25,15 @@ class XDMF:
         Notes
         -----
         This method only saves the data, not any of the pore-scale models or
-        other attributes.  To save an actual OpenPNM Simulation use the
+        other attributes.  To save an actual OpenPNM Project use the
         ``Workspace`` object.
 
         """
-        simulation, network, phases = cls._parse_args(network=network,
-                                                      phases=phases)
+        project, network, phases = cls._parse_args(network=network,
+                                                   phases=phases)
 
         if filename == '':
-            filename = simulation.name
+            filename = project.name
         f = h5py.File(filename+".hdf5", "w")
 
         d = Dict.to_dict(network, phases=phases, interleave=True,

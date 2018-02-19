@@ -1,7 +1,7 @@
 import re
 import scipy as sp
 import pandas as pd
-from openpnm.core import logging, Simulation
+from openpnm.core import logging, Project
 from openpnm.network import GenericNetwork
 from openpnm.io import GenericIO
 from openpnm.io.Pandas import Pandas
@@ -65,19 +65,19 @@ class CSV(GenericIO):
         The data from all Geometry objects is added to the file automatically.
 
         """
-        simulation, network, phases = cls._parse_args(network=network,
-                                                      phases=phases)
+        project, network, phases = cls._parse_args(network=network,
+                                                   phases=phases)
 
         df = Pandas.to_dataframe(network=network, phases=phases, join=True)
 
         # Write to file
         if filename == '':
-            filename = simulation.name
+            filename = project.name
         with cls._write_file(filename=filename, ext='csv') as f:
             df.to_csv(f, index=False)
 
     @classmethod
-    def load(cls, filename, simulation=None):
+    def load(cls, filename, project=None):
         r"""
         Opens a 'csv' file, reads in the data, and adds it to the **Network**
 
@@ -87,9 +87,9 @@ class CSV(GenericIO):
             The name of the file containing the data to import.  The formatting
             of this file is outlined below.
 
-        simulation : OpenPNM Simulation object
-            A GenericNetwork is created and added to the specified Simulation.
-            If no Simulation object is supplied then one will be created and
+        project : OpenPNM Project object
+            A GenericNetwork is created and added to the specified Project.
+            If no Project object is supplied then one will be created and
             returned.
 
         """
@@ -123,8 +123,8 @@ class CSV(GenericIO):
             else:
                 dct[item] = sp.array(a.pop(item))
 
-        if simulation is None:
-            simulation = Simulation(name=filename.split('.')[0])
-        network = GenericNetwork(simulation=simulation)
+        if project is None:
+            project = Project(name=filename.split('.')[0])
+        network = GenericNetwork(project=project)
         network = cls._update_network(network=network, net=net)
-        return simulation
+        return project

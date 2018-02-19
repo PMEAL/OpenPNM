@@ -17,10 +17,10 @@ class GenericReaction(GenericAlgorithm, ModelsMixin):
         self.settings['quantity'] = algorithm.settings['quantity']
 
     def apply(self, A=None, b=None):
-        net = self.simulation.network
+        net = self.project.network
         Ps = net.map_pores(self['pore._id'])
-        # Fetch algorithm object from simulation
-        alg = self.simulation[self.settings['algorithm']]
+        # Fetch algorithm object from project
+        alg = self.project[self.settings['algorithm']]
         if A is None:
             A = alg.A
         if b is None:

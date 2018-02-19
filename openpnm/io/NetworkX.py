@@ -1,6 +1,6 @@
 import scipy as sp
 import networkx as nx
-from openpnm.core import logging, Simulation
+from openpnm.core import logging, Project
 from openpnm.io import GenericIO
 from openpnm.network import GenericNetwork
 logger = logging.getLogger(__name__)
@@ -35,7 +35,7 @@ class NetworkX(GenericIO):
     """
 
     @classmethod
-    def load(cls, G, simulation=None):
+    def load(cls, G, project=None):
         r"""
         Add data to an OpenPNM Network from a undirected NetworkX graph object.
 
@@ -47,10 +47,9 @@ class NetworkX(GenericIO):
             gaps, i.e. ``G.nodes() = [0,1,3,4,5]`` is not allowed and should be
             mapped to ``G.nodes() = [0,1,2,3,4]``.
 
-        simulation : OpenPNM Simulation object
-            A GenericNetwork is created and added to the specified Simulation.
-            If no Simulation object is supplied then one will be created and
-            returned.
+        project : OpenPNM Project object
+            A GenericNetwork is created and added to the specified Project.
+            If no Project is supplied then one will be created and returned.
 
         Notes
         -----
@@ -138,7 +137,7 @@ class NetworkX(GenericIO):
                 net['throat.'+item][i] = val
             i += 1
 
-        network = GenericNetwork(simulation=simulation)
+        network = GenericNetwork(project=project)
         network = cls._update_network(network=network, net=net)
         network._gen_ids()
         return network
