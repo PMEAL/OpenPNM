@@ -42,10 +42,17 @@ class Base(dict):
         This is a subclass of the default __setitem__ behavior.  The main aim
         is to limit what type and shape of data can be written to protect
         the integrity of the network.  Specifically, this means only Np or Nt
-        long arrays can be written, and they must be called 'pore.___' or
-        'throat.___'.  Also, any scalars are cast into full length vectors.
+        long arrays can be written, and they must be called 'pore.***' or
+        'throat.***'.  Also, any scalars are cast into full length vectors.
 
         """
+        # If value is a dictionary, then break it up into constituent arrays
+        if hasattr(value, 'keys'):
+            for item in value.keys():
+                prop = item.replace('pore.', '').replace('throat.', '')
+                self.__setitem__(key+'_'+prop, value[item])
+            return
+
         value = sp.array(value, ndmin=1)  # Convert value to an ndarray
 
         # Enforce correct dict naming
@@ -85,7 +92,7 @@ class Base(dict):
             if self._count(element) == 0:
                 self.update({key: value})
             else:
-                raise Exception('Cannot write an array, wrong length: '+key)
+                raise Exception('Cannot write array, wrong length: '+key)
 
     def _set_name(self, name):
         if not hasattr(self, '_name'):
@@ -148,7 +155,7 @@ class Base(dict):
             if item not in ['pore.all', 'throat.all']:
                 del self[item]
 
-    def keys(self, element=None, mode='all'):
+    def keys(self, element=None, mode='skip'):
         r"""
         This subclass works exactly like ``keys`` when no arguments are passed,
         but optionally accepts an ``element`` and/or a ``mode``, which filters
@@ -160,10 +167,22 @@ class Base(dict):
             Can be either 'pore' or 'throat', which limits the returned list of
             keys to only 'pore' or 'throat' keys.
 
-        mode : string (optional, default is 'all')
-            Can be 'labels' or 'props', which limits the returned list of keys
-            to only 'labels' (boolean arrays) or 'props' (numerical arrays).
+        mode : string (optional, default is 'skip')
+            Controls which keys are returned.  Options are:
+
+            **'skip'** : This mode (default) bypasses this subclassed method
+            and just returns the normal KeysView object.
+
+            **'labels'** and/or **'props'** : Limits the returned list of keys
+            to only 'labels' (boolean arrays) and/or 'props' (numerical
+            arrays).
+
+            **'all'** : Returns both 'labels' and 'props'.  This is equivalent
+            to sending a list of both 'labels' and 'props'.
+
         """
+        if mode == 'skip':
+            return super().keys()
         element = self._parse_element(element=element)
         allowed = ['props', 'labels']
         if mode == 'all':
