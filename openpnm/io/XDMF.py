@@ -29,8 +29,11 @@ class XDMF:
         ``Workspace`` object.
 
         """
+        simulation, network, phases = cls._parse_args(network=network,
+                                                      phases=phases)
+
         if filename == '':
-            filename = network.simulation.name
+            filename = simulation.name
         f = h5py.File(filename+".hdf5", "w")
 
         d = Dict.to_dict(network, phases=phases, interleave=True,

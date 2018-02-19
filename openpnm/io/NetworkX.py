@@ -144,22 +144,19 @@ class NetworkX(GenericIO):
         return network
 
     @classmethod
-    def save(cls, simulation):
+    def save(cls, network):
         r"""
         Write OpenPNM Network to a NetworkX object.
 
         Parameters
         ----------
-        simulation : OpenPNM Simulation Object
-            The OpenPNM Simulation containing the Network to be converted to a
-            NetworkX object
+        network : OpenPNM Network Object
+            The OpenPNM Network to be converted to a NetworkX object
 
         Returns
         -------
         A NetworkX object with all pore/throat properties attached to it
         """
-        network = simulation.network
-
         # Ensure network is an OpenPNM Network object.
         if not isinstance(network, GenericNetwork):
             raise('Provided network is not an OpenPNM Network.')

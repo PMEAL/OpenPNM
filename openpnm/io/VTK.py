@@ -31,29 +31,30 @@ class VTK(GenericIO):
     '''.strip()
 
     @classmethod
-    def save(cls, simulation, filename='', phases=[]):
+    def save(cls, network, phases=[], filename=''):
         r"""
         Save network and phase data to a single vtp file for visualizing in
         Paraview
 
         Parameters
         ----------
-        simulation : OpenPNM Simulation Object
-            The Simulation containing the data to be written
-
-        filename : string, optional
-            Filename to write data.  If no name is given the file is named
-            after ther network
+        network : OpenPNM Network Object
+            The Network containing the data to be written
 
         phases : list, optional
             A list containing OpenPNM Phase object(s) containing data to be
             written
 
+        filename : string, optional
+            Filename to write data.  If no name is given the file is named
+            after ther network
+
         """
-        network = simulation.network
+        simulation, network, phases = cls._parse_args(network=network,
+                                                      phases=phases)
 
         if filename == '':
-            filename = network.name
+            filename = simulation.name
         if ~filename.endswith('.vtp'):
             filename = filename+'.vtp'
 

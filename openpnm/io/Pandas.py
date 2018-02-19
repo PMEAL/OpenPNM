@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 class Pandas():
 
     @classmethod
-    def to_dataframe(cls, network, phases=[], join=False):
+    def to_dataframe(cls, network=None, phases=[], join=False):
         r"""
         Convert the Network (and optionally Phase) data to Pandas DataFrames.
 
@@ -29,10 +29,10 @@ class Pandas():
             problematic as it will put NaNs into all the *pore* columns which
             are shorter than the *throat* columns.
 
-        Returns
-        -------
-        A named Tuple containing a DataFrame for ``pore`` and ``throat`` data.
         """
+        simulation, network, phases = cls._parse_args(network=network,
+                                                      phases=phases)
+
         # Initialize pore and throat data dictionary using Dict class
         pdata = Dict.to_dict(network=network, phases=phases, element='pore',
                              interleave=True, flatten=True,

@@ -36,7 +36,7 @@ class Dict(GenericIO):
         return simulation
 
     @classmethod
-    def to_dict(cls, network, phases=[], element=['pore', 'throat'],
+    def to_dict(cls, network=None, phases=[], element=['pore', 'throat'],
                 interleave=True, flatten=True, categorize_by=[]):
         r"""
         Returns a single dictionary object containing data from the given
@@ -45,7 +45,7 @@ class Dict(GenericIO):
 
         Parameters
         ----------
-        network : OpenPNM Network Object
+        network : OpenPNM Network Object (optional)
             The network containing the desired data
 
         phases : list of OpenPNM Phase Objects (optional, default is none)
@@ -105,8 +105,8 @@ class Dict(GenericIO):
         *HDF5* file directly, since the hierarchy is dictated by the placement
         of '/' characters.
         """
-        phases = cls._parse_phases(phases=phases)
-        simulation = network.simulation
+        simulation, network, phases = cls._parse_args(network=network,
+                                                      phases=phases)
 
         d = NestedDict()
         delim = '/'
@@ -128,24 +128,25 @@ class Dict(GenericIO):
             path = prefix + delim + obj.name + datatype + propname
             return path
 
-        for key in network.keys(element=element):
-            path = build_path(obj=network, key=key,)
-            d[path] = network[key]
+        for net in network:
+            for key in net.keys(element=element):
+                path = build_path(obj=net, key=key,)
+                d[path] = net[key]
 
-        for geo in simulation.geometries().values():
-            for key in geo.keys(element=element):
-                if interleave:
-                    path = build_path(obj=network, key=key)
-                    d[path] = network[key]
-                else:
-                    path = build_path(obj=geo, key=key)
-                    if flatten:
+            for geo in simulation.geometries().values():
+                for key in geo.keys(element=element):
+                    if interleave:
+                        path = build_path(obj=net, key=key)
+                        d[path] = net[key]
+                    else:
+                        path = build_path(obj=geo, key=key)
+                        if flatten:
+                            d[path] = geo[key]
+                        elif 'object' not in categorize_by:
+                            path = path.split(delim)
+                            path.insert(1, net.name)
+                            path = delim.join(path)
                         d[path] = geo[key]
-                    elif 'object' not in categorize_by:
-                        path = path.split(delim)
-                        path.insert(1, network.name)
-                        path = delim.join(path)
-                    d[path] = geo[key]
 
         for phase in phases:
             for key in phase.keys(element=element):

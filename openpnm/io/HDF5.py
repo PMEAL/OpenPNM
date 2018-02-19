@@ -13,7 +13,7 @@ class HDF5(GenericIO):
     """
 
     @classmethod
-    def to_hdf5(cls, network, phases=[], element=['pore', 'throat'],
+    def to_hdf5(cls, network=None, phases=[], element=['pore', 'throat'],
                 filename='', interleave=True, flatten=False, categorize_by=[]):
         r"""
         Creates an HDF5 file containing data from the specified objects,
@@ -66,12 +66,14 @@ class HDF5(GenericIO):
             'throat.'
 
         """
+        simulation, network, phases = cls._parse_args(network=network,
+                                                      phases=phases)
         dct = Dict.to_dict(network=network, phases=phases, element=element,
                            interleave=interleave, flatten=flatten,
                            categorize_by=categorize_by)
         d = FlatDict(dct, delimiter='/')
         if filename == '':
-            filename = network.simulation.name
+            filename = simulation.name
         f = h5py.File(filename+".hdf", "w")
         for item in d.keys():
             tempname = '_'.join(item.split('.'))
@@ -84,7 +86,7 @@ class HDF5(GenericIO):
         return f
 
     @classmethod
-    def save(cls, network, phases=[], filename='', **kwargs):
+    def save(cls, network=None, phases=[], filename='', **kwargs):
         r"""
         Saves data from the given objects into the specified file.
 
@@ -110,7 +112,9 @@ class HDF5(GenericIO):
         ``Workspace`` object.
 
         """
-        simulation = network.simulation
+        simulation, network, phases = cls._parse_args(network=network,
+                                                      phases=phases)
+
         if filename == '':
             filename = simulation.name
         else:

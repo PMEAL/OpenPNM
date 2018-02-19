@@ -100,7 +100,21 @@ class GenericIO():
         return f
 
     @classmethod
-    def _parse_phases(cls, phases):
-        if type(phases) is not list:  # Ensure it's a list
+    def _parse_args(cls, network, phases):
+        # Convert network to a list, even if empty
+        if network is None:
+            network = []
+        else:
+            network = [network]
+        # Ensure phases is a list, even if empty
+        if type(phases) is not list:
             phases = [phases]
-        return phases
+        # Get handle to simulation object
+        if len(network) == 0:
+            if len(phases) == 0:
+                raise Exception('Must specify one of network or phase')
+            else:
+                simulation = phases[0].simulation
+        else:
+            simulation = network[0].simulation
+        return (simulation, network, phases)

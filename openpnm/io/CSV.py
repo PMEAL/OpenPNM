@@ -27,6 +27,7 @@ class CSV(GenericIO):
     3. It's possible to sub-categorize each property by prefixing the
     category to the property name, separated by forward slashes (/).  Ex:
     ``'pore.diameter'`` can be associated with a certain network using
+    ``network_1/pore.diameter``.
 
     3. Each column represents a specific property.  For Np x 1 or Nt x 1
     data such as *pore.volume* this is straightforward.  For Np x *m* or
@@ -43,7 +44,7 @@ class CSV(GenericIO):
     """
 
     @classmethod
-    def save(cls, network, phases=[], filename=''):
+    def save(cls, network=None, phases=[], filename=''):
         r"""
         Save all the pore and throat property data on the Network (and
         optionally on any Phases objects) to CSV files.
@@ -64,8 +65,8 @@ class CSV(GenericIO):
         The data from all Geometry objects is added to the file automatically.
 
         """
-        phases = cls._parse_phases(phases=phases)
-        simulation = network.simulation
+        simulation, network, phases = cls._parse_args(network=network,
+                                                      phases=phases)
 
         df = Pandas.to_dataframe(network=network, phases=phases, join=True)
 
@@ -108,7 +109,7 @@ class CSV(GenericIO):
         keys = sorted(list(a.keys()))
         for item in keys:
             # Merge arrays that have been split into multiple columns
-            m = re.search(r'\[.\]', item)
+            m = re.search(r'\[.\]', item)  # The dot '.' is a wildcard
             if m:  # m is None if pattern not found, otherwise merge cols
                 pname = re.split(r'\[.\]', item)[0]  # Get base propname
                 # Find all other keys with same base propname
