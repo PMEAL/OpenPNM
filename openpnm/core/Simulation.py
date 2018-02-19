@@ -8,10 +8,9 @@ class Simulation(list):
 
     def __init__(self, name=None):
         super().__init__()
-        self._name = None
-        self.name = name
+        # Register self with workspace
+        ws[name] = self
         self._grid = {}
-        ws.update({self.name: self})
         self.settings = ws.settings.copy()
 
     def append(self, obj):
@@ -26,16 +25,17 @@ class Simulation(list):
     def _set_name(self, name):
         if name is None:
             name = ws._gen_name()
-        if name in ws.keys():
-            raise Exception("A simulation with that name already exists")
-        if self.name is not None:
-            old_name = self.name
-            ws.pop(old_name, None)
-            ws.update({name: self})
-        self._name = name
+        ws[name] = self
+        # Remove workspace, if present
+        for key in ws.keys():
+            if ws[key] is self:
+                ws.pop(key, None)
+                break
 
     def _get_name(self):
-        return self._name
+        for key in ws.keys():
+            if ws[key] is self:
+                return key
 
     name = property(fget=_get_name, fset=_set_name)
 

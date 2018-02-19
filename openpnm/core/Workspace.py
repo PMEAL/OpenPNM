@@ -28,6 +28,13 @@ class Workspace(dict):
         self.comments = 'Using OpenPNM ' + openpnm.__version__
         self.settings = Settings()
 
+    def __setitem__(self, name, simulation):
+        if name in self.keys():
+            raise Exception("A simulation named " + name + " already exists")
+        if name is None:
+            name = self._gen_name()
+        super().__setitem__(name, simulation)
+
     def _setloglevel(self, level):
         logger.setLevel(level)
 
@@ -45,30 +52,49 @@ class Workspace(dict):
         for item in simulation:
             __main__.__dict__[item.name] = item
 
+    def save_workspace(self, filename=''):
+        r"""
+        """
+        if filename == '':
+            filename = 'bob'
+        else:
+            filename = filename.rsplit('.pnm', 1)[0]
+        d = {}
+        for sim in self.values():
+            d[sim.name] = sim
+        pickle.dump(d, open(filename + '.pnm', 'wb'))
+
+    def load_workspace(self, filename):
+        r"""
+        """
+        self.clear()
+        self.load_simulation(filename=filename)
+
     def save_simulation(self, simulation, filename=''):
         r"""
-        Save a single simulation to a 'net' file, including all of its
-        associated objects, but not Algorithms
+        Save given simulation to a 'pnm' file, including all of associated
+        objects, but not Algorithms.
 
         Parameters
         ----------
-        simulation : OpenPNM Network object
-            The Network to save
+        simulation : OpenPNM Simulation
+            The simulation to save
 
         filename : string, optional
-            If no filename is given the name of the Network is used
+            If no filename is given, the given simulation name is used
         """
         if filename == '':
             filename = simulation.name
         else:
-            filename = filename.rsplit('.net', 1)[0]
+            filename = filename.rsplit('.pnm', 1)[0]
 
-        # Save nested dictionary pickle
-        pickle.dump(simulation, open(filename + '.net', 'wb'))
+        # Save dictionary as pickle
+        d = {simulation.name: simulation}
+        pickle.dump(d, open(filename + '.pnm', 'wb'))
 
     def load_simulation(self, filename):
         r"""
-        Loads a Simulation from the specified 'net' file and adds it
+        Loads a Simulation from the specified 'pnm' file and adds it
         to the Workspace
 
         Parameters
@@ -76,12 +102,10 @@ class Workspace(dict):
         filename : string
             The name of the file containing the Network simulation to load
         """
-        filename = filename.rsplit('.net', 1)[0]
-        sim = pickle.load(open(filename + '.net', 'rb'))
-        if sim.name not in self.keys():
-            self[sim.name] = sim
-        else:
-            raise Exception('A simulation with that name is already present')
+        filename = filename.rsplit('.pnm', 1)[0]
+        d = pickle.load(open(filename + '.pnm', 'rb'))
+        for name in d.keys():
+            self[name] = d[name]
 
     def close_simulation(self, simulation):
         r"""
@@ -135,7 +159,8 @@ class Workspace(dict):
         """
         raise NotImplementedError()
 
-    def export_data(self, network, phases=[], filename=None, filetype='vtp'):
+    def export_data(self, network=None, phases=[], filename=None,
+                    filetype='vtp'):
         r"""
         Export the pore and throat data from the given object(s) into the
         specified file and format.
