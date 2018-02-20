@@ -159,9 +159,16 @@ class GenericNetwork(Base, ModelsMixin):
         Parameters
         ----------
         weights : array_like, optional
-            An Nt-long array containing the throat values to enter into the
-            matrix (in graph theory these are known as the 'weights').  If
-            omitted, ones are used to create a standard adjacency matrix
+            An array containing the throat values to enter into the matrix
+            (in graph theory these are known as the 'weights').
+
+            If the array is Nt-long, it implies that the matrix is symmetric,
+            so the upper and lower triangular regions are mirror images.  If
+            it is 2*Nt-long then it is assumed that the first Nt elements are
+            for the upper triangle, and the last Nt element are for the lower
+            triangular.
+
+            If omitted, ones are used to create a standard adjacency matrix
             representing connectivity only.
 
         fmt : string, optional
@@ -177,7 +184,8 @@ class GenericNetwork(Base, ModelsMixin):
 
         triu : boolean (default is ``False``)
             If ``True``, the returned sparse matrix only contains the upper-
-            triangular elements.
+            triangular elements.  This argument is ignored if the ``weights``
+            array is 2*Nt-long.
 
         drop_zeros : boolean (default is ``False``)
             If ``True``, applies the ``eliminate_zeros`` method of the sparse
@@ -210,14 +218,17 @@ class GenericNetwork(Base, ModelsMixin):
         # Check if provided data is valid
         if weights is None:
             weights = sp.ones((self.Nt,), dtype=int)
-        elif sp.shape(weights)[0] != self.Nt:
+        elif sp.shape(weights)[0] not in [self.Nt, 2*self.Nt]:
             raise Exception('Received weights are incorrect length')
 
         # Append row & col to each other, and data to itself
         conn = self['throat.conns']
         row = conn[:, 0]
         col = conn[:, 1]
-        if not triu:
+        if weights.size == 2*self.Nt:
+            row = sp.append(row, conn[:, 1])
+            col = sp.append(col, conn[:, 0])
+        elif not triu:
             row = sp.append(row, conn[:, 1])
             col = sp.append(col, conn[:, 0])
             weights = sp.append(weights, weights)
