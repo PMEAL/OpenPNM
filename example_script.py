@@ -1,7 +1,6 @@
 import openpnm as op
 import scipy as sp
 ws = op.core.Workspace()
-ws.settings['local_data'] = True
 
 sp.random.seed(0)
 pn = op.network.Cubic(shape=[5, 5, 5], spacing=0.0001, name='pn11')

@@ -1,5 +1,6 @@
 import time
 from openpnm.core import Workspace
+from openpnm.utils.misc import SettingsDict
 import numpy as np
 ws = Workspace()
 
@@ -11,7 +12,7 @@ class Project(list):
         # Register self with workspace
         ws[name] = self
         self._grid = {}
-        self.settings = ws.settings.copy()
+        self.settings = SettingsDict()
 
     def append(self, obj):
         if 'openpnm' in str(type(obj)):

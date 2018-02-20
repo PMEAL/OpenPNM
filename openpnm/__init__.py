@@ -17,8 +17,7 @@ from . import physics
 from . import algorithms
 from . import utils
 from . import io
-from . import materials
-from .core import Workspace
+from .core import Workspace, Project
 
 
 # Set up logging to file - see previous section for more details

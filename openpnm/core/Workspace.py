@@ -3,7 +3,7 @@ import openpnm
 import time
 import copy
 from openpnm.core import logging
-from openpnm.utils import Settings
+from openpnm.utils import SettingsDict
 logger = logging.getLogger()
 
 
@@ -26,7 +26,7 @@ class Workspace(dict):
     def __init__(self):
         super().__init__()
         self.comments = 'Using OpenPNM ' + openpnm.__version__
-        self.settings = Settings()
+        self.settings = SettingsDict()
 
     def __setitem__(self, name, project):
         if name is None:
