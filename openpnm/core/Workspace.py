@@ -29,10 +29,12 @@ class Workspace(dict):
         self.settings = Settings()
 
     def __setitem__(self, name, project):
-        if name in self.keys():
-            raise Exception("A project named " + name + " already exists")
         if name is None:
             name = self._gen_name()
+        if name in self.keys():
+            raise Exception("A project named " + name + " already exists")
+        if project in self.values():
+            self.pop(project.name, None)
         super().__setitem__(name, project)
 
     def _setloglevel(self, level):

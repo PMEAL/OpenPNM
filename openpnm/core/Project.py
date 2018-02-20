@@ -26,11 +26,6 @@ class Project(list):
         if name is None:
             name = ws._gen_name()
         ws[name] = self
-        # Remove workspace, if present
-        for key in ws.keys():
-            if ws[key] is self:
-                ws.pop(key, None)
-                break
 
     def _get_name(self):
         for key in ws.keys():
