@@ -7,6 +7,6 @@ from .MIP import MIP
 from .Reaction import GenericReaction
 from .GenericTransport import GenericTransport
 from .ReactiveTransport import ReactiveTransport
+from .CrankNicholson import CrankNicholson
 from .TransientTransport import TransientTransport
 from .TransientReactiveTransport import TransientReactiveTransport
-from .CrankNicholsonMixin import CrankNicholson

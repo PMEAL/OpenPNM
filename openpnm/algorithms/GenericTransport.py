@@ -164,6 +164,13 @@ class GenericTransport(GenericAlgorithm):
             self.A.setdiag(datadiag)
             self.A.eliminate_zeros()  # Remove 0 entries
 
+    def setup(self):
+        r"""
+        """
+        self.build_A()
+        self.build_b()
+        self.apply_BCs()
+
     def run(self):
         r"""
         Builds the A and b matrices, and calls the solver specified in the
@@ -183,13 +190,6 @@ class GenericTransport(GenericAlgorithm):
     def _run_generic(self):
         x_new = self._solve()
         self[self.settings['quantity']] = x_new
-
-    def setup(self):
-        r"""
-        """
-        self.build_A()
-        self.build_b()
-        self.apply_BCs()
 
     def _solve(self, A=None, b=None):
         r"""

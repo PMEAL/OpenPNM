@@ -21,9 +21,9 @@ class TransientReactiveTransport(ReactiveTransport, TransientTransport):
         x = self._run_transient_reactive(x=x, t=t)
 
     def _run_transient_reactive(self, x, t):
-        x = self._run_reactive(x=x)
         self.update_A()
         self.update_b()
+        x = self._run_reactive(x=x)
         if t < self.settings['t_final']:
             print('Current time step: '+str(t))
             self._run_transient_reactive(x=x, t=t+self.settings['t_step'])
