@@ -1,4 +1,4 @@
-from openpnm.algorithms import ReactiveTransport, TransientTransport
+from openpnm.algorithms import ReactiveTransport, TransientTransport, CrankNicholsonMixin
 from openpnm.core import logging
 logger = logging.getLogger(__name__)
 
@@ -25,5 +25,7 @@ class TransientReactiveTransport(ReactiveTransport, TransientTransport):
         self.update_A()
         self.update_b()
         if t < self.settings['t_final']:
+            print('Current time step: '+str(t))
             self._run_transient_reactive(x=x, t=t+self.settings['t_step'])
-        return x
+        else:
+            print('Maximum time step reached')

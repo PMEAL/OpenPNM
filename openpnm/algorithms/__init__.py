@@ -9,3 +9,4 @@ from .GenericTransport import GenericTransport
 from .ReactiveTransport import ReactiveTransport
 from .TransientTransport import TransientTransport
 from .TransientReactiveTransport import TransientReactiveTransport
+from .CrankNicholsonMixin import CrankNicholson

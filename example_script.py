@@ -39,7 +39,7 @@ alg2.set_source_term(propname='pore.reaction', pores=pn.pores('bottom'))
 alg2.run()
 water.update(alg2.results())
 
-alg3 = op.algorithms.TransientTransport(network=pn, phase=water)
+alg3 = op.algorithms.CrankNicholson(network=pn, phase=water)
 # You can also set the settings afterwards.  Note that some of these
 # will have defaults when finally subclassed (i.e. quantity = pressure)
 alg3.settings.update({'t_initial': 0,
