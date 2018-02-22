@@ -15,7 +15,7 @@ class Project(list):
         self.settings = SettingsDict()
 
     def append(self, obj):
-        if 'openpnm' in str(type(obj)):
+        if 'Base' in obj.mro():  # This is not perfect...could be non-OpenPNM
             if 'GenericNetwork' in obj.mro():
                 if self.network:
                     raise Exception('Project already has a network')

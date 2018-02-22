@@ -28,3 +28,8 @@ class GenericAlgorithm(Base):
         if network is not None:
             project = network.project
         super().__init__(project=project, **kwargs)
+
+    def results(self):
+        r"""
+        """
+        raise NotImplementedError("This method must be subclassed")

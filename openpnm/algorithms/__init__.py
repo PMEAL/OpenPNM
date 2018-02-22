@@ -5,4 +5,7 @@ from .StokesFlow import StokesFlow
 from .FickianDiffusion import FickianDiffusion
 from .MIP import MIP
 from .Reaction import GenericReaction
-from .models import *
+from .GenericTransport import GenericTransport
+from .ReactiveTransport import ReactiveTransport
+from .TransientTransport import TransientTransport
+from .TransientReactiveTransport import TransientReactiveTransport

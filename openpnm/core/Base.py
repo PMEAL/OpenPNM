@@ -1255,6 +1255,7 @@ class Base(dict):
     def _parse_prop(self, propname, element):
         r"""
         """
+        element = self._parse_element(element, single=True)
         return element + '.' + propname.split('.')[-1]
 
     def __str__(self):

@@ -18,34 +18,35 @@ mod = op.models.physics.hydraulic_conductance.hagen_poiseuille
 phys_water = op.physics.GenericPhysics(network=pn, phase=water, geometry=geom)
 phys_water.add_model(propname='throat.conductance',
                      model=mod, viscosity='throat.viscosity')
-phys_water.regenerate_models()
 
-alg = op.algorithms.FickianDiffusion(network=pn, phase=water)
-alg.setup(conductance='throat.conductance', quantity='pore.mole_fraction')
-alg.set_BC(pores=pn.pores('top'), bctype='dirichlet', bcvalues=0.5)
-alg.set_BC(pores=pn.pores('bottom'), bctype='dirichlet', bcvalues=0.0)
-alg['pore.mole_fraction'] = 1
+water['pore.A'] = 1e-10
+water['pore.k'] = 2
+water.add_model(propname='pore.reaction',
+                model=op.models.physics.generic_source_term.standard_kinetics,
+                prefactor='pore.A', exponent='pore.k',
+                quantity='pore.pressure', regen_mode='deferred')
 
-rxn = op.algorithms.GenericReaction(network=pn, pores=[70, 71])
-rxn['pore.k'] = 1e-1
-rxn['pore.alpha'] = 1
-rxn.add_model(propname='pore.rxn_rate',
-              model=op.algorithms.models.standard_kinetics,
-              quantity='pore.mole_fraction',
-              prefactor='pore.k', exponent='pore.alpha',
-              regen_mode='deferred')
-rxn.settings['rate_model'] = 'pore.rxn_rate'
-alg.set_source(source=rxn)
+s = {'conductance': 'throat.conductance',
+     'quantity': 'pore.pressure'}
+alg1 = op.algorithms.GenericTransport(network=pn, phase=water, settings=s)
+alg1.set_dirchlet_BC(pores=pn.pores('top'), values=1)
+alg1.set_dirchlet_BC(pores=pn.pores('bottom'), values=0)
+alg1.run()
 
-rxn2 = op.algorithms.GenericReaction(network=pn, pores=[50, 51])
-rxn2.settings['rate_model'] = 'pore.rxn_rate'
-rxn2['pore.k'] = 1e-1
-rxn2['pore.alpha'] = 2
-rxn2.add_model(propname='pore.rxn_rate',
-               model=op.algorithms.models.standard_kinetics,
-               quantity='pore.mole_fraction',
-               prefactor='pore.k', exponent='pore.alpha',
-               regen_mode='deferred')
-alg.set_source(source=rxn2)
+alg2 = op.algorithms.ReactiveTransport(network=pn, phase=water, settings=s)
+alg2.set_dirchlet_BC(pores=pn.pores('top'), values=1)
+alg2.set_source_term(propname='pore.reaction', pores=pn.pores('bottom'))
+alg2.run()
+water.update(alg2.results())
 
-alg.run()
+alg3 = op.algorithms.TransientTransport(network=pn, phase=water)
+# You can also set the settings afterwards.  Note that some of these
+# will have defaults when finally subclassed (i.e. quantity = pressure)
+alg3.settings.update({'t_initial': 0,
+                      't_final': 1,
+                      't_step': 0.5,
+                      'conductance': 'throat.conductance',
+                      'quantity': 'pore.pressure'})
+alg3.set_dirchlet_BC(pores=pn.pores('top'), values=1)
+alg3.set_IC(values=0)
+alg3.run()

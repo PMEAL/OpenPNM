@@ -8,6 +8,21 @@ Submodule -- generic_source_term
 import scipy as _sp
 
 
+def standard_kinetics(target, quantity, prefactor, exponent):
+    r"""
+
+    """
+    X = target[quantity]
+    A = target[prefactor]
+    b = target[exponent]
+
+    r = A*(X**b)
+    S1 = A*b*(X**(b - 1))
+    S2 = A*(1 - b)*(X**b)
+    values = {'pore.S1': S1, 'pore.S2': S2, 'pore.rate': r}
+    return values
+
+
 def linear(physics, phase, A1='', A2='', x='', return_rate=True, **kwargs):
     r"""
     For the following source term:
