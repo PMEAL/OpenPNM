@@ -1,4 +1,4 @@
-from openpnm.algorithms import ReactiveTransport, TransientTransport, CrankNicholsonMixin
+from openpnm.algorithms import ReactiveTransport, TransientTransport
 from openpnm.core import logging
 logger = logging.getLogger(__name__)
 
