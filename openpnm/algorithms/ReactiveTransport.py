@@ -48,6 +48,8 @@ class ReactiveTransport(GenericTransport):
             Initial guess of unknown variable
 
         """
+        print('―'*80)
+        print('Running ReactiveTransport')
         self.setup()
         self._run_reactive(x=x)
 
@@ -65,4 +67,5 @@ class ReactiveTransport(GenericTransport):
             print('Tolerance met, solution converged')
             return
         else:
+            print('Tolerance not met: ' + str(res))
             self._run_reactive(x=x_new)

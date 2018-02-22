@@ -31,6 +31,8 @@ class TransientTransport(GenericTransport):
     def run(self, t=0):
         r"""
         """
+        print('―'*80)
+        print('Running TransientTransport')
         self.setup()
         self._run_transient(t=t)
 
@@ -40,6 +42,7 @@ class TransientTransport(GenericTransport):
         x_new = self._solve()
         self[self.settings['quantity']] = x_new
         if t < self.settings['t_final']:
+            print('Current time step: '+str(t))
             self._run_transient(t=t + self.settings['t_step'])
         else:
             print('Maximum time step reached')

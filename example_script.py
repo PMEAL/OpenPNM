@@ -44,9 +44,57 @@ alg3 = op.algorithms.TransientTransport(network=pn, phase=water)
 # will have defaults when finally subclassed (i.e. quantity = pressure)
 alg3.settings.update({'t_initial': 0,
                       't_final': 1,
-                      't_step': 0.5,
+                      't_step': 0.25,
                       'conductance': 'throat.conductance',
                       'quantity': 'pore.pressure'})
 alg3.set_dirchlet_BC(pores=pn.pores('top'), values=1)
 alg3.set_IC(values=0)
 alg3.run()
+
+
+alg4 = op.algorithms.TransientReactiveTransport(network=pn, phase=water)
+alg4.settings.update(alg3.settings)  # Just copy settings from another alg
+alg4.set_dirchlet_BC(pores=pn.pores('top'), values=1)
+alg4.set_IC(values=0)
+alg4.set_source_term(propname='pore.reaction', pores=pn.pores('bottom'))
+alg4.run()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

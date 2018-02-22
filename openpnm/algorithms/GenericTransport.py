@@ -175,6 +175,8 @@ class GenericTransport(GenericAlgorithm):
             Initial guess of unknown variable
 
         """
+        print('―'*80)
+        print('Running GenericTransport')
         self.setup()
         self._run_generic()
 
