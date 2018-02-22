@@ -808,7 +808,7 @@ def subdivide(network, pores, shape, labels=[]):
     >>> assert pn.Np == (150+4*(4*7*3)-4)
 
     '''
-    mro = [item.__name__ for item in network.__class__.__mro__]
+    mro = network._mro()
     if 'Cubic' not in mro:
         raise Exception('Subdivide is only supported for Cubic Networks')
     from op.network.Cubic import Cubic

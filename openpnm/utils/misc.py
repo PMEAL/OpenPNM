@@ -200,7 +200,7 @@ def amalgamate_data(objs=[], delimiter='_'):
                       'throat.offset_vertices', 'throat.vertices', 'throat.normal',
                       'throat.perimeter', 'pore.vert_index', 'throat.vert_index']
     for item in objs:
-        mro = [module.__name__ for module in item.__class__.__mro__]
+        mro = item._mro()
         # If Network object, combine Geometry and Network keys
         if 'GenericNetwork' in mro:
             keys = []

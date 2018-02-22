@@ -117,7 +117,7 @@ class Dict(GenericIO):
             datatype = ''
             arr = obj[key]
             if 'object' in categorize_by:
-                prefix = obj.isa()
+                prefix = obj._isa()
             if 'element' in categorize_by:
                 propname = delim + key.replace('.', delim)
             if 'data' in categorize_by:

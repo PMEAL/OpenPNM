@@ -15,8 +15,8 @@ class Project(list):
         self.settings = SettingsDict()
 
     def append(self, obj):
-        if 'Base' in obj.mro():  # This is not perfect...could be non-OpenPNM
-            if 'GenericNetwork' in obj.mro():
+        if 'Base' in obj._mro():  # This is not perfect...could be non-OpenPNM
+            if 'GenericNetwork' in obj._mro():
                 if self.network:
                     raise Exception('Project already has a network')
             super().append(obj)
@@ -44,7 +44,7 @@ class Project(list):
             return super().__getitem__(key)
 
     def find_phase(self, obj):
-        mro = [c.__name__ for c in obj.__class__.__mro__]
+        mro = obj._mro()
         if 'GenericPhase'in mro:
             return obj
         if 'GenericAlgorithm' in mro:
@@ -86,26 +86,13 @@ class Project(list):
 
     def _generate_name(self, obj):
         prefix = obj.settings['prefix']
-        num = str(len([item for item in self if item.isa() == obj.isa()]))
-#        if 'GenericNetwork' in obj.mro():
-#            num = str(1).zfill(2)
-#        elif 'GenericGeometry' in obj.mro():
-#            num = str(len(self.geometries().keys())).zfill(2)
-#        elif 'GenericPhase' in obj.mro():
-#            num = str(len(self.phases().keys())).zfill(2)
-#        elif 'GenericPhysics' in obj.mro():
-#            num = str(len(self.physics().keys())).zfill(2)
-#        elif 'GenericAlgorithm' in obj.mro():
-#            num = str(len(self.algorithms().keys())).zfill(2)
-#        else:
-#            num = str(len(self)).zfill(2)
+        num = str(len([item for item in self if item._isa() == obj._isa()]))
         name = prefix + '_' + num
         return name
 
     def _get_net(self):
         for item in self:
-            mro = [c.__name__ for c in item.__class__.__mro__]
-            if 'GenericNetwork' in mro:
+            if 'GenericNetwork' in item._mro():
                 return item
 
     network = property(fget=_get_net)
@@ -113,32 +100,28 @@ class Project(list):
     def geometries(self):
         _dict = {}
         for item in self:
-            mro = [c.__name__ for c in item.__class__.__mro__]
-            if 'GenericGeometry' in mro:
+            if 'GenericGeometry' in item._mro():
                 _dict.update({item.name: item})
         return _dict
 
     def phases(self):
         _dict = {}
         for item in self:
-            mro = [c.__name__ for c in item.__class__.__mro__]
-            if 'GenericPhase' in mro:
+            if 'GenericPhase' in item._mro():
                 _dict.update({item.name: item})
         return _dict
 
     def physics(self):
         _dict = {}
         for item in self:
-            mro = [c.__name__ for c in item.__class__.__mro__]
-            if 'GenericPhysics' in mro:
+            if 'GenericPhysics' in item._mro():
                 _dict.update({item.name: item})
         return _dict
 
     def algorithms(self):
         _dict = {}
         for item in self:
-            mro = [c.__name__ for c in item.__class__.__mro__]
-            if 'GenericAlgorithm' in mro:
+            if 'GenericAlgorithm' in item._mro():
                 _dict.update({item.name: item})
         return _dict
 

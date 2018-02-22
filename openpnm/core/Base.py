@@ -796,7 +796,7 @@ class Base(dict):
         - This uses an unweighted average, without attempting to account for
         distances or sizes of pores and throats.
         """
-        mro = [module.__name__ for module in self.__class__.__mro__]
+        mro = self._mro()
         if 'GenericNetwork' in mro:
             net = self
             Ts = net.throats()
@@ -1302,26 +1302,26 @@ class Base(dict):
         lines.append(horizonal_rule)
         return '\n'.join(lines)
 
-    def mro(self):
+    def _mro(self):
         mro = [c.__name__ for c in self.__class__.__mro__]
         return mro
 
-    def isa(self, obj_type=None):
+    def _isa(self, obj_type=None):
         if obj_type is None:
             prefix = 'base'
-            if 'GenericNetwork' in self.mro():
+            if 'GenericNetwork' in self._mro():
                 prefix = 'network'
-            elif 'GenericGeometry' in self.mro():
+            elif 'GenericGeometry' in self._mro():
                 prefix = 'geometry'
-            elif 'GenericPhase' in self.mro():
+            elif 'GenericPhase' in self._mro():
                 prefix = 'phase'
-            elif 'GenericPhysics' in self.mro():
+            elif 'GenericPhysics' in self._mro():
                 prefix = 'physics'
-            elif 'GenericAlgorithm' in self.mro():
+            elif 'GenericAlgorithm' in self._mro():
                 prefix = 'algorithm'
             return prefix
         else:
-            mro = [s.lower() for s in self.mro()]
+            mro = [s.lower() for s in self._mro()]
             temp = [s.replace('generic', '') for s in mro
                     if s.startswith('generic')]
             mro.extend(temp)
