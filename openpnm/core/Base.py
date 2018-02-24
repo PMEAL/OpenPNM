@@ -151,7 +151,7 @@ class Base(dict):
         """
         allowed = ['constants', 'labels', 'models', 'all']
         mode = self._parse_mode(mode=mode, allowed=allowed)
-        for item in self.props(mode=mode, element=element):
+        for item in self.keys(mode=mode, element=element):
             if item not in ['pore.all', 'throat.all']:
                 del self[item]
 
@@ -185,7 +185,7 @@ class Base(dict):
             return super().keys()
         element = self._parse_element(element=element)
         allowed = ['props', 'labels']
-        if mode == 'all':
+        if 'all' in mode:
             mode = allowed
         mode = self._parse_mode(mode=mode, allowed=allowed)
         keys = super().keys()
@@ -255,31 +255,29 @@ class Base(dict):
         ['pore.coords', 'throat.conns']
         """
         # Parse Inputs
-        allowed_modes = ['all', 'data', 'models', 'constants']
+        allowed_modes = ['all', 'data', 'constants', 'models']
         mode = self._parse_mode(mode=mode, allowed=allowed_modes)
         if 'all' in mode:
             mode = allowed_modes
         element = self._parse_element(element=element)
-        vals = {}
+        vals = set()
         if 'data' in mode:
-            temp = {i: None for i in self.keys()}  # Using dict avoids dupes
-            vals.update(temp)
+            vals = set(self.keys(mode=['props']))
+        # Now add model names
         if hasattr(self, 'models'):
             if 'models' in mode:
-                temp = {i: None for i in self.models.keys()}
-                vals.update(temp)
+                vals = vals.union(self.models.keys())
             if 'constants' in mode:
-                constants = [i for i in self.keys() if i not in self.models.keys()]
-                temp = {i: None for i in constants}
-                vals.update(temp)
-        # Remove values of the wrong element select element
-        vals = [i for i in vals.keys() if i.split('.')[0] in element]
-        # Remove labels
-        vals = [i for i in vals if self[i].dtype != bool]
-        # Remove hidden props
-        vals = [i for i in vals if not i.split('.')[1].startswith('_')]
+                temp = set(self.keys(mode='props')).difference(self.models.keys())
+                vals = vals.union(temp)
+        # Deal with hidden props
+        hide = set([i for i in self.keys() if i.split('.')[1].startswith('_')])
+        vals = vals.difference(hide)
+        # Remove values of the wrong element
+        temp = set([i for i in vals if i.split('.')[0] not in element])
+        vals = set(vals).difference(temp)
         # Convert to nice list for printing
-        vals = PrintableList(vals)
+        vals = PrintableList(list(vals))
         return vals
 
     def _get_labels(self, element, locations, mode):
@@ -294,9 +292,7 @@ class Base(dict):
         mode = self._parse_mode(mode=mode, allowed=allowed, single=True)
         element = self._parse_element(element=element)
         # Collect list of all pore OR throat labels
-        a = set([k for k in self.keys() if k.split('.')[0] in element])
-        b = set([k for k in self.keys() if self[k].dtype == bool])
-        labels = list(a.intersection(b))
+        labels = self.keys(mode='labels', element=element)
         labels.sort()
         labels = sp.array(labels)  # Convert to ND-array for following checks
         arr = sp.zeros((sp.shape(locations)[0], len(labels)), dtype=bool)
@@ -1267,7 +1263,7 @@ class Base(dict):
                                                         'Properties',
                                                         'Valid Values'))
         lines.append(horizonal_rule)
-        props = self.props()
+        props = list(set(self.keys()).difference(set(self.labels())))
         props.sort()
         for i, item in enumerate(props):
             prop = item
