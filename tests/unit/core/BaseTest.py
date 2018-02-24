@@ -534,131 +534,77 @@ class BaseTest:
         assert 'pore.test_dict_test2' in self.net.keys()
         self.net['pore.test_dict'] = {'test1': 1, 'test2': self.net.Ps}
 
-#    def test_mapping(self):
-#        # Create small cubic network
-#        pn = op.network.Cubic(shape=[3, 3, 3], spacing=0.0001)
-#        # Assign 3 different geometries to each layer in the z-direction
-#        Pa = sp.arange(0, 9)
-#        Ta = pn.find_neighbor_throats(Pa)
-#        geom1 = op.geometry.GenericGeometry(network=pn,
-#                                            pores=Pa,
-#                                            throats=Ta)
-#        Pc = sp.arange(18, 27)
-#        Tc = pn.find_neighbor_throats(Pc)
-#        geom3 = op.geometry.GenericGeometry(network=pn,
-#                                            pores=Pc,
-#                                            throats=Tc)
-#        Pb = sp.arange(9, 18)
-#        Tb = pn.find_neighbor_throats(pores=Pb, mode='intersection')
-#        geom2 = op.geometry.GenericGeometry(network=pn,
-#                                            pores=Pb,
-#                                            throats=Tb)
-#        # Create an index in the Network
-#        pn['pore.num1'] = pn.Ps
-#        # Create the same index across each geom
-#        geom1['pore.num2'] = Pa
-#        geom2['pore.num2'] = Pb
-#        geom3['pore.num2'] = Pc
-#        # Confirm two indexes match
-#        assert(sp.all(pn['pore.num1'] == pn['pore.num2']))
-#        # Send junk pores to ensure error is raised
-#        with pytest.raises(Exception):
-#            pn.map_pores(pores=[0, pn.Np-1], target=geom1)
-#            pn.map_pores(pores=[0, pn.Np+1], target=geom1)
-#            pn.map_pores(pores=[pn.Np-1], target=geom1)
-#            pn.map_pores(pores=[pn.Np+1], target=geom1)
-#            geom1.map_pores(pores=[0, geom1.Np+1], target=pn)
-#            geom1.map_pores(pores=[0, pn.Np+1], target=pn)
-#            geom1.map_pores(pores=[geom1.Np+1], target=pn)
-#            geom1.map_pores(pores=[pn.Np+1], target=pn)
-#            geom2.map_pores(pores=[0], target=geom1)
-#            geom2.map_pores(pores=[geom2.Np+1], target=geom1)
-#            geom2.map_pores(pores=[0, geom2.Np-1], target=geom1)
-#            geom2.map_pores(pores=[0, geom2.Np+1], target=geom1)
-#        # Trim column from center of Network
-#        op.topotools.trim(network=pn, pores=[4, 13, 22])
-#        # Confirm index still match
-#        assert(sp.all(pn['pore.num1'] == pn['pore.num2']))
-#        # Check mapping between each Geometry object and in both directions
-#        # Check geom1
-#        a = geom1.map_pores(pores=geom1.Ps, target=pn)
-#        b = pn.map_pores(pores=a, target=geom1)
-#        assert(sp.all(b == geom1.Ps))
-#        a = geom1.map_throats(throats=geom1.Ts, target=pn)
-#        b = pn.map_throats(throats=a, target=geom1)
-#        assert(sp.all(b == geom1.Ts))
-#        # Check geom2
-#        a = geom2.map_pores(pores=geom2.Ps, target=pn)
-#        b = pn.map_pores(pores=a, target=geom2)
-#        assert(sp.all(b == geom2.Ps))
-#        a = geom2.map_throats(throats=geom2.Ts, target=pn)
-#        b = pn.map_throats(throats=a, target=geom2)
-#        assert(sp.all(b == geom2.Ts))
-#        # Check geom3
-#        a = geom3.map_pores(pores=geom3.Ps, target=pn)
-#        b = pn.map_pores(pores=a, target=geom3)
-#        assert(sp.all(b == geom3.Ps))
-#        a = geom3.map_throats(throats=geom3.Ts, target=pn)
-#        b = pn.map_throats(throats=a, target=geom3)
-#        assert(sp.all(b == geom3.Ts))
-#
-#    def test_interleave_data_bool(self):
-#        net = op.network.Cubic(shape=[2, 2, 2])
-#        Ps = net.pores('top')
-#        geom1 = op.geometry.GenericGeometry(network=net, pores=Ps)
-#        Ps = net.pores('bottom')
-#        geom2 = op.geometry.GenericGeometry(network=net, pores=Ps)
-#        # Ensure Falses return in missing places
-#        geom1['pore.blah'] = True
-#        assert sp.all(~geom2['pore.blah'])
-#        assert sp.sum(net['pore.blah']) == 4
-#        # Ensure all Trues returned now
-#        geom2['pore.blah'] = True
-#        assert sp.all(geom2['pore.blah'])
-#        assert sp.sum(net['pore.blah']) == 8
-#
-#    def test_interleave_data_int(self):
-#        net = op.network.Cubic(shape=[2, 2, 2])
-#        Ps = net.pores('top')
-#        geom1 = op.geometry.GenericGeometry(network=net, pores=Ps)
-#        Ps = net.pores('bottom')
-#        geom2 = op.geometry.GenericGeometry(network=net, pores=Ps)
-#        geom1['pore.blah'] = 1
-#        # Ensure ints are returned geom1
-#        assert 'int' in geom1['pore.blah'].dtype.name
-#        # Ensure nans are returned on geom2
-#        assert sp.all(sp.isnan(geom2['pore.blah']))
-#        # Ensure interleaved array is float with nans
-#        assert 'float' in net['pore.blah'].dtype.name
-#        # Ensure missing values are floats
-#        assert sp.sum(sp.isnan(net['pore.blah'])) == 4
-#
-#    def test_interleave_data_float(self):
-#        net = op.network.Cubic(shape=[2, 2, 2])
-#        Ps = net.pores('top')
-#        geom1 = op.geometry.GenericGeometry(network=net, pores=Ps)
-#        Ps = net.pores('bottom')
-#        geom2 = op.geometry.GenericGeometry(network=net, pores=Ps)
-#        geom1['pore.blah'] = 1.0
-#        # Ensure flaots are returned geom1
-#        assert 'float' in geom1['pore.blah'].dtype.name
-#        # Ensure nans are returned on geom2
-#        assert sp.all(sp.isnan(geom2['pore.blah']))
-#        # Ensure interleaved array is float with nans
-#        assert 'float' in net['pore.blah'].dtype.name
-#        # Ensure missing values are floats
-#        assert sp.sum(sp.isnan(net['pore.blah'])) == 4
-#
-#    def test_interleave_data_object(self):
-#        net = op.network.Cubic(shape=[2, 2, 2])
-#        Ps = net.pores('top')
-#        geom1 = op.geometry.GenericGeometry(network=net, pores=Ps)
-#        Ps = net.pores('bottom')
-#        geom2 = op.geometry.GenericGeometry(network=net, pores=Ps)
-#        geom1['pore.blah'] = [[1, 2], [1, 2, 3], [1, 2, 3, 4], [1]]
-#        assert 'object' in net['pore.blah'].dtype.name
-#        # Ensure missing elements are None
-#        assert sp.sum([item is None for item in net['pore.blah']]) == 4
+    def test_pore_mapping(self):
+        a = self.geo21['pore._id']
+        b = self.geo22['pore._id']
+        assert a.size == self.geo21.Np
+        assert b.size == self.geo22.Np
+        assert ~sp.any(sp.in1d(a, b))
+        assert sp.all(self.net2.map_pores(a) == self.net2.pores(self.geo21.name))
+        assert sp.all(self.net2.map_pores(b) == self.net2.pores(self.geo22.name))
+
+    def test_throat_mapping(self):
+        a = self.geo21['throat._id']
+        assert a.size == self.geo21.Nt
+        assert sp.all(self.net2.map_throats(a) == self.net2.throats(self.geo21.name))
+
+    def test_interleave_data_bool(self):
+        net = op.network.Cubic(shape=[2, 2, 2])
+        Ps = net.pores('top')
+        geom1 = op.geometry.GenericGeometry(network=net, pores=Ps)
+        Ps = net.pores('bottom')
+        geom2 = op.geometry.GenericGeometry(network=net, pores=Ps)
+        # Ensure Falses return in missing places
+        geom1['pore.blah'] = True
+        assert sp.all(~geom2['pore.blah'])
+        assert sp.sum(net['pore.blah']) == 4
+        # Ensure all Trues returned now
+        geom2['pore.blah'] = True
+        assert sp.all(geom2['pore.blah'])
+        assert sp.sum(net['pore.blah']) == 8
+
+    def test_interleave_data_int(self):
+        net = op.network.Cubic(shape=[2, 2, 2])
+        Ps = net.pores('top')
+        geom1 = op.geometry.GenericGeometry(network=net, pores=Ps)
+        Ps = net.pores('bottom')
+        geom2 = op.geometry.GenericGeometry(network=net, pores=Ps)
+        geom1['pore.blah'] = 1
+        # Ensure ints are returned geom1
+        assert 'int' in geom1['pore.blah'].dtype.name
+        # Ensure nans are returned on geom2
+        assert sp.all(sp.isnan(geom2['pore.blah']))
+        # Ensure interleaved array is float with nans
+        assert 'float' in net['pore.blah'].dtype.name
+        # Ensure missing values are floats
+        assert sp.sum(sp.isnan(net['pore.blah'])) == 4
+
+    def test_interleave_data_float(self):
+        net = op.network.Cubic(shape=[2, 2, 2])
+        Ps = net.pores('top')
+        geom1 = op.geometry.GenericGeometry(network=net, pores=Ps)
+        Ps = net.pores('bottom')
+        geom2 = op.geometry.GenericGeometry(network=net, pores=Ps)
+        geom1['pore.blah'] = 1.0
+        # Ensure flaots are returned geom1
+        assert 'float' in geom1['pore.blah'].dtype.name
+        # Ensure nans are returned on geom2
+        assert sp.all(sp.isnan(geom2['pore.blah']))
+        # Ensure interleaved array is float with nans
+        assert 'float' in net['pore.blah'].dtype.name
+        # Ensure missing values are floats
+        assert sp.sum(sp.isnan(net['pore.blah'])) == 4
+
+    def test_interleave_data_object(self):
+        net = op.network.Cubic(shape=[2, 2, 2])
+        Ps = net.pores('top')
+        geom1 = op.geometry.GenericGeometry(network=net, pores=Ps)
+        Ps = net.pores('bottom')
+        geom2 = op.geometry.GenericGeometry(network=net, pores=Ps)
+        geom1['pore.blah'] = [[1, 2], [1, 2, 3], [1, 2, 3, 4], [1]]
+        assert 'object' in net['pore.blah'].dtype.name
+        # Ensure missing elements are None
+        assert sp.sum([item is None for item in net['pore.blah']]) == 4
 
     def test_interleave_data_key_error(self):
         net = op.network.Cubic(shape=[2, 2, 2])
