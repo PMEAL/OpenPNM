@@ -1077,11 +1077,8 @@ class Base(dict):
         >>> pn._count('throat')
         300
         """
-        element = self._parse_element(element=element)
-        temp = {e: sp.size(super(Base, self).__getitem__(e+'.all')) for e in element}
-        # TODO: In a future version this should always just return a dict
-        if len(temp) == 1:
-            temp = list(temp.values())[0]
+        element = self._parse_element(element=element, single=True)
+        temp = sp.size(super(Base, self).__getitem__(element+'.all'))
         return temp
 
     def _parse_indices(self, indices):

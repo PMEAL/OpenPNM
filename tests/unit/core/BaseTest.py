@@ -186,8 +186,8 @@ class BaseTest:
             self.net.toindices(mask)
 
     def test_count(self):
-        a = self.net._count()
-        assert a == {'pore': 27, 'throat': 54}
+        with pytest.raises(Exception):
+            self.net._count()
 
     def test_num_pores(self):
         a = self.net.num_pores()
