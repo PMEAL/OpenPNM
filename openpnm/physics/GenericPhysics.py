@@ -79,16 +79,14 @@ class GenericPhysics(Base, ModelsMixin):
 
     def __missing__(self, key):
         element = key.split('.')[0]
-        boss = self.project.find_phase(self)
-        if self.settings['missing_values'] is 'none':
-            raise KeyError(key)
+        phase = self.project.find_phase(self)
+        # If key not available try running model
+        if key in self.models.keys():
+            print('GenericPhysics: ' + key + ' missing, running model')
+            self.regenerate_models(propnames=[key])
+            vals = self.__getitem__(key)
+        # If not found on network a key error will be raised
         else:
-            # If key not available try running model
-            if key in self.models.keys():
-                self.regenerate_models(propnames=[key])
-                vals = self.__getitem__(key)
-            # If not found on network a key error will be raised
-            else:
-                inds = boss._get_indices(element=element, labels=self.name)
-                vals = boss[key][inds]
-            return vals
+            inds = phase._get_indices(element=element, labels=self.name)
+            vals = super(Base, phase).__getitem__(key)[inds]
+        return vals

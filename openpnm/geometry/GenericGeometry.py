@@ -35,8 +35,7 @@ class GenericGeometry(Base, ModelsMixin):
     def __init__(self, network=None, project=None, pores=[], throats=[],
                  settings={}, **kwargs):
         # Define some default settings
-        self.settings.update({'prefix': 'geo',
-                              'missing_values': np.nan})
+        self.settings.update({'prefix': 'geo'})
         # Overwrite with user supplied settings, if any
         self.settings.update(settings)
 
@@ -68,18 +67,16 @@ class GenericGeometry(Base, ModelsMixin):
     def __missing__(self, key):
         net = self.project.network
         element = key.split('.')[0]
-        if self.settings['missing_values'] is 'none':
-            raise KeyError(key)
+        # If key not available try running model
+        if key in self.models.keys():
+            print('GenericGeometry: ' + key + ' missing, running model')
+            self.regenerate_models(propnames=[key])
+            vals = self.__getitem__(key)
+        # If not found on network a key error will be raised
         else:
-            # If key not available try running model
-            if key in self.models.keys():
-                self.regenerate_models(propnames=[key])
-                vals = self.__getitem__(key)
-            # If not found on network a key error will be raised
-            else:
-                inds = net._get_indices(element=element, labels=self.name)
-                vals = net[key][inds]
-            return vals
+            inds = net._get_indices(element=element, labels=self.name)
+            vals = super(Base, net).__getitem__(key)[key][inds]
+        return vals
 
     def add_locations(self, pores=[], throats=[]):
         r"""

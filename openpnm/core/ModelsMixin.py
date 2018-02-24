@@ -63,7 +63,7 @@ class ModelsMixin():
     def regenerate_models(self, propnames=None, exclude=[]):
         # If no props given, then regenerate them all
         if propnames is None:
-            propnames = list(self.models.dependency_tree())
+#            propnames = list(self.models.dependency_tree())
             propnames = list(self.models.keys())
         # If only one prop given, as string, put into a list
         elif type(propnames) is str:

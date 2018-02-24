@@ -32,8 +32,7 @@ class StickAndBall(GenericGeometry):
 
         self.add_model(propname='pore.max_size',
                        model=gm.pore_size.largest_sphere,
-                       iters=10,
-                       pore_diameter='pore.diameter')
+                       iters=10)
 
         self.add_model(propname='pore.area',
                        model=gm.pore_area.spherical,

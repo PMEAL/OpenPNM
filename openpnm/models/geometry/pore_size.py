@@ -58,7 +58,7 @@ def random(target, seed=None, num_range=[0, 1]):
     return _misc.random(target, element='pore', seed=seed, num_range=num_range)
 
 
-def largest_sphere(target, pore_diameter='pore.diameter', iters=10):
+def largest_sphere(target, iters=10):
     r"""
     Finds the maximum diameter pore that can be place in each location that
     does not overlap with any neighbors.
@@ -89,12 +89,7 @@ def largest_sphere(target, pore_diameter='pore.diameter', iters=10):
 
     """
     network = target.project.network
-    try:
-        D = network[pore_diameter]
-        nans = _sp.isnan(D)
-        D[nans] = 0.0
-    except:
-        D = _sp.zeros([network.Np, ], dtype=float)
+    D = _sp.zeros([network.Np, ], dtype=float)
     Ps = network.pores(target.name)
     C1 = network['pore.coords'][network['throat.conns'][:, 0]]
     C2 = network['pore.coords'][network['throat.conns'][:, 1]]
