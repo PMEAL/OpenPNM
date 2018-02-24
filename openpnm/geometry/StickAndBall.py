@@ -24,47 +24,55 @@ class StickAndBall(GenericGeometry):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.models = self.recipe()
 
-    @classmethod
-    def recipe(cls):
-        r = {'pore.seed': {'model': gm.pore_misc.random,
-                           'num_range': [0, 0.1],
-                           'seed': None},
+        self.add_model(propname='pore.seed',
+                       model=gm.pore_misc.random,
+                       num_range=[0, 0.1],
+                       seed=None)
 
-             'pore.max_size': {'model': gm.pore_size.largest_sphere,
-                               'iters': 10,
-                               'pore_diameter': 'pore.diameter'},
+        self.add_model(propname='pore.max_size',
+                       model=gm.pore_size.largest_sphere,
+                       iters=10,
+                       pore_diameter='pore.diameter')
 
-             'pore.volume': {'model': gm.pore_volume.sphere,
-                             'pore_diameter': 'pore.diameter'},
+        self.add_model(propname='pore.area',
+                       model=gm.pore_area.spherical,
+                       pore_diameter='pore.diameter')
 
-             'pore.diameter': {'model': gm.misc.product,
-                               'arg1': 'pore.max_size',
-                               'arg2': 'pore.seed'},
+        self.add_model(propname='pore.volume',
+                       model=gm.pore_volume.sphere,
+                       pore_diameter='pore.diameter')
 
-             'throat.max_size': {'model': gm.throat_misc.neighbor,
-                                 'mode': 'min',
-                                 'pore_prop': 'pore.diameter'},
+        self.add_model(propname='pore.diameter',
+                       model=gm.misc.product,
+                       arg1='pore.max_size',
+                       arg2='pore.seed')
 
-             'throat.diameter': {'model': gm.misc.scaled,
-                                 'factor': 0.5,
-                                 'prop': 'throat.max_size'},
+        self.add_model(propname='throat.max_size',
+                       model=gm.throat_misc.neighbor,
+                       mode='min',
+                       pore_prop='pore.diameter')
 
-             'throat.length': {'model': gm.throat_length.straight,
-                               'L_negative': 1e-09,
-                               'pore_diameter': 'pore.diameter'},
+        self.add_model(propname='throat.diameter',
+                       model=gm.misc.scaled,
+                       factor=0.5,
+                       prop='throat.max_size')
 
-             'throat.surface_area': {'model': gm.throat_surface_area.cylinder,
-                                     'throat_diameter': 'throat.diameter',
-                                     'throat_length': 'throat.length'},
+        self.add_model(propname='throat.length',
+                       model=gm.throat_length.straight,
+                       L_negative=1e-09,
+                       pore_diameter='pore.diameter')
 
-             'throat.volume': {'model': gm.throat_volume.cylinder,
-                               'throat_diameter': 'throat.diameter',
-                               'throat_length': 'throat.length'},
+        self.add_model(propname='throat.surface_area',
+                       model=gm.throat_surface_area.cylinder,
+                       throat_diameter='throat.diameter',
+                       throat_length='throat.length')
 
-             'throat.area': {'model': gm.throat_area.cylinder,
-                             'throat_diameter': 'throat.diameter'},
+        self.add_model(propname='throat.volume',
+                       model=gm.throat_volume.cylinder,
+                       throat_diameter='throat.diameter',
+                       throat_length='throat.length')
 
-             }
-        return r
+        self.add_model(propname='throat.area',
+                       model=gm.throat_area.cylinder,
+                       throat_diameter='throat.diameter')

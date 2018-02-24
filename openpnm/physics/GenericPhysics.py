@@ -70,11 +70,25 @@ class GenericPhysics(Base, ModelsMixin):
         # Convert self.name into 'all'
         elif key.split('.')[-1] in [self.name]:
             vals = self[element+'.all']
-        # Get prop or label if present
-        elif key in self.keys():
-            vals = super(Base, self).__getitem__(key)
-        # Otherwise retrieve from phase
+        # Apply logic in the __missing__ method
+        elif key not in self.keys():
+            vals = self.__missing__(key)
         else:
-            inds = boss._get_indices(element=element, labels=self.name)
-            vals = boss[key][inds]
+            vals = super(Base, self).__getitem__(key)
         return vals
+
+    def __missing__(self, key):
+        element = key.split('.')[0]
+        boss = self.project.find_phase(self)
+        if self.settings['missing_values'] is 'none':
+            raise KeyError(key)
+        else:
+            # If key not available try running model
+            if key in self.models.keys():
+                self.regenerate_models(propnames=[key])
+                vals = self.__getitem__(key)
+            # If not found on network a key error will be raised
+            else:
+                inds = boss._get_indices(element=element, labels=self.name)
+                vals = boss[key][inds]
+            return vals

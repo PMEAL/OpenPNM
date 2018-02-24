@@ -35,7 +35,8 @@ class GenericGeometry(Base, ModelsMixin):
     def __init__(self, network=None, project=None, pores=[], throats=[],
                  settings={}, **kwargs):
         # Define some default settings
-        self.settings.update({'prefix': 'geo'})
+        self.settings.update({'prefix': 'geo',
+                              'missing_values': np.nan})
         # Overwrite with user supplied settings, if any
         self.settings.update(settings)
 
@@ -50,20 +51,35 @@ class GenericGeometry(Base, ModelsMixin):
     def __getitem__(self, key):
         net = self.project.network
         element = key.split('.')[0]
-        inds = net._get_indices(element=element, labels=self.name)
         # Get uuid from network
         if key.split('.')[-1] == '_id':
+            inds = net._get_indices(element=element, labels=self.name)
             vals = net[element+'._id'][inds]
         # Convert self.name into 'all'
         elif key.split('.')[-1] in [self.name]:
             vals = self[element+'.all']
-        # Get prop or label if present
-        elif key in self.keys():
-            vals = super(Base, self).__getitem__(key)
+        # Apply logic in the __missing__ method
+        elif key not in self.keys():
+            vals = self.__missing__(key)
         else:
-            # If not found on network a key error will be raised
-            vals = net[key][inds]
+            vals = super(Base, self).__getitem__(key)
         return vals
+
+    def __missing__(self, key):
+        net = self.project.network
+        element = key.split('.')[0]
+        if self.settings['missing_values'] is 'none':
+            raise KeyError(key)
+        else:
+            # If key not available try running model
+            if key in self.models.keys():
+                self.regenerate_models(propnames=[key])
+                vals = self.__getitem__(key)
+            # If not found on network a key error will be raised
+            else:
+                inds = net._get_indices(element=element, labels=self.name)
+                vals = net[key][inds]
+            return vals
 
     def add_locations(self, pores=[], throats=[]):
         r"""

@@ -7,8 +7,7 @@ pn = op.network.Cubic(shape=[5, 5, 5], spacing=0.0001, name='pn11')
 pn.add_boundary_pores()
 proj = pn.project
 
-geom = op.geometry.StickAndBall(network=pn, pores=pn.Ps, throats=pn.Ts,
-                                settings={'test': 1})
+geom = op.geometry.StickAndBall(network=pn, pores=pn.Ps, throats=pn.Ts)
 
 air = op.phases.Air(network=pn)
 water = op.phases.Water(network=pn)
@@ -25,6 +24,9 @@ water.add_model(propname='pore.reaction',
                 model=op.models.physics.generic_source_term.standard_kinetics,
                 prefactor='pore.A', exponent='pore.k',
                 quantity='pore.pressure', regen_mode='deferred')
+
+water.add_model(propname='throat.diffusive_conductance',
+                model=op.models.physics.diffusive_conductance.bulk_diffusion)
 
 s = {'conductance': 'throat.conductance',
      'quantity': 'pore.pressure'}
