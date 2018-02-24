@@ -46,15 +46,17 @@ class GenericPhase(Base, ModelsMixin):
 
     def __getitem__(self, key):
         element = key.split('.')[0]
+        # Deal with special keys first
         if key.split('.')[-1] == '_id':
             net = self.project.network
             return net[element+'._id']
         if key.split('.')[-1] == self.name:
             return self[element+'.all']
-        if key not in self.keys():
+        # Now get values if present, or regenerate them
+        vals = self.get(key)
+        if vals is None:
             logger.debug(key + ' not on Phase, constructing data from Physics')
             names = self.project.find_physics(phase=self)
             physics = [self.project.physics()[i] for i in names]
-            return self._interleave_data(key, physics)
-        else:
-            return super().__getitem__(key)
+            vals = self._interleave_data(key, physics)
+        return vals

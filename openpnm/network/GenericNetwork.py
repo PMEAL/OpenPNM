@@ -35,15 +35,17 @@ class GenericNetwork(Base, ModelsMixin):
         super().__setitem__(prop, value)
 
     def __getitem__(self, key):
+        # Deal with special keys first
         if key.split('.')[-1] == self.name:
             element = key.split('.')[0]
             return self[element+'.all']
-        if key not in self.keys():
+        # Now get values if present, or regenerate them
+        vals = self.get(key)
+        if vals is None:
             logger.debug(key + ' not on Network, check on Geometries')
             geoms = self.project.geometries().values()
-            return self._interleave_data(key, geoms)
-        else:
-            return super().__getitem__(key)
+            vals = self._interleave_data(key, geoms)
+        return vals
 
     def _gen_ids(self):
         if 'pore._id' not in self.keys():

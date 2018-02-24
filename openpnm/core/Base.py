@@ -198,6 +198,16 @@ class Base(dict):
             temp = [i for i in temp if i.split('.')[0] in element]
         return temp
 
+    def get(self, key, value=None):
+        v = super().get(key, value)
+        if v is None:
+            if hasattr(self, 'models'):
+                if key in self.models.keys():
+                    logger.info(key+' not found, regenerating model')
+                    self.regenerate_models(propnames=key)
+                    v = self.get(key=key, value=value)
+        return v
+
     # -------------------------------------------------------------------------
     """Data Query Methods"""
     # -------------------------------------------------------------------------
@@ -724,8 +734,7 @@ class Base(dict):
         N = self.project.network._count(element)
 
         # Attempt to fetch the requested prop array from each object
-        # Use super version of getitem to avoid recursive look-ups
-        arrs = [super(Base, item).__getitem__(prop) for item in sources]
+        arrs = [item.get(prop, None) for item in sources]
         locs = [self._get_indices(element, item.name) for item in sources]
         sizes = [sp.size(a) for a in arrs]
         if all([item is None for item in arrs]):  # prop not found anywhere

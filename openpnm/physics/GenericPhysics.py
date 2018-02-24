@@ -62,31 +62,22 @@ class GenericPhysics(Base, ModelsMixin):
         phase['throat.'+self.name][network.throats(geometry.name)] = True
 
     def __getitem__(self, key):
+        # Find boss object (either phase or network)
         element = key.split('.')[0]
-        boss = self.project.find_phase(self)
+        if self._isa('phase'):
+            boss = self.project.find_phase(self)
+        else:
+            boss = self.project.network
+        # Deal with a few special key items
         if key.split('.')[-1] == '_id':
             inds = boss._get_indices(element=element, labels=self.name)
-            vals = boss[element+'._id'][inds]
+            return boss[element+'._id'][inds]
         # Convert self.name into 'all'
         elif key.split('.')[-1] in [self.name]:
-            vals = self[element+'.all']
-        # Apply logic in the __missing__ method
-        elif key not in self.keys():
-            vals = self.__missing__(key)
-        else:
-            vals = super(Base, self).__getitem__(key)
-        return vals
-
-    def __missing__(self, key):
-        element = key.split('.')[0]
-        phase = self.project.find_phase(self)
-        # If key not available try running model
-        if key in self.models.keys():
-            print('GenericPhysics: ' + key + ' missing, running model')
-            self.regenerate_models(propnames=[key])
-            vals = self.__getitem__(key)
-        # If not found on network a key error will be raised
-        else:
-            inds = phase._get_indices(element=element, labels=self.name)
-            vals = super(Base, phase).__getitem__(key)[inds]
+            return self[element+'.all']
+        # Now get values if present, or regenerate them
+        vals = self.get(key)
+        if vals is None:
+            inds = boss._get_indices(element=element, labels=self.name)
+            vals = boss[key][inds]
         return vals
