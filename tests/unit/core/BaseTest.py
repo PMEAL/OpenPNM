@@ -14,10 +14,10 @@ class BaseTest:
                                                throats=self.net.Ts)
         self.geo['pore.diameter'] = sp.rand(self.net.Np)
         self.geo.add_model(propname='pore.volume',
-                           model=op.geometry.models.pore_volume.sphere)
+                           model=op.models.geometry.pore_volume.sphere)
         self.geo['throat.diameter'] = sp.rand(self.net.Nt)
         self.geo.add_model(propname='throat.area',
-                           model=op.geometry.models.throat_area.cylinder)
+                           model=op.models.geometry.throat_area.cylinder)
         self.geo.regenerate_models()
         self.geo['throat.label1'] = False
         self.geo['throat.label2'] = False
@@ -527,6 +527,12 @@ class BaseTest:
         assert sp.all(a == [6, 7, 8, 15, 16, 17, 24, 25, 26])
         b = self.net._get_indices(element='pore', labels='*ght')
         assert sp.all(a == b)
+
+    def test_write_dict(self):
+        self.net['pore.test_dict'] = {'test1': 1, 'test2': self.net.Ps}
+        assert 'pore.test_dict_test1' in self.net.keys()
+        assert 'pore.test_dict_test2' in self.net.keys()
+        self.net['pore.test_dict'] = {'test1': 1, 'test2': self.net.Ps}
 
 #    def test_mapping(self):
 #        # Create small cubic network
