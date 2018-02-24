@@ -179,6 +179,12 @@ class BaseTest:
         a = self.net.toindices(mask)
         assert sp.all(a == Ts)
 
+    def test_toindices_float_mask(self):
+        mask = (sp.rand(self.net.Np) < 0.5)
+        inds_in = sp.where(mask)[0]
+        inds_out = self.net.toindices(mask*1.0)
+        assert sp.all(inds_in == inds_out)
+
     def test_toindices_wrong_mask(self):
         mask = sp.zeros((self.net.Nt)-2, dtype=bool)
         mask[[0, 3, 6]] = True

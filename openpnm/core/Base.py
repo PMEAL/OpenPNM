@@ -1104,19 +1104,17 @@ class Base(dict):
         if indices is None:
             indices = sp.array([], ndmin=1, dtype=int)
         locs = sp.array(indices, ndmin=1)
-        if sp.issubdtype(locs.dtype, sp.number) or \
-           sp.issubdtype(locs.dtype, sp.bool_):
-            pass
-        else:
-            raise Exception('Invalid data type received as indices, ' +
-                            ' must be boolean or numeric')
+        # Try to infer if int or float array is actually boolean mask
+        if sp.all(sp.in1d(locs, [0, 1])) and locs.size in [self.Nt, self.Np]:
+            locs = sp.array(locs, dtype=bool)
+        # If boolean array, convert to indices
         if locs.dtype == bool:
             if sp.size(locs) == self.Np:
                 locs = self.Ps[locs]
             elif sp.size(locs) == self.Nt:
                 locs = self.Ts[locs]
             else:
-                raise Exception('Boolean list of locations must be either ' +
+                raise Exception('Mask of locations must be either ' +
                                 'Np nor Nt long')
         locs = locs.astype(dtype=int)
         return locs
