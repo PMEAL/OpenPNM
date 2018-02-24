@@ -199,6 +199,14 @@ class Base(dict):
         return temp
 
     def get(self, key, value=None):
+        r"""
+        This sub-classed method sattempt to retrieve the requested item,
+        and if it is not found among the data arrays, and the pore-scale
+        model of the same name is run if present.  If successful, the newly
+        newly calculated values are retrieved and returned, otherwise the
+        given default value is returned.
+
+        """
         v = super().get(key, value)
         if v is None:
             if hasattr(self, 'models'):
@@ -211,12 +219,6 @@ class Base(dict):
     # -------------------------------------------------------------------------
     """Data Query Methods"""
     # -------------------------------------------------------------------------
-    def get_data(self, props):
-        d = {}
-        for item in props:
-            d.update({item: self[item]})
-        return d
-
     def props(self, element=None, mode='all', deep=False):
         r"""
         Returns a list containing the names of all defined pore or throat
