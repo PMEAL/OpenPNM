@@ -548,6 +548,12 @@ class BaseTest:
         assert a.size == self.geo21.Nt
         assert sp.all(self.net2.map_throats(a) == self.net2.throats(self.geo21.name))
 
+    def test_map_pores_unfiltered(self):
+        a = self.geo['pore._id']
+        b = self.net.map_pores(a, filtered=False)
+        assert sp.all(b.indices == self.net.pores(self.geo.name))
+        assert b.mask.size == self.geo.Np
+
     def test_interleave_data_bool(self):
         net = op.network.Cubic(shape=[2, 2, 2])
         Ps = net.pores('top')
@@ -636,6 +642,22 @@ class BaseTest:
         geom = op.geometry.GenericGeometry(network=net, pores=[0, 1, 2])
         geom['pore.blah'] = True
         assert sp.sum(net['pore.blah']) == geom.Np
+
+    def test_get_regenerate_on_demand(self):
+        self.geo.regenerate_models()
+        models = list(self.geo.models.keys())
+        assert len(set(self.geo.keys()).intersection(models)) == 2
+        for item in models:
+            del self.geo[item]
+        assert len(set(self.geo.keys()).intersection(models)) == 0
+        for item in models:
+            arr = self.geo[item]
+        assert len(set(self.geo.keys()).intersection(models)) == 2
+
+    def test_get_no_matches(self):
+        self.geo.pop('pore.blah', None)
+        with pytest.raises(KeyError):
+            self.geo['pore.blah']
 
 
 if __name__ == '__main__':
