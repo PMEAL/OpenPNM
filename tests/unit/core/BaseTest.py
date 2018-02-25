@@ -386,10 +386,6 @@ class BaseTest:
     def test_parse_indices_None(self):
         assert len(self.net._parse_indices(indices=None)) == 0
 
-    def test_parse_indices_string(self):
-        with pytest.raises(Exception):
-            self.net._parse_indices(indices='abc')
-
     def test_parse_indices_int(self):
         a = self.net._parse_indices(indices=0)
         assert type(a) == sp.ndarray

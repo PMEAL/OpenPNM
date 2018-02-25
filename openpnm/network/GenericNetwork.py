@@ -221,7 +221,7 @@ class GenericNetwork(Base, ModelsMixin):
         if weights is None:
             weights = sp.ones((self.Nt,), dtype=int)
         elif sp.shape(weights)[0] not in [self.Nt, 2*self.Nt]:
-            raise Exception('Received weights are incorrect length')
+            raise Exception('Received weights are of incorrect length')
 
         # Append row & col to each other, and data to itself
         conn = self['throat.conns']
@@ -483,6 +483,8 @@ class GenericNetwork(Base, ModelsMixin):
         array([ 3,  5,  7, 25, 27])
         """
         pores = self._parse_indices(pores)
+        if sp.size(pores) == 0:
+            return sp.array([], ndmin=1, dtype=int)
         neighbors = topotools.find_neighbor_sites(sites=pores, logic=mode,
                                                   am=self.am, flatten=flatten,
                                                   exclude_input=excl_self)
@@ -535,6 +537,8 @@ class GenericNetwork(Base, ModelsMixin):
         array([array([0, 1, 2]), array([0, 3, 4, 5])], dtype=object)
         """
         pores = self._parse_indices(pores)
+        if sp.size(pores) == 0:
+            return sp.array([], ndmin=1, dtype=int)
         neighbors = topotools.find_neighbor_bonds(sites=pores, logic=mode,
                                                   im=self.im, flatten=flatten)
         return neighbors
@@ -677,8 +681,8 @@ class GenericNetwork(Base, ModelsMixin):
         # Sort the indices in each list
         [Pn[i].sort() for i in range(0, sp.size(pores))]
         if flatten:  # Convert list of lists to a flat nd-array
-            temp = sp.hstack(Pn)
-            Pn = sp.unique(Pn)
+            temp = sp.concatenate((Pn))
+            Pn = sp.unique(temp)
             if excl_self:  # Remove inputs if necessary
                 Pn = Pn[~sp.in1d(Pn, pores)]
         else:  # Convert list of lists to an nd-array of nd-arrays

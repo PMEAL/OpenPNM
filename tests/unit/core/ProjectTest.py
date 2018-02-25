@@ -51,15 +51,15 @@ class ProjectTest:
 
     def test_grid_printing(self):
         d = self.proj.grid
-        assert d == {'geo_1': {'phase_1': 'phys_1', 'phase_2': 'phys_3'},
-                     'geo_2': {'phase_1': 'phys_2', 'phase_2': 'phys_4'}}
+        assert d == {'geo_01': {'phase_01': 'phys_01', 'phase_02': 'phys_03'},
+                     'geo_02': {'phase_01': 'phys_02', 'phase_02': 'phys_04'}}
 
         s = "――――――――――――――――――――――――――――――――――――――――――――――――\n" + \
-            "|     net_1    |    phase_1    |    phase_2    |\n" + \
+            "|     net_01   |    phase_01   |    phase_02   |\n" + \
             "――――――――――――――――――――――――――――――――――――――――――――――――\n" + \
-            "|     geo_1    |    phys_1     |    phys_3     |\n" + \
+            "|     geo_01   |    phys_01    |    phys_03    |\n" + \
             "――――――――――――――――――――――――――――――――――――――――――――――――\n" + \
-            "|     geo_2    |    phys_2     |    phys_4     |\n" + \
+            "|     geo_02   |    phys_02    |    phys_04    |\n" + \
             "――――――――――――――――――――――――――――――――――――――――――――――――"
         assert print(self.proj.grid) == print(s)
 

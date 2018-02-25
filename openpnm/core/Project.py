@@ -87,7 +87,7 @@ class Project(list):
     def _generate_name(self, obj):
         prefix = obj.settings['prefix']
         num = str(len([item for item in self if item._isa() == obj._isa()]))
-        name = prefix + '_' + num
+        name = prefix + '_' + num.zfill(2)
         return name
 
     def _get_net(self):

@@ -85,7 +85,7 @@ def find_neighbor_bonds(sites, im, flatten=True, logic='union'):
         im = im.tolil(copy=False)
     neighbors = [im.rows[i] for i in sp.array(sites)]
     if flatten:
-        neighbors = sp.hstack(neighbors)
+        neighbors = sp.concatenate(neighbors)
         neighbors = apply_logic(neighbors=neighbors, logic=logic)
     return neighbors
 

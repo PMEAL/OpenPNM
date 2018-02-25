@@ -16,7 +16,7 @@ water = op.phases.Water(network=pn)
 
 phys1 = op.physics.GenericPhysics(network=pn, phase=water, geometry=geom1)
 phys1.add_model(propname='pore.test',
-                model=op.geometry.models.pore_misc.constant,
+                model=op.models.geometry.pore_misc.constant,
                 value=1.0)
 phys1.regenerate_models()
 

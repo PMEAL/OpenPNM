@@ -7,8 +7,8 @@ class GenericNetworkTest:
         self.net = op.network.Cubic(shape=[10, 10, 10])
 
     def teardown_class(self):
-        mgr = op.core.Workspace()
-        mgr.clear()
+        ws = op.core.Workspace()
+        ws.clear()
 
     def test_find_connected_pores_numeric_not_flattend(self):
         a = self.net.find_connected_pores(throats=[0, 1])
@@ -46,8 +46,8 @@ class GenericNetworkTest:
         a = self.net.find_neighbor_pores(pores=[0, 2], mode='intersection')
         assert sp.all(a == [1])
 
-    def test_find_neighbor_pores_numeric_notintersection(self):
-        a = self.net.find_neighbor_pores(pores=[0, 2], mode='not_intersection')
+    def test_find_neighbor_pores_numeric_exclusive_or(self):
+        a = self.net.find_neighbor_pores(pores=[0, 2], mode='exclusive_or')
         assert sp.all(a == [3, 10, 12, 100, 102])
 
     def test_find_neighbor_pores_numeric_union_incl_self(self):
@@ -60,9 +60,9 @@ class GenericNetworkTest:
                                          excl_self=False)
         assert sp.all(a == [1])
 
-    def test_find_neighbor_pores_numeric_notintersection_incl_self(self):
+    def test_find_neighbor_pores_numeric_exclusive_or_incl_self(self):
         a = self.net.find_neighbor_pores(pores=[0, 2],
-                                         mode='not_intersection',
+                                         mode='exclusive_or',
                                          excl_self=False)
         assert sp.all(a == [0, 2, 3, 10, 12, 100, 102])
 
@@ -84,9 +84,9 @@ class GenericNetworkTest:
         a = self.net.find_neighbor_throats(pores=[0, 2], mode='intersection')
         assert sp.size(a) == 0
 
-    def test_find_neighbor_throats_numeric_not_intersection(self):
+    def test_find_neighbor_throats_numeric_exclusive_or(self):
         a = self.net.find_neighbor_throats(pores=[0, 2],
-                                           mode='not_intersection')
+                                           mode='exclusive_or')
         assert sp.all(a == [0, 1, 2, 900, 902, 1800, 1802])
 
     def test_num_neighbors_empty(self):
@@ -111,10 +111,10 @@ class GenericNetworkTest:
                                    mode='intersection', flatten=True)
         assert a == 1
         a = self.net.num_neighbors(pores=[0, 2], element='pores',
-                                   mode='not_intersection', flatten=True)
+                                   mode='exclusive_or', flatten=True)
         assert a == 5
 
-    def test_num_neighbors_pores_notflattened(self):
+    def test_num_neighbors_pores_not_flattened(self):
         a = self.net.num_neighbors(pores=[0, 2], flatten=False)
         assert sp.all(a == [3, 4])
         a = self.net.num_neighbors(pores=0, flatten=False)
@@ -122,48 +122,53 @@ class GenericNetworkTest:
         assert isinstance(a, sp.ndarray)
 
     def test_num_neighbors_throats_flattened(self):
-        a = self.net.num_neighbors(pores=0, element='throats', flatten=True)
+        net = op.network.Cubic(shape=[10, 10, 10])
+        a = net.num_neighbors(pores=0, element='throats', flatten=True)
         assert a == 3
-        a = self.net.num_neighbors(pores=[0, 1], element='throats',
-                                   flatten=True)
+        a = net.num_neighbors(pores=[0, 1], element='throats', flatten=True)
         assert a == 6
-        op.topotools.extend(network=self.net, throat_conns=[[0, 1], [0, 2]])
-        a = self.net.num_neighbors(pores=0, element='throats', flatten=True)
+        op.topotools.extend(network=net, throat_conns=[[0, 1], [0, 2]])
+        net._am.clear()
+        net._im.clear()
+        a = net.num_neighbors(pores=0, element='throats', flatten=True)
         assert a == 5
-        a = self.net.num_neighbors(pores=[0, 1], element='throats',
-                                   flatten=True)
+        a = net.num_neighbors(pores=[0, 1], element='throats', flatten=True)
         assert a == 8
-        op.topotools.trim(network=self.net, throats=self.net.Ts[-2:])
 
     def test_num_neighbors_throats_with_modes(self):
-        a = self.net.num_neighbors(pores=[0, 1], element='throats',
-                                   mode='union', flatten=True)
+        net = op.network.Cubic(shape=[10, 10, 10])
+        a = net.num_neighbors(pores=[0, 1], element='throats', mode='union',
+                              flatten=True)
         assert a == 6
-        op.topotools.extend(network=self.net, throat_conns=[[0, 1], [0, 2]])
-        a = self.net.num_neighbors(pores=[0, 1], element='throats',
-                                   mode='union', flatten=True)
+        op.topotools.extend(network=net, throat_conns=[[0, 1], [0, 2]])
+        net._am.clear()
+        net._im.clear()
+        a = net.num_neighbors(pores=[0, 1], element='throats', mode='union',
+                              flatten=True)
         assert a == 8
-        a = self.net.num_neighbors(pores=[0, 1], element='throats',
-                                   mode='intersection', flatten=True)
+        a = net.num_neighbors(pores=[0, 1], element='throats',
+                              mode='intersection', flatten=True)
         assert a == 2
-        a = self.net.num_neighbors(pores=[0, 1], element='throats',
-                                   mode='not_intersection', flatten=True)
+        a = net.num_neighbors(pores=[0, 1], element='throats',
+                              mode='exclusive_or', flatten=True)
         assert a == 6
-        op.topotools.trim(network=self.net, throats=self.net.Ts[-2:])
 
     def test_num_neighbors_throats_not_flattened(self):
-        a = self.net.num_neighbors(pores=0, element='throats', flatten=False)
+        net = op.network.Cubic(shape=[10, 10, 10])
+        a = net.num_neighbors(pores=0, element='throats', flatten=False)
         assert sp.all(a == [3])
-        a = self.net.num_neighbors(pores=[0, 1, 2, 3], element='throats',
-                                   flatten=False)
+        a = net.num_neighbors(pores=[0, 1, 2, 3], element='throats',
+                              flatten=False)
         assert sp.all(a == [3, 4, 4, 4])
-        op.topotools.extend(network=self.net, throat_conns=[[0, 1], [0, 2]])
-        a = self.net.num_neighbors(pores=0, element='throats', flatten=False)
+        op.topotools.extend(network=net, throat_conns=[[0, 1], [0, 2]])
+        net._am.clear()
+        net._im.clear()
+        a = net.num_neighbors(pores=0, element='throats', flatten=False)
         assert sp.all(a == [5])
-        a = self.net.num_neighbors(pores=[0, 1, 2, 3], element='throats',
-                                   flatten=False)
+        a = net.num_neighbors(pores=[0, 1, 2, 3], element='throats',
+                              flatten=False)
         assert sp.all(a == [5, 5, 5, 4])
-        op.topotools.trim(network=self.net, throats=self.net.Ts[-2:])
+        op.topotools.trim(network=net, throats=net.Ts[-2:])
 
     def test_find_nearby_pores_distance_1(self):
         a = self.net.find_nearby_pores(pores=[0, 1], r=1)
@@ -175,7 +180,7 @@ class GenericNetworkTest:
         assert sp.all([sp.size(a[i]) for i in [0, 1]] == [10, 14])
 
     def test_find_nearby_pores_distance_0(self):
-        a = self.net.find_nearby_pores(pores=[0, 1], r=0)
+        a = self.net.find_nearby_pores(pores=[0, 1], r=1e-9)
         assert sp.shape(a) == (2, 0)
 
     def test_find_nearby_pores_distance_1_flattened(self):
