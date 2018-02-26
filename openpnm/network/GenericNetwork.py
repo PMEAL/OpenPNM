@@ -214,7 +214,7 @@ class GenericNetwork(Base, ModelsMixin):
         >>> import openpnm as op
         >>> pn = op.network.Cubic(shape=[5, 5, 5])
         >>> weights = sp.rand(pn.num_throats(), ) < 0.5
-        >>> temp = pn.create_adjacency_matrix(weights=weights, fmt='csr')
+        >>> am = pn.create_adjacency_matrix(weights=weights, fmt='csr')
 
         """
         # Check if provided data is valid
@@ -303,7 +303,7 @@ class GenericNetwork(Base, ModelsMixin):
         >>> import openpnm as op
         >>> pn = op.network.Cubic(shape=[5, 5, 5])
         >>> weights = sp.rand(pn.num_throats(), ) < 0.5
-        >>> temp = pn.create_incidence_matrix(weights=weights, sprsfmt='csr')
+        >>> im = pn.create_incidence_matrix(weights=weights, sprsfmt='csr')
         """
         # Check if provided data is valid
         if weights is None:
@@ -371,9 +371,9 @@ class GenericNetwork(Base, ModelsMixin):
         >>> pn = op.network.Cubic(shape=[5, 5, 5])
         >>> pn.find_connected_pores(throats=[0,1])
         array([[0, 1],
-               [0, 5]])
+               [1, 2]])
         >>> pn.find_connected_pores(throats=[0,1], flatten=True)
-        array([0, 1, 5])
+        array([0, 1, 2])
 
         Notes
         -----
@@ -532,9 +532,9 @@ class GenericNetwork(Base, ModelsMixin):
         >>> import openpnm as op
         >>> pn = op.network.Cubic(shape=[5, 5, 5])
         >>> pn.find_neighbor_throats(pores=[0, 1])
-        array([0, 1, 2, 3, 4, 5])
+        array([  0,   1, 100, 101, 200, 201])
         >>> pn.find_neighbor_throats(pores=[0, 1], flatten=False)
-        array([array([0, 1, 2]), array([0, 3, 4, 5])], dtype=object)
+        [[0, 100, 200], [0, 1, 101, 201]]
         """
         pores = self._parse_indices(pores)
         if sp.size(pores) == 0:
