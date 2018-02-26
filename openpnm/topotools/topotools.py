@@ -50,7 +50,7 @@ def find_neighbor_sites(sites, am, flatten=True, exclude_input=True,
         if exclude_input:
             neighbors = neighbors[sp.in1d(neighbors, sites, invert=True,
                                           assume_unique=True)]
-    return neighbors.astype(int)
+    return neighbors
 
 
 def find_neighbor_bonds(sites, im, flatten=True, logic='union'):
@@ -87,7 +87,7 @@ def find_neighbor_bonds(sites, im, flatten=True, logic='union'):
     if flatten:
         neighbors = sp.concatenate(neighbors)
         neighbors = apply_logic(neighbors=neighbors, logic=logic)
-    return neighbors.astype(int)
+    return neighbors
 
 
 def find_connected_sites(bonds, am, flatten=True, logic='union'):
@@ -124,7 +124,7 @@ def find_connected_sites(bonds, am, flatten=True, logic='union'):
         neighbors = apply_logic(neighbors=neighbors, logic=logic)
     else:
         neighbors = sp.vstack((am.row[bonds], am.col[bonds])).T
-    return neighbors.astype(int)
+    return neighbors
 
 
 def find_connecting_bonds(sites, am):
@@ -158,7 +158,7 @@ def find_connecting_bonds(sites, am):
         am = am.todok(copy=False)
     z = tuple(zip(sites[:, 0], sites[:, 1]))
     neighbors = [am.get(z[i], None) for i in range(len(z))]
-    return neighbors.astype(int)
+    return neighbors
 
 
 def apply_logic(neighbors, logic):
@@ -174,7 +174,7 @@ def apply_logic(neighbors, logic):
         neighbors = sp.unique(sp.where(sp.bincount(neighbors) > 1)[0])
     else:
         raise Exception('Unsupported logic type: '+logic)
-    return neighbors
+    return neighbors.astype(int)
 
 
 def istriu(am):
