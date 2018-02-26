@@ -369,10 +369,10 @@ class GenericNetwork(Base, ModelsMixin):
         --------
         >>> import openpnm as op
         >>> pn = op.network.Cubic(shape=[5, 5, 5])
-        >>> pn.find_connected_pores(throats=[0,1])
+        >>> pn.find_connected_pores(throats=[0, 1])
         array([[0, 1],
                [1, 2]])
-        >>> pn.find_connected_pores(throats=[0,1], flatten=True)
+        >>> pn.find_connected_pores(throats=[0, 1], flatten=True)
         array([0, 1, 2])
 
         Notes
