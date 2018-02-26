@@ -20,7 +20,7 @@ install:
   - python setup.py install
 
 script:
-  - pytest --pep8 --cov=./
+  - ./bin/test pep8 cov
 
 after_success:
   - codecov
