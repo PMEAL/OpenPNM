@@ -39,14 +39,16 @@ class Drainage(GenericAlgorithm):
     >>> geo = op.geometry.StickAndBall(network=pn, pores=pn.Ps, throats=pn.Ts)
     >>> water = op.phases.Water(network=pn)
     >>> air = op.phases.Air(network=pn)
-    >>> phys = op.physics.Standard(network=pn, phase=water, geometry=geo)
+    >>> phys = op.physics.GenericPhysics(network=pn, phase=water, geometry=geo)
+    >>> phys.add_model(propname='throat.capillary_pressure',
+    ...                model=op.models.physics.capillary_pressure.washburn)
 
     Once the basic Core objects are setup, the Algorithm can be created and
     and run as follows:
 
     >>> alg = op.algorithms.Drainage(network=pn)
     >>> alg.setup(invading_phase=water, defending_phase=air)
-    >>> alg.set_inlets(pores=pn.pores('boundary_top'))
+    >>> alg.set_inlets(pores=pn.pores('top'))
     >>> alg.run()
     >>> data = alg.get_drainage_data()
 
@@ -89,8 +91,8 @@ class Drainage(GenericAlgorithm):
             fluid.
 
         defending_phase : OpenPNM Phase object
-            The Phase object containing the physical properties of the defending
-            fluid.
+            The Phase object containing the physical properties of the
+            defending fluid.
 
         entry_pressure : string (optional)
             The dictionary key on the Phase object where the throat entry
@@ -442,7 +444,7 @@ class Drainage(GenericAlgorithm):
         # Add residual throats, if any, to list of invaded throats
         Tinvaded = Tinvaded + self['throat.residual']
         # Perform the clustering using scipy.csgraph
-        csr = net.create_adjacency_matrix(data=Tinvaded, fmt='csr')
+        csr = net.create_adjacency_matrix(weights=Tinvaded, fmt='csr')
         clusters = csg.connected_components(csgraph=csr, directed=False)[1]
         # Find pores attached to each invaded throats
         Ps = net.find_connected_pores(throats=Tinvaded, flatten=True)

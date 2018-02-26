@@ -7,6 +7,7 @@ module __GenericAlgorithm__: Base class to build custom algorithms
 """
 from openpnm.core import Base, logging
 logger = logging.getLogger()
+import numpy as np
 
 
 class GenericAlgorithm(Base):
@@ -28,6 +29,10 @@ class GenericAlgorithm(Base):
         if network is not None:
             project = network.project
         super().__init__(project=project, **kwargs)
+
+        if project.network is not None:
+            self['pore.all'] = np.ones((project.network.Np, ), dtype=bool)
+            self['throat.all'] = np.ones((project.network.Nt, ), dtype=bool)
 
     def results(self):
         r"""

@@ -174,7 +174,7 @@ def apply_logic(neighbors, logic):
         neighbors = sp.unique(sp.where(sp.bincount(neighbors) > 1)[0])
     else:
         raise Exception('Unsupported logic type: '+logic)
-    return neighbors
+    return neighbors.astype(int)
 
 
 def istriu(am):

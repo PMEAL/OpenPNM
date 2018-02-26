@@ -26,10 +26,6 @@ class GenericTransport(GenericAlgorithm):
 
         super().__init__(project=project, **kwargs)
 
-        if project.network is not None:
-            self['pore.all'] = np.ones((project.network.Np, ), dtype=bool)
-            self['throat.all'] = np.ones((project.network.Nt, ), dtype=bool)
-
     def set_dirchlet_BC(self, pores, values):
         r"""
         """
