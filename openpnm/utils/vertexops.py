@@ -12,7 +12,7 @@ def PolyArea2D(pts):
     convex hull in correct order
     Example
     ---------
-    >>> import OpenPNM.Utilities.vertexops as vo
+    >>> import openpnm.utils.vertexops as vo
     >>> tri = np.array([[0, 0], [1, 2], [2, 0]])
     >>> vo.PolyArea2D(tri) == 2.0
     True
@@ -28,7 +28,7 @@ def PolyPerimeter2D(pts):
     convex hull in correct order
     Example
     ---------
-    >>> import OpenPNM.Utilities.vertexops as vo
+    >>> import openpnm.utils.vertexops as vo
     >>> quad = np.array([[0, 0], [0, 1], [1, 1], [1, 0]])
     >>> vo.PolyPerimeter2D(quad) == 4.0
     True
@@ -44,7 +44,7 @@ def PolyWeightedCentroid2D(pts):
     convex hull in correct order
     Example
     ---------
-    >>> import OpenPNM.Utilities.vertexops as vo
+    >>> import openpnm.utils.vertexops as vo
     >>> quad = np.array([[0, 0], [0, 2], [2, 2], [2, 0]])
     >>> vo.PolyWeightedCentroid2D(quad) == [1.0,1.0]
     True
