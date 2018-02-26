@@ -105,11 +105,10 @@ def weibull(target, shape, scale, loc, seeds):
     be used to find suitable values of 'shape', 'scale'` and 'loc'.  Note that
     'shape' is represented by 'c' in the actual function call.
 
-    >>> import scipy.stats as spst
-    >>> import scipy as sp
+    >>> import scipy
+    >>> func = scipy.stats.weibull_min(c=1.5, scale=0.0001, loc=0)
     >>> import matplotlib.pyplot as plt
-    >>> x = spst.weibull_min.ppf(q=sp.rand(10000), c=1.5, scale=0.0001, loc=0)
-    >>> plt.hist(x, bins=50)
+    >>> fig = plt.hist(func.ppf(q=scipy.rand(10000)), bins=50)
 
     """
     seeds = target[seeds]
@@ -147,11 +146,10 @@ def normal(target, scale, loc, seeds):
     which uses the 'norm' method of the scipy.stats module.  This can
     be used to find suitable values of 'scale' and 'loc'.
 
-    >>> import scipy.stats as spst
-    >>> import scipy as sp
+    >>> import scipy
+    >>> func = scipy.stats.norm(scale=.0001, loc=0.001)
     >>> import matplotlib.pyplot as plt
-    >>> x = spst.norm.ppf(q=sp.rand(10000), scale=.0001, loc=0.001)
-    >>> plt.hist(x, bins=50)
+    >>> fig = plt.hist(func.ppf(q=scipy.rand(10000)), bins=50)
 
     """
     seeds = target[seeds]
@@ -190,7 +188,7 @@ def generic(target, func, seeds):
     >>> import scipy
     >>> func = scipy.stats.weibull_min(c=2, scale=.0001, loc=0)
     >>> import matplotlib.pyplot as plt
-    >>> plt.hist(func.ppf(q=scipy.rand(1000), bins=50))
+    >>> fig = plt.hist(func.ppf(q=scipy.rand(1000)), bins=50)
 
     """
     seeds = target[seeds]

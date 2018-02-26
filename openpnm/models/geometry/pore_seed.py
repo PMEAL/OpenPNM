@@ -68,19 +68,11 @@ def spatially_correlated(target, weights=None, strel=None):
     Examples
     --------
     >>> import openpnm as op
-    >>> pn = op.network.Cubic(shape=[50, 50, 50])
-    >>> geom = op.geometry.GenericGeometry(network=pn,
-    ...                                    pores=pn.Ps,
-    ...                                    throats=pn.Ts)
-    >>> mod = op.geometry.models.pore_seed.spatially_correlated
-    >>> geom.add_model(propname='pore.seed',
-    ...                model=mod,
-    ...                weights=[2, 2, 2])
-    >>> im = pn.asarray(geom['pore.seed'])
-
-    Visualizing the end result can be done with:
-
-        ```matplotlib.pyplot.imshow(im[:, 25, :],interpolation='none')```
+    >>> pn = op.network.Cubic(shape=[10, 10, 10])
+    >>> Ps, Ts = pn.Ps, pn.Ts
+    >>> geom = op.geometry.GenericGeometry(network=pn, pores=Ps, throats=Ts)
+    >>> mod = op.models.geometry.pore_seed.spatially_correlated
+    >>> geom.add_model(propname='pore.seed', model=mod, weights=[2, 2, 2])
 
     """
     import scipy.ndimage as spim
@@ -136,13 +128,13 @@ def location_adjusted(target, image=None):
     ----------
     >>> import openpnm as op
     >>> pn = op.network.Cubic(shape=[6,6,6])
-    >>> geom = op.geometry.GenericGeometry(network=pn, pores=pn.Ps,
-    ...                                    throats=pn.Ts)
+    >>> Ps, Ts = pn.Ps, pn.Ts
+    >>> geom = op.geometry.GenericGeometry(network=pn, pores=Ps, throats=Ts)
     >>> import numpy as np
     >>> im = np.ones([3,3,3])
     >>> im[:,:,0] = 0.5
     >>> im[:,:,1] = 0.75
-    >>> model = op.geometry.models.pore_seed.location_adjusted
+    >>> model = op.models.geometry.pore_seed.location_adjusted
     >>> geom.add_model(propname='pore.seed', model=model, image=im)
     """
     # Generate the random seed values

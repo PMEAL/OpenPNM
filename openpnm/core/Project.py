@@ -23,6 +23,10 @@ class Project(list):
         else:
             raise Exception('Only OpenPNM objects can be added')
 
+    @property
+    def workspace(self):
+        return ws
+
     def _set_name(self, name):
         if name is None:
             name = ws._gen_name()

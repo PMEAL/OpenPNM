@@ -152,6 +152,8 @@ class Cubic(GenericNetwork):
         'left','right', etc), then shifts them to the periphery of the domain,
         and gives them the label 'right_face', 'left_face', etc.
         """
+        if type(labels) == str:
+            labels = [labels]
         x, y, z = self['pore.coords'].T
         Lcx, Lcy, Lcz = self._spacing
 

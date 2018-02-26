@@ -379,11 +379,11 @@ class Base(dict):
         Examples
         --------
         >>> import openpnm as op
-        >>> pn = op.network.Cubic(shape=[3, 3, 3])
+        >>> pn = op.network.Cubic(shape=[5, 5, 5])
         >>> pn.labels(pores=[0, 1, 5, 6])
-        ['pore.all', 'pore.bottom', 'pore.front', 'pore.left']
+        ['pore.all', 'pore.bottom', 'pore.front', 'pore.internal', 'pore.left']
         >>> pn.labels(pores=[0, 1, 5, 6], mode='intersection')
-        ['pore.all', 'pore.bottom']
+        ['pore.all', 'pore.front', 'pore.internal']
         """
         labels = PrintableList()
         # Short-circuit query when no pores or throats are given
@@ -487,10 +487,10 @@ class Base(dict):
         >>> import openpnm as op
         >>> pn = op.network.Cubic(shape=[5, 5, 5])
         >>> Ps = pn.pores(labels=['top', 'front'], mode='union')
-        >>> Ps[[0, 1, 2, -3, -2, -1]]
-        array([  0,   5,  10, 122, 123, 124])
+        >>> Ps[:5]  # Look at first 5 pore indices
+        array([0, 1, 2, 3, 4])
         >>> pn.pores(labels=['top', 'front'], mode='intersection')
-        array([100, 105, 110, 115, 120])
+        array([ 4,  9, 14, 19, 24])
         """
         ind = self._get_indices(element='pore', labels=labels, mode=mode)
         return ind
@@ -539,7 +539,7 @@ class Base(dict):
         >>> import openpnm as op
         >>> pn = op.network.Cubic(shape=[3, 3, 3])
         >>> Ts = pn.throats()
-        >>> Ts[0:5]
+        >>> Ts[0:5]  # Look at first 5 throat indices
         array([0, 1, 2, 3, 4])
 
         """
@@ -628,15 +628,15 @@ class Base(dict):
         Examples
         --------
         >>> import openpnm as op
-        >>> pn = op.network.Cubic(shape=[3, 3, 3])
+        >>> pn = op.network.Cubic(shape=[5, 5, 5])
         >>> mask = pn.tomask(pores=[0, 10, 20])
         >>> sum(mask)  # 3 non-zero elements exist in the mask (0, 10 and 20)
         3
         >>> len(mask)  # Mask size is equal to the number of pores in network
-        27
+        125
         >>> mask = pn.tomask(throats=[0, 10, 20])
         >>> len(mask)  # Mask is now equal to number of throats in network
-        54
+        300
 
         """
         if (pores is not None) and (throats is None):
@@ -701,36 +701,25 @@ class Base(dict):
         Examples
         --------
         >>> import openpnm as op
-        >>> pn = op.network.Cubic(shape=[3, 3, 3])
-        >>> Ps = pn.pores('top', mode='not')
-        >>> Ts = pn.find_neighbor_throats(pores=Ps,
-        ...                               mode='intersection',
-        ...                               flatten=True)
-        >>> geom = op.geometry.GenericGeometry(network=pn,
-        ...                                    pores=Ps,
-        ...                                    throats=Ts)
-        >>> Ps = pn.pores('top')
-        >>> Ts = pn.find_neighbor_throats(pores=Ps,
-        ...                               mode='not_intersection')
-        >>> boun = op.geometry.Boundary(network=pn, pores=Ps, throats=Ts)
-        >>> geom['pore.test_float'] = sp.random.random(geom.Np)
-        >>> print(sp.sum(~sp.isnan(pn['pore.test_float'])) == geom.Np)
-        True
-        >>> boun['pore.test_float'] = sp.random.random(boun.Np)
-        >>> print(sp.sum(~sp.isnan(pn['pore.test_float'])) == pn.Np)
-        True
-        >>> geom['pore.test_int'] = sp.random.randint(0, 100, geom.Np)
-        >>> print(pn['pore.test_int'].dtype.name.startswith('float'))
-        True
-        >>> boun['pore.test_int'] = sp.ones(boun.Np).astype(int)
-        >>> print(pn['pore.test_int'].dtype.name.startswith('int'))
-        True
-        >>> geom['pore.test_bool'] = True
-        >>> print(sp.sum(pn['pore.test_bool']) == geom.Np)
-        True
-        >>> boun['pore.test_bool'] = True
-        >>> print(sp.sum(pn['pore.test_bool']) == pn.Np)
-        True
+        >>> pn = op.network.Cubic(shape=[2, 2, 2])
+        >>> Ps = pn['pore.top']
+        >>> Ts = pn.find_neighbor_throats(pores=Ps)
+        >>> g1 = op.geometry.GenericGeometry(network=pn, pores=Ps, throats=Ts)
+        >>> Ts = ~pn.tomask(throats=Ts)
+        >>> g2 = op.geometry.GenericGeometry(network=pn, pores=~Ps, throats=Ts)
+        >>> g1['pore.value'] = 1
+        >>> print(g1['pore.value'])
+        [1 1 1 1]
+        >>> print(g2['pore.value'])  # 'pore.value' is defined on g1, not g2
+        [nan nan nan nan]
+        >>> print(pn['pore.value'])
+        [nan  1. nan  1. nan  1. nan  1.]
+        >>> g2['pore.value'] = 20
+        >>> print(pn['pore.value'])
+        [20  1 20  1 20  1 20  1]
+        >>> pn['pore.label'] = False
+        >>> print(g1['pore.label'])  # 'pore.label' is defined on pn, not g1
+        [False False False False]
         """
         element = self._parse_element(prop.split('.')[0], single=True)
         N = self.project.network._count(element)
@@ -888,7 +877,7 @@ class Base(dict):
         >>> Ps = pn.pores(['top', 'bottom', 'front'], mode='union')
         >>> pn.filter_by_label(pores=Ps, labels=['top', 'front'],
         ...                    mode='intersection')
-        array([100, 105, 110, 115, 120])
+        array([ 4,  9, 14, 19, 24])
         """
         allowed = ['union', 'intersection', 'not_intersection', 'not']
         mode = self._parse_mode(mode=mode, allowed=allowed, single=True)
@@ -1011,21 +1000,6 @@ class Base(dict):
         --------
         num_pores
         count
-
-        Examples
-        --------
-        >>> import openpnm as op
-        >>> pn = op.network.Cubic(shape=[5, 5, 5])
-        >>> pn.num_throats()
-        300
-        >>> pn.num_throats(labels=['top'])
-        40
-        >>> pn.num_throats(labels=['top', 'front'], mode='union')
-        76
-        >>> pn.num_throats(labels=['top', 'front'], mode='intersection')
-        4
-        >>> pn.num_throats(labels=['top', 'front'], mode='not_intersection')
-        72
 
         """
         # Count number of pores of specified type

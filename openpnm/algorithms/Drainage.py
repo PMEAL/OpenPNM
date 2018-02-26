@@ -35,11 +35,8 @@ class Drainage(GenericAlgorithm):
     --------
     >>> import openpnm as op
     >>> pn = op.network.Cubic(shape=[20, 20, 20], spacing=10)
-    >>> pn.add_boundary_pores(pores=pn.pores('top'),
-    ...                       offset=[0, 0, 10],
-    ...                       apply_label='boundary_top')
-    >>> geo = op.geometry.Stick_and_Ball(network=pn, pores=pn.Ps,
-    ...                                  throats=pn.Ts)
+    >>> pn.add_boundary_pores(labels='top')
+    >>> geo = op.geometry.StickAndBall(network=pn, pores=pn.Ps, throats=pn.Ts)
     >>> water = op.phases.Water(network=pn)
     >>> air = op.phases.Air(network=pn)
     >>> phys = op.physics.Standard(network=pn, phase=water, geometry=geo)

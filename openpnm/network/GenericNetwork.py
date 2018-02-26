@@ -303,7 +303,7 @@ class GenericNetwork(Base, ModelsMixin):
         >>> import openpnm as op
         >>> pn = op.network.Cubic(shape=[5, 5, 5])
         >>> weights = sp.rand(pn.num_throats(), ) < 0.5
-        >>> im = pn.create_incidence_matrix(weights=weights, sprsfmt='csr')
+        >>> im = pn.create_incidence_matrix(weights=weights, fmt='csr')
         """
         # Check if provided data is valid
         if weights is None:
@@ -476,7 +476,7 @@ class GenericNetwork(Base, ModelsMixin):
         >>> pn.find_neighbor_pores(pores=[0, 1], mode='union', excl_self=False)
         array([ 0,  1,  2,  5,  6, 25, 26])
         >>> pn.find_neighbor_pores(pores=[0, 2], flatten=False)
-        [[ 1,  5, 25], [ 1,  3,  7, 27]]
+        [[1, 5, 25], [1, 3, 7, 27]]
         >>> pn.find_neighbor_pores(pores=[0, 2], mode='intersection')
         array([1])
         >>> pn.find_neighbor_pores(pores=[0, 2], mode='exclusive_or')
@@ -661,11 +661,11 @@ class GenericNetwork(Base, ModelsMixin):
         >>> import openpnm as op
         >>> pn = op.network.Cubic(shape=[3, 3, 3])
         >>> pn.find_nearby_pores(pores=[0, 1], r=1)
-        array([array([ 1,  5, 25]), array([ 0,  2,  6, 26])], dtype=object)
+        array([array([1, 3, 9]), array([ 0,  2,  4, 10])], dtype=object)
         >>> pn.find_nearby_pores(pores=[0, 1], r=0.5)
         array([], shape=(2, 0), dtype=int64)
         >>> pn.find_nearby_pores(pores=[0, 1], r=1, flatten=True)
-        array([ 2,  5,  6, 25, 26])
+        array([ 2,  3,  4,  9, 10])
         """
         pores = self._parse_indices(pores)
         # Handle an empty array if given

@@ -153,13 +153,6 @@ def find_connecting_bonds(sites, am):
     the ``None`` values to ``nan``.  These can then be found using
     ``scipy.isnan``.
 
-    Examples
-    --------
-    >>> import openpnm as op
-    >>> pn = op.network.Cubic(shape=[5, 5, 5])
-    >>> sites = sp.vstack(([0, 1, 2], [2, 2, 2])).T
-    >>> op.topotools.find_connecting_bonds(sites=sites, am=pn.am)
-        [None, 1, None]
     """
     if am.format != 'dok':
         am = am.todok(copy=False)
@@ -322,8 +315,6 @@ def trim(network, pores=[], throats=[]):
     del network['throat._id_conns']
     network._am.clear()
     network._im.clear()
-
-    return network
 
 
 def extend(network, pore_coords=[], throat_conns=[], labels=[]):
@@ -642,7 +633,7 @@ def stitch(network, donor, P_network, P_donor, method='nearest',
     >>> [pn2.Np, pn2.Nt]
     [125, 300]
     >>> pn2['pore.coords'][:, 2] += 5.0
-    >>> op.topotools.stitch(donor=pn2, P_network=pn.pores('top'),
+    >>> op.topotools.stitch(network=pn, donor=pn2, P_network=pn.pores('top'),
     ...                     P_donor=pn2.pores('bottom'), method='nearest',
     ...                     len_max=1.0)
     >>> [pn.Np, pn.Nt]
@@ -689,9 +680,7 @@ def stitch(network, donor, P_network, P_donor, method='nearest',
             element = label.split('.')[0]
             locations = sp.where(network._get_indices(element) >=
                                  N_init[element])[0]
-            try:
-                network[label + label_suffix]
-            except:
+            if label + label_suffix not in network.keys():
                 network[label + label_suffix] = False
             network[label+label_suffix][locations] = donor[label]
 
@@ -700,7 +689,7 @@ def stitch(network, donor, P_network, P_donor, method='nearest',
 
     # Remove donor from Workspace, if present
     # This check allows for the reuse of a donor Network multiple times
-    for sim in ws.values():
+    for sim in list(ws.values()):
         if donor in sim:
             del ws[sim.name]
 
@@ -797,21 +786,20 @@ def subdivide(network, pores, shape, labels=[]):
     Examples
     --------
     >>> import openpnm as op
-    >>> pn = op.network.Cubic(shape=[5,6,5], spacing=0.001)
+    >>> pn = op.network.Cubic(shape=[5, 6, 5], spacing=0.001)
     >>> pn.Np
     150
-    >>> nano_pores = [2,13,14,15]
-    >>> op.topotools.subdivide(network=pn, pores=nano_pores, shape=[4,7,3],
+    >>> nano_pores = [2, 13, 14, 15]
+    >>> op.topotools.subdivide(network=pn, pores=nano_pores, shape=[4, 7, 3],
     ...                        labels='nano')
     >>> pn.Np
     482
-    >>> assert pn.Np == (150+4*(4*7*3)-4)
 
     '''
     mro = network._mro()
     if 'Cubic' not in mro:
         raise Exception('Subdivide is only supported for Cubic Networks')
-    from op.network.Cubic import Cubic
+    from openpnm.network import Cubic
     pores = sp.array(pores, ndmin=1)
 
     # Checks to find boundary pores in the selected pores
@@ -821,8 +809,8 @@ def subdivide(network, pores, shape, labels=[]):
     if not hasattr(network, '_subdivide_flag'):
         network._subdivide_flag = True
     else:
-        raise Exception('The network has subdivided pores, so the method ' +
-                        'does not support another subdivision.')
+        raise Exception('The network has subdivided pores, so the method \
+                         does not support another subdivision')
     # Assigning right shape and division
     if sp.size(shape) != 2 and sp.size(shape) != 3:
         raise Exception('Subdivide not implemented for Networks other than 2D \
@@ -922,7 +910,8 @@ def subdivide(network, pores, shape, labels=[]):
     for l in main_labels:
         del network['pore.surface_'+l]
     trim(network=network, pores=pores)
-    _mgr.purge_object(obj=new_net, mode='complete')
+    ws = network.project.workspace
+    ws.close_project(new_net.project)
 
 
 def trim_occluded_throats(network, mask='all'):
@@ -969,9 +958,9 @@ def merge_pores(network, pores, labels=['merged']):
     Examples
     --------
     >>> import openpnm as op
-    >>> pn = op.network.Cubic(shape=[20,20,1])
-    >>> P = pn.find_nearby_pores(pores=111, r=5, flatten=True)
-    >>> op.topotools.merge_pores(network=pn, pores=P, labels=['merged'])
+    >>> pn = op.network.Cubic(shape=[20, 20, 1])
+    >>> Ps = pn.find_nearby_pores(pores=111, r=5, flatten=True)
+    >>> op.topotools.merge_pores(network=pn, pores=Ps, labels=['merged'])
     >>> print(pn.Np)
     321
     >>> pn.pores('merged')
@@ -1122,7 +1111,7 @@ def plot_connections(network, throats=None, fig=None, **kwargs):
     --------
     >>> import openpnm as op
     >>> pn = op.network.Cubic(shape=[10, 10, 3])
-    >>> pn.add_boundaries()
+    >>> pn.add_boundary_pores()
     >>> Ts = pn.throats('*boundary', mode='not')
     >>> # Create figure showing boundary throats
     >>> fig = op.topotools.plot_connections(network=pn, throats=Ts)
@@ -1137,7 +1126,7 @@ def plot_connections(network, throats=None, fig=None, **kwargs):
     if throats is None:
         Ts = network.Ts
     else:
-        Ts = network._parse_indices(locations=throats)
+        Ts = network._parse_indices(indices=throats)
 
     ThreeD = False
     if len(sp.unique(network['pore.coords'][:, 2])) > 1:
@@ -1212,7 +1201,7 @@ def plot_coordinates(network, pores=None, fig=None, **kwargs):
     --------
     >>> import openpnm as op
     >>> pn = op.network.Cubic(shape=[10, 10, 3])
-    >>> pn.add_boundaries()
+    >>> pn.add_boundary_pores()
     >>> Ps = pn.pores('internal')
     >>> # Create figure showing internal pores
     >>> fig = op.topotools.plot_coordinates(network=pn, pores=Ps, c='b')
@@ -1228,7 +1217,7 @@ def plot_coordinates(network, pores=None, fig=None, **kwargs):
     if pores is None:
         Ps = network.Ps
     else:
-        Ps = network._parse_indices(locations=pores)
+        Ps = network._parse_indices(indices=pores)
 
     ThreeD = False
     if len(sp.unique(network['pore.coords'][:, 2])) > 1:
@@ -1340,7 +1329,7 @@ def generate_base_points(num_points, domain_size, prob=None):
     >>> pts = op.topotools.generate_base_points(num_points=50,
     ...                                         domain_size=[2],
     ...                                         prob=prob)
-    >>> net = op.network.DelaunayVoronoiDual(points=pts, domain_size=[2])
+    >>> net = op.network.DelaunayVoronoiDual(points=pts, shape=[2])
     """
     def _try_points(num_points, prob):
         prob = sp.array(prob)/sp.amax(prob)  # Ensure prob is normalized
@@ -1481,35 +1470,12 @@ def find_clusters(self, mask=[], t_labels=False):
     --------
     >>> import openpnm as op
     >>> pn = op.network.Cubic(shape=[25, 25, 1])
-    >>> geom = op.geometry.GenericGeometry(network=pn,
-    ...                                    pores=pn.Ps,
-    ...                                    throats=pn.Ts)
+    >>> Ps, Ts = pn.Ps, pn.Ts
+    >>> geom = op.geometry.GenericGeometry(network=pn, pores=Ps, throats=Ts)
     >>> geom['pore.seed'] = sp.rand(pn.Np)
     >>> geom['throat.seed'] = sp.rand(pn.Nt)
 
-    Bond percolation is achieved by sending a list of invaded throats:
-
-    >>> (p_bond,t_bond) = pn.find_clusters2(mask=geom['throat.seed'] < 0.3,
-    ...                                     t_labels=True)
-
-    Site percolation is achieved by sending a list of invaded pores:
-
-    >>> (p_site,t_site) = pn.find_clusters2(mask=geom['pore.seed'] < 0.3,
-    ...                                     t_labels=True)
-
-    To visualize the invasion pattern, use matplotlib's matshow method
-    along with the Cubic Network's asarray method which converts list based
-    data to square arrays:
-
-    .. code-block:: python
-
-        import matplotlib.pyplot as plt
-        im_bond = pn.asarray(p_bond)[:, :, 0]
-        im_site = pn.asarray(p_site)[:, :, 0]
-        plt.subplot(1, 2, 1)
-        plt.imshow(im_site, interpolation='none')
-        plt.subplot(1, 2, 2)
-        plt.imshow(im_bond, interpolation='none')
+    This docstring needs to be updated
 
     """
     # Parse the input arguments
@@ -1631,11 +1597,10 @@ def add_boundary_pores(network, pores, offset, apply_label='boundary'):
     >>> print(pn.Np)  # Confirm initial Network size
     125
     >>> Ps = pn.pores('top')  # Select pores on top face
-    >>> pn.add_boundary_pores(pores=Ps, offset=[0, 0, 1])
+    >>> pn.add_boundary_pores(labels=['top'])
     >>> print(pn.Np)  # Confirm addition of 25 new pores
     150
-    >>> 'pore.boundary' in pn.labels()  # Default label is created
-    True
+
     """
     # Parse the input pores
     Ps = sp.array(pores, ndmin=1)
@@ -1692,9 +1657,8 @@ def find_path(network, pore_pairs, weights=None):
     Examples
     --------
     >>> import openpnm as op
-    >>> import openpnm.utils.misc as misc
     >>> pn = op.network.Cubic(shape=[3, 3, 3])
-    >>> a = misc.find_path(network=pn, pore_pairs=[[0, 4], [0, 10]])
+    >>> a = op.topotools.find_path(network=pn, pore_pairs=[[0, 4], [0, 10]])
     >>> a['pores']
     [array([0, 1, 4]), array([ 0,  1, 10])]
     >>> a['throats']
@@ -1703,9 +1667,8 @@ def find_path(network, pore_pairs, weights=None):
     Ps = sp.array(pore_pairs, ndmin=2)
     if weights is None:
         weights = sp.ones_like(network.Ts)
-    graph = network.create_adjacency_matrix(data=weights,
-                                            sprsfmt='csr',
-                                            dropzeros=False)
+    graph = network.create_adjacency_matrix(weights=weights, fmt='csr',
+                                            drop_zeros=False)
     paths = csgraph.dijkstra(csgraph=graph, indices=Ps[:, 0],
                              return_predecessors=True)[1]
     pores = []
@@ -1718,9 +1681,9 @@ def find_path(network, pore_pairs, weights=None):
             j = paths[row][j]
         ans.append(Ps[row][0])
         ans.reverse()
-        pores.append(sp.array(ans))
-        throats.append(network.find_neighbor_throats(pores=ans,
-                                                     mode='intersection'))
+        pores.append(sp.array(ans, dtype=int))
+        Ts = network.find_neighbor_throats(pores=ans, mode='intersection')
+        throats.append(sp.array(Ts, dtype=int))
     pdict = PrintableDict
     dict_ = pdict({'pores': pores, 'throats': throats})
     return dict_
