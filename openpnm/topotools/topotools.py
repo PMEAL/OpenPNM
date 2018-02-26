@@ -124,7 +124,7 @@ def find_connected_sites(bonds, am, flatten=True, logic='union'):
         neighbors = apply_logic(neighbors=neighbors, logic=logic)
     else:
         neighbors = sp.vstack((am.row[bonds], am.col[bonds])).T
-        neighbors.astype(int)
+        neighbors = sp.array(neighbors, dtype=int)
     return neighbors
 
 
