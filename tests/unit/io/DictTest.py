@@ -197,8 +197,7 @@ class DictTest:
         assert d.issubset(D['phase_02']['phys_04'].keys())
         assert d.issubset(D['phase_02']['phys_04'].keys())
 
-
-    def test_to_dict_not_flat_not_interleaved_categorized_by_element_data(self):
+    def test_to_dict_not_flat_not_interleaved_cat_by_element_data(self):
         D = Dict.to_dict(network=self.net, phases=[self.phase_1, self.phase_2],
                          flatten=False, interleave=False,
                          categorize_by=['element', 'data'])
@@ -247,7 +246,7 @@ class DictTest:
         assert d.issubset(D['phase_02']['phys_04']['properties'].keys())
         assert d.issubset(D['phase_02']['phys_04']['labels'].keys())
 
-    def test_to_dict_not_flat_not_interleaved_categorized_by_element_data_object(self):
+    def test_to_dict_not_flat_not_interleaved_cat_by_element_data_object(self):
         D = Dict.to_dict(network=self.net, phases=[self.phase_1, self.phase_2],
                          flatten=False, interleave=False,
                          categorize_by=['element', 'data', 'object'])
@@ -295,7 +294,7 @@ class DictTest:
         assert d.issubset(D['physics']['phys_04']['properties'].keys())
         assert d.issubset(D['physics']['phys_04']['labels'].keys())
 
-    def test_to_dict_not_flat_not_interleaved_categorized_by_element_object(self):
+    def test_to_dict_not_flat_not_interleaved_cat_by_element_object(self):
         D = Dict.to_dict(network=self.net, phases=[self.phase_1, self.phase_2],
                          flatten=False, interleave=False,
                          categorize_by=['element', 'object'])

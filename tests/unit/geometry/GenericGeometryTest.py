@@ -13,8 +13,6 @@ class BaseTest:
         mgr.clear()
 
 
-
-
 if __name__ == '__main__':
 
     t = BaseTest()

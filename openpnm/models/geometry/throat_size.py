@@ -25,7 +25,7 @@ normal.__doc__ = _misc.normal.__doc__
 
 
 def generic(target, func, seeds='throat.seed'):
-    return _misc.generic(geometry=geometry, func=func, seeds=seeds)
+    return _misc.generic(target=target, func=func, seeds=seeds)
 
 
 generic.__doc__ = _misc.generic.__doc__
@@ -36,7 +36,6 @@ def neighbor(target, pore_prop, mode='min'):
 
 
 neighbor.__doc__ = _neighbor.__doc__
-
 
 
 def random(target, seed=None, num_range=[0, 1]):
@@ -61,7 +60,8 @@ def random(target, seed=None, num_range=[0, 1]):
         throat sizes directly; for instance pores between 10 and 100 um can be
         generated with ``num_range = [0.00001, 0.0001]``.
     """
-    return _misc.random(target, element='throat', seed=seed, num_range=num_range)
+    return _misc.random(target=target, element='throat', seed=seed,
+                        num_range=num_range)
 
 
 def equivalent_circle(target, throat_area='throat.area'):

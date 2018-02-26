@@ -6,22 +6,6 @@ ws = Workspace()
 
 class ModelsDict(PrintableDict):
 
-    def dependency_tree(self):
-        tree = []
-        for propname in self.keys():
-            if propname not in tree:
-                tree.append(propname)
-            kwargs = self[propname].copy()
-            kwargs.pop('model')
-            kwargs.pop('regen_mode', None)
-            for dependency in kwargs.values():
-                if dependency in list(self.keys()):
-                    tree.insert(tree.index(propname), dependency)
-
-        unique = []
-        [unique.append(item) for item in tree if item not in unique]
-        return unique
-
     def __str__(self):
         horizontal_rule = '―' * 78
         lines = [horizontal_rule]
@@ -63,7 +47,6 @@ class ModelsMixin():
     def regenerate_models(self, propnames=None, exclude=[]):
         # If no props given, then regenerate them all
         if propnames is None:
-#            propnames = list(self.models.dependency_tree())
             propnames = list(self.models.keys())
         # If only one prop given, as string, put into a list
         elif type(propnames) is str:
