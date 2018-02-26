@@ -51,7 +51,8 @@ setup(
         'scikit-image',
         'transforms3d',
         'pandas',
-        'flatdict'
+        'flatdict',
+        'h5py'
     ],
     author='OpenPNM Team',
     author_email='jgostick@uwaterloo.ca',
