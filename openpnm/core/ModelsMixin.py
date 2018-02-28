@@ -42,7 +42,7 @@ class ModelsDict(PrintableDict):
 
 class ModelsMixin():
 
-    def add_model(self, propname, model, regen_mode='deferred', **kwargs):
+    def add_model(self, propname, model, regen_mode='normal', **kwargs):
         # Add model and regen_mode to kwargs dictionary
         kwargs.update({'model': model, 'regen_mode': regen_mode})
         # Insepct model to extract arguments and default values
@@ -88,10 +88,18 @@ class ModelsMixin():
         regen_mode = kwargs.pop('regen_mode', None)
         # Only regenerate model if regen_mode is correct
         if regen_mode == 'constant':
+            # Only regenerate if data not already in dictionary
             if prop not in self.keys():
                 self[prop] = model(target=self, **kwargs)
         else:
-            self[prop] = model(target=self, **kwargs)
+            # Try to run the model, but catch KeyError is missing values
+            try:
+                self[prop] = model(target=self, **kwargs)
+            except KeyError:
+                # Set model to deferred, to run later when called
+                logger.warn('Dependencies for ' + prop + ' not available,' +
+                            ' setting regen_mode to deferred')
+                self.models[prop]['regen_mode'] = 'deferred'
 
     def _get_models(self):
         if not hasattr(self, '_models_dict'):

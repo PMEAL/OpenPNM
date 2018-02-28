@@ -77,7 +77,7 @@ def bulk_diffusion(target, molar_density='pore.molar_density',
     # Get shape factor
     try:
         sf = network[shape_factor]
-    except:
+    except KeyError:
         sf = _sp.ones(network.num_throats())
     sf[_sp.isnan(sf)] = 1.0
     gt = (1/sf)*ct*DABt*tarea/tlen
