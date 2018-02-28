@@ -70,9 +70,11 @@ class Project(list):
             name = self.grid[geometry.name][phase.name]
             phys = self[name]
         elif geometry:
-            phys = self.grid.row(geometry)
+            row = self.grid.row(geometry)
+            phys = [self.physics().get(i, None) for i in row]
         elif phase:
-            phys = self.grid.col(phase)
+            col = self.grid.col(phase)
+            phys = [self.physics().get(i, None) for i in col]
         else:
             raise Exception('Must specify at least one of geometry or phase')
         if phys == ['']:
@@ -93,6 +95,26 @@ class Project(list):
         num = str(len([item for item in self if item._isa() == obj._isa()]))
         name = prefix + '_' + num.zfill(2)
         return name
+
+    def purge_object(self, obj):
+        r"""
+        """
+        if obj._isa() in ['geometry', 'physics', 'algorithm']:
+            self._purge(obj)
+        if obj._isa() == 'phase':
+            physics = self.find_physics(phase=obj)
+            for phys in physics:
+                self._purge(self.physics()[phys])
+            self._purge(obj)
+        if obj._isa() == 'network':
+            raise Exception('Cannot purge a network, just make a new project')
+
+    def _purge(self, obj):
+        for item in self:
+            for key in list(item.keys()):
+                if key.split('.')[-1] == obj.name:
+                    del item[key]
+        self.remove(obj)
 
     def _get_net(self):
         for item in self:
