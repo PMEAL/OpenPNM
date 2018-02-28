@@ -15,7 +15,7 @@ class Project(list):
         self.settings = SettingsDict()
 
     def append(self, obj):
-        if 'Base' in obj._mro():  # This is not perfect...could be non-OpenPNM
+        if hasattr(obj, '_mro'):
             if 'GenericNetwork' in obj._mro():
                 if self.network:
                     raise Exception('Project already has a network')
@@ -104,7 +104,7 @@ class Project(list):
         if obj._isa() == 'phase':
             physics = self.find_physics(phase=obj)
             for phys in physics:
-                self._purge(self.physics()[phys])
+                self._purge(self.physics()[phys.name])
             self._purge(obj)
         if obj._isa() == 'network':
             raise Exception('Cannot purge a network, just make a new project')
