@@ -70,10 +70,10 @@ class Project(list):
             name = self.grid[geometry.name][phase.name]
             phys = self[name]
         elif geometry:
-            row = self.grid.row(geometry)
+            row = self.grid.row(geometry.name)
             phys = [self.physics().get(i, None) for i in row]
         elif phase:
-            col = self.grid.col(phase)
+            col = self.grid.col(phase.name)
             phys = [self.physics().get(i, None) for i in col]
         else:
             raise Exception('Must specify at least one of geometry or phase')
@@ -166,7 +166,7 @@ class Project(list):
 
     def _get_grid(self):
         net = self.network
-        grid = Grid()
+        grid = {}
         for geo in self.geometries().keys():
             grid[geo] = {}
             for phase in self.phases().values():
@@ -175,7 +175,7 @@ class Project(list):
                     if phys in [n.split('.')[1] for n in phase.keys()]:
                         if np.sum(net['pore.'+geo][phase.pores(phys)]) > 0:
                             grid[geo][phase.name] = phys
-        self._grid = grid
+        grid = ProjectGrid(self.name, grid)
         return grid
 
     grid = property(fget=_get_grid)
@@ -196,50 +196,49 @@ class Project(list):
 
 class Grid(dict):
 
-    def _get_sim(self):
-        for sim in ws.values():
-            if sim._grid is self:
-                return sim
+    def __init__(self, name='', *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.name = name
 
-    def _get_geometries(self):
-        sim = self._get_sim()
-        return list(sim.geometries().keys())
+    def index(self):
+        return list(self.keys())
 
-    geometries = property(fget=_get_geometries)
+    def header(self):
+        d = []
+        for item in self.keys():
+            d.extend([i for i in self[item].keys()])
+        return list(set(d))
 
-    def _get_phases(self):
-        sim = self._get_sim()
-        return list(sim.phases().keys())
+    def row(self, name):
+        return list(self[name].values())
 
-    phases = property(fget=_get_phases)
-
-    def _get_net(self):
-        sim = self._get_sim()
-        return sim.network
-
-    network = property(fget=_get_net)
-
-    def row(self, geometry):
-        return list(self[geometry.name].values())
-
-    def col(self, phase):
+    def col(self, name):
         col = []
-        for geo in self.geometries:
-            col.append(self[geo][phase.name])
+        for row in self.index():
+            col.append(self[row][name])
         return col
 
     def __str__(self):
         s = []
-        hr = '―'*(16*(len(self.phases)+1))
+        hr = '―'*(16*(len(self.header())+1))
         s.append(hr)
-        fmt = ["| {"+str(i)+":^13} " for i in range(len(self.phases))]
-        phases = [item for item in self.phases]
-        s.append('| {0:^13}'.format(self.network.name) +
-                 ''.join(fmt).format(*phases) + '|')
+        fmt = ["| {"+str(i)+":^13} " for i in range(len(self.header()))]
+        cols = [item for item in self.header()]
+        s.append('| {0:^13}'.format(self.name) +
+                 ''.join(fmt).format(*cols) + '|')
         s.append(hr)
-        for geo in self.geometries:
-            ind = '| {0:^13}'.format(geo)
-            row = list(self[geo].values())
-            s.append(ind + ''.join(fmt).format(*row) + '|')
+        for row in self.index():
+            ind = '| {0:^13}'.format(row)
+            temp = list(self[row].values())
+            s.append(ind + ''.join(fmt).format(*temp) + '|')
             s.append(hr)
         return '\n'.join(s)
+
+
+class ProjectGrid(Grid):
+
+    def geometries(self):
+        return self.index()
+
+    def phases(self):
+        return self.header()
