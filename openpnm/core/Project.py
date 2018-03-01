@@ -167,13 +167,16 @@ class Project(list):
     def _get_grid(self):
         net = self.network
         grid = {}
+        row = {phase: '' for phase in self.phases().keys()}
         for geo in self.geometries().keys():
-            grid[geo] = {}
+            grid[geo] = row.copy()
             for phase in self.phases().values():
-                grid[geo][phase.name] = ''
                 for phys in self.physics().keys():
                     if phys in [n.split('.')[1] for n in phase.keys()]:
-                        if np.sum(net['pore.'+geo][phase.pores(phys)]) > 0:
+                        geo_mask = net['pore.'+geo]
+                        phys_mask = phase['pore.'+phys]
+                        # TODO: This could be more or less strict
+                        if np.sum(geo_mask*phys_mask) > 0:
                             grid[geo][phase.name] = phys
         grid = ProjectGrid(self.name, grid)
         return grid
@@ -229,8 +232,7 @@ class Grid(dict):
         s.append(hr)
         for row in self.index():
             ind = '| {0:^13}'.format(row)
-            temp = list(self[row].values())
-            s.append(ind + ''.join(fmt).format(*temp) + '|')
+            s.append(ind + ''.join(fmt).format(*list(self[row].values()))+'|')
             s.append(hr)
         return '\n'.join(s)
 
