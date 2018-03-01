@@ -124,6 +124,13 @@ class ProjectTest:
         with pytest.raises(Exception):
             proj.append(1)
 
+    def test_phases(self):
+        proj = self.ws.copy_project(self.net.project)
+        phases = proj.phases()
+        assert 'phase_01' in phases.keys()
+        assert 'phase_02' in phases.keys()
+        assert len(phases.keys()) == 2
+
     def test_find_phase(self):
         proj = self.ws.copy_project(self.net.project)
         phys1 = proj.physics()['phys_01']
@@ -135,6 +142,13 @@ class ProjectTest:
         assert 'pore.' + phys2.name in phase.keys()
         assert 'throat.' + phys2.name in phase.keys()
 
+    def test_geometries(self):
+        proj = self.ws.copy_project(self.net.project)
+        geoms = proj.geometries()
+        assert 'geo_01' in geoms.keys()
+        assert 'geo_02' in geoms.keys()
+        assert len(geoms.keys()) == 2
+
     def test_find_geometry(self):
         proj = self.ws.copy_project(self.net.project)
         phys1 = proj.physics()['phys_01']
@@ -144,6 +158,15 @@ class ProjectTest:
         assert geo1.Nt == phys1.Nt
         # Make sure it finds same geometry
         assert proj.find_geometry(phys3) is geo1
+
+    def test_physics(self):
+        proj = self.ws.copy_project(self.net.project)
+        physics = proj.physics()
+        assert 'phys_01' in physics.keys()
+        assert 'phys_02' in physics.keys()
+        assert 'phys_03' in physics.keys()
+        assert 'phys_04' in physics.keys()
+        assert len(physics.keys()) == 4
 
     def test_find_physics(self):
         proj = self.ws.copy_project(self.net.project)
