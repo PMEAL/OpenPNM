@@ -1,4 +1,5 @@
 import time
+import pickle
 from openpnm.core import Workspace
 from openpnm.utils.misc import SettingsDict
 import numpy as np
@@ -14,7 +15,7 @@ class Project(list):
         self._grid = {}
         self.settings = SettingsDict()
 
-    def append(self, obj):
+    def extend(self, obj):
         if hasattr(obj, '_mro'):
             if 'GenericNetwork' in obj._mro():
                 if self.network:
@@ -22,6 +23,9 @@ class Project(list):
             super().append(obj)
         else:
             raise Exception('Only OpenPNM objects can be added')
+
+    def append(self, obj):
+        self.extend(obj)
 
     @property
     def workspace(self):
@@ -115,6 +119,20 @@ class Project(list):
                 if key.split('.')[-1] == obj.name:
                     del item[key]
         self.remove(obj)
+
+    def save_object(self, obj):
+        r"""
+        """
+        if not isinstance(obj, list):
+            obj = [obj]
+        for item in obj:
+            filename = item.name + '.' + item.settings['prefix']
+            pickle.dump({item.name: item}, open(filename, 'wb'))
+
+    def load_object(self, filename):
+        d = pickle.load(open(filename, 'rb'))
+        for item in d.keys():
+            self.extend(d[item])
 
     def _get_net(self):
         for item in self:
