@@ -104,7 +104,7 @@ class GenericIO():
         # Convert network to a list, even if empty
         if network is None:
             network = []
-        else:
+        elif type(network) is not list:
             network = [network]
         # Ensure phases is a list, even if empty
         if type(phases) is not list:
