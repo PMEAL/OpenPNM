@@ -1,5 +1,6 @@
 import time
 import pickle
+import h5py
 from openpnm.core import Workspace
 from openpnm.utils.misc import SettingsDict
 import numpy as np
@@ -133,6 +134,42 @@ class Project(list):
         d = pickle.load(open(filename, 'rb'))
         for item in d.keys():
             self.extend(d[item])
+
+    def dump_data(self):
+        r"""
+        Dump data from all objects in project to an HDF5 file
+        """
+        f = h5py.File(self.name + '.hdf5')
+        try:
+            for obj in self:
+                for key in list(obj.keys()):
+                    tempname = obj.name + '|' + '_'.join(key.split('.'))
+                    if 'U' in str(obj[key][0].dtype):
+                        pass
+                    elif 'all' in key.split('.'):
+                        pass
+                    else:
+                        arr = obj.pop(key)
+                        f.create_dataset(name='/'+tempname, shape=arr.shape,
+                                         dtype=arr.dtype, data=arr)
+        except AttributeError:
+            print('File is not empty, change project name and try again')
+            f.close()
+        f.close()
+
+    def load_data(self):
+        r"""
+        Retrieve data from an HDF5 file and place onto correct objects in the
+        project
+        """
+        f = h5py.File(self.name + '.hdf5')
+        # Reload data into project
+        for item in f.keys():
+            obj_name, propname = item.split('|')
+            propname = propname.split('_')
+            propname = propname[0] + '.' + '_'.join(propname[1:])
+            self[obj_name][propname] = f[item]
+        f.close()
 
     def _get_net(self):
         for item in self:
