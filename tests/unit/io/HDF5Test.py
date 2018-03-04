@@ -1,7 +1,7 @@
 import openpnm as op
-from openpnm.io import Dict
 import scipy as sp
 import pytest
+import py
 
 
 class HDF5Test:
@@ -58,17 +58,22 @@ class HDF5Test:
         ws = op.core.Workspace()
         ws.clear()
 
-    def test_to_hdf5(self):
+    def test_to_hdf5(self, tmpdir):
+        fname = tmpdir.join(self.net.project.name)
         f = op.io.HDF5.to_hdf5(network=[self.net],
-                               phases=[self.phase_1, self.phase_2])
+                               phases=[self.phase_1, self.phase_2],
+                               filename=fname)
         assert list(f.keys()) == ['net_01', 'phase_01', 'phase_02']
         f.close()
 
-    def test_save(self):
-        op.io.HDF5.save(network=self.net, phases=[self.phase_1, self.phase_2])
+    def test_save(self, tmpdir):
+        fname = tmpdir.join(self.net.project.name)
+        op.io.HDF5.save(network=self.net, phases=self.phase_1, filename=fname)
+        assert len(tmpdir.listdir()) == 1
+#        assert fname.isfile()
+
 
 if __name__ == '__main__':
-
     # All the tests in this file can be run with 'playing' this file
     t = HDF5Test()
     self = t  # For interacting with the tests at the command line
@@ -76,4 +81,7 @@ if __name__ == '__main__':
     for item in t.__dir__():
         if item.startswith('test'):
             print('running test: '+item)
-            t.__getattribute__(item)()
+            try:
+                t.__getattribute__(item)()
+            except TypeError:
+                t.__getattribute__(item)(tmpdir=py.path.local())

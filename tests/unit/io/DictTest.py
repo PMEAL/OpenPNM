@@ -58,24 +58,6 @@ class DictTest:
         ws = op.core.Workspace()
         ws.clear()
 
-    def test_to_dict_default(self):
-        D = Dict.to_dict(network=self.net)
-        assert 'net_01' in D.keys()
-        # Ensure sending list doesn't mess it up
-        D = Dict.to_dict(network=[self.net])
-        assert 'net_01' in D.keys()
-        # Check accidentally nested list
-        D = Dict.to_dict(network=[[self.net]])
-        assert 'net_01' in D.keys()
-
-    def test_to_dict_only_phases(self):
-        D = Dict.to_dict(phases=self.phase_1)
-        assert D.keys() == ['phase_01']
-
-    def test_to_dict_no_network_no_phases(self):
-        with pytest.raises(Exception):
-            Dict.to_dict()
-
     def test_to_dict_flattened_interleaved(self):
         D = Dict.to_dict(network=self.net, phases=[self.phase_1, self.phase_2],
                          flatten=True, interleave=True, categorize_by=[])

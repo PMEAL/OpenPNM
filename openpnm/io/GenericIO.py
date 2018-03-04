@@ -1,5 +1,7 @@
 import scipy as sp
 import openpnm as op
+from pathlib import Path
+import py
 from openpnm.core import logging
 from openpnm.utils import flat_list
 logger = logging.getLogger(__name__)
@@ -16,34 +18,6 @@ class GenericIO():
     def load(cls):
         raise NotImplementedError("The \'load\' method for this class " +
                                   "does not exist yet")
-
-    @staticmethod
-    def split_geometry(network):
-        r"""
-        This method accepts an OpenPNM Network object and removes all geometry
-        related pore and throat properties, (basically all values other than
-        ```'pore.coords'``` and ```throat.conns```), and places them on a
-        GenericGeometry object.  Any labels on the Network are left intact.
-
-        Parameters
-        ----------
-        network : OpenPNM Network Object
-            The Network that possesses the geometrical values
-
-        Returns
-        -------
-        geometry : OpenPNM Geometry Object
-            The new GenericGeometry object that was created to contain the
-            geometrical pore and throat properties.
-
-        """
-        geom = op.geometry.GenericGeometry(network=network,
-                                           pores=network.Ps,
-                                           throats=network.Ts)
-        for item in network.props():
-            if item not in ['pore.coords', 'throat.conns']:
-                geom.update({item: network.pop(item)})
-        return geom
 
     @classmethod
     def _update_network(cls, network, net):
@@ -80,38 +54,27 @@ class GenericIO():
         return network
 
     @classmethod
-    def _write_file(cls, filename, ext):
-        ext = ext.replace('.', '').lower()
-        filename = filename.rstrip('.'+ext)
-        filename = filename+'.'+ext
-        try:
-            logger.warning(filename+' already exists, contents will be ' +
-                           'overwritten')
-            f = open(filename, mode='w')
-        except:
-            f = open(filename, mode='x')
-        return f
-
-    @classmethod
-    def _read_file(cls, filename, ext, mode='r'):
-        ext = ext.replace('.', '').lower()
-        if not filename.endswith('.'+ext):
-            filename = filename+'.'+ext
-        f = open(filename, mode=mode)
-        return f
+    def _parse_filename(cls, filename, path='', ext=''):
+        p = Path(path)
+        p = p.resolve()
+        p = p.joinpath(filename)
+        # If extension not part of filename
+        if p.suffix == '':
+            try:
+                p = p.with_suffix(ext)
+            except ValueError:
+                p = p.with_suffix('.'+ext)
+        return p
 
     @classmethod
     def _parse_args(cls, network, phases):
         # Convert network to a list, even if empty
         if network is None:
             network = []
-        elif type(network) is not list:
-            network = [network]
         else:
             network = flat_list(network)
         # Ensure phases is a list, even if empty
-        if type(phases) is not list:
-            phases = [phases]
+        phases = flat_list(phases)
         # Get handle to project object
         if len(network) == 0:
             if len(phases) == 0:

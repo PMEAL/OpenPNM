@@ -68,13 +68,17 @@ class HDF5(GenericIO):
         """
         project, network, phases = cls._parse_args(network=network,
                                                    phases=phases)
+
+        if filename == '':
+            filename = project.name
+        filename = cls._parse_filename(filename)
+
         dct = Dict.to_dict(network=network, phases=phases, element=element,
                            interleave=interleave, flatten=flatten,
                            categorize_by=categorize_by)
         d = FlatDict(dct, delimiter='/')
-        if filename == '':
-            filename = project.name
-        f = h5py.File(filename+".hdf", "w")
+
+        f = h5py.File(filename, "w")
         for item in d.keys():
             tempname = '_'.join(item.split('.'))
             arr = d[item]
@@ -98,7 +102,7 @@ class HDF5(GenericIO):
         phases : list of OpenPNM Phase Objects (optional, default is none)
             A list of phase objects whose data are to be included
 
-        filename : string
+        filename : string or path object
 
         **kwargs : key-word arguments
             These additional arguments are passed on to the ``to_hdf5``
@@ -114,12 +118,7 @@ class HDF5(GenericIO):
         """
         project, network, phases = cls._parse_args(network=network,
                                                    phases=phases)
-
-        if filename == '':
-            filename = project.name
-        else:
-            filename = filename.rsplit('.hdf', 1)[0]
-        f = cls.to_hdf5(network=network, phases=phases, interleave=True,
+        f = cls.to_hdf5(network=network, phases=phases, filename=filename,
                         **kwargs)
         f.close()
 
