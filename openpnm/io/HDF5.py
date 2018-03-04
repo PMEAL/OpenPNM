@@ -71,7 +71,7 @@ class HDF5(GenericIO):
 
         if filename == '':
             filename = project.name
-        filename = cls._parse_filename(filename)
+        filename = cls._parse_filename(filename, ext='hdf')
 
         dct = Dict.to_dict(network=network, phases=phases, element=element,
                            interleave=interleave, flatten=flatten,

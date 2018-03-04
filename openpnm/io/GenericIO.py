@@ -1,7 +1,6 @@
 import scipy as sp
 import openpnm as op
 from pathlib import Path
-import py
 from openpnm.core import logging
 from openpnm.utils import flat_list
 logger = logging.getLogger(__name__)

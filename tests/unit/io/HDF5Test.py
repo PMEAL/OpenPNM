@@ -2,6 +2,7 @@ import openpnm as op
 import scipy as sp
 import pytest
 import py
+import os
 
 
 class HDF5Test:
@@ -64,13 +65,20 @@ class HDF5Test:
                                phases=[self.phase_1, self.phase_2],
                                filename=fname)
         assert list(f.keys()) == ['net_01', 'phase_01', 'phase_02']
+        filename = f.filename
         f.close()
+        os.remove(filename)
 
     def test_save(self, tmpdir):
         fname = tmpdir.join(self.net.project.name)
+        len_before = len(tmpdir.listdir())
         op.io.HDF5.save(network=self.net, phases=self.phase_1, filename=fname)
-        assert len(tmpdir.listdir()) == 1
-#        assert fname.isfile()
+        assert len(tmpdir.listdir()) == (len_before + 1)
+        os.remove(fname.dirpath().join(self.net.project.name + '.hdf'))
+
+    def test_load(self, tmpdir):
+        with pytest.raises(NotImplementedError):
+            op.io.HDF5.load(filename='')
 
 
 if __name__ == '__main__':
