@@ -129,12 +129,12 @@ class Dict(GenericIO):
             return path
 
         for net in network:
-            for key in net.keys(element=element):
+            for key in net.keys(element=element, mode='all'):
                 path = build_path(obj=net, key=key,)
                 d[path] = net[key]
 
             for geo in project.geometries().values():
-                for key in geo.keys(element=element):
+                for key in geo.keys(element=element, mode='all'):
                     if interleave:
                         path = build_path(obj=net, key=key)
                         d[path] = net[key]
@@ -149,13 +149,13 @@ class Dict(GenericIO):
                         d[path] = geo[key]
 
         for phase in phases:
-            for key in phase.keys(element=element):
+            for key in phase.keys(element=element, mode='all'):
                 path = build_path(obj=phase, key=key)
                 d[path] = phase[key]
 
             for physics in project.find_physics(phase=phase):
                 phys = project.physics()[physics]
-                for key in phys.keys(element=element):
+                for key in phys.keys(element=element, mode='all'):
                     if interleave:
                         path = build_path(obj=phase, key=key)
                         d[path] = phase[key]

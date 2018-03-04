@@ -57,7 +57,7 @@ class CSV(GenericIO):
         phases : list of OpenPNM Phases (optional)
             The Phases whose data should be stored.
 
-        filename : string
+        filename : string or path object
             The name of the file to store the data
 
         Notes
@@ -67,14 +67,13 @@ class CSV(GenericIO):
         """
         project, network, phases = cls._parse_args(network=network,
                                                    phases=phases)
-
         df = Pandas.to_dataframe(network=network, phases=phases, join=True)
 
         # Write to file
         if filename == '':
             filename = project.name
-        with cls._write_file(filename=filename, ext='csv') as f:
-            df.to_csv(f, index=False)
+        fname = cls._parse_filename(filename=filename, ext='csv')
+        df.to_csv(fname, index=False)
 
     @classmethod
     def load(cls, filename, project=None):
@@ -95,14 +94,13 @@ class CSV(GenericIO):
         """
         net = {}
 
-        with cls._read_file(filename=filename, ext='csv') as f:
-            a = pd.read_table(filepath_or_buffer=f,
-                              sep=',',
-                              skipinitialspace=True,
-                              index_col=False,
-                              true_values=['T', 't', 'True', 'true', 'TRUE'],
-                              false_values=['F', 'f', 'False', 'false',
-                                            'FALSE'])
+        fname = cls._parse_filename(filename)
+        a = pd.read_table(filepath_or_buffer=fname,
+                          sep=',',
+                          skipinitialspace=True,
+                          index_col=False,
+                          true_values=['T', 't', 'True', 'true', 'TRUE'],
+                          false_values=['F', 'f', 'False', 'false', 'FALSE'])
 
         dct = {}
         # First parse through all the items and clean-up`
