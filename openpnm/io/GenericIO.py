@@ -1,6 +1,7 @@
 import scipy as sp
 import openpnm as op
 from openpnm.core import logging
+from openpnm.utils import flat_list
 logger = logging.getLogger(__name__)
 
 
@@ -106,6 +107,8 @@ class GenericIO():
             network = []
         elif type(network) is not list:
             network = [network]
+        else:
+            network = flat_list(network)
         # Ensure phases is a list, even if empty
         if type(phases) is not list:
             phases = [phases]

@@ -146,7 +146,7 @@ class HDF5(GenericIO):
         """
         raise NotImplementedError()
 
-    def print_hierarchy(f):
+    def print_levels(f):
         def print_level(f, p='', indent='-'):
             for item in f.keys():
                 if hasattr(f[item], 'keys'):

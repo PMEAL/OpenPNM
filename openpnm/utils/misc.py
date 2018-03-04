@@ -169,6 +169,19 @@ def unique_list(input_list):
     return output_list
 
 
+def flat_list(input_list):
+    r"""
+    Given a list of nested lists of arbitrary depth, returns a single level or
+    'flat' list.
+
+    """
+    x = input_list
+    if isinstance(x, list):
+        return [a for i in x for a in flat_list(i)]
+    else:
+        return [x]
+
+
 def amalgamate_data(objs=[], delimiter='_'):
     r"""
     Returns a dictionary containing ALL pore data from all netowrk and/or
