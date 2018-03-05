@@ -3,8 +3,9 @@ import scipy as sp
 import pandas as pd
 from openpnm.core import logging, Workspace
 from openpnm.network import GenericNetwork
-from openpnm.io import GenericIO
+from openpnm.io import GenericIO, Dict
 from openpnm.io.Pandas import Pandas
+from openpnm.utils import NestedDict
 logger = logging.getLogger(__name__)
 ws = Workspace()
 
@@ -108,7 +109,6 @@ class CSV(GenericIO):
         # First parse through all the items and re-merge columns
         keys = sorted(list(a.keys()))
         for item in keys:
-            # -----------------------------------------------------------------
             m = re.search(r'\[.\]', item)  # The dot '.' is a wildcard
             if m:  # m is None if pattern not found, otherwise merge cols
                 pname = re.split(r'\[.\]', item)[0]  # Get base propname
@@ -123,14 +123,6 @@ class CSV(GenericIO):
             else:
                 dct[item] = sp.array(a.pop(item))
 
-        obj_types = ['network', 'geometry', 'phase', 'physics', 'algorithm']
-        for item in dct.keys():
-            categories = item.split('|')[0].strip(' ')
-            if categories[0] in obj_types:
-                pass
+        project = Dict.from_dict(dct, project=project)
 
-
-
-        network = GenericNetwork(project=project)
-        network = cls._update_network(network=network, net=dct)
         return project

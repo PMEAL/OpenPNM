@@ -1,9 +1,10 @@
 import pickle
-from openpnm.core import logging, Project, Base
+from openpnm.core import logging, Project, Workspace
 from openpnm.network import GenericNetwork
 from openpnm.utils import NestedDict, FlatDict
 from openpnm.io import GenericIO
 logger = logging.getLogger(__name__)
+ws = Workspace()
 
 
 class Dict(GenericIO):
@@ -17,22 +18,27 @@ class Dict(GenericIO):
 
     @classmethod
     def from_dict(cls, dct, project=None):
-
-        # Now parse through dict and put values on correct objects
-        dct = FlatDict(dct, delimiter='/')
-        sim = NestedDict()
-        for item in dct.keys():
-            level = item.split('/')
-            sim[level[-2]][level[-1]] = dct[item]
-
+        r"""
+        """
         if project is None:
-            project = Project()
-
-        for item in sim.keys():
-            obj = Base(project=project)
-            obj.update(sim[item])
-            obj._name = item
-
+            project = ws.new_project()
+        dct = NestedDict(dct, delimiter=' | ')
+        obj_types = ['network', 'geometry', 'phase', 'physics', 'algorithm']
+        for item in dct.keys():
+            if item in obj_types:
+                for name in dct[item].keys():
+                    try:
+                        obj = project[name]
+                    except KeyError:
+                        obj = project._new_object(objtype=item, name=name)
+                    obj.update(dct[item][name])
+            else:
+                name = item
+                try:
+                    obj = project[name]
+                except KeyError:
+                    obj = project._new_object(objtype='base', name=name)
+                obj.update(dct[name])
         return project
 
     @classmethod
