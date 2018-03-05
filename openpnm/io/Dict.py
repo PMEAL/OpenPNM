@@ -22,6 +22,7 @@ class Dict(GenericIO):
         """
         if project is None:
             project = ws.new_project()
+
         # Uncategorize pore/throat and labels/properties, if present
         fd = FlatDict(dct, delimiter=delimiter)
         d = FlatDict(delimiter=delimiter)
@@ -32,6 +33,7 @@ class Dict(GenericIO):
             new_key = new_key.replace('properties' + delimiter, '')
             d[new_key] = fd.pop(key)
 
+        # Plase data into correctly categorized dicts, for later handling
         objs = {'network': NestedDict(),
                 'geometry': NestedDict(),
                 'physics': NestedDict(),
@@ -42,10 +44,13 @@ class Dict(GenericIO):
             path = item.split(delimiter)
             if len(path) > 2:
                 if path[-3] in objs.keys():
+                    # Item is categorized by type, so note it
                     objs[path[-3]][path[-2]][path[-1]] = d[item]
                 else:
+                    # item is nested, not categorized; make it a base
                     objs['base'][path[-2]][path[-1]] = d[item]
             else:
+                # If not categorized by type, make it a base
                 objs['base'][path[-2]][path[-1]] = d[item]
 
         # Convert to OpenPNM Objects, attempting to infer type
@@ -59,7 +64,7 @@ class Dict(GenericIO):
 
     @classmethod
     def to_dict(cls, network=None, phases=[], element=['pore', 'throat'],
-                interleave=True, flatten=True, categorize_by=[]):
+                interleave=True, flatten=True, categorize_by=[], delim='/'):
         r"""
         Returns a single dictionary object containing data from the given
         OpenPNM objects, with the keys organized differently depending on
@@ -130,8 +135,7 @@ class Dict(GenericIO):
         project, network, phases = cls._parse_args(network=network,
                                                    phases=phases)
 
-        d = NestedDict()
-        delim = '/'
+        d = NestedDict(delimiter=delim)
 
         def build_path(obj, key):
             propname = delim + key
@@ -152,7 +156,7 @@ class Dict(GenericIO):
 
         for net in network:
             for key in net.keys(element=element, mode='all'):
-                path = build_path(obj=net, key=key,)
+                path = build_path(obj=net, key=key)
                 d[path] = net[key]
 
             for geo in project.geometries().values():
@@ -164,7 +168,12 @@ class Dict(GenericIO):
                         path = build_path(obj=geo, key=key)
                         if flatten:
                             d[path] = geo[key]
-                        elif 'object' not in categorize_by:
+                        elif 'object' in categorize_by:
+                            path = path.split(delim)
+                            path.insert(0, 'network')
+                            path.insert(1, net.name)
+                            path = delim.join(path)
+                        else:
                             path = path.split(delim)
                             path.insert(1, net.name)
                             path = delim.join(path)
@@ -184,7 +193,12 @@ class Dict(GenericIO):
                         path = build_path(obj=phys, key=key)
                         if flatten:
                             d[path] = phys[key]
-                        elif 'object' not in categorize_by:
+                        elif 'object' in categorize_by:
+                            path = path.split(delim)
+                            path.insert(0, 'phase')
+                            path.insert(1, phase.name)
+                            path = delim.join(path)
+                        else:
                             path = path.split(delim)
                             path.insert(1, phase.name)
                             path = delim.join(path)
