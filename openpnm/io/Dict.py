@@ -153,8 +153,7 @@ class Dict(GenericIO):
                 path = build_path(obj=phase, key=key)
                 d[path] = phase[key]
 
-            for physics in project.find_physics(phase=phase):
-                phys = project.physics()[physics]
+            for phys in project.find_physics(phase=phase):
                 for key in phys.keys(element=element, mode='all'):
                     if interleave:
                         path = build_path(obj=phase, key=key)

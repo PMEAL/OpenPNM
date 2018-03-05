@@ -1,6 +1,6 @@
 from collections import namedtuple
 from openpnm.core import Workspace, logging
-from openpnm.utils.misc import PrintableList, PrintableDict, SettingsDict
+from openpnm.utils.misc import PrintableList, SettingsDict
 import scipy as sp
 logger = logging.getLogger(__name__)
 ws = Workspace()
@@ -21,7 +21,7 @@ class Base(dict):
         super().__init__()
         if project is None:
             project = ws.new_project()
-        project.append(self)
+        project.extend(self)
         self.name = name
         self.update({'pore.all': sp.ones(shape=(Np, ), dtype=bool)})
         self.update({'throat.all': sp.ones(shape=(Nt, ), dtype=bool)})

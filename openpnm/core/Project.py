@@ -1,6 +1,9 @@
 import time
+import pickle
+import h5py
 from openpnm.core import Workspace
 from openpnm.utils.misc import SettingsDict
+import openpnm
 import numpy as np
 ws = Workspace()
 
@@ -14,14 +17,17 @@ class Project(list):
         self._grid = {}
         self.settings = SettingsDict()
 
-    def append(self, obj):
-        if 'Base' in obj._mro():  # This is not perfect...could be non-OpenPNM
+    def extend(self, obj):
+        if hasattr(obj, '_mro'):
             if 'GenericNetwork' in obj._mro():
                 if self.network:
                     raise Exception('Project already has a network')
             super().append(obj)
         else:
             raise Exception('Only OpenPNM objects can be added')
+
+    def append(self, obj):
+        self.extend(obj)
 
     @property
     def workspace(self):
@@ -70,9 +76,11 @@ class Project(list):
             name = self.grid[geometry.name][phase.name]
             phys = self[name]
         elif geometry:
-            phys = self.grid.row(geometry)
+            row = self.grid.row(geometry.name)
+            phys = [self.physics().get(i, None) for i in row]
         elif phase:
-            phys = self.grid.col(phase)
+            col = self.grid.col(phase.name)
+            phys = [self.physics().get(i, None) for i in col]
         else:
             raise Exception('Must specify at least one of geometry or phase')
         if phys == ['']:
@@ -93,6 +101,91 @@ class Project(list):
         num = str(len([item for item in self if item._isa() == obj._isa()]))
         name = prefix + '_' + num.zfill(2)
         return name
+
+    def purge_object(self, obj):
+        r"""
+        """
+        if obj._isa() in ['geometry', 'physics', 'algorithm']:
+            self._purge(obj)
+        if obj._isa() == 'phase':
+            physics = self.find_physics(phase=obj)
+            for phys in physics:
+                self._purge(self.physics()[phys.name])
+            self._purge(obj)
+        if obj._isa() == 'network':
+            raise Exception('Cannot purge a network, just make a new project')
+
+    def _purge(self, obj):
+        for item in self:
+            for key in list(item.keys()):
+                if key.split('.')[-1] == obj.name:
+                    del item[key]
+        self.remove(obj)
+
+    def save_object(self, obj):
+        r"""
+        """
+        if not isinstance(obj, list):
+            obj = [obj]
+        for item in obj:
+            filename = item.name + '.' + item.settings['prefix']
+            pickle.dump({item.name: item}, open(filename, 'wb'))
+
+    def load_object(self, filename):
+        d = pickle.load(open(filename, 'rb'))
+        for item in d.keys():
+            self.extend(d[item])
+
+    def _new_object(self, objtype):
+        if objtype == 'network':
+            obj = openpnm.network.GenericNetwork(project=self)
+        elif objtype == 'geometry':
+            obj = openpnm.geometry.GenericGeometry(project=self)
+        elif objtype == 'phase':
+            obj = openpnm.phases.GenericPhase(project=self)
+        elif objtype == 'physics':
+            obj = openpnm.physics.GenericPhysics(project=self)
+        elif objtype == 'algorithm':
+            obj = openpnm.algorithm.GenericAlgorithm(project=self)
+        else:
+            obj = openpnm.core.Base(project=self)
+        return obj
+
+    def dump_data(self):
+        r"""
+        Dump data from all objects in project to an HDF5 file
+        """
+        f = h5py.File(self.name + '.hdf5')
+        try:
+            for obj in self:
+                for key in list(obj.keys()):
+                    tempname = obj.name + '|' + '_'.join(key.split('.'))
+                    if 'U' in str(obj[key][0].dtype):
+                        pass
+                    elif 'all' in key.split('.'):
+                        pass
+                    else:
+                        arr = obj.pop(key)
+                        f.create_dataset(name='/'+tempname, shape=arr.shape,
+                                         dtype=arr.dtype, data=arr)
+        except AttributeError:
+            print('File is not empty, change project name and try again')
+            f.close()
+        f.close()
+
+    def load_data(self):
+        r"""
+        Retrieve data from an HDF5 file and place onto correct objects in the
+        project
+        """
+        f = h5py.File(self.name + '.hdf5')
+        # Reload data into project
+        for item in f.keys():
+            obj_name, propname = item.split('|')
+            propname = propname.split('_')
+            propname = propname[0] + '.' + '_'.join(propname[1:])
+            self[obj_name][propname] = f[item]
+        f.close()
 
     def _get_net(self):
         for item in self:
@@ -144,16 +237,19 @@ class Project(list):
 
     def _get_grid(self):
         net = self.network
-        grid = Grid()
+        grid = {}
+        row = {phase: '' for phase in self.phases().keys()}
         for geo in self.geometries().keys():
-            grid[geo] = {}
+            grid[geo] = row.copy()
             for phase in self.phases().values():
-                grid[geo][phase.name] = ''
                 for phys in self.physics().keys():
                     if phys in [n.split('.')[1] for n in phase.keys()]:
-                        if np.sum(net['pore.'+geo][phase.pores(phys)]) > 0:
+                        geo_mask = net['pore.'+geo]
+                        phys_mask = phase['pore.'+phys]
+                        # TODO: This could be more or less strict
+                        if np.sum(geo_mask*phys_mask) > 0:
                             grid[geo][phase.name] = phys
-        self._grid = grid
+        grid = ProjectGrid(self.name, grid)
         return grid
 
     grid = property(fget=_get_grid)
@@ -174,50 +270,48 @@ class Project(list):
 
 class Grid(dict):
 
-    def _get_sim(self):
-        for sim in ws.values():
-            if sim._grid is self:
-                return sim
+    def __init__(self, name='', *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.name = name
 
-    def _get_geometries(self):
-        sim = self._get_sim()
-        return list(sim.geometries().keys())
+    def index(self):
+        return list(self.keys())
 
-    geometries = property(fget=_get_geometries)
+    def header(self):
+        d = []
+        for item in self.keys():
+            d.extend([i for i in self[item].keys()])
+        return list(set(d))
 
-    def _get_phases(self):
-        sim = self._get_sim()
-        return list(sim.phases().keys())
+    def row(self, name):
+        return list(self[name].values())
 
-    phases = property(fget=_get_phases)
-
-    def _get_net(self):
-        sim = self._get_sim()
-        return sim.network
-
-    network = property(fget=_get_net)
-
-    def row(self, geometry):
-        return list(self[geometry.name].values())
-
-    def col(self, phase):
+    def col(self, name):
         col = []
-        for geo in self.geometries:
-            col.append(self[geo][phase.name])
+        for row in self.index():
+            col.append(self[row][name])
         return col
 
     def __str__(self):
         s = []
-        hr = '―'*(16*(len(self.phases)+1))
+        hr = '―'*(16*(len(self.header())+1))
         s.append(hr)
-        fmt = ["| {"+str(i)+":^13} " for i in range(len(self.phases))]
-        phases = [item for item in self.phases]
-        s.append('| {0:^13}'.format(self.network.name) +
-                 ''.join(fmt).format(*phases) + '|')
+        fmt = ["| {"+str(i)+":^13} " for i in range(len(self.header()))]
+        cols = [item for item in self.header()]
+        s.append('| {0:^13}'.format(self.name) +
+                 ''.join(fmt).format(*cols) + '|')
         s.append(hr)
-        for geo in self.geometries:
-            ind = '| {0:^13}'.format(geo)
-            row = list(self[geo].values())
-            s.append(ind + ''.join(fmt).format(*row) + '|')
+        for row in self.index():
+            ind = '| {0:^13}'.format(row)
+            s.append(ind + ''.join(fmt).format(*list(self[row].values()))+'|')
             s.append(hr)
         return '\n'.join(s)
+
+
+class ProjectGrid(Grid):
+
+    def geometries(self):
+        return self.index()
+
+    def phases(self):
+        return self.header()
