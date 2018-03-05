@@ -17,28 +17,44 @@ class Dict(GenericIO):
     """
 
     @classmethod
-    def from_dict(cls, dct, project=None):
+    def from_dict(cls, dct, project=None, delimiter=' | '):
         r"""
         """
         if project is None:
             project = ws.new_project()
-        dct = NestedDict(dct, delimiter=' | ')
-        obj_types = ['network', 'geometry', 'phase', 'physics', 'algorithm']
-        for item in dct.keys():
-            if item in obj_types:
-                for name in dct[item].keys():
-                    try:
-                        obj = project[name]
-                    except KeyError:
-                        obj = project._new_object(objtype=item, name=name)
-                    obj.update(dct[item][name])
+        # Uncategorize pore/throat and labels/properties, if present
+        fd = FlatDict(dct, delimiter=delimiter)
+        d = FlatDict(delimiter=delimiter)
+        for key in list(fd.keys()):
+            new_key = key.replace('pore' + delimiter, 'pore.')
+            new_key = new_key.replace('throat' + delimiter, 'throat.')
+            new_key = new_key.replace('labels' + delimiter, '')
+            new_key = new_key.replace('properties' + delimiter, '')
+            d[new_key] = fd.pop(key)
+
+        objs = {'network': NestedDict(),
+                'geometry': NestedDict(),
+                'physics': NestedDict(),
+                'phase': NestedDict(),
+                'algorithm': NestedDict(),
+                'base': NestedDict()}
+        for item in d.keys():
+            path = item.split(delimiter)
+            if len(path) > 2:
+                if path[-3] in objs.keys():
+                    objs[path[-3]][path[-2]][path[-1]] = d[item]
+                else:
+                    objs['base'][path[-2]][path[-1]] = d[item]
             else:
-                name = item
-                try:
-                    obj = project[name]
-                except KeyError:
-                    obj = project._new_object(objtype='base', name=name)
-                obj.update(dct[name])
+                objs['base'][path[-2]][path[-1]] = d[item]
+
+        # Convert to OpenPNM Objects, attempting to infer type
+        for objtype in objs.keys():
+            for name in objs[objtype].keys():
+                obj = project._new_object(objtype=objtype, name='')
+                obj._name = name
+                obj.update(objs[objtype][name])
+
         return project
 
     @classmethod

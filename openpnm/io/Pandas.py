@@ -47,7 +47,6 @@ class Pandas(GenericIO):
         for key in list(pdata.keys()):
             if sp.shape(pdata[key]) != (network[0].Np,):
                 arr = pdata.pop(key)
-                print(arr.shape)
                 tmp = sp.split(arr, arr.shape[1], axis=1)
                 cols = range(len(tmp))
                 pdata.update({key+'['+str(i)+']': tmp[i].squeeze()

@@ -361,6 +361,33 @@ class DictTest:
                          flatten=False, interleave=True,
                          categorize_by=['data', 'element'])
 
+    def test_from_dict_interleaved_categorized_by_object(self):
+        D = Dict.to_dict(network=self.net, phases=[self.phase_1],
+                         flatten=False, interleave=True,
+                         categorize_by=['object'])
+        proj = Dict.from_dict(D)
+        assert len(proj) == 2
+
+    def test_from_dict_not_interleaved_flatted_categorized_by_object(self):
+        D = Dict.to_dict(network=self.net, phases=[self.phase_1],
+                         flatten=True, interleave=False,
+                         categorize_by=['object'])
+        proj = Dict.from_dict(D)
+        assert len(proj) == 6
+
+    def test_from_dict_not_interleaved_not_flatted_categorized_by_object(self):
+        D = Dict.to_dict(network=self.net, phases=[self.phase_1],
+                         flatten=False, interleave=False,
+                         categorize_by=['object'])
+        proj = Dict.from_dict(D)
+        assert len(proj) == 6
+
+    def test_from_dict_not_interleaved_not_flatted_not_categorized(self):
+        D = Dict.to_dict(network=self.net, phases=[self.phase_1],
+                         flatten=False, interleave=False,
+                         categorize_by=[])
+        proj = Dict.from_dict(D)
+        assert len(proj) == 6
 
 if __name__ == '__main__':
 

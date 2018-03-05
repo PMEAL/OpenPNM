@@ -94,11 +94,11 @@ class Project(list):
     def _validate_name(self, name):
         names = [i.name for i in self]
         if name in names:
-            raise Exception('An object with that name already exists!')
+            raise Exception('An object already exists named ' + name)
         for item in self:
             for key in item.keys():
                 if key.split('.')[1] == name:
-                    raise Exception('A property/label already uses that name')
+                    raise Exception('A property/label is already named ' + name)
 
     def _generate_name(self, obj):
         prefix = obj.settings['prefix']
