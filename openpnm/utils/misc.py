@@ -50,25 +50,30 @@ class SettingsDict(PrintableDict):
         return self[key]
 
 
-class NestedDict(PrintableDict):
+class NestedDict(dict):
 
-    def __init__(self, delimiter='/', **kwargs):
+    def __init__(self, mapping={}, delimiter='/'):
         super().__init__()
         self.delimiter = delimiter
-        for item in kwargs:
-            self[item] = kwargs[item]
+        self.update(mapping)
+        self.unravel()
 
     def __setitem__(self, key, value):
-        path = key.split(self.delimiter)
+        path = key.split(self.delimiter, 1)
         if len(path) > 1:
-            key = path.pop(0)
-            self[key][self.delimiter.join(path)] = value
+            if path[0] not in self.keys():
+                self[path[0]] = NestedDict(delimiter=self.delimiter)
+            self[path[0]][path[1]] = value
         else:
             super().__setitem__(key, value)
 
     def __missing__(self, key):
-        self[key] = NestedDict()
+        self[key] = NestedDict(delimiter=self.delimiter)
         return self[key]
+
+    def unravel(self):
+        for item in self.keys():
+            self[item] = self.pop(item)
 
     def keys(self, dicts=True, values=True):
         k = list(super().keys())
