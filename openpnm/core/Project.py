@@ -3,6 +3,7 @@ import pickle
 import h5py
 from openpnm.core import Workspace
 from openpnm.utils.misc import SettingsDict
+import openpnm
 import numpy as np
 ws = Workspace()
 
@@ -134,6 +135,21 @@ class Project(list):
         d = pickle.load(open(filename, 'rb'))
         for item in d.keys():
             self.extend(d[item])
+
+    def _new_object(self, objtype):
+        if objtype == 'network':
+            obj = openpnm.network.GenericNetwork(project=self)
+        elif objtype == 'geometry':
+            obj = openpnm.geometry.GenericGeometry(project=self)
+        elif objtype == 'phase':
+            obj = openpnm.phases.GenericPhase(project=self)
+        elif objtype == 'physics':
+            obj = openpnm.physics.GenericPhysics(project=self)
+        elif objtype == 'algorithm':
+            obj = openpnm.algorithm.GenericAlgorithm(project=self)
+        else:
+            obj = openpnm.core.Base(project=self)
+        return obj
 
     def dump_data(self):
         r"""
