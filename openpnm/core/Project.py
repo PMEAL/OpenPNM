@@ -47,11 +47,15 @@ class Project(list):
 
     def __getitem__(self, key):
         if type(key) == str:
-            for obj in self:
-                if obj.name == key:
-                    return obj
+            obj = None
+            for item in self:
+                if item.name == key:
+                    obj = item
+            if obj is None:
+                raise KeyError(key)
         else:
-            return super().__getitem__(key)
+            obj = super().__getitem__(key)
+        return obj
 
     def find_phase(self, obj):
         mro = obj._mro()
@@ -136,19 +140,19 @@ class Project(list):
         for item in d.keys():
             self.extend(d[item])
 
-    def _new_object(self, objtype):
+    def _new_object(self, objtype, name=None):
         if objtype == 'network':
-            obj = openpnm.network.GenericNetwork(project=self)
+            obj = openpnm.network.GenericNetwork(project=self, name=name)
         elif objtype == 'geometry':
-            obj = openpnm.geometry.GenericGeometry(project=self)
+            obj = openpnm.geometry.GenericGeometry(project=self, name=name)
         elif objtype == 'phase':
-            obj = openpnm.phases.GenericPhase(project=self)
+            obj = openpnm.phases.GenericPhase(project=self, name=name)
         elif objtype == 'physics':
-            obj = openpnm.physics.GenericPhysics(project=self)
+            obj = openpnm.physics.GenericPhysics(project=self, name=name)
         elif objtype == 'algorithm':
-            obj = openpnm.algorithm.GenericAlgorithm(project=self)
+            obj = openpnm.algorithm.GenericAlgorithm(project=self, name=name)
         else:
-            obj = openpnm.core.Base(project=self)
+            obj = openpnm.core.Base(project=self, name=name)
         return obj
 
     def dump_data(self):
