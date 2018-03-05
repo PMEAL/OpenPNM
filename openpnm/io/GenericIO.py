@@ -48,7 +48,7 @@ class GenericIO():
                 logger.warning('\''+item+'\' already present...overwriting')
             network.update({item: net[item]})
 
-        network._gen_ids()
+#        network._gen_ids()
 
         return network
 

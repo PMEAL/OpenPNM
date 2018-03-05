@@ -1,11 +1,12 @@
 import re
 import scipy as sp
 import pandas as pd
-from openpnm.core import logging, Project
+from openpnm.core import logging, Workspace
 from openpnm.network import GenericNetwork
 from openpnm.io import GenericIO
 from openpnm.io.Pandas import Pandas
 logger = logging.getLogger(__name__)
+ws = Workspace()
 
 
 class CSV(GenericIO):
@@ -92,9 +93,10 @@ class CSV(GenericIO):
             returned.
 
         """
-        net = {}
+        if project is None:
+            project = ws.new_project()
 
-        fname = cls._parse_filename(filename)
+        fname = cls._parse_filename(filename, ext='csv')
         a = pd.read_table(filepath_or_buffer=fname,
                           sep=',',
                           skipinitialspace=True,
@@ -103,10 +105,10 @@ class CSV(GenericIO):
                           false_values=['F', 'f', 'False', 'false', 'FALSE'])
 
         dct = {}
-        # First parse through all the items and clean-up`
+        # First parse through all the items and re-merge columns
         keys = sorted(list(a.keys()))
         for item in keys:
-            # Merge arrays that have been split into multiple columns
+            # -----------------------------------------------------------------
             m = re.search(r'\[.\]', item)  # The dot '.' is a wildcard
             if m:  # m is None if pattern not found, otherwise merge cols
                 pname = re.split(r'\[.\]', item)[0]  # Get base propname
@@ -121,8 +123,14 @@ class CSV(GenericIO):
             else:
                 dct[item] = sp.array(a.pop(item))
 
-        if project is None:
-            project = Project(name=filename.split('.')[0])
+        obj_types = ['network', 'geometry', 'phase', 'physics', 'algorithm']
+        for item in dct.keys():
+            categories = item.split('|')[0].strip(' ')
+            if categories[0] in obj_types:
+                pass
+
+
+
         network = GenericNetwork(project=project)
-        network = cls._update_network(network=network, net=net)
+        network = cls._update_network(network=network, net=dct)
         return project

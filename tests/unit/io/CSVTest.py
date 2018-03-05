@@ -69,6 +69,11 @@ class CSVTest:
         with pytest.raises(OSError):
             op.io.CSV.load(filename='')
 
+    def test_load(self, tmpdir):
+        fname = tmpdir.join(self.net.project.name)
+        op.io.CSV.save(network=self.net, phases=self.phase_1, filename=fname)
+        proj = op.io.CSV.load(filename=fname)
+
 
 if __name__ == '__main__':
     # All the tests in this file can be run with 'playing' this file
