@@ -1,9 +1,11 @@
 import os as os
 import scipy as sp
 import pandas as pd
+from openpnm.topotools import trim
 from openpnm.core import logging
 from openpnm.io import GenericIO
 from openpnm.network import GenericNetwork
+from pathlib import Path
 logger = logging.getLogger(__name__)
 
 
@@ -52,42 +54,36 @@ class Statoil(GenericIO):
         -------
         If no Network object is supplied then one will be created and returned.
 
-        If return_geometry is True, then a tuple is returned containing both
-        the network and a geometry object.
-
         """
         net = {}
 
         # ---------------------------------------------------------------------
         # Parse the link1 file
-        for item in ['link1']:
-            filename = os.path.join(path, prefix+'_'+item+'.dat')
-            with cls._read_file(filename=filename, ext='dat') as f:
-                link1 = pd.read_table(filepath_or_buffer=f,
-                                      header=None,
-                                      skiprows=1,
-                                      sep=' ',
-                                      skipinitialspace=True,
-                                      index_col=0)
+        filename = Path(path.resolve(), prefix+'_link1.dat')
+        with open(filename, mode='r') as f:
+            link1 = pd.read_table(filepath_or_buffer=f,
+                                  header=None,
+                                  skiprows=1,
+                                  sep=' ',
+                                  skipinitialspace=True,
+                                  index_col=0)
         link1.columns = ['throat.pore1', 'throat.pore2', 'throat.radius',
                          'throat.shape_factor', 'throat.total_length']
         # Add link1 props to net
         net['throat.conns'] = sp.vstack((link1['throat.pore1']-1,
-                                          link1['throat.pore2']-1)).T
+                                         link1['throat.pore2']-1)).T
         net['throat.conns'] = sp.sort(net['throat.conns'], axis=1)
         net['throat.radius'] = sp.array(link1['throat.radius'])
         net['throat.shape_factor'] = sp.array(link1['throat.shape_factor'])
         net['throat.total_length'] = sp.array(link1['throat.total_length'])
         # ---------------------------------------------------------------------
-        # Parse the link2 file
-        for item in ['link2']:
-            filename = os.path.join(path, prefix+'_'+item+'.dat')
-            with cls._read_file(filename=filename, ext='dat') as f:
-                link2 = pd.read_table(filepath_or_buffer=f,
-                                       header=None,
-                                       sep=' ',
-                                       skipinitialspace=True,
-                                       index_col=0)
+        filename = Path(path.resolve(), prefix+'_link2.dat')
+        with open(filename, mode='r') as f:
+            link2 = pd.read_table(filepath_or_buffer=f,
+                                  header=None,
+                                  sep=' ',
+                                  skipinitialspace=True,
+                                  index_col=0)
         link2.columns = ['throat.pore1', 'throat.pore2',
                          'throat.pore1_length', 'throat.pore2_length',
                          'throat.length', 'throat.volume',
@@ -98,16 +94,15 @@ class Statoil(GenericIO):
         net['throat.clay_volume'] = sp.array(link2['throat.clay_volume'])
         # ---------------------------------------------------------------------
         # Parse the node1 file
-        for item in ['node1']:
-            filename = os.path.join(path, prefix+'_'+item+'.dat')
-            with cls._read_file(filename=filename, ext='dat') as f:
-                row_0 = f.readline().split()
-                num_lines = int(row_0[0])
-                array = sp.ndarray([num_lines, 6])
-                for i in range(num_lines):
-                    row = f.readline()\
-                           .replace('\t', ' ').replace('\n', ' ').split()
-                    array[i, :] = row[0:6]
+        filename = Path(path.resolve(), prefix+'_node1.dat')
+        with open(filename, mode='r') as f:
+            row_0 = f.readline().split()
+            num_lines = int(row_0[0])
+            array = sp.ndarray([num_lines, 6])
+            for i in range(num_lines):
+                row = f.readline()\
+                       .replace('\t', ' ').replace('\n', ' ').split()
+                array[i, :] = row[0:6]
         node1 = pd.DataFrame(array[:, [1, 2, 3, 4]])
         node1.columns = ['pore.x_coord', 'pore.y_coord', 'pore.z_coord',
                          'pore.coordination_number']
@@ -117,14 +112,13 @@ class Statoil(GenericIO):
                                         node1['pore.z_coord'])).T
         # ---------------------------------------------------------------------
         # Parse the node1 file
-        for item in ['node2']:
-            filename = os.path.join(path, prefix+'_'+item+'.dat')
-            with cls._read_file(filename=filename, ext='dat') as f:
-                node2 = pd.read_table(filepath_or_buffer=f,
-                                      header=None,
-                                      sep=' ',
-                                      skipinitialspace=True,
-                                      index_col=0)
+        filename = Path(path.resolve(), prefix+'_node2.dat')
+        with open(filename, mode='r') as f:
+            node2 = pd.read_table(filepath_or_buffer=f,
+                                  header=None,
+                                  sep=' ',
+                                  skipinitialspace=True,
+                                  index_col=0)
         node2.columns = ['pore.volume', 'pore.radius', 'pore.shape_factor',
                          'pore.clay_volume']
         # Add node2 props to net
@@ -135,8 +129,7 @@ class Statoil(GenericIO):
 
         if network is None:
             network = GenericNetwork()
-        network = cls._update_network(network=network, net=net,
-                                      return_geometry=return_geometry)
+        network = cls._update_network(network=network, net=net)
 
         # Use OpenPNM Tools to clean up network
         # Trim throats connected to 'inlet' or 'outlet' reservoirs
@@ -151,7 +144,7 @@ class Statoil(GenericIO):
         network['pore.inlets'] = False
         network['pore.inlets'][inlets] = True
         # Now trim the throats
-        trim = sp.hstack([trim1, trim2])
-        network.trim(throats=trim)
+        to_trim = sp.hstack([trim1, trim2])
+        trim(network=network, throats=to_trim)
 
-        return network
+        return network.project

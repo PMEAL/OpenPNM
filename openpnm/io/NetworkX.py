@@ -10,6 +10,7 @@ class NetworkX(GenericIO):
     r"""
     This class is meant specifcally for exchanging data with NetworkX, which
     is a common tool for dealing with network structures.
+
     Notes
     -----
     1. Each node in a NetworkX object (i.e. ``G``) can be assigned properties
