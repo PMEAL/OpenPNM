@@ -1,6 +1,5 @@
 import pickle
-from openpnm.core import logging, Project, Workspace
-from openpnm.network import GenericNetwork
+from openpnm.core import logging, Workspace
 from openpnm.utils import NestedDict, FlatDict, sanitize_dict
 from openpnm.io import GenericIO
 logger = logging.getLogger(__name__)
@@ -17,20 +16,40 @@ class Dict(GenericIO):
     """
 
     @classmethod
-    def from_dict(cls, dct, project=None, delimiter=' | '):
+    def from_dict(cls, dct, project=None):
         r"""
+        This method converts a correctly formatted dictionary into OpenPNM
+        objects, and returns a handle to the *project* containing them.
+
+        Parameters
+        ----------
+        dct : dictionary
+            The Python dictionary containing the data.  The nesting and
+            labeling of the dictionary is used to create the appropriate
+            OpenPNM objects.
+
+        project : OpenPNM Project Object
+            The project with which the created objects should be associated.
+            If not supplied, one will be created.
+
+        Returns
+        -------
+        An OpenPNM Project containing the objects created to store the given
+        data.
+
         """
         if project is None:
             project = ws.new_project()
 
         # Uncategorize pore/throat and labels/properties, if present
-        fd = FlatDict(dct, delimiter=delimiter)
-        d = FlatDict(delimiter=delimiter)
+        delim = ' | '
+        fd = FlatDict(dct, delimiter=delim)
+        d = FlatDict(delimiter=delim)
         for key in list(fd.keys()):
-            new_key = key.replace('pore' + delimiter, 'pore.')
-            new_key = new_key.replace('throat' + delimiter, 'throat.')
-            new_key = new_key.replace('labels' + delimiter, '')
-            new_key = new_key.replace('properties' + delimiter, '')
+            new_key = key.replace('pore' + delim, 'pore.')
+            new_key = new_key.replace('throat' + delim, 'throat.')
+            new_key = new_key.replace('labels' + delim, '')
+            new_key = new_key.replace('properties' + delim, '')
             d[new_key] = fd.pop(key)
 
         # Plase data into correctly categorized dicts, for later handling
@@ -41,7 +60,7 @@ class Dict(GenericIO):
                 'algorithm': NestedDict(),
                 'base': NestedDict()}
         for item in d.keys():
-            path = item.split(delimiter)
+            path = item.split(delim)
             if len(path) > 2:
                 if path[-3] in objs.keys():
                     # Item is categorized by type, so note it

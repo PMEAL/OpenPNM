@@ -13,8 +13,7 @@ ws = Workspace()
 class CSV(GenericIO):
     r"""
     This class is used for reading and writing CSV files containing pore and
-    throat property data.  This class uses Pandas for transferring data from
-    the OpenPNM format to CSV.
+    throat property data.
 
     Notes
     -----
@@ -27,15 +26,18 @@ class CSV(GenericIO):
     of *pore.volume* or *throat.surface_area*.
 
     3. It's possible to sub-categorize each property by prefixing the
-    category to the property name, separated by forward slashes (/).  Ex:
-    ``'pore.diameter'`` can be associated with a certain network using
-    ``network_1/pore.diameter``.
+    category to the property name, separated by a delimiter (The default is a
+    pipe with spaces around it: ' | ').  Ex: ``'pore.diameter'`` can be
+    associated with a certain network using ``network_1 | pore.diameter``.
 
     3. Each column represents a specific property.  For Np x 1 or Nt x 1
     data such as *pore.volume* this is straightforward.  For Np x *m* or
-    Nt x *m* data, it must be entered in as a set of values NOT separated by
-    commas.  For instance, the *pore.coords* values should be X Y Z with
-    *spaces* between each value, not commas.
+    Nt x *m* data, each of the *m* columns should have their own column in
+    in the CSV file, with a numpy-style index indicating which axis it
+    corresponds to.  For instance, the *pore.coords* values should be stored
+    as three separate columns with the headings: *pore.coords[0]*,
+    *pore.coords[1]*, and *pore.coords[2]*.  OpenPNM will convert that back
+    into an Np x *m* array upon loading.
 
     4. The file can contain both or either pore and throat data.
 
