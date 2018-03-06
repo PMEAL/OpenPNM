@@ -72,7 +72,7 @@ class HDF5Test:
     def test_save(self, tmpdir):
         fname = tmpdir.join(self.net.project.name)
         len_before = len(tmpdir.listdir())
-        op.io.HDF5.save(network=self.net, phases=self.phase_1, filename=fname)
+        op.io.HDF5.save(network=self.net, phases=self.phase_1)
         assert len(tmpdir.listdir()) == (len_before + 1)
         os.remove(fname.dirpath().join(self.net.project.name + '.hdf'))
 
