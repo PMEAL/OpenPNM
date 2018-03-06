@@ -1,7 +1,7 @@
 import openpnm as op
 from openpnm.io import Dict
-import scipy as sp
-import pytest
+import py
+import os
 
 
 class DictTest:
@@ -479,6 +479,16 @@ class DictTest:
         assert len(proj.phases().values()) == 0
         assert len(proj.physics().values()) == 0
 
+    def test_save_and_load(self, tmpdir):
+        D = Dict.to_dict(network=self.net, phases=[self.phase_1],
+                         flatten=False, interleave=False,
+                         categorize_by=[])
+        fname = tmpdir.join('test.dct')
+        Dict.save(dct=D, filename=fname)
+        dct = Dict.load(filename=fname)
+        assert len(dct.keys()) == 2
+        os.remove(fname)
+
 
 if __name__ == '__main__':
 
@@ -488,4 +498,7 @@ if __name__ == '__main__':
     for item in t.__dir__():
         if item.startswith('test'):
             print('running test: '+item)
-            t.__getattribute__(item)()
+            try:
+                t.__getattribute__(item)()
+            except TypeError:
+                t.__getattribute__(item)(tmpdir=py.path.local())

@@ -1,7 +1,7 @@
 import pickle
 from openpnm.core import logging, Project, Workspace
 from openpnm.network import GenericNetwork
-from openpnm.utils import NestedDict, FlatDict
+from openpnm.utils import NestedDict, FlatDict, sanitize_dict
 from openpnm.io import GenericIO
 logger = logging.getLogger(__name__)
 ws = Workspace()
@@ -209,68 +209,42 @@ class Dict(GenericIO):
         return d
 
     @classmethod
-    def save(cls, network, phases=[], filename=''):
+    def save(cls, dct, filename):
         r"""
-        Saves data from the given objects into the specified file.
+        Saves data from the given dictionary into the specified file.
 
         Parameters
         ----------
-        network : OpenPNM Network Object
-            The network containing the desired data
+        dct : dictionary
+            A dictionary to save to file, presumably obtained from the
+            ``to_dict`` method of this class.
 
-        phases : list of OpenPNM Phase Objects (optional, default is none)
-            A list of phase objects whose data are to be included
-
-        Notes
-        -----
-        This function enforces a specific dictionary format, so that it
-        can be consistently interpreted by the ``load`` function.  To get
-        a dictionary with a different format use the ``get`` method, and then
-        optionally save it to a file manually using the ``pickle`` standard
-        library.
-
-        This method only saves the data, not any of the pore-scale models or
-        other attributes.  To save an actual OpenPNM Project use the
-        ``Workspace`` object.
+        filename : string or path object
+            The filename to store the dictionary.
 
         """
-        project = network.project
-        if filename == '':
-            filename = project.name
-        else:
-            filename = filename.rsplit('.dct', 1)[0]
-        d = cls.to_dict(project=project, phases=phases,
-                        interleave=True, categorize=False)
-        for item in list(d.keys()):
-            new_name = item.split('.')
-            d[new_name[1] + '.' + new_name[2]] = d.pop(item)
-        pickle.dump(d, open(filename + '.dct', 'wb'))
+        fname = cls._parse_filename(filename=filename, ext='dct')
+        dct = sanitize_dict(dct)
+        with open(fname, 'wb') as f:
+            pickle.dump(dct, f)
 
     @classmethod
-    def load(cls, filename, project=None):
+    def load(cls, filename):
         r"""
-        Load data from the specified file into an OpenPNM project
+        Load data from the specified file into a Python dictionary
 
         Parameters
         ----------
-        filname : string
-            The path to the file to be openned
-
-        project : OpenPNM Project object
-            A GenericNetwork is created and added to the specified Project.
-            If no Project object is supplied then one will be created and
-            returned.
+        filename : string
+            The path to the file to be opened
 
         Notes
         -----
-        This function is designed to open files creating using the ``save``
-        function, which have a specific format.
+        This returns a Python dictionary which can be converted into OpenPNM
+        objects using the ``from_dict`` method of this class.
 
         """
-        with cls._read_file(filename=filename, ext='dct', mode='rb') as f:
-            net = pickle.load(f)
-        if project is None:
-            project = Project(name=filename.split('.')[0])
-        network = GenericNetwork(project=project)
-        network = cls._update_network(network=network, net=net)
-        return project
+        fname = cls._parse_filename(filename)
+        with open(fname, 'rb') as f:
+            dct = pickle.load(f)
+        return dct

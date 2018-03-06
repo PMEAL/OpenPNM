@@ -1,6 +1,6 @@
 import scipy as _sp
 import time as _time
-from collections import OrderedDict
+from collections import OrderedDict, abc
 
 
 class PrintableList(list):
@@ -74,6 +74,18 @@ class NestedDict(dict):
     def unravel(self):
         for item in self.keys():
             self[item] = self.pop(item)
+
+    def to_dict(self, dct=None):
+        if dct is None:
+            dct = self
+        plain_dict = dict()
+        for key in dct.keys():
+            value = dct[key]
+            if hasattr(value, 'keys'):
+                plain_dict[key] = self.to_dict(value)
+            else:
+                plain_dict[key] = value
+        return plain_dict
 
     def keys(self, dicts=True, values=True):
         k = list(super().keys())
@@ -185,6 +197,22 @@ def flat_list(input_list):
         return [a for i in x for a in flat_list(i)]
     else:
         return [x]
+
+
+def sanitize_dict(input_dict):
+    r"""
+    Given a nested dictionary, ensures that all nested dicts are normal
+    Python dict.  This is necessary for pickling, or just converting
+    an 'auto-vivifying' dict to something that acts normal.
+    """
+    plain_dict = dict()
+    for key in input_dict.keys():
+        value = input_dict[key]
+        if hasattr(value, 'keys'):
+            plain_dict[key] = sanitize_dict(value)
+        else:
+            plain_dict[key] = value
+    return plain_dict
 
 
 def amalgamate_data(objs=[], delimiter='_'):
