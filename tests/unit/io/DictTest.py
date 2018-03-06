@@ -261,18 +261,30 @@ class DictTest:
         assert d.issubset(D['phase']['phase_01']['labels'].keys())
         assert d.issubset(D['phase']['phase_02']['properties'].keys())
         assert d.issubset(D['phase']['phase_02']['labels'].keys())
-        assert d.issubset(D['network']['net_01']['geometry']['geo_01']['properties'].keys())
-        assert d.issubset(D['network']['net_01']['geometry']['geo_01']['labels'].keys())
-        assert d.issubset(D['network']['net_01']['geometry']['geo_02']['properties'].keys())
-        assert d.issubset(D['network']['net_01']['geometry']['geo_02']['labels'].keys())
-        assert d.issubset(D['phase']['phase_01']['physics']['phys_01']['properties'].keys())
-        assert d.issubset(D['phase']['phase_01']['physics']['phys_01']['labels'].keys())
-        assert d.issubset(D['phase']['phase_01']['physics']['phys_02']['properties'].keys())
-        assert d.issubset(D['phase']['phase_01']['physics']['phys_02']['labels'].keys())
-        assert d.issubset(D['phase']['phase_02']['physics']['phys_03']['properties'].keys())
-        assert d.issubset(D['phase']['phase_02']['physics']['phys_03']['labels'].keys())
-        assert d.issubset(D['phase']['phase_02']['physics']['phys_04']['properties'].keys())
-        assert d.issubset(D['phase']['phase_02']['physics']['phys_04']['labels'].keys())
+        path = D['network']['net_01']['geometry']['geo_01']['properties']
+        assert d.issubset(path.keys())
+        path = D['network']['net_01']['geometry']['geo_01']['labels']
+        assert d.issubset(path.keys())
+        path = D['network']['net_01']['geometry']['geo_02']['properties']
+        assert d.issubset(path.keys())
+        path = D['network']['net_01']['geometry']['geo_02']['labels']
+        assert d.issubset(path.keys())
+        path = D['phase']['phase_01']['physics']['phys_01']['properties']
+        assert d.issubset(path.keys())
+        path = D['phase']['phase_01']['physics']['phys_01']['labels']
+        assert d.issubset(path.keys())
+        D['phase']['phase_01']['physics']['phys_02']['properties']
+        assert d.issubset(path.keys())
+        path = D['phase']['phase_01']['physics']['phys_02']['labels']
+        assert d.issubset(path.keys())
+        path = D['phase']['phase_02']['physics']['phys_03']['properties']
+        assert d.issubset(path.keys())
+        path = D['phase']['phase_02']['physics']['phys_03']['labels']
+        assert d.issubset(path.keys())
+        path = D['phase']['phase_02']['physics']['phys_04']['properties']
+        assert d.issubset(path.keys())
+        path = D['phase']['phase_02']['physics']['phys_04']['labels']
+        assert d.issubset(path.keys())
 
     def test_to_dict_not_flat_not_interleaved_cat_by_element_object(self):
         D = Dict.to_dict(network=self.net, phases=[self.phase_1, self.phase_2],
