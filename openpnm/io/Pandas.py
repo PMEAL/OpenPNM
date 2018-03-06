@@ -67,7 +67,7 @@ class Pandas(GenericIO):
         if join:
             data = tdata.join(other=pdata, how='left')
         else:
-            data = namedtuple('dataframes', ('pore', 'throat'))
-            data(pore=pdata, throat=tdata)
+            nt = namedtuple('dataframes', ('pore', 'throat'))
+            data = nt(pore=pdata, throat=tdata)
 
         return data

@@ -2,9 +2,10 @@ import openpnm as op
 import pytest
 import py
 import os
+from openpnm.io.Pandas import Pandas
 
 
-class CSVTest:
+class PandasTest:
 
     def setup_class(self):
         ws = op.Workspace()
@@ -58,34 +59,29 @@ class CSVTest:
         ws = op.core.Workspace()
         ws.clear()
 
-    def test_save(self, tmpdir):
-        fname = tmpdir.join(self.net.project.name)
-        len_before = len(tmpdir.listdir())
-        op.io.CSV.save(network=self.net, phases=self.phase_1, filename=fname)
-        assert len(tmpdir.listdir()) == (len_before + 1)
-        os.remove(fname.dirpath().join(self.net.project.name + '.csv'))
+    def test_to_dataframe_not_joined(self):
+        df = Pandas.to_dataframe(network=self.net, phases=[self.phase_1],
+                                 join=False)
+        assert len(df.pore.keys()) == 22
+        assert len(df.throat.keys()) == 12
 
-    def test_save_no_filename(self, tmpdir):
-        op.io.CSV.save(network=self.net, phases=self.phase_1)
-        fname = tmpdir.join(self.net.project.name)
-        os.remove(fname.dirpath().join(self.net.project.name + '.csv'))
+    def test_to_dataframe_joined(self):
+        df = Pandas.to_dataframe(network=self.net, phases=[self.phase_1],
+                                 join=True)
+        assert len(df.keys()) == 34
 
-    def test_load_bad_filename(self, tmpdir):
-        with pytest.raises(OSError):
-            op.io.CSV.load(filename='')
+    def test_save(self):
+        with pytest.raises(NotImplementedError):
+            Pandas.save()
 
-    def test_load_categorized_by_object(self, tmpdir):
-        fname = tmpdir.join(self.net.project.name)
-        op.io.CSV.save(network=self.net, phases=self.phase_1, filename=fname)
-        proj = op.io.CSV.load(filename=fname)
-        os.remove(fname.dirpath().join(self.net.project.name + '.csv'))
-        assert len(proj) == 2
-        assert proj.network.name == self.net.name
-        assert list(proj.phases().values())[0].name == self.phase_1.name
+    def test_load(self):
+        with pytest.raises(NotImplementedError):
+            Pandas.load()
+
 
 if __name__ == '__main__':
     # All the tests in this file can be run with 'playing' this file
-    t = CSVTest()
+    t = PandasTest()
     self = t  # For interacting with the tests at the command line
     t.setup_class()
     for item in t.__dir__():
