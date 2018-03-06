@@ -24,7 +24,7 @@ class Statoil(GenericIO):
     """
 
     @classmethod
-    def load(cls, path, prefix, network=None, return_geometry=False):
+    def load(cls, path, prefix, network=None):
         r"""
         Load data from the \'dat\' files located in specified folder.
 
@@ -41,18 +41,9 @@ class Statoil(GenericIO):
             If given then the data will be loaded on it and returned.  If not
             given, a Network will be created and returned.
 
-        return_geometry : Boolean
-            If True, then all geometrical related properties are removed from
-            the Network object and added to a GenericGeometry object.  In this
-            case the method returns a tuple containing (network, geometry). If
-            False (default) then the returned Network will contain all
-            properties that were in the original file.  In this case, the user
-            can call the ```split_geometry``` method explicitly to perform the
-            separation.
-
         Returns
         -------
-        If no Network object is supplied then one will be created and returned.
+        An OpenPNM Project containing a GenericNetwork holding all the data
 
         """
         net = {}
