@@ -80,6 +80,15 @@ class HDF5Test:
         with pytest.raises(NotImplementedError):
             op.io.HDF5.load(filename='')
 
+    def test_print(self, tmpdir):
+        fname = tmpdir.join(self.net.project.name)
+        f = op.io.HDF5.to_hdf5(network=[self.net], filename=fname,
+                               interleave=False)
+        op.io.HDF5.print_levels(f)
+        op.io.HDF5.print_flattened(f)
+        f.close()
+        os.remove(fname.dirpath().join(self.net.project.name + '.hdf'))
+
 
 if __name__ == '__main__':
     # All the tests in this file can be run with 'playing' this file
