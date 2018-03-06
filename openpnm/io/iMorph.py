@@ -3,6 +3,8 @@ import scipy as sp
 from openpnm.core import logging
 from openpnm.io import GenericIO
 from openpnm.network import GenericNetwork
+from openpnm.topotools import extend, trim
+from openpnm.network import GenericNetwork
 logger = logging.getLogger(__name__)
 
 
@@ -17,7 +19,7 @@ class iMorph(GenericIO):
     def load(cls, path,
              node_file="throats_cellsThroatsGraph_Nodes.txt",
              graph_file="throats_cellsThroatsGraph.txt",
-             voxel_size=None, return_geometry=False):
+             network=None, voxel_size=None, return_geometry=False):
         r"""
         Loads network data from an iMorph processed image stack
 
@@ -33,6 +35,11 @@ class iMorph(GenericIO):
         graph_file : string
             The file that describes the connectivity of the network, the
             default iMorph name is: throats_cellsThroatsGraph.txt
+
+        network : OpenPNM Network Object
+            The OpenPNM Network onto which the data should be loaded.  If no
+            network is supplied then an empty import network is created and
+            returned.
 
         voxel_size : float
             Allows the user to define a voxel size different than what is
@@ -55,8 +62,8 @@ class iMorph(GenericIO):
         the network and a geometry object.
         """
         #
-        node_file = os.path.join(path, node_file)
-        graph_file = os.path.join(path, graph_file)
+        node_file = os.path.join(path.resolve(), node_file)
+        graph_file = os.path.join(path.resolve(), graph_file)
         # parsing the nodes file
         with open(node_file, 'r') as file:
             Np = sp.fromstring(file.readline().rsplit('=')[1], sep='\t',
@@ -64,8 +71,7 @@ class iMorph(GenericIO):
             vox_size = sp.fromstring(file.readline().rsplit(')')[1], sep='\t',)[0]
 
             # network always recreated to prevent errors
-            network = GenericNetwork()
-            network['pore.all'] = sp.ones(shape=[Np, ], dtype=bool)
+            network = GenericNetwork(Np=Np, Nt=0)
 
             # Define expected properies
             network['pore.volume'] = sp.nan
@@ -78,8 +84,6 @@ class iMorph(GenericIO):
                 if 'pore.'+vals[2] not in network.labels():
                     network['pore.'+vals[2]] = False
                 network['pore.'+vals[2]][int(vals[0])] = True
-
-        network._gen_ids()
 
         if voxel_size is None:
             voxel_size = vox_size * 1.0E-6  # file stores value in microns
@@ -142,13 +146,15 @@ class iMorph(GenericIO):
         network['pore.to_trim'][network.pores('*throat')] = True
         Ts = network.pores('to_trim')
         new_conns = network.find_neighbor_pores(pores=Ts, flatten=False)
-        network.extend(throat_conns=new_conns, labels='new_conns')
+        extend(network=network, throat_conns=new_conns, labels='new_conns')
         for item in network.props('pore'):
             item = item.split('.')[1]
-            network['throat.'+item] = sp.nan
+            arr = sp.ones_like(network['pore.'+item])[0]
+            arr = sp.tile(A=arr, reps=[network.Nt, 1])*sp.nan
+            network['throat.'+item] = sp.squeeze(arr)
             network['throat.'+item][network.throats('new_conns')] = \
                 network['pore.'+item][Ts]
-        network.trim(pores=Ts)
+        trim(network=network, pores=Ts)
 
         # setting up boundary pores
         x_coord, y_coord, z_coord = sp.hsplit(network['pore.coords'], 3)
@@ -172,7 +178,7 @@ class iMorph(GenericIO):
 
         # adding props to border cell face throats and from pores
         Ts = sp.where(network['throat.conns'][:, 1] >
-                      network.pores('border_cell_face')[0] - 1)[0]
+                       network.pores('border_cell_face')[0] - 1)[0]
         faces = network['throat.conns'][Ts, 1]
         for item in network.props('pore'):
             item = item.split('.')[1]
@@ -189,11 +195,5 @@ class iMorph(GenericIO):
         network['throat.radius'] = network['throat.radius'] * 1e-6
         network['throat.dmax'] = network['throat.dmax'] * 1e-6
         network['throat.volume'] = network['throat.volume'] * voxel_size**3
-        #
-        # checking network health to generate warnings for the user
-        network.health_dict = network.check_network_health()
-        logger.info('Network health stored as network.health_dict')
-        if return_geometry:
-            geometry = cls.fetch_geometry(network)
-            network = (network, geometry)
-        return network
+
+        return network.project
