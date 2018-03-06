@@ -90,59 +90,9 @@ class HDF5(GenericIO):
         return f
 
     @classmethod
-    def save(cls, network=None, phases=[], filename='', **kwargs):
-        r"""
-        Saves data from the given objects into the specified file.
-
-        Parameters
-        ----------
-        network : OpenPNM Network Object
-            The network containing the desired data
-
-        phases : list of OpenPNM Phase Objects (optional, default is none)
-            A list of phase objects whose data are to be included
-
-        filename : string or path object
-
-        **kwargs : key-word arguments
-            These additional arguments are passed on to the ``to_hdf5``
-            function to controls the hierarchy of the data.  Refer to that
-            method's docstring for more info.
-
-        Notes
-        -----
-        This method only saves the data, not any of the pore-scale models or
-        other attributes.  To save an actual OpenPNM Project use the
-        ``Workspace`` object.
-
-        """
-        project, network, phases = cls._parse_args(network=network,
-                                                   phases=phases)
-        f = cls.to_hdf5(network=network, phases=phases, filename=filename,
-                        **kwargs)
-        f.close()
-
-    @classmethod
-    def load(cls, filename, project=None):
-        r"""
-        Load data from the specified file into an OpenPNM project
-
-        Parameters
-        ----------
-        filname : string
-            The path to the file to be openned
-
-        project : OpenPNM Project object
-            A GenericNetwork is created and added to the specified Project.
-            If no Project is supplied then one will be created and
-            returned.
-
-        Notes
-        -----
-        This function is designed to open files creating using the ``save``
-        function, which have a specific format.
-
-        """
+    def from_hdf5(cls):
+        r'''
+        '''
         raise NotImplementedError()
 
     def print_levels(f):

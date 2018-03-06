@@ -69,16 +69,9 @@ class HDF5Test:
         f.close()
         os.remove(filename)
 
-    def test_save(self, tmpdir):
-        fname = tmpdir.join(self.net.project.name)
-        len_before = len(tmpdir.listdir())
-        op.io.HDF5.save(network=self.net, phases=self.phase_1)
-        assert len(tmpdir.listdir()) == (len_before + 1)
-        os.remove(fname.dirpath().join(self.net.project.name + '.hdf'))
-
-    def test_load(self, tmpdir):
+    def test_from_hdf5(self):
         with pytest.raises(NotImplementedError):
-            op.io.HDF5.load(filename='')
+            op.io.HDF5.from_hdf5()
 
     def test_print(self, tmpdir):
         fname = tmpdir.join(self.net.project.name)

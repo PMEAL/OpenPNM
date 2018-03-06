@@ -1,6 +1,7 @@
 import openpnm as op
 import pytest
 import py
+import os
 from pathlib import Path
 
 
@@ -15,7 +16,8 @@ class MARockTest:
         ws.clear()
 
     def test_load_MARock(self, tmpdir):
-        path = Path(tmpdir.dirname, '../fixtures/3DMA-Castlegate')
+        path = Path(os.path.realpath(__file__),
+                    '../../../fixtures/3DMA-Castlegate')
         project = op.io.MARock.load(path=path)
         assert len(project) == 1
         net = project.network
