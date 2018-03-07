@@ -16,7 +16,7 @@ class Dict(GenericIO):
     """
 
     @classmethod
-    def from_dict(cls, dct, project=None):
+    def from_dict(cls, dct, project=None, delim='/'):
         r"""
         This method converts a correctly formatted dictionary into OpenPNM
         objects, and returns a handle to the *project* containing them.
@@ -42,7 +42,6 @@ class Dict(GenericIO):
             project = ws.new_project()
 
         # Uncategorize pore/throat and labels/properties, if present
-        delim = ' | '
         fd = FlatDict(dct, delimiter=delim)
         d = FlatDict(delimiter=delim)
         for key in list(fd.keys()):

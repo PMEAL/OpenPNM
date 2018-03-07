@@ -1,10 +1,7 @@
 import openpnm as op
 import scipy as sp
-import pytest
-import py
 from pathlib import Path
 import os
-import networkx as nx
 
 
 class iMorphTest:
