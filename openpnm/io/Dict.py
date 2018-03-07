@@ -16,7 +16,7 @@ class Dict(GenericIO):
     """
 
     @classmethod
-    def from_dict(cls, dct, project=None, delim=' | '):
+    def from_dict(cls, dct, project=None):
         r"""
         This method converts a correctly formatted dictionary into OpenPNM
         objects, and returns a handle to the *project* containing them.
@@ -42,6 +42,7 @@ class Dict(GenericIO):
             project = ws.new_project()
 
         # Uncategorize pore/throat and labels/properties, if present
+        delim = ' | '
         fd = FlatDict(dct, delimiter=delim)
         d = FlatDict(delimiter=delim)
         for key in list(fd.keys()):
@@ -82,7 +83,7 @@ class Dict(GenericIO):
 
     @classmethod
     def to_dict(cls, network=None, phases=[], element=['pore', 'throat'],
-                interleave=True, flatten=True, categorize_by=[], delim=' | '):
+                interleave=True, flatten=True, categorize_by=[]):
         r"""
         Returns a single dictionary object containing data from the given
         OpenPNM objects, with the keys organized differently depending on
@@ -152,7 +153,7 @@ class Dict(GenericIO):
         """
         project, network, phases = cls._parse_args(network=network,
                                                    phases=phases)
-
+        delim = ' | '
         d = NestedDict(delimiter=delim)
 
         def build_path(obj, key):
