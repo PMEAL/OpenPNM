@@ -125,6 +125,6 @@ class CSV(GenericIO):
             else:
                 dct[item] = sp.array(a.pop(item))
 
-        project = Dict.from_dict(dct, project=project)
+        project = Dict.from_dict(dct, project=project, delim=' | ')
 
         return project

@@ -36,10 +36,10 @@ class Pandas(GenericIO):
         # Initialize pore and throat data dictionary using Dict class
         pdata = Dict.to_dict(network=network, phases=phases, element='pore',
                              interleave=True, flatten=True,
-                             categorize_by=['object'])
+                             categorize_by=['object'], delim=' | ')
         tdata = Dict.to_dict(network=network, phases=phases, element='throat',
                              interleave=True, flatten=True,
-                             categorize_by=['object'])
+                             categorize_by=['object'], delim=' | ')
         pdata = FlatDict(pdata, delimiter=' | ')
         tdata = FlatDict(tdata, delimiter=' | ')
 
