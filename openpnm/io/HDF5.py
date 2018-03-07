@@ -75,7 +75,7 @@ class HDF5(GenericIO):
 
         dct = Dict.to_dict(network=network, phases=phases, element=element,
                            interleave=interleave, flatten=flatten,
-                           categorize_by=categorize_by)
+                           categorize_by=categorize_by, delim='/')
         d = FlatDict(dct, delimiter='/')
 
         f = h5py.File(filename, "w")

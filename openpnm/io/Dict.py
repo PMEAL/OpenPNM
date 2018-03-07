@@ -16,7 +16,7 @@ class Dict(GenericIO):
     """
 
     @classmethod
-    def from_dict(cls, dct, project=None, delim='/'):
+    def from_dict(cls, dct, project=None, delim=' | '):
         r"""
         This method converts a correctly formatted dictionary into OpenPNM
         objects, and returns a handle to the *project* containing them.
@@ -82,7 +82,7 @@ class Dict(GenericIO):
 
     @classmethod
     def to_dict(cls, network=None, phases=[], element=['pore', 'throat'],
-                interleave=True, flatten=True, categorize_by=[], delim='/'):
+                interleave=True, flatten=True, categorize_by=[], delim=' | '):
         r"""
         Returns a single dictionary object containing data from the given
         OpenPNM objects, with the keys organized differently depending on
