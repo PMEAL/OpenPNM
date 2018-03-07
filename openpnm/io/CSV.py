@@ -72,7 +72,7 @@ class CSV(GenericIO):
         project, network, phases = cls._parse_args(network=network,
                                                    phases=phases)
         df = Pandas.to_dataframe(network=network, phases=phases,
-                                 join=True, delim=' | ')
+                                 join=True, delim=delim)
 
         # Write to file
         if filename == '':
@@ -126,6 +126,6 @@ class CSV(GenericIO):
             else:
                 dct[item] = sp.array(a.pop(item))
 
-        project = Dict.from_dict(dct, project=project)
+        project = Dict.from_dict(dct, project=project, delim=delim)
 
         return project

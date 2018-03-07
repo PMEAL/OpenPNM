@@ -3,7 +3,7 @@ from collections import namedtuple
 import pandas as pd
 from openpnm.core import logging
 from openpnm.io import Dict, GenericIO
-from openpnm.utils import FlatDict
+from openpnm.utils import FlatDict, sanitize_dict
 logger = logging.getLogger(__name__)
 
 
@@ -60,8 +60,8 @@ class Pandas(GenericIO):
                               for i in cols})
 
         # Convert sanitized dictionaries to DataFrames
-        pdata = pd.DataFrame(pdata.as_dict())
-        tdata = pd.DataFrame(tdata.as_dict())
+        pdata = pd.DataFrame(sanitize_dict(pdata))
+        tdata = pd.DataFrame(sanitize_dict(tdata))
 
         # Prepare DataFrames to be returned
         if join:
