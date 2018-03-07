@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 class Pandas(GenericIO):
 
     @classmethod
-    def to_dataframe(cls, network=None, phases=[], join=False):
+    def to_dataframe(cls, network=None, phases=[], join=False, delim=' | '):
         r"""
         Convert the Network (and optionally Phase) data to Pandas DataFrames.
 
@@ -36,12 +36,12 @@ class Pandas(GenericIO):
         # Initialize pore and throat data dictionary using Dict class
         pdata = Dict.to_dict(network=network, phases=phases, element='pore',
                              interleave=True, flatten=True,
-                             categorize_by=['object'], delim=' | ')
+                             categorize_by=['object'], delim=delim)
         tdata = Dict.to_dict(network=network, phases=phases, element='throat',
                              interleave=True, flatten=True,
-                             categorize_by=['object'], delim=' | ')
-        pdata = FlatDict(pdata, delimiter=' | ')
-        tdata = FlatDict(tdata, delimiter=' | ')
+                             categorize_by=['object'], delim=delim)
+        pdata = FlatDict(pdata, delimiter=delim)
+        tdata = FlatDict(tdata, delimiter=delim)
 
         # Scan data and convert non-1d arrays to multiple columns
         for key in list(pdata.keys()):

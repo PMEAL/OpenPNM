@@ -48,7 +48,7 @@ class CSV(GenericIO):
     """
 
     @classmethod
-    def save(cls, network=None, phases=[], filename=''):
+    def save(cls, network=None, phases=[], filename='', delim=' | '):
         r"""
         Save all the pore and throat property data on the Network (and
         optionally on any Phases objects) to CSV files.
@@ -71,7 +71,8 @@ class CSV(GenericIO):
         """
         project, network, phases = cls._parse_args(network=network,
                                                    phases=phases)
-        df = Pandas.to_dataframe(network=network, phases=phases, join=True)
+        df = Pandas.to_dataframe(network=network, phases=phases,
+                                 join=True, delim=' | ')
 
         # Write to file
         if filename == '':
@@ -80,7 +81,7 @@ class CSV(GenericIO):
         df.to_csv(fname, index=False)
 
     @classmethod
-    def load(cls, filename, project=None):
+    def load(cls, filename, project=None, delim=' | '):
         r"""
         Opens a 'csv' file, reads in the data, and adds it to the **Network**
 
@@ -125,6 +126,6 @@ class CSV(GenericIO):
             else:
                 dct[item] = sp.array(a.pop(item))
 
-        project = Dict.from_dict(dct, project=project, delim=' | ')
+        project = Dict.from_dict(dct, project=project, delim=delim)
 
         return project
