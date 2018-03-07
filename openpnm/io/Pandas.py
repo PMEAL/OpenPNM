@@ -40,8 +40,8 @@ class Pandas(GenericIO):
         tdata = Dict.to_dict(network=network, phases=phases, element='throat',
                              interleave=True, flatten=True,
                              categorize_by=['object'], delim=delim)
-        pdata = FlatDict(pdata, delimiter=delim)
-        tdata = FlatDict(tdata, delimiter=delim)
+        pdata = FlatDict(pdata, delimiter=delim).as_dict()
+        tdata = FlatDict(tdata, delimiter=delim).as_dict()
 
         # Scan data and convert non-1d arrays to multiple columns
         for key in list(pdata.keys()):
