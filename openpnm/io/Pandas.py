@@ -60,8 +60,8 @@ class Pandas(GenericIO):
                               for i in cols})
 
         # Convert sanitized dictionaries to DataFrames
-        pdata = pd.DataFrame(pdata)
-        tdata = pd.DataFrame(tdata)
+        pdata = pd.DataFrame(pdata.as_dict())
+        tdata = pd.DataFrame(tdata.as_dict())
 
         # Prepare DataFrames to be returned
         if join:
