@@ -33,7 +33,7 @@ class VTK(GenericIO):
     '''.strip()
 
     @classmethod
-    def save(cls, network, phases=[], filename=''):
+    def save(cls, network, phases=[], filename='', delim=' | '):
         r"""
         Save network and phase data to a single vtp file for visualizing in
         Paraview
@@ -56,8 +56,8 @@ class VTK(GenericIO):
                                                    phases=phases)
 
         am = Dict.to_dict(network=network, phases=phases, interleave=True,
-                          categorize_by=['object', 'data'], delim=' | ')
-        am = FlatDict(am, delimiter=' | ')
+                          categorize_by=['object', 'data'])
+        am = FlatDict(am, delimiter=delim)
         key_list = list(sorted(am.keys()))
 
         network = network[0]
@@ -116,7 +116,7 @@ class VTK(GenericIO):
             f.write(string)
 
     @classmethod
-    def load(cls, filename, project=None):
+    def load(cls, filename, project=None, delim=' | '):
         r"""
         Read in pore and throat data from a saved VTK file.
 
@@ -157,7 +157,7 @@ class VTK(GenericIO):
 
         if project is None:
             project = ws.new_project()
-        project = Dict.from_dict(dct=net, project=project, delim=' | ')
+        project = Dict.from_dict(dct=net, project=project, delim=delim)
 
         # Convert arrays of 1's and/or 0's to booleans
         for obj in project:
