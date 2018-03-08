@@ -1,16 +1,16 @@
-import scipy as _sp
+import scipy as sp
 from collections import namedtuple
-import pandas as _pd
+import pandas as pd
 from openpnm.core import logging
-from openpnm.io import Dict
-from openpnm.utils import FlatDict
+from openpnm.io import Dict, GenericIO
+from openpnm.utils import FlatDict, sanitize_dict
 logger = logging.getLogger(__name__)
 
 
-class Pandas():
+class Pandas(GenericIO):
 
     @classmethod
-    def to_dataframe(cls, network=None, phases=[], join=False):
+    def to_dataframe(cls, network=None, phases=[], join=False, delim=' | '):
         r"""
         Convert the Network (and optionally Phase) data to Pandas DataFrames.
 
@@ -40,34 +40,34 @@ class Pandas():
         tdata = Dict.to_dict(network=network, phases=phases, element='throat',
                              interleave=True, flatten=True,
                              categorize_by=['object'])
-        pdata = FlatDict(pdata, delimiter=' | ')
-        tdata = FlatDict(tdata, delimiter=' | ')
+        pdata = FlatDict(pdata, delimiter=delim)
+        tdata = FlatDict(tdata, delimiter=delim)
 
         # Scan data and convert non-1d arrays to multiple columns
         for key in list(pdata.keys()):
-            if _sp.shape(pdata[key]) != (network.Np,):
+            if sp.shape(pdata[key]) != (network[0].Np,):
                 arr = pdata.pop(key)
-                tmp = _sp.split(arr, arr.shape[1], axis=1)
+                tmp = sp.split(arr, arr.shape[1], axis=1)
                 cols = range(len(tmp))
                 pdata.update({key+'['+str(i)+']': tmp[i].squeeze()
                               for i in cols})
         for key in list(tdata.keys()):
-            if _sp.shape(tdata[key]) != (network.Nt,):
+            if sp.shape(tdata[key]) != (network[0].Nt,):
                 arr = tdata.pop(key)
-                tmp = _sp.split(arr, arr.shape[1], axis=1)
+                tmp = sp.split(arr, arr.shape[1], axis=1)
                 cols = range(len(tmp))
                 tdata.update({key+'['+str(i)+']': tmp[i].squeeze()
                               for i in cols})
 
         # Convert sanitized dictionaries to DataFrames
-        pdata = _pd.DataFrame(pdata)
-        tdata = _pd.DataFrame(tdata)
+        pdata = pd.DataFrame(sanitize_dict(pdata))
+        tdata = pd.DataFrame(sanitize_dict(tdata))
 
         # Prepare DataFrames to be returned
         if join:
             data = tdata.join(other=pdata, how='left')
         else:
-            data = namedtuple('dataframes', ('pore', 'throat'))
-            data(pore=pdata, throat=tdata)
+            nt = namedtuple('dataframes', ('pore', 'throat'))
+            data = nt(pore=pdata, throat=tdata)
 
         return data

@@ -48,7 +48,7 @@ class GenericNetwork(Base, ModelsMixin):
         return vals
 
     def _gen_ids(self):
-        if 'pore._id' not in self.keys():
+        if ('pore._id' not in self.keys()) or (len(self['pore._id']) == 0):
             self['pore._id'] = [str(uuid.uuid4()) for i in self.Ps]
         else:
             # If ids are missing it will from the end of the array...hopefully
@@ -56,7 +56,7 @@ class GenericNetwork(Base, ModelsMixin):
                 inds = sp.where(self['pore._id'] == '')[0]
                 temp = [str(uuid.uuid4()) for i in range(len(inds))]
                 self['pore._id'][inds] = temp
-        if 'throat._id' not in self.keys():
+        if ('throat._id' not in self.keys()) or (len(self['throat._id']) == 0):
             self['throat._id'] = [str(uuid.uuid4()) for i in self.Ts]
         else:
             # If ids are missing it will from the end of the array...hopefully

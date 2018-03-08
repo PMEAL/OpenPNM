@@ -1,10 +1,10 @@
 import xml.etree.cElementTree as ET
-from openpnm.io import Dict
+from openpnm.io import Dict, GenericIO
 from openpnm.utils import FlatDict
 import h5py
 
 
-class XDMF:
+class XDMF(GenericIO):
 
     _header = '''<?xml version="1.0" ?>
                  <!DOCTYPE Xdmf SYSTEM "Xdmf.dtd" []>'''
@@ -31,10 +31,11 @@ class XDMF:
         """
         project, network, phases = cls._parse_args(network=network,
                                                    phases=phases)
+        network = network[0]
 
         if filename == '':
             filename = project.name
-        f = h5py.File(filename+".hdf5", "w")
+        f = h5py.File(filename+".hdf", "w")
 
         d = Dict.to_dict(network, phases=phases, interleave=True,
                          flatten=False, categorize_by=['element', 'data'])

@@ -1,6 +1,6 @@
 import scipy as _sp
 import time as _time
-from collections import OrderedDict
+from collections import OrderedDict, abc
 
 
 class PrintableList(list):
@@ -50,25 +50,42 @@ class SettingsDict(PrintableDict):
         return self[key]
 
 
-class NestedDict(PrintableDict):
+class NestedDict(dict):
 
-    def __init__(self, delimiter='/', **kwargs):
+    def __init__(self, mapping={}, delimiter='/'):
         super().__init__()
         self.delimiter = delimiter
-        for item in kwargs:
-            self[item] = kwargs[item]
+        self.update(mapping)
+        self.unravel()
 
     def __setitem__(self, key, value):
-        path = key.split(self.delimiter)
+        path = key.split(self.delimiter, 1)
         if len(path) > 1:
-            key = path.pop(0)
-            self[key][self.delimiter.join(path)] = value
+            if path[0] not in self.keys():
+                self[path[0]] = NestedDict(delimiter=self.delimiter)
+            self[path[0]][path[1]] = value
         else:
             super().__setitem__(key, value)
 
     def __missing__(self, key):
-        self[key] = NestedDict()
+        self[key] = NestedDict(delimiter=self.delimiter)
         return self[key]
+
+    def unravel(self):
+        for item in self.keys():
+            self[item] = self.pop(item)
+
+    def to_dict(self, dct=None):
+        if dct is None:
+            dct = self
+        plain_dict = dict()
+        for key in dct.keys():
+            value = dct[key]
+            if hasattr(value, 'keys'):
+                plain_dict[key] = self.to_dict(value)
+            else:
+                plain_dict[key] = value
+        return plain_dict
 
     def keys(self, dicts=True, values=True):
         k = list(super().keys())
@@ -167,6 +184,35 @@ def unique_list(input_list):
             if match is False:
                 output_list.append(i)
     return output_list
+
+
+def flat_list(input_list):
+    r"""
+    Given a list of nested lists of arbitrary depth, returns a single level or
+    'flat' list.
+
+    """
+    x = input_list
+    if isinstance(x, list):
+        return [a for i in x for a in flat_list(i)]
+    else:
+        return [x]
+
+
+def sanitize_dict(input_dict):
+    r"""
+    Given a nested dictionary, ensures that all nested dicts are normal
+    Python dict.  This is necessary for pickling, or just converting
+    an 'auto-vivifying' dict to something that acts normal.
+    """
+    plain_dict = dict()
+    for key in input_dict.keys():
+        value = input_dict[key]
+        if hasattr(value, 'keys'):
+            plain_dict[key] = sanitize_dict(value)
+        else:
+            plain_dict[key] = value
+    return plain_dict
 
 
 def amalgamate_data(objs=[], delimiter='_'):

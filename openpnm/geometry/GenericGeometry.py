@@ -45,6 +45,10 @@ class GenericGeometry(Base, ModelsMixin):
 
         super().__init__(project=project, **kwargs)
 
+        if network is not None:
+            network['pore.'+self.name] = False
+            network['throat.'+self.name] = False
+
         self.add_locations(pores=pores, throats=throats)
 
     def __getitem__(self, key):

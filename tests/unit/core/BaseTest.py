@@ -247,6 +247,37 @@ class BaseTest:
                                  mode='difference')
         assert a == 45
 
+    def test_keys_mode_skip(self):
+        a = self.net.keys()
+        assert 'dict_keys' in str(type(a))
+
+    def test_keys_mode_props(self):
+        a = self.net.keys(mode='props')
+        assert 'dict_keys' not in str(type(a))
+        b = [i for i in a if self.net[i].dtype != bool]
+        assert a == b
+
+    def test_keys_mode_labels(self):
+        a = self.net.keys(mode='labels')
+        assert 'dict_keys' not in str(type(a))
+        b = [i for i in a if self.net[i].dtype == bool]
+        assert a == b
+
+    def test_keys_element_pores_mode_all(self):
+        a = self.net.keys(element='pores', mode='all')
+        b = [i.split('.')[0] for i in a]
+        assert set(b) == {'pore'}
+
+    def test_keys_element_throats_mode_all(self):
+        a = self.net.keys(element='throats', mode='all')
+        b = [i.split('.')[0] for i in a]
+        assert set(b) == {'throat'}
+
+    def test_keys_mode_props_and_labels(self):
+        a = self.net.keys(mode=['props', 'labels'])
+        b = list(self.net.keys())
+        assert set(a) == set(b)
+
     def test_props_all(self):
         a = self.geo.props()
         assert sorted(a) == ['pore.diameter', 'pore.volume',
