@@ -1,8 +1,9 @@
 import scipy as sp
-from openpnm.core import logging
-from openpnm.io import GenericIO
-from openpnm.network import GenericNetwork
+from openpnm.core import logging, Workspace
+from openpnm.io import GenericIO, Dict
+from openpnm.utils import FlatDict, sanitize_dict
 logger = logging.getLogger(__name__)
+ws = Workspace()
 
 
 class MAT(GenericIO):
@@ -25,7 +26,7 @@ class MAT(GenericIO):
     """
 
     @classmethod
-    def save(cls, network, phases=[], filename=''):
+    def save(cls, network, phases=[], filename='', delim='_'):
         r"""
         Write Network to a Mat file for exporting to Matlab.
 
@@ -40,25 +41,22 @@ class MAT(GenericIO):
             Phases that have properties we want to write to file
 
         """
+        project, network, phases = cls._parse_args(network=network,
+                                                   phases=phases)
+        network = network[0]
+        # Write to file
         if filename == '':
-            filename = network.name
-        filename = filename.replace('.mat', '') + '.mat'
-        if type(phases) is not list:  # Ensure it's a list
-            phases = [phases]
+            filename = project.name
+        filename = cls._parse_filename(filename=filename, ext='mat')
 
-        keys = network.props(deep=True) + network.labels()
-        pnMatlab = {i.replace('.', '_'): network[i] for i in keys}
+        d = Dict.to_dict(network=network, phases=phases, interleave=True)
+        d = FlatDict(d, delimiter='.')
+        d = sanitize_dict(d)
 
-        for phase in phases:
-            keys = phase.props(mode=['all', 'deep']) + phase.labels()
-            temp = {i.replace('.', '_')+'|'+phase.name: phase[i]
-                    for i in keys}
-            pnMatlab.update(temp)
-
-        sp.io.savemat(file_name=filename, mdict=pnMatlab)
+        sp.io.savemat(file_name=filename, mdict=d)
 
     @classmethod
-    def load(cls, filename, network=None, return_geometry=False):
+    def load(cls, filename, project=None):
         r"""
         Loads data onto the given network from an appropriately formatted
         'mat' file (i.e. MatLAB output).
@@ -69,18 +67,10 @@ class MAT(GenericIO):
             The name of the file containing the data to import.  The formatting
             of this file is outlined below.
 
-        network : OpenPNM Network Object
-            The Network object onto which the data should be loaded.  If no
-            Network is supplied than one will be created and returned.
-
-        return_geometry : Boolean
-            If True, then all geometrical related properties are removed from
-            the Network object and added to a GenericGeometry object.  In this
-            case the method returns a tuple containing (network, geometry). If
-            False (default) then the returned Network will contain all
-            properties that were in the original file.  In this case, the user
-            can call the ```split_geometry``` method explicitly to perform the
-            separation.
+        project : OpenPNM Project object
+            A GenericNetwork is created and added to the specified Project.
+            If no Project object is supplied then one will be created and
+            returned.
 
         Returns
         -------
@@ -90,35 +80,14 @@ class MAT(GenericIO):
         the network and a geometry object.
 
         """
-        net = {}
-
-        import scipy.io as spio
-        data = spio.loadmat(filename)
+        filename = cls._parse_filename(filename=filename, ext='mat')
+        data = sp.io.loadmat(filename)
         # Deal with pore coords and throat conns specially
-        if 'throat_conns' in data.keys():
-            net.update({'throat.conns': sp.vstack(data['throat_conns'])})
-            Nt = sp.shape(net['throat.conns'])[0]
-            net.update({'throat.all': sp.ones((Nt,), dtype=bool)})
-            del data['throat_conns']
-        else:
-            logger.warning('\'throat_conns\' not found')
-        if 'pore_coords' in data.keys():
-            net.update({'pore.coords': sp.vstack(data['pore_coords'])})
-            Np = sp.shape(net['pore.coords'])[0]
-            net.update({'pore.all': sp.ones((Np,), dtype=bool)})
-            del data['pore_coords']
-        else:
-            logger.warning('\'pore_coords\' not found')
+        for item in list(data.keys()):
+            if item in ['__header__', '__version__', '__globals__']:
+                data.pop(item)
 
-        # Now parse through all the other items
-        items = [i for i in data.keys() if '__' not in i]
-        for item in items:
-            element = item.split('_')[0]
-            prop = item.split('_', maxsplit=1)[1]
-            net[element+'.'+prop] = sp.squeeze(data[item].T)
-
-        if network is None:
-            network = GenericNetwork()
-        network = cls._update_network(network=network, net=net,
-                                      return_geometry=return_geometry)
-        return network
+        project = Dict.from_dict(data, delim='.')
+        if project is None:
+            project = ws.new_project()
+        return project

@@ -43,6 +43,12 @@ class Dict(GenericIO):
 
         # Uncategorize pore/throat and labels/properties, if present
         fd = FlatDict(dct, delimiter=delim)
+        # If . is the delimiter, replace with | otherwise things break
+        if delim == '.':
+            delim = ' | '
+            for key in list(fd.keys()):
+                new_key = key.replace('.', delim)
+                fd[new_key] = fd.pop(key)
         d = FlatDict(delimiter=delim)
         for key in list(fd.keys()):
             new_key = key.replace('pore' + delim, 'pore.')
