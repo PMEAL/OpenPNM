@@ -1,4 +1,5 @@
 import scipy as sp
+import numpy as np
 import openpnm as op
 from pathlib import Path
 from openpnm.core import logging
@@ -17,6 +18,16 @@ class GenericIO():
     def load(cls):
         raise NotImplementedError("The \'load\' method for this class " +
                                   "does not exist yet")
+
+    @classmethod
+    def _convert_data(cls, project):
+        # Convert arrays of 1's and/or 0's to booleans
+        for obj in project:
+            for item in obj.keys():
+                ra = obj[item]
+                if (ra.dtype == int) and (ra.max() <= 1) and (ra.min() >= 0):
+                    obj.update({item: ra.astype(bool)})
+        return project
 
     @classmethod
     def _update_network(cls, network, net):

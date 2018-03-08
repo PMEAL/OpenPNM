@@ -159,14 +159,10 @@ class VTK(GenericIO):
             project = ws.new_project()
         project = Dict.from_dict(dct=net, project=project, delim=delim)
 
-        # Convert arrays of 1's and/or 0's to booleans
-        for obj in project:
-            for item in obj.keys():
-                array = obj[item]
-                if array.dtype == int:
-                    hits = np.in1d(np.unique(array), [1, 0])
-                    if np.all(hits):
-                        obj.update({item: array.astype(bool)})
+        # Clean up data values, if necessary, like convert array's of
+        # 1's and 0's into boolean.
+        project = cls._convert_data(project)
+
         # Add coords and conns to network
         network = project.network
         network.update({'throat.conns': conns})

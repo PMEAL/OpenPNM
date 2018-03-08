@@ -18,8 +18,8 @@ class MAT(GenericIO):
     1. The file can contain either or both pore and throat data.
 
     2. The property names should be in the format of ``pore_volume`` or
-    ``throat_surface_area`. In OpenPNM the first \'_\' will be replaced by
-    a \'.\' to give \'pore.volume\' or \'throat.surface_area\'.
+    ``throat_surface_area``. In OpenPNM the first '_' will be replaced by
+    a '.' to give ``'pore.volume'`` or ``'throat.surface_area'``.
 
     3. Boolean data represented as 1's and 0's will be converted to the
     Python boolean True and False.  These will become \'labels\' in
@@ -27,7 +27,7 @@ class MAT(GenericIO):
     """
 
     @classmethod
-    def save(cls, network, phases=[], filename='', delim='_'):
+    def save(cls, network, phases=[], filename=''):
         r"""
         Write Network to a Mat file for exporting to Matlab.
 
@@ -51,10 +51,14 @@ class MAT(GenericIO):
         filename = cls._parse_filename(filename=filename, ext='mat')
 
         d = Dict.to_dict(network=network, phases=phases, interleave=True)
-        d = FlatDict(d, delimiter='.')
+        d = FlatDict(d, delimiter='|')
         d = sanitize_dict(d)
+        new_d = {}
+        for key in list(d.keys()):
+            new_key = key.replace('|', '_').replace('.', '_')
+            new_d[new_key] = d.pop(key)
 
-        spio.savemat(file_name=filename, mdict=d)
+        spio.savemat(file_name=filename, mdict=new_d)
 
     @classmethod
     def load(cls, filename, project=None):
@@ -75,20 +79,28 @@ class MAT(GenericIO):
 
         Returns
         -------
-        If no Network object is supplied then one will be created and returned.
-
-        If return_geometry is True, then a tuple is returned containing both
-        the network and a geometry object.
+        If no project object is supplied then one will be created and returned.
 
         """
         filename = cls._parse_filename(filename=filename, ext='mat')
         data = spio.loadmat(filename)
-        # Deal with pore coords and throat conns specially
+        # Reinsert the '.' separator into the array names
         for item in list(data.keys()):
             if item in ['__header__', '__version__', '__globals__']:
                 data.pop(item)
+                continue
+            elif '_pore_' in item:
+                path, prop = item.split('_pore_')
+                new_key = path + '|pore.' + prop
+            elif '_throat_' in item:
+                path, prop = item.split('_throat_')
+                new_key = path + '|throat.' + prop
+            data[new_key] = data.pop(item)
 
-        project = Dict.from_dict(data, delim='.')
         if project is None:
             project = ws.new_project()
+        project = Dict.from_dict(data, project=project, delim='|')
+
+        project = cls._convert_data(project)
+
         return project
