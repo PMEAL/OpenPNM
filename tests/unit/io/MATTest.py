@@ -64,7 +64,7 @@ class MATTest:
         op.io.MAT.save(network=self.net, phases=self.phase_1, filename=fname)
         project = op.io.MAT.load(fname)
         assert len(project) == 2
-        net = project.networ
+        net = project.network
         assert net is None  # Since all classes are Base
         os.remove(tmpdir.join('test_file.mat'))
 
