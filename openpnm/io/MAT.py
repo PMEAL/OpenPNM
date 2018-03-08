@@ -1,4 +1,5 @@
 import scipy as sp
+import scipy.io as spio
 from openpnm.core import logging, Workspace
 from openpnm.io import GenericIO, Dict
 from openpnm.utils import FlatDict, sanitize_dict
@@ -53,7 +54,7 @@ class MAT(GenericIO):
         d = FlatDict(d, delimiter='.')
         d = sanitize_dict(d)
 
-        sp.io.savemat(file_name=filename, mdict=d)
+        spio.savemat(file_name=filename, mdict=d)
 
     @classmethod
     def load(cls, filename, project=None):
@@ -81,7 +82,7 @@ class MAT(GenericIO):
 
         """
         filename = cls._parse_filename(filename=filename, ext='mat')
-        data = sp.io.loadmat(filename)
+        data = spio.loadmat(filename)
         # Deal with pore coords and throat conns specially
         for item in list(data.keys()):
             if item in ['__header__', '__version__', '__globals__']:
