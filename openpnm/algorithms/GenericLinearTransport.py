@@ -183,10 +183,10 @@ class GenericLinearTransport(GenericAlgorithm):
         b = sp.zeros(shape=(self.Np, ), dtype=float)  # Create b matrix of 0's
         if 'pore.dirichlet' in self.keys():
             ind = self['pore.dirichlet']
-            b[ind] = -self['pore.dirichlet_value'][ind]
+            b[ind] = self['pore.dirichlet_value'][ind]
         if 'pore.neumann' in self.keys():
             ind = self['pore.neumann']
-            b[ind] = -self['pore.neumann_value'][ind]
+            b[ind] = self['pore.neumann_value'][ind]
         self.b = b
         return b
 
