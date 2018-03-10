@@ -36,12 +36,12 @@ class ThroatMiscTest:
         self.geo.add_model(model=mod,
                            propname='throat.seed',
                            num_range=[0.1, 0.9])
-#        assert sp.amax(self.geo['throat.seed']) <= 0.9
-#        assert sp.amin(self.geo['throat.seed']) >= 0.1
+        self.geo.regenerate_models()
+        assert sp.amax(self.geo['throat.seed']) <= 0.9
+        assert sp.amin(self.geo['throat.seed']) >= 0.1
 
     def test_neighbor_min(self):
-        catch = self.geo.pop('throat.seed', None)
-        catch = self.geo.models.pop('throat.seed', None)
+        self.geo.remove_model('throat.seed')
         mod = gm.throat_misc.neighbor
         self.geo['pore.seed'] = sp.rand(self.net.Np,)
         self.geo.add_model(model=mod,
@@ -53,8 +53,7 @@ class ThroatMiscTest:
         assert sp.allclose(self.geo['throat.seed'], tseed)
 
     def test_neighbor_max(self):
-        catch = self.geo.pop('throat.seed', None)
-        catch = self.geo.models.pop('throat.seed', None)
+        self.geo.remove_model('throat.seed')
         mod = gm.throat_misc.neighbor
         self.geo['pore.seed'] = sp.rand(self.net.Np,)
         self.geo.add_model(model=mod,
@@ -66,8 +65,7 @@ class ThroatMiscTest:
         assert sp.allclose(self.geo['throat.seed'], tseed)
 
     def test_neighbor_mean(self):
-        catch = self.geo.pop('throat.seed', None)
-        catch = self.geo.models.pop('throat.seed', None)
+        self.geo.remove_model('throat.seed')
         mod = gm.throat_misc.neighbor
         self.geo['pore.seed'] = sp.rand(self.net.Np,)
         self.geo.add_model(model=mod,

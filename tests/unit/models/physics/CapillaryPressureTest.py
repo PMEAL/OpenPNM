@@ -86,7 +86,6 @@ class CapillaryPressureTest:
         self.phys.remove_model('throat.capillary_pressure')
 
 
-
 if __name__ == '__main__':
 
     t = CapillaryPressureTest()
