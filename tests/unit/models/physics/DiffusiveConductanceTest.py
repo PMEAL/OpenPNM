@@ -26,9 +26,9 @@ class DiffusiveConductanceTest:
         assert sp.allclose(a=self.phys['throat.conductance1'][0],
                            b=0.00084552)
 
-        self.phys.models.add(propname='throat.conductance2',
-                             model=mod,
-                             calc_pore_len=True)
+        self.phys.add_model(propname='throat.conductance2',
+                            model=mod,
+                            calc_pore_len=True)
         self.phys.regenerate_models()
         assert sp.allclose(a=self.phys['throat.conductance2'][0],
                            b=0.00084552)
