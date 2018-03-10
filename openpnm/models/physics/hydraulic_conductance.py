@@ -36,7 +36,12 @@ def hagen_poiseuille(target, viscosity='pore.viscosity',
     # Get Nt-by-2 list of pores connected to each throat
     Ps = network['throat.conns']
     # Get properties in every pore in the network
-    mut = phase[viscosity]
+    if 'pore' in viscosity:
+        mut = phase.interpolate_data(viscosity)
+        mup = phase[viscosity]
+    elif 'throat' in viscosity:
+        mup = phase.interpolate_data(viscosity)
+        mut = phase[viscosity]
     pdia = network[pore_diameter]
     if calc_pore_len:
         lengths = misc.conduit_lengths(network, mode='centroid')
