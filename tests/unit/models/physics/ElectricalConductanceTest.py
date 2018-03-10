@@ -21,8 +21,8 @@ class ElectricalConductanceTest:
         self.geo['throat.length'] = 0.0001
         f = op.models.physics.electrical_conductance.series_resistors
         self.phys.add_model(propname='throat.electrical_conductance',
-                             pore_conductivity='pore.conductivity',
-                             model=f)
+                            conductivity='pore.conductivity',
+                            model=f)
         self.phys.regenerate_models()
         a = 0.99990001
         assert sp.allclose(self.phys['throat.electrical_conductance'][0], a)
@@ -30,7 +30,7 @@ class ElectricalConductanceTest:
 
 if __name__ == '__main__':
 
-    t = ElectricalConductivityTest()
+    t = ElectricalConductanceTest()
     self = t
     t.setup_class()
     for item in t.__dir__():
