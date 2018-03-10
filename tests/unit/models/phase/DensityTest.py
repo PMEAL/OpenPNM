@@ -1,11 +1,11 @@
-import OpenPNM
+import openpnm as op
 import scipy as sp
 
 
 class DensityTest:
     def setup_class(self):
-        self.net = OpenPNM.Network.Cubic(shape=[3, 3, 3])
-        self.phase = OpenPNM.Phases.GenericPhase(network=self.net)
+        self.net = op.network.Cubic(shape=[3, 3, 3])
+        self.phase = op.phases.GenericPhase(network=self.net)
         self.phase['pore.temperature'] = 298.0  # K
         self.phase['pore.pressure'] = 101325.0  # Pa
         self.phase['pore.molecular_weight'] = 0.018  # kg/mol
@@ -14,22 +14,35 @@ class DensityTest:
 
     def test_standard(self):
         # Liquid water
-        self.phase.models.add(propname='pore.density',
-                              model=OpenPNM.Phases.models.density.standard)
+        self.phase.add_model(propname='pore.density',
+                             model=op.models.phase.density.standard)
         assert sp.allclose(self.phase['pore.density'], 999.702)
 
     def test_ideal_gas(self):
         # Water vapor
-        self.phase.models.add(propname='pore.density',
-                              model=OpenPNM.Phases.models.density.ideal_gas)
+        self.phase.add_model(propname='pore.density',
+                             model=op.models.phase.density.ideal_gas)
+        self.phase.regenerate_models()
         assert sp.allclose(self.phase['pore.density'], 0.73610248)
 
     def test_water(self):
         # Liquid water
-        self.phase.models.add(propname='pore.density',
-                              model=OpenPNM.Phases.models.density.water)
+        self.phase.add_model(propname='pore.density',
+                             model=op.models.phase.density.water)
+        self.phase.regenerate_models()
         assert sp.allclose(self.phase['pore.density'], 996.9522)
 
     def teardown_class(self):
         del(self.phase)
         del(self.net)
+
+
+if __name__ == '__main__':
+
+    t = DensityTest()
+    self = t
+    t.setup_class()
+    for item in t.__dir__():
+        if item.startswith('test'):
+            print('running test: '+item)
+            t.__getattribute__(item)()
