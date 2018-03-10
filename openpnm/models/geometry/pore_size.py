@@ -60,8 +60,8 @@ def random(target, seed=None, num_range=[0, 1]):
 
 def largest_sphere(target, iters=10):
     r"""
-    Finds the maximum diameter pore that can be place in each location that
-    does not overlap with any neighbors.
+    Finds the maximum diameter pore that can be places in each location without
+    doverlapping any neighbors.
 
     Parameters
     ----------
