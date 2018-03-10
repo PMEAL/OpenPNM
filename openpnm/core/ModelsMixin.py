@@ -27,6 +27,8 @@ class ModelsDict(PrintableDict):
 class ModelsMixin():
 
     def add_model(self, propname, model, regen_mode='deferred', **kwargs):
+        r"""
+        """
         # Add model and regen_mode to kwargs dictionary
         kwargs.update({'model': model, 'regen_mode': regen_mode})
         # Insepct model to extract arguments and default values
@@ -44,7 +46,20 @@ class ModelsMixin():
         if regen_mode != 'deferred':
             self._regen(propname)
 
+    def remove_model(self, propname=None, mode=['model', 'data']):
+        r"""
+        """
+        if type(propname) is str:
+            propname = [propname]
+        for item in propname:
+            if 'model' in mode:
+                del self.models[item]
+            if 'data' in mode:
+                del self[item]
+
     def regenerate_models(self, propnames=None, exclude=[]):
+        r"""
+        """
         # If no props given, then regenerate them all
         if propnames is None:
             propnames = list(self.models.keys())
