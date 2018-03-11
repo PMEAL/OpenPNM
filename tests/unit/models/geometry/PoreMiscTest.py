@@ -76,7 +76,7 @@ class PoreMiscTest:
         catch = self.geo.models.pop('pore.seed', None)
         catch = self.geo.models.pop('throat.seed', None)
         self.geo['throat.seed'] = sp.rand(self.net.Nt,)
-        self.geo.add_model(model=neighor,
+        self.geo.add_model(model=neighbor,
                            propname='pore.seed',
                            throat_prop='throat.seed',
                            mode='mean')
