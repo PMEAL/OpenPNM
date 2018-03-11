@@ -1,11 +1,9 @@
 import openpnm as op
 import scipy as sp
-import openpnm.models.geometry as gm
+import openpnm.models.geometry.pore_misc as mods
 
 
 class PoreMiscTest:
-    def test_constant(self):
-        pass
 
     def setup_class(self):
         self.net = op.network.Cubic(shape=[5, 5, 5])
@@ -13,9 +11,14 @@ class PoreMiscTest:
                                                pores=self.net.Ps,
                                                throats=self.net.Ts)
 
+    def test_constant(self):
+        self.geo.add_model(model=mods.constant,
+                           propname='pore.value',
+                           value=3.3)
+        assert sp.all(sp.unique(self.geo['pore.value']) == 3.3)
+
     def test_random_no_seed(self):
-        mod = gm.pore_misc.random
-        self.geo.add_model(model=mod,
+        self.geo.add_model(model=mods.random,
                            propname='pore.seed',
                            seed=None)
         temp1 = self.geo['pore.seed'].copy()
@@ -24,8 +27,7 @@ class PoreMiscTest:
         assert sp.all(~(temp1 == temp2))
 
     def test_random_with_seed(self):
-        mod = gm.pore_misc.random
-        self.geo.add_model(model=mod,
+        self.geo.add_model(model=mods.random,
                            propname='pore.seed',
                            seed=0)
         temp1 = self.geo['pore.seed'].copy()
@@ -34,8 +36,7 @@ class PoreMiscTest:
 #        assert np.testing.assert_array_almost_equal_nulp(temp1, temp2)
 
     def test_random_with_range(self):
-        mod = gm.pore_misc.random
-        self.geo.add_model(model=mod,
+        self.geo.add_model(model=mods.random,
                            propname='pore.seed',
                            num_range=[0.1, 0.9])
         self.geo.regenerate_models()
@@ -46,9 +47,8 @@ class PoreMiscTest:
         catch = self.geo.pop('pore.seed', None)
         catch = self.geo.models.pop('pore.seed', None)
         catch = self.geo.models.pop('throat.seed', None)
-        mod = gm.pore_misc.neighbor
         self.geo['throat.seed'] = sp.rand(self.net.Nt,)
-        self.geo.add_model(model=mod,
+        self.geo.add_model(model=mods.neighbor,
                            propname='pore.seed',
                            throat_prop='throat.seed',
                            mode='min')
@@ -61,9 +61,8 @@ class PoreMiscTest:
         catch = self.geo.pop('pore.seed', None)
         catch = self.geo.models.pop('pore.seed', None)
         catch = self.geo.models.pop('throat.seed', None)
-        mod = gm.pore_misc.neighbor
         self.geo['throat.seed'] = sp.rand(self.net.Nt,)
-        self.geo.add_model(model=mod,
+        self.geo.add_model(model=mods.neighbor,
                            propname='pore.seed',
                            throat_prop='throat.seed',
                            mode='max')
@@ -76,9 +75,8 @@ class PoreMiscTest:
         catch = self.geo.pop('pore.seed', None)
         catch = self.geo.models.pop('pore.seed', None)
         catch = self.geo.models.pop('throat.seed', None)
-        mod = gm.pore_misc.neighbor
         self.geo['throat.seed'] = sp.rand(self.net.Nt,)
-        self.geo.add_model(model=mod,
+        self.geo.add_model(model=neighor,
                            propname='pore.seed',
                            throat_prop='throat.seed',
                            mode='mean')
