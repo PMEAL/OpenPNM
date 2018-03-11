@@ -16,8 +16,8 @@ class PoreSeedTest:
                            model=f,
                            seed=0,
                            num_range=[0.1, 2])
-        assert sp.amax(self.geo['pore.seed']) > 1.9
-        assert sp.amin(self.geo['pore.seed']) > 0.1
+        assert sp.amax(self.geo['pore.seed']) > 1
+        assert sp.amin(self.geo['pore.seed']) < 1
 
     def test_spatially_correlated(self):
         f = mods.spatially_correlated
