@@ -39,7 +39,8 @@ class ModelsMixin():
             A reference (handle) to the function to be used.
 
         regen_mode : string
-            Controls how/when the model is run.  Options are:
+            Controls how/when the model is run (See Notes for more details).
+            Options are:
 
             *'normal'* or *'eager'* : The model is run directly upon being
             assiged, and also run every time ``object.regenerate_models`` is
@@ -59,14 +60,14 @@ class ModelsMixin():
         dependent models first, or else a KeyError will be raised since needed
         data is not present.  In 'lazy' mode models are not run until their
         data is asked for, which creates a cascading call to all necessary
-        models that have not been run yet.  This latter behavior is more
+        models that have not been run yet.  The latter behavior is more
         convenient, but can be confusing since a lot happens behind the scenes.
 
         For example: In 'eager' mode, if 'pore.volume' is assigned before
         'pore.diameter' a KeyError will occur when the model attempts to
         access the 'pore.diameter' data.  In 'lazy' mode the request for
-        `pore.volume` will run the 'pore.volume' model, which attempts to
-        access `pore.diameter` data, and upon failing to find it will
+        `pore.volume` data will run the 'pore.volume' model, which attempts
+        to access `pore.diameter` data, and upon failing to find it will
         attempt to run the `pore.diameter` model.
 
         """
@@ -119,6 +120,19 @@ class ModelsMixin():
 
     def regenerate_models(self, propnames=None, exclude=[]):
         r"""
+        Re-runs the specified models.
+
+        Parameters
+        ----------
+        propnames : string or list of strings
+            The list of property names to be regenerated.  If None are given
+            then ALL models are re-run (except for those whose ``regen_mode``
+            is 'constant').
+
+        exclude : list of strings
+            Since the default behavior is to run ALL models, this can be used
+            to exclude specific models.  It may be more convenient to supply
+            as list of 2 models to exclude than to specify 8 models include.
         """
         # If no props given, then regenerate them all
         if propnames is None:
