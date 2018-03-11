@@ -3,7 +3,6 @@ sudo: false
 language: python
 
 python:
-  - "3.5"
   - "3.6"
 
 before_install:
@@ -14,24 +13,16 @@ before_install:
   - export PATH="$HOME/miniconda/bin:$PATH"
 
 install:
-  - conda install --yes python=$TRAVIS_PYTHON_VERSION --file requirements.txt
+  - conda install --yes python=$TRAVIS_PYTHON_VERSION --file conda_requirements.txt
   - pip install -r test_requirements.txt
+  - pip install -r pip_requirements.txt
   - python setup.py install
 
 script:
-  - ./bin/test pep8 cov
+  - python ./bin/test pep8 cov
 
 after_success:
   - codecov
 
 notifications:
   email: false
-
-deploy:
-  provider: pypi
-  distribution: sdist
-  user: jgostick
-  password:
-    secure: kFTCsi4mSzZgasxKRIjAk2/Y/GvasoecrwCDiwoxFSwpbW6K1TPiSHZgBrlwFyZt3F7/1zXA+Ji5Oi6jXfhdpIiyOk70Ht1G9DRQ/yBvVKjLUM87qxAYRGDrXNQor4oRsWg2J+VdYUx3tUck2vp8hh873HP0uAGmcaWNHv3TxhA=
-    tags: true
-    branch: master
