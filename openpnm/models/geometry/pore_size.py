@@ -1,61 +1,37 @@
-r"""
-===============================================================================
-pore_diameter
-===============================================================================
-
-"""
 from openpnm.core import logging
-from . import misc as _misc
-import scipy as _sp
+from openpnm.models import misc
+import numpy as np
 _logger = logging.getLogger(__name__)
 
 
 def weibull(target, shape, scale, loc, seeds='pore.seed'):
-    return _misc.weibull(target=target, shape=shape, scale=scale, loc=loc,
-                         seeds=seeds)
-
-
-weibull.__doc__ = _misc.weibull.__doc__
-
-
-def normal(target, scale, loc, seeds='pore.seed'):
-    return _misc.normal(target=target, scale=scale, loc=loc,
+    return misc.weibull(target=target, shape=shape, scale=scale, loc=loc,
                         seeds=seeds)
 
 
-normal.__doc__ = _misc.normal.__doc__
+weibull.__doc__ = misc.weibull.__doc__
+
+
+def normal(target, scale, loc, seeds='pore.seed'):
+    return misc.normal(target=target, scale=scale, loc=loc,
+                       seeds=seeds)
+
+
+normal.__doc__ = misc.normal.__doc__
 
 
 def generic(target, func, seeds='pore.seed'):
-    return _misc.generic(target=target, func=func, seeds=seeds)
+    return misc.generic(target=target, func=func, seeds=seeds)
 
 
-generic.__doc__ = _misc.generic.__doc__
+generic.__doc__ = misc.generic.__doc__
 
 
 def random(target, seed=None, num_range=[0, 1]):
-    r"""
-    Assign pore sizes from a random distribution
+    return misc.random(target, element='pore', seed=seed, num_range=num_range)
 
-    Parameters
-    ----------
-    target : OpenPNM Object
-        The object which this model is associated with. This controls the
-        length of the calculated array, and also provides access to other
-        necessary properties.
 
-    seed : int
-        The starting seed value to send to Scipy's random number generator.
-        The default is None, which means different distribution is returned
-        each time the model is run.
-
-    num_range : list
-        A two element list indicating the low and high end of the returned
-        numbers.  The default is [0, 1] but this can be adjusted to produce
-        pore sizes directly; for instance pores between 10 and 100 um can be
-        generated with ``num_range = [0.00001, 0.0001]``.
-    """
-    return _misc.random(target, element='pore', seed=seed, num_range=num_range)
+random.__doc__ = misc.random.__doc__
 
 
 def largest_sphere(target, iters=10):
@@ -89,17 +65,17 @@ def largest_sphere(target, iters=10):
 
     """
     network = target.project.network
-    D = _sp.zeros([network.Np, ], dtype=float)
+    D = np.zeros([network.Np, ], dtype=float)
     Ps = network.pores(target.name)
     C1 = network['pore.coords'][network['throat.conns'][:, 0]]
     C2 = network['pore.coords'][network['throat.conns'][:, 1]]
-    L = _sp.sqrt(_sp.sum((C1 - C2)**2, axis=1))
+    L = np.sqrt(np.sum((C1 - C2)**2, axis=1))
     while iters >= 0:
         iters -= 1
-        Lt = L - _sp.sum(D[network['throat.conns']], axis=1)/2
+        Lt = L - np.sum(D[network['throat.conns']], axis=1)/2
         am = network.create_adjacency_matrix(weights=Lt, fmt='lil')
-        D[Ps] = D[Ps] + _sp.array([_sp.amin(row) for row in am.data])[Ps]*0.95
-    if _sp.any(D < 0):
+        D[Ps] = D[Ps] + np.array([np.amin(row) for row in am.data])[Ps]*0.95
+    if np.any(D < 0):
         _logger.warning('Negative pore diameters found!  Neighboring pores' +
                         ' must be larger than the pore spacing.')
     return D[network.pores(target.name)]
@@ -122,5 +98,5 @@ def equivalent_sphere(target, pore_volume='pore.volume'):
     """
     from scipy.special import cbrt
     pore_vols = target[pore_volume]
-    value = cbrt(6*pore_vols/_sp.pi)
+    value = cbrt(6*pore_vols/np.pi)
     return value
