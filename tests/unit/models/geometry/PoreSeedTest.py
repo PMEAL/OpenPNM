@@ -1,5 +1,6 @@
 import openpnm as op
 import scipy as sp
+import openpnm.models.geometry.pore_seed as mods
 
 
 class PoreSeedTest:
@@ -10,7 +11,7 @@ class PoreSeedTest:
                                                throats=self.net.Ts)
 
     def test_random(self):
-        f = op.models.geometry.pore_seed.random
+        f = mods.random
         self.geo.add_model(propname='pore.seed',
                            model=f,
                            seed=0,
@@ -19,25 +20,27 @@ class PoreSeedTest:
         assert sp.amin(self.geo['pore.seed']) > 0.1
 
     def test_spatially_correlated(self):
-        f = op.models.geometry.pore_seed.spatially_correlated
+        f = mods.spatially_correlated
         self.geo.add_model(propname='pore.seed',
                            model=f,
-                           weights=[2, 2, 2])
+                           weights=[2, 2, 2],
+                           regen_mode='normal')
         assert sp.amin(self.geo['pore.seed'] > 0)
         assert sp.amax(self.geo['pore.seed'] < 1)
 
     def test_spatially_correlated_zero_weights(self):
-        f = op.models.geometry.pore_seed.spatially_correlated
+        f = mods.spatially_correlated
         self.geo.add_model(propname='pore.seed',
                            model=f,
-                           weights=[0, 0, 0])
+                           weights=[0, 0, 0],
+                           regen_mode='normal')
         assert sp.amin(self.geo['pore.seed'] > 0)
         assert sp.amax(self.geo['pore.seed'] < 1)
 
     def test_location_adjusted(self):
         image1 = sp.ones([5, 5, 5])
         image1[:, :, 0] = 0.5
-        f = op.models.geometry.pore_seed.location_adjusted
+        f = mods.location_adjusted
         self.geo.add_model(propname='pore.seed',
                            model=f,
                            image=image1)
@@ -49,10 +52,12 @@ class PoreSeedTest:
         image2 = sp.ones([2, 2])
         self.geo.add_model(propname='pore.seed',
                            model=f,
-                           image=image2)
+                           image=image2,
+                           regen_mode='normal')
         self.geo.add_model(propname='pore.seed',
                            model=f,
-                           image=-image1)
+                           image=-image1,
+                           regen_mode='normal')
 
 
 if __name__ == '__main__':
