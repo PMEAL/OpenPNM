@@ -1,11 +1,3 @@
-# -*- coding: utf-8 -*-
-r"""
-===============================================================================
-pore_seed -- Methods for generating fields of values for use as seeds in
-statistical pore size distributions
-===============================================================================
-
-"""
 from . import misc as _misc
 import scipy as _sp
 from openpnm.core import logging
