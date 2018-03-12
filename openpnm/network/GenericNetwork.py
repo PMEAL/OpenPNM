@@ -485,8 +485,11 @@ class GenericNetwork(Base, ModelsMixin):
         pores = self._parse_indices(pores)
         if sp.size(pores) == 0:
             return sp.array([], ndmin=1, dtype=int)
+        if 'lil' not in self._am.keys():
+            self.get_adjacency_matrix(fmt='lil')
         neighbors = topotools.find_neighbor_sites(sites=pores, logic=mode,
-                                                  am=self.am, flatten=flatten,
+                                                  am=self._am['lil'],
+                                                  flatten=flatten,
                                                   exclude_input=excl_self)
         return neighbors
 
@@ -539,8 +542,11 @@ class GenericNetwork(Base, ModelsMixin):
         pores = self._parse_indices(pores)
         if sp.size(pores) == 0:
             return sp.array([], ndmin=1, dtype=int)
+        if 'lil' not in self._im.keys():
+            self.get_incidence_matrix(fmt='lil')
         neighbors = topotools.find_neighbor_bonds(sites=pores, logic=mode,
-                                                  im=self.im, flatten=flatten)
+                                                  im=self._im['lil'],
+                                                  flatten=flatten)
         return neighbors
 
     def _find_neighbors(self, pores, element, **kwargs):
