@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from openpnm.phases import GenericPhase
-import openpnm.models.phase as fm
+import openpnm.models as mods
 
 
 class Air(GenericPhase):
@@ -44,19 +44,19 @@ class Air(GenericPhase):
         self['pore.critical_volume'] = 0.002917
         self['pore.contact_angle'] = 110.0
         self.add_model(propname='pore.density',
-                       model=fm.density.ideal_gas)
+                       model=mods.phase.density.ideal_gas)
         self.add_model(propname='pore.molar_density',
-                       model=fm.molar_density.ideal_gas)
+                       model=mods.phase.molar_density.ideal_gas)
         self.add_model(propname='pore.diffusivity',
-                       model=fm.diffusivity.fuller,
+                       model=mods.phase.diffusivity.fuller,
                        MA=0.032, MB=0.028,
                        vA=16.6, vB=17.9)
         self.add_model(propname='pore.thermal_conductivity',
-                       model=fm.misc.polynomial,
+                       model=mods.misc.polynomial,
                        prop='pore.temperature',
                        a=[0.00422791, 0.0000789606, -1.56383E-08])
         self.add_model(propname='pore.viscosity',
-                       model=fm.misc.polynomial,
+                       model=mods.misc.polynomial,
                        prop='pore.temperature',
                        a=[0.00000182082, 6.51815E-08, -3.48553E-11,
                           1.11409E-14])
