@@ -58,6 +58,14 @@ class DictTest:
         ws = op.core.Workspace()
         ws.clear()
 
+    def test_to_dict_missing_all_physics(self):
+        net = op.network.Cubic(shape=[4, 4, 4])
+        op.geometry.GenericGeometry(network=net, pores=net.Ps, throats=net.Ts)
+        phase = op.phases.GenericPhase(network=net)
+
+        Dict.to_dict(network=net, phases=[phase], flatten=True,
+                     interleave=True, categorize_by=[])
+
     def test_to_dict_flattened_interleaved(self):
         D = Dict.to_dict(network=self.net, phases=[self.phase_1, self.phase_2],
                          flatten=True, interleave=True, categorize_by=[])
@@ -429,6 +437,12 @@ class DictTest:
         assert d.issubset(D['phase_01']['properties'].keys())
         assert d.issubset(D['phase_02']['labels'].keys())
         assert d.issubset(D['phase_02']['properties'].keys())
+
+    def test_to_dict_categorize_by_project(self):
+        D = Dict.to_dict(network=self.net, phases=[self.phase_1, self.phase_2],
+                         flatten=False, interleave=True,
+                         categorize_by=['project'])
+        assert 'sim_01' in D.keys()
 
     def test_from_dict_interleaved_categorized_by_object(self):
         D = Dict.to_dict(network=self.net, phases=[self.phase_1],

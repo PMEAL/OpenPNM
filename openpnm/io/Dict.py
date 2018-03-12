@@ -209,27 +209,32 @@ class Dict(GenericIO):
                 d[path] = phase[key]
 
             for phys in project.find_physics(phase=phase):
-                for key in phys.keys(element=element, mode='all'):
-                    if interleave:
-                        path = build_path(obj=phase, key=key)
-                        d[path] = phase[key]
-                    else:
-                        path = build_path(obj=phys, key=key)
-                        if flatten:
-                            d[path] = phys[key]
-                        elif 'object' in categorize_by:
-                            path = path.split(delim)
-                            path.insert(0, 'phase')
-                            path.insert(1, phase.name)
-                            path = delim.join(path)
+                if phys:
+                    for key in phys.keys(element=element, mode='all'):
+                        if interleave:
+                            path = build_path(obj=phase, key=key)
+                            d[path] = phase[key]
                         else:
-                            path = path.split(delim)
-                            path.insert(1, phase.name)
-                            path = delim.join(path)
-                        d[path] = phys[key]
+                            path = build_path(obj=phys, key=key)
+                            if flatten:
+                                d[path] = phys[key]
+                            elif 'object' in categorize_by:
+                                path = path.split(delim)
+                                path.insert(0, 'phase')
+                                path.insert(1, phase.name)
+                                path = delim.join(path)
+                            else:
+                                path = path.split(delim)
+                                path.insert(1, phase.name)
+                                path = delim.join(path)
+                            d[path] = phys[key]
 
         if 'root' in d.keys():
             d = d['root']
+        if 'project' in categorize_by:
+            new_d = NestedDict()
+            new_d[project.name] = d
+            d = new_d
         return d
 
     @classmethod
