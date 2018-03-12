@@ -1,13 +1,4 @@
-# -*- coding: utf-8 -*-
-r"""
-===============================================================================
-Submodule -- vapor_pressure
-===============================================================================
-
-Methods for predicing the vapor pressure of pure species
-
-"""
-import scipy as sp
+import numpy as np
 
 
 def antoine(target, A, B, C, temperature='pore.temperature'):
@@ -88,7 +79,7 @@ def water(target, temperature='pore.temperature', salinity='pore.salinity'):
     a4 = 4.1764768E-05
     a5 = -1.4452093E-08
     a6 = 6.5459673E+00
-    Pv_w = sp.exp((a1/T) + a2 + a3*T + a4*T**2 + a5*T**3 + a6*sp.log(T))
+    Pv_w = np.exp((a1/T) + a2 + a3*T + a4*T**2 + a5*T**3 + a6*np.log(T))
     Pv_sw = Pv_w/(1+0.57357*(S/(1000-S)))
     value = Pv_sw
     return value

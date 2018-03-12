@@ -1,12 +1,5 @@
-r"""
-===============================================================================
-Submodule -- hydraulic_conductance
-===============================================================================
-
-"""
-
+import openpnm as op
 import scipy as _sp
-import openpnm.utils.misc as misc
 
 
 def hagen_poiseuille(target, viscosity='pore.viscosity',
@@ -39,7 +32,7 @@ def hagen_poiseuille(target, viscosity='pore.viscosity',
     mut = phase[viscosity]
     pdia = network[pore_diameter]
     if calc_pore_len:
-        lengths = misc.conduit_lengths(network, mode='centroid')
+        lengths = op.utils.misc.conduit_lengths(network, mode='centroid')
         plen1 = lengths[:, 0]
         plen2 = lengths[:, 2]
     else:

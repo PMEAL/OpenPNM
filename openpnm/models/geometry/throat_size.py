@@ -1,43 +1,43 @@
-from openpnm.models import misc
-from .throat_misc import neighbor as _neighbor
-import nump as np
+from openpnm.models import misc as _misc
+import numpy as _np
 
 
 def weibull(target, shape, scale, loc, seeds='throat.seed'):
-    return misc.weibull(target=target, shape=shape, scale=scale, loc=loc,
-                        seeds=seeds)
+    return _misc.weibull(target=target, shape=shape, scale=scale, loc=loc,
+                         seeds=seeds)
 
 
-weibull.__doc__ = misc.weibull.__doc__
+weibull.__doc__ = _misc.weibull.__doc__
 
 
 def normal(target, scale, loc, seeds='throat.seed'):
-    return misc.normal(target=target, scale=scale, loc=loc, seeds=seeds)
+    return _misc.normal(target=target, scale=scale, loc=loc, seeds=seeds)
 
 
-normal.__doc__ = misc.normal.__doc__
+normal.__doc__ = _misc.normal.__doc__
 
 
 def generic(target, func, seeds='throat.seed'):
-    return misc.generic(target=target, func=func, seeds=seeds)
+    return _misc.generic(target=target, func=func, seeds=seeds)
 
 
-generic.__doc__ = misc.generic.__doc__
+generic.__doc__ = _misc.generic.__doc__
 
 
-def neighbor(target, pore_prop, mode='min'):
-    return _neighbor(target=target, pore_prop=pore_prop, mode=mode)
+def from_neighbor_pores(target, pore_prop, mode='min'):
+    return _misc.from_neighbor_pores(target=target, pore_prop=pore_prop,
+                                     mode=mode)
 
 
-neighbor.__doc__ = _neighbor.__doc__
+from_neighbor_pores.__doc__ = _misc.from_neighbor_pores.__doc__
 
 
 def random(target, seed=None, num_range=[0, 1]):
-    return misc.random(target=target, element='throat', seed=seed,
-                       num_range=num_range)
+    return _misc.random(target=target, element='throat', seed=seed,
+                        num_range=num_range)
 
 
-random.__doc__ = misc.random.__doc__
+random.__doc__ = _misc.random.__doc__
 
 
 def equivalent_circle(target, throat_area='throat.area'):
@@ -55,5 +55,5 @@ def equivalent_circle(target, throat_area='throat.area'):
         The dictionary key to the throat area values
     """
     areas = target[throat_area]
-    value = 2*np.sqrt(areas/np.pi)
+    value = 2*_np.sqrt(areas/_np.pi)
     return value

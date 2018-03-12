@@ -1,10 +1,4 @@
-r"""
-===============================================================================
-pore_area -- Models for cross-sectional area of a pore body
-===============================================================================
-
-"""
-import scipy as _sp
+from numpy import pi as _pi
 
 
 def spherical(target, pore_diameter='pore.diameter'):
@@ -24,7 +18,7 @@ def spherical(target, pore_diameter='pore.diameter'):
 
     """
     diams = target[pore_diameter]
-    value = _sp.pi/4*(diams)**2
+    value = _pi/4*(diams)**2
     return value
 
 

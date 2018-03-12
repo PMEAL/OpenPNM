@@ -1,10 +1,4 @@
-r"""
-===============================================================================
-Submodule -- pore_surface_area
-===============================================================================
-
-"""
-import scipy as _sp
+import numpy as _np
 
 
 def sphere(target, pore_diameter='pore.diameter', throat_area='throat.area'):
@@ -31,9 +25,9 @@ def sphere(target, pore_diameter='pore.diameter', throat_area='throat.area'):
     """
     network = target.project.network
     R = target[pore_diameter]/2
-    Asurf = 4*_sp.constants.pi*R**2
+    Asurf = 4*_np.pi*R**2
     Tn = network.find_neighbor_throats(pores=target.Ps, flatten=False)
-    Tsurf = _sp.array([_sp.sum(network[throat_area][Ts]) for Ts in Tn])
+    Tsurf = _np.array([_np.sum(network[throat_area][Ts]) for Ts in Tn])
     value = Asurf - Tsurf
     return value
 
@@ -62,6 +56,6 @@ def cube(target, pore_diameter='pore.diameter', throat_area='throat.area'):
     network = target.project.network
     D = target[pore_diameter]
     Tn = network.find_neighbor_throats(pores=target.Ps, flatten=False)
-    Tsurf = _sp.array([_sp.sum(network[throat_area][Ts]) for Ts in Tn])
+    Tsurf = _np.array([_np.sum(network[throat_area][Ts]) for Ts in Tn])
     value = 6*D**2 - Tsurf
     return value

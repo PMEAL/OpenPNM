@@ -1,7 +1,7 @@
-import openpnm.models.misc as _misc
 import scipy as _sp
-from openpnm.core import logging
-_logger = logging.getLogger(__name__)
+from openpnm.models import misc as _misc
+from openpnm.core import logging as _logging
+_logger = _logging.getLogger(__name__)
 
 
 def random(target, seed=None, num_range=[0, 1]):

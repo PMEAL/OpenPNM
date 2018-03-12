@@ -1,3 +1,4 @@
+from .misc import constant
 from .misc import product
 from .misc import random
 from .misc import scaled
@@ -6,3 +7,5 @@ from .misc import polynomial
 from .misc import weibull
 from .misc import normal
 from .misc import generic
+from .misc import from_neighbor_throats
+from .misc import from_neighbor_pores

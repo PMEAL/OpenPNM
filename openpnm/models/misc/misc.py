@@ -2,6 +2,28 @@ import numpy as np
 import scipy.stats as spts
 
 
+def constant(target, value):
+    r"""
+    Places a constant value into the target object
+
+    Parameters
+    ----------
+    target : OpenPNM Object
+        The object which this model is associated with. This controls the
+        length of the calculated array, and also provides access to other
+        necessary properties.
+
+    value : scalar
+        The numerical value to apply
+
+    Notes
+    -----
+    This model is mostly useless and for testing purposes, but might be used
+    to 'reset' an array back to a default value.
+    """
+    return value
+
+
 def product(target, props):
     r"""
     Calculates the product of multiple property values
@@ -18,7 +40,7 @@ def product(target, props):
 
     """
     value = 1.0
-    for item in props.values():
+    for item in props:
         value *= target[item]
     return value
 
@@ -126,7 +148,7 @@ def polynomial(target, a, prop, **kwargs):
     return value
 
 
-def weibull(target, shape, scale, loc, seeds):
+def weibull(target, seeds, shape, scale, loc):
     r"""
     Produces values from a Weibull distribution given a set of random numbers.
 
@@ -136,6 +158,10 @@ def weibull(target, shape, scale, loc, seeds):
         The object which this model is associated with. This controls the
         length of the calculated array, and also provides access to other
         necessary properties.
+
+    seeds : string, optional
+        The dictionary key on the Geometry object containing random seed values
+        (between 0 and 1) to use in the statistical distribution.
 
     shape : float
         This controls the skewness of the distribution, with 'shape' < 1 giving
@@ -149,12 +175,6 @@ def weibull(target, shape, scale, loc, seeds):
     loc : float
         Applies an offset to the distribution such that the smallest values are
         above this number.
-
-    seeds : string, optional
-        The dictionary key on the Geometry object containing random seed values
-        (between 0 and 1) to use in the statistical distribution.  If none is
-        specified, then an array of random numbers will be automatically
-        generated and stored on the Geometry object.
 
     Examples
     --------
@@ -174,7 +194,7 @@ def weibull(target, shape, scale, loc, seeds):
     return value
 
 
-def normal(target, scale, loc, seeds):
+def normal(target, seeds, scale, loc):
     r"""
     Produces values from a Weibull distribution given a set of random numbers.
 
@@ -186,17 +206,15 @@ def normal(target, scale, loc, seeds):
         geom.Nt) and (2) provide access to other necessary values
         (i.e. geom['pore.seed']).
 
+    seeds : string, optional
+        The dictionary key on the Geometry object containing random seed values
+        (between 0 and 1) to use in the statistical distribution.
+
     scale : float
         The standard deviation of the Normal distribution
 
     loc : float
         The mean of the Normal distribution
-
-    seeds : string, optional
-        The dictionary key on the Geometry object containing random seed values
-        (between 0 and 1) to use in the statistical distribution.  If none is
-        specified, then an array of random numbers will be automatically
-        generated and stored on teh Geometry object.
 
     Examples
     --------
@@ -215,7 +233,7 @@ def normal(target, scale, loc, seeds):
     return value
 
 
-def generic(target, func, seeds):
+def generic(target, seeds, func):
     r"""
     Accepts an 'rv_frozen' object from the Scipy.stats submodule and returns
     values from the distribution for the given seeds using the ``ppf`` method.
@@ -227,15 +245,13 @@ def generic(target, func, seeds):
         length of the calculated array, and also provides access to other
         necessary properties.
 
+    seeds : string, optional
+        The dictionary key on the Geometry object containing random seed values
+        (between 0 and 1) to use in the statistical distribution.
+
     func : object
         An 'rv_frozen' object from the Scipy.stats library with all of the
         parameters pre-specified.
-
-    seeds : string, optional
-        The dictionary key on the Geometry object containing random seed values
-        (between 0 and 1) to use in the statistical distribution.  If none is
-        specified, then an array of random numbers will be automatically
-        generated and stored on teh Geometry object.
 
     Examples
     --------
@@ -251,4 +267,75 @@ def generic(target, func, seeds):
     """
     seeds = target[seeds]
     value = func.ppf(seeds)
+    return value
+
+
+def from_neighbor_throats(target, throat_prop='throat.seed', mode='min'):
+    r"""
+    Adopt a value from the values found in neighboring throats
+
+    Parameters
+    ----------
+    target : OpenPNM Object
+        The object which this model is associated with. This controls the
+        length of the calculated array, and also provides access to other
+        necessary properties.
+
+    throat_prop : string
+        The dictionary key of the array containing the throat property to be
+        used in the calculation.  The default is 'throat.seed'.
+
+    mode : string
+        Controls how the pore property is calculated.  Options are 'min',
+        'max' and 'mean'.
+    """
+    network = target.project.network
+    Ps = target.pores()
+    data = target[throat_prop]
+    neighborTs = network.find_neighbor_throats(pores=Ps,
+                                               flatten=False,
+                                               mode='intersection')
+    values = np.ones((np.shape(Ps)[0],))*np.nan
+    if mode == 'min':
+        for pore in Ps:
+            values[pore] = np.amin(data[neighborTs[pore]])
+    if mode == 'max':
+        for pore in Ps:
+            values[pore] = np.amax(data[neighborTs[pore]])
+    if mode == 'mean':
+        for pore in Ps:
+            values[pore] = np.mean(data[neighborTs[pore]])
+    return values
+
+
+def from_neighbor_pores(target, pore_prop='pore.seed', mode='min'):
+    r"""
+    Adopt a value based on the values in neighboring pores
+
+    Parameters
+    ----------
+    target : OpenPNM Object
+        The object which this model is associated with. This controls the
+        length of the calculated array, and also provides access to other
+        necessary properties.
+
+    pore_prop : string
+        The dictionary key to the array containing the pore property to be
+        used in the calculation.  Default is 'pore.seed'.
+
+    mode : string
+        Controls how the throat property is calculated.  Options are 'min',
+        'max' and 'mean'.
+
+    """
+    network = target.project.network
+    throats = network.throats(target.name)
+    P12 = network.find_connected_pores(throats)
+    pvalues = network[pore_prop][P12]
+    if mode == 'min':
+        value = np.amin(pvalues, axis=1)
+    if mode == 'max':
+        value = np.amax(pvalues, axis=1)
+    if mode == 'mean':
+        value = np.mean(pvalues, axis=1)
     return value

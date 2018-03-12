@@ -1,37 +1,37 @@
-from openpnm.core import logging
-from openpnm.models import misc
-import numpy as np
-_logger = logging.getLogger(__name__)
+from openpnm.core import logging as _logging
+from openpnm.models import misc as _misc
+import numpy as _np
+_logger = _logging.getLogger(__name__)
 
 
 def weibull(target, shape, scale, loc, seeds='pore.seed'):
-    return misc.weibull(target=target, shape=shape, scale=scale, loc=loc,
-                        seeds=seeds)
+    return _misc.weibull(target=target, shape=shape, scale=scale, loc=loc,
+                         seeds=seeds)
 
 
-weibull.__doc__ = misc.weibull.__doc__
+weibull.__doc__ = _misc.weibull.__doc__
 
 
 def normal(target, scale, loc, seeds='pore.seed'):
-    return misc.normal(target=target, scale=scale, loc=loc,
-                       seeds=seeds)
+    return _misc.normal(target=target, scale=scale, loc=loc,
+                        seeds=seeds)
 
 
-normal.__doc__ = misc.normal.__doc__
+normal.__doc__ = _misc.normal.__doc__
 
 
 def generic(target, func, seeds='pore.seed'):
-    return misc.generic(target=target, func=func, seeds=seeds)
+    return _misc.generic(target=target, func=func, seeds=seeds)
 
 
-generic.__doc__ = misc.generic.__doc__
+generic.__doc__ = _misc.generic.__doc__
 
 
 def random(target, seed=None, num_range=[0, 1]):
-    return misc.random(target, element='pore', seed=seed, num_range=num_range)
+    return _misc.random(target, element='pore', seed=seed, num_range=num_range)
 
 
-random.__doc__ = misc.random.__doc__
+random.__doc__ = _misc.random.__doc__
 
 
 def largest_sphere(target, iters=10):
@@ -65,17 +65,17 @@ def largest_sphere(target, iters=10):
 
     """
     network = target.project.network
-    D = np.zeros([network.Np, ], dtype=float)
+    D = _np.zeros([network.Np, ], dtype=float)
     Ps = network.pores(target.name)
     C1 = network['pore.coords'][network['throat.conns'][:, 0]]
     C2 = network['pore.coords'][network['throat.conns'][:, 1]]
-    L = np.sqrt(np.sum((C1 - C2)**2, axis=1))
+    L = _np.sqrt(_np.sum((C1 - C2)**2, axis=1))
     while iters >= 0:
         iters -= 1
-        Lt = L - np.sum(D[network['throat.conns']], axis=1)/2
+        Lt = L - _np.sum(D[network['throat.conns']], axis=1)/2
         am = network.create_adjacency_matrix(weights=Lt, fmt='lil')
-        D[Ps] = D[Ps] + np.array([np.amin(row) for row in am.data])[Ps]*0.95
-    if np.any(D < 0):
+        D[Ps] = D[Ps] + _np.array([_np.amin(row) for row in am.data])[Ps]*0.95
+    if _np.any(D < 0):
         _logger.warning('Negative pore diameters found!  Neighboring pores' +
                         ' must be larger than the pore spacing.')
     return D[network.pores(target.name)]
@@ -98,5 +98,5 @@ def equivalent_sphere(target, pore_volume='pore.volume'):
     """
     from scipy.special import cbrt
     pore_vols = target[pore_volume]
-    value = cbrt(6*pore_vols/np.pi)
+    value = cbrt(6*pore_vols/_np.pi)
     return value
