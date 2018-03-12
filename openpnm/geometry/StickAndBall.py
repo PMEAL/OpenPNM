@@ -36,7 +36,7 @@ class StickAndBall(GenericGeometry):
                        iters=10)
 
         self.add_model(propname='pore.area',
-                       model=mods.geometry.pore_area.spherical,
+                       model=gm.pore_area.sphere,
                        pore_diameter='pore.diameter')
 
         self.add_model(propname='pore.volume',

@@ -1,7 +1,7 @@
 from numpy import pi as _pi
 
 
-def spherical(target, pore_diameter='pore.diameter'):
+def sphere(target, pore_diameter='pore.diameter'):
     r"""
     Calculate cross-sectional area assuming the pore body is a sphere
 
@@ -22,7 +22,7 @@ def spherical(target, pore_diameter='pore.diameter'):
     return value
 
 
-def cubic(target, pore_diameter='pore.diameter'):
+def cube(target, pore_diameter='pore.diameter'):
     r"""
     Calculate cross-sectional area assuming the pore body is a cube
 

@@ -46,14 +46,24 @@ def washburn(target, surface_tension='pore.surface_tension',
     """
     network = target.project.network
     phase = target.project.find_phase(target)
-    if surface_tension.split('.')[0] == 'pore':
-        sigma = phase.interpolate_data(propname=surface_tension)
-    else:
-        sigma = phase[surface_tension]
-    if contact_angle.split('.')[0] == 'pore':
-        theta = phase.interpolate_data(propname=contact_angle)
-    else:
-        theta = phase[contact_angle]
+    if 'pore' in diameter:
+        if 'throat' in surface_tension:
+            sigma = phase.interpolate_data(propname=surface_tension)
+        else:
+            sigma = phase[surface_tension]
+        if 'throat' in contact_angle:
+            theta = phase.interpolate_data(propname=contact_angle)
+        else:
+            theta = phase[contact_angle]
+    if 'throat' in diameter:
+        if 'pore' in surface_tension:
+            sigma = phase.interpolate_data(propname=surface_tension)
+        else:
+            sigma = phase[surface_tension]
+        if 'pore' in contact_angle:
+            theta = phase.interpolate_data(propname=contact_angle)
+        else:
+            theta = phase[contact_angle]
     r = network[diameter]/2
     value = -2*sigma*_sp.cos(_sp.radians(theta))/r
     if diameter.split('.')[0] == 'throat':
@@ -114,16 +124,24 @@ def purcell(target, r_toroid, surface_tension='pore.surface_tension',
     """
     network = target.project.network
     phase = target.project.find_phase(target)
-    if surface_tension.split('.')[0] == 'pore':
-        sigma = phase[surface_tension]
-        sigma = phase.interpolate_data(propname=surface_tension)
-    else:
-        sigma = phase[surface_tension]
-    if contact_angle.split('.')[0] == 'pore':
-        theta = phase[contact_angle]
-        theta = phase.interpolate_data(propname=contact_angle)
-    else:
-        theta = phase[contact_angle]
+    if 'pore' in diameter:
+        if 'throat' in surface_tension:
+            sigma = phase.interpolate_data(propname=surface_tension)
+        else:
+            sigma = phase[surface_tension]
+        if 'throat' in contact_angle:
+            theta = phase.interpolate_data(propname=contact_angle)
+        else:
+            theta = phase[contact_angle]
+    if 'throat' in diameter:
+        if 'pore' in surface_tension:
+            sigma = phase.interpolate_data(propname=surface_tension)
+        else:
+            sigma = phase[surface_tension]
+        if 'pore' in contact_angle:
+            theta = phase.interpolate_data(propname=contact_angle)
+        else:
+            theta = phase[contact_angle]
     r = network[diameter]/2
     R = r_toroid
     alpha = theta - 180 + _sp.arcsin(_sp.sin(_sp.radians(theta)/(1+r/R)))

@@ -1,3 +1,4 @@
+from . import misc as _misc
 import scipy as _sp
 from openpnm.models import misc as _misc
 from openpnm.core import logging as _logging

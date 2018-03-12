@@ -34,10 +34,8 @@ def sphere(target, pore_diameter='pore.diameter', throat_area='throat.area'):
 
 def cube(target, pore_diameter='pore.diameter', throat_area='throat.area'):
     r"""
-    Calculates internal surface area of pore bodies assuming they are spherical
-    then subtracts the area of the neighboring throats in a crude way, by
-    simply considering the throat cross-sectional area, thus not accounting
-    for the actual curvature of the intersection.
+    Calculates internal surface area of pore bodies assuming they are cubes
+    then subtracts the area of the neighboring throats.
 
     Parameters
     ----------
