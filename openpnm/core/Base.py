@@ -202,11 +202,11 @@ class Base(dict):
 
     def get(self, key, value=None):
         r"""
-        This sub-classed method sattempt to retrieve the requested item,
-        and if it is not found among the data arrays, and the pore-scale
-        model of the same name is run if present.  If successful, the newly
-        newly calculated values are retrieved and returned, otherwise the
-        given default value is returned.
+        This sub-classed method attempt to retrieve the requested item,
+        and if it is not found among the data, the pore-scale model of the
+        same name is run if present.  If successful, the newly calculated
+        values are retrieved and returned, otherwise the given default value
+        is returned.
 
         """
         v = super().get(key, value)

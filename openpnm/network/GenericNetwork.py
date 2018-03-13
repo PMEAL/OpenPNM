@@ -17,7 +17,6 @@ class GenericNetwork(Base, ModelsMixin):
         self.settings.setdefault('prefix', 'net')
         self.settings.update(settings)
         super().__init__(project=project, **kwargs)
-        self._gen_ids()
 
         # Initialize adjacency and incidence matrix dictionaries
         self._im = {}
@@ -39,6 +38,8 @@ class GenericNetwork(Base, ModelsMixin):
         if key.split('.')[-1] == self.name:
             element = key.split('.')[0]
             return self[element+'.all']
+        if key.split('.')[-1] == '_id':
+            self._gen_ids()
         # Now get values if present, or regenerate them
         vals = self.get(key)
         if vals is None:
@@ -48,22 +49,26 @@ class GenericNetwork(Base, ModelsMixin):
         return vals
 
     def _gen_ids(self):
-        if ('pore._id' not in self.keys()) or (len(self['pore._id']) == 0):
+        if ('pore._id' not in self.keys()):
             self['pore._id'] = [str(uuid.uuid4()) for i in self.Ps]
         else:
-            # If ids are missing it will from the end of the array...hopefully
-            if self['pore._id'][-1] == '':
-                inds = sp.where(self['pore._id'] == '')[0]
+            IDs = super().__getitem__('pore._id')
+            # Missing IDs will be at end of the array...hopefully
+            if (IDs[-1] == '') or (len(IDs) == 0):
+                inds = sp.where(IDs == '')[0]
                 temp = [str(uuid.uuid4()) for i in range(len(inds))]
-                self['pore._id'][inds] = temp
-        if ('throat._id' not in self.keys()) or (len(self['throat._id']) == 0):
+                IDs[inds] = temp
+                self['pore._id'] = IDs
+        if ('throat._id' not in self.keys()):
             self['throat._id'] = [str(uuid.uuid4()) for i in self.Ts]
         else:
-            # If ids are missing it will from the end of the array...hopefully
-            if self['throat._id'][-1] == '':
-                inds = sp.where(self['throat._id'] == '')[0]
+            IDs = super().__getitem__('throat._id')
+            # Missing IDs will be at end of the array...hopefully
+            if (IDs[-1] == '') or (len(IDs) == 0):
+                inds = sp.where(IDs == '')[0]
                 temp = [str(uuid.uuid4()) for i in range(len(inds))]
-                self['throat._id'][inds] = temp
+                IDs[inds] = temp
+                self['throat._id'] = temp
 
     def get_adjacency_matrix(self, fmt='coo'):
         r"""
@@ -220,16 +225,20 @@ class GenericNetwork(Base, ModelsMixin):
         # Check if provided data is valid
         if weights is None:
             weights = sp.ones((self.Nt,), dtype=int)
-        elif sp.shape(weights)[0] not in [self.Nt, 2*self.Nt]:
+        elif sp.shape(weights)[0] not in [self.Nt, 2*self.Nt, (self.Nt, 2)]:
             raise Exception('Received weights are of incorrect length')
 
         # Append row & col to each other, and data to itself
         conn = self['throat.conns']
         row = conn[:, 0]
         col = conn[:, 1]
-        if weights.size == 2*self.Nt:
+        if weights.shape == (2*self.Nt,):
             row = sp.append(row, conn[:, 1])
             col = sp.append(col, conn[:, 0])
+        elif weights.shape == (self.Nt, 2):
+            row = sp.append(row, conn[:, 1])
+            col = sp.append(col, conn[:, 0])
+            weights = weights.flatten(order='F')
         elif not triu:
             row = sp.append(row, conn[:, 1])
             col = sp.append(col, conn[:, 0])
