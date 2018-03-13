@@ -1,6 +1,6 @@
 import openpnm as op
 import scipy as sp
-
+import openpnm.models.geometry.throat_seed as mods
 
 class ThroatSeedTest:
     def setup_class(self):
@@ -12,7 +12,7 @@ class ThroatSeedTest:
 
     def test_random(self):
         self.geo.add_model(propname='throat.seed',
-                           model=op.models.geometry.throat_seed.random,
+                           model=mods.random,
                            seed=0,
                            num_range=[0.1, 2])
         self.geo.regenerate_models()
@@ -21,13 +21,13 @@ class ThroatSeedTest:
 
     def test_neighbor(self):
         self.geo.add_model(propname='throat.seed_max',
-                           model=op.models.geometry.throat_seed.neighbor,
+                           model=mods.from_neighbor_pores,
                            mode='max')
         self.geo.add_model(propname='throat.seed_min',
-                           model=op.models.geometry.throat_seed.neighbor,
+                           model=mods.from_neighbor_pores,
                            mode='min')
         self.geo.add_model(propname='throat.seed_mean',
-                           model=op.models.geometry.throat_seed.neighbor,
+                           model=mods.from_neighbor_pores,
                            mode='mean')
         self.geo.regenerate_models()
         assert sp.all(self.geo['throat.seed_min'] <= self.geo['throat.seed_max'])

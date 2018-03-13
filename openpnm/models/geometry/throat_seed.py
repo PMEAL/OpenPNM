@@ -1,4 +1,4 @@
-from . import misc as _misc
+from openpnm.models import misc as _misc
 
 
 def random(target, seed=None, num_range=[0, 1]):
@@ -14,4 +14,4 @@ def from_neighbor_pores(target, pore_prop='pore.seed', mode='min'):
                                      mode=mode)
 
 
-random.__doc__ = _misc.random.__doc__
+random.__doc__ = _misc.from_neighbor_pores.__doc__
