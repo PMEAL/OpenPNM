@@ -3,7 +3,7 @@ import scipy as sp
 import openpnm.models.misc as mods
 
 
-class PoreMiscTest:
+class MiscTest:
 
     def setup_class(self):
         self.net = op.network.Cubic(shape=[5, 5, 5])
@@ -160,7 +160,7 @@ class PoreMiscTest:
 
 if __name__ == '__main__':
 
-    t = PoreMiscTest()
+    t = MiscTest()
     self = t
     t.setup_class()
     for item in t.__dir__():
