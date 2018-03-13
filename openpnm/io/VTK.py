@@ -101,12 +101,12 @@ class VTK(GenericIO):
             if element is not None:
                 cell_data_node.append(element)
 
-        tree = ET.ElementTree(root)
-        tree.write(filename)
-
         if filename == '':
             filename = project.name
         filename = cls._parse_filename(filename=filename, ext='vtp')
+
+        tree = ET.ElementTree(root)
+        tree.write(filename)
 
         with open(filename, 'r+') as f:
             string = f.read()
