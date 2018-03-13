@@ -2,6 +2,7 @@ import openpnm as op
 import scipy as sp
 import openpnm.models.geometry.throat_seed as mods
 
+
 class ThroatSeedTest:
     def setup_class(self):
         self.net = op.network.Cubic(shape=[5, 5, 5])
