@@ -151,6 +151,7 @@ class ModelsMixin():
             as list of 2 models to exclude than to specify 8 models include.
         """
         # If no props given, then regenerate them all
+        all_props = self.models.dependency_tree()
         if propnames is None:
             propnames = all_props
             # If some props are to be excluded, remove them from list
