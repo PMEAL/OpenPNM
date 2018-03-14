@@ -60,10 +60,9 @@ class HDF5(GenericIO):
             categorized by ``label`` and ``property`` to separate *boolean*
             from *numeric* data.
 
-            **'categorize_elements'** : If specified the data arrays are
-            additionally categorized by ``pore`` and ``throat``, meaning
-            that the propnames are no longer prepended by a 'pore.' or
-            'throat.'
+            **'elements'** : If specified the data arrays are additionally
+            categorized by ``pore`` and ``throat``, meaning that the propnames
+            are no longer prepended by a 'pore.' or 'throat.'
 
         """
         project, network, phases = cls._parse_args(network=network,
