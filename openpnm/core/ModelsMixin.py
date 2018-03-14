@@ -1,10 +1,26 @@
 import inspect
-from openpnm.core import Workspace
+from openpnm.core import Workspace, logging
 from openpnm.utils.misc import PrintableDict
 ws = Workspace()
+logger = logging.getLogger()
 
 
 class ModelsDict(PrintableDict):
+
+    def dependency_tree(self):
+        tree = []
+        for propname in self.keys():
+            if propname not in tree:
+                tree.append(propname)
+            kwargs = self[propname].copy()
+            kwargs.pop('model')
+            kwargs.pop('regen_mode', None)
+            for dependency in kwargs.values():
+                if dependency in list(self.keys()):
+                    tree.insert(tree.index(propname), dependency)
+        unique = []
+        [unique.append(item) for item in tree if item not in unique]
+        return unique
 
     def __str__(self):
         horizontal_rule = '―' * 78
@@ -135,14 +151,18 @@ class ModelsMixin():
             as list of 2 models to exclude than to specify 8 models include.
         """
         # If no props given, then regenerate them all
+        all_props = self.models.dependency_tree()
         if propnames is None:
-            propnames = list(self.models.keys())
-        # If only one prop given, as string, put into a list
-        elif type(propnames) is str:
-            propnames = [propnames]
-        [propnames.remove(i) for i in exclude if i in propnames]
+            propnames = all_props
+            # If some props are to be excluded, remove them from list
+            if len(exclude) > 0:
+                propnames = [i for i in propnames if i not in exclude]
+        else:
+            # Re-create propnames to ensure it's in correct order
+            propnames = [i for i in all_props if i in propnames]
         # Scan through list of propnames and regenerate each one
         for item in propnames:
+            logger.info('Regenerating model: '+item)
             self._regen(item)
 
     def _regen(self, prop):
@@ -153,10 +173,18 @@ class ModelsMixin():
         regen_mode = kwargs.pop('regen_mode', None)
         # Only regenerate model if regen_mode is correct
         if regen_mode == 'constant':
+            # Only regenerate if data not already in dictionary
             if prop not in self.keys():
                 self[prop] = model(target=self, **kwargs)
         else:
-            self[prop] = model(target=self, **kwargs)
+            # Try to run the model, but catch KeyError is missing values
+            try:
+                self[prop] = model(target=self, **kwargs)
+            except KeyError:
+                # Set model to deferred, to run later when called
+                logger.warn('Dependencies for ' + prop + ' not available,' +
+                            ' setting regen_mode to deferred')
+                self.models[prop]['regen_mode'] = 'deferred'
 
     def _get_models(self):
         if not hasattr(self, '_models_dict'):
