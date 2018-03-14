@@ -1,10 +1,4 @@
-r"""
-===============================================================================
-Submodule -- throat_area
-===============================================================================
-
-"""
-import scipy as _sp
+from numpy import pi as _pi
 
 
 def cylinder(target, throat_diameter='throat.diameter'):
@@ -19,11 +13,11 @@ def cylinder(target, throat_diameter='throat.diameter'):
         necessary geometric properties.
 
     throat_diameter : string
-        Dictionary key to the throat diameter values
+        Dictionary key of the throat diameter values
 
     """
     diams = target[throat_diameter]
-    value = _sp.pi/4*(diams)**2
+    value = _pi/4*(diams)**2
     return value
 
 
@@ -39,7 +33,7 @@ def cuboid(target, throat_diameter='throat.diameter'):
         necessary geometric properties.
 
     throat_diameter : string
-        Dictionary key to the throat diameter values
+        Dictionary key of the throat diameter values
 
     """
     diams = target[throat_diameter]

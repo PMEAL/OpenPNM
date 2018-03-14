@@ -1,6 +1,6 @@
 from collections import namedtuple
 from openpnm.core import Workspace, logging
-from openpnm.utils.misc import PrintableList, PrintableDict, SettingsDict
+from openpnm.utils.misc import PrintableList, SettingsDict
 import scipy as sp
 logger = logging.getLogger(__name__)
 ws = Workspace()
@@ -21,7 +21,7 @@ class Base(dict):
         super().__init__()
         if project is None:
             project = ws.new_project()
-        project.append(self)
+        project.extend(self)
         self.name = name
         self.update({'pore.all': sp.ones(shape=(Np, ), dtype=bool)})
         self.update({'throat.all': sp.ones(shape=(Nt, ), dtype=bool)})
@@ -99,6 +99,8 @@ class Base(dict):
             self._name = None
         if name is None:
             name = self.project._generate_name(self)
+        if self.name == name:
+            return
         self.project._validate_name(name)
         if self._name is not None:
             logger.info('Changing the name of '+self.name+' to '+name)
@@ -200,11 +202,11 @@ class Base(dict):
 
     def get(self, key, value=None):
         r"""
-        This sub-classed method sattempt to retrieve the requested item,
-        and if it is not found among the data arrays, and the pore-scale
-        model of the same name is run if present.  If successful, the newly
-        newly calculated values are retrieved and returned, otherwise the
-        given default value is returned.
+        This sub-classed method attempt to retrieve the requested item,
+        and if it is not found among the data, the pore-scale model of the
+        same name is run if present.  If successful, the newly calculated
+        values are retrieved and returned, otherwise the given default value
+        is returned.
 
         """
         v = super().get(key, value)

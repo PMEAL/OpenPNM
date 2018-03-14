@@ -1,12 +1,5 @@
-r"""
-===============================================================================
-Submodule -- diffusive_conductance
-===============================================================================
-
-"""
-
+import openpnm as op
 import scipy as _sp
-import openpnm.utils.misc as misc
 
 
 def bulk_diffusion(target, molar_density='pore.molar_density',
@@ -55,7 +48,7 @@ def bulk_diffusion(target, molar_density='pore.molar_density',
     DABp = phase[diffusivity]
     DABt = phase.interpolate_data(propname=diffusivity)
     if calc_pore_len:
-        lengths = misc.conduit_lengths(network, mode='centroid')
+        lengths = op.utils.misc.conduit_lengths(network, mode='centroid')
         plen1 = lengths[:, 0]
         plen2 = lengths[:, 2]
     else:

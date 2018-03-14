@@ -52,7 +52,7 @@ class MARock(GenericIO):
         """
 
         net = {}
-
+        path = path.resolve()
         for file in os.listdir(path):
             if file.endswith(".np2th"):
                 np2th_file = os.path.join(path, file)

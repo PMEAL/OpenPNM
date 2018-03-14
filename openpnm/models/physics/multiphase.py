@@ -8,10 +8,10 @@ Submodule -- diffusive_conductance
 import scipy as sp
 
 
-def conduit_conductance(physics, phase, network, throat_conductance,
+def conduit_conductance(target, throat_conductance,
                         throat_occupancy='throat.occupancy',
                         pore_occupancy='pore.occupancy',
-                        mode='strict', factor=1e-6, **kwargs):
+                        mode='strict', factor=1e-6):
     r"""
     Add a new multiphase conductance property to the conduits of network, where
     a conduit is ( 1/2 pore - full throat - 1/2 pore ) based on the areas.
@@ -52,7 +52,7 @@ def conduit_conductance(physics, phase, network, throat_conductance,
     calculated.
 
     """
-    throats = phase.Ts
+    throats = target.Ts
     if mode == 'loose':
         closed_conduits = ~sp.array(phase[throat_occupancy], dtype=bool)
     else:

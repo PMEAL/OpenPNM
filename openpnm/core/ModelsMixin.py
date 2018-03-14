@@ -42,7 +42,51 @@ class ModelsDict(PrintableDict):
 
 class ModelsMixin():
 
-    def add_model(self, propname, model, regen_mode='normal', **kwargs):
+    def add_model(self, propname, model, regen_mode='deferred', **kwargs):
+        r"""
+        Adds a new model to the models dictionary (``object.models``)
+
+        Parameters
+        ----------
+        propname : string
+            The name of the property to be calculated by the model.
+
+        model : function
+            A reference (handle) to the function to be used.
+
+        regen_mode : string
+            Controls how/when the model is run (See Notes for more details).
+            Options are:
+
+            *'normal'* or *'eager'* : The model is run directly upon being
+            assiged, and also run every time ``object.regenerate_models`` is
+            called.
+
+            *'constant'* : The model is run directly upon being assigned, but
+            is not called again, thus making it's data act like a constant.
+
+            *'deferred'* or *'lazy'*: (default) Is not run upon being assigned,
+            but is run the first time that it's data is requested.
+
+        Notes
+        -----
+        The difference between 'eager' and 'lazy' execution is useful to
+        understand.  In 'eager' mode the model is run as soon as it's assigned
+        to the object, which means that users must be careful to assign
+        dependent models first, or else a KeyError will be raised since needed
+        data is not present.  In 'lazy' mode models are not run until their
+        data is asked for, which creates a cascading call to all necessary
+        models that have not been run yet.  The latter behavior is more
+        convenient, but can be confusing since a lot happens behind the scenes.
+
+        For example: In 'eager' mode, if 'pore.volume' is assigned before
+        'pore.diameter' a KeyError will occur when the model attempts to
+        access the 'pore.diameter' data.  In 'lazy' mode the request for
+        `pore.volume` data will run the 'pore.volume' model, which attempts
+        to access `pore.diameter` data, and upon failing to find it will
+        attempt to run the `pore.diameter` model.
+
+        """
         # Add model and regen_mode to kwargs dictionary
         kwargs.update({'model': model, 'regen_mode': regen_mode})
         # Insepct model to extract arguments and default values
@@ -57,15 +101,55 @@ class ModelsMixin():
         # Store all keyword argumnents in model
         self.models[propname] = kwargs
         # Regenerate model values if necessary
-        if regen_mode != 'deferred':
+        if regen_mode not in ['deferred', 'lazy']:
             self._regen(propname)
 
+    def remove_model(self, propname=None, mode=['model', 'data']):
+        r"""
+        Removes model and data from object.
+
+        Parameters
+        ----------
+        propname : string or list of strings
+            The property or list of properties to remove
+
+        mode : list of strings
+            Controls what is removed.  Options are:
+
+            *'model'* : Removes the model but not any numerical data that may
+            already exist.
+
+            *'data'* : Removes the data but leaves the model.
+
+        The default is both.
+
+        """
+        if type(propname) is str:
+            propname = [propname]
+        for item in propname:
+            if 'model' in mode:
+                if item in self.models.keys():
+                    del self.models[item]
+            if 'data' in mode:
+                if item in self.keys():
+                    del self[item]
+
     def regenerate_models(self, propnames=None, exclude=[]):
-        # If only one prop given, as string, put into a list
-        if type(propnames) is str:
-            propnames = [propnames]
-        # Get list of all properties in the correct order
-        all_props = self.models.dependency_tree()
+        r"""
+        Re-runs the specified models.
+
+        Parameters
+        ----------
+        propnames : string or list of strings
+            The list of property names to be regenerated.  If None are given
+            then ALL models are re-run (except for those whose ``regen_mode``
+            is 'constant').
+
+        exclude : list of strings
+            Since the default behavior is to run ALL models, this can be used
+            to exclude specific models.  It may be more convenient to supply
+            as list of 2 models to exclude than to specify 8 models include.
+        """
         # If no props given, then regenerate them all
         if propnames is None:
             propnames = all_props

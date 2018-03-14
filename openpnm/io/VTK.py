@@ -1,9 +1,11 @@
 from xml.etree import ElementTree as ET
 import numpy as np
-from openpnm.core import logging, Project
+from openpnm.core import logging, Workspace
 from openpnm.network import GenericNetwork
-from openpnm.io import GenericIO
+from openpnm.io import GenericIO, Dict
+from openpnm.utils import FlatDict
 logger = logging.getLogger(__name__)
+ws = Workspace()
 
 
 class VTK(GenericIO):
@@ -31,7 +33,7 @@ class VTK(GenericIO):
     '''.strip()
 
     @classmethod
-    def save(cls, network, phases=[], filename=''):
+    def save(cls, network, phases=[], filename='', delim=' | '):
         r"""
         Save network and phase data to a single vtp file for visualizing in
         Paraview
@@ -53,41 +55,24 @@ class VTK(GenericIO):
         project, network, phases = cls._parse_args(network=network,
                                                    phases=phases)
 
-        if filename == '':
-            filename = project.name
-        if ~filename.endswith('.vtp'):
-            filename = filename+'.vtp'
-
-        root = ET.fromstring(VTK._TEMPLATE)
-        objs = []
-        if type(phases) != list:
-            phases = [phases]
-        for phase in phases:
-            objs.append(phase)
-        objs.append(network)
-
-        am = {network.name+'|'+i: network[i] for i in
-              network.props(deep=True) + network.labels()}
-        for phase in phases:
-            dict_ = {phase.name+'|'+i: phase[i] for i in
-                     phase.props(deep=True) + phase.labels()}
-            am.update(dict_)
-
+        am = Dict.to_dict(network=network, phases=phases, interleave=True,
+                          categorize_by=['object', 'data'])
+        am = FlatDict(am, delimiter=delim)
         key_list = list(sorted(am.keys()))
+
+        network = network[0]
         points = network['pore.coords']
         pairs = network['throat.conns']
-
         num_points = np.shape(points)[0]
         num_throats = np.shape(pairs)[0]
 
+        root = ET.fromstring(VTK._TEMPLATE)
         piece_node = root.find('PolyData').find('Piece')
         piece_node.set("NumberOfPoints", str(num_points))
         piece_node.set("NumberOfLines", str(num_throats))
-
         points_node = piece_node.find('Points')
         coords = VTK._array_to_element("coords", points.T.ravel('F'), n=3)
         points_node.append(coords)
-
         lines_node = piece_node.find('Lines')
         connectivity = VTK._array_to_element("connectivity", pairs)
         lines_node.append(connectivity)
@@ -116,10 +101,13 @@ class VTK(GenericIO):
             if element is not None:
                 cell_data_node.append(element)
 
+        if filename == '':
+            filename = project.name
+        filename = cls._parse_filename(filename=filename, ext='vtp')
+
         tree = ET.ElementTree(root)
         tree.write(filename)
 
-        # Make pretty
         with open(filename, 'r+') as f:
             string = f.read()
             string = string.replace('</DataArray>', '</DataArray>\n\t\t\t')
@@ -128,7 +116,7 @@ class VTK(GenericIO):
             f.write(string)
 
     @classmethod
-    def load(cls, filename, project=None):
+    def load(cls, filename, project=None, delim=' | '):
         r"""
         Read in pore and throat data from a saved VTK file.
 
@@ -145,42 +133,45 @@ class VTK(GenericIO):
         """
         net = {}
 
-        filename = filename.rsplit('.', maxsplit=1)[0]
-        tree = ET.parse(filename+'.vtp')
+        filename = cls._parse_filename(filename, ext='vtp')
+        tree = ET.parse(filename)
         piece_node = tree.find('PolyData').find('Piece')
 
         # Extract connectivity
         conn_element = piece_node.find('Lines').find('DataArray')
-        array = VTK._element_to_array(conn_element, 2)
-        net.update({'throat.conns': array})
+        conns = VTK._element_to_array(conn_element, 2)
         # Extract coordinates
         coord_element = piece_node.find('Points').find('DataArray')
-        array = VTK._element_to_array(coord_element, 3)
-        net.update({'pore.coords': array})
+        coords = VTK._element_to_array(coord_element, 3)
 
         # Extract pore data
         for item in piece_node.find('PointData').iter('DataArray'):
             key = item.get('Name')
-            element = key.split('.')[0]
             array = VTK._element_to_array(item)
-            propname = key.split('.')[1]
-            net.update({element+'.'+propname: array})
+            net[key] = array
         # Extract throat data
         for item in piece_node.find('CellData').iter('DataArray'):
             key = item.get('Name')
-            element = key.split('.')[0]
             array = VTK._element_to_array(item)
-            propname = key.split('.')[1]
-            net.update({element+'.'+propname: array})
+            net[key] = array
 
         if project is None:
-            project = Project(name=filename.split('.')[0])
-        network = GenericNetwork(project=project)
-        network = cls._update_network(network=network, net=net)
+            project = ws.new_project()
+        project = Dict.from_dict(dct=net, project=project, delim=delim)
+
+        # Clean up data values, if necessary, like convert array's of
+        # 1's and 0's into boolean.
+        project = cls._convert_data(project)
+
+        # Add coords and conns to network
+        network = project.network
+        network.update({'throat.conns': conns})
+        network.update({'pore.coords': coords})
+
         return project
 
-    @staticmethod
-    def _array_to_element(name, array, n=1):
+    @classmethod
+    def _array_to_element(cls, name, array, n=1):
         dtype_map = {
             'int8': 'Int8',
             'int16': 'Int16',
@@ -203,8 +194,8 @@ class VTK(GenericIO):
             element.text = '\t'.join(map(str, array.ravel()))
         return element
 
-    @staticmethod
-    def _element_to_array(element, n=1):
+    @classmethod
+    def _element_to_array(cls, element, n=1):
         string = element.text
         dtype = element.get("type")
         array = np.fromstring(string, sep='\t')

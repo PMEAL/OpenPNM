@@ -2,7 +2,6 @@ from . import contact_angle
 from . import density
 from . import diffusivity
 from . import electrical_conductivity
-from . import misc
 from . import molar_density
 from . import surface_tension
 from . import thermal_conductivity

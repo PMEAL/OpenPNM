@@ -1,12 +1,6 @@
-r"""
-===============================================================================
-Submodule -- throat_length
-===============================================================================
-
-"""
 import scipy as _sp
-from openpnm.core import logging
-_logger = logging.getLogger(__name__)
+from openpnm.core import logging as _logging
+_logger = _logging.getLogger(__name__)
 
 
 def straight(target, pore_diameter='pore.diameter', L_negative=1e-9):

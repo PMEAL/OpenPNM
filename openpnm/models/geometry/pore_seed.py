@@ -1,15 +1,7 @@
-# -*- coding: utf-8 -*-
-r"""
-===============================================================================
-pore_seed -- Methods for generating fields of values for use as seeds in
-statistical pore size distributions
-===============================================================================
-
-"""
-from . import misc as _misc
 import scipy as _sp
-from openpnm.core import logging
-_logger = logging.getLogger(__name__)
+from openpnm.models import misc as _misc
+from openpnm.core import logging as _logging
+_logger = _logging.getLogger(__name__)
 
 
 def random(target, seed=None, num_range=[0, 1]):

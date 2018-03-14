@@ -1,18 +1,19 @@
 import re
 import scipy as sp
 import pandas as pd
-from openpnm.core import logging, Project
+from openpnm.core import logging, Workspace
 from openpnm.network import GenericNetwork
-from openpnm.io import GenericIO
+from openpnm.io import GenericIO, Dict
 from openpnm.io.Pandas import Pandas
+from openpnm.utils import NestedDict
 logger = logging.getLogger(__name__)
+ws = Workspace()
 
 
 class CSV(GenericIO):
     r"""
     This class is used for reading and writing CSV files containing pore and
-    throat property data.  This class uses Pandas for transferring data from
-    the OpenPNM format to CSV.
+    throat property data.
 
     Notes
     -----
@@ -25,15 +26,18 @@ class CSV(GenericIO):
     of *pore.volume* or *throat.surface_area*.
 
     3. It's possible to sub-categorize each property by prefixing the
-    category to the property name, separated by forward slashes (/).  Ex:
-    ``'pore.diameter'`` can be associated with a certain network using
-    ``network_1/pore.diameter``.
+    category to the property name, separated by a delimiter (The default is a
+    pipe with spaces around it: ' | ').  Ex: ``'pore.diameter'`` can be
+    associated with a certain network using ``network_1 | pore.diameter``.
 
     3. Each column represents a specific property.  For Np x 1 or Nt x 1
     data such as *pore.volume* this is straightforward.  For Np x *m* or
-    Nt x *m* data, it must be entered in as a set of values NOT separated by
-    commas.  For instance, the *pore.coords* values should be X Y Z with
-    *spaces* between each value, not commas.
+    Nt x *m* data, each of the *m* columns should have their own column in
+    in the CSV file, with a numpy-style index indicating which axis it
+    corresponds to.  For instance, the *pore.coords* values should be stored
+    as three separate columns with the headings: *pore.coords[0]*,
+    *pore.coords[1]*, and *pore.coords[2]*.  OpenPNM will convert that back
+    into an Np x *m* array upon loading.
 
     4. The file can contain both or either pore and throat data.
 
@@ -44,7 +48,7 @@ class CSV(GenericIO):
     """
 
     @classmethod
-    def save(cls, network=None, phases=[], filename=''):
+    def save(cls, network=None, phases=[], filename='', delim=' | '):
         r"""
         Save all the pore and throat property data on the Network (and
         optionally on any Phases objects) to CSV files.
@@ -57,7 +61,7 @@ class CSV(GenericIO):
         phases : list of OpenPNM Phases (optional)
             The Phases whose data should be stored.
 
-        filename : string
+        filename : string or path object
             The name of the file to store the data
 
         Notes
@@ -67,17 +71,17 @@ class CSV(GenericIO):
         """
         project, network, phases = cls._parse_args(network=network,
                                                    phases=phases)
-
-        df = Pandas.to_dataframe(network=network, phases=phases, join=True)
+        df = Pandas.to_dataframe(network=network, phases=phases,
+                                 join=True, delim=delim)
 
         # Write to file
         if filename == '':
             filename = project.name
-        with cls._write_file(filename=filename, ext='csv') as f:
-            df.to_csv(f, index=False)
+        fname = cls._parse_filename(filename=filename, ext='csv')
+        df.to_csv(fname, index=False)
 
     @classmethod
-    def load(cls, filename, project=None):
+    def load(cls, filename, project=None, delim=' | '):
         r"""
         Opens a 'csv' file, reads in the data, and adds it to the **Network**
 
@@ -93,22 +97,21 @@ class CSV(GenericIO):
             returned.
 
         """
-        net = {}
+        if project is None:
+            project = ws.new_project()
 
-        with cls._read_file(filename=filename, ext='csv') as f:
-            a = pd.read_table(filepath_or_buffer=f,
-                              sep=',',
-                              skipinitialspace=True,
-                              index_col=False,
-                              true_values=['T', 't', 'True', 'true', 'TRUE'],
-                              false_values=['F', 'f', 'False', 'false',
-                                            'FALSE'])
+        fname = cls._parse_filename(filename, ext='csv')
+        a = pd.read_table(filepath_or_buffer=fname,
+                          sep=',',
+                          skipinitialspace=True,
+                          index_col=False,
+                          true_values=['T', 't', 'True', 'true', 'TRUE'],
+                          false_values=['F', 'f', 'False', 'false', 'FALSE'])
 
         dct = {}
-        # First parse through all the items and clean-up`
+        # First parse through all the items and re-merge columns
         keys = sorted(list(a.keys()))
         for item in keys:
-            # Merge arrays that have been split into multiple columns
             m = re.search(r'\[.\]', item)  # The dot '.' is a wildcard
             if m:  # m is None if pattern not found, otherwise merge cols
                 pname = re.split(r'\[.\]', item)[0]  # Get base propname
@@ -123,8 +126,6 @@ class CSV(GenericIO):
             else:
                 dct[item] = sp.array(a.pop(item))
 
-        if project is None:
-            project = Project(name=filename.split('.')[0])
-        network = GenericNetwork(project=project)
-        network = cls._update_network(network=network, net=net)
+        project = Dict.from_dict(dct, project=project, delim=delim)
+
         return project

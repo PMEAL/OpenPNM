@@ -1,10 +1,4 @@
-r"""
-===============================================================================
-pore_volume --
-===============================================================================
-
-"""
-import scipy as _sp
+from numpy import pi as _pi
 
 
 def sphere(target, pore_diameter='pore.diameter'):
@@ -19,11 +13,11 @@ def sphere(target, pore_diameter='pore.diameter'):
         necessary geometric properties.
 
     pore_diameter : string
-        The dictionary key to the pore diameter values
+        The dictionary key of the pore diameter values
 
     """
     diams = target[pore_diameter]
-    value = _sp.pi/6*diams**3
+    value = _pi/6*diams**3
     return value
 
 
@@ -39,7 +33,7 @@ def cube(target, pore_diameter='pore.diameter'):
         necessary geometric properties.
 
     pore_diameter : string
-        The dictionary key to the pore diameter values
+        The dictionary key of the pore diameter values
 
     """
     diams = target[pore_diameter]
