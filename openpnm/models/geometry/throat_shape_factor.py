@@ -1,9 +1,3 @@
-r"""
-===============================================================================
-Submodule -- throat_shape_factor
-===============================================================================
-
-"""
 import scipy as _sp
 
 
@@ -47,8 +41,10 @@ def mason_morrow(target, throat_perimeter='throat.perimeter',
                  throat_area='throat.area'):
     r"""
     Mason and Morrow relate the capillary pressure to the shaped factor in a
-    Similar way to Mortensen but for triangles.
-    Ref:
+    similar way to Mortensen but for triangles.
+
+    References
+    ----------
     Mason, G. and Morrow, N.R., 1991. Capillary behavior of a perfectly wetting
     liquid in irregular triangular tubes. Journal of Colloid and Interface
     Science, 141(1), pp.262-274.
@@ -68,7 +64,9 @@ def jenkins_rao(target, throat_perimeter='throat.perimeter',
     r"""
     Jenkins and Rao relate the capillary pressure in an eliptical throat to
     the aspect ratio
-    Ref:
+
+    References
+    ----------
     Jenkins, R.G. and Rao, M.B., 1984. The effect of elliptical pores on
     mercury porosimetry results. Powder technology, 38(2), pp.177-180.
     """
