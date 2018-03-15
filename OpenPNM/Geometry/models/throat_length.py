@@ -67,6 +67,10 @@ def c2c(network, geometry, pore_centroid='pore.centroid',
     net_pore1 = connections[:, 0]
     net_pore2 = connections[:, 1]
     pore_centroids = network[pore_centroid]
+    pore_coords = network['pore.coords']
+    nan_cen = _sp.isnan(pore_centroids[:, 0])
+    if _sp.sum(nan_cen) > 0:
+        pore_centroids[nan_cen] = pore_coords[nan_cen]
     throat_centroids = network[throat_centroid][throats]
     v1 = throat_centroids-pore_centroids[net_pore1]
     v2 = throat_centroids-pore_centroids[net_pore2]
