@@ -221,7 +221,7 @@ class MixedPercolation(GenericAlgorithm):
         max_p_reached = [False]*len(self.queue.items())
         count = -1
         invasion_running = [True]*len(self.queue.items())
-        high_Pc = np.zeros(len(self.queue.items()))
+        high_Pc = np.ones(len(self.queue.items()))*-np.inf
         while np.any(invasion_running) and not np.all(max_p_reached):
             # Loop over clusters
             for c_num in self.queue.keys():
