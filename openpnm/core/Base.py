@@ -1079,10 +1079,10 @@ class Base(dict):
 
         Examples
         --------
-        >>> import OpenPNM
-        >>> pn = OpenPNM.Network.TestNet()
-        >>> health_check = pn.check_data_health()
-        >>> health_check.health
+        >>> import openpnm
+        >>> pn = openpnm.network.Cubic(shape=[5, 5, 5])
+        >>> h = pn.check_data_health()
+        >>> h.health
         True
         """
         health = HealthDict()

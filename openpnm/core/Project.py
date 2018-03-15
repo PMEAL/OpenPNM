@@ -2,7 +2,7 @@ import time
 import pickle
 import h5py
 from openpnm.core import Workspace
-from openpnm.utils.misc import SettingsDict
+from openpnm.utils.misc import SettingsDict, HealthDict
 import openpnm
 import numpy as np
 ws = Workspace()
@@ -270,6 +270,26 @@ class Project(list):
                      '{0:<65}'.format(item.__repr__()))
         s.append(hr)
         return '\n'.join(s)
+
+    def check_geometry_health(self):
+        r"""
+        Perform a check to find pores with overlapping or undefined Geometries
+        """
+        geoms = self.geometries().keys()
+        net = self.network
+        Ptemp = np.zeros((net.Np,))
+        Ttemp = np.zeros((net.Nt,))
+        for item in geoms:
+            Pind = net['pore.'+item]
+            Tind = net['throat.'+item]
+            Ptemp[Pind] = Ptemp[Pind] + 1
+            Ttemp[Tind] = Ttemp[Tind] + 1
+        health = HealthDict()
+        health['overlapping_pores'] = np.where(Ptemp > 1)[0].tolist()
+        health['undefined_pores'] = np.where(Ptemp == 0)[0].tolist()
+        health['overlapping_throats'] = np.where(Ttemp > 1)[0].tolist()
+        health['undefined_throats'] = np.where(Ttemp == 0)[0].tolist()
+        return health
 
 
 class Grid(dict):
