@@ -128,7 +128,7 @@ class GenericTransport(GenericAlgorithm):
         network = self.project.network
         phase = self.project.phases()[self.settings['phase']]
         g = phase[self.settings['conductance']]
-        am = network.create_adjacency_matrix(weights=-g, fmt='coo')
+        am = network.create_adjacency_matrix(weights=g, fmt='coo')
         A = spgr.laplacian(am)
         self.A = A
         return A
