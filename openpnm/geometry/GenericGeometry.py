@@ -91,48 +91,31 @@ class GenericGeometry(Base, ModelsMixin):
     def _set_locations(self, element, indices=[], mode='add'):
         r"""
         """
+        if self._isa('physics'):
+            boss = self.project.find_phase(physics=self)
+        if self._isa('geometry'):
+            boss = self.project.network
         element = self._parse_element(element=element, single=True)
         # Use the network's _parse_indices, since indicies could be 'network'
         # length boolean masks
-        network = self.project.network
-        indices = network._parse_indices(indices)
+        indices = boss._parse_indices(indices)
 
-        net = self.project.network
-        proj = self.project
+        # Add self's label to network if not present, to prevent errors below
+        if element+'.'+self.name not in boss.keys():
+            boss[element+'.'+self.name] = False
 
-        if element+'.'+self.name not in net.keys():
-            net[element+'.'+self.name] = False
-
+        # Find mask of existing locations (network indexing)
+        mask = boss[element+'.'+self.name]
+        # Update mask with new locations (either add or remove)
         if mode == 'add':
-            # Ensure indices are not already assigned to another object
-            temp = sp.zeros(shape=[net._count(element=element), ], dtype=bool)
-            for item in proj.geometries().keys():
-                temp += net[element+'.'+item]
-            if sp.any(temp[indices]):
-                raise Exception('Some of the given '+element+' are already ' +
-                                'assigned to an existing object')
-            set_flag = True
+            mask = mask + boss._tomask(indices=indices, element=element)
         elif mode == 'drop':
-            set_flag = False
-
-        # Change lables of all associated physics in their respective phases
-        for phase in proj.phases().values():
-            phys = proj.find_physics(geometry=self, phase=phase)
-            if phys:
-                if element+'.'+phys.name not in phase.keys():
-                    phase[element+'.'+phys.name] = False
-                phase[element+'.'+phys.name][indices] = set_flag
-                temp = sp.ones(shape=(sp.sum(phase[element+'.'+phys.name]),),
-                               dtype=bool)
-                phys.update({element+'.all': temp})
-
-        # Change labels in the network
-        net[element+'.'+self.name][indices] = set_flag
-        temp = sp.ones(shape=(sp.sum(net[element+'.'+self.name]),), dtype=bool)
-        self.update({element+'.all': temp})
-        inds = net._get_indices(element=element, labels=self.name)
-        for item in self.props(element=element):
-            self.update({item: net[item][inds]})
+            mask = mask ^ (boss._tomask(indices=indices, element=element))
+        # Change size of all arrays on self
+        for item in self.keys(element=element, mode='all'):
+            self.update({item: boss[item][mask]})
+        # Update label array in network
+        boss[element+'.'+self.name] = mask
 
     def show_hist(self, props=['pore.diameter'], bins=20, fig=None, **kwargs):
         if fig is None:
