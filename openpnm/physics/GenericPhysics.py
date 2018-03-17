@@ -1,10 +1,10 @@
-from openpnm.core import Base, Workspace, ModelsMixin, logging
+from openpnm.core import Subdomain, ModelsMixin, Workspace, logging
 from numpy import ones
 logger = logging.getLogger(__name__)
 ws = Workspace()
 
 
-class GenericPhysics(Base, ModelsMixin):
+class GenericPhysics(Subdomain, ModelsMixin):
     r"""
     Generic class to generate Physics objects
 
@@ -45,39 +45,4 @@ class GenericPhysics(Base, ModelsMixin):
             self.settings['phase'] = phase.name
         if geometry is not None:
             self.settings['geometry'] = geometry.name
-            self.set_locations(geometry)
-
-    def set_locations(self, geometry):
-        phase = self.project.phases()[self.settings['phase']]
-        network = self.project.network
-
-        # Adjust array sizes
-        self['pore.all'] = ones((geometry.Np, ), dtype=bool)
-        self['throat.all'] = ones((geometry.Nt, ), dtype=bool)
-
-        # Initialize a label array in the associated phase
-        phase['pore.'+self.name] = False
-        phase['pore.'+self.name][network.pores(geometry.name)] = True
-        phase['throat.'+self.name] = False
-        phase['throat.'+self.name][network.throats(geometry.name)] = True
-
-    def __getitem__(self, key):
-        # Find boss object (either phase or network)
-        element = key.split('.')[0]
-        if self._isa('phase'):
-            boss = self.project.find_phase(self)
-        else:
-            boss = self.project.network
-        # Deal with a few special key items
-        if key.split('.')[-1] == '_id':
-            inds = boss._get_indices(element=element, labels=self.name)
-            return boss[element+'._id'][inds]
-        # Convert self.name into 'all'
-        elif key.split('.')[-1] in [self.name]:
-            return self[element+'.all']
-        # Now get values if present, or regenerate them
-        vals = self.get(key)
-        if vals is None:
-            inds = boss._get_indices(element=element, labels=self.name)
-            vals = boss[key][inds]
-        return vals
+            self.add_locations(pores=geometry.Ps, throats=geometry.Ts)
