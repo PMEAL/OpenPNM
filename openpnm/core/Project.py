@@ -78,7 +78,10 @@ class Project(list):
     def find_physics(self, geometry=None, phase=None):
         if geometry and phase:
             name = self.grid[geometry.name][phase.name]
-            phys = self[name]
+            if name == '':
+                phys = None
+            else:
+                phys = self[name]
         elif geometry:
             row = self.grid.row(geometry.name)
             phys = [self.physics().get(i, None) for i in row]
