@@ -191,40 +191,29 @@ class Project(list):
             self[obj_name][propname] = f[item]
         f.close()
 
-    def _get_net(self):
-        for item in self:
-            if 'GenericNetwork' in item._mro():
-                return item
-
-    network = property(fget=_get_net)
+    @property
+    def network(self):
+        net = list(self._get_objects_of_type('network').values())
+        if len(net) > 0:
+            net = net[0]
+        else:
+            net = None
+        return net
 
     def geometries(self):
-        _dict = {}
-        for item in self:
-            if 'GenericGeometry' in item._mro():
-                _dict.update({item.name: item})
-        return _dict
+        return self._get_objects_of_type('geometry')
 
     def phases(self):
-        _dict = {}
-        for item in self:
-            if 'GenericPhase' in item._mro():
-                _dict.update({item.name: item})
-        return _dict
+        return self._get_objects_of_type('phase')
 
     def physics(self):
-        _dict = {}
-        for item in self:
-            if 'GenericPhysics' in item._mro():
-                _dict.update({item.name: item})
-        return _dict
+        return self._get_objects_of_type('physics')
 
     def algorithms(self):
-        _dict = {}
-        for item in self:
-            if 'GenericAlgorithm' in item._mro():
-                _dict.update({item.name: item})
-        return _dict
+        return self._get_objects_of_type('algorithm')
+
+    def _get_objects_of_type(self, objtype):
+        return {item.name: item for item in self if item._isa(objtype)}
 
     def _set_comments(self, string):
         if hasattr(self, '_comments') is False:
