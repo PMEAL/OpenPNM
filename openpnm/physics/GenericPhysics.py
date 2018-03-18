@@ -43,6 +43,10 @@ class GenericPhysics(Subdomain, ModelsMixin):
 
         if phase is not None:
             self.settings['phase'] = phase.name
+            phase['pore.'+self.name] = False
+            phase['throat.'+self.name] = False
         if geometry is not None:
             self.settings['geometry'] = geometry.name
-            self.add_locations(pores=geometry.Ps, throats=geometry.Ts)
+            Ps = network.pores(geometry.name)
+            Ts = network.throats(geometry.name)
+            self.add_locations(pores=Ps, throats=Ts)
