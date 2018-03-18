@@ -70,7 +70,7 @@ class Project(list):
             if 'pore.'+obj.name in phase.keys():
                 return phase
         # If all else fails, throw an exception
-        raise Exception('Cannot find a phase associated with ' + obj.name)
+        raise Exception('Cannot find a phase associated with '+obj.name)
 
     def find_geometry(self, physics):
         # If geometry happens to be in settings, look it up directly
@@ -83,7 +83,7 @@ class Project(list):
                 if physics.name == self.grid[g.name][p.name]:
                     return g
         # If all else fails, throw an exception
-        raise Exception('Cant find a geometry associated with ' + physics.name)
+        raise Exception('Cannot find a geometry associated with '+physics.name)
 
     def find_physics(self, geometry=None, phase=None):
         if geometry and phase:
@@ -104,11 +104,11 @@ class Project(list):
     def _validate_name(self, name):
         names = [i.name for i in self]
         if name in names:
-            raise Exception('An object already exists named ' + name)
+            raise Exception('An object already exists named '+name)
         for item in self:
             for key in item.keys():
                 if key.split('.')[1] == name:
-                    raise Exception('A property/label is already named ' + name)
+                    raise Exception('A property/label is already named '+name)
 
     def _generate_name(self, obj):
         prefix = obj.settings['prefix']
@@ -250,8 +250,15 @@ class Project(list):
                         geo_mask = net['pore.'+geo.name]
                         phys_mask = phase['pore.'+phys.name]
                         # TODO: This could be more or less strict
-                        if np.sum(geo_mask*phys_mask) > 0:
-                            grid[geo.name][phase.name] = phys.name
+                        # Least strict: np.any(geo_mask*phys_mask)
+                        # Most strict: np.all(geo_mask == phys*mask)
+                        if np.all(geo_mask == phys_mask):
+                            val = grid[geo.name][phase.name]
+                            if val == '':
+                                val = phys.name
+                            else:
+                                val = ' + '.join([val, phys.name])
+                            grid[geo.name][phase.name] = val
         grid = ProjectGrid(self.network.name, grid)
         return grid
 
