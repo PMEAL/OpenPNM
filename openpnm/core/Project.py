@@ -58,22 +58,32 @@ class Project(list):
         return obj
 
     def find_phase(self, obj):
-        mro = obj._mro()
-        if 'GenericPhase'in mro:
+        # If received phase, just return self
+        if obj._isa('phase'):
             return obj
-        if 'GenericAlgorithm' in mro:
+        # If phase happens to be in settings (i.e. algorithm), look it up
+        elif 'phase' in obj.settings.keys():
             phase = self.phases()[obj.settings['phase']]
             return phase
-        for g in self.geometries().values():
-            for p in self.phases().values():
-                if obj.name == self.grid[g.name][p.name]:
-                    return p
+        # Otherwise find it using bottom-up approach (i.e. look in phase keys)
+        for phase in self.phases().values():
+            if 'pore.'+obj.name in phase.keys():
+                return phase
+        # If all else fails, throw an exception
+        raise Exception('Cannot find a phase associated with ' + obj.name)
 
     def find_geometry(self, physics):
+        # If geometry happens to be in settings, look it up directly
+        if 'geometry' in physics.settings.keys():
+            geom = self.geometries()[physics.settings['geometry']]
+            return geom
+        # Otherwise, use the grid
         for g in self.geometries().values():
             for p in self.phases().values():
                 if physics.name == self.grid[g.name][p.name]:
                     return g
+        # If all else fails, throw an exception
+        raise Exception('Cant find a geometry associated with ' + physics.name)
 
     def find_physics(self, geometry=None, phase=None):
         if geometry and phase:
@@ -232,17 +242,17 @@ class Project(list):
         net = self.network
         grid = {}
         row = {phase: '' for phase in self.phases().keys()}
-        for geo in self.geometries().keys():
-            grid[geo] = row.copy()
+        for geo in self.geometries().values():
+            grid[geo.name] = row.copy()
             for phase in self.phases().values():
-                for phys in self.physics().keys():
-                    if phys in [n.split('.')[1] for n in phase.keys()]:
-                        geo_mask = net['pore.'+geo]
-                        phys_mask = phase['pore.'+phys]
+                for phys in self.physics().values():
+                    if phys.name in [n.split('.')[1] for n in phase.keys()]:
+                        geo_mask = net['pore.'+geo.name]
+                        phys_mask = phase['pore.'+phys.name]
                         # TODO: This could be more or less strict
                         if np.sum(geo_mask*phys_mask) > 0:
-                            grid[geo][phase.name] = phys
-        grid = ProjectGrid(self.name, grid)
+                            grid[geo.name][phase.name] = phys.name
+        grid = ProjectGrid(self.network.name, grid)
         return grid
 
     grid = property(fget=_get_grid)
@@ -302,6 +312,10 @@ class Grid(dict):
 
 
 class ProjectGrid(Grid):
+    r"""
+    This is a subclass of Grid, which adds the ability to lookup by geometries
+    and phases, as more specific versions of rows and cols
+    """
 
     def geometries(self):
         return self.index()
