@@ -45,8 +45,6 @@ class Subdomain(Base):
         """
         if self._isa('physics'):
             boss = self.project.find_phase(self)
-            if boss is None:
-                boss = self.project[self.settings['phase']]
         if self._isa('geometry'):
             boss = self.project.network
         element = self._parse_element(element=element, single=True)
