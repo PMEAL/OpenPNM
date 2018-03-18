@@ -249,9 +249,9 @@ class Project(list):
                     if phys.name in [n.split('.')[1] for n in phase.keys()]:
                         geo_mask = net['pore.'+geo.name]
                         phys_mask = phase['pore.'+phys.name]
-                        # TODO: This could be more or less strict
-                        # Least strict: np.any(geo_mask*phys_mask)
-                        # Most strict: np.all(geo_mask == phys*mask)
+                        # TODO: This could be more or less strict using either:
+                        # Less: np.any(geo_mask * phys_mask)
+                        # More: np.all(geo_mask == phys_mask)
                         if np.all(geo_mask == phys_mask):
                             val = grid[geo.name][phase.name]
                             if val == '':

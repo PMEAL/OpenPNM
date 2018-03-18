@@ -62,7 +62,8 @@ class Subdomain(Base):
             for name in objs:
                 if element+'.'+name in boss.keys():
                     if np.any(boss[element+'.'+name][indices]):
-                        raise Exception('Given indices already assigned to '+name)
+                        raise Exception('Given indices are already assigned ' +
+                                        'to ' + name)
 
         # Find mask of existing locations (network indexing)
         mask = boss[element+'.'+self.name]
@@ -70,7 +71,7 @@ class Subdomain(Base):
         if mode == 'add':
             mask = mask + boss._tomask(indices=indices, element=element)
         elif mode == 'drop':
-            mask = mask ^ (boss._tomask(indices=indices, element=element))
+            mask = mask * (~boss._tomask(indices=indices, element=element))
         # Change size of all arrays on self
         for item in self.keys(element=element, mode='all'):
             self.update({item: boss[item][mask]})
