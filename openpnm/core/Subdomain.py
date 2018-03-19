@@ -54,6 +54,10 @@ class Subdomain(Base):
         boss = self._get_boss()
         element = self._parse_element(element=element, single=True)
 
+        # Make sure label array exists in boss
+        if (element+'.'+self.name) not in boss.keys():
+            boss[element+'.'+self.name] = False
+
         # Check to ensure indices aren't already assigned
         if mode == 'add':
             if self._isa('geometry'):
@@ -78,6 +82,10 @@ class Subdomain(Base):
             self.update({item: boss[item][mask]})
         # Update label array in network
         boss[element+'.'+self.name] = mask
+        # Remove label from boss if ALL locations are removed
+        if mode == 'drop':
+            if ~np.any(boss[element+'.'+self.name]):
+                del boss[element+'.'+self.name]
 
     def _get_boss(self):
         if self._isa('physics'):
