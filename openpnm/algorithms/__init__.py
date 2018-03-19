@@ -6,6 +6,7 @@ from .TransientReactiveTransport import TransientReactiveTransport
 from .CrankNicholson import CrankNicholson
 from .StokesFlow import StokesFlow
 from .FickianDiffusion import FickianDiffusion
+from .AdvectionDiffusion import AdvectionDiffusion
 from .FourierConduction import FourierConduction
 from .OhmicConduction import OhmicConduction
 from .Drainage import Drainage
