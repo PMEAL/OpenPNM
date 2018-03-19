@@ -20,6 +20,7 @@ class Subdomain(Base):
             return self[element+'.all']
         # Now get values if present, or regenerate them
         vals = self.get(key)
+        # If still not found, check with boss object (interleave data)
         if vals is None:
             inds = boss._get_indices(element=element, labels=self.name)
             vals = boss[key][inds]
