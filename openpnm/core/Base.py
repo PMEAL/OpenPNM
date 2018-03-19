@@ -12,8 +12,11 @@ class Base(dict):
     """
 
     def __new__(cls, *args, **kwargs):
-        cls.settings = SettingsDict()
         instance = super(Base, cls).__new__(cls, *args, **kwargs)
+        # The SettingsDict implements the __missing__ magic method, which
+        # returns None instead of KeyError.  This is useful for checking the
+        # value of a settings without first ensuring it exists.
+        instance.settings = SettingsDict()
         return instance
 
     def __init__(self, Np=0, Nt=0, name=None, project=None):
