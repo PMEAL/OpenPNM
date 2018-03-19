@@ -67,7 +67,7 @@ class Project(list):
             return phase
         # Otherwise find it using bottom-up approach (i.e. look in phase keys)
         for phase in self.phases().values():
-            if 'pore.'+obj.name in phase.keys():
+            if ('pore.'+obj.name in phase) or ('throat.'+obj.name in phase):
                 return phase
         # If all else fails, throw an exception
         raise Exception('Cannot find a phase associated with '+obj.name)
@@ -93,8 +93,10 @@ class Project(list):
             row = self.grid.row(geometry.name)
             phys = [self.physics().get(i, None) for i in row]
         elif phase:
-            col = self.grid.col(phase.name)
-            phys = [self.physics().get(i, None) for i in col]
+            names = set(self.physics().keys())
+            keys = set([item.split('.')[-1] for item in phase.keys()])
+            hits = names.intersection(keys)
+            phys = [self.physics().get(i, None) for i in hits]
         else:
             raise Exception('Must specify at least one of geometry or phase')
         if phys == ['']:
