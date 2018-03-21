@@ -1,6 +1,5 @@
 import numpy as np
 import scipy.sparse as sprs
-import scipy.sparse.csgraph as spgr
 from openpnm.algorithms import GenericAlgorithm
 from openpnm.core import logging
 logger = logging.getLogger(__name__)
@@ -16,11 +15,14 @@ class AdvectionDiffusion(GenericAlgorithm):
                  **kwargs):
         # Set some default settings
         self.settings.update({'phase': None,
-                       'quantity': 'pore.mole_fraction',
-                       'diffusive_conductance': 'throat.diffusive_conductance',
-                       'hydraulic_conductance': 'throat.hydraulic_conductance',
-                       'pressure': 'pore.pressure',
-                       'solver': 'spsolve'})
+                              'quantity': 'pore.mole_fraction',
+                              'diffusive_conductance':
+                                  'throat.diffusive_conductance',
+                              'hydraulic_conductance':
+                                  'throat.hydraulic_conductance',
+                              'pressure':
+                                  'pore.pressure',
+                              'solver': 'spsolve'})
         self.settings.update(settings)
         if phase is not None:
             self.settings['phase'] = phase.name
@@ -134,18 +136,20 @@ class AdvectionDiffusion(GenericAlgorithm):
         HC = phase[self.settings['hydraulic_conductance']]
         p = phase[self.settings['pressure']]
         D = phase[self.settings['diffusive_conductance']]
-        nt = network.find_neighbor_throats(pores=phase['pore.all'], \
-             flatten=False, mode='not_intersection') # Pore neighbor throats
-        A = np.zeros((network.Np, network.Np)) # Initialize A matrix
-        for i in range (network.Np):
-            q = HC[nt[i]]*(p[network.find_neighbor_pores(i)]-p[i]) # Flow rate
-            qP = np.where(q>0, q, 0) # Throat positive flow rates
-            qN = np.where(q<0, q, 0) # Throat negative flow rates
-            A[i,i] = np.sum( qN - D[nt[i]] ) # Diagonal
-            j1 = network['throat.conns'][nt[i]] # Find off diag cells to fill
-            j2 = np.reshape(j1,np.size(j1))
-            j = j2[j2!=i]
-            A[i,j] = -( -qP - D[nt[i]] ) # Off diagonal
+        # Pore neighbor throats
+        nt = network.find_neighbor_throats(pores=phase['pore.all'],
+                                           flatten=False,
+                                           mode='not_intersection')
+        A = np.zeros((network.Np, network.Np))  # Initialize A matrix
+        for i in range(network.Np):
+            q = HC[nt[i]]*(p[network.find_neighbor_pores(i)]-p[i])  # Flow rate
+            qP = np.where(q > 0, q, 0)  # Throat positive flow rates
+            qN = np.where(q < 0, q, 0)  # Throat negative flow rates
+            A[i, i] = np.sum(qN - D[nt[i]])  # Diagonal
+            j1 = network['throat.conns'][nt[i]]  # Find off diag cells to fill
+            j2 = np.reshape(j1, np.size(j1))
+            j = j2[j2 != i]
+            A[i, j] = -(-qP - D[nt[i]])  # Off diagonal
         A = sprs.coo_matrix(A)
         self.A = A
         return A
