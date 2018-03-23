@@ -7,7 +7,7 @@ class Subdomain(Base):
     def __getitem__(self, key):
         # Find boss object (either phase or network)
         element = key.split('.')[0]
-        if self._isa('phase'):
+        if self._isa('physics'):
             boss = self.project.find_phase(self)
         else:
             boss = self.project.network

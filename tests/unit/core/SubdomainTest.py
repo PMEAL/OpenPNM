@@ -60,6 +60,18 @@ class SubdomainTest:
         assert self.phys1.Np == 27
         assert self.phys1.Nt == 54
 
+    def test_drop_locations_completely(self):
+        assert self.phys1.Np == 27
+        assert self.phys1.Nt == 54
+        assert 'pore.'+self.phys1.name in self.phase1.keys()
+        assert 'throat.'+self.phys1.name in self.phase1.keys()
+        self.phys1.drop_locations(pores=self.net.Ps)
+        assert 'pore.'+self.phys1.name not in self.phase1.keys()
+        assert 'throat.'+self.phys1.name in self.phase1.keys()
+        self.phys1.drop_locations(throats=self.net.Ts)
+        assert 'throat.'+self.phys1.name not in self.phase1.keys()
+        self.phys1.add_locations(pores=self.net.Ps, throats=self.net.Ts)
+
 
 if __name__ == '__main__':
 

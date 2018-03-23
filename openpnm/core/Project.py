@@ -62,7 +62,7 @@ class Project(list):
         if obj._isa('phase'):
             return obj
         # If phase happens to be in settings (i.e. algorithm), look it up
-        elif 'phase' in obj.settings.keys():
+        if 'phase' in obj.settings.keys():
             phase = self.phases()[obj.settings['phase']]
             return phase
         # Otherwise find it using bottom-up approach (i.e. look in phase keys)
@@ -77,31 +77,48 @@ class Project(list):
         if 'geometry' in physics.settings.keys():
             geom = self.geometries()[physics.settings['geometry']]
             return geom
-        # Otherwise, use the grid
-        for g in self.geometries().values():
-            for p in self.phases().values():
-                if physics.name == self.grid[g.name][p.name]:
-                    return g
+        # Otherwise, use the bottom-up approach
+        for geo in self.geometries().values():
+            phys = self.find_physics(geometry=geo)
+            if phys is physics:
+                return geo
         # If all else fails, throw an exception
         raise Exception('Cannot find a geometry associated with '+physics.name)
 
     def find_physics(self, geometry=None, phase=None):
         if geometry and phase:
-            name = self.grid[geometry.name][phase.name]
-            phys = self[name]
+            physics = self.find_physics(geometry=geometry)
+            phases = list(self.phases().values())
+            phys = physics[phases.index(phase)]
+            return phys
         elif geometry:
-            row = self.grid.row(geometry.name)
-            phys = [self.physics().get(i, None) for i in row]
+            result = []
+            net = self.network
+            geoPs = net['pore.'+geometry.name]
+            geoTs = net['throat.'+geometry.name]
+            for phase in self.phases().values():
+                physics = self.find_physics(phase=phase)
+                temp = None
+                for phys in physics:
+                    Ps = phase.map_pores(phys['pore._id'])
+                    physPs = phase.tomask(pores=Ps)
+                    Ts = phase.map_throats(phys['throat._id'])
+                    physTs = phase.tomask(throats=Ts)
+                    if np.all(geoPs == physPs) and np.all(geoTs == physTs):
+                        temp = phys
+                result.append(temp)
+            return result
         elif phase:
             names = set(self.physics().keys())
             keys = set([item.split('.')[-1] for item in phase.keys()])
             hits = names.intersection(keys)
             phys = [self.physics().get(i, None) for i in hits]
+            return phys
         else:
-            raise Exception('Must specify at least one of geometry or phase')
-        if phys == ['']:
             phys = []
-        return phys
+            for geom in self.geometries().values():
+                phys.append(self.find_physics(geometry=geom))
+            return phys
 
     def _validate_name(self, name):
         names = [i.name for i in self]
@@ -241,26 +258,17 @@ class Project(list):
     comments = property(fget=_get_comments, fset=_set_comments)
 
     def _get_grid(self):
-        net = self.network
         grid = {}
         row = {phase: '' for phase in self.phases().keys()}
         for geo in self.geometries().values():
             grid[geo.name] = row.copy()
             for phase in self.phases().values():
-                for phys in self.physics().values():
-                    if phys.name in [n.split('.')[1] for n in phase.keys()]:
-                        geo_mask = net['pore.'+geo.name]
-                        phys_mask = phase['pore.'+phys.name]
-                        # TODO: This could be more or less strict using either:
-                        # Less: np.any(geo_mask * phys_mask)
-                        # More: np.all(geo_mask == phys_mask)
-                        if np.all(geo_mask == phys_mask):
-                            val = grid[geo.name][phase.name]
-                            if val == '':
-                                val = phys.name
-                            else:
-                                val = ' + '.join([val, phys.name])
-                            grid[geo.name][phase.name] = val
+                phys = self.find_physics(phase=phase, geometry=geo)
+                if phys is None:
+                    phys = ''
+                else:
+                    phys = phys.name
+                grid[geo.name][phase.name] = phys
         grid = ProjectGrid(self.network.name, grid)
         return grid
 
