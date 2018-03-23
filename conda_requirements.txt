@@ -3,5 +3,3 @@ scipy
 matplotlib
 pandas
 scikit-image
-ruamel_yaml<0.15
-pycosat<0.6.3
