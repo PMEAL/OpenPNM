@@ -51,9 +51,6 @@ setup(
         'pandas',
         'flatdict',
         'h5py'],
-    extras_require={
-        ":python_version<'3.5'": [
-                "ruamel_yaml<0.15"]},
 
     author='OpenPNM Team',
     author_email='jgostick@uwaterloo.ca',
