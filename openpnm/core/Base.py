@@ -136,7 +136,11 @@ class Base(dict):
 
         Parameters
         ----------
-        mode : string of list of strings
+        element : string or list of strings
+            Can be either 'pore' or 'throat', which specifies whether 'pore'
+            and/or 'throat' data should be cleared.  The default is both.
+
+        mode : string or list of strings
             This controls what is cleared from the object.  Options are:
 
             **'props'** : Removes all numerical property values from the object
@@ -151,7 +155,7 @@ class Base(dict):
             of the framework; it is meant for advanced users and developers.
 
         """
-        allowed = ['constants', 'labels', 'models', 'all']
+        allowed = ['constants', 'labels', 'all']
         mode = self._parse_mode(mode=mode, allowed=allowed)
         for item in self.keys(mode=mode, element=element):
             if item not in ['pore.all', 'throat.all']:
@@ -165,9 +169,10 @@ class Base(dict):
 
         Parameters
         ----------
-        element : string (optional, default is None)
+        element : string
             Can be either 'pore' or 'throat', which limits the returned list of
-            keys to only 'pore' or 'throat' keys.
+            keys to only 'pore' or 'throat' keys.  If neither is given, then
+            both are assumed.
 
         mode : string (optional, default is 'skip')
             Controls which keys are returned.  Options are:
