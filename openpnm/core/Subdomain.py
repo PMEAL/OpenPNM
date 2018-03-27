@@ -27,13 +27,14 @@ class Subdomain(Base):
         return vals
 
     def __setitem__(self, key, value):
-        # Find boss object (either phase or network)
-        if self._isa('phase'):
-            boss = self.project.find_phase(self)
-        else:
-            boss = self.project.network
-        if key in boss.keys():
-            raise Exception(key + ' already exists on ' + boss.name)
+        if self.project:
+            # Find boss object (either phase or network)
+            if self._isa('phase'):
+                boss = self.project.find_phase(self)
+            else:
+                boss = self.project.network
+            if key in boss.keys():
+                raise Exception(key + ' already exists on ' + boss.name)
         super().__setitem__(key, value)
 
     def add_locations(self, pores=[], throats=[]):
