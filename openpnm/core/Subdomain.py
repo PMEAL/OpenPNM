@@ -5,9 +5,9 @@ import numpy as np
 class Subdomain(Base):
 
     def __getitem__(self, key):
-        # Find boss object (either phase or network)
         element = key.split('.')[0]
-        if self._isa('physics'):
+        # Find boss object (either phase or network)
+        if self._isa('phase'):
             boss = self.project.find_phase(self)
         else:
             boss = self.project.network
@@ -25,6 +25,16 @@ class Subdomain(Base):
             inds = boss._get_indices(element=element, labels=self.name)
             vals = boss[key][inds]
         return vals
+
+    def __setitem__(self, key, value):
+        # Find boss object (either phase or network)
+        if self._isa('phase'):
+            boss = self.project.find_phase(self)
+        else:
+            boss = self.project.network
+        if key in boss.keys():
+            raise Exception(key + ' already exists on ' + boss.name)
+        super().__setitem__(key, value)
 
     def add_locations(self, pores=[], throats=[]):
         r"""
