@@ -22,8 +22,8 @@ class GenericNetwork(Base, ModelsMixin):
         self._im = {}
         self._am = {}
 
-    def __setitem__(self, prop, value):
-        if prop == 'throat.conns':
+    def __setitem__(self, key, value):
+        if key == 'throat.conns':
             if sp.shape(value)[1] != 2:
                 logger.error('Wrong size for throat conns!')
             else:
@@ -31,7 +31,12 @@ class GenericNetwork(Base, ModelsMixin):
                     logger.warning('Converting throat.conns to be upper \
                                     triangular')
                     value = sp.sort(value, axis=1)
-        super().__setitem__(prop, value)
+        if self.project:
+            for item in self.project.geometries().values():
+                exclude = {'pore.all', 'throat.all'}
+                if key in set(item.keys()).difference(exclude):
+                    raise Exception(key+' already exists on '+item.name)
+        super().__setitem__(key, value)
 
     def __getitem__(self, key):
         # Deal with special keys first
