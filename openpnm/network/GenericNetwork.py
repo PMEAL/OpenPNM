@@ -33,7 +33,8 @@ class GenericNetwork(Base, ModelsMixin):
                     value = sp.sort(value, axis=1)
         if self.project:
             for item in self.project.geometries().values():
-                if key in item.keys():
+                exclude = {'pore.all', 'throat.all'}
+                if key in set(item.keys()).difference(exclude):
                     raise Exception(key+' already exists on '+item.name)
         super().__setitem__(key, value)
 

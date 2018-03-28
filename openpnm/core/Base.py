@@ -735,8 +735,12 @@ class Base(dict):
         sizes = [sp.size(a) for a in arrs]
         if all([item is None for item in arrs]):  # prop not found anywhere
             raise KeyError(prop)
-        if sp.any([i is None for i in arrs]):  # prop not found everywhere
-            logger.warning('\''+prop+'\' not found on at least one object')
+#        if sp.any([i is None for i in arrs]):  # prop not found everywhere
+#            logger.warning('\''+prop+'\' not found on at least one object')
+#        if sp.sum(sizes) < self._count(element):
+#            logger.warning('Not all '+element+'s are assigned to an object')
+#            N_missing = self._count(element) - sp.sum(sizes)
+#            arrs.append(sp.zeros(shape=(N_missing,), dtype=float)*sp.nan)
 
         # Check the general type of each array
         atype = []
@@ -763,10 +767,9 @@ class Base(dict):
                     temp_arr = sp.zeros((N, item.shape[1]), dtype=item.dtype)
                 temp_arr.fill(dummy_val[atype[0]])
 
-        # Convrert int arrays to float IF NaNs are expected
-        if (temp_arr.dtype.name.startswith('int') and
-            (sp.any([i is None for i in arrs]) or
-             sp.sum(sizes) != N)):
+        # Convert int arrays to float IF NaNs are expected
+        if temp_arr.dtype.name.startswith('int') and \
+           (sp.any([i is None for i in arrs]) or sp.sum(sizes) != N):
             temp_arr = temp_arr.astype(float)
             temp_arr.fill(sp.nan)
 

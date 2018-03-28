@@ -7,7 +7,7 @@ class Subdomain(Base):
     def __getitem__(self, key):
         element = key.split('.')[0]
         # Find boss object (either phase or network)
-        if self._isa('phase'):
+        if self._isa('physics'):
             boss = self.project.find_phase(self)
         else:
             boss = self.project.network
@@ -33,7 +33,7 @@ class Subdomain(Base):
                 boss = self.project.find_phase(self)
             else:
                 boss = self.project.network
-            if key in boss.keys():
+            if key in set(boss.keys()).difference({'pore.all', 'throat.all'}):
                 raise Exception(key + ' already exists on ' + boss.name)
         super().__setitem__(key, value)
 

@@ -47,7 +47,8 @@ class GenericPhase(Base, ModelsMixin):
     def __setitem__(self, key, value):
         if self.project:
             for item in self.project.find_physics(phase=self):
-                if key in item.keys():
+                exclude = {'pore.all', 'throat.all'}
+                if key in set(item.keys()).difference(exclude):
                     raise Exception(key+' already exists on '+item.name)
         super().__setitem__(key, value)
 
