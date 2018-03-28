@@ -327,7 +327,7 @@ class BaseTest:
 
     def test_labels_on_throats(self):
         a = self.net.labels(element='throats')
-        b = ['throat.all', 'throat.'+self.geo.name]
+        b = ['throat.all', 'throat.internal', 'throat.'+self.geo.name]
         assert sorted(a) == sorted(b)
 
     def test_labels_on_foo(self):
@@ -343,7 +343,7 @@ class BaseTest:
 
     def test_labels_on_all_throats(self):
         a = self.net.labels(throats=self.net.Ts)
-        b = ['throat.all', 'throat.'+self.geo.name]
+        b = ['throat.all', 'throat.internal', 'throat.'+self.geo.name]
         assert sorted(a) == sorted(b)
 
     def test_labels_on_one_pore(self):
