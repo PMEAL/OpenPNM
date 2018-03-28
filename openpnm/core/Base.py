@@ -12,8 +12,11 @@ class Base(dict):
     """
 
     def __new__(cls, *args, **kwargs):
-        cls.settings = SettingsDict()
         instance = super(Base, cls).__new__(cls, *args, **kwargs)
+        # The SettingsDict implements the __missing__ magic method, which
+        # returns None instead of KeyError.  This is useful for checking the
+        # value of a settings without first ensuring it exists.
+        instance.settings = SettingsDict()
         return instance
 
     def __init__(self, Np=0, Nt=0, name=None, project=None):
@@ -745,12 +748,12 @@ class Base(dict):
         sizes = [sp.size(a) for a in arrs]
         if sp.all([item is None for item in arrs]):  # prop not found anywhere
             raise KeyError(prop)
-        if sp.any([i is None for i in arrs]):  # prop not found everywhere
-            logger.warning('\''+prop+'\' not found on at least one object')
-        if sp.sum(sizes) < self._count(element):
-            logger.warning('Not all '+element+'s are assigned to an object')
-            N_missing = self._count(element) - sp.sum(sizes)
-            arrs.append(sp.zeros(shape=(N_missing,), dtype=float)*sp.nan)
+#        if sp.any([i is None for i in arrs]):  # prop not found everywhere
+#            logger.warning('\''+prop+'\' not found on at least one object')
+#        if sp.sum(sizes) < self._count(element):
+#            logger.warning('Not all '+element+'s are assigned to an object')
+#            N_missing = self._count(element) - sp.sum(sizes)
+#            arrs.append(sp.zeros(shape=(N_missing,), dtype=float)*sp.nan)
 
         # Check the general type of each array
         atype = []
@@ -778,9 +781,8 @@ class Base(dict):
                 temp_arr.fill(dummy_val[atype[0]])
 
         # Convert int arrays to float IF NaNs are expected
-        if (temp_arr.dtype.name.startswith('int') and
-            (sp.any([i is None for i in arrs]) or
-             sp.sum(sizes) != N)):
+        if temp_arr.dtype.name.startswith('int') and \
+           (sp.any([i is None for i in arrs]) or sp.sum(sizes) != N):
             temp_arr = temp_arr.astype(float)
             temp_arr.fill(sp.nan)
 
