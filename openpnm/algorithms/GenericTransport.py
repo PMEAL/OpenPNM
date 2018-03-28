@@ -128,7 +128,7 @@ class GenericTransport(GenericAlgorithm):
         network = self.project.network
         phase = self.project.phases()[self.settings['phase']]
         g = phase[self.settings['conductance']]
-        am = network.create_adjacency_matrix(weights=-g, fmt='coo')
+        am = network.create_adjacency_matrix(weights=g, fmt='coo')
         A = spgr.laplacian(am)
         self.A = A
         return A
@@ -144,12 +144,12 @@ class GenericTransport(GenericAlgorithm):
         if 'pore.neumann' in self.keys():
             # Update b
             ind = self['pore.neumann']
-            self.b[ind] = -self['pore.neumann_value'][ind]
+            self.b[ind] = self['pore.neumann_value'][ind]
 
         if 'pore.dirichlet' in self.keys():
             # Update b
             ind = self['pore.dirichlet']
-            self.b[ind] = -self['pore.dirichlet_value'][ind]
+            self.b[ind] = self['pore.dirichlet_value'][ind]
             # Update A
             # Find all entries on rows associated with dirichlet pores
             P_bc = self.toindices(self['pore.dirichlet'])
