@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 import os
 import sys
 from distutils.util import convert_path
@@ -52,10 +50,10 @@ setup(
         'transforms3d',
         'pandas',
         'flatdict',
-        'h5py'
-    ],
+        'h5py'],
+
     author='OpenPNM Team',
     author_email='jgostick@uwaterloo.ca',
     download_url='https://github.com/pmeal/OpenPNM/',
-    url='https://github.com/pmeal/OpenPNM'
+    url='http://openpnm.org'
 )
