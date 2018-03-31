@@ -53,7 +53,7 @@ class Base(dict):
         if hasattr(value, 'keys'):
             for item in value.keys():
                 prop = item.replace('pore.', '').replace('throat.', '')
-                self.__setitem__(key+'_'+prop, value[item])
+                self.__setitem__(key+'.'+prop, value[item])
             return
 
         value = sp.array(value, ndmin=1)  # Convert value to an ndarray
