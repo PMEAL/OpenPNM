@@ -160,9 +160,13 @@ class GenericTransport(GenericAlgorithm):
             self.A.setdiag(datadiag)
             self.A.eliminate_zeros()  # Remove 0 entries
 
-    def setup(self):
+    def setup(self, quantity=None, conductance=None):
         r"""
         """
+        if quantity:
+            self.settings['quantity'] = quantity
+        if conductance:
+            self.settings['conductance'] = conductance
         self.build_A()
         self.build_b()
         self.apply_BCs()
