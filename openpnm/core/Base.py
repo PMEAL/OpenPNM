@@ -218,11 +218,11 @@ class Base(dict):
         v = super().get(key, value)
         if v is None:
             if hasattr(self, 'models'):
-                if (key in self.models.keys()) and \
-                      (self.models[key]['regen_mode'] in ['deferred', 'lazy']):
-                    logger.info(key+' not found, regenerating model')
-                    self.regenerate_models(propnames=key)
-                    v = self.get(key=key, value=value)
+                if key in self.models.keys():
+                    if self.models[key]['regen_mode'] in ['deferred', 'lazy']:
+                        logger.info(key+' not found, regenerating model')
+                        self.regenerate_models(propnames=key)
+                        v = self.get(key=key, value=value)
         return v
 
     # -------------------------------------------------------------------------

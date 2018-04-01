@@ -110,7 +110,7 @@ class GenericSourceTermTest:
 #        r3 = np.round(self.alg.rate(pores=self.S_pores)[0], 20)
         assert r1 == r2
 #        assert r2 == -r3
-#
+
     def test_natural_exponential(self):
         self.phys['pore.item1'] = 0.8e-11
         self.phys['pore.item2'] = 0.5
@@ -144,7 +144,7 @@ class GenericSourceTermTest:
 #        r3 = np.round(self.alg.rate(pores=self.S_pores)[0], 20)
         assert r1 == r2
 #        assert r2 == -r3
-#
+
     def test_logarithm(self):
         self.phys['pore.item1'] = 0.16e-13
         self.phys['pore.item2'] = 10
