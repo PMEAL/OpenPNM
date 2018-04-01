@@ -30,9 +30,7 @@ class Base(dict):
         self.update({'throat.all': sp.ones(shape=(Nt, ), dtype=bool)})
 
     def __repr__(self):
-        return '<%s object at %s>' % (
-            self.__class__.__module__,
-            hex(id(self)))
+        return '<%s object at %s>' % (self.__class__.__module__, hex(id(self)))
 
     def __eq__(self, other):
         if hex(id(self)) == hex(id(other)):
@@ -53,7 +51,7 @@ class Base(dict):
         if hasattr(value, 'keys'):
             for item in value.keys():
                 prop = item.replace('pore.', '').replace('throat.', '')
-                self.__setitem__(key+'_'+prop, value[item])
+                self.__setitem__(key+'.'+prop, value[item])
             return
 
         value = sp.array(value, ndmin=1)  # Convert value to an ndarray
@@ -220,7 +218,8 @@ class Base(dict):
         v = super().get(key, value)
         if v is None:
             if hasattr(self, 'models'):
-                if key in self.models.keys():
+                if (key in self.models.keys()) and \
+                      (self.models[key]['regen_mode'] in ['deferred', 'lazy']):
                     logger.info(key+' not found, regenerating model')
                     self.regenerate_models(propnames=key)
                     v = self.get(key=key, value=value)

@@ -12,7 +12,7 @@ def standard_kinetics(target, quantity, prefactor, exponent):
     r = A*(X**b)
     S1 = A*b*(X**(b - 1))
     S2 = A*(1 - b)*(X**b)
-    values = {'pore.S1': S1, 'pore.S2': S2, 'pore.rate': r}
+    values = {'S1': S1, 'S2': S2, 'rate': r}
     return values
 
 
