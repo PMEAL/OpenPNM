@@ -39,7 +39,7 @@ water['pore.k'] = 2
 water.add_model(propname='pore.reaction',
                 model=op.models.physics.generic_source_term.standard_kinetics,
                 prefactor='pore.A', exponent='pore.k',
-                quantity='pore.pressure', regen_mode='deferred')
+                quantity='pore.pressure', regen_mode='normal')
 
 s = {'conductance': 'throat.conductance',
      'quantity': 'pore.pressure'}

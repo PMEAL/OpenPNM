@@ -11,16 +11,9 @@ class Subdomain(Base):
             boss = self.project.find_phase(self)
         else:
             boss = self.project.network
-        # Deal with a few special key items
-        if key.split('.')[-1] == '_id':
-            inds = boss._get_indices(element=element, labels=self.name)
-            return boss[element+'._id'][inds]
-        # Convert self.name into 'all'
-        elif key.split('.')[-1] in [self.name]:
-            return self[element+'.all']
-        # Now get values if present, or regenerate them
+        # Get values if present, or regenerate them
         vals = self.get(key)
-        # If still not found, check with boss object (interleave data)
+        # If still not found, check with boss object
         if vals is None:
             inds = boss._get_indices(element=element, labels=self.name)
             vals = boss[key][inds]
