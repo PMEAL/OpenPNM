@@ -64,7 +64,8 @@ def linear(target, A1='', A2='', quantity=''):
     r = target[A1] * X + target[A2]
     S1 = target[A1]
     S2 = target[A2]
-    return {'pore.S1': S1, 'pore.S2': S2, 'pore.rate': r}
+    values = {'S1': S1, 'S2': S2, 'rate': r}
+    return values
 
 
 def power_law(target, A1='', A2='', A3='', quantity=''):
@@ -110,10 +111,11 @@ def power_law(target, A1='', A2='', A3='', quantity=''):
     """
     X = target[quantity]
 
-    r =target[A1] * X ** target[A2] + target[A3]
+    r = target[A1] * X ** target[A2] + target[A3]
     S1 = target[A1] * target[A2] * X ** (target[A2] - 1)
     S2 = target[A1] * X ** target[A2] * (1 - target[A2]) + target[A3]
-    return {'pore.S1': S1, 'pore.S2': S2, 'pore.rate': r}
+    values = {'S1': S1, 'S2': S2, 'rate': r}
+    return values
 
 
 def exponential(target, A1='', A2='', A3='', A4='', A5='', A6='',
@@ -171,10 +173,12 @@ def exponential(target, A1='', A2='', A3='', A4='', A5='', A6='',
         a['2'] ** (a['3'] * X ** a['4'] + a['5'])
     S2 = a['1'] * a['2'] ** (a['3'] * X ** a['4'] + a['5']) * \
         (1 - a['3'] * a['4'] * _sp.log(a['2']) * X ** a['4']) + a['6']
-    return {'pore.S1': S1, 'pore.S2': S2, 'pore.rate': r}
+    values = {'S1': S1, 'S2': S2, 'rate': r}
+    return values
 
 
-def natural_exponential(target, A1='', A2='', A3='', A4='', A5='', quantity=''):
+def natural_exponential(target, A1='', A2='', A3='', A4='', A5='',
+                        quantity=''):
     r"""
     For the following source term:
         .. math::
@@ -231,7 +235,8 @@ def natural_exponential(target, A1='', A2='', A3='', A4='', A5='', quantity=''):
     S2 = a['1'] * (1 - a['2'] * a['3'] * X ** a['3']) * \
         _sp.exp(a['2'] * X ** a['3'] + a['4']) + a['5']
 
-    return {'pore.S1': S1, 'pore.S2': S2, 'pore.rate': r}
+    values = {'S1': S1, 'S2': S2, 'rate': r}
+    return values
 
 
 def logarithm(target, A1='', A2='', A3='', A4='', A5='', A6='', quantity=''):
@@ -293,7 +298,8 @@ def logarithm(target, A1='', A2='', A3='', A4='', A5='', A6='', quantity=''):
         a['6'] - a['1'] * a['3'] * a['4'] * X ** a['4'] / \
         (_sp.log(a['2']) * (a['3'] * X ** a['4'] + a['5']))
 
-    return {'pore.S1': S1, 'pore.S2': S2, 'pore.rate': r}
+    values = {'S1': S1, 'S2': S2, 'rate': r}
+    return values
 
 
 def natural_logarithm(target, A1='', A2='', A3='', A4='', A5='', quantity=''):
@@ -358,4 +364,5 @@ def natural_logarithm(target, A1='', A2='', A3='', A4='', A5='', quantity=''):
         a['5'] - a['1'] * a['2'] * a['3'] * X ** a['3'] / \
         (a['2'] * X ** a['3'] + a['4'])
 
-    return {'pore.S1': S1, 'pore.S2': S2, 'pore.rate': r}
+    values = {'S1': S1, 'S2': S2, 'rate': r}
+    return values
