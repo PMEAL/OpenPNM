@@ -34,8 +34,8 @@ class GenericSourceTermTest:
                        quantity='pore.mole_fraction')
         self.alg.set_BC(bctype='dirichlet', bcvalues=0.4,
                         pores=self.BC_pores)
-        self.alg.set_source_term(propname='pore.source1',
-                                 pores=self.source_pores)
+        self.alg.set_source(propname='pore.source1',
+                            pores=self.source_pores)
         self.alg.run()
         self.phase.update(self.alg.results())
         self.phys.regenerate_models(propnames='pore.source1')
@@ -61,15 +61,15 @@ class GenericSourceTermTest:
                                                    phase=self.phase)
         self.alg.set_BC(bctype='dirichlet', bcvalues=0.4,
                         pores=self.BC_pores)
-        self.alg.set_source_term(propname='pore.source1',
-                                 pores=self.source_pores)
+        self.alg.set_source(propname='pore.source1',
+                            pores=self.source_pores)
         self.alg.setup(conductance='throat.diffusive_conductance',
                        quantity='pore.mole_fraction')
         self.alg.run()
         self.phase.update(self.alg.results())
         self.phys.regenerate_models(propnames='pore.source1')
         X = self.phase['pore.mole_fraction']
-        r1 = np.sum(0.5e-12 * X[self.source_pores] ** 2.5 - 1.4e-11)
+        r1 = np.sum(0.5e-12 * X[self.source_pores]**2.5 - 1.4e-11)
         r2 = np.sum(self.phys['pore.source1.rate'][self.source_pores])
 #        r3 = np.round(self.alg.rate(pores=self.S_pores)[0], 20)
         assert r1 == r2
@@ -96,15 +96,15 @@ class GenericSourceTermTest:
                                                    phase=self.phase)
         self.alg.set_BC(bctype='dirichlet', bcvalues=0.4,
                         pores=self.BC_pores)
-        self.alg.set_source_term(propname='pore.source1',
-                                 pores=self.source_pores)
+        self.alg.set_source(propname='pore.source1',
+                            pores=self.source_pores)
         self.alg.setup(conductance='throat.diffusive_conductance',
                        quantity='pore.mole_fraction')
         self.alg.run()
         self.phase.update(self.alg.results())
         self.phys.regenerate_models(propnames='pore.source1')
         X = self.phase['pore.mole_fraction']
-        r1 = np.round(np.sum(0.8e-11 * 3 ** (0.5 * X[self.source_pores] ** 2 -
+        r1 = np.round(np.sum(0.8e-11 * 3 ** (0.5 * X[self.source_pores]**2 -
                       0.34) + 2e-14), 20)
         r2 = np.round(np.sum(self.phys['pore.source1.rate'][self.source_pores]), 20)
 #        r3 = np.round(self.alg.rate(pores=self.S_pores)[0], 20)
@@ -130,15 +130,15 @@ class GenericSourceTermTest:
                                                    phase=self.phase)
         self.alg.set_BC(bctype='dirichlet', bcvalues=0.4,
                         pores=self.BC_pores)
-        self.alg.set_source_term(propname='pore.source1',
-                                 pores=self.source_pores)
+        self.alg.set_source(propname='pore.source1',
+                            pores=self.source_pores)
         self.alg.setup(conductance='throat.diffusive_conductance',
                        quantity='pore.mole_fraction')
         self.alg.run()
         self.phase.update(self.alg.results())
         self.phys.regenerate_models(propnames='pore.source1')
         X = self.phase['pore.mole_fraction']
-        r1 = np.round(np.sum(0.8e-11 * np.exp(0.5 * X[self.source_pores] ** 2 -
+        r1 = np.round(np.sum(0.8e-11 * np.exp(0.5 * X[self.source_pores]**2 -
                       0.34) + 2e-14), 20)
         r2 = np.round(np.sum(self.phys['pore.source1.rate'][self.source_pores]), 20)
 #        r3 = np.round(self.alg.rate(pores=self.S_pores)[0], 20)
@@ -166,16 +166,16 @@ class GenericSourceTermTest:
                                                    phase=self.phase)
         self.alg.set_BC(bctype='dirichlet', bcvalues=0.4,
                         pores=self.BC_pores)
-        self.alg.set_source_term(propname='pore.source1',
-                                 pores=self.source_pores)
+        self.alg.set_source(propname='pore.source1',
+                            pores=self.source_pores)
         self.alg.setup(conductance='throat.diffusive_conductance',
                        quantity='pore.mole_fraction')
         self.alg.run()
         self.phase.update(self.alg.results())
         self.phys.regenerate_models(propnames='pore.source1')
         X = self.phase['pore.mole_fraction']
-        r1 = np.round(np.sum(0.16e-13 * np.log(4 * X[self.source_pores] ** (1.4) +
-                             0.133) / np.log(10) - 5.1e-13), 20)
+        r1 = np.round(np.sum(0.16e-13 * np.log(4 * X[self.source_pores]**(1.4)
+                             + 0.133) / np.log(10) - 5.1e-13), 20)
         r2 = np.round(np.sum(self.phys['pore.source1.rate'][self.source_pores]), 20)
 #        r3 = np.round(self.alg.rate(pores=self.S_pores)[0], 20)
         assert r1 == r2
@@ -200,16 +200,16 @@ class GenericSourceTermTest:
                                                    phase=self.phase)
         self.alg.set_BC(bctype='dirichlet', bcvalues=0.4,
                         pores=self.BC_pores)
-        self.alg.set_source_term(propname='pore.source1',
-                                 pores=self.source_pores)
+        self.alg.set_source(propname='pore.source1',
+                            pores=self.source_pores)
         self.alg.setup(conductance='throat.diffusive_conductance',
                        quantity='pore.mole_fraction')
         self.alg.run()
         self.phase.update(self.alg.results())
         self.phys.regenerate_models(propnames='pore.source1')
         X = self.phase['pore.mole_fraction']
-        r1 = np.round(np.sum(0.16e-14 * np.log(4 * X[self.source_pores] ** (1.4) +
-                             0.133) - 5.1e-14), 20)
+        r1 = np.round(np.sum(0.16e-14 * np.log(4 * X[self.source_pores]**(1.4)
+                             + 0.133) - 5.1e-14), 20)
         r2 = np.round(np.sum(self.phys['pore.source1.rate'][self.source_pores]), 20)
 #        r3 = np.round(self.alg.rate(pores=self.S_pores)[0], 20)
         assert r1 == r2
