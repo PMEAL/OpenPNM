@@ -13,13 +13,23 @@ class ReactiveTransport(GenericTransport):
                               'tolerance': 0.001})
         super().__init__(**kwargs)
 
-    def set_source_term(self, propname, pores):
+    def set_source(self, propname, pores):
         r"""
+        Applies a given source term to the specified pores
+
+        Parameters
+        ----------
+        propname : string
+            The property name of the source term model to be applied
+
+        pores : array_like
+            The pore indices where the source term should be applied
+
         """
         self.settings['sources'].append(propname)
         self[propname] = self.tomask(pores=pores)
 
-    def apply_sources(self):
+    def _apply_sources(self):
         phase = self.project.phases()[self.settings['phase']]
         for item in self.settings['sources']:
             Ps = self.pores(item)
@@ -50,14 +60,14 @@ class ReactiveTransport(GenericTransport):
         """
         print('―'*80)
         print('Running ReactiveTransport')
-        self.setup()
-        self._run_reactive(x=x)
+        x = self._run_reactive(x=x)
+        return x
 
     def _run_reactive(self, x):
         if self.settings['quantity'] not in self.keys():
             self[self.settings['quantity']] = 0
-        self.setup()
-        self.apply_sources()
+        self._apply_BCs()
+        self._apply_sources()
         if x is None:
             x = np.zeros(shape=[self.Np, ], dtype=float)
         x_new = self._solve()
@@ -65,7 +75,7 @@ class ReactiveTransport(GenericTransport):
         res = np.sum(np.absolute(x**2 - x_new**2))
         if res < self.settings['tolerance']:
             print('Solution converged: ' + str(res))
-            return
+            return x_new
         else:
             print('Tolerance not met: ' + str(res))
             self._run_reactive(x=x_new)

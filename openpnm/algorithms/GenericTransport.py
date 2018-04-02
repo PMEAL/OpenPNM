@@ -25,15 +25,56 @@ class GenericTransport(GenericAlgorithm):
             project = network.project
 
         super().__init__(project=project, **kwargs)
+        self.A = None
+        self._pure_A = None
+        self.b = None
+        self._pure_b = None
 
     def set_dirchlet_BC(self, pores, values):
         r"""
+        Apply *Dirichlet* boundary conditons to the specified pore locations.
+        Dirichlet conditions refer to constant *quantity* (e.g. pressure).
+
+        Parameters
+        ----------
+        pores : array_like
+            The pore indices where the condition should be applied
+
+        values : scalar or array_like
+            The value to of the boundary condition.  If a scalar is supplied
+            it is assigne to all locations, and if a vector is applied it
+            corresponds directy to the locations given in ``pores``.
+
+        Notes
+        -----
+        The definition of ``quantity`` is specified in the algorithm's
+        ``settings``, e.g. ``alg.settings['quentity'] = 'pore.pressure'``.
         """
         self.set_BC(pores=pores, bctype='dirichlet', bcvalues=values,
                     mode='merge')
 
     def set_neumann_BC(self, pores, values):
         r"""
+        Apply *Neumann*-type boundary conditons to the specified pore
+        locations. Neumann conditions technnically refer to the *gradient* of
+        the *quantity* (e.g. dP/dz), while in OpenPNM this means the flow-rate
+        of the quantity, which is the gradient multiplied by the conductance
+        (e.g n = g dP/dz).
+
+        Parameters
+        ----------
+        pores : array_like
+            The pore indices where the condition should be applied
+
+        values : scalar or array_like
+            The value to of the boundary condition.  If a scalar is supplied
+            it is assigne to all locations, and if a vector is applied it
+            corresponds directy to the locations given in ``pores``.
+
+        Notes
+        -----
+        The definition of ``quantity`` is specified in the algorithm's
+        ``settings``, e.g. ``alg.settings['quentity'] = 'pore.pressure'``.
         """
         self.set_BC(pores=pores, bctype='neumann', bcvalues=values,
                     mode='merge')
@@ -69,7 +110,7 @@ class GenericTransport(GenericAlgorithm):
         Notes
         -----
         It is not possible to have multiple boundary conditions for a
-        specified location in just one algorithm. Use ``mode='remove'`` to
+        specified location in one algorithm. Use ``mode='remove'`` to
         clear existing BCs before applying new ones or ``mode='overwrite'``
         which removes all existing BC's before applying the new ones.
 
@@ -79,8 +120,7 @@ class GenericTransport(GenericAlgorithm):
 
         """
         # Hijack the parse_mode function to verify bctype argument
-        bctype = self._parse_mode(bctype, allowed=['dirichlet', 'neumann',
-                                                   'neumann_group'],
+        bctype = self._parse_mode(bctype, allowed=['dirichlet', 'neumann'],
                                   single=True)
         mode = self._parse_mode(mode, allowed=['merge', 'overwrite', 'remove'],
                                 single=True)
@@ -122,30 +162,64 @@ class GenericTransport(GenericAlgorithm):
             self['pore.neumann'][pores] = False
             self['pore.neumann_value'][pores] = np.nan
 
-    def build_A(self):
+    def _build_A(self, force=False):
         r"""
-        """
-        network = self.project.network
-        phase = self.project.phases()[self.settings['phase']]
-        g = phase[self.settings['conductance']]
-        am = network.create_adjacency_matrix(weights=g, fmt='coo')
-        A = spgr.laplacian(am)
-        self.A = A
-        return A
+        Builds the coefficient matrix based on conductances between pores.
+        The conductance to use is specified in the algorithm's ``settings``
+        under ``conductance``.  In subclasses (e.g. ``FickianDiffusion``)
+        this is set by default, though it can be overwritten.
 
-    def build_b(self):
+        Parameters
+        ----------
+        force : Boolean (default is ``False)
+            If set to ``True`` then the A matrix is built from new.  If
+            ``False`` (the default), a cached version of A is returned.  The
+            cached version is *clean* in the sense that no boundary conditions
+            or sources terms have been added to it.
+        """
+        if force:
+            self._pure_A = None
+        if self._pure_A is None:
+            network = self.project.network
+            phase = self.project.phases()[self.settings['phase']]
+            g = phase[self.settings['conductance']]
+            am = network.create_adjacency_matrix(weights=g, fmt='coo')
+            self._pure_A = spgr.laplacian(am)
+        self.A = self._pure_A.copy()
+
+    def _build_b(self, force=False):
         r"""
-        """
-        b = np.zeros(shape=(self.Np, ), dtype=float)  # Create b matrix of 0's
-        self.b = b
-        return b
+        Builds the RHS matrix, without applying any boundary conditions or
+        source terms. This method is trivial an basically creates a column
+        vector of 0's.
 
-    def apply_BCs(self):
+        Parameters
+        ----------
+        force : Boolean (default is ``False``)
+            If set to ``True`` then the b matrix is built from new.  If
+            ``False`` (the default), a cached version of b is returned.  The
+            cached version is *clean* in the sense that no boundary conditions
+            or sources terms have been added to it.
+        """
+        if force:
+            self._pure_b = None
+        if self._pure_b is None:
+            b = np.zeros(shape=(self.Np, ), dtype=float)  # Create vector of 0s
+            self._pure_b = b
+        self.b = self._pure_b.copy()
+
+    def _apply_BCs(self):
+        r"""
+        Applies all the boundary conditions that have been specified, by
+        adding values to the *A* and *b* matrices.
+
+        """
+        self._build_A()
+        self._build_b()
         if 'pore.neumann' in self.keys():
             # Update b
             ind = self['pore.neumann']
             self.b[ind] = self['pore.neumann_value'][ind]
-
         if 'pore.dirichlet' in self.keys():
             # Update b
             ind = self['pore.dirichlet']
@@ -160,13 +234,6 @@ class GenericTransport(GenericAlgorithm):
             self.A.setdiag(datadiag)
             self.A.eliminate_zeros()  # Remove 0 entries
 
-    def setup(self):
-        r"""
-        """
-        self.build_A()
-        self.build_b()
-        self.apply_BCs()
-
     def run(self):
         r"""
         Builds the A and b matrices, and calls the solver specified in the
@@ -177,27 +244,38 @@ class GenericTransport(GenericAlgorithm):
         x : ND-array
             Initial guess of unknown variable
 
+        Returns
+        -------
+        Nothing is returned...the solution is stored on the objecxt under
+        ``pore.quantity`` where *quantity* is specified in the ``settings``
+        attribute.
+
         """
         print('―'*80)
         print('Running GenericTransport')
-        self.setup()
         self._run_generic()
 
     def _run_generic(self):
+        self._apply_BCs()
         x_new = self._solve()
         self[self.settings['quantity']] = x_new
 
     def _solve(self, A=None, b=None):
         r"""
-        Sends the A and b matrices to the specified solver.
+        Sends the A and b matrices to the specified solver, and solves for *x*
+        given the boundary conditions, and source terms based on the present
+        value of *x*.  This method does NOT iterate to solve for non-linear
+        source terms or march time steps.
 
         Parameters
         ----------
         A : sparse matrix
-            The coefficient matrix in sparse format
+            The coefficient matrix in sparse format. If not specified, then
+            it uses  the ``A`` matrix attached to the object.
 
         b : ND-array
-            The RHS matrix in any format
+            The RHS matrix in any format.  If not specified, then it uses
+            the ``b`` matrix attached to the object.
 
         Notes
         -----
@@ -207,14 +285,20 @@ class GenericTransport(GenericAlgorithm):
         """
         if A is None:
             A = self.A
+            if A is None:
+                raise Exception('The A matrix has not been built yet')
         if b is None:
             b = self.b
+            if b is None:
+                raise Exception('The b matrix has not been built yet')
         solver = getattr(sprs.linalg, self.settings['solver'])
         x = solver(A=A.tocsr(), b=b)
         return x
 
     def results(self):
         r"""
+        Fetches the calculated quantity from the algorithm and returns it as
+        an array.
         """
         quantity = self.settings['quantity']
         d = {quantity: self[quantity]}

@@ -1,9 +1,9 @@
-from openpnm.algorithms import GenericTransport
+from openpnm.algorithms import ReactiveTransport
 from openpnm.core import logging
 logger = logging.getLogger(__name__)
 
 
-class OhmicConduction(GenericTransport):
+class OhmicConduction(ReactiveTransport):
     r"""
     A subclass of GenericLinearTransport to simulate electron and ionic
     conduction.  The 2 main roles of this subclass are to set the default

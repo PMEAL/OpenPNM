@@ -18,12 +18,12 @@ class TransientTransport(GenericTransport):
         """
         self[self.settings['quantity']] = values
 
-    def update_A(self):
+    def _update_A(self):
         r"""
         """
         pass
 
-    def update_b(self):
+    def _update_b(self):
         r"""
         """
         pass
@@ -33,12 +33,12 @@ class TransientTransport(GenericTransport):
         """
         print('―'*80)
         print('Running TransientTransport')
-        self.setup()
         self._run_transient(t=t)
 
     def _run_transient(self, t):
-        self.update_A()
-        self.update_b()
+        self._apply_BCs()
+        self._update_A()
+        self._update_b()
         x_new = self._solve()
         self[self.settings['quantity']] = x_new
         if t < self.settings['t_final']:
