@@ -38,6 +38,8 @@ class ReactiveTransport(GenericTransport):
             quantity = self.settings['quantity']
             # Put quantity on phase so physics finds it when regenerating
             phase[quantity] = self[quantity]
+            # Regenerate models, on either phase or physics
+            phase.regenerate_models(propnames=item)
             for phys in physics:
                 phys.regenerate_models(propnames=item)
             # Add S1 to diagonal of A
