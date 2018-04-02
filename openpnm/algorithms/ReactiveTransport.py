@@ -31,13 +31,15 @@ class ReactiveTransport(GenericTransport):
 
     def _apply_sources(self):
         phase = self.project.phases()[self.settings['phase']]
+        physics = self.project.find_physics(phase=phase)
         for item in self.settings['sources']:
             Ps = self.pores(item)
             # Regenerate models with new guess
             quantity = self.settings['quantity']
             # Put quantity on phase so physics finds it when regenerating
             phase[quantity] = self[quantity]
-            phase.regenerate_models(propnames=item)
+            for phys in physics:
+                phys.regenerate_models(propnames=item)
             # Add S1 to diagonal of A
             # TODO: We need this to NOT overwrite the A and b, but create
             # copy, otherwise we have to regenerate A and b on each loop

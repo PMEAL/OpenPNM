@@ -43,7 +43,7 @@ water.add_model(propname='pore.reaction',
 
 s = {'conductance': 'throat.conductance',
      'quantity': 'pore.pressure'}
-alg1 = op.algorithms.GenericTransport(network=pn, phase=water, settings=s)
+alg1 = op.algorithms.ReactiveTransport(network=pn, phase=water, settings=s)
 alg1.set_dirchlet_BC(pores=pn.pores('inlets'), values=1)
 alg1.set_dirchlet_BC(pores=pn.pores('outlets'), values=0)
 alg1.run()
