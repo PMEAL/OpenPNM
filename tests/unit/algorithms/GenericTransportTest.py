@@ -58,8 +58,8 @@ class GenericTransportTest:
         assert sp.all(x == y)
 
     def teardown_class(self):
-        mgr = op.Base.Workspace()
-        mgr.clear()
+        ws = op.core.Workspace()
+        ws.clear()
 
 
 if __name__ == '__main__':
