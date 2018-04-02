@@ -46,10 +46,10 @@ class ReactiveTransport(GenericTransport):
             # TODO: We need this to NOT overwrite the A and b, but create
             # copy, otherwise we have to regenerate A and b on each loop
             datadiag = self.A.diagonal()
-            datadiag[Ps] = datadiag[Ps] + phase[item+'_S1'][Ps]
+            datadiag[Ps] = datadiag[Ps] + phase[item+'.'+'S1'][Ps]
             self.A.setdiag(datadiag)
             # Add S2 to b
-            self.b[Ps] = self.b[Ps] - phase[item+'_S2'][Ps]
+            self.b[Ps] = self.b[Ps] - phase[item+'.'+'S2'][Ps]
 
     def run(self, x=None):
         r"""

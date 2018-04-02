@@ -563,9 +563,9 @@ class BaseTest:
 
     def test_write_dict(self):
         self.net['pore.test_dict'] = {'test1': 1, 'test2': self.net.Ps}
-        assert 'pore.test_dict_test1' in self.net.keys()
-        assert 'pore.test_dict_test2' in self.net.keys()
-        self.net['pore.test_dict'] = {'test1': 1, 'test2': self.net.Ps}
+        assert 'pore.test_dict.test1' in self.net.keys()
+        assert self.net['pore.test_dict.test1'].shape == (self.net.Np, )
+        assert 'pore.test_dict.test2' in self.net.keys()
 
     def test_pore_mapping(self):
         a = self.geo21['pore._id']
