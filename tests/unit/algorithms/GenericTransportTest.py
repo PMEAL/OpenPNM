@@ -16,19 +16,38 @@ class GenericTransportTest:
                                               phase=self.phase,
                                               geometry=self.geo)
         self.phys['throat.diffusive_conductance'] = 1.0
-        self.phys['pore.A'] = 1e6
-        self.phys['pore.k'] = 2
-        mod = op.models.physics.generic_source_term.standard_kinetics
-        self.phys.add_model(propname='pore.reaction',
-                            model=mod,
-                            prefactor='pore.A',
-                            exponent='pore.k',
-                            quantity='pore.mole_fraction',
-                            regen_mode='normal')
+
+    def test_results(self):
+        alg = op.algorithms.GenericTransport(network=self.net,
+                                             phase=self.phase)
+        with pytest.raises(Exception):
+            alg.results()
+
+    def test_remove_boundary_conditions(self):
+        alg = op.algorithms.GenericTransport(network=self.net,
+                                             phase=self.phase)
+        alg.set_dirchlet_BC(pores=self.net.pores('top'), values=1)
+        alg.set_dirchlet_BC(pores=self.net.pores('bottom'), values=0)
+        assert sp.sum(alg['pore.dirichlet']) > 0
+        alg.remove_BC(pores=self.net.pores('top'))
+        assert sp.sum(alg['pore.dirichlet']) > 0
+        alg.remove_BC(pores=self.net.pores('bottom'))
+        assert sp.sum(alg['pore.dirichlet']) == 0
+
+    def test_generic_transport(self):
+        alg = op.algorithms.GenericTransport(network=self.net,
+                                             phase=self.phase)
+        alg.settings['conductance'] = 'throat.diffusive_conductance'
+        alg.settings['quantity'] = 'pore.mole_fraction'
+        alg.set_dirchlet_BC(pores=self.net.pores('top'), values=1)
+        alg.set_dirchlet_BC(pores=self.net.pores('bottom'), values=0)
+        alg.run()
 
     def test_two_dirichlet_conditions(self):
-        alg = op.algorithms.FickianDiffusion(network=self.net,
+        alg = op.algorithms.GenericTransport(network=self.net,
                                              phase=self.phase)
+        alg.settings['conductance'] = 'throat.diffusive_conductance'
+        alg.settings['quantity'] = 'pore.mole_fraction'
         alg.set_dirchlet_BC(pores=self.net.pores('top'), values=1)
         alg.set_dirchlet_BC(pores=self.net.pores('bottom'), values=0)
         alg.run()
@@ -37,23 +56,14 @@ class GenericTransportTest:
         assert sp.all(x == y)
 
     def test_one_dirichlet_one_neumann(self):
-        alg = op.algorithms.FickianDiffusion(network=self.net,
+        alg = op.algorithms.GenericTransport(network=self.net,
                                              phase=self.phase)
+        alg.settings['conductance'] = 'throat.diffusive_conductance'
+        alg.settings['quantity'] = 'pore.mole_fraction'
         alg.set_neumann_BC(pores=self.net.pores('bottom'), values=1)
         alg.set_dirchlet_BC(pores=self.net.pores('top'), values=0)
         alg.run()
         x = [0., 1., 2., 3., 4., 5., 6., 7., 8.]
-        y = sp.unique(sp.around(alg['pore.mole_fraction'], decimals=3))
-        assert sp.all(x == y)
-
-    def test_one_dirichlet_one_source_term(self):
-        alg = op.algorithms.FickianDiffusion(network=self.net,
-                                             phase=self.phase)
-        alg.set_dirchlet_BC(pores=self.net.pores('top'), values=1)
-        alg.set_source(pores=self.net.pores('bottom'),
-                       propname='pore.reaction')
-        alg.run()
-        x = [0.0, 0.125, 0.25, 0.375, 0.5, 0.625, 0.75, 0.875, 1.0]
         y = sp.unique(sp.around(alg['pore.mole_fraction'], decimals=3))
         assert sp.all(x == y)
 
