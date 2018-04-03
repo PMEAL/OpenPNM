@@ -31,7 +31,7 @@ class GenericSourceTermTest:
         self.alg = op.algorithms.ReactiveTransport(network=self.net,
                                                    phase=self.phase)
         self.alg.settings.update({'conductance': 'throat.diffusive_conductance',
-                                 'quantity': 'pore.mole_fraction'})
+                                  'quantity': 'pore.mole_fraction'})
         self.alg.set_BC(bctype='dirichlet', bcvalues=0.4,
                         pores=self.BC_pores)
         self.alg.set_source(propname='pore.source1',
@@ -64,7 +64,7 @@ class GenericSourceTermTest:
         self.alg.set_source(propname='pore.source1',
                             pores=self.source_pores)
         self.alg.settings.update({'conductance': 'throat.diffusive_conductance',
-                                 'quantity': 'pore.mole_fraction'})
+                                  'quantity': 'pore.mole_fraction'})
         self.alg.run()
         self.phase.update(self.alg.results())
         self.phys.regenerate_models(propnames='pore.source1')
@@ -99,7 +99,7 @@ class GenericSourceTermTest:
         self.alg.set_source(propname='pore.source1',
                             pores=self.source_pores)
         self.alg.settings.update({'conductance': 'throat.diffusive_conductance',
-                                 'quantity': 'pore.mole_fraction'})
+                                  'quantity': 'pore.mole_fraction'})
         self.alg.run()
         self.phase.update(self.alg.results())
         self.phys.regenerate_models(propnames='pore.source1')
@@ -133,7 +133,7 @@ class GenericSourceTermTest:
         self.alg.set_source(propname='pore.source1',
                             pores=self.source_pores)
         self.alg.settings.update({'conductance': 'throat.diffusive_conductance',
-                                 'quantity': 'pore.mole_fraction'})
+                                  'quantity': 'pore.mole_fraction'})
         self.alg.run()
         self.phase.update(self.alg.results())
         self.phys.regenerate_models(propnames='pore.source1')
@@ -169,13 +169,13 @@ class GenericSourceTermTest:
         self.alg.set_source(propname='pore.source1',
                             pores=self.source_pores)
         self.alg.settings.update({'conductance': 'throat.diffusive_conductance',
-                                 'quantity': 'pore.mole_fraction'})
+                                  'quantity': 'pore.mole_fraction'})
         self.alg.run()
         self.phase.update(self.alg.results())
         self.phys.regenerate_models(propnames='pore.source1')
         X = self.phase['pore.mole_fraction']
-        r1 = np.round(np.sum(0.16e-13 * np.log(4 * X[self.source_pores]**(1.4)
-                             + 0.133) / np.log(10) - 5.1e-13), 20)
+        r1 = np.round(np.sum(0.16e-13*np.log(4*X[self.source_pores]**(1.4) +
+                             0.133) / np.log(10) - 5.1e-13), 20)
         r2 = np.round(np.sum(self.phys['pore.source1.rate'][self.source_pores]), 20)
 #        r3 = np.round(self.alg.rate(pores=self.S_pores)[0], 20)
         assert r1 == r2
@@ -203,13 +203,13 @@ class GenericSourceTermTest:
         self.alg.set_source(propname='pore.source1',
                             pores=self.source_pores)
         self.alg.settings.update({'conductance': 'throat.diffusive_conductance',
-                                 'quantity': 'pore.mole_fraction'})
+                                  'quantity': 'pore.mole_fraction'})
         self.alg.run()
         self.phase.update(self.alg.results())
         self.phys.regenerate_models(propnames='pore.source1')
         X = self.phase['pore.mole_fraction']
-        r1 = np.round(np.sum(0.16e-14 * np.log(4 * X[self.source_pores]**(1.4)
-                             + 0.133) - 5.1e-14), 20)
+        r1 = np.round(np.sum(0.16e-14*np.log(4*X[self.source_pores]**(1.4) +
+                             0.133) - 5.1e-14), 20)
         r2 = np.round(np.sum(self.phys['pore.source1.rate'][self.source_pores]), 20)
 #        r3 = np.round(self.alg.rate(pores=self.S_pores)[0], 20)
         assert r1 == r2
