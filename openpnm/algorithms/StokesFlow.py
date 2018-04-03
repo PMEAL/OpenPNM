@@ -21,10 +21,10 @@ class StokesFlow(ReactiveTransport):
 
     def calc_eff_permeability(self):
         r"""
-        This calculates the effective permeability in this linear
-        transport algorithm.
+        This calculates the effective permeability in this linear transport
+        algorithm.
         """
-        phase = self.project.phases[self.settings['phase']]
+        phase = self.project.phases()[self.settings['phase']]
         d_normal = self._calc_eff_prop()
-        self._eff_property = d_normal / sp.mean(phase['pore.viscosity'])
+        self._eff_property = d_normal * sp.mean(phase['pore.viscosity'])
         return self._eff_property

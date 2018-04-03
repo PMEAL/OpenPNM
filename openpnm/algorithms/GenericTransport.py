@@ -327,18 +327,18 @@ class GenericTransport(GenericAlgorithm):
         as material being consumed.
         """
         network = self.project.network
-        phase = self.project.phases[self.settings['phase']]
+        phase = self.project.phases()[self.settings['phase']]
         conductance = phase[self.settings['conductance']]
         quantity = self[self.settings['quantity']]
         pores = self._parse_indices(pores)
         R = []
         if mode == 'group':
             t = network.find_neighbor_throats(pores, flatten=True,
-                                              mode='not_intersection')
+                                              mode='exclusive_or')
             throat_group_num = 1
         elif mode == 'single':
             t = network.find_neighbor_throats(pores, flatten=False,
-                                              mode='not_intersection')
+                                              mode='exclusive_or')
             throat_group_num = np.shape(t)[0]
         for i in np.r_[0: throat_group_num]:
             if mode == 'group':
@@ -362,13 +362,13 @@ class GenericTransport(GenericAlgorithm):
 
     def _calc_eff_prop(self):
         r"""
-        Returns the main parameters for calculating the effective
-        property in a linear transport equation.  It also checks for the
-        proper boundary conditions, inlets and outlets.
+        Returns the main parameters for calculating the effective property
+        in a linear transport equation.  It also checks for the proper
+        boundary conditions, inlets and outlets.
         """
         network = self.project.network
         if self.settings['quantity'] not in self.keys():
-            raise Exception('The algorit hm has not been run yet. Cannot ' +
+            raise Exception('The algorithm has not been run yet. Cannot ' +
                             'calculate effective property.')
 
         # Determine boundary conditions by analyzing algorithm object
@@ -378,8 +378,9 @@ class GenericTransport(GenericAlgorithm):
         outlets = np.where(self['pore.dirichlet_value'] == np.amin(BCs))[0]
 
         # Fetch area and length of domain
-        A = network.domain_area(face=inlets)
-        L = network.domain_length(face_1=inlets, face_2=outlets)
+        # TODO: The area and length of network remains a problem
+        A = network.domain_area
+        L = network.domain_length
         flow = self.rate(pores=inlets)
         D = np.sum(flow)*L/A/(BCs[0] - BCs[1])
         return D
