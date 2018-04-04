@@ -29,7 +29,7 @@ class Project(list):
     def append(self, obj):
         self.extend(obj)
 
-    def clear(self, objtype=[], invert=False):
+    def clear(self, objtype=[]):
         r"""
         Clears objects from the project entirely or selectively, depdening on
         the received arguments.
@@ -43,20 +43,19 @@ class Project(list):
             *'physics'*, or *'algorithm'*.  It's also possible to use
             abbreviations, like *'geom'*.
 
-        invert : boolean (default is ``false``)
-            This reverses the logic of which type of objects are cleared, such
-            that all objects are deleted *except* the given types.
-
         """
         if len(objtype) == 0:
             super().clear()
         else:
             names = [obj.name for obj in self]
             for name in names:
-                obj = self[name]
-                for t in objtype:
-                    if obj._isa(t):
-                        self._purge(obj)
+                try:
+                    obj = self[name]
+                    for t in objtype:
+                        if obj._isa(t):
+                            self.purge_object(obj)
+                except KeyError:
+                    pass
 
     @property
     def workspace(self):
