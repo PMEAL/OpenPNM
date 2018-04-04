@@ -6,6 +6,7 @@ Submodule -- generic_source_term
 """
 
 import scipy as _sp
+import sympy as syp
 
 
 def standard_kinetics(target, quantity, prefactor, exponent):
@@ -23,7 +24,7 @@ def standard_kinetics(target, quantity, prefactor, exponent):
     return values
 
 
-def linear(target, A1='', A2='', x='', return_rate=True, **kwargs):
+def linear(target, A1='', A2='', x='', **kwargs):
     r"""
     For the following source term:
         .. math::
@@ -428,4 +429,148 @@ def natural_logarithm(target, A1='', A2='', A3='', A4='', A5='',
         a['5'] - a['1'] * a['2'] * a['3'] * \
         X ** a['3'] / (a['2'] * X ** a['3'] + a['4'])
     values = {'pore.S1': S1, 'pore.S2': S2, 'pore.rate': r}
+    return values
+
+# Symbols used in all symbolic functions
+# a-f are coefficients and var is the independent variable
+a,b,c,d,e,f,var = syp.symbols('a,b,c,d,e,f,var')
+
+def build_func(eq, args=None):
+    r'''
+    Take a symbolic equation and return the lambdified version plus the
+    Linearization of form S1 * x + S2
+    '''
+    eq_prime = eq.diff(var)
+    s1 = eq_prime
+    s2 = eq - eq_prime*var
+    EQ = syp.lambdify(args, eq, 'numpy')
+    S1 = syp.lambdify(args, s1, 'numpy')
+    S2 = syp.lambdify(args, s2, 'numpy')
+    return EQ, S1, S2
+
+def linear_sym(target, A1='', A2='', x='', **kwargs):
+    r'''
+    Linear source term
+    '''
+    A = target['pore.' + A1.split('.')[-1]]
+    B = target['pore.' + A2.split('.')[-1]]
+    X = target['pore.' + x.split('.')[-1]]
+    # Equation
+    y = a*var + b
+    # Callable functions
+    r, s1, s2 = build_func(y, (a,b,var))
+    # Values
+    r_val=r(A, B, X)
+    s1_val=s1(A, B, X)
+    s2_val=s2(A, B, X)
+    values = {'pore.S1': s1_val, 'pore.S2': s2_val, 'pore.rate': r_val}
+    return values
+
+def power_law_sym(target, A1='', A2='', A3='', x='', **kwargs):
+    r'''
+    Power Law source term
+    '''
+    A = target['pore.' + A1.split('.')[-1]]
+    B = target['pore.' + A2.split('.')[-1]]
+    C = target['pore.' + A3.split('.')[-1]]
+    X = target['pore.' + x.split('.')[-1]]
+    # Equation
+    y =  a*var**b + c
+    # Callable functions
+    r, s1, s2 = build_func(y, (a,b,c,var))
+    # Values
+    r_val=r(A, B, C, X)
+    s1_val=s1(A, B, C, X)
+    s2_val=s2(A, B, C, X)
+    values = {'pore.S1': s1_val, 'pore.S2': s2_val, 'pore.rate': r_val}
+    return values
+
+def exponential_sym(target, A1='', A2='', A3='',
+                    A4='', A5='', A6='', x='', **kwargs):
+    r'''
+    Exponential source term
+    '''
+    A = target['pore.' + A1.split('.')[-1]]
+    B = target['pore.' + A2.split('.')[-1]]
+    C = target['pore.' + A3.split('.')[-1]]
+    D = target['pore.' + A4.split('.')[-1]]
+    E = target['pore.' + A5.split('.')[-1]]
+    F = target['pore.' + A6.split('.')[-1]]
+    X = target['pore.' + x.split('.')[-1]]
+    # Equation
+    y =  a*b**(c*var**d + e)+f
+    # Callable functions
+    r, s1, s2 = build_func(y, (a,b,c,d,e,f,var))
+    # Values
+    r_val=r(A, B, C, D, E, F, X)
+    s1_val=s1(A, B, C, D, E, F, X)
+    s2_val=s2(A, B, C, D, E, F, X)
+    values = {'pore.S1': s1_val, 'pore.S2': s2_val, 'pore.rate': r_val}
+    return values
+
+def natural_exponential_sym(target, A1='', A2='', A3='',
+                            A4='', A5='', x='', **kwargs):
+    r'''
+    Natural exponential source term
+    '''
+    A = target['pore.' + A1.split('.')[-1]]
+    B = target['pore.' + A2.split('.')[-1]]
+    C = target['pore.' + A3.split('.')[-1]]
+    D = target['pore.' + A4.split('.')[-1]]
+    E = target['pore.' + A5.split('.')[-1]]
+    X = target['pore.' + x.split('.')[-1]]
+    # Equation
+    y =  a*syp.exp(b*var**c + d)+e
+    # Callable functions
+    r, s1, s2 = build_func(y, (a,b,c,d,e,var))
+    # Values
+    r_val=r(A, B, C, D, E, X)
+    s1_val=s1(A, B, C, D, E, X)
+    s2_val=s2(A, B, C, D, E, X)
+    values = {'pore.S1': s1_val, 'pore.S2': s2_val, 'pore.rate': r_val}
+    return values
+
+def logarithm_sym(target, A1='', A2='', A3='',
+                  A4='', A5='', A6='', x='', **kwargs):
+    r'''
+    Logarithmic source term
+    '''
+    A = target['pore.' + A1.split('.')[-1]]
+    B = target['pore.' + A2.split('.')[-1]]
+    C = target['pore.' + A3.split('.')[-1]]
+    D = target['pore.' + A4.split('.')[-1]]
+    E = target['pore.' + A5.split('.')[-1]]
+    F = target['pore.' + A6.split('.')[-1]]
+    X = target['pore.' + x.split('.')[-1]]
+    # Equation
+    y =  a*syp.log((c*var**d + e),b)+f
+    # Callable functions
+    r, s1, s2 = build_func(y, (a,b,c,d,e,f,var))
+    # Values
+    r_val=r(A, B, C, D, E, F, X)
+    s1_val=s1(A, B, C, D, E, F, X)
+    s2_val=s2(A, B, C, D, E, F, X)
+    values = {'pore.S1': s1_val, 'pore.S2': s2_val, 'pore.rate': r_val}
+    return values
+
+def natural_logarithm_sym(target, A1='', A2='', A3='',
+                          A4='', A5='', x='', **kwargs):
+    r'''
+    Natural log source term
+    '''
+    A = target['pore.' + A1.split('.')[-1]]
+    B = target['pore.' + A2.split('.')[-1]]
+    C = target['pore.' + A3.split('.')[-1]]
+    D = target['pore.' + A4.split('.')[-1]]
+    E = target['pore.' + A5.split('.')[-1]]
+    X = target['pore.' + x.split('.')[-1]]
+    # Equation
+    y =  a*syp.ln(b*var**c + d)+e
+    # Callable functions
+    r, s1, s2 = build_func(y, (a,b,c,d,e,var))
+    # Values
+    r_val=r(A, B, C, D, E, X)
+    s1_val=s1(A, B, C, D, E, X)
+    s2_val=s2(A, B, C, D, E, X)
+    values = {'pore.S1': s1_val, 'pore.S2': s2_val, 'pore.rate': r_val}
     return values
