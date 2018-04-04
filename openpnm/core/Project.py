@@ -107,8 +107,7 @@ class Project(list):
             return geom
         # Otherwise, use the bottom-up approach
         for geo in self.geometries().values():
-            phys = self.find_physics(geometry=geo)
-            if phys is physics:
+            if physics in self.find_physics(geometry=geo):
                 return geo
         # If all else fails, throw an exception
         raise Exception('Cannot find a geometry associated with '+physics.name)
