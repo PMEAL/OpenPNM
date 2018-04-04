@@ -23,7 +23,7 @@ def standard_kinetics(target, quantity, prefactor, exponent):
     return values
 
 
-def linear(physics, phase, A1='', A2='', x='', return_rate=True, **kwargs):
+def linear(target, A1='', A2='', x='', return_rate=True, **kwargs):
     r"""
     For the following source term:
         .. math::
@@ -53,26 +53,17 @@ def linear(physics, phase, A1='', A2='', x='', return_rate=True, **kwargs):
 
     """
     if x is '':
-        X = _sp.ones(physics.Np) * _sp.nan
+        X = _sp.ones(target.Np) * _sp.nan
     else:
         if type(x) == str:
             x = 'pore.' + x.split('.')[-1]
             try:
-                X = physics[x]
+                X = target[x]
             except KeyError:
-                raise Exception(physics.name +
+                raise Exception(target.name +
                                 ' does not have the pore property :' + x + '!')
         else:
             X = _sp.array(x)
-
-    length_X = _sp.size(X)
-    if length_X != physics.Np:
-        if length_X == 1:
-            X = X * _sp.ones(physics.Np)
-        elif length_X >= phase.Np:
-            X = X[physics.map_pores()]
-        else:
-            raise Exception('Wrong size for the numerical array of x!')
 
     a = {}
     source_params = [A1, A2]
@@ -84,24 +75,23 @@ def linear(physics, phase, A1='', A2='', x='', return_rate=True, **kwargs):
             if type(A) == str:
                 A = 'pore.' + A.split('.')[-1]
                 try:
-                    a[str(ind+1)] = physics[A]
+                    a[str(ind+1)] = target[A]
                 except KeyError:
-                    raise Exception(physics.name + '/' + phase.name +
+                    raise Exception(target.name +
                                     ' does not have the pore property :' +
                                     A + '!')
             else:
                 raise Exception('source_term parameters can only be string '
                                 'type!')
 
-    if return_rate:
-        return(a['1'] * X + a['2'])
-    else:
-        S1 = a['1']
-        S2 = a['2']
-        return(_sp.vstack((S1, S2)).T)
+    r = a['1'] * X + a['2']
+    S1 = a['1']
+    S2 = a['2']
+    values = {'pore.S1': S1, 'pore.S2': S2, 'pore.rate': r}
+    return values
 
 
-def power_law(physics, phase, A1='', A2='', A3='', x='',
+def power_law(target, A1='', A2='', A3='', x='',
               return_rate=True, **kwargs):
     r"""
     For the following source term:
@@ -125,26 +115,17 @@ def power_law(physics, phase, A1='', A2='', A3='', x='',
 
     """
     if x is '':
-        X = _sp.ones(physics.Np) * _sp.nan
+        X = _sp.ones(target.Np) * _sp.nan
     else:
         if type(x) == str:
             x = 'pore.' + x.split('.')[-1]
             try:
-                X = physics[x]
+                X = target[x]
             except KeyError:
-                raise Exception(physics.name +
+                raise Exception(target.name +
                                 ' does not have the pore property :' + x + '!')
         else:
             X = _sp.array(x)
-
-    length_X = _sp.size(X)
-    if length_X != physics.Np:
-        if length_X == 1:
-            X = X * _sp.ones(physics.Np)
-        elif length_X >= phase.Np:
-            X = X[physics.map_pores()]
-        else:
-            raise Exception('Wrong size for the numerical array of x!')
 
     a = {}
     source_params = [A1, A2, A3]
@@ -156,25 +137,24 @@ def power_law(physics, phase, A1='', A2='', A3='', x='',
             if type(A) == str:
                 A = 'pore.' + A.split('.')[-1]
                 try:
-                    a[str(ind+1)] = physics[A]
+                    a[str(ind+1)] = target[A]
                 except KeyError:
-                    raise Exception(physics.name + '/' + phase.name +
+                    raise Exception(target.name +
                                     ' does not have the pore property :' +
                                     A + '!')
             else:
                 raise Exception('source_term parameters can only be string '
                                 'type!')
 
-    if return_rate:
-        return(a['1'] * X ** a['2'] + a['3'])
-    else:
-        S1 = a['1'] * a['2'] * X ** (a['2'] - 1)
-        S2 = a['1'] * X ** a['2'] * (1 - a['2']) + a['3']
-        return(_sp.vstack((S1, S2)).T)
+    r=a['1'] * X ** a['2'] + a['3']
+    S1 = a['1'] * a['2'] * X ** (a['2'] - 1)
+    S2 = a['1'] * X ** a['2'] * (1 - a['2']) + a['3']
+    values = {'pore.S1': S1, 'pore.S2': S2, 'pore.rate': r}
+    return values
 
 
-def exponential(physics, phase, A1='', A2='', A3='', A4='', A5='', A6='',
-                x='', return_rate=True, **kwargs):
+def exponential(target, A1='', A2='', A3='', A4='', A5='', A6='',
+                x='', **kwargs):
     r"""
     For the following source term:
         .. math::
@@ -197,26 +177,17 @@ def exponential(physics, phase, A1='', A2='', A3='', A4='', A5='', A6='',
 
     """
     if x is '':
-        X = _sp.ones(physics.Np) * _sp.nan
+        X = _sp.ones(target.Np) * _sp.nan
     else:
         if type(x) == str:
             x = 'pore.'+x.split('.')[-1]
             try:
-                X = physics[x]
+                X = target[x]
             except KeyError:
-                raise Exception(physics.name +
+                raise Exception(target.name +
                                 ' does not have the pore property :' + x + '!')
         else:
             X = _sp.array(x)
-
-    length_X = _sp.size(X)
-    if length_X != physics.Np:
-        if length_X == 1:
-            X = X * _sp.ones(physics.Np)
-        elif length_X >= phase.Np:
-            X = X[physics.map_pores()]
-        else:
-            raise Exception('Wrong size for the numerical array of x!')
 
     a = {}
     source_params = [A1, A2, A3, A4, A5, A6]
@@ -231,28 +202,28 @@ def exponential(physics, phase, A1='', A2='', A3='', A4='', A5='', A6='',
             if type(A) == str:
                 A = 'pore.' + A.split('.')[-1]
                 try:
-                    a[str(ind+1)] = physics[A]
+                    a[str(ind+1)] = target[A]
                 except KeyError:
-                    raise Exception(physics.name + '/' + phase.name +
+                    raise Exception(target.name +
                                     ' does not have the pore property :' +
                                     A + '!')
             else:
                 raise Exception('source_term parameters can only be string '
                                 'type!')
 
-    if return_rate:
-        return a['1'] * a['2'] ** (a['3'] * X ** a['4'] + a['5']) + a['6']
-    else:
-        S1 = a['1'] * a['3'] * a['4'] * \
-            X ** (a['4'] - 1) * _sp.log(a['2']) * \
-            a['2'] ** (a['3'] * X ** a['4'] + a['5'])
-        S2 = a['1'] * a['2'] ** (a['3'] * X ** a['4'] + a['5']) * \
-            (1 - a['3'] * a['4'] * _sp.log(a['2']) * X ** a['4']) + a['6']
-        return(_sp.vstack((S1, S2)).T)
+
+    r = a['1'] * a['2'] ** (a['3'] * X ** a['4'] + a['5']) + a['6']
+    S1 = a['1'] * a['3'] * a['4'] * \
+        X ** (a['4'] - 1) * _sp.log(a['2']) * \
+        a['2'] ** (a['3'] * X ** a['4'] + a['5'])
+    S2 = a['1'] * a['2'] ** (a['3'] * X ** a['4'] + a['5']) * \
+        (1 - a['3'] * a['4'] * _sp.log(a['2']) * X ** a['4']) + a['6']
+    values = {'pore.S1': S1, 'pore.S2': S2, 'pore.rate': r}
+    return values
 
 
-def natural_exponential(physics, phase, A1='', A2='', A3='', A4='', A5='',
-                        x='', return_rate=True, **kwargs):
+def natural_exponential(target, A1='', A2='', A3='', A4='', A5='',
+                        x='', **kwargs):
     r"""
     For the following source term:
         .. math::
@@ -275,26 +246,17 @@ def natural_exponential(physics, phase, A1='', A2='', A3='', A4='', A5='',
 
     """
     if x is '':
-        X = _sp.ones(physics.Np)*_sp.nan
+        X = _sp.ones(target.Np)*_sp.nan
     else:
         if type(x) == str:
             x = 'pore.'+x.split('.')[-1]
             try:
-                X = physics[x]
+                X = target[x]
             except KeyError:
-                raise Exception(physics.name +
+                raise Exception(target.name +
                                 ' does not have the pore property :' + x + '!')
         else:
             X = _sp.array(x)
-
-    length_X = _sp.size(X)
-    if length_X != physics.Np:
-        if length_X == 1:
-            X = X * _sp.ones(physics.Np)
-        elif length_X >= phase.Np:
-            X = X[physics.map_pores()]
-        else:
-            raise Exception('Wrong size for the numerical array of x!')
 
     a = {}
     source_params = [A1, A2, A3, A4, A5]
@@ -309,28 +271,27 @@ def natural_exponential(physics, phase, A1='', A2='', A3='', A4='', A5='',
             if type(A) == str:
                 A = 'pore.' + A.split('.')[-1]
                 try:
-                    a[str(ind+1)] = physics[A]
+                    a[str(ind+1)] = target[A]
                 except KeyError:
-                    raise Exception(physics.name + '/' + phase.name +
+                    raise Exception(target.name +
                                     ' does not have the pore property :' +
                                     A + '!')
             else:
                 raise Exception('source_term parameters can only be string '
                                 'type!')
 
-    if return_rate:
-        return(a['1'] * _sp.exp(a['2'] * X ** a['3'] + a['4']) + a['5'])
-    else:
-        S1 = a['1'] * a['2'] * \
-            a['3'] * X ** (a['3'] - 1) * \
-            _sp.exp(a['2'] * X ** a['3'] + a['4'])
-        S2 = a['1'] * (1 - a['2'] * a['3'] * X ** a['3']) * \
-            _sp.exp(a['2'] * X ** a['3'] + a['4']) + a['5']
-        return(_sp.vstack((S1, S2)).T)
+    r = a['1'] * _sp.exp(a['2'] * X ** a['3'] + a['4']) + a['5']
+    S1 = a['1'] * a['2'] * \
+        a['3'] * X ** (a['3'] - 1) * \
+        _sp.exp(a['2'] * X ** a['3'] + a['4'])
+    S2 = a['1'] * (1 - a['2'] * a['3'] * X ** a['3']) * \
+        _sp.exp(a['2'] * X ** a['3'] + a['4']) + a['5']
+    values = {'pore.S1': S1, 'pore.S2': S2, 'pore.rate': r}
+    return values
 
 
-def logarithm(physics, phase, A1='', A2='', A3='', A4='', A5='', A6='',
-              x='', return_rate=True, **kwargs):
+def logarithm(target, A1='', A2='', A3='', A4='', A5='', A6='',
+              x='', **kwargs):
     r"""
     For the following source term:
         .. math::
@@ -353,26 +314,18 @@ def logarithm(physics, phase, A1='', A2='', A3='', A4='', A5='', A6='',
 
     """
     if x is '':
-        X = _sp.ones(physics.Np)*_sp.nan
+        X = _sp.ones(target.Np)*_sp.nan
     else:
         if type(x) == str:
             x = 'pore.' + x.split('.')[-1]
             try:
-                X = physics[x]
+                X = target[x]
             except KeyError:
-                raise Exception(physics.name +
+                raise Exception(target.name +
                                 ' does not have the pore property :' + x + '!')
         else:
             X = _sp.array(x)
 
-    length_X = _sp.size(X)
-    if length_X != physics.Np:
-        if length_X == 1:
-            X = X * _sp.ones(physics.Np)
-        elif length_X >= phase.Np:
-            X = X[physics.map_pores()]
-        else:
-            raise Exception('Wrong size for the numerical array of x!')
 
     a = {}
     source_params = [A1, A2, A3, A4, A5, A6]
@@ -387,30 +340,29 @@ def logarithm(physics, phase, A1='', A2='', A3='', A4='', A5='', A6='',
             if type(A) == str:
                 A = 'pore.' + A.split('.')[-1]
                 try:
-                    a[str(ind+1)] = physics[A]
+                    a[str(ind+1)] = target[A]
                 except KeyError:
-                    raise Exception(physics.name + '/' + phase.name +
+                    raise Exception(target.name +
                                     ' does not have the pore property :' +
                                     A + '!')
             else:
                 raise Exception('source_term parameters can only be string '
                                 'type!')
 
-    if return_rate:
-        return(a['1'] * _sp.log(a['3'] * X ** a['4'] + a['5']) /
+    r = (a['1'] * _sp.log(a['3'] * X ** a['4'] + a['5']) /
                _sp.log(a['2']) + a['6'])
-    else:
-        S1 = a['1'] * a['3'] * a['4'] * \
-            X ** (a['4'] - 1) / \
-            (_sp.log(a['2']) * (a['3'] * X ** a['4'] + a['5']))
-        S2 = a['1'] * _sp.log(a['3'] * X ** a['4'] + a['5']) / \
-            _sp.log(a['2']) + a['6'] - a['1'] * a['3'] * \
-            a['4'] * X ** a['4'] / \
-            (_sp.log(a['2']) * (a['3'] * X ** a['4'] + a['5']))
-        return(_sp.vstack((S1, S2)).T)
+    S1 = a['1'] * a['3'] * a['4'] * \
+        X ** (a['4'] - 1) / \
+        (_sp.log(a['2']) * (a['3'] * X ** a['4'] + a['5']))
+    S2 = a['1'] * _sp.log(a['3'] * X ** a['4'] + a['5']) / \
+        _sp.log(a['2']) + a['6'] - a['1'] * a['3'] * \
+        a['4'] * X ** a['4'] / \
+        (_sp.log(a['2']) * (a['3'] * X ** a['4'] + a['5']))
+    values = {'pore.S1': S1, 'pore.S2': S2, 'pore.rate': r}
+    return values
 
 
-def natural_logarithm(physics, phase, A1='', A2='', A3='', A4='', A5='',
+def natural_logarithm(target, A1='', A2='', A3='', A4='', A5='',
                       x='', return_rate=True, **kwargs):
     r"""
     For the following source term:
@@ -434,27 +386,17 @@ def natural_logarithm(physics, phase, A1='', A2='', A3='', A4='', A5='',
 
     """
     if x is '':
-        X = _sp.ones(physics.Np)*_sp.nan
+        X = _sp.ones(target.Np)*_sp.nan
     else:
         if type(x) == str:
             x = 'pore.' + x.split('.')[-1]
             try:
-                X = physics[x]
+                X = target[x]
             except KeyError:
-                raise Exception(physics.name +
+                raise Exception(target.name +
                                 ' does not have the pore property :' + x + '!')
         else:
             X = _sp.array(x)
-
-    length_X = _sp.size(X)
-
-    if length_X != physics.Np:
-        if length_X == 1:
-            X = X * _sp.ones(physics.Np)
-        elif length_X >= phase.Np:
-            X = X[physics.map_pores()]
-        else:
-            raise Exception('Wrong size for the numerical array of x!')
 
     a = {}
     source_params = [A1, A2, A3, A4, A5]
@@ -469,22 +411,21 @@ def natural_logarithm(physics, phase, A1='', A2='', A3='', A4='', A5='',
             if type(A) == str:
                 A = 'pore.' + A.split('.')[-1]
                 try:
-                    a[str(ind+1)] = physics[A]
+                    a[str(ind+1)] = target[A]
                 except KeyError:
-                    raise Exception(physics.name + '/' + phase.name +
+                    raise Exception(target.name +
                                     ' does not have the pore property :' +
                                     A + '!')
             else:
                 raise Exception('source_term parameters can only be string '
                                 'type!')
 
-    if return_rate:
-        return(a['1'] * _sp.log(a['2'] * X ** a['3'] + a['4']) + a['5'])
-    else:
-        S1 = a['1'] * a['2'] * a['3'] * \
-            X ** (a['3'] - 1) / \
-            (a['2'] * X ** a['3'] + a['4'])
-        S2 = a['1'] * _sp.log(a['2'] * X ** a['3'] + a['4']) + \
-            a['5'] - a['1'] * a['2'] * a['3'] * \
-            X ** a['3'] / (a['2'] * X ** a['3'] + a['4'])
-        return(_sp.vstack((S1, S2)).T)
+    r = a['1'] * _sp.log(a['2'] * X ** a['3'] + a['4']) + a['5']
+    S1 = a['1'] * a['2'] * a['3'] * \
+        X ** (a['3'] - 1) / \
+        (a['2'] * X ** a['3'] + a['4'])
+    S2 = a['1'] * _sp.log(a['2'] * X ** a['3'] + a['4']) + \
+        a['5'] - a['1'] * a['2'] * a['3'] * \
+        X ** a['3'] / (a['2'] * X ** a['3'] + a['4'])
+    values = {'pore.S1': S1, 'pore.S2': S2, 'pore.rate': r}
+    return values
