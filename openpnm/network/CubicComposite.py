@@ -19,7 +19,8 @@ labels = None
 class CubicComposite(GenericNetwork):
     r"""
     """
-    def __init__(self, shapes, spacings, origins, labels=None, name=None, simulation=None):
+    def __init__(self, shapes, spacings, origins, labels=None, name=None,
+                 project=None):
 
         # If no labels given, then use default
         if labels is None:

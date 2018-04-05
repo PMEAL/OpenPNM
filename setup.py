@@ -36,14 +36,11 @@ setup(
         'openpnm',
         'openpnm.core',
         'openpnm.network',
-        'openpnm.network.models',
         'openpnm.geometry',
-        'openpnm.geometry.models',
         'openpnm.phases',
-        'openpnm.phases.models',
         'openpnm.physics',
-        'openpnm.physics.models',
         'openpnm.utils',
+        'openpnm.models',
         'openpnm.algorithms',
         'openpnm.topotools'
     ],
@@ -53,9 +50,9 @@ setup(
         'matplotlib',
         'scikit-image',
         'transforms3d',
-        'dill',
         'pandas',
-        'pyyaml'
+        'flatdict',
+        'h5py'
     ],
     author='OpenPNM Team',
     author_email='jgostick@uwaterloo.ca',

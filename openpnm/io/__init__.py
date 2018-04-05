@@ -1,4 +1,5 @@
 from .GenericIO import GenericIO
+from .Dict import Dict
 from .VTK import VTK
 from .CSV import CSV
 from .NetworkX import NetworkX
@@ -7,3 +8,5 @@ from .iMorph import iMorph
 from .MARock import MARock
 from .Statoil import Statoil
 from .Pandas import Pandas
+from .HDF5 import HDF5
+from .XDMF import XDMF

@@ -1,6 +1,6 @@
 import scipy as _sp
 import time as _time
-from collections import OrderedDict
+from collections import OrderedDict, abc
 
 
 class PrintableList(list):
@@ -36,9 +36,80 @@ class PrintableDict(OrderedDict):
         lines.append('{0:<35s} {1}'.format('key', self._header))
         lines.append(header)
         for item in list(self.keys()):
-            lines.append('{0:<35s} {1}'.format(item, self[item]))
+            if type(self[item]) == _sp.ndarray:
+                lines.append('{0:<35s} {1}'.format(item, _sp.shape(self[item])))
+            else:
+                lines.append('{0:<35s} {1}'.format(item, self[item]))
         lines.append(header)
         return '\n'.join(lines)
+
+
+class SettingsDict(PrintableDict):
+    def __missing__(self, key):
+        self[key] = None
+        return self[key]
+
+
+class NestedDict(dict):
+
+    def __init__(self, mapping={}, delimiter='/'):
+        super().__init__()
+        self.delimiter = delimiter
+        self.update(mapping)
+        self.unravel()
+
+    def __setitem__(self, key, value):
+        path = key.split(self.delimiter, 1)
+        if len(path) > 1:
+            if path[0] not in self.keys():
+                self[path[0]] = NestedDict(delimiter=self.delimiter)
+            self[path[0]][path[1]] = value
+        else:
+            super().__setitem__(key, value)
+
+    def __missing__(self, key):
+        self[key] = NestedDict(delimiter=self.delimiter)
+        return self[key]
+
+    def unravel(self):
+        for item in self.keys():
+            self[item] = self.pop(item)
+
+    def to_dict(self, dct=None):
+        if dct is None:
+            dct = self
+        plain_dict = dict()
+        for key in dct.keys():
+            value = dct[key]
+            if hasattr(value, 'keys'):
+                plain_dict[key] = self.to_dict(value)
+            else:
+                plain_dict[key] = value
+        return plain_dict
+
+    def keys(self, dicts=True, values=True):
+        k = list(super().keys())
+        new_keys = []
+        for item in k:
+            if hasattr(self[item], 'keys'):
+                if dicts:
+                    new_keys.append(item)
+            else:
+                if values:
+                    new_keys.append(item)
+        return new_keys
+
+    def __str__(self):
+        def print_level(self, p='', indent='-'):
+            for item in self.keys():
+                if hasattr(self[item], 'keys'):
+                    p = print_level(self[item], p=p, indent=indent + indent[0])
+                elif indent[-1] != ' ':
+                    indent = indent + ''
+                p = indent + item + '\n' + p
+            return(p)
+        p = print_level(self)
+        return p
 
 
 class HealthDict(PrintableDict):
@@ -115,6 +186,35 @@ def unique_list(input_list):
     return output_list
 
 
+def flat_list(input_list):
+    r"""
+    Given a list of nested lists of arbitrary depth, returns a single level or
+    'flat' list.
+
+    """
+    x = input_list
+    if isinstance(x, list):
+        return [a for i in x for a in flat_list(i)]
+    else:
+        return [x]
+
+
+def sanitize_dict(input_dict):
+    r"""
+    Given a nested dictionary, ensures that all nested dicts are normal
+    Python dict.  This is necessary for pickling, or just converting
+    an 'auto-vivifying' dict to something that acts normal.
+    """
+    plain_dict = dict()
+    for key in input_dict.keys():
+        value = input_dict[key]
+        if hasattr(value, 'keys'):
+            plain_dict[key] = sanitize_dict(value)
+        else:
+            plain_dict[key] = value
+    return plain_dict
+
+
 def amalgamate_data(objs=[], delimiter='_'):
     r"""
     Returns a dictionary containing ALL pore data from all netowrk and/or
@@ -146,7 +246,7 @@ def amalgamate_data(objs=[], delimiter='_'):
                       'throat.offset_vertices', 'throat.vertices', 'throat.normal',
                       'throat.perimeter', 'pore.vert_index', 'throat.vert_index']
     for item in objs:
-        mro = [module.__name__ for module in item.__class__.__mro__]
+        mro = item._mro()
         # If Network object, combine Geometry and Network keys
         if 'GenericNetwork' in mro:
             keys = []

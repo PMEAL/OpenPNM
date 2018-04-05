@@ -47,7 +47,7 @@ class Cubic(GenericNetwork):
 
     """
     def __init__(self, shape, spacing=[1, 1, 1], connectivity=6, name=None,
-                 simulation=None):
+                 project=None):
 
         arr = np.atleast_3d(np.empty(shape))
 
@@ -107,7 +107,7 @@ class Cubic(GenericNetwork):
         self['throat.conns'] = pairs
 
         super().__init__(Np=points.shape[0], Nt=pairs.shape[0], name=name,
-                         simulation=simulation)
+                         project=project)
 
         self._label_surfaces()
 
@@ -152,6 +152,8 @@ class Cubic(GenericNetwork):
         'left','right', etc), then shifts them to the periphery of the domain,
         and gives them the label 'right_face', 'left_face', etc.
         """
+        if type(labels) == str:
+            labels = [labels]
         x, y, z = self['pore.coords'].T
         Lcx, Lcy, Lcz = self._spacing
 

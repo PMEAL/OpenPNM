@@ -151,17 +151,17 @@ class GenericLinearTransport(GenericAlgorithm):
         self.settings['quantity'] = self._parse_prop(quantity, 'pore')
 
         # Check health of conductance vector
-        phase = self.simulation.phases[self.settings['phase']]
+        phase = self.project.phases()[self.settings['phase']]
         if sp.any(sp.isnan(phase[self.settings['conductance']])):
             raise Exception('The provided throat conductance contains NaNs')
 
     def build_A(self):
         r"""
         """
-        network = self.simulation.network
-        phase = self.simulation.phases[self.settings['phase']]
+        network = self.project.network
+        phase = self.project.phases()[self.settings['phase']]
         g = phase[self.settings['conductance']]
-        am = network.create_adjacency_matrix(data=-g, fmt='coo')
+        am = network.create_adjacency_matrix(weights=-g, fmt='coo')
         A = spgr.laplacian(am)
         if 'pore.neumann' in self.keys():
             pass  # Do nothing to A, only b changes
@@ -183,10 +183,10 @@ class GenericLinearTransport(GenericAlgorithm):
         b = sp.zeros(shape=(self.Np, ), dtype=float)  # Create b matrix of 0's
         if 'pore.dirichlet' in self.keys():
             ind = self['pore.dirichlet']
-            b[ind] = -self['pore.dirichlet_value'][ind]
+            b[ind] = self['pore.dirichlet_value'][ind]
         if 'pore.neumann' in self.keys():
             ind = self['pore.neumann']
-            b[ind] = -self['pore.neumann_value'][ind]
+            b[ind] = self['pore.neumann_value'][ind]
         self.b = b
         return b
 
@@ -207,7 +207,7 @@ class GenericLinearTransport(GenericAlgorithm):
             x = sp.zeros(shape=[self.Np, ], dtype=float)
         # Scan through all source objects registered on algorithm
         for item in self.settings['sources']:
-            source = self.simulation[item]  # Obtain handle to source object
+            source = self.project[item]  # Obtain handle to source object
             source.apply()  # Apply source object to update A and b
         x_new = self.solve()
         self[self.settings['quantity']] = x_new
@@ -267,8 +267,8 @@ class GenericLinearTransport(GenericAlgorithm):
         A negative rate indicates material moving into the pore or pores, such
         as material being consumed.
         """
-        network = self.simulation.network
-        phase = self.simulation.phases[self.settings['phase']]
+        network = self.project.network
+        phase = self.project.phases[self.settings['phase']]
         conductance = phase[self.settings['conductance']]
         quantity = self[self.settings['quantity']]
         pores = self._parse_indices(pores)
@@ -307,7 +307,7 @@ class GenericLinearTransport(GenericAlgorithm):
         property in a linear transport equation.  It also checks for the
         proper boundary conditions, inlets and outlets.
         """
-        network = self.simulation.network
+        network = self.project.network
         if self.settings['quantity'] not in self.keys():
             raise Exception('The algorit hm has not been run yet. Cannot ' +
                             'calculate effective property.')

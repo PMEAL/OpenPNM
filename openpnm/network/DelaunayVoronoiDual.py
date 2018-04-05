@@ -92,7 +92,7 @@ class DelaunayVoronoiDual(GenericNetwork):
     >>> pts = op.topotools.generate_base_points(num_points=50,
     ...                                         domain_size=[1, 5])
     >>> pts -= [0, 0, 1]  # Shift points in the negative z-direction
-    >>> cyl = op.network.DelaunayVoronoiDual(points=pts, domain_size=[1, 3])
+    >>> cyl = op.network.DelaunayVoronoiDual(points=pts, shape=[1, 3])
 
     All points lying below the z=0 plane and above the z=3 plane are trimmed,
     which gives the network *rough* ends since the points near the plane of

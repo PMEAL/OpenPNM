@@ -35,21 +35,20 @@ class Drainage(GenericAlgorithm):
     --------
     >>> import openpnm as op
     >>> pn = op.network.Cubic(shape=[20, 20, 20], spacing=10)
-    >>> pn.add_boundary_pores(pores=pn.pores('top'),
-    ...                       offset=[0, 0, 10],
-    ...                       apply_label='boundary_top')
-    >>> geo = op.geometry.Stick_and_Ball(network=pn, pores=pn.Ps,
-    ...                                  throats=pn.Ts)
+    >>> pn.add_boundary_pores(labels='top')
+    >>> geo = op.geometry.StickAndBall(network=pn, pores=pn.Ps, throats=pn.Ts)
     >>> water = op.phases.Water(network=pn)
     >>> air = op.phases.Air(network=pn)
-    >>> phys = op.physics.Standard(network=pn, phase=water, geometry=geo)
+    >>> phys = op.physics.GenericPhysics(network=pn, phase=water, geometry=geo)
+    >>> phys.add_model(propname='throat.capillary_pressure',
+    ...                model=op.models.physics.capillary_pressure.washburn)
 
     Once the basic Core objects are setup, the Algorithm can be created and
     and run as follows:
 
     >>> alg = op.algorithms.Drainage(network=pn)
     >>> alg.setup(invading_phase=water, defending_phase=air)
-    >>> alg.set_inlets(pores=pn.pores('boundary_top'))
+    >>> alg.set_inlets(pores=pn.pores('top'))
     >>> alg.run()
     >>> data = alg.get_drainage_data()
 
@@ -92,8 +91,8 @@ class Drainage(GenericAlgorithm):
             fluid.
 
         defending_phase : OpenPNM Phase object
-            The Phase object containing the physical properties of the defending
-            fluid.
+            The Phase object containing the physical properties of the
+            defending fluid.
 
         entry_pressure : string (optional)
             The dictionary key on the Phase object where the throat entry
@@ -405,7 +404,7 @@ class Drainage(GenericAlgorithm):
         Determine which pores and throats are trapped by invading phase.  This
         method is called by ``run`` if 'trapping' is set to True.
         """
-        net = self.simulation.network
+        net = self.project.network
         # Generate a list containing boolean values for throat state
         Tinvaded = self['throat.inv_Pc'] < sp.inf
         # Add residual throats, if any, to list of invaded throats
@@ -439,13 +438,13 @@ class Drainage(GenericAlgorithm):
         Determine which pores and throats are invaded at a given applied
         capillary pressure.  This method is called by ``run``.
         """
-        net = self.simulation.network
+        net = self.project.network
         # Generate a list containing boolean values for throat state
         Tinvaded = self['throat.entry_pressure'] <= inv_val
         # Add residual throats, if any, to list of invaded throats
         Tinvaded = Tinvaded + self['throat.residual']
         # Perform the clustering using scipy.csgraph
-        csr = net.create_adjacency_matrix(data=Tinvaded, fmt='csr')
+        csr = net.create_adjacency_matrix(weights=Tinvaded, fmt='csr')
         clusters = csg.connected_components(csgraph=csr, directed=False)[1]
         # Find pores attached to each invaded throats
         Ps = net.find_connected_pores(throats=Tinvaded, flatten=True)
@@ -497,7 +496,7 @@ class Drainage(GenericAlgorithm):
         the keys 'pore.volume' and 'throat.volume'.  This cannot be customized
         at this time.
         """
-        net = self.simulation.network
+        net = self.project.network
         # Infer list of applied capillary pressures
         PcPoints = self._inv_points
         if PcPoints[-1] == sp.inf:  # Remove infinity from PcPoints if present
@@ -560,7 +559,7 @@ class Drainage(GenericAlgorithm):
         The 'pore(throat)_filling' model must accept the applied capillary
         pressure as 'Pc'.  This is not customizable at the moment.
         """
-        net = self.simulation.network
+        net = self.project.network
         if element == 'pore':
             key = self._pore_filling
             vol = self._pore_volume
@@ -643,7 +642,7 @@ class Drainage(GenericAlgorithm):
         partial occupancy so that summing occupancy for both phases equals
         1.0 for every pore.
         """
-        net = self.simulation.network
+        net = self.project.network
         Psatn = self['pore.inv_Pc'] <= Pc
         Tsatn = self['throat.inv_Pc'] <= Pc
         self._inv_phase['pore.occupancy'] = sp.array(Psatn, dtype=float)

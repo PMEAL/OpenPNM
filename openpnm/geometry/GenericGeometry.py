@@ -32,58 +32,45 @@ class GenericGeometry(Base, ModelsMixin):
     >>> geom = op.geometry.GenericGeometry(network=pn, pores=Ps, throats=Ts)
     """
 
-    def __init__(self, network, pores=[], throats=[], settings={}, **kwargs):
-        self.settings.setdefault('prefix', 'geo')
+    def __init__(self, network=None, project=None, pores=[], throats=[],
+                 settings={}, **kwargs):
+        # Define some default settings
+        self.settings.update({'prefix': 'geo'})
+        # Overwrite with user supplied settings, if any
         self.settings.update(settings)
-        super().__init__(simulation=network.simulation, **kwargs)
-        self.settings['local_data'] = self.simulation.settings['local_data']
+
+        # Deal with network or project arguments
+        if network is not None:
+            project = network.project
+
+        super().__init__(project=project, **kwargs)
+
+        if network is not None:
+            network['pore.'+self.name] = False
+            network['throat.'+self.name] = False
+
         self.add_locations(pores=pores, throats=throats)
 
     def __getitem__(self, key):
-        net = self.simulation.network
+        # Find boss object (either phase or network)
         element = key.split('.')[0]
-        inds = net._get_indices(element=element, labels=self.name)
-        # Get uuid from network
+        if self._isa('phase'):
+            boss = self.project.find_phase(self)
+        else:
+            boss = self.project.network
+        # Deal with a few special key items
         if key.split('.')[-1] == '_id':
-            vals = net[element+'._id'][inds]
+            inds = boss._get_indices(element=element, labels=self.name)
+            return boss[element+'._id'][inds]
         # Convert self.name into 'all'
         elif key.split('.')[-1] in [self.name]:
-            vals = self[element+'.all']
-        # Get prop or label if present
-        elif key in self.keys():
-            vals = super(Base, self).__getitem__(key)
-        else:
-            # If not found on network a key error will be raised
-            vals = net[key][inds]
+            return self[element+'.all']
+        # Now get values if present, or regenerate them
+        vals = self.get(key)
+        if vals is None:
+            inds = boss._get_indices(element=element, labels=self.name)
+            vals = boss[key][inds]
         return vals
-
-    def __setitem__(self, key, value):
-        if self.settings['local_data']:
-            super().__setitem__(key, value)
-        else:
-            network = self.simulation.network
-            element = self._parse_element(key.split('.')[0], single=True)
-            inds = network._map(ids=self[element+'._id'], element=element,
-                                filtered=True)
-            # If array not in network, create it first
-            if key not in network.keys():
-                if value.dtype == bool:
-                    network[key] = False
-                else:
-                    dtype = value.dtype
-                    if dtype.name == 'object':
-                        network[key] = np.zeros(1, dtype=object)
-                    else:
-                        Nt = len(network[element+'.all'])
-                        dim = np.size(value[0])
-                        if dim > 1:
-                            arr = np.zeros(dim, dtype=dtype)
-                            temp = np.tile(arr, reps=(Nt, 1))*np.nan
-                        else:
-                            temp = np.zeros(Nt)*np.nan
-                        network[key] = temp
-
-            network[key][inds] = value
 
     def add_locations(self, pores=[], throats=[]):
         r"""
@@ -107,11 +94,11 @@ class GenericGeometry(Base, ModelsMixin):
         element = self._parse_element(element=element, single=True)
         # Use the network's _parse_indices, since indicies could be 'network'
         # length boolean masks
-        network = self.simulation.network
+        network = self.project.network
         indices = network._parse_indices(indices)
 
-        net = self.simulation.network
-        sim = self.simulation
+        net = self.project.network
+        proj = self.project
 
         if element+'.'+self.name not in net.keys():
             net[element+'.'+self.name] = False
@@ -119,7 +106,7 @@ class GenericGeometry(Base, ModelsMixin):
         if mode == 'add':
             # Ensure indices are not already assigned to another object
             temp = sp.zeros(shape=[net._count(element=element), ], dtype=bool)
-            for item in sim.geometries.keys():
+            for item in proj.geometries().keys():
                 temp += net[element+'.'+item]
             if sp.any(temp[indices]):
                 raise Exception('Some of the given '+element+' are already ' +
@@ -129,8 +116,8 @@ class GenericGeometry(Base, ModelsMixin):
             set_flag = False
 
         # Change lables of all associated physics in their respective phases
-        for phase in sim.phases.values():
-            phys = sim.find_physics(geometry=self, phase=phase)
+        for phase in proj.phases().values():
+            phys = proj.find_physics(geometry=self, phase=phase)
             if phys:
                 if element+'.'+phys.name not in phase.keys():
                     phase[element+'.'+phys.name] = False
@@ -173,4 +160,4 @@ class GenericGeometry(Base, ModelsMixin):
         A shortcut to get a handle to the associated network
         There can only be one so this works
         """
-        return self.simulation.network
+        return self.project.network

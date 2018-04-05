@@ -1,1 +1,2 @@
-pyyaml
+flatdict
+h5py

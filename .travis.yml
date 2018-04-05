@@ -3,7 +3,6 @@ sudo: false
 language: python
 
 python:
-  - "3.5"
   - "3.6"
 
 before_install:
@@ -20,7 +19,7 @@ install:
   - python setup.py install
 
 script:
-  - pytest --pep8 --cov=./
+  - python ./bin/test pep8 cov
 
 after_success:
   - codecov
