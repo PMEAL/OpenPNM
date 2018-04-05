@@ -7,6 +7,7 @@ Submodule -- generic_source_term
 
 import scipy as _sp
 import sympy as syp
+import collections
 
 
 def standard_kinetics(target, quantity, prefactor, exponent):
@@ -572,5 +573,43 @@ def natural_logarithm_sym(target, A1='', A2='', A3='',
     r_val=r(A, B, C, D, E, X)
     s1_val=s1(A, B, C, D, E, X)
     s2_val=s2(A, B, C, D, E, X)
+    values = {'pore.S1': s1_val, 'pore.S2': s2_val, 'pore.rate': r_val}
+    return values
+
+def general_symbolic(target, eqn=None, arg_map=None, **kwargs):
+    r'''
+    A general function to interpret a sympy equation and evaluate the linear
+    components of the source term.
+    
+    Parameters
+    ----------
+    target : OpenPNM object
+    eqn: sympy symbolic expression for the source terms
+        e.g. y = a*x**b + c
+    arg_map : OrderedDict mapping the symbols in the expression to OpenPNM data
+        on the target. Must contain 'var' which is the independent variable.
+        e.g.
+        arg_map=collections.OrderedDict([('a','pore.a'), ('b','pore.a'),
+                                         ('c','pore.A3'), ('var','pore.x')])
+    '''
+    # First make sure all the symbols have been allocated dict items
+    for arg in syp.postorder_traversal(eqn):
+        if syp.srepr(arg)[:6] == 'Symbol':
+            key = syp.srepr(arg)[7:].strip('(').strip(')').strip("'")
+            if key not in arg_map.keys():
+                raise Exception('argument mapping incomplete, missing '+key)
+    if 'var' not in arg_map.keys():
+        raise Exception('argument mapping must contain "var" for the '+
+                        'independent variable')
+    # Get the data
+    data = collections.OrderedDict()
+    for key in arg_map.keys():
+        data[key] = target[arg_map[key]]
+        # Callable functions
+    symbols = tuple(arg_map.keys())
+    r, s1, s2 = build_func(eqn, symbols)
+    r_val=r(*data.values())
+    s1_val=s1(*data.values())
+    s2_val=s2(*data.values())
     values = {'pore.S1': s1_val, 'pore.S2': s2_val, 'pore.rate': r_val}
     return values
