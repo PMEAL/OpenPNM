@@ -68,7 +68,8 @@ def random(target, element, seed=None, num_range=[0, 1]):
     """
     range_size = num_range[1] - num_range[0]
     range_min = num_range[0]
-    np.random.seed(seed)
+    if seed is not None:
+        np.random.seed(seed)
     value = np.random.rand(target._count(element),)
     value = value*range_size + range_min
     return value
