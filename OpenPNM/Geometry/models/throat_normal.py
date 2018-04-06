@@ -6,6 +6,7 @@ throat_normal -- calculate from the normal vector to the throat vertices
 """
 import scipy as sp
 from scipy.spatial import ConvexHull
+from transforms3d import _gohlketransforms as tr
 
 
 def voronoi(network, geometry, **kwargs):
@@ -28,3 +29,16 @@ def voronoi(network, geometry, **kwargs):
         value[i] = sp.cross(v1, v2)
 
     return value
+
+
+def pore_coords(network, geometry, **kwargs):
+    r"""
+    Unit vector from P1 to P2 as defined in throat.conns
+    """
+    conns = network['throat.conns']
+    P1 = conns[:, 0]
+    P2 = conns[:, 1]
+    coords = network['pore.coords']
+    vec = coords[P2] - coords[P1]
+    unit_vec = tr.unit_vector(vec, axis=1)
+    return unit_vec

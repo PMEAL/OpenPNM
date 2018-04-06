@@ -59,6 +59,12 @@ class VoronoiTest:
         self.geo_vox.make_fibre_image()
         assert hasattr(self.geo_vox, '_fibre_image') is True
 
+    def test_from_fibres(self):
+        geom = self.geo_vox
+        geom.models.add(propname='pore.indiam',
+                        model=gm.pore_diameter.from_fibres)
+        assert sp.all(sp.around(geom['pore.indiam'][:8], 8) == 2.285e-5)
+
     def test_voronoi_vert(self):
         self.mgr.purge_object(self.geo_vox)
         fibre_rad = 5e-6
@@ -82,3 +88,14 @@ class VoronoiTest:
                                  model=gm.throat_perimeter.voronoi)
         assert sp.all(sp.absolute(1 - self.geo_vert['throat.perimeter2'] /
                                   self.geo_vert['throat.perimeter']) < 0.05)
+
+
+if __name__ == '__main__':
+    t = VoronoiTest()
+    t.setup_class()
+    t.test_props_all()
+    t.test_get_fibre_slice()
+    t.test_compress_geom()
+    t.test_make_fibre_image()
+    t.test_from_fibres()
+    t.test_voronoi_vert()

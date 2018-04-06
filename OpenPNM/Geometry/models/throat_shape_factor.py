@@ -10,11 +10,11 @@ import scipy as _sp
 def compactness(geometry, throat_perimeter='throat.perimeter',
                 throat_area='throat.area', **kwargs):
     r"""
-    Mortensen et al. have shown that the Hagen-Poiseuille hydraluic resistance is
-    linearly dependent on the compactness. Defined as perimeter^2/area.
+    Mortensen et al. have shown that the Hagen-Poiseuille hydraluic resistance
+    is linearly dependent on the compactness. Defined as perimeter^2/area.
     The dependence is not universal as shapes with sharp corners provide more
-    resistance than those that are more elliptical. Count the number of vertices
-    and apply the right correction.
+    resistance than those that are more elliptical. Count the number of
+    vertices and apply the right correction.
     """
     # Only apply to throats with an area
     ts = geometry.throats()[geometry[throat_area] > 0]
@@ -40,3 +40,41 @@ def compactness(geometry, throat_perimeter='throat.perimeter',
     alpha[alpha < 1.0] = 1.0
 
     return alpha
+
+
+def mason_morrow(geometry, throat_perimeter='throat.perimeter',
+                 throat_area='throat.area', **kwargs):
+    r"""
+    Mason and Morrow relate the capillary pressure to the shaped factor in a
+    Similar way to Mortensen but for triangles.
+    Ref:
+    Mason, G. and Morrow, N.R., 1991. Capillary behavior of a perfectly wetting
+    liquid in irregular triangular tubes. Journal of Colloid and Interface
+    Science, 141(1), pp.262-274.
+    """
+    # Only apply to throats with an area
+    ts = geometry.throats()[geometry[throat_area] <= 0]
+    P = geometry[throat_perimeter]
+    A = geometry[throat_area]
+    value = A/(P**2)
+    value[ts] = 1/(4*_sp.pi)
+    return value
+
+
+def jenkins_rao(geometry, throat_perimeter='throat.perimeter',
+                throat_area='throat.area',
+                throat_diameter='throat.indiameter',
+                **kwargs):
+    r"""
+    Jenkins and Rao relate the capillary pressure in an eliptical throat to
+    the aspect ratio
+    Ref:
+    Jenkins, R.G. and Rao, M.B., 1984. The effect of elliptical pores on
+    mercury porosimetry results. Powder technology, 38(2), pp.177-180.
+    """
+    P = geometry[throat_perimeter]
+    A = geometry[throat_area]
+    r = geometry[throat_diameter]/2
+    # Normalized by value for perfect circle
+    value = (P/A)/(2/r)
+    return value

@@ -42,3 +42,4 @@ from .__StokesFlow__ import StokesFlow
 from .__OrdinaryPercolation__ import OrdinaryPercolation
 from .__InvasionPercolation__ import InvasionPercolation
 from .__Drainage__ import Drainage
+from .__MixedPercolation__ import MixedPercolation

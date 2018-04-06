@@ -113,9 +113,9 @@ The following code snippets give examples of how all these pieces fit together u
 	>>> net['pore.foo'][4]  # Retrieve values from the array
 	44.0
 	>>> net['pore.foo'][2:6]  # Extract a slice of the array
-	array([  1.,   1.,  44.,   1.])
+	array([ 1.,  1., 44.,  1.])
 	>>> net['pore.foo'][[2, 4, 6]]  # Extract specific locations
-	array([  1.,  44.,   1.])
+	array([ 1., 44.,  1.])
 	>>> net['throat.foo'] = 2  # Assign a scalar
 	>>> len(net['throat.foo'])  # The scalar values is converted to an Nt-long array
 	10
@@ -189,10 +189,10 @@ The ability to retrieve pore indices is handy for querying pore properties, such
 .. code-block:: python
 
 	>>> pn['pore.coords'][pn.pores('left')]
-	array([[  5.00000000e-05,   5.00000000e-05,   5.00000000e-05],
-	       [  1.50000000e-04,   5.00000000e-05,   5.00000000e-05],
-	       [  2.50000000e-04,   5.00000000e-05,   5.00000000e-05],
-	       [  3.50000000e-04,   5.00000000e-05,   5.00000000e-05]])
+	array([[5.0e-05, 5.0e-05, 5.0e-05],
+	       [1.5e-04, 5.0e-05, 5.0e-05],
+	       [2.5e-04, 5.0e-05, 5.0e-05],
+	       [3.5e-04, 5.0e-05, 5.0e-05]])
 
 A list of all labels currently assigned to the network can be obtained with:
 

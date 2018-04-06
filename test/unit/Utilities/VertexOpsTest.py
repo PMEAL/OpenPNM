@@ -1,6 +1,7 @@
 import OpenPNM
 import scipy as sp
 import OpenPNM.Utilities.vertexops as vo
+import matplotlib.pyplot as plt
 
 
 class VertexOpsTest:
@@ -51,6 +52,21 @@ class VertexOpsTest:
         r, c = sp.shape(test)
         assert r == len(throat_verts)
         assert c == 2
+
+    def test_plot_throat(self):
+        fig1 = vo.plot_throat(self.geo, [0])
+        fig2 = vo.plot_throat(self.geo, [0, 1, 2])
+        del fig1
+        del fig2
+        pass
+
+    def test_plot_pore(self):
+        fig1 = vo.plot_throat(self.geo, [0])
+        fig2 = vo.plot_throat(self.geo, [0, 1, 2])
+        del fig1
+        del fig2
+        plt.close('all')
+        pass
 
 if __name__ == '__main__':
     a = VertexOpsTest()

@@ -6,3 +6,4 @@ pandas
 scikit-image
 dill
 pyyaml
+sympy

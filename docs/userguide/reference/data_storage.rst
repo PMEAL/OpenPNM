@@ -26,7 +26,7 @@ The physical details about pores and throats are referred to as *properties*, wh
     >>> import scipy as sp
     >>> pn = OpenPNM.Network.Cubic(shape=[3, 3, 3])
     >>> pn['pore.coords'][1]
-    array([ 0.5,  0.5,  1.5])
+    array([0.5, 0.5, 1.5])
 
 Note that ``pn['pore.coords']`` retrieves the Numpy array from the dictionary, while the ``[1]`` retrieves the value in element 1 of the Numpy array.
 

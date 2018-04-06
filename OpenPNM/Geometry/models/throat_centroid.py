@@ -64,3 +64,12 @@ def centre_of_mass(geometry, vertices='throat.offset_vertices', **kwargs):
                 logger.error('Rotation Failed: ' + str(_sp.unique(facet[:, 2])))
 
     return value
+
+
+def pore_coords(network, geometry, **kwargs):
+    r"""
+    Unit vector from P1 to P2 as defined in throat.conns
+    """
+    conns = network['throat.conns']
+    coords = network['pore.coords']
+    return _sp.mean(coords[conns], axis=1)
