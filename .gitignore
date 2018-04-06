@@ -1,12 +1,1 @@
-*.egg
-*.egg-info
-*.py[co]
-build/
-dist/
-.coverage
-.cache
-.DS_Store
-*.net
-*.pnm
-*.vtp
-*.py~
+*.pyc

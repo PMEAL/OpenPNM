@@ -1,54 +1,62 @@
-import OpenPNM as op
-# Initialize workspace, and clear it just to be safe
-ws = op.Base.Workspace()
-ws.clear()
+import openpnm as op
+import scipy as sp
+ws = op.core.Workspace()
 
-# Create Topological Network object
-pn = op.Network.Cubic(shape=[15, 5, 5], spacing=1)
-pn.add_boundaries()
+sp.random.seed(0)
+pn = op.network.Cubic(shape=[5, 5, 5], spacing=0.0001, name='pn11')
+pn.add_boundary_pores()
+proj = pn.project
 
-# Create Geometry object for internal pores
-Ps = pn.pores('boundary', mode='not')
-Ts = pn.find_neighbor_throats(pores=Ps, mode='intersection', flatten=True)
-geom = op.Geometry.Stick_and_Ball(network=pn, pores=Ps, throats=Ts)
-# Create Geometry object for boundary pores
-Ps = pn.pores('boundary')
-Ts = pn.find_neighbor_throats(pores=Ps, mode='not_intersection')
-boun = op.Geometry.Boundary(network=pn, pores=Ps, throats=Ts)
+geom = op.geometry.StickAndBall(network=pn, pores=pn.Ps, throats=pn.Ts)
 
-# Create Phase objects
-air = op.Phases.Air(network=pn, name='air')
-water = op.Phases.Water(network=pn, name='water')
+air = op.phases.Air(network=pn)
+water = op.phases.Water(network=pn)
+water['throat.viscosity'] = water['pore.viscosity'][0]
 
-# Create one Physics object for each phase
-Ps = pn.pores()
-Ts = pn.throats()
-phys_water = op.Physics.Standard(network=pn, phase=water, pores=Ps, throats=Ts)
-phys_air = op.Physics.Standard(network=pn, phase=air, pores=Ps, throats=Ts)
+mod = op.models.physics.hydraulic_conductance.hagen_poiseuille
+phys_water = op.physics.GenericPhysics(network=pn, phase=water, geometry=geom)
+phys_water.add_model(propname='throat.conductance',
+                     model=mod, viscosity='throat.viscosity')
 
-# Begin Simulations
-# 1. Perform a Drainage Experiment
-drainage = op.Algorithms.Drainage(network=pn)
-drainage.setup(invading_phase=water, defending_phase=air)
-Ps = pn.pores(labels=['bottom_boundary'])
-drainage.set_inlets(pores=Ps)
-drainage.run()
-drainage.return_results(Pc=7000)
+water['pore.A'] = 1e-10
+water['pore.k'] = 2
+water.add_model(propname='pore.reaction',
+                model=op.models.physics.generic_source_term.standard_kinetics,
+                prefactor='pore.A', exponent='pore.k',
+                quantity='pore.pressure', regen_mode='deferred')
 
-# 2. Perform Invasion Percolation
-inlets = pn.pores('bottom_boundary')
-IP_1 = op.Algorithms.InvasionPercolation(network=pn)
-IP_1.run(phase=water, inlets=inlets)
-IP_1.return_results()
+water.add_model(propname='throat.diffusive_conductance',
+                model=op.models.physics.diffusive_conductance.bulk_diffusion)
 
-# 3. Perform Fickian Diffusion'''
-fickian = op.Algorithms.FickianDiffusion(network=pn, phase=air)
-Ps_bc1 = pn.pores('right_boundary')
-fickian.set_boundary_conditions(bctype='Dirichlet', bcvalue=0.6, pores=Ps_bc1)
-Ps_bc2 = pn.pores('left_boundary')
-fickian.set_boundary_conditions(bctype='Dirichlet', bcvalue=0.4, pores=Ps_bc2)
-fickian.run()
-fickian.return_results()
+s = {'conductance': 'throat.conductance',
+     'quantity': 'pore.pressure'}
+alg1 = op.algorithms.GenericTransport(network=pn, phase=water, settings=s)
+alg1.set_dirchlet_BC(pores=pn.pores('top'), values=1)
+alg1.set_dirchlet_BC(pores=pn.pores('bottom'), values=0)
+alg1.run()
 
-# Export to VTK
-op.export_data(network=pn, filename='example', fileformat='VTK')
+alg2 = op.algorithms.ReactiveTransport(network=pn, phase=water, settings=s)
+alg2.set_dirchlet_BC(pores=pn.pores('top'), values=1)
+alg2.set_source_term(propname='pore.reaction', pores=pn.pores('bottom'))
+alg2.run()
+water.update(alg2.results())
+
+alg3 = op.algorithms.TransientTransport(network=pn, phase=water)
+# You can also set the settings afterwards.  Note that some of these
+# will have defaults when finally subclassed (i.e. quantity = pressure)
+alg3.settings.update({'t_initial': 0,
+                      't_final': 1,
+                      't_step': 0.25,
+                      'conductance': 'throat.conductance',
+                      'quantity': 'pore.pressure'})
+alg3.set_dirchlet_BC(pores=pn.pores('top'), values=1)
+alg3.set_IC(values=0)
+alg3.run()
+
+
+alg4 = op.algorithms.TransientReactiveTransport(network=pn, phase=water)
+alg4.settings.update(alg3.settings)  # Just copy settings from another alg
+alg4.set_dirchlet_BC(pores=pn.pores('top'), values=1)
+alg4.set_IC(values=0)
+alg4.set_source_term(propname='pore.reaction', pores=pn.pores('bottom'))
+alg4.run()
