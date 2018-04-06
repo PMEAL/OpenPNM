@@ -26,7 +26,7 @@ class GenericTransport(GenericAlgorithm):
 
         super().__init__(project=project, **kwargs)
 
-    def set_dirchlet_BC(self, pores, values):
+    def set_dirichlet_BC(self, pores, values):
         r"""
         """
         self.set_BC(pores=pores, bctype='dirichlet', bcvalues=values,
