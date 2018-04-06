@@ -1,47 +1,50 @@
 """
 ===============================================================================
-module Dispersion: Class for solving dispersion
+module Dispersion: Class for solving advection diffusion
 ===============================================================================
 """
 
 import scipy as sp
-from openpnm.algorithms import GenericLinearTransport
+from openpnm.algorithms import GenericTransport
 from openpnm.core import logging
 logger = logging.getLogger(__name__)
 
-
-class Dispersion(GenericLinearTransport):
+class Dispersion(GenericTransport):
     r'''
-    A subclass of GenericLinearTransport to simulate dispersion.
+    A subclass of GenericTransport to simulate advection diffusion.
 
     Examples
     --------
     >>>     
     
     '''
-    def __init__(self, **kwargs):
+    def __init__(self, settings={}, **kwargs):
         super().__init__(**kwargs)
         logger.info('Create ' + self.__class__.__name__ + ' Object')
+        self.settings.update({'quantity': 'pore.mole_fraction',
+                              'conductance': 'throat.hydraulic_conductance',
+                              'pressure': 'pore.pressure'})
+        self.settings.update(settings)
         
-    def setup(self, conductance='diffusive_conductance',
-              quantity='mole_fraction', **kwargs):
+    def setup(self, **kwargs):
         r"""
 
         """
-        super().setup(conductance=conductance, quantity=quantity)
+        super().setup()
 
     def build_A(self):
         r"""
         """
-        network = self.simulation.network
-        phase = self.simulation.phases[self.settings['phase']]
+        network = self.project.network
+        phase = self.project.phases()[self.settings['phase']]
         
         # Get adjacancy and incidence matrices
         adj_mat = network.create_adjacency_matrix(fmt='csr')
         inc_mat = network.create_incidence_matrix(fmt='csr')
         
         K = network['throat.conns']
-        P = phase['pore.pressure'] # Phase must have 'pressure' attached to it.
+        # Phase must have 'pressure' attached to it.
+        P = phase[self.settings['pressure']]
         dp = network['pore.diameter']
         Vp = network['pore.volume']
         Vt = network['throat.volume']
@@ -53,7 +56,6 @@ class Dispersion(GenericLinearTransport):
         Ae = (Vt + Vp[K[:,0]] + Vp[K[:,1]]) / Le
         
         I, J, V = [], [], []
-        
         for i in range(network.Np):   
             neighbor_pores = adj_mat[i,:].nonzero()[1]
             neighbor_throats = inc_mat[i,:].nonzero()[1]
@@ -61,7 +63,7 @@ class Dispersion(GenericLinearTransport):
             neighbor_conns = K[neighbor_throats]
             neighbor_pores_w_throat_ordering = neighbor_conns[neighbor_conns!=i]
             Pi, Pk = P[i], P[neighbor_pores_w_throat_ordering]
-            Q_ik = (Pi - Pk) * phase['throat.conductance'][neighbor_throats]
+            Q_ik = (Pi - Pk) * phase[self.settings['conductance']][neighbor_throats]
             Le_ik = Le[neighbor_throats]
             Ae_ik = Ae[neighbor_throats]
             u_ik = Q_ik / Ae_ik
@@ -84,19 +86,6 @@ class Dispersion(GenericLinearTransport):
             V.extend(val)
             I.extend([i]*len(neighbor_pores))
             J.extend(neighbor_pores_w_throat_ordering)
-            
         A = sp.sparse.coo_matrix((V,(I,J)),shape=(network.Np, network.Np))
-        
-        if 'pore.neumann' in self.keys():
-            pass  # Do nothing to A, only b changes
-        if 'pore.dirichlet' in self.keys():
-            # Find all entries on rows associated with dirichlet pores
-            P_bc = self.toindices(self['pore.dirichlet'])
-            indrow = sp.in1d(A.row, P_bc)
-            A.data[indrow] = 0  # Remove entries from A for all BC rows
-            datadiag = A.diagonal()  # Add diagonal entries back into A
-            datadiag[P_bc] = sp.ones_like(P_bc, dtype=float)
-            A.setdiag(datadiag)
-            A.eliminate_zeros()  # Remove 0 entries
         self.A = A
         return A
