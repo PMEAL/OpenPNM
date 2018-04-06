@@ -97,14 +97,15 @@ class Base(dict):
             else:
                 raise Exception('Cannot write array, wrong length: '+key)
 
-    def _set_name(self, name):
+    def _set_name(self, name, validate=True):
         if not hasattr(self, '_name'):
             self._name = None
         if name is None:
             name = self.project._generate_name(self)
         if self.name == name:
             return
-        self.project._validate_name(name)
+        if validate:
+            self.project._validate_name(name)
         if self._name is not None:
             logger.info('Changing the name of '+self.name+' to '+name)
             # Rename any label arrays in other objects
