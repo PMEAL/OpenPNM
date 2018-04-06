@@ -92,7 +92,7 @@ class MixedPercolation(GenericAlgorithm):
         self._interface_Ts = np.zeros(self.Nt, dtype=bool)
         self._interface_Ps = np.zeros(self.Np, dtype=bool)
 
-    def set_inlets(self, pores=None, clusters=None):
+    def set_inlets(self, pores=None, clusters=None, Pc_start=0.0):
         r"""
 
         Parameters
@@ -116,6 +116,7 @@ class MixedPercolation(GenericAlgorithm):
             # Perform initial analysis on input pores
             self['pore.inv_seq'][cluster] = inlet_inv_seq
             self['pore.cluster'][cluster] = i
+            self['pore.inv_Pc'][cluster] = Pc_start
             if np.size(cluster) > 1:
                 for elem_id in cluster:
                     self._add_ts2q(elem_id, self.queue[i], action=0)
@@ -200,14 +201,20 @@ class MixedPercolation(GenericAlgorithm):
             The number of throats to invaded during this step
 
         """
+        if 'inv_points' in kwargs.keys():
+            Pc_start = kwargs['inv_points'][0]
+        else:
+            Pc_start = 0.0
         if 'throat.entry_pressure' not in self.keys():
             logger.error("Setup method must be run first")
         if 'inlets' in self._key_words.keys():
             logger.info("Setting inlet pores at shared pressure")
-            self.set_inlets(pores=self._key_words['inlets'])
+            self.set_inlets(pores=self._key_words['inlets'],
+                            Pc_start=Pc_start)
         elif 'clusters' in self._key_words.keys():
             logger.info("Setting inlet clusters at individual pressures")
-            self.set_inlets(clusters=self._key_words['clusters'])
+            self.set_inlets(clusters=self._key_words['clusters'],
+                            Pc_start=Pc_start)
         else:
             logger.error("Either 'inlets' or 'clusters' must be passed to" +
                          " setup method")
@@ -353,6 +360,10 @@ class MixedPercolation(GenericAlgorithm):
         if "throat.trapping_sequence" in self.props():
             self._phase['throat.trapping_sequence'] = \
                 self['throat.trapping_sequence']
+        if 'pore.action' in self.props():
+            self._phase['pore.action'] = self['pore.action']
+        if 'throat.action' in self.props():
+            self._phase['throat.action'] = self['throat.action']
 
     def apply_flow(self, flowrate):
         r"""
