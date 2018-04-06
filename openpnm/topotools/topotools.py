@@ -1440,7 +1440,7 @@ def reflect_base_points(base_pts=None, domain_size=None):
     return base_pts
 
 
-def find_clusters(self, mask=[], t_labels=False):
+def find_clusters(network, mask=[], t_labels=False):
     r"""
     Identify connected clusters of pores in the network.  This method can
     also return a list of throat cluster numbers, which correspond to the
@@ -1450,6 +1450,9 @@ def find_clusters(self, mask=[], t_labels=False):
 
     Parameters
     ----------
+    network : OpenPNM Network Object
+        The network
+
     mask : array_like, boolean
         A list of active bonds or sites (throats or pores).  If the mask is
         Np long, then the method will perform a site percolation, and if
@@ -1485,11 +1488,11 @@ def find_clusters(self, mask=[], t_labels=False):
         raise Exception('Mask must be a boolean array of Np or Nt length')
 
     # If pore mask was given perform site percolation
-    if sp.size(mask) == self.Np:
-        (p_clusters, t_clusters) = self._site_percolation(mask)
+    if sp.size(mask) == network.Np:
+        (p_clusters, t_clusters) = _site_percolation(network, mask)
     # If pore mask was given perform bond percolation
-    elif sp.size(mask) == self.Nt:
-        (p_clusters, t_clusters) = self._bond_percolation(mask)
+    elif sp.size(mask) == network.Nt:
+        (p_clusters, t_clusters) = _bond_percolation(network, mask)
     else:
         raise Exception('Mask received was neither Nt nor Np long')
 
@@ -1499,21 +1502,20 @@ def find_clusters(self, mask=[], t_labels=False):
         return p_clusters
 
 
-def _site_percolation(self, pmask):
+def _site_percolation(network, pmask):
     r"""
     This private method is called by 'find_clusters2'
     """
     # Find throats that produce site percolation
-    conns = sp.copy(self['throat.conns'])
+    conns = sp.copy(network['throat.conns'])
     conns[:, 0] = pmask[conns[:, 0]]
     conns[:, 1] = pmask[conns[:, 1]]
     # Only if both pores are True is the throat set to True
     tmask = sp.all(conns, axis=1)
 
     # Perform the clustering using scipy.csgraph
-    csr = self.create_adjacency_matrix(data=tmask,
-                                       sprsfmt='csr',
-                                       dropzeros=True)
+    csr = network.create_adjacency_matrix(weights=tmask, fmt='csr',
+                                          drop_zeros=True)
     clusters = sprs.csgraph.connected_components(csgraph=csr,
                                                  directed=False)[1]
 
@@ -1522,7 +1524,7 @@ def _site_percolation(self, pmask):
     # to single isolated invaded pores
     p_clusters = (clusters + 1)*(pmask) - 1
     # Label invaded throats with their neighboring pore's label
-    t_clusters = clusters[self['throat.conns']]
+    t_clusters = clusters[network['throat.conns']]
     ind = (t_clusters[:, 0] == t_clusters[:, 1])
     t_clusters = t_clusters[:, 0]
     # Label non-invaded throats with -1
@@ -1531,24 +1533,23 @@ def _site_percolation(self, pmask):
     return (p_clusters, t_clusters)
 
 
-def _bond_percolation(self, tmask):
+def _bond_percolation(network, tmask):
     r"""
     This private method is called by 'find_clusters2'
     """
     # Perform the clustering using scipy.csgraph
-    csr = self.create_adjacency_matrix(data=tmask,
-                                       sprsfmt='csr',
-                                       dropzeros=True)
+    csr = network.create_adjacency_matrix(weights=tmask, fmt='csr',
+                                          drop_zeros=True)
     clusters = sprs.csgraph.connected_components(csgraph=csr,
                                                  directed=False)[1]
 
     # Convert clusters to a more usable output:
     # Find pores attached to each invaded throats
-    Ps = self.find_connected_pores(throats=tmask, flatten=True)
+    Ps = network.find_connected_pores(throats=tmask, flatten=True)
     # Adjust cluster numbers such that non-invaded pores are labelled -0
-    p_clusters = (clusters + 1)*(self.tomask(pores=Ps).astype(int)) - 1
+    p_clusters = (clusters + 1)*(network.tomask(pores=Ps).astype(int)) - 1
     # Label invaded throats with their neighboring pore's label
-    t_clusters = clusters[self['throat.conns']][:, 0]
+    t_clusters = clusters[network['throat.conns']][:, 0]
     # Label non-invaded throats with -1
     t_clusters[~tmask] = -1
 

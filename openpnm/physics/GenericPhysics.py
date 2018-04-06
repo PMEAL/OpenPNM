@@ -37,16 +37,17 @@ class GenericPhysics(Subdomain, ModelsMixin):
 
         # Deal with network or project arguments
         if network is not None:
-            project = network.project
+            if project is not None:
+                assert network is project.network
+            else:
+                project = network.project
 
         super().__init__(project=project, **kwargs)
 
         if phase is not None:
-            self.settings['phase'] = phase.name
             phase['pore.'+self.name] = False
             phase['throat.'+self.name] = False
         if geometry is not None:
-            self.settings['geometry'] = geometry.name
             Ps = network.pores(geometry.name)
             Ts = network.throats(geometry.name)
             self.add_locations(pores=Ps, throats=Ts)

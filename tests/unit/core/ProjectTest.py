@@ -191,6 +191,14 @@ class ProjectTest:
         assert phys2 is not phys3
         assert phys3 is not phys4
 
+    def test_clear(self):
+        proj = self.ws.copy_project(self.net.project)
+        assert len(proj) == 9
+        proj.clear(objtype=['phase'])
+        assert len(proj) == 3
+        proj.clear()
+        assert len(proj) == 0
+
 
 if __name__ == '__main__':
 
