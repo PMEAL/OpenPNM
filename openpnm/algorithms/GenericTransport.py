@@ -316,7 +316,7 @@ class GenericTransport(GenericAlgorithm):
         mode : string, optional
             Controls how to return the rate.  Options are:
 
-            *'group'*: (default) Teturns the cumulative rate of material
+            *'group'*: (default) Returns the cumulative rate of material
             moving into the given set of pores
 
             *'single'* : Calculates the rate for each pore individually
@@ -326,38 +326,29 @@ class GenericTransport(GenericAlgorithm):
         A negative rate indicates material moving into the pore or pores, such
         as material being consumed.
         """
+        pores = self._parse_indices(pores)
+
         network = self.project.network
         phase = self.project.phases()[self.settings['phase']]
         conductance = phase[self.settings['conductance']]
         quantity = self[self.settings['quantity']]
-        pores = self._parse_indices(pores)
-        R = []
-        if mode == 'group':
-            t = network.find_neighbor_throats(pores, flatten=True,
-                                              mode='exclusive_or')
-            throat_group_num = 1
-        elif mode == 'single':
-            t = network.find_neighbor_throats(pores, flatten=False,
-                                              mode='exclusive_or')
-            throat_group_num = np.shape(t)[0]
-        for i in np.r_[0: throat_group_num]:
-            if mode == 'group':
-                throats = t
-                P = pores
-            elif mode == 'single':
-                throats = t[i]
-                P = pores[i]
-            p1 = network.find_connected_pores(throats)[:, 0]
-            p2 = network.find_connected_pores(throats)[:, 1]
-            pores1 = np.copy(p1)
-            pores2 = np.copy(p2)
-            # Changes to pores1 and pores2 to make them as inner/outer pores
-            pores1[~np.in1d(p1, P)] = p2[~np.in1d(p1, P)]
-            pores2[~np.in1d(p1, P)] = p1[~np.in1d(p1, P)]
-            X1 = quantity[pores1]
-            X2 = quantity[pores2]
-            g = conductance[throats]
-            R.append(np.sum(np.multiply(g, (X2 - X1))))
+
+        P12 = network['throat.conns']
+        X12 = quantity[P12]
+        f = (-1)**np.argsort(X12, axis=1)[:, 1]
+        g = conductance
+        Dx = np.abs(np.diff(X12, axis=1).squeeze())
+        Qt = f*g*Dx
+
+        if mode == 'single':
+            Qp = np.zeros((self.Np, ))
+            np.add.at(Qp, P12[:, 0], Qt)
+            np.add.at(Qp, P12[:, 1], -Qt)
+            R = Qp[pores]
+        elif mode == 'group':
+            Ts = network.find_neighbor_throats(pores=pores,
+                                               mode='exclusive_or')
+            R = np.sum(Qt[Ts])
         return np.array(R, ndmin=1)
 
     def _calc_eff_prop(self):
