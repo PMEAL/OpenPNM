@@ -20,12 +20,13 @@ class AdvectionDiffusion(GenericTransport):
                                   'throat.diffusive_conductance',
                               'hydraulic_conductance':
                                   'throat.hydraulic_conductance',
-                              'pressure': 'pore.pressure'})
+                              'pressure': 'pore.pressure',
+                              'molar_density': 'pore.molar_density'})
         # Apply any received settings to overwrite defaults
         self.settings.update(settings)
 
     def build_A(self):
-        return self.build_A_vectorized_old()
+        return self.build_A_looped()
 
     def build_A_vectorized_new(self):
         network = self.project.network
@@ -48,6 +49,31 @@ class AdvectionDiffusion(GenericTransport):
         np.add.at(d, conns[:, 0], diags)
         A = network.create_adjacency_matrix(weights=-off_diags)
         A.setdiag(d)
+        self.A = A
+        return A
+    
+    def build_A_vectorized_new2(self):
+        network = self.project.network
+        phase = self.project.phases()[self.settings['phase']]
+        P = phase[self.settings['pressure']]
+        gh_0 = phase[self.settings['hydraulic_conductance']]
+        gd = phase[self.settings['diffusive_conductance']]
+        gd = np.tile(gd, 2)
+        md = phase[self.settings['molar_density']][0]
+
+        Qij = md*gh_0*np.diff(P[network['throat.conns']], axis=1).squeeze()
+        Qij = np.append(Qij, -Qij)
+
+        qP = np.where(Qij > 0, Qij, 0)  # Throat positive flow rates
+        qN = np.where(Qij < 0, Qij, 0)
+
+        # Put the flow rates in the coefficient matrices
+        am1 = network.create_adjacency_matrix(weights=(qP + gd))
+        am2 = network.create_adjacency_matrix(weights=(-qN + gd))
+        A_diags = laplacian(am1)
+        A = laplacian(am2)
+        # Overwrite the diagonal
+        A.setdiag(A_diags.diagonal())
         self.A = A
         return A
 
@@ -83,13 +109,16 @@ class AdvectionDiffusion(GenericTransport):
         gh = phase[self.settings['hydraulic_conductance']]
         P = phase[self.settings['pressure']]
         D = phase[self.settings['diffusive_conductance']]
+        md = phase[self.settings['molar_density']][0]
         # Pore neighbor throats
         nt = network.find_neighbor_throats(pores=phase['pore.all'],
                                            flatten=False,
                                            mode='not_intersection')
         A = np.zeros((network.Np, network.Np))  # Initialize A matrix
         for i in range(network.Np):
-            q = gh[nt[i]]*(P[network.find_neighbor_pores(i)] - P[i])
+            prs = network.find_connected_pores(nt[i])
+            prs = prs[prs != i]
+            q = gh[nt[i]]*(P[i]-P[prs])*md  # Flow rate
             qP = np.where(q > 0, q, 0)  # Throat positive flow rates
             qN = np.where(q < 0, q, 0)  # Throat negative flow rates
             A[i, i] = np.sum(qP + D[nt[i]])  # Diagonal
