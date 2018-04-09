@@ -68,9 +68,7 @@ class AdvectionDiffusion(GenericTransport):
         # Put the flow rates in the coefficient matrix
         A = network.create_adjacency_matrix(weights=(qP + gd))
         # Overwrite the diagonal
-        d = np.zeros_like(Qij)
-        np.add.at(d, conns[:, 0], (np.clip(Qij, -np.inf, 0) - gd))
-        am = network.create_adjacency_matrix(weights=(qN - gd))
+        am = network.create_adjacency_matrix(weights=-(-qN + gd))
         A_diags = laplacian(am)
         A.setdiag(A_diags.diagonal())
 #        A.setdiag(d)
@@ -94,11 +92,11 @@ class AdvectionDiffusion(GenericTransport):
             q = gh[nt[i]]*(P[network.find_neighbor_pores(i)] - P[i])
             qP = np.where(q > 0, q, 0)  # Throat positive flow rates
             qN = np.where(q < 0, q, 0)  # Throat negative flow rates
-            A[i, i] = np.sum(qN - D[nt[i]])  # Diagonal
+            A[i, i] = np.sum(qP + D[nt[i]])  # Diagonal
             j1 = network['throat.conns'][nt[i]]  # Find off diag cells to fill
             j2 = np.reshape(j1, np.size(j1))
             j = j2[j2 != i]
-            A[i, j] = -(-qP - D[nt[i]])  # Off diagonal
+            A[i, j] = -(-qN + D[nt[i]])  # Off diagonal
         A = sprs.coo_matrix(A)
         self.A = A
         return A
