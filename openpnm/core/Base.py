@@ -1,6 +1,6 @@
 from collections import namedtuple
 from openpnm.core import Workspace, logging
-from openpnm.utils.misc import PrintableList, SettingsDict
+from openpnm.utils.misc import PrintableList, SettingsDict, HealthDict
 import scipy as sp
 logger = logging.getLogger(__name__)
 ws = Workspace()
@@ -12,8 +12,11 @@ class Base(dict):
     """
 
     def __new__(cls, *args, **kwargs):
-        cls.settings = SettingsDict()
         instance = super(Base, cls).__new__(cls, *args, **kwargs)
+        # The SettingsDict implements the __missing__ magic method, which
+        # returns None instead of KeyError.  This is useful for checking the
+        # value of a settings without first ensuring it exists.
+        instance.settings = SettingsDict()
         return instance
 
     def __init__(self, Np=0, Nt=0, name=None, project=None):
@@ -94,14 +97,15 @@ class Base(dict):
             else:
                 raise Exception('Cannot write array, wrong length: '+key)
 
-    def _set_name(self, name):
+    def _set_name(self, name, validate=True):
         if not hasattr(self, '_name'):
             self._name = None
         if name is None:
             name = self.project._generate_name(self)
         if self.name == name:
             return
-        self.project._validate_name(name)
+        if validate:
+            self.project._validate_name(name)
         if self._name is not None:
             logger.info('Changing the name of '+self.name+' to '+name)
             # Rename any label arrays in other objects
@@ -136,7 +140,11 @@ class Base(dict):
 
         Parameters
         ----------
-        mode : string of list of strings
+        element : string or list of strings
+            Can be either 'pore' or 'throat', which specifies whether 'pore'
+            and/or 'throat' data should be cleared.  The default is both.
+
+        mode : string or list of strings
             This controls what is cleared from the object.  Options are:
 
             **'props'** : Removes all numerical property values from the object
@@ -151,7 +159,7 @@ class Base(dict):
             of the framework; it is meant for advanced users and developers.
 
         """
-        allowed = ['constants', 'labels', 'models', 'all']
+        allowed = ['constants', 'labels', 'all']
         mode = self._parse_mode(mode=mode, allowed=allowed)
         for item in self.keys(mode=mode, element=element):
             if item not in ['pore.all', 'throat.all']:
@@ -165,9 +173,10 @@ class Base(dict):
 
         Parameters
         ----------
-        element : string (optional, default is None)
+        element : string
             Can be either 'pore' or 'throat', which limits the returned list of
-            keys to only 'pore' or 'throat' keys.
+            keys to only 'pore' or 'throat' keys.  If neither is given, then
+            both are assumed.
 
         mode : string (optional, default is 'skip')
             Controls which keys are returned.  Options are:
@@ -684,8 +693,6 @@ class Base(dict):
         ----------
         prop : string
             The property name to be retrieved
-        sources : list
-            List of object names OR objects from which data is retrieved
 
         Returns
         -------
@@ -694,7 +701,7 @@ class Base(dict):
         Notes
         -----
         This makes an effort to maintain the data 'type' when possible; however
-        when data is missing this can be tricky.  Data can be missing in two
+        when data are missing this can be tricky.  Data can be missing in two
         different ways: A set of pores is not assisgned to a geometry or the
         network contains multiple geometries and data does not exist on all.
         Float and boolean data is fine, but missing ints are converted to float
@@ -726,14 +733,28 @@ class Base(dict):
         element = self._parse_element(prop.split('.')[0], single=True)
         N = self.project.network._count(element)
 
-        # Attempt to fetch the requested prop array from each object
+        # Fetch sources list depending on object type?
+        # proj = self.project
+        # if self._isa('network'):
+        #     sources = list(proj.geometries().values())
+        # elif self._isa('phase'):
+        #     sources = list(proj.phases().values())
+        # else:
+        #     return self[prop]
+
+        # Attempt to 'get' the requested array from each object
+        # Use 'get' so that missing keys return None, instead of KeyError
         arrs = [item.get(prop, None) for item in sources]
         locs = [self._get_indices(element, item.name) for item in sources]
         sizes = [sp.size(a) for a in arrs]
-        if all([item is None for item in arrs]):  # prop not found anywhere
+        if sp.all([item is None for item in arrs]):  # prop not found anywhere
             raise KeyError(prop)
-        if sp.any([i is None for i in arrs]):  # prop not found everywhere
-            logger.warning('\''+prop+'\' not found on at least one object')
+#        if sp.any([i is None for i in arrs]):  # prop not found everywhere
+#            logger.warning('\''+prop+'\' not found on at least one object')
+#        if sp.sum(sizes) < self._count(element):
+#            logger.warning('Not all '+element+'s are assigned to an object')
+#            N_missing = self._count(element) - sp.sum(sizes)
+#            arrs.append(sp.zeros(shape=(N_missing,), dtype=float)*sp.nan)
 
         # Check the general type of each array
         atype = []
@@ -760,10 +781,9 @@ class Base(dict):
                     temp_arr = sp.zeros((N, item.shape[1]), dtype=item.dtype)
                 temp_arr.fill(dummy_val[atype[0]])
 
-        # Convrert int arrays to float IF NaNs are expected
-        if (temp_arr.dtype.name.startswith('int') and
-            (sp.any([i is None for i in arrs]) or
-             sp.sum(sizes) != N)):
+        # Convert int arrays to float IF NaNs are expected
+        if temp_arr.dtype.name.startswith('int') and \
+           (sp.any([i is None for i in arrs]) or sp.sum(sizes) != N):
             temp_arr = temp_arr.astype(float)
             temp_arr.fill(sp.nan)
 
@@ -1056,6 +1076,48 @@ class Base(dict):
         element = self._parse_element(element=element, single=True)
         temp = sp.size(super(Base, self).__getitem__(element+'.all'))
         return temp
+
+    def check_data_health(self, props=[], element=None):
+        r"""
+        Check the health of pore and throat data arrays.
+
+        Parameters
+        ----------
+        element : string, optional
+            Can be either 'pore' or 'throat', which will limit the checks to
+            only those data arrays.
+
+        props : list of pore (or throat) properties, optional
+            If given, will limit the health checks to only the specfied
+            properties.  Also useful for checking existance.
+
+        Returns
+        -------
+        Returns a HealthDict object which a basic dictionary with an added
+        ``health`` attribute that is True is all entries in the dict are
+        deemed healthy (empty lists), or False otherwise.
+
+        Examples
+        --------
+        >>> import openpnm
+        >>> pn = openpnm.network.Cubic(shape=[5, 5, 5])
+        >>> h = pn.check_data_health()
+        >>> h.health
+        True
+        """
+        health = HealthDict()
+        if props == []:
+            props = self.props(element)
+        else:
+            if type(props) == str:
+                props = [props]
+        for item in props:
+            health[item] = []
+            if sp.sum(sp.isnan(self[item])) > 0:
+                health[item] = 'Has NaNs'
+            elif sp.shape(self[item])[0] != self._count(item.split('.')[0]):
+                health[item] = 'Wrong Length'
+        return health
 
     def _parse_indices(self, indices):
         r"""

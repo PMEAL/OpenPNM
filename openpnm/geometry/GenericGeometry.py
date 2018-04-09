@@ -1,13 +1,11 @@
 import scipy as sp
-import numpy as np
 import matplotlib.pyplot as plt
-from openpnm.core import Base, ModelsMixin
-from openpnm.core import logging, Workspace
+from openpnm.core import Subdomain, ModelsMixin, Workspace, logging
 logger = logging.getLogger(__name__)
 ws = Workspace()
 
 
-class GenericGeometry(Base, ModelsMixin):
+class GenericGeometry(Subdomain, ModelsMixin):
     r"""
     GenericGeometry - Base class to construct a Geometry object
 
@@ -41,98 +39,18 @@ class GenericGeometry(Base, ModelsMixin):
 
         # Deal with network or project arguments
         if network is not None:
-            project = network.project
+            if project is not None:
+                assert network is project.network
+            else:
+                project = network.project
 
         super().__init__(project=project, **kwargs)
 
-        if network is not None:
+        network = self.project.network
+        if network:
             network['pore.'+self.name] = False
             network['throat.'+self.name] = False
-
-        self.add_locations(pores=pores, throats=throats)
-
-    def __getitem__(self, key):
-        # Find boss object (either phase or network)
-        element = key.split('.')[0]
-        if self._isa('phase'):
-            boss = self.project.find_phase(self)
-        else:
-            boss = self.project.network
-        # Deal with a few special key items
-        if key.split('.')[-1] == '_id':
-            inds = boss._get_indices(element=element, labels=self.name)
-            return boss[element+'._id'][inds]
-        # Convert self.name into 'all'
-        elif key.split('.')[-1] in [self.name]:
-            return self[element+'.all']
-        # Now get values if present, or regenerate them
-        vals = self.get(key)
-        if vals is None:
-            inds = boss._get_indices(element=element, labels=self.name)
-            vals = boss[key][inds]
-        return vals
-
-    def add_locations(self, pores=[], throats=[]):
-        r"""
-        """
-        if len(pores) > 0:
-            self._set_locations(element='pore', indices=pores, mode='add')
-        if len(throats) > 0:
-            self._set_locations(element='throat', indices=throats, mode='add')
-
-    def drop_locations(self, pores=[], throats=[]):
-        r"""
-        """
-        if len(pores) > 0:
-            self._set_locations(element='pore', indices=pores, mode='drop')
-        if len(throats) > 0:
-            self._set_locations(element='throat', indices=throats, mode='drop')
-
-    def _set_locations(self, element, indices=[], mode='add'):
-        r"""
-        """
-        element = self._parse_element(element=element, single=True)
-        # Use the network's _parse_indices, since indicies could be 'network'
-        # length boolean masks
-        network = self.project.network
-        indices = network._parse_indices(indices)
-
-        net = self.project.network
-        proj = self.project
-
-        if element+'.'+self.name not in net.keys():
-            net[element+'.'+self.name] = False
-
-        if mode == 'add':
-            # Ensure indices are not already assigned to another object
-            temp = sp.zeros(shape=[net._count(element=element), ], dtype=bool)
-            for item in proj.geometries().keys():
-                temp += net[element+'.'+item]
-            if sp.any(temp[indices]):
-                raise Exception('Some of the given '+element+' are already ' +
-                                'assigned to an existing object')
-            set_flag = True
-        elif mode == 'drop':
-            set_flag = False
-
-        # Change lables of all associated physics in their respective phases
-        for phase in proj.phases().values():
-            phys = proj.find_physics(geometry=self, phase=phase)
-            if phys:
-                if element+'.'+phys.name not in phase.keys():
-                    phase[element+'.'+phys.name] = False
-                phase[element+'.'+phys.name][indices] = set_flag
-                temp = sp.ones(shape=(sp.sum(phase[element+'.'+phys.name]),),
-                               dtype=bool)
-                phys.update({element+'.all': temp})
-
-        # Change labels in the network
-        net[element+'.'+self.name][indices] = set_flag
-        temp = sp.ones(shape=(sp.sum(net[element+'.'+self.name]),), dtype=bool)
-        self.update({element+'.all': temp})
-        inds = net._get_indices(element=element, labels=self.name)
-        for item in self.props(element=element):
-            self.update({item: net[item][inds]})
+            self.add_locations(pores=pores, throats=throats)
 
     def show_hist(self, props=['pore.diameter'], bins=20, fig=None, **kwargs):
         if fig is None:

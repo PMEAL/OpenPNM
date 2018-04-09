@@ -2,7 +2,7 @@ import time
 import pickle
 import h5py
 from openpnm.core import Workspace
-from openpnm.utils.misc import SettingsDict
+from openpnm.utils.misc import SettingsDict, HealthDict
 import openpnm
 import numpy as np
 ws = Workspace()
@@ -28,6 +28,34 @@ class Project(list):
 
     def append(self, obj):
         self.extend(obj)
+
+    def clear(self, objtype=[]):
+        r"""
+        Clears objects from the project entirely or selectively, depdening on
+        the received arguments.
+
+        Parameters
+        ----------
+        objtype : list of strings
+            A list containing the object type(s) to be removed.  If no types
+            are specified, then all objects are removed.  To clear only objects
+            of a specific type, use *'network'*, *'geometry'*, *'phase'*,
+            *'physics'*, or *'algorithm'*.  It's also possible to use
+            abbreviations, like *'geom'*.
+
+        """
+        if len(objtype) == 0:
+            super().clear()
+        else:
+            names = [obj.name for obj in self]
+            for name in names:
+                try:
+                    obj = self[name]
+                    for t in objtype:
+                        if obj._isa(t):
+                            self.purge_object(obj)
+                except KeyError:
+                    pass
 
     @property
     def workspace(self):
@@ -58,47 +86,75 @@ class Project(list):
         return obj
 
     def find_phase(self, obj):
-        mro = obj._mro()
-        if 'GenericPhase'in mro:
+        # If received phase, just return self
+        if obj._isa('phase'):
             return obj
-        if 'GenericAlgorithm' in mro:
+        # If phase happens to be in settings (i.e. algorithm), look it up
+        if 'phase' in obj.settings.keys():
             phase = self.phases()[obj.settings['phase']]
             return phase
-        for g in self.geometries().values():
-            for p in self.phases().values():
-                if obj.name == self.grid[g.name][p.name]:
-                    return p
+        # Otherwise find it using bottom-up approach (i.e. look in phase keys)
+        for phase in self.phases().values():
+            if ('pore.'+obj.name in phase) or ('throat.'+obj.name in phase):
+                return phase
+        # If all else fails, throw an exception
+        raise Exception('Cannot find a phase associated with '+obj.name)
 
     def find_geometry(self, physics):
-        for g in self.geometries().values():
-            for p in self.phases().values():
-                if physics.name == self.grid[g.name][p.name]:
-                    return g
+        # If geometry happens to be in settings, look it up directly
+        if 'geometry' in physics.settings.keys():
+            geom = self.geometries()[physics.settings['geometry']]
+            return geom
+        # Otherwise, use the bottom-up approach
+        for geo in self.geometries().values():
+            if physics in self.find_physics(geometry=geo):
+                return geo
+        # If all else fails, throw an exception
+        raise Exception('Cannot find a geometry associated with '+physics.name)
 
     def find_physics(self, geometry=None, phase=None):
         if geometry and phase:
-            name = self.grid[geometry.name][phase.name]
-            phys = self[name]
+            physics = self.find_physics(geometry=geometry)
+            phases = list(self.phases().values())
+            phys = physics[phases.index(phase)]
+            return phys
         elif geometry:
-            row = self.grid.row(geometry.name)
-            phys = [self.physics().get(i, None) for i in row]
+            result = []
+            net = self.network
+            geoPs = net['pore.'+geometry.name]
+            geoTs = net['throat.'+geometry.name]
+            for phase in self.phases().values():
+                physics = self.find_physics(phase=phase)
+                temp = None
+                for phys in physics:
+                    Ps = phase.map_pores(phys['pore._id'])
+                    physPs = phase.tomask(pores=Ps)
+                    Ts = phase.map_throats(phys['throat._id'])
+                    physTs = phase.tomask(throats=Ts)
+                    if np.all(geoPs == physPs) and np.all(geoTs == physTs):
+                        temp = phys
+                result.append(temp)
+            return result
         elif phase:
-            col = self.grid.col(phase.name)
-            phys = [self.physics().get(i, None) for i in col]
+            names = set(self.physics().keys())
+            keys = set([item.split('.')[-1] for item in phase.keys()])
+            hits = names.intersection(keys)
+            phys = [self.physics().get(i, None) for i in hits]
+            return phys
         else:
-            raise Exception('Must specify at least one of geometry or phase')
-        if phys == ['']:
             phys = []
-        return phys
+            for geom in self.geometries().values():
+                phys.append(self.find_physics(geometry=geom))
+            return phys
 
     def _validate_name(self, name):
         names = [i.name for i in self]
         if name in names:
-            raise Exception('An object already exists named ' + name)
+            raise Exception('An object already exists named '+name)
         for item in self:
             for key in item.keys():
                 if key.split('.')[1] == name:
-                    raise Exception('A property/label is already named ' + name)
+                    raise Exception('A property/label is already named '+name)
 
     def _generate_name(self, obj):
         prefix = obj.settings['prefix']
@@ -191,40 +247,29 @@ class Project(list):
             self[obj_name][propname] = f[item]
         f.close()
 
-    def _get_net(self):
-        for item in self:
-            if 'GenericNetwork' in item._mro():
-                return item
-
-    network = property(fget=_get_net)
+    @property
+    def network(self):
+        net = list(self._get_objects_of_type('network').values())
+        if len(net) > 0:
+            net = net[0]
+        else:
+            net = None
+        return net
 
     def geometries(self):
-        _dict = {}
-        for item in self:
-            if 'GenericGeometry' in item._mro():
-                _dict.update({item.name: item})
-        return _dict
+        return self._get_objects_of_type('geometry')
 
     def phases(self):
-        _dict = {}
-        for item in self:
-            if 'GenericPhase' in item._mro():
-                _dict.update({item.name: item})
-        return _dict
+        return self._get_objects_of_type('phase')
 
     def physics(self):
-        _dict = {}
-        for item in self:
-            if 'GenericPhysics' in item._mro():
-                _dict.update({item.name: item})
-        return _dict
+        return self._get_objects_of_type('physics')
 
     def algorithms(self):
-        _dict = {}
-        for item in self:
-            if 'GenericAlgorithm' in item._mro():
-                _dict.update({item.name: item})
-        return _dict
+        return self._get_objects_of_type('algorithm')
+
+    def _get_objects_of_type(self, objtype):
+        return {item.name: item for item in self if item._isa(objtype)}
 
     def _set_comments(self, string):
         if hasattr(self, '_comments') is False:
@@ -240,20 +285,18 @@ class Project(list):
     comments = property(fget=_get_comments, fset=_set_comments)
 
     def _get_grid(self):
-        net = self.network
         grid = {}
         row = {phase: '' for phase in self.phases().keys()}
-        for geo in self.geometries().keys():
-            grid[geo] = row.copy()
+        for geo in self.geometries().values():
+            grid[geo.name] = row.copy()
             for phase in self.phases().values():
-                for phys in self.physics().keys():
-                    if phys in [n.split('.')[1] for n in phase.keys()]:
-                        geo_mask = net['pore.'+geo]
-                        phys_mask = phase['pore.'+phys]
-                        # TODO: This could be more or less strict
-                        if np.sum(geo_mask*phys_mask) > 0:
-                            grid[geo][phase.name] = phys
-        grid = ProjectGrid(self.name, grid)
+                phys = self.find_physics(phase=phase, geometry=geo)
+                if phys is None:
+                    phys = ''
+                else:
+                    phys = phys.name
+                grid[geo.name][phase.name] = phys
+        grid = ProjectGrid(self.network.name, grid)
         return grid
 
     grid = property(fget=_get_grid)
@@ -270,6 +313,47 @@ class Project(list):
                      '{0:<65}'.format(item.__repr__()))
         s.append(hr)
         return '\n'.join(s)
+
+    def check_geometry_health(self):
+        r"""
+        Perform a check to find pores with overlapping or undefined Geometries
+        """
+        geoms = self.geometries().keys()
+        net = self.network
+        Ptemp = np.zeros((net.Np,))
+        Ttemp = np.zeros((net.Nt,))
+        for item in geoms:
+            Pind = net['pore.'+item]
+            Tind = net['throat.'+item]
+            Ptemp[Pind] = Ptemp[Pind] + 1
+            Ttemp[Tind] = Ttemp[Tind] + 1
+        health = HealthDict()
+        health['overlapping_pores'] = np.where(Ptemp > 1)[0].tolist()
+        health['undefined_pores'] = np.where(Ptemp == 0)[0].tolist()
+        health['overlapping_throats'] = np.where(Ttemp > 1)[0].tolist()
+        health['undefined_throats'] = np.where(Ttemp == 0)[0].tolist()
+        return health
+
+    def check_physics_health(self, phase):
+        r"""
+        Perform a check to find pores which have overlapping or missing Physics
+        """
+        phys = self.find_physics(phase=phase)
+        if None in phys:
+            raise Exception('Undefined physics found, check the grid')
+        Ptemp = np.zeros((phase.Np,))
+        Ttemp = np.zeros((phase.Nt,))
+        for item in phys:
+                Pind = phase['pore.'+item.name]
+                Tind = phase['throat.'+item.name]
+                Ptemp[Pind] = Ptemp[Pind] + 1
+                Ttemp[Tind] = Ttemp[Tind] + 1
+        health = HealthDict()
+        health['overlapping_pores'] = np.where(Ptemp > 1)[0].tolist()
+        health['undefined_pores'] = np.where(Ptemp == 0)[0].tolist()
+        health['overlapping_throats'] = np.where(Ttemp > 1)[0].tolist()
+        health['undefined_throats'] = np.where(Ttemp == 0)[0].tolist()
+        return health
 
 
 class Grid(dict):
@@ -313,6 +397,10 @@ class Grid(dict):
 
 
 class ProjectGrid(Grid):
+    r"""
+    This is a subclass of Grid, which adds the ability to lookup by geometries
+    and phases, as more specific versions of rows and cols
+    """
 
     def geometries(self):
         return self.index()

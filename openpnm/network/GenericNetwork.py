@@ -4,6 +4,7 @@ import scipy.sparse as sprs
 import scipy.spatial as sptl
 from openpnm.core import Base, Workspace, ModelsMixin, logging
 from openpnm import topotools
+from openpnm.utils import HealthDict
 logger = logging.getLogger()
 ws = Workspace()
 
@@ -22,8 +23,8 @@ class GenericNetwork(Base, ModelsMixin):
         self._im = {}
         self._am = {}
 
-    def __setitem__(self, prop, value):
-        if prop == 'throat.conns':
+    def __setitem__(self, key, value):
+        if key == 'throat.conns':
             if sp.shape(value)[1] != 2:
                 logger.error('Wrong size for throat conns!')
             else:
@@ -31,7 +32,12 @@ class GenericNetwork(Base, ModelsMixin):
                     logger.warning('Converting throat.conns to be upper \
                                     triangular')
                     value = sp.sort(value, axis=1)
-        super().__setitem__(prop, value)
+        if self.project:
+            for item in self.project.geometries().values():
+                exclude = {'pore.all', 'throat.all'}
+                if key in set(item.keys()).difference(exclude):
+                    raise Exception(key+' already exists on '+item.name)
+        super().__setitem__(key, value)
 
     def __getitem__(self, key):
         # Deal with special keys first
@@ -708,3 +714,96 @@ class GenericNetwork(Base, ModelsMixin):
         if Pn.dtype == float:
             Pn = Pn.astype(sp.int64)
         return Pn
+
+    def check_network_health(self):
+        r"""
+        This method check the network topological health by checking for:
+
+            (1) Isolated pores
+            (2) Islands or isolated clusters of pores
+            (3) Duplicate throats
+            (4) Bidirectional throats (ie. symmetrical adjacency matrix)
+            (5) Headless throats
+
+        Returns
+        -------
+        A dictionary containing the offending pores or throat numbers under
+        each named key.
+
+        It also returns a list of which pores and throats should be trimmed
+        from the network to restore health.  This list is a suggestion only,
+        and is based on keeping the largest cluster and trimming the others.
+
+        Notes
+        -----
+        - Does not yet check for duplicate pores
+        - Does not yet suggest which throats to remove
+        - This is just a 'check' and does not 'fix' the problems it finds
+        """
+
+        health = HealthDict()
+        health['disconnected_clusters'] = []
+        health['isolated_pores'] = []
+        health['trim_pores'] = []
+        health['duplicate_throats'] = []
+        health['bidirectional_throats'] = []
+        health['headless_throats'] = []
+        health['looped_throats'] = []
+
+        # Check for headless throats
+        hits = sp.where(self['throat.conns'] > self.Np - 1)[0]
+        if sp.size(hits) > 0:
+            health['headless_throats'] = sp.unique(hits)
+            logger.warning('Health check cannot complete due to connectivity '
+                           'errors. Please correct existing errors & recheck.')
+            return health
+
+        # Check for throats that loop back onto the same pore
+        P12 = self['throat.conns']
+        hits = sp.where(P12[:, 0] == P12[:, 1])[0]
+        if sp.size(hits) > 0:
+            health['looped_throats'] = hits
+
+        # Check for individual isolated pores
+        Ps = self.num_neighbors(self.pores())
+        if sp.sum(Ps == 0) > 0:
+            logger.warning(str(sp.sum(Ps == 0)) + ' pores have no neighbors')
+            health['isolated_pores'] = sp.where(Ps == 0)[0]
+
+        # Check for separated clusters of pores
+        temp = []
+        tmask = self.tomask(throats=self.throats('all'))
+        Cs = topotools.find_clusters(network=self, mask=tmask)
+        if sp.shape(sp.unique(Cs))[0] > 1:
+            logger.warning('Isolated clusters exist in the network')
+            for i in sp.unique(Cs):
+                temp.append(sp.where(Cs == i)[0])
+            b = sp.array([len(item) for item in temp])
+            c = sp.argsort(b)[::-1]
+            for i in range(0, len(c)):
+                health['disconnected_clusters'].append(temp[c[i]])
+                if i > 0:
+                    health['trim_pores'].extend(temp[c[i]])
+
+        # Check for duplicate throats
+        am = self.create_adjacency_matrix(fmt='lil')
+        mergeTs = []
+        for i in range(0, self.Np):
+            for j in sp.where(sp.array(am.data[i]) > 1)[0]:
+                k = am.rows[i][j]
+                mergeTs.extend(self.find_connecting_throat(i, k))
+        # Remove duplicates
+        mergeTs = [list(i) for i in set(tuple(i) for i in mergeTs)]
+        health['duplicate_throats'] = mergeTs
+
+        # Check for bidirectional throats
+        adjmat = self.create_adjacency_matrix(fmt='coo')
+        num_full = adjmat.sum()
+        temp = sprs.triu(adjmat, k=1)
+        num_upper = temp.sum()
+        if num_full > num_upper:
+            biTs = sp.where(self['throat.conns'][:, 0] >
+                            self['throat.conns'][:, 1])[0]
+            health['bidirectional_throats'] = biTs.tolist()
+
+        return health

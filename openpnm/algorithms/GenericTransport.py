@@ -26,7 +26,7 @@ class GenericTransport(GenericAlgorithm):
 
         super().__init__(project=project, **kwargs)
 
-    def set_dirchlet_BC(self, pores, values):
+    def set_dirichlet_BC(self, pores, values):
         r"""
         """
         self.set_BC(pores=pores, bctype='dirichlet', bcvalues=values,
@@ -128,7 +128,7 @@ class GenericTransport(GenericAlgorithm):
         network = self.project.network
         phase = self.project.phases()[self.settings['phase']]
         g = phase[self.settings['conductance']]
-        am = network.create_adjacency_matrix(weights=-g, fmt='coo')
+        am = network.create_adjacency_matrix(weights=g, fmt='coo')
         A = spgr.laplacian(am)
         self.A = A
         return A

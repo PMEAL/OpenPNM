@@ -31,18 +31,30 @@ class GenericPhase(Base, ModelsMixin):
 
         # Deal with network or project arguments
         if network is not None:
-            project = network.project
+            if project is not None:
+                assert network is project.network
+            else:
+                project = network.project
 
         super().__init__(project=project, **kwargs)
 
         # If project has a network object, adjust pore and throat sizes
-        if project.network:
-            self['pore.all'] = ones((project.network.Np, ), dtype=bool)
-            self['throat.all'] = ones((project.network.Nt, ), dtype=bool)
+        network = self.project.network
+        if network:
+            self['pore.all'] = ones((network.Np, ), dtype=bool)
+            self['throat.all'] = ones((network.Nt, ), dtype=bool)
 
         # Set standard conditions on the fluid to get started
         self['pore.temperature'] = 298.0
         self['pore.pressure'] = 101325.0
+
+    def __setitem__(self, key, value):
+        if self.project:
+            for item in self.project.find_physics(phase=self):
+                exclude = {'pore.all', 'throat.all'}
+                if key in set(item.keys()).difference(exclude):
+                    raise Exception(key+' already exists on '+item.name)
+        super().__setitem__(key, value)
 
     def __getitem__(self, key):
         element = key.split('.')[0]

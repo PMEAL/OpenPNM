@@ -108,7 +108,8 @@ class Cubic(GenericNetwork):
 
         super().__init__(Np=points.shape[0], Nt=pairs.shape[0], name=name,
                          project=project)
-
+        self['pore.internal'] = True
+        self['throat.internal'] = True
         self._label_surfaces()
 
     def _label_surfaces(self):
@@ -121,11 +122,6 @@ class Cubic(GenericNetwork):
         for label in labels:
             if 'pore.'+label not in self.keys():
                 self['pore.'+label] = False
-        if 'pore.boundary' in self.keys():
-            internal = -self['pore.boundary']
-        else:
-            internal = self['pore.all']
-        self['pore.internal'] = internal
         self['pore.front'][x <= x.min()] = True
         self['pore.back'][x >= x.max()] = True
         self['pore.left'][y <= y.min()] = True
