@@ -28,7 +28,7 @@ class Dispersion(GenericTransport):
                               'pressure': 'pore.pressure'})
         self.settings.update(settings)
 
-    def build_A_vectorized(self):
+    def build_A(self):
         r"""
         """
         network = self.project.network
@@ -40,7 +40,7 @@ class Dispersion(GenericTransport):
         conns = sp.vstack((pore_ij, sp.flip(pore_ij, axis=1)))
 
         # Fetch phase properties, including pressure
-        # TODO: Decide is adding random #'s is a good idea
+        # TODO: Adding rands to prevent error at delta P = 0...could be better?
         P = phase['pore.pressure'] + sp.rand(self.Np)*1e-30
         # TODO: convert to a throat vector to account for spatial variation
         D = sp.mean(phase['pore.diffusivity'])
@@ -66,7 +66,6 @@ class Dispersion(GenericTransport):
         Pe_ik = u_ik*Le_ik/D
 
         # Condition numerical extremes in Pe_ik array
-        Pe_ik[sp.isnan(Pe_ik)] = 0  # Remove NaNs when deltaP = 0
         negs = Pe_ik < 0  # Note locations of negative numbers
         temp = sp.absolute(Pe_ik)
         Pe_ik = sp.clip(temp, 1e-10, 100)  # Clip large and near-zeros values
