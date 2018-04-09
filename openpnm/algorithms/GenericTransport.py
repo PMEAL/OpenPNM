@@ -147,16 +147,17 @@ class GenericTransport(GenericAlgorithm):
             self.b[ind] = self['pore.neumann_value'][ind]
 
         if 'pore.dirichlet' in self.keys():
+            f = np.amax(np.absolute(self.A.data))
             # Update b
             ind = self['pore.dirichlet']
-            self.b[ind] = self['pore.dirichlet_value'][ind]
+            self.b[ind] = f*self['pore.dirichlet_value'][ind]
             # Update A
             # Find all entries on rows associated with dirichlet pores
             P_bc = self.toindices(self['pore.dirichlet'])
             indrow = np.in1d(self.A.row, P_bc)
             self.A.data[indrow] = 0  # Remove entries from A for all BC rows
             datadiag = self.A.diagonal()  # Add diagonal entries back into A
-            datadiag[P_bc] = np.ones_like(P_bc, dtype=float)
+            datadiag[P_bc] = f*np.ones_like(P_bc, dtype=float)
             self.A.setdiag(datadiag)
             self.A.eliminate_zeros()  # Remove 0 entries
 

@@ -66,10 +66,10 @@ class Dispersion(GenericTransport):
             Pe_ik = u_ik * Le_ik / D
 
             # Get rid of exp overflow when calculating condunctances
-            Pe_ik[(Pe_ik < 1e-10) & (Pe_ik >= 0)] = 1e-10
-            Pe_ik[(Pe_ik > -1e-10) & (Pe_ik <= 0)] = -1e-10
-            Pe_ik[Pe_ik > 100] = 100
-            Pe_ik[Pe_ik < -100] = -100
+            Pe_ik[(Pe_ik < 1e-20) & (Pe_ik >= 0)] = 1e-20
+            Pe_ik[(Pe_ik > -1e-20) & (Pe_ik <= 0)] = -1e-20
+            Pe_ik[Pe_ik > 1000] = 1000
+            Pe_ik[Pe_ik < -1000] = -1000
 
             # Coefficients of center pore
             val = sp.sum(-Q_ik + Q_ik / (1 - sp.exp(Pe_ik)))
