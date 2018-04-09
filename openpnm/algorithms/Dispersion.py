@@ -110,15 +110,15 @@ class Dispersion(GenericTransport):
         Vt = network['throat.volume']
         Lt = network['throat.length']
 
-        # Calculating effective length and area specifically for dispersion
+        # Calculate effective length and area specifically for dispersion
         Le = Lt + sp.mean(Dp[pore_ij], axis=1)
         Ae = (Vt + sp.sum(Vp[pore_ij], axis=1))/Le
-
-        # Calculate conditions in each throat, for both directions
-        g = phase[self.settings['conductance']]
-        g = sp.tile(g, 2)
         Le_ik = sp.tile(Le, 2)
         Ae_ik = sp.tile(Ae, 2)
+
+        # Calculate flow conditions in each throat, for both directions
+        g = phase[self.settings['conductance']]
+        g = sp.tile(g, 2)
         Q_ik = g*sp.diff(P[conns], axis=1).squeeze()
         u_ik = Q_ik/Ae_ik
         Pe_ik = u_ik*Le_ik/D
@@ -135,7 +135,7 @@ class Dispersion(GenericTransport):
         am = network.create_adjacency_matrix(weights=off_diags, fmt='coo')
         A = laplacian(am)
 
-        # Now find the sum(Q_ik) and add to the diagonals
+        # Now add -Q_ik to each element of the diagonal
         diag = A.diagonal()
         sp.add.at(diag, conns[:, 0], -Q_ik)
         A.setdiag(diag)
