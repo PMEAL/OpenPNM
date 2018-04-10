@@ -33,18 +33,21 @@ class AdvectionDiffusion(GenericTransport):
         gd = np.tile(gd, 2)
         md = phase[self.settings['molar_density']][0]
 
-        conns = np.flip(network['throat.conns'], axis=1)
-        Qij = md*gh_0*np.diff(P[conns], axis=1).squeeze()
-        Qij = np.append(Qij, -Qij)
+        conns1 = network['throat.conns']
+        conns2 = np.flip(conns1, axis=1)
 
-        qP = np.where(Qij > 0, Qij, 0)  # Throat positive flow rates
-        qN = np.where(Qij < 0, Qij, 0)
+        Qij1 = md*gh_0*np.diff(P[conns1], axis=1).squeeze()
+        Qij1 = np.append(Qij1, -Qij1)
+        Qij2 = md*gh_0*np.diff(P[conns2], axis=1).squeeze()
+        Qij2 = np.append(Qij2, -Qij2)
+
+        qP1 = np.where(Qij1 > 0, Qij1, 0)  # Throat positive flow rates
+        qN2 = np.where(Qij2 < 0, Qij2, 0)
 
         # Put the flow rates in the coefficient matrices
-        am1 = network.create_adjacency_matrix(weights=(qP + gd))
-        am2 = network.create_adjacency_matrix(weights=(-qN + gd))
+        am1 = network.create_adjacency_matrix(weights=(qP1 + gd))
+        A = -network.create_adjacency_matrix(weights=(-qN2 + gd))
         A_diags = laplacian(am1)
-        A = laplacian(am2)
         # Overwrite the diagonal
         A.setdiag(A_diags.diagonal())
         self.A = A
