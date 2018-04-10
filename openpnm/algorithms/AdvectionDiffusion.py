@@ -1,5 +1,4 @@
 import numpy as np
-import scipy.sparse as sprs
 from scipy.sparse.csgraph import laplacian
 from openpnm.algorithms import GenericTransport
 from openpnm.core import logging
@@ -26,33 +25,6 @@ class AdvectionDiffusion(GenericTransport):
         self.settings.update(settings)
 
     def build_A(self):
-        return self.build_A_looped()
-
-    def build_A_vectorized_new(self):
-        network = self.project.network
-        phase = self.project.phases()[self.settings['phase']]
-        P = phase[self.settings['pressure']]
-        gh = phase[self.settings['hydraulic_conductance']]
-        gh = np.tile(gh, 2)
-        gd = phase[self.settings['diffusive_conductance']]
-        gd = np.tile(gd, 2)
-
-        pores_ij = network['throat.conns']
-        conns = np.vstack((pores_ij, np.flip(pores_ij, axis=1)))
-        Qij = gh*np.diff(P[conns], axis=1).squeeze()
-        qP = Qij >= 0  # Throat positive flow rates
-        qN = ~qP
-        Qij = np.absolute(Qij)
-        off_diags = qN*(Qij + gd)
-        diags = qP*(Qij + gd)
-        d = np.zeros_like(diags)
-        np.add.at(d, conns[:, 0], diags)
-        A = network.create_adjacency_matrix(weights=-off_diags)
-        A.setdiag(d)
-        self.A = A
-        return A
-    
-    def build_A_vectorized_new2(self):
         network = self.project.network
         phase = self.project.phases()[self.settings['phase']]
         P = phase[self.settings['pressure']]
@@ -61,7 +33,8 @@ class AdvectionDiffusion(GenericTransport):
         gd = np.tile(gd, 2)
         md = phase[self.settings['molar_density']][0]
 
-        Qij = md*gh_0*np.diff(P[network['throat.conns']], axis=1).squeeze()
+        conns = np.flip(network['throat.conns'], axis=1)
+        Qij = md*gh_0*np.diff(P[conns], axis=1).squeeze()
         Qij = np.append(Qij, -Qij)
 
         qP = np.where(Qij > 0, Qij, 0)  # Throat positive flow rates
@@ -74,58 +47,5 @@ class AdvectionDiffusion(GenericTransport):
         A = laplacian(am2)
         # Overwrite the diagonal
         A.setdiag(A_diags.diagonal())
-        self.A = A
-        return A
-
-    def build_A_vectorized_old(self):
-        network = self.project.network
-        phase = self.project.phases()[self.settings['phase']]
-        P = phase[self.settings['pressure']]
-        gh = phase[self.settings['hydraulic_conductance']]
-        gh = np.tile(gh, 2)
-        gd = phase[self.settings['diffusive_conductance']]
-        gd = np.tile(gd, 2)
-
-        pores_ij = network['throat.conns']
-        conns = np.vstack((pores_ij, np.flip(pores_ij, axis=1)))
-        Qij = gh*np.diff(P[conns], axis=1).squeeze()
-        qP = np.where(Qij > 0, Qij, 0)  # Throat positive flow rates
-        qN = np.where(Qij <= 0, Qij, 0)
-        # Put the flow rates in the coefficient matrix
-        A = network.create_adjacency_matrix(weights=(qP + gd))
-        # Overwrite the diagonal
-        am = network.create_adjacency_matrix(weights=-(-qN + gd))
-        A_diags = laplacian(am)
-        A.setdiag(A_diags.diagonal())
-#        A.setdiag(d)
-        self.A = A
-        return A
-
-    def build_A_looped(self):
-        r"""
-        """
-        network = self.project.network
-        phase = self.project.phases()[self.settings['phase']]
-        gh = phase[self.settings['hydraulic_conductance']]
-        P = phase[self.settings['pressure']]
-        D = phase[self.settings['diffusive_conductance']]
-        md = phase[self.settings['molar_density']][0]
-        # Pore neighbor throats
-        nt = network.find_neighbor_throats(pores=phase['pore.all'],
-                                           flatten=False,
-                                           mode='not_intersection')
-        A = np.zeros((network.Np, network.Np))  # Initialize A matrix
-        for i in range(network.Np):
-            prs = network.find_connected_pores(nt[i])
-            prs = prs[prs != i]
-            q = gh[nt[i]]*(P[i]-P[prs])*md  # Flow rate
-            qP = np.where(q > 0, q, 0)  # Throat positive flow rates
-            qN = np.where(q < 0, q, 0)  # Throat negative flow rates
-            A[i, i] = np.sum(qP + D[nt[i]])  # Diagonal
-            j1 = network['throat.conns'][nt[i]]  # Find off diag cells to fill
-            j2 = np.reshape(j1, np.size(j1))
-            j = j2[j2 != i]
-            A[i, j] = -(-qN + D[nt[i]])  # Off diagonal
-        A = sprs.coo_matrix(A)
         self.A = A
         return A
