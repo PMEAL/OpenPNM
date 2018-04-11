@@ -24,7 +24,7 @@ def generic(target, func, seeds='throat.seed'):
 generic.__doc__ = _misc.generic.__doc__
 
 
-def from_neighbor_pores(target, pore_prop, mode='min'):
+def from_neighbor_pores(target, pore_prop='pore.diameter', mode='min'):
     return _misc.from_neighbor_pores(target=target, pore_prop=pore_prop,
                                      mode=mode)
 
