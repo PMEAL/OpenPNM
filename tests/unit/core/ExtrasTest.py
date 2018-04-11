@@ -55,7 +55,6 @@ class ExtrasTest:
         assert len(obj.project) == 1
 
 
-
 if __name__ == '__main__':
 
     t = ExtrasTest()
