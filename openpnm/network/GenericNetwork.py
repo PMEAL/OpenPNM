@@ -809,20 +809,3 @@ class GenericNetwork(Base, ModelsMixin):
             health['bidirectional_throats'] = biTs.tolist()
 
         return health
-
-    # TODO: These all need to be done properly...somehow
-    def _get_domain_area(self):
-        return self._area
-
-    def _set_domain_area(self, area):
-        self._area = area
-
-    domain_area = property(fget=_get_domain_area, fset=_set_domain_area)
-
-    def _get_domain_len(self):
-        return self._length
-
-    def _set_domain_len(self, length):
-        self._length = length
-
-    domain_length = property(fget=_get_domain_len, fset=_set_domain_len)

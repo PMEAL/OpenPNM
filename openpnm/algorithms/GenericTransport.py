@@ -1,6 +1,10 @@
 import numpy as np
 import scipy.sparse as sprs
 import scipy.sparse.csgraph as spgr
+from sklearn.cluster import KMeans
+from scipy.spatial import ConvexHull
+from scipy.spatial import cKDTree
+from openpnm.topotools import iscoplanar
 from openpnm.algorithms import GenericAlgorithm
 from openpnm.core import logging
 logger = logging.getLogger(__name__)
@@ -381,9 +385,57 @@ class GenericTransport(GenericAlgorithm):
         outlets = np.where(self['pore.dirichlet_value'] == np.amin(BCs))[0]
 
         # Fetch area and length of domain
-        # TODO: The area and length of network remains a problem
-        A = network.domain_area
-        L = network.domain_length
+        A = self.domain_area
+        L = self.domain_length
         flow = self.rate(pores=inlets)
         D = np.sum(flow)*L/A/(BCs[0] - BCs[1])
         return D
+
+    def _get_domain_area(self):
+        if not hasattr(self, '_area'):
+            logger.warning('Attempting to estimate inlet area...will be low')
+            network = self.project.network
+            coords = network['pore.coords'][self.pores('dirichlet')]
+            y_pred = KMeans(n_clusters=2).fit_predict(coords)
+            inlets = coords[y_pred == 0]
+            if not iscoplanar(inlets):
+                raise Exception('Detected inlet pores are not coplanar')
+            N = np.array([np.size(np.unique(inlets[:, i])) for i in [0, 1, 2]])
+            N = N > 1
+            if N.all():
+                raise Exception('Detected inlets are not oriented along a ' +
+                                'principle axis')
+            coords = inlets[:, N]
+            hull = ConvexHull(points=coords)
+            self._area = hull.volume  # In 2D volume = area, area = perimeter
+        return self._area
+
+    def _set_domain_area(self, area):
+        self._area = area
+
+    domain_area = property(fget=_get_domain_area, fset=_set_domain_area)
+
+    def _get_domain_length(self):
+        if not hasattr(self, '_length'):
+            logger.warning('Attempting to estimate domain length... ' +
+                           'could be low if boundary pores were not added')
+            network = self.project.network
+            coords = network['pore.coords'][self.pores('dirichlet')]
+            y_pred = KMeans(n_clusters=2).fit_predict(coords)
+            inlets = coords[y_pred == 1]
+            outlets = coords[y_pred == 0]
+            if not iscoplanar(inlets):
+                raise Exception('Detected inlet pores are not coplanar')
+            if not iscoplanar(outlets):
+                raise Exception('Detected inlet pores are not coplanar')
+            tree = cKDTree(data=inlets)
+            Ls = np.unique(tree.query(x=outlets)[0])
+            if np.size(Ls) != 1:
+                raise Exception('A unique value of length could not be found')
+            self._length = Ls[0]
+        return self._length
+
+    def _set_domain_length(self, length):
+        self._length = length
+
+    domain_length = property(fget=_get_domain_length, fset=_set_domain_length)
