@@ -17,18 +17,30 @@ class GenericTransport(GenericAlgorithm):
                               'conductance': None,
                               'quantity': None,
                               'solver': 'spsolve'})
-        self.settings.update(settings)
-        if phase is not None:
-            self.settings['phase'] = phase.name
-
+        self.setup(phase=phase, **settings)
+        # If network given, get project, otherwise let parent class create it
         if network is not None:
             project = network.project
-
         super().__init__(project=project, **kwargs)
+        # Create some instance attributes
         self.A = None
         self._pure_A = None
         self.b = None
         self._pure_b = None
+
+    def setup(self, phase=None, **kwargs):
+        r"""
+        This method takes several arguments that are essential to running the
+        algorithm and adds them to the settings.
+
+        Notes
+        -----
+        This generic version should be subclassed, and the arguments given
+        suitable default names.
+        """
+        if phase:
+            self.settings['phase'] = phase.name
+        self.settings.update(kwargs)
 
     def set_dirchlet_BC(self, pores, values):
         r"""
@@ -50,8 +62,8 @@ class GenericTransport(GenericAlgorithm):
         The definition of ``quantity`` is specified in the algorithm's
         ``settings``, e.g. ``alg.settings['quentity'] = 'pore.pressure'``.
         """
-        self.set_BC(pores=pores, bctype='dirichlet', bcvalues=values,
-                    mode='merge')
+        self._set_BC(pores=pores, bctype='dirichlet', bcvalues=values,
+                     mode='merge')
 
     def set_neumann_BC(self, pores, values):
         r"""
@@ -76,10 +88,10 @@ class GenericTransport(GenericAlgorithm):
         The definition of ``quantity`` is specified in the algorithm's
         ``settings``, e.g. ``alg.settings['quentity'] = 'pore.pressure'``.
         """
-        self.set_BC(pores=pores, bctype='neumann', bcvalues=values,
-                    mode='merge')
+        self._set_BC(pores=pores, bctype='neumann', bcvalues=values,
+                     mode='merge')
 
-    def set_BC(self, pores, bctype, bcvalues=None, mode='merge'):
+    def _set_BC(self, pores, bctype, bcvalues=None, mode='merge'):
         r"""
         Apply boundary conditions to specified pores
 
