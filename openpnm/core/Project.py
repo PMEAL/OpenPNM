@@ -2,7 +2,7 @@ import time
 import pickle
 import h5py
 from openpnm.core import Workspace
-from openpnm.utils.misc import SettingsDict
+from openpnm.utils.misc import SettingsDict, HealthDict
 import openpnm
 import numpy as np
 ws = Workspace()
@@ -28,6 +28,34 @@ class Project(list):
 
     def append(self, obj):
         self.extend(obj)
+
+    def clear(self, objtype=[]):
+        r"""
+        Clears objects from the project entirely or selectively, depdening on
+        the received arguments.
+
+        Parameters
+        ----------
+        objtype : list of strings
+            A list containing the object type(s) to be removed.  If no types
+            are specified, then all objects are removed.  To clear only objects
+            of a specific type, use *'network'*, *'geometry'*, *'phase'*,
+            *'physics'*, or *'algorithm'*.  It's also possible to use
+            abbreviations, like *'geom'*.
+
+        """
+        if len(objtype) == 0:
+            super().clear()
+        else:
+            names = [obj.name for obj in self]
+            for name in names:
+                try:
+                    obj = self[name]
+                    for t in objtype:
+                        if obj._isa(t):
+                            self.purge_object(obj)
+                except KeyError:
+                    pass
 
     @property
     def workspace(self):
@@ -79,8 +107,7 @@ class Project(list):
             return geom
         # Otherwise, use the bottom-up approach
         for geo in self.geometries().values():
-            phys = self.find_physics(geometry=geo)
-            if phys is physics:
+            if physics in self.find_physics(geometry=geo):
                 return geo
         # If all else fails, throw an exception
         raise Exception('Cannot find a geometry associated with '+physics.name)
@@ -286,6 +313,47 @@ class Project(list):
                      '{0:<65}'.format(item.__repr__()))
         s.append(hr)
         return '\n'.join(s)
+
+    def check_geometry_health(self):
+        r"""
+        Perform a check to find pores with overlapping or undefined Geometries
+        """
+        geoms = self.geometries().keys()
+        net = self.network
+        Ptemp = np.zeros((net.Np,))
+        Ttemp = np.zeros((net.Nt,))
+        for item in geoms:
+            Pind = net['pore.'+item]
+            Tind = net['throat.'+item]
+            Ptemp[Pind] = Ptemp[Pind] + 1
+            Ttemp[Tind] = Ttemp[Tind] + 1
+        health = HealthDict()
+        health['overlapping_pores'] = np.where(Ptemp > 1)[0].tolist()
+        health['undefined_pores'] = np.where(Ptemp == 0)[0].tolist()
+        health['overlapping_throats'] = np.where(Ttemp > 1)[0].tolist()
+        health['undefined_throats'] = np.where(Ttemp == 0)[0].tolist()
+        return health
+
+    def check_physics_health(self, phase):
+        r"""
+        Perform a check to find pores which have overlapping or missing Physics
+        """
+        phys = self.find_physics(phase=phase)
+        if None in phys:
+            raise Exception('Undefined physics found, check the grid')
+        Ptemp = np.zeros((phase.Np,))
+        Ttemp = np.zeros((phase.Nt,))
+        for item in phys:
+                Pind = phase['pore.'+item.name]
+                Tind = phase['throat.'+item.name]
+                Ptemp[Pind] = Ptemp[Pind] + 1
+                Ttemp[Tind] = Ttemp[Tind] + 1
+        health = HealthDict()
+        health['overlapping_pores'] = np.where(Ptemp > 1)[0].tolist()
+        health['undefined_pores'] = np.where(Ptemp == 0)[0].tolist()
+        health['overlapping_throats'] = np.where(Ttemp > 1)[0].tolist()
+        health['undefined_throats'] = np.where(Ttemp == 0)[0].tolist()
+        return health
 
 
 class Grid(dict):

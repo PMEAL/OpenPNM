@@ -1,6 +1,6 @@
 from collections import namedtuple
 from openpnm.core import Workspace, logging
-from openpnm.utils.misc import PrintableList, SettingsDict
+from openpnm.utils.misc import PrintableList, SettingsDict, HealthDict
 import scipy as sp
 logger = logging.getLogger(__name__)
 ws = Workspace()
@@ -95,14 +95,15 @@ class Base(dict):
             else:
                 raise Exception('Cannot write array, wrong length: '+key)
 
-    def _set_name(self, name):
+    def _set_name(self, name, validate=True):
         if not hasattr(self, '_name'):
             self._name = None
         if name is None:
             name = self.project._generate_name(self)
         if self.name == name:
             return
-        self.project._validate_name(name)
+        if validate:
+            self.project._validate_name(name)
         if self._name is not None:
             logger.info('Changing the name of '+self.name+' to '+name)
             # Rename any label arrays in other objects
@@ -1074,6 +1075,48 @@ class Base(dict):
         element = self._parse_element(element=element, single=True)
         temp = sp.size(super(Base, self).__getitem__(element+'.all'))
         return temp
+
+    def check_data_health(self, props=[], element=None):
+        r"""
+        Check the health of pore and throat data arrays.
+
+        Parameters
+        ----------
+        element : string, optional
+            Can be either 'pore' or 'throat', which will limit the checks to
+            only those data arrays.
+
+        props : list of pore (or throat) properties, optional
+            If given, will limit the health checks to only the specfied
+            properties.  Also useful for checking existance.
+
+        Returns
+        -------
+        Returns a HealthDict object which a basic dictionary with an added
+        ``health`` attribute that is True is all entries in the dict are
+        deemed healthy (empty lists), or False otherwise.
+
+        Examples
+        --------
+        >>> import openpnm
+        >>> pn = openpnm.network.Cubic(shape=[5, 5, 5])
+        >>> h = pn.check_data_health()
+        >>> h.health
+        True
+        """
+        health = HealthDict()
+        if props == []:
+            props = self.props(element)
+        else:
+            if type(props) == str:
+                props = [props]
+        for item in props:
+            health[item] = []
+            if sp.sum(sp.isnan(self[item])) > 0:
+                health[item] = 'Has NaNs'
+            elif sp.shape(self[item])[0] != self._count(item.split('.')[0]):
+                health[item] = 'Wrong Length'
+        return health
 
     def _parse_indices(self, indices):
         r"""

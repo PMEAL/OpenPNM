@@ -42,7 +42,7 @@ class GenericTransport(GenericAlgorithm):
             self.settings['phase'] = phase.name
         self.settings.update(kwargs)
 
-    def set_dirchlet_BC(self, pores, values):
+    def set_dirichlet_BC(self, pores, values):
         r"""
         Apply *Dirichlet* boundary conditons to the specified pore locations.
         Dirichlet conditions refer to constant *quantity* (e.g. pressure).

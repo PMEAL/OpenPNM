@@ -31,14 +31,18 @@ class GenericPhase(Base, ModelsMixin):
 
         # Deal with network or project arguments
         if network is not None:
-            project = network.project
+            if project is not None:
+                assert network is project.network
+            else:
+                project = network.project
 
         super().__init__(project=project, **kwargs)
 
         # If project has a network object, adjust pore and throat sizes
-        if project.network:
-            self['pore.all'] = ones((project.network.Np, ), dtype=bool)
-            self['throat.all'] = ones((project.network.Nt, ), dtype=bool)
+        network = self.project.network
+        if network:
+            self['pore.all'] = ones((network.Np, ), dtype=bool)
+            self['throat.all'] = ones((network.Nt, ), dtype=bool)
 
         # Set standard conditions on the fluid to get started
         self['pore.temperature'] = 298.0

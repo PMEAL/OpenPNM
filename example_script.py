@@ -43,15 +43,14 @@ water.add_model(propname='pore.reaction',
 
 s = {'conductance': 'throat.conductance',
      'quantity': 'pore.pressure'}
-alg1 = op.algorithms.ReactiveTransport(network=pn)
-alg1.setup(phase=water, **s)
-alg1.set_dirchlet_BC(pores=pn.pores('inlets'), values=1)
-alg1.set_dirchlet_BC(pores=pn.pores('outlets'), values=0)
+alg1 = op.algorithms.GenericTransport(network=pn, phase=water, settings=s)
+alg1.set_dirichlet_BC(pores=pn.pores('inlets'), values=1)
+alg1.set_dirichlet_BC(pores=pn.pores('outlets'), values=0)
 alg1.run()
 
 alg2 = op.algorithms.ReactiveTransport(network=pn, phase=water, settings=s)
-alg2.set_dirchlet_BC(pores=pn.pores('inlets'), values=1)
-alg2.set_source(propname='pore.reaction', pores=pn.pores('outlets'))
+alg2.set_dirichlet_BC(pores=pn.pores('inlets'), values=1)
+alg2.set_source_term(propname='pore.reaction', pores=pn.pores('outlets'))
 alg2.run()
 water.update(alg2.results())
 
@@ -63,14 +62,14 @@ alg3.settings.update({'t_initial': 0,
                       't_step': 0.25,
                       'conductance': 'throat.conductance',
                       'quantity': 'pore.pressure'})
-alg3.set_dirchlet_BC(pores=pn.pores('inlets'), values=1)
+alg3.set_dirichlet_BC(pores=pn.pores('inlets'), values=1)
 alg3.set_IC(values=0)
 alg3.run()
 
 
 alg4 = op.algorithms.TransientReactiveTransport(network=pn, phase=water)
 alg4.settings.update(alg3.settings)  # Just copy settings from another alg
-alg4.set_dirchlet_BC(pores=pn.pores('inlets'), values=1)
+alg4.set_dirichlet_BC(pores=pn.pores('inlets'), values=1)
 alg4.set_IC(values=0)
 alg4.set_source(propname='pore.reaction', pores=pn.pores('bottom'))
 alg4.run()

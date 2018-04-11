@@ -39,15 +39,18 @@ class GenericGeometry(Subdomain, ModelsMixin):
 
         # Deal with network or project arguments
         if network is not None:
-            project = network.project
+            if project is not None:
+                assert network is project.network
+            else:
+                project = network.project
 
         super().__init__(project=project, **kwargs)
 
-        if network is not None:
+        network = self.project.network
+        if network:
             network['pore.'+self.name] = False
             network['throat.'+self.name] = False
-
-        self.add_locations(pores=pores, throats=throats)
+            self.add_locations(pores=pores, throats=throats)
 
     def show_hist(self, props=['pore.diameter'], bins=20, fig=None, **kwargs):
         if fig is None:
