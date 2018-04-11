@@ -7,8 +7,6 @@ class SubclassedTransportTest:
 
     def setup_class(self):
         self.net = op.network.Cubic(shape=[9, 9, 9])
-        self.net.domain_area = 9*9
-        self.net.domain_length = 9
         self.geo = op.geometry.StickAndBall(network=self.net,
                                             pores=self.net.Ps,
                                             throats=self.net.Ts)
@@ -24,6 +22,8 @@ class SubclassedTransportTest:
         alg.set_dirichlet_BC(pores=self.net.pores('top'), values=1)
         alg.set_dirichlet_BC(pores=self.net.pores('bottom'), values=0)
         alg.run()
+        alg.domain_area = 81
+        alg.domain_length = 9
         Deff = alg.calc_eff_diffusivity()
         assert sp.around(Deff, decimals=10) == 0.0275097564
 
@@ -33,6 +33,8 @@ class SubclassedTransportTest:
         alg.set_dirichlet_BC(pores=self.net.pores('top'), values=101325)
         alg.set_dirichlet_BC(pores=self.net.pores('bottom'), values=0)
         alg.run()
+        alg.domain_area = 81
+        alg.domain_length = 9
         Keff = alg.calc_eff_permeability()
         assert sp.around(Keff, decimals=10) == 2.075e-05
 
@@ -43,6 +45,8 @@ class SubclassedTransportTest:
         alg.set_dirichlet_BC(pores=self.net.pores('top'), values=101325)
         alg.set_dirichlet_BC(pores=self.net.pores('bottom'), values=0)
         alg.run()
+        alg.domain_area = 81
+        alg.domain_length = 9
         Keff = alg.calc_effective_conductivity()
         assert sp.around(Keff, decimals=10) == 1.125
 
@@ -52,6 +56,8 @@ class SubclassedTransportTest:
         alg.set_dirichlet_BC(pores=self.net.pores('top'), values=101325)
         alg.set_dirichlet_BC(pores=self.net.pores('bottom'), values=0)
         alg.run()
+        alg.domain_area = 81
+        alg.domain_length = 9
         Keff = alg.calc_effective_conductivity()
         assert sp.around(Keff, decimals=10) == 1.125
 

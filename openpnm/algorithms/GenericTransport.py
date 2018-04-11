@@ -1,7 +1,6 @@
 import numpy as np
 import scipy.sparse as sprs
 import scipy.sparse.csgraph as spgr
-from sklearn.cluster import KMeans
 from scipy.spatial import ConvexHull
 from scipy.spatial import cKDTree
 from openpnm.topotools import iscoplanar
@@ -379,10 +378,9 @@ class GenericTransport(GenericAlgorithm):
                             'calculate effective property.')
 
         # Determine boundary conditions by analyzing algorithm object
+        inlets, outlets = self._get_inlets_and_outlets()
         Ps = self.pores('pore.dirichlet')
         BCs = np.unique(self['pore.dirichlet_value'][Ps])
-        inlets = np.where(self['pore.dirichlet_value'] == np.amax(BCs))[0]
-        outlets = np.where(self['pore.dirichlet_value'] == np.amin(BCs))[0]
 
         # Fetch area and length of domain
         A = self.domain_area
@@ -391,23 +389,38 @@ class GenericTransport(GenericAlgorithm):
         D = np.sum(flow)*L/A/(BCs[0] - BCs[1])
         return D
 
+    def _get_inlets_and_outlets(self):
+        # Determine boundary conditions by analyzing algorithm object
+        Ps = self.pores('pore.dirichlet')
+        BCs = np.unique(self['pore.dirichlet_value'][Ps])
+        inlets = np.where(self['pore.dirichlet_value'] == np.amax(BCs))[0]
+        outlets = np.where(self['pore.dirichlet_value'] == np.amin(BCs))[0]
+        return (inlets, outlets)
+
     def _get_domain_area(self):
         if not hasattr(self, '_area'):
             logger.warning('Attempting to estimate inlet area...will be low')
             network = self.project.network
-            coords = network['pore.coords'][self.pores('dirichlet')]
-            y_pred = KMeans(n_clusters=2).fit_predict(coords)
-            inlets = coords[y_pred == 0]
+            Pin, Pout = self._get_inlets_and_outlets()
+            inlets = network['pore.coords'][Pin]
+            outlets = network['pore.coords'][Pout]
             if not iscoplanar(inlets):
                 raise Exception('Detected inlet pores are not coplanar')
-            N = np.array([np.size(np.unique(inlets[:, i])) for i in [0, 1, 2]])
-            N = N > 1
-            if N.all():
+            if not iscoplanar(outlets):
+                raise Exception('Detected outlet pores are not coplanar')
+            Nin = np.ptp(inlets, axis=0) > 0
+            if Nin.all():
                 raise Exception('Detected inlets are not oriented along a ' +
                                 'principle axis')
-            coords = inlets[:, N]
-            hull = ConvexHull(points=coords)
-            self._area = hull.volume  # In 2D volume = area, area = perimeter
+            Nout = np.ptp(outlets, axis=0) > 0
+            if Nout.all():
+                raise Exception('Detected outlets are not oriented along a ' +
+                                'principle axis')
+            hull_in = ConvexHull(points=inlets[:, Nin])
+            hull_out = ConvexHull(points=outlets[:, Nout])
+            if hull_in.volume != hull_out.volume:
+                raise Exception('Inlet and outlet faces are different area')
+            self._area = hull_in.volume  # In 2D volume=area, area=perimeter
         return self._area
 
     def _set_domain_area(self, area):
@@ -420,16 +433,15 @@ class GenericTransport(GenericAlgorithm):
             logger.warning('Attempting to estimate domain length... ' +
                            'could be low if boundary pores were not added')
             network = self.project.network
-            coords = network['pore.coords'][self.pores('dirichlet')]
-            y_pred = KMeans(n_clusters=2).fit_predict(coords)
-            inlets = coords[y_pred == 1]
-            outlets = coords[y_pred == 0]
+            Pin, Pout = self._get_inlets_and_outlets()
+            inlets = network['pore.coords'][Pin]
+            outlets = network['pore.coords'][Pout]
             if not iscoplanar(inlets):
                 raise Exception('Detected inlet pores are not coplanar')
             if not iscoplanar(outlets):
                 raise Exception('Detected inlet pores are not coplanar')
             tree = cKDTree(data=inlets)
-            Ls = np.unique(tree.query(x=outlets)[0])
+            Ls = np.unique(np.around(tree.query(x=outlets)[0], decimals=5))
             if np.size(Ls) != 1:
                 raise Exception('A unique value of length could not be found')
             self._length = Ls[0]
