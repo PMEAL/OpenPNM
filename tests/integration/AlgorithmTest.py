@@ -53,7 +53,8 @@ def test_thermal_conduction():
     assert np.amax(np.absolute(diff)) < 0.015
 
 
-#def test_open_air_diffusivity():
+def test_open_air_diffusivity():
+    pass
 #    pn = op.network.Cubic([5, 5, 5], spacing=1)
 #    pn.add_boundary_pores()
 #    air = op.phases.Air(network=pn)
@@ -71,9 +72,10 @@ def test_thermal_conduction():
 #    Diff.domain_length = 5
 #    Diff_deff = Diff.calc_eff_diffusivity()/Dab
 #    assert np.round(Diff_deff, 3) == 1
-#
-#
-#def test_Darcy_alg():
+
+
+def test_Darcy_alg():
+    pass
 #    # Generate Network and clean up some of boundaries
 #    divs = [1, 50, 10]
 #    Lc = 0.00004
