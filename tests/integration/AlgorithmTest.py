@@ -37,8 +37,8 @@ def test_thermal_conduction():
     inlets = pn.pores('back_boundary')
     outlets = pn.pores(['front_boundary', 'left_boundary', 'right_boundary'])
     T_in = 30*np.sin(np.pi*pn['pore.coords'][inlets, 1]/5)+50
-    alg.set_dirchlet_BC(values=T_in, pores=inlets)
-    alg.set_dirchlet_BC(values=50, pores=outlets)
+    alg.set_dirichlet_BC(values=T_in, pores=inlets)
+    alg.set_dirichlet_BC(values=50, pores=outlets)
     alg.run()
     Cu.update(alg.results())
     # Calculate analytical solution over the same domain spacing
@@ -61,7 +61,8 @@ def test_open_air_diffusivity():
     geom = op.geometry.StickAndBall(network=pn, pores=Ps, throats=Ts)
     geom['pore.diameter'] = 0.999999
     geom['throat.diameter'] = 0.999999
-    geom.regenerate(['pore.diameter', 'throat.diameter'], mode='exclude')
+    geom.regenerate_models(['pore.diameter', 'throat.diameter'],
+                           mode='exclude')
     Ps = pn.pores('boundary')
     Ts = pn.find_neighbor_throats(pores=Ps, mode='not_intersection')
     boun = op.geometry.Boundary(network=pn, pores=Ps, throats=Ts)
@@ -103,7 +104,7 @@ def test_Darcy_alg():
     P_out = 0  # Pa
     Q_in = 0.6667*(Lc**2)*divs[1]*divs[0]  # m^3/s
     alg1.set_neumann_BC(values=-Q_in, pores=inlets)
-    alg1.set_dirchlet_BC(values=P_out, pores=outlets)
+    alg1.set_dirichlet_BC(values=P_out, pores=outlets)
     alg1.run()
     air.update(alg1.results())
     a = round(np.absolute(alg1.rate(outlets))[0], 16)
@@ -115,8 +116,8 @@ def test_Darcy_alg():
     outlets = pn.pores('top')
     P_out = 0  # Pa
     P_in = 1000  # Pa
-    alg2.set_dirchlet_BC(values=P_in, pores=inlets)
-    alg2.set_dirchlet_BC(values=P_out, pores=outlets)
+    alg2.set_dirichlet_BC(values=P_in, pores=inlets)
+    alg2.set_dirichlet_BC(values=P_out, pores=outlets)
     alg2.run()
     a = round(np.absolute(alg2.rate(inlets))[0], 16)
     b = round(np.absolute(alg2.rate(outlets))[0], 16)

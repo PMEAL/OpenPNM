@@ -21,8 +21,8 @@ class SubclassedTransportTest:
         alg = op.algorithms.FickianDiffusion(network=self.net,
                                              phase=self.phase)
         self.phys['throat.diffusive_conductance'] = 1
-        alg.set_dirchlet_BC(pores=self.net.pores('top'), values=1)
-        alg.set_dirchlet_BC(pores=self.net.pores('bottom'), values=0)
+        alg.set_dirichlet_BC(pores=self.net.pores('top'), values=1)
+        alg.set_dirichlet_BC(pores=self.net.pores('bottom'), values=0)
         alg.run()
         Deff = alg.calc_eff_diffusivity()
         assert sp.around(Deff, decimals=10) == 0.0275097564
@@ -30,8 +30,8 @@ class SubclassedTransportTest:
     def test_stokes_flow(self):
         alg = op.algorithms.StokesFlow(network=self.net, phase=self.phase)
         self.phys['throat.hydraulic_conductance'] = 1
-        alg.set_dirchlet_BC(pores=self.net.pores('top'), values=101325)
-        alg.set_dirchlet_BC(pores=self.net.pores('bottom'), values=0)
+        alg.set_dirichlet_BC(pores=self.net.pores('top'), values=101325)
+        alg.set_dirichlet_BC(pores=self.net.pores('bottom'), values=0)
         alg.run()
         Keff = alg.calc_eff_permeability()
         assert sp.around(Keff, decimals=10) == 2.075e-05
@@ -40,8 +40,8 @@ class SubclassedTransportTest:
         alg = op.algorithms.FourierConduction(network=self.net,
                                               phase=self.phase)
         self.phys['throat.thermal_conductance'] = 1
-        alg.set_dirchlet_BC(pores=self.net.pores('top'), values=101325)
-        alg.set_dirchlet_BC(pores=self.net.pores('bottom'), values=0)
+        alg.set_dirichlet_BC(pores=self.net.pores('top'), values=101325)
+        alg.set_dirichlet_BC(pores=self.net.pores('bottom'), values=0)
         alg.run()
         Keff = alg.calc_effective_conductivity()
         assert sp.around(Keff, decimals=10) == 1.125
@@ -49,8 +49,8 @@ class SubclassedTransportTest:
     def test_ohmic_conduction(self):
         alg = op.algorithms.OhmicConduction(network=self.net, phase=self.phase)
         self.phys['throat.electrical_conductance'] = 1
-        alg.set_dirchlet_BC(pores=self.net.pores('top'), values=101325)
-        alg.set_dirchlet_BC(pores=self.net.pores('bottom'), values=0)
+        alg.set_dirichlet_BC(pores=self.net.pores('top'), values=101325)
+        alg.set_dirichlet_BC(pores=self.net.pores('bottom'), values=0)
         alg.run()
         Keff = alg.calc_effective_conductivity()
         assert sp.around(Keff, decimals=10) == 1.125

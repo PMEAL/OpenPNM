@@ -13,10 +13,10 @@ class FourierConduction(ReactiveTransport):
     """
 
     def __init__(self, settings={}, **kwargs):
+        super().__init__(**kwargs)
         self.settings.update({'quantity': 'pore.temperature',
                               'conductance': 'throat.thermal_conductance'})
         self.settings.update(settings)
-        super().__init__(**kwargs)
 
     def setup(self, phase=None, quantity='', conductance='', **kwargs):
         r"""

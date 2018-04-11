@@ -32,8 +32,7 @@ class GenericSourceTermTest:
                                                    phase=self.phase)
         self.alg.settings.update({'conductance': 'throat.diffusive_conductance',
                                   'quantity': 'pore.mole_fraction'})
-        self.alg.set_BC(bctype='dirichlet', bcvalues=0.4,
-                        pores=self.BC_pores)
+        self.alg.set_dirichlet_BC(values=0.4, pores=self.BC_pores)
         self.alg.set_source(propname='pore.source1',
                             pores=self.source_pores)
         self.alg.run()
@@ -59,8 +58,7 @@ class GenericSourceTermTest:
                             regen_mode='normal')
         self.alg = op.algorithms.ReactiveTransport(network=self.net,
                                                    phase=self.phase)
-        self.alg.set_BC(bctype='dirichlet', bcvalues=0.4,
-                        pores=self.BC_pores)
+        self.alg.set_dirichlet_BC(values=0.4, pores=self.BC_pores)
         self.alg.set_source(propname='pore.source1',
                             pores=self.source_pores)
         self.alg.settings.update({'conductance': 'throat.diffusive_conductance',
@@ -94,8 +92,7 @@ class GenericSourceTermTest:
                             regen_mode='normal')
         self.alg = op.algorithms.ReactiveTransport(network=self.net,
                                                    phase=self.phase)
-        self.alg.set_BC(bctype='dirichlet', bcvalues=0.4,
-                        pores=self.BC_pores)
+        self.alg.set_dirichlet_BC(values=0.4, pores=self.BC_pores)
         self.alg.set_source(propname='pore.source1',
                             pores=self.source_pores)
         self.alg.settings.update({'conductance': 'throat.diffusive_conductance',
@@ -128,8 +125,7 @@ class GenericSourceTermTest:
                             regen_mode='normal')
         self.alg = op.algorithms.ReactiveTransport(network=self.net,
                                                    phase=self.phase)
-        self.alg.set_BC(bctype='dirichlet', bcvalues=0.4,
-                        pores=self.BC_pores)
+        self.alg.set_dirichlet_BC(values=0.4, pores=self.BC_pores)
         self.alg.set_source(propname='pore.source1',
                             pores=self.source_pores)
         self.alg.settings.update({'conductance': 'throat.diffusive_conductance',
@@ -164,8 +160,7 @@ class GenericSourceTermTest:
                             regen_mode='normal')
         self.alg = op.algorithms.ReactiveTransport(network=self.net,
                                                    phase=self.phase)
-        self.alg.set_BC(bctype='dirichlet', bcvalues=0.4,
-                        pores=self.BC_pores)
+        self.alg.set_dirichlet_BC(values=0.4, pores=self.BC_pores)
         self.alg.set_source(propname='pore.source1',
                             pores=self.source_pores)
         self.alg.settings.update({'conductance': 'throat.diffusive_conductance',
@@ -198,8 +193,7 @@ class GenericSourceTermTest:
                             regen_mode='on_demand')
         self.alg = op.algorithms.ReactiveTransport(network=self.net,
                                                    phase=self.phase)
-        self.alg.set_BC(bctype='dirichlet', bcvalues=0.4,
-                        pores=self.BC_pores)
+        self.alg.set_dirichlet_BC(values=0.4, pores=self.BC_pores)
         self.alg.set_source(propname='pore.source1',
                             pores=self.source_pores)
         self.alg.settings.update({'conductance': 'throat.diffusive_conductance',

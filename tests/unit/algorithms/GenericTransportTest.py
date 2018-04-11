@@ -26,8 +26,8 @@ class GenericTransportTest:
     def test_remove_boundary_conditions(self):
         alg = op.algorithms.GenericTransport(network=self.net,
                                              phase=self.phase)
-        alg.set_dirchlet_BC(pores=self.net.pores('top'), values=1)
-        alg.set_dirchlet_BC(pores=self.net.pores('bottom'), values=0)
+        alg.set_dirichlet_BC(pores=self.net.pores('top'), values=1)
+        alg.set_dirichlet_BC(pores=self.net.pores('bottom'), values=0)
         assert sp.sum(alg['pore.dirichlet']) > 0
         alg.remove_BC(pores=self.net.pores('top'))
         assert sp.sum(alg['pore.dirichlet']) > 0
@@ -39,8 +39,8 @@ class GenericTransportTest:
                                              phase=self.phase)
         alg.settings['conductance'] = 'throat.diffusive_conductance'
         alg.settings['quantity'] = 'pore.mole_fraction'
-        alg.set_dirchlet_BC(pores=self.net.pores('top'), values=1)
-        alg.set_dirchlet_BC(pores=self.net.pores('bottom'), values=0)
+        alg.set_dirichlet_BC(pores=self.net.pores('top'), values=1)
+        alg.set_dirichlet_BC(pores=self.net.pores('bottom'), values=0)
         alg.run()
 
     def test_two_dirichlet_conditions(self):
@@ -48,8 +48,8 @@ class GenericTransportTest:
                                              phase=self.phase)
         alg.settings['conductance'] = 'throat.diffusive_conductance'
         alg.settings['quantity'] = 'pore.mole_fraction'
-        alg.set_dirchlet_BC(pores=self.net.pores('top'), values=1)
-        alg.set_dirchlet_BC(pores=self.net.pores('bottom'), values=0)
+        alg.set_dirichlet_BC(pores=self.net.pores('top'), values=1)
+        alg.set_dirichlet_BC(pores=self.net.pores('bottom'), values=0)
         alg.run()
         x = [0.0, 0.125, 0.25, 0.375, 0.5, 0.625, 0.75, 0.875, 1.0]
         y = sp.unique(sp.around(alg['pore.mole_fraction'], decimals=3))
@@ -61,7 +61,7 @@ class GenericTransportTest:
         alg.settings['conductance'] = 'throat.diffusive_conductance'
         alg.settings['quantity'] = 'pore.mole_fraction'
         alg.set_neumann_BC(pores=self.net.pores('bottom'), values=1)
-        alg.set_dirchlet_BC(pores=self.net.pores('top'), values=0)
+        alg.set_dirichlet_BC(pores=self.net.pores('top'), values=0)
         alg.run()
         x = [0., 1., 2., 3., 4., 5., 6., 7., 8.]
         y = sp.unique(sp.around(alg['pore.mole_fraction'], decimals=3))

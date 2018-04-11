@@ -32,7 +32,7 @@ class GenericTransportTest:
         alg.settings['conductance'] = 'throat.diffusive_conductance'
         alg.settings['quantity'] = 'pore.mole_fraction'
         alg.set_source(pores=self.net.pores('bottom'), propname='pore.reaction')
-        alg.set_dirchlet_BC(pores=self.net.pores('top'), values=1)
+        alg.set_dirichlet_BC(pores=self.net.pores('top'), values=1)
         alg.run()
         x = [0.0, 0.125, 0.25, 0.375, 0.5, 0.625, 0.75, 0.875, 1.0]
         y = sp.unique(sp.around(alg['pore.mole_fraction'], decimals=3))

@@ -3,7 +3,7 @@ import scipy as sp
 import pytest
 
 
-class MiscTest:
+class ExtrasTest:
 
     def setup_class(self):
         ws = op.Workspace()
@@ -58,7 +58,7 @@ class MiscTest:
 
 if __name__ == '__main__':
 
-    t = MiscTest()
+    t = ExtrasTest()
     self = t
     t.setup_class()
     for item in t.__dir__():
