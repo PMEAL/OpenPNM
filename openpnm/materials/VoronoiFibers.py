@@ -37,7 +37,7 @@ class VoronoiFibers(DelaunayVoronoiDual):
         and may run into memory issues but is more accurate and allows
         manipulation of the image.
         N.B. many of the class methods are dependent on the voxel image.
-        
+
     Other arguments are the same as for DelaunayVoronoiDual network, please
     refer to the class documents for further info.
     """
@@ -53,9 +53,9 @@ class VoronoiFibers(DelaunayVoronoiDual):
                          throats=self.throats('delaunay'),
                          name=self.name+'_del')
         VoronoiGeometry(network=self,
-                       pores=self.pores('voronoi'),
-                       throats=self.throats('voronoi'),
-                       name=self.name+'_vor')
+                        pores=self.pores('voronoi'),
+                        throats=self.throats('voronoi'),
+                        name=self.name+'_vor')
 
 
 class DelaunayGeometry(GenericGeometry):

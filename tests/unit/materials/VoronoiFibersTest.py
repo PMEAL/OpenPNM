@@ -14,18 +14,18 @@ class VoronoiTest:
 #        p = (sp.random.random([len(bp), 3])-0.5)/10000
 #        bp += p
         self.wrk = op.core.Workspace()
-        self.net = op.materials.VoronoiFibers(fiber_rad = 1e-6,
+        self.net = op.materials.VoronoiFibers(fiber_rad=1e-6,
                                               shape=[scale, scale, scale],
                                               points=bp*scale,
                                               name='test')
         self.prj = self.net.project
-        self.del_geom = self.prj.geometries()['test_del']   
+        self.del_geom = self.prj.geometries()['test_del']
         self.vor_geom = self.prj.geometries()['test_vor']
-        
+
     def test_props_all(self):
         a = self.del_geom.props()
         assert sorted(a) == ['pore.area', 'pore.centroid', 'pore.diameter',
-                             'pore.incenter','pore.indiameter',
+                             'pore.incenter', 'pore.indiameter',
                              'pore.vertices', 'pore.volume',
                              'throat.area', 'throat.c2c', 'throat.centroid',
                              'throat.diameter', 'throat.incenter',
