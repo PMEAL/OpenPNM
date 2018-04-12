@@ -322,7 +322,7 @@ class DelaunayVoronoiDual(GenericNetwork):
             throats = self.throats('delaunay')
         temp = []
         tvals = self['throat.interconnect'].astype(int)
-        am = self.create_adjacency_matrix(data=tvals, fmt='lil')
+        am = self.create_adjacency_matrix(weights=tvals, fmt='lil')
         for t in throats:
             P12 = self['throat.conns'][t]
             Ps = list(set(am.rows[P12][0]).intersection(am.rows[P12][1]))
@@ -350,7 +350,7 @@ class DelaunayVoronoiDual(GenericNetwork):
             pores = self.pores('delaunay')
         temp = []
         tvals = self['throat.interconnect'].astype(int)
-        am = self.create_adjacency_matrix(data=tvals, fmt='lil')
+        am = self.create_adjacency_matrix(weights=tvals, fmt='lil')
         for p in pores:
             Ps = am.rows[p]
             temp.append(Ps)

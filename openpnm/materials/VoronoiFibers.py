@@ -20,6 +20,13 @@ logger = logging.getLogger(__name__)
 
 class VoronoiFibers(DelaunayVoronoiDual):
     r"""
+    A Material that resembles a carbon fiber paper with straight intersecting
+    fibers. Two geometries are created: DelaunayGeometry defines the pore space
+    with pores connected by a Delaunay tesselation and VoronoiGeometry defines
+    the fiber space with fibers forming the edges of the Voronoi diagram.
+    The two geometries are complimentary and can be accessed individually
+    the project associated with this network object.
+
     fiber_rad: float
         fiber radius to apply to Voronoi edges when calculating pore and throat
         sizes
@@ -30,6 +37,9 @@ class VoronoiFibers(DelaunayVoronoiDual):
         and may run into memory issues but is more accurate and allows
         manipulation of the image.
         N.B. many of the class methods are dependent on the voxel image.
+        
+    Other arguments are the same as for DelaunayVoronoiDual network, please
+    refer to the class documents for further info.
     """
 
     def __init__(self, fiber_rad=None, vox_len=1e-6, **kwargs):
@@ -38,15 +48,14 @@ class VoronoiFibers(DelaunayVoronoiDual):
         self.fiber_rad = fiber_rad
         self.vox_len = vox_len
         super().__init__(**kwargs)
-        self['pore.vertices'] = sp.ones(self.Np, dtype=object)*np.nan
-        self['throat.vertices'] = sp.ones(self.Nt, dtype=object)*np.nan
-        self['throat.offset_vertices'] = sp.ones(self.Nt, dtype=object)*np.nan
-        DelaunayGeometry(network=self, pores=self.pores('delaunay'),
+        DelaunayGeometry(network=self,
+                         pores=self.pores('delaunay'),
                          throats=self.throats('delaunay'),
                          name=self.name+'_del')
-        VoronoiGeometry(network=self, pores=self.pores('voronoi'),
-                        throats=self.throats('voronoi'),
-                        name=self.name+'_vor')
+        VoronoiGeometry(network=self,
+                       pores=self.pores('voronoi'),
+                       throats=self.throats('voronoi'),
+                       name=self.name+'_vor')
 
 
 class DelaunayGeometry(GenericGeometry):
@@ -64,11 +73,11 @@ class DelaunayGeometry(GenericGeometry):
         super().__init__(network=network, **kwargs)
         # Set all the required models
         vertices = network.find_pore_hulls()
-        p_coords = np.array([network['pore.coords'][p] for p in vertices],
+        p_coords = np.array([network['pore.coords'][list(p)] for p in vertices],
                             dtype=object)
         self['pore.vertices'] = p_coords
         vertices = network.find_throat_facets()
-        t_coords = np.array([network['pore.coords'][t] for t in vertices],
+        t_coords = np.array([network['pore.coords'][list(t)] for t in vertices],
                             dtype=object)
         self['throat.vertices'] = t_coords
         # Once vertices are saved we no longer need the voronoi network
@@ -95,14 +104,8 @@ class DelaunayGeometry(GenericGeometry):
         sf_mod = gm.throat_shape_factor.compactness
         sa_mod = gm.throat_surface_area.extrusion
         r = {'throat.shape_factor': {'model': sf_mod},
-             'pore.seed': {'model': gm.pore_misc.random,
-                           'num_range': [0, 0.1],
-                           'seed': None},
-             'throat.seed': {'model': gm.throat_misc.neighbor,
-                             'pore_prop': 'pore.seed',
-                             'mode': 'min'},
              'pore.diameter': {'model': gm.pore_size.equivalent_sphere},
-             'pore.area': {'model': gm.pore_area.spherical,
+             'pore.area': {'model': gm.pore_area.sphere,
                            'pore_diameter': 'pore.diameter'},
              'throat.surface_area': {'model': sa_mod},
              }
@@ -112,7 +115,7 @@ class DelaunayGeometry(GenericGeometry):
         r"""
         Update the throat normals from the voronoi vertices
         """
-        verts = self['throat.vertices']
+        verts = self['throat.vertices'].astype(float)
         value = sp.zeros([len(verts), 3])
         for i in range(len(verts)):
             if len(sp.unique(verts[i][:, 0])) == 1:
@@ -192,15 +195,9 @@ class DelaunayGeometry(GenericGeometry):
         properties
         """
         offset = self.network.fiber_rad
-        mask = self['throat.delaunay']
-        Nt = len(mask)
-        net_Nt = self.num_throats()
-        if Nt == net_Nt:
-            centroid = sp.zeros([Nt, 3])
-            incenter = sp.zeros([Nt, 3])
-        else:
-            centroid = sp.ndarray(Nt, dtype=object)
-            incenter = sp.ndarray(Nt, dtype=object)
+        Nt = self.num_throats()
+        centroid = sp.zeros([Nt, 3])
+        incenter = sp.zeros([Nt, 3])
         area = sp.zeros(Nt)
         perimeter = sp.zeros(Nt)
         inradius = sp.zeros(Nt)
@@ -251,7 +248,7 @@ class DelaunayGeometry(GenericGeometry):
                 maxp2 = pts[:, 1].max()
                 img = np.zeros([np.int(math.ceil(maxp1-minp1)+1),
                                 np.int(math.ceil(maxp2-minp2)+1)])
-                int_pts = np.around(pts, 0).astype(int)
+                int_pts = np.around(pts.astype(float), 0).astype(int)
                 for pt in int_pts:
                     img[pt[0]][pt[1]] = 1
                 # Pad with zeros all the way around the edges
@@ -259,7 +256,7 @@ class DelaunayGeometry(GenericGeometry):
                 img_pad[1:np.shape(img)[0]+1, 1:np.shape(img)[1]+1] = img
                 # All points should lie on this plane but could be some
                 # rounding errors so use the order parameter
-                z_plane = sp.unique(np.around(z, order+2))
+                z_plane = sp.unique(np.around(z.astype(float), order+2))
                 if len(z_plane) > 1:
                     logger.error('Rotation for image analysis failed')
                     temp_arr = np.ones(1)
@@ -458,6 +455,9 @@ class DelaunayGeometry(GenericGeometry):
         del fiber_space
 
     def _bresenham(self, faces, dx):
+        r'''
+        A Bresenham line function to generate points to fill in for the fibers
+        '''
         line_points = []
         for face in faces:
             # Get in hull order
@@ -472,7 +472,7 @@ class DelaunayGeometry(GenericGeometry):
             else:
                 f2d = np.vstack((fx, fy)).T
             hull = sptl.ConvexHull(f2d, qhull_options='QJ Pp')
-            face = np.around(face[hull.vertices], 6)
+            face = face[hull.vertices]
             for i in range(len(face)):
                 vec = face[i]-face[i-1]
                 vec_length = np.linalg.norm(vec)
@@ -540,7 +540,7 @@ class DelaunayGeometry(GenericGeometry):
                 cz = 1
 
         # Get image of the fibers
-        line_points = self._bresenham(verts, vox_len/2)
+        line_points = self._bresenham(verts, vox_len/2).astype(float)
         line_ints = (np.around((line_points/vox_len), 0)).astype(int)
         for x, y, z in line_ints:
             try:
@@ -622,6 +622,7 @@ class DelaunayGeometry(GenericGeometry):
                 return None
             l = sp.asarray(sp.shape(self._fiber_image))
             s = sp.around(plane*l).astype(int)
+            s[s>=self._fiber_image.shape] -= 1
         elif index is not None:
             if 'array' not in index.__class__.__name__:
                 index = sp.asarray(index)
@@ -710,8 +711,8 @@ class DelaunayGeometry(GenericGeometry):
 
 class VoronoiGeometry(GenericGeometry):
     r"""
-    Subclass of GenericGeometry for the pores connected by throats formed from
-    the Delaunay tesselation.
+    Subclass of GenericGeometry for the fibers making up the complimentary
+    solid network.
 
     Parameters
     ----------
@@ -731,7 +732,7 @@ class VoronoiGeometry(GenericGeometry):
                        model=gm.pore_volume.sphere,
                        regen_mode=rm)
         self.add_model(propname='pore.area',
-                       model=gm.pore_area.spherical,
+                       model=gm.pore_area.sphere,
                        regen_mode=rm)
         self['throat.diameter'] = sp.ones(self.Nt)*network.fiber_rad*2
         self['throat.indiameter'] = self['throat.diameter']
@@ -754,16 +755,6 @@ class VoronoiGeometry(GenericGeometry):
                        regen_mode=rm)
         self.add_model(propname='throat.shape_factor',
                        model=gm.throat_shape_factor.compactness,
-                       regen_mode=rm)
-        self.add_model(propname='pore.seed',
-                       model=gm.pore_misc.random,
-                       num_range=[0, 0.1],
-                       seed=None,
-                       regen_mode=rm)
-        self.add_model(propname='throat.seed',
-                       model=gm.throat_misc.neighbor,
-                       pore_prop='pore.seed',
-                       mode='min',
                        regen_mode=rm)
 
     def _throat_props(self):
