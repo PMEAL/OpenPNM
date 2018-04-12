@@ -17,7 +17,15 @@ class InvasionPercolation(GenericAlgorithm):
 
     Notes
     ----
-    n/a
+    This algorithm uses a binary heap to store all a list of all accessible
+    throats, sorted according to entry pressure.  This means that item [0] in
+    the heap is the most easily invaded throat, so looking up which throat
+    to invade next is computationally trivial.  In order to keep the list
+    sorted new throats to the list takes more time, however, the heap data
+    structure is very efficient at this.  Interested users can consult the
+    wikipedia page on `binary heaps
+    <https://en.wikipedia.org/wiki/Binary_heap>`_ for more information.
+
 
     Examples
     --------
@@ -57,10 +65,19 @@ class InvasionPercolation(GenericAlgorithm):
     Because it was a 2D network it's easy to quickly visualize the invasion
     pattern as an image for verification:
 
-    >>> plt.subplot(1, 2, 1)
-    >>> plt.imshow(sp.reshape(ip['pore.invasion_sequence'], newshape=S[S > 1]))
-    >>> plt.subplot(1, 2, 2)
-    >>> plt.imshow(sp.reshape(water['pore.occupancy'], newshape=S[S > 1]))
+    .. note::
+
+        Because the network is 2D and cubic, an image can be generated with
+        color corresponding to a value.  The following plots the entire
+        invasion sequence, and the water configuraiton at Snwp = 0.5.
+
+        ``plt.subplot(1, 2, 1)``
+
+        ``plt.imshow(sp.reshape(ip['pore.invasion_sequence'], newshape=S[S > 1]))``
+
+        ``plt.subplot(1, 2, 2)``
+
+        ``plt.imshow(sp.reshape(water['pore.occupancy'], newshape=S[S > 1]))``
 
     """
 
