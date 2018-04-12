@@ -59,7 +59,6 @@ class IPTest:
         assert S > 0.45
 
 
-
 if __name__ == '__main__':
 
     t = IPTest()
