@@ -9,3 +9,4 @@ from .FourierConduction import FourierConduction
 from .OhmicConduction import OhmicConduction
 from .Drainage import Drainage
 from .MIP import MIP
+from .InvasionPercolation import InvasionPercolation

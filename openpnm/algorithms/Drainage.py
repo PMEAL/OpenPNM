@@ -64,7 +64,7 @@ class Drainage(GenericAlgorithm):
     which as the name suggests send the results to the correct locations.  For
     the 'Drainage Algorithm' this works as follows:
 
-    >>> alg.return_results(Pc=5000)
+    >>> water.update(alg.results(Pc=5000))
 
     This command determines which pores and throats were filled at the applied
     capillary pressure of 5000, and creates 'pore.occupancy' and
@@ -118,8 +118,8 @@ class Drainage(GenericAlgorithm):
 
         """
         self['throat.entry_pressure'] = invading_phase[entry_pressure]
-        self['pore.inv_Pc'] = sp.inf
-        self['throat.inv_Pc'] = sp.inf
+        self['pore.invasion_pressure'] = sp.inf
+        self['throat.invasion_pressure'] = sp.inf
         self['pore.trapped'] = sp.inf
         self['throat.trapped'] = sp.inf
         self['pore.inlets'] = False
@@ -279,10 +279,10 @@ class Drainage(GenericAlgorithm):
                 self._check_trapping(inv_val)
 
         # Find invasion sequence values (to correspond with IP algorithm)
-        Pinv = self['pore.inv_Pc']
-        self['pore.inv_seq'] = sp.searchsorted(sp.unique(Pinv), Pinv)
-        Tinv = self['throat.inv_Pc']
-        self['throat.inv_seq'] = sp.searchsorted(sp.unique(Tinv), Tinv)
+        Pinv = self['pore.invasion_pressure']
+        self['pore.invasion_sequence'] = sp.searchsorted(sp.unique(Pinv), Pinv)
+        Tinv = self['throat.invasion_pressure']
+        self['throat.invasion_sequence'] = sp.searchsorted(sp.unique(Tinv), Tinv)
 
     def _check_trapping(self, inv_val):
         r"""
@@ -291,7 +291,7 @@ class Drainage(GenericAlgorithm):
         """
         net = self.project.network
         # Generate a list containing boolean values for throat state
-        Tinvaded = self['throat.inv_Pc'] < sp.inf
+        Tinvaded = self['throat.invasion_pressure'] < sp.inf
         # Add residual throats, if any, to list of invaded throats
         Tinvaded = Tinvaded + self['throat.residual']
         # Invert logic to find defending throats
@@ -299,7 +299,7 @@ class Drainage(GenericAlgorithm):
         [pclusters, tclusters] = net.find_clusters2(mask=Tdefended,
                                                     t_labels=True)
         # See which outlet pores remain uninvaded
-        outlets = self['pore.outlets']*(self['pore.inv_Pc'] == sp.inf)
+        outlets = self['pore.outlets']*(self['pore.invasion_pressure'] == sp.inf)
         # Identify clusters connected to remaining outlet sites
         def_clusters = sp.unique(pclusters[outlets])
         temp = sp.in1d(sp.unique(pclusters), def_clusters, invert=True)
@@ -346,20 +346,20 @@ class Drainage(GenericAlgorithm):
         # Find pores on the invading clusters
         pmask = sp.in1d(p_clusters, inv_clusters)
         # Store current applied pressure in newly invaded pores
-        pinds = (self['pore.inv_Pc'] == sp.inf) * (pmask)
-        self['pore.inv_Pc'][pinds] = inv_val
+        pinds = (self['pore.invasion_pressure'] == sp.inf) * (pmask)
+        self['pore.invasion_pressure'][pinds] = inv_val
 
         # Find throats on the invading clusters
         tmask = sp.in1d(t_clusters, inv_clusters)
         # Store current applied pressure in newly invaded throats
-        tinds = (self['throat.inv_Pc'] == sp.inf) * (tmask)
-        self['throat.inv_Pc'][tinds] = inv_val
+        tinds = (self['throat.invasion_pressure'] == sp.inf) * (tmask)
+        self['throat.invasion_pressure'][tinds] = inv_val
 
         # Set residual pores and throats, if any, to invaded
         if sp.any(self['pore.residual']):
-            self['pore.inv_Pc'][self['pore.residual']] = 0
+            self['pore.invasion_pressure'][self['pore.residual']] = 0
         if sp.any(self['throat.residual']):
-            self['throat.inv_Pc'][self['throat.residual']] = 0
+            self['throat.invasion_pressure'][self['throat.residual']] = 0
 
     def get_drainage_data(self):
         r"""
@@ -371,9 +371,9 @@ class Drainage(GenericAlgorithm):
 
         Returns
         -------
-        A dictionary containing arrays of applied capillary pressures and
-        various phase saturations.  The dictionary keys explain the content of
-        each array.
+        A named-tuple containing arrays of applied capillary pressures and
+        non-wetting phase saturation.  A named-tuple means that the arrays
+        can be accessed as named attributes like ``obj.Pcap``.
 
         Notes
         -----
@@ -396,7 +396,7 @@ class Drainage(GenericAlgorithm):
         Vnwp_all = []
         for Pc in PcPoints:
             # Calculate filled pore volumes
-            p_inv = self['pore.inv_Pc'] <= Pc
+            p_inv = self['pore.invasion_pressure'] <= Pc
             if self.settings['pore_filling'] is None:
                 Vp = sp.sum(Pvol[p_inv])
             else:
@@ -404,7 +404,7 @@ class Drainage(GenericAlgorithm):
                                                    element='pore')
                 Vp = sp.sum(Vp[p_inv])
             # Calculate filled throat volumes
-            t_inv = self['throat.inv_Pc'] <= Pc
+            t_inv = self['throat.invasion_pressure'] <= Pc
             if self.settings['throat_filling'] is None:
                 Vt = sp.sum(Tvol[t_inv])
             else:
@@ -525,31 +525,18 @@ class Drainage(GenericAlgorithm):
 
         **'throat.occupancy'** : The same as 'pore.occupancy' but for throats.
 
-        **'pore.inv_Pc'** : The pressure step at which each pore was invaded.
-        This can be used to create a boolean mask of all pores invaded at a
-        pressure less than P, with ``obj['pore.inv_Pc'] < P``.
-
-        **'throat.inv_Pc'** : The same as 'pore.inv_Pc' but for throats.
-
-        **'pore.inv_seq'** : The sequence in which the pores were invaded.
-        If N pressure steps were applied then this array will range from 1
-        to N.  Note that many pores will be invaded at the same sequence due
-        to the nature of the drainage process.
-
-        **'throat.inv_seq'** : Same as 'pore.inv_seq' but for throats.
+        This dictionary can be passed directly to the ``update`` method of
+        the *Phase* object. These values can then be accessed by models
+        or algorithms.
 
         """
         proj = self.project
         net = proj.network
-        Psatn = self['pore.inv_Pc'] <= Pc
-        Tsatn = self['throat.inv_Pc'] <= Pc
+        Psatn = self['pore.invasion_pressure'] <= Pc
+        Tsatn = self['throat.invasion_pressure'] <= Pc
         inv_phase = {}
         inv_phase['pore.occupancy'] = sp.array(Psatn, dtype=float)
         inv_phase['throat.occupancy'] = sp.array(Tsatn, dtype=float)
-        inv_phase['pore.inv_Pc'] = self['pore.inv_Pc']
-        inv_phase['pore.inv_seq'] = self['pore.inv_seq']
-        inv_phase['throat.inv_Pc'] = self['throat.inv_Pc']
-        inv_phase['throat.inv_seq'] = self['throat.inv_seq']
         if self.settings['pore_filling']:
             Vp = self._calc_fractional_filling(element='pore', pressure=Pc)
             Sp = Vp/net[self.settings['pore_volume']]
