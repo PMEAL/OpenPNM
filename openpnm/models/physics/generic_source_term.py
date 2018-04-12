@@ -548,7 +548,7 @@ def logarithm_sym(target, A1='', A2='', A3='',
     F = target['pore.' + A6.split('.')[-1]]
     X = target['pore.' + x.split('.')[-1]]
     # Equation
-    y =  a*syp.log((c*var**d + e),b)+f
+    y =  a*syp.log((c*var**d + e), b)+f
     # Callable functions
     r, s1, s2 = build_func(y, (a, b, c, d, e, f, var))
     # Values
@@ -586,14 +586,14 @@ def general_symbolic(target, eqn=None, arg_map=None, **kwargs):
     r'''
     A general function to interpret a sympy equation and evaluate the linear
     components of the source term.
-    
+
     Parameters
     ----------
     target : OpenPNM object
     eqn: sympy symbolic expression for the source terms
         e.g. y = a*x**b + c
     arg_map : OrderedDict mapping the symbols in the expression to OpenPNM data
-        on the target. Must contain 'var' which is the independent variable.
+        on the target. Must contain 'x' which is the independent variable.
         e.g.
         arg_map=collections.OrderedDict([('a','pore.a'), ('b','pore.a'),
                                          ('c','pore.A3'), ('var','pore.x')])
@@ -604,7 +604,7 @@ def general_symbolic(target, eqn=None, arg_map=None, **kwargs):
             key = syp.srepr(arg)[7:].strip('(').strip(')').strip("'")
             if key not in arg_map.keys():
                 raise Exception('argument mapping incomplete, missing '+key)
-    if 'var' not in arg_map.keys():
+    if 'x' not in arg_map.keys():
         raise Exception('argument mapping must contain "var" for the '+
                         'independent variable')
     # Get the data

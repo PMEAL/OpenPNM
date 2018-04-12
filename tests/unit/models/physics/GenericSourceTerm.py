@@ -28,13 +28,13 @@ class GenericSourceTermTest:
                             model=pm.generic_source_term.linear,
                             A1='pore.item1',
                             A2='pore.item2',
-                            quantity='pore.mole_fraction',
+                            x='pore.mole_fraction',
                             regen_mode='normal')
         self.phys.add_model(propname='pore.source2',
                             model=pm.generic_source_term.linear_sym,
                             A1='pore.item1',
                             A2='pore.item2',
-                            quantity='pore.mole_fraction',
+                            x='pore.mole_fraction',
                             regen_mode='normal')
         self.alg = op.algorithms.ReactiveTransport(network=self.net,
                                                    phase=self.phase)
@@ -46,6 +46,7 @@ class GenericSourceTermTest:
         self.alg.run()
         self.phase.update(self.alg.results())
         self.phys.regenerate_models(propnames='pore.source1')
+        self.phys.regenerate_models(propnames='pore.source2')
         X = self.phase['pore.mole_fraction']
         r1 = np.round(np.sum(0.5e-11 * X[self.source_pores] + 1.5e-12), 20)
         r2 = np.round(np.sum(self.phys['pore.source1.rate'][self.source_pores]), 20)
@@ -62,14 +63,14 @@ class GenericSourceTermTest:
                             A1='pore.item1',
                             A2='pore.item2',
                             A3='pore.item3',
-                            quantity='pore.mole_fraction',
+                            x='pore.mole_fraction',
                             regen_mode='normal')
         self.phys.add_model(propname='pore.source2',
                             model=pm.generic_source_term.power_law_sym,
                             A1='pore.item1',
                             A2='pore.item2',
                             A3='pore.item3',
-                            quantity='pore.mole_fraction',
+                            x='pore.mole_fraction',
                             regen_mode='normal')
         self.alg = op.algorithms.ReactiveTransport(network=self.net,
                                                    phase=self.phase)
@@ -81,6 +82,7 @@ class GenericSourceTermTest:
         self.alg.run()
         self.phase.update(self.alg.results())
         self.phys.regenerate_models(propnames='pore.source1')
+        self.phys.regenerate_models(propnames='pore.source2')
         X = self.phase['pore.mole_fraction']
         r1 = np.sum(0.5e-12 * X[self.source_pores]**2.5 - 1.4e-11)
         r2 = np.sum(self.phys['pore.source1.rate'][self.source_pores])
@@ -103,7 +105,7 @@ class GenericSourceTermTest:
                             A4='pore.item4',
                             A5='pore.item5',
                             A6='pore.item6',
-                            quantity='pore.mole_fraction',
+                            x='pore.mole_fraction',
                             regen_mode='normal')
         self.phys.add_model(propname='pore.source2',
                             model=pm.generic_source_term.exponential_sym,
@@ -113,7 +115,7 @@ class GenericSourceTermTest:
                             A4='pore.item4',
                             A5='pore.item5',
                             A6='pore.item6',
-                            quantity='pore.mole_fraction',
+                            x='pore.mole_fraction',
                             regen_mode='normal')
         self.alg = op.algorithms.ReactiveTransport(network=self.net,
                                                    phase=self.phase)
@@ -125,6 +127,7 @@ class GenericSourceTermTest:
         self.alg.run()
         self.phase.update(self.alg.results())
         self.phys.regenerate_models(propnames='pore.source1')
+        self.phys.regenerate_models(propnames='pore.source2')
         X = self.phase['pore.mole_fraction']
         r1 = np.round(np.sum(0.8e-11 * 3 ** (0.5 * X[self.source_pores]**2 -
                       0.34) + 2e-14), 20)
@@ -146,7 +149,7 @@ class GenericSourceTermTest:
                             A3='pore.item3',
                             A4='pore.item4',
                             A5='pore.item5',
-                            quantity='pore.mole_fraction',
+                            x='pore.mole_fraction',
                             regen_mode='normal')
         self.phys.add_model(propname='pore.source2',
                             model=pm.generic_source_term.natural_exponential_sym,
@@ -155,7 +158,7 @@ class GenericSourceTermTest:
                             A3='pore.item3',
                             A4='pore.item4',
                             A5='pore.item5',
-                            quantity='pore.mole_fraction',
+                            x='pore.mole_fraction',
                             regen_mode='normal')
         self.alg = op.algorithms.ReactiveTransport(network=self.net,
                                                    phase=self.phase)
@@ -167,6 +170,7 @@ class GenericSourceTermTest:
         self.alg.run()
         self.phase.update(self.alg.results())
         self.phys.regenerate_models(propnames='pore.source1')
+        self.phys.regenerate_models(propnames='pore.source2')
         X = self.phase['pore.mole_fraction']
         r1 = np.round(np.sum(0.8e-11 * np.exp(0.5 * X[self.source_pores]**2 -
                       0.34) + 2e-14), 20)
@@ -190,7 +194,7 @@ class GenericSourceTermTest:
                             A4='pore.item4',
                             A5='pore.item5',
                             A6='pore.item6',
-                            quantity='pore.mole_fraction',
+                            x='pore.mole_fraction',
                             regen_mode='normal')
         self.phys.add_model(propname='pore.source2',
                             model=pm.generic_source_term.logarithm_sym,
@@ -200,7 +204,7 @@ class GenericSourceTermTest:
                             A4='pore.item4',
                             A5='pore.item5',
                             A6='pore.item6',
-                            quantity='pore.mole_fraction',
+                            x='pore.mole_fraction',
                             regen_mode='normal')
         self.alg = op.algorithms.ReactiveTransport(network=self.net,
                                                    phase=self.phase)
@@ -212,6 +216,7 @@ class GenericSourceTermTest:
         self.alg.run()
         self.phase.update(self.alg.results())
         self.phys.regenerate_models(propnames='pore.source1')
+        self.phys.regenerate_models(propnames='pore.source2')
         X = self.phase['pore.mole_fraction']
         r1 = np.round(np.sum(0.16e-13*np.log(4*X[self.source_pores]**(1.4) +
                              0.133) / np.log(10) - 5.1e-13), 20)
@@ -233,7 +238,7 @@ class GenericSourceTermTest:
                             A3='pore.item3',
                             A4='pore.item4',
                             A5='pore.item5',
-                            quantity='pore.mole_fraction',
+                            x='pore.mole_fraction',
                             regen_mode='on_demand')
         self.phys.add_model(propname='pore.source2',
                             model=pm.generic_source_term.natural_logarithm_sym,
@@ -242,7 +247,7 @@ class GenericSourceTermTest:
                             A3='pore.item3',
                             A4='pore.item4',
                             A5='pore.item5',
-                            quantity='pore.mole_fraction',
+                            x='pore.mole_fraction',
                             regen_mode='normal')
         self.alg = op.algorithms.ReactiveTransport(network=self.net,
                                                    phase=self.phase)
@@ -254,6 +259,7 @@ class GenericSourceTermTest:
         self.alg.run()
         self.phase.update(self.alg.results())
         self.phys.regenerate_models(propnames='pore.source1')
+        self.phys.regenerate_models(propnames='pore.source2')
         X = self.phase['pore.mole_fraction']
         r1 = np.round(np.sum(0.16e-14*np.log(4*X[self.source_pores]**(1.4) +
                              0.133) - 5.1e-14), 20)
@@ -263,7 +269,7 @@ class GenericSourceTermTest:
         assert r1 == rs
 
     def test_general_symbolic(self):
-        a,b,c,d,e,f,x = syp.symbols('a,b,c,d,e,x')
+        a, b, c, d, e, x = syp.symbols('a,b,c,d,e,x')
         # natural log function
         y =  a*syp.ln(b*x**c + d)+e
         phys = self.phys
@@ -279,12 +285,14 @@ class GenericSourceTermTest:
                        A3='pore.item3',
                        A4='pore.item4',
                        A5='pore.item5',
-                       quantity='pore.mole_fraction',
-                       regen_mode='on_demand')
-        arg_map=collections.OrderedDict([('a','pore.item1'), ('b','pore.item2'),
-                                         ('c','pore.item3'), ('d','pore.item4'),
-                                         ('e','pore.item5'),
-                                         ('var','pore.mole_fraction')])
+                       x='pore.mole_fraction',
+                       regen_mode='normal')
+        arg_map=collections.OrderedDict([('a', 'pore.item1'),
+                                         ('b', 'pore.item2'),
+                                         ('c', 'pore.item3'),
+                                         ('d', 'pore.item4'),
+                                         ('e', 'pore.item5'),
+                                         ('x', 'pore.mole_fraction')])
         phys.add_model(propname='pore.general',
                        model=op.models.physics.generic_source_term.general_symbolic,
                        eqn=y, arg_map=arg_map,
