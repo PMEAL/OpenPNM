@@ -213,7 +213,6 @@ def exponential(target, A1='', A2='', A3='', A4='', A5='', A6='',
                 raise Exception('source_term parameters can only be string '
                                 'type!')
 
-
     r = a['1'] * a['2'] ** (a['3'] * X ** a['4'] + a['5']) + a['6']
     S1 = a['1'] * a['3'] * a['4'] * \
         X ** (a['4'] - 1) * _sp.log(a['2']) * \
@@ -328,7 +327,6 @@ def logarithm(target, A1='', A2='', A3='', A4='', A5='', A6='',
         else:
             X = _sp.array(x)
 
-
     a = {}
     source_params = [A1, A2, A3, A4, A5, A6]
     for ind in _sp.arange(_sp.size(source_params)):
@@ -434,7 +432,8 @@ def natural_logarithm(target, A1='', A2='', A3='', A4='', A5='',
 
 # Symbols used in all symbolic functions
 # a-f are coefficients and var is the independent variable
-a,b,c,d,e,f,var = syp.symbols('a,b,c,d,e,f,var')
+a, b, c, d, e, f, var = syp.symbols('a,b,c,d,e,f,var')
+
 
 def build_func(eq, args=None):
     r'''
@@ -449,6 +448,7 @@ def build_func(eq, args=None):
     S2 = syp.lambdify(args, s2, 'numpy')
     return EQ, S1, S2
 
+
 def linear_sym(target, A1='', A2='', x='', **kwargs):
     r'''
     Linear source term
@@ -459,13 +459,14 @@ def linear_sym(target, A1='', A2='', x='', **kwargs):
     # Equation
     y = a*var + b
     # Callable functions
-    r, s1, s2 = build_func(y, (a,b,var))
+    r, s1, s2 = build_func(y, (a, b, var))
     # Values
     r_val=r(A, B, X)
     s1_val=s1(A, B, X)
     s2_val=s2(A, B, X)
     values = {'pore.S1': s1_val, 'pore.S2': s2_val, 'pore.rate': r_val}
     return values
+
 
 def power_law_sym(target, A1='', A2='', A3='', x='', **kwargs):
     r'''
@@ -478,13 +479,14 @@ def power_law_sym(target, A1='', A2='', A3='', x='', **kwargs):
     # Equation
     y =  a*var**b + c
     # Callable functions
-    r, s1, s2 = build_func(y, (a,b,c,var))
+    r, s1, s2 = build_func(y, (a, b, c, var))
     # Values
     r_val=r(A, B, C, X)
     s1_val=s1(A, B, C, X)
     s2_val=s2(A, B, C, X)
     values = {'pore.S1': s1_val, 'pore.S2': s2_val, 'pore.rate': r_val}
     return values
+
 
 def exponential_sym(target, A1='', A2='', A3='',
                     A4='', A5='', A6='', x='', **kwargs):
@@ -501,13 +503,14 @@ def exponential_sym(target, A1='', A2='', A3='',
     # Equation
     y =  a*b**(c*var**d + e)+f
     # Callable functions
-    r, s1, s2 = build_func(y, (a,b,c,d,e,f,var))
+    r, s1, s2 = build_func(y, (a, b, c, d, e, f, var))
     # Values
     r_val=r(A, B, C, D, E, F, X)
     s1_val=s1(A, B, C, D, E, F, X)
     s2_val=s2(A, B, C, D, E, F, X)
     values = {'pore.S1': s1_val, 'pore.S2': s2_val, 'pore.rate': r_val}
     return values
+
 
 def natural_exponential_sym(target, A1='', A2='', A3='',
                             A4='', A5='', x='', **kwargs):
@@ -523,13 +526,14 @@ def natural_exponential_sym(target, A1='', A2='', A3='',
     # Equation
     y =  a*syp.exp(b*var**c + d)+e
     # Callable functions
-    r, s1, s2 = build_func(y, (a,b,c,d,e,var))
+    r, s1, s2 = build_func(y, (a, b, c, d, e, var))
     # Values
     r_val=r(A, B, C, D, E, X)
     s1_val=s1(A, B, C, D, E, X)
     s2_val=s2(A, B, C, D, E, X)
     values = {'pore.S1': s1_val, 'pore.S2': s2_val, 'pore.rate': r_val}
     return values
+
 
 def logarithm_sym(target, A1='', A2='', A3='',
                   A4='', A5='', A6='', x='', **kwargs):
@@ -546,13 +550,14 @@ def logarithm_sym(target, A1='', A2='', A3='',
     # Equation
     y =  a*syp.log((c*var**d + e),b)+f
     # Callable functions
-    r, s1, s2 = build_func(y, (a,b,c,d,e,f,var))
+    r, s1, s2 = build_func(y, (a, b, c, d, e, f, var))
     # Values
     r_val=r(A, B, C, D, E, F, X)
     s1_val=s1(A, B, C, D, E, F, X)
     s2_val=s2(A, B, C, D, E, F, X)
     values = {'pore.S1': s1_val, 'pore.S2': s2_val, 'pore.rate': r_val}
     return values
+
 
 def natural_logarithm_sym(target, A1='', A2='', A3='',
                           A4='', A5='', x='', **kwargs):
@@ -568,13 +573,14 @@ def natural_logarithm_sym(target, A1='', A2='', A3='',
     # Equation
     y =  a*syp.ln(b*var**c + d)+e
     # Callable functions
-    r, s1, s2 = build_func(y, (a,b,c,d,e,var))
+    r, s1, s2 = build_func(y, (a, b, c, d, e, var))
     # Values
     r_val=r(A, B, C, D, E, X)
     s1_val=s1(A, B, C, D, E, X)
     s2_val=s2(A, B, C, D, E, X)
     values = {'pore.S1': s1_val, 'pore.S2': s2_val, 'pore.rate': r_val}
     return values
+
 
 def general_symbolic(target, eqn=None, arg_map=None, **kwargs):
     r'''
