@@ -1,12 +1,14 @@
 import openpnm as op
 import scipy as sp
+import matplotlib.pyplot as plt
 
 ws = op.core.Workspace()
 ws.settings['local_data'] = True
 
 # NETWORK
-sp.random.seed(13)
-pn = op.network.Cubic(shape=[60, 30, 1], spacing=1e-4, name='pn11')
+sp.random.seed(17)
+nx, ny, nz = 60, 120, 1
+pn = op.network.Cubic(shape=[nx, ny, nz], spacing=1e-4, name='pn11')
 
 # GEOMETRIES
 geom = op.geometry.StickAndBall(network=pn, pores=pn.Ps, throats=pn.Ts)
@@ -36,29 +38,41 @@ inlet2 = pn.pores('left')  # pore inlet2
 outlet2 = pn.pores('right')  # pore outlet2
 
 # ALGORITHMS
-
 alg1 = op.algorithms.StokesFlow(network=pn, phase=water)
-# alg1.setup()
-alg1.set_BC(pores=inlet, bctype='dirichlet', bcvalues=10)
-alg1.set_BC(pores=outlet, bctype='dirichlet', bcvalues=0)
+alg1.set_BC(pores=inlet2, bctype='dirichlet', bcvalues=100)
+alg1.set_BC(pores=outlet2, bctype='dirichlet', bcvalues=0)
 alg1.run()
 water['pore.pressure'] = alg1['pore.pressure']
 
-alg2 = op.algorithms.FickianDiffusion(network=pn, phase=water)
-# alg2.setup()
-alg2.set_BC(pores=inlet, bctype='dirichlet', bcvalues=1)
-alg2.set_BC(pores=outlet, bctype='dirichlet', bcvalues=0)
-alg2.run()
-
 alg3 = op.algorithms.AdvectionDiffusion(network=pn, phase=water)
-# alg3.setup()
 alg3.set_BC(pores=inlet, bctype='dirichlet', bcvalues=1)
-alg3.set_BC(pores=outlet, bctype='dirichlet', bcvalues=0)
+alg3.set_BC(pores=outlet, bctype='dirichlet', bcvalues=1)
 alg3.run()
 
-# EXPORT DATA
+alg4 = op.algorithms.Dispersion(network=pn, phase=water)
+alg4.set_BC(pores=inlet, bctype='dirichlet', bcvalues=1)
+alg4.set_BC(pores=outlet, bctype='dirichlet', bcvalues=1)
+alg4.run()
 
-water['pore.concentration_diff'] = alg2['pore.mole_fraction']
-water['pore.concentration_diffAdv'] = alg3['pore.mole_fraction']
+# PLOT
+Z = sp.array([sp.reshape(alg3['pore.mole_fraction'], (nx, ny)),
+              sp.reshape(alg4['pore.mole_fraction'], (nx, ny))])
 
-ws.export_data(network=pn, phases=water, filename='vis_test')
+fig, axes = plt.subplots(nrows=1, ncols=2)
+i = 0
+for ax in axes.flat:
+    im = ax.imshow(Z[i].T, cmap='rainbow')
+    if (i == 0):
+        ax.set_title('upwind')
+    else:
+        ax.set_title('Peclet based')
+    ax.set_ylabel('y')
+    ax.set_xlabel('x')
+    i += 1
+
+fig.subplots_adjust(right=0.8)
+cbar_ax = fig.add_axes([0.85, 0.15, 0.05, 0.7])
+fig.colorbar(im, cax=cbar_ax)
+
+plt.suptitle('OpenPNM dispersion modeling', fontsize=16)
+plt.show()

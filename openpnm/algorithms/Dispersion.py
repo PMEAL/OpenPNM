@@ -4,7 +4,7 @@ module Dispersion: Class for solving advection diffusion
 ===============================================================================
 """
 
-import scipy as sp
+import numpy as np
 from scipy.sparse.csgraph import laplacian
 from openpnm.algorithms import GenericTransport
 from openpnm.core import logging
@@ -24,7 +24,9 @@ class Dispersion(GenericTransport):
         super().__init__(**kwargs)
         logger.info('Create ' + self.__class__.__name__ + ' Object')
         self.settings.update({'quantity': 'pore.mole_fraction',
-                              'conductance': 'throat.hydraulic_conductance',
+                              'hydraulic_conductance':
+                                  'throat.hydraulic_conductance',
+                              'diffusivity': 'pore.diffusivity',
                               'pressure': 'pore.pressure'})
         self.settings.update(settings)
 
@@ -33,54 +35,48 @@ class Dispersion(GenericTransport):
         """
         network = self.project.network
         phase = self.project.phases()[self.settings['phase']]
+        P = phase[self.settings['pressure']]
+        D = np.mean(phase[self.settings['diffusivity']])
+        gh_0 = phase[self.settings['hydraulic_conductance']]
+        conns1 = network['throat.conns']
+        conns2 = np.flip(conns1, axis=1)
 
-        # Get conns for triu and full matrix
-        pore_ij = network['throat.conns']
-        pore_ij = sp.flip(pore_ij, axis=1)
-        conns = sp.vstack((pore_ij, sp.flip(pore_ij, axis=1)))
-
-        # Fetch phase properties, including pressure
-        # TODO: Adding rands to prevent error at delta P = 0...could be better?
-        P = phase['pore.pressure'] + sp.rand(self.Np)*1e-30
-        # TODO: convert to a throat vector to account for spatial variation
-        D = sp.mean(phase['pore.diffusivity'])
-
-        # Fetch geometric properties for pores and throats
-        Dp = network['pore.diameter']
+        # Calculating effective length and area
+        dp = network['pore.diameter']
         Vp = network['pore.volume']
         Vt = network['throat.volume']
         Lt = network['throat.length']
+        Le_0 = Lt + (dp[conns1[:, 0]] + dp[conns1[:, 1]])/2
+        Le = np.tile(Le_0, 2)
+        Ae = (Vt + Vp[conns1[:, 0]] + Vp[conns1[:, 1]]) / Le_0
+        Ae = np.tile(Ae, 2)
 
-        # Calculate effective length and area specifically for dispersion
-        # TODO: Move this to a pore scale model and make more rigorous
-        Le = Lt + sp.mean(Dp[pore_ij], axis=1)
-        Ae = (Vt + sp.sum(Vp[pore_ij], axis=1))/Le
-        Le_ik = sp.tile(Le, 2)
-        Ae_ik = sp.tile(Ae, 2)
+        Qij1 = gh_0*np.diff(P[conns1], axis=1).squeeze()
+        Qij1 = np.append(Qij1, -Qij1)
+        Uij1 = Qij1 / Ae
+        Peij1 = Uij1 * Le / D
 
-        # Calculate flow conditions in each throat, for both directions
-        g = phase[self.settings['conductance']]
-        g = sp.tile(g, 2)
-        Q_ik = g*sp.diff(P[conns], axis=1).squeeze()
-        u_ik = Q_ik/Ae_ik
-        Pe_ik = u_ik*Le_ik/D
+        Qij2 = gh_0*np.diff(P[conns2], axis=1).squeeze()
+        Qij2 = np.append(Qij2, -Qij2)
+        Uij2 = Qij2 / Ae
+        Peij2 = Uij2 * Le / D
 
-        # Condition numerical extremes in Pe_ik array
-        negs = Pe_ik < 0  # Note locations of negative numbers
-        temp = sp.absolute(Pe_ik)
-        Pe_ik = sp.clip(temp, 1e-10, 100)  # Clip large and near-zeros values
-        Pe_ik[negs] = -1.0*Pe_ik[negs]  # Replace negative numbers
+        Peij1[(Peij1 < 1e-10) & (Peij1 >= 0)] = 1e-10
+        Peij1[(Peij1 > -1e-10) & (Peij1 <= 0)] = -1e-10
+        Peij1[Peij1 > 100] = 100
+        Peij1[Peij1 < -100] = -100
 
-        # Calculate the-off diagonal terms
-        off_diags = Q_ik/(1 - sp.exp(Pe_ik))
-        # Build an adjacency matrix and pass to scipy's laplacian function
-        am = network.create_adjacency_matrix(weights=off_diags, fmt='coo')
-        A = laplacian(am)
+        Peij2[(Peij2 < 1e-10) & (Peij2 >= 0)] = 1e-10
+        Peij2[(Peij2 > -1e-10) & (Peij2 <= 0)] = -1e-10
+        Peij2[Peij2 > 100] = 100
+        Peij2[Peij2 < -100] = -100
 
-        # Now add -Q_ik to each element of the diagonal
-        diag = A.diagonal()
-        sp.add.at(diag, conns[:, 0], -Q_ik)
-        A.setdiag(diag)
-
+        am1 = network.create_adjacency_matrix(
+                weights=(-Qij1 + Qij1 / (1 - np.exp(Peij1))))
+        A = network.create_adjacency_matrix(
+                weights=(-Qij2 / (1 - np.exp(Peij2))))
+        A_diags = laplacian(am1)
+        # Overwrite the diagonal
+        A.setdiag(A_diags.diagonal())
         self.A = A
         return A
