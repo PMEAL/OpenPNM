@@ -30,9 +30,7 @@ class Base(dict):
         self.update({'throat.all': sp.ones(shape=(Nt, ), dtype=bool)})
 
     def __repr__(self):
-        return '<%s object at %s>' % (
-            self.__class__.__module__,
-            hex(id(self)))
+        return '<%s object at %s>' % (self.__class__.__module__, hex(id(self)))
 
     def __eq__(self, other):
         if hex(id(self)) == hex(id(other)):
@@ -53,7 +51,7 @@ class Base(dict):
         if hasattr(value, 'keys'):
             for item in value.keys():
                 prop = item.replace('pore.', '').replace('throat.', '')
-                self.__setitem__(key+'_'+prop, value[item])
+                self.__setitem__(key+'.'+prop, value[item])
             return
 
         value = sp.array(value, ndmin=1)  # Convert value to an ndarray
@@ -97,14 +95,15 @@ class Base(dict):
             else:
                 raise Exception('Cannot write array, wrong length: '+key)
 
-    def _set_name(self, name):
+    def _set_name(self, name, validate=True):
         if not hasattr(self, '_name'):
             self._name = None
         if name is None:
             name = self.project._generate_name(self)
         if self.name == name:
             return
-        self.project._validate_name(name)
+        if validate:
+            self.project._validate_name(name)
         if self._name is not None:
             logger.info('Changing the name of '+self.name+' to '+name)
             # Rename any label arrays in other objects
@@ -221,9 +220,10 @@ class Base(dict):
         if v is None:
             if hasattr(self, 'models'):
                 if key in self.models.keys():
-                    logger.info(key+' not found, regenerating model')
-                    self.regenerate_models(propnames=key)
-                    v = self.get(key=key, value=value)
+                    if self.models[key]['regen_mode'] in ['deferred', 'lazy']:
+                        logger.info(key+' not found, regenerating model')
+                        self.regenerate_models(propnames=key)
+                        v = self.get(key=key, value=value)
         return v
 
     # -------------------------------------------------------------------------

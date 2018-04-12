@@ -48,7 +48,7 @@ class GenericNetwork(Base, ModelsMixin):
             self._gen_ids()
         # Now get values if present, or regenerate them
         vals = self.get(key)
-        if vals is None:
+        if vals is None:  # Invoke interleave data
             logger.debug(key + ' not on Network, check on Geometries')
             geoms = self.project.geometries().values()
             vals = self._interleave_data(key, geoms)
@@ -56,6 +56,7 @@ class GenericNetwork(Base, ModelsMixin):
 
     def _gen_ids(self):
         if ('pore._id' not in self.keys()):
+            logger.info('Generating pore IDs, please wait')
             self['pore._id'] = [str(uuid.uuid4()) for i in self.Ps]
         else:
             IDs = super().__getitem__('pore._id')
@@ -66,6 +67,7 @@ class GenericNetwork(Base, ModelsMixin):
                 IDs[inds] = temp
                 self['pore._id'] = IDs
         if ('throat._id' not in self.keys()):
+            logger.info('Generating throat IDs, please wait')
             self['throat._id'] = [str(uuid.uuid4()) for i in self.Ts]
         else:
             IDs = super().__getitem__('throat._id')

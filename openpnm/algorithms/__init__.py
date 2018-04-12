@@ -3,7 +3,6 @@ from .GenericTransport import GenericTransport
 from .ReactiveTransport import ReactiveTransport
 from .TransientTransport import TransientTransport
 from .TransientReactiveTransport import TransientReactiveTransport
-from .CrankNicholson import CrankNicholson
 from .StokesFlow import StokesFlow
 from .FickianDiffusion import FickianDiffusion
 from .FourierConduction import FourierConduction

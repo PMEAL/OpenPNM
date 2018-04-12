@@ -11,16 +11,9 @@ class Subdomain(Base):
             boss = self.project.find_phase(self)
         else:
             boss = self.project.network
-        # Deal with a few special key items
-        if key.split('.')[-1] == '_id':
-            inds = boss._get_indices(element=element, labels=self.name)
-            return boss[element+'._id'][inds]
-        # Convert self.name into 'all'
-        elif key.split('.')[-1] in [self.name]:
-            return self[element+'.all']
-        # Now get values if present, or regenerate them
+        # Get values if present, or regenerate them
         vals = self.get(key)
-        # If still not found, check with boss object (interleave data)
+        # If still not found, check with boss object
         if vals is None:
             inds = boss._get_indices(element=element, labels=self.name)
             vals = boss[key][inds]
@@ -39,6 +32,20 @@ class Subdomain(Base):
 
     def add_locations(self, pores=[], throats=[]):
         r"""
+        Adds associations between an objectx and its boss object at the
+        given pore and/or throat locations.
+
+        Parameters
+        ----------
+        pores and throats : array_like
+            The pore and/or throat locations for which the association should
+            be added.  These indices are for the full domain.
+
+        Notes
+        -----
+        For *Physics* objects, the boss is the *Phase* with which it was
+        assigned, while for *Geometry* objects the boss is the *Network*.
+
         """
         boss = self._get_boss()
         pores = boss._parse_indices(pores)
@@ -48,18 +55,41 @@ class Subdomain(Base):
         if len(throats) > 0:
             self._set_locations(element='throat', indices=throats, mode='add')
 
-    def drop_locations(self, pores=[], throats=[]):
+    def drop_locations(self, pores=[], throats=[], complete=False):
         r"""
+        Removes association between an objectx and its boss object at the
+        given pore and/or throat locations.
+
+        Parameters
+        ----------
+        pores and throats : array_like
+            The pore and/or throat locations from which the association should
+            be removed.  These indices refer to the full domain.
+
+        complete : boolean (default is ``False``)
+            If ``True`` then *all* pore and throat associations are removed
+            along with any trace that the objects were associated.
+
+        Notes
+        -----
+        For *Physics* objects, the boss is the *Phase* with which it was
+        assigned, while for *Geometry* objects the boss is the *Network*.
+
         """
         boss = self._get_boss()
         pores = boss._parse_indices(pores)
         throats = boss._parse_indices(throats)
+        if complete:
+            pores = boss.pores(self.name)
+            throats = boss.throats(self.name)
         if len(pores) > 0:
-            self._set_locations(element='pore', indices=pores, mode='drop')
+            self._set_locations(element='pore', indices=pores, mode='drop',
+                                complete=complete)
         if len(throats) > 0:
-            self._set_locations(element='throat', indices=throats, mode='drop')
+            self._set_locations(element='throat', indices=throats, mode='drop',
+                                complete=complete)
 
-    def _set_locations(self, element, indices=[], mode='add'):
+    def _set_locations(self, element, indices, mode, complete=False):
         r"""
         """
         boss = self._get_boss()
@@ -96,7 +126,10 @@ class Subdomain(Base):
         # Remove label from boss if ALL locations are removed
         if mode == 'drop':
             if ~np.any(boss[element+'.'+self.name]):
-                del boss[element+'.'+self.name]
+                if complete:
+                    del boss[element+'.'+self.name]
+                else:
+                    boss[element+'.'+self.name] = False
 
     def _get_boss(self):
         if self._isa('physics'):

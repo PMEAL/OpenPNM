@@ -8,11 +8,9 @@ Submodule -- thermal_conductance
 import scipy as _sp
 
 
-def series_resistors(physics, phase, network,
-                     thermal_conductivity='pore.thermal_conductivity',
+def series_resistors(target, thermal_conductivity='pore.thermal_conductivity',
                      pore_diameter='pore.diameter', pore_area='pore.area',
-                     throat_area='throat.area', throat_length='throat.length',
-                     **kwargs):
+                     throat_area='throat.area', throat_length='throat.length'):
     r"""
     Calculate the thermal conductance of void conduits in network ( 1/2 pore - full
     throat - 1/2 pore ) based on size (assuming cylindrical geometry)
@@ -33,11 +31,12 @@ def series_resistors(physics, phase, network,
     network then extracts the values for the appropriate throats at the end.
 
     """
+    network = target.project.network
+    phase = target.project.find_phase(target)
     # Get Nt-by-2 list of pores connected to each throat
     Ps = network['throat.conns']
     # Get properties in every pore in the network
-    kp = phase[thermal_conductivity]
-    kt = phase.interpolate_data(kp)
+    kt = phase.interpolate_data(thermal_conductivity)
     # Find g for half of pore 1
     pdia = network[pore_diameter]
     parea = network[pore_area]
@@ -58,5 +57,5 @@ def series_resistors(physics, phase, network,
     tlen[tlen <= 0] = 1e-12
     gt = kt*tarea/tlen
     value = (1/gt + 1/gp1 + 1/gp2)**(-1)
-    value = value[phase.throats(physics.name)]
+    value = value[phase.throats(target.name)]
     return value

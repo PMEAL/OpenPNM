@@ -17,12 +17,12 @@ class TransientReactiveTransport(ReactiveTransport, TransientTransport):
         """
         print('―'*80)
         print('Running TransientReactiveTransport')
-        self.setup()
         x = self._run_transient_reactive(x=x, t=t)
 
     def _run_transient_reactive(self, x, t):
-        self.update_A()
-        self.update_b()
+        self._apply_BCs()
+        self._update_A()
+        self._update_b()
         x = self._run_reactive(x=x)
         if t < self.settings['t_final']:
             print('Current time step: '+str(t))

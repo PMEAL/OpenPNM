@@ -80,8 +80,11 @@ class Dict(GenericIO):
         # Convert to OpenPNM Objects, attempting to infer type
         for objtype in objs.keys():
             for name in objs[objtype].keys():
+                # Create empty object, using dummy name to avoid error
                 obj = project._new_object(objtype=objtype, name='')
-                obj._name = name
+                # Overwrite name
+                obj._set_name(name=name, validate=False)
+                # Update new object with data from dict
                 obj.update(objs[objtype][name])
 
         return project

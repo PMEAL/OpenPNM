@@ -9,6 +9,7 @@ from .topotools import find_connected_sites
 from .topotools import find_connecting_bonds
 from .topotools import find_clusters
 from .topotools import generate_base_points
+from .topotools import iscoplanar
 from .topotools import label_faces
 from .topotools import merge_pores
 from .topotools import plot_connections
