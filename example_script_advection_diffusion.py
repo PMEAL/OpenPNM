@@ -7,7 +7,7 @@ ws.settings['local_data'] = True
 
 # NETWORK
 sp.random.seed(17)
-nx, ny, nz = 60, 120, 1
+nx, ny, nz = 80, 160, 1
 pn = op.network.Cubic(shape=[nx, ny, nz], spacing=1e-4, name='pn11')
 
 # GEOMETRIES
@@ -39,33 +39,52 @@ outlet2 = pn.pores('right')  # pore outlet2
 
 # ALGORITHMS
 alg1 = op.algorithms.StokesFlow(network=pn, phase=water)
-alg1.set_BC(pores=inlet2, bctype='dirichlet', bcvalues=100)
-alg1.set_BC(pores=outlet2, bctype='dirichlet', bcvalues=0)
+alg1.set_BC(pores=inlet, bctype='dirichlet', bcvalues=20)
+alg1.set_BC(pores=outlet, bctype='dirichlet', bcvalues=0)
 alg1.run()
 water['pore.pressure'] = alg1['pore.pressure']
 
-alg3 = op.algorithms.AdvectionDiffusion(network=pn, phase=water)
-alg3.set_BC(pores=inlet, bctype='dirichlet', bcvalues=1)
-alg3.set_BC(pores=outlet, bctype='dirichlet', bcvalues=1)
+alg2 = op.algorithms.AdvectionDiffusion(network=pn, phase=water,
+                                        discretization='upwind')
+alg2.set_BC(pores=inlet2, bctype='dirichlet', bcvalues=1)
+alg2.set_BC(pores=outlet2, bctype='dirichlet', bcvalues=0)
+alg2.run()
+
+alg3 = op.algorithms.AdvectionDiffusion(network=pn, phase=water,
+                                        discretization='hybrid')
+alg3.set_BC(pores=inlet2, bctype='dirichlet', bcvalues=1)
+alg3.set_BC(pores=outlet2, bctype='dirichlet', bcvalues=0)
 alg3.run()
 
-alg4 = op.algorithms.Dispersion(network=pn, phase=water)
-alg4.set_BC(pores=inlet, bctype='dirichlet', bcvalues=1)
-alg4.set_BC(pores=outlet, bctype='dirichlet', bcvalues=1)
+alg4 = op.algorithms.AdvectionDiffusion(network=pn, phase=water,
+                                        discretization='powerlaw')
+alg4.set_BC(pores=inlet2, bctype='dirichlet', bcvalues=1)
+alg4.set_BC(pores=outlet2, bctype='dirichlet', bcvalues=0)
 alg4.run()
 
-# PLOT
-Z = sp.array([sp.reshape(alg3['pore.mole_fraction'], (nx, ny)),
-              sp.reshape(alg4['pore.mole_fraction'], (nx, ny))])
+alg5 = op.algorithms.Dispersion(network=pn, phase=water)
+alg5.set_BC(pores=inlet2, bctype='dirichlet', bcvalues=1)
+alg5.set_BC(pores=outlet2, bctype='dirichlet', bcvalues=0)
+alg5.run()
 
-fig, axes = plt.subplots(nrows=1, ncols=2)
+# PLOT
+Z = sp.array([sp.reshape(alg2['pore.mole_fraction'], (nx, ny)),
+              sp.reshape(alg3['pore.mole_fraction'], (nx, ny)),
+              sp.reshape(alg4['pore.mole_fraction'], (nx, ny)),
+              sp.reshape(alg5['pore.mole_fraction'], (nx, ny))])
+
+fig, axes = plt.subplots(nrows=1, ncols=4)
 i = 0
 for ax in axes.flat:
     im = ax.imshow(Z[i].T, cmap='rainbow')
     if (i == 0):
         ax.set_title('upwind')
+    elif (i == 1):
+        ax.set_title('hybrid')
+    elif (i == 2):
+        ax.set_title('power law')
     else:
-        ax.set_title('Peclet based')
+        ax.set_title('Pe based')
     ax.set_ylabel('y')
     ax.set_xlabel('x')
     i += 1

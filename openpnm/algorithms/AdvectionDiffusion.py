@@ -11,7 +11,7 @@ class AdvectionDiffusion(GenericTransport):
 
     """
 
-    def __init__(self, settings={}, **kwargs):
+    def __init__(self, discretization='powerlaw', settings={}, **kwargs):
         super().__init__(**kwargs)
         # Set some default settings
         self.settings.update({'quantity': 'pore.mole_fraction',
@@ -20,11 +20,13 @@ class AdvectionDiffusion(GenericTransport):
                               'hydraulic_conductance':
                                   'throat.hydraulic_conductance',
                               'pressure': 'pore.pressure',
-                              'molar_density': 'pore.molar_density'})
+                              'molar_density': 'pore.molar_density',
+                              'discretization': discretization})
         # Apply any received settings to overwrite defaults
         self.settings.update(settings)
 
     def build_A(self):
+        dis = self.settings['discretization']
         network = self.project.network
         phase = self.project.phases()[self.settings['phase']]
         P = phase[self.settings['pressure']]
@@ -44,9 +46,22 @@ class AdvectionDiffusion(GenericTransport):
         qP1 = np.where(Qij1 > 0, Qij1, 0)  # Throat positive flow rates
         qN2 = np.where(Qij2 < 0, Qij2, 0)
 
-        # Put the flow rates in the coefficient matrices
-        am1 = network.create_adjacency_matrix(weights=(qP1 + gd))
-        A = -network.create_adjacency_matrix(weights=(-qN2 + gd))
+        if (dis == 'upwind'):
+            # Put the flow rates in the coefficient matrices
+            am1 = network.create_adjacency_matrix(weights=(qP1 + gd))
+            A = -network.create_adjacency_matrix(weights=(-qN2 + gd))
+        elif (dis == 'hybrid'):
+            am1 = network.create_adjacency_matrix(
+                    weights=np.maximum(qP1, (qP1/2 + gd)))
+            A = -network.create_adjacency_matrix(
+                    weights=np.maximum(-qN2, (-qN2/2 + gd)))
+        elif (dis == 'powerlaw'):
+            Pe1 = np.absolute(qP1/gd)
+            Pe2 = np.absolute(qN2/gd)
+            diag = gd*np.maximum(0, (1-0.1*Pe1)**5) + qP1
+            offdiag = gd*np.maximum(0, (1-0.1*Pe2)**5) - qN2
+            am1 = network.create_adjacency_matrix(weights=diag)
+            A = -network.create_adjacency_matrix(weights=offdiag)
         A_diags = laplacian(am1)
         # Overwrite the diagonal
         A.setdiag(A_diags.diagonal())
