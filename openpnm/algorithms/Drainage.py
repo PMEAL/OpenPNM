@@ -71,6 +71,12 @@ class Drainage(OrdinaryPercolation):
 
     """
 
+    def __init__(self, settings={}, **kwargs):
+        super().__init__(**kwargs)
+        self.settings.update({'pore_volume': 'pore.volume',
+                              'throat_volume': 'throat.volume'})
+        self.settings.update(settings)
+
     def evaluate_late_pore_filling(self, Pc, Swp_init=0.75, eta=3.0,
                                    wetting_phase=False):
         r"""
@@ -152,7 +158,7 @@ class Drainage(OrdinaryPercolation):
         """
         net = self.project.network
         # Infer list of applied capillary pressures
-        PcPoints = self._inv_points
+        PcPoints = np.unique(self['throat.invasion_pressure'])
         if PcPoints[-1] == np.inf:  # Remove infinity from PcPoints if present
             PcPoints = PcPoints[:-1]
         # Get pore and throat volumes

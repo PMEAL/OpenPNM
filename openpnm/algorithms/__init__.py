@@ -8,6 +8,7 @@ from .FickianDiffusion import FickianDiffusion
 from .FourierConduction import FourierConduction
 from .OhmicConduction import OhmicConduction
 from .GenericPercolation import GenericPercolation
+from .OrdinaryPercolation import OrdinaryPercolation
+from .InvasionPercolation import InvasionPercolation
 from .Drainage import Drainage
 from .MIP import MIP
-from .InvasionPercolation import InvasionPercolation

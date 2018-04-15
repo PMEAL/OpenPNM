@@ -3,88 +3,78 @@ import numpy as np
 import scipy.sparse as sprs
 import scipy.sparse.csgraph as csg
 from collections import namedtuple
-from openpnm.algorithms import GenericAlgorithm
+from openpnm.algorithms import GenericPercolation
 from openpnm.core import logging
 logger = logging.getLogger(__name__)
 tup = namedtuple('cluster_labels', ('sites', 'bonds'))
 
 
-class OrdinaryPercolation(GenericAlgorithm):
+class OrdinaryPercolation(GenericPercolation):
 
     def __init__(self, settings={}, **kwargs):
         r"""
         """
         super().__init__(**kwargs)
-        settings.update({'trapping': False,
-                         'access_limited': True,
-                         'kind': 'bond'})
+        self.settings.update({'trapping': False,
+                              'access_limited': True,
+                              'mode': 'bond'})
+        self.settings.update(settings)
+        self.reset()
 
     def setup(self,
-              invading_phase,
-              defending_phase=None,
+              phase=None,
               trapping=False,
-              access_limited=True,
-              kind='bond',
-              entry_pressure='throat.capillary_pressure',
-              pore_filling=None,
-              throat_filling=None,
-              pore_volume='pore.volume',
-              throat_volume='throat.volume'):
+              access_limited=False,
+              mode='',
+              entry_pressure=''):
         r"""
         Used to specify necessary arguments to the simulation.  This method is
         useful for resetting the algorithm or applying more explicit control.
 
         Parameters
         ----------
-        invading_phase : OpenPNM Phase object
+        phase : OpenPNM Phase object
             The Phase object containing the physical properties of the invading
             fluid.
 
-        defending_phase : OpenPNM Phase object
-            The Phase object containing the physical properties of the
-            defending fluid.
-
-        entry_pressure : string (optional)
+        entry_pressure : string
             The dictionary key on the Phase object where the throat entry
-            pressure values can be found.  The default is
+            pressure values are stored.  The default is
             'throat.capillary_pressure'.
 
-        trapping : boolean (optional)
+        trapping : boolean
             Specifies whether defending phase trapping should be included or
             not. The default is False.  Note that defending phase outlets can
             be specified using the ``set_outlets`` method.  Otherwise it is
             assumed the defending phase has no outlets.
 
-        pore_filling and throat_filling: string (optional)
-            The dictionary key on the Physics object where the late pore or
-            throat filling model is located. The default is None, meaning that
-            a pore or throat is completely filled upon penetration.
+        access_limited : boolean
+            If ``True`` the invading phase can only enter the network from the
+            invasion sites specified with ``set_inlets``.  Otherwise, invading
+            clusters can appear anywhere in the network.  This second case is
+            the normal *ordinary percolation*.
 
-        pore_volume and throat_volume : string (optional)
-            The dictionary key on the Geometry object where the pore or throat
-            volume data is located.  The defaults is 'pore.volume' and
-            'throat.volume'.
+        mode : string
+            Specifies they type of percolation process to simulate.  Options
+            are:
+
+            **'bond'** - The percolation process is controlled by bond entry
+            thresholds.
+
+            **'site'** - The percolation process is controlled by site entry
+            thresholds.
 
         """
-        self['throat.entry_pressure'] = invading_phase[entry_pressure]
-        self['pore.invasion_pressure'] = sp.inf
-        self['throat.invasion_pressure'] = sp.inf
-        self['pore.trapped'] = sp.inf
-        self['throat.trapped'] = sp.inf
-        self['pore.inlets'] = False
-        self['pore.outlets'] = False
-        self['pore.residual'] = False
-        self['throat.residual'] = False
-        self.settings['defending_phase'] = None
-        self.settings.update({'invading_phase': invading_phase.name,
-                              'trapping': trapping,
-                              'access_limited': access_limited,
-                              'pore_filling': pore_filling,
-                              'throat_filling': throat_filling,
-                              'throat_volume': throat_volume,
-                              'pore_volume': pore_volume})
-        if defending_phase:
-            self.settings['defending_phase'] = defending_phase.name
+        if phase:
+            self.settings['phase'] = phase.name
+        if entry_pressure:
+            self.settings['entry_pressure'] = entry_pressure
+            phase = self.project.find_phase(self)
+            self['throat.entry_pressure'] = phase[entry_pressure]
+        if trapping:
+            self.settings['trapping'] = True
+        if access_limited:
+            self.settings['access_limited'] = True
 
     def run(self, points=25):
         r"""
@@ -100,14 +90,16 @@ class OrdinaryPercolation(GenericAlgorithm):
             entry pressures.
 
         """
+        phase = self.project.find_phase(self)
+        self['throat.entry_pressure'] = phase['throat.capillary_pressure']
         # Parse inputs and generate list of invasion points if necessary
         if type(points) is int:
             logger.info('Generating list of invasion pressures')
             # Nudge values up and down
-            if self.settings['percolation_type'] == 'bond':
+            if self.settings['mode'] == 'bond':
                 min_p = sp.amin(self['throat.entry_pressure'])*0.99
                 max_p = sp.amax(self['throat.entry_pressure'])*1.01
-            elif self.settings['percolation_type'] == 'sites':
+            elif self.settings['mode'] == 'site':
                 min_p = sp.amin(self['pore.entry_pressure'])*0.99
                 max_p = sp.amax(self['pore.entry_pressure'])*1.01
             else:
@@ -117,15 +109,15 @@ class OrdinaryPercolation(GenericAlgorithm):
         # Generate curve from points
         for inv_val in points:
 
-            conns = net['throat.conns']
             # Apply one applied pressure and determine invaded pores
-            if self.settings['kind'] == 'bond':
-                t_invaded = self['throat.invasion_pressure'] < inv_val
-                labels = self.bond_percolation(ij=conns, t_invaded)
-            elif self.settings['kind'] == 'site':
-                p_invaded = self['pore.invasion_pressure'] < inv_val
-                labels = self.site_percolation(ij=conns, p_invaded)
-            elif self.settings['kind'] == 'mixed':
+            conns = self.project.network['throat.conns']
+            if self.settings['mode'] == 'bond':
+                t_invaded = self['throat.entry_pressure'] < inv_val
+                labels = self.bond_percolation(conns, t_invaded)
+            elif self.settings['mode'] == 'site':
+                p_invaded = self['pore.entry_pressure'] < inv_val
+                labels = self.site_percolation(conns, p_invaded)
+            elif self.settings['mode'] == 'mixed':
                 raise Exception('Mixed percolation is not implemented yet')
             else:
                 raise Exception('Unrecognized percolation process specified')
@@ -137,16 +129,17 @@ class OrdinaryPercolation(GenericAlgorithm):
                 # Remove cluster numbers == -1, if any
                 inv_clusters = inv_clusters[inv_clusters >= 0]
                 # Find all pores in invading clusters
-                p_invaded = np.in1d(labels.sites, inv_clusters)
-                t_invaded = np.in1d(labels.bonds, inv_clusters)
-                labels = tup(p_labels, t_labels)
+                p_invading = np.in1d(labels.sites, inv_clusters)
+                labels.sites[~p_invading] = -1
+                t_invading = np.in1d(labels.bonds, inv_clusters)
+                labels.bonds[~t_invading] = -1
 
             # Store current applied pressure in newly invaded pores
             pinds = (self['pore.invasion_pressure'] == sp.inf)*(labels.sites >= 0)
-            self['pore.inv_Pc'][pinds] = inv_val
+            self['pore.invasion_pressure'][pinds] = inv_val
             # Store current applied pressure in newly invaded throats
-            tinds = (self['throat.inv_Pc'] == sp.inf)*(labels.bonds >= 0)
-            self['throat.inv_Pc'][tinds] = inv_val
+            tinds = (self['throat.invasion_pressure'] == sp.inf)*(labels.bonds >= 0)
+            self['throat.invasion_pressure'][tinds] = inv_val
 
         # Convert invasion pressures in sequence values
         Pinv = self['pore.invasion_pressure']
@@ -172,12 +165,6 @@ class OrdinaryPercolation(GenericAlgorithm):
         t_labels = sp.amin(p_labels[ij], axis=1)
         result = tup(p_labels, t_labels)
         return result
-
-    def make_contiguous(self, array):
-        valid_clusters = sp.bincount(clusters) > 1
-        mapping = -sp.ones(shape=(clusters.max()+1, ), dtype=int)
-        mapping[valid_clusters] = sp.arange(0, valid_clusters.sum())
-        p_labels = mapping[clusters]
 
     def bond_percolation(self, ij, t_invaded):
         r"""
