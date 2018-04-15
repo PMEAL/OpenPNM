@@ -7,6 +7,7 @@ from .StokesFlow import StokesFlow
 from .FickianDiffusion import FickianDiffusion
 from .FourierConduction import FourierConduction
 from .OhmicConduction import OhmicConduction
+from .GenericPercolation import GenericPercolation
 from .Drainage import Drainage
 from .MIP import MIP
 from .InvasionPercolation import InvasionPercolation
