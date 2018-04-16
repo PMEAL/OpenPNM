@@ -73,8 +73,12 @@ class Drainage(OrdinaryPercolation):
 
     def __init__(self, settings={}, **kwargs):
         super().__init__(**kwargs)
+        # Apply class-specific default settings
         self.settings.update({'pore_volume': 'pore.volume',
-                              'throat_volume': 'throat.volume'})
+                              'throat_volume': 'throat.volume',
+                              'mode': 'bond',
+                              'access_limited': True})
+        # Override with any user specified settings
         self.settings.update(settings)
 
     def evaluate_late_pore_filling(self, Pc, Swp_init=0.75, eta=3.0,
@@ -145,10 +149,6 @@ class Drainage(OrdinaryPercolation):
         r"""
         Obtain the numerical values of the calculate drainage pressure curve.
 
-        Parameters
-        ----------
-        None
-
         Returns
         -------
         A named-tuple containing arrays of applied capillary pressures and
@@ -159,6 +159,8 @@ class Drainage(OrdinaryPercolation):
         net = self.project.network
         # Infer list of applied capillary pressures
         PcPoints = np.unique(self['throat.invasion_pressure'])
+        # Add a low pressure point to the list to improve graph
+        PcPoints = np.concatenate(([0.9*PcPoints[0]], PcPoints))
         if PcPoints[-1] == np.inf:  # Remove infinity from PcPoints if present
             PcPoints = PcPoints[:-1]
         # Get pore and throat volumes
@@ -199,16 +201,6 @@ class Drainage(OrdinaryPercolation):
         r"""
         Plot the drainage curve as the non-wetting phase saturation vs the
         applied capillary pressure.
-
-        Parameters
-        ----------
-        data : dictionary of arrays
-            This dictionary should be obtained from the ``get_drainage_data``
-            method.
-
-        x_values and y_values : string
-            The dictionary keys of the arrays containing the x-values and
-            y-values
 
         """
         # Begin creating nicely formatted plot

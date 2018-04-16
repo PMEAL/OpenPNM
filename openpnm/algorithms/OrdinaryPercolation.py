@@ -23,8 +23,8 @@ class OrdinaryPercolation(GenericPercolation):
 
     def setup(self,
               phase=None,
-              trapping=False,
-              access_limited=False,
+              trapping=None,
+              access_limited=None,
               mode='',
               entry_pressure=''):
         r"""
@@ -71,10 +71,10 @@ class OrdinaryPercolation(GenericPercolation):
             self.settings['entry_pressure'] = entry_pressure
             phase = self.project.find_phase(self)
             self['throat.entry_pressure'] = phase[entry_pressure]
-        if trapping:
-            self.settings['trapping'] = True
-        if access_limited:
-            self.settings['access_limited'] = True
+        if trapping is not None:
+            self.settings['trapping'] = trapping
+        if access_limited is not None:
+            self.settings['access_limited'] = access_limited
 
     def run(self, points=25):
         r"""
@@ -97,11 +97,11 @@ class OrdinaryPercolation(GenericPercolation):
             logger.info('Generating list of invasion pressures')
             # Nudge values up and down
             if self.settings['mode'] == 'bond':
-                min_p = sp.amin(self['throat.entry_pressure'])*0.99
-                max_p = sp.amax(self['throat.entry_pressure'])*1.01
+                min_p = sp.amin(self['throat.entry_pressure'])*0.95
+                max_p = sp.amax(self['throat.entry_pressure'])*1.05
             elif self.settings['mode'] == 'site':
-                min_p = sp.amin(self['pore.entry_pressure'])*0.99
-                max_p = sp.amax(self['pore.entry_pressure'])*1.01
+                min_p = sp.amin(self['pore.entry_pressure'])*0.95
+                max_p = sp.amax(self['pore.entry_pressure'])*1.05
             else:
                 raise Exception('Percolation type has not been set')
             points = sp.logspace(sp.log10(min_p), sp.log10(max_p), points)
@@ -111,28 +111,15 @@ class OrdinaryPercolation(GenericPercolation):
 
             # Apply one applied pressure and determine invaded pores
             conns = self.project.network['throat.conns']
-            if self.settings['mode'] == 'bond':
-                t_invaded = self['throat.entry_pressure'] < inv_val
-                labels = self.bond_percolation(conns, t_invaded)
-            elif self.settings['mode'] == 'site':
-                p_invaded = self['pore.entry_pressure'] < inv_val
-                labels = self.site_percolation(conns, p_invaded)
-            elif self.settings['mode'] == 'mixed':
-                raise Exception('Mixed percolation is not implemented yet')
-            else:
-                raise Exception('Unrecognized percolation process specified')
+            labels = self._apply_percolation(inv_val)
 
             # Optionally remove clusters not connected to the inlets
             if self.settings['access_limited']:
-                # Identify clusters on invasion sites
-                inv_clusters = sp.unique(labels.sites[self['pore.inlets']])
-                # Remove cluster numbers == -1, if any
-                inv_clusters = inv_clusters[inv_clusters >= 0]
-                # Find all pores in invading clusters
-                p_invading = np.in1d(labels.sites, inv_clusters)
-                labels.sites[~p_invading] = -1
-                t_invading = np.in1d(labels.bonds, inv_clusters)
-                labels.bonds[~t_invading] = -1
+                labels = self.remove_isolated_clusters
+
+            if self.settings['trapping']:
+                t_defended = labels.bonds == -1
+                temp = self.bond_percolation(conns, t_defended)
 
             # Store current applied pressure in newly invaded pores
             pinds = (self['pore.invasion_pressure'] == sp.inf)*(labels.sites >= 0)
@@ -148,6 +135,30 @@ class OrdinaryPercolation(GenericPercolation):
         Tseq = sp.searchsorted(sp.unique(Tinv), Tinv)
         self['pore.invasion_sequence'] = Pseq
         self['throat.invasion_sequence'] = Tseq
+
+    def _apply_percolation(self, inv_val):
+        if self.settings['mode'] == 'bond':
+            t_invaded = self['throat.entry_pressure'] <= inv_val
+            labels = self.bond_percolation(conns, t_invaded)
+        elif self.settings['mode'] == 'site':
+            p_invaded = self['pore.entry_pressure'] <= inv_val
+            labels = self.site_percolation(conns, p_invaded)
+        elif self.settings['mode'] == 'mixed':
+            raise Exception('Mixed percolation is not implemented yet')
+        else:
+            raise Exception('Unrecognized percolation process specified')
+
+    def remove_isolated_clusters(self, labels):
+        # Identify clusters on invasion sites
+        inv_clusters = sp.unique(labels.sites[self['pore.inlets']])
+        # Remove cluster numbers == -1, if any
+        inv_clusters = inv_clusters[inv_clusters >= 0]
+        # Find all pores in invading clusters
+        p_invading = np.in1d(labels.sites, inv_clusters)
+        labels.sites[~p_invading] = -1
+        t_invading = np.in1d(labels.bonds, inv_clusters)
+        labels.bonds[~t_invading] = -1
+        return labels
 
     def site_percolation(self, ij, p_invaded):
         r"""
@@ -182,91 +193,6 @@ class OrdinaryPercolation(GenericPercolation):
         result = tup(p_labels, t_labels)
         return result
 
-    def evaluate_trapping(self):
-        r"""
-        Finds trapped pores and throats after a full ordinary percolation
-        simulation has been run.
-
-        Returns
-        -------
-        It creates arrays called ``pore.trapped`` and ``throat.trapped``, but
-        also adjusts the ``pore.invasion_pressure`` and
-        ``throat.invasion_pressure`` arrays to set trapped locations to have
-        infinite invasion pressure (i.e. not invaded).
-
-        """
-        network = self.project.network
-        p_outlets = self['pore.outlets']
-        self['pore.trapped'] = sp.zeros([self.Np, ], dtype=float)
-        self['throat.trapped'] = sp.zeros([self.Nt, ], dtype=float)
-        try:
-            # Get points used in OP
-            inv_points = sp.unique(self['pore.invasion_pressure'])
-        except KeyError:
-            raise Exception('Orindary percolation has not been run!')
-        tind = network.throats()
-        conns = network.find_connected_pores(tind)
-        for inv_val in inv_points[0:-1]:
-            # Find clusters of defender pores
-            Pinvaded = self['pore.inv_Pc'] <= inv_val
-            Cstate = sp.sum(Pinvaded[conns], axis=1)
-            Tinvaded = self['throat.inv_Pc'] <= inv_val
-            # 0 = all open, 1=1 pore filled,
-            # 2=2 pores filled 3=2 pores + 1 throat filled
-            Cstate = Cstate + Tinvaded
-            clusters = network.find_clusters(Cstate == 0)
-            # Clean up clusters (invaded = -1, defended >=0)
-            clusters = clusters * (~Pinvaded) - (Pinvaded)
-            # Identify clusters connected to outlet sites
-            out_clusters = sp.unique(clusters[p_outlets])
-            trapped_pores = ~sp.in1d(clusters, out_clusters)
-            trapped_pores[Pinvaded] = False
-            if sum(trapped_pores) > 0:
-                inds = (self['pore.trapped'] == 0) * trapped_pores
-                self['pore.trapped'][inds] = inv_val
-                trapped_throats = network.find_neighbor_throats(trapped_pores)
-                trapped_throat_array = np.asarray([False] * len(Cstate))
-                trapped_throat_array[trapped_throats] = True
-                inds = (self['throat.trapped'] == 0) * trapped_throat_array
-                self['throat.trapped'][inds] = inv_val
-                inds = (self['throat.trapped'] == 0) * (Cstate == 2)
-                self['throat.trapped'][inds] = inv_val
-        self['pore.inv_Pc'][self['pore.trapped'] > 0] = sp.inf
-        self['throat.inv_Pc'][self['throat.trapped'] > 0] = sp.inf
-
-    def _check_trapping(self, inv_val):
-        r"""
-        Determine which pores and throats are trapped by invading phase.  This
-        method is called by ``run`` if 'trapping' is set to True.
-        """
-        net = self.project.network
-        # Generate a list containing boolean values for throat state
-        Tinvaded = self['throat.invasion_pressure'] < sp.inf
-        # Add residual throats, if any, to list of invaded throats
-        Tinvaded = Tinvaded + self['throat.residual']
-        # Invert logic to find defending throats
-        Tdefended = ~Tinvaded
-        [pclusters, tclusters] = net.find_clusters2(mask=Tdefended,
-                                                    t_labels=True)
-        # See which outlet pores remain uninvaded
-        outlets = self['pore.outlets']*(self['pore.invasion_pressure'] == sp.inf)
-        # Identify clusters connected to remaining outlet sites
-        def_clusters = sp.unique(pclusters[outlets])
-        temp = sp.in1d(sp.unique(pclusters), def_clusters, invert=True)
-        trapped_clusters = sp.unique(pclusters)[temp]
-        trapped_clusters = trapped_clusters[trapped_clusters >= 0]
-
-        # Find defending clusters NOT connected to the outlet pores
-        pmask = np.in1d(pclusters, trapped_clusters)
-        # Store current applied pressure in newly trapped pores
-        pinds = (self['pore.trapped'] == sp.inf) * (pmask)
-        self['pore.trapped'][pinds] = inv_val
-
-        # Find throats on the trapped defending clusters
-        tinds = net.find_neighbor_throats(pores=pinds, mode='intersection')
-        self['throat.trapped'][tinds] = inv_val
-        self['throat.entry_pressure'][tinds] = 1000000
-
     def results(self, Pc):
         r"""
         This method determines which pores and throats are filled with non-
@@ -278,8 +204,8 @@ class OrdinaryPercolation(GenericPercolation):
         Parameters
         ----------
         Pc : scalar
-            The capillary pressure for which an invading phase configuration is
-            required.
+            The capillary pressure for which an invading phase configuration
+            is desired.
 
         Returns
         -------
