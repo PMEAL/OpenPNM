@@ -15,6 +15,7 @@ class VoronoiTest:
 #        bp += p
         self.wrk = op.core.Workspace()
         self.net = op.materials.VoronoiFibers(fiber_rad=1e-6,
+                                              resolution=1e-6,
                                               shape=[scale, scale, scale],
                                               points=bp*scale,
                                               name='test')
