@@ -75,7 +75,7 @@ class DelaunayVoronoiDual(GenericNetwork):
 
     The resulting network can be quickly visualized with
     ``op.topotools.plot_connections(net)``.  This plotting function also
-    supports showing limited sets of throats for more clear inspectionk such as
+    supports showing limited sets of throats for more clear inspection such as
     ``op.topotools.plot_connections(net, throats=net.throats('surface'))``.
     See its documentation for details.
 
@@ -322,7 +322,8 @@ class DelaunayVoronoiDual(GenericNetwork):
             throats = self.throats('delaunay')
         temp = []
         tvals = self['throat.interconnect'].astype(int)
-        am = self.create_adjacency_matrix(weights=tvals, fmt='lil')
+        am = self.create_adjacency_matrix(weights=tvals, fmt='lil',
+                                          drop_zeros=True)
         for t in throats:
             P12 = self['throat.conns'][t]
             Ps = list(set(am.rows[P12][0]).intersection(am.rows[P12][1]))
@@ -350,7 +351,8 @@ class DelaunayVoronoiDual(GenericNetwork):
             pores = self.pores('delaunay')
         temp = []
         tvals = self['throat.interconnect'].astype(int)
-        am = self.create_adjacency_matrix(weights=tvals, fmt='lil')
+        am = self.create_adjacency_matrix(weights=tvals, fmt='lil',
+                                          drop_zeros=True)
         for p in pores:
             Ps = am.rows[p]
             temp.append(Ps)
