@@ -81,9 +81,9 @@ class VoronoiFibers(DelaunayVoronoiDual):
 
     >>> import openpnm as op
     >>> net = op.materials.VoronoiFibers(num_points=50,
-                                         shape=[1e-4, 1e-4, 1e-4],
-                                         fiber_rad=5e-6,
-                                         resolution=1e-6)
+    ...                                  shape=[1e-4, 1e-4, 1e-4],
+    ...                                  fiber_rad=5e-6,
+    ...                                  resolution=1e-6)
     """
 
     def __init__(self, num_points=None, points=None, shape=[1, 1, 1],
