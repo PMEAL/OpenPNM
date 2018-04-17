@@ -11,10 +11,11 @@ class VoronoiTest:
                        [0.25, 0.25, 0.75], [0.25, 0.75, 0.75],
                        [0.75, 0.25, 0.75], [0.75, 0.75, 0.75]])
         scale = 1e-4
-#        p = (sp.random.random([len(bp), 3])-0.5)/10000
-#        bp += p
+        sp.random.seed(1)
+        p = (sp.random.random([len(bp), 3])-0.5)/10000
+        bp += p
         self.wrk = op.core.Workspace()
-        self.net = op.materials.VoronoiFibers(fiber_rad=1e-6,
+        self.net = op.materials.VoronoiFibers(fiber_rad=2e-6,
                                               resolution=1e-6,
                                               shape=[scale, scale, scale],
                                               points=bp*scale,

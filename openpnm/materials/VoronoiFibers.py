@@ -127,9 +127,7 @@ class DelaunayGeometry(GenericGeometry):
         t_coords = np.array([network['pore.coords'][list(t)] for t in vertices],
                             dtype=object)
         self['throat.vertices'] = t_coords
-        # Once vertices are saved we no longer need the voronoi network
-#        topotools.trim(network=network, pores=network.pores('voronoi'))
-#        topotools.trim(network=network, throats=network.throats('voronoi'))
+
         self.in_hull_volume()
         self['throat.normal'] = self._t_normals()
         self['throat.centroid'] = self._centroids(verts=t_coords)
@@ -172,10 +170,10 @@ class DelaunayGeometry(GenericGeometry):
             else:
                 verts_2d = sp.vstack((verts[i][:, 0], verts[i][:, 1])).T
             hull = sptl.ConvexHull(verts_2d, qhull_options='QJ Pp')
-            sorted_verts = verts[i][hull.vertices]
-            v1 = sorted_verts[1]-sorted_verts[0]
-            v2 = sorted_verts[-1]-sorted_verts[0]
-            value[i] = sp.cross(v1, v2)
+            sorted_verts = verts[i][hull.vertices].astype(float)
+            v1 = sorted_verts[-1]-sorted_verts[0]
+            v2 = sorted_verts[1]-sorted_verts[0]
+            value[i]=tr.unit_vector(sp.cross(v1, v2))
         return value
 
     def _centroids(self, verts):
@@ -295,7 +293,7 @@ class DelaunayGeometry(GenericGeometry):
                 maxp2 = pts[:, 1].max()
                 img = np.zeros([np.int(math.ceil(maxp1-minp1)+1),
                                 np.int(math.ceil(maxp2-minp2)+1)])
-                int_pts = np.around(pts, 0).astype(int)
+                int_pts = np.around(pts.astype(float), 0).astype(int)
                 for pt in int_pts:
                     img[pt[0]][pt[1]] = 1
                 # Pad with zeros all the way around the edges
@@ -303,9 +301,9 @@ class DelaunayGeometry(GenericGeometry):
                 img_pad[1:np.shape(img)[0]+1, 1:np.shape(img)[1]+1] = img
                 # All points should lie on this plane but could be some
                 # rounding errors so use the order parameter
-                z_plane = sp.unique(np.around(z, order+2))
+                z_plane = sp.unique(np.around(z.astype(float), order+1))
                 if len(z_plane) > 1:
-                    logger.error('Rotation for image analysis failed')
+                    logger.error('Throat '+str(i)+' Rotation Failure')
                     temp_arr = np.ones(1)
                     temp_arr.fill(np.mean(z_plane))
                     z_plane = temp_arr
@@ -519,7 +517,7 @@ class DelaunayGeometry(GenericGeometry):
             else:
                 f2d = np.vstack((fx, fy)).T
             hull = sptl.ConvexHull(f2d, qhull_options='QJ Pp')
-            face = np.around(face[hull.vertices], 6)
+            face = np.around(face[hull.vertices].astype(float), 6)
             for i in range(len(face)):
                 vec = face[i]-face[i-1]
                 vec_length = np.linalg.norm(vec)
