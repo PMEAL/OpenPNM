@@ -1,5 +1,6 @@
 import openpnm as op
 import scipy as sp
+import matplotlib.pyplot as plt
 
 ws = op.core.Workspace()
 ws.settings['local_data'] = True
@@ -50,9 +51,28 @@ alg2.set_BC(pores=inlet, bctype='dirichlet', bcvalues=2)
 alg2.set_BC(pores=outlet, bctype='dirichlet', bcvalues=0)
 alg2.run()
 
-alg3 = op.algorithms.AdvectionDiffusion(network=pn, phase=water)
-alg3.set_BC(pores=inlet, bctype='dirichlet', bcvalues=2)
-alg3.set_BC(pores=outlet, bctype='dirichlet', bcvalues=0)
-alg3.run()
+# PLOT
+Z = sp.array([sp.reshape(alg2['pore.mole_fraction_initial'], (nx, ny)),
+              sp.reshape(alg2['pore.mole_fraction0'], (nx, ny)),
+              sp.reshape(alg2['pore.mole_fraction5'], (nx, ny)),
+              sp.reshape(alg2['pore.mole_fraction10'], (nx, ny)),
+              sp.reshape(alg2['pore.mole_fraction20'], (nx, ny)),
+              sp.reshape(alg2['pore.mole_fraction40'], (nx, ny)),
+              sp.reshape(alg2['pore.mole_fraction60'], (nx, ny)),
+              sp.reshape(alg2['pore.mole_fraction_steady'], (nx, ny))])
 
-test = alg3['pore.mole_fraction'] - alg2['pore.mole_fraction']
+fig, axes = plt.subplots(nrows=2, ncols=4)
+i = 0
+for ax in axes.flat:
+    im = ax.imshow(Z[i].T, cmap='rainbow')
+    ax.set_title(str(i))
+    ax.set_ylabel('y')
+    ax.set_xlabel('x')
+    i += 1
+
+fig.subplots_adjust(right=0.8)
+cbar_ax = fig.add_axes([0.85, 0.15, 0.02, 0.7])
+fig.colorbar(im, cax=cbar_ax)
+
+plt.suptitle('OpenPNM transient dispersion', fontsize=16)
+plt.show()

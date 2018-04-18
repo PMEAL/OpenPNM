@@ -45,19 +45,19 @@ alg1.run()
 water['pore.pressure'] = alg1['pore.pressure']
 
 alg2 = op.algorithms.AdvectionDiffusion(network=pn, phase=water,
-                                        discretization='upwind')
+                                        s_scheme='upwind')
 alg2.set_BC(pores=inlet2, bctype='dirichlet', bcvalues=1)
 alg2.set_BC(pores=outlet2, bctype='dirichlet', bcvalues=0)
 alg2.run()
 
 alg3 = op.algorithms.AdvectionDiffusion(network=pn, phase=water,
-                                        discretization='hybrid')
+                                        s_scheme='hybrid')
 alg3.set_BC(pores=inlet2, bctype='dirichlet', bcvalues=1)
 alg3.set_BC(pores=outlet2, bctype='dirichlet', bcvalues=0)
 alg3.run()
 
 alg4 = op.algorithms.AdvectionDiffusion(network=pn, phase=water,
-                                        discretization='powerlaw')
+                                        s_scheme='powerlaw')
 alg4.set_BC(pores=inlet2, bctype='dirichlet', bcvalues=1)
 alg4.set_BC(pores=outlet2, bctype='dirichlet', bcvalues=0)
 alg4.run()

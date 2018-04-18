@@ -11,9 +11,9 @@ class TransientAdvectionDiffusion(AdvectionDiffusion, TransientTransport):
 
     """
 
-    def __init__(self, t_initial=0, t_final=8000, t_step=2, t_output=200,
-                 tolerance=1e-4,
-                 t_scheme='implicit', s_scheme='powerlaw',
+    def __init__(self, t_initial=0, t_final=1e+06, t_step=2, t_output=50,
+                 tolerance=1e-5,
+                 t_scheme='cranknicolson', s_scheme='powerlaw',
                  settings={}, **kwargs):
         super().__init__(**kwargs)
         # Set some default settings

@@ -20,6 +20,11 @@ class TransientTransport(GenericTransport):
         if (type(values) == float or type(values) == int):
             self[self.settings['quantity']] = values * np.ones(
                                               shape=(self.Np, ), dtype=float)
+        elif ((type(values) is np.ndarray) and (values.shape[0] == self.Np)):
+            self[self.settings['quantity']] = values
+        else:
+            print('Warning: initial condition should be a float or a ' +
+                  str(self.Np)+' long numpy array!')
 
     def update_A(self):
         r"""
