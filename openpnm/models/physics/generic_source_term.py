@@ -1,6 +1,8 @@
 r"""
 ===============================================================================
 Submodule -- generic_source_term
+All functions employ the linearization method described in Patankar's book
+Numerical Heat Transfer and fluid flow section 4.2.5
 ===============================================================================
 
 """
@@ -715,7 +717,7 @@ def general_symbolic(target, eqn=None, arg_map=None, **kwargs):
     Example
     ----------
     >>> import openpnm as op
-    >>> from openmpnm.models.physics import generic_source_term as gst
+    >>> from openpnm.models.physics import generic_source_term as gst
     >>> import scipy as sp
     >>> import sympy as syp
     >>> pn = op.network.Cubic(shape=[5, 5, 5], spacing=0.0001)
