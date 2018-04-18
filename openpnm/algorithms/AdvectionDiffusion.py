@@ -11,7 +11,7 @@ class AdvectionDiffusion(GenericTransport):
 
     """
 
-    def __init__(self, discretization='powerlaw', settings={}, **kwargs):
+    def __init__(self, s_scheme='powerlaw', settings={}, **kwargs):
         super().__init__(**kwargs)
         # Set some default settings
         self.settings.update({'quantity': 'pore.mole_fraction',
@@ -21,12 +21,12 @@ class AdvectionDiffusion(GenericTransport):
                                   'throat.hydraulic_conductance',
                               'pressure': 'pore.pressure',
                               'molar_density': 'pore.molar_density',
-                              'discretization': discretization})
+                              's_scheme': s_scheme})
         # Apply any received settings to overwrite defaults
         self.settings.update(settings)
 
     def build_A(self):
-        dis = self.settings['discretization']
+        s_dis = self.settings['s_scheme']
         network = self.project.network
         phase = self.project.phases()[self.settings['phase']]
         P = phase[self.settings['pressure']]
@@ -46,16 +46,16 @@ class AdvectionDiffusion(GenericTransport):
         qP1 = np.where(Qij1 > 0, Qij1, 0)  # Throat positive flow rates
         qN2 = np.where(Qij2 < 0, Qij2, 0)
 
-        if (dis == 'upwind'):
+        if (s_dis == 'upwind'):
             # Put the flow rates in the coefficient matrices
             am1 = network.create_adjacency_matrix(weights=(qP1 + gd))
             A = -network.create_adjacency_matrix(weights=(-qN2 + gd))
-        elif (dis == 'hybrid'):
+        elif (s_dis == 'hybrid'):
             am1 = network.create_adjacency_matrix(
                     weights=np.maximum(qP1, (qP1/2 + gd)))
             A = -network.create_adjacency_matrix(
                     weights=np.maximum(-qN2, (-qN2/2 + gd)))
-        elif (dis == 'powerlaw'):
+        elif (s_dis == 'powerlaw'):
             Pe1 = np.absolute(qP1/gd)
             Pe2 = np.absolute(qN2/gd)
             diag = gd*np.maximum(0, (1-0.1*Pe1)**5) + qP1
