@@ -27,7 +27,7 @@ def standard_kinetics(target, quantity, prefactor, exponent):
     return values
 
 
-def linear(target, A1='', A2='', x='', **kwargs):
+def linear(target, A1='', A2='', x=''):
     r"""
     For the following source term:
         .. math::
@@ -96,7 +96,7 @@ def linear(target, A1='', A2='', x='', **kwargs):
 
 
 def power_law(target, A1='', A2='', A3='', x='',
-              return_rate=True, **kwargs):
+              return_rate=True):
     r"""
     For the following source term:
         .. math::
@@ -158,7 +158,7 @@ def power_law(target, A1='', A2='', A3='', x='',
 
 
 def exponential(target, A1='', A2='', A3='', A4='', A5='', A6='',
-                x='', **kwargs):
+                x=''):
     r"""
     For the following source term:
         .. math::
@@ -226,7 +226,7 @@ def exponential(target, A1='', A2='', A3='', A4='', A5='', A6='',
 
 
 def natural_exponential(target, A1='', A2='', A3='', A4='', A5='',
-                        x='', **kwargs):
+                        x=''):
     r"""
     For the following source term:
         .. math::
@@ -294,7 +294,7 @@ def natural_exponential(target, A1='', A2='', A3='', A4='', A5='',
 
 
 def logarithm(target, A1='', A2='', A3='', A4='', A5='', A6='',
-              x='', **kwargs):
+              x=''):
     r"""
     For the following source term:
         .. math::
@@ -365,7 +365,7 @@ def logarithm(target, A1='', A2='', A3='', A4='', A5='', A6='',
 
 
 def natural_logarithm(target, A1='', A2='', A3='', A4='', A5='',
-                      x='', return_rate=True, **kwargs):
+                      x='', return_rate=True):
     r"""
     For the following source term:
         .. math::
@@ -437,7 +437,7 @@ def natural_logarithm(target, A1='', A2='', A3='', A4='', A5='',
 a, b, c, d, e, f, x = syp.symbols('a,b,c,d,e,f,x')
 
 
-def build_func(eq, args=None):
+def _build_func(eq, args=None):
     r'''
     Take a symbolic equation and return the lambdified version plus the
     Linearization of form S1 * x + S2
@@ -451,7 +451,7 @@ def build_func(eq, args=None):
     return EQ, S1, S2
 
 
-def linear_sym(target, A1='', A2='', X='', **kwargs):
+def linear_sym(target, A1='', A2='', X=''):
     r"""
     For the following source term:
         .. math::
@@ -486,7 +486,7 @@ def linear_sym(target, A1='', A2='', X='', **kwargs):
     # Equation
     y = a*x + b
     # Callable functions
-    r, s1, s2 = build_func(y, (a, b, x))
+    r, s1, s2 = _build_func(y, (a, b, x))
     # Values
     r_val=r(A, B, X)
     s1_val=s1(A, B, X)
@@ -495,7 +495,7 @@ def linear_sym(target, A1='', A2='', X='', **kwargs):
     return values
 
 
-def power_law_sym(target, A1='', A2='', A3='', X='', **kwargs):
+def power_law_sym(target, A1='', A2='', A3='', X=''):
     r"""
     For the following source term:
         .. math::
@@ -524,7 +524,7 @@ def power_law_sym(target, A1='', A2='', A3='', X='', **kwargs):
     # Equation
     y =  a*x**b + c
     # Callable functions
-    r, s1, s2 = build_func(y, (a, b, c, x))
+    r, s1, s2 = _build_func(y, (a, b, c, x))
     # Values
     r_val=r(A, B, C, X)
     s1_val=s1(A, B, C, X)
@@ -534,7 +534,7 @@ def power_law_sym(target, A1='', A2='', A3='', X='', **kwargs):
 
 
 def exponential_sym(target, A1='', A2='', A3='',
-                    A4='', A5='', A6='', X='', **kwargs):
+                    A4='', A5='', A6='', X=''):
     r"""
     For the following source term:
         .. math::
@@ -566,7 +566,7 @@ def exponential_sym(target, A1='', A2='', A3='',
     # Equation
     y =  a*b**(c*x**d + e)+f
     # Callable functions
-    r, s1, s2 = build_func(y, (a, b, c, d, e, f, x))
+    r, s1, s2 = _build_func(y, (a, b, c, d, e, f, x))
     # Values
     r_val=r(A, B, C, D, E, F, X)
     s1_val=s1(A, B, C, D, E, F, X)
@@ -576,7 +576,7 @@ def exponential_sym(target, A1='', A2='', A3='',
 
 
 def natural_exponential_sym(target, A1='', A2='', A3='',
-                            A4='', A5='', X='', **kwargs):
+                            A4='', A5='', X=''):
     r"""
     For the following source term:
         .. math::
@@ -607,7 +607,7 @@ def natural_exponential_sym(target, A1='', A2='', A3='',
     # Equation
     y =  a*syp.exp(b*x**c + d)+e
     # Callable functions
-    r, s1, s2 = build_func(y, (a, b, c, d, e, x))
+    r, s1, s2 = _build_func(y, (a, b, c, d, e, x))
     # Values
     r_val=r(A, B, C, D, E, X)
     s1_val=s1(A, B, C, D, E, X)
@@ -617,7 +617,7 @@ def natural_exponential_sym(target, A1='', A2='', A3='',
 
 
 def logarithm_sym(target, A1='', A2='', A3='',
-                  A4='', A5='', A6='', X='', **kwargs):
+                  A4='', A5='', A6='', X=''):
     r"""
     For the following source term:
         .. math::
@@ -649,7 +649,7 @@ def logarithm_sym(target, A1='', A2='', A3='',
     # Equation
     y =  a*syp.log((c*x**d + e), b)+f
     # Callable functions
-    r, s1, s2 = build_func(y, (a, b, c, d, e, f, x))
+    r, s1, s2 = _build_func(y, (a, b, c, d, e, f, x))
     # Values
     r_val=r(A, B, C, D, E, F, X)
     s1_val=s1(A, B, C, D, E, F, X)
@@ -659,7 +659,7 @@ def logarithm_sym(target, A1='', A2='', A3='',
 
 
 def natural_logarithm_sym(target, A1='', A2='', A3='',
-                          A4='', A5='', X='', **kwargs):
+                          A4='', A5='', X=''):
     r"""
     For the following source term:
         .. math::
@@ -690,7 +690,7 @@ def natural_logarithm_sym(target, A1='', A2='', A3='',
     # Equation
     y =  a*syp.ln(b*x**c + d)+e
     # Callable functions
-    r, s1, s2 = build_func(y, (a, b, c, d, e, x))
+    r, s1, s2 = _build_func(y, (a, b, c, d, e, x))
     # Values
     r_val=r(A, B, C, D, E, X)
     s1_val=s1(A, B, C, D, E, X)
@@ -699,7 +699,7 @@ def natural_logarithm_sym(target, A1='', A2='', A3='',
     return values
 
 
-def general_symbolic(target, eqn=None, arg_map=None, **kwargs):
+def general_symbolic(target, eqn=None, arg_map=None):
     r'''
     A general function to interpret a sympy equation and evaluate the linear
     components of the source term.
@@ -752,7 +752,7 @@ def general_symbolic(target, eqn=None, arg_map=None, **kwargs):
         data[key] = target[arg_map[key]]
         # Callable functions
     symbols = tuple(arg_map.keys())
-    r, s1, s2 = build_func(eqn, symbols)
+    r, s1, s2 = _build_func(eqn, symbols)
     r_val=r(*data.values())
     s1_val=s1(*data.values())
     s2_val=s2(*data.values())
