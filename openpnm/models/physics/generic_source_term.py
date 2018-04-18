@@ -430,9 +430,9 @@ def natural_logarithm(target, A1='', A2='', A3='', A4='', A5='',
     values = {'pore.S1': S1, 'pore.S2': S2, 'pore.rate': r}
     return values
 
-# Symbols used in all symbolic functions
-# a-f are coefficients and var is the independent variable
-a, b, c, d, e, f, var = syp.symbols('a,b,c,d,e,f,var')
+# Symbols used in all symbolic functions except general_symbolic which gets its
+# own : a-f are coefficients and x is the independent variable
+a, b, c, d, e, f, x = syp.symbols('a,b,c,d,e,f,x')
 
 
 def build_func(eq, args=None):
@@ -440,26 +440,51 @@ def build_func(eq, args=None):
     Take a symbolic equation and return the lambdified version plus the
     Linearization of form S1 * x + S2
     '''
-    eq_prime = eq.diff(var)
+    eq_prime = eq.diff(x)
     s1 = eq_prime
-    s2 = eq - eq_prime*var
+    s2 = eq - eq_prime*x
     EQ = syp.lambdify(args, eq, 'numpy')
     S1 = syp.lambdify(args, s1, 'numpy')
     S2 = syp.lambdify(args, s2, 'numpy')
     return EQ, S1, S2
 
 
-def linear_sym(target, A1='', A2='', x='', **kwargs):
-    r'''
-    Linear source term
-    '''
+def linear_sym(target, A1='', A2='', X='', **kwargs):
+    r"""
+    For the following source term:
+        .. math::
+            r = A_{1}   x  +  A_{2}
+    If return_rate is True, it returns the value of source term for the
+    provided x in each pore.
+    If return_rate is False, it calculates the slope and intercept for the
+    following linear form :
+        .. math::
+            r = S_{1}   x  +  S_{2}
+
+    Parameters
+    ----------
+    A1 , A2 : string
+        The property name of the coefficients in the source term model.
+        With A2 set to zero this equation takes on the familiar for of r=kx.
+    x : string or float/int or array/list
+        The property name or numerical value or array for the main quantity
+    Notes
+    -----
+    Because this source term is linear in concentration (x) is it not necessary
+    to iterate during the solver step.  Thus, when using the
+    ``set_source_term`` method for an algorithm, it is recommended to set the
+    ``maxiter``
+    argument to 0.  This will save 1 unncessary solution of the system, since
+    the solution would coverge after the first pass anyway.
+
+    """
     A = target['pore.' + A1.split('.')[-1]]
     B = target['pore.' + A2.split('.')[-1]]
-    X = target['pore.' + x.split('.')[-1]]
+    X = target['pore.' + X.split('.')[-1]]
     # Equation
-    y = a*var + b
+    y = a*x + b
     # Callable functions
-    r, s1, s2 = build_func(y, (a, b, var))
+    r, s1, s2 = build_func(y, (a, b, x))
     # Values
     r_val=r(A, B, X)
     s1_val=s1(A, B, X)
@@ -468,18 +493,36 @@ def linear_sym(target, A1='', A2='', x='', **kwargs):
     return values
 
 
-def power_law_sym(target, A1='', A2='', A3='', x='', **kwargs):
-    r'''
-    Power Law source term
-    '''
+def power_law_sym(target, A1='', A2='', A3='', X='', **kwargs):
+    r"""
+    For the following source term:
+        .. math::
+            r = A_{1}   x^{A_{2}}  +  A_{3}
+    If return_rate is True, it returns the value of source term for the
+    provided x in each pore.
+    If return_rate is False, it calculates the slope and intercept for the
+    following linear form :
+        .. math::
+            r = S_{1}   x  +  S_{2}
+
+    Parameters
+    ----------
+    A1 -> A3 : string
+        The property name of the coefficients in the source term model
+    x : string or float/int or array/list
+        The property name or numerical value or array for the main quantity
+    Notes
+    -----
+
+    """
     A = target['pore.' + A1.split('.')[-1]]
     B = target['pore.' + A2.split('.')[-1]]
     C = target['pore.' + A3.split('.')[-1]]
-    X = target['pore.' + x.split('.')[-1]]
+    X = target['pore.' + X.split('.')[-1]]
     # Equation
-    y =  a*var**b + c
+    y =  a*x**b + c
     # Callable functions
-    r, s1, s2 = build_func(y, (a, b, c, var))
+    r, s1, s2 = build_func(y, (a, b, c, x))
     # Values
     r_val=r(A, B, C, X)
     s1_val=s1(A, B, C, X)
@@ -489,21 +532,39 @@ def power_law_sym(target, A1='', A2='', A3='', x='', **kwargs):
 
 
 def exponential_sym(target, A1='', A2='', A3='',
-                    A4='', A5='', A6='', x='', **kwargs):
-    r'''
-    Exponential source term
-    '''
+                    A4='', A5='', A6='', X='', **kwargs):
+    r"""
+    For the following source term:
+        .. math::
+            r =  A_{1} A_{2}^{( A_{3} x^{ A_{4} } + A_{5})} + A_{6}
+    If return_rate is True, it returns the value of source term for the
+    provided x in each pore.
+    If return_rate is False, it calculates the slope and intercept for the
+    following linear form :
+        .. math::
+            r = S_{1}   x  +  S_{2}
+
+    Parameters
+    ----------
+    A1 -> A6 : string
+        The property name of the coefficients in the source term model
+    x : string or float/int or array/list
+        The property name or numerical value or array for the main quantity
+    Notes
+    -----
+
+    """
     A = target['pore.' + A1.split('.')[-1]]
     B = target['pore.' + A2.split('.')[-1]]
     C = target['pore.' + A3.split('.')[-1]]
     D = target['pore.' + A4.split('.')[-1]]
     E = target['pore.' + A5.split('.')[-1]]
     F = target['pore.' + A6.split('.')[-1]]
-    X = target['pore.' + x.split('.')[-1]]
+    X = target['pore.' + X.split('.')[-1]]
     # Equation
-    y =  a*b**(c*var**d + e)+f
+    y =  a*b**(c*x**d + e)+f
     # Callable functions
-    r, s1, s2 = build_func(y, (a, b, c, d, e, f, var))
+    r, s1, s2 = build_func(y, (a, b, c, d, e, f, x))
     # Values
     r_val=r(A, B, C, D, E, F, X)
     s1_val=s1(A, B, C, D, E, F, X)
@@ -513,20 +574,38 @@ def exponential_sym(target, A1='', A2='', A3='',
 
 
 def natural_exponential_sym(target, A1='', A2='', A3='',
-                            A4='', A5='', x='', **kwargs):
-    r'''
-    Natural exponential source term
-    '''
+                            A4='', A5='', X='', **kwargs):
+    r"""
+    For the following source term:
+        .. math::
+            r =   A_{1} exp( A_{2}  x^{ A_{3} } + A_{4} )+ A_{5}
+    If return_rate is True, it returns the value of source term for the
+    provided x in each pore.
+    If return_rate is False, it calculates the slope and intercept for the
+    following linear form :
+        .. math::
+            r = S_{1}   x  +  S_{2}
+
+    Parameters
+    ----------
+    A1 -> A5 : string
+        The property name of the coefficients in the source term model
+    x : string or float/int or array/list
+        The property name or numerical value or array for the main quantity
+    Notes
+    -----
+
+    """
     A = target['pore.' + A1.split('.')[-1]]
     B = target['pore.' + A2.split('.')[-1]]
     C = target['pore.' + A3.split('.')[-1]]
     D = target['pore.' + A4.split('.')[-1]]
     E = target['pore.' + A5.split('.')[-1]]
-    X = target['pore.' + x.split('.')[-1]]
+    X = target['pore.' + X.split('.')[-1]]
     # Equation
-    y =  a*syp.exp(b*var**c + d)+e
+    y =  a*syp.exp(b*x**c + d)+e
     # Callable functions
-    r, s1, s2 = build_func(y, (a, b, c, d, e, var))
+    r, s1, s2 = build_func(y, (a, b, c, d, e, x))
     # Values
     r_val=r(A, B, C, D, E, X)
     s1_val=s1(A, B, C, D, E, X)
@@ -536,21 +615,39 @@ def natural_exponential_sym(target, A1='', A2='', A3='',
 
 
 def logarithm_sym(target, A1='', A2='', A3='',
-                  A4='', A5='', A6='', x='', **kwargs):
-    r'''
-    Logarithmic source term
-    '''
+                  A4='', A5='', A6='', X='', **kwargs):
+    r"""
+    For the following source term:
+        .. math::
+            r =  A_{1}   Log_{ A_{2} }( A_{3} x^{ A_{4} }+ A_{5})+ A_{6}
+    If return_rate is True, it returns the value of source term for the
+    provided x in each pore.
+    If return_rate is False, it calculates the slope and intercept for the
+    following linear form :
+        .. math::
+            r = S_{1}   x  +  S_{2}
+
+    Parameters
+    ----------
+    A1 -> A6 : string
+        The property name of the coefficients in the source term model
+    x : string or float/int or array/list
+        The property name or numerical value or array for the main quantity
+    Notes
+    -----
+
+    """
     A = target['pore.' + A1.split('.')[-1]]
     B = target['pore.' + A2.split('.')[-1]]
     C = target['pore.' + A3.split('.')[-1]]
     D = target['pore.' + A4.split('.')[-1]]
     E = target['pore.' + A5.split('.')[-1]]
     F = target['pore.' + A6.split('.')[-1]]
-    X = target['pore.' + x.split('.')[-1]]
+    X = target['pore.' + X.split('.')[-1]]
     # Equation
-    y =  a*syp.log((c*var**d + e), b)+f
+    y =  a*syp.log((c*x**d + e), b)+f
     # Callable functions
-    r, s1, s2 = build_func(y, (a, b, c, d, e, f, var))
+    r, s1, s2 = build_func(y, (a, b, c, d, e, f, x))
     # Values
     r_val=r(A, B, C, D, E, F, X)
     s1_val=s1(A, B, C, D, E, F, X)
@@ -560,20 +657,38 @@ def logarithm_sym(target, A1='', A2='', A3='',
 
 
 def natural_logarithm_sym(target, A1='', A2='', A3='',
-                          A4='', A5='', x='', **kwargs):
-    r'''
-    Natural log source term
-    '''
+                          A4='', A5='', X='', **kwargs):
+    r"""
+    For the following source term:
+        .. math::
+            r =   A_{1}  Ln( A_{2} x^{ A_{3} }+ A_{4})+ A_{5}
+    If return_rate is True, it returns the value of source term for the
+    provided x in each pore.
+    If return_rate is False, it calculates the slope and intercept for the
+    following linear form :
+        .. math::
+            r = S_{1}   x  +  S_{2}
+
+    Parameters
+    ----------
+    A1 -> A5 : string
+        The property name of the coefficients in the source term model
+    x : string or float/int or array/list
+        The property name or numerical value or array for the main quantity
+    Notes
+    -----
+
+    """
     A = target['pore.' + A1.split('.')[-1]]
     B = target['pore.' + A2.split('.')[-1]]
     C = target['pore.' + A3.split('.')[-1]]
     D = target['pore.' + A4.split('.')[-1]]
     E = target['pore.' + A5.split('.')[-1]]
-    X = target['pore.' + x.split('.')[-1]]
+    X = target['pore.' + X.split('.')[-1]]
     # Equation
-    y =  a*syp.ln(b*var**c + d)+e
+    y =  a*syp.ln(b*x**c + d)+e
     # Callable functions
-    r, s1, s2 = build_func(y, (a, b, c, d, e, var))
+    r, s1, s2 = build_func(y, (a, b, c, d, e, x))
     # Values
     r_val=r(A, B, C, D, E, X)
     s1_val=s1(A, B, C, D, E, X)
@@ -592,11 +707,33 @@ def general_symbolic(target, eqn=None, arg_map=None, **kwargs):
     target : OpenPNM object
     eqn: sympy symbolic expression for the source terms
         e.g. y = a*x**b + c
-    arg_map : OrderedDict mapping the symbols in the expression to OpenPNM data
+    arg_map : Dict mapping the symbols in the expression to OpenPNM data
         on the target. Must contain 'x' which is the independent variable.
         e.g.
-        arg_map=collections.OrderedDict([('a','pore.a'), ('b','pore.a'),
-                                         ('c','pore.A3'), ('var','pore.x')])
+        arg_map={'a':'pore.a', 'b':'pore.b', 'c':'pore.c', 'x':'pore.x'}
+
+    Example
+    ----------
+    >>> import openpnm as op
+    >>> from openmpnm.models.physics import generic_source_term as gst
+    >>> import scipy as sp
+    >>> import sympy as syp
+    >>> pn = op.network.Cubic(shape=[5, 5, 5], spacing=0.0001)
+    >>> water = op.phases.Water(network=pn)
+    >>> water['pore.a'] = 1
+    >>> water['pore.b'] = 2
+    >>> water['pore.c'] = 3
+    >>> water['pore.x'] = sp.random.random(water.Np)
+    >>> a,b,c,x = syp.symbols('a,b,c,x')
+    >>> y = a*x**b + c
+    >>> arg_map={'a':'pore.a', 'b':'pore.b', 'c':'pore.c', 'x':'pore.x'}
+    >>> water.add_model(propname='pore.general',
+    ...                 model=gst.general_symbolic,
+    ...                 eqn=y, arg_map=arg_map,
+    ...                 regen_mode='normal')
+    >>> assert 'pore.general.rate' in water.props()
+    >>> assert 'pore.general.S1' in water.props()
+    >>> assert 'pore.general.S1' in water.props()
     '''
     # First make sure all the symbols have been allocated dict items
     for arg in syp.postorder_traversal(eqn):
@@ -605,7 +742,7 @@ def general_symbolic(target, eqn=None, arg_map=None, **kwargs):
             if key not in arg_map.keys():
                 raise Exception('argument mapping incomplete, missing '+key)
     if 'x' not in arg_map.keys():
-        raise Exception('argument mapping must contain "var" for the '+
+        raise Exception('argument mapping must contain "x" for the '+
                         'independent variable')
     # Get the data
     data = collections.OrderedDict()

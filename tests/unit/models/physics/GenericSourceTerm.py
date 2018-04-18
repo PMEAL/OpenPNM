@@ -34,7 +34,7 @@ class GenericSourceTermTest:
                             model=pm.generic_source_term.linear_sym,
                             A1='pore.item1',
                             A2='pore.item2',
-                            x='pore.mole_fraction',
+                            X='pore.mole_fraction',
                             regen_mode='normal')
         self.alg = op.algorithms.ReactiveTransport(network=self.net,
                                                    phase=self.phase)
@@ -70,7 +70,7 @@ class GenericSourceTermTest:
                             A1='pore.item1',
                             A2='pore.item2',
                             A3='pore.item3',
-                            x='pore.mole_fraction',
+                            X='pore.mole_fraction',
                             regen_mode='normal')
         self.alg = op.algorithms.ReactiveTransport(network=self.net,
                                                    phase=self.phase)
@@ -115,7 +115,7 @@ class GenericSourceTermTest:
                             A4='pore.item4',
                             A5='pore.item5',
                             A6='pore.item6',
-                            x='pore.mole_fraction',
+                            X='pore.mole_fraction',
                             regen_mode='normal')
         self.alg = op.algorithms.ReactiveTransport(network=self.net,
                                                    phase=self.phase)
@@ -158,7 +158,7 @@ class GenericSourceTermTest:
                             A3='pore.item3',
                             A4='pore.item4',
                             A5='pore.item5',
-                            x='pore.mole_fraction',
+                            X='pore.mole_fraction',
                             regen_mode='normal')
         self.alg = op.algorithms.ReactiveTransport(network=self.net,
                                                    phase=self.phase)
@@ -204,7 +204,7 @@ class GenericSourceTermTest:
                             A4='pore.item4',
                             A5='pore.item5',
                             A6='pore.item6',
-                            x='pore.mole_fraction',
+                            X='pore.mole_fraction',
                             regen_mode='normal')
         self.alg = op.algorithms.ReactiveTransport(network=self.net,
                                                    phase=self.phase)
@@ -247,7 +247,7 @@ class GenericSourceTermTest:
                             A3='pore.item3',
                             A4='pore.item4',
                             A5='pore.item5',
-                            x='pore.mole_fraction',
+                            X='pore.mole_fraction',
                             regen_mode='normal')
         self.alg = op.algorithms.ReactiveTransport(network=self.net,
                                                    phase=self.phase)
