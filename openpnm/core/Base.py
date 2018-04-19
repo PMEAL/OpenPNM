@@ -216,7 +216,7 @@ class Base(dict):
         mode : string (optional, default is 'skip')
             Controls which keys are returned.  Options are:
 
-            ``None`` : This mode (default) bypasses this subclassed method
+            **``None``** : This mode (default) bypasses this subclassed method
             and just returns the normal KeysView object.
 
             **'labels'** : Limits the returned list of keys to only 'labels'
@@ -324,6 +324,7 @@ class Base(dict):
         See Also
         --------
         labels
+        keys
 
         Examples
         --------
@@ -432,7 +433,7 @@ class Base(dict):
             **'intersection'** : Label applied to ALL of the given pores
             (or throats)
 
-            **'not'** : Labels NOT applied to ALL pores (or throats)
+            **'complement'** : Labels NOT applied to ALL pores (or throats)
 
             **'count'** : The number of labels on each pores (or throats)
 
@@ -445,6 +446,11 @@ class Base(dict):
         -------
         A list containing the dictionary keys on the object, limited by the
         specified ``mode``.
+
+        See Also
+        --------
+        props
+        keys
 
         Examples
         --------
@@ -509,7 +515,7 @@ class Base(dict):
                 info = self[element+'.'+item.split('.')[-1]]
                 not_intersect = not_intersect + sp.int8(info)
             ind = (not_intersect == 1)
-        elif mode in ['not', 'difference']:
+        elif mode in ['not', 'difference', 'complement']:
             none = sp.zeros_like(self[element+'.all'], dtype=int)
             for item in labels:  # Iterate over labels and collect all indices
                 info = self[element+'.'+item.split('.')[-1]]
@@ -538,19 +544,25 @@ class Base(dict):
             **'union'** : (default) All pores with ANY of the given labels are
             returned.
 
-            **'all'** : Only pore with ALL the given labels are returned. This
-            is equivalent to ``intersection`` which is deprecated.
+            **'intersection'** : Only pore with ALL the given labels are
+            returned. This is equivalent to ``intersection`` which is
+            deprecated.
 
-            **'one'** : Only pores with exactly ONE of the given labels are
-            returned.
+            **'exclusive_or'** : Only pores with exactly ONE of the given
+            labels are returned.
 
-            **'none'** : Only pores with NONE of the given labels are returned.
-            This is equivalent to ``not_intersection`` which is deprecated.
+            **'complement'** : Only pores with NONE of the given labels are
+            returned. This is equivalent to ``not_intersection`` which is
+            deprecated.
 
         Returns
         -------
         A Numpy array containing pore indices where the specified label(s)
         exist.
+
+        See Also
+        --------
+        throats
 
         Examples
         --------
@@ -603,6 +615,10 @@ class Base(dict):
         -------
         A Numpy array containing the throat indices where the specified
         label(s) exist.
+
+        See Also
+        --------
+        pores
 
         Examples
         --------
@@ -695,6 +711,10 @@ class Base(dict):
         A boolean mask of length Np or Nt with True in the specified pore or
         throat locations.
 
+        See Also
+        --------
+        toindices
+
         Examples
         --------
         >>> import openpnm as op
@@ -732,6 +752,10 @@ class Base(dict):
         -------
         A list of pore or throat indices corresponding the locations where
         the received mask was True.
+
+        See Also
+        --------
+        tomask
 
         Notes
         -----
@@ -798,8 +822,12 @@ class Base(dict):
         #     sources = list(proj.geometries().values())
         # elif self._isa('phase'):
         #     sources = list(proj.phases().values())
+        # elif self._isa('physics')
+        #     sources = list(proj.physics().values())
+        # elif self._isa('physics'):
+        #     sources = list(proj.geometries().values())
         # else:
-        #     return self[prop]
+        #     pass
 
         # Attempt to 'get' the requested array from each object
         # Use 'get' so that missing keys return None, instead of KeyError
@@ -872,6 +900,14 @@ class Base(dict):
         -----
         - This uses an unweighted average, without attempting to account for
         distances or sizes of pores and throats.
+
+        Examples
+        --------
+        >>> import openpnm as op
+        >>> pn = op.network.Cubic(shape=[3, 1, 1])
+        >>> pn['pore.value'] = [1, 2, 3]
+        >>> pn.interpolate_data('pore.value')
+        array([1.5, 2.5])
         """
         mro = self._mro()
         if 'GenericNetwork' in mro:
@@ -903,10 +939,9 @@ class Base(dict):
             values = temp[Ps]
         elif propname.startswith('pore'):
             # Upcast data to full network size
-            temp = sp.ones((net.Np, ))*sp.nan
-            temp[Ps] = self[propname]
-            data = temp
-            Ps12 = net.find_connected_pores(throats=Ts, flatten=False)
+            data = sp.ones((net.Np, ))*sp.nan
+            data[Ps] = self[propname]
+            Ps12 = net['throat.conns'][Ts]
             values = sp.mean(data[Ps12], axis=1)
         return values
 
@@ -933,10 +968,11 @@ class Base(dict):
             **'intersection'** : Only locations with ALL the given labels are
             kept.
 
-            **'not_intersection'** : Only locations with exactly one of the
+            **'exlusive_or'** : Only locations with exactly one of the
             given labels are kept.
 
-            **'not'** : Only locations with none of the given labels are kept.
+            **'complement'** : Only locations with none of the given labels
+            are kept.
 
         See Also
         --------
@@ -960,7 +996,7 @@ class Base(dict):
         ...                    mode='intersection')
         array([ 4,  9, 14, 19, 24])
         """
-        allowed = ['union', 'intersection', 'not_intersection', 'not']
+        allowed = ['union', 'intersection', 'exclusive_or', 'complement']
         mode = self._parse_mode(mode=mode, allowed=allowed, single=True)
         # Convert inputs to locations and element
         if (sp.size(throats) > 0) and (sp.size(pores) > 0):
@@ -1003,10 +1039,10 @@ class Base(dict):
             **intersection** : Only pores with ALL the given labels are
             counted.
 
-            **'one'** : Only pores with exactly one of the given
+            **'exclusive_or'** : Only pores with exactly one of the given
             labels are counted.
 
-            **'none'** : Only pores with none of the given labels are
+            **'complement'** : Only pores with none of the given labels are
             counted.
 
         Returns
@@ -1066,10 +1102,10 @@ class Base(dict):
             **'intersection'** : Only throats with ALL the given labels are
             counted.
 
-            **'one'** : Only throats with exactly one of the given
+            **'exclusive_or'** : Only throats with exactly one of the given
             labels are counted.
 
-            **'none'** : Only throats with none of the given labels are
+            **'complement'** : Only throats with none of the given labels are
             counted.
 
         Returns
@@ -1298,10 +1334,6 @@ class Base(dict):
             elif element+'.'+label in self.keys():
                 temp = [element+'.'+label]
             else:
-                # TODO: The following Error should/could be raised but it
-                # breaks the net-geom and phase-phys look-up logic
-                # raise KeyError('\''+element+'.'+label+'\''+' not found')
-                logger.warning('\''+element+'.'+label+'\''+' not found')
                 temp = [element+'.'+label]
             parsed_labels.extend(temp)
             # Remove duplicates if any
