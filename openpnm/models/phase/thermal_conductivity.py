@@ -8,6 +8,7 @@ Submodule -- thermal_conductance
 import scipy as sp
 import cantera as ct
 
+
 def water(target, temperature='pore.temperature', salinity='pore.salinity'):
     r"""
     Calculates thermal conductivity of pure water or seawater at atmospheric
@@ -157,14 +158,14 @@ def cantera(target, cantera_phase_obj, temperature='pore.temperature',
             pressure='pore.pressure'):
     r"""
     Uses Cantera module to calculate thermal conductivity.
-    
+
     Parameters
     ----------
     target : OpenPNM Object
         The object for which these values are being calculated.  This
         controls the length of the calculated array, and also provides
         access to other necessary thermofluid properties.
-    
+
     cantera_phase_obj : Cantera Solution instance
         The object which contains the model to calculate thermal conductivity
 
@@ -173,7 +174,7 @@ def cantera(target, cantera_phase_obj, temperature='pore.temperature',
 
     pressure : string
         The dictionary key containing the pressure values (Pa)
- 
+
     """
     T = target[temperature]
     p = target[pressure]
