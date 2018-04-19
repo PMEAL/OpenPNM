@@ -41,7 +41,7 @@ class XDMF(GenericIO):
                          flatten=False, categorize_by=['element', 'data'])
 
         # Make HDF5 file with all datasets, and no groups
-        D = FlatDict(d, delimiter=' | ')
+        D = FlatDict(d, delimiter='/')
         for item in D.keys():
             if 'U' in str(D[item][0].dtype):
                 pass
@@ -59,25 +59,26 @@ class XDMF(GenericIO):
 
         # geometry coordinates
         row, col = f["coordinates"].shape
-        dims = str(col) + ' ' + str(row) + ' '
+        dims = ' '.join((str(row), str(col)))
         hdf_loc = f.filename + ":coordinates"
         geo_data = create_data_item(value=hdf_loc, Dimensions=dims,
-                                    Format='HDF', NumberType="Float")
+                                    Format='HDF', DataType="Float")
         geo = create_geometry(GeometryType="XYZ")
         geo.append(geo_data)
 
         # topolgy connections
         row, col = f["connections"].shape  # col first then row
-        dims = str(row) + ' ' + str(col) + ' '
+        dims = ' '.join((str(row), str(col)))
         hdf_loc = f.filename + ":connections"
         topo_data = create_data_item(value=hdf_loc, Dimensions=dims,
                                      Format="HDF", NumberType="Int")
         topo = create_topology(TopologyType="Polyline",
+                               NodesPerElement=str(2),
                                NumberOfElements=str(row))
         topo.append(topo_data)
 
         # Add pore and throat properties
-        for item in f.keys():
+        for item in D.keys():
             if item not in ['coordinates', 'connections']:
                 attr_type = 'Scalar'
                 shape = f[item].shape
@@ -87,8 +88,14 @@ class XDMF(GenericIO):
                                         Dimensions=dims,
                                         Format='HDF',
                                         Precision='8',
-                                        NumberType='Float')
-                el_attr = create_attribute(Name=item, AttributeType=attr_type)
+                                        DataType='Float')
+                name = item.replace('/', ' | ')
+                if 'throat' in item:
+                    Center = "Cell"
+                else:
+                    Center = "Node"
+                el_attr = create_attribute(Name=name, Center=Center,
+                                           AttributeType=attr_type)
                 el_attr.append(attr)
                 grid.append(el_attr)
 
@@ -124,15 +131,16 @@ def create_topology(TopologyType, NumberOfElements, **attribs):
     element = ET.Element('Topology')
     element.attrib.update({'TopologyType': TopologyType,
                            'NumberOfElements': NumberOfElements})
+    if TopologyType in ['Polyline']:
+        if 'NodesPerElement' not in attribs.keys():
+            raise Exception('NodesPerElement must be specified')
     element.attrib.update(attribs)
     return element
 
 
 def create_attribute(Name, **attribs):
     element = ET.Element('Attribute')
-    element.attrib.update({'Name': Name,
-                           'AttributeType': 'Scalar',
-                           'Center': 'Node'})
+    element.attrib.update({'Name': Name})
     element.attrib.update(attribs)
     return element
 
@@ -160,7 +168,7 @@ def create_data_item(value, Dimensions, **attribs):
     element = ET.Element('DataItem')
     element.attrib.update({'ItemType': "Uniform",
                            'Format': "XML",
-                           'NumberType': "Float",
+                           'DatarType': "Float",
                            'Precision': "4",
                            'Rank': "1",
                            'Dimensions': Dimensions,
