@@ -26,7 +26,7 @@ class TransientTransport(GenericTransport):
             print('Warning: initial condition should be a float or a ' +
                   str(self.Np)+' long numpy array!')
 
-    def update_A(self):
+    def _update_A(self):
         r"""
         """
         network = self.project.network
@@ -49,7 +49,7 @@ class TransientTransport(GenericTransport):
         self.A = A
         return A
 
-    def update_b(self):
+    def _update_b(self):
         r"""
         """
         network = self.project.network

@@ -1,6 +1,9 @@
 import numpy as np
 import scipy.sparse as sprs
 import scipy.sparse.csgraph as spgr
+from scipy.spatial import ConvexHull
+from scipy.spatial import cKDTree
+from openpnm.topotools import iscoplanar
 from openpnm.algorithms import GenericAlgorithm
 from openpnm.core import logging
 logger = logging.getLogger(__name__)
@@ -17,28 +20,81 @@ class GenericTransport(GenericAlgorithm):
                               'conductance': None,
                               'quantity': None,
                               'solver': 'spsolve'})
-        self.settings.update(settings)
-        if phase is not None:
-            self.settings['phase'] = phase.name
-
+        self.setup(phase=phase, **settings)
+        # If network given, get project, otherwise let parent class create it
         if network is not None:
             project = network.project
-
         super().__init__(project=project, **kwargs)
+        # Create some instance attributes
+        self.A = None
+        self._pure_A = None
+        self.b = None
+        self._pure_b = None
+
+    def setup(self, phase=None, **kwargs):
+        r"""
+        This method takes several arguments that are essential to running the
+        algorithm and adds them to the settings.
+
+        Notes
+        -----
+        This generic version should be subclassed, and the arguments given
+        suitable default names.
+        """
+        if phase:
+            self.settings['phase'] = phase.name
+        self.settings.update(kwargs)
 
     def set_dirichlet_BC(self, pores, values):
         r"""
+        Apply *Dirichlet* boundary conditons to the specified pore locations.
+        Dirichlet conditions refer to constant *quantity* (e.g. pressure).
+
+        Parameters
+        ----------
+        pores : array_like
+            The pore indices where the condition should be applied
+
+        values : scalar or array_like
+            The value to of the boundary condition.  If a scalar is supplied
+            it is assigne to all locations, and if a vector is applied it
+            corresponds directy to the locations given in ``pores``.
+
+        Notes
+        -----
+        The definition of ``quantity`` is specified in the algorithm's
+        ``settings``, e.g. ``alg.settings['quentity'] = 'pore.pressure'``.
         """
-        self.set_BC(pores=pores, bctype='dirichlet', bcvalues=values,
-                    mode='merge')
+        self._set_BC(pores=pores, bctype='dirichlet', bcvalues=values,
+                     mode='merge')
 
     def set_neumann_BC(self, pores, values):
         r"""
-        """
-        self.set_BC(pores=pores, bctype='neumann', bcvalues=values,
-                    mode='merge')
+        Apply *Neumann*-type boundary conditons to the specified pore
+        locations. Neumann conditions technnically refer to the *gradient* of
+        the *quantity* (e.g. dP/dz), while in OpenPNM this means the flow-rate
+        of the quantity, which is the gradient multiplied by the conductance
+        (e.g n = g dP/dz).
 
-    def set_BC(self, pores, bctype, bcvalues=None, mode='merge'):
+        Parameters
+        ----------
+        pores : array_like
+            The pore indices where the condition should be applied
+
+        values : scalar or array_like
+            The value to of the boundary condition.  If a scalar is supplied
+            it is assigne to all locations, and if a vector is applied it
+            corresponds directy to the locations given in ``pores``.
+
+        Notes
+        -----
+        The definition of ``quantity`` is specified in the algorithm's
+        ``settings``, e.g. ``alg.settings['quentity'] = 'pore.pressure'``.
+        """
+        self._set_BC(pores=pores, bctype='neumann', bcvalues=values,
+                     mode='merge')
+
+    def _set_BC(self, pores, bctype, bcvalues=None, mode='merge'):
         r"""
         Apply boundary conditions to specified pores
 
@@ -69,7 +125,7 @@ class GenericTransport(GenericAlgorithm):
         Notes
         -----
         It is not possible to have multiple boundary conditions for a
-        specified location in just one algorithm. Use ``mode='remove'`` to
+        specified location in one algorithm. Use ``mode='remove'`` to
         clear existing BCs before applying new ones or ``mode='overwrite'``
         which removes all existing BC's before applying the new ones.
 
@@ -79,8 +135,7 @@ class GenericTransport(GenericAlgorithm):
 
         """
         # Hijack the parse_mode function to verify bctype argument
-        bctype = self._parse_mode(bctype, allowed=['dirichlet', 'neumann',
-                                                   'neumann_group'],
+        bctype = self._parse_mode(bctype, allowed=['dirichlet', 'neumann'],
                                   single=True)
         mode = self._parse_mode(mode, allowed=['merge', 'overwrite', 'remove'],
                                 single=True)
@@ -122,30 +177,64 @@ class GenericTransport(GenericAlgorithm):
             self['pore.neumann'][pores] = False
             self['pore.neumann_value'][pores] = np.nan
 
-    def build_A(self):
+    def _build_A(self, force=False):
         r"""
-        """
-        network = self.project.network
-        phase = self.project.phases()[self.settings['phase']]
-        g = phase[self.settings['conductance']]
-        am = network.create_adjacency_matrix(weights=g, fmt='coo')
-        A = spgr.laplacian(am)
-        self.A = A
-        return A
+        Builds the coefficient matrix based on conductances between pores.
+        The conductance to use is specified in the algorithm's ``settings``
+        under ``conductance``.  In subclasses (e.g. ``FickianDiffusion``)
+        this is set by default, though it can be overwritten.
 
-    def build_b(self):
+        Parameters
+        ----------
+        force : Boolean (default is ``False)
+            If set to ``True`` then the A matrix is built from new.  If
+            ``False`` (the default), a cached version of A is returned.  The
+            cached version is *clean* in the sense that no boundary conditions
+            or sources terms have been added to it.
+        """
+        if force:
+            self._pure_A = None
+        if self._pure_A is None:
+            network = self.project.network
+            phase = self.project.phases()[self.settings['phase']]
+            g = phase[self.settings['conductance']]
+            am = network.create_adjacency_matrix(weights=g, fmt='coo')
+            self._pure_A = spgr.laplacian(am)
+        self.A = self._pure_A.copy()
+
+    def _build_b(self, force=False):
         r"""
-        """
-        b = np.zeros(shape=(self.Np, ), dtype=float)  # Create b matrix of 0's
-        self.b = b
-        return b
+        Builds the RHS matrix, without applying any boundary conditions or
+        source terms. This method is trivial an basically creates a column
+        vector of 0's.
 
-    def apply_BCs(self):
+        Parameters
+        ----------
+        force : Boolean (default is ``False``)
+            If set to ``True`` then the b matrix is built from new.  If
+            ``False`` (the default), a cached version of b is returned.  The
+            cached version is *clean* in the sense that no boundary conditions
+            or sources terms have been added to it.
+        """
+        if force:
+            self._pure_b = None
+        if self._pure_b is None:
+            b = np.zeros(shape=(self.Np, ), dtype=float)  # Create vector of 0s
+            self._pure_b = b
+        self.b = self._pure_b.copy()
+
+    def _apply_BCs(self):
+        r"""
+        Applies all the boundary conditions that have been specified, by
+        adding values to the *A* and *b* matrices.
+
+        """
+        self._build_A()
+        self._build_b()
         if 'pore.neumann' in self.keys():
             # Update b
             ind = self['pore.neumann']
             self.b[ind] = self['pore.neumann_value'][ind]
-
         if 'pore.dirichlet' in self.keys():
             f = np.amax(np.absolute(self.A.data))
             # Update b
@@ -161,13 +250,6 @@ class GenericTransport(GenericAlgorithm):
             self.A.setdiag(datadiag)
             self.A.eliminate_zeros()  # Remove 0 entries
 
-    def setup(self):
-        r"""
-        """
-        self.build_A()
-        self.build_b()
-        self.apply_BCs()
-
     def run(self):
         r"""
         Builds the A and b matrices, and calls the solver specified in the
@@ -178,27 +260,38 @@ class GenericTransport(GenericAlgorithm):
         x : ND-array
             Initial guess of unknown variable
 
+        Returns
+        -------
+        Nothing is returned...the solution is stored on the objecxt under
+        ``pore.quantity`` where *quantity* is specified in the ``settings``
+        attribute.
+
         """
         print('―'*80)
         print('Running GenericTransport')
-        self.setup()
         self._run_generic()
 
     def _run_generic(self):
+        self._apply_BCs()
         x_new = self._solve()
         self[self.settings['quantity']] = x_new
 
     def _solve(self, A=None, b=None):
         r"""
-        Sends the A and b matrices to the specified solver.
+        Sends the A and b matrices to the specified solver, and solves for *x*
+        given the boundary conditions, and source terms based on the present
+        value of *x*.  This method does NOT iterate to solve for non-linear
+        source terms or march time steps.
 
         Parameters
         ----------
         A : sparse matrix
-            The coefficient matrix in sparse format
+            The coefficient matrix in sparse format. If not specified, then
+            it uses  the ``A`` matrix attached to the object.
 
         b : ND-array
-            The RHS matrix in any format
+            The RHS matrix in any format.  If not specified, then it uses
+            the ``b`` matrix attached to the object.
 
         Notes
         -----
@@ -208,14 +301,20 @@ class GenericTransport(GenericAlgorithm):
         """
         if A is None:
             A = self.A
+            if A is None:
+                raise Exception('The A matrix has not been built yet')
         if b is None:
             b = self.b
+            if b is None:
+                raise Exception('The b matrix has not been built yet')
         solver = getattr(sprs.linalg, self.settings['solver'])
         x = solver(A=A.tocsr(), b=b)
         return x
 
     def results(self):
         r"""
+        Fetches the calculated quantity from the algorithm and returns it as
+        an array.
         """
         quantity = self.settings['quantity']
         d = {quantity: self[quantity]}
@@ -233,7 +332,7 @@ class GenericTransport(GenericAlgorithm):
         mode : string, optional
             Controls how to return the rate.  Options are:
 
-            *'group'*: (default) Teturns the cumulative rate of material
+            *'group'*: (default) Returns the cumulative rate of material
             moving into the given set of pores
 
             *'single'* : Calculates the rate for each pore individually
@@ -243,60 +342,113 @@ class GenericTransport(GenericAlgorithm):
         A negative rate indicates material moving into the pore or pores, such
         as material being consumed.
         """
+        pores = self._parse_indices(pores)
+
         network = self.project.network
-        phase = self.project.phases[self.settings['phase']]
+        phase = self.project.phases()[self.settings['phase']]
         conductance = phase[self.settings['conductance']]
         quantity = self[self.settings['quantity']]
-        pores = self._parse_indices(pores)
-        R = []
-        if mode == 'group':
-            t = network.find_neighbor_throats(pores, flatten=True,
-                                              mode='not_intersection')
-            throat_group_num = 1
-        elif mode == 'single':
-            t = network.find_neighbor_throats(pores, flatten=False,
-                                              mode='not_intersection')
-            throat_group_num = np.shape(t)[0]
-        for i in np.r_[0: throat_group_num]:
-            if mode == 'group':
-                throats = t
-                P = pores
-            elif mode == 'single':
-                throats = t[i]
-                P = pores[i]
-            p1 = network.find_connected_pores(throats)[:, 0]
-            p2 = network.find_connected_pores(throats)[:, 1]
-            pores1 = np.copy(p1)
-            pores2 = np.copy(p2)
-            # Changes to pores1 and pores2 to make them as inner/outer pores
-            pores1[~np.in1d(p1, P)] = p2[~np.in1d(p1, P)]
-            pores2[~np.in1d(p1, P)] = p1[~np.in1d(p1, P)]
-            X1 = quantity[pores1]
-            X2 = quantity[pores2]
-            g = conductance[throats]
-            R.append(np.sum(np.multiply(g, (X2 - X1))))
+
+        P12 = network['throat.conns']
+        X12 = quantity[P12]
+        f = (-1)**np.argsort(X12, axis=1)[:, 1]
+        g = conductance
+        Dx = np.abs(np.diff(X12, axis=1).squeeze())
+        Qt = f*g*Dx
+
+        if mode == 'single':
+            Qp = np.zeros((self.Np, ))
+            np.add.at(Qp, P12[:, 0], Qt)
+            np.add.at(Qp, P12[:, 1], -Qt)
+            R = Qp[pores]
+        elif mode == 'group':
+            Ts = network.find_neighbor_throats(pores=pores,
+                                               mode='exclusive_or')
+            R = np.sum(Qt[Ts])
         return np.array(R, ndmin=1)
 
     def _calc_eff_prop(self):
         r"""
-        Returns the main parameters for calculating the effective
-        property in a linear transport equation.  It also checks for the
-        proper boundary conditions, inlets and outlets.
+        Returns the main parameters for calculating the effective property
+        in a linear transport equation.  It also checks for the proper
+        boundary conditions, inlets and outlets.
         """
         network = self.project.network
         if self.settings['quantity'] not in self.keys():
-            raise Exception('The algorit hm has not been run yet. Cannot ' +
+            raise Exception('The algorithm has not been run yet. Cannot ' +
                             'calculate effective property.')
 
+        # Determine boundary conditions by analyzing algorithm object
+        inlets, outlets = self._get_inlets_and_outlets()
+        Ps = self.pores('pore.dirichlet')
+        BCs = np.unique(self['pore.dirichlet_value'][Ps])
+
+        # Fetch area and length of domain
+        A = self.domain_area
+        L = self.domain_length
+        flow = self.rate(pores=inlets)
+        D = np.sum(flow)*L/A/(BCs[0] - BCs[1])
+        return D
+
+    def _get_inlets_and_outlets(self):
         # Determine boundary conditions by analyzing algorithm object
         Ps = self.pores('pore.dirichlet')
         BCs = np.unique(self['pore.dirichlet_value'][Ps])
         inlets = np.where(self['pore.dirichlet_value'] == np.amax(BCs))[0]
         outlets = np.where(self['pore.dirichlet_value'] == np.amin(BCs))[0]
+        return (inlets, outlets)
 
-        # Fetch area and length of domain
-        A = network.domain_area(face=inlets)
-        L = network.domain_length(face_1=inlets, face_2=outlets)
-        flow = self.rate(pores=inlets)
-        D = np.sum(flow)*L/A/(BCs[0] - BCs[1])
-        return D
+    def _get_domain_area(self):
+        if not hasattr(self, '_area'):
+            logger.warning('Attempting to estimate inlet area...will be low')
+            network = self.project.network
+            Pin, Pout = self._get_inlets_and_outlets()
+            inlets = network['pore.coords'][Pin]
+            outlets = network['pore.coords'][Pout]
+            if not iscoplanar(inlets):
+                raise Exception('Detected inlet pores are not coplanar')
+            if not iscoplanar(outlets):
+                raise Exception('Detected outlet pores are not coplanar')
+            Nin = np.ptp(inlets, axis=0) > 0
+            if Nin.all():
+                raise Exception('Detected inlets are not oriented along a ' +
+                                'principle axis')
+            Nout = np.ptp(outlets, axis=0) > 0
+            if Nout.all():
+                raise Exception('Detected outlets are not oriented along a ' +
+                                'principle axis')
+            hull_in = ConvexHull(points=inlets[:, Nin])
+            hull_out = ConvexHull(points=outlets[:, Nout])
+            if hull_in.volume != hull_out.volume:
+                raise Exception('Inlet and outlet faces are different area')
+            self._area = hull_in.volume  # In 2D volume=area, area=perimeter
+        return self._area
+
+    def _set_domain_area(self, area):
+        self._area = area
+
+    domain_area = property(fget=_get_domain_area, fset=_set_domain_area)
+
+    def _get_domain_length(self):
+        if not hasattr(self, '_length'):
+            logger.warning('Attempting to estimate domain length... ' +
+                           'could be low if boundary pores were not added')
+            network = self.project.network
+            Pin, Pout = self._get_inlets_and_outlets()
+            inlets = network['pore.coords'][Pin]
+            outlets = network['pore.coords'][Pout]
+            if not iscoplanar(inlets):
+                raise Exception('Detected inlet pores are not coplanar')
+            if not iscoplanar(outlets):
+                raise Exception('Detected inlet pores are not coplanar')
+            tree = cKDTree(data=inlets)
+            Ls = np.unique(np.around(tree.query(x=outlets)[0], decimals=5))
+            if np.size(Ls) != 1:
+                raise Exception('A unique value of length could not be found')
+            self._length = Ls[0]
+        return self._length
+
+    def _set_domain_length(self, length):
+        self._length = length
+
+    domain_length = property(fget=_get_domain_length, fset=_set_domain_length)
