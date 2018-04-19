@@ -17,20 +17,12 @@ class TransientTransport(GenericTransport):
     def set_IC(self, values):
         r"""
         """
-        if (type(values) == float or type(values) == int):
-            self[self.settings['quantity']] = values * np.ones(
-                                              shape=(self.Np, ), dtype=float)
-        elif ((type(values) is np.ndarray) and (values.shape[0] == self.Np)):
-            self[self.settings['quantity']] = values
-        else:
-            print('Warning: initial condition should be a float or a ' +
-                  str(self.Np)+' long numpy array!')
+        self[self.settings['quantity']] = values
 
     def _update_A(self):
         r"""
         """
         network = self.project.network
-        phase = self.project.phases()[self.settings['phase']]
         Vi = self._coef*network['pore.volume']
         dt = self.settings['t_step']
         s = self.settings['t_scheme']
@@ -53,7 +45,6 @@ class TransientTransport(GenericTransport):
         r"""
         """
         network = self.project.network
-        phase = self.project.phases()[self.settings['phase']]
         Vi = self._coef*network['pore.volume']
         dt = self.settings['t_step']
         s = self.settings['t_scheme']
@@ -70,25 +61,20 @@ class TransientTransport(GenericTransport):
         self.b = b
         return b
 
-    def setup(self):
-        r"""
-        """
-        # Create a scratch b from IC to apply BCs to A matrix
-        self.b = self[self.settings['quantity']]
-        self.apply_BCs()
-        # Save A matrix (with BCs applied) of the steady sys of eqs
-        self._A_steady = self.A
-        # Override A and b according to t_scheme and apply BCs
-        self.update_A()
-        self.update_b()
-        self.apply_BCs()
-
     def run(self, t=None):
         r"""
         """
         print('―'*80)
         print('Running TransientTransport')
-        self.setup()
+        # Create a scratch b from IC to apply BCs to A matrix
+        self.b = self[self.settings['quantity']]
+        self._apply_BCs()
+        # Save A matrix (with BCs applied) of the steady sys of eqs
+        self._A_steady = self.A
+        # Override A and b according to t_scheme and apply BCs
+        self._update_A()
+        self._update_b()
+        self._apply_BCs()
         if t is None:
             t = self.settings['t_initial']
         self._run_transient(t=t)
@@ -134,8 +120,8 @@ class TransientTransport(GenericTransport):
                         self[self.settings['quantity'] +
                              str(np.where(outputs == time)[0][0])] = x_new
                         print('        Exporting time step: '+str(time)+' s')
-                    self.update_b()
-                    self.apply_BCs()
+                    self._update_b()
+                    self._apply_BCs()
                 else:  # Stop time iterations if residual < tolerance
                     self[self.settings['quantity'] + '_steady'] = x_new
                     print('        Exporting time step: '+str(time)+' s')

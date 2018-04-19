@@ -39,16 +39,16 @@ outlet2 = pn.pores('right')  # pore outlet2
 
 # ALGORITHMS
 alg1 = op.algorithms.StokesFlow(network=pn, phase=water)
-alg1.set_BC(pores=inlet, bctype='dirichlet', bcvalues=10)
-alg1.set_BC(pores=outlet, bctype='dirichlet', bcvalues=0)
+alg1.set_dirichlet_BC(pores=inlet, values=10)
+alg1.set_dirichlet_BC(pores=outlet, values=0)
 alg1.run()
 water['pore.pressure'] = alg1['pore.pressure']
 
 alg2 = op.algorithms.TransientAdvectionDiffusion(network=pn, phase=water,
                                                  t_scheme='cranknicolson')
 alg2.set_IC(0)
-alg2.set_BC(pores=inlet, bctype='dirichlet', bcvalues=2)
-alg2.set_BC(pores=outlet, bctype='dirichlet', bcvalues=0)
+alg2.set_dirichlet_BC(pores=inlet, values=2)
+alg2.set_dirichlet_BC(pores=outlet, values=0)
 alg2.run()
 
 # PLOT
