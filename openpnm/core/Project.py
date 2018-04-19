@@ -148,8 +148,7 @@ class Project(list):
             return phys
 
     def _validate_name(self, name):
-        names = [i.name for i in self]
-        if name in names:
+        if name in self.names:
             raise Exception('An object already exists named '+name)
         for item in self:
             for key in item.keys():
@@ -161,6 +160,11 @@ class Project(list):
         num = str(len([item for item in self if item._isa() == obj._isa()]))
         name = prefix + '_' + num.zfill(2)
         return name
+
+    @property
+    def names(self):
+        names = [i.name for i in self]
+        return names
 
     def purge_object(self, obj):
         r"""
