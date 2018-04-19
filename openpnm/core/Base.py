@@ -132,7 +132,7 @@ class Base(dict):
         r"""
         A subclassed version of the standard dict's clear method.  This can be
         used to selectively clear certain aspects of the object, including
-        properties, labels and/or models.  It can also clear everything,
+        properties and/or labels.  It can also clear everything,
         except for the 'pore.all' and 'throat.all' labels which are required
         for object to remain functional.
 
@@ -148,16 +148,49 @@ class Base(dict):
             **'props'** : Removes all numerical property values from the object
             dictionary.
 
-            **'labels'** : Removes all labels from the object dictionary
+            **'labels'** : Removes all labels from the object dictionary,
+            except those relating to the pore and throat locations of
+            associated objects.
 
-            **'all'** : Removes all of the above AND sets the \'pore.all\'
-            and \'throat.all\' labels to zero length.  This also removes any
-            pore and throat locations that were previously set.  This mode
-            should be used carefully since it can break some subtle aspects
-            of the framework; it is meant for advanced users and developers.
+            **'all'** : Removes both 'props' and 'labels'
+
+        Notes
+        -----
+        If you wish to completey reset the object, you can do so manually
+        by looping over the keys and deleting each one, then re-adding
+        'pore.all' and 'throat.all' using the ``update`` command.
+
+        If you wish to selectively remove some properties but not other, use
+        something like ``del object['pore.blah']`` at the python prompt.
+        Obviously this can be done in a for-loop to remove a list of items.
+
+        Examples
+        --------
+        >>> import openpnm as op
+        >>> pn = op.network.Cubic(shape=[5, 5, 5])
+        >>> len(pn.labels())  # There are 10 total labels on the network
+        10
+        >>> pn.clear(mode='labels')
+        >>> len(pn.labels())  # Kept only 'pore.all' and 'throat.all'
+        2
+        >>> geom = op.geometry.GenericGeometry(network=pn, pores=pn.Ps,
+        ...                                    throats=pn.Ts)
+        >>> len(pn.labels())  # 2 new labels were added for geometry locations
+        4
+        >>> pn.clear(mode='labels')
+        >>> 'pore.'+geom.name in pn.keys()  # The geometry labels were kept
+        True
+        >>> len(pn.props())  # The network has two properties
+        2
+        >>> pn.clear(element='pore', mode='props')
+        >>> 'pore.coords' in pn.keys()  # The pore property was removed
+        False
+        >>> pn.clear()  # Remove everything except protected labels
+        >>> len(pn.keys())
+        4
 
         """
-        allowed = ['constants', 'labels', 'all']
+        allowed = ['props', 'labels', 'all']
         mode = self._parse_mode(mode=mode, allowed=allowed)
         for item in self.keys(mode=mode, element=element):
             if item not in ['pore.all', 'throat.all']:
