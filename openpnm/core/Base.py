@@ -197,11 +197,14 @@ class Base(dict):
                 if item.split('.')[1] not in self.project.names:
                     del self[item]
 
-    def keys(self, element=None, mode='skip'):
+    def keys(self, element=None, mode=None):
         r"""
         This subclass works exactly like ``keys`` when no arguments are passed,
         but optionally accepts an ``element`` and/or a ``mode``, which filters
         the output to only the requested keys.
+
+        The default behavior is exactly equivalent to the normal ``keys``
+        method.
 
         Parameters
         ----------
@@ -213,18 +216,41 @@ class Base(dict):
         mode : string (optional, default is 'skip')
             Controls which keys are returned.  Options are:
 
-            **'skip'** : This mode (default) bypasses this subclassed method
+            ``None`` : This mode (default) bypasses this subclassed method
             and just returns the normal KeysView object.
 
-            **'labels'** and/or **'props'** : Limits the returned list of keys
-            to only 'labels' (boolean arrays) and/or 'props' (numerical
-            arrays).
+            **'labels'** : Limits the returned list of keys to only 'labels'
+            (boolean arrays)
+
+            **'props'** : Limits he return list of keys to only 'props'
+            (numerical arrays).
 
             **'all'** : Returns both 'labels' and 'props'.  This is equivalent
             to sending a list of both 'labels' and 'props'.
 
+        See Also
+        --------
+        props
+        labels
+
+        Notes
+        -----
+        This subclass can be used to get dictionary keys of specific kinds of
+        data.  It's use augments ``props`` and ``labels`` by returning a list
+        containing both types, but possibly limited by element type ('pores'
+        or 'throats'.)
+
+        Examples
+        --------
+        >>> import openpnm as op
+        >>> pn = op.network.Cubic([5, 5, 5])
+        >>> pn.keys(mode='props')  # Get all props
+        ['pore.coords', 'throat.conns']
+        >>> pn.keys(mode='props', element='pore')  # Get only pore props
+        ['pore.coords']
+
         """
-        if mode == 'skip':
+        if mode is None:
             return super().keys()
         element = self._parse_element(element=element)
         allowed = ['props', 'labels']
