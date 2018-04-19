@@ -70,6 +70,8 @@ class ReactiveTransport(GenericTransport):
     def _run_reactive(self, x):
         if self.settings['quantity'] not in self.keys():
             self[self.settings['quantity']] = 0
+        self._build_A()
+        self._build_b()
         self._apply_BCs()
         self._apply_sources()
         if x is None:

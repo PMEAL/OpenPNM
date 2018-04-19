@@ -26,9 +26,9 @@ class GenericTransport(GenericAlgorithm):
             project = network.project
         super().__init__(project=project, **kwargs)
         # Create some instance attributes
-        self.A = None
+        self._A = None
         self._pure_A = None
-        self.b = None
+        self._b = None
         self._pure_b = None
 
     def setup(self, phase=None, **kwargs):
@@ -223,14 +223,32 @@ class GenericTransport(GenericAlgorithm):
             self._pure_b = b
         self.b = self._pure_b.copy()
 
+    def _get_A(self):
+        if self._A is None:
+            self._build_A(force=True)
+        return self._A
+
+    def _set_A(self, A):
+        self._A = A
+
+    A = property(fget=_get_A, fset=_set_A)
+
+    def _get_b(self):
+        if self._b is None:
+            self._build_b(force=True)
+        return self._b
+
+    def _set_b(self, b):
+        self._b = b
+
+    b = property(fget=_get_b, fset=_set_b)
+
     def _apply_BCs(self):
         r"""
         Applies all the boundary conditions that have been specified, by
         adding values to the *A* and *b* matrices.
 
         """
-        self._build_A()
-        self._build_b()
         if 'pore.neumann' in self.keys():
             # Update b
             ind = self['pore.neumann']
