@@ -4,6 +4,7 @@ from .ReactiveTransport import ReactiveTransport
 from .TransientTransport import TransientTransport
 from .TransientReactiveTransport import TransientReactiveTransport
 from .StokesFlow import StokesFlow
+from .TransientStokesFlow import TransientStokesFlow
 from .FickianDiffusion import FickianDiffusion
 from .AdvectionDiffusion import AdvectionDiffusion
 from .TransientAdvectionDiffusion import TransientAdvectionDiffusion

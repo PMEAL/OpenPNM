@@ -31,8 +31,7 @@ class TransientTransport(GenericTransport):
         """
         network = self.project.network
         phase = self.project.phases()[self.settings['phase']]
-        md = phase[self.settings['molar_density']][0]
-        Vi = md*network['pore.volume']
+        Vi = self._coef*network['pore.volume']
         dt = self.settings['t_step']
         s = self.settings['t_scheme']
         if (s == 'implicit'):
@@ -55,8 +54,7 @@ class TransientTransport(GenericTransport):
         """
         network = self.project.network
         phase = self.project.phases()[self.settings['phase']]
-        md = phase[self.settings['molar_density']][0]
-        Vi = md*network['pore.volume']
+        Vi = self._coef*network['pore.volume']
         dt = self.settings['t_step']
         s = self.settings['t_scheme']
         if (s == 'implicit'):

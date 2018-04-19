@@ -34,3 +34,6 @@ class TransientAdvectionDiffusion(AdvectionDiffusion, TransientTransport):
         self.settings.update(settings)
         # Save A matrix of the steady sys of eqs
         self.A = self.build_A()
+        # Define _coef as the molar density
+        phase = self.project.phases()[self.settings['phase']]
+        self._coef = phase[self.settings['molar_density']]
