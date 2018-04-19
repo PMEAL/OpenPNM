@@ -21,6 +21,7 @@ install:
   - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION
   - source activate test-environment
   - conda install --file conda_requirements.txt
+  - conda install -c cantera cantera
   - pip install -r test_requirements.txt
   - python setup.py install
 
