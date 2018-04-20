@@ -44,35 +44,8 @@ alg1.set_dirichlet_BC(pores=outlet, values=0)
 alg1.run()
 water['pore.pressure'] = alg1['pore.pressure']
 
-alg2 = op.algorithms.TransientAdvectionDiffusion(network=pn, phase=water,
-                                                 t_scheme='cranknicolson')
+alg2 = op.algorithms.TransientAdvectionDiffusion(network=pn, phase=water)
 alg2.set_IC(0)
 alg2.set_dirichlet_BC(pores=inlet, values=2)
 alg2.set_dirichlet_BC(pores=outlet, values=0)
 alg2.run()
-
-# PLOT
-Z = sp.array([sp.reshape(alg2['pore.mole_fraction_initial'], (nx, ny)),
-              sp.reshape(alg2['pore.mole_fraction0'], (nx, ny)),
-              sp.reshape(alg2['pore.mole_fraction5'], (nx, ny)),
-              sp.reshape(alg2['pore.mole_fraction10'], (nx, ny)),
-              sp.reshape(alg2['pore.mole_fraction20'], (nx, ny)),
-              sp.reshape(alg2['pore.mole_fraction40'], (nx, ny)),
-              sp.reshape(alg2['pore.mole_fraction60'], (nx, ny)),
-              sp.reshape(alg2['pore.mole_fraction_steady'], (nx, ny))])
-
-fig, axes = plt.subplots(nrows=2, ncols=4)
-i = 0
-for ax in axes.flat:
-    im = ax.imshow(Z[i].T, cmap='rainbow')
-    ax.set_title(str(i))
-    ax.set_ylabel('y')
-    ax.set_xlabel('x')
-    i += 1
-
-fig.subplots_adjust(right=0.8)
-cbar_ax = fig.add_axes([0.85, 0.15, 0.02, 0.7])
-fig.colorbar(im, cax=cbar_ax)
-
-plt.suptitle('OpenPNM transient dispersion', fontsize=16)
-plt.show()

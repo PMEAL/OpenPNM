@@ -6,7 +6,7 @@ ws.settings['local_data'] = True
 
 # NETWORK
 sp.random.seed(17)
-nx, ny, nz = 30, 60, 1
+nx, ny, nz = 20, 40, 1
 pn = op.network.Cubic(shape=[nx, ny, nz], spacing=1e-4, name='pn11')
 
 # GEOMETRIES
@@ -38,12 +38,12 @@ outlet2 = pn.pores('right')  # pore outlet2
 
 # ALGORITHMS
 alg1 = op.algorithms.StokesFlow(network=pn, phase=water)
-alg1.set_BC(pores=inlet, bctype='dirichlet', bcvalues=10)
-alg1.set_BC(pores=outlet, bctype='dirichlet', bcvalues=0)
+alg1.set_dirichlet_BC(pores=inlet, values=5)
+alg1.set_dirichlet_BC(pores=outlet, values=0)
 alg1.run()
 
 alg1b = op.algorithms.TransientStokesFlow(network=pn, phase=water)
 alg1b.set_IC(0)
-alg1b.set_BC(pores=inlet, bctype='dirichlet', bcvalues=10)
-alg1b.set_BC(pores=outlet, bctype='dirichlet', bcvalues=0)
+alg1b.set_dirichlet_BC(pores=inlet, values=5)
+alg1b.set_dirichlet_BC(pores=outlet, values=0)
 alg1b.run()

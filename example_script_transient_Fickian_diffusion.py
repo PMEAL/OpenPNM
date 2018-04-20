@@ -38,12 +38,12 @@ outlet2 = pn.pores('right')  # pore outlet2
 
 # ALGORITHMS
 alg1 = op.algorithms.FickianDiffusion(network=pn, phase=water)
-alg1.set_BC(pores=inlet, bctype='dirichlet', bcvalues=10)
-alg1.set_BC(pores=outlet, bctype='dirichlet', bcvalues=0)
+alg1.set_dirichlet_BC(pores=inlet, values=10)
+alg1.set_dirichlet_BC(pores=outlet, values=0)
 alg1.run()
 
 alg1b = op.algorithms.TransientFickianDiffusion(network=pn, phase=water)
 alg1b.set_IC(0)
-alg1b.set_BC(pores=inlet, bctype='dirichlet', bcvalues=10)
-alg1b.set_BC(pores=outlet, bctype='dirichlet', bcvalues=0)
+alg1b.set_dirichlet_BC(pores=inlet, values=10)
+alg1b.set_dirichlet_BC(pores=outlet, values=0)
 alg1b.run()

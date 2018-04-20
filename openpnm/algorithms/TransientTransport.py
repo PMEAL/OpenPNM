@@ -10,9 +10,34 @@ class TransientTransport(GenericTransport):
     A subclass of GenericTransport to perform transient and steady simulations.
     """
 
-    def __init__(self, **kwargs):
-        self.settings.update({})
+    def __init__(self, settings={}, **kwargs):
+        self.settings.update({'t_initial': 0,
+                              't_final': 1e+06,
+                              't_step': 0.1,
+                              't_output': 1,
+                              't_tolerance': 1e-04,
+                              't_scheme': 'cranknicolson'})
         super().__init__(**kwargs)
+        self._coeff = 1  # Coefficient for units consistency
+        self._A_steady = None  # Initialize the steady sys of eqs A matrix
+
+    def setup(self, phase=None, t_initial='', t_final='', t_step='',
+              t_output='', t_tolerance='', t_scheme='', **kwargs):
+        if phase:
+            self.settings['phase'] = phase.name
+        if t_initial:
+            self.settings['t_initial'] = t_initial
+        if t_final:
+            self.settings['t_final'] = t_final
+        if t_step:
+            self.settings['t_step'] = t_step
+        if t_output:
+            self.settings['t_output'] = t_output
+        if t_tolerance:
+            self.settings['t_tolerance'] = t_tolerance
+        if t_scheme:
+            self.settings['t_scheme'] = t_scheme
+        self.settings.update(**kwargs)
 
     def set_IC(self, values):
         r"""
@@ -83,7 +108,7 @@ class TransientTransport(GenericTransport):
         tf = self.settings['t_final']
         dt = self.settings['t_step']
         to = self.settings['t_output']
-        tol = self.settings['tolerance']
+        tol = self.settings['t_tolerance']
         s = self.settings['t_scheme']
         res = 1  # Initialize the residual
 
@@ -115,14 +140,15 @@ class TransientTransport(GenericTransport):
                                   np.absolute(x_new[x_new != 0]))
                     print('        Residual: '+str(res))
                     self[self.settings['quantity']] = x_new
-                    # Output transient solutions
-                    if time in outputs:
-                        self[self.settings['quantity'] +
-                             str(np.where(outputs == time)[0][0])] = x_new
+                    # Output transient solutions. Round time to ensure every
+                    # value in outputs is exported.
+                    if round(time, 12) in outputs:
+                        ind = np.where(outputs == round(time, 12))[0][0]
+                        self[self.settings['quantity'] + str(ind)] = x_new
                         print('        Exporting time step: '+str(time)+' s')
                     self._update_b()
                     self._apply_BCs()
-                else:  # Stop time iterations if residual < tolerance
+                else:  # Stop time iterations if residual < t_tolerance
                     self[self.settings['quantity'] + '_steady'] = x_new
                     print('        Exporting time step: '+str(time)+' s')
                     break
