@@ -17,19 +17,20 @@ class TransientAdvectionDiffusion(AdvectionDiffusion, TransientTransport):
                  settings={}, **kwargs):
         super().__init__(**kwargs)
         # Set some default settings
-        self.settings.update({
-                'quantity': 'pore.mole_fraction',
-                'diffusive_conductance': 'throat.diffusive_conductance',
-                'hydraulic_conductance': 'throat.hydraulic_conductance',
-                'pressure': 'pore.pressure',
-                'molar_density': 'pore.molar_density',
-                't_initial': t_initial,
-                't_final': t_final,
-                't_step': t_step,
-                't_output': t_output,
-                'tolerance': tolerance,
-                't_scheme': t_scheme,
-                's_scheme': s_scheme})
+        self.settings.update({'quantity': 'pore.mole_fraction',
+                              'diffusive_conductance':
+                                  'throat.diffusive_conductance',
+                              'hydraulic_conductance':
+                                  'throat.hydraulic_conductance',
+                              'pressure': 'pore.pressure',
+                              'molar_density': 'pore.molar_density',
+                              't_initial': t_initial,
+                              't_final': t_final,
+                              't_step': t_step,
+                              't_output': t_output,
+                              'tolerance': tolerance,
+                              't_scheme': t_scheme,
+                              's_scheme': s_scheme})
         # Apply any received settings to overwrite defaults
         self.settings.update(settings)
         # Save A matrix of the steady sys of eqs

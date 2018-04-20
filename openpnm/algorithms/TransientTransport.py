@@ -96,8 +96,8 @@ class TransientTransport(GenericTransport):
         outputs = np.append(np.arange(t+to, tf, to), tf)
 
         # Export the initial field (t=t_initial)
-        self[self.settings['quantity']+'_initial'] = (
-                                            self[self.settings['quantity']])
+        vals = self[self.settings['quantity']]
+        self[self.settings['quantity']+'_initial'] = vals
 
         if (s == 'steady'):  # If solver in steady mode, do one iteration
             print('    Running in steady mode')
