@@ -224,11 +224,7 @@ class GenericTransport(GenericAlgorithm):
         self.b = self._pure_b.copy()
 
     def _get_A(self):
-        try:
-            self._A
-            if self._A is None:
-                self._build_A(force=True)
-        except AttributeError:
+        if self._A is None:
             self._build_A(force=True)
         return self._A
 
@@ -238,11 +234,7 @@ class GenericTransport(GenericAlgorithm):
     A = property(fget=_get_A, fset=_set_A)
 
     def _get_b(self):
-        try:
-            self._b
-            if self._b is None:
-                self._build_b(force=True)
-        except AttributeError:
+        if self._b is None:
             self._build_b(force=True)
         return self._b
 
