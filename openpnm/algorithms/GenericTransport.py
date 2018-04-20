@@ -338,7 +338,7 @@ class GenericTransport(GenericAlgorithm):
         d = {quantity: self[quantity]}
         return d
 
-    def rate(self, pores=None, mode='group'):
+    def rate(self, pores=[], throats=[], mode='group'):
         r"""
         Calculates the net rate of material moving into a given set of pores.
 
@@ -346,6 +346,9 @@ class GenericTransport(GenericAlgorithm):
         ----------
         pores : array_like
             The pores for which the rate should be calculated
+
+        throats : array_like
+            The throats through which the rate should be calculated
 
         mode : string, optional
             Controls how to return the rate.  Options are:
@@ -361,6 +364,7 @@ class GenericTransport(GenericAlgorithm):
         as material being consumed.
         """
         pores = self._parse_indices(pores)
+        throats = self._parse_indices(throats)
 
         network = self.project.network
         phase = self.project.phases()[self.settings['phase']]
@@ -372,17 +376,25 @@ class GenericTransport(GenericAlgorithm):
         f = (-1)**np.argsort(X12, axis=1)[:, 1]
         g = conductance
         Dx = np.abs(np.diff(X12, axis=1).squeeze())
-        Qt = f*g*Dx
+        Qt = -f*g*Dx
 
-        if mode == 'single':
-            Qp = np.zeros((self.Np, ))
-            np.add.at(Qp, P12[:, 0], Qt)
-            np.add.at(Qp, P12[:, 1], -Qt)
-            R = Qp[pores]
-        elif mode == 'group':
-            Ts = network.find_neighbor_throats(pores=pores,
-                                               mode='exclusive_or')
-            R = np.sum(Qt[Ts])
+        if len(throats) and len(pores):
+            raise Exception('Must specify either pores or throats, not both')
+        elif len(throats):
+            if mode == 'single':
+                R = Qt[throats]
+            if mode == 'group':
+                R = np.sum(Qt[throats])
+        elif len(pores):
+            if mode == 'single':
+                Qp = np.zeros((self.Np, ))
+                np.add.at(Qp, P12[:, 0], -Qt)
+                np.add.at(Qp, P12[:, 1], Qt)
+                R = Qp[pores]
+            elif mode == 'group':
+                Ts = network.find_neighbor_throats(pores=pores,
+                                                   mode='exclusive_or')
+                R = np.sum(Qt[Ts])
         return np.array(R, ndmin=1)
 
     def _calc_eff_prop(self):
