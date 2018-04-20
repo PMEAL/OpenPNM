@@ -6,7 +6,6 @@ Submodule -- thermal_conductance
 
 """
 import scipy as sp
-import cantera as ct
 
 
 def water(target, temperature='pore.temperature', salinity='pore.salinity'):
@@ -176,6 +175,12 @@ def cantera(target, cantera_phase_obj, temperature='pore.temperature',
         The dictionary key containing the pressure values (Pa)
 
     """
+    try:
+        import cantera as ct
+    except ModuleNotFoundError:
+        raise Exception('Cantera is not installed. Visit https://www.canter' +
+                        'a.org/docs/sphinx/html/install.html for more info.')
+
     T = target[temperature]
     p = target[pressure]
     states = ct.SolutionArray(phase=cantera_phase_obj, shape=T.size)
