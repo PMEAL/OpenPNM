@@ -18,7 +18,7 @@ def reduce_coordination(target, z):
     target['throat.mst'] = False
     target['throat.mst'][Ts] = True
     # Trim throats not on the spanning tree to acheive desired coordination
-    Ts = sp.random.permutation(target.throats('mst', mode='not'))
+    Ts = sp.random.permutation(target.throats('mst', mode='complement'))
     Ts = Ts[:int(target.Nt - target.Np*(z/2))]
     mask = target.tomask(throats=Ts)
     return mask

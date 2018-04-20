@@ -46,7 +46,7 @@ class PoreSeedTest:
                            image=image1)
         Ps = self.net.pores('bottom')
         a = sp.mean(self.geo["pore.seed"][Ps])
-        Other = self.net.pores('bottom', mode='not')
+        Other = self.net.pores('bottom', mode='complement')
         b = sp.mean(self.geo["pore.seed"][Other])
         assert a < b
         image2 = sp.ones([2, 2])

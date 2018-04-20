@@ -59,7 +59,7 @@ class PoreSizeTest:
         geom2 = op.geometry.GenericGeometry(network=net,
                                             pores=net.pores('top'))
         geom2['pore.diameter'] = 1.0
-        Ps = net.pores('top', mode='not')
+        Ps = net.pores('top', mode='complement')
         geom1 = op.geometry.GenericGeometry(network=net, pores=Ps,
                                             throats=net.Ts)
         mod = op.models.geometry.pore_size.largest_sphere

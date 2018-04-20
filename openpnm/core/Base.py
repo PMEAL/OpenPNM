@@ -370,8 +370,8 @@ class Base(dict):
         """
         # Parse inputs
         locations = self._parse_indices(locations)
-        allowed = ['none', 'union', 'intersection', 'not', 'count', 'mask',
-                   'difference']
+        allowed = ['none', 'union', 'intersection', 'complement', 'not',
+                   'count', 'mask', 'difference']
         mode = self._parse_mode(mode=mode, allowed=allowed, single=True)
         element = self._parse_element(element=element)
         # Collect list of all pore OR throat labels
@@ -393,7 +393,7 @@ class Base(dict):
             temp = labels[sp.sum(arr, axis=0) == sp.shape(locations, )[0]]
             temp.tolist()
             return PrintableList(temp)
-        if mode in ['not', 'difference']:
+        if mode in ['not', 'complement', 'difference']:
             temp = labels[sp.sum(arr, axis=0) != sp.shape(locations, )[0]]
             temp.tolist()
             return PrintableList(temp)
@@ -491,7 +491,7 @@ class Base(dict):
         """
         # Parse and validate all input values.
         allowed = ['union', 'intersection', 'not_intersection', 'not',
-                   'difference']
+                   'difference', 'complement']
         mode = self._parse_mode(mode=mode, allowed=allowed, single=True)
         element = self._parse_element(element, single=True)
         labels = self._parse_labels(labels=labels, element=element)
@@ -510,16 +510,16 @@ class Base(dict):
                 intersect = intersect*self[element+'.'+item.split('.')[-1]]
             ind = intersect
         elif mode in ['not_intersection']:
-            not_intersect = sp.zeros_like(self[element+'.all'], dtype=int)
+            none = sp.zeros_like(self[element+'.all'], dtype=int)
             for item in labels:  # Iterate over labels and collect all indices
                 info = self[element+'.'+item.split('.')[-1]]
-                not_intersect = not_intersect + sp.int8(info)
-            ind = (not_intersect == 1)
+                none = none + sp.int8(info)
+            ind = (none == 1)
         elif mode in ['not', 'difference', 'complement']:
             none = sp.zeros_like(self[element+'.all'], dtype=int)
             for item in labels:  # Iterate over labels and collect all indices
                 info = self[element+'.'+item.split('.')[-1]]
-                none = none - sp.int8(info)
+                none = none + sp.int8(info)
             ind = (none == 0)
         # Extract indices from boolean mask
         ind = sp.where(ind)[0]
@@ -1067,8 +1067,6 @@ class Base(dict):
         45
         >>> pn.num_pores(labels=['top', 'front'], mode='intersection')
         5
-        >>> pn.num_pores(labels=['top', 'front'], mode='not_intersection')
-        40
 
         """
         # Count number of pores of specified type
