@@ -13,27 +13,25 @@ import matplotlib.pyplot as plt
 plt.close('all')
 wrk = op.core.Workspace()
 
-model = 'sinusoidal'
+cap_model = 'sinusoidal'
 fiber_rad = 5e-5
 snap_off = True
+partial = False
+coop_fill = True
+trapping = False
+lpf = False
 
 sp.random.seed(0)
 pn = op.network.Cubic(shape=[5, 5, 5], spacing=2.5e-5, name='pn11')
 pn.add_boundary_pores()
 proj = pn.project
 
-Ps = pn.pores('internal')
-Ts = pn.throats('internal')
+Ps = pn.pores()
+Ts = pn.throats()
 geom = op.geometry.StickAndBall(network=pn, pores=Ps, throats=Ts,
                                 name='intern')
-
-Ps = pn.pores('*boundary')
-Ts = pn.throats('*boundary')
-boun = op.geometry.StickAndBall(network=pn, pores=Ps, throats=Ts, name='bound')
-
-pn['pore.inlets'] = pn['pore.top_boundary'].copy()
-pn['pore.outlets'] = pn['pore.bottom_boundary'].copy()
-
+geom.add_model(propname='throat.normal', model=gm.throat_normal.pore_coords,
+               regen_mode='normal')
 air = op.phases.Air(network=pn)
 water = op.phases.Water(network=pn)
 water['throat.viscosity'] = water['pore.viscosity'][0]
@@ -55,37 +53,58 @@ inv_points = np.linspace(0, 30000, 31)
 
 throat_diam = 'throat.diameter'
 pore_diam = 'pore.indiameter'
-if model == 'purcell':
+if cap_model == 'purcell':
     pmod = pm.capillary_pressure.purcell
-elif model == 'purcell_bi':
+elif cap_model == 'purcell_bi':
     pmod = pm.capillary_pressure.purcell_bi
-elif model == 'sinusoidal':
+elif cap_model == 'sinusoidal':
     pmod = pm.capillary_pressure.sinusoidal
-phys_water.models.add(propname='throat.capillary_pressure',
-                      model=pmod,
-                      r_toroid=fiber_rad,
-                      diameter=throat_diam,
-                      h_max=pore_diam)
-phys_air.models.add(propname='throat.capillary_pressure',
-                    model=pmod,
-                    r_toroid=fiber_rad,
-                    diameter=throat_diam,
-                    h_max=pore_diam)
+phys_water.add_model(propname='throat.capillary_pressure',
+                     model=pmod,
+                     r_toroid=fiber_rad,
+                     diameter=throat_diam,
+                     h_max=pore_diam)
+phys_air.add_model(propname='throat.capillary_pressure',
+                   model=pmod,
+                   r_toroid=fiber_rad,
+                   diameter=throat_diam,
+                   h_max=pore_diam)
 if snap_off:
-    phys_air.models.add(propname='throat.snap_off',
-                        model=pm.capillary_pressure.ransohoff_snap_off,
-                        throat_diameter=throat_diam,
-                        wavelength=fiber_rad)
+    phys_air.add_model(propname='throat.snap_off',
+                       model=pm.capillary_pressure.ransohoff_snap_off,
+                       diameter=throat_diam,
+                       wavelength=fiber_rad)
     phys_air['throat.snap_off'] = np.abs(phys_air['throat.snap_off'])
 phys_air['pore.capillary_pressure'] = 0
 phys_water['pore.capillary_pressure'] = 0
-BPs = pn.pores('boundary')
-NBPs = pn.find_neighbor_pores(BPs, flatten=False)
-boundary_neighbors = []
-for NBP in NBPs:
-    boundary_neighbors.append(NBP[0])
-NBPs = np.asarray(boundary_neighbors)
-wPc_NBPs = phys_water["pore.capillary_pressure"][NBPs]
-phys_water["pore.capillary_pressure"][BPs] = wPc_NBPs
-aPc_NBPs = phys_air["pore.capillary_pressure"][NBPs]
-phys_air["pore.capillary_pressure"][BPs] = aPc_NBPs
+#BPs = pn.pores('*boundary')
+#NBPs = np.asarray(pn.find_neighbor_pores(BPs, flatten=False)).flatten()
+#wPc_NBPs = phys_water["pore.capillary_pressure"][NBPs]
+#phys_water["pore.capillary_pressure"][BPs] = wPc_NBPs
+#aPc_NBPs = phys_air["pore.capillary_pressure"][NBPs]
+#phys_air["pore.capillary_pressure"][BPs] = aPc_NBPs
+
+inlets = pn.pores(labels=['bottom_boundary'])
+outlets = pn.pores(labels=['top_boundary'])
+in_step = 2
+ip_inlets = [inlets[x] for x in range(0, len(inlets), in_step)]
+inlet_inv_seq = -1
+
+IP_1 = op.algorithms.MixedPercolation(network=pn)
+IP_1.setup(phase=water,
+           def_phase=air,
+           inlets=ip_inlets,
+           inlet_inv_seq=inlet_inv_seq,
+           snap_off=snap_off,
+           partial=partial)
+
+if coop_fill:
+    IP_1.setup_coop_filling(capillary_model=cap_model,
+                            inv_points=inv_points,
+                            radius=fiber_rad)
+IP_1.run(inlets=ip_inlets)
+if trapping:
+    IP_1.apply_trapping(outlets=outlets)
+
+alg_data = IP_1.plot_drainage_curve(inv_points=inv_points,
+                                    lpf=lpf)
