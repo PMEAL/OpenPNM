@@ -253,26 +253,44 @@ class Project(list):
 
     @property
     def network(self):
-        net = list(self._get_objects_of_type('network').values())
+        net = list(self._get_objects_by_type('network').values())
         if len(net) > 0:
             net = net[0]
         else:
             net = None
         return net
 
-    def geometries(self):
-        return self._get_objects_of_type('geometry')
+    def geometries(self, name=None):
+        if name:
+            return self._get_object_by_name(name)
+        else:
+            return self._get_objects_by_type('geometry')
 
-    def phases(self):
-        return self._get_objects_of_type('phase')
+    def phases(self, name=None):
+        if name:
+            return self._get_object_by_name(name)
+        else:
+            return self._get_objects_by_type('phase')
 
-    def physics(self):
-        return self._get_objects_of_type('physics')
+    def physics(self, name=None):
+        if name:
+            return self._get_object_by_name(name)
+        else:
+            return self._get_objects_by_type('physics')
 
-    def algorithms(self):
-        return self._get_objects_of_type('algorithm')
+    def algorithms(self, name=None):
+        if name:
+            return self._get_object_by_name(name)
+        else:
+            return self._get_objects_by_type('algorithm')
 
-    def _get_objects_of_type(self, objtype):
+    def _get_object_by_name(self, name):
+        for item in self:
+            if item.name == name:
+                return item
+        raise Exception('An object named ' + name + ' was not found')
+
+    def _get_objects_by_type(self, objtype):
         return {item.name: item for item in self if item._isa(objtype)}
 
     def _set_comments(self, string):
