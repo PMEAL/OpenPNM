@@ -11,4 +11,5 @@ from .GenericPercolation import GenericPercolation
 from .OrdinaryPercolation import OrdinaryPercolation
 from .InvasionPercolation import InvasionPercolation
 from .Drainage import Drainage
+from .MixedPercolation import MixedPercolation
 from .MIP import MIP
