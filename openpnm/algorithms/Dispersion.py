@@ -29,8 +29,9 @@ class Dispersion(GenericTransport):
                               'diffusivity': 'pore.diffusivity',
                               'pressure': 'pore.pressure'})
         self.settings.update(settings)
+        self._A = self._build_A()
 
-    def build_A(self):
+    def _build_A(self):
         r"""
         """
         network = self.project.network
@@ -78,5 +79,5 @@ class Dispersion(GenericTransport):
         A_diags = laplacian(am1)
         # Overwrite the diagonal
         A.setdiag(A_diags.diagonal())
-        self.A = A
+        self._A = A
         return A

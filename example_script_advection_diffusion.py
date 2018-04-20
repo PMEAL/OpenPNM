@@ -39,32 +39,32 @@ outlet2 = pn.pores('right')  # pore outlet2
 
 # ALGORITHMS
 alg1 = op.algorithms.StokesFlow(network=pn, phase=water)
-alg1.set_BC(pores=inlet, bctype='dirichlet', bcvalues=20)
-alg1.set_BC(pores=outlet, bctype='dirichlet', bcvalues=0)
+alg1.set_dirichlet_BC(pores=inlet, values=20)
+alg1.set_dirichlet_BC(pores=outlet, values=0)
 alg1.run()
 water['pore.pressure'] = alg1['pore.pressure']
 
 alg2 = op.algorithms.AdvectionDiffusion(network=pn, phase=water,
                                         s_scheme='upwind')
-alg2.set_BC(pores=inlet2, bctype='dirichlet', bcvalues=1)
-alg2.set_BC(pores=outlet2, bctype='dirichlet', bcvalues=0)
+alg2.set_dirichlet_BC(pores=inlet2, values=1)
+alg2.set_dirichlet_BC(pores=outlet2, values=0)
 alg2.run()
 
 alg3 = op.algorithms.AdvectionDiffusion(network=pn, phase=water,
                                         s_scheme='hybrid')
-alg3.set_BC(pores=inlet2, bctype='dirichlet', bcvalues=1)
-alg3.set_BC(pores=outlet2, bctype='dirichlet', bcvalues=0)
+alg3.set_dirichlet_BC(pores=inlet2, values=1)
+alg3.set_dirichlet_BC(pores=outlet2, values=0)
 alg3.run()
 
 alg4 = op.algorithms.AdvectionDiffusion(network=pn, phase=water,
                                         s_scheme='powerlaw')
-alg4.set_BC(pores=inlet2, bctype='dirichlet', bcvalues=1)
-alg4.set_BC(pores=outlet2, bctype='dirichlet', bcvalues=0)
+alg4.set_dirichlet_BC(pores=inlet2, values=1)
+alg4.set_dirichlet_BC(pores=outlet2, values=0)
 alg4.run()
 
 alg5 = op.algorithms.Dispersion(network=pn, phase=water)
-alg5.set_BC(pores=inlet2, bctype='dirichlet', bcvalues=1)
-alg5.set_BC(pores=outlet2, bctype='dirichlet', bcvalues=0)
+alg5.set_dirichlet_BC(pores=inlet2, values=1)
+alg5.set_dirichlet_BC(pores=outlet2, values=0)
 alg5.run()
 
 # PLOT

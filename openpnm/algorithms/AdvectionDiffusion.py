@@ -24,8 +24,9 @@ class AdvectionDiffusion(GenericTransport):
                               's_scheme': s_scheme})
         # Apply any received settings to overwrite defaults
         self.settings.update(settings)
+        self._A = self._build_A()
 
-    def build_A(self):
+    def _build_A(self):
         s_dis = self.settings['s_scheme']
         network = self.project.network
         phase = self.project.phases()[self.settings['phase']]
@@ -65,5 +66,5 @@ class AdvectionDiffusion(GenericTransport):
         A_diags = laplacian(am1)
         # Overwrite the diagonal
         A.setdiag(A_diags.diagonal())
-        self.A = A
+        self._A = A
         return A
