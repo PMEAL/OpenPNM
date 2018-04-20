@@ -8,7 +8,6 @@ def bulk_diffusion(target, molar_density='pore.molar_density',
                    pore_diameter='pore.diameter',
                    throat_area='throat.area',
                    throat_length='throat.length',
-                   throat_diameter='throat.diameter',
                    shape_factor='throat.shape_factor',
                    calc_pore_len=False):
     r"""
@@ -39,8 +38,7 @@ def bulk_diffusion(target, molar_density='pore.molar_density',
     parea = network[pore_area]
     pdia = network[pore_diameter]
     # Get the properties of every throat
-    tdia = network[throat_diameter]
-    tarea = _sp.pi*(tdia/2)**2
+    tarea = network[throat_area]
     tlen = network[throat_length]
     # Interpolate pore phase property values to throats
     cp = phase[molar_density]
