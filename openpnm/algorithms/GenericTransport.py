@@ -414,7 +414,6 @@ class GenericTransport(GenericAlgorithm):
         in a linear transport equation.  It also checks for the proper
         boundary conditions, inlets and outlets.
         """
-        network = self.project.network
         if self.settings['quantity'] not in self.keys():
             raise Exception('The algorithm has not been run yet. Cannot ' +
                             'calculate effective property.')
@@ -423,12 +422,13 @@ class GenericTransport(GenericAlgorithm):
         inlets, outlets = self._get_inlets_and_outlets()
         Ps = self.pores('pore.dirichlet')
         BCs = np.unique(self['pore.dirichlet_value'][Ps])
+        Dx = np.abs(np.diff(BCs))
 
         # Fetch area and length of domain
         A = self.domain_area
         L = self.domain_length
         flow = self.rate(pores=inlets)
-        D = np.sum(flow)*L/A/(BCs[0] - BCs[1])
+        D = np.sum(flow)*L/A/Dx
         return D
 
     def _get_inlets_and_outlets(self):
