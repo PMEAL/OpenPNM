@@ -160,6 +160,8 @@ class ModelsMixin():
         else:
             # Re-create propnames to ensure it's in correct order
             propnames = [i for i in all_props if i in propnames]
+        if len(propnames) == 0:
+            logger.info('List of propnames to regenerate is empty')
         # Scan through list of propnames and regenerate each one
         for item in propnames:
             logger.info('Regenerating model: '+item)
