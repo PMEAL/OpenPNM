@@ -44,20 +44,17 @@ alg1.set_dirichlet_BC(pores=outlet, values=0)
 alg1.run()
 water['pore.pressure'] = alg1['pore.pressure']
 
-alg2 = op.algorithms.AdvectionDiffusion(network=pn, phase=water,
-                                        s_scheme='upwind')
+alg2 = op.algorithms.AdvectionDiffusion(network=pn, phase=water)
 alg2.set_dirichlet_BC(pores=inlet2, values=1)
 alg2.set_dirichlet_BC(pores=outlet2, values=0)
 alg2.run()
 
-alg3 = op.algorithms.AdvectionDiffusion(network=pn, phase=water,
-                                        s_scheme='hybrid')
+alg3 = op.algorithms.AdvectionDiffusion(network=pn, phase=water)
 alg3.set_dirichlet_BC(pores=inlet2, values=1)
 alg3.set_dirichlet_BC(pores=outlet2, values=0)
 alg3.run()
 
-alg4 = op.algorithms.AdvectionDiffusion(network=pn, phase=water,
-                                        s_scheme='powerlaw')
+alg4 = op.algorithms.AdvectionDiffusion(network=pn, phase=water)
 alg4.set_dirichlet_BC(pores=inlet2, values=1)
 alg4.set_dirichlet_BC(pores=outlet2, values=0)
 alg4.run()
@@ -66,32 +63,3 @@ alg5 = op.algorithms.Dispersion(network=pn, phase=water)
 alg5.set_dirichlet_BC(pores=inlet2, values=1)
 alg5.set_dirichlet_BC(pores=outlet2, values=0)
 alg5.run()
-
-# PLOT
-Z = sp.array([sp.reshape(alg2['pore.mole_fraction'], (nx, ny)),
-              sp.reshape(alg3['pore.mole_fraction'], (nx, ny)),
-              sp.reshape(alg4['pore.mole_fraction'], (nx, ny)),
-              sp.reshape(alg5['pore.mole_fraction'], (nx, ny))])
-
-fig, axes = plt.subplots(nrows=1, ncols=4)
-i = 0
-for ax in axes.flat:
-    im = ax.imshow(Z[i].T, cmap='rainbow')
-    if (i == 0):
-        ax.set_title('upwind')
-    elif (i == 1):
-        ax.set_title('hybrid')
-    elif (i == 2):
-        ax.set_title('power law')
-    else:
-        ax.set_title('Pe based')
-    ax.set_ylabel('y')
-    ax.set_xlabel('x')
-    i += 1
-
-fig.subplots_adjust(right=0.8)
-cbar_ax = fig.add_axes([0.85, 0.15, 0.05, 0.7])
-fig.colorbar(im, cax=cbar_ax)
-
-plt.suptitle('OpenPNM dispersion modeling', fontsize=16)
-plt.show()

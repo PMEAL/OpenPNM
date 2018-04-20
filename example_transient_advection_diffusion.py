@@ -1,6 +1,5 @@
 import openpnm as op
 import scipy as sp
-import matplotlib.pyplot as plt
 
 ws = op.core.Workspace()
 ws.settings['local_data'] = True
