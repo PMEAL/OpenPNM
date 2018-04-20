@@ -12,6 +12,7 @@ class TransientTransport(GenericTransport):
 
     def __init__(self, **kwargs):
         self.settings.update({})
+        self._coef = None
         super().__init__(**kwargs)
 
     def set_IC(self, values):
