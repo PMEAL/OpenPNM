@@ -725,11 +725,8 @@ class MixedPercolation(GenericAlgorithm):
         connected to a pore
         """
         net = self.project.network
+        all_physics = self.project.find_physics(phase=self._phase)
         from openpnm.models import physics as pm
-        try:
-            phys = self._phase.physics(self._phase.physics()[0])[0]
-        except:
-            logger.error('Phase has no Physics object associated')
         self._coop_fill = True
         if inv_points is None:
             inv_points = np.arange(0, 30100, 500)
@@ -768,102 +765,102 @@ class MixedPercolation(GenericAlgorithm):
             center_model = pm.capillary_pressure.sinusoidal
         else:
             logger.exception('capillary model '+capillary_model+' not valid')
-
-        for Pc in inv_points:
-            # Dictionary with keys of pore id
-            pore_data = {}
-            if capillary_model == 'purcell':
-                phys.add_model(propname=tfill_angle,
-                               model=angle_model,
-                               r_toroid=radius,
-                               Pc=Pc)
-                phys.add_model(propname=tmen_rad,
-                               model=radius_model,
-                               r_toroid=radius,
-                               filling_angle=tfill_angle)
-                phys.add_model(propname=tmen_cen,
-                               model=center_model,
-                               r_toroid=radius,
-                               filling_angle=tfill_angle)
-            elif capillary_model == 'sinusoidal':
-                phys.add_model(propname='throat.men_data',
-                               model=angle_model,
-                               mode='men',
-                               target=Pc)
-                phys[tfill_angle] = phys['throat.men_data']['alpha']
-                phys[tmen_rad] = phys['throat.men_data']['rad']
-                phys[tmen_cen] = phys['throat.men_data']['cen']
-
-            for pore in pores:
-                # Dictionary with keys of throat id
-                throat_data = {}
-                p_cen = p_centroids[pore]
-                p_rad = p_diam[pore]/2
-                throats = net.find_neighbor_throats(pores=pore, flatten=True)
-                throat_centres = t_centroids[throats]
-                throat_normals = t_norms[throats]
-                unit = np.linalg.norm(throat_normals, axis=1)
-                throat_normals /= np.vstack((unit, unit, unit)).T
-                v = p_cen - throat_centres
-                sign = np.sign(np.sum(v*throat_normals, axis=1))
-                cen = phys[tmen_cen][throats]
-                c3 = np.vstack((cen*sign, cen*sign, cen*sign)).T
-                men_cen = throat_centres + c3*throat_normals
-                pairs = []
-                for i, T in enumerate(throats):
-                    men_data = {}
-                    men_data['cen'] = men_cen[i]
-                    men_data['rad'] = phys[tmen_rad][T]
-                    men_data['offset'] = phys[tmen_cen][T]
-                    men_data['alpha'] = phys[tfill_angle][T]
-                    throat_data[T] = men_data
-                for ni in range(len(throats)):
-                    for nj in range(len(throats))[ni+1:]:
-                        pairs.append([ni, nj])
-                pairs = np.asarray(pairs)
-                if len(pairs) > 0:
-                    c1 = men_cen[pairs[:, 0]]
-                    c2 = men_cen[pairs[:, 1]]
-                    c2c = (c1-c2)
-                    dist = np.linalg.norm(c2c, axis=1)
-                    t1 = throats[pairs[:, 0]]
-                    t2 = throats[pairs[:, 1]]
-                    r1 = phys[tmen_rad][t1]
-                    r2 = phys[tmen_rad][t2]
-                    # nans may exist if pressure is outside the range
-                    # set these to zero to be ignored by next step without
-                    # causing RuntimeWarning
-                    r1[sp.isnan(r1)] = 0
-                    r2[sp.isnan(r2)] = 0
-                    check_pos = np.logical_and(r1 > 0, r2 > 0)
-                    # simple initial distance check on sphere rads
-                    check_rads = (r1+r2) >= dist
-                    # check whether the filling angle is ok at this Pc
-                    check_alpha_t1 = ~sp.isnan(phys[tfill_angle][t1])
-                    check_alpha_t2 = ~sp.isnan(phys[tfill_angle][t2])
-                    check_alpha = check_alpha_t1*check_alpha_t2
-                    # check whether this throat pair already has a coop value
-                    check_nans = sp.isnan(self.tt_Pc[t1, t2])
-                    mask = check_pos*check_alpha*check_nans*check_rads
-                    # if all checks pass
-                    if np.any(mask):
-                        # Check if intersecting circle lies within pore
-                        inter = self._check_intersection(c1=c1[mask],
-                                                         c2=c2[mask],
-                                                         r1=r1[mask],
-                                                         r2=r2[mask],
-                                                         pore_center=p_cen,
-                                                         pore_rad=p_rad)
-                        if np.any(inter):
-                            self.tt_Pc[t1[mask][inter], t2[mask][inter]] = Pc
-                            self.tt_Pc[t2[mask][inter], t1[mask][inter]] = Pc
-                        # intersection
-                    # pairs of mensici
-                # pore
-                pore_data[pore] = throat_data
-            # Pc
-            self.coop_data[Pc] = pore_data
-        # Finished
+        for phys in all_physics:
+            for Pc in inv_points:
+                # Dictionary with keys of pore id
+                pore_data = {}
+                if capillary_model == 'purcell':
+                    phys.add_model(propname=tfill_angle,
+                                   model=angle_model,
+                                   r_toroid=radius,
+                                   Pc=Pc)
+                    phys.add_model(propname=tmen_rad,
+                                   model=radius_model,
+                                   r_toroid=radius,
+                                   filling_angle=tfill_angle)
+                    phys.add_model(propname=tmen_cen,
+                                   model=center_model,
+                                   r_toroid=radius,
+                                   filling_angle=tfill_angle)
+                elif capillary_model == 'sinusoidal':
+                    phys.add_model(propname='throat.men_data',
+                                   model=angle_model,
+                                   mode='men',
+                                   target_Pc=Pc)
+                    phys[tfill_angle] = phys['throat.men_data']['alpha']
+                    phys[tmen_rad] = phys['throat.men_data']['rad']
+                    phys[tmen_cen] = phys['throat.men_data']['cen']
+    
+                for pore in pores:
+                    # Dictionary with keys of throat id
+                    throat_data = {}
+                    p_cen = p_centroids[pore]
+                    p_rad = p_diam[pore]/2
+                    throats = net.find_neighbor_throats(pores=pore, flatten=True)
+                    throat_centres = t_centroids[throats]
+                    throat_normals = t_norms[throats]
+                    unit = np.linalg.norm(throat_normals, axis=1)
+                    throat_normals /= np.vstack((unit, unit, unit)).T
+                    v = p_cen - throat_centres
+                    sign = np.sign(np.sum(v*throat_normals, axis=1))
+                    cen = phys[tmen_cen][throats]
+                    c3 = np.vstack((cen*sign, cen*sign, cen*sign)).T
+                    men_cen = throat_centres + c3*throat_normals
+                    pairs = []
+                    for i, T in enumerate(throats):
+                        men_data = {}
+                        men_data['cen'] = men_cen[i]
+                        men_data['rad'] = phys[tmen_rad][T]
+                        men_data['offset'] = phys[tmen_cen][T]
+                        men_data['alpha'] = phys[tfill_angle][T]
+                        throat_data[T] = men_data
+                    for ni in range(len(throats)):
+                        for nj in range(len(throats))[ni+1:]:
+                            pairs.append([ni, nj])
+                    pairs = np.asarray(pairs)
+                    if len(pairs) > 0:
+                        c1 = men_cen[pairs[:, 0]]
+                        c2 = men_cen[pairs[:, 1]]
+                        c2c = (c1-c2)
+                        dist = np.linalg.norm(c2c, axis=1)
+                        t1 = throats[pairs[:, 0]]
+                        t2 = throats[pairs[:, 1]]
+                        r1 = phys[tmen_rad][t1]
+                        r2 = phys[tmen_rad][t2]
+                        # nans may exist if pressure is outside the range
+                        # set these to zero to be ignored by next step without
+                        # causing RuntimeWarning
+                        r1[sp.isnan(r1)] = 0
+                        r2[sp.isnan(r2)] = 0
+                        check_pos = np.logical_and(r1 > 0, r2 > 0)
+                        # simple initial distance check on sphere rads
+                        check_rads = (r1+r2) >= dist
+                        # check whether the filling angle is ok at this Pc
+                        check_alpha_t1 = ~sp.isnan(phys[tfill_angle][t1])
+                        check_alpha_t2 = ~sp.isnan(phys[tfill_angle][t2])
+                        check_alpha = check_alpha_t1*check_alpha_t2
+                        # check whether this throat pair already has a coop value
+                        check_nans = sp.isnan(self.tt_Pc[t1, t2])
+                        mask = check_pos*check_alpha*check_nans*check_rads
+                        # if all checks pass
+                        if np.any(mask):
+                            # Check if intersecting circle lies within pore
+                            inter = self._check_intersection(c1=c1[mask],
+                                                             c2=c2[mask],
+                                                             r1=r1[mask],
+                                                             r2=r2[mask],
+                                                             pore_center=p_cen,
+                                                             pore_rad=p_rad)
+                            if np.any(inter):
+                                self.tt_Pc[t1[mask][inter], t2[mask][inter]] = Pc
+                                self.tt_Pc[t2[mask][inter], t1[mask][inter]] = Pc
+                            # intersection
+                        # pairs of mensici
+                    # pore
+                    pore_data[pore] = throat_data
+                # Pc
+                self.coop_data[Pc] = pore_data
+            # Physics
         logger.info("Coop filling finished in " +
                     str(np.around(time.time()-start, 2)) + " s")
 
