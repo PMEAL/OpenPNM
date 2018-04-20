@@ -340,7 +340,8 @@ class GenericTransport(GenericAlgorithm):
 
     def rate(self, pores=[], throats=[], mode='group'):
         r"""
-        Calculates the net rate of material moving into a given set of pores.
+        Calculates the net rate of material moving into a given set of pores or
+        throats
 
         Parameters
         ----------
@@ -358,10 +359,20 @@ class GenericTransport(GenericAlgorithm):
 
             *'single'* : Calculates the rate for each pore individually
 
-        Notes
-        -----
-        A negative rate indicates material moving into the pore or pores, such
-        as material being consumed.
+        Returns
+        -------
+        If ``pores`` are specified, then the returned values indicate the
+        net rate of material exiting the pore or pores.  Thus a positive
+        rate indicates material is leaving the pores, and negative values
+        mean material is entering.
+
+        If ``throats`` are specified the rate is calculated in the direction of
+        the gradient, thus is always positive.
+
+        If ``mode`` is 'single' then the cumulative rate through the given
+        pores (or throats) are returned as a vector, if ``mode`` is 'group'
+        then the individual rates are summed and returned as a scalar.
+
         """
         pores = self._parse_indices(pores)
         throats = self._parse_indices(throats)
@@ -382,9 +393,9 @@ class GenericTransport(GenericAlgorithm):
             raise Exception('Must specify either pores or throats, not both')
         elif len(throats):
             if mode == 'single':
-                R = Qt[throats]
+                R = np.absolute(Qt[throats])
             if mode == 'group':
-                R = np.sum(Qt[throats])
+                R = np.absolute(np.sum(Qt[throats]))
         elif len(pores):
             if mode == 'single':
                 Qp = np.zeros((self.Np, ))
