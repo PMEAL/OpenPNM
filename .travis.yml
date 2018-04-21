@@ -32,5 +32,3 @@ after_success:
 
 notifications:
   email: false
-  webhooks: https://www.travisbuddy.com/
-  on_success: never
