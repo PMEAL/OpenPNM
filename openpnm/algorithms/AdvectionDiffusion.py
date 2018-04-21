@@ -74,10 +74,10 @@ class AdvectionDiffusion(GenericTransport):
             am1 = network.create_adjacency_matrix(weights=(qP1 + gd))
             A = -network.create_adjacency_matrix(weights=(-qN2 + gd))
         elif (s_dis == 'hybrid'):
-            am1 = network.create_adjacency_matrix(
-                    weights=np.maximum(qP1, (qP1/2 + gd)))
-            A = -network.create_adjacency_matrix(
-                    weights=np.maximum(-qN2, (-qN2/2 + gd)))
+            w = np.maximum(qP1, (qP1/2 + gd))
+            am1 = network.create_adjacency_matrix(weights=w)
+            w = np.maximum(-qN2, (-qN2/2 + gd))
+            A = -network.create_adjacency_matrix(weights=w)
         elif (s_dis == 'powerlaw'):
             Pe1 = np.absolute(qP1/gd)
             Pe2 = np.absolute(qN2/gd)
