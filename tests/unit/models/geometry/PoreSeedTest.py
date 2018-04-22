@@ -37,28 +37,6 @@ class PoreSeedTest:
         assert sp.amin(self.geo['pore.seed'] > 0)
         assert sp.amax(self.geo['pore.seed'] < 1)
 
-    def test_location_adjusted(self):
-        image1 = sp.ones([5, 5, 5])
-        image1[:, :, 0] = 0.5
-        f = mods.location_adjusted
-        self.geo.add_model(propname='pore.seed',
-                           model=f,
-                           image=image1)
-        Ps = self.net.pores('bottom')
-        a = sp.mean(self.geo["pore.seed"][Ps])
-        Other = self.net.pores('bottom', mode='not')
-        b = sp.mean(self.geo["pore.seed"][Other])
-        assert a < b
-        image2 = sp.ones([2, 2])
-        self.geo.add_model(propname='pore.seed',
-                           model=f,
-                           image=image2,
-                           regen_mode='normal')
-        self.geo.add_model(propname='pore.seed',
-                           model=f,
-                           image=-image1,
-                           regen_mode='normal')
-
 
 if __name__ == '__main__':
 

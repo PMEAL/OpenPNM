@@ -69,6 +69,25 @@ class PoreSizeTest:
         assert sp.all(geom2['pore.diameter'] == 1.0)
 #        assert sp.all(sp.ceil(sp`.unique(geom1['pore.diameter'])) == [3.0, 5.0])
 
+    def test_equivalent_diameter(self):
+        mod = op.models.geometry.pore_size.equivalent_diameter
+        self.geo['pore.volume'] = 1.0
+        self.geo.add_model(propname='pore.diameter',
+                           model=mod,
+                           pore_volume='pore.volume',
+                           pore_shape='sphere')
+        a = sp.unique(self.geo['pore.diameter'])
+        b = sp.array(1.24070098, ndmin=1)
+        assert sp.allclose(a, b)
+        del self.geo['pore.diameter'], self.geo.models['pore.diameter']
+        self.geo.add_model(propname='pore.diameter',
+                           model=mod,
+                           pore_volume='pore.volume',
+                           pore_shape='cube')
+        a = sp.unique(self.geo['pore.diameter'])
+        b = sp.array(1.0, ndmin=1)
+        assert sp.allclose(a, b)
+
 
 if __name__ == '__main__':
 

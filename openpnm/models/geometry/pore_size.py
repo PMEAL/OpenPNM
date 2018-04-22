@@ -27,13 +27,6 @@ def generic(target, func, seeds='pore.seed'):
 generic.__doc__ = _misc.generic.__doc__
 
 
-def random(target, seed=None, num_range=[0, 1]):
-    return _misc.random(target, element='pore', seed=seed, num_range=num_range)
-
-
-random.__doc__ = _misc.random.__doc__
-
-
 def largest_sphere(target, iters=10):
     r"""
     Finds the maximum diameter pore that can be places in each location without
@@ -81,7 +74,8 @@ def largest_sphere(target, iters=10):
     return D[network.pores(target.name)]
 
 
-def equivalent_sphere(target, pore_volume='pore.volume'):
+def equivalent_diameter(target, pore_volume='pore.volume',
+                        pore_shape='sphere'):
     r"""
     Calculate pore diameter as the diameter of a sphere with an equivalent
     volume.
@@ -95,8 +89,16 @@ def equivalent_sphere(target, pore_volume='pore.volume'):
 
     pore_volume : string
         The dictionary key containing the pore volume values
+
+    shape : string
+        The shape of the pore body to assume when back-calculating from
+        volume.  Options are 'sphere' (default) or 'cube'.
+
     """
     from scipy.special import cbrt
     pore_vols = target[pore_volume]
-    value = cbrt(6*pore_vols/_np.pi)
+    if pore_shape.startswith('sph'):
+        value = cbrt(6*pore_vols/_np.pi)
+    elif pore_shape.startswith('cub'):
+        value = cbrt(pore_vols)
     return value
