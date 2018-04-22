@@ -17,6 +17,14 @@ def standard_kinetics(target, quantity, prefactor, exponent):
     return values
 
 
+def _parse_args(target, key, default):
+    if key == '':
+        val = default
+    else:
+        val = target[key]
+    return val
+
+
 def linear(target, X, A1='', A2=''):
     r"""
     Calculates the rate, as well as slope and intercept of the following
@@ -52,14 +60,8 @@ def linear(target, X, A1='', A2=''):
             rate = S_{1}   X  +  S_{2}
 
     """
-    if A1 == '':
-        A = 1
-    else:
-        A = target[A1]
-    if A2 == '':
-        B = 1
-    else:
-        B = target[A2]
+    A = _parse_args(target=target, key=A1, default=1.0)
+    B = _parse_args(target=target, key=A2, default=0.0)
     X = target[X]
 
     r = A * X + B
@@ -104,18 +106,9 @@ def power_law(target, X, A1='', A2='', A3=''):
             rate = S_{1}   X  +  S_{2}
 
     """
-    if A1 == '':
-        A = 1
-    else:
-        A = target[A1]
-    if A2 == '':
-        B = 1
-    else:
-        B = target[A2]
-    if A3 == '':
-        C = 1
-    else:
-        C = target[A3]
+    A = _parse_args(target=target, key=A1, default=1.0)
+    B = _parse_args(target=target, key=A2, default=1.0)
+    C = _parse_args(target=target, key=A3, default=0.0)
     X = target[X]
 
     r = A * X ** B + C
@@ -160,30 +153,12 @@ def exponential(target, X, A1='', A2='', A3='', A4='', A5='', A6=''):
             rate = S_{1}   X  +  S_{2}
 
     """
-    if A1 == '':
-        A = 1
-    else:
-        A = target[A1]
-    if A2 == '':
-        B = 1
-    else:
-        B = target[A2]
-    if A3 == '':
-        C = 1
-    else:
-        C = target[A3]
-    if A4 == '':
-        D = 1
-    else:
-        D = target[A4]
-    if A5 == '':
-        E = 0
-    else:
-        E = target[A5]
-    if A6 == '':
-        F = 0
-    else:
-        F = target[A6]
+    A = _parse_args(target=target, key=A1, default=1.0)
+    B = _parse_args(target=target, key=A2, default=1.0)
+    C = _parse_args(target=target, key=A3, default=1.0)
+    D = _parse_args(target=target, key=A4, default=1.0)
+    E = _parse_args(target=target, key=A5, default=0.0)
+    F = _parse_args(target=target, key=A6, default=0.0)
     X = target[X]
 
     r = A * B ** (C * X ** D + E) + F
@@ -228,26 +203,11 @@ def natural_exponential(target, X, A1='', A2='', A3='', A4='', A5=''):
             rate = S_{1}   X  +  S_{2}
 
     """
-    if A1 == '':
-        A = 1
-    else:
-        A = target[A1]
-    if A2 == '':
-        B = 1
-    else:
-        B = target[A2]
-    if A3 == '':
-        C = 1
-    else:
-        C = target[A3]
-    if A4 == '':
-        D = 1
-    else:
-        D = target[A4]
-    if A5 == '':
-        E = 0
-    else:
-        E = target[A5]
+    A = _parse_args(target=target, key=A1, default=1.0)
+    B = _parse_args(target=target, key=A2, default=1.0)
+    C = _parse_args(target=target, key=A3, default=1.0)
+    D = _parse_args(target=target, key=A4, default=1.0)
+    E = _parse_args(target=target, key=A5, default=0.0)
     X = target[X]
 
     r = A * _sp.exp(B * X ** C + D) + E
@@ -292,30 +252,12 @@ def logarithm(target, X, A1='', A2='', A3='', A4='', A5='', A6=''):
             rate = S_{1}   X  +  S_{2}
 
     """
-    if A1 == '':
-        A = 1
-    else:
-        A = target[A1]
-    if A2 == '':
-        B = 1
-    else:
-        B = target[A2]
-    if A3 == '':
-        C = 1
-    else:
-        C = target[A3]
-    if A4 == '':
-        D = 1
-    else:
-        D = target[A4]
-    if A5 == '':
-        E = 0
-    else:
-        E = target[A5]
-    if A6 == '':
-        F = 0
-    else:
-        F = target[A6]
+    A = _parse_args(target=target, key=A1, default=1.0)
+    B = _parse_args(target=target, key=A2, default=1.0)
+    C = _parse_args(target=target, key=A3, default=1.0)
+    D = _parse_args(target=target, key=A4, default=1.0)
+    E = _parse_args(target=target, key=A5, default=0.0)
+    F = _parse_args(target=target, key=A6, default=0.0)
     X = target[X]
 
     r = (A * _sp.log(C * X ** D + E)/_sp.log(B) + F)
@@ -361,26 +303,11 @@ def natural_logarithm(target, X, A1='', A2='', A3='', A4='', A5=''):
             rate = S_{1}   X  +  S_{2}
 
     """
-    if A1 == '':
-        A = 1
-    else:
-        A = target[A1]
-    if A2 == '':
-        B = 1
-    else:
-        B = target[A2]
-    if A3 == '':
-        C = 1
-    else:
-        C = target[A3]
-    if A4 == '':
-        D = 1
-    else:
-        D = target[A4]
-    if A5 == '':
-        E = 0
-    else:
-        E = target[A5]
+    A = _parse_args(target=target, key=A1, default=1.0)
+    B = _parse_args(target=target, key=A2, default=1.0)
+    C = _parse_args(target=target, key=A3, default=1.0)
+    D = _parse_args(target=target, key=A4, default=1.0)
+    E = _parse_args(target=target, key=A5, default=0.0)
     X = target[X]
 
     r = A*_sp.log(B*X**C + D) + E
@@ -439,14 +366,8 @@ def linear_sym(target, X, A1='', A2=''):
             rate = S_{1}   X  +  S_{2}
 
     """
-    if A1 == '':
-        A = 1
-    else:
-        A = target[A1]
-    if A2 == '':
-        B = 0
-    else:
-        B = target[A2]
+    A = _parse_args(target=target, key=A1, default=1.0)
+    B = _parse_args(target=target, key=A2, default=0.0)
     X = target[X]
     # Symbols used in symbolic function
     a, b, x = _syp.symbols('a,b,x')
@@ -497,18 +418,9 @@ def power_law_sym(target, X, A1='', A2='', A3=''):
             rate = S_{1}   X  +  S_{2}
 
     """
-    if A1 == '':
-        A = 1
-    else:
-        A = target[A1]
-    if A2 == '':
-        B = 1
-    else:
-        B = target[A2]
-    if A3 == '':
-        C = 0
-    else:
-        C = target[A3]
+    A = _parse_args(target=target, key=A1, default=1.0)
+    B = _parse_args(target=target, key=A2, default=1.0)
+    C = _parse_args(target=target, key=A3, default=0.0)
     X = target[X]
     # Symbols used in symbolic function
     a, b, c, x = _syp.symbols('a,b,c,x')
@@ -559,30 +471,12 @@ def exponential_sym(target, X, A1='', A2='', A3='', A4='', A5='', A6=''):
             rate = S_{1}   X  +  S_{2}
 
     """
-    if A1 == '':
-        A = 1
-    else:
-        A = target[A1]
-    if A2 == '':
-        B = 1
-    else:
-        B = target[A2]
-    if A3 == '':
-        C = 1
-    else:
-        C = target[A3]
-    if A4 == '':
-        D = 1
-    else:
-        D = target[A4]
-    if A5 == '':
-        E = 0
-    else:
-        E = target[A5]
-    if A6 == '':
-        F = 0
-    else:
-        F = target[A6]
+    A = _parse_args(target=target, key=A1, default=1.0)
+    B = _parse_args(target=target, key=A2, default=1.0)
+    C = _parse_args(target=target, key=A3, default=1.0)
+    D = _parse_args(target=target, key=A4, default=1.0)
+    E = _parse_args(target=target, key=A5, default=0.0)
+    F = _parse_args(target=target, key=A6, default=0.0)
     X = target[X]
     # Symbols used in symbolic function
     a, b, c, d, e, f, x = _syp.symbols('a,b,c,d,e,f,x')
@@ -633,26 +527,11 @@ def natural_exponential_sym(target, X, A1='', A2='', A3='', A4='', A5=''):
             rate = S_{1}   X  +  S_{2}
 
     """
-    if A1 == '':
-        A = 1
-    else:
-        A = target[A1]
-    if A2 == '':
-        B = 1
-    else:
-        B = target[A2]
-    if A3 == '':
-        C = 1
-    else:
-        C = target[A3]
-    if A4 == '':
-        D = 0
-    else:
-        D = target[A4]
-    if A5 == '':
-        E = 0
-    else:
-        E = target[A5]
+    A = _parse_args(target=target, key=A1, default=1.0)
+    B = _parse_args(target=target, key=A2, default=1.0)
+    C = _parse_args(target=target, key=A3, default=1.0)
+    D = _parse_args(target=target, key=A4, default=1.0)
+    E = _parse_args(target=target, key=A5, default=0.0)
     X = target[X]
     # Symbols used in symbolic function
     a, b, c, d, e, x = _syp.symbols('a,b,c,d,e,x')
@@ -703,30 +582,12 @@ def logarithm_sym(target, X, A1='', A2='', A3='', A4='', A5='', A6=''):
             rate = S_{1}   X  +  S_{2}
 
     """
-    if A1 == '':
-        A = 1
-    else:
-        A = target[A1]
-    if A2 == '':
-        B = 1
-    else:
-        B = target[A2]
-    if A3 == '':
-        C = 1
-    else:
-        C = target[A3]
-    if A4 == '':
-        D = 1
-    else:
-        D = target[A4]
-    if A5 == '':
-        E = 0
-    else:
-        E = target[A5]
-    if A6 == '':
-        F = 0
-    else:
-        F = target[A6]
+    A = _parse_args(target=target, key=A1, default=1.0)
+    B = _parse_args(target=target, key=A2, default=1.0)
+    C = _parse_args(target=target, key=A3, default=1.0)
+    D = _parse_args(target=target, key=A4, default=1.0)
+    E = _parse_args(target=target, key=A5, default=0.0)
+    F = _parse_args(target=target, key=A6, default=0.0)
     X = target[X]
     # Symbols used in symbolic function
     a, b, c, d, e, f, x = _syp.symbols('a,b,c,d,e,f,x')
@@ -777,26 +638,11 @@ def natural_logarithm_sym(target, X, A1='', A2='', A3='', A4='', A5=''):
             rate = S_{1}   X  +  S_{2}
 
     """
-    if A1 == '':
-        A = 1
-    else:
-        A = target[A1]
-    if A2 == '':
-        B = 1
-    else:
-        B = target[A2]
-    if A3 == '':
-        C = 1
-    else:
-        C = target[A3]
-    if A4 == '':
-        D = 0
-    else:
-        D = target[A4]
-    if A5 == '':
-        E = 0
-    else:
-        E = target[A5]
+    A = _parse_args(target=target, key=A1, default=1.0)
+    B = _parse_args(target=target, key=A2, default=1.0)
+    C = _parse_args(target=target, key=A3, default=1.0)
+    D = _parse_args(target=target, key=A4, default=1.0)
+    E = _parse_args(target=target, key=A5, default=0.0)
     X = target[X]
     # Symbols used in symbolic function
     a, b, c, d, e, x = _syp.symbols('a,b,c,d,e,x')
