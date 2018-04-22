@@ -13,11 +13,11 @@ def standard_kinetics(target, quantity, prefactor, exponent):
     r = A*(X**b)
     S1 = A*b*(X**(b - 1))
     S2 = A*(1 - b)*(X**b)
-    values = {'pore.S1': S1, 'pore.S2': S2, 'pore.rate': r}
+    values = {'S1': S1, 'S2': S2, 'rate': r}
     return values
 
 
-def linear(target, A1='', A2='', X=''):
+def linear(target, X, A1='', A2=''):
     r"""
     Calculates the rate, as well as slope and intercept of the following
     function at the given value of `X`:
@@ -45,7 +45,8 @@ def linear(target, A1='', A2='', X=''):
 
         **'S2'** - The intercept of the source term function at the given X.
 
-    The slope and intercept are used in Broyden
+    The slope and intercept provide a linearized source term equation about the
+    current value of X as follow:
 
         .. math::
             rate = S_{1}   X  +  S_{2}
@@ -68,7 +69,7 @@ def linear(target, A1='', A2='', X=''):
     return values
 
 
-def power_law(target, A1='', A2='', A3='', X=''):
+def power_law(target, X, A1='', A2='', A3=''):
     r"""
     Calculates the rate, as well as slope and intercept of the following
     function at the given value of *X*:
@@ -96,7 +97,8 @@ def power_law(target, A1='', A2='', A3='', X=''):
 
         **'S2'** - The intercept of the source term function at the given X.
 
-    The slope and intercept are used in Broyden
+    The slope and intercept provide a linearized source term equation about the
+    current value of X as follow:
 
         .. math::
             rate = S_{1}   X  +  S_{2}
@@ -123,7 +125,7 @@ def power_law(target, A1='', A2='', A3='', X=''):
     return values
 
 
-def exponential(target, A1='', A2='', A3='', A4='', A5='', A6='', X=''):
+def exponential(target, X, A1='', A2='', A3='', A4='', A5='', A6=''):
     r"""
     Calculates the rate, as well as slope and intercept of the following
     function at the given value of `X`:
@@ -151,7 +153,8 @@ def exponential(target, A1='', A2='', A3='', A4='', A5='', A6='', X=''):
 
         **'S2'** - The intercept of the source term function at the given X.
 
-    The slope and intercept are used in Broyden
+    The slope and intercept provide a linearized source term equation about the
+    current value of X as follow:
 
         .. math::
             rate = S_{1}   X  +  S_{2}
@@ -190,7 +193,7 @@ def exponential(target, A1='', A2='', A3='', A4='', A5='', A6='', X=''):
     return values
 
 
-def natural_exponential(target, A1='', A2='', A3='', A4='', A5='', X=''):
+def natural_exponential(target, X, A1='', A2='', A3='', A4='', A5=''):
     r"""
     Calculates the rate, as well as slope and intercept of the following
     function at the given value of `X`:
@@ -218,7 +221,8 @@ def natural_exponential(target, A1='', A2='', A3='', A4='', A5='', X=''):
 
         **'S2'** - The intercept of the source term function at the given X.
 
-    The slope and intercept are used in Broyden
+    The slope and intercept provide a linearized source term equation about the
+    current value of X as follow:
 
         .. math::
             rate = S_{1}   X  +  S_{2}
@@ -253,7 +257,7 @@ def natural_exponential(target, A1='', A2='', A3='', A4='', A5='', X=''):
     return values
 
 
-def logarithm(target, A1='', A2='', A3='', A4='', A5='', A6='', X=''):
+def logarithm(target, X, A1='', A2='', A3='', A4='', A5='', A6=''):
     r"""
     Calculates the rate, as well as slope and intercept of the following
     function at the given value of `X`:
@@ -281,7 +285,8 @@ def logarithm(target, A1='', A2='', A3='', A4='', A5='', A6='', X=''):
 
         **'S2'** - The intercept of the source term function at the given X.
 
-    The slope and intercept are used in Broyden
+    The slope and intercept provide a linearized source term equation about the
+    current value of X as follow:
 
         .. math::
             rate = S_{1}   X  +  S_{2}
@@ -321,7 +326,7 @@ def logarithm(target, A1='', A2='', A3='', A4='', A5='', A6='', X=''):
     return values
 
 
-def natural_logarithm(target, A1='', A2='', A3='', A4='', A5='', X=''):
+def natural_logarithm(target, X, A1='', A2='', A3='', A4='', A5=''):
     r"""
     Calculates the rate, as well as slope and intercept of the following
     function at the given value of `X`:
@@ -349,7 +354,8 @@ def natural_logarithm(target, A1='', A2='', A3='', A4='', A5='', X=''):
 
         **'S2'** - The intercept of the source term function at the given X.
 
-    The slope and intercept are used in Broyden
+    The slope and intercept provide a linearized source term equation about the
+    current value of X as follow:
 
         .. math::
             rate = S_{1}   X  +  S_{2}
@@ -384,26 +390,21 @@ def natural_logarithm(target, A1='', A2='', A3='', A4='', A5='', X=''):
     return values
 
 
-# Symbols used in all symbolic functions except general_symbolic which gets its
-# own : a-f are coefficients and x is the independent variable
-a, b, c, d, e, f, x = syp.symbols('a,b,c,d,e,f,x')
-
-
-def _build_func(eq, args=None):
+def _build_func(eq, **args):
     r'''
     Take a symbolic equation and return the lambdified version plus the
     linearization of form S1 * x + S2
     '''
-    eq_prime = eq.diff(x)
+    eq_prime = eq.diff(args['x'])
     s1 = eq_prime
-    s2 = eq - eq_prime*x
-    EQ = syp.lambdify(args, eq, 'numpy')
-    S1 = syp.lambdify(args, s1, 'numpy')
-    S2 = syp.lambdify(args, s2, 'numpy')
+    s2 = eq - eq_prime*args['x']
+    EQ = syp.lambdify(args.values(), expr=eq, modules='numpy')
+    S1 = syp.lambdify(args.values(), expr=s1, modules='numpy')
+    S2 = syp.lambdify(args.values(), expr=s2, modules='numpy')
     return EQ, S1, S2
 
 
-def linear_sym(target, A1='', A2='', X=''):
+def linear_sym(target, X, A1='', A2=''):
     r"""
     Calculates the rate, as well as slope and intercept of the following
     function at the given value of *x*:
@@ -418,7 +419,7 @@ def linear_sym(target, A1='', A2='', X=''):
         values to be used in the source term model
 
     X : string
-        The dictionary key on the target objecxt containing the the quantity
+        The dictionary key on the target object containing the the quantity
         of interest
 
     Returns
@@ -431,10 +432,11 @@ def linear_sym(target, A1='', A2='', X=''):
 
         **'S2'** - The intercept of the source term function at the given X.
 
-    The slope and intercept are used in Broyden
+    The slope and intercept provide a linearized source term equation about the
+    current value of X as follow:
 
         .. math::
-            rate = S_{1}   x  +  S_{2}
+            rate = S_{1}   X  +  S_{2}
 
     """
     if A1 == '':
@@ -442,14 +444,16 @@ def linear_sym(target, A1='', A2='', X=''):
     else:
         A = target[A1]
     if A2 == '':
-        B = 1
+        B = 0
     else:
         B = target[A2]
     X = target[X]
+    # Symbols used in symbolic function
+    a, b, x = syp.symbols('a,b,x')
     # Equation
     y = a*x + b
     # Callable functions
-    r, s1, s2 = _build_func(y, (a, b, x))
+    r, s1, s2 = _build_func(eq=y, a=a, b=b,  x=x)
     # Values
     r_val = r(A, B, X)
     s1_val = s1(A, B, X)
@@ -458,7 +462,7 @@ def linear_sym(target, A1='', A2='', X=''):
     return values
 
 
-def power_law_sym(target, A1='', A2='', A3='', X=''):
+def power_law_sym(target, X, A1='', A2='', A3=''):
     r"""
     Calculates the rate, as well as slope and intercept of the following
     function at the given value of *x*:
@@ -486,10 +490,11 @@ def power_law_sym(target, A1='', A2='', A3='', X=''):
 
         **'S2'** - The intercept of the source term function at the given X.
 
-    The slope and intercept are used in Broyden
+    The slope and intercept provide a linearized source term equation about the
+    current value of X as follow:
 
         .. math::
-            rate = S_{1}   x  +  S_{2}
+            rate = S_{1}   X  +  S_{2}
 
     """
     if A1 == '':
@@ -505,10 +510,12 @@ def power_law_sym(target, A1='', A2='', A3='', X=''):
     else:
         C = target[A3]
     X = target[X]
+    # Symbols used in symbolic function
+    a, b, c, x = syp.symbols('a,b,c,x')
     # Equation
     y = a*x**b + c
     # Callable functions
-    r, s1, s2 = _build_func(y, (a, b, c, x))
+    r, s1, s2 = _build_func(eq=y, a=a, b=b, c=c, x=x)
     # Values
     r_val = r(A, B, C, X)
     s1_val = s1(A, B, C, X)
@@ -517,7 +524,7 @@ def power_law_sym(target, A1='', A2='', A3='', X=''):
     return values
 
 
-def exponential_sym(target, A1='', A2='', A3='', A4='', A5='', A6='', X=''):
+def exponential_sym(target, X, A1='', A2='', A3='', A4='', A5='', A6=''):
     r"""
     Calculates the rate, as well as slope and intercept of the following
     function at the given value of *x*:
@@ -545,10 +552,11 @@ def exponential_sym(target, A1='', A2='', A3='', A4='', A5='', A6='', X=''):
 
         **'S2'** - The intercept of the source term function at the given X.
 
-    The slope and intercept are used in Broyden
+    The slope and intercept provide a linearized source term equation about the
+    current value of X as follow:
 
         .. math::
-            rate = S_{1}   x  +  S_{2}
+            rate = S_{1}   X  +  S_{2}
 
     """
     if A1 == '':
@@ -568,18 +576,20 @@ def exponential_sym(target, A1='', A2='', A3='', A4='', A5='', A6='', X=''):
     else:
         D = target[A4]
     if A5 == '':
-        E = 1
+        E = 0
     else:
         E = target[A5]
     if A6 == '':
-        F = 1
+        F = 0
     else:
         F = target[A6]
     X = target[X]
+    # Symbols used in symbolic function
+    a, b, c, d, e, f, x = syp.symbols('a,b,c,d,e,f,x')
     # Equation
     y = a*b**(c*x**d + e) + f
     # Callable functions
-    r, s1, s2 = _build_func(y, (a, b, c, d, e, f, x))
+    r, s1, s2 = _build_func(eq=y, a=a, b=b, c=c, d=d, e=e, f=f, x=x)
     # Values
     r_val = r(A, B, C, D, E, F, X)
     s1_val = s1(A, B, C, D, E, F, X)
@@ -588,7 +598,7 @@ def exponential_sym(target, A1='', A2='', A3='', A4='', A5='', A6='', X=''):
     return values
 
 
-def natural_exponential_sym(target, A1='', A2='', A3='', A4='', A5='', X=''):
+def natural_exponential_sym(target, X, A1='', A2='', A3='', A4='', A5=''):
     r"""
     Calculates the rate, as well as slope and intercept of the following
     function at the given value of *x*:
@@ -616,10 +626,11 @@ def natural_exponential_sym(target, A1='', A2='', A3='', A4='', A5='', X=''):
 
         **'S2'** - The intercept of the source term function at the given X.
 
-    The slope and intercept are used in Broyden
+    The slope and intercept provide a linearized source term equation about the
+    current value of X as follow:
 
         .. math::
-            rate = S_{1}   x  +  S_{2}
+            rate = S_{1}   X  +  S_{2}
 
     """
     if A1 == '':
@@ -635,18 +646,20 @@ def natural_exponential_sym(target, A1='', A2='', A3='', A4='', A5='', X=''):
     else:
         C = target[A3]
     if A4 == '':
-        D = 1
+        D = 0
     else:
         D = target[A4]
     if A5 == '':
-        E = 1
+        E = 0
     else:
         E = target[A5]
     X = target[X]
+    # Symbols used in symbolic function
+    a, b, c, d, e, x = syp.symbols('a,b,c,d,e,x')
     # Equation
     y = a*syp.exp(b*x**c + d) + e
     # Callable functions
-    r, s1, s2 = _build_func(y, (a, b, c, d, e, x))
+    r, s1, s2 = _build_func(eq=y, a=a, b=b, c=c, d=d, e=e, x=x)
     # Values
     r_val = r(A, B, C, D, E, X)
     s1_val = s1(A, B, C, D, E, X)
@@ -655,7 +668,7 @@ def natural_exponential_sym(target, A1='', A2='', A3='', A4='', A5='', X=''):
     return values
 
 
-def logarithm_sym(target, A1='', A2='', A3='', A4='', A5='', A6='', X=''):
+def logarithm_sym(target, X, A1='', A2='', A3='', A4='', A5='', A6=''):
     r"""
     Calculates the rate, as well as slope and intercept of the following
     function at the given value of *x*:
@@ -683,10 +696,11 @@ def logarithm_sym(target, A1='', A2='', A3='', A4='', A5='', A6='', X=''):
 
         **'S2'** - The intercept of the source term function at the given X.
 
-    The slope and intercept are used in Broyden
+    The slope and intercept provide a linearized source term equation about the
+    current value of X as follow:
 
         .. math::
-            rate = S_{1}   x  +  S_{2}
+            rate = S_{1}   X  +  S_{2}
 
     """
     if A1 == '':
@@ -706,18 +720,20 @@ def logarithm_sym(target, A1='', A2='', A3='', A4='', A5='', A6='', X=''):
     else:
         D = target[A4]
     if A5 == '':
-        E = 1
+        E = 0
     else:
         E = target[A5]
     if A6 == '':
-        F = 1
+        F = 0
     else:
         F = target[A6]
     X = target[X]
+    # Symbols used in symbolic function
+    a, b, c, d, e, f, x = syp.symbols('a,b,c,d,e,f,x')
     # Equation
     y = a*syp.log((c*x**d + e), b) + f
     # Callable functions
-    r, s1, s2 = _build_func(y, (a, b, c, d, e, f, x))
+    r, s1, s2 = _build_func(eq=y, a=a, b=b, c=c, d=d, e=e, f=f, x=x)
     # Values
     r_val = r(A, B, C, D, E, F, X)
     s1_val = s1(A, B, C, D, E, F, X)
@@ -726,7 +742,7 @@ def logarithm_sym(target, A1='', A2='', A3='', A4='', A5='', A6='', X=''):
     return values
 
 
-def natural_logarithm_sym(target, A1='', A2='', A3='', A4='', A5='', X=''):
+def natural_logarithm_sym(target, X, A1='', A2='', A3='', A4='', A5=''):
     r"""
     Calculates the rate, as well as slope and intercept of the following
     function at the given value of *x*:
@@ -754,10 +770,11 @@ def natural_logarithm_sym(target, A1='', A2='', A3='', A4='', A5='', X=''):
 
         **'S2'** - The intercept of the source term function at the given X.
 
-    The slope and intercept are used in Broyden
+    The slope and intercept provide a linearized source term equation about the
+    current value of X as follow:
 
         .. math::
-            rate = S_{1}   x  +  S_{2}
+            rate = S_{1}   X  +  S_{2}
 
     """
     if A1 == '':
@@ -773,18 +790,20 @@ def natural_logarithm_sym(target, A1='', A2='', A3='', A4='', A5='', X=''):
     else:
         C = target[A3]
     if A4 == '':
-        D = 1
+        D = 0
     else:
         D = target[A4]
     if A5 == '':
-        E = 1
+        E = 0
     else:
         E = target[A5]
     X = target[X]
+    # Symbols used in symbolic function
+    a, b, c, d, e, x = syp.symbols('a,b,c,d,e,x')
     # Equation
     y = a*syp.ln(b*x**c + d) + e
     # Callable functions
-    r, s1, s2 = _build_func(y, (a, b, c, d, e, x))
+    r, s1, s2 = _build_func(eq=y, a=a, b=b, c=c, d=d, e=e, x=x)
     # Values
     r_val = r(A, B, C, D, E, X)
     s1_val = s1(A, B, C, D, E, X)
@@ -808,8 +827,7 @@ def general_symbolic(target, eqn=None, arg_map=None):
 
     arg_map : Dict mapping the symbols in the expression to OpenPNM data
         on the target. Must contain 'x' which is the independent variable.
-        e.g.
-        arg_map={'a':'pore.a', 'b':'pore.b', 'c':'pore.c', 'x':'pore.x'}
+        e.g. arg_map={'a':'pore.a', 'b':'pore.b', 'c':'pore.c', 'x':'pore.x'}
 
     Example
     ----------
@@ -823,7 +841,7 @@ def general_symbolic(target, eqn=None, arg_map=None):
     >>> water['pore.b'] = 2
     >>> water['pore.c'] = 3
     >>> water['pore.x'] = sp.random.random(water.Np)
-    >>> a,b,c,x = syp.symbols('a,b,c,x')
+    >>> a, b, c, x = syp.symbols('a,b,c,x')
     >>> y = a*x**b + c
     >>> arg_map = {'a':'pore.a', 'b':'pore.b', 'c':'pore.c', 'x':'pore.x'}
     >>> water.add_model(propname='pore.general',
@@ -845,11 +863,12 @@ def general_symbolic(target, eqn=None, arg_map=None):
                         'independent variable')
     # Get the data
     data = {}
+    args = {}
     for key in arg_map.keys():
         data[key] = target[arg_map[key]]
         # Callable functions
-    symbols = tuple(arg_map.keys())
-    r, s1, s2 = _build_func(eqn, symbols)
+        args[key] = syp.symbols(key)
+    r, s1, s2 = _build_func(eqn, **args)
     r_val = r(*data.values())
     s1_val = s1(*data.values())
     s2_val = s2(*data.values())
