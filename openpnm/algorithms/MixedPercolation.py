@@ -599,7 +599,7 @@ class MixedPercolation(GenericAlgorithm):
                             logger.info(msg)
 
         # And now return clusters
-        clusters[net.pores('boundary')] = -2
+        clusters[outlets] = -2
         num_trap = np.sum(np.unique(clusters) >= 0)
         if num_trap > 0:
             logger.info("Number of trapped clusters" + str(num_trap))
