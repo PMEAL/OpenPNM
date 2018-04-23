@@ -17,6 +17,7 @@ from . import physics
 from . import algorithms
 from . import utils
 from . import io
+from . import materials
 from .core import Workspace, Project
 
 

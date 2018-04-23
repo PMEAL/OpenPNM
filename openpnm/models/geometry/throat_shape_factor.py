@@ -22,19 +22,20 @@ def compactness(target, throat_perimeter='throat.perimeter',
     A = target[throat_area]
     C = _sp.ones(target.num_throats())
     C[ts] = P[ts]**2/A[ts]
-    verts = target['throat.offset_vertices']
     alpha = _sp.ones_like(C)*8*_sp.pi
-    for i in ts:
-        if ~_sp.any(_sp.isnan(verts[i])):
-            if len(verts[i]) == 3:
-                # Triangular Correction
-                alpha[i] = C[i]*(25/17) + (40*_sp.sqrt(3)/17)
-            elif len(verts[i]) == 4:
-                # Rectangular Correction
-                alpha[i] = C[i]*(22/7) - (65/3)
-            elif len(verts[i]) > 4:
-                # Approximate Elliptical Correction
-                alpha[i] = C[i]*(8/3) - (8*_sp.pi/3)
+    if 'throat.offset_vertices' in target.props():
+        verts = target['throat.offset_vertices']
+        for i in ts:
+            if ~_sp.any(_sp.isnan(verts[i])):
+                if len(verts[i]) == 3:
+                    # Triangular Correction
+                    alpha[i] = C[i]*(25/17) + (40*_sp.sqrt(3)/17)
+                elif len(verts[i]) == 4:
+                    # Rectangular Correction
+                    alpha[i] = C[i]*(22/7) - (65/3)
+                elif len(verts[i]) > 4:
+                    # Approximate Elliptical Correction
+                    alpha[i] = C[i]*(8/3) - (8*_sp.pi/3)
     # For a perfect circle alpha = 8*pi so normalize by this
     alpha /= 8*_sp.pi
     # Very small throats could have values less than one
