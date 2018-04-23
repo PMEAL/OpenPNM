@@ -18,7 +18,8 @@ class MultiPhaseTest:
         self.phys = op.physics.GenericPhysics(network=self.net,
                                               phase=self.phase,
                                               geometry=self.geo)
-        self.phys['throat.capillary_pressure'] = 5000
+        sp.random.seed(0)
+        self.phys['throat.capillary_pressure'] = 7000*sp.rand(self.phys.Nt)
         self.phys['throat.diffusive_conductance'] = 2
 
     def test_conduit_conductance_strict(self):
@@ -51,15 +52,19 @@ class MultiPhaseTest:
         a = sp.where(self.phase['throat.conduit_conductance'] == 0)[0]
         assert sp.all(a == Tinv)
 
-#    def test_late_throat_filling(self):
-#        pass
-#
-#    def test_late_pore_filling(self):
-#        self.phys.add_model(propname='pore.late_p',
-#                            model=pm.multiphase.late_pore_filling,
-#                            Pc=5500)
-#        p = self.phase['pore.occupancy'] > 0
-#        assert sp.allclose(self.phase['pore.late_p'][p], 0.84973704)
+    def test_late_throat_filling(self):
+        self.phys.add_model(propname='throat.nwp_saturation',
+                            model=pm.multiphase.late_throat_filling,
+                            Pc=5500, regen_mode='eager')
+        assert sp.all(self.phase['throat.nwp_saturation'] < 1.0)
+        assert sp.all(self.phase['throat.nwp_saturation'] > 0.0)
+
+    def test_late_pore_filling(self):
+        self.phys.add_model(propname='pore.nwp_saturation',
+                            model=pm.multiphase.late_pore_filling,
+                            Pc=5500, regen_mode='eager')
+        assert sp.all(self.phase['pore.nwp_saturation'] < 1.0)
+        assert sp.all(self.phase['pore.nwp_saturation'] > 0.0)
 
 
 if __name__ == '__main__':

@@ -69,8 +69,12 @@ def conduit_conductance(target, throat_conductance,
 def late_throat_filling(target, Pc, Swp_star=0.11, eta=3,
                         throat_entry_pressure='throat.capillary_pressure'):
     r"""
-    Applies a late filling model to calculate fractional throat filling
-    as a function of applied capillary pressure.
+    Calculates the fraction of a throat filled with invading fluid based on
+    the capillary pressure in the system.  The invading phase volume is
+    calculated from:
+
+        .. math::
+            S_{nwp} = 1 - S_{wp}^{*} (P_{inv}/P_{c})^{\eta}
 
     Parameters
     ----------
@@ -81,37 +85,38 @@ def late_throat_filling(target, Pc, Swp_star=0.11, eta=3,
         Exponent to control the rate at which wetting phase is displaced
 
     Swp_star : float
-        The residual wetting phase in an invaded pore immediately after
+        The residual wetting phase in an invaded throat immediately after
         nonwetting phase invasion
 
     throat_entry_pressure : string
-        The dictionary key containing throat entry pressures.  The default is
-        'throat.capillary_pressure'.
+        The dictionary key containing throat entry pressures.
 
     Returns
     -------
     A Nt-list of containing the fraction of each throat that is filled with
-    non-wetting phase.  Note this method does NOT account for whether a throat
-    is actually filled or not.
+    non-wetting phase.
 
     """
     Swp = sp.ones(target.Nt,)
     if Pc > 0:
         Swp = Swp_star*(target[throat_entry_pressure]/Pc)**eta
-    values = (1 - Swp)*(target[throat_entry_pressure] <= Pc)
+    values = (1 - Swp)
     return values
 
 
 def late_pore_filling(target, Pc, Swp_star=0.2, eta=3,
-                      pc_star='pore.pc_star',
                       throat_entry_pressure='throat.capillary_pressure'):
     r"""
-    Applies a late filling model to calculate fractional pore filling as
-    a function of applied capillary pressure.
+    Calculates the fraction of a pore filled with invading fluid based on
+    the capillary pressure in the system.  The invading phase volume is
+    calculated from:
+
+        .. math::
+            S_{nwp} = 1 - S_{wp}^{*} (P_{inv}/P_{c})^{\eta}
 
     Parameters
     ----------
-    Pc : float
+    Pc : float`
         The capillary pressure in the non-wetting phase (Pc > 0)
 
     eta : float
@@ -121,38 +126,22 @@ def late_pore_filling(target, Pc, Swp_star=0.2, eta=3,
         The residual wetting phase in an invaded pore immediately after
         nonwetting phase invasion
 
-    pc_star : string
-        The dictionary key to find or place the Pc_star array.  Pc_star is
-        the minimum pressure at which a pore can be invaded and is found as
-        the minimum entery pressure of all the pore's neighboring throats.
-        The default is 'pore.Pc_star' and if this array is not found it is
-        created.
-
     throat_entry_pressure : string
-        The dictionary key containing throat entry pressures.  The default is
-        'throat.capillary_pressure'.
-
+        The dictionary key containing throat entry pressures.
     Returns
     -------
     A Np-list of containing the fraction of each pore that is filled with non-
-    wetting phase.  Note this method does NOT account for whether a pore is
-    actually filled or not; this needs to be done using some other external
-    criteria such as the 'pore.inv_Pc' array on a *Drainage* algorithm.
+    wetting phase.
 
     """
-    network = target.network
-    # If pc_star has not yet been calculated, do so
-    if pc_star not in target.keys():
-        pores = target.Ps
-        prop = target[throat_entry_pressure]
-        neighborTs = network.find_neighbor_throats(pores, flatten=False)
-        temp = sp.array([sp.amin(prop[row]) for row in neighborTs])
-        target[pc_star] = temp[target.Pnet]
-
+    phase = target.project.find_phase(target)
+    # Find PcStar
+    from openpnm.models.misc import from_neighbor_throats
+    pc_star = from_neighbor_throats(target=phase,
+                                    throat_prop=throat_entry_pressure,
+                                    mode='min')
     Swp = sp.ones(target.Np,)
     if Pc > 0:
-        Swp = Swp_star*(target[pc_star]/Pc)**eta
-    else:
-        Swp = Swp_star
-    values = (1-Swp)*(target[pc_star] <= Pc)
+        Swp = Swp_star*(pc_star/Pc)**eta
+    values = (1 - Swp)
     return values
