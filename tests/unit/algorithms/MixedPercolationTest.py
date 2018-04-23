@@ -7,7 +7,7 @@ from openpnm import topotools as tp
 
 plt.close('all')
 wrk = op.Workspace()
-wrk.loglevel = 10
+wrk.loglevel = 50
 
 
 class MixedPercolationTest:

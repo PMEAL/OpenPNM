@@ -790,7 +790,7 @@ class MixedPercolation(GenericAlgorithm):
                     phys[tfill_angle] = phys['throat.men_data']['alpha']
                     phys[tmen_rad] = phys['throat.men_data']['rad']
                     phys[tmen_cen] = phys['throat.men_data']['cen']
-    
+
                 for pore in pores:
                     # Dictionary with keys of throat id
                     throat_data = {}
