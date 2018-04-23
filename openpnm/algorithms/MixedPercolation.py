@@ -725,7 +725,7 @@ class MixedPercolation(GenericAlgorithm):
         connected to a pore
         """
         net = self.project.network
-        all_physics = self.project.find_physics(phase=self._phase)
+        phases_physics = self.project.find_physics(phase=self._phase)
         from openpnm.models import physics as pm
         self._coop_fill = True
         if inv_points is None:
@@ -765,7 +765,7 @@ class MixedPercolation(GenericAlgorithm):
             center_model = pm.capillary_pressure.sinusoidal
         else:
             logger.exception('capillary model '+capillary_model+' not valid')
-        for phys in all_physics:
+        for phys in phases_physics:
             for Pc in inv_points:
                 # Dictionary with keys of pore id
                 pore_data = {}

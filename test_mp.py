@@ -15,14 +15,14 @@ wrk = op.core.Workspace()
 
 cap_model = 'sinusoidal'
 fiber_rad = 5e-5
-snap_off = True
+snap_off = False
 partial = False
-coop_fill = True
+coop_fill = False
 trapping = False
 lpf = False
 
 sp.random.seed(0)
-pn = op.network.Cubic(shape=[5, 5, 5], spacing=2.5e-5, name='pn11')
+pn = op.network.Cubic(shape=[5, 5, 5], spacing=3e-4, name='pn11')
 pn.add_boundary_pores()
 proj = pn.project
 
