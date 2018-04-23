@@ -4,7 +4,12 @@ from .ReactiveTransport import ReactiveTransport
 from .TransientTransport import TransientTransport
 from .TransientReactiveTransport import TransientReactiveTransport
 from .StokesFlow import StokesFlow
+from .TransientStokesFlow import TransientStokesFlow
 from .FickianDiffusion import FickianDiffusion
+from .TransientFickianDiffusion import TransientFickianDiffusion
+from .AdvectionDiffusion import AdvectionDiffusion
+from .TransientAdvectionDiffusion import TransientAdvectionDiffusion
+from .Dispersion import Dispersion
 from .FourierConduction import FourierConduction
 from .OhmicConduction import OhmicConduction
 from .GenericPercolation import GenericPercolation
