@@ -40,9 +40,7 @@ class MixedPercolationTest:
         self.air["pore.contact_angle"] = 70
         self.air["pore.surface_tension"] = self.water["pore.surface_tension"]
         self.inv_points = np.linspace(0, 30000, 31)
-        self._label_surfaces()
-
-    def _label_surfaces(self):
+        # Label surfaces
         left = self.net['pore.coords'][self.net.pores('surface')][:, 0].min()
         right = self.net['pore.coords'][self.net.pores('surface')][:, 0].max()
         back = self.net['pore.coords'][self.net.pores('surface')][:, 1].min()

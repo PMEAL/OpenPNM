@@ -77,13 +77,6 @@ if snap_off:
     phys_air['throat.snap_off'] = np.abs(phys_air['throat.snap_off'])
 phys_air['pore.capillary_pressure'] = 0
 phys_water['pore.capillary_pressure'] = 0
-#BPs = pn.pores('*boundary')
-#NBPs = np.asarray(pn.find_neighbor_pores(BPs, flatten=False)).flatten()
-#wPc_NBPs = phys_water["pore.capillary_pressure"][NBPs]
-#phys_water["pore.capillary_pressure"][BPs] = wPc_NBPs
-#aPc_NBPs = phys_air["pore.capillary_pressure"][NBPs]
-#phys_air["pore.capillary_pressure"][BPs] = aPc_NBPs
-
 inlets = pn.pores(labels=['bottom_boundary'])
 outlets = pn.pores(labels=['top_boundary'])
 in_step = 2
