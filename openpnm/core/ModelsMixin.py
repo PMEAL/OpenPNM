@@ -179,7 +179,10 @@ class ModelsMixin():
         model = kwargs.pop('model')
         regen_mode = kwargs.pop('regen_mode', None)
         # Only regenerate model if regen_mode is correct
-        if regen_mode == 'constant':
+        if self.settings['freeze_models']:
+            # Don't run ANY models if freeze_models is set to True
+            pass
+        elif regen_mode == 'constant':
             # Only regenerate if data not already in dictionary
             if prop not in self.keys():
                 self[prop] = model(target=self, **kwargs)
