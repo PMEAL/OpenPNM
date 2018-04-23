@@ -22,6 +22,9 @@ class ThroatStraightTest:
         a = np.array([0.95])
         b = np.unique(self.geo['throat.length'])
         assert np.allclose(a, b)
+        self.geo['pore.diameter'] = 1.1
+        self.geo.regenerate_models(propnames=['throat.length'])
+        assert np.amin(self.geo['throat.length']) == 1e-9
 
 
 if __name__ == '__main__':

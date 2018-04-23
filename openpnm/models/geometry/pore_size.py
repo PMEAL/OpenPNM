@@ -77,8 +77,8 @@ def largest_sphere(target, iters=10):
 def equivalent_diameter(target, pore_volume='pore.volume',
                         pore_shape='sphere'):
     r"""
-    Calculate pore diameter as the diameter of a sphere with an equivalent
-    volume.
+    Calculates the diameter of a sphere or edge-length of a cube with same
+    volume as the pore.
 
     Parameters
     ----------
@@ -90,7 +90,7 @@ def equivalent_diameter(target, pore_volume='pore.volume',
     pore_volume : string
         The dictionary key containing the pore volume values
 
-    shape : string
+    pore_shape : string
         The shape of the pore body to assume when back-calculating from
         volume.  Options are 'sphere' (default) or 'cube'.
 
