@@ -42,7 +42,7 @@ class ModelsDict(PrintableDict):
 
 class ModelsMixin():
 
-    def add_model(self, propname, model, regen_mode='deferred', **kwargs):
+    def add_model(self, propname, model, regen_mode='normal', **kwargs):
         r"""
         Adds a new model to the models dictionary (``object.models``)
 
@@ -65,8 +65,9 @@ class ModelsMixin():
             *'constant'* : The model is run directly upon being assigned, but
             is not called again, thus making it's data act like a constant.
 
-            *'deferred'* or *'lazy'*: (default) Is not run upon being assigned,
-            but is run the first time that it's data is requested.
+            *'deferred'* or *'lazy'*: Is not run upon being assigned,
+            but is run the first time that it's data is requested, and each
+            time after that as well.
 
         Notes
         -----
@@ -98,6 +99,10 @@ class ModelsMixin():
                 # Skip if argument was given in kwargs
                 if k not in kwargs:
                     kwargs.update({k: v})
+        # Ensure that a model doesn't call itself if regen mode is lazy.
+        if (propname in kwargs.values()) and \
+           (regen_mode in ['deferred', 'lazy']):
+            raise Exception()
         # Store all keyword argumnents in model
         self.models[propname] = kwargs
         # Regenerate model values if necessary
