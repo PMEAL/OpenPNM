@@ -26,9 +26,9 @@ class GenericTransport(GenericAlgorithm):
             project = network.project
         super().__init__(project=project, **kwargs)
         # Create some instance attributes
-        self.A = None
+        self._A = None
         self._pure_A = None
-        self.b = None
+        self._b = None
         self._pure_b = None
 
     def setup(self, phase=None, **kwargs):
@@ -223,29 +223,48 @@ class GenericTransport(GenericAlgorithm):
             self._pure_b = b
         self.b = self._pure_b.copy()
 
+    def _get_A(self):
+        if self._A is None:
+            self._build_A(force=True)
+        return self._A
+
+    def _set_A(self, A):
+        self._A = A
+
+    A = property(fget=_get_A, fset=_set_A)
+
+    def _get_b(self):
+        if self._b is None:
+            self._build_b(force=True)
+        return self._b
+
+    def _set_b(self, b):
+        self._b = b
+
+    b = property(fget=_get_b, fset=_set_b)
+
     def _apply_BCs(self):
         r"""
         Applies all the boundary conditions that have been specified, by
         adding values to the *A* and *b* matrices.
 
         """
-        self._build_A()
-        self._build_b()
         if 'pore.neumann' in self.keys():
             # Update b
             ind = self['pore.neumann']
             self.b[ind] = self['pore.neumann_value'][ind]
         if 'pore.dirichlet' in self.keys():
+            f = np.amax(np.absolute(self.A.data))
             # Update b
             ind = self['pore.dirichlet']
-            self.b[ind] = self['pore.dirichlet_value'][ind]
+            self.b[ind] = f*self['pore.dirichlet_value'][ind]
             # Update A
             # Find all entries on rows associated with dirichlet pores
             P_bc = self.toindices(self['pore.dirichlet'])
             indrow = np.in1d(self.A.row, P_bc)
             self.A.data[indrow] = 0  # Remove entries from A for all BC rows
             datadiag = self.A.diagonal()  # Add diagonal entries back into A
-            datadiag[P_bc] = np.ones_like(P_bc, dtype=float)
+            datadiag[P_bc] = f*np.ones_like(P_bc, dtype=float)
             self.A.setdiag(datadiag)
             self.A.eliminate_zeros()  # Remove 0 entries
 
@@ -319,14 +338,18 @@ class GenericTransport(GenericAlgorithm):
         d = {quantity: self[quantity]}
         return d
 
-    def rate(self, pores=None, mode='group'):
+    def rate(self, pores=[], throats=[], mode='group'):
         r"""
-        Calculates the net rate of material moving into a given set of pores.
+        Calculates the net rate of material moving into a given set of pores or
+        throats
 
         Parameters
         ----------
         pores : array_like
             The pores for which the rate should be calculated
+
+        throats : array_like
+            The throats through which the rate should be calculated
 
         mode : string, optional
             Controls how to return the rate.  Options are:
@@ -336,12 +359,23 @@ class GenericTransport(GenericAlgorithm):
 
             *'single'* : Calculates the rate for each pore individually
 
-        Notes
-        -----
-        A negative rate indicates material moving into the pore or pores, such
-        as material being consumed.
+        Returns
+        -------
+        If ``pores`` are specified, then the returned values indicate the
+        net rate of material exiting the pore or pores.  Thus a positive
+        rate indicates material is leaving the pores, and negative values
+        mean material is entering.
+
+        If ``throats`` are specified the rate is calculated in the direction of
+        the gradient, thus is always positive.
+
+        If ``mode`` is 'single' then the cumulative rate through the given
+        pores (or throats) are returned as a vector, if ``mode`` is 'group'
+        then the individual rates are summed and returned as a scalar.
+
         """
         pores = self._parse_indices(pores)
+        throats = self._parse_indices(throats)
 
         network = self.project.network
         phase = self.project.phases()[self.settings['phase']]
@@ -353,17 +387,25 @@ class GenericTransport(GenericAlgorithm):
         f = (-1)**np.argsort(X12, axis=1)[:, 1]
         g = conductance
         Dx = np.abs(np.diff(X12, axis=1).squeeze())
-        Qt = f*g*Dx
+        Qt = -f*g*Dx
 
-        if mode == 'single':
-            Qp = np.zeros((self.Np, ))
-            np.add.at(Qp, P12[:, 0], Qt)
-            np.add.at(Qp, P12[:, 1], -Qt)
-            R = Qp[pores]
-        elif mode == 'group':
-            Ts = network.find_neighbor_throats(pores=pores,
-                                               mode='exclusive_or')
-            R = np.sum(Qt[Ts])
+        if len(throats) and len(pores):
+            raise Exception('Must specify either pores or throats, not both')
+        elif len(throats):
+            if mode == 'single':
+                R = np.absolute(Qt[throats])
+            if mode == 'group':
+                R = np.absolute(np.sum(Qt[throats]))
+        elif len(pores):
+            if mode == 'single':
+                Qp = np.zeros((self.Np, ))
+                np.add.at(Qp, P12[:, 0], -Qt)
+                np.add.at(Qp, P12[:, 1], Qt)
+                R = Qp[pores]
+            elif mode == 'group':
+                Ts = network.find_neighbor_throats(pores=pores,
+                                                   mode='exclusive_or')
+                R = np.sum(Qt[Ts])
         return np.array(R, ndmin=1)
 
     def _calc_eff_prop(self):
@@ -372,7 +414,6 @@ class GenericTransport(GenericAlgorithm):
         in a linear transport equation.  It also checks for the proper
         boundary conditions, inlets and outlets.
         """
-        network = self.project.network
         if self.settings['quantity'] not in self.keys():
             raise Exception('The algorithm has not been run yet. Cannot ' +
                             'calculate effective property.')
@@ -381,12 +422,13 @@ class GenericTransport(GenericAlgorithm):
         inlets, outlets = self._get_inlets_and_outlets()
         Ps = self.pores('pore.dirichlet')
         BCs = np.unique(self['pore.dirichlet_value'][Ps])
+        Dx = np.abs(np.diff(BCs))
 
         # Fetch area and length of domain
         A = self.domain_area
         L = self.domain_length
         flow = self.rate(pores=inlets)
-        D = np.sum(flow)*L/A/(BCs[0] - BCs[1])
+        D = np.sum(flow)*L/A/Dx
         return D
 
     def _get_inlets_and_outlets(self):
