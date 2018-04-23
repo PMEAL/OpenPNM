@@ -165,6 +165,7 @@ def purcell(target, r_toroid, surface_tension='pore.surface_tension',
         value = value[phase.pores(target.name)]
     return value
 
+
 def sinusoidal(target,
                mode='max',
                target_Pc=None,
