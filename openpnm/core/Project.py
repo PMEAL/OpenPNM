@@ -16,6 +16,7 @@ class Project(list):
         ws[name] = self
         self._grid = {}
         self.settings = SettingsDict()
+        self.comments = 'Using OpenPNM ' + openpnm.__version__
 
     def extend(self, obj):
         if hasattr(obj, '_mro'):

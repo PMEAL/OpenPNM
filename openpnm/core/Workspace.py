@@ -25,7 +25,6 @@ class Workspace(dict):
 
     def __init__(self):
         super().__init__()
-        self.comments = 'Using OpenPNM ' + openpnm.__version__
         self.settings = SettingsDict()
 
     def __setitem__(self, name, project):
@@ -149,7 +148,7 @@ class Workspace(dict):
 
         Returns
         -------
-        An empty project object, suitable for passing into a Network
+        An empty project object, sui+table for passing into a Network
         generator
 
         """
@@ -159,7 +158,7 @@ class Workspace(dict):
     def import_data(self, filename):
         r"""
         """
-        raise NotImplementedError()
+        raise NotImplementedError('Use the io module to import data')
 
     def export_data(self, network=None, phases=[], filename=None,
                     filetype='vtp'):
@@ -242,19 +241,6 @@ class Workspace(dict):
                 n.append(int(item.split('sim_')[1]))
         name = 'sim_'+str(max(n)+1).zfill(2)
         return name
-
-    def _set_comments(self, string):
-        if hasattr(self, '_comments') is False:
-            self._comments = {}
-        self._comments[time.strftime('%c')] = string
-
-    def _get_comments(self):
-        if hasattr(self, '_comments') is False:
-            self._comments = {}
-        for key in list(self._comments.keys()):
-            print(key, ': ', self._comments[key])
-
-    comments = property(fget=_get_comments, fset=_set_comments)
 
     def __str__(self):
         s = []
