@@ -756,8 +756,6 @@ class GenericNetwork(Base, ModelsMixin):
         hits = sp.where(self['throat.conns'] > self.Np - 1)[0]
         if sp.size(hits) > 0:
             health['headless_throats'] = sp.unique(hits)
-            logger.warning('Health check cannot complete due to connectivity '
-                           'errors. Please correct existing errors & recheck.')
             return health
 
         # Check for throats that loop back onto the same pore
@@ -769,7 +767,6 @@ class GenericNetwork(Base, ModelsMixin):
         # Check for individual isolated pores
         Ps = self.num_neighbors(self.pores())
         if sp.sum(Ps == 0) > 0:
-            logger.warning(str(sp.sum(Ps == 0)) + ' pores have no neighbors')
             health['isolated_pores'] = sp.where(Ps == 0)[0]
 
         # Check for separated clusters of pores
@@ -777,7 +774,6 @@ class GenericNetwork(Base, ModelsMixin):
         tmask = self.tomask(throats=self.throats('all'))
         Cs = topotools.find_clusters(network=self, mask=tmask)
         if sp.shape(sp.unique(Cs))[0] > 1:
-            logger.warning('Isolated clusters exist in the network')
             for i in sp.unique(Cs):
                 temp.append(sp.where(Cs == i)[0])
             b = sp.array([len(item) for item in temp])
