@@ -209,41 +209,50 @@ class Project(list):
             obj = openpnm.core.Base(project=self, name=name)
         return obj
 
-    def dump_data(self):
+    def _dump_data(self, mode=['props']):
         r"""
         Dump data from all objects in project to an HDF5 file
+
+        Parameters
+        ----------
+        mode : string or list of strings
+            The type of data to be dumped to the HDF5 file.  Options are:
+
+            **'props'** : Numerical data such as 'pore.diameter'.  The default
+            is only 'props'.
+
+            **'labels'** : Boolean data that are used as labels.  Since this
+            is boolean data it does not consume large amounts of memory and
+            probably does not need to be dumped.
+
         """
-        f = h5py.File(self.name + '.hdf5')
-        try:
+        with h5py.File(self.name + '.hdf5') as f:
             for obj in self:
                 for key in list(obj.keys()):
                     tempname = obj.name + '|' + '_'.join(key.split('.'))
+                    arr = obj[key]
                     if 'U' in str(obj[key][0].dtype):
                         pass
                     elif 'all' in key.split('.'):
                         pass
                     else:
-                        arr = obj.pop(key)
                         f.create_dataset(name='/'+tempname, shape=arr.shape,
                                          dtype=arr.dtype, data=arr)
-        except AttributeError:
-            print('File is not empty, change project name and try again')
-            f.close()
-        f.close()
+            for obj in self:
+                obj.clear(mode=mode)
 
-    def load_data(self):
+    def _fetch_data(self):
         r"""
         Retrieve data from an HDF5 file and place onto correct objects in the
         project
         """
-        f = h5py.File(self.name + '.hdf5')
-        # Reload data into project
-        for item in f.keys():
-            obj_name, propname = item.split('|')
-            propname = propname.split('_')
-            propname = propname[0] + '.' + '_'.join(propname[1:])
-            self[obj_name][propname] = f[item]
-        f.close()
+        with h5py.File(self.name + '.hdf5') as f:
+            # Reload data into project
+            for item in f.keys():
+                obj_name, propname = item.split('|')
+                propname = propname.split('_')
+                propname = propname[0] + '.' + '_'.join(propname[1:])
+                self[obj_name][propname] = f[item]
 
     @property
     def network(self):

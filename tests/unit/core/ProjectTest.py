@@ -237,6 +237,13 @@ class ProjectTest:
         proj = self.proj
         proj.comments = 'test comment'
         assert 'test comment' in proj._comments.values()
+        proj.comments
+
+    def test_print(self):
+        proj = self.proj
+        s = proj.__str__()
+        # 13 rows
+        assert len(s.split('\n')) == 13
 
     def test_save_and_load_object(self):
         proj = self.proj
@@ -245,6 +252,7 @@ class ProjectTest:
         new_proj = self.ws.new_project()
         new_proj.load_object(name+'.net')
         assert new_proj.network.name == name
+        os.remove(name+'.net')
 
     def test_load_object_from_fixture(self):
         path = Path(os.path.realpath(__file__),
@@ -254,6 +262,16 @@ class ProjectTest:
         new_proj.load_object(filename)
         assert len(new_proj) == 1
         assert new_proj.network._isa('network')
+
+    def test_dump_and_fetch_data(self):
+        proj = self.ws.copy_project(self.proj)
+        proj._dump_data()
+        # Ensure all properties are gone
+        assert ~sp.any([len(item.props()) for item in proj])
+        proj._fetch_data()
+        assert sp.any([len(item.props()) for item in proj])
+#        os.remove(self.proj.name+'.hdf5')
+
 
 
 if __name__ == '__main__':
