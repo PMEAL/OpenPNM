@@ -208,9 +208,6 @@ class ModelsMixin():
         for model in dict_:
             # In case regen mode is not set, do it now
             dict_[model].setdefault('regen_mode', 'normal')
-        if self.settings['freeze_models']:
-            pass
-        else:
-            self.regenerate_models()
+        self.regenerate_models()
 
     models = property(fget=_get_models, fset=_set_models)

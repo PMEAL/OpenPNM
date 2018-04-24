@@ -141,20 +141,16 @@ class DelaunayGeometry(GenericGeometry):
         self['throat.length'] *= self.network.fiber_rad*2
         self['throat.c2c'] = self._throat_c2c()
         # Configurable Models
-        self.models = self.recipe()
+        self.add_model(propname='throat.shape_factor',
+                       model=gm.throat_shape_factor.compactness)
+        self.add_model(propname='pore.diameter',
+                       model=gm.pore_size.equivalent_diameter)
+        self.add_model(propname='pore.area',
+                       model=gm.pore_area.sphere,
+                       pore_diameter='pore.diameter')
+        self.add_model(propname='throat.surface_area',
+                       model=gm.throat_surface_area.extrusion)
         self.regenerate_models()
-
-    @classmethod
-    def recipe(cls):
-        sf_mod = gm.throat_shape_factor.compactness
-        sa_mod = gm.throat_surface_area.extrusion
-        r = {'throat.shape_factor': {'model': sf_mod},
-             'pore.diameter': {'model': gm.pore_size.equivalent_sphere},
-             'pore.area': {'model': gm.pore_area.sphere,
-                           'pore_diameter': 'pore.diameter'},
-             'throat.surface_area': {'model': sa_mod},
-             }
-        return r
 
     def _t_normals(self):
         r"""
@@ -173,7 +169,7 @@ class DelaunayGeometry(GenericGeometry):
             sorted_verts = verts[i][hull.vertices].astype(float)
             v1 = sorted_verts[-1]-sorted_verts[0]
             v2 = sorted_verts[1]-sorted_verts[0]
-            value[i]=tr.unit_vector(sp.cross(v1, v2))
+            value[i] = tr.unit_vector(sp.cross(v1, v2))
         return value
 
     def _centroids(self, verts):
