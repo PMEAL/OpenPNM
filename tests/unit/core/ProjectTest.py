@@ -270,8 +270,7 @@ class ProjectTest:
         assert ~sp.any([len(item.props()) for item in proj])
         proj._fetch_data()
         assert sp.any([len(item.props()) for item in proj])
-#        os.remove(self.proj.name+'.hdf5')
-
+        os.remove(self.proj.name+'.hdf5')
 
 
 if __name__ == '__main__':
