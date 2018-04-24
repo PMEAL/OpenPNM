@@ -1,6 +1,8 @@
 import openpnm as op
 import scipy as sp
 import pytest
+from pathlib import Path
+import os
 
 
 class ProjectTest:
@@ -235,6 +237,23 @@ class ProjectTest:
         proj = self.proj
         proj.comments = 'test comment'
         assert 'test comment' in proj._comments.values()
+
+    def test_save_and_load_object(self):
+        proj = self.proj
+        name = proj.network.name
+        proj.save_object(proj.network)
+        new_proj = self.ws.new_project()
+        new_proj.load_object(name+'.net')
+        assert new_proj.network.name == name
+
+    def test_load_object_from_fixture(self):
+        path = Path(os.path.realpath(__file__),
+                    '../../../fixtures/OpenPNM-Objects')
+        filename = Path(path.resolve(), 'net_01.net')
+        new_proj = self.ws.new_project()
+        new_proj.load_object(filename)
+        assert len(new_proj) == 1
+        assert new_proj.network._isa('network')
 
 
 if __name__ == '__main__':
