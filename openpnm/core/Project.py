@@ -142,9 +142,7 @@ class Project(list):
             phys = [self.physics().get(i, None) for i in hits]
             return phys
         else:
-            phys = []
-            for geom in self.geometries().values():
-                phys.append(self.find_physics(geometry=geom))
+            phys = list(self.physics().values())
             return phys
 
     def _validate_name(self, name):
