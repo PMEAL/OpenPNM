@@ -11,7 +11,7 @@ class GenericGeometryTest:
         self.geo.regenerate_models()
 
     def teardown_class(self):
-        mgr = op.Base.Workspace()
+        mgr = op.core.Workspace()
         mgr.clear()
 
     def test_plot_histogram(self):
