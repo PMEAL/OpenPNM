@@ -769,27 +769,32 @@ class MixedPercolation(GenericAlgorithm):
             for Pc in inv_points:
                 # Dictionary with keys of pore id
                 pore_data = {}
+                regen_mode='normal'
                 if capillary_model == 'purcell':
                     phys.add_model(propname=tfill_angle,
                                    model=angle_model,
                                    r_toroid=radius,
-                                   Pc=Pc)
+                                   Pc=Pc,
+                                   regen_mode=regen_mode)
                     phys.add_model(propname=tmen_rad,
                                    model=radius_model,
                                    r_toroid=radius,
-                                   filling_angle=tfill_angle)
+                                   filling_angle=tfill_angle,
+                                   regen_mode=regen_mode)
                     phys.add_model(propname=tmen_cen,
                                    model=center_model,
                                    r_toroid=radius,
-                                   filling_angle=tfill_angle)
+                                   filling_angle=tfill_angle,
+                                   regen_mode=regen_mode)
                 elif capillary_model == 'sinusoidal':
                     phys.add_model(propname='throat.men_data',
                                    model=angle_model,
                                    mode='men',
-                                   target_Pc=Pc)
-                    phys[tfill_angle] = phys['throat.men_data']['alpha']
-                    phys[tmen_rad] = phys['throat.men_data']['rad']
-                    phys[tmen_cen] = phys['throat.men_data']['cen']
+                                   target_Pc=Pc,
+                                   regen_mode=regen_mode)
+                    phys[tfill_angle] = phys['throat.men_data.alpha']
+                    phys[tmen_rad] = phys['throat.men_data.rad']
+                    phys[tmen_cen] = phys['throat.men_data.cen']
 
                 for pore in pores:
                     # Dictionary with keys of throat id

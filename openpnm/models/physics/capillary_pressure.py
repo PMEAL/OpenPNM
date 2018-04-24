@@ -276,8 +276,12 @@ def sinusoidal(target,
     cap_angle = syp.lambdify((x, rp, rt, l, s, t, off), gamma, 'numpy')
     # Network properties
     throatLength = network[throat_length]
-    poreRad = np.mean(network[pore_diameter][network['throat.conns']], axis=1)
-    poreRad /= 2
+    minDiam = np.min(network[pore_diameter][network['throat.conns']], axis=1)
+    maxDiam = np.max(network[pore_diameter][network['throat.conns']], axis=1)
+    meanDiam = np.mean(network[pore_diameter][network['throat.conns']], axis=1)
+    # Ignore zero valued (boundary pores)
+    meanDiam[minDiam==0.0] = maxDiam[minDiam==0.0] 
+    poreRad = meanDiam/2
     throatRad = network[throat_diameter]/2
     Nt = network.Nt
     # Model ouputs
@@ -369,10 +373,8 @@ def sinusoidal(target,
     men_data['rad'] = rad_curve(pos, poreRad, throatRad, throatLength,
                                 sigma, theta, offset)
     men_data['cen'] = pos - np.sign(target_Pc)*men_data['alpha']
-    df = pd.DataFrame(men_data)
-    rec_arr = df.to_records(index=False)
-    logger.info(mode+' calculated for Pc: '+str(target_Pc))
-    return rec_arr
+
+    return men_data
 
 
 def ransohoff_snap_off(target,
