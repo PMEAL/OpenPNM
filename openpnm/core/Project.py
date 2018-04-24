@@ -325,41 +325,55 @@ class Project(list):
         r"""
         Perform a check to find pores with overlapping or undefined Geometries
         """
-        geoms = self.geometries().keys()
-        net = self.network
-        Ptemp = np.zeros((net.Np,))
-        Ttemp = np.zeros((net.Nt,))
-        for item in geoms:
-            Pind = net['pore.'+item]
-            Tind = net['throat.'+item]
-            Ptemp[Pind] = Ptemp[Pind] + 1
-            Ttemp[Tind] = Ttemp[Tind] + 1
         health = HealthDict()
-        health['overlapping_pores'] = np.where(Ptemp > 1)[0].tolist()
-        health['undefined_pores'] = np.where(Ptemp == 0)[0].tolist()
-        health['overlapping_throats'] = np.where(Ttemp > 1)[0].tolist()
-        health['undefined_throats'] = np.where(Ttemp == 0)[0].tolist()
+        health['overlapping_pores'] = []
+        health['undefined_pores'] = []
+        health['overlapping_throats'] = []
+        health['undefined_throats'] = []
+        geoms = self.geometries().keys()
+        if len(geoms):
+            net = self.network
+            Ptemp = np.zeros((net.Np,))
+            Ttemp = np.zeros((net.Nt,))
+            for item in geoms:
+                Pind = net['pore.'+item]
+                Tind = net['throat.'+item]
+                Ptemp[Pind] = Ptemp[Pind] + 1
+                Ttemp[Tind] = Ttemp[Tind] + 1
+            health['overlapping_pores'] = np.where(Ptemp > 1)[0].tolist()
+            health['undefined_pores'] = np.where(Ptemp == 0)[0].tolist()
+            health['overlapping_throats'] = np.where(Ttemp > 1)[0].tolist()
+            health['undefined_throats'] = np.where(Ttemp == 0)[0].tolist()
         return health
 
     def check_physics_health(self, phase):
         r"""
         Perform a check to find pores which have overlapping or missing Physics
         """
-        phys = self.find_physics(phase=phase)
-        if None in phys:
-            raise Exception('Undefined physics found, check the grid')
-        Ptemp = np.zeros((phase.Np,))
-        Ttemp = np.zeros((phase.Nt,))
-        for item in phys:
-                Pind = phase['pore.'+item.name]
-                Tind = phase['throat.'+item.name]
-                Ptemp[Pind] = Ptemp[Pind] + 1
-                Ttemp[Tind] = Ttemp[Tind] + 1
         health = HealthDict()
-        health['overlapping_pores'] = np.where(Ptemp > 1)[0].tolist()
-        health['undefined_pores'] = np.where(Ptemp == 0)[0].tolist()
-        health['overlapping_throats'] = np.where(Ttemp > 1)[0].tolist()
-        health['undefined_throats'] = np.where(Ttemp == 0)[0].tolist()
+        health['overlapping_pores'] = []
+        health['undefined_pores'] = []
+        health['overlapping_throats'] = []
+        health['undefined_throats'] = []
+        geoms = self.geometries().keys()
+        if len(geoms):
+            phys = self.find_physics(phase=phase)
+            if len(phys) == 0:
+                raise Exception(str(len(geoms))+' geometries were found, but' +
+                                ' no physics')
+            if None in phys:
+                raise Exception('Undefined physics found, check the grid')
+            Ptemp = np.zeros((phase.Np,))
+            Ttemp = np.zeros((phase.Nt,))
+            for item in phys:
+                    Pind = phase['pore.'+item.name]
+                    Tind = phase['throat.'+item.name]
+                    Ptemp[Pind] = Ptemp[Pind] + 1
+                    Ttemp[Tind] = Ttemp[Tind] + 1
+            health['overlapping_pores'] = np.where(Ptemp > 1)[0].tolist()
+            health['undefined_pores'] = np.where(Ptemp == 0)[0].tolist()
+            health['overlapping_throats'] = np.where(Ttemp > 1)[0].tolist()
+            health['undefined_throats'] = np.where(Ttemp == 0)[0].tolist()
         return health
 
 
