@@ -80,6 +80,57 @@ class HealthCheckTest:
         assert np.all(h['overlapping_throats'] == np.where(temp)[0])
         del self.ws[proj.name]
 
+    def test_check_physics_health_good(self):
+        proj = self.proj
+        h = proj.check_physics_health(self.phase1)
+        a = list(h.keys())
+        b = ['overlapping_pores', 'undefined_pores', 'overlapping_throats',
+             'undefined_throats']
+        # Ensure correct items are checked
+        assert set(a) == set(b)
+        # Ensure all items found no problems (0 length results)
+        assert ~np.any([len(item) for item in h.values()])
+
+    def test_check_physics_health_undefined_pores(self):
+        proj = self.ws.copy_project(self.proj)
+        phys = self.phys11
+        phase = proj.find_phase(phys)
+        temp = np.copy(phase['pore.'+phys.name])
+        phase['pore.'+phys.name] = False
+        h = proj.check_physics_health(phase)
+        assert np.all(h['undefined_pores'] == np.where(temp)[0])
+        del self.ws[proj.name]
+
+    def test_check_physics_health_undefined_throats(self):
+        proj = self.ws.copy_project(self.proj)
+        phys = self.phys11
+        phase = proj.find_phase(phys)
+        temp = np.copy(phase['throat.'+phys.name])
+        phase['throat.'+phys.name] = False
+        h = proj.check_physics_health(phase)
+        assert np.all(h['undefined_throats'] == np.where(temp)[0])
+        del self.ws[proj.name]
+
+    def test_check_physics_health_overlapping_pores(self):
+        proj = self.ws.copy_project(self.proj)
+        phys = self.phys11
+        phase = proj.find_phase(phys)
+        temp = np.copy(phase['pore.'+phys.name])
+        phase['pore.'+phys.name] = True
+        h = proj.check_physics_health(phase)
+        assert np.all(h['overlapping_pores'] == np.where(temp == 0)[0])
+        del self.ws[proj.name]
+
+    def test_check_physics_health_overlapping_throats(self):
+        proj = self.ws.copy_project(self.proj)
+        phys = self.phys11
+        phase = proj.find_phase(phys)
+        temp = np.copy(phase['throat.'+phys.name])
+        phase['throat.'+phys.name] = True
+        h = proj.check_physics_health(phase)
+        assert np.all(h['overlapping_throats'] == np.where(temp == 0)[0])
+        del self.ws[proj.name]
+
 
 if __name__ == '__main__':
 
