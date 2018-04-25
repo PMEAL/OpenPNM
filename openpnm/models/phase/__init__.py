@@ -1,4 +1,3 @@
-from . import contact_angle
 from . import density
 from . import diffusivity
 from . import electrical_conductivity

@@ -50,6 +50,35 @@ class ThroatSizeTest:
         assert sp.amin(self.geo['throat.diameter']) > 0.001
         del self.geo['throat.diameter']
 
+    def test_from_neighbor_pores(self):
+        self.geo['pore.diameter'] = 0.1
+        self.geo.add_model(propname='throat.diameter',
+                           model=gm.throat_size.from_neighbor_pores,
+                           pore_prop='pore.diameter')
+        a = sp.unique(self.geo['throat.diameter'])
+        b = sp.array(0.1, ndmin=1)
+        assert sp.allclose(a, b)
+        del self.geo['throat.diameter'], self.geo.models['throat.diameter']
+
+    def test_equivalent_diameter(self):
+        self.geo['throat.area'] = 1.0
+        self.geo.add_model(propname='throat.diameter',
+                           model=gm.throat_size.equivalent_diameter,
+                           throat_area='throat.area',
+                           throat_shape='circle')
+        a = sp.unique(self.geo['throat.diameter'])
+        b = sp.array(1.12837917, ndmin=1)
+        assert sp.allclose(a, b)
+        del self.geo['throat.diameter'], self.geo.models['throat.diameter']
+        self.geo.add_model(propname='throat.diameter',
+                           model=gm.throat_size.equivalent_diameter,
+                           throat_area='throat.area',
+                           throat_shape='square')
+        a = sp.unique(self.geo['throat.diameter'])
+        b = sp.array(1.0, ndmin=1)
+        assert sp.allclose(a, b)
+        del self.geo['throat.diameter'], self.geo.models['throat.diameter']
+
 
 if __name__ == '__main__':
 

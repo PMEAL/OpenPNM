@@ -684,7 +684,9 @@ class BaseTest:
             del self.geo[item]
         assert len(set(self.geo.keys()).intersection(models)) == 0
         for item in models:
+            self.geo.models[item]['regen_mode'] = 'lazy'
             arr = self.geo[item]
+            self.geo.models[item]['regen_mode'] = 'normal'
         assert len(set(self.geo.keys()).intersection(models)) == 2
 
     def test_get_no_matches(self):

@@ -3,12 +3,12 @@ import scipy as _sp
 
 
 def bulk_diffusion(target, molar_density='pore.molar_density',
-                   diffusivity='pore.diffusivity',
+                   pore_diffusivity='pore.diffusivity',
+                   throat_diffusivity='throat.diffusivity',
                    pore_area='pore.area',
                    pore_diameter='pore.diameter',
                    throat_area='throat.area',
                    throat_length='throat.length',
-                   throat_diameter='throat.diameter',
                    shape_factor='throat.shape_factor',
                    calc_pore_len=False):
     r"""
@@ -38,15 +38,16 @@ def bulk_diffusion(target, molar_density='pore.molar_density',
     # Get properties in every pore in the network
     parea = network[pore_area]
     pdia = network[pore_diameter]
+    DABp = phase[pore_diffusivity]
     # Get the properties of every throat
-    tdia = network[throat_diameter]
-    tarea = _sp.pi*(tdia/2)**2
+    tarea = network[throat_area]
     tlen = network[throat_length]
     # Interpolate pore phase property values to throats
-    cp = phase[molar_density]
     ct = phase.interpolate_data(propname=molar_density)
-    DABp = phase[diffusivity]
-    DABt = phase.interpolate_data(propname=diffusivity)
+    try:
+        DABt = phase[throat_diffusivity]
+    except KeyError:
+        DABt = phase.interpolate_data(propname=pore_diffusivity)
     if calc_pore_len:
         lengths = op.utils.misc.conduit_lengths(network, mode='centroid')
         plen1 = lengths[:, 0]
@@ -58,11 +59,11 @@ def bulk_diffusion(target, molar_density='pore.molar_density',
     plen1[plen1 <= 0] = 1e-12
     plen2[plen2 <= 0] = 1e-12
     # Find g for half of pore 1
-    gp1 = ct*DABt*parea[Ps[:, 0]] / plen1
+    gp1 = ct*(DABp*parea)[Ps[:, 0]] / plen1
     gp1[_sp.isnan(gp1)] = _sp.inf
     gp1[~(gp1 > 0)] = _sp.inf  # Set 0 conductance pores (boundaries) to inf
     # Find g for half of pore 2
-    gp2 = ct*DABt*parea[Ps[:, 1]] / plen2
+    gp2 = ct*(DABp*parea)[Ps[:, 1]] / plen2
     gp2[_sp.isnan(gp2)] = _sp.inf
     gp2[~(gp2 > 0)] = _sp.inf  # Set 0 conductance pores (boundaries) to inf
     # Find g for full throat, remove any non-positive lengths

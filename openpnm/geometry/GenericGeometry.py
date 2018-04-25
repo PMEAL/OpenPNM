@@ -52,9 +52,24 @@ class GenericGeometry(Subdomain, ModelsMixin):
             network['throat.'+self.name] = False
             self.add_locations(pores=pores, throats=throats)
 
-    def show_hist(self, props=['pore.diameter'], bins=20, fig=None, **kwargs):
-        if fig is None:
-            fig = plt.figure()
+    def show_hist(self, props=['pore.diameter'], bins=20, **kwargs):
+        r"""
+        Show a quick plot of key property distributions.
+
+        Parameters
+        ----------
+        props : string or list of strings
+            The pore and/or throat properties to be plotted as histograms
+
+        bins : int or array_like
+            The number of bins to use when generating the histogram.  If an
+            array is given they are used as the bin spacing instead.
+
+        Notes
+        -----
+        Other keyword arguments are passed to the ``matplotlib.pyplot.hist``
+        function.
+        """
         if type(props) is str:
             props = [props]
         N = len(props)
@@ -69,7 +84,7 @@ class GenericGeometry(Subdomain, ModelsMixin):
             c = int(sp.floor(N**0.5))
 
         for i in range(len(props)):
-            plt.subplot(r, c, i+1)
+            fig = plt.subplot(r, c, i+1)
             plt.hist(self[props[i]], bins=bins, **kwargs)
 
     @property

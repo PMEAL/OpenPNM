@@ -1,5 +1,5 @@
 import openpnm as op
-import scipy as sp
+from numpy.testing import assert_approx_equal
 
 
 class DiffusivityTest:
@@ -19,7 +19,7 @@ class DiffusivityTest:
                              vA=16.6,
                              vB=17.9)
         self.phase.regenerate_models()
-        assert sp.allclose(self.phase['pore.diffusivity'], 2.06754784e-05)
+        assert_approx_equal(self.phase['pore.diffusivity'].mean(), 2.06754784e-05)
 
     def test_fuller_scaling(self):
         f = op.models.phase.diffusivity.fuller_scaling
@@ -29,7 +29,7 @@ class DiffusivityTest:
                              Po=100000,
                              To=273)
         self.phase.regenerate_models()
-        assert sp.allclose(self.phase['pore.diffusivity'], 2.06754784e-05)
+        assert_approx_equal(self.phase['pore.diffusivity'].mean(), 2.06754784e-05)
 
     def test_tyn_calus(self):
         f = op.models.phase.diffusivity.tyn_calus
@@ -40,7 +40,7 @@ class DiffusivityTest:
                              sigma_A=1,
                              sigma_B=1)
         self.phase.regenerate_models()
-        assert sp.allclose(self.phase['pore.diffusivity'], 9.84851806e-05)
+        assert_approx_equal(self.phase['pore.diffusivity'].mean(), 9.84851806e-05)
 
     def test_tyn_calus_scaling(self):
         f = op.models.phase.diffusivity.tyn_calus_scaling
@@ -50,7 +50,7 @@ class DiffusivityTest:
                              mu_o=3e-5,
                              To=273)
         self.phase.regenerate_models()
-        assert sp.allclose(self.phase['pore.diffusivity'], 9.84851806e-05)
+        assert_approx_equal(self.phase['pore.diffusivity'].mean(), 9.84851806e-05)
 
 
 if __name__ == '__main__':

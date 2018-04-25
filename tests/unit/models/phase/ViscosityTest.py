@@ -1,5 +1,6 @@
 import openpnm as op
 import scipy as sp
+from numpy.testing import assert_approx_equal
 
 
 class ViscosityTest:
@@ -16,7 +17,8 @@ class ViscosityTest:
         self.phase.add_model(propname='pore.viscosity',
                              model=op.models.phase.viscosity.water)
         self.phase.regenerate_models()
-        assert sp.allclose(self.phase['pore.viscosity'], 0.00089319)
+        assert_approx_equal(self.phase['pore.viscosity'].mean(),
+                            0.0008931909)
 
     def test_reynolds(self):
         self.phase.add_model(propname='pore.viscosity',
@@ -24,13 +26,15 @@ class ViscosityTest:
                              u0=0.001,
                              b=0.001)
         self.phase.regenerate_models()
-        assert sp.allclose(self.phase['pore.viscosity'], 0.00134716)
+        assert_approx_equal(self.phase['pore.viscosity'].mean(),
+                            0.001347161)
 
     def test_chung(self):
         self.phase.add_model(propname='pore.viscosity',
                              model=op.models.phase.viscosity.chung)
         self.phase.regenerate_models()
-        assert sp.allclose(self.phase['pore.viscosity'], 6.47289919e-05)
+        assert_approx_equal(self.phase['pore.viscosity'].mean(),
+                            6.47289919e-05)
 
 
 if __name__ == '__main__':

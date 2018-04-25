@@ -1445,7 +1445,7 @@ def find_clusters(network, mask=[], t_labels=False):
     Identify connected clusters of pores in the network.  This method can
     also return a list of throat cluster numbers, which correspond to the
     cluster numbers of the pores to which the throat is connected.  Either
-    site and bond percolation can be consider, see description of input
+    site and bond percolation can be considered, see description of input
     arguments for details.
 
     Parameters

@@ -51,9 +51,9 @@ class StokesFlow(ReactiveTransport):
         if phase:
             self.settings['phase'] = phase.name
         if quantity:
-            self.settings['quantity': quantity]
+            self.settings['quantity'] = quantity
         if conductance:
-            self.settings['conductance': conductance]
+            self.settings['conductance'] = conductance
         super().setup(**kwargs)
 
     def calc_eff_permeability(self):

@@ -1,5 +1,5 @@
 import openpnm as op
-import scipy as sp
+from numpy.testing import assert_approx_equal
 
 
 class MolarDensityTest:
@@ -17,19 +17,22 @@ class MolarDensityTest:
         f = op.models.phase.molar_density.standard
         self.phase.add_model(propname='pore.molar_density', model=f)
         self.phase.regenerate_models()
-        assert sp.allclose(self.phase['pore.molar_density'], 40.8934707)
+        assert_approx_equal(self.phase['pore.molar_density'].mean(),
+                            40.8934707)
 
     def test_ideal_gas(self):
         f = op.models.phase.molar_density.ideal_gas
         self.phase.add_model(propname='pore.molar_density', model=f)
         self.phase.regenerate_models()
-        assert sp.allclose(self.phase['pore.molar_density'], 40.8945824)
+        assert_approx_equal(self.phase['pore.molar_density'].mean(),
+                            40.8945824)
 
     def test_vanderwaals(self):
         f = op.models.phase.molar_density.vanderwaals
         self.phase.add_model(propname='pore.molar_density', model=f)
         self.phase.regenerate_models()
-        assert sp.allclose(self.phase['pore.molar_density'], 40.92524916)
+        assert_approx_equal(self.phase['pore.molar_density'].mean(),
+                            40.92524916)
 
 
 if __name__ == '__main__':
