@@ -719,9 +719,9 @@ class Base(dict):
         >>> print(g1['pore.value'])
         [1 1 1 1]
         >>> print(g2['pore.value'])  # 'pore.value' is defined on g1, not g2
-        [ nan  nan  nan  nan]
+        [nan nan nan nan]
         >>> print(pn['pore.value'])
-        [ nan   1.  nan   1.  nan   1.  nan   1.]
+        [nan  1. nan  1. nan  1. nan  1.]
         >>> g2['pore.value'] = 20
         >>> print(pn['pore.value'])
         [20  1 20  1 20  1 20  1]

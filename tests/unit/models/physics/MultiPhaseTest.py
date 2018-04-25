@@ -1,5 +1,6 @@
 import openpnm as op
 import scipy as sp
+from numpy.testing import assert_approx_equal
 import openpnm.models.physics as pm
 
 

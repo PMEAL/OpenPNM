@@ -1,5 +1,5 @@
 import openpnm as op
-import scipy as sp
+from numpy.testing import assert_approx_equal
 
 
 class DensityTest:
@@ -16,21 +16,21 @@ class DensityTest:
         # Liquid water
         self.phase.add_model(propname='pore.density',
                              model=op.models.phase.density.standard)
-        assert sp.allclose(self.phase['pore.density'], 999.702)
+        assert_approx_equal(self.phase['pore.density'].mean(), 999.702)
 
     def test_ideal_gas(self):
         # Water vapor
         self.phase.add_model(propname='pore.density',
                              model=op.models.phase.density.ideal_gas)
         self.phase.regenerate_models()
-        assert sp.allclose(self.phase['pore.density'], 0.73610248)
+        assert_approx_equal(self.phase['pore.density'].mean(), 0.73610248)
 
     def test_water(self):
         # Liquid water
         self.phase.add_model(propname='pore.density',
                              model=op.models.phase.density.water)
         self.phase.regenerate_models()
-        assert sp.allclose(self.phase['pore.density'], 996.9522)
+        assert_approx_equal(self.phase['pore.density'].mean(), 996.9522)
 
     def teardown_class(self):
         del(self.phase)

@@ -1,5 +1,6 @@
 import openpnm as op
 import scipy as sp
+from numpy.testing import assert_approx_equal
 
 
 class VaporPressureTest:
@@ -18,7 +19,8 @@ class VaporPressureTest:
                              B=1750.71,
                              C=236.191)
         self.phase.regenerate_models()
-        assert sp.allclose(self.phase['pore.test'], 3607.850875)
+        assert_approx_equal(self.phase['pore.test'].mean(),
+                            3607.8508)
 
     def test_water(self):
         f = op.models.phase.vapor_pressure.water
@@ -27,7 +29,8 @@ class VaporPressureTest:
                              temperature='pore.temperature',
                              salinity='pore.salinity')
         self.phase.regenerate_models()
-        assert sp.allclose(self.phase['pore.test'], 3536.01)
+        assert_approx_equal(self.phase['pore.test'].mean(),
+                            3536.0130)
 
     def test_water_no_salinity(self):
         f = op.models.phase.vapor_pressure.water
@@ -37,7 +40,8 @@ class VaporPressureTest:
                              temperature='pore.temperature',
                              salinity='pore.salinity')
         self.phase.regenerate_models()
-        assert sp.allclose(self.phase['pore.test'], 3536.01)
+        assert_approx_equal(self.phase['pore.test'].mean(),
+                            3536.0130)
         self.phase['pore.salinity'] = sp.zeros((self.phase.Np,))
 
 

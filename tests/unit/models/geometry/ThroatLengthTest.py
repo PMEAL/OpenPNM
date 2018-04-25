@@ -1,6 +1,7 @@
 import openpnm as op
 import openpnm.models.geometry.throat_length as mods
 import numpy as np
+from numpy.testing import assert_approx_equal
 
 
 class ThroatStraightTest:
