@@ -1,6 +1,7 @@
 import openpnm as op
 from numpy.testing import assert_approx_equal
 
+
 class CapillaryPressureTest:
 
     def setup_class(self):
