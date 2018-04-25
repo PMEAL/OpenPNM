@@ -1,5 +1,6 @@
 import openpnm as op
 import scipy as sp
+from numpy.testing import assert_approx_equal
 import openpnm.models.physics as pm
 
 
@@ -66,7 +67,8 @@ class MultiPhaseTest:
 #                            model=pm.multiphase.late_pore_filling,
 #                            Pc=5500)
 #        p = self.phase['pore.occupancy'] > 0
-#        assert sp.allclose(self.phase['pore.late_p'][p], 0.84973704)
+#        assert_approx_equal(self.phase['pore.late_p'][p].mean(),
+#                            0.84973704)
 
 
 if __name__ == '__main__':

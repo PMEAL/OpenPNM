@@ -1,6 +1,7 @@
 import openpnm as op
 import openpnm.models.geometry.throat_length as mods
 import numpy as np
+from numpy.testing import assert_approx_equal
 
 
 class ThroatStraightTest:
@@ -21,7 +22,7 @@ class ThroatStraightTest:
                            regen_mode='normal')
         a = np.array([0.95])
         b = np.unique(self.geo['throat.length'])
-        assert np.allclose(a, b)
+        assert_approx_equal(a, b)
 
 
 if __name__ == '__main__':

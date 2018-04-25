@@ -1,6 +1,5 @@
 import openpnm as op
-import scipy as sp
-
+from numpy.testing import assert_approx_equal
 
 class CapillaryPressureTest:
 
@@ -32,7 +31,7 @@ class CapillaryPressureTest:
                             diameter='throat.diameter')
         self.phys.regenerate_models()
         a = 0.14399999999999993
-        assert sp.allclose(self.water['pore.capillary_pressure'][0], a)
+        assert_approx_equal(self.water['pore.capillary_pressure'][0], a)
         self.phys.remove_model('pore.capillary_pressure')
 
     def test_washburn_throat_values(self):
@@ -46,7 +45,7 @@ class CapillaryPressureTest:
                             diameter='throat.diameter')
         self.phys.regenerate_models()
         a = 0.14399999999999993
-        assert sp.allclose(self.water['throat.capillary_pressure'][0], a)
+        assert_approx_equal(self.water['throat.capillary_pressure'][0], a)
         self.phys.remove_model('throat.capillary_pressure')
 
     def test_purcell_pore_values(self):
@@ -67,7 +66,7 @@ class CapillaryPressureTest:
                             diameter='throat.diameter')
         self.phys.regenerate_models()
         a = 0.26206427646507374
-        assert sp.allclose(self.water['pore.capillary_pressure'][0], a)
+        assert_approx_equal(self.water['pore.capillary_pressure'][0], a)
         self.phys.remove_model('pore.capillary_pressure')
 
     def test_purcell_throat_values(self):
@@ -82,7 +81,7 @@ class CapillaryPressureTest:
                             diameter='throat.diameter')
         self.phys.regenerate_models()
         a = 0.26206427646507374
-        assert sp.allclose(self.water['throat.capillary_pressure'][0], a)
+        assert_approx_equal(self.water['throat.capillary_pressure'][0], a)
         self.phys.remove_model('throat.capillary_pressure')
 
 

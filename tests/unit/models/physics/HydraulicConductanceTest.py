@@ -1,5 +1,5 @@
 import openpnm as op
-import scipy as sp
+from numpy.testing import assert_approx_equal
 
 
 class HydraulicConductanceTest:
@@ -24,14 +24,14 @@ class HydraulicConductanceTest:
         mod = op.models.physics.hydraulic_conductance.hagen_poiseuille
         self.phys.add_model(propname='throat.conductance1',
                             model=mod)
-        assert sp.allclose(a=self.phys['throat.conductance1'][0],
-                           b=1330.68207684)
+        assert_approx_equal(self.phys['throat.conductance1'].mean(),
+                            1330.68207684)
 
         self.phys.add_model(propname='throat.conductance2',
                             model=mod,
                             calc_pore_len=True)
-        assert sp.allclose(a=self.phys['throat.conductance2'][0],
-                           b=1330.68207684)
+        assert_approx_equal(self.phys['throat.conductance2'].mean(),
+                            1330.68207684)
 
 
 if __name__ == '__main__':

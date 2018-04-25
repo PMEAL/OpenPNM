@@ -1,6 +1,7 @@
 import openpnm as op
 import openpnm.models.geometry.pore_area as mods
 import numpy as np
+from numpy.testing import assert_approx_equal
 
 
 class PoreAreaTest:
@@ -22,7 +23,7 @@ class PoreAreaTest:
                            regen_mode='normal')
         a = np.array([0.78539816])
         b = np.unique(self.geo['pore.area'])
-        assert np.allclose(a, b)
+        assert_approx_equal(a, b)
 
     def test_cube(self):
         self.geo.add_model(propname='pore.area',
@@ -30,7 +31,7 @@ class PoreAreaTest:
                            regen_mode='normal')
         a = np.array([1.0])
         b = np.unique(self.geo['pore.area'])
-        assert np.allclose(a, b)
+        assert_approx_equal(a, b)
 
 
 if __name__ == '__main__':

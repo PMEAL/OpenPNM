@@ -1,5 +1,5 @@
 import openpnm as op
-import scipy as sp
+from numpy.testing import assert_approx_equal
 
 
 class ElectricalConductanceTest:
@@ -25,7 +25,7 @@ class ElectricalConductanceTest:
                             model=f)
         self.phys.regenerate_models()
         a = 0.99990001
-        assert sp.allclose(self.phys['throat.electrical_conductance'][0], a)
+        assert_approx_equal(self.phys['throat.electrical_conductance'].mean(), a)
 
 
 if __name__ == '__main__':

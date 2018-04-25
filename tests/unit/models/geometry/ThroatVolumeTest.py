@@ -1,6 +1,7 @@
 import openpnm as op
 import openpnm.models.geometry.throat_volume as mods
 import numpy as np
+from numpy.testing import assert_approx_equal
 
 
 class ThroatVolumeTest:
@@ -20,9 +21,9 @@ class ThroatVolumeTest:
         self.geo.add_model(propname='throat.volume',
                            model=mods.cylinder,
                            regen_mode='normal')
-        a = np.array([0.00785398])
+        a = np.array([0.007853981])
         b = np.unique(self.geo['throat.volume'])
-        assert np.allclose(a, b)
+        assert_approx_equal(a, b)
 
     def test_cube(self):
         self.geo.add_model(propname='throat.volume',
@@ -30,7 +31,7 @@ class ThroatVolumeTest:
                            regen_mode='normal')
         a = np.array([0.01])
         b = np.unique(self.geo['throat.volume'])
-        assert np.allclose(a, b)
+        assert_approx_equal(a, b)
 
 
 if __name__ == '__main__':
