@@ -9,6 +9,12 @@ def compactness(target, throat_perimeter='throat.perimeter',
     The dependence is not universal as shapes with sharp corners provide more
     resistance than those that are more elliptical. Count the number of
     vertices and apply the right correction.
+
+    References
+    ----------
+    Mortensen N.A, Okkels F., and Bruus H. Reexamination of Hagen-Poiseuille
+    flow: Shape dependence of the hydraulic resistance in microchannels.
+    Physical Review E, v.71, pp.057301 (2005).
     """
     # Only apply to throats with an area
     ts = target.throats()[target[throat_area] > 0]
@@ -34,7 +40,6 @@ def compactness(target, throat_perimeter='throat.perimeter',
     alpha /= 8*_sp.pi
     # Very small throats could have values less than one
     alpha[alpha < 1.0] = 1.0
-
     return alpha
 
 
@@ -46,9 +51,9 @@ def mason_morrow(target, throat_perimeter='throat.perimeter',
 
     References
     ----------
-    Mason, G. and Morrow, N.R., 1991. Capillary behavior of a perfectly wetting
+    Mason, G. and Morrow, N.R.. Capillary behavior of a perfectly wetting
     liquid in irregular triangular tubes. Journal of Colloid and Interface
-    Science, 141(1), pp.262-274.
+    Science, 141(1), pp.262-274 (1991).
     """
     # Only apply to throats with an area
     ts = target.throats()[target[throat_area] <= 0]
@@ -68,8 +73,8 @@ def jenkins_rao(target, throat_perimeter='throat.perimeter',
 
     References
     ----------
-    Jenkins, R.G. and Rao, M.B., 1984. The effect of elliptical pores on
-    mercury porosimetry results. Powder technology, 38(2), pp.177-180.
+    Jenkins, R.G. and Rao, M.B., The effect of elliptical pores on
+    mercury porosimetry results. Powder technology, 38(2), pp.177-180. (1984)
     """
     P = target[throat_perimeter]
     A = target[throat_area]

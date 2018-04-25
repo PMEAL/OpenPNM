@@ -157,7 +157,7 @@ class Base(dict):
             of the framework; it is meant for advanced users and developers.
 
         """
-        allowed = ['constants', 'labels', 'all']
+        allowed = ['props', 'labels', 'all']
         mode = self._parse_mode(mode=mode, allowed=allowed)
         for item in self.keys(mode=mode, element=element):
             if item not in ['pore.all', 'throat.all']:

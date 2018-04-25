@@ -13,60 +13,58 @@ class MultiPhaseTest:
         self.phase = op.phases.GenericPhase(network=self.net)
         self.phase['pore.occupancy'] = sp.ones(self.net.Np)
         self.phase['throat.occupancy'] = sp.ones(self.net.Nt)
-        self.phase['pore.occupancy'] = 0.
-        self.phase['throat.occupancy'] = 0.
+        self.phase['pore.occupancy'][[6, 7, 19, 25]] = 0
+        self.phase['throat.occupancy'][[1, 2, 3]] = 0
         self.phys = op.physics.GenericPhysics(network=self.net,
                                               phase=self.phase,
                                               geometry=self.geo)
-        self.phys['throat.capillary_pressure'] = 5000
+        sp.random.seed(0)
+        self.phys['throat.capillary_pressure'] = 7000*sp.rand(self.phys.Nt)
         self.phys['throat.diffusive_conductance'] = 2
 
-#    def test_conduit_conductance_strict(self):
-#        self.phase['pore.occupancy'][[19, 25]] = 0
-#        t1 = self.net.Ts[self.phase['throat.occupancy'] == 0]
-#        t2 = self.net.Ts[~sp.in1d(self.net.Ts, t1)]
-#        self.phys.add_model(propname='throat.cond_conductance',
-#                            throat_conductance='throat.diffusive_conductance',
-#                            model=pm.multiphase.conduit_conductance,
-#                            mode='strict', factor=0)
-#        assert ~sp.all(self.phase['throat.cond_conductance'] == 0)
-#        assert sp.all(self.phase['throat.cond_conductance'][t1] == 0)
-#        assert ~sp.all(self.phase['throat.cond_conductance'][t2] != 0)
-#
-#    def test_conduit_conductance_medium(self):
-#        self.phase['pore.occupancy'][[19, 25]] = 0
-#        self.phase['pore.occupancy'][6] = 0
-#        t1 = self.net.Ts[self.phase['throat.occupancy'] == 0.]
-#        t2 = self.net.find_connecting_throat(6, 7)[0]
-#        t3 = self.net.Ts[~sp.in1d(self.net.Ts, sp.concatenate((t1, t2)))]
-#        self.phys.add_model(propname='throat.cond_conductance',
-#                            throat_conductance='throat.diffusive_conductance',
-#                            model=pm.multiphase.conduit_conductance,
-#                            mode='medium', factor=0)
-#        assert sp.all(self.phase['throat.cond_conductance'][t1] == 0)
-#        assert self.phase['throat.cond_conductance'][t2] == 0
-#        assert sp.all(self.phase['throat.cond_conductance'][t3] != 0)
-#
-#    def test_conduit_conductance_loose(self):
-#        self.phase['pore.occupancy'][[19, 20]] = 0
-#        t1 = self.net.Ts[self.phase['throat.occupancy'] == 0]
-#        t2 = self.net.Ts[~sp.in1d(self.net.Ts, t1)]
-#        self.phys.add_model(propname='throat.cond_conductance',
-#                            throat_conductance='throat.diffusive_conductance',
-#                            model=pm.multiphase.conduit_conductance,
-#                            mode='loose', factor=0)
-#        assert sp.all(self.phase['throat.cond_conductance'][t1] == 0)
-#        assert sp.all(self.phase['throat.cond_conductance'][t2] != 0)
-#
-#    def test_late_throat_filling(self):
-#        pass
-#
-#    def test_late_pore_filling(self):
-#        self.phys.add_model(propname='pore.late_p',
-#                            model=pm.multiphase.late_pore_filling,
-#                            Pc=5500)
-#        p = self.phase['pore.occupancy'] > 0
-#        assert sp.allclose(self.phase['pore.late_p'][p], 0.84973704)
+    def test_conduit_conductance_strict(self):
+        self.phys.add_model(propname='throat.conduit_conductance',
+                            throat_conductance='throat.diffusive_conductance',
+                            model=pm.multiphase.conduit_conductance,
+                            mode='strict', factor=0,
+                            regen_mode='eager')
+        Tinv = [1, 2, 3, 4, 5, 12, 13, 16, 17, 21, 22, 31, 34, 42, 43, 46, 52]
+        a = sp.where(self.phase['throat.conduit_conductance'] == 0)[0]
+        assert sp.all(a == Tinv)
+
+    def test_conduit_conductance_medium(self):
+        self.phys.add_model(propname='throat.conduit_conductance',
+                            throat_conductance='throat.diffusive_conductance',
+                            model=pm.multiphase.conduit_conductance,
+                            mode='medium', factor=0,
+                            regen_mode='eager')
+        Tinv = [1, 2, 3, 4]
+        a = sp.where(self.phase['throat.conduit_conductance'] == 0)[0]
+        assert sp.all(a == Tinv)
+
+    def test_conduit_conductance_loose(self):
+        self.phys.add_model(propname='throat.conduit_conductance',
+                            throat_conductance='throat.diffusive_conductance',
+                            model=pm.multiphase.conduit_conductance,
+                            mode='loose', factor=0,
+                            regen_mode='eager')
+        Tinv = [1, 2, 3]
+        a = sp.where(self.phase['throat.conduit_conductance'] == 0)[0]
+        assert sp.all(a == Tinv)
+
+    def test_late_throat_filling(self):
+        self.phys.add_model(propname='throat.nwp_saturation',
+                            model=pm.multiphase.late_throat_filling,
+                            Pc=5500, regen_mode='eager')
+        assert sp.all(self.phase['throat.nwp_saturation'] < 1.0)
+        assert sp.all(self.phase['throat.nwp_saturation'] > 0.0)
+
+    def test_late_pore_filling(self):
+        self.phys.add_model(propname='pore.nwp_saturation',
+                            model=pm.multiphase.late_pore_filling,
+                            Pc=5500, regen_mode='eager')
+        assert sp.all(self.phase['pore.nwp_saturation'] < 1.0)
+        assert sp.all(self.phase['pore.nwp_saturation'] > 0.0)
 
 
 if __name__ == '__main__':

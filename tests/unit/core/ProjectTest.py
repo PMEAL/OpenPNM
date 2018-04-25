@@ -1,6 +1,8 @@
 import openpnm as op
 import scipy as sp
 import pytest
+from pathlib import Path
+import os
 
 
 class ProjectTest:
@@ -131,7 +133,7 @@ class ProjectTest:
         assert 'phase_02' in phases.keys()
         assert len(phases.keys()) == 2
 
-    def test_find_phase(self):
+    def test_find_phase_from_physics(self):
         proj = self.ws.copy_project(self.net.project)
         phys1 = proj.physics()['phys_01']
         phys2 = proj.physics()['phys_02']
@@ -141,6 +143,11 @@ class ProjectTest:
         phase = proj.find_phase(phys1)
         assert 'pore.' + phys2.name in phase.keys()
         assert 'throat.' + phys2.name in phase.keys()
+
+    def test_find_phase_from_phase(self):
+        phases = list(self.proj.phases().values())
+        a = self.proj.find_phase(phases[0])
+        assert a is phases[0]
 
     def test_geometries(self):
         proj = self.ws.copy_project(self.net.project)
@@ -168,8 +175,8 @@ class ProjectTest:
         assert 'phys_04' in physics.keys()
         assert len(physics.keys()) == 4
 
-    def test_find_physics(self):
-        proj = self.ws.copy_project(self.net.project)
+    def test_find_physics_from_geometry(self):
+        proj = self.proj
         geo1 = proj.geometries()['geo_01']
         phys1_2 = proj.find_physics(geometry=geo1)
         # Ensure two physics were returned
@@ -180,6 +187,11 @@ class ProjectTest:
         geo2 = proj.geometries()['geo_02']
         phys3_4 = proj.find_physics(geometry=geo2)
         assert phys3_4 != phys1_2
+
+    def test_find_physics_from_phase_and_geometry(self):
+        proj = self.proj
+        geo1 = proj.geometries()['geo_01']
+        geo2 = proj.geometries()['geo_02']
         phase1 = proj.phases()['phase_01']
         phase2 = proj.phases()['phase_02']
         phys1 = proj.find_physics(geometry=geo1, phase=phase1)
@@ -191,6 +203,23 @@ class ProjectTest:
         assert phys2 is not phys3
         assert phys3 is not phys4
 
+    def test_find_physics_from_phase(self):
+        proj = self.proj
+        phase1 = proj.phases()['phase_01']
+        phase2 = proj.phases()['phase_02']
+        physics1 = proj.find_physics(phase=phase1)
+        physics2 = proj.find_physics(phase=phase2)
+        assert len(physics1) == 2
+        assert len(physics2) == 2
+        # Make sure lists are mutually exclusive
+        assert ~sp.all([item in physics2 for item in physics1])
+
+    def test_find_physics_no_phase_or_geometry(self):
+        proj = self.proj
+        a = proj.find_physics()
+        b = proj.physics().values()
+        assert sp.all([item in b for item in a])
+
     def test_clear(self):
         proj = self.ws.copy_project(self.net.project)
         assert len(proj) == 9
@@ -198,6 +227,50 @@ class ProjectTest:
         assert len(proj) == 3
         proj.clear()
         assert len(proj) == 0
+
+    def test_getitem(self):
+        a = self.proj[0]
+        b = self.proj[a.name]
+        assert a is b
+
+    def test_comments(self):
+        proj = self.proj
+        proj.comments = 'test comment'
+        assert 'test comment' in proj._comments.values()
+        proj.comments
+
+    def test_print(self):
+        proj = self.proj
+        s = proj.__str__()
+        # 13 rows
+        assert len(s.split('\n')) == 13
+
+    def test_save_and_load_object(self):
+        proj = self.proj
+        name = proj.network.name
+        proj.save_object(proj.network)
+        new_proj = self.ws.new_project()
+        new_proj.load_object(name+'.net')
+        assert new_proj.network.name == name
+        os.remove(name+'.net')
+
+    def test_load_object_from_fixture(self):
+        path = Path(os.path.realpath(__file__),
+                    '../../../fixtures/OpenPNM-Objects')
+        filename = Path(path.resolve(), 'net_01.net')
+        new_proj = self.ws.new_project()
+        new_proj.load_object(filename)
+        assert len(new_proj) == 1
+        assert new_proj.network._isa('network')
+
+    def test_dump_and_fetch_data(self):
+        proj = self.ws.copy_project(self.proj)
+        proj._dump_data()
+        # Ensure all properties are gone
+        assert ~sp.any([len(item.props()) for item in proj])
+        proj._fetch_data()
+        assert sp.any([len(item.props()) for item in proj])
+        os.remove(proj.name+'.hdf5')
 
 
 if __name__ == '__main__':
