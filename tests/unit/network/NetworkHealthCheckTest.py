@@ -50,6 +50,26 @@ class CheckNetworkHealthTest:
         assert len(a['disconnected_clusters']) == 3
         assert len(a['trim_pores']) == 20
 
+    def test_check_network_health_isolated_pores_and_clusters(self):
+        net = op.network.Cubic(shape=[5, 5, 5])
+        # Create first isolated cluster
+        Ps = net['pore.coords'][:, 2] == 2.5
+        Ps = Ps*(net['pore.coords'][:, 1] > 2.5)
+        Ts = net.find_neighbor_throats(pores=Ps, mode='exclusive_or')
+        trim(network=net, throats=Ts)
+        # Create an isolated pore
+        Ts = net.find_neighbor_throats(pores=0)
+        trim(network=net, throats=Ts)
+        a = net.check_network_health()
+        # Ensure pore 0 counts as a cluster
+        assert len(a['disconnected_clusters']) == 3
+        # Ensure trim_pores has right length
+        assert len(a['trim_pores']) == 11
+        # Ensure 0 is listed in trim pores
+        assert 0 in a['trim_pores']
+        # Ensure 0 is also listed as an isolated pore
+        assert a['isolated_pores'] == 0
+
     def test_check_network_health_isolated_pores(self):
         net = op.network.Cubic(shape=[5, 5, 5])
         Ts = net.find_neighbor_throats(pores=0)
