@@ -24,6 +24,32 @@ class CheckNetworkHealthTest:
         assert items == a.keys()
         assert np.size(list(a.values())) == 0
 
+    def test_check_network_health_one_isolated_cluster(self):
+        net = op.network.Cubic(shape=[5, 5, 5])
+        Ps = net['pore.coords'][:, 2] == 2.5
+        Ps = Ps*(net['pore.coords'][:, 1] > 2.5)
+        Ts = net.find_neighbor_throats(pores=Ps, mode='exclusive_or')
+        trim(network=net, throats=Ts)
+        a = net.check_network_health()
+        assert len(a['disconnected_clusters']) == 2
+        assert len(a['trim_pores']) == 10
+
+    def test_check_network_health_two_isolated_clusters(self):
+        net = op.network.Cubic(shape=[5, 5, 5])
+        # Create first isolated cluster
+        Ps = net['pore.coords'][:, 2] == 2.5
+        Ps = Ps*(net['pore.coords'][:, 1] > 2.5)
+        Ts = net.find_neighbor_throats(pores=Ps, mode='exclusive_or')
+        trim(network=net, throats=Ts)
+        # Create a second isolated cluster
+        Ps = net['pore.coords'][:, 2] == 3.5
+        Ps = Ps*(net['pore.coords'][:, 1] < 2.5)
+        Ts = net.find_neighbor_throats(pores=Ps, mode='exclusive_or')
+        trim(network=net, throats=Ts)
+        a = net.check_network_health()
+        assert len(a['disconnected_clusters']) == 3
+        assert len(a['trim_pores']) == 20
+
     def test_check_network_health_isolated_pores(self):
         net = op.network.Cubic(shape=[5, 5, 5])
         Ts = net.find_neighbor_throats(pores=0)

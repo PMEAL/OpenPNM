@@ -2,6 +2,7 @@ import uuid
 import scipy as sp
 import scipy.sparse as sprs
 import scipy.spatial as sptl
+import scipy.sparse.csgraph as csg
 from openpnm.core import Base, Workspace, ModelsMixin, logging
 from openpnm import topotools
 from openpnm.utils import HealthDict
@@ -771,9 +772,9 @@ class GenericNetwork(Base, ModelsMixin):
 
         # Check for separated clusters of pores
         temp = []
-        tmask = self.tomask(throats=self.throats('all'))
-        Cs = topotools.find_clusters(network=self, mask=tmask)
-        if sp.shape(sp.unique(Cs))[0] > 1:
+        am = self.create_adjacency_matrix(fmt='coo', triu=True)
+        Cs = csg.connected_components(am, directed=False)[1]
+        if sp.unique(Cs).size > 1:
             for i in sp.unique(Cs):
                 temp.append(sp.where(Cs == i)[0])
             b = sp.array([len(item) for item in temp])
@@ -784,15 +785,17 @@ class GenericNetwork(Base, ModelsMixin):
                     health['trim_pores'].extend(temp[c[i]])
 
         # Check for duplicate throats
-        am = self.create_adjacency_matrix(fmt='lil')
-        mergeTs = []
-        for i in range(0, self.Np):
-            for j in sp.where(sp.array(am.data[i]) > 1)[0]:
-                k = am.rows[i][j]
-                mergeTs.extend(self.find_connecting_throat(i, k))
-        # Remove duplicates
-        mergeTs = [list(i) for i in set(tuple(i) for i in mergeTs)]
-        health['duplicate_throats'] = mergeTs
+        am = self.create_adjacency_matrix(fmt='csr', triu=True).tocoo()
+        hits = sp.where(am.data > 1)[0]
+        if len(hits):
+            mergeTs = []
+            hits = sp.vstack((am.row[hits], am.col[hits])).T
+            ihits = hits[:, 0] + 1j*hits[:, 1]
+            conns = self['throat.conns']
+            iconns = conns[:, 0] + 1j*conns[:, 1]  # Convert to imaginary
+            for item in ihits:
+                mergeTs.append(sp.where(iconns == item)[0])
+            health['duplicate_throats'] = mergeTs
 
         # Check for bidirectional throats
         adjmat = self.create_adjacency_matrix(fmt='coo')
