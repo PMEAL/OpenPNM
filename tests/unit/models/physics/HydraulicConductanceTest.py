@@ -24,14 +24,12 @@ class HydraulicConductanceTest:
         mod = op.models.physics.hydraulic_conductance.hagen_poiseuille
         self.phys.add_model(propname='throat.conductance1',
                             model=mod)
-        assert_approx_equal(self.phys['throat.conductance1'].mean(),
-                            1330.68207684)
+        assert_approx_equal(self.phys['throat.conductance1'].mean(), 1330.68207684)
 
         self.phys.add_model(propname='throat.conductance2',
                             model=mod,
                             calc_pore_len=True)
-        assert_approx_equal(self.phys['throat.conductance2'].mean(),
-                            1330.68207684)
+        assert_approx_equal(self.phys['throat.conductance2'].mean(), 1330.68207684)
 
 
 if __name__ == '__main__':
