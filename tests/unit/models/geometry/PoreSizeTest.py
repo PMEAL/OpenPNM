@@ -46,7 +46,8 @@ class PoreSizeTest:
                                           throats=net.Ts)
         geo.add_model(propname='pore.diameter',
                       model=mods.largest_sphere,
-                      iters=1)
+                      iters=1,
+                      regen_mode='eager')
         dmin = sp.amin(geo['pore.diameter'])
         assert dmin <= 0.1
         geo.models['pore.diameter']['iters'] = 5
@@ -62,12 +63,33 @@ class PoreSizeTest:
         Ps = net.pores('top', mode='not')
         geom1 = op.geometry.GenericGeometry(network=net, pores=Ps,
                                             throats=net.Ts)
-        mod = op.models.geometry.pore_size.largest_sphere
         geom1.add_model(propname='pore.diameter',
-                        model=mod,
-                        iters=15)
+                        model=mods.largest_sphere,
+                        iters=15, regen_mode='eager')
         assert sp.all(geom2['pore.diameter'] == 1.0)
-#        assert sp.all(sp.ceil(sp`.unique(geom1['pore.diameter'])) == [3.0, 5.0])
+        assert sp.all(sp.ceil(sp.unique(geom1['pore.diameter'])) == [3.0, 5.0])
+        geom2['pore.diameter'] = 6
+        geom1.regenerate_models()
+        assert sp.amin(geom1['pore.diameter']) < 0
+
+    def test_equivalent_diameter(self):
+        mod = op.models.geometry.pore_size.equivalent_diameter
+        self.geo['pore.volume'] = 1.0
+        self.geo.add_model(propname='pore.diameter',
+                           model=mod,
+                           pore_volume='pore.volume',
+                           pore_shape='sphere')
+        a = sp.unique(self.geo['pore.diameter'])
+        b = sp.array(1.24070098, ndmin=1)
+        assert sp.allclose(a, b)
+        del self.geo['pore.diameter'], self.geo.models['pore.diameter']
+        self.geo.add_model(propname='pore.diameter',
+                           model=mod,
+                           pore_volume='pore.volume',
+                           pore_shape='cube')
+        a = sp.unique(self.geo['pore.diameter'])
+        b = sp.array(1.0, ndmin=1)
+        assert sp.allclose(a, b)
 
 
 if __name__ == '__main__':

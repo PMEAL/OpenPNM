@@ -26,7 +26,7 @@ class ExtrasTest:
         assert len(obj.project) == 1
 
     def test_initialize_StickAndBall_without_args(self):
-        obj = op.geometry.StickAndBall()
+        obj = op.geometry.StickAndBall(settings={'freeze_models': True})
         assert set(obj.keys()) == set(['pore.all', 'throat.all'])
         assert len(obj.models.keys()) > 0
         assert obj.Np == 0
@@ -40,7 +40,7 @@ class ExtrasTest:
         assert len(obj.project) == 1
 
     def test_initialize_Air_without_args(self):
-        obj = op.phases.Air()
+        obj = op.phases.Air(settings={'freeze_models': True})
         assert len(obj.keys()) > 4
         assert len(obj.models.keys()) > 0
         assert obj.Np == 0
