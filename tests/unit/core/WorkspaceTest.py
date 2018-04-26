@@ -36,6 +36,10 @@ class WorkspaceTest:
         assert proj.name in self.ws.keys()
         assert old_name not in self.ws.keys()
 
+    def test_str(self):
+        s = self.ws.__str__().split('\n')
+        assert 'OpenPNM Version' in s[1]
+
 
 if __name__ == '__main__':
 

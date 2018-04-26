@@ -170,6 +170,8 @@ class Workspace(dict):
         s = []
         hr = '―'*78
         s.append(hr)
+        s.append('OpenPNM Version ' + openpnm.__version__ + ' Workspace')
+        s.append(hr)
         for item in self.values():
             s.append(' ' + item.name)
             s.append(item.__str__())
