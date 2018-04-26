@@ -676,6 +676,12 @@ class BaseTest:
         geom['pore.blah'] = True
         assert sp.sum(net['pore.blah']) == geom.Np
 
+    def test_interpolate_data(self):
+        a = self.geo.interpolate_data(propname='throat.diameter')
+        assert a.size == self.geo.Np
+        a = self.geo.interpolate_data(propname='pore.diameter')
+        assert a.size == self.geo.Nt
+
     def test_get_regenerate_on_demand(self):
         self.geo.regenerate_models()
         models = list(self.geo.models.keys())
