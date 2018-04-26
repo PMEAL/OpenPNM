@@ -272,6 +272,28 @@ class ProjectTest:
         assert sp.any([len(item.props()) for item in proj])
         os.remove(proj.name+'.hdf5')
 
+    def test_export_data(self):
+        fname = 'export_data_tests'
+        self.proj.export_data(network=self.net, phases=self.phase1,
+                              filename=fname, filetype='vtp')
+        os.remove(fname+'.vtp')
+        self.proj.export_data(network=self.net, phases=self.phase1,
+                              filename=fname+'.vtp')
+        os.remove(fname+'.vtp')
+        self.proj.export_data(network=self.net, phases=self.phase1,
+                              filename=fname, filetype='csv')
+        os.remove(fname+'.csv')
+#        self.proj.export_data(network=self.net, phases=self.phase1,
+#                              filename=fname, filetype='xmf')
+#        os.remove(fname+'.xmf')
+#        os.remove(fname+'.hdf')
+        self.proj.export_data(network=self.net, phases=self.phase1,
+                              filename=fname, filetype='hdf')
+        os.remove(fname+'.hdf')
+        self.proj.export_data(network=self.net, phases=self.phase1,
+                              filename=fname, filetype='mat')
+        os.remove(fname+'.mat')
+
 
 if __name__ == '__main__':
 

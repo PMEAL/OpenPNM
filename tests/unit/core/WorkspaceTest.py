@@ -8,6 +8,8 @@ class WorkspaceTest:
     def setup_class(self):
         self.ws = op.core.Workspace()
         self.ws.clear()
+        self.net = op.network.Cubic(shape=[5, 5, 5])
+        self.phase = op.phases.Air(network=self.net)
 
     def test_new_project_no_name(self):
         proj = self.ws.new_project()
