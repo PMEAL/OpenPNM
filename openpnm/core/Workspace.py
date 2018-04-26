@@ -57,7 +57,7 @@ class Workspace(dict):
         r"""
         """
         if filename == '':
-            filename = 'bob'
+            filename = 'workspace' + '_' + time.strftime('%Y%b%d_%H%M%p')
         else:
             filename = filename.rsplit('.pnm', 1)[0]
         d = {}
