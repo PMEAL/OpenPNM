@@ -1,10 +1,3 @@
-r"""
-===============================================================================
-Submodule -- electrical_conductance
-===============================================================================
-
-"""
-
 import scipy as _sp
 
 
@@ -12,7 +5,8 @@ def series_resistors(target, conductivity='pore.electrical_conductivity',
                      pore_area='pore.area', pore_diameter='pore.diameter',
                      throat_area='throat.area', throat_length='throat.length'):
     r"""
-    Calculates the electrical conductance of throat assuming cylindrical geometry
+    Calculates the electrical conductance of throat assuming cylindrical
+    geometry
 
     Parameters
     ----------
