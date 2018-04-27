@@ -17,7 +17,7 @@ class ModelsTest:
 
     def test_models_dict_print(self):
         s = self.geo.models.__str__().split('\n')
-        assert len(s) == 55
+        assert len(s) == 56
         assert s.count('―'*78) == 13
 
     def test_regenerate_models(self):
@@ -26,6 +26,9 @@ class ModelsTest:
         self.geo.clear(mode='props')
         a = len(self.geo.props())
         assert a == 0
+        self.geo.regenerate_models()
+        a = len(self.geo.props())
+        assert a == 11
 
 
 if __name__ == '__main__':
