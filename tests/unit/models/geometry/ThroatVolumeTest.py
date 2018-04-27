@@ -28,8 +28,7 @@ class ThroatVolumeTest:
 
     def test_cube(self):
         self.geo.add_model(propname='throat.volume',
-                           model=mods.cuboid,
-                           regen_mode='eager')
+                           model=mods.cuboid)
         a = np.array([0.01])
         b = np.unique(self.geo['throat.volume'])
         assert_approx_equal(a, b)
@@ -37,8 +36,7 @@ class ThroatVolumeTest:
     def test_extrusion(self):
         self.geo.add_model(propname='throat.volume',
                            throat_area='throat.area',
-                           model=mods.extrusion,
-                           regen_mode='eager')
+                           model=mods.extrusion)
         a = np.array([0.03])
         b = np.unique(self.geo['throat.volume'])
         assert np.allclose(a, b)

@@ -27,8 +27,7 @@ class MultiPhaseTest:
         self.phys.add_model(propname='throat.conduit_conductance',
                             throat_conductance='throat.diffusive_conductance',
                             model=pm.multiphase.conduit_conductance,
-                            mode='strict', factor=0,
-                            regen_mode='eager')
+                            mode='strict', factor=0)
         Tinv = [1, 2, 3, 4, 5, 12, 13, 16, 17, 21, 22, 31, 34, 42, 43, 46, 52]
         a = sp.where(self.phase['throat.conduit_conductance'] == 0)[0]
         assert sp.all(a == Tinv)
@@ -37,8 +36,7 @@ class MultiPhaseTest:
         self.phys.add_model(propname='throat.conduit_conductance',
                             throat_conductance='throat.diffusive_conductance',
                             model=pm.multiphase.conduit_conductance,
-                            mode='medium', factor=0,
-                            regen_mode='eager')
+                            mode='medium', factor=0)
         Tinv = [1, 2, 3, 4]
         a = sp.where(self.phase['throat.conduit_conductance'] == 0)[0]
         assert sp.all(a == Tinv)
@@ -47,8 +45,7 @@ class MultiPhaseTest:
         self.phys.add_model(propname='throat.conduit_conductance',
                             throat_conductance='throat.diffusive_conductance',
                             model=pm.multiphase.conduit_conductance,
-                            mode='loose', factor=0,
-                            regen_mode='eager')
+                            mode='loose', factor=0)
         Tinv = [1, 2, 3]
         a = sp.where(self.phase['throat.conduit_conductance'] == 0)[0]
         assert sp.all(a == Tinv)
@@ -56,14 +53,14 @@ class MultiPhaseTest:
     def test_late_throat_filling(self):
         self.phys.add_model(propname='throat.nwp_saturation',
                             model=pm.multiphase.late_throat_filling,
-                            Pc=5500, regen_mode='eager')
+                            Pc=5500)
         assert sp.all(self.phase['throat.nwp_saturation'] < 1.0)
         assert sp.all(self.phase['throat.nwp_saturation'] > 0.0)
 
     def test_late_pore_filling(self):
         self.phys.add_model(propname='pore.nwp_saturation',
                             model=pm.multiphase.late_pore_filling,
-                            Pc=5500, regen_mode='eager')
+                            Pc=5500)
         assert sp.all(self.phase['pore.nwp_saturation'] < 1.0)
         assert sp.all(self.phase['pore.nwp_saturation'] > 0.0)
 
