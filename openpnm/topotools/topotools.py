@@ -414,7 +414,7 @@ def reduce_coordination(network, z):
 
     # Trim throats not on the spanning tree to acheive desired coordination
     z = 3.5
-    Ts = sp.random.permutation(network.throats('mst', mode='not'))
+    Ts = sp.random.permutation(network.throats('mst', mode='complement'))
     Ts = Ts[:int(network.Nt - network.Np*(z/2))]
     network.trim(throats=Ts)
 
@@ -1113,7 +1113,7 @@ def plot_connections(network, throats=None, fig=None, **kwargs):
     >>> import openpnm as op
     >>> pn = op.network.Cubic(shape=[10, 10, 3])
     >>> pn.add_boundary_pores()
-    >>> Ts = pn.throats('*boundary', mode='not')
+    >>> Ts = pn.throats('*boundary', mode='complement')
     >>> # Create figure showing boundary throats
     >>> fig = op.topotools.plot_connections(network=pn, throats=Ts)
     >>> Ts = pn.throats('*boundary')

@@ -83,11 +83,9 @@ class Base(dict):
 
         # Write value to dictionary
         if sp.shape(value)[0] == 1:  # If value is scalar
-            logger.debug('Broadcasting scalar value into vector: '+key)
             value = sp.ones((self._count(element), ), dtype=value.dtype)*value
             super(Base, self).__setitem__(key, value)
         elif sp.shape(value)[0] == self._count(element):
-            logger.debug('Updating vector: '+key)
             super(Base, self).__setitem__(key, value)
         else:
             if self._count(element) == 0:
@@ -132,7 +130,7 @@ class Base(dict):
         r"""
         A subclassed version of the standard dict's clear method.  This can be
         used to selectively clear certain aspects of the object, including
-        properties, labels and/or models.  It can also clear everything,
+        properties and/or labels.  It can also clear everything,
         except for the 'pore.all' and 'throat.all' labels which are required
         for object to remain functional.
 
@@ -148,26 +146,63 @@ class Base(dict):
             **'props'** : Removes all numerical property values from the object
             dictionary.
 
-            **'labels'** : Removes all labels from the object dictionary
+            **'labels'** : Removes all labels from the object dictionary,
+            except those relating to the pore and throat locations of
+            associated objects.
 
-            **'all'** : Removes all of the above AND sets the \'pore.all\'
-            and \'throat.all\' labels to zero length.  This also removes any
-            pore and throat locations that were previously set.  This mode
-            should be used carefully since it can break some subtle aspects
-            of the framework; it is meant for advanced users and developers.
+            **'all'** : Removes both 'props' and 'labels'
+
+        Notes
+        -----
+        If you wish to completey reset the object, you can do so manually
+        by looping over the keys and deleting each one, then re-adding
+        'pore.all' and 'throat.all' using the ``update`` command.
+
+        If you wish to selectively remove some properties but not other, use
+        something like ``del object['pore.blah']`` at the python prompt.
+        Obviously this can be done in a for-loop to remove a list of items.
+
+        Examples
+        --------
+        >>> import openpnm as op
+        >>> pn = op.network.Cubic(shape=[5, 5, 5])
+        >>> len(pn.labels())  # There are 10 total labels on the network
+        10
+        >>> pn.clear(mode='labels')
+        >>> len(pn.labels())  # Kept only 'pore.all' and 'throat.all'
+        2
+        >>> geom = op.geometry.GenericGeometry(network=pn, pores=pn.Ps,
+        ...                                    throats=pn.Ts)
+        >>> len(pn.labels())  # 2 new labels were added for geometry locations
+        4
+        >>> pn.clear(mode='labels')
+        >>> 'pore.'+geom.name in pn.keys()  # The geometry labels were kept
+        True
+        >>> len(pn.props())  # The network has two properties
+        2
+        >>> pn.clear(element='pore', mode='props')
+        >>> 'pore.coords' in pn.keys()  # The pore property was removed
+        False
+        >>> pn.clear()  # Remove everything except protected labels
+        >>> len(pn.keys())
+        4
 
         """
         allowed = ['props', 'labels', 'all']
         mode = self._parse_mode(mode=mode, allowed=allowed)
         for item in self.keys(mode=mode, element=element):
             if item not in ['pore.all', 'throat.all']:
-                del self[item]
+                if item.split('.')[1] not in self.project.names:
+                    del self[item]
 
-    def keys(self, element=None, mode='skip'):
+    def keys(self, element=None, mode=None):
         r"""
         This subclass works exactly like ``keys`` when no arguments are passed,
         but optionally accepts an ``element`` and/or a ``mode``, which filters
         the output to only the requested keys.
+
+        The default behavior is exactly equivalent to the normal ``keys``
+        method.
 
         Parameters
         ----------
@@ -179,18 +214,41 @@ class Base(dict):
         mode : string (optional, default is 'skip')
             Controls which keys are returned.  Options are:
 
-            **'skip'** : This mode (default) bypasses this subclassed method
+            **``None``** : This mode (default) bypasses this subclassed method
             and just returns the normal KeysView object.
 
-            **'labels'** and/or **'props'** : Limits the returned list of keys
-            to only 'labels' (boolean arrays) and/or 'props' (numerical
-            arrays).
+            **'labels'** : Limits the returned list of keys to only 'labels'
+            (boolean arrays)
+
+            **'props'** : Limits he return list of keys to only 'props'
+            (numerical arrays).
 
             **'all'** : Returns both 'labels' and 'props'.  This is equivalent
             to sending a list of both 'labels' and 'props'.
 
+        See Also
+        --------
+        props
+        labels
+
+        Notes
+        -----
+        This subclass can be used to get dictionary keys of specific kinds of
+        data.  It's use augments ``props`` and ``labels`` by returning a list
+        containing both types, but possibly limited by element type ('pores'
+        or 'throats'.)
+
+        Examples
+        --------
+        >>> import openpnm as op
+        >>> pn = op.network.Cubic([5, 5, 5])
+        >>> pn.keys(mode='props')  # Get all props
+        ['pore.coords', 'throat.conns']
+        >>> pn.keys(mode='props', element='pore')  # Get only pore props
+        ['pore.coords']
+
         """
-        if mode == 'skip':
+        if mode is None:
             return super().keys()
         element = self._parse_element(element=element)
         allowed = ['props', 'labels']
@@ -207,24 +265,24 @@ class Base(dict):
             temp = [i for i in temp if i.split('.')[0] in element]
         return temp
 
-    def get(self, key, value=None):
-        r"""
-        This sub-classed method attempt to retrieve the requested item,
-        and if it is not found among the data, the pore-scale model of the
-        same name is run if present.  If successful, the newly calculated
-        values are retrieved and returned, otherwise the given default value
-        is returned.
-
-        """
-        v = super().get(key, value)
-        if v is None:
-            if hasattr(self, 'models'):
-                if key in self.models.keys():
-                    if self.models[key]['regen_mode'] in ['deferred', 'lazy']:
-                        logger.info(key+' not found, regenerating model')
-                        self.regenerate_models(propnames=key)
-                        v = self.get(key=key, value=value)
-        return v
+#    def get(self, key, value=None):
+#        r"""
+#        This sub-classed method attempts to retrieve the requested item,
+#        and if it is not found among the data, the pore-scale model of the
+#        same name is run if present.  If successful, the newly calculated
+#        values are retrieved and returned, otherwise the given default value
+#        is returned.
+#
+#        """
+#        v = super().get(key, value)
+#        if v is None:
+#            if hasattr(self, 'models'):
+#                if key in self.models.keys():
+#                    if self.models[key]['regen_mode'] in ['deferred']:
+#                        logger.debug(key+' not found, regenerating model')
+#                        self.regenerate_models(propnames=key)
+#                        v = self.get(key=key, value=value)
+#        return v
 
     # -------------------------------------------------------------------------
     """Data Query Methods"""
@@ -245,15 +303,11 @@ class Base(dict):
 
             **'all'** : Returns all properties on the object
 
-            **'data'**: Returns a list of all numberical arrays on the object,
-            regardless of how they were calculated.
-
             **'models'** : Returns only properties that are associated with a
             model
 
             **'constants'** : returns data values that were *not* generated by
             a model, but manaully created.
-
 
         Returns
         -------
@@ -264,6 +318,7 @@ class Base(dict):
         See Also
         --------
         labels
+        keys
 
         Examples
         --------
@@ -277,21 +332,24 @@ class Base(dict):
         ['pore.coords', 'throat.conns']
         """
         # Parse Inputs
-        allowed_modes = ['all', 'data', 'constants', 'models']
-        mode = self._parse_mode(mode=mode, allowed=allowed_modes)
-        if 'all' in mode:
-            mode = allowed_modes
         element = self._parse_element(element=element)
-        vals = set()
-        if 'data' in mode:
-            vals = set(self.keys(mode=['props']))
-        # Now add model names
-        if hasattr(self, 'models'):
-            if 'models' in mode:
-                vals = vals.union(self.models.keys())
-            if 'constants' in mode:
-                temp = set(self.keys(mode='props')).difference(self.models.keys())
-                vals = vals.union(temp)
+        allowed_modes = ['all', 'constants', 'models']
+        mode = self._parse_mode(mode=mode, allowed=allowed_modes, single=True)
+        if mode == 'all':
+            vals = set(self.keys(mode='props'))
+        if mode == 'constants':
+            if hasattr(self, 'models'):
+                temp = set(self.keys(mode='props'))
+                vals = temp.difference(self.models.keys())
+            else:
+                vals = set(self.keys(mode='props'))
+        if mode == 'models':
+            if hasattr(self, 'models'):
+                temp = set(self.keys(mode='props'))
+                vals = temp.intersection(self.models.keys())
+            else:
+                logger.warning('Object does not have a models attribute')
+                vals = set()
         # Deal with hidden props
         hide = set([i for i in self.keys() if i.split('.')[1].startswith('_')])
         vals = vals.difference(hide)
@@ -309,8 +367,8 @@ class Base(dict):
         """
         # Parse inputs
         locations = self._parse_indices(locations)
-        allowed = ['none', 'union', 'intersection', 'not', 'count', 'mask',
-                   'difference']
+        allowed = ['none', 'union', 'intersection', 'complement', 'not',
+                   'count', 'mask', 'difference']
         mode = self._parse_mode(mode=mode, allowed=allowed, single=True)
         element = self._parse_element(element=element)
         # Collect list of all pore OR throat labels
@@ -332,7 +390,7 @@ class Base(dict):
             temp = labels[sp.sum(arr, axis=0) == sp.shape(locations, )[0]]
             temp.tolist()
             return PrintableList(temp)
-        if mode in ['not', 'difference']:
+        if mode in ['not', 'complement', 'difference']:
             temp = labels[sp.sum(arr, axis=0) != sp.shape(locations, )[0]]
             temp.tolist()
             return PrintableList(temp)
@@ -372,7 +430,7 @@ class Base(dict):
             **'intersection'** : Label applied to ALL of the given pores
             (or throats)
 
-            **'not'** : Labels NOT applied to ALL pores (or throats)
+            **'complement'** : Labels NOT applied to ALL pores (or throats)
 
             **'count'** : The number of labels on each pores (or throats)
 
@@ -385,6 +443,11 @@ class Base(dict):
         -------
         A list containing the dictionary keys on the object, limited by the
         specified ``mode``.
+
+        See Also
+        --------
+        props
+        keys
 
         Examples
         --------
@@ -425,7 +488,7 @@ class Base(dict):
         """
         # Parse and validate all input values.
         allowed = ['union', 'intersection', 'not_intersection', 'not',
-                   'difference']
+                   'difference', 'complement']
         mode = self._parse_mode(mode=mode, allowed=allowed, single=True)
         element = self._parse_element(element, single=True)
         labels = self._parse_labels(labels=labels, element=element)
@@ -444,16 +507,16 @@ class Base(dict):
                 intersect = intersect*self[element+'.'+item.split('.')[-1]]
             ind = intersect
         elif mode in ['not_intersection']:
-            not_intersect = sp.zeros_like(self[element+'.all'], dtype=int)
-            for item in labels:  # Iterate over labels and collect all indices
-                info = self[element+'.'+item.split('.')[-1]]
-                not_intersect = not_intersect + sp.int8(info)
-            ind = (not_intersect == 1)
-        elif mode in ['not', 'difference']:
             none = sp.zeros_like(self[element+'.all'], dtype=int)
             for item in labels:  # Iterate over labels and collect all indices
                 info = self[element+'.'+item.split('.')[-1]]
-                none = none - sp.int8(info)
+                none = none + sp.int8(info)
+            ind = (none == 1)
+        elif mode in ['not', 'difference', 'complement']:
+            none = sp.zeros_like(self[element+'.all'], dtype=int)
+            for item in labels:  # Iterate over labels and collect all indices
+                info = self[element+'.'+item.split('.')[-1]]
+                none = none + sp.int8(info)
             ind = (none == 0)
         # Extract indices from boolean mask
         ind = sp.where(ind)[0]
@@ -478,19 +541,25 @@ class Base(dict):
             **'union'** : (default) All pores with ANY of the given labels are
             returned.
 
-            **'all'** : Only pore with ALL the given labels are returned. This
-            is equivalent to ``intersection`` which is deprecated.
+            **'intersection'** : Only pore with ALL the given labels are
+            returned. This is equivalent to ``intersection`` which is
+            deprecated.
 
-            **'one'** : Only pores with exactly ONE of the given labels are
-            returned.
+            **'exclusive_or'** : Only pores with exactly ONE of the given
+            labels are returned.
 
-            **'none'** : Only pores with NONE of the given labels are returned.
-            This is equivalent to ``not_intersection`` which is deprecated.
+            **'complement'** : Only pores with NONE of the given labels are
+            returned. This is equivalent to ``not_intersection`` which is
+            deprecated.
 
         Returns
         -------
         A Numpy array containing pore indices where the specified label(s)
         exist.
+
+        See Also
+        --------
+        throats
 
         Examples
         --------
@@ -543,6 +612,10 @@ class Base(dict):
         -------
         A Numpy array containing the throat indices where the specified
         label(s) exist.
+
+        See Also
+        --------
+        pores
 
         Examples
         --------
@@ -635,6 +708,10 @@ class Base(dict):
         A boolean mask of length Np or Nt with True in the specified pore or
         throat locations.
 
+        See Also
+        --------
+        toindices
+
         Examples
         --------
         >>> import openpnm as op
@@ -672,6 +749,10 @@ class Base(dict):
         -------
         A list of pore or throat indices corresponding the locations where
         the received mask was True.
+
+        See Also
+        --------
+        tomask
 
         Notes
         -----
@@ -738,8 +819,12 @@ class Base(dict):
         #     sources = list(proj.geometries().values())
         # elif self._isa('phase'):
         #     sources = list(proj.phases().values())
+        # elif self._isa('physics')
+        #     sources = list(proj.physics().values())
+        # elif self._isa('physics'):
+        #     sources = list(proj.geometries().values())
         # else:
-        #     return self[prop]
+        #     pass
 
         # Attempt to 'get' the requested array from each object
         # Use 'get' so that missing keys return None, instead of KeyError
@@ -812,6 +897,14 @@ class Base(dict):
         -----
         - This uses an unweighted average, without attempting to account for
         distances or sizes of pores and throats.
+
+        Examples
+        --------
+        >>> import openpnm as op
+        >>> pn = op.network.Cubic(shape=[3, 1, 1])
+        >>> pn['pore.value'] = [1, 2, 3]
+        >>> pn.interpolate_data('pore.value')
+        array([1.5, 2.5])
         """
         mro = self._mro()
         if 'GenericNetwork' in mro:
@@ -843,10 +936,9 @@ class Base(dict):
             values = temp[Ps]
         elif propname.startswith('pore'):
             # Upcast data to full network size
-            temp = sp.ones((net.Np, ))*sp.nan
-            temp[Ps] = self[propname]
-            data = temp
-            Ps12 = net.find_connected_pores(throats=Ts, flatten=False)
+            data = sp.ones((net.Np, ))*sp.nan
+            data[Ps] = self[propname]
+            Ps12 = net['throat.conns'][Ts]
             values = sp.mean(data[Ps12], axis=1)
         return values
 
@@ -873,10 +965,11 @@ class Base(dict):
             **'intersection'** : Only locations with ALL the given labels are
             kept.
 
-            **'not_intersection'** : Only locations with exactly one of the
+            **'exlusive_or'** : Only locations with exactly one of the
             given labels are kept.
 
-            **'not'** : Only locations with none of the given labels are kept.
+            **'complement'** : Only locations with none of the given labels
+            are kept.
 
         See Also
         --------
@@ -900,7 +993,7 @@ class Base(dict):
         ...                    mode='intersection')
         array([ 4,  9, 14, 19, 24])
         """
-        allowed = ['union', 'intersection', 'not_intersection', 'not']
+        allowed = ['union', 'intersection', 'exclusive_or', 'complement']
         mode = self._parse_mode(mode=mode, allowed=allowed, single=True)
         # Convert inputs to locations and element
         if (sp.size(throats) > 0) and (sp.size(pores) > 0):
@@ -943,10 +1036,10 @@ class Base(dict):
             **intersection** : Only pores with ALL the given labels are
             counted.
 
-            **'one'** : Only pores with exactly one of the given
+            **'exclusive_or'** : Only pores with exactly one of the given
             labels are counted.
 
-            **'none'** : Only pores with none of the given labels are
+            **'complement'** : Only pores with none of the given labels are
             counted.
 
         Returns
@@ -971,8 +1064,6 @@ class Base(dict):
         45
         >>> pn.num_pores(labels=['top', 'front'], mode='intersection')
         5
-        >>> pn.num_pores(labels=['top', 'front'], mode='not_intersection')
-        40
 
         """
         # Count number of pores of specified type
@@ -1006,10 +1097,10 @@ class Base(dict):
             **'intersection'** : Only throats with ALL the given labels are
             counted.
 
-            **'one'** : Only throats with exactly one of the given
+            **'exclusive_or'** : Only throats with exactly one of the given
             labels are counted.
 
-            **'none'** : Only throats with none of the given labels are
+            **'complement'** : Only throats with none of the given labels are
             counted.
 
         Returns
@@ -1238,10 +1329,6 @@ class Base(dict):
             elif element+'.'+label in self.keys():
                 temp = [element+'.'+label]
             else:
-                # TODO: The following Error should/could be raised but it
-                # breaks the net-geom and phase-phys look-up logic
-                # raise KeyError('\''+element+'.'+label+'\''+' not found')
-                logger.warning('\''+element+'.'+label+'\''+' not found')
                 temp = [element+'.'+label]
             parsed_labels.extend(temp)
             # Remove duplicates if any

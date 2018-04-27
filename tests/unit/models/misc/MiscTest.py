@@ -24,11 +24,21 @@ class MiscTest:
                            value=2)
         self.geo.add_model(model=mods.constant,
                            propname='pore.value2',
-                           value=4)
+                           value=2)
         self.geo.add_model(model=mods.product,
+                           propname='pore.result1',
+                           prop1='pore.value1',
+                           prop2='pore.value2')
+        assert sp.all(sp.unique(self.geo['pore.result1']) == 4)
+        self.geo.add_model(model=mods.constant,
                            propname='pore.value3',
-                           props=['pore.value1', 'pore.value2'])
-        assert sp.all(sp.unique(self.geo['pore.value3']) == 8)
+                           value=2)
+        self.geo.add_model(model=mods.product,
+                           propname='pore.result2',
+                           prop1='pore.value1',
+                           prop2='pore.value2',
+                           prop3='pore.value3')
+        assert sp.all(sp.unique(self.geo['pore.result2']) == 8)
 
     def test_scaled(self):
         self.geo['pore.value4'] = 4

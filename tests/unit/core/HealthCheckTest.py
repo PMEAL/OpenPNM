@@ -93,7 +93,7 @@ class HealthCheckTest:
 
     def test_check_physics_health_undefined_pores(self):
         proj = self.ws.copy_project(self.proj)
-        phys = self.phys11
+        phys = proj['phys_01']
         phase = proj.find_phase(phys)
         temp = np.copy(phase['pore.'+phys.name])
         phase['pore.'+phys.name] = False
@@ -103,7 +103,7 @@ class HealthCheckTest:
 
     def test_check_physics_health_undefined_throats(self):
         proj = self.ws.copy_project(self.proj)
-        phys = self.phys11
+        phys = proj['phys_01']
         phase = proj.find_phase(phys)
         temp = np.copy(phase['throat.'+phys.name])
         phase['throat.'+phys.name] = False
@@ -113,7 +113,7 @@ class HealthCheckTest:
 
     def test_check_physics_health_overlapping_pores(self):
         proj = self.ws.copy_project(self.proj)
-        phys = self.phys11
+        phys = proj['phys_01']
         phase = proj.find_phase(phys)
         temp = np.copy(phase['pore.'+phys.name])
         phase['pore.'+phys.name] = True
@@ -123,13 +123,34 @@ class HealthCheckTest:
 
     def test_check_physics_health_overlapping_throats(self):
         proj = self.ws.copy_project(self.proj)
-        phys = self.phys11
+        phys = proj['phys_01']
         phase = proj.find_phase(phys)
         temp = np.copy(phase['throat.'+phys.name])
         phase['throat.'+phys.name] = True
         h = proj.check_physics_health(phase)
         assert np.all(h['overlapping_throats'] == np.where(temp == 0)[0])
         del self.ws[proj.name]
+
+    def test_check_data_health_has_nans(self):
+        proj = self.ws.copy_project(self.proj)
+        phys11 = proj['phys_01']
+        phys11['pore.blah'] = 1.0
+        a = phys11.check_data_health()
+        assert a.health
+        phys11['pore.blah'][0] = np.nan
+        a = phys11.check_data_health()
+        assert not a.health
+        assert a['pore.blah'] == 'Has NaNs'
+
+    def test_check_data_health_wrong_length(self):
+        proj = self.ws.copy_project(self.proj)
+        network = proj.network
+        a = network.check_data_health()
+        assert a.health
+        network.update({'pore.blah': np.array([1, 2, 3])})
+        a = network.check_data_health()
+        assert not a.health
+        assert a['pore.blah'] == 'Wrong Length'
 
 
 if __name__ == '__main__':

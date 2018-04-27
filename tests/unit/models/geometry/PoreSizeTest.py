@@ -46,8 +46,7 @@ class PoreSizeTest:
                                           throats=net.Ts)
         geo.add_model(propname='pore.diameter',
                       model=mods.largest_sphere,
-                      iters=1,
-                      regen_mode='eager')
+                      iters=1)
         dmin = sp.amin(geo['pore.diameter'])
         assert dmin <= 0.1
         geo.models['pore.diameter']['iters'] = 5
@@ -60,12 +59,12 @@ class PoreSizeTest:
         geom2 = op.geometry.GenericGeometry(network=net,
                                             pores=net.pores('top'))
         geom2['pore.diameter'] = 1.0
-        Ps = net.pores('top', mode='not')
+        Ps = net.pores('top', mode='complement')
         geom1 = op.geometry.GenericGeometry(network=net, pores=Ps,
                                             throats=net.Ts)
         geom1.add_model(propname='pore.diameter',
                         model=mods.largest_sphere,
-                        iters=15, regen_mode='eager')
+                        iters=15)
         assert sp.all(geom2['pore.diameter'] == 1.0)
         assert sp.all(sp.ceil(sp.unique(geom1['pore.diameter'])) == [3.0, 5.0])
         geom2['pore.diameter'] = 6
