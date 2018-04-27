@@ -24,7 +24,7 @@ def constant(target, value):
     return value
 
 
-def product(target, props):
+def product(target, prop1, prop2, **kwargs):
     r"""
     Calculates the product of multiple property values
 
@@ -35,12 +35,20 @@ def product(target, props):
         length of the calculated array, and also provides access to other
         necessary properties.
 
-    props : list of strings
-        The names of each property to be multiplied
+    prop1 : string
+        The name of the first argument
 
+    prop2 : string
+        The name of the second argument
+
+    Notes
+    -----
+    Additional properties can be specified beyond just ``prop1`` and ``prop2``
+    by including additional arguments in the function call (i.e. ``prop3 =
+    'pore.foo'``).
     """
-    value = 1.0
-    for item in props:
+    value = target[prop1]*target[prop2]
+    for item in kwargs.values():
         value *= target[item]
     return value
 
@@ -137,9 +145,9 @@ def polynomial(target, a, prop, **kwargs):
         list corresponds to a0 and so on.  Note that no entries can be skipped
         so 0 coefficients must be sent as 0.
 
-    poreprop : string
+    prop : string
         The dictionary key containing the independent variable or phase
-        property to be used in the correlation.
+        property to be used in the polynomial.
 
     """
     x = target[prop]

@@ -1,6 +1,7 @@
 import openpnm as op
 import openpnm.models.geometry.throat_perimeter as mods
 import numpy as np
+from numpy.testing import assert_approx_equal
 
 
 class ThroatPerimeterTest:
@@ -21,7 +22,7 @@ class ThroatPerimeterTest:
                            regen_mode='normal')
         a = np.array([0.31415927])
         b = np.unique(self.geo['throat.perimeter'])
-        assert np.allclose(a, b)
+        assert_approx_equal(a, b)
 
     def test_cube(self):
         self.geo.add_model(propname='throat.perimeter',
@@ -29,7 +30,7 @@ class ThroatPerimeterTest:
                            regen_mode='normal')
         a = np.array([0.4])
         b = np.unique(self.geo['throat.perimeter'])
-        assert np.allclose(a, b)
+        assert_approx_equal(a, b)
 
 
 if __name__ == '__main__':

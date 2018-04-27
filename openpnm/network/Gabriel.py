@@ -18,5 +18,5 @@ class Gabriel(Delaunay):
 
         super().__init__(num_points=num_points, shape=shape, points=points,
                          **kwargs)
-        topotools.trim(self, throats=self.throats('gabriel', mode='not'))
+        topotools.trim(self, throats=self.throats('gabriel', mode='complement'))
         del self['throat.gabriel']

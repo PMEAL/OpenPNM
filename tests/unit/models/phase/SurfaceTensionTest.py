@@ -1,5 +1,6 @@
 import openpnm as op
 import scipy as sp
+from numpy.testing import assert_approx_equal
 
 
 class SurfaceTensionTest:
@@ -18,7 +19,8 @@ class SurfaceTensionTest:
         self.phase.add_model(propname='pore.surface_tension',
                              model=f)
         self.phase.regenerate_models()
-        assert sp.allclose(self.phase['pore.surface_tension'], 0.07199533)
+        assert_approx_equal(self.phase['pore.surface_tension'].mean(),
+                            0.07199533)
 
     def test_eotvos(self):
         f = op.models.phase.surface_tension.eotvos
@@ -26,7 +28,8 @@ class SurfaceTensionTest:
                              model=f,
                              k=0.000014)
         self.phase.regenerate_models()
-        assert sp.allclose(self.phase['pore.surface_tension'], 0.07112169)
+        assert_approx_equal(self.phase['pore.surface_tension'].mean(),
+                            0.07112169)
 
     def test_guggenheim_katayama(self):
         f = op.models.phase.surface_tension.guggenheim_katayama
@@ -35,7 +38,8 @@ class SurfaceTensionTest:
                              K2=0.0000014,
                              n=0.1)
         self.phase.regenerate_models()
-        assert sp.allclose(self.phase['pore.surface_tension'], 0.27582571)
+        assert_approx_equal(self.phase['pore.surface_tension'].mean(),
+                            0.27582571)
 
     def test_brock_bird_scaling(self):
         f = op.models.phase.surface_tension.brock_bird_scaling
@@ -44,7 +48,8 @@ class SurfaceTensionTest:
                              sigma_o=0.0608,
                              To=363)
         self.phase.regenerate_models()
-        assert sp.allclose(self.phase['pore.surface_tension'], 0.07820761)
+        assert_approx_equal(self.phase['pore.surface_tension'].mean(),
+                            0.07820759)
 
 
 if __name__ == '__main__':
