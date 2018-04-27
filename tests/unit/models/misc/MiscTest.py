@@ -1,6 +1,7 @@
 import openpnm as op
 import scipy as sp
 import openpnm.models.misc as mods
+from numpy.testing import assert_approx_equal, assert_array_almost_equal_nulp
 
 
 class MiscTest:
@@ -23,11 +24,21 @@ class MiscTest:
                            value=2)
         self.geo.add_model(model=mods.constant,
                            propname='pore.value2',
-                           value=4)
+                           value=2)
         self.geo.add_model(model=mods.product,
+                           propname='pore.result1',
+                           prop1='pore.value1',
+                           prop2='pore.value2')
+        assert sp.all(sp.unique(self.geo['pore.result1']) == 4)
+        self.geo.add_model(model=mods.constant,
                            propname='pore.value3',
-                           props=['pore.value1', 'pore.value2'])
-        assert sp.all(sp.unique(self.geo['pore.value3']) == 8)
+                           value=2)
+        self.geo.add_model(model=mods.product,
+                           propname='pore.result2',
+                           prop1='pore.value1',
+                           prop2='pore.value2',
+                           prop3='pore.value3')
+        assert sp.all(sp.unique(self.geo['pore.result2']) == 8)
 
     def test_scaled(self):
         self.geo['pore.value4'] = 4
@@ -71,7 +82,7 @@ class MiscTest:
         temp1 = self.geo['pore.seed'].copy()
         self.geo.regenerate_models()
         temp2 = self.geo['pore.seed'].copy()
-#        assert np.testing.assert_array_almost_equal_nulp(temp1, temp2)
+        # assert_array_almost_equal_nulp(temp1, temp2)
 
     def test_random_with_range(self):
         self.geo.add_model(model=mods.random,
@@ -83,9 +94,9 @@ class MiscTest:
         assert sp.amin(self.geo['pore.seed']) >= 0.1
 
     def test_from_neighbor_throats_min(self):
-        catch = self.geo.pop('pore.seed', None)
-        catch = self.geo.models.pop('pore.seed', None)
-        catch = self.geo.models.pop('throat.seed', None)
+        self.geo.pop('pore.seed', None)
+        self.geo.models.pop('pore.seed', None)
+        self.geo.models.pop('throat.seed', None)
         self.geo['throat.seed'] = sp.rand(self.net.Nt,)
         self.geo.add_model(model=mods.from_neighbor_throats,
                            propname='pore.seed',
@@ -97,9 +108,9 @@ class MiscTest:
         assert pmax <= tmax
 
     def test_from_neighbor_throats_max(self):
-        catch = self.geo.pop('pore.seed', None)
-        catch = self.geo.models.pop('pore.seed', None)
-        catch = self.geo.models.pop('throat.seed', None)
+        self.geo.pop('pore.seed', None)
+        self.geo.models.pop('pore.seed', None)
+        self.geo.models.pop('throat.seed', None)
         self.geo['throat.seed'] = sp.rand(self.net.Nt,)
         self.geo.add_model(model=mods.from_neighbor_throats,
                            propname='pore.seed',
@@ -111,9 +122,9 @@ class MiscTest:
         assert pmin >= tmin
 
     def test_from_neighbor_throats_mean(self):
-        catch = self.geo.pop('pore.seed', None)
-        catch = self.geo.models.pop('pore.seed', None)
-        catch = self.geo.models.pop('throat.seed', None)
+        self.geo.pop('pore.seed', None)
+        self.geo.models.pop('pore.seed', None)
+        self.geo.models.pop('throat.seed', None)
         self.geo['throat.seed'] = sp.rand(self.net.Nt,)
         self.geo.add_model(model=mods.from_neighbor_throats,
                            propname='pore.seed',
@@ -133,7 +144,7 @@ class MiscTest:
                            mode='min')
         P12 = self.net['throat.conns']
         tseed = sp.amin(self.geo['pore.seed'][P12], axis=1)
-        assert sp.allclose(self.geo['throat.seed'], tseed)
+        assert_array_almost_equal_nulp(self.geo['throat.seed'], tseed)
 
     def test_from_neighbor_pores_max(self):
         self.geo.remove_model('throat.seed')
@@ -144,7 +155,7 @@ class MiscTest:
                            mode='max')
         P12 = self.net['throat.conns']
         tseed = sp.amax(self.geo['pore.seed'][P12], axis=1)
-        assert sp.allclose(self.geo['throat.seed'], tseed)
+        assert_array_almost_equal_nulp(self.geo['throat.seed'], tseed)
 
     def test_from_neighbor_pores_mean(self):
         self.geo.remove_model('throat.seed')
@@ -155,7 +166,7 @@ class MiscTest:
                            mode='mean')
         P12 = self.net['throat.conns']
         tseed = sp.mean(self.geo['pore.seed'][P12], axis=1)
-        assert sp.allclose(self.geo['throat.seed'], tseed)
+        assert_array_almost_equal_nulp(self.geo['throat.seed'], tseed)
 
 
 if __name__ == '__main__':

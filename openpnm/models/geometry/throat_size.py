@@ -32,17 +32,11 @@ def from_neighbor_pores(target, pore_prop='pore.diameter', mode='min'):
 from_neighbor_pores.__doc__ = _misc.from_neighbor_pores.__doc__
 
 
-def random(target, seed=None, num_range=[0, 1]):
-    return _misc.random(target=target, element='throat', seed=seed,
-                        num_range=num_range)
-
-
-random.__doc__ = _misc.random.__doc__
-
-
-def equivalent_circle(target, throat_area='throat.area'):
+def equivalent_diameter(target, throat_area='throat.area',
+                        throat_shape='circle'):
     r"""
-    Calculates the diameter of a cirlce with same area as the throat.
+    Calculates the diameter of a cirlce or edge-length of a sqaure with same
+    area as the throat.
 
     Parameters
     ----------
@@ -53,7 +47,15 @@ def equivalent_circle(target, throat_area='throat.area'):
 
     thorat_area : string
         The dictionary key to the throat area values
+
+    throat_shape : string
+        The shape cross-sectional shape of the throat to assume when
+        back-calculating from the area.  Options are 'circle' (default) or
+        'square'.
     """
-    areas = target[throat_area]
-    value = 2*_np.sqrt(areas/_np.pi)
+    area = target[throat_area]
+    if throat_shape.startswith('circ'):
+        value = 2*_np.sqrt(area/_np.pi)
+    elif throat_shape.startswith('square'):
+        value = _np.sqrt(area)
     return value

@@ -1,5 +1,5 @@
 import openpnm as op
-import scipy as sp
+from numpy.testing import assert_approx_equal
 
 
 class DiffusiveConductanceTest:
@@ -23,15 +23,15 @@ class DiffusiveConductanceTest:
         self.phys.add_model(propname='throat.conductance1',
                             model=mod)
         self.phys.regenerate_models()
-        assert sp.allclose(a=self.phys['throat.conductance1'][0],
-                           b=0.00084552)
+        assert_approx_equal(self.phys['throat.conductance1'].mean(),
+                            0.000845515)
 
         self.phys.add_model(propname='throat.conductance2',
                             model=mod,
                             calc_pore_len=True)
         self.phys.regenerate_models()
-        assert sp.allclose(a=self.phys['throat.conductance2'][0],
-                           b=0.00084552)
+        assert_approx_equal(self.phys['throat.conductance2'].mean(),
+                            0.000845515)
 
 
 if __name__ == '__main__':
