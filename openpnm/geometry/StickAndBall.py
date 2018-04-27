@@ -44,7 +44,8 @@ class StickAndBall(GenericGeometry):
 
         self.add_model(propname='pore.diameter',
                        model=mods.misc.product,
-                       props=['pore.max_size', 'pore.seed'])
+                       prop1='pore.max_size',
+                       prop2='pore.seed')
 
         self.add_model(propname='throat.max_size',
                        model=mods.misc.from_neighbor_pores,
