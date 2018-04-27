@@ -1,6 +1,6 @@
 import scipy as _sp
 import time as _time
-from collections import OrderedDict, abc
+from collections import OrderedDict
 
 
 class PrintableList(list):
@@ -9,8 +9,7 @@ class PrintableList(list):
         lines = [horizontal_rule]
         self.sort()
         for i, item in enumerate(self):
-            if '._' not in item:
-                lines.append('{0}\t: {1}'.format(i + 1, item))
+            lines.append('{0}\t: {1}'.format(i + 1, item))
         lines.append(horizontal_rule)
         return '\n'.join(lines)
 
@@ -45,6 +44,7 @@ class PrintableDict(OrderedDict):
 
 
 class SettingsDict(PrintableDict):
+
     def __missing__(self, key):
         self[key] = None
         return self[key]
@@ -70,10 +70,6 @@ class NestedDict(dict):
     def __missing__(self, key):
         self[key] = NestedDict(delimiter=self.delimiter)
         return self[key]
-
-    def unravel(self):
-        for item in self.keys():
-            self[item] = self.pop(item)
 
     def to_dict(self, dct=None):
         if dct is None:
@@ -159,7 +155,7 @@ def toc(quiet=False):
         else:
             return t
     else:
-        print("Toc: start time not set")
+        raise Exception('Start time not set, call tic first')
 
 
 def unique_list(input_list):
