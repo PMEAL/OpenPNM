@@ -38,6 +38,13 @@ class UtilsTest:
         s = L.__str__().split('\n')
         assert len(s) == 5
 
+    def test_printable_dict(self):
+        D = op.utils.PrintableDict({'item1': 1, 'item2': 2, 'item3': sp.array([1, 2])})
+        s = D.__str__().split('\n')
+        assert len(s) == 7
+        r = D.__repr__()
+        assert r == "{'item1': 1, 'item2': 2, 'item3': array([1, 2])}"
+
 
 if __name__ == '__main__':
 

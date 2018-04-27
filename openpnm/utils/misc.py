@@ -71,6 +71,10 @@ class NestedDict(dict):
         self[key] = NestedDict(delimiter=self.delimiter)
         return self[key]
 
+    def unravel(self):
+        for item in self.keys():
+            self[item] = self.pop(item)
+
     def to_dict(self, dct=None):
         if dct is None:
             dct = self
