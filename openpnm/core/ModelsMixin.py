@@ -157,6 +157,7 @@ class ModelsMixin():
         """
         # If no props given, then regenerate them all
         all_props = self.models.dependency_tree()
+#        all_props = list(self.models.keys())
         if propnames is None:
             propnames = all_props
             # If some props are to be excluded, remove them from list
@@ -166,10 +167,9 @@ class ModelsMixin():
             # Re-create propnames to ensure it's in correct order
             propnames = [i for i in all_props if i in propnames]
         if len(propnames) == 0:
-            logger.info('List of propnames to regenerate is empty')
+            logger.warning('List of propnames to regenerate is empty')
         # Scan through list of propnames and regenerate each one
         for item in propnames:
-            logger.info('Regenerating model: '+item)
             self._regen(item)
 
     def _regen(self, prop):
@@ -187,14 +187,7 @@ class ModelsMixin():
             if prop not in self.keys():
                 self[prop] = model(target=self, **kwargs)
         else:
-            # Try to run the model, but catch KeyError is missing values
-            try:
-                self[prop] = model(target=self, **kwargs)
-            except KeyError:
-                # Set model to deferred, to run later when called
-                logger.warn('Dependencies for ' + prop + ' not available,' +
-                            ' setting regen_mode to deferred')
-                self.models[prop]['regen_mode'] = 'deferred'
+            self[prop] = model(target=self, **kwargs)
 
     def _get_models(self):
         if not hasattr(self, '_models_dict'):

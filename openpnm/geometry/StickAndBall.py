@@ -58,7 +58,7 @@ class StickAndBall(GenericGeometry):
 
         self.add_model(propname='throat.length',
                        model=mods.geometry.throat_length.straight,
-                       L_negative=1e-09,
+                       L_negative=1e-12,
                        pore_diameter='pore.diameter')
 
         self.add_model(propname='throat.surface_area',
