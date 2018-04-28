@@ -59,7 +59,7 @@ class CubicDual(GenericNetwork):
         faces = [['front', 'back'], ['left', 'right'], ['top', 'bottom']]
         faces = [faces[i] for i in sp.where(~single_dim)[0]]
         faces = sp.array(faces).flatten().tolist()
-        dual.add_boundaries(faces)
+        dual.add_boundary_pores(faces)
         # Add secondary network name as a label
         dual['pore.'+label_2] = True
         dual['throat.'+label_2] = True
@@ -92,4 +92,4 @@ class CubicDual(GenericNetwork):
         net['throat.internal'][Ts] = True
         # Transfer all dictionary items from 'net' to 'self'
         [self.update({item: net[item]}) for item in net]
-        del self.workspace[net.name]
+        self.project.remove(self)
