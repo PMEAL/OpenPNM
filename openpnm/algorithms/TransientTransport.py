@@ -18,7 +18,7 @@ class TransientTransport(GenericTransport):
                               't_tolerance': 1e-04,
                               't_scheme': 'cranknicolson'})
         super().__init__(**kwargs)
-        self._coeff = 1  # Coefficient for units consistency
+        self._coef = 1  # Coefficient for units consistency
         self._A_steady = None  # Initialize the steady sys of eqs A matrix
 
     def setup(self, phase=None, t_initial='', t_final='', t_step='',
