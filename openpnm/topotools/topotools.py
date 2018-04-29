@@ -402,8 +402,9 @@ def reduce_coordination(network, z):
     r"""
     """
     # Find minimum spanning tree using random weights
-    am = network.create_adjacency_matrix(sym=False, data=sp.rand(network.Nt))
-    mst = csgraph.minimumspanning_tree(am, overwrite=True)
+    am = network.create_adjacency_matrix(weights=sp.rand(network.Nt),
+                                         triu=False)
+    mst = csgraph.minimum_spanning_tree(am, overwrite=True)
     mst = mst.tocoo()
 
     # Label throats on spanning tree to avoid deleting them
@@ -413,13 +414,12 @@ def reduce_coordination(network, z):
     network['throat.mst'][Ts] = True
 
     # Trim throats not on the spanning tree to acheive desired coordination
-    z = 3.5
     Ts = sp.random.permutation(network.throats('mst', mode='complement'))
     Ts = Ts[:int(network.Nt - network.Np*(z/2))]
-    network.trim(throats=Ts)
+    trim(network=network, throats=Ts)
 
 
-def label_faces(network):
+def label_faces(network, tol=0.1):
     r"""
     Finds pores on the surface of the network and labels them according to
     whether they are on the *top*, *bottom*, etc.  This function assumes the
@@ -431,14 +431,20 @@ def label_faces(network):
         The network to apply the labels
     """
     find_surface_pores(network)
-    Ps = network['pore.surface']
+    Psurf = network['pore.surface']
     crds = network['pore.coords']
-    network['pore.top'] = (crds[:, 2] > 0.9*sp.amax(crds[:, 2])) * Ps
-    network['pore.bottom'] = (crds[:, 2] < 0.1*sp.amax(crds[:, 2])) * Ps
-    network['pore.right'] = (crds[:, 1] > 0.9*sp.amax(crds[:, 1])) * Ps
-    network['pore.left'] = (crds[:, 1] < 0.1*sp.amax(crds[:, 1])) * Ps
-    network['pore.back'] = (crds[:, 0] > 0.9*sp.amax(crds[:, 0])) * Ps
-    network['pore.front'] = (crds[:, 0] < 0.1*sp.amax(crds[:, 0])) * Ps
+    xmin, xmax = sp.amin(crds[:, 0]), sp.amax(crds[:, 0])
+    xspan = xmax - xmin
+    ymin, ymax = sp.amin(crds[:, 1]), sp.amax(crds[:, 1])
+    yspan = ymax - ymin
+    zmin, zmax = sp.amin(crds[:, 2]), sp.amax(crds[:, 2])
+    zspan = zmax - zmin
+    network['pore.back'] = (crds[:, 0] > (1-tol)*xmax) * Psurf
+    network['pore.right'] = (crds[:, 1] > (1-tol)*ymax) * Psurf
+    network['pore.top'] = (crds[:, 2] > (1-tol)*zmax) * Psurf
+    network['pore.front'] = (crds[:, 0] < (xmin + tol*xspan)) * Psurf
+    network['pore.left'] = (crds[:, 1] < (xmin + tol*xspan)) * Psurf
+    network['pore.bottom'] = (crds[:, 2] < (xmin + tol*xspan)) * Psurf
 
 
 def find_surface_pores(network, markers=None, label='surface'):
