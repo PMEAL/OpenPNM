@@ -1614,8 +1614,7 @@ def add_boundary_pores(network, pores, offset, apply_label='boundary'):
 
     offset : 3 x 1 array
         The distance in vector form which the cloned boundary pores should
-        be offset.  If no spacing is provided, then the spacing is inferred
-        from the Network.
+        be offset.
 
     apply_label : string
         This label is applied to the boundary pores.  Default is
