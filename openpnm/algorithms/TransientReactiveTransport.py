@@ -12,8 +12,8 @@ class TransientReactiveTransport(ReactiveTransport):
 
     def __init__(self, settings={}, **kwargs):
         self.settings.update({'t_initial': 0,
-                              't_final': 10000,
-                              't_step': 0.1,
+                              't_final': 50000,
+                              't_step': 1,
                               't_output': 100000,
                               't_tolerance': 1e-05,
                               'r_tolerance': 1e-3,
@@ -167,7 +167,7 @@ class TransientReactiveTransport(ReactiveTransport):
 #                                  np.absolute(x_new[x_new != 0]))
                     res = np.sum(np.absolute(x_old**2 - x_new**2))
                     print('        Residual: '+str(res))
-                    self[self.settings['quantity']] = x_new
+                    #self[self.settings['quantity']] = x_new
                     # Output transient solutions. Round time to ensure every
                     # value in outputs is exported.
                     if round(time, 12) in outputs:
@@ -243,7 +243,7 @@ class TransientReactiveTransport(ReactiveTransport):
             # TODO: We need this to NOT overwrite the A and b, but create
             # copy, otherwise we have to regenerate A and b on each loop
             datadiag = self._A.diagonal()
-            datadiag[Ps] = datadiag[Ps] + phase[item+'.'+'S1'][Ps]
+            datadiag[Ps] = datadiag[Ps] + f1*phase[item+'.'+'S1'][Ps]
             self._A.setdiag(datadiag)
             # Add S2 to b
-            self._b[Ps] = self._b[Ps] - phase[item+'.'+'S2'][Ps]
+            self._b[Ps] = self._b[Ps] - f1*phase[item+'.'+'S2'][Ps]
