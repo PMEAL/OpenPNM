@@ -1,6 +1,5 @@
 import openpnm as op
 import numpy as np
-from numpy.testing import assert_approx_equal
 from openpnm import topotools
 
 
@@ -20,6 +19,16 @@ class GraphToolsTest:
         assert topotools.istriu(am)
         am = am.T
         assert not topotools.istriu(am)
+        # Now test non-coo AM's
+        am = net.create_adjacency_matrix(triu=False, fmt='lil')
+        assert not topotools.istriu(am)
+        am = net.create_adjacency_matrix(triu=True, fmt='csr')
+        assert topotools.istriu(am)
+        am = am.T
+        assert not topotools.istriu(am)
+        # Now test non-triangular AM
+        im = net.create_incidence_matrix()
+        assert not topotools.istriu(im)
 
     def test_istril(self):
         net = op.network.Cubic(shape=[5, 5, 5])
@@ -29,6 +38,16 @@ class GraphToolsTest:
         assert not topotools.istril(am)
         am = am.T
         assert topotools.istril(am)
+        # Now test non-coo AM's
+        am = net.create_adjacency_matrix(triu=False, fmt='lil')
+        assert not topotools.istril(am)
+        am = net.create_adjacency_matrix(triu=True, fmt='csr')
+        assert not topotools.istril(am)
+        am = am.T
+        assert topotools.istril(am)
+        # Now test non-triangular AM
+        im = net.create_incidence_matrix()
+        assert not topotools.istril(im)
 
     def test_istriangular(self):
         net = op.network.Cubic(shape=[5, 5, 5])
@@ -38,6 +57,16 @@ class GraphToolsTest:
         assert topotools.istriangular(am)
         am = am.T
         assert topotools.istriangular(am)
+        # Now test non-coo AM's
+        am = net.create_adjacency_matrix(triu=False, fmt='lil')
+        assert not topotools.istriangular(am)
+        am = net.create_adjacency_matrix(triu=True, fmt='csr')
+        assert topotools.istriangular(am)
+        am = am.T
+        assert topotools.istriangular(am)
+        # Now test non-triangular AM
+        im = net.create_incidence_matrix()
+        assert not topotools.istriangular(im)
 
     def test_issymmetric(self):
         net = op.network.Cubic(shape=[5, 5, 5])
@@ -47,6 +76,16 @@ class GraphToolsTest:
         assert not topotools.issymmetric(am)
         am = am.T
         assert not topotools.issymmetric(am)
+        # Now test non-coo AM's
+        am = net.create_adjacency_matrix(triu=False)
+        assert topotools.issymmetric(am)
+        am = net.create_adjacency_matrix(triu=True)
+        assert not topotools.issymmetric(am)
+        am = am.T
+        assert not topotools.issymmetric(am)
+        # Now test non-triangular AM
+        im = net.create_incidence_matrix()
+        assert not topotools.issymmetric(im)
 
     def test_find_clusters(self):
         net = op.network.Cubic(shape=[10, 10, 10])
