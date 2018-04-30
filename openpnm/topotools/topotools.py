@@ -351,7 +351,6 @@ def extend(network, pore_coords=[], throat_conns=[], labels=[]):
         raise Exception('Network has active Phases, copy network to a new ' +
                         'project and try again')
 
-    logger.info('Extending network')
     Np_old = network.num_pores()
     Nt_old = network.num_throats()
     Np = Np_old + int(sp.size(pore_coords)/3)
@@ -554,7 +553,6 @@ def clone_pores(network, pores, labels=['clone'], mode='parents'):
     if len(network.project.phases()) > 0:
         raise Exception('Network has active Phases, cannot proceed')
 
-    logger.debug('Cloning pores')
     apply_label = [labels]
     Np = network.Np
     Nt = network.Nt
@@ -761,9 +759,28 @@ def connect_pores(network, pores1, pores2, labels=[], add_conns=True):
         return conns
 
 
-def find_pores_distance(network, pores1=None, pores2=None):
+def find_pore_to_pore_distance(network, pores1=None, pores2=None):
     r'''
-    Find the distance between two group of pores.
+    Find the distance between all pores on set one to each pore in set 2
+
+    Parameters
+    ----------
+    network : OpenPNM Network Object
+        The network object containing the pore coordinates
+
+    pores1 : array_like
+        The pore indices of the first set
+
+    pores2 : array_Like
+        The pore indices of the second set.  It's OK if these indices are
+        partially or completely duplicating ``pores``.
+
+    Returns
+    -------
+    A distance matrix with ``len(pores1)`` rows and ``len(pores2)`` columns.
+    The distance between pore *i* in ``pores1`` and *j* in ``pores2`` is
+    located at *(i, j)* and *(j, i)* in the distance matrix.
+
     '''
     from scipy.spatial.distance import cdist
     p1 = sp.array(pores1, ndmin=1)
@@ -1028,7 +1045,7 @@ def _template_sphere_disc(dim, outer_radius, inner_radius):
         elif dim == 3:
             img_min = (x ** 2 + y ** 2 + z ** 2) > rmin ** 2
         img = img * img_min
-    return (img)
+    return img
 
 
 def template_sphere_shell(outer_radius, inner_radius=0):
@@ -1040,10 +1057,11 @@ def template_sphere_shell(outer_radius, inner_radius=0):
     Parameters
     ----------
     outer_radius : int
-        Number of the nodes in the outer radius of the shell
+        Number of nodes in the outer radius of the sphere.
 
     inner_radius : int
-        Number of the nodes in the inner radius of the shell
+        Number of nodes in the inner radius of the shell.  a value of 0 will
+        result in a solid sphere.
 
     Returns
     -------
@@ -1053,10 +1071,10 @@ def template_sphere_shell(outer_radius, inner_radius=0):
     """
     img = _template_sphere_disc(dim=3, outer_radius=outer_radius,
                                 inner_radius=inner_radius)
-    return(img)
+    return img
 
 
-def template_disc_ring(outer_radius, inner_radius=0):
+def template_cylinder_annulus(height, outer_radius, inner_radius=0):
     r"""
     This method generates an image array of a disc-ring.  It is useful for
     passing to Cubic networks as a ``template`` to make circular-shaped 2D
@@ -1064,11 +1082,15 @@ def template_disc_ring(outer_radius, inner_radius=0):
 
     Parameters
     ----------
+    height : int
+        The height of the cylinder
+
     outer_radius : int
-        Number of the nodes in the outer radius of the disc
+        Number of nodes in the outer radius of the cylinder
 
     inner_radius : int
-        Number of the nodes in the inner radius of the disc
+        Number of the nodes in the inner radius of the annulus.  A value of 0
+        will result in a solid cylinder.
 
     Returns
     -------
@@ -1079,7 +1101,8 @@ def template_disc_ring(outer_radius, inner_radius=0):
 
     img = _template_sphere_disc(dim=2, outer_radius=outer_radius,
                                 inner_radius=inner_radius)
-    return(img)
+    img = sp.tile(sp.atleast_3d(img), reps=height)
+    return img
 
 
 def plot_connections(network, throats=None, fig=None, **kwargs):
@@ -1625,7 +1648,6 @@ def add_boundary_pores(network, pores, offset, apply_label='boundary'):
     # Apply labels to boundary pores (trim leading 'pores' if present)
     label = apply_label.split('.')[-1]
     label = 'pore.' + label
-    logger.debug('The label \''+label+'\' has been applied')
     network[label] = False
     network[label][newPs] = True
 
