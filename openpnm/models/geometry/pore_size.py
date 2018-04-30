@@ -29,7 +29,7 @@ generic.__doc__ = _misc.generic.__doc__
 
 def largest_sphere(target, pore_diameter='pore.diameter', iters=10):
     r"""
-    Finds the maximum diameter pore that can be places in each location without
+    Finds the maximum diameter pore that can be placed in each location without
     overlapping any neighbors.
 
     Parameters

@@ -18,7 +18,7 @@ class ModelsDict(PrintableDict):
                 self.edges.append(node)
 
         tree = {}
-        
+        # Gather all props and make into nodes with deps
         for propname in self.keys():
             if propname not in list(tree.keys()):
                 tree[propname] = Node(propname)
@@ -30,24 +30,41 @@ class ModelsDict(PrintableDict):
                     if dependency not in list(tree.keys()):
                         tree[dependency] = Node(dependency)
                     tree[propname].addEdge(tree[dependency])
-
-        def dep_resolve(node, resolved, unresolved):
+        
+        def dep_resolve(node, resolved, unresolved, circular):
+            r'''
+            Function to recursively resolve dependencies
+            '''
             unresolved.append(node)
             for edge in node.edges:
                 if edge not in resolved:
                     if edge in unresolved:
                         logger.warning('Circular reference detected: %s -> %s'
                                         % (node.name, edge.name))
+                        # save these dep first - user defined order
+                        circular.append(edge)
+                        circular.append(node)
                         break
-                    dep_resolve(edge, resolved, unresolved)
+                    dep_resolve(edge, resolved, unresolved, circular)
             resolved.append(node)
             unresolved.remove(node)
-        
+
         resolved = []
         for node in tree.values():
             if node not in resolved:
-                dep_resolve(node, resolved, [])
-        
+                circular = []
+                dep_resolve(node, resolved, [], circular)
+                res_copy = []
+                # If a circuar dep was found then keep the rest and copy
+                # The circular ones in the user defined order
+                for node in resolved:
+                    if node not in circular:
+                        res_copy.append(node)
+                for node in circular:
+                    if node not in res_copy:
+                        res_copy.append(node)
+                resolved = res_copy.copy()
+                            
         return [node.name for node in resolved]
 
     def __str__(self):
