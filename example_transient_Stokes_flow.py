@@ -6,7 +6,7 @@ ws.settings['local_data'] = True
 
 # NETWORK
 sp.random.seed(17)
-nx, ny, nz = 20, 40, 1
+nx, ny, nz = 5, 10, 1
 pn = op.network.Cubic(shape=[nx, ny, nz], spacing=1e-4, name='pn11')
 
 # GEOMETRIES
@@ -43,6 +43,7 @@ alg1.set_dirichlet_BC(pores=outlet, values=0)
 alg1.run()
 
 alg1b = op.algorithms.TransientStokesFlow(network=pn, phase=water)
+alg1b.settings.update({'t_step': 1})
 alg1b.set_IC(0)
 alg1b.set_dirichlet_BC(pores=inlet, values=5)
 alg1b.set_dirichlet_BC(pores=outlet, values=0)

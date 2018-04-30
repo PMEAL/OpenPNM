@@ -12,12 +12,12 @@ class TransientReactiveTransport(ReactiveTransport):
 
     def __init__(self, settings={}, **kwargs):
         self.settings.update({'t_initial': 0,
-                              't_final': 50000,
-                              't_step': 1,
-                              't_output': 100000,
-                              't_tolerance': 1e-05,
-                              'r_tolerance': 1e-3,
-                              't_scheme': 'steady'})
+                              't_final': 1e+04,
+                              't_step': 0.2,
+                              't_output': 1e+08,
+                              't_tolerance': 1e-06,
+                              'r_tolerance': 1e-06,
+                              't_scheme': 'implicit'})
         super().__init__(**kwargs)
         self._coef = 1  # Coefficient for units consistency
         self._A_steady = None  # Initialize the steady sys of eqs A matrix
@@ -51,10 +51,6 @@ class TransientReactiveTransport(ReactiveTransport):
         network = self.project.network
         Vi = self._coef*network['pore.volume']
         dt = self.settings['t_step']
-        
-#        dt = self.settings['t_step']
-#        Vi = self._coef*(dt/network['pore.volume'])
-        
         s = self.settings['t_scheme']
         if (s == 'implicit'):
             f1, f2 = 1, 1
@@ -66,12 +62,6 @@ class TransientReactiveTransport(ReactiveTransport):
         A = ((f2/dt) * sprs.coo_matrix.multiply(
             sprs.coo_matrix(np.reshape(Vi, (self.Np, 1)), shape=(self.Np,)),
             sprs.identity(self.Np, format='coo')) + f1 * self._A_steady)
-
-#        A = (f2 * sprs.coo_matrix.multiply(
-#            sprs.coo_matrix(np.reshape(Vi, (self.Np, 1)), shape=(self.Np,)),
-#            f1 * self._A_steady) + sprs.identity(self.Np, format='coo'))
-
-
         # Convert A to 'coo' format to apply BCs
         A = sprs.coo_matrix(A)
         self._A = A
@@ -84,8 +74,6 @@ class TransientReactiveTransport(ReactiveTransport):
         phase = self.project.phases()[self.settings['phase']]
         Vi = self._coef*network['pore.volume']
         dt = self.settings['t_step']
-#        dt = self.settings['t_step']
-#        Vi = self._coef*(dt/network['pore.volume'])
         s = self.settings['t_scheme']
         if (s == 'implicit'):
             f1, f2, f3 = 1, 1, 0
@@ -94,15 +82,12 @@ class TransientReactiveTransport(ReactiveTransport):
         elif (s == 'steady'):
             f1, f2, f3 = 1, 0, 1
         x_old = self[self.settings['quantity']]
-#        b = (f2*(1-f1)*(-self._A_steady)*x_old +
-#             f2*(Vi/dt)*x_old +
-#             f3*np.zeros(shape=(self.Np, ), dtype=float))
         b = (f2*(1-f1)*(-self._A_steady)*x_old +
              f2*(Vi/dt)*x_old +
              f3*np.zeros(shape=(self.Np, ), dtype=float))
-#        for item in self.settings['sources']:
-#            Ps = self.pores(item)
-#            b[Ps] = b[Ps] - f2*(phase[item+'.'+'rate'][Ps])
+        for item in self.settings['sources']:
+            Ps = self.pores(item)
+            b[Ps] = b[Ps] - f2*(1-f1)*(phase[item+'.'+'rate'][Ps])
         self._b = b
         return b
 
@@ -122,7 +107,6 @@ class TransientReactiveTransport(ReactiveTransport):
         self._apply_BCs()
         self._A_t = (self._A).copy()
         self._b_t = (self._b).copy()
-        #self._apply_sources(s=self.settings['t_scheme'])
         if t is None:
             t = self.settings['t_initial']
         self._run_transient(t=t)
@@ -133,7 +117,7 @@ class TransientReactiveTransport(ReactiveTransport):
         to = self.settings['t_output']
         tol = self.settings['t_tolerance']
         s = self.settings['t_scheme']
-        res = 1  # Initialize the residual
+        res_t = 1  # Initialize the residual
 
         # Make sure 'tf' and 'to' are multiples of 'dt'
         tf = tf + (dt-(tf % dt))*((tf % dt) != 0)
@@ -154,7 +138,7 @@ class TransientReactiveTransport(ReactiveTransport):
 
         else:  # Do time iterations
             for time in np.arange(t+dt, tf+dt, dt):
-                if (res >= tol):  # Check if the steady state is reached
+                if (res_t >= tol):  # Check if the steady state is reached
                     print('    Current time step: '+str(time)+' s')
                     x_old = self[self.settings['quantity']]
 
@@ -162,31 +146,18 @@ class TransientReactiveTransport(ReactiveTransport):
                     x_new = self[self.settings['quantity']]
 
                     # Compute the residual
-#                    res = np.amax(np.absolute(x_new[x_new != 0] -
-#                                              x_old[x_new != 0]) /
-#                                  np.absolute(x_new[x_new != 0]))
-                    res = np.sum(np.absolute(x_old**2 - x_new**2))
-                    print('        Residual: '+str(res))
-                    #self[self.settings['quantity']] = x_new
+                    res_t = np.sum(np.absolute(x_old**2 - x_new**2))
+                    print('        Residual: '+str(res_t))
                     # Output transient solutions. Round time to ensure every
                     # value in outputs is exported.
                     if round(time, 12) in outputs:
                         ind = np.where(outputs == round(time, 12))[0][0]
-                        self[self.settings['quantity'] + str(ind)] = x_new
+                        self[self.settings['quantity_'] + str(ind)] = x_new
                         print('        Exporting time step: '+str(time)+' s')
-
-                    #self._A = self._A_t
-                    #self._b = self._b_t
-
-                    #self._t_update_A()
+                    # Update b and apply BCs
                     self._t_update_b()
                     self._apply_BCs()
-                    
                     self._b_t = (self._b).copy()
-
-                    
-                    #self._apply_sources(s=self.settings['t_scheme'])
-
                 else:  # Stop time iterations if residual < t_tolerance
                     self[self.settings['quantity'] + '_steady'] = x_new
                     print('        Exporting time step: '+str(time)+' s')
@@ -202,48 +173,15 @@ class TransientReactiveTransport(ReactiveTransport):
         self._A = (self._A_t).copy()
         self._b = (self._b_t).copy()
         self._apply_BCs()
-        #print (self._b)
-        self._t_apply_sources(s=self.settings['t_scheme'])
-        #self._apply_sources()
+        self._apply_sources(s=self.settings['t_scheme'])
         if x is None:
             x = np.zeros(shape=[self.Np, ], dtype=float)
         x_new = self._solve()
         self[self.settings['quantity']] = x_new
-        res = np.sum(np.absolute(x**2 - x_new**2))
-        if res < self.settings['r_tolerance']:
-            print('            Solution converged: ' + str(res))
+        res_r = np.sum(np.absolute(x**2 - x_new**2))
+        if res_r < self.settings['r_tolerance']:
+            print('            Solution converged: ' + str(res_r))
             return x_new
         else:
-            print('            Tolerance not met: ' + str(res))
+            print('            Tolerance not met: ' + str(res_r))
             self._t_run_reactive(x=x_new)
-
-    def _t_apply_sources(self, s='steady'):
-        if (s == 'cranknicolson'):
-            f1 = 0.5
-        else:
-            f1 = 1
-        network = self.project.network
-        phase = self.project.phases()[self.settings['phase']]
-        Vi = self._coef*network['pore.volume']
-        dt = self.settings['t_step']
-
-        phase = self.project.phases()[self.settings['phase']]
-        physics = self.project.find_physics(phase=phase)
-        for item in self.settings['sources']:
-            Ps = self.pores(item)
-            # Regenerate models with new guess
-            quantity = self.settings['quantity']
-            # Put quantity on phase so physics finds it when regenerating
-            phase[quantity] = self[quantity]
-            # Regenerate models, on either phase or physics
-            phase.regenerate_models(propnames=item)
-            for phys in physics:
-                phys.regenerate_models(propnames=item)
-            # Add S1 to diagonal of A
-            # TODO: We need this to NOT overwrite the A and b, but create
-            # copy, otherwise we have to regenerate A and b on each loop
-            datadiag = self._A.diagonal()
-            datadiag[Ps] = datadiag[Ps] + f1*phase[item+'.'+'S1'][Ps]
-            self._A.setdiag(datadiag)
-            # Add S2 to b
-            self._b[Ps] = self._b[Ps] - f1*phase[item+'.'+'S2'][Ps]

@@ -1,10 +1,9 @@
-from openpnm.algorithms import FickianDiffusion
-from openpnm.algorithms import TransientTransport
+from openpnm.algorithms import TransientReactiveTransport, FickianDiffusion
 from openpnm.core import logging
 logger = logging.getLogger(__name__)
 
 
-class TransientFickianDiffusion(TransientTransport, FickianDiffusion):
+class TransientFickianDiffusion(TransientReactiveTransport, FickianDiffusion):
     r"""
     A subclass of GenericTransport to simulate diffusion.
 

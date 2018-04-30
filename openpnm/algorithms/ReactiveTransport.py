@@ -83,9 +83,6 @@ class ReactiveTransport(GenericTransport):
         x_new = self._solve()
         self[self.settings['quantity']] = x_new
         res = np.sum(np.absolute(x**2 - x_new**2))
-        #res = np.amax(np.absolute(x_new[x_new != 0] -
-        #                          x[x_new != 0]) /
-        #              np.absolute(x_new[x_new != 0]))
         if res < self.settings['tolerance']:
             print('Solution converged: ' + str(res))
             return x_new
