@@ -42,7 +42,7 @@ def find_neighbor_sites(sites, am, flatten=True, exclude_input=True,
     """
     if am.format != 'lil':
         am = am.tolil(copy=False)
-    neighbors = [am.rows[i] for i in sp.array(sites)]
+    neighbors = [am.rows[i] for i in sp.array(sites, ndmin=1)]
     if flatten:
         neighbors.append(sites)
         neighbors = sp.hstack(neighbors)
@@ -83,7 +83,7 @@ def find_neighbor_bonds(sites, im, flatten=True, logic='union'):
         print('Warning: Received matrix has more sites than bonds!')
     if im.format != 'lil':
         im = im.tolil(copy=False)
-    neighbors = [im.rows[i] for i in sp.array(sites)]
+    neighbors = [im.rows[i] for i in sp.array(sites, ndmin=1)]
     if flatten:
         neighbors = sp.concatenate(neighbors)
         neighbors = apply_logic(neighbors=neighbors, logic=logic)
