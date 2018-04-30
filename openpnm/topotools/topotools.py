@@ -1525,7 +1525,7 @@ def find_clusters(network, mask=[], t_labels=False):
 
 def _site_percolation(network, pmask):
     r"""
-    This private method is called by 'find_clusters2'
+    This private method is called by 'find_clusters'
     """
     # Find throats that produce site percolation
     conns = sp.copy(network['throat.conns'])
@@ -1556,7 +1556,7 @@ def _site_percolation(network, pmask):
 
 def _bond_percolation(network, tmask):
     r"""
-    This private method is called by 'find_clusters2'
+    This private method is called by 'find_clusters'
     """
     # Perform the clustering using scipy.csgraph
     csr = network.create_adjacency_matrix(weights=tmask, fmt='csr',
@@ -1567,7 +1567,7 @@ def _bond_percolation(network, tmask):
     # Convert clusters to a more usable output:
     # Find pores attached to each invaded throats
     Ps = network.find_connected_pores(throats=tmask, flatten=True)
-    # Adjust cluster numbers such that non-invaded pores are labelled -0
+    # Adjust cluster numbers such that non-invaded pores are labelled -1
     p_clusters = (clusters + 1)*(network.tomask(pores=Ps).astype(int)) - 1
     # Label invaded throats with their neighboring pore's label
     t_clusters = clusters[network['throat.conns']][:, 0]
@@ -1575,22 +1575,6 @@ def _bond_percolation(network, tmask):
     t_clusters[~tmask] = -1
 
     return (p_clusters, t_clusters)
-
-
-def _compress_labels(self, label_array):
-    # Make cluster number contiguous
-    array = sp.array(label_array)
-    if array.dtype != int:
-        raise Exception('label_array must be intergers')
-    min_val = sp.amin(array)
-    if min_val >= 0:
-        min_val = 0
-    array = array + sp.absolute(min_val)
-    nums = sp.unique(array)
-    temp = sp.zeros((sp.amax(array)+1,))
-    temp[nums] = sp.arange(0, sp.size(nums))
-    array = temp[array].astype(array.dtype)
-    return array
 
 
 def add_boundary_pores(network, pores, offset, apply_label='boundary'):
