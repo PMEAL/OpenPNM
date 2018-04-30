@@ -48,12 +48,18 @@ class GraphToolsTest:
         am = am.T
         assert not topotools.issymmetric(am)
 
-    def test_am_to_im(self):
-        net = op.network.Cubic(shape=[5, 5, 5])
-        am = net.create_adjacency_matrix()
-        im = net.create_incidence_matrix()
-        im2 = topotools.am_to_im(am)
-        assert im == im2
+    def test_find_clusters(self):
+        net = op.network.Cubic(shape=[10, 10, 10])
+        net['pore.seed'] = np.random.rand(net.Np)
+        net['throat.seed'] = np.random.rand(net.Nt)
+        clusters = topotools.find_clusters(network=net,
+                                           mask=net['pore.seed'] < 0.5)
+        assert len(clusters[0]) == net.Np
+        assert len(clusters[1]) == net.Nt
+        clusters = topotools.find_clusters(network=net,
+                                           mask=net['throat.seed'] < 0.5)
+        assert len(clusters[0]) == net.Np
+        assert len(clusters[1]) == net.Nt
 
 
 if __name__ == '__main__':

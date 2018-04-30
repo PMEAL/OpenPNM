@@ -1490,28 +1490,20 @@ def find_clusters(network, mask=[], t_labels=False):
         Np long, then the method will perform a site percolation, and if
         the mask is Nt long bond percolation will be performed.
 
-    t_labels : boolean (default id False)
-        Indicates if throat cluster numbers should also be returned. If
-        true then a tuple containing both p_clusters and t_clusters is
-        returned.
-
     Returns
     -------
-    A Np long list of pore clusters numbers, unless t_labels is True in
-    which case a tuple containing both pore and throat cluster labels is
-    returned.  The label numbers correspond such that pores and throats
-    with the same label are part of the same cluster.
+    A tuple containing an Np long list of pore cluster labels, and an Nt-long
+    list of throat cluster labels.  The label numbers correspond such that
+    pores and throats with the same label are part of the same cluster.
 
     Examples
     --------
     >>> import openpnm as op
+    >>> from scipy import rand
     >>> pn = op.network.Cubic(shape=[25, 25, 1])
-    >>> Ps, Ts = pn.Ps, pn.Ts
-    >>> geom = op.geometry.GenericGeometry(network=pn, pores=Ps, throats=Ts)
-    >>> geom['pore.seed'] = sp.rand(pn.Np)
-    >>> geom['throat.seed'] = sp.rand(pn.Nt)
+    >>> pn['pore.seed'] = rand(pn.Np)
+    >>> pn['throat.seed'] = rand(pn.Nt)
 
-    This docstring needs to be updated
 
     """
     # Parse the input arguments
@@ -1528,10 +1520,7 @@ def find_clusters(network, mask=[], t_labels=False):
     else:
         raise Exception('Mask received was neither Nt nor Np long')
 
-    if t_labels:
-        return (p_clusters, t_clusters)
-    else:
-        return p_clusters
+    return (p_clusters, t_clusters)
 
 
 def _site_percolation(network, pmask):

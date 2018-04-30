@@ -85,10 +85,25 @@ class TopotoolsTest:
                                      offset=[0, 1, 0])
         assert net.Np == 150
 
-    def test_clone_pores(self):
+    def test_clone_pores_mode_parents(self):
         net = op.network.Cubic(shape=[5, 5, 5])
         topotools.clone_pores(network=net, pores=net.pores('left'))
         assert net.Np == 150
+        assert net.Nt == 325
+
+    def test_clone_pores_mode_sibings(self):
+        net = op.network.Cubic(shape=[5, 5, 5])
+        topotools.clone_pores(network=net, pores=net.pores('left'),
+                              mode='siblings')
+        assert net.Np == 150
+        assert net.Nt == 340
+
+    def test_clone_pores_mode_isolated(self):
+        net = op.network.Cubic(shape=[5, 5, 5])
+        topotools.clone_pores(network=net, pores=net.pores('left'),
+                              mode='isolated')
+        assert net.Np == 150
+        assert net.Nt == 300
 
 
 if __name__ == '__main__':

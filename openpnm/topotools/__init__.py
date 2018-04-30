@@ -1,5 +1,4 @@
 from .topotools import add_boundary_pores
-from .topotools import am_to_im
 from .topotools import clone_pores
 from .topotools import connect_pores
 from .topotools import extend
