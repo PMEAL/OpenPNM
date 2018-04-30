@@ -553,7 +553,8 @@ def clone_pores(network, pores, labels=['clone'], mode='parents'):
     if len(network.project.phases()) > 0:
         raise Exception('Network has active Phases, cannot proceed')
 
-    apply_label = [labels]
+    if type(labels) == str:
+        labels = [labels]
     Np = network.Np
     Nt = network.Nt
     # Clone pores
@@ -564,7 +565,7 @@ def clone_pores(network, pores, labels=['clone'], mode='parents'):
     Npnew = sp.shape(pnew)[0]
     clones = sp.arange(Np, Npnew)
     # Add clone labels to network
-    for item in apply_label:
+    for item in labels:
         network['pore.'+item] = False
         network['throat.'+item] = False
     # Add connections between parents and clones
@@ -578,7 +579,7 @@ def clone_pores(network, pores, labels=['clone'], mode='parents'):
     if mode == 'isolated':
         extend(network=network, pore_coords=pclone)
     # Apply provided labels to cloned pores
-    for item in apply_label:
+    for item in labels:
         network['pore.'+item][network.pores('all') >= Np] = True
         network['throat.'+item][network.throats('all') >= Nt] = True
 
@@ -1639,7 +1640,7 @@ def add_boundary_pores(network, pores, offset, apply_label='boundary'):
     if sp.size(pores) == 0:  # Handle an empty array if given
         return sp.array([], dtype=sp.int64)
     # Clone the specifed pores
-    clone_pores(pores=Ps)
+    clone_pores(network=network, pores=Ps)
     newPs = network.pores('pore.clone')
     del network['pore.clone']
     # Offset the cloned pores

@@ -81,7 +81,14 @@ class TopotoolsTest:
 
     def test_add_boundary_pores(self):
         net = op.network.Cubic(shape=[5, 5, 5])
-        topotools.add_
+        topotools.add_boundary_pores(network=net, pores=net.pores('left'),
+                                     offset=[0, 1, 0])
+        assert net.Np == 150
+
+    def test_clone_pores(self):
+        net = op.network.Cubic(shape=[5, 5, 5])
+        topotools.clone_pores(network=net, pores=net.pores('left'))
+        assert net.Np == 150
 
 
 if __name__ == '__main__':
