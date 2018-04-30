@@ -1,4 +1,5 @@
 from .topotools import add_boundary_pores
+from .topotools import am_to_im
 from .topotools import clone_pores
 from .topotools import connect_pores
 from .topotools import extend
@@ -12,6 +13,10 @@ from .topotools import find_pore_to_pore_distance
 from .topotools import find_clusters
 from .topotools import generate_base_points
 from .topotools import iscoplanar
+from .topotools import issymmetric
+from .topotools import istriu
+from .topotools import istril
+from .topotools import istriangular
 from .topotools import label_faces
 from .topotools import merge_pores
 from .topotools import plot_connections

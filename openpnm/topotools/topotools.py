@@ -199,15 +199,17 @@ def istril(am):
 def istriangular(am):
     if am.format != 'coo':
         am = am.tocoo(copy=False)
-    return (istril(am) + istriu(am))
+    return istril(am) or istriu(am)
 
 
 def issymmetric(am):
     if am.shape[0] != am.shape[1]:
-        print('Matrix is not square, symmetrical is not relevant')
+        logger.warning('Matrix is not square, symmetrical is not relevant')
         return False
     if am.format != 'coo':
         am = am.tocoo(copy=False)
+    if istril(am) or istriu(am):
+        return False
     inds_up = am.row < am.col
     inds_lo = am.row > am.col
     # Check if locations of non-zeros are symmetrically distributed

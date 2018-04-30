@@ -12,6 +12,49 @@ class GraphToolsTest:
     def teardown_class(self):
         self.ws.clear()
 
+    def test_istriu(self):
+        net = op.network.Cubic(shape=[5, 5, 5])
+        am = net.create_adjacency_matrix(triu=False)
+        assert not topotools.istriu(am)
+        am = net.create_adjacency_matrix(triu=True)
+        assert topotools.istriu(am)
+        am = am.T
+        assert not topotools.istriu(am)
+
+    def test_istril(self):
+        net = op.network.Cubic(shape=[5, 5, 5])
+        am = net.create_adjacency_matrix(triu=False)
+        assert not topotools.istril(am)
+        am = net.create_adjacency_matrix(triu=True)
+        assert not topotools.istril(am)
+        am = am.T
+        assert topotools.istril(am)
+
+    def test_istriangular(self):
+        net = op.network.Cubic(shape=[5, 5, 5])
+        am = net.create_adjacency_matrix(triu=False)
+        assert not topotools.istriangular(am)
+        am = net.create_adjacency_matrix(triu=True)
+        assert topotools.istriangular(am)
+        am = am.T
+        assert topotools.istriangular(am)
+
+    def test_issymmetric(self):
+        net = op.network.Cubic(shape=[5, 5, 5])
+        am = net.create_adjacency_matrix(triu=False)
+        assert topotools.issymmetric(am)
+        am = net.create_adjacency_matrix(triu=True)
+        assert not topotools.issymmetric(am)
+        am = am.T
+        assert not topotools.issymmetric(am)
+
+    def test_am_to_im(self):
+        net = op.network.Cubic(shape=[5, 5, 5])
+        am = net.create_adjacency_matrix()
+        im = net.create_incidence_matrix()
+        im2 = topotools.am_to_im(am)
+        assert im == im2
+
 
 if __name__ == '__main__':
 
