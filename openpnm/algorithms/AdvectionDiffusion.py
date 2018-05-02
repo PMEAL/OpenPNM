@@ -11,20 +11,42 @@ class AdvectionDiffusion(GenericTransport):
 
     """
 
-    def __init__(self, s_scheme='powerlaw', settings={}, **kwargs):
+    def __init__(self, settings={}, **kwargs):
         super().__init__(**kwargs)
         # Set some default settings
         self.settings.update({'quantity': 'pore.mole_fraction',
                               'diffusive_conductance':
-                                  'throat.diffusive_conductance',
+                              'throat.diffusive_conductance',
                               'hydraulic_conductance':
-                                  'throat.hydraulic_conductance',
+                              'throat.hydraulic_conductance',
                               'pressure': 'pore.pressure',
                               'molar_density': 'pore.molar_density',
-                              's_scheme': s_scheme})
+                              's_scheme': 'powerlaw'})
         # Apply any received settings to overwrite defaults
         self.settings.update(settings)
         self._A = self._build_A()
+
+    def setup(self, phase=None, quantity='', diffusive_conductance='',
+              hydraulic_conductance='', pressure='', molar_density='',
+              s_scheme='', **kwargs):
+        r"""
+
+        """
+        if phase:
+            self.settings['phase'] = phase.name
+        if quantity:
+            self.settings['quantity'] = quantity
+        if diffusive_conductance:
+            self.settings['diffusive_conductance'] = diffusive_conductance
+        if hydraulic_conductance:
+            self.settings['hydraulic_conductance'] = hydraulic_conductance
+        if pressure:
+            self.settings['pressure'] = pressure
+        if molar_density:
+            self.settings['molar_density'] = molar_density
+        if s_scheme:
+            self.settings['s_scheme'] = s_scheme
+        super().setup(**kwargs)
 
     def _build_A(self):
         s_dis = self.settings['s_scheme']
