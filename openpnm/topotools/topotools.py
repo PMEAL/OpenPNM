@@ -92,7 +92,7 @@ def find_neighbor_bonds(sites, im, flatten=True, logic='union'):
 
 def find_connected_sites(bonds, am, flatten=True, logic='union'):
     r"""
-    Given an adjacency matrix, finds whichsites are connected to the input
+    Given an adjacency matrix, finds which sites are connected to the input
     bonds.
 
     Parameters
@@ -118,7 +118,7 @@ def find_connected_sites(bonds, am, flatten=True, logic='union'):
     """
     if am.format != 'coo':
         am = am.tocoo(copy=False)
-    bonds = sp.array(bonds)
+    bonds = sp.array(bonds, ndmin=1)
     if flatten:
         neighbors = sp.hstack((am.row[bonds], am.col[bonds]))
         neighbors = apply_logic(neighbors=neighbors, logic=logic)
@@ -157,6 +157,7 @@ def find_connecting_bonds(sites, am):
     """
     if am.format != 'dok':
         am = am.todok(copy=False)
+    sites = sp.array(sites, ndmin=2)
     z = tuple(zip(sites[:, 0], sites[:, 1]))
     neighbors = [am.get(z[i], None) for i in range(len(z))]
     return neighbors

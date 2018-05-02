@@ -10,9 +10,34 @@ class GraphToolsTest:
         r"""
         Make a nice and simple network to test stuff
 
+        The Network:
+
         3 ― 4 ― 5
         | \ |
         0 ― 1 ― 2
+
+        The Adjacency Matrix:    The Enumreated Adjacency Matrix:
+
+          | 0  1  2  3  4  5       | 0  1  2  3  4  5
+        ――|――――――――――――――――――    ――|――――――――――――――――――
+        0 | -  1     1           0 | -  0     1
+        1 | 1  -  1  1  1        1 | 0  -  3  2  5
+        2 |    1  -              2 |    3  -
+        3 | 1  1     -  1        3 | 1  2     -  4
+        4 |    1     1  -  1     4 |    5     4  -  6
+        5 |             1  -     5 |             6  -
+
+        The Incidence Matrix:    The Enumerated Incidence Matrix
+
+          | 0  1  2  3  4  5       | 0  1  2  3  4  5
+        ――|――――――――――――――――――    ――|――――――――――――――――――
+        0 | 1  1                 0 | 1  0
+        1 | 1        1           1 | 3        0
+        2 |    1     1           2 |    3     1
+        3 |    1  1              3 |    2  1
+        4 |          1  1        4 |          4  3
+        5 |    1        1        5 |    4        1
+        6 |             1  1     6 |             5  4
 
         """
         self.ws = op.Workspace()
@@ -25,10 +50,10 @@ class GraphToolsTest:
                            [2, 1, 0]])
         conns = np.array([[0, 1],
                           [0, 3],
-                          [1, 2],
                           [1, 3],
-                          [1, 4],
+                          [1, 2],
                           [3, 4],
+                          [1, 4],
                           [4, 5]])
         self.net['pore.coords'] = coords
         self.net['throat.conns'] = conns
@@ -36,16 +61,112 @@ class GraphToolsTest:
     def teardown_class(self):
         self.ws.clear()
 
+    def test_find_connected_sites(self):
+        am = self.net.create_adjacency_matrix(weights=self.net.Ts, fmt='coo')
+        Ps = topotools.find_connected_sites(bonds=[0], am=am, flatten=True)
+        assert np.all(Ps == [0, 1])
+        Ps = topotools.find_connected_sites(bonds=[1], am=am, flatten=True)
+        assert np.all(Ps == [0, 3])
+        Ps = topotools.find_connected_sites(bonds=[2], am=am, flatten=True)
+        assert np.all(Ps == [1, 3])
+        Ps = topotools.find_connected_sites(bonds=[3], am=am, flatten=True)
+        assert np.all(Ps == [1, 2])
+        Ps = topotools.find_connected_sites(bonds=[4], am=am, flatten=True)
+        assert np.all(Ps == [3, 4])
+        Ps = topotools.find_connected_sites(bonds=[5], am=am, flatten=True)
+        assert np.all(Ps == [1, 4])
+        Ps = topotools.find_connected_sites(bonds=[6], am=am, flatten=True)
+        assert np.all(Ps == [4, 5])
+
+    def test_find_connected_sites_single(self):
+        am = self.net.create_adjacency_matrix(fmt='coo')
+        Ps = topotools.find_connected_sites(bonds=0, am=am, flatten=True)
+        assert np.all(Ps == [0, 1])
+
+#    def test_find_connected_sites_fmt_not_coo(self):
+#        am = self.net.create_adjacency_matrix(fmt='csr')
+#        Ps = topotools.find_connected_sites(bonds=[0], am=am, flatten=True)
+#        assert np.all(Ps == [0, 1])
+#        Ps = topotools.find_connected_sites(bonds=[1], am=am, flatten=True)
+#        assert np.all(Ps == [0, 3])
+#        Ps = topotools.find_connected_sites(bonds=[2], am=am, flatten=True)
+#        assert np.all(Ps == [1, 3])
+#        Ps = topotools.find_connected_sites(bonds=[3], am=am, flatten=True)
+#        assert np.all(Ps == [1, 2])
+#        Ps = topotools.find_connected_sites(bonds=[4], am=am, flatten=True)
+#        assert np.all(Ps == [3, 4])
+#        Ps = topotools.find_connected_sites(bonds=[5], am=am, flatten=True)
+#        assert np.all(Ps == [1, 4])
+#        Ps = topotools.find_connected_sites(bonds=[6], am=am, flatten=True)
+#        assert np.all(Ps == [4, 5])
+
+    def test_find_connecting_bonds(self):
+        am = self.net.create_adjacency_matrix(weights=self.net.Ts, fmt='dok')
+        T = topotools.find_connecting_bonds(sites=[0, 1], am=am)
+        assert np.all(T == [0])
+        T = topotools.find_connecting_bonds(sites=[0, 3], am=am)
+        assert np.all(T == [1])
+        T = topotools.find_connecting_bonds(sites=[1, 3], am=am)
+        assert np.all(T == [2])
+        T = topotools.find_connecting_bonds(sites=[1, 2], am=am)
+        assert np.all(T == [3])
+        T = topotools.find_connecting_bonds(sites=[3, 4], am=am)
+        assert np.all(T == [4])
+        T = topotools.find_connecting_bonds(sites=[1, 4], am=am)
+        assert np.all(T == [5])
+        T = topotools.find_connecting_bonds(sites=[4, 5], am=am)
+        assert np.all(T == [6])
+
+    def test_find_connecting_bonds_fmt_not_dok(self):
+        am = self.net.create_adjacency_matrix(weights=self.net.Ts, fmt='csr')
+        T = topotools.find_connecting_bonds(sites=[0, 1], am=am)
+        assert np.all(T == [0])
+        T = topotools.find_connecting_bonds(sites=[0, 3], am=am)
+        assert np.all(T == [1])
+        T = topotools.find_connecting_bonds(sites=[1, 3], am=am)
+        assert np.all(T == [2])
+        T = topotools.find_connecting_bonds(sites=[1, 2], am=am)
+        assert np.all(T == [3])
+        T = topotools.find_connecting_bonds(sites=[3, 4], am=am)
+        assert np.all(T == [4])
+        T = topotools.find_connecting_bonds(sites=[1, 4], am=am)
+        assert np.all(T == [5])
+        T = topotools.find_connecting_bonds(sites=[4, 5], am=am)
+        assert np.all(T == [6])
+
+    def test_find_connecting_bonds_multiple_sites(self):
+        am = self.net.create_adjacency_matrix(weights=self.net.Ts, fmt='dok')
+        T = topotools.find_connecting_bonds(sites=[[0, 1], [0, 3]], am=am)
+        assert np.all(T == [0, 1])
+        T = topotools.find_connecting_bonds(sites=[[0, 1], [0, 3], [4, 5]],
+                                            am=am)
+        assert np.all(T == [0, 1, 6])
+
+    def test_find_connecting_bonds_nonexistant_connections(self):
+        am = self.net.create_adjacency_matrix(weights=self.net.Ts, fmt='dok')
+        T = topotools.find_connecting_bonds(sites=[0, 5], am=am)
+        assert np.all(T == [None])
+        T = topotools.find_connecting_bonds(sites=[[0, 1], [0, 5]], am=am)
+        assert np.all(T == [0, None])
+
+    def test_find_connecting_bonds_multiple_sites_fmt_not_dok(self):
+        am = self.net.create_adjacency_matrix(weights=self.net.Ts, fmt='csr')
+        T = topotools.find_connecting_bonds(sites=[[0, 1], [0, 3]], am=am)
+        assert np.all(T == [0, 1])
+        T = topotools.find_connecting_bonds(sites=[[0, 1], [0, 3], [4, 5]],
+                                            am=am)
+        assert np.all(T == [0, 1, 6])
+
     def test_find_neighbor_bonds(self):
         im = self.net.create_incidence_matrix(fmt='lil')
         Ts = topotools.find_neighbor_bonds(sites=[0], im=im)
         assert np.all(Ts == [0, 1])
         Ts = topotools.find_neighbor_bonds(sites=[1], im=im)
-        assert np.all(Ts == [0, 2, 3, 4])
+        assert np.all(Ts == [0, 2, 3, 5])
         Ts = topotools.find_neighbor_bonds(sites=[2], im=im)
-        assert np.all(Ts == [2])
+        assert np.all(Ts == [3])
         Ts = topotools.find_neighbor_bonds(sites=[3], im=im)
-        assert np.all(Ts == [1, 3, 5])
+        assert np.all(Ts == [1, 2, 4])
         Ts = topotools.find_neighbor_bonds(sites=[4], im=im)
         assert np.all(Ts == [4, 5, 6])
         Ts = topotools.find_neighbor_bonds(sites=[5], im=im)
@@ -62,11 +183,11 @@ class GraphToolsTest:
         Ts = topotools.find_neighbor_bonds(sites=[0], im=im)
         assert np.all(Ts == [0, 1])
         Ts = topotools.find_neighbor_bonds(sites=[1], im=im)
-        assert np.all(Ts == [0, 2, 3, 4])
+        assert np.all(Ts == [0, 2, 3, 5])
         Ts = topotools.find_neighbor_bonds(sites=[2], im=im)
-        assert np.all(Ts == [2])
+        assert np.all(Ts == [3])
         Ts = topotools.find_neighbor_bonds(sites=[3], im=im)
-        assert np.all(Ts == [1, 3, 5])
+        assert np.all(Ts == [1, 2, 4])
         Ts = topotools.find_neighbor_bonds(sites=[4], im=im)
         assert np.all(Ts == [4, 5, 6])
         Ts = topotools.find_neighbor_bonds(sites=[5], im=im)
