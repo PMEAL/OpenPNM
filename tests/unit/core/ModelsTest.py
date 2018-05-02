@@ -4,7 +4,7 @@ import scipy as sp
 import numpy as np
 import openpnm.models as mods
 import pytest
-from testfixtures import LogCapture
+from testfixtures import LogCapture, ShouldRaise
 
 
 class ModelsTest:
@@ -69,40 +69,24 @@ class ModelsTest:
         self.geo = geom
 
     def test_dependency_tree_circular(self):
-        prj=self.net.project
-        prj.purge_object(self.geo)
-        geom = op.geometry.GenericGeometry(network=self.net,
-                                           pores=self.net.Ps)
-        geom.add_model(propname='pore.max_size',
-                       model=mods.geometry.pore_size.largest_sphere,
-                       iters=10)
+        pn = self.net
+        def chicken(target, prop='pore.egg'):
+            return np.ones(target.Np)
+        
+        def egg(target, prop='pore.chicken'):
+            return np.ones(target.Np)
 
-        geom.add_model(propname='pore.volume',
-                       model=mods.geometry.pore_volume.sphere,
-                       pore_diameter='pore.diameter')
+        pn.add_model(propname='pore.chicken', model=chicken)
+        pn.add_model(propname='pore.egg', model=egg)
 
-        geom.add_model(propname='pore.diameter',
-                       model=mods.misc.product,
-                       prop1='pore.max_size',
-                       prop2='pore.seed')
+        with ShouldRaise(Exception('Circular reference detected: pore.egg'+
+                                   ' -> pore.chicken')):
+            pn.models.dependency_tree()
+        pn.remove_model('pore.chicken')
+        pn.remove_model('pore.egg')
+        
 
-        geom.add_model(propname='pore.area',
-                       model=mods.geometry.pore_area.sphere,
-                       pore_diameter='pore.diameter')
-
-        geom.add_model(propname='pore.seed',
-                       model=mods.misc.random,
-                       element='pore',
-                       num_range=[0, 0.1],
-                       seed=None)
-        with LogCapture() as l:
-            geom.models.dependency_tree()
-        l.check(('root',
-                 'WARNING',
-                 'Circular reference detected: pore.diameter -> pore.max_size')
-                )
-
-    def test_dependency_tree_tricircular(self):
+    def test_dependency_tree_tri_circular(self):
         pn = self.net
         def rock(target, prop='pore.scissors'):
             return np.ones(target.Np)
@@ -118,10 +102,9 @@ class ModelsTest:
         pn.add_model(propname='pore.scissors', model=scissors)
         pn.add_model(propname='pore.rock', model=rock)
 
-        with LogCapture() as l:
-            tree = np.asarray(pn.models.dependency_tree())
-        print(l)
-        print(tree)
+        with ShouldRaise(Exception('Circular reference detected: pore.scissors'+
+                                   ' -> pore.paper')):
+            pn.models.dependency_tree()
 
 if __name__ == '__main__':
 
