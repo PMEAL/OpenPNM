@@ -3,7 +3,7 @@ import scipy as sp
 ws = op.core.Workspace()
 
 sp.random.seed(0)
-pn = op.network.Cubic(shape=[5, 5, 5], spacing=0.0001, name='pn11')
+pn = op.network.Cubic(shape=[3, 3, 3], spacing=0.0001, name='pn11')
 pn.add_boundary_pores()
 proj = pn.project
 
@@ -52,7 +52,16 @@ alg1.run()
 
 # You can also specify phase and settings during initialization
 alg2 = op.algorithms.ReactiveTransport(network=pn, phase=water, settings=s)
+alg2.settings.update({'tolerance': 1e-6})
 alg2.set_dirichlet_BC(pores=pn.pores('inlets'), values=1)
 alg2.set_source(propname='pore.reaction', pores=pn.pores('outlets'))
 alg2.run()
 water.update(alg2.results())
+
+alg3 = op.algorithms.TransientReactiveTransport(network=pn, phase=water)
+alg3.settings.update(s)
+alg3.settings.update({'t_scheme': 'implicit'})
+alg3.set_IC(0)
+alg3.set_dirichlet_BC(pores=pn.pores('inlets'), values=1)
+alg3.set_source(propname='pore.reaction', pores=pn.pores('outlets'))
+alg3.run()
