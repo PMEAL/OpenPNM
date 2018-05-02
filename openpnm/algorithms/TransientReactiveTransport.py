@@ -12,7 +12,7 @@ class TransientReactiveTransport(ReactiveTransport):
 
     def __init__(self, settings={}, **kwargs):
         self.settings.update({'t_initial': 0,
-                              't_final': 1e+04,
+                              't_final': 5e+03,
                               't_step': 0.05,
                               't_output': 1e+08,
                               't_tolerance': 1e-06,

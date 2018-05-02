@@ -3,7 +3,7 @@ import scipy as sp
 import pytest
 
 
-class TransientReactiveTransportTest:
+class TransientImplicitReactiveTransportTest:
 
     def setup_class(self):
         sp.random.seed(0)
@@ -35,56 +35,11 @@ class TransientReactiveTransportTest:
         self.s = {'conductance': 'throat.conductance',
                   'quantity': 'pore.pressure'}
 
-    def test_reactive_transport(self):
-        alg = op.algorithms.ReactiveTransport(network=self.net,
-                                              phase=self.phase,
-                                              settings=self.s)
-        alg.settings.update({'tolerance': 1e-6})
-        alg.set_dirichlet_BC(pores=self.net.pores('left'), values=2)
-        alg.set_source(propname='pore.reaction', pores=self.net.pores('right'))
-        alg.run()
-        x = [2, 8.0339e-01, 4.4e-04,
-             2, 7.3107e-01, 2.1e-04,
-             2, 1.3544e-01, 4e-04]
-        y = sp.around(alg[alg.settings['quantity']], decimals=5)
-        assert sp.all(x == y)
-
-    def test_transient_steady_reactive_transport(self):
-        alg = op.algorithms.TransientReactiveTransport(network=self.net,
-                                                       phase=self.phase,
-                                                       settings=self.s)
-        alg.settings.update({'t_scheme': 'steady', 'r_tolerance': 1e-06})
-        alg.set_IC(0)
-        alg.set_dirichlet_BC(pores=self.net.pores('left'), values=2)
-        alg.set_source(propname='pore.reaction', pores=self.net.pores('right'))
-        alg.run()
-        x = [2, 8.0339e-01, 4.4e-04,
-             2, 7.3107e-01, 2.1e-04,
-             2, 1.3544e-01, 4e-04]
-        y = sp.around(alg[alg.settings['quantity']], decimals=5)
-        assert sp.all(x == y)
-
-    def test_implicit_steady_reactive_transport(self):
+    def test_transient_implicit_reactive_transport(self):
         alg = op.algorithms.TransientReactiveTransport(network=self.net,
                                                        phase=self.phase,
                                                        settings=self.s)
         alg.settings.update({'t_scheme': 'implicit', 't_step': 0.1,
-                             't_tolerance': 1e-07, 'r_tolerance': 1e-05})
-        alg.set_IC(0)
-        alg.set_dirichlet_BC(pores=self.net.pores('left'), values=2)
-        alg.set_source(propname='pore.reaction', pores=self.net.pores('right'))
-        alg.run()
-        x = [2, 8.0339e-01, 4.4e-04,
-             2, 7.3107e-01, 2.1e-04,
-             2, 1.3544e-01, 4e-04]
-        y = sp.around(alg[alg.settings['quantity']], decimals=5)
-        assert sp.all(x == y)
-
-    def test_cranknicolson_steady_reactive_transport(self):
-        alg = op.algorithms.TransientReactiveTransport(network=self.net,
-                                                       phase=self.phase,
-                                                       settings=self.s)
-        alg.settings.update({'t_scheme': 'cranknicolson', 't_step': 0.05,
                              't_tolerance': 1e-07, 'r_tolerance': 1e-05})
         alg.set_IC(0)
         alg.set_dirichlet_BC(pores=self.net.pores('left'), values=2)
@@ -103,7 +58,7 @@ class TransientReactiveTransportTest:
 
 if __name__ == '__main__':
 
-    t = TransientReactiveTransportTest()
+    t = TransientImplicitReactiveTransportTest()
     t.setup_class()
     for item in t.__dir__():
         if item.startswith('test'):
