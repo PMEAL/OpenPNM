@@ -13,7 +13,7 @@ class TransientReactiveTransport(ReactiveTransport):
     def __init__(self, settings={}, **kwargs):
         self.settings.update({'t_initial': 0,
                               't_final': 5e+03,
-                              't_step': 0.05,
+                              't_step': 0.1,
                               't_output': 1e+08,
                               't_tolerance': 1e-06,
                               'r_tolerance': 1e-04,
@@ -73,6 +73,7 @@ class TransientReactiveTransport(ReactiveTransport):
         """
         network = self.project.network
         phase = self.project.phases()[self.settings['phase']]
+        physics = self.project.find_physics(phase=phase)
         Vi = self._coef*network['pore.volume']
         dt = self.settings['t_step']
         s = self.settings['t_scheme']
@@ -88,6 +89,15 @@ class TransientReactiveTransport(ReactiveTransport):
              f3*np.zeros(shape=(self.Np, ), dtype=float))
         for item in self.settings['sources']:
             Ps = self.pores(item)
+            # Regenerate models with new guess
+            quantity = self.settings['quantity']
+            # Put quantity on phase so physics finds it when regenerating
+            phase[quantity] = self[quantity]
+            # Regenerate models, on either phase or physics
+            phase.regenerate_models(propnames=item)
+            for phys in physics:
+                phys.regenerate_models(propnames=item)
+            # Update b
             b[Ps] = b[Ps] - f2*(1-f1)*(phase[item+'.'+'rate'][Ps])
         self._b = b
         return b
@@ -163,7 +173,7 @@ class TransientReactiveTransport(ReactiveTransport):
                     self[self.settings['quantity'] + '_steady'] = x_new
                     print('        Exporting time step: '+str(time)+' s')
                     break
-            if (time == tf):
+            if (round(time, 12) == tf):
                 print('    Maximum time step reached: '+str(time)+' s')
             else:
                 print('    Transient solver converged after: '+str(time)+' s')
