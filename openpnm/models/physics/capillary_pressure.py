@@ -349,7 +349,8 @@ def sinusoidal(target,
         '''
         # interpolated initial guess
         x0 = min_point+(x_range*(target-min_Pc)/(Pc_range))
-        x0[~in_range(target)] = np.nan
+        x0[target < min_Pc] = min_point[target < min_Pc]
+        x0[target > max_Pc] = max_point[target > max_Pc]
         # find root with function adjusted for target
         root = Newton_Raphson(x0,
                               poreRad,
@@ -373,6 +374,7 @@ def sinusoidal(target,
     men_data['rad'] = rad_curve(pos, poreRad, throatRad, throatLength,
                                 sigma, theta, offset)
     men_data['cen'] = pos - np.sign(target_Pc)*men_data['alpha']
+    logger.info('Meniscus data calculated for Pc: '+str(target_Pc))
 
     return men_data
 
