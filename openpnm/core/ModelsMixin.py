@@ -8,12 +8,12 @@ logger = logging.getLogger()
 class ModelsDict(PrintableDict):
 
     def dependency_tree(self):
-        
+
         class Node:
             def __init__(self, name):
                 self.name = name
                 self.edges=[]
-                
+
             def addEdge(self, node):
                 self.edges.append(node)
 
@@ -30,7 +30,7 @@ class ModelsDict(PrintableDict):
                     if dependency not in list(tree.keys()):
                         tree[dependency] = Node(dependency)
                     tree[propname].addEdge(tree[dependency])
-        
+
         def dep_resolve(node, resolved, unresolved):
             r'''
             Function to recursively resolve dependencies
@@ -50,7 +50,7 @@ class ModelsDict(PrintableDict):
         for node in tree.values():
             if node not in resolved:
                 dep_resolve(node, resolved, [])
-                            
+
         return [node.name for node in resolved]
 
     def __str__(self):

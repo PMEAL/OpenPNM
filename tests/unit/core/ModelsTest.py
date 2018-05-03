@@ -70,9 +70,10 @@ class ModelsTest:
 
     def test_dependency_tree_circular(self):
         pn = self.net
+
         def chicken(target, prop='pore.egg'):
             return np.ones(target.Np)
-        
+
         def egg(target, prop='pore.chicken'):
             return np.ones(target.Np)
 
@@ -84,19 +85,18 @@ class ModelsTest:
             pn.models.dependency_tree()
         pn.remove_model('pore.chicken')
         pn.remove_model('pore.egg')
-        
 
     def test_dependency_tree_tri_circular(self):
         pn = self.net
+
         def rock(target, prop='pore.scissors'):
             return np.ones(target.Np)
-        
+
         def scissors(target, prop='pore.paper'):
             return np.ones(target.Np)
-        
+
         def paper(target, prop='pore.rock'):
             return np.ones(target.Np)
-
 
         pn.add_model(propname='pore.paper', model=paper)
         pn.add_model(propname='pore.scissors', model=scissors)
