@@ -105,12 +105,11 @@ class OrdinaryPercolation(GenericPercolation):
             else:
                 raise Exception('Percolation type has not been set')
             points = sp.logspace(sp.log10(min_p), sp.log10(max_p), points)
-
+        conns = self.project.network['throat.conns']
         # Generate curve from points
         for inv_val in points:
 
             # Apply one applied pressure and determine invaded pores
-            conns = self.project.network['throat.conns']
             labels = self._apply_percolation(inv_val)
 
             # Optionally remove clusters not connected to the inlets
@@ -137,6 +136,7 @@ class OrdinaryPercolation(GenericPercolation):
         self['throat.invasion_sequence'] = Tseq
 
     def _apply_percolation(self, inv_val):
+        conns = self.project.network['throat.conns']
         if self.settings['mode'] == 'bond':
             t_invaded = self['throat.entry_pressure'] <= inv_val
             labels = self.bond_percolation(conns, t_invaded)

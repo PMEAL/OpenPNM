@@ -46,7 +46,7 @@ class Drainage(OrdinaryPercolation):
     and run as follows:
 
     >>> alg = op.algorithms.Drainage(network=pn)
-    >>> alg.setup(invading_phase=water, defending_phase=air)
+    >>> alg.setup(phase=water)
     >>> alg.set_inlets(pores=pn.pores('top'))
     >>> alg.run()
     >>> data = alg.get_drainage_data()
