@@ -29,9 +29,8 @@ class Dispersion(GenericTransport):
                               'diffusivity': 'pore.diffusivity',
                               'pressure': 'pore.pressure'})
         self.settings.update(settings)
-        self._A = self._build_A()
 
-    def _build_A(self):
+    def _build_A(self, force=False):
         r"""
         """
         network = self.project.network
@@ -72,12 +71,16 @@ class Dispersion(GenericTransport):
         Peij2[Peij2 > 100] = 100
         Peij2[Peij2 < -100] = -100
 
-        w = -Qij1 + Qij1 / (1 - np.exp(Peij1))
-        am1 = network.create_adjacency_matrix(weights=w)
-        w = -Qij2 / (1 - np.exp(Peij2))
-        A = network.create_adjacency_matrix(weights=w)
-        A_diags = laplacian(am1)
-        # Overwrite the diagonal
-        A.setdiag(A_diags.diagonal())
-        self._A = A
+        if force:
+            self._pure_A = None
+        if self._pure_A is None:
+            w = -Qij1 + Qij1 / (1 - np.exp(Peij1))
+            am1 = network.create_adjacency_matrix(weights=w)
+            w = -Qij2 / (1 - np.exp(Peij2))
+            A = network.create_adjacency_matrix(weights=w)
+            A_diags = laplacian(am1)
+            # Overwrite the diagonal
+            A.setdiag(A_diags.diagonal())
+            self._pure_A = A
+        self._A = self._pure_A.copy()
         return A
