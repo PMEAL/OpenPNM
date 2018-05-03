@@ -1,5 +1,6 @@
 import openpnm as op
 import scipy as sp
+from numpy.testing import assert_approx_equal
 
 
 class ThermalConductivityTest:
@@ -20,21 +21,24 @@ class ThermalConductivityTest:
         self.phase.add_model(propname='pore.thermal_conductivity',
                              model=f)
         self.phase.regenerate_models()
-        assert sp.allclose(self.phase['pore.thermal_conductivity'], 0.61047611)
+        assert_approx_equal(self.phase['pore.thermal_conductivity'].mean(),
+                            0.61047611)
 
     def test_chung(self):
         f = op.models.phase.thermal_conductivity.chung
         self.phase.add_model(propname='pore.thermal_conductivity',
                              model=f)
         self.phase.regenerate_models()
-        assert sp.allclose(self.phase['pore.thermal_conductivity'], 0.62063913)
+        assert_approx_equal(self.phase['pore.thermal_conductivity'].mean(),
+                            0.62063913)
 
     def test_sato(self):
         f = op.models.phase.thermal_conductivity.sato
         self.phase.add_model(propname='pore.thermal_conductivity',
                              model=f)
         self.phase.regenerate_models()
-        assert sp.allclose(self.phase['pore.thermal_conductivity'], 0.29787023)
+        assert_approx_equal(self.phase['pore.thermal_conductivity'].mean(),
+                            0.29787023)
 
 
 if __name__ == '__main__':

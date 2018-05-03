@@ -1,6 +1,7 @@
 import openpnm as op
 import openpnm.models.geometry.pore_surface_area as mods
 import numpy as np
+from numpy.testing import assert_array_almost_equal_nulp
 
 
 class PoreSurfaceAreaTest:
@@ -22,7 +23,8 @@ class PoreSurfaceAreaTest:
                            regen_mode='normal')
         a = np.array([2.54159265, 2.64159265, 2.74159265, 2.84159265])
         b = np.unique(self.geo['pore.area'])
-        assert np.allclose(a, b)
+        assert_array_almost_equal_nulp(a, b, nulp=1e7)
+        # nulp = 1e7 means 16-7 = 9 significant figures accurate.
 
     def test_cube(self):
         self.geo.add_model(propname='pore.area',
@@ -30,7 +32,7 @@ class PoreSurfaceAreaTest:
                            regen_mode='normal')
         a = np.array([5.4, 5.5, 5.6, 5.7])
         b = np.unique(self.geo['pore.area'])
-        assert np.allclose(a, b)
+        assert_array_almost_equal_nulp(a, b)
 
 
 if __name__ == '__main__':

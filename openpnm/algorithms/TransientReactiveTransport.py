@@ -12,13 +12,14 @@ class TransientReactiveTransport(ReactiveTransport):
 
     def __init__(self, settings={}, **kwargs):
         self.settings.update({'t_initial': 0,
-                              't_final': 1e+04,
-                              't_step': 0.2,
+                              't_final': 5e+03,
+                              't_step': 0.05,
                               't_output': 1e+08,
                               't_tolerance': 1e-06,
-                              'r_tolerance': 1e-06,
+                              'r_tolerance': 1e-04,
                               't_scheme': 'implicit'})
         super().__init__(**kwargs)
+        self.settings.update(settings)
         self._coef = 1  # Coefficient for units consistency
         self._A_steady = None  # Initialize the steady sys of eqs A matrix
 
@@ -38,7 +39,7 @@ class TransientReactiveTransport(ReactiveTransport):
             self.settings['t_tolerance'] = t_tolerance
         if t_scheme:
             self.settings['t_scheme'] = t_scheme
-        self.settings.update(**kwargs)
+        self.settings.update(kwargs)
 
     def set_IC(self, values):
         r"""
@@ -152,7 +153,7 @@ class TransientReactiveTransport(ReactiveTransport):
                     # value in outputs is exported.
                     if round(time, 12) in outputs:
                         ind = np.where(outputs == round(time, 12))[0][0]
-                        self[self.settings['quantity_'] + str(ind)] = x_new
+                        self[self.settings['quantity']+'_'+str(ind)] = x_new
                         print('        Exporting time step: '+str(time)+' s')
                     # Update b and apply BCs
                     self._t_update_b()
