@@ -1,7 +1,6 @@
 from .GenericAlgorithm import GenericAlgorithm
 from .GenericTransport import GenericTransport
 from .ReactiveTransport import ReactiveTransport
-from .TransientTransport import TransientTransport
 from .TransientReactiveTransport import TransientReactiveTransport
 from .StokesFlow import StokesFlow
 from .TransientStokesFlow import TransientStokesFlow

@@ -29,7 +29,11 @@ class ReactiveTransport(GenericTransport):
         self.settings['sources'].append(propname)
         self[propname] = self.tomask(pores=pores)
 
-    def _apply_sources(self):
+    def _apply_sources(self, s='steady'):
+        if (s == 'cranknicolson'):
+            f1 = 0.5
+        else:
+            f1 = 1
         phase = self.project.phases()[self.settings['phase']]
         physics = self.project.find_physics(phase=phase)
         for item in self.settings['sources']:
@@ -46,10 +50,10 @@ class ReactiveTransport(GenericTransport):
             # TODO: We need this to NOT overwrite the A and b, but create
             # copy, otherwise we have to regenerate A and b on each loop
             datadiag = self.A.diagonal()
-            datadiag[Ps] = datadiag[Ps] + phase[item+'.'+'S1'][Ps]
+            datadiag[Ps] = datadiag[Ps] + f1*phase[item+'.'+'S1'][Ps]
             self.A.setdiag(datadiag)
             # Add S2 to b
-            self.b[Ps] = self.b[Ps] - phase[item+'.'+'S2'][Ps]
+            self.b[Ps] = self.b[Ps] - f1*phase[item+'.'+'S2'][Ps]
 
     def run(self, x=None):
         r"""
