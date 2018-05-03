@@ -280,7 +280,7 @@ def sinusoidal(target,
     maxDiam = np.max(network[pore_diameter][network['throat.conns']], axis=1)
     meanDiam = np.mean(network[pore_diameter][network['throat.conns']], axis=1)
     # Ignore zero valued (boundary pores)
-    meanDiam[minDiam==0.0] = maxDiam[minDiam==0.0] 
+    meanDiam[minDiam==0.0] = maxDiam[minDiam==0.0]
     poreRad = meanDiam/2
     throatRad = network[throat_diameter]/2
     Nt = network.Nt

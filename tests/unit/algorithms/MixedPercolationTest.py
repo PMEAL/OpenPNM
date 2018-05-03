@@ -52,7 +52,7 @@ class MixedPercolationTest:
         self.net['pore.back_boundary']=self.net['pore.coords'][:, 1]==back
         self.net['pore.front_boundary']=self.net['pore.coords'][:, 1]==front
         self.net['pore.bottom_boundary']=self.net['pore.coords'][:, 2]==bottom
-        self.net['pore.top_boundary']=self.net['pore.coords'][:, 2]==top        
+        self.net['pore.top_boundary']=self.net['pore.coords'][:, 2]==top    
 
     def process_physics(self, model='purcell', snap_off=True):
         prj = self.net.project
