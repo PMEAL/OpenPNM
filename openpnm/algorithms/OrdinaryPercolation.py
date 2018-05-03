@@ -121,10 +121,12 @@ class OrdinaryPercolation(GenericPercolation):
                 temp = self.bond_percolation(conns, t_defended)
 
             # Store current applied pressure in newly invaded pores
-            pinds = (self['pore.invasion_pressure'] == sp.inf)*(labels.sites >= 0)
+#            pinds = (self['pore.invasion_pressure'] == sp.inf)*(labels.sites >= 0)
+            pinds = (self['pore.invasion_pressure'] == sp.inf)
             self['pore.invasion_pressure'][pinds] = inv_val
             # Store current applied pressure in newly invaded throats
-            tinds = (self['throat.invasion_pressure'] == sp.inf)*(labels.bonds >= 0)
+#            tinds = (self['throat.invasion_pressure'] == sp.inf)*(labels.bonds >= 0)
+            tinds = (self['throat.invasion_pressure'] == sp.inf)
             self['throat.invasion_pressure'][tinds] = inv_val
 
         # Convert invasion pressures in sequence values
