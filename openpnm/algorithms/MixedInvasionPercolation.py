@@ -37,7 +37,8 @@ class MixedInvasionPercolation(GenericPercolation):
         super().__init__(**kwargs)
         self.settings.update({'pore_volume': 'pore.volume',
                               'throat_volume': 'throat.volume',
-                              'entry_pressure': 'throat.capillary_pressure',
+                              'pore_entry_pressure': 'pore.capillary_pressure',
+                              'throat_entry_pressure': 'throat.capillary_pressure',
                               'mode': 'mixed'})
 
     def setup(self, phase, def_phase, **kwargs):
@@ -58,16 +59,8 @@ class MixedInvasionPercolation(GenericPercolation):
         self._phase = phase
         self._def = def_phase
         # Setup arrays and info
-        if np.shape(np.shape(phase['throat.capillary_pressure']))[0] > 1:
-            self._bi_directional = True
-            # If bi-directional throats, get the first one for now, switched
-            # later when algorithm runs and works out which one to apply
-            tcp = phase['throat.capillary_pressure']
-            self['throat.entry_pressure'] = tcp[:, 0]
-        else:
-            self['throat.entry_pressure'] = phase['throat.capillary_pressure']
-            self._bi_directional = False
-        self['pore.entry_pressure'] = phase['pore.capillary_pressure']
+        self['throat.entry_pressure'] = phase[self.settings['throat_entry_pressure']]
+        self['pore.entry_pressure'] = phase[self.settings['pore_entry_pressure']]
         self.reset()
         self._key_words = kwargs
         # Need to setup cooperative pore filling seperately
@@ -166,16 +159,9 @@ class MixedInvasionPercolation(GenericPercolation):
         Ts = net.find_neighbor_throats(pores=pore)
         # Remove already invaded throats from Ts
         Ts = Ts[self['throat.inv_seq'][Ts] <= 0]
-        tcp = self._phase['throat.capillary_pressure']
         if len(Ts) > 0:
             self._interface_Ts[Ts] = True
             for T in Ts:
-                if self._bi_directional:
-                    # Get index of pore being invaded next and apply correct
-                    # entry pressure
-                    pmap = net['throat.conns'][T] != pore
-                    pind = list(pmap).index(True)
-                    self['throat.entry_pressure'][T] = tcp[T][pind]
                 data = []
                 # Pc
                 data.append(self['throat.entry_pressure'][T])

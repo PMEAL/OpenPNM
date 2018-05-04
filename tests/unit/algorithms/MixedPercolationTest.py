@@ -88,18 +88,18 @@ class MixedPercolationTest:
                                model=pmod,
                                r_toroid=self.fiber_rad,
                                diameter=throat_diam)
-        elif model == 'purcell_bi':
-            pmod = pm.capillary_pressure.purcell_bi
-            phys_water.add_model(propname='throat.capillary_pressure',
-                                 model=pmod,
-                                 r_toroid=self.fiber_rad,
-                                 diameter=throat_diam,
-                                 h_max=pore_diam)
-            phys_air.add_model(propname='throat.capillary_pressure',
-                               model=pmod,
-                               r_toroid=self.fiber_rad,
-                               diameter=throat_diam,
-                               h_max=pore_diam)
+#        elif model == 'purcell_bi':
+#            pmod = pm.capillary_pressure.purcell_bi
+#            phys_water.add_model(propname='throat.capillary_pressure',
+#                                 model=pmod,
+#                                 r_toroid=self.fiber_rad,
+#                                 diameter=throat_diam,
+#                                 h_max=pore_diam)
+#            phys_air.add_model(propname='throat.capillary_pressure',
+#                               model=pmod,
+#                               r_toroid=self.fiber_rad,
+#                               diameter=throat_diam,
+#                               h_max=pore_diam)
         elif model == 'sinusoidal':
             pmod = pm.capillary_pressure.sinusoidal
             phys_water.add_model(propname='throat.capillary_pressure',
@@ -192,12 +192,12 @@ class MixedPercolationTest:
                                 coop_fill=True)
         assert np.abs(np.sum(t.coop_data[1] - t.w_inv[1])) > 0
 
-    def test_purcell_bi(self):
-        t = self
-        t.w_inv = t.run_alg(inv_phase=t.water, def_phase=t.air)
-        t.bi_data = t.run_alg(inv_phase=t.water, def_phase=t.air,
-                              cap_model='purcell_bi')
-        assert np.abs(np.sum(t.bi_data[1] - t.w_inv[1])) > 0
+#    def test_purcell_bi(self):
+#        t = self
+#        t.w_inv = t.run_alg(inv_phase=t.water, def_phase=t.air)
+#        t.bi_data = t.run_alg(inv_phase=t.water, def_phase=t.air,
+#                              cap_model='purcell_bi')
+#        assert np.abs(np.sum(t.bi_data[1] - t.w_inv[1])) > 0
 
     def test_sinusoidal(self):
         t = self
@@ -236,11 +236,7 @@ if __name__ == '__main__':
     wrk.loglevel = 20
     t = MixedPercolationTest()
     t.setup_class()
-    t.test_apply_trapping()
-    t.test_snap_off()
-    t.test_partial()
-    t.test_coop_filling()
-    t.test_purcell_bi()
-    t.test_sinusoidal()
-    t.test_sinusoidal_coop()
-    t.test_apply_flow_rate()
+    for item in t.__dir__():
+        if item.startswith('test'):
+            print('running test: '+item)
+            t.__getattribute__(item)()

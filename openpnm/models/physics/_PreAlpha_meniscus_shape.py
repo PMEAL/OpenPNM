@@ -482,6 +482,108 @@ def ransohoff_snap_off(target,
     return value[phase.throats(target.name)]
 
 
+def purcell_bi(target, r_toroid,
+               surface_tension='pore.surface_tension',
+               contact_angle='pore.contact_angle',
+               diameter='throat.diameter',
+               h_max='pore.diameter',
+               max_dist=True,
+               **kwargs):
+    r"""
+    Computes the throat capillary entry pressure assuming the throat is a
+    toroid. Pressure is a function of both pore and throat diameters so it
+    becomes a bi-dirctional calculation.
+
+    Parameters
+    ----------
+    network : OpenPNM Network Object
+        The Network on which to apply the calculation
+    sigma : dict key (string)
+        The dictionary key containing the surface tension values to be used. If
+        a pore property is given, it is interpolated to a throat list.
+    theta : dict key (string)
+        The dictionary key containing the contact angle values to be used. If
+        a pore property is given, it is interpolated to a throat list.
+    throat_diameter : dict key (string)
+        The dictionary key containing the throat diameter values to be used.
+    r_toroid : float or array_like
+        The radius of the toroid surrounding the pore
+
+    Notes
+    -----
+    This approach accounts for the converging-diverging nature of many throat
+    types.  Advancing the meniscus beyond the apex of the toroid requires an
+    increase in capillary pressure beyond that for a cylindical tube of the
+    same radius. The details of this equation are described by Mason and
+    Morrow [1]_, and explored by Gostick [2]_ in the context of a pore network
+    model.
+
+    """
+    network = target.project.network
+    phase = target.project.find_phase(target)
+    element, sigma, theta = _get_key_props(phase=phase,
+                                           diameter=diameter,
+                                           surface_tension=surface_tension,
+                                           contact_angle=contact_angle)
+    # Mason and Morrow have the definitions switched
+    theta = 180 - theta
+    th = _sp.deg2rad(theta)
+    rt = network[diameter]/2
+    R = r_toroid
+    a_max = th - np.arcsin((np.sin(th))/(1+rt/R))
+    if max_dist and element == 'throat':
+        # Perform analysis for entry into both pores
+        r_max = np.zeros([network.Nt, 2])
+        for j in range(2):
+            Pj = network['throat.conns'][:, j]
+            dj = network[h_max][Pj]
+            max_reached = np.zeros(network.Nt, dtype=bool)
+            alpha_reached = np.zeros(network.Nt)
+            # With increasing filling angle assess whether interface has passed
+            # the critical distance and record the critical angle
+            a_space = _sp.linspace(1e-3, _sp.pi, 181)
+            nudge = 0.001
+            for a_test in a_space:
+                nudgers = network.throats()[np.around(th-a_test, 0) == 90]
+                if len(nudgers) > 0:
+                    th[nudgers] += nudge
+                r = R*(1+(rt/R)-_sp.cos(a_test))/_sp.cos(th-a_test)
+                # Vertical adjustment for centre of circle
+                y_off = R*np.sin(a_test)
+                # Angle between contact point - centre - vertical
+                zeta = (th-a_test-(np.pi/2))
+                c = y_off - r*np.cos(zeta)
+                y_max = c+r
+                ts = network.throats()[(y_max > (dj)) * (~max_reached)]
+                if len(ts) > 0:
+                    max_reached[ts] = True
+                    alpha_reached[ts] = a_test
+                if len(nudgers) > 0:
+                    th[nudgers] -= nudge
+            # Any interfaces that never reach a wall are ok"
+            alpha_reached[~max_reached] = a_max[~max_reached]
+            temp = max_reached[np.abs(a_max) > np.abs(alpha_reached)]
+            temp_sum = np.around(100*np.sum(temp)/len(a_max), 2)
+            logger.info("Percentage max before BT " + str(temp_sum))
+            # Any interfaces that can expand to maximum curvature before
+            # hitting a pore wall are ok
+            mask = np.abs(a_max) < np.abs(alpha_reached)
+            alpha_reached[mask] = a_max[mask]
+            r_max[:, j] = (R*(1 + (rt/R) - _sp.cos(alpha_reached)) /
+                           _sp.cos(th - alpha_reached))
+
+        value = (2*np.vstack((sigma, sigma)).T) / r_max
+    else:
+        r_max = R*(1+(rt/R)-_sp.cos(a_max))/_sp.cos(th-a_max)
+        value = 2*sigma/r_max
+
+    if element == 'throat':
+        value = value[phase.throats(target.name)]
+    else:
+        value = value[phase.pores(target.name)]
+    return value
+
+
 def purcell_filling_angle(target, r_toroid,
                           surface_tension='pore.surface_tension',
                           contact_angle='pore.contact_angle',
