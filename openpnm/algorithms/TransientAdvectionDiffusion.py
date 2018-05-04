@@ -3,7 +3,8 @@ from openpnm.core import logging
 logger = logging.getLogger(__name__)
 
 
-class TransientAdvectionDiffusion(TransientReactiveTransport,AdvectionDiffusion):
+class TransientAdvectionDiffusion(TransientReactiveTransport,
+                                  AdvectionDiffusion):
     r"""
     A subclass of GenericTransport to perform steady and transient simulations
     of pure diffusion and advection diffusion problems.
