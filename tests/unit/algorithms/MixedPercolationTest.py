@@ -110,8 +110,15 @@ class MixedPercolationTest:
             phys_air.add_model(propname='throat.snap_off',
                                model=pm.capillary_pressure.ransohoff_snap_off,
                                throat_diameter=throat_diam,
-                               wavelength=self.fiber_rad)
+                               wavelength=self.fiber_rad,
+                               regen_mode='normal')
             phys_air['throat.snap_off'] = np.abs(phys_air['throat.snap_off'])
+            phys_water.add_model(propname='throat.snap_off',
+                                 model=pm.capillary_pressure.ransohoff_snap_off,
+                                 throat_diameter=throat_diam,
+                                 wavelength=self.fiber_rad,
+                                 regen_mode='normal')
+            phys_water['throat.snap_off'] = np.abs(phys_water['throat.snap_off'])
         phys_air['pore.capillary_pressure'] = 0
         phys_water['pore.capillary_pressure'] = 0
         BPs = self.net.pores('surface')
@@ -140,11 +147,11 @@ class MixedPercolationTest:
 
         IP_1 = mp(network=self.net)
         IP_1.settings['partial_saturation']=partial
+        IP_1.settings['snap_off']=snap_off
         IP_1.setup(phase=inv_phase,
                    def_phase=def_phase,
                    inlets=ip_inlets,
-                   inlet_inv_seq=inlet_inv_seq,
-                   snap_off=snap_off)
+                   inlet_inv_seq=inlet_inv_seq)
 #        if coop_fill:
 #            IP_1.setup_coop_filling(capillary_model=cap_model,
 #                                    inv_points=self.inv_points,

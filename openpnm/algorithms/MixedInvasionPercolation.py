@@ -40,7 +40,8 @@ class MixedInvasionPercolation(GenericPercolation):
                               'pore_entry_pressure': 'pore.capillary_pressure',
                               'throat_entry_pressure': 'throat.capillary_pressure',
                               'mode': 'mixed',
-                              'partial_saturation':False})
+                              'partial_saturation':False,
+                              'snap_off':False})
 
     def setup(self, phase, def_phase, **kwargs):
         r"""
@@ -82,8 +83,7 @@ class MixedInvasionPercolation(GenericPercolation):
         self['pore.residual'] = False
         self['throat.residual'] = False
         for elem in ['pore', 'throat']:
-            for prop in ['invasion_pressure',
-                         'inv_sat',
+            for prop in ['inv_sat',
                          'occupancy',
                          'action']:
                 try:
@@ -91,7 +91,6 @@ class MixedInvasionPercolation(GenericPercolation):
                 except:
                     pass
             for prop in ['invasion_sequence',
-                         'invasion_pressure',
                          'cluster',
                          'action']:
                 try:
@@ -134,15 +133,12 @@ class MixedInvasionPercolation(GenericPercolation):
                 self._add_ts2q(cluster, self.queue[i], action=0)
             else:
                 logger.warning("Some inlet clusters have no pores")
-        try:
-            if self._key_words['snap_off']:
-                self.apply_snap_off()
-        except:
-            pass
-        try:
-            if self.settings['partial_saturation']:
-                self.apply_partial_sat()
-        except:
+        if self.settings['snap_off']:
+            self._apply_snap_off()
+
+        if self.settings['partial_saturation']:
+            self.apply_partial_sat()
+        else:
             self._phase['pore.occuancy'] = False
             self._phase['throat.occupancy'] = False
             self._def['pore.occupancy'] = True
@@ -631,7 +627,7 @@ class MixedInvasionPercolation(GenericPercolation):
         else:
             logger.info("No trapped clusters found")
 
-    def apply_snap_off(self, snap_off='throat.snap_off', queue=None):
+    def _apply_snap_off(self, snap_off='throat.snap_off', queue=None):
         r"""
         Add all the throats to the queue with snap off pressure
         """

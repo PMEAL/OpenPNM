@@ -422,12 +422,12 @@ def ransohoff_snap_off(target,
     """
     network = target.project.network
     phase = target.project.find_phase(target)
+    geometry = target.project.find_geometry(target)
     element, sigma, theta = _get_key_props(phase=phase,
                                            diameter=diameter,
                                            surface_tension=surface_tension,
                                            contact_angle=contact_angle)
     try:
-        geometry = network.geometries(network.geometries()[0])[0]
         all_verts = geometry[vertices]
         # Work out whether throat geometry can support at least one pair of
         # adjacent arc menisci that can grow and merge to form snap-off
