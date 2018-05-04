@@ -2,6 +2,7 @@ import openpnm as op
 import numpy as np
 import scipy as sp
 from openpnm.models import physics as pm
+from openpnm.algorithms import MixedInvasionPercolation as mp
 import matplotlib.pyplot as plt
 from openpnm import topotools as tp
 
@@ -52,7 +53,7 @@ class MixedPercolationTest:
         self.net['pore.back_boundary']=self.net['pore.coords'][:, 1]==back
         self.net['pore.front_boundary']=self.net['pore.coords'][:, 1]==front
         self.net['pore.bottom_boundary']=self.net['pore.coords'][:, 2]==bottom
-        self.net['pore.top_boundary']=self.net['pore.coords'][:, 2]==top    
+        self.net['pore.top_boundary']=self.net['pore.coords'][:, 2]==top
 
     def process_physics(self, model='purcell', snap_off=True):
         prj = self.net.project
@@ -138,7 +139,7 @@ class MixedPercolationTest:
         ip_inlets = [inlets[x] for x in range(0, len(inlets), in_step)]
         inlet_inv_seq = -1
 
-        IP_1 = op.algorithms.MixedPercolation(network=self.net)
+        IP_1 = mp(network=self.net)
         IP_1.setup(phase=inv_phase,
                    def_phase=def_phase,
                    inlets=ip_inlets,
@@ -221,7 +222,7 @@ class MixedPercolationTest:
         tvol = np.sum(t.net['throat.volume'])
         tot = pvol+tvol
         t.process_physics(model='purcell', snap_off=False)
-        IP_1 = op.algorithms.MixedPercolation(network=self.net)
+        IP_1 = mp(network=self.net)
         inlets = t.net.pores(labels=['bottom_boundary'])
         outlets = t.net.pores(labels=['top_boundary'])
         IP_1.setup(phase=t.water,
