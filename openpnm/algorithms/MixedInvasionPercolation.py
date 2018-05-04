@@ -39,10 +39,10 @@ class MixedInvasionPercolation(GenericPercolation):
                               'pore_entry_pressure': 'pore.capillary_pressure',
                               'throat_entry_pressure': 'throat.capillary_pressure',
                               'mode': 'mixed',
-                              'partial_saturation':False,
-                              'snap_off':False})
+                              'partial_saturation': False,
+                              'snap_off': False})
 
-    def setup(self, phase, def_phase, **kwargs):
+    def setup(self, phase, def_phase):
         r"""
         Set up the required parameters for the algorithm
 
@@ -63,7 +63,6 @@ class MixedInvasionPercolation(GenericPercolation):
         self['throat.entry_pressure'] = phase[self.settings['throat_entry_pressure']]
         self['pore.entry_pressure'] = phase[self.settings['pore_entry_pressure']]
         self.reset()
-        self._key_words = kwargs
 
     def reset(self):
         r"""
@@ -306,7 +305,6 @@ class MixedInvasionPercolation(GenericPercolation):
                 logger.warning("Clusters " + str(c_num) + " and " +
                                str(elem_cluster) + " performed " +
                                " strange operation!")
-       
 
     def return_results(self, pores=[], throats=[], Pc=None):
         r"""
@@ -413,7 +411,8 @@ class MixedInvasionPercolation(GenericPercolation):
             logger.error("Cannot plot drainage curve. Please run " +
                          " algorithm first")
         if inv_points is None:
-            ok_Pc = self['throat.invasion_pressure'][~sp.isnan(self['throat.invasion_pressure'])]
+            mask = ~sp.isnan(self['throat.invasion_pressure'])
+            ok_Pc = self['throat.invasion_pressure'][mask]
             inv_points = np.unique(ok_Pc)
         sat_p = np.zeros(len(inv_points))
         sat_t = np.zeros(len(inv_points))
