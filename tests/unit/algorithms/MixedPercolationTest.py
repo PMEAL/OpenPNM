@@ -77,7 +77,6 @@ class MixedPercolationTest:
                                                geometry=self.geom,
                                                name='mp_phys_w')
         throat_diam = 'throat.diameter'
-        pore_diam = 'pore.indiameter'
         if model == 'purcell':
             pmod = pm.capillary_pressure.purcell
             phys_water.add_model(propname='throat.capillary_pressure',
@@ -152,14 +151,12 @@ class MixedPercolationTest:
                    def_phase=def_phase,
                    inlets=ip_inlets,
                    inlet_inv_seq=inlet_inv_seq)
-#        if coop_fill:
-#            IP_1.setup_coop_filling(capillary_model=cap_model,
-#                                    inv_points=self.inv_points,
-#                                    radius=self.fiber_rad)
-        IP_1.run(inlets=ip_inlets)
+        IP_1.set_inlets(pores=ip_inlets)
         if trapping:
-            IP_1.apply_trapping(outlets=outlets)
-
+            IP_1.set_outlets(outlets)
+        IP_1.run()
+        if trapping:
+            IP_1.apply_trapping()
         alg_data = IP_1.plot_drainage_curve(inv_points=self.inv_points,
                                             lpf=lpf)
         plt.close('all')
@@ -229,11 +226,10 @@ class MixedPercolationTest:
         t.process_physics(model='purcell', snap_off=False)
         IP_1 = mp(network=self.net)
         inlets = t.net.pores(labels=['bottom_boundary'])
-        outlets = t.net.pores(labels=['top_boundary'])
         IP_1.setup(phase=t.water,
-                   def_phase=t.air,
-                   inlets=inlets)
-        IP_1.run(outlets=outlets)
+                   def_phase=t.air)
+        IP_1.set_inlets(pores=inlets)
+        IP_1.run()
         IP_1.apply_flow(flowrate=tot)
         assert 'throat.invasion_time' in self.water.props()
 

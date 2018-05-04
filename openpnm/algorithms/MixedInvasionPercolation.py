@@ -11,7 +11,6 @@ import numpy as np
 from openpnm.algorithms import GenericPercolation
 import logging
 import matplotlib.pyplot as plt
-import time
 logger = logging.getLogger(__name__)
 
 
@@ -102,25 +101,39 @@ class MixedInvasionPercolation(GenericPercolation):
         self._interface_Ts = np.zeros(self.Nt, dtype=bool)
         self._interface_Ps = np.zeros(self.Np, dtype=bool)
 
-    def set_inlets(self, pores=None, clusters=None):
+    def set_inlets(self, pores=None, clusters=None, starting_sequence=-1):
         r"""
 
         Parameters
         ----------
         pores : array_like
             The list of inlet pores from which the Phase can enter the Network
+        
+        clusters : list of lists - can be just one list but each list defines
+            a cluster of pores that share a common invasion pressure.
+        
+        starting_sequence: int default: -1
+            The invasion sequence to set the inlets at, -1 is helpful for
+            thresholding from a freshly started simulation. Other numbers may
+            be used for starting from a partially saturated state which may or
+            may not have been determined from running this algorithm multiple
+            times.
+            
+        Like Basic Invasion Percolation a queue of 
         """
-        if 'inlets' in self._key_words.keys():
-            pores = self._key_words['inlets']
-
-        if clusters is None:
+        if pores is not None:
+            logger.info("Setting inlet pores at shared pressure")
             clusters = []
             clusters.append(pores)
+        elif clusters is not None:
+            logger.info("Setting inlet clusters at individual pressures")
+        else:
+            logger.error("Either 'inlets' or 'clusters' must be passed to" +
+                         " setup method")
+
         self.queue = {}
-        try:
-            inlet_inv_seq = self._key_words['inlet_inv_seq']
-        except:
-            inlet_inv_seq = -1
+        inlet_inv_seq = starting_sequence
+
         for i, cluster in enumerate(clusters):
             self.queue[i] = []
             # Perform initial analysis on input pores
@@ -192,7 +205,7 @@ class MixedInvasionPercolation(GenericPercolation):
                 data.append(action)
                 hq.heappush(queue, data)
 
-    def run(self, max_pressure=None, outlets=None, **kwargs):
+    def run(self, max_pressure=None):
         r"""
         Perform the algorithm
 
@@ -204,15 +217,6 @@ class MixedInvasionPercolation(GenericPercolation):
         """
         if 'throat.entry_pressure' not in self.keys():
             logger.error("Setup method must be run first")
-        if 'inlets' in self._key_words.keys():
-            logger.info("Setting inlet pores at shared pressure")
-            self.set_inlets(pores=self._key_words['inlets'])
-        elif 'clusters' in self._key_words.keys():
-            logger.info("Setting inlet clusters at individual pressures")
-            self.set_inlets(clusters=self._key_words['clusters'])
-        else:
-            logger.error("Either 'inlets' or 'clusters' must be passed to" +
-                         " setup method")
 
         if max_pressure is None:
             self.max_pressure = sp.inf
@@ -224,6 +228,8 @@ class MixedInvasionPercolation(GenericPercolation):
         self.count = -1
         self.invasion_running = [True]*len(self.queue.items())
         self.high_Pc = np.ones(len(self.queue.items()))*-np.inf
+        outlets = self['pore.outlets']
+        terminate_clusters = np.sum(outlets) > 0
         while np.any(self.invasion_running) and not np.all(self.max_p_reached):
             # Loop over clusters
             for c_num in self.queue.keys():
@@ -235,7 +241,7 @@ class MixedInvasionPercolation(GenericPercolation):
                         # finished
                         self.invasion_running[c_num] = False
             self._invade_isolated_Ts()
-            if outlets is not None:
+            if terminate_clusters:
                 # terminated clusters
                 tcs = np.unique(self['pore.cluster'][outlets]).astype(int)
                 tcs = tcs[tcs >= 0]
@@ -476,7 +482,7 @@ class MixedInvasionPercolation(GenericPercolation):
         else:
             return Snwp
 
-    def apply_trapping(self, outlets, partial=False):
+    def apply_trapping(self, partial=False):
         """
         Apply trapping based on algorithm described by Y. Masson [1].
         It is applied as a post-process and runs the percolation algorithm in
@@ -513,9 +519,6 @@ class MixedInvasionPercolation(GenericPercolation):
 
         Parameters
         ----------
-        outlets : list or array of pore indices for defending fluid to escape
-        through
-
         partial : Boolean indicating whether partially filled network
 
         Returns
@@ -526,6 +529,10 @@ class MixedInvasionPercolation(GenericPercolation):
         Also creates 2 boolean arrays Np and Nt long called '<element>.trapped'
         """
         net = self.project.network
+        outlets = self['pore.outlets']
+        if np.sum(outlets) == 0:
+            raise Exception('Outlets must be set using the set_outlets method' +
+                            ' before applying trapping')
         if partial:
             # Set occupancy
             invaded_ps = self['pore.invasion_sequence'] > -1
@@ -606,7 +613,7 @@ class MixedInvasionPercolation(GenericPercolation):
         clusters[outlets] = -2
         num_trap = np.sum(np.unique(clusters) >= 0)
         if num_trap > 0:
-            logger.info("Number of trapped clusters" + str(num_trap))
+            logger.info("Number of trapped clusters " + str(num_trap))
             self['pore.trapped'] = clusters > -1
             num_tPs = np.sum(self['pore.trapped'])
             logger.info("Number of trapped pores: " + str(num_tPs))
@@ -658,7 +665,7 @@ class MixedInvasionPercolation(GenericPercolation):
         occ_Ts = self._phase['throat.occupancy'] == occupied
         low_val = -np.inf
         if np.sum(occ_Ps) > 0:
-            logger.warn("Applying partial saturation to " +
+            logger.info("Applying partial saturation to " +
                         str(np.sum(occ_Ps)) + " pores")
             self['pore.invasion_sequence'][occ_Ps] = 0
             for P in net.pores()[occ_Ps]:
@@ -666,7 +673,7 @@ class MixedInvasionPercolation(GenericPercolation):
                 self['pore.cluster'][P] = invading_cluster
                 self['pore.invasion_pressure'][P] = low_val
         if np.sum(occ_Ts) > 0:
-            logger.warn("Applying partial saturation to " +
+            logger.info("Applying partial saturation to " +
                         str(np.sum(occ_Ts)) + " throats")
         self['throat.invasion_sequence'][occ_Ts] = 0
         for T in net.throats()[occ_Ts]:
