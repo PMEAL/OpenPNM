@@ -4,7 +4,7 @@ from openpnm.core import logging
 logger = logging.getLogger()
 
 
-class MIP(GenericAlgorithm):
+class MercuryIntrusionPorosimetry(GenericAlgorithm):
 
     def __init__(self, network, phase, **kwargs):
         super().__init__(network=network, **kwargs)
