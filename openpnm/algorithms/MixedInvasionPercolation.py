@@ -39,7 +39,8 @@ class MixedInvasionPercolation(GenericPercolation):
                               'throat_volume': 'throat.volume',
                               'pore_entry_pressure': 'pore.capillary_pressure',
                               'throat_entry_pressure': 'throat.capillary_pressure',
-                              'mode': 'mixed'})
+                              'mode': 'mixed',
+                              'partial_saturation':False})
 
     def setup(self, phase, def_phase, **kwargs):
         r"""
@@ -141,7 +142,7 @@ class MixedInvasionPercolation(GenericPercolation):
         except:
             pass
         try:
-            if self._key_words['partial']:
+            if self.settings['partial_saturation']:
                 self.apply_partial_sat()
         except:
             self._phase['pore.occuancy'] = False

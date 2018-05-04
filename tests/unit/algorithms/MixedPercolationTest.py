@@ -140,12 +140,12 @@ class MixedPercolationTest:
         inlet_inv_seq = -1
 
         IP_1 = mp(network=self.net)
+        IP_1.settings['partial_saturation']=partial
         IP_1.setup(phase=inv_phase,
                    def_phase=def_phase,
                    inlets=ip_inlets,
                    inlet_inv_seq=inlet_inv_seq,
-                   snap_off=snap_off,
-                   partial=partial)
+                   snap_off=snap_off)
         if coop_fill:
             IP_1.setup_coop_filling(capillary_model=cap_model,
                                     inv_points=self.inv_points,
