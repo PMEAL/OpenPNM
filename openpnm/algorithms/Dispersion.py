@@ -6,12 +6,12 @@ module Dispersion: Class for solving advection diffusion
 
 import numpy as np
 from scipy.sparse.csgraph import laplacian
-from openpnm.algorithms import GenericTransport
+from openpnm.algorithms import ReactiveTransport
 from openpnm.core import logging
 logger = logging.getLogger(__name__)
 
 
-class Dispersion(GenericTransport):
+class Dispersion(ReactiveTransport):
     r'''
     A subclass of GenericTransport to simulate advection diffusion.
 
@@ -83,4 +83,4 @@ class Dispersion(GenericTransport):
             A.setdiag(A_diags.diagonal())
             self._pure_A = A
         self._A = self._pure_A.copy()
-        return A
+        return self._A

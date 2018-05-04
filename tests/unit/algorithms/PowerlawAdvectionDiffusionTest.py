@@ -1,5 +1,3 @@
-import sys
-sys.path.append('/home/mehrez/Documents/repositories/openpnm_repos/OpenPNM/')
 import openpnm as op
 import scipy as sp
 import pytest

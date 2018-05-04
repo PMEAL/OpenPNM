@@ -1,10 +1,9 @@
-from openpnm.algorithms import AdvectionDiffusion, TransientReactiveTransport
+from openpnm.algorithms import TransientReactiveTransport, AdvectionDiffusion
 from openpnm.core import logging
 logger = logging.getLogger(__name__)
 
 
-class TransientAdvectionDiffusion(AdvectionDiffusion,
-                                  TransientReactiveTransport):
+class TransientAdvectionDiffusion(TransientReactiveTransport,AdvectionDiffusion):
     r"""
     A subclass of GenericTransport to perform steady and transient simulations
     of pure diffusion and advection diffusion problems.
