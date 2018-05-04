@@ -128,7 +128,6 @@ class MixedPercolationTest:
     def run_alg(self, inv_phase=None, def_phase=None,
                 lpf=False,
                 snap_off=False,
-                coop_fill=False,
                 partial=False,
                 trapping=False,
                 cap_model='purcell'):
@@ -146,10 +145,10 @@ class MixedPercolationTest:
                    inlets=ip_inlets,
                    inlet_inv_seq=inlet_inv_seq,
                    snap_off=snap_off)
-        if coop_fill:
-            IP_1.setup_coop_filling(capillary_model=cap_model,
-                                    inv_points=self.inv_points,
-                                    radius=self.fiber_rad)
+#        if coop_fill:
+#            IP_1.setup_coop_filling(capillary_model=cap_model,
+#                                    inv_points=self.inv_points,
+#                                    radius=self.fiber_rad)
         IP_1.run(inlets=ip_inlets)
         if trapping:
             IP_1.apply_trapping(outlets=outlets)
@@ -185,12 +184,12 @@ class MixedPercolationTest:
                                partial=True)
         assert t.drn_data[1][0] > 0
 
-    def test_coop_filling(self):
-        t = self
-        t.w_inv = t.run_alg(inv_phase=t.water, def_phase=t.air)
-        t.coop_data = t.run_alg(inv_phase=t.air, def_phase=t.water,
-                                coop_fill=True)
-        assert np.abs(np.sum(t.coop_data[1] - t.w_inv[1])) > 0
+#    def test_coop_filling(self):
+#        t = self
+#        t.w_inv = t.run_alg(inv_phase=t.water, def_phase=t.air)
+#        t.coop_data = t.run_alg(inv_phase=t.air, def_phase=t.water,
+#                                coop_fill=True)
+#        assert np.abs(np.sum(t.coop_data[1] - t.w_inv[1])) > 0
 
 #    def test_purcell_bi(self):
 #        t = self
@@ -206,15 +205,15 @@ class MixedPercolationTest:
                            cap_model='sinusoidal')
         assert np.abs(np.sum(t.purc[1] - t.sinu[1])) > 0
 
-    def test_sinusoidal_coop(self):
-        t = self
-        t.sinu = t.run_alg(inv_phase=t.air, def_phase=t.water,
-                           cap_model='sinusoidal')
-        t.sinu_coop = t.run_alg(inv_phase=t.air, def_phase=t.water,
-                                coop_fill=True,
-                                cap_model='sinusoidal')
-#        assert np.abs(np.sum(t.sinu[1] - t.sinu_coop[1])) > 0
-        pass
+#    def test_sinusoidal_coop(self):
+#        t = self
+#        t.sinu = t.run_alg(inv_phase=t.air, def_phase=t.water,
+#                           cap_model='sinusoidal')
+#        t.sinu_coop = t.run_alg(inv_phase=t.air, def_phase=t.water,
+#                                coop_fill=True,
+#                                cap_model='sinusoidal')
+##        assert np.abs(np.sum(t.sinu[1] - t.sinu_coop[1])) > 0
+#        pass
 
     def test_apply_flow_rate(self):
         t = self
