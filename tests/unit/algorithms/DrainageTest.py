@@ -4,7 +4,7 @@ import pytest
 mgr = op.Workspace()
 
 
-#class DrainageTest:
+# class DrainageTest:
 #    def setup_class(self):
 #        self.net = op.network.Cubic(shape=[5, 5, 5], spacing=0.0005)
 #        self.geo = op.geometry.StickAndBall(network=self.net,
@@ -149,10 +149,10 @@ mgr = op.Workspace()
 #                       trapping=True)
 #        self.alg.set_inlets(pores=self.net.pores('top'))
 #        self.alg.set_inlets(pores=self.net.pores('bottom'))
-##        self.alg.run()
-##        data = self.alg.get_drainage_data()
-##        assert 'capillary_pressure' in data.keys()
-##        assert 'invading_phase_saturation' in data.keys()
+# #        self.alg.run()
+# #        data = self.alg.get_drainage_data()
+# #        assert 'capillary_pressure' in data.keys()
+# #        assert 'invading_phase_saturation' in data.keys()
 #
 #    def test_run_w_residual_pores_and_throats(self):
 #        self.alg = op.algorithms.Drainage(network=self.net)
@@ -165,7 +165,7 @@ mgr = op.Workspace()
 #        assert hasattr(data, 'Snwp')
 #
 #
-#if __name__ == '__main__':
+# if __name__ == '__main__':
 #
 #    t = DrainageTest()
 #    t.setup_class()
