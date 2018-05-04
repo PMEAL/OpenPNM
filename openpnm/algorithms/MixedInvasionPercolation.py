@@ -8,16 +8,19 @@ InvasionPercolationBasic: Simple IP
 import heapq as hq
 import scipy as sp
 import numpy as np
-from openpnm.algorithms import GenericAlgorithm
+from openpnm.algorithms import GenericPercolation
 import logging
 import matplotlib.pyplot as plt
 import time
 logger = logging.getLogger(__name__)
 
 
-class MixedInvasionPercolation(GenericAlgorithm):
+class MixedInvasionPercolation(GenericPercolation):
     r"""
-    A classic/basic invasion percolation algorithm optimized for speed.
+    An implemetation of invasion percolation which can invade bonds, sites or a
+    mixture of both. Inlets can be treated as individual injection points that
+    share a common pressure or have their own and progess independently.
+    Inlets can also be single pores or clusters.
 
     Parameters
     ----------
@@ -32,6 +35,10 @@ class MixedInvasionPercolation(GenericAlgorithm):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        self.settings.update({'pore_volume': 'pore.volume',
+                              'throat_volume': 'throat.volume',
+                              'entry_pressure': 'throat.capillary_pressure',
+                              'mode': 'mixed'})
 
     def setup(self, phase, def_phase, **kwargs):
         r"""
@@ -61,15 +68,27 @@ class MixedInvasionPercolation(GenericAlgorithm):
             self['throat.entry_pressure'] = phase['throat.capillary_pressure']
             self._bi_directional = False
         self['pore.entry_pressure'] = phase['pore.capillary_pressure']
-        self.reset_invasion_info()
+        self.reset()
         self._key_words = kwargs
         # Need to setup cooperative pore filling seperately
         self._coop_fill = False
 
-    def reset_invasion_info(self):
-        r'''
-        Resets all the invasion data
-        '''
+    def reset(self):
+        r"""
+        Resets the various data arrays on the object back to their original
+        state. This is useful for repeating a simulation at different inlet
+        conditions, or invasion points for instance.
+        """
+        self['pore.invasion_pressure'] = np.inf
+        self['throat.invasion_pressure'] = np.inf
+        self['pore.invasion_sequence'] = -1
+        self['throat.invasion_sequence'] = -1
+        self['pore.trapped'] = np.inf
+        self['throat.trapped'] = np.inf
+        self['pore.inlets'] = False
+        self['pore.outlets'] = False
+        self['pore.residual'] = False
+        self['throat.residual'] = False
         for elem in ['pore', 'throat']:
             for prop in ['inv_Pc',
                          'inv_sat',
@@ -215,77 +234,25 @@ class MixedInvasionPercolation(GenericAlgorithm):
                          " setup method")
 
         if max_pressure is None:
-            max_pressure = sp.inf
+            self.max_pressure = sp.inf
         if len(self.queue.items()) == 0:
             logger.warn('queue is empty, this network is fully invaded')
             return
 
-        max_p_reached = [False]*len(self.queue.items())
-        count = -1
-        invasion_running = [True]*len(self.queue.items())
-        high_Pc = np.ones(len(self.queue.items()))*-np.inf
-        while np.any(invasion_running) and not np.all(max_p_reached):
+        self.max_p_reached = [False]*len(self.queue.items())
+        self.count = -1
+        self.invasion_running = [True]*len(self.queue.items())
+        self.high_Pc = np.ones(len(self.queue.items()))*-np.inf
+        while np.any(self.invasion_running) and not np.all(self.max_p_reached):
             # Loop over clusters
             for c_num in self.queue.keys():
-                if invasion_running[c_num]:
+                if self.invasion_running[c_num]:
+                    self._invade_cluster(c_num)
                     queue = self.queue[c_num]
-                    pressure, elem_id, elem_type, action = hq.heappop(queue)
-                    if elem_type == 'pore':
-                        self._interface_Ps[elem_id] = False
-                    else:
-                        self._interface_Ts[elem_id] = False
-                    if pressure > max_pressure:
-                        max_p_reached[c_num] = True
-                    else:
-                        elem_cluster = self[elem_type+'.cluster'][elem_id]
-                        elem_cluster = elem_cluster.astype(int)
-                        # Cluster is the uninvaded cluster
-                        if elem_cluster == -1:
-                            count += 1
-                            # Record highest Pc cluster has reached
-                            if high_Pc[c_num] < pressure:
-                                high_Pc[c_num] = pressure
-                            # The newly invaded element is available for
-                            # invasion
-                            self[elem_type+'.inv_seq'][elem_id] = count
-                            self[elem_type+'.cluster'][elem_id] = c_num
-                            self[elem_type+'.inv_Pc'][elem_id] = high_Pc[c_num]
-                            self[elem_type+'.action'][elem_id] = action
-                            if elem_type == 'throat':
-                                self._add_ps2q(elem_id, queue, action=0)
-                            elif elem_type == 'pore':
-                                self._add_ts2q(elem_id, queue, action=0)
-                                if self._coop_fill:
-                                    self._check_coop(elem_id, queue)
-                        # Element is part of existing cluster
-                        elif (elem_cluster != c_num and
-                              invasion_running[elem_cluster]):
-                            # The newly invaded element is part of an invading
-                            # cluster. Merge the clusters using the existing
-                            # cluster number
-                            logger.info("Merging cluster "+str(c_num) +
-                                        " into cluster "+str(elem_cluster) +
-                                        " at sequence "+str(count))
-
-                        elif (elem_cluster != c_num and not
-                              invasion_running[elem_cluster]):
-                            # The newly invaded element is part of cluster that
-                            # has stopped invading
-                            logger.info("Cluster " + str(c_num) +
-                                        " terminated")
-
-                        elif self[elem_type+'.cluster'][elem_id] == c_num:
-                            # Self intersecting or repeating elements"
-                            pass
-                        else:
-                            logger.warning("Clusters " + str(c_num) + " and " +
-                                           str(elem_cluster) + " performed " +
-                                           " strange operation!")
-
-                    if len(queue) == 0 or max_p_reached[c_num]:
+                    if len(queue) == 0 or self.max_p_reached[c_num]:
                         # If the cluster contains no more entries invasion has
                         # finished
-                        invasion_running[c_num] = False
+                        self.invasion_running[c_num] = False
             self._invade_isolated_Ts()
             if outlets is not None:
                 # terminated clusters
@@ -293,10 +260,66 @@ class MixedInvasionPercolation(GenericAlgorithm):
                 tcs = tcs[tcs >= 0]
                 if len(tcs) > 0:
                     for tc in tcs:
-                        if invasion_running[tc] is True:
-                            invasion_running[tc] = False
+                        if self.invasion_running[tc] is True:
+                            self.invasion_running[tc] = False
                             logger.info("Cluster " + str(tc) + " reached " +
-                                        " outlet at sequence " + str(count))
+                                        " outlet at sequence " + str(self.count))
+
+    def _invade_cluster(self, c_num):
+        queue = self.queue[c_num]
+        pressure, elem_id, elem_type, action = hq.heappop(queue)
+        if elem_type == 'pore':
+            self._interface_Ps[elem_id] = False
+        else:
+            self._interface_Ts[elem_id] = False
+        if pressure > self.max_pressure:
+            self.max_p_reached[c_num] = True
+        else:
+            elem_cluster = self[elem_type+'.cluster'][elem_id]
+            elem_cluster = elem_cluster.astype(int)
+            # Cluster is the uninvaded cluster
+            if elem_cluster == -1:
+                self.count += 1
+                # Record highest Pc cluster has reached
+                if self.high_Pc[c_num] < pressure:
+                    self.high_Pc[c_num] = pressure
+                # The newly invaded element is available for
+                # invasion
+                self[elem_type+'.inv_seq'][elem_id] = self.count
+                self[elem_type+'.cluster'][elem_id] = c_num
+                self[elem_type+'.inv_Pc'][elem_id] = self.high_Pc[c_num]
+                self[elem_type+'.action'][elem_id] = action
+                if elem_type == 'throat':
+                    self._add_ps2q(elem_id, queue, action=0)
+                elif elem_type == 'pore':
+                    self._add_ts2q(elem_id, queue, action=0)
+                    if self._coop_fill:
+                        self._check_coop(elem_id, queue)
+            # Element is part of existing cluster
+            elif (elem_cluster != c_num and
+                  self.invasion_running[elem_cluster]):
+                # The newly invaded element is part of an invading
+                # cluster. Merge the clusters using the existing
+                # cluster number
+                logger.info("Merging cluster "+str(c_num) +
+                            " into cluster "+str(elem_cluster) +
+                            " at sequence "+str(self.count))
+
+            elif (elem_cluster != c_num and not
+                  self.invasion_running[elem_cluster]):
+                # The newly invaded element is part of cluster that
+                # has stopped invading
+                logger.info("Cluster " + str(c_num) +
+                            " terminated")
+
+            elif self[elem_type+'.cluster'][elem_id] == c_num:
+                # Self intersecting or repeating elements"
+                pass
+            else:
+                logger.warning("Clusters " + str(c_num) + " and " +
+                               str(elem_cluster) + " performed " +
+                               " strange operation!")
+       
 
     def return_results(self, pores=[], throats=[], Pc=None):
         r"""
