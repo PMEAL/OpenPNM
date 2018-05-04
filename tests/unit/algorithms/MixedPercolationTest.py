@@ -212,7 +212,6 @@ class MixedPercolationTest:
 #        t.sinu_coop = t.run_alg(inv_phase=t.air, def_phase=t.water,
 #                                coop_fill=True,
 #                                cap_model='sinusoidal')
-##        assert np.abs(np.sum(t.sinu[1] - t.sinu_coop[1])) > 0
 #        pass
 
     def test_apply_flow_rate(self):

@@ -677,52 +677,6 @@ class MixedInvasionPercolation(GenericPercolation):
             self['throat.cluster'][T] = invading_cluster
             self['throat.invasion_pressure'][T] = low_val
 
-    def _perpendicular_vector(self, vec):
-        return np.cross(vec, [1, 1, 1])
-
-    def _circ_points(self, a, b, c):
-        t = np.arange(0, 2*np.pi, 0.1)
-        pts = []
-        for i in range(3):
-            pts.append(c[i] + a[i]*np.sin(t) + b[i]*np.cos(t))
-        return np.asarray(pts).T
-
-    def _check_intersection(self, c1, c2, r1, r2, pore_center, pore_rad):
-        r"""
-        Helper function to determine whether the intersetion between two
-        Spheres formed by growing menisci in the throats lies within the pore
-        body that they connect to
-        """
-        intersection = np.zeros(len(r1), dtype=bool)
-        vec_n = c2 - c1
-        dist = np.linalg.norm(vec_n, axis=1)
-        vec_a = self._perpendicular_vector(vec_n)
-        dist_a = np.linalg.norm(vec_a, axis=1)
-        vec_a *= 1/(np.vstack((dist_a, dist_a, dist_a)).T)
-        vec_b = np.cross(vec_a, vec_n)
-        dist_b = np.linalg.norm(vec_b, axis=1)
-        vec_b *= 1/(np.vstack((dist_b, dist_b, dist_b)).T)
-        x = (dist**2 - r2**2 + r1**2)/(2*dist)
-        # intersection centre
-        p = c1 + (vec_n.T*(x/dist)).T
-        sq = 4 * dist**2 * r1**2 - (dist**2 - r2**2 + r1**2)**2
-        # Could try to vectorize this but it would be pretty complicated!!!
-        for i in range(len(r1)):
-            if sq[i] > 0:
-                # An intersection is found
-                rad = (1/(2*dist[i]))*np.sqrt(sq[i])
-                # Points around circle
-                circle = self._circ_points(vec_a[i]*rad, vec_b[i]*rad, p[i])
-                # If any points on the circle defining the intersection
-                # Are within the pore radius distance from the pore center
-                # The intersection is inside the pore - Not exact as pores
-                # Are irregular shapes
-                c2p = np.linalg.norm(circle-pore_center, axis=1)
-                if np.any(c2p < pore_rad):
-                    intersection[i] = True
-
-        return intersection
-
     def _invade_isolated_Ts(self):
         r"""
         Throats that are uninvaded connected to pores that are both invaded
