@@ -12,7 +12,7 @@ class TransientReactiveTransport(ReactiveTransport):
 
     def __init__(self, settings={}, **kwargs):
         self.settings.update({'t_initial': 0,
-                              't_final': 5e+03,
+                              't_final': 5e+04,
                               't_step': 0.1,
                               't_output': 1e+08,
                               't_tolerance': 1e-06,
@@ -132,10 +132,6 @@ class TransientReactiveTransport(ReactiveTransport):
         self.settings['t_output'] = to
         outputs = np.append(np.arange(t+to, tf, to), tf)
 
-        # Export the initial field (t=t_initial)
-        vals = self[self.settings['quantity']]
-        self[self.settings['quantity']+'_initial'] = vals
-
         if (s == 'steady'):  # If solver in steady mode, do one iteration
             print('    Running in steady mode')
             x_old = self[self.settings['quantity']]
@@ -143,6 +139,9 @@ class TransientReactiveTransport(ReactiveTransport):
             x_new = self[self.settings['quantity']]
 
         else:  # Do time iterations
+            # Export the initial field (t=t_initial)
+            vals = self[self.settings['quantity']]
+            self[self.settings['quantity']+'_initial'] = vals
             for time in np.arange(t+dt, tf+dt, dt):
                 if (res_t >= tol):  # Check if the steady state is reached
                     print('    Current time step: '+str(time)+' s')
