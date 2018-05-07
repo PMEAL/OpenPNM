@@ -28,7 +28,7 @@ class GenericPercolation(GenericAlgorithm):
 
         """
         Ps = self._parse_indices(pores)
-        if sum(self['pore.outlets'][Ps]) > 0:
+        if np.sum(self['pore.outlets'][Ps]) > 0:
             raise Exception('Some inlets are already defined as outlets')
         if overwrite:
             self['pore.inlets'] = False
@@ -57,7 +57,7 @@ class GenericPercolation(GenericAlgorithm):
             logger.warning('Setting outlets is meaningless unless trapping ' +
                            'was set to True during setup')
         Ps = self._parse_indices(pores)
-        if sum(self['pore.inlets'][Ps]) > 0:
+        if np.sum(self['pore.inlets'][Ps]) > 0:
             raise Exception('Some outlets are already defined as inlets')
         if overwrite:
             self['pore.outlets'] = False
