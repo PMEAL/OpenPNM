@@ -1,10 +1,10 @@
 import openpnm as op
-from openpnm.algorithms import GenericAlgorithm, Drainage
+from openpnm.algorithms import OrdinaryPercolation
 from openpnm.core import logging
 logger = logging.getLogger()
 
 
-class MercuryIntrusionPorosimetry(GenericAlgorithm):
+class Porosimetry(OrdinaryPercolation):
 
     def __init__(self, network, phase, **kwargs):
         super().__init__(network=network, **kwargs)
@@ -17,7 +17,7 @@ class MercuryIntrusionPorosimetry(GenericAlgorithm):
                      surface_tension='throat.surface_tension',
                      contact_angle='throat.contact_angle',
                      regen_mode='normal')
-        mip = Drainage(network=network)
+        mip = OrdinaryPercolaton(network=network)
         mip.setup(invading_phase=Hg)
         if 'pore.surface' not in network.keys():
             op.topotools.find_surface_pores(network=network)

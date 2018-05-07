@@ -16,4 +16,4 @@ from .OrdinaryPercolation import OrdinaryPercolation
 from .InvasionPercolation import InvasionPercolation
 from .Drainage import Drainage
 from .MixedInvasionPercolation import MixedInvasionPercolation
-from .MercuryIntrusionPorosimetry import MercuryIntrusionPorosimetry
+from .MercuryIntrusionPorosimetry import Porosimetry
