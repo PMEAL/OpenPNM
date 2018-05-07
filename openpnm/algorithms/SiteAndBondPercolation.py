@@ -6,6 +6,84 @@ from openpnm.algorithms import OrdinaryPercolation
 
 
 class SiteAndBondPercolation(OrdinaryPercolation):
+    r"""
+    Examples
+    --------
+    Start by importing all the necessary packages:
+
+    >>> import openpnm as op
+    >>> import scipy as sp
+    >>> import matplotlib.pyplot as plt
+
+    Initialize all the OpenPNM Objects and assign some basic properties:
+
+    >>> shape = [50, 50]
+    >>> pn = op.network.Cubic(shape=shape)
+    >>> hg = op.phases.Mercury(network=pn)
+    >>> phys = op.physics.GenericPhysics(network=pn, phase=hg, geometry=pn)
+    >>> phys['pore.capillary_pressure'] = sp.rand(pn.Np)
+    >>> phys['throat.capillary_pressure'] = sp.rand(pn.Nt)
+
+    Initialize the algorithm, run setup, and generate a lit of invasion points:
+
+    >>> mip = op.algorithms.SiteAndBondPercolation(network=pn)
+    >>> mip.setup(phase=hg)
+    >>> points = sp.linspace(0, 1, 20)
+
+    Start by simulating access limited bond percolation:
+
+    >>> mip.reset()
+    >>> mip.settings['access_limited'] = True
+    >>> mip.settings['mode'] = 'bond'
+    >>> mip.set_inlets(pores=pn.pores(['left']))
+    >>> mip.run(points)
+    >>> data = mip.get_percolation_data()
+    >>> fig = plt.subplot(2, 4, 1)
+    >>> fig = plt.plot(*data, 'b-o')
+    >>> fig = plt.subplot(2, 4, 2)
+    >>> fig = plt.imshow(sp.reshape(mip['pore.invasion_pressure'], shape))
+    >>> fig = plt.title('Access Limited Bond Percolation')
+
+    Clear the previous results with reset and rerun without access limitations:
+
+    >>> mip.reset()
+    >>> mip.settings['access_limited'] = False
+    >>> mip.settings['mode'] = 'bond'
+    >>> mip.run(points)
+    >>> data = mip.get_percolation_data()
+    >>> fig = plt.subplot(2, 4, 3)
+    >>> fig = plt.plot(*data, 'r-o')
+    >>> fig = plt.subplot(2, 4, 4)
+    >>> fig = plt.imshow(sp.reshape(mip['pore.invasion_pressure'], shape))
+    >>> fig = plt.title('Normal Bond Percolation')
+
+    Now try site percolation with access limitations:
+
+    >>> mip.reset()
+    >>> mip.settings['access_limited'] = True
+    >>> mip.settings['mode'] = 'site'
+    >>> mip.set_inlets(pores=pn.pores(['left']))
+    >>> mip.run(points)
+    >>> data = mip.get_percolation_data()
+    >>> fig = plt.subplot(2, 4, 5)
+    >>> fig = plt.plot(*data, 'g-o')
+    >>> fig = plt.subplot(2, 4, 6)
+    >>> fig = plt.imshow(sp.reshape(mip['pore.invasion_pressure'], shape))
+    >>> fig = plt.title('Access Limited Site Percolation')
+
+    And finally, site percolation without access limitations:
+
+    >>> mip.reset()
+    >>> mip.settings['access_limited'] = False
+    >>> mip.settings['mode'] = 'site'
+    >>> mip.run(points)
+    >>> data = mip.get_percolation_data()
+    >>> fig = plt.subplot(2, 4, 7)
+    >>> fig = plt.plot(*data, 'c-o')
+    >>> fig = plt.subplot(2, 4, 8)
+    >>> fig = plt.imshow(sp.reshape(mip['pore.invasion_pressure'], shape))
+    >>> fig = plt.title('Normal Site Percolation')
+    """
 
     def get_percolation_threshold(self):
         r"""
@@ -116,7 +194,7 @@ class SiteAndBondPercolation(OrdinaryPercolation):
         xdata = data.Pcap
         ydata = data.Snwp
         fig = plt.figure()
-        plt.semilogx(xdata, ydata, 'ko-')
+        plt.plot(xdata, ydata, 'ko-')
         plt.ylabel('Invading Phase Saturation')
         plt.xlabel('Capillary Pressure')
         plt.grid(True)
