@@ -19,10 +19,9 @@ class PrintableList(list):
 
 
 class PrintableDict(OrderedDict):
-    def __init__(self, *args, **kwargs):
-        self._header = 'value'
-        if 'header' in kwargs:
-            self._header = kwargs.pop('header')
+    def __init__(self, key='key', value='value', *args, **kwargs):
+        self._value = value
+        self._key = key
         super().__init__(*args, **kwargs)
 
     def __repr__(self):
@@ -32,7 +31,7 @@ class PrintableDict(OrderedDict):
     def __str__(self):
         header = '―' * 78
         lines = [header]
-        lines.append('{0:<35s} {1}'.format('key', self._header))
+        lines.append('{0:<35s} {1}'.format(self._key, self._value))
         lines.append(header)
         for item in list(self.keys()):
             if type(self[item]) == _sp.ndarray:
