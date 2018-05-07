@@ -275,6 +275,25 @@ class OrdinaryPercolation(GenericAlgorithm):
         self['pore.invasion_sequence'] = Pseq
         self['throat.invasion_sequence'] = Tseq
 
+    def get_percolation_threshold(self):
+        r"""
+        """
+        if sp.sum(self['pore.inlets']) == 0:
+            raise Exception('Inlet pores must be specified first')
+        else:
+            Pin = self['pore.inlets']
+        if sp.sum(self['pore.outlets']) == 0:
+            raise Exception('Outlet pores must be specified first')
+        else:
+            Pout = self['pore.outlets']
+        # Do a simple check of pressures on the outlet pores first...
+        if self.settings['access_limited']:
+            thresh = sp.amin(self['pore.invasion_pressure'][Pout])
+        else:
+            raise Exception('This is currently only implemented for access ' +
+                            'limited simulations')
+        return thresh
+
     def is_percolating(self, applied_pressure):
         r"""
         Returns a True of False value to indicate if a percolating cluster
@@ -309,27 +328,27 @@ class OrdinaryPercolation(GenericAlgorithm):
                                        inlets=Pin, outlets=Pout)
         return val
 
-    def get_percolation_threshold(self):
-        r"""
-        """
-        if sp.sum(self['pore.inlets']) == 0:
-            raise Exception('Inlet pores must be specified first')
-        else:
-            Pin = self['pore.inlets']
-        if sp.sum(self['pore.outlets']) == 0:
-            raise Exception('Outlet pores must be specified first')
-        else:
-            Pout = self['pore.outlets']
-        # Do a simple check of pressures on the outlet pores first...
-        if self.settings['access_limited']:
-            thresh = sp.amin(self['pore.invasion_pressure'][Pout])
-        else:
-            raise Exception('This is currently only implemented for access ' +
-                            'limited simulations')
-        return thresh
-
     def _is_percolating(self, am, inlets, outlets, mode='site'):
         r"""
+        Determines if a percolating clusters exists in the network spanning
+        the given inlet and outlet sites
+
+        Parameters
+        ----------
+        am : adjacency_matrix
+            The adjacency matrix with the ``data`` attribute indicating
+            if a bond is occupied or not
+
+        inlets : array_like
+            An array of indices indicating which sites are part of the inlets
+
+        outlets : array_like
+            An array of indices indicating which sites are part of the outlets
+
+        mode : string
+            Indicates which type of percolation to apply, either `'site'` or
+            `'bond'`
+
         """
         if am.format is not 'coo':
             am = am.to_coo()
