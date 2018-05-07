@@ -1,6 +1,7 @@
 import scipy as sp
 import scipy.ndimage as spim
 import scipy.sparse as sprs
+import porespy as ps
 from scipy.sparse import csgraph
 from openpnm.core import logging, Workspace
 from openpnm.utils.misc import PrintableDict
@@ -246,6 +247,165 @@ def im_to_am(im):
         print('Warning: Received matrix has more sites than bonds')
     if im.format != 'coo':
         im = im.tocoo(copy=False)
+
+
+def ispercolating(am, inlets, outlets, mode='site'):
+    r"""
+    Determines if a percolating clusters exists in the network spanning
+    the given inlet and outlet sites
+
+    Parameters
+    ----------
+    am : adjacency_matrix
+        The adjacency matrix with the ``data`` attribute indicating
+        if a bond is occupied or not
+
+    inlets : array_like
+        An array of indices indicating which sites are part of the inlets
+
+    outlets : array_like
+        An array of indices indicating which sites are part of the outlets
+
+    mode : string
+        Indicates which type of percolation to apply, either `'site'` or
+        `'bond'`
+
+    """
+    if am.format is not 'coo':
+        am = am.to_coo()
+    ij = sp.vstack((am.col, am.row)).T
+    if mode.startswith('site'):
+        occupied_sites = sp.zeros(shape=am.shape[0], dtype=bool)
+        occupied_sites[ij[am.data].flatten()] = True
+        clusters = site_percolation(ij, occupied_sites)
+    elif mode.startswith('bond'):
+        occupied_bonds = am.data
+        clusters = bond_percolation(ij, occupied_bonds)
+    ins = sp.unique(clusters.sites[inlets])
+    if ins[0] == -1:
+        ins = ins[1:]
+    outs = sp.unique(clusters.sites[outlets])
+    if outs[0] == -1:
+        outs = outs[1:]
+    hits = sp.in1d(ins, outs)
+    return sp.any(hits)
+
+
+def remove_isolated_clusters(labels, inlets):
+    r"""
+    Finds cluster labels not attached to the inlets, and sets them to
+    unoccupied (-1)
+
+    Parameters
+    ----------
+    labels : tuple of site and bond labels
+        This information is provided by the ``site_percolation`` or
+        ``bond_percolation`` functions
+
+    inlets : array_like
+        A list of which sites are inlets.  Can be a boolean mask or an
+        array of indices.
+
+    Returns
+    -------
+    A tuple containing a list of site and bond labels, with all clusters
+    not connected to the inlet sites set to not occupied.
+
+    """
+    # Identify clusters of invasion sites
+    inv_clusters = sp.unique(labels.sites[inlets])
+    # Remove cluster numbers == -1, if any
+    inv_clusters = inv_clusters[inv_clusters >= 0]
+    # Find all pores in invading clusters
+    p_invading = sp.in1d(labels.sites, inv_clusters)
+    labels.sites[~p_invading] = -1
+    t_invading = sp.in1d(labels.bonds, inv_clusters)
+    labels.bonds[~t_invading] = -1
+    return labels
+
+
+def site_percolation(ij, occupied_sites):
+    r"""
+    Calculates the site and bond occupancy status for a site percolation
+    process given a list of occupied sites.
+
+    Parameters
+    ----------
+    ij : array_like
+        An N x 2 array of [site_A, site_B] connections.  If two connected
+        sites are both occupied they are part of the same cluster, as it
+        the bond connecting them.
+
+    occupied_sites : boolean
+        A list indicating whether sites are occupied or not
+
+    Returns
+    -------
+    A tuple containing a list of site and bond labels, indicating which
+    cluster each belongs to.  A value of -1 indicates unoccupied.
+
+    Notes
+    -----
+    The ``connected_components`` function of scipy.csgraph will give ALL
+    sites a cluster number whether they are occupied or not, so this
+    function essentially adjusts the cluster numbers to represent a
+    percolation process.
+
+    """
+    from collections import namedtuple
+    Np = sp.size(occupied_sites)
+    occupied_bonds = sp.all(occupied_sites[ij], axis=1)
+    adj_mat = sprs.csr_matrix((occupied_bonds, (ij[:, 0], ij[:, 1])),
+                              shape=(Np, Np))
+    adj_mat.eliminate_zeros()
+    clusters = csgraph.connected_components(csgraph=adj_mat, directed=False)[1]
+    clusters[~occupied_sites] = -1
+    s_labels = ps.tools.make_contiguous(clusters + 1) - 1
+    b_labels = sp.amin(s_labels[ij], axis=1)
+    tup = namedtuple('cluster_labels', ('sites', 'bonds'))
+    return tup(s_labels, b_labels)
+
+
+def bond_percolation(ij, occupied_bonds):
+    r"""
+    Calculates the site and bond occupancy status for a bond percolation
+    process given a list of occupied bonds.
+
+    Parameters
+    ----------
+    ij : array_like
+        An N x 2 array of [site_A, site_B] connections.  A site is
+        considered occupied if any of it's connecting bonds are occupied.
+
+    occupied_bonds: boolean
+        A list indicating whether a bond is occupied or not
+
+    Returns
+    -------
+    A tuple contain a list of site and bond labels, indicating which
+    cluster each belongs to.  A value of -1 indicates uninvaded.
+
+    Notes
+    -----
+    The ``connected_components`` function of scipy.csgraph will give ALL
+    sites a cluster number whether they are occupied or not, so this
+    function essentially adjusts the cluster numbers to represent a
+    percolation process.
+
+    """
+    from collections import namedtuple
+    Np = sp.amax(ij) + 1
+    adj_mat = sprs.csr_matrix((occupied_bonds, (ij[:, 0], ij[:, 1])),
+                              shape=(Np, Np))
+    adj_mat.eliminate_zeros()
+    clusters = csgraph.connected_components(csgraph=adj_mat, directed=False)[1]
+    valid_clusters = sp.bincount(clusters) > 1
+    mapping = -sp.ones(shape=(clusters.max()+1, ), dtype=int)
+    mapping[valid_clusters] = sp.arange(0, valid_clusters.sum())
+    s_labels = mapping[clusters]
+    b_labels = sp.amin(s_labels[ij], axis=1)
+    tup = namedtuple('cluster_labels', ('sites', 'bonds'))
+    return tup(s_labels, b_labels)
 
 
 def trim(network, pores=[], throats=[]):
