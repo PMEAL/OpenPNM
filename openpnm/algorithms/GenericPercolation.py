@@ -7,21 +7,7 @@ logger = logging.getLogger(__name__)
 class GenericPercolation(GenericAlgorithm):
 
     def reset(self):
-        r"""
-        Resets the various data arrays on the object back to their original
-        state. This is useful for repeating a simulation at different inlet
-        conditions, or invasion points for instance.
-        """
-        self['pore.invasion_pressure'] = np.inf
-        self['throat.invasion_pressure'] = np.inf
-        self['pore.invasion_sequence'] = -1
-        self['throat.invasion_sequence'] = -1
-        self['pore.trapped'] = np.inf
-        self['throat.trapped'] = np.inf
-        self['pore.inlets'] = False
-        self['pore.outlets'] = False
-        self['pore.residual'] = False
-        self['throat.residual'] = False
+        raise NotImplementedError()
 
     def set_inlets(self, pores=[], overwrite=False):
         r"""

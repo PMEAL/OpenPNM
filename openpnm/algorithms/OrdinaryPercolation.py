@@ -4,26 +4,27 @@ import scipy.sparse as sprs
 import scipy.sparse.csgraph as csg
 import matplotlib.pyplot as plt
 from collections import namedtuple
-from openpnm.algorithms import GenericAlgorithm
+from openpnm.algorithms import GenericPercolation
 from openpnm.topotools import site_percolation, bond_percolation
 from openpnm.topotools import remove_isolated_clusters, ispercolating
 from openpnm.core import logging
 logger = logging.getLogger(__name__)
 
-
-class OrdinaryPercolation(GenericAlgorithm):
-
-    def __init__(self, settings={}, **kwargs):
-        r"""
-        """
-        super().__init__(**kwargs)
-        defaults = {'access_limited': True,
+default_settings = {'access_limited': True,
                     'mode': 'bond',
                     'pore_entry_pressure': 'pore.capillary_pressure',
                     'throat_entry_pressure': 'throat.capillary_pressure',
                     'pore_volume': '',
                     'throat_volume': ''}
-        self.settings.update(defaults)
+
+
+class OrdinaryPercolation(GenericPercolation):
+
+    def __init__(self, settings={}, **kwargs):
+        r"""
+        """
+        super().__init__(**kwargs)
+        self.settings.update(default_settings)
         # Apply user settings, if any
         self.settings.update(settings)
         # Use the reset method to initialize all arrays
@@ -111,85 +112,6 @@ class OrdinaryPercolation(GenericAlgorithm):
         self['pore.outlets'] = False
         self['pore.residual'] = False
         self['throat.residual'] = False
-
-    def set_inlets(self, pores=[], overwrite=False):
-        r"""
-        Set the locations from which the invader enters the network
-
-        Parameters
-        ----------
-        pores : array_like
-            Locations that are initially filled with invader, from which
-            clusters grow and invade into the network
-
-        overwrite : boolean
-            If ``True`` then all existing inlet locations will be removed and
-            then the supplied locations will be added.  If ``False`` (default),
-            the supplied locations are added to any already existing locations.
-
-        """
-        Ps = self._parse_indices(pores)
-        if sum(self['pore.outlets'][Ps]):
-            raise Exception('Some given indices are already set as outlets')
-        if overwrite:
-            self['pore.inlets'] = False
-        self['pore.inlets'][Ps] = True
-
-    def set_outlets(self, pores=[], overwrite=False):
-        r"""
-        Set the locations through which defender exits the network.
-        This is only necessary if 'trapping' was set to True when ``setup``
-        was called.
-
-        Parameters
-        ----------
-        pores : array_like
-            Locations where the defender can exit the network.  Any defender
-            that does not have access to these sites will be trapped.
-
-        overwrite : boolean
-            If ``True`` then all existing outlet locations will be removed and
-            then the supplied locations will be added.  If ``False`` (default),
-            then supplied locations are added to any already existing outlet
-            locations.
-
-        """
-        Ps = self._parse_indices(pores)
-        if sum(self['pore.inlets'][Ps]):
-            raise Exception('Some given indices are already set as inlets')
-        if overwrite:
-            self['pore.outlets'] = False
-        self['pore.outlets'][Ps] = True
-
-    def set_residual(self, pores=[], throats=[], overwrite=False):
-        r"""
-        Specify locations of any residual invader.  These locations are set
-        to invaded at the start of the simulation.
-
-        Parameters
-        ----------
-        pores : array_like
-            The pores locations that are to be filled with invader at the
-            beginning of the simulation.
-
-        throats : array_like
-            The throat locations that are to be filled with invader at the
-            beginning of the simulation.
-
-        overwrite : boolean
-            If ``True`` then all existing residual locations will be removed
-            and then the supplied locations will be added.  If ``False``, the
-            supplied locations are added to any already existing locations.
-
-        """
-        Ps = self._parse_indices(pores)
-        if overwrite:
-            self['pore.residual'] = False
-        self['pore.residual'][Ps] = True
-        Ts = self._parse_indices(throats)
-        if overwrite:
-            self['throat.residual'] = False
-        self['throat.residual'][Ts] = True
 
     def run(self, points=25, start=None, stop=None):
         r"""
@@ -282,8 +204,6 @@ class OrdinaryPercolation(GenericAlgorithm):
         """
         if sp.sum(self['pore.inlets']) == 0:
             raise Exception('Inlet pores must be specified first')
-        else:
-            Pin = self['pore.inlets']
         if sp.sum(self['pore.outlets']) == 0:
             raise Exception('Outlet pores must be specified first')
         else:
@@ -298,13 +218,13 @@ class OrdinaryPercolation(GenericAlgorithm):
 
     def is_percolating(self, applied_pressure):
         r"""
-        Returns a True of False value to indicate if a percolating cluster
-        spans the between the inlet and outlet pores that were specified.
+        Returns a True or False value to indicate if a percolating cluster
+        spans between the inlet and outlet pores that were specified.
 
         Parameters
         ----------
         applied_pressure : scalar, float
-            The pressure for which percolation should be checked.
+            The pressure at which percolation should be checked
 
         Returns
         -------
