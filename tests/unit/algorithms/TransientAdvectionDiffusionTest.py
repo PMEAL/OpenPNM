@@ -35,7 +35,7 @@ class TransientAdvectionDiffusionTest:
 
         alg2 = op.algorithms.TransientAdvectionDiffusion(network=self.net,
                                                          phase=self.phase)
-        alg2.settings.update({'t_scheme': 'implicit', 's_scheme': 'hybrid',
+        alg2.settings.update({'t_scheme': 'implicit', 's_scheme': 'powerlaw',
                               't_step': 1, 't_output': 50, 't_final': 100,
                               't_tolerance': 1e-20})
         alg2.set_IC(0)

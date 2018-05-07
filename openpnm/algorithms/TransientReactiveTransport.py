@@ -99,7 +99,10 @@ class TransientReactiveTransport(ReactiveTransport):
         """
         print('―'*80)
         print('Running TransientTransport')
-        # Create a scratch b from IC to apply BCs to A matrix
+        # If solver used in steady mode, no need to add ICs
+        if (self.settings['t_scheme'] == 'steady'):
+            self[self.settings['quantity']] = 0
+        # Create a scratch b from IC
         self._b = self[self.settings['quantity']]
         self._apply_BCs()
         # Save A matrix (with BCs applied) of the steady sys of eqs

@@ -91,5 +91,4 @@ class AdvectionDiffusion(ReactiveTransport):
             # Overwrite the diagonal
             A.setdiag(A_diags.diagonal())
             self._pure_A = A
-        self._A = self._pure_A.copy()
-        return self._A
+        self.A = self._pure_A.copy()

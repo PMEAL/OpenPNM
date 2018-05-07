@@ -25,8 +25,9 @@ class Dispersion(ReactiveTransport):
         logger.info('Create ' + self.__class__.__name__ + ' Object')
         self.settings.update({'quantity': 'pore.mole_fraction',
                               'hydraulic_conductance':
-                                  'throat.hydraulic_conductance',
+                              'throat.hydraulic_conductance',
                               'diffusivity': 'pore.diffusivity',
+                              'molar_density': 'pore.molar_density',
                               'pressure': 'pore.pressure'})
         self.settings.update(settings)
 
@@ -82,5 +83,4 @@ class Dispersion(ReactiveTransport):
             # Overwrite the diagonal
             A.setdiag(A_diags.diagonal())
             self._pure_A = A
-        self._A = self._pure_A.copy()
-        return self._A
+        self.A = self._pure_A.copy()
