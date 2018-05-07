@@ -528,6 +528,7 @@ class MixedInvasionPercolation(GenericPercolation):
         Also creates 2 boolean arrays Np and Nt long called '<element>.trapped'
         """
         net = self.project.network
+        inlets = self['pore.inlets']
         outlets = self['pore.outlets']
         if np.sum(outlets) == 0:
             raise Exception('Outlets must be set using the set_outlets method' +
@@ -562,7 +563,7 @@ class MixedInvasionPercolation(GenericPercolation):
         stopped_clusters = np.zeros(net.Np, dtype=bool)
         all_neighbors = net.find_neighbor_pores(net.pores(), flatten=False)
         for un_seq, pore in inv_seq:
-            if pore not in outlets and un_seq > -1:  # Don't include outlets
+            if ~outlets[pore] and un_seq > -1:  # Don't include outlets
                 nc = clusters[all_neighbors[pore]]  # Neighboring clusters
                 unique_ns = np.unique(nc[nc != -1])  # Unique Neighbors
                 seq_pore = "S:"+str(un_seq)+" P:"+str(pore)
@@ -692,13 +693,16 @@ class MixedInvasionPercolation(GenericPercolation):
                                      invaded_Ps[Ts[:, 1]])
         isolated_Ts = np.logical_and(isolated_Ts, uninvaded_Ts)
         inv_Pc = self['pore.invasion_pressure']
+        inv_seq = self['pore.invasion_sequence']
         if np.any(isolated_Ts):
-            Pc = np.max(inv_Pc[Ts], axis=1)
-            seq = np.max(inv_Pc[Ts], axis=1)
             max_array = Ts[:, 0]
-            second_higher = inv_Pc[Ts][:, 1] > inv_Pc[Ts][:, 0]
+            second_higher = inv_seq[Ts][:, 1] > inv_seq[Ts][:, 0]
             max_array[second_higher] = Ts[:, 1][second_higher]
-            action = self['pore.action'][max_array]
-            self['throat.invasion_pressure'][isolated_Ts] = Pc[isolated_Ts]
-            self['throat.invasion_sequence'][isolated_Ts] = seq[isolated_Ts]
-            self['throat.action'][isolated_Ts] = action[isolated_Ts]
+            mPc = inv_Pc[max_array]
+            mSeq = inv_seq[max_array]
+            mAct = self['pore.action'][max_array]
+            mClu = self['pore.cluster'][max_array]
+            self['throat.invasion_pressure'][isolated_Ts] = mPc[isolated_Ts]
+            self['throat.invasion_sequence'][isolated_Ts] = mSeq[isolated_Ts]
+            self['throat.action'][isolated_Ts] = mAct[isolated_Ts]
+            self['throat.cluster'][isolated_Ts] = mClu[isolated_Ts]
