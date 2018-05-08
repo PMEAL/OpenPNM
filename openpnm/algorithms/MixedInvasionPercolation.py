@@ -138,6 +138,7 @@ class MixedInvasionPercolation(GenericPercolation):
             # Perform initial analysis on input pores
             self['pore.invasion_sequence'][cluster] = inlet_inv_seq
             self['pore.cluster'][cluster] = i
+            self['pore.invasion_pressure'][cluster] = -np.inf
             if np.size(cluster) > 1:
                 for elem_id in cluster:
                     self._add_ts2q(elem_id, self.queue[i], action=0)
@@ -219,6 +220,8 @@ class MixedInvasionPercolation(GenericPercolation):
 
         if max_pressure is None:
             self.max_pressure = sp.inf
+        else:
+            self.max_pressure = max_pressure
         if len(self.queue.items()) == 0:
             logger.warn('queue is empty, this network is fully invaded')
             return

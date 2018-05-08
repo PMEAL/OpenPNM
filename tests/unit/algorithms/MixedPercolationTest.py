@@ -176,7 +176,7 @@ class MixedPercolationTest:
         self.phase['throat.occupancy'] = False
         self.phase['pore.occupancy'][P1] = True
         self.phase['pore.occupancy'][P2] = True
-        dat_p = self.run_mp(False, True, False, True)
+        dat_p = self.run_mp(False, True, False, False)
         assert self.phase['pore.invasion_pressure'][P1] == -np.inf
         assert self.phase['pore.invasion_pressure'][P2] == -np.inf
         assert self.phase['throat.invasion_pressure'][T] == -np.inf
@@ -193,7 +193,52 @@ class MixedPercolationTest:
         phys['pore.capillary_pressure']=0.0
         self.run_mp(False, False, False, flowrate=tot)
         assert 'throat.invasion_time' in self.phase.props()
+        
+    def test_max_pressure(self):
+        net = self.net
+        phys = self.phys
+        phys['throat.capillary_pressure']=np.arange(0, net.Nt, dtype=float)
+        phys['pore.capillary_pressure']=0.0
+        IP_1 = mp(network=self.net)
+        IP_1.settings['partial_saturation']=False
+        IP_1.settings['snap_off']=False
+        IP_1.setup(phase=self.phase,
+                   def_phase=self.def_phase)
+        IP_1.set_inlets(pores=self.inlets)    
+        IP_1.run(max_pressure=20)
+        IP_1.return_results()
+        inv_Pc = self.phase['pore.invasion_pressure']
+        inv_Pc = inv_Pc[~np.isinf(inv_Pc)]
+        assert inv_Pc.max() <= 20
 
+    def test_drainage_curve(self):
+        net = self.net
+        phys = self.phys
+        phys['throat.capillary_pressure']=np.arange(0, net.Nt, dtype=float)
+        phys['pore.capillary_pressure']=0.0
+        IP_1 = mp(network=self.net)
+        self.phase['pore.occupancy'] = False
+        self.phase['throat.occupancy'] = False
+        IP_1.settings['partial_saturation']=True
+        IP_1.settings['snap_off']=False
+        IP_1.setup(phase=self.phase,
+                   def_phase=self.def_phase)
+        inv_points = np.arange(0, 100, 1, dtype=float)
+        sat = np.zeros_like(inv_points)
+        tot_vol = (np.sum(self.net['pore.volume']) +
+                   np.sum(self.net['throat.volume']))
+        for i, Pc in enumerate(inv_points):
+            IP_1.reset()
+            IP_1.set_inlets(pores=self.inlets)    
+            IP_1.run(max_pressure=Pc)
+            IP_1.return_results()
+            Pinv_Pc = self.phase['pore.invasion_pressure']
+            Tinv_Pc = self.phase['throat.invasion_pressure']
+            sat[i] += np.sum(self.net['pore.volume'][Pinv_Pc<np.inf])
+            sat[i] += np.sum(self.net['throat.volume'][Tinv_Pc<np.inf])
+        assert sat.max()/tot_vol == 1.0
+
+            
 if __name__ == '__main__':
     t = MixedPercolationTest()
     t.setup_class()
