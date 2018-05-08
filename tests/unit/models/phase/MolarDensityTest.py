@@ -14,21 +14,21 @@ class MolarDensityTest:
         self.phase['pore.critical_pressure'] = 3771000.0  # Pa
 
     def test_standard(self):
-        f = op.models.phase.molar_density.standard
+        f = op.models.phases.molar_density.standard
         self.phase.add_model(propname='pore.molar_density', model=f)
         self.phase.regenerate_models()
         assert_approx_equal(self.phase['pore.molar_density'].mean(),
                             40.8934707)
 
     def test_ideal_gas(self):
-        f = op.models.phase.molar_density.ideal_gas
+        f = op.models.phases.molar_density.ideal_gas
         self.phase.add_model(propname='pore.molar_density', model=f)
         self.phase.regenerate_models()
         assert_approx_equal(self.phase['pore.molar_density'].mean(),
                             40.8945824)
 
     def test_vanderwaals(self):
-        f = op.models.phase.molar_density.vanderwaals
+        f = op.models.phases.molar_density.vanderwaals
         self.phase.add_model(propname='pore.molar_density', model=f)
         self.phase.regenerate_models()
         assert_approx_equal(self.phase['pore.molar_density'].mean(),
