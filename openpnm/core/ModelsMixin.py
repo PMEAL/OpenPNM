@@ -1,4 +1,5 @@
 import inspect
+import networkx as nx
 from openpnm.core import Workspace, logging
 from openpnm.utils.misc import PrintableDict
 ws = Workspace()
@@ -7,6 +8,19 @@ logger = logging.getLogger()
 
 class ModelsDict(PrintableDict):
 
+    def dependency_tree2(self):
+        dtree = nx.DiGraph()
+        for propname in self.keys():
+            dtree.add_node(propname)
+            for dependency in self[propname].values():
+                if dependency in list(self.keys()):
+                    dtree.add_edge(dependency, propname)
+        cycles = list(nx.simple_cycles(dtree))
+        if cycles:
+            raise Exception('Cyclic dependency found: ' + ' -> '.join(
+                            cycles[0] + [cycles[0][0]]))
+        return list(nx.algorithms.topological_sort(dtree))
+    
     def dependency_tree(self):
 
         class Node:
