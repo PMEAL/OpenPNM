@@ -30,8 +30,8 @@ class GenericNetwork(Base, ModelsMixin):
                 logger.error('Wrong size for throat conns!')
             else:
                 if sp.any(value[:, 0] > value[:, 1]):
-                    logger.warning('Converting throat.conns to be upper \
-                                    triangular')
+                    logger.warning('Converting throat.conns to be upper ' +
+                                   'triangular')
                     value = sp.sort(value, axis=1)
         if self.project:
             for item in self.project.geometries().values():

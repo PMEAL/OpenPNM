@@ -55,8 +55,6 @@ class GenericIO():
             if (net[item].dtype is int) and (net[item].max() == 1):
                 net[item] = net[item].astype(bool)
             # Write data to network object
-            if item in network:
-                logger.warning('\''+item+'\' already present...overwriting')
             network.update({item: net[item]})
 
         network._gen_ids()
