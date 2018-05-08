@@ -224,27 +224,24 @@ class OrdinaryPercolation(GenericAlgorithm):
         if self.settings['mode'] == 'bond':
             self['throat.entry_pressure'] = \
                 phase[self.settings['throat_entry_pressure']]
-            if type(points) is int:
-                if start is None:
-                    start = sp.amin(self['throat.entry_pressure'])*0.95
-                if stop is None:
-                    stop = sp.amax(self['throat.entry_pressure'])*1.05
-                points = sp.logspace(start=sp.log10(max(1, start)),
-                                     stop=sp.log10(stop),
-                                     num=points)
+            if start is None:
+                start = sp.amin(self['throat.entry_pressure'])*0.95
+            if stop is None:
+                stop = sp.amax(self['throat.entry_pressure'])*1.05
+
         elif self.settings['mode'] == 'site':
             self['pore.entry_pressure'] = \
                 phase[self.settings['pore_entry_pressure']]
-            if type(points) is int:
-                if start is None:
-                    start = sp.amin(self['pore.entry_pressure'])*0.95
-                if stop is None:
-                    stop = sp.amax(self['pore.entry_pressure'])*1.05
-                points = sp.logspace(start=sp.log10(max(1, start)),
-                                     stop=sp.log10(stop),
-                                     num=points)
+            if start is None:
+                start = sp.amin(self['pore.entry_pressure'])*0.95
+            if stop is None:
+                stop = sp.amax(self['pore.entry_pressure'])*1.05
         else:
             raise Exception('Percolation type has not been set')
+        if type(points) is int:
+            points = sp.logspace(start=sp.log10(max(1, start)),
+                                 stop=sp.log10(stop), num=points)
+
         # Ensure pore inlets have been set IF access limitations is True
         if self.settings['access_limited']:
             if sp.sum(self['pore.inlets']) == 0:
@@ -321,24 +318,3 @@ class OrdinaryPercolation(GenericAlgorithm):
         inv_phase['pore.occupancy'] = sp.array(Psatn, dtype=float)
         inv_phase['throat.occupancy'] = sp.array(Tsatn, dtype=float)
         return inv_phase
-
-    def _get_data(self, applied_pressure, Pvol, Tvol):
-        r"""
-        Obtain the numerical values of the calculated percolation curve
-
-        Returns
-        -------
-        A named-tuple containing arrays of applied capillary pressures and
-        invading phase saturation.
-
-        """
-        # Find cumulative filled volume at each applied capillary pressure
-        # Calculate filled pore volumes
-        p_inv = self['pore.invasion_pressure'] <= applied_pressure
-        Vp = sp.zeros_like(Pvol)
-        Vp[p_inv] = Pvol[p_inv]
-        # Calculate filled throat volumes
-        t_inv = self['throat.invasion_pressure'] <= applied_pressure
-        Vt = sp.zeros_like(Tvol)
-        Vt[t_inv] = Tvol[t_inv]
-        return Vp, Vt

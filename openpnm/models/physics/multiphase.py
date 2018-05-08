@@ -66,8 +66,9 @@ def conduit_conductance(target, throat_conductance,
     return value[Ts]
 
 
-def late_throat_filling(target, Pc, Swp_star=0.11, eta=3,
-                        throat_entry_pressure='throat.capillary_pressure'):
+def late_throat_filling(target, throat_pressure='throat.pressure',
+                        throat_entry_pressure='throat.capillary_pressure',
+                        Swp_star=0.11, eta=3):
     r"""
     Calculates the fraction of a throat filled with invading fluid based on
     the capillary pressure in the system.  The invading phase volume is
@@ -78,7 +79,7 @@ def late_throat_filling(target, Pc, Swp_star=0.11, eta=3,
 
     Parameters
     ----------
-    Pc : float
+    throat_pressure : string
         The capillary pressure in the non-wetting phase (Pc > 0)
 
     eta : float
@@ -97,15 +98,21 @@ def late_throat_filling(target, Pc, Swp_star=0.11, eta=3,
     non-wetting phase.
 
     """
+    phase = target.project.find_phase(target)
     Swp = sp.ones(target.Nt,)
-    if Pc > 0:
+    if throat_pressure not in phase.keys():
+        Pc = phase.interpolate_data('pore.'+throat_pressure.split('.')[1])
+    else:
+        Pc = phase[throat_pressure]
+    if sp.all(Pc > 0):
         Swp = Swp_star*(target[throat_entry_pressure]/Pc)**eta
     values = (1 - Swp)
     return values
 
 
-def late_pore_filling(target, Pc, Swp_star=0.2, eta=3,
-                      throat_entry_pressure='throat.capillary_pressure'):
+def late_pore_filling(target, pore_pressure='pore.pressure',
+                      throat_entry_pressure='throat.capillary_pressure',
+                      Swp_star=0.2, eta=3):
     r"""
     Calculates the fraction of a pore filled with invading fluid based on
     the capillary pressure in the system.  The invading phase volume is
@@ -116,7 +123,7 @@ def late_pore_filling(target, Pc, Swp_star=0.2, eta=3,
 
     Parameters
     ----------
-    Pc : float`
+    throat_pressure : string
         The capillary pressure in the non-wetting phase (Pc > 0)
 
     eta : float
@@ -141,7 +148,8 @@ def late_pore_filling(target, Pc, Swp_star=0.2, eta=3,
                                     throat_prop=throat_entry_pressure,
                                     mode='min')
     Swp = sp.ones(target.Np,)
-    if Pc > 0:
+    Pc = phase[pore_pressure]
+    if sp.all(Pc > 0):
         Swp = Swp_star*(pc_star/Pc)**eta
     values = (1 - Swp)
     return values

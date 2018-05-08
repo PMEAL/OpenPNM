@@ -8,7 +8,10 @@ logger = logging.getLogger()
 default_settings = {'pore_volume': 'pore.volume',
                     'throat_volume': 'throat.volume',
                     'mode': 'bond',
-                    'access_limited': True}
+                    'access_limited': True,
+                    'throat_entry_pressure': 'throat.capillary_pressure',
+                    'late_pore_filling': '',
+                    'late_throat_filling': ''}
 
 
 class Porosimetry(OrdinaryPercolation):
@@ -25,7 +28,9 @@ class Porosimetry(OrdinaryPercolation):
               phase=None,
               throat_entry_pressure='',
               pore_volume='',
-              throat_volume=''):
+              throat_volume='',
+              late_pore_filling='',
+              late_throat_filling=''):
         r"""
         Used to specify necessary arguments to the simulation.  This method is
         useful for resetting the algorithm or applying more explicit control.
@@ -42,13 +47,21 @@ class Porosimetry(OrdinaryPercolation):
             'throat.capillary_pressure'.  This is only accessed if the ``mode``
             is set to bond percolation.
 
-        'pore_volume' : string
+        pore_volume : string
             The dictionary key containing the pore volume information. The
             default is 'pore.volume'.
 
-        'throat_volume' : string
+        throat_volume : string
             The dictionary key containing the throat volume information.  The
             default is 'throat.volume'.
+
+        late_pore_filling : string
+            The name of the model used to determine partial pore filling as
+            a function of applied pressure.
+
+        late_throat_filling : string
+            The name of the model used to determine partial throat filling as
+            a function of applied pressure.
 
         """
         if phase:
@@ -61,6 +74,10 @@ class Porosimetry(OrdinaryPercolation):
             self.settings['pore_volume'] = pore_volume
         if throat_volume:
             self.settings['throat_volume'] = throat_volume
+        if late_pore_filling:
+            self.settings['late_pore_filling'] = late_pore_filling
+        if late_throat_filling:
+            self.settings['late_throat_filling'] = late_throat_filling
 
     def run(self, points=25, start=None, stop=None):
         if self.settings['mode'] is not 'bond':
@@ -82,6 +99,7 @@ class Porosimetry(OrdinaryPercolation):
 
         """
         net = self.project.network
+        phase = self.project.find_phase(self)
         # Infer list of applied capillary pressures
         points = np.unique(self['throat.invasion_pressure'])
         # Add a low pressure point to the list to improve graph
@@ -99,10 +117,26 @@ class Porosimetry(OrdinaryPercolation):
         for p in points:
             # Calculate filled pore volumes
             p_inv = self['pore.invasion_pressure'] <= p
-            Vp = np.sum(Pvol[p_inv])
+            lpf = 1
+            if self.settings['late_pore_filling']:
+                # Set pressure on phase to current capillary pressure
+                phase['pore.pressure'] = p
+                # Regenerate corresponding physics model
+                phase.regenerate_models(self.settings['late_pore_filling'])
+                # Fetch partial filling fraction from phase object (0->1)
+                lpf = phase[self.settings['late_pore_filling']]
+            Vp = np.sum((Pvol*lpf)[p_inv])
             # Calculate filled throat volumes
             t_inv = self['throat.invasion_pressure'] <= p
-            Vt = np.sum(Tvol[t_inv])
+            ltf = 1
+            if self.settings['late_throat_filling']:
+                # Set pressure on phase to current capillary pressure
+                phase['throat.pressure'] = p
+                # Regenerate corresponding physics model
+                phase.regenerate_models(self.settings['late_pore_filling'])
+                # Fetch partial filling fraction from phase object (0->1)
+                ltf = phase[self.settings['late_pore_filling']]
+            Vt = np.sum((Tvol*ltf)[t_inv])
             Vnwp_p.append(Vp)
             Vnwp_t.append(Vt)
             Vnwp_all.append(Vp + Vt)
@@ -119,16 +153,10 @@ class Porosimetry(OrdinaryPercolation):
 
         """
         # Begin creating nicely formatted plot
-        data = self.get_intrusion_data()
-        xdata = data.Pcap
-        ydata = data.Snwp
+        x, y = self.get_intrusion_data()
         fig = plt.figure()
-        plt.semilogx(xdata, ydata, 'ko-')
+        plt.semilogx(x, y, 'ko-')
         plt.ylabel('Invading Phase Saturation')
         plt.xlabel('Capillary Pressure')
         plt.grid(True)
-        if np.amax(xdata) <= 1:
-            plt.xlim(xmin=0, xmax=1)
-        if np.amax(ydata) <= 1:
-            plt.ylim(ymin=0, ymax=1)
         return fig
