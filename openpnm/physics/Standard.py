@@ -58,7 +58,7 @@ class Standard(GenericPhysics):
                            model=mods.hydraulic_conductance.hagen_poiseuille)
         if 'pore.diffusivity' in phase.keys():
             self.add_model(propname='throat.diffusive_conductance',
-                           model=mods.diffusive_conductance.bulk_diffusion)
+                           model=mods.diffusive_conductance.ordinary_diffusion)
         if 'pore.surface_tension' in phase.keys() and \
            'pore.contact_angle' in phase.keys():
             self.add_model(propname='throat.capillary_pressure',

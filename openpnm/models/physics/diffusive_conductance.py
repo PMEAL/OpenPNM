@@ -2,15 +2,15 @@ import openpnm as op
 import scipy as _sp
 
 
-def bulk_diffusion(target, molar_density='pore.molar_density',
-                   pore_diffusivity='pore.diffusivity',
-                   throat_diffusivity='throat.diffusivity',
-                   pore_area='pore.area',
-                   pore_diameter='pore.diameter',
-                   throat_area='throat.area',
-                   throat_length='throat.length',
-                   shape_factor='throat.shape_factor',
-                   calc_pore_len=False):
+def ordinary_diffusion(target, molar_density='pore.molar_density',
+                       pore_diffusivity='pore.diffusivity',
+                       throat_diffusivity='throat.diffusivity',
+                       pore_area='pore.area',
+                       pore_diameter='pore.diameter',
+                       throat_area='throat.area',
+                       throat_length='throat.length',
+                       shape_factor='throat.shape_factor',
+                       calc_pore_len=False):
     r"""
     Calculate the diffusive conductance of conduits in network, where a
     conduit is ( 1/2 pore - full throat - 1/2 pore ) based on the areas

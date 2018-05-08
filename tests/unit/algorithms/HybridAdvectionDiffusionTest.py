@@ -22,7 +22,7 @@ class HybridAdvectionDiffusionTest:
         self.phys.add_model(propname='throat.hydraulic_conductance',
                             model=mod1, viscosity='throat.viscosity',
                             regen_mode='normal')
-        mod2 = op.models.physics.diffusive_conductance.bulk_diffusion
+        mod2 = op.models.physics.diffusive_conductance.ordinary_diffusion
         self.phys.add_model(propname='throat.diffusive_conductance',
                             model=mod2, regen_mode='normal')
 

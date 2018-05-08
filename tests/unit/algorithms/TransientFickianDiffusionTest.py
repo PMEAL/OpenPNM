@@ -18,7 +18,7 @@ class TransientFickianDiffusionTest:
         self.phys = op.physics.GenericPhysics(network=self.net,
                                               phase=self.phase,
                                               geometry=self.geo)
-        mod = op.models.physics.diffusive_conductance.bulk_diffusion
+        mod = op.models.physics.diffusive_conductance.ordinary_diffusion
         self.phys.add_model(propname='throat.diffusive_conductance',
                             model=mod, regen_mode='normal')
 
