@@ -50,7 +50,6 @@ class GenericNetwork(Base, ModelsMixin):
         # Now get values if present, or regenerate them
         vals = self.get(key)
         if vals is None:  # Invoke interleave data
-            logger.debug(key + ' not on Network, check on Geometries')
             geoms = self.project.geometries().values()
             vals = self._interleave_data(key, geoms)
         return vals

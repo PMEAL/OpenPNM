@@ -138,7 +138,6 @@ class ModelsMixin():
         else:
             try:
                 self[prop] = model(target=self, **kwargs)
-                logger.debug('Regnerating model: ' + prop)
             except KeyError:
                 logger.warning(prop+' was not run due to missing dependencies')
                 self.models[prop]['regen_mode'] = 'deferred'
