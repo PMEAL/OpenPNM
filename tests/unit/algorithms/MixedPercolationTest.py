@@ -168,7 +168,7 @@ class MixedPercolationTest:
         phys = self.phys
         phys['throat.capillary_pressure']=np.arange(0, net.Nt, dtype=float)
         phys['pore.capillary_pressure']=0.0
-        dat_m = self.run_mp(False, False, False)
+        dat_o = self.run_mp(False, False, False)
         # Sequential w. partial
         T = 10
         [P1, P2] = self.net['throat.conns'][T]
@@ -176,11 +176,11 @@ class MixedPercolationTest:
         self.phase['throat.occupancy'] = False
         self.phase['pore.occupancy'][P1] = True
         self.phase['pore.occupancy'][P2] = True
-        dat_n = self.run_mp(False, True, False, True)
+        dat_p = self.run_mp(False, True, False, True)
         assert self.phase['pore.invasion_pressure'][P1] == -np.inf
         assert self.phase['pore.invasion_pressure'][P2] == -np.inf
         assert self.phase['throat.invasion_pressure'][T] == -np.inf
-        assert ~np.all(dat_m[1]-dat_n[1]==0)
+        assert ~np.all(dat_o[1]-dat_p[1]==0)
 
     def test_apply_flow_rate(self):
         t = self
