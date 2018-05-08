@@ -56,7 +56,6 @@ class GenericNetwork(Base, ModelsMixin):
 
     def _gen_ids(self):
         if ('pore._id' not in self.keys()):
-            logger.info('Generating pore IDs, please wait')
             self['pore._id'] = [str(uuid.uuid4()) for i in self.Ps]
         else:
             IDs = super().__getitem__('pore._id')
@@ -67,7 +66,6 @@ class GenericNetwork(Base, ModelsMixin):
                 IDs[inds] = temp
                 self['pore._id'] = IDs
         if ('throat._id' not in self.keys()):
-            logger.info('Generating throat IDs, please wait')
             self['throat._id'] = [str(uuid.uuid4()) for i in self.Ts]
         else:
             IDs = super().__getitem__('throat._id')
@@ -108,16 +106,13 @@ class GenericNetwork(Base, ModelsMixin):
         """
         # Retrieve existing matrix if available
         if fmt in self._am.keys():
-            logger.info('Desired adjacency matrix already present')
             am = self._am[fmt]
         elif self._am.keys():
-            logger.info('Desired adjacency matrix not present, converting...')
             am = self._am[list(self._am.keys())[0]]
             tofmt = getattr(am, 'to'+fmt)
             am = tofmt()
             self._am[fmt] = am
         else:
-            logger.info('No Adjacency Matrix not present, building...')
             am = self.create_adjacency_matrix(weights=self.Ts, fmt=fmt)
             self._am[fmt] = am
         return am

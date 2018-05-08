@@ -103,7 +103,6 @@ class Base(dict):
         if validate:
             self.project._validate_name(name)
         if self._name is not None:
-            logger.info('Changing the name of '+self.name+' to '+name)
             # Rename any label arrays in other objects
             for item in self.project:
                 if 'pore.'+self.name in item.keys():

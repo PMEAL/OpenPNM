@@ -22,7 +22,6 @@ class Dispersion(ReactiveTransport):
     '''
     def __init__(self, settings={}, **kwargs):
         super().__init__(**kwargs)
-        logger.info('Create ' + self.__class__.__name__ + ' Object')
         self.settings.update({'quantity': 'pore.mole_fraction',
                               'hydraulic_conductance':
                                   'throat.hydraulic_conductance',

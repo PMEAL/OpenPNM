@@ -364,7 +364,6 @@ class Drainage(GenericAlgorithm):
         """
         # If no invasion points are given then generate some
         if inv_pressures is None:
-            logger.info('Generating list of invasion pressures')
             min_p = sp.amin(self['throat.entry_pressure']) * 0.98  # nudge down
             max_p = sp.amax(self['throat.entry_pressure']) * 1.02  # bump up
             inv_points = sp.logspace(sp.log10(min_p),
@@ -390,7 +389,6 @@ class Drainage(GenericAlgorithm):
             logger.info('Applying capillary pressure: ' + str(inv_val))
             self._apply_percolation(inv_val)
             if self._trapping:
-                logger.info('Checking for trapping')
                 self._check_trapping(inv_val)
 
         # Find invasion sequence values (to correspond with IP algorithm)
