@@ -80,8 +80,8 @@ class ModelsTest:
         pn.add_model(propname='pore.chicken', model=chicken)
         pn.add_model(propname='pore.egg', model=egg)
 
-        with ShouldRaise(Exception('Circular reference detected: pore.egg'+
-                                   ' -> pore.chicken')):
+        with ShouldRaise(Exception('Cyclic dependency found: pore.egg ->' +
+                                   ' pore.chicken -> pore.egg')):
             pn.models.dependency_tree()
         pn.remove_model('pore.chicken')
         pn.remove_model('pore.egg')
@@ -102,8 +102,8 @@ class ModelsTest:
         pn.add_model(propname='pore.scissors', model=scissors)
         pn.add_model(propname='pore.rock', model=rock)
 
-        with ShouldRaise(Exception('Circular reference detected: pore.scissors'+
-                                   ' -> pore.paper')):
+        with ShouldRaise(Exception('Cyclic dependency found: pore.scissors ->'+
+                                   ' pore.rock -> pore.paper -> pore.scissors')):
             pn.models.dependency_tree()
 
 if __name__ == '__main__':

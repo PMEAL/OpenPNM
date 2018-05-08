@@ -8,7 +8,10 @@ logger = logging.getLogger()
 
 class ModelsDict(PrintableDict):
 
-    def dependency_tree2(self):
+    def dependency_tree(self):
+        r'''
+        Function to return models with dependencies first
+        '''
         dtree = nx.DiGraph()
         for propname in self.keys():
             dtree.add_node(propname)
@@ -20,52 +23,7 @@ class ModelsDict(PrintableDict):
             raise Exception('Cyclic dependency found: ' + ' -> '.join(
                             cycles[0] + [cycles[0][0]]))
         return list(nx.algorithms.topological_sort(dtree))
-    
-    def dependency_tree(self):
 
-        class Node:
-            def __init__(self, name):
-                self.name = name
-                self.edges=[]
-
-            def addEdge(self, node):
-                self.edges.append(node)
-
-        tree = {}
-        # Gather all props and make into nodes with deps
-        for propname in self.keys():
-            if propname not in list(tree.keys()):
-                tree[propname] = Node(propname)
-            kwargs = self[propname].copy()
-            kwargs.pop('model')
-            kwargs.pop('regen_mode', None)
-            for dependency in kwargs.values():
-                if dependency in list(self.keys()):
-                    if dependency not in list(tree.keys()):
-                        tree[dependency] = Node(dependency)
-                    tree[propname].addEdge(tree[dependency])
-
-        def dep_resolve(node, resolved, unresolved):
-            r'''
-            Function to recursively resolve dependencies
-            '''
-            unresolved.append(node)
-            for edge in node.edges:
-                if edge not in resolved:
-                    if edge in unresolved:
-                        raise Exception('Circular reference detected: %s -> %s'
-                                        % (node.name, edge.name))
-                        break
-                    dep_resolve(edge, resolved, unresolved)
-            resolved.append(node)
-            unresolved.remove(node)
-
-        resolved = []
-        for node in tree.values():
-            if node not in resolved:
-                dep_resolve(node, resolved, [])
-
-        return [node.name for node in resolved]
 
     def __str__(self):
         horizontal_rule = '―' * 78
