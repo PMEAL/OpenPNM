@@ -78,13 +78,10 @@ class ModelsMixin():
         if model.__defaults__:
             vals = list(inspect.getargspec(model).defaults)
             keys = inspect.getargspec(model).args[-len(vals):]
-            # Put defaults into dict_
-            for k, v in zip(keys, vals):
-                # Skip if argument was given in kwargs
-                if k not in kwargs:
+            for k, v in zip(keys, vals):  # Put defaults into kwargs
+                if k not in kwargs:  # Skip if argument was given in kwargs
                     kwargs.update({k: v})
-        # Store all keyword argumnents in model
-        self.models[propname] = kwargs
+        self.models[propname] = kwargs  # Store all keyword argumnents in model
         # Regenerate model values if necessary
         if regen_mode not in ['deferred']:
             self._regen(propname)
@@ -108,6 +105,13 @@ class ModelsMixin():
         """
         if type(propnames) is str:  # Convert string to list if necessary
             propnames = [propnames]
+
+        if propnames is None:  # If no props given, then regenerate them all
+            propnames = self.models.dependency_tree()
+            # If some props are to be excluded, remove them from list
+            if len(exclude) > 0:
+                propnames = [i for i in propnames if i not in exclude]
+
         # Check if any propnames are not on self, deal with separately
         self_models = self.models.dependency_tree()
         foreign_models = set(propnames).difference(set(self_models))
@@ -122,14 +126,10 @@ class ModelsMixin():
                         geom.regenerate_models(propnames)
             # Remove any foreign models from given list, and proceed
             propnames = set(propnames).difference(foreign_models)
-        if propnames is None:  # If no props given, then regenerate them all
-            propnames = self.models.dependency_tree()
-            # If some props are to be excluded, remove them from list
-            if len(exclude) > 0:
-                propnames = [i for i in propnames if i not in exclude]
-        else:
-            # Re-order given propnames according to dependency tree
-            propnames = [i for i in self_models if i in propnames]
+
+        # Re-order given propnames according to dependency tree
+        propnames = [i for i in self_models if i in propnames]
+
         # Scan through list of propnames and regenerate each one
         for item in propnames:
             self._regen(item)
