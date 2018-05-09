@@ -69,26 +69,3 @@ class Standard(GenericPhysics):
         if 'pore.electrical_conductivity' in phase.keys():
             self.add_model(propname='throat.electrical_conductance',
                            model=mods.electrical_conductance.series_resistors)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
