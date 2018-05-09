@@ -81,7 +81,6 @@ class ModelsDict(PrintableDict):
                                font_weight='bold')
         return fig
 
-
     def __str__(self):
         horizontal_rule = '―' * 78
         lines = [horizontal_rule]
