@@ -39,7 +39,8 @@ class MixedPercolationTest:
         self.inlets = [0]
         self.outlets = [24]
 
-    def run_mp(self, trapping, partial, snap, plot=False, flowrate=None):
+    def run_mp(self, trapping=False, partial=False, snap=False,
+               plot=True, flowrate=None):
         IP_1 = mp(network=self.net)
         IP_1.settings['partial_saturation']=partial
         IP_1.settings['snap_off']=snap

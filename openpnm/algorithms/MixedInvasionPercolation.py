@@ -96,7 +96,7 @@ class MixedInvasionPercolation(GenericPercolation):
         self._interface_Ts = np.zeros(self.Nt, dtype=bool)
         self._interface_Ps = np.zeros(self.Np, dtype=bool)
 
-    def set_inlets(self, pores=None, clusters=None, starting_sequence=-1):
+    def set_inlets(self, pores=None, clusters=None):
         r"""
 
         Parameters
@@ -106,13 +106,6 @@ class MixedInvasionPercolation(GenericPercolation):
         
         clusters : list of lists - can be just one list but each list defines
             a cluster of pores that share a common invasion pressure.
-        
-        starting_sequence: int default: -1
-            The invasion sequence to set the inlets at, -1 is helpful for
-            thresholding from a freshly started simulation. Other numbers may
-            be used for starting from a partially saturated state which may or
-            may not have been determined from running this algorithm multiple
-            times.
             
         Like Basic Invasion Percolation a queue of 
         """
@@ -127,12 +120,11 @@ class MixedInvasionPercolation(GenericPercolation):
                          " setup method")
 
         self.queue = {}
-        inlet_inv_seq = starting_sequence
 
         for i, cluster in enumerate(clusters):
             self.queue[i] = []
             # Perform initial analysis on input pores
-            self['pore.invasion_sequence'][cluster] = inlet_inv_seq
+            self['pore.invasion_sequence'][cluster] = 0
             self['pore.cluster'][cluster] = i
             self['pore.invasion_pressure'][cluster] = -np.inf
             if np.size(cluster) > 1:
@@ -155,7 +147,7 @@ class MixedInvasionPercolation(GenericPercolation):
 
     def _add_ts2q(self, pore, queue):
         """
-        Helper method to add throats to the queue
+        Helper method to add throats to the cluster queue
         """
         net = self.project.network
         elem_type = 'throat'
@@ -177,7 +169,7 @@ class MixedInvasionPercolation(GenericPercolation):
 
     def _add_ps2q(self, throat, queue):
         """
-        Helper method to add pores to the queue
+        Helper method to add pores to the cluster queue
         """
         net = self.project.network
         elem_type = 'pore'
@@ -203,8 +195,9 @@ class MixedInvasionPercolation(GenericPercolation):
 
         Parameters
         ----------
-        n_steps : int
-            The number of throats to invaded during this step
+        max_pressure : float
+            The maximum pressure applied to the invading cluster. Any pores and
+            throats with entry pressure above this value will not be invaded.
 
         """
         if 'throat.entry_pressure' not in self.keys():
@@ -217,10 +210,12 @@ class MixedInvasionPercolation(GenericPercolation):
         if len(self.queue.items()) == 0:
             logger.warn('queue is empty, this network is fully invaded')
             return
-
+        # track whether each cluster has reached the maximum pressure
         self.max_p_reached = [False]*len(self.queue.items())
-        self.count = -1
+        # starting invasion sequence
+        self.count = np.zeros(len(self.queue.items()))
         self.invasion_running = [True]*len(self.queue.items())
+        # highest pressure reached so far - used for porosimetry curve
         self.high_Pc = np.ones(len(self.queue.items()))*-np.inf
         outlets = self['pore.outlets']
         terminate_clusters = np.sum(outlets) > 0
@@ -260,13 +255,13 @@ class MixedInvasionPercolation(GenericPercolation):
             elem_cluster = elem_cluster.astype(int)
             # Cluster is the uninvaded cluster
             if elem_cluster == -1:
-                self.count += 1
+                self.count[c_num] += 1
                 # Record highest Pc cluster has reached
                 if self.high_Pc[c_num] < pressure:
                     self.high_Pc[c_num] = pressure
                 # The newly invaded element is available for
                 # invasion
-                self[elem_type+'.invasion_sequence'][elem_id] = self.count
+                self[elem_type+'.invasion_sequence'][elem_id] = self.count[c_num]
                 self[elem_type+'.cluster'][elem_id] = c_num
                 self[elem_type+'.invasion_pressure'][elem_id] = self.high_Pc[c_num]
                 if elem_type == 'throat':
@@ -522,7 +517,6 @@ class MixedInvasionPercolation(GenericPercolation):
         Also creates 2 boolean arrays Np and Nt long called '<element>.trapped'
         """
         net = self.project.network
-        inlets = self['pore.inlets']
         outlets = self['pore.outlets']
         if np.sum(outlets) == 0:
             raise Exception('Outlets must be set using the set_outlets method' +
