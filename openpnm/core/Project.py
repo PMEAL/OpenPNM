@@ -487,6 +487,45 @@ class Project(list):
             health['undefined_throats'] = np.where(Ttemp == 0)[0].tolist()
         return health
 
+    def _regenerate_models(self, objs=[], propnames=[]):
+        r"""
+        Can be used to regenerate models across all objects in the project.
+
+        Parameters
+        ----------
+        objs : list of OpenPNM objects
+            Can be used to specify which specific objects to regenerate.  The
+            default is to regenerate all objects.  If a subset of objects is
+            given, this function ensure they are generated in a sensible order
+            such as any phases are done before any physics objects.
+
+        propnames : list of strings, or string
+            The specific model to regenerate.  If none are given then ALL
+            models on all objects are regenerated.  If a subset is given,
+            then only object that have a corresponding model are regenerated,
+            to avoid any problems.  This means that a single model can be
+            given, without specifying the objects.
+
+        """
+        objs = list(objs)
+        if objs == []:
+            objs = self
+        if type(propnames) is str:
+            propnames = [propnames]
+        # Sort objs in the correct order (geom, phase, phys)
+        net = [i for i in objs if i is self.network]
+        geoms = [i for i in objs if i in self.geometries().values()]
+        phases = [i for i in objs if i in self.phases().values()]
+        phys = [i for i in objs if i in self.physics().values()]
+        objs = net + geoms + phases + phys
+        for obj in objs:
+            if len(propnames):
+                for model in propnames:
+                    if model in obj.models.keys():
+                        obj.regenerate_models(propnames=model)
+            else:
+                obj.regenerate_models()
+
 
 class Grid(dict):
 
