@@ -81,15 +81,14 @@ class MixedInvasionPercolation(GenericPercolation):
         self['pore.residual'] = False
         self['throat.residual'] = False
         for elem in ['pore', 'throat']:
-            for prop in ['inv_sat',
+            for prop in ['invasion_saturation',
                          'occupancy',
                          'action']:
                 try:
                     del self[elem+'.'+prop]
                 except:
                     pass
-            for prop in ['invasion_sequence',
-                         'cluster',
+            for prop in ['cluster',
                          'action']:
                 try:
                     self[elem+'.'+prop] = -1
@@ -351,11 +350,11 @@ class MixedInvasionPercolation(GenericPercolation):
                 self['pore.invasion_pressure']
             self._phase['throat.invasion_pressure'] = \
                 self['throat.invasion_pressure']
-        if "pore.inv_sat" in self.props():
-            self._phase['pore.inv_sat'] = \
-                self['pore.inv_sat']
-            self._phase['throat.inv_sat'] = \
-                self['throat.inv_sat']
+        if "pore.invasion_saturation" in self.props():
+            self._phase['pore.invasion_saturation'] = \
+                self['pore.invasion_saturation']
+            self._phase['throat.invasion_saturation'] = \
+                self['throat.invasion_saturation']
         if "pore.trapped" in self.labels():
             self._phase['pore.trapped'] = self['pore.trapped']
         if "pore.trapping_sequence" in self.props():
