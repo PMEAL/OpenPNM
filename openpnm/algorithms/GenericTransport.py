@@ -68,13 +68,12 @@ class GenericTransport(GenericAlgorithm):
         self._set_BC(pores=pores, bctype='value', bcvalues=values,
                      mode='merge')
 
-    def set_neumann_BC(self, pores, values):
+    def set_rate_BC(self, pores, values):
         r"""
-        Apply *Neumann-type* boundary conditons to the specified pore
-        locations. Neumann conditions technnically refer to the *gradient* of
-        the *quantity* (e.g. dP/dz), while in OpenPNM this means the flow-rate
-        of the quantity, which is the gradient multiplied by the conductance
-        (e.g n = g dP/dz).
+        Apply constant rate boundary conditons to the specified pore
+        locations. This is similar to a Neumann boundary condition, but is
+        slightly different since it's the conductance multiplied by the
+        gradient, while Neumann conditions specify just the gradient.
 
         Parameters
         ----------
@@ -91,8 +90,7 @@ class GenericTransport(GenericAlgorithm):
         The definition of ``quantity`` is specified in the algorithm's
         ``settings``, e.g. ``alg.settings['quentity'] = 'pore.pressure'``.
         """
-        self._set_BC(pores=pores, bctype='neumann', bcvalues=values,
-                     mode='merge')
+        self._set_BC(pores=pores, bctype='rate', bcvalues=values, mode='merge')
 
     def _set_BC(self, pores, bctype, bcvalues=None, mode='merge'):
         r"""
@@ -108,7 +106,7 @@ class GenericTransport(GenericAlgorithm):
             types can be one one of the following:
 
             - *'value'* : Specify the value of the quantity in each location
-            - *'neumann'* : Specify the flow rate into each location
+            - *'rate'* : Specify the flow rate into each location
 
         bcvalues : int or array_like
             The boundary value to apply, such as concentration or rate.  If
@@ -135,7 +133,7 @@ class GenericTransport(GenericAlgorithm):
 
         """
         # Hijack the parse_mode function to verify bctype argument
-        bctype = self._parse_mode(bctype, allowed=['value', 'neumann'],
+        bctype = self._parse_mode(bctype, allowed=['value', 'rate'],
                                   single=True)
         mode = self._parse_mode(mode, allowed=['merge', 'overwrite', 'remove'],
                                 single=True)
@@ -166,9 +164,8 @@ class GenericTransport(GenericAlgorithm):
             pores = self.Ps
         if 'pore.bc_value' in self.keys():
             self['pore.bc_value'][pores] = np.nan
-        if 'pore.neumann' in self.keys():
-            self['pore.neumann'][pores] = False
-            self['pore.neumann_value'][pores] = np.nan
+        if 'pore.rate' in self.keys():
+            self['pore.bc_rate'][pores] = sp.nan
 
     def _build_A(self, force=False):
         r"""
@@ -242,10 +239,10 @@ class GenericTransport(GenericAlgorithm):
         adding values to the *A* and *b* matrices.
 
         """
-        if 'pore.neumann' in self.keys():
+        if 'pore.bc_rate' in self.keys():
             # Update b
-            ind = self['pore.neumann']
-            self.b[ind] = self['pore.neumann_value'][ind]
+            ind = np.isfinite(self['pore.bc_rate'])
+            self.b[ind] = self['pore.bc_rate'][ind]
         if 'pore.bc_value' in self.keys():
             f = np.amax(np.absolute(self.A.data))
             # Update b

@@ -9,6 +9,6 @@ phys = op.physics.Standard(network=pn, phase=air, geometry=geom)
 alg = op.algorithms.GenericTransport(network=pn)
 alg.setup(phase=air, quantity='pore.mole_fraction',
           conductance='throat.diffusive_conductance')
-alg.set_neumann_BC(pores=pn.pores('left'), values=1)
+alg.set_rate_BC(pores=pn.pores('left'), values=1)
 alg.set_value_BC(pores=pn.pores('right'), values=0)
 alg.run()

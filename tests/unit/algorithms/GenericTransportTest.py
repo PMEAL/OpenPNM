@@ -55,12 +55,12 @@ class GenericTransportTest:
         y = sp.unique(sp.around(alg['pore.mole_fraction'], decimals=3))
         assert sp.all(x == y)
 
-    def test_one_value_one_neumann(self):
+    def test_one_value_one_rate(self):
         alg = op.algorithms.GenericTransport(network=self.net,
                                              phase=self.phase)
         alg.settings['conductance'] = 'throat.diffusive_conductance'
         alg.settings['quantity'] = 'pore.mole_fraction'
-        alg.set_neumann_BC(pores=self.net.pores('bottom'), values=1)
+        alg.set_rate_BC(pores=self.net.pores('bottom'), values=1)
         alg.set_value_BC(pores=self.net.pores('top'), values=0)
         alg.run()
         x = [0., 1., 2., 3., 4., 5., 6., 7., 8.]

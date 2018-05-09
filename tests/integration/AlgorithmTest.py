@@ -96,12 +96,12 @@ def test_Darcy_alg():
 #    outlets = pn.pores('top')
 #    P_out = 0  # Pa
 #    Q_in = 0.6667*(Lc**2)*divs[1]*divs[0]  # m^3/s
-#    alg1.set_neumann_BC(values=-Q_in, pores=inlets)
+#    alg1.set_rate_BC(values=-Q_in, pores=inlets)
 #    alg1.set_value_BC(values=P_out, pores=outlets)
 #    alg1.run()
 #    air.update(alg1.results())
 #    a = round(np.absolute(alg1.rate(outlets))[0], 16)
-#    b = round(np.absolute(np.sum(alg1['pore.neumann_value'][inlets])), 16)
+#    b = round(np.absolute(np.sum(alg1['pore.bc_rate'][inlets])), 16)
 #    assert a == b
 #
 #    alg2 = op.algorithms.StokesFlow(network=pn, phase=air)
