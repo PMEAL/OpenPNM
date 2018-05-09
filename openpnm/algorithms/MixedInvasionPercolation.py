@@ -74,6 +74,10 @@ class MixedInvasionPercolation(GenericPercolation):
         self['throat.invasion_pressure'] = np.inf
         self['pore.invasion_sequence'] = -1
         self['throat.invasion_sequence'] = -1
+        self['pore.invasion_saturation'] = -1
+        self['throat.invasion_saturation'] = -1
+        self['pore.cluster'] = -1
+        self['throat.cluster'] = -1
         self['pore.trapped'] = np.inf
         self['throat.trapped'] = np.inf
         self['pore.inlets'] = False
@@ -81,19 +85,12 @@ class MixedInvasionPercolation(GenericPercolation):
         self['pore.residual'] = False
         self['throat.residual'] = False
         for elem in ['pore', 'throat']:
-            for prop in ['invasion_saturation',
-                         'occupancy',
-                         'action']:
+            for prop in ['occupancy']:
                 try:
                     del self[elem+'.'+prop]
                 except:
                     pass
-            for prop in ['cluster',
-                         'action']:
-                try:
-                    self[elem+'.'+prop] = -1
-                except:
-                    pass
+
         # Masks for tracking pores and throats at the interface
         # Basically a quick way of getting to all the elements in the queues
         self._interface_Ts = np.zeros(self.Nt, dtype=bool)
@@ -140,9 +137,9 @@ class MixedInvasionPercolation(GenericPercolation):
             self['pore.invasion_pressure'][cluster] = -np.inf
             if np.size(cluster) > 1:
                 for elem_id in cluster:
-                    self._add_ts2q(elem_id, self.queue[i], action=0)
+                    self._add_ts2q(elem_id, self.queue[i])
             elif np.size(cluster) == 1:
-                self._add_ts2q(cluster, self.queue[i], action=0)
+                self._add_ts2q(cluster, self.queue[i])
             else:
                 logger.warning("Some inlet clusters have no pores")
         if self.settings['snap_off']:
@@ -156,7 +153,7 @@ class MixedInvasionPercolation(GenericPercolation):
             self._def['pore.occupancy'] = True
             self._def['throat.occupancy'] = True
 
-    def _add_ts2q(self, pore, queue, action=-1):
+    def _add_ts2q(self, pore, queue):
         """
         Helper method to add throats to the queue
         """
@@ -176,11 +173,9 @@ class MixedInvasionPercolation(GenericPercolation):
                 data.append(T)
                 # Element Type (Pore of Throat)
                 data.append(elem_type)
-                # Invasion Action - 0=Burst, 1=Coop, 2=Snap, 3=Touch??
-                data.append(action)
                 hq.heappush(queue, data)
 
-    def _add_ps2q(self, throat, queue, action=-1):
+    def _add_ps2q(self, throat, queue):
         """
         Helper method to add pores to the queue
         """
@@ -200,8 +195,6 @@ class MixedInvasionPercolation(GenericPercolation):
                 data.append(P)
                 # Element Type (Pore of Throat)
                 data.append(elem_type)
-                # Invasion Action - 0=Burst, 1=Coop, 2=Snap, 3=Touch??
-                data.append(action)
                 hq.heappush(queue, data)
 
     def run(self, max_pressure=None):
@@ -255,7 +248,7 @@ class MixedInvasionPercolation(GenericPercolation):
 
     def _invade_cluster(self, c_num):
         queue = self.queue[c_num]
-        pressure, elem_id, elem_type, action = hq.heappop(queue)
+        pressure, elem_id, elem_type = hq.heappop(queue)
         if elem_type == 'pore':
             self._interface_Ps[elem_id] = False
         else:
@@ -276,11 +269,10 @@ class MixedInvasionPercolation(GenericPercolation):
                 self[elem_type+'.invasion_sequence'][elem_id] = self.count
                 self[elem_type+'.cluster'][elem_id] = c_num
                 self[elem_type+'.invasion_pressure'][elem_id] = self.high_Pc[c_num]
-                self[elem_type+'.action'][elem_id] = action
                 if elem_type == 'throat':
-                    self._add_ps2q(elem_id, queue, action=0)
+                    self._add_ps2q(elem_id, queue)
                 elif elem_type == 'pore':
-                    self._add_ts2q(elem_id, queue, action=0)
+                    self._add_ts2q(elem_id, queue)
 #                    if self._coop_fill:
 #                        self._check_coop(elem_id, queue)
             # Element is part of existing cluster
@@ -648,7 +640,7 @@ class MixedInvasionPercolation(GenericPercolation):
             logger.info("Adding snap off pressures to queue")
             for T in net.throats():
                 if not np.isnan(Pc_snap_off[T]):
-                    hq.heappush(queue, [Pc_snap_off[T], T, 'throat', 2])
+                    hq.heappush(queue, [Pc_snap_off[T], T, 'throat'])
         except:
             logger.warning("Phase " + self._phase.name + " doesn't have " +
                            "property " + snap_off)
@@ -671,7 +663,7 @@ class MixedInvasionPercolation(GenericPercolation):
                         str(np.sum(occ_Ps)) + " pores")
             self['pore.invasion_sequence'][occ_Ps] = 0
             for P in net.pores()[occ_Ps]:
-                self._add_ts2q(P, queue, action=0)
+                self._add_ts2q(P, queue)
                 self['pore.cluster'][P] = invading_cluster
                 self['pore.invasion_pressure'][P] = low_val
         if np.sum(occ_Ts) > 0:
@@ -702,9 +694,7 @@ class MixedInvasionPercolation(GenericPercolation):
             max_array[second_higher] = Ts[:, 1][second_higher]
             mPc = inv_Pc[max_array]
             mSeq = inv_seq[max_array]
-            mAct = self['pore.action'][max_array]
             mClu = self['pore.cluster'][max_array]
             self['throat.invasion_pressure'][isolated_Ts] = mPc[isolated_Ts]
             self['throat.invasion_sequence'][isolated_Ts] = mSeq[isolated_Ts]
-            self['throat.action'][isolated_Ts] = mAct[isolated_Ts]
             self['throat.cluster'][isolated_Ts] = mClu[isolated_Ts]
