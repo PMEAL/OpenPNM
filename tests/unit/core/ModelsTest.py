@@ -2,7 +2,7 @@ import openpnm as op
 import numpy as np
 import openpnm.models as mods
 import pytest
-from testfixtures import LogCapture, ShouldRaise
+from testfixtures import LogCapture
 
 
 class ModelsTest:
@@ -78,8 +78,7 @@ class ModelsTest:
         pn.add_model(propname='pore.chicken', model=chicken)
         pn.add_model(propname='pore.egg', model=egg)
 
-        with ShouldRaise(Exception('Cyclic dependency found: pore.egg ->' +
-                                   ' pore.chicken -> pore.egg')):
+        with pytest.raises(Exception):
             pn.models.dependency_list()
         pn.remove_model('pore.chicken')
         pn.remove_model('pore.egg')
