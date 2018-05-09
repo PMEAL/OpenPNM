@@ -40,7 +40,7 @@ class MixedInvasionPercolation(GenericPercolation):
                               'pore_entry_pressure': 'pore.capillary_pressure',
                               'throat_entry_pressure': 'throat.capillary_pressure',
                               'mode': 'mixed',
-                              'partial_saturation': False,
+                              'residual_saturation': False,
                               'snap_off': False})
 
     def setup(self, phase, def_phase):
@@ -138,8 +138,8 @@ class MixedInvasionPercolation(GenericPercolation):
         if self.settings['snap_off']:
             self._apply_snap_off()
 
-        if self.settings['partial_saturation']:
-            self._apply_partial_sat2()
+        if self.settings['residual_saturation']:
+            self._apply_residual_sat()
         else:
             self.invasion_running = [True]*len(self.queue)
 #        else:
@@ -647,39 +647,11 @@ class MixedInvasionPercolation(GenericPercolation):
         except:
             logger.warning("Phase " + self._phase.name + " doesn't have " +
                            "property " + snap_off)
-
-    def _apply_partial_sat(self):
-        r"""
-        Method to start invasion from a partially saturated state
-        """
-        net = self.project.network
-        invading_cluster = 0
-        queue = self.queue[invading_cluster]
-        occ_type = self._phase['pore.occupancy'].dtype
-        occupied = np.array([1], dtype=occ_type)
-        occ_Ps = self._phase['pore.occupancy'] == occupied
-        occ_Ts = self._phase['throat.occupancy'] == occupied
-        low_val = -np.inf
-        if np.sum(occ_Ps) > 0:
-            logger.info("Applying partial saturation to " +
-                        str(np.sum(occ_Ps)) + " pores")
-            self['pore.invasion_sequence'][occ_Ps] = 0
-            for P in net.pores()[occ_Ps]:
-                self._add_ts2q(P, queue)
-                self['pore.cluster'][P] = invading_cluster
-                self['pore.invasion_pressure'][P] = low_val
-        if np.sum(occ_Ts) > 0:
-            logger.info("Applying partial saturation to " +
-                        str(np.sum(occ_Ts)) + " throats")
-        self['throat.invasion_sequence'][occ_Ts] = 0
-        for T in net.throats()[occ_Ts]:
-            self['throat.cluster'][T] = invading_cluster
-            self['throat.invasion_pressure'][T] = low_val
     
-    def _apply_partial_sat2(self):
+    def _apply_residual_sat(self):
         r"""
-        Method to start invasion from a partially saturated state. Called after
-        inlets are set.
+        Method to start invasion in a network w. residual saturation.
+        Called after inlets are set.
         
         Looks at pore.occupancy on the phase only and treats inner throats, i.e.
         those that connect two pores in the cluster as invaded and outer ones
@@ -728,9 +700,6 @@ class MixedInvasionPercolation(GenericPercolation):
             Ts = net.find_neighbor_throats(pores=rPs,
                                            flatten=True,
                                            mode='exclusive_or')
-#            self['throat.cluster'][Ts] = -1
-#            self['throat.invasion_sequence'][Ts] = -1
-#            self['throat.invasion_pressure'][Ts] = np.inf
             for T in Ts:
                 data = []
                 # Pc

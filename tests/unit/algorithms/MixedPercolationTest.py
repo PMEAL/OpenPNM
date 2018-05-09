@@ -39,10 +39,10 @@ class MixedPercolationTest:
         self.inlets = [0]
         self.outlets = [Np*Np - 1]
 
-    def run_mp(self, trapping=False, partial=False, snap=False,
+    def run_mp(self, trapping=False, resdiual=False, snap=False,
                plot=False, flowrate=None):
         IP_1 = mp(network=self.net)
-        IP_1.settings['partial_saturation']=partial
+        IP_1.settings['residual_saturation']=resdiual
         IP_1.settings['snap_off']=snap
         IP_1.setup(phase=self.phase,
                    def_phase=self.def_phase)
@@ -164,7 +164,7 @@ class MixedPercolationTest:
         assert self.phase['throat.invasion_pressure'][T] == 0.5
         assert ~np.all(dat_m[1]-dat_n[1]==0)
 
-    def test_partial(self):
+    def test_residual(self):
         # Throats only
         # Sequential
         net = self.net
@@ -270,7 +270,7 @@ class MixedPercolationTest:
         phys['throat.capillary_pressure']=np.arange(0, net.Nt, dtype=float)
         phys['pore.capillary_pressure']=np.arange(0, net.Np, dtype=float)
         IP_1 = mp(network=self.net)
-        IP_1.settings['partial_saturation']=True
+        IP_1.settings['residual_saturation']=True
         IP_1.settings['snap_off']=False
         IP_1.setup(phase=self.phase,
                    def_phase=self.def_phase)
@@ -290,7 +290,7 @@ class MixedPercolationTest:
         phys['throat.capillary_pressure']=np.arange(0, net.Nt, dtype=float)
         phys['pore.capillary_pressure']=np.arange(0, net.Np, dtype=float)
         IP_1 = mp(network=self.net)
-        IP_1.settings['partial_saturation']=True
+        IP_1.settings['residual_saturation']=True
         IP_1.settings['snap_off']=False
         IP_1.setup(phase=self.phase,
                    def_phase=self.def_phase)
@@ -318,7 +318,7 @@ class MixedPercolationTest:
         self.phase['throat.occupancy'] = False
         self.phase['pore.occupancy'] = np.random.random(net.Np) < 0.25
         IP_1 = mp(network=self.net)
-        IP_1.settings['partial_saturation']=True
+        IP_1.settings['residual_saturation']=True
         IP_1.settings['snap_off']=False
         IP_1.setup(phase=self.phase,
                    def_phase=self.def_phase)
@@ -326,6 +326,7 @@ class MixedPercolationTest:
         IP_1.run()
         IP_1.return_results()
         assert np.all(self.phase['pore.invasion_sequence'] > -1)
+        assert len(np.unique(self.phase['pore.cluster'])) > 1
         
         
 
