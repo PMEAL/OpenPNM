@@ -268,32 +268,20 @@ class MixedInvasionPercolation(GenericPercolation):
                     self._add_ps2q(elem_id, queue)
                 elif elem_type == 'pore':
                     self._add_ts2q(elem_id, queue)
-#                    if self._coop_fill:
-#                        self._check_coop(elem_id, queue)
-            # Element is part of existing cluster
+            # Element is part of existing cluster that is still invading
             elif (elem_cluster != c_num and
                   self.invasion_running[elem_cluster]):
                 # The newly invaded element is part of an invading
                 # cluster. Merge the clusters using the existing
-                # cluster number
+                # cluster number)
+                while len(queue) > 0:
+                    temp = [_pc, _id, _type] = hq.heappop(queue)
+                    if self[_type+'.invasion_sequence'][_id] == -1:
+                        hq.heappush(self.queue[elem_cluster],temp)
                 logger.info("Merging cluster "+str(c_num) +
                             " into cluster "+str(elem_cluster) +
                             " at sequence "+str(self.count))
 
-            elif (elem_cluster != c_num and not
-                  self.invasion_running[elem_cluster]):
-                # The newly invaded element is part of cluster that
-                # has stopped invading
-                logger.info("Cluster " + str(c_num) +
-                            " terminated")
-
-            elif self[elem_type+'.cluster'][elem_id] == c_num:
-                # Self intersecting or repeating elements"
-                pass
-            else:
-                logger.warning("Clusters " + str(c_num) + " and " +
-                               str(elem_cluster) + " performed " +
-                               " strange operation!")
 
     def return_results(self, pores=[], throats=[], Pc=None):
         r"""

@@ -40,7 +40,7 @@ class MixedPercolationTest:
         self.outlets = [24]
 
     def run_mp(self, trapping=False, partial=False, snap=False,
-               plot=True, flowrate=None):
+               plot=False, flowrate=None):
         IP_1 = mp(network=self.net)
         IP_1.settings['partial_saturation']=partial
         IP_1.settings['snap_off']=snap
@@ -239,7 +239,31 @@ class MixedPercolationTest:
             sat[i] += np.sum(self.net['throat.volume'][Tinv_Pc<np.inf])
         assert sat.max()/tot_vol == 1.0
 
-            
+    def test_cluster_merging(self):
+        phys = self.phys
+        phys['throat.capillary_pressure']=0.0
+        Pc = np.array([[0.0, 1.0, 2.0, 1.0, 0.0],
+                       [3.0, 4.0, 5.0, 4.0, 3.0],
+                       [6.0, 7.0, 8.0, 7.0, 6.0],
+                       [9.0, 10.0, 11.0, 10.0, 9.0],
+                       [12.0, 13.0, 14.0, 13.0, 12.0]])
+        phys['pore.capillary_pressure']=Pc.flatten()
+
+        IP_1 = mp(network=self.net)
+        IP_1.settings['partial_saturation']=False
+        IP_1.settings['snap_off']=False
+        IP_1.setup(phase=self.phase,
+                   def_phase=self.def_phase)
+        # Set the inlets as the pores with zero entry Pc
+        IP_1.set_inlets(clusters=[[0], [4]])
+        IP_1.run()
+        IP_1.return_results()
+        # Clusters should merge on first row and all pores after the first row
+        # should be part of the same cluster
+        assert len(np.unique(self.phase['pore.cluster'][5:])) == 1
+
+
+
 if __name__ == '__main__':
     t = MixedPercolationTest()
     t.setup_class()
