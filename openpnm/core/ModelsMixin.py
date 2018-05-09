@@ -8,12 +8,6 @@ logger = logging.getLogger()
 
 class ModelsDict(PrintableDict):
 
-    def __setitem__(self, key, value):
-        if not isinstance(value, dict):
-            raise Exception('Can only assign a dictionary to a model')
-        value = ModelWrapper(value)
-        super().__setitem__(key, value)
-
     def dependency_list(self):
         r'''
         Returns a list of dependencies in the order with which they should be
