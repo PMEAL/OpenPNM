@@ -42,7 +42,7 @@ class TransientImplicitReactiveTransportTest:
         alg.settings.update({'t_scheme': 'implicit', 't_step': 0.1,
                              't_tolerance': 1e-07, 'r_tolerance': 1e-06})
         alg.set_IC(0)
-        alg.set_dirichlet_BC(pores=self.net.pores('left'), values=2)
+        alg.set_value_BC(pores=self.net.pores('left'), values=2)
         alg.set_source(propname='pore.reaction', pores=self.net.pores('right'))
         alg.run()
         x = [2, 8.0339e-01, 4.4e-04,

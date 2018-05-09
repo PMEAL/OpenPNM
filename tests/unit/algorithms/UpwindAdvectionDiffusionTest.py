@@ -28,16 +28,16 @@ class UpwindAdvectionDiffusionTest:
 
     def test_upwind_advection_diffusion_diffusion(self):
         alg1 = op.algorithms.StokesFlow(network=self.net, phase=self.phase)
-        alg1.set_dirichlet_BC(pores=self.net.pores('back'), values=10)
-        alg1.set_dirichlet_BC(pores=self.net.pores('front'), values=0)
+        alg1.set_value_BC(pores=self.net.pores('back'), values=10)
+        alg1.set_value_BC(pores=self.net.pores('front'), values=0)
         alg1.run()
         self.phase[alg1.settings['quantity']] = alg1[alg1.settings['quantity']]
 
         alg2 = op.algorithms.AdvectionDiffusion(network=self.net,
                                                 phase=self.phase)
         alg2.settings.update({'s_scheme': 'upwind'})
-        alg2.set_dirichlet_BC(pores=self.net.pores('back'), values=2)
-        alg2.set_dirichlet_BC(pores=self.net.pores('front'), values=0)
+        alg2.set_value_BC(pores=self.net.pores('back'), values=2)
+        alg2.set_value_BC(pores=self.net.pores('front'), values=0)
         alg2.run()
         x = [0., 0., 0.,
              0.91776, 1.12458, 1.24078,

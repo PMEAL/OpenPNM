@@ -37,8 +37,8 @@ def test_thermal_conduction():
     inlets = pn.pores('back_boundary')
     outlets = pn.pores(['front_boundary', 'left_boundary', 'right_boundary'])
     T_in = 30*np.sin(np.pi*pn['pore.coords'][inlets, 1]/5)+50
-    alg.set_dirichlet_BC(values=T_in, pores=inlets)
-    alg.set_dirichlet_BC(values=50, pores=outlets)
+    alg.set_value_BC(values=T_in, pores=inlets)
+    alg.set_value_BC(values=50, pores=outlets)
     alg.run()
     Cu.update(alg.results())
     # Calculate analytical solution over the same domain spacing
@@ -64,9 +64,9 @@ def test_open_air_diffusivity():
 #    BC1_pores = pn.pores(labels=['top_boundary'])
 #    BC2_pores = pn.pores(labels=['bottom_boundary'])
 #    Diff = op.algorithms.FickianDiffusion(network=pn, phase=air)
-#    # Assign Dirichlet boundary conditions to top and bottom surface pores
-#    Diff.set_dirichlet_BC(values=0.6, pores=BC1_pores)
-#    Diff.set_dirichlet_BC(values=0.4, pores=BC2_pores)
+#    # Assign value boundary conditions to top and bottom surface pores
+#    Diff.set_value_BC(values=0.6, pores=BC1_pores)
+#    Diff.set_value_BC(values=0.4, pores=BC2_pores)
 #    Diff.run()
 #    Diff.domain_area = 25
 #    Diff.domain_length = 5
@@ -97,7 +97,7 @@ def test_Darcy_alg():
 #    P_out = 0  # Pa
 #    Q_in = 0.6667*(Lc**2)*divs[1]*divs[0]  # m^3/s
 #    alg1.set_neumann_BC(values=-Q_in, pores=inlets)
-#    alg1.set_dirichlet_BC(values=P_out, pores=outlets)
+#    alg1.set_value_BC(values=P_out, pores=outlets)
 #    alg1.run()
 #    air.update(alg1.results())
 #    a = round(np.absolute(alg1.rate(outlets))[0], 16)
@@ -109,8 +109,8 @@ def test_Darcy_alg():
 #    outlets = pn.pores('top')
 #    P_out = 0  # Pa
 #    P_in = 1000  # Pa
-#    alg2.set_dirichlet_BC(values=P_in, pores=inlets)
-#    alg2.set_dirichlet_BC(values=P_out, pores=outlets)
+#    alg2.set_value_BC(values=P_in, pores=inlets)
+#    alg2.set_value_BC(values=P_out, pores=outlets)
 #    alg2.run()
 #    a = round(np.absolute(alg2.rate(inlets))[0], 16)
 #    b = round(np.absolute(alg2.rate(outlets))[0], 16)

@@ -28,15 +28,15 @@ class DispersionTest:
 
     def test_dispersion(self):
         alg1 = op.algorithms.StokesFlow(network=self.net, phase=self.phase)
-        alg1.set_dirichlet_BC(pores=self.net.pores('back'), values=10)
-        alg1.set_dirichlet_BC(pores=self.net.pores('front'), values=0)
+        alg1.set_value_BC(pores=self.net.pores('back'), values=10)
+        alg1.set_value_BC(pores=self.net.pores('front'), values=0)
         alg1.run()
         self.phase[alg1.settings['quantity']] = alg1[alg1.settings['quantity']]
 
         alg2 = op.algorithms.Dispersion(network=self.net,
                                                 phase=self.phase)
-        alg2.set_dirichlet_BC(pores=self.net.pores('back'), values=2)
-        alg2.set_dirichlet_BC(pores=self.net.pores('front'), values=0)
+        alg2.set_value_BC(pores=self.net.pores('back'), values=2)
+        alg2.set_value_BC(pores=self.net.pores('front'), values=0)
         alg2.run()
         x = [0., 0., 0.,
              0.97645, 1.18766, 1.37642,

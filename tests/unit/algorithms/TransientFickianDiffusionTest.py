@@ -28,8 +28,8 @@ class TransientFickianDiffusionTest:
         alg.settings.update({'t_scheme': 'implicit', 't_step': 1,
                              't_output': 100, 't_tolerance': 1e-08})
         alg.set_IC(0)
-        alg.set_dirichlet_BC(pores=self.net.pores('back'), values=1)
-        alg.set_dirichlet_BC(pores=self.net.pores('front'), values=0)
+        alg.set_value_BC(pores=self.net.pores('back'), values=1)
+        alg.set_value_BC(pores=self.net.pores('front'), values=0)
         alg.run()
         x = [0., 0., 0.,
              0.28421, 0.35742, 0.3742,
