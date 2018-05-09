@@ -21,7 +21,7 @@ class TransientStokesFlowTest:
         mod = op.models.physics.hydraulic_conductance.hagen_poiseuille
         self.phys.add_model(propname='throat.hydraulic_conductance',
                             model=mod,
-                            viscosity='throat.viscosity',
+                            throat_viscosity='throat.viscosity',
                             regen_mode='normal')
 
     def test_transient_stokes_flow(self):

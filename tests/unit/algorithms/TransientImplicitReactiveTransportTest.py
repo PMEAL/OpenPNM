@@ -24,7 +24,7 @@ class TransientImplicitReactiveTransportTest:
         mod2 = op.models.physics.generic_source_term.standard_kinetics
         self.phys.add_model(propname='throat.conductance',
                             model=mod1,
-                            viscosity='throat.viscosity',
+                            throat_viscosity='throat.viscosity',
                             regen_mode='normal')
         self.phys.add_model(propname='pore.reaction',
                             model=mod2,

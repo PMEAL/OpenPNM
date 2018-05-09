@@ -38,7 +38,6 @@ def ordinary_diffusion(target, molar_density='pore.molar_density',
     # Get properties in every pore in the network
     parea = network[pore_area]
     pdia = network[pore_diameter]
-    DABp = phase[pore_diffusivity]
     # Get the properties of every throat
     tarea = network[throat_area]
     tlen = network[throat_length]
@@ -48,6 +47,11 @@ def ordinary_diffusion(target, molar_density='pore.molar_density',
         DABt = phase[throat_diffusivity]
     except KeyError:
         DABt = phase.interpolate_data(propname=pore_diffusivity)
+    try:
+        DABp = phase[pore_diffusivity]
+    except KeyError:
+        DABp = phase.interpolate_data(propname=throat_diffusivity)
+
     if calc_pore_len:
         lengths = op.utils.misc.conduit_lengths(network, mode='centroid')
         plen1 = lengths[:, 0]

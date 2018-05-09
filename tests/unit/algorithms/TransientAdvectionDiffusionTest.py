@@ -20,7 +20,7 @@ class TransientAdvectionDiffusionTest:
                                               geometry=self.geo)
         mod1 = op.models.physics.hydraulic_conductance.hagen_poiseuille
         self.phys.add_model(propname='throat.hydraulic_conductance',
-                            model=mod1, viscosity='throat.viscosity',
+                            model=mod1, throat_viscosity='throat.viscosity',
                             regen_mode='normal')
         mod2 = op.models.physics.diffusive_conductance.ordinary_diffusion
         self.phys.add_model(propname='throat.diffusive_conductance',
