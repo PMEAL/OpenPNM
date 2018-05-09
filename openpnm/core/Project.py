@@ -2,7 +2,7 @@ import time
 import pickle
 import h5py
 from openpnm.core import Workspace
-from openpnm.utils.misc import SettingsDict, HealthDict
+from openpnm.utils.misc import SettingsDict, HealthDict, PrintableList
 import openpnm
 import numpy as np
 ws = Workspace()
@@ -85,6 +85,13 @@ class Project(list):
         else:
             obj = super().__getitem__(key)
         return obj
+
+    def names(self):
+        r"""
+        Returns a list of all object names
+        """
+        names = PrintableList([obj.name for obj in self])
+        return names
 
     def find_phase(self, obj):
         # If received phase, just return self
