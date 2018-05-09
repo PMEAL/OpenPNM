@@ -146,6 +146,9 @@ class Base(dict):
             **'props'** : Removes all numerical property values from the object
             dictionary.
 
+            **'model_data'** : Removes only numerical data that was produced
+            by an associated model.
+
             **'labels'** : Removes all labels from the object dictionary,
             except those relating to the pore and throat locations of
             associated objects.
@@ -188,8 +191,13 @@ class Base(dict):
         4
 
         """
-        allowed = ['props', 'labels', 'all']
+        allowed = ['props', 'labels', 'model_data', 'all']
         mode = self._parse_mode(mode=mode, allowed=allowed)
+        if 'model_data' in mode:
+            for item in self.models.keys():
+                print('deleting ' + item)
+                del self[item]
+            mode.remove('model_data')
         for item in self.keys(mode=mode, element=element):
             if item not in ['pore.all', 'throat.all']:
                 if item.split('.')[1] not in self.project.names:
