@@ -56,27 +56,6 @@ class ModelsDict(PrintableDict):
         [unique.append(item) for item in tree if item not in unique]
         return unique
 
-    def dependency_map(self):
-        r"""
-        Create a graph of the dependency graph in a decent format
-
-        See Also
-        --------
-        dependency_graph
-        dependency_list
-
-        """
-        dtree = self.dependency_graph()
-        fig = nx.draw_spectral(dtree,
-                               with_labels=True,
-                               arrowsize=50,
-                               node_size=2000,
-                               edge_color='lightgrey',
-                               width=3.0,
-                               font_size=32,
-                               font_weight='bold')
-        return fig
-
     def find_target(self):
         for proj in ws.values():
             for obj in proj:
