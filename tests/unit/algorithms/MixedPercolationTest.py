@@ -7,14 +7,14 @@ import openpnm.models as mods
 
 plt.close('all')
 wrk = op.Workspace()
-wrk.loglevel = 50
+wrk.loglevel = 20
 
 
 class MixedPercolationTest:
 
-    def setup_class(self):
+    def setup_class(self, Np=5):
         # Create Topological Network object
-        self.net = op.network.Cubic([5,5,1], spacing=1)
+        self.net = op.network.Cubic([Np, Np, 1], spacing=1)
         self.geo = op.geometry.GenericGeometry(network=self.net,
                                                pores=self.net.pores(),
                                                throats=self.net.throats())
@@ -37,7 +37,7 @@ class MixedPercolationTest:
                                               phase=self.phase,
                                               geometry=self.geo)
         self.inlets = [0]
-        self.outlets = [24]
+        self.outlets = [Np*Np - 1]
 
     def run_mp(self, trapping=False, partial=False, snap=False,
                plot=False, flowrate=None):
@@ -51,14 +51,16 @@ class MixedPercolationTest:
         if trapping:
             IP_1.set_outlets(self.outlets)
             IP_1.apply_trapping()
-        inv_points = np.arange(0, 100, 1)
+        max_Pc = np.max(self.phys['throat.capillary_pressure'])
+        inv_points = np.arange(0, max_Pc, 1)
         # returns data as well as plotting
         alg_data = IP_1.plot_drainage_curve(inv_points=inv_points,
                                             lpf=False)
         IP_1.return_results()
         if plot:
             plt.figure()
-            plt.imshow(self.phase['pore.invasion_sequence'].reshape([5, 5]),
+            l = np.sqrt(self.net.Np).astype(int)
+            plt.imshow(IP_1['pore.invasion_sequence'].reshape([l, l]),
                        cmap=plt.get_cmap('Blues'))
         else:
             plt.close()
@@ -262,12 +264,69 @@ class MixedPercolationTest:
         # should be part of the same cluster
         assert len(np.unique(self.phase['pore.cluster'][5:])) == 1
 
+    def test_connected_residual_clusters(self):
+        net = self.net
+        phys = self.phys
+        phys['throat.capillary_pressure']=np.arange(0, net.Nt, dtype=float)
+        phys['pore.capillary_pressure']=np.arange(0, net.Np, dtype=float)
+        IP_1 = mp(network=self.net)
+        IP_1.settings['partial_saturation']=True
+        IP_1.settings['snap_off']=False
+        IP_1.setup(phase=self.phase,
+                   def_phase=self.def_phase)
 
+        T = 20
+        [P1, P2] = self.net['throat.conns'][T]
+        self.phase['pore.occupancy'] = False
+        self.phase['throat.occupancy'] = False
+        self.phase['pore.occupancy'][P1] = True
+        self.phase['pore.occupancy'][P2] = True
+        IP_1.set_inlets(pores=self.inlets)
+        assert len(IP_1.queue) == 1
+
+    def test_disconnected_residual_clusters(self):
+        net = self.net
+        phys = self.phys
+        phys['throat.capillary_pressure']=np.arange(0, net.Nt, dtype=float)
+        phys['pore.capillary_pressure']=np.arange(0, net.Np, dtype=float)
+        IP_1 = mp(network=self.net)
+        IP_1.settings['partial_saturation']=True
+        IP_1.settings['snap_off']=False
+        IP_1.setup(phase=self.phase,
+                   def_phase=self.def_phase)
+
+        T = 20
+        [P1, P2] = self.net['throat.conns'][T]
+        self.phase['pore.occupancy'] = False
+        self.phase['throat.occupancy'] = False
+        self.phase['pore.occupancy'][P1] = False
+        self.phase['pore.occupancy'][P2] = True
+        IP_1.set_inlets(pores=self.inlets)
+        assert len(IP_1.queue) == 2
+
+    def test_big_clusters(self):
+        self.setup_class(Np=10)
+        net = self.net
+        phys = self.phys
+        np.random.seed(1)
+        phys['throat.capillary_pressure']=np.random.random(net.Nt)*net.Nt
+        phys['pore.capillary_pressure']=np.random.random(net.Np)*net.Np
+        self.inlets = net.pores('left')
+        self.outlets = None
+        np.random.seed(1)
+        self.phase['pore.occupancy'] = False
+        self.phase['throat.occupancy'] = False
+        self.phase['pore.occupancy'] = np.random.random(net.Np) < 0.25
+        dat_q = self.run_mp(False, True, False, plot=False)
+#        assert np.all(self.phase['pore.invasion_sequence'] > -1)
+        
+        
 
 if __name__ == '__main__':
     t = MixedPercolationTest()
     t.setup_class()
-    for item in t.__dir__():
-        if item.startswith('test'):
-            print('running test: '+item)
-            t.__getattribute__(item)()
+#    for item in t.__dir__():
+#        if item.startswith('test'):
+#            print('running test: '+item)
+#            t.__getattribute__(item)()
+    t.test_big_clusters()
