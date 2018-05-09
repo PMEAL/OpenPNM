@@ -120,10 +120,10 @@ class MixedInvasionPercolation(GenericPercolation):
             logger.error("Either 'inlets' or 'clusters' must be passed to" +
                          " setup method")
 
-        self.queue = {}
+        self.queue = []
 
         for i, cluster in enumerate(clusters):
-            self.queue[i] = []
+            self.queue.append([])
             # Perform initial analysis on input pores
             self['pore.invasion_sequence'][cluster] = 0
             self['pore.cluster'][cluster] = i
@@ -141,7 +141,7 @@ class MixedInvasionPercolation(GenericPercolation):
         if self.settings['partial_saturation']:
             self._apply_partial_sat2()
         else:
-            self.invasion_running = [True]*len(self.queue.items())
+            self.invasion_running = [True]*len(self.queue)
 #        else:
 #            self._phase['pore.occuancy'] = False
 #            self._phase['throat.occupancy'] = False
@@ -210,20 +210,20 @@ class MixedInvasionPercolation(GenericPercolation):
             self.max_pressure = sp.inf
         else:
             self.max_pressure = max_pressure
-        if len(self.queue.items()) == 0:
+        if len(self.queue) == 0:
             logger.warn('queue is empty, this network is fully invaded')
             return
         # track whether each cluster has reached the maximum pressure
-        self.max_p_reached = [False]*len(self.queue.items())
+        self.max_p_reached = [False]*len(self.queue)
         # starting invasion sequence
         self.count = 0
         # highest pressure reached so far - used for porosimetry curve
-        self.high_Pc = np.ones(len(self.queue.items()))*-np.inf
+        self.high_Pc = np.ones(len(self.queue))*-np.inf
         outlets = self['pore.outlets']
         terminate_clusters = np.sum(outlets) > 0
         while np.any(self.invasion_running) and not np.all(self.max_p_reached):
             # Loop over clusters
-            for c_num in self.queue.keys():
+            for c_num in range(len(self.queue)):
                 if self.invasion_running[c_num]:
                     self._invade_cluster(c_num)
                     queue = self.queue[c_num]
@@ -701,7 +701,7 @@ class MixedInvasionPercolation(GenericPercolation):
         residual = self._phase['pore.occupancy'].astype(bool)
         rclusters = site_percolation(conns, residual).sites
         rcluster_ids = np.unique(rclusters[rclusters > -1])
-        initial_num = max(self.queue.keys())
+        initial_num = len(self.queue)-1
         for rcluster_id in rcluster_ids:
             rPs = rclusters == rcluster_id
             existing = np.unique(self['pore.cluster'][rPs]) 
@@ -712,8 +712,8 @@ class MixedInvasionPercolation(GenericPercolation):
                 cluster_num = existing[0]
             else:
                 # Make a new cluster queue
-                cluster_num = max(self.queue.keys()) + 1
-                self.queue[cluster_num] = []
+                cluster_num = len(self.queue)
+                self.queue.append([])
             queue = self.queue[cluster_num]
             # Set the residual pores and inner throats as part of cluster
             self['pore.cluster'][rPs] = cluster_num
@@ -738,11 +738,11 @@ class MixedInvasionPercolation(GenericPercolation):
                 # Element Type (Pore of Throat)
                 data.append('throat')
                 hq.heappush(queue, data)
-        self.invasion_running = [True]*len(self.queue.items())
+        self.invasion_running = [True]*len(self.queue)
         # we have added new clusters that are currently isolated and we
         # need to stop them invading until they merge into an invading
         # cluster
-        for c_num in self.queue.keys():
+        for c_num in range(len(self.queue)):
             if c_num > initial_num:
                 self.invasion_running[c_num] = False
 

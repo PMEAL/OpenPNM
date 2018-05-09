@@ -7,7 +7,7 @@ import openpnm.models as mods
 
 plt.close('all')
 wrk = op.Workspace()
-wrk.loglevel = 20
+wrk.loglevel = 50
 
 
 class MixedPercolationTest:
@@ -52,7 +52,7 @@ class MixedPercolationTest:
             IP_1.set_outlets(self.outlets)
             IP_1.apply_trapping()
         max_Pc = np.max(self.phys['throat.capillary_pressure'])
-        inv_points = np.arange(0, max_Pc, 1)
+        inv_points = np.arange(0, 100, 1)
         # returns data as well as plotting
         alg_data = IP_1.plot_drainage_curve(inv_points=inv_points,
                                             lpf=False)
@@ -325,8 +325,7 @@ class MixedPercolationTest:
 if __name__ == '__main__':
     t = MixedPercolationTest()
     t.setup_class()
-#    for item in t.__dir__():
-#        if item.startswith('test'):
-#            print('running test: '+item)
-#            t.__getattribute__(item)()
-    t.test_big_clusters()
+    for item in t.__dir__():
+        if item.startswith('test'):
+            print('running test: '+item)
+            t.__getattribute__(item)()
