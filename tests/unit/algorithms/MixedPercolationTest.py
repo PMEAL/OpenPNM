@@ -328,7 +328,29 @@ class MixedPercolationTest:
         assert np.all(self.phase['pore.invasion_sequence'] > -1)
         assert len(np.unique(self.phase['pore.cluster'])) > 1
         
-        
+    def test_invade_isolated_Ts(self):
+        self.setup_class(Np=10)
+        net = self.net
+        phys = self.phys
+        np.random.seed(1)
+        phys['throat.capillary_pressure']=0.0
+        phys['pore.capillary_pressure']=np.random.random(net.Np)*net.Np
+        self.inlets = net.pores('left')
+        self.outlets = None
+        IP_1 = mp(network=self.net)
+        IP_1.settings['invade_isolated_Ts']=False
+        IP_1.setup(phase=self.phase,
+                   def_phase=self.def_phase)
+        IP_1.set_inlets(pores=self.inlets)    
+        IP_1.run()
+        IP_1.return_results()
+        save_seq = IP_1['throat.invasion_sequence'].copy()
+        IP_1.settings['invade_isolated_Ts']=True
+        IP_1.reset()
+        IP_1.set_inlets(pores=self.inlets)    
+        IP_1.run()
+        IP_1.return_results()
+        assert np.any(IP_1['throat.invasion_sequence']-save_seq != 0)
 
 if __name__ == '__main__':
     t = MixedPercolationTest()

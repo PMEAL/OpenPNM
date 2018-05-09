@@ -41,7 +41,8 @@ class MixedInvasionPercolation(GenericPercolation):
                               'throat_entry_pressure': 'throat.capillary_pressure',
                               'mode': 'mixed',
                               'residual_saturation': False,
-                              'snap_off': False})
+                              'snap_off': False,
+                              'invade_isolated_Ts': False})
 
     def setup(self, phase, def_phase):
         r"""
@@ -142,11 +143,6 @@ class MixedInvasionPercolation(GenericPercolation):
             self._apply_residual_sat()
         else:
             self.invasion_running = [True]*len(self.queue)
-#        else:
-#            self._phase['pore.occuancy'] = False
-#            self._phase['throat.occupancy'] = False
-#            self._def['pore.occupancy'] = True
-#            self._def['throat.occupancy'] = True
 
     def _add_ts2q(self, pore, queue):
         """
@@ -230,7 +226,8 @@ class MixedInvasionPercolation(GenericPercolation):
                     # If the cluster contains no more entries invasion has
                     # finished
                     self.invasion_running[c_num] = False
-#            self._invade_isolated_Ts()
+            if self.settings['invade_isolated_Ts']:
+                self._invade_isolated_Ts()
             if terminate_clusters:
                 # terminated clusters
                 tcs = np.unique(self['pore.cluster'][outlets]).astype(int)
