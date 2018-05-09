@@ -174,7 +174,7 @@ class ModelsMixin():
                 propnames = [i for i in propnames if i not in exclude]
 
         # Check if any propnames are not on self, deal with separately
-        self_models = self.models.dependency_tree()
+        self_models = self.models.dependency_list()
         foreign_models = set(propnames).difference(set(self_models))
         if len(foreign_models):
             # If foreign model is found on another object, regenerate it

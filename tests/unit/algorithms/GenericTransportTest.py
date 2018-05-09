@@ -28,11 +28,11 @@ class GenericTransportTest:
                                              phase=self.phase)
         alg.set_value_BC(pores=self.net.pores('top'), values=1)
         alg.set_value_BC(pores=self.net.pores('bottom'), values=0)
-        assert sp.sum(alg['pore.bc_value']) > 0
+        assert sp.sum(sp.isfinite(alg['pore.bc_value'])) > 0
         alg.remove_BC(pores=self.net.pores('top'))
-        assert sp.sum(alg['pore.bc_value']) > 0
+        assert sp.sum(sp.isfinite(alg['pore.bc_value'])) > 0
         alg.remove_BC(pores=self.net.pores('bottom'))
-        assert sp.sum(alg['pore.bc_value']) == 0
+        assert sp.sum(sp.isfinite(alg['pore.bc_value'])) == 0
 
     def test_generic_transport(self):
         alg = op.algorithms.GenericTransport(network=self.net,

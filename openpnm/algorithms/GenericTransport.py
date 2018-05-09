@@ -146,11 +146,6 @@ class GenericTransport(GenericAlgorithm):
             raise Exception('The number of boundary values must match the ' +
                             'number of locations')
 
-        # Label pores where a boundary condition will be applied
-        if ('pore.bc_'+bctype not in self.keys()) or (mode == 'overwrite'):
-            self['pore.bc_'+bctype] = False
-        self['pore.bc_'+bctype][pores] = True
-
         # Store boundary values
         if ('pore.bc_'+bctype not in self.keys()) or (mode == 'overwrite'):
             self['pore.bc_'+bctype] = np.nan
