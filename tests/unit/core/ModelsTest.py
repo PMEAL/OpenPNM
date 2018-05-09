@@ -34,7 +34,7 @@ class ModelsTest:
         a = len(self.geo.props())
         assert a == 11
 
-    def test_dependency_tree(self):
+    def test_dependency_list(self):
         prj=self.net.project
         prj.purge_object(self.geo)
         geom = op.geometry.GenericGeometry(network=self.net,
@@ -58,7 +58,7 @@ class ModelsTest:
                        element='pore',
                        num_range=[0, 0.1],
                        seed=None)
-        tree = np.asarray(geom.models.dependency_tree())
+        tree = np.asarray(geom.models.dependency_list())
         pos_v = np.argwhere(tree=='pore.volume').flatten()[0]
         pos_d = np.argwhere(tree=='pore.diameter').flatten()[0]
         pos_a = np.argwhere(tree=='pore.area').flatten()[0]
@@ -68,7 +68,7 @@ class ModelsTest:
         assert pos_a > pos_d
         self.geo = geom
 
-    def test_dependency_tree_circular(self):
+    def test_dependency_list_circular(self):
         pn = self.net
 
         def chicken(target, prop='pore.egg'):
@@ -82,11 +82,11 @@ class ModelsTest:
 
         with ShouldRaise(Exception('Cyclic dependency found: pore.egg ->' +
                                    ' pore.chicken -> pore.egg')):
-            pn.models.dependency_tree()
+            pn.models.dependency_list()
         pn.remove_model('pore.chicken')
         pn.remove_model('pore.egg')
 
-    def test_dependency_tree_tri_circular(self):
+    def test_dependency_list_tri_circular(self):
         pn = self.net
 
         def rock(target, prop='pore.scissors'):
@@ -104,7 +104,7 @@ class ModelsTest:
 
         with ShouldRaise(Exception('Cyclic dependency found: pore.scissors ->'+
                                    ' pore.rock -> pore.paper -> pore.scissors')):
-            pn.models.dependency_tree()
+            pn.models.dependency_list()
 
 if __name__ == '__main__':
 

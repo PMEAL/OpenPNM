@@ -11,7 +11,8 @@ class ModelsDict(PrintableDict):
     def dependency_list(self):
         r'''
         Returns a list of dependencies in the order with which they should be
-        called to ensure data is calculated in the correct order.
+        called to ensure data is calculated by one model before it's asked for
+        by another.
 
         Notes
         -----
@@ -31,7 +32,8 @@ class ModelsDict(PrintableDict):
         if cycles:
             raise Exception('Cyclic dependency found: ' + ' -> '.join(
                             cycles[0] + [cycles[0][0]]))
-        return list(nx.algorithms.topological_sort(dtree))
+        d = nx.algorithms.dag.lexicographical_topological_sort(dtree, sorted)
+        return list(d)
 
     def dependency_graph(self):
         r"""
