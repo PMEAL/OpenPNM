@@ -309,7 +309,7 @@ class MixedPercolationTest:
         net = self.net
         phys = self.phys
         np.random.seed(1)
-        phys['throat.capillary_pressure']=np.random.random(net.Nt)*net.Nt
+        phys['throat.capillary_pressure']=0.0
         phys['pore.capillary_pressure']=np.random.random(net.Np)*net.Np
         self.inlets = net.pores('left')
         self.outlets = None
@@ -317,8 +317,15 @@ class MixedPercolationTest:
         self.phase['pore.occupancy'] = False
         self.phase['throat.occupancy'] = False
         self.phase['pore.occupancy'] = np.random.random(net.Np) < 0.25
-        dat_q = self.run_mp(False, True, False, plot=False)
-#        assert np.all(self.phase['pore.invasion_sequence'] > -1)
+        IP_1 = mp(network=self.net)
+        IP_1.settings['partial_saturation']=True
+        IP_1.settings['snap_off']=False
+        IP_1.setup(phase=self.phase,
+                   def_phase=self.def_phase)
+        IP_1.set_inlets(pores=self.inlets)    
+        IP_1.run()
+        IP_1.return_results()
+        assert np.all(self.phase['pore.invasion_sequence'] > -1)
         
         
 

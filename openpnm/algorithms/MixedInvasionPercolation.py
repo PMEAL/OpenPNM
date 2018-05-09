@@ -223,15 +223,14 @@ class MixedInvasionPercolation(GenericPercolation):
         terminate_clusters = np.sum(outlets) > 0
         while np.any(self.invasion_running) and not np.all(self.max_p_reached):
             # Loop over clusters
-            for c_num in range(len(self.queue)):
-                if self.invasion_running[c_num]:
-                    self._invade_cluster(c_num)
-                    queue = self.queue[c_num]
-                    if len(queue) == 0 or self.max_p_reached[c_num]:
-                        # If the cluster contains no more entries invasion has
-                        # finished
-                        self.invasion_running[c_num] = False
-            self._invade_isolated_Ts()
+            for c_num in np.argwhere(self.invasion_running).flatten():
+                self._invade_cluster(c_num)
+                queue = self.queue[c_num]
+                if len(queue) == 0 or self.max_p_reached[c_num]:
+                    # If the cluster contains no more entries invasion has
+                    # finished
+                    self.invasion_running[c_num] = False
+#            self._invade_isolated_Ts()
             if terminate_clusters:
                 # terminated clusters
                 tcs = np.unique(self['pore.cluster'][outlets]).astype(int)
@@ -719,7 +718,7 @@ class MixedInvasionPercolation(GenericPercolation):
             self['pore.cluster'][rPs] = cluster_num
             Ts = net.find_neighbor_throats(pores=rPs,
                                            flatten=True,
-                                           mode='union')
+                                           mode='intersection')
             self['throat.cluster'][Ts] = cluster_num
             self['pore.invasion_sequence'][rPs] = 0
             self['throat.invasion_sequence'][Ts] = 0
@@ -729,6 +728,9 @@ class MixedInvasionPercolation(GenericPercolation):
             Ts = net.find_neighbor_throats(pores=rPs,
                                            flatten=True,
                                            mode='exclusive_or')
+#            self['throat.cluster'][Ts] = -1
+#            self['throat.invasion_sequence'][Ts] = -1
+#            self['throat.invasion_pressure'][Ts] = np.inf
             for T in Ts:
                 data = []
                 # Pc
