@@ -108,6 +108,20 @@ class ModelsMixin():
         """
         if type(propnames) is str:  # Convert string to list if necessary
             propnames = [propnames]
+        # Check if any propnames are not on self, deal with separately
+        self_models = self.models.dependency_tree()
+        foreign_models = set(propnames).difference(set(self_models))
+        if len(foreign_models):
+            # If foreign model is found on another object, regenerate it
+            for item in foreign_models:
+                if self._isa('phase'):
+                    for phys in self.project.find_physics(phase=self):
+                        phys.regenerate_models(propnames)
+                if self._isa('network'):
+                    for geom in self.geometries().values():
+                        geom.regenerate_models(propnames)
+            # Remove any foreign models from given list, and proceed
+            propnames = set(propnames).difference(foreign_models)
         if propnames is None:  # If no props given, then regenerate them all
             propnames = self.models.dependency_tree()
             # If some props are to be excluded, remove them from list
@@ -115,8 +129,7 @@ class ModelsMixin():
                 propnames = [i for i in propnames if i not in exclude]
         else:
             # Re-order given propnames according to dependency tree
-            all_props = self.models.dependency_tree()
-            propnames = [i for i in all_props if i in propnames]
+            propnames = [i for i in self_models if i in propnames]
         # Scan through list of propnames and regenerate each one
         for item in propnames:
             self._regen(item)
