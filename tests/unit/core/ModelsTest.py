@@ -1,6 +1,4 @@
-
 import openpnm as op
-import scipy as sp
 import numpy as np
 import openpnm.models as mods
 import pytest
@@ -102,9 +100,9 @@ class ModelsTest:
         pn.add_model(propname='pore.scissors', model=scissors)
         pn.add_model(propname='pore.rock', model=rock)
 
-        with ShouldRaise(Exception('Cyclic dependency found: pore.scissors ->'+
-                                   ' pore.rock -> pore.paper -> pore.scissors')):
+        with pytest.raises(Exception):
             pn.models.dependency_list()
+
 
 if __name__ == '__main__':
 
