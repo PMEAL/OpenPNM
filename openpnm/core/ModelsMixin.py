@@ -8,21 +8,84 @@ logger = logging.getLogger()
 
 class ModelsDict(PrintableDict):
 
-    def dependency_tree(self):
+    def __setitem__(self, key, value):
+        if not isinstance(value, dict):
+            raise Exception('Can only assign a dictionary to a model')
+        value = ModelWrapper(value)
+        super().__setitem__(key, value)
+
+    def dependency_list(self):
         r'''
-        Function to return models with dependencies first
+        Returns a list of dependencies in the order with which they should be
+        called to ensure data is calculated in the correct order.
+
+        Notes
+        -----
+        This raises an exception if the graph has cycles which means the
+        dependencies are unresolvable (i.e. there is no order which the
+        models can be called that will work).  In this case it is possible
+        to visually inspect the graph using ``dependency_graph``.
+
+        See Also
+        --------
+        dependency_graph
+        dependency_map
+
         '''
+        dtree = self.dependency_graph()
+        cycles = list(nx.simple_cycles(dtree))
+        if cycles:
+            raise Exception('Cyclic dependency found: ' + ' -> '.join(
+                            cycles[0] + [cycles[0][0]]))
+        return list(nx.algorithms.topological_sort(dtree))
+
+    def dependency_graph(self):
+        r"""
+        Returns a NetworkX graph object of the dependencies
+
+        See Also
+        --------
+        dependency_list
+        dependency_map
+
+        Notes
+        -----
+        To visualize the dependencies, the following NetworkX function and
+        settings is helpful:
+
+        nx.draw_spectral(d, arrowsize=50, font_size=32, with_labels=True,
+                         node_size=2000, width=3.0, edge_color='lightgrey',
+                         font_weight='bold')
+
+        """
         dtree = nx.DiGraph()
         for propname in self.keys():
             dtree.add_node(propname)
             for dependency in self[propname].values():
                 if dependency in list(self.keys()):
                     dtree.add_edge(dependency, propname)
-        cycles = list(nx.simple_cycles(dtree))
-        if cycles:
-            raise Exception('Cyclic dependency found: ' + ' -> '.join(
-                            cycles[0] + [cycles[0][0]]))
-        return list(nx.algorithms.topological_sort(dtree))
+        return dtree
+
+    def dependency_map(self):
+        r"""
+        Create a graph of the dependency graph in a decent format
+
+        See Also
+        --------
+        dependency_graph
+        dependency_list
+
+        """
+        dtree = self.dependency_graph()
+        fig = nx.draw_spectral(dtree,
+                               with_labels=True,
+                               arrowsize=50,
+                               node_size=2000,
+                               edge_color='lightgrey',
+                               width=3.0,
+                               font_size=32,
+                               font_weight='bold')
+        return fig
 
 
     def __str__(self):
@@ -112,13 +175,13 @@ class ModelsMixin():
         if type(propnames) is str:  # Convert string to list if necessary
             propnames = [propnames]
         if propnames is None:  # If no props given, then regenerate them all
-            propnames = self.models.dependency_tree()
+            propnames = self.models.dependency_list()
             # If some props are to be excluded, remove them from list
             if len(exclude) > 0:
                 propnames = [i for i in propnames if i not in exclude]
         else:
-            # Re-order given propnames according to dependency tree
-            all_props = self.models.dependency_tree()
+            # Re-order given propnames according to dependency list
+            all_props = self.models.dependency_list()
             propnames = [i for i in all_props if i in propnames]
         # Scan through list of propnames and regenerate each one
         for item in propnames:
