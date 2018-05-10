@@ -1432,7 +1432,7 @@ class Base(dict):
             elif '._' not in prop:
                 a = sp.isnan(self[item])
                 defined = sp.shape(self[item])[0] \
-                    - a.sum(axis=0, keepdims=(a.ndim-1) == 0).flatten()[0]
+                    - a.sum(axis=0, keepdims=(a.ndim-1) == 0)[0]
                 fmt = "{0:<5d} {1:<45s} {2:>5d} / {3:<5d}"
                 lines.append(fmt.format(i + 1, prop, defined, required))
         lines.append(horizonal_rule)
