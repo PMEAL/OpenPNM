@@ -12,9 +12,9 @@ wrk.loglevel = 50
 
 class MixedPercolationTest:
 
-    def setup_class(self):
+    def setup_class(self, Np=5):
         # Create Topological Network object
-        self.net = op.network.Cubic([5,5,1], spacing=1)
+        self.net = op.network.Cubic([Np, Np, 1], spacing=1)
         self.geo = op.geometry.GenericGeometry(network=self.net,
                                                pores=self.net.pores(),
                                                throats=self.net.throats())
@@ -37,11 +37,12 @@ class MixedPercolationTest:
                                               phase=self.phase,
                                               geometry=self.geo)
         self.inlets = [0]
-        self.outlets = [24]
+        self.outlets = [Np*Np - 1]
 
-    def run_mp(self, trapping, partial, snap, plot=False, flowrate=None):
+    def run_mp(self, trapping=False, resdiual=False, snap=False,
+               plot=False, flowrate=None):
         IP_1 = mp(network=self.net)
-        IP_1.settings['partial_saturation']=partial
+        IP_1.settings['residual_saturation']=resdiual
         IP_1.settings['snap_off']=snap
         IP_1.setup(phase=self.phase,
                    def_phase=self.def_phase)
@@ -50,6 +51,7 @@ class MixedPercolationTest:
         if trapping:
             IP_1.set_outlets(self.outlets)
             IP_1.apply_trapping()
+        max_Pc = np.max(self.phys['throat.capillary_pressure'])
         inv_points = np.arange(0, 100, 1)
         # returns data as well as plotting
         alg_data = IP_1.plot_drainage_curve(inv_points=inv_points,
@@ -57,7 +59,8 @@ class MixedPercolationTest:
         IP_1.return_results()
         if plot:
             plt.figure()
-            plt.imshow(self.phase['pore.invasion_sequence'].reshape([5, 5]),
+            l = np.sqrt(self.net.Np).astype(int)
+            plt.imshow(IP_1['pore.invasion_sequence'].reshape([l, l]),
                        cmap=plt.get_cmap('Blues'))
         else:
             plt.close()
@@ -161,7 +164,7 @@ class MixedPercolationTest:
         assert self.phase['throat.invasion_pressure'][T] == 0.5
         assert ~np.all(dat_m[1]-dat_n[1]==0)
 
-    def test_partial(self):
+    def test_residual(self):
         # Throats only
         # Sequential
         net = self.net
@@ -238,7 +241,142 @@ class MixedPercolationTest:
             sat[i] += np.sum(self.net['throat.volume'][Tinv_Pc<np.inf])
         assert sat.max()/tot_vol == 1.0
 
-            
+    def test_cluster_merging(self):
+        phys = self.phys
+        phys['throat.capillary_pressure']=0.0
+        Pc = np.array([[0.0, 1.0, 2.0, 1.0, 0.0],
+                       [3.0, 4.0, 5.0, 4.0, 3.0],
+                       [6.0, 7.0, 8.0, 7.0, 6.0],
+                       [9.0, 10.0, 11.0, 10.0, 9.0],
+                       [12.0, 13.0, 14.0, 13.0, 12.0]])
+        phys['pore.capillary_pressure']=Pc.flatten()
+
+        IP_1 = mp(network=self.net)
+        IP_1.settings['partial_saturation']=False
+        IP_1.settings['snap_off']=False
+        IP_1.setup(phase=self.phase,
+                   def_phase=self.def_phase)
+        # Set the inlets as the pores with zero entry Pc
+        IP_1.set_inlets(clusters=[[0], [4]])
+        IP_1.run()
+        IP_1.return_results()
+        # Clusters should merge on first row and all pores after the first row
+        # should be part of the same cluster
+        assert len(np.unique(self.phase['pore.cluster'][5:])) == 1
+
+    def test_connected_residual_clusters(self):
+        net = self.net
+        phys = self.phys
+        phys['throat.capillary_pressure']=np.arange(0, net.Nt, dtype=float)
+        phys['pore.capillary_pressure']=np.arange(0, net.Np, dtype=float)
+        IP_1 = mp(network=self.net)
+        IP_1.settings['residual_saturation']=True
+        IP_1.settings['snap_off']=False
+        IP_1.setup(phase=self.phase,
+                   def_phase=self.def_phase)
+
+        T = 20
+        [P1, P2] = self.net['throat.conns'][T]
+        self.phase['pore.occupancy'] = False
+        self.phase['throat.occupancy'] = False
+        self.phase['pore.occupancy'][P1] = True
+        self.phase['pore.occupancy'][P2] = True
+        IP_1.set_inlets(pores=self.inlets)
+        assert len(IP_1.queue) == 1
+
+    def test_disconnected_residual_clusters(self):
+        net = self.net
+        phys = self.phys
+        phys['throat.capillary_pressure']=np.arange(0, net.Nt, dtype=float)
+        phys['pore.capillary_pressure']=np.arange(0, net.Np, dtype=float)
+        IP_1 = mp(network=self.net)
+        IP_1.settings['residual_saturation']=True
+        IP_1.settings['snap_off']=False
+        IP_1.setup(phase=self.phase,
+                   def_phase=self.def_phase)
+
+        T = 20
+        [P1, P2] = self.net['throat.conns'][T]
+        self.phase['pore.occupancy'] = False
+        self.phase['throat.occupancy'] = False
+        self.phase['pore.occupancy'][P1] = False
+        self.phase['pore.occupancy'][P2] = True
+        IP_1.set_inlets(pores=self.inlets)
+        assert len(IP_1.queue) == 2
+
+    def test_big_clusters(self):
+        self.setup_class(Np=10)
+        net = self.net
+        phys = self.phys
+        np.random.seed(1)
+        phys['throat.capillary_pressure']=0.0
+        phys['pore.capillary_pressure']=np.random.random(net.Np)*net.Np
+        self.inlets = net.pores('left')
+        self.outlets = None
+        np.random.seed(1)
+        self.phase['pore.occupancy'] = False
+        self.phase['throat.occupancy'] = False
+        self.phase['pore.occupancy'] = np.random.random(net.Np) < 0.25
+        IP_1 = mp(network=self.net)
+        IP_1.settings['residual_saturation']=True
+        IP_1.settings['snap_off']=False
+        IP_1.setup(phase=self.phase,
+                   def_phase=self.def_phase)
+        IP_1.set_inlets(pores=self.inlets)    
+        IP_1.run()
+        IP_1.return_results()
+        assert np.all(self.phase['pore.invasion_sequence'] > -1)
+        assert len(np.unique(self.phase['pore.cluster'])) > 1
+
+    def test_big_clusters_trapping(self):
+        self.setup_class(Np=10)
+        net = self.net
+        phys = self.phys
+        np.random.seed(1)
+        phys['throat.capillary_pressure']=0.0
+        phys['pore.capillary_pressure']=np.random.random(net.Np)*net.Np
+        self.inlets = net.pores('left')
+        self.outlets = net.pores('right')
+        np.random.seed(1)
+        self.phase['pore.occupancy'] = False
+        self.phase['throat.occupancy'] = False
+        self.phase['pore.occupancy'] = np.random.random(net.Np) < 0.25
+        IP_1 = mp(network=self.net)
+        IP_1.settings['residual_saturation']=True
+        IP_1.settings['snap_off']=False
+        IP_1.setup(phase=self.phase,
+                   def_phase=self.def_phase)
+        IP_1.set_inlets(pores=self.inlets)    
+        IP_1.run()
+        IP_1.set_outlets(self.outlets)
+        IP_1.apply_trapping()
+        IP_1.return_results()
+        assert np.sum(IP_1['pore.trapped'])==35
+   
+    def test_invade_isolated_Ts(self):
+        self.setup_class(Np=10)
+        net = self.net
+        phys = self.phys
+        np.random.seed(1)
+        phys['throat.capillary_pressure']=0.0
+        phys['pore.capillary_pressure']=np.random.random(net.Np)*net.Np
+        self.inlets = net.pores('left')
+        self.outlets = None
+        IP_1 = mp(network=self.net)
+        IP_1.settings['invade_isolated_Ts']=False
+        IP_1.setup(phase=self.phase,
+                   def_phase=self.def_phase)
+        IP_1.set_inlets(pores=self.inlets)    
+        IP_1.run()
+        IP_1.return_results()
+        save_seq = IP_1['throat.invasion_sequence'].copy()
+        IP_1.settings['invade_isolated_Ts']=True
+        IP_1.reset()
+        IP_1.set_inlets(pores=self.inlets)    
+        IP_1.run()
+        IP_1.return_results()
+        assert np.any(IP_1['throat.invasion_sequence']-save_seq != 0)
+
 if __name__ == '__main__':
     t = MixedPercolationTest()
     t.setup_class()
