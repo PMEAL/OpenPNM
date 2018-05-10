@@ -327,7 +327,32 @@ class MixedPercolationTest:
         IP_1.return_results()
         assert np.all(self.phase['pore.invasion_sequence'] > -1)
         assert len(np.unique(self.phase['pore.cluster'])) > 1
-        
+
+    def test_big_clusters_trapping(self):
+        self.setup_class(Np=10)
+        net = self.net
+        phys = self.phys
+        np.random.seed(1)
+        phys['throat.capillary_pressure']=0.0
+        phys['pore.capillary_pressure']=np.random.random(net.Np)*net.Np
+        self.inlets = net.pores('left')
+        self.outlets = net.pores('right')
+        np.random.seed(1)
+        self.phase['pore.occupancy'] = False
+        self.phase['throat.occupancy'] = False
+        self.phase['pore.occupancy'] = np.random.random(net.Np) < 0.25
+        IP_1 = mp(network=self.net)
+        IP_1.settings['residual_saturation']=True
+        IP_1.settings['snap_off']=False
+        IP_1.setup(phase=self.phase,
+                   def_phase=self.def_phase)
+        IP_1.set_inlets(pores=self.inlets)    
+        IP_1.run()
+        IP_1.set_outlets(self.outlets)
+        IP_1.apply_trapping()
+        IP_1.return_results()
+        assert np.sum(IP_1['pore.trapped'])==35
+   
     def test_invade_isolated_Ts(self):
         self.setup_class(Np=10)
         net = self.net
