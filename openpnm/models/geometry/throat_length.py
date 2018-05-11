@@ -39,27 +39,9 @@ def straight(target, pore_diameter='pore.diameter', L_negative=1e-12):
     return value
 
 
-def center_to_center(target, pore_diameter='pore.diameter'):
-    r"""
-    Find throat length as the center to center distance less the pore radii
-
-    Parameters
-    ----------
-    pore_diameter : string
-        The diameter of the pores.  The default is 'pore.diameter'.
-
-    """
-    net = target.project.network
-    P12 = net['throat.conns']
-    vec = _sp.diff(net['pore.coords'][P12], axis=1).squeeze()
-    mag = _sp.sqrt(_sp.sum(_sp.square(vec), axis=1))
-    vals = mag - _sp.sum(0.5*net[pore_diameter][P12], axis=1)
-    return vals[net.throats(target.name)]
-
-
-def ends_points(target,
-                throat_vector='throat.vector',
-                pore_diameter='pore.diameter'):
+def endpoints(target,
+              throat_vector='throat.vector',
+              pore_diameter='pore.diameter'):
     r"""
     Find the start and end point of each throat by offset each pore coordinate
     by it's radius along the throat vector.
@@ -77,25 +59,6 @@ def ends_points(target,
     --------
     The following code snippet can be used to visualize the throats as line
     segments:
-
-
-    cmap = plt.cm.jet
-    norm = plt.Normalize(vmin=sp.amin(pn['pore.diameter']/2),
-                         vmax=sp.amax(pn['pore.diameter']/2))
-    for t in pn.Ts:
-        x = geom['throat.endpoints'][t, 0][0], geom['throat.endpoints'][t, 1][0]
-        y = geom['throat.endpoints'][t, 0][1], geom['throat.endpoints'][t, 1][1]
-        fig = plt.plot(x, y, 'k-o')
-    for p in pn.Ps:
-        xy = pn['pore.coords'][p, :2]
-        r = pn['pore.diameter'][p]/2
-        circle1 = plt.Circle(xy, r, color=cmap(norm(r)), clip_on=False)
-        fig = plt.gcf()
-        ax = fig.gca()
-        ax.add_artist(circle1)
-
-    plt.axis('equal')
-    plt.axis('off')
 
     """
     net = target.project.network
