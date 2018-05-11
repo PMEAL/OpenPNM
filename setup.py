@@ -50,7 +50,8 @@ setup(
         'transforms3d',
         'pandas',
         'flatdict',
-        'h5py'],
+        'h5py',
+		'porespy'],
 
     author='OpenPNM Team',
     author_email='jgostick@uwaterloo.ca',
