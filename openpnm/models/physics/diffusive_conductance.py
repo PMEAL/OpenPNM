@@ -2,7 +2,7 @@ import openpnm as op
 import scipy as _sp
 
 
-def ordinary_diffusion(target, molar_density='pore.molar_density',
+def ordinary_diffusion(target,
                        pore_diffusivity='pore.diffusivity',
                        throat_diffusivity='throat.diffusivity',
                        pore_area='pore.area',
@@ -42,7 +42,6 @@ def ordinary_diffusion(target, molar_density='pore.molar_density',
     tarea = network[throat_area]
     tlen = network[throat_length]
     # Interpolate pore phase property values to throats
-    ct = phase.interpolate_data(propname=molar_density)
     try:
         DABt = phase[throat_diffusivity]
     except KeyError:
@@ -63,11 +62,11 @@ def ordinary_diffusion(target, molar_density='pore.molar_density',
     plen1[plen1 <= 0] = 1e-12
     plen2[plen2 <= 0] = 1e-12
     # Find g for half of pore 1
-    gp1 = ct*(DABp*parea)[Ps[:, 0]] / plen1
+    gp1 = (DABp*parea)[Ps[:, 0]] / plen1
     gp1[_sp.isnan(gp1)] = _sp.inf
     gp1[~(gp1 > 0)] = _sp.inf  # Set 0 conductance pores (boundaries) to inf
     # Find g for half of pore 2
-    gp2 = ct*(DABp*parea)[Ps[:, 1]] / plen2
+    gp2 = (DABp*parea)[Ps[:, 1]] / plen2
     gp2[_sp.isnan(gp2)] = _sp.inf
     gp2[~(gp2 > 0)] = _sp.inf  # Set 0 conductance pores (boundaries) to inf
     # Find g for full throat, remove any non-positive lengths
@@ -78,7 +77,7 @@ def ordinary_diffusion(target, molar_density='pore.molar_density',
     except KeyError:
         sf = _sp.ones(network.num_throats())
     sf[_sp.isnan(sf)] = 1.0
-    gt = (1/sf)*ct*DABt*tarea/tlen
+    gt = (1/sf)*DABt*tarea/tlen
     # Set 0 conductance pores (boundaries) to inf
     gt[~(gt > 0)] = _sp.inf
     value = (1/gt + 1/gp1 + 1/gp2)**(-1)
