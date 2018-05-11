@@ -4,3 +4,4 @@ matplotlib
 pandas
 scikit-image
 sympy
+numba
