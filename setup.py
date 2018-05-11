@@ -51,7 +51,7 @@ setup(
         'pandas',
         'flatdict',
         'h5py',
-		  'porespy'],
+        'porespy'],
 
     author='OpenPNM Team',
     author_email='jgostick@uwaterloo.ca',
