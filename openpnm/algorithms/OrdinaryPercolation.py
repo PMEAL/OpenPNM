@@ -46,11 +46,6 @@ class OrdinaryPercolation(GenericAlgorithm):
     >>> mip.settings['mode'] = 'bond'
     >>> mip.set_inlets(pores=pn.pores(['left']))
     >>> mip.run(points)
-    >>> fig = plt.subplot(2, 4, 1)
-    >>> fig = plt.plot(*data, 'b-o')
-    >>> fig = plt.subplot(2, 4, 2)
-    >>> fig = plt.imshow(sp.reshape(mip['pore.invasion_pressure'], shape))
-    >>> fig = plt.title('Access Limited Bond Percolation')
 
     Clear the previous results with reset and rerun without access limitations:
 
@@ -58,11 +53,6 @@ class OrdinaryPercolation(GenericAlgorithm):
     >>> mip.settings['access_limited'] = False
     >>> mip.settings['mode'] = 'bond'
     >>> mip.run(points)
-    >>> fig = plt.subplot(2, 4, 3)
-    >>> fig = plt.plot(*data, 'r-o')
-    >>> fig = plt.subplot(2, 4, 4)
-    >>> fig = plt.imshow(sp.reshape(mip['pore.invasion_pressure'], shape))
-    >>> fig = plt.title('Normal Bond Percolation')
 
     Now try site percolation with access limitations:
 
@@ -71,11 +61,6 @@ class OrdinaryPercolation(GenericAlgorithm):
     >>> mip.settings['mode'] = 'site'
     >>> mip.set_inlets(pores=pn.pores(['left']))
     >>> mip.run(points)
-    >>> fig = plt.subplot(2, 4, 5)
-    >>> fig = plt.plot(*data, 'g-o')
-    >>> fig = plt.subplot(2, 4, 6)
-    >>> fig = plt.imshow(sp.reshape(mip['pore.invasion_pressure'], shape))
-    >>> fig = plt.title('Access Limited Site Percolation')
 
     And finally, site percolation without access limitations:
 
@@ -83,11 +68,6 @@ class OrdinaryPercolation(GenericAlgorithm):
     >>> mip.settings['access_limited'] = False
     >>> mip.settings['mode'] = 'site'
     >>> mip.run(points)
-    >>> fig = plt.subplot(2, 4, 7)
-    >>> fig = plt.plot(*data, 'c-o')
-    >>> fig = plt.subplot(2, 4, 8)
-    >>> fig = plt.imshow(sp.reshape(mip['pore.invasion_pressure'], shape))
-    >>> fig = plt.title('Normal Site Percolation')
     """
 
     def __init__(self, settings={}, **kwargs):
