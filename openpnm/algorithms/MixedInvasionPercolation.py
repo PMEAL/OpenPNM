@@ -105,11 +105,11 @@ class MixedInvasionPercolation(GenericPercolation):
         ----------
         pores : array_like
             The list of inlet pores from which the Phase can enter the Network
-        
+
         clusters : list of lists - can be just one list but each list defines
             a cluster of pores that share a common invasion pressure.
-            
-        Like Basic Invasion Percolation a queue of 
+
+        Like Basic Invasion Percolation a queue of
         """
         if pores is not None:
             logger.info("Setting inlet pores at shared pressure")
@@ -297,7 +297,7 @@ class MixedInvasionPercolation(GenericPercolation):
         while len(self.queue[c2empty]) > 0:
             temp = [_pc, _id, _type] = hq.heappop(self.queue[c2empty])
             if self[_type+'.invasion_sequence'][_id] == -1:
-                hq.heappush(self.queue[c2keep],temp)
+                hq.heappush(self.queue[c2keep], temp)
         self.invasion_running[c2empty] = False
 
     def return_results(self, pores=[], throats=[], Pc=None):
@@ -644,18 +644,18 @@ class MixedInvasionPercolation(GenericPercolation):
         except:
             logger.warning("Phase " + self._phase.name + " doesn't have " +
                            "property " + snap_off)
-    
+
     def _apply_residual_sat(self):
         r"""
         Method to start invasion in a network w. residual saturation.
         Called after inlets are set.
-        
+
         Looks at pore.occupancy on the phase only and treats inner throats, i.e.
         those that connect two pores in the cluster as invaded and outer ones
         as uninvaded. Uninvaded throats are added to a new residual cluster
         queue but do not start invading independently if not connected to an
         inlet.
-        
+
         Step 1. Identify clusters in the phase occupancy.
         Step 2. Look for clusters that are connected or contain an inlet
         Step 3. For those that are merge into inlet cluster. May be connected
@@ -672,7 +672,7 @@ class MixedInvasionPercolation(GenericPercolation):
         initial_num = len(self.queue)-1
         for rcluster_id in rcluster_ids:
             rPs = rclusters == rcluster_id
-            existing = np.unique(self['pore.cluster'][rPs]) 
+            existing = np.unique(self['pore.cluster'][rPs])
             existing = existing[existing > -1]
             if len(existing) > 0:
                 # There was at least one inlet cluster connected to this
