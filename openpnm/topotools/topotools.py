@@ -1851,7 +1851,7 @@ def find_path(network, pore_pairs, weights=None):
         Ts = network.find_neighbor_throats(pores=ans, mode='intersection')
         throats.append(sp.array(Ts, dtype=int))
     pdict = PrintableDict
-    dict_ = pdict({'pores': pores, 'throats': throats})
+    dict_ = pdict(**{'pores': pores, 'throats': throats})
     return dict_
 
 

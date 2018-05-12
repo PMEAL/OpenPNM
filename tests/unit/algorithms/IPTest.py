@@ -58,6 +58,14 @@ class IPTest:
         assert S < 0.55
         assert S > 0.45
 
+    def test_trapping(self):
+        alg = op.algorithms.InvasionPercolation(network=self.net)
+        alg.setup(phase=self.water)
+        alg.set_inlets(pores=self.net.pores('top'))
+        alg.run()
+        alg.apply_trapping(outlets=self.net.pores('bottom'))
+        assert 'pore.trapped' in alg.labels()
+
 
 if __name__ == '__main__':
 

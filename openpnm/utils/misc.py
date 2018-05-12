@@ -119,7 +119,7 @@ class HealthDict(PrintableDict):
     returns False.
     """
     def __init__(self, header='status', **kwargs):
-        super().__init__(header=header, **kwargs)
+        super().__init__(value=header, **kwargs)
 
     def _get_health(self):
         health = True

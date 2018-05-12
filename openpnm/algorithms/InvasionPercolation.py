@@ -287,10 +287,11 @@ class InvasionPercolation(GenericAlgorithm):
         Also creates 2 boolean arrays Np and Nt long called '<element>.trapped'
         """
         # First see if network is fully invaded
+        net = self.project.network
         invaded_ps = self['pore.invasion_sequence'] > -1
         if ~np.all(invaded_ps):
             # Put defending phase into clusters
-            clusters = self._net.find_clusters2(~invaded_ps)
+            clusters = net.find_clusters2(~invaded_ps)
             # Identify clusters that are connected to an outlet and set to -2
             # -1 is the invaded fluid
             # -2 is the defender fluid able to escape
@@ -301,20 +302,19 @@ class InvasionPercolation(GenericAlgorithm):
                     clusters[clusters == c] = -2
         else:
             # Go from end
-            clusters = np.ones(self._net.Np, dtype=int)*-1
+            clusters = np.ones(net.Np, dtype=int)*-1
             clusters[outlets] = -2
 
         # Turn into a list for indexing
         inv_seq = np.vstack((self['pore.invasion_sequence'].astype(int),
-                             np.arange(0, self._net.Np, dtype=int))).T
+                             np.arange(0, net.Np, dtype=int))).T
         # Reverse sort list
         inv_seq = inv_seq[inv_seq[:, 0].argsort()][::-1]
         next_cluster_num = np.max(clusters)+1
         # For all the steps after the inlets are set up to break-through
         # Reverse the sequence and assess the neighbors cluster state
-        stopped_clusters = np.zeros(self._net.Np, dtype=bool)
-        all_neighbors = self._net.find_neighbor_pores(self._net.pores(),
-                                                      flatten=False)
+        stopped_clusters = np.zeros(net.Np, dtype=bool)
+        all_neighbors = net.find_neighbor_pores(net.pores(), flatten=False)
         for un_seq, pore in inv_seq:
             if pore not in outlets:  # Don't bother with outlets
                 nc = clusters[all_neighbors[pore]]  # Neighboring clusters
@@ -367,8 +367,8 @@ class InvasionPercolation(GenericAlgorithm):
         logger.info("Number of trapped clusters" +
                     str(np.sum(np.unique(clusters) >= 0)))
         self['pore.trapped'] = self['pore.clusters'] > -1
-        trapped_ts = self._net.find_neighbor_throats(self['pore.trapped'])
-        self['throat.trapped'] = np.zeros([self._net.Nt], dtype=bool)
+        trapped_ts = net.find_neighbor_throats(self['pore.trapped'])
+        self['throat.trapped'] = np.zeros([net.Nt], dtype=bool)
         self['throat.trapped'][trapped_ts] = True
-        self['pore.invasion_sequence'][self['pore.trapped']] = np.inf
-        self['throat.invasion_sequence'][self['throat.trapped']] = np.inf
+        self['pore.invasion_sequence'][self['pore.trapped']] = -1
+        self['throat.invasion_sequence'][self['throat.trapped']] = -1
