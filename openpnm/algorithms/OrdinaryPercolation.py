@@ -8,8 +8,8 @@ logger = logging.getLogger(__name__)
 
 default_settings = {'access_limited': True,
                     'mode': 'bond',
-                    'pore_entry_pressure': 'pore.capillary_pressure',
-                    'throat_entry_pressure': 'throat.capillary_pressure',
+                    'pore_entry_threshold': 'pore.entry_pressure',
+                    'throat_entry_threshold': 'throat.entry_pressure',
                     'pore_volume': '',
                     'throat_volume': ''}
 
@@ -273,7 +273,7 @@ class OrdinaryPercolation(GenericAlgorithm):
         # Parse inputs and generate list of invasion points if necessary
         if self.settings['mode'] == 'bond':
             self['throat.entry_pressure'] = \
-                phase[self.settings['throat_entry_pressure']]
+                phase[self.settings['throat_entry_threshold']]
             if start is None:
                 start = sp.amin(self['throat.entry_pressure'])*0.95
             if stop is None:
@@ -281,7 +281,7 @@ class OrdinaryPercolation(GenericAlgorithm):
 
         elif self.settings['mode'] == 'site':
             self['pore.entry_pressure'] = \
-                phase[self.settings['pore_entry_pressure']]
+                phase[self.settings['pore_entry_threshold']]
             if start is None:
                 start = sp.amin(self['pore.entry_pressure'])*0.95
             if stop is None:
