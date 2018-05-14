@@ -103,6 +103,7 @@ def late_filling(target, pressure='pore.pressure',
     a percolation algorithm of some sort.
 
     """
+    element = pressure.split('.')[0]
     phase = target.project.find_phase(target)
     pc_star = phase[Pc_star]
     Pc = phase[pressure]
@@ -110,5 +111,5 @@ def late_filling(target, pressure='pore.pressure',
     Pc = sp.maximum(Pc, 1e-9)
     Swp = Swp_star*((pc_star/Pc)**eta)
     values = sp.clip(1 - Swp, 0.0, 1.0)
-    values = values[phase.pores(target.name)]
+    values = values[phase._get_indices(element=element)]
     return values
