@@ -20,16 +20,15 @@ class TransientDispersionTest:
                                               geometry=self.geo)
         mod1 = op.models.physics.hydraulic_conductance.hagen_poiseuille
         self.phys.add_model(propname='throat.hydraulic_conductance',
-                            model=mod1, viscosity='throat.viscosity',
-                            regen_mode='normal')
-        mod2 = op.models.physics.diffusive_conductance.bulk_diffusion
+                            model=mod1, regen_mode='normal')
+        mod2 = op.models.physics.diffusive_conductance.ordinary_diffusion
         self.phys.add_model(propname='throat.diffusive_conductance',
                             model=mod2, regen_mode='normal')
 
     def test_transient_dispersion(self):
         alg1 = op.algorithms.StokesFlow(network=self.net, phase=self.phase)
-        alg1.set_dirichlet_BC(pores=self.net.pores('back'), values=10)
-        alg1.set_dirichlet_BC(pores=self.net.pores('front'), values=0)
+        alg1.set_value_BC(pores=self.net.pores('back'), values=10)
+        alg1.set_value_BC(pores=self.net.pores('front'), values=0)
         alg1.run()
         self.phase[alg1.settings['quantity']] = alg1[alg1.settings['quantity']]
 
@@ -37,8 +36,8 @@ class TransientDispersionTest:
                                                          phase=self.phase)
         alg2.settings.update({'t_scheme': 'steady'})
         alg2.set_IC(0)
-        alg2.set_dirichlet_BC(pores=self.net.pores('back'), values=2)
-        alg2.set_dirichlet_BC(pores=self.net.pores('front'), values=0)
+        alg2.set_value_BC(pores=self.net.pores('back'), values=2)
+        alg2.set_value_BC(pores=self.net.pores('front'), values=0)
         alg2.run()
         x = [0., 0., 0.,
              0.97645, 1.18766, 1.37642,

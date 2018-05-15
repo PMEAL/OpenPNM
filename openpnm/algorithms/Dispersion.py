@@ -26,7 +26,6 @@ class Dispersion(ReactiveTransport):
                               'hydraulic_conductance':
                               'throat.hydraulic_conductance',
                               'diffusivity': 'pore.diffusivity',
-                              'molar_density': 'pore.molar_density',
                               'pressure': 'pore.pressure'})
         self.settings.update(settings)
 

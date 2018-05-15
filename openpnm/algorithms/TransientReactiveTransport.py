@@ -20,7 +20,6 @@ class TransientReactiveTransport(ReactiveTransport):
                               't_scheme': 'implicit'})
         super().__init__(**kwargs)
         self.settings.update(settings)
-        self._coef = 1  # Coefficient for units consistency
         self._A_steady = None  # Initialize the steady sys of eqs A matrix
 
     def setup(self, phase=None, t_initial='', t_final='', t_step='',
@@ -50,7 +49,7 @@ class TransientReactiveTransport(ReactiveTransport):
         r"""
         """
         network = self.project.network
-        Vi = self._coef*network['pore.volume']
+        Vi = network['pore.volume']
         dt = self.settings['t_step']
         s = self.settings['t_scheme']
         if (s == 'implicit'):
@@ -73,7 +72,7 @@ class TransientReactiveTransport(ReactiveTransport):
         """
         network = self.project.network
         phase = self.project.phases()[self.settings['phase']]
-        Vi = self._coef*network['pore.volume']
+        Vi = network['pore.volume']
         dt = self.settings['t_step']
         s = self.settings['t_scheme']
         if (s == 'implicit'):
