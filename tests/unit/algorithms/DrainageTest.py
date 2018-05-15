@@ -16,11 +16,11 @@ class DrainageTest:
                                               phase=self.water,
                                               geometry=self.geo)
         mod = op.models.physics.capillary_pressure.washburn
-        self.phys.add_model(propname='throat.capillary_pressure',
+        self.phys.add_model(propname='throat.entry_pressure',
                             model=mod)
 
     def test_set_inlets_overwrite(self):
-        self.alg = op.algorithms.Drainage(network=self.net)
+        self.alg = op.algorithms.Porosimetry(network=self.net)
         self.alg.setup(phase=self.water)
 
         self.alg.set_inlets(pores=self.net.pores('top'))
@@ -36,14 +36,14 @@ class DrainageTest:
         assert sp.sum(self.alg['pore.inlets']) == 0
 
     def test_set_inlets_conflicting_with_outlets(self):
-        self.alg = op.algorithms.Drainage(network=self.net)
+        self.alg = op.algorithms.Porosimetry(network=self.net)
         self.alg.setup(phase=self.water)
         self.alg['pore.outlets'][self.net.pores('top')] = True
         with pytest.raises(Exception):
             self.alg.set_inlets(pores=self.net.pores('top'))
 
     def test_set_outlets_conflicting_with_inlets(self):
-        self.alg = op.algorithms.Drainage(network=self.net)
+        self.alg = op.algorithms.Porosimetry(network=self.net)
         self.alg.setup(phase=self.water)
         self.alg['pore.inlets'][self.net.pores('top')] = True
         try:
@@ -53,14 +53,14 @@ class DrainageTest:
         assert flag
 
     def test_set_outlets_without_trapping(self):
-        self.alg = op.algorithms.Drainage(network=self.net)
+        self.alg = op.algorithms.Porosimetry(network=self.net)
         self.alg.setup(phase=self.water)
         self.alg.set_inlets(pores=self.net.pores('top'))
         with pytest.raises(Exception):
             self.alg.set_outlets(pores=self.net.pores('top'))
 
     def test_set_outlets_overwrite(self):
-        self.alg = op.algorithms.Drainage(network=self.net)
+        self.alg = op.algorithms.Porosimetry(network=self.net)
         self.alg.setup(phase=self.water)
 
         self.alg.set_outlets(pores=self.net.pores('top'))
@@ -76,7 +76,7 @@ class DrainageTest:
         assert sp.sum(self.alg['pore.outlets']) == 0
 
     def test_set_residual_modes(self):
-        self.alg = op.algorithms.Drainage(network=self.net)
+        self.alg = op.algorithms.Porosimetry(network=self.net)
         self.alg.setup(phase=self.water)
 
         Ps = sp.random.randint(0, self.net.Np, 10)
@@ -105,49 +105,32 @@ class DrainageTest:
         assert sp.sum(self.alg['pore.residual']) == 0
 
     def test_run_npts(self):
-        self.alg = op.algorithms.Drainage(network=self.net)
+        self.alg = op.algorithms.Porosimetry(network=self.net)
         self.alg.setup(phase=self.water)
         Ps = sp.random.randint(0, self.net.Np, 10)
         self.alg.set_inlets(pores=Ps)
         self.alg.run(points=20)
 
-#    def test_run_inv_pressures(self):
-#        self.alg = op.algorithms.Drainage(network=self.net)
-#        self.alg.setup(phase=self.water)
-#        Ps = sp.random.randint(0, self.net.Np, 10)
-#        self.alg.set_inlets(pores=Ps)
-#        self.alg.run(points=range(0, 20000, 1000))
-#        assert sp.all(self.alg._inv_points == range(0, 20000, 1000))
+    def test_run_inv_pressures(self):
+        self.alg = op.algorithms.Porosimetry(network=self.net)
+        self.alg.setup(phase=self.water)
+        Ps = sp.random.randint(0, self.net.Np, 10)
+        self.alg.set_inlets(pores=Ps)
+        self.alg.run(points=range(0, 20000, 1000))
 
     def test_run_no_inlets(self):
-        self.alg = op.algorithms.Drainage(network=self.net)
+        self.alg = op.algorithms.Porosimetry(network=self.net)
         self.alg.setup(phase=self.water)
         with pytest.raises(Exception):
             self.alg.run()
 
-#    def test_run_w_trapping_but_no_outlets(self):
-#        self.alg = op.algorithms.Drainage(network=self.net)
-#        self.alg.setup(phase=self.water)
-#        Ps = sp.random.randint(0, self.net.Np, 10)
-#        self.alg.set_inlets(pores=Ps)
-#        with pytest.raises(Exception):
-#            self.alg.run()
-
-#    def test_run_w_trapping(self):
-#        self.alg = op.algorithms.Drainage(network=self.net)
-#        self.alg.setup(invading_phase=self.water,
-#                       defending_phase=self.air,
-#                       trapping=True)
-#        self.alg.set_inlets(pores=self.net.pores('top'))
-#        self.alg.set_inlets(pores=self.net.pores('bottom'))
-
     def test_run_w_residual_pores_and_throats(self):
-        self.alg = op.algorithms.Drainage(network=self.net)
+        self.alg = op.algorithms.Porosimetry(network=self.net)
         self.alg.setup(phase=self.water)
         self.alg.set_inlets(pores=self.net.pores('top'))
         self.alg.set_residual(pores=self.net.pores('bottom'))
         self.alg.run()
-        data = self.alg.get_drainage_data()
+        data = self.alg.get_intrusion_data()
         assert hasattr(data, 'Pcap')
         assert hasattr(data, 'Snwp')
 

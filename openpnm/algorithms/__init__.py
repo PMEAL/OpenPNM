@@ -14,7 +14,6 @@ from .OhmicConduction import OhmicConduction
 from .GenericPercolation import GenericPercolation
 from .OrdinaryPercolation import OrdinaryPercolation
 from .InvasionPercolation import InvasionPercolation
-from .Drainage import Drainage
 from .MixedInvasionPercolation import MixedInvasionPercolation
 from .Porosimetry import Porosimetry
 from .SiteAndBondPercolation import SiteAndBondPercolation
