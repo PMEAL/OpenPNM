@@ -151,3 +151,38 @@ def sato(target, mol_weight='pore.molecular_weight',
     Tr = T/Tc
     value = (1.11/((MW*1e3)**0.5))*(3+20*(1-Tr)**(2/3))/(3+20*(1-Tbr)**(2/3))
     return value
+
+
+def cantera(target, cantera_phase_obj, temperature='pore.temperature',
+            pressure='pore.pressure'):
+    r"""
+    Uses Cantera module to calculate thermal conductivity.
+
+    Parameters
+    ----------
+    target : OpenPNM Object
+        The object for which these values are being calculated.  This
+        controls the length of the calculated array, and also provides
+        access to other necessary thermofluid properties.
+
+    cantera_phase_obj : Cantera Solution instance
+        The object which contains the model to calculate thermal conductivity
+
+    temperature : string
+        The dictionary key containing the temperature values (K)
+
+    pressure : string
+        The dictionary key containing the pressure values (Pa)
+
+    """
+    try:
+        import cantera as ct
+    except ModuleNotFoundError:
+        raise Exception('Cantera is not installed. Visit https://www.canter' +
+                        'a.org/docs/sphinx/html/install.html for more info.')
+
+    T = target[temperature]
+    p = target[pressure]
+    states = ct.SolutionArray(phase=cantera_phase_obj, shape=T.size)
+    states.TP = T, p
+    return states.thermal_conductivity
