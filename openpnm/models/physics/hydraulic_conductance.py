@@ -2,7 +2,9 @@ import openpnm as op
 import scipy as _sp
 
 
-def hagen_poiseuille(target, viscosity='pore.viscosity',
+def hagen_poiseuille(target,
+                     pore_viscosity='pore.viscosity',
+                     throat_viscosity='throat.viscosity',
                      pore_diameter='pore.diameter',
                      throat_length='throat.length',
                      throat_diameter='throat.diameter',
@@ -29,12 +31,14 @@ def hagen_poiseuille(target, viscosity='pore.viscosity',
     # Get Nt-by-2 list of pores connected to each throat
     Ps = network['throat.conns']
     # Get properties in every pore in the network
-    if 'pore' in viscosity:
-        mut = phase.interpolate_data(viscosity)
-        mup = phase[viscosity]
-    elif 'throat' in viscosity:
-        mup = phase.interpolate_data(viscosity)
-        mut = phase[viscosity]
+    try:
+        mup = phase[pore_viscosity]
+    except KeyError:
+        mup = phase.interpolate_data(throat_viscosity)
+    try:
+        mut = phase[throat_viscosity]
+    except KeyError:
+        mut = phase.interpolate_data(pore_viscosity)
     pdia = network[pore_diameter]
     if calc_pore_len:
         lengths = op.utils.misc.conduit_lengths(network, mode='centroid')
@@ -47,12 +51,12 @@ def hagen_poiseuille(target, viscosity='pore.viscosity',
     plen1[plen1 <= 0] = 1e-12
     plen2[plen2 <= 0] = 1e-12
     # Find g for half of pore 1
-    gp1 = _sp.pi*(pdia[Ps[:, 0]])**4/(128*plen1*mut)
+    gp1 = _sp.pi*(pdia[Ps[:, 0]])**4/(128*plen1*mup[Ps[:, 0]])
     gp1[_sp.isnan(gp1)] = _sp.inf
     gp1[~(gp1 > 0)] = _sp.inf  # Set 0 conductance pores (boundaries) to inf
 
     # Find g for half of pore 2
-    gp2 = _sp.pi*(pdia[Ps[:, 1]])**4/(128*plen2*mut)
+    gp2 = _sp.pi*(pdia[Ps[:, 1]])**4/(128*plen2*mup[Ps[:, 1]])
     gp2[_sp.isnan(gp2)] = _sp.inf
     gp2[~(gp2 > 0)] = _sp.inf  # Set 0 conductance pores (boundaries) to inf
     # Find g for full throat

@@ -27,9 +27,9 @@ def generic(target, func, seeds='pore.seed'):
 generic.__doc__ = _misc.generic.__doc__
 
 
-def largest_sphere(target, pore_diameter='pore.diameter', iters=10):
+def largest_sphere(target, fixed_diameter='pore.fixed_diameter', iters=10):
     r"""
-    Finds the maximum diameter pore that can be places in each location without
+    Finds the maximum diameter pore that can be placed in each location without
     overlapping any neighbors.
 
     Parameters
@@ -39,7 +39,7 @@ def largest_sphere(target, pore_diameter='pore.diameter', iters=10):
         length of the calculated array, and also provides access to other
         necessary properties.
 
-    pore_diameter : string
+    fixed_diameter : string
         The dictionary key containing the pore diameter values already
         assigned to network, if any.
 
@@ -64,7 +64,7 @@ def largest_sphere(target, pore_diameter='pore.diameter', iters=10):
     network = target.project.network
     try:
         # Fetch any existing pore diameters on the network
-        D = network[pore_diameter]
+        D = network[fixed_diameter]
         # Set any unassigned values (nans) to 0
         D[_np.isnan(D)] = 0
     except KeyError:

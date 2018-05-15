@@ -15,14 +15,14 @@ class ViscosityTest:
 
     def test_water(self):
         self.phase.add_model(propname='pore.viscosity',
-                             model=op.models.phase.viscosity.water)
+                             model=op.models.phases.viscosity.water)
         self.phase.regenerate_models()
         assert_approx_equal(self.phase['pore.viscosity'].mean(),
                             0.0008931909)
 
     def test_reynolds(self):
         self.phase.add_model(propname='pore.viscosity',
-                             model=op.models.phase.viscosity.reynolds,
+                             model=op.models.phases.viscosity.reynolds,
                              u0=0.001,
                              b=0.001)
         self.phase.regenerate_models()
@@ -31,7 +31,7 @@ class ViscosityTest:
 
     def test_chung(self):
         self.phase.add_model(propname='pore.viscosity',
-                             model=op.models.phase.viscosity.chung)
+                             model=op.models.phases.viscosity.chung)
         self.phase.regenerate_models()
         assert_approx_equal(self.phase['pore.viscosity'].mean(),
                             6.47289919e-05)

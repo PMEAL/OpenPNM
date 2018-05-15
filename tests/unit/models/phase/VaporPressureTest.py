@@ -11,7 +11,7 @@ class VaporPressureTest:
         self.phase['pore.salinity'] = sp.zeros((self.phase.Np,))
 
     def test_antoine(self):
-        f = op.models.phase.vapor_pressure.antoine
+        f = op.models.phases.vapor_pressure.antoine
         self.phase.add_model(propname='pore.test',
                              model=f,
                              temperature='pore.temperature',
@@ -23,7 +23,7 @@ class VaporPressureTest:
                             3607.8508)
 
     def test_water(self):
-        f = op.models.phase.vapor_pressure.water
+        f = op.models.phases.vapor_pressure.water
         self.phase.add_model(propname='pore.test',
                              model=f,
                              temperature='pore.temperature',
@@ -33,7 +33,7 @@ class VaporPressureTest:
                             3536.0130)
 
     def test_water_no_salinity(self):
-        f = op.models.phase.vapor_pressure.water
+        f = op.models.phases.vapor_pressure.water
         del self.phase['pore.salinity']
         self.phase.add_model(propname='pore.test',
                              model=f,

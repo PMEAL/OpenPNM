@@ -15,7 +15,7 @@ class SurfaceTensionTest:
         self.phase['pore.molar_density'] = 55.5  # mol/m3
 
     def test_water(self):
-        f = op.models.phase.surface_tension.water
+        f = op.models.phases.surface_tension.water
         self.phase.add_model(propname='pore.surface_tension',
                              model=f)
         self.phase.regenerate_models()
@@ -23,7 +23,7 @@ class SurfaceTensionTest:
                             0.07199533)
 
     def test_eotvos(self):
-        f = op.models.phase.surface_tension.eotvos
+        f = op.models.phases.surface_tension.eotvos
         self.phase.add_model(propname='pore.surface_tension',
                              model=f,
                              k=0.000014)
@@ -32,7 +32,7 @@ class SurfaceTensionTest:
                             0.07112169)
 
     def test_guggenheim_katayama(self):
-        f = op.models.phase.surface_tension.guggenheim_katayama
+        f = op.models.phases.surface_tension.guggenheim_katayama
         self.phase.add_model(propname='pore.surface_tension',
                              model=f,
                              K2=0.0000014,
@@ -42,7 +42,7 @@ class SurfaceTensionTest:
                             0.27582571)
 
     def test_brock_bird_scaling(self):
-        f = op.models.phase.surface_tension.brock_bird_scaling
+        f = op.models.phases.surface_tension.brock_bird_scaling
         self.phase.add_model(propname='pore.surface_tension',
                              model=f,
                              sigma_o=0.0608,

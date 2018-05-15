@@ -18,8 +18,8 @@ class DiffusiveConductanceTest:
                                               phase=self.air,
                                               geometry=self.geo)
 
-    def test_bulk_diffusion(self):
-        mod = op.models.physics.diffusive_conductance.bulk_diffusion
+    def test_ordinary_diffusion(self):
+        mod = op.models.physics.diffusive_conductance.ordinary_diffusion
         self.phys.add_model(propname='throat.conductance1',
                             model=mod)
         self.phys.regenerate_models()
