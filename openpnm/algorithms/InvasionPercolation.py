@@ -316,7 +316,7 @@ class InvasionPercolation(GenericAlgorithm):
         stopped_clusters = np.zeros(net.Np, dtype=bool)
         all_neighbors = net.find_neighbor_pores(net.pores(), flatten=False)
         for un_seq, pore in inv_seq:
-            if pore not in outlets:  # Don't bother with outlets
+            if pore not in outlets and un_seq > 0:  # Skip inlets and outlets
                 nc = clusters[all_neighbors[pore]]  # Neighboring clusters
                 unique_ns = np.unique(nc[nc != -1])  # Unique Neighbors
                 seq_pore = "S:"+str(un_seq)+" P:"+str(pore)
