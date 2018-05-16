@@ -52,14 +52,14 @@ class MultiPhaseTest:
 
     def test_late_throat_filling(self):
         self.phys.add_model(propname='throat.nwp_saturation',
-                            model=pm.multiphase.late_throat_filling,
+                            model=pm.multiphase.partial_filling,
                             Pc=5500)
         assert sp.all(self.phase['throat.nwp_saturation'] < 1.0)
         assert sp.all(self.phase['throat.nwp_saturation'] > 0.0)
 
     def test_late_pore_filling(self):
         self.phys.add_model(propname='pore.nwp_saturation',
-                            model=pm.multiphase.late_pore_filling,
+                            model=pm.multiphase.late_filling,
                             Pc=5500)
         assert sp.all(self.phase['pore.nwp_saturation'] < 1.0)
         assert sp.all(self.phase['pore.nwp_saturation'] > 0.0)

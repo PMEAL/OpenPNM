@@ -21,8 +21,8 @@ class SiteAndBondPercolation(OrdinaryPercolation):
     >>> pn = op.network.Cubic(shape=shape)
     >>> hg = op.phases.Mercury(network=pn)
     >>> phys = op.physics.GenericPhysics(network=pn, phase=hg, geometry=pn)
-    >>> phys['pore.capillary_pressure'] = sp.rand(pn.Np)
-    >>> phys['throat.capillary_pressure'] = sp.rand(pn.Nt)
+    >>> phys['pore.entry_pressure'] = sp.rand(pn.Np)
+    >>> phys['throat.entry_pressure'] = sp.rand(pn.Nt)
 
     Initialize the algorithm, run setup, and generate a lit of invasion points:
 
