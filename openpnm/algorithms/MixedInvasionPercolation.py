@@ -37,14 +37,14 @@ class MixedInvasionPercolation(GenericPercolation):
         super().__init__(**kwargs)
         self.settings.update({'pore_volume': 'pore.volume',
                               'throat_volume': 'throat.volume',
-                              'pore_entry_pressure': 'pore.capillary_pressure',
-                              'throat_entry_pressure': 'throat.capillary_pressure',
+                              'pore_entry_pressure': 'pore.entry_pressure',
+                              'throat_entry_pressure': 'throat.entry_pressure',
                               'mode': 'mixed',
                               'residual_saturation': False,
                               'snap_off': False,
                               'invade_isolated_Ts': False})
 
-    def setup(self, phase, def_phase):
+    def setup(self, phase):
         r"""
         Set up the required parameters for the algorithm
 
@@ -54,14 +54,8 @@ class MixedInvasionPercolation(GenericPercolation):
             The phase to be injected into the Network.  The Phase must have the
             capillary entry pressure values for the system.
 
-        prop : string
-            The name of the property containing the capillary entry
-            pressure.  This should be applied to both throats and pores.
-
         """
         self._phase = phase
-        self._def = def_phase
-        # Setup arrays and info
         self['throat.entry_pressure'] = phase[self.settings['throat_entry_pressure']]
         self['pore.entry_pressure'] = phase[self.settings['pore_entry_pressure']]
         self.reset()
@@ -300,7 +294,7 @@ class MixedInvasionPercolation(GenericPercolation):
                 hq.heappush(self.queue[c2keep], temp)
         self.invasion_running[c2empty] = False
 
-    def return_results(self, pores=[], throats=[], Pc=None):
+    def results(self, pores=[], throats=[], Pc=None):
         r"""
         Places the results of the IP simulation into the Phase object.
 
@@ -331,8 +325,6 @@ class MixedInvasionPercolation(GenericPercolation):
                 self['pore.occupancy'] = self['pore.invasion_pressure'] <= Pc
                 self._phase['throat.occupancy'] = self['throat.occupancy']
                 self._phase['pore.occupancy'] = self['pore.occupancy']
-                self._def['throat.occupancy'] = ~self['throat.occupancy']
-                self._def['pore.occupancy'] = ~self['pore.occupancy']
             else:
                 logger.warning("Occupancy not updated, please run " +
                                "extract_drainage() method to populate" +
@@ -621,9 +613,7 @@ class MixedInvasionPercolation(GenericPercolation):
             self['throat.invasion_sequence'][self['throat.trapped']] = -1
             # Assumes invasion has run to the end
             self._phase['pore.occupancy'] = ~self['pore.trapped']
-            self._def['pore.occupancy'] = self['pore.trapped']
             self._phase['throat.occupancy'] = ~self['throat.trapped']
-            self._def['throat.occupancy'] = self['throat.trapped']
         else:
             logger.info("No trapped clusters found")
 
