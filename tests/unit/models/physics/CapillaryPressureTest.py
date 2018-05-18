@@ -111,7 +111,7 @@ class CapillaryPressureTest:
         phys1.add_model(propname='throat.snap_off_pair',
                         model=f,
                         wavelength=fiber_rad,
-                        require_pair=True)        
+                        require_pair=True)
         phys2 = op.physics.GenericPhysics(network=net,
                                           geometry=vor_geom,
                                           phase=water)

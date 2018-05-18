@@ -46,7 +46,7 @@ class VoronoiTest:
     def test_plot_pore(self):
         vo.plot_pore(self.del_geom, pores=self.del_geom.pores())
         plt.close('all')
-    
+
     def test_plot_throat(self):
         vo.plot_throat(self.del_geom, throats=[0])
         plt.close('all')
