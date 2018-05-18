@@ -105,6 +105,18 @@ class TopotoolsTest:
         assert net.Np == 150
         assert net.Nt == 300
 
+    def test_ispercolating(self):
+        net = op.network.Cubic(shape=[10, 10, 10], connectivity=26)
+        tmask = net['throat.all']
+        Pin = net.pores('left')
+        Pout = net.pores('right')
+        am = net.create_adjacency_matrix(weights=tmask, fmt='coo')
+        val = topotools.ispercolating(am=am, mode='bond',
+                                      inlets=Pin, outlets=Pout)
+        assert val
+        val = topotools.ispercolating(am=am, mode='site',
+                                      inlets=Pin, outlets=Pout)
+        assert val
 
 if __name__ == '__main__':
 

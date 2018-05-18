@@ -360,7 +360,9 @@ def site_percolation(ij, occupied_sites):
     adj_mat.eliminate_zeros()
     clusters = csgraph.connected_components(csgraph=adj_mat, directed=False)[1]
     clusters[~occupied_sites] = -1
-    s_labels = ps.tools.make_contiguous(clusters + 1) - 1
+    s_labels = ps.tools.make_contiguous(clusters + 1)
+    if sp.any(~occupied_sites):
+        s_labels -= 1
     b_labels = sp.amin(s_labels[ij], axis=1)
     tup = namedtuple('cluster_labels', ('sites', 'bonds'))
     return tup(s_labels, b_labels)
