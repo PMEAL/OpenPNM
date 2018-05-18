@@ -87,7 +87,7 @@ class CapillaryPressureTest:
                        [0.75, 0.25, 0.75], [0.75, 0.75, 0.75]])
         scale = 1e-4
         sp.random.seed(1)
-        p = (sp.random.random([len(bp), 3])-0.5)/10000
+        p = (sp.random.random([len(bp), 3])-0.5)/1000
         bp += p
         fiber_rad = 2e-6
         net = op.materials.VoronoiFibers(fiber_rad=fiber_rad,
@@ -108,14 +108,24 @@ class CapillaryPressureTest:
         phys1.add_model(propname='throat.snap_off',
                         model=f,
                         wavelength=fiber_rad)
+        phys1.add_model(propname='throat.snap_off_pair',
+                        model=f,
+                        wavelength=fiber_rad,
+                        require_pair=True)        
         phys2 = op.physics.GenericPhysics(network=net,
                                           geometry=vor_geom,
                                           phase=water)
         phys2.add_model(propname='throat.snap_off',
                         model=f,
                         wavelength=fiber_rad)
+        phys2.add_model(propname='throat.snap_off_pair',
+                        model=f,
+                        wavelength=fiber_rad,
+                        require_pair=True)
         ts = ~net['throat.interconnect']
         assert ~sp.any(sp.isnan(water['throat.snap_off'][ts]))
+        assert sp.any(sp.isnan(water['throat.snap_off_pair'][ts]))
+        assert sp.any(~sp.isnan(water['throat.snap_off_pair'][ts]))
 
 if __name__ == '__main__':
 
