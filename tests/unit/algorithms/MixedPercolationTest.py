@@ -380,7 +380,7 @@ class MixedPercolationTest:
         IP_1.results()
         assert np.any(IP_1['throat.invasion_sequence'][outlets]>-1)
         assert np.any(IP_1['throat.invasion_sequence']==-1)
-        
+
 
 if __name__ == '__main__':
     t = MixedPercolationTest()
