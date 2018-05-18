@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 ===============================================================================
-InvasionPercolationBasic: Simple IP
+MixedInvasionPercolation: IP allowing pores and throats to invade separately
 ===============================================================================
 
 """

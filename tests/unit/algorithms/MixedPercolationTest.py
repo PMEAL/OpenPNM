@@ -363,6 +363,25 @@ class MixedPercolationTest:
         IP_1.results()
         assert np.any(IP_1['throat.invasion_sequence']-save_seq != 0)
 
+    def test_terminate_clusters(self):
+        self.setup_class(Np=10)
+        net = self.net
+        phys = self.phys
+        np.random.seed(1)
+        phys['throat.entry_pressure']=0.0
+        phys['pore.entry_pressure']=np.random.random(net.Np)*net.Np
+        inlets = net.pores('left')
+        outlets = net.pores('right')
+        IP_1 = mp(network=self.net)
+        IP_1.setup(phase=self.phase)
+        IP_1.set_inlets(pores=inlets)
+        IP_1.set_outlets(pores=outlets)
+        IP_1.run()
+        IP_1.results()
+        assert np.any(IP_1['throat.invasion_sequence'][outlets]>-1)
+        assert np.any(IP_1['throat.invasion_sequence']==-1)
+        
+
 if __name__ == '__main__':
     t = MixedPercolationTest()
     t.setup_class()
