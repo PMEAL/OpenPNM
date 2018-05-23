@@ -6,6 +6,40 @@ ws = Workspace()
 logger = logging.getLogger()
 
 
+class ModelWrapper(dict):
+
+    def run(self):
+        r"""
+        This provides an alternative way to run the model, rather than using
+        the ``regenerate_models`` function on the target object.
+
+        Returns
+        -------
+        An array of data calculated by the model, with a length dictated by
+        the size of the target object.
+
+        """
+        target = self.find_target()
+        kwargs = self.get_kwargs()
+        vals = self['model'](target=target, **kwargs)
+        return vals
+
+    def get_kwargs(self):
+        kwargs = self.copy()
+        del kwargs['model']
+        del kwargs['regen_mode']
+        return kwargs
+
+    def find_target(self):
+        for proj in ws.values():
+            for obj in proj:
+                for model in obj.models.values():
+                    if model['model'] is self['model']:
+                        target = obj
+                        break  # Target found, so stop searching
+        return target
+
+
 class ModelsDict(PrintableDict):
 
     def dependency_list(self):
@@ -82,6 +116,14 @@ class ModelsDict(PrintableDict):
                                font_size=32,
                                font_weight='bold')
         return fig
+
+    def find_target(self):
+        for proj in ws.values():
+            for obj in proj:
+                if obj.models is self:
+                    target = obj
+                    break  # Target found, so stop searching
+        return target
 
     def __str__(self):
         horizontal_rule = '―' * 78
