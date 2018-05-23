@@ -24,14 +24,14 @@ class DiffusiveConductanceTest:
                             model=mod)
         self.phys.regenerate_models()
         assert_approx_equal(self.phys['throat.conductance1'].mean(),
-                            0.000845515)
+                            2.067547834363044e-05)
 
         self.phys.add_model(propname='throat.conductance2',
                             model=mod,
                             calc_pore_len=True)
         self.phys.regenerate_models()
         assert_approx_equal(self.phys['throat.conductance2'].mean(),
-                            0.000845515)
+                            2.067547834363044e-05)
 
 
 if __name__ == '__main__':

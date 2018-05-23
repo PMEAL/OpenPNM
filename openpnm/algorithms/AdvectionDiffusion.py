@@ -20,14 +20,12 @@ class AdvectionDiffusion(ReactiveTransport):
                               'hydraulic_conductance':
                               'throat.hydraulic_conductance',
                               'pressure': 'pore.pressure',
-                              'molar_density': 'pore.molar_density',
                               's_scheme': 'powerlaw'})
         # Apply any received settings to overwrite defaults
         self.settings.update(settings)
 
     def setup(self, phase=None, quantity='', diffusive_conductance='',
-              hydraulic_conductance='', pressure='', molar_density='',
-              s_scheme='', **kwargs):
+              hydraulic_conductance='', pressure='', s_scheme='', **kwargs):
         r"""
 
         """
@@ -41,8 +39,6 @@ class AdvectionDiffusion(ReactiveTransport):
             self.settings['hydraulic_conductance'] = hydraulic_conductance
         if pressure:
             self.settings['pressure'] = pressure
-        if molar_density:
-            self.settings['molar_density'] = molar_density
         if s_scheme:
             self.settings['s_scheme'] = s_scheme
         super().setup(**kwargs)
@@ -55,14 +51,13 @@ class AdvectionDiffusion(ReactiveTransport):
         gh_0 = phase[self.settings['hydraulic_conductance']]
         gd = phase[self.settings['diffusive_conductance']]
         gd = np.tile(gd, 2)
-        md = phase[self.settings['molar_density']][0]
 
         conns1 = network['throat.conns']
         conns2 = np.flip(conns1, axis=1)
 
-        Qij1 = md*gh_0*np.diff(P[conns1], axis=1).squeeze()
+        Qij1 = gh_0*np.diff(P[conns1], axis=1).squeeze()
         Qij1 = np.append(Qij1, -Qij1)
-        Qij2 = md*gh_0*np.diff(P[conns2], axis=1).squeeze()
+        Qij2 = gh_0*np.diff(P[conns2], axis=1).squeeze()
         Qij2 = np.append(Qij2, -Qij2)
 
         qP1 = np.where(Qij1 > 0, Qij1, 0)  # Throat positive flow rates
@@ -91,5 +86,4 @@ class AdvectionDiffusion(ReactiveTransport):
             # Overwrite the diagonal
             A.setdiag(A_diags.diagonal())
             self._pure_A = A
-        self._A = self._pure_A.copy()
-        return self._A
+        self.A = self._pure_A.copy()

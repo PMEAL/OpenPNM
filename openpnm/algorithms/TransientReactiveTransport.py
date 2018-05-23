@@ -12,7 +12,7 @@ class TransientReactiveTransport(ReactiveTransport):
 
     def __init__(self, settings={}, **kwargs):
         self.settings.update({'t_initial': 0,
-                              't_final': 5e+03,
+                              't_final': 5e+04,
                               't_step': 0.1,
                               't_output': 1e+08,
                               't_tolerance': 1e-06,
@@ -20,7 +20,6 @@ class TransientReactiveTransport(ReactiveTransport):
                               't_scheme': 'implicit'})
         super().__init__(**kwargs)
         self.settings.update(settings)
-        self._coef = 1  # Coefficient for units consistency
         self._A_steady = None  # Initialize the steady sys of eqs A matrix
 
     def setup(self, phase=None, t_initial='', t_final='', t_step='',
@@ -50,7 +49,7 @@ class TransientReactiveTransport(ReactiveTransport):
         r"""
         """
         network = self.project.network
-        Vi = self._coef*network['pore.volume']
+        Vi = network['pore.volume']
         dt = self.settings['t_step']
         s = self.settings['t_scheme']
         if (s == 'implicit'):
@@ -73,7 +72,7 @@ class TransientReactiveTransport(ReactiveTransport):
         """
         network = self.project.network
         phase = self.project.phases()[self.settings['phase']]
-        Vi = self._coef*network['pore.volume']
+        Vi = network['pore.volume']
         dt = self.settings['t_step']
         s = self.settings['t_scheme']
         if (s == 'implicit'):
@@ -99,7 +98,10 @@ class TransientReactiveTransport(ReactiveTransport):
         """
         print('―'*80)
         print('Running TransientTransport')
-        # Create a scratch b from IC to apply BCs to A matrix
+        # If solver used in steady mode, no need to add ICs
+        if (self.settings['t_scheme'] == 'steady'):
+            self[self.settings['quantity']] = 0
+        # Create a scratch b from IC
         self._b = self[self.settings['quantity']]
         self._apply_BCs()
         # Save A matrix (with BCs applied) of the steady sys of eqs
@@ -129,10 +131,6 @@ class TransientReactiveTransport(ReactiveTransport):
         self.settings['t_output'] = to
         outputs = np.append(np.arange(t+to, tf, to), tf)
 
-        # Export the initial field (t=t_initial)
-        vals = self[self.settings['quantity']]
-        self[self.settings['quantity']+'_initial'] = vals
-
         if (s == 'steady'):  # If solver in steady mode, do one iteration
             print('    Running in steady mode')
             x_old = self[self.settings['quantity']]
@@ -140,6 +138,9 @@ class TransientReactiveTransport(ReactiveTransport):
             x_new = self[self.settings['quantity']]
 
         else:  # Do time iterations
+            # Export the initial field (t=t_initial)
+            vals = self[self.settings['quantity']]
+            self[self.settings['quantity']+'_initial'] = vals
             for time in np.arange(t+dt, tf+dt, dt):
                 if (res_t >= tol):  # Check if the steady state is reached
                     print('    Current time step: '+str(time)+' s')
