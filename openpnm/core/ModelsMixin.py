@@ -1,4 +1,5 @@
 import inspect
+import networkx as nx
 from openpnm.core import Workspace, logging
 from openpnm.utils.misc import PrintableDict
 ws = Workspace()
@@ -7,20 +8,80 @@ logger = logging.getLogger()
 
 class ModelsDict(PrintableDict):
 
-    def dependency_tree(self):
-        tree = []
+    def dependency_list(self):
+        r'''
+        Returns a list of dependencies in the order with which they should be
+        called to ensure data is calculated by one model before it's asked for
+        by another.
+
+        Notes
+        -----
+        This raises an exception if the graph has cycles which means the
+        dependencies are unresolvable (i.e. there is no order which the
+        models can be called that will work).  In this case it is possible
+        to visually inspect the graph using ``dependency_graph``.
+
+        See Also
+        --------
+        dependency_graph
+        dependency_map
+
+        '''
+        dtree = self.dependency_graph()
+        cycles = list(nx.simple_cycles(dtree))
+        if cycles:
+            raise Exception('Cyclic dependency found: ' + ' -> '.join(
+                            cycles[0] + [cycles[0][0]]))
+        d = nx.algorithms.dag.lexicographical_topological_sort(dtree, sorted)
+        return list(d)
+
+    def dependency_graph(self):
+        r"""
+        Returns a NetworkX graph object of the dependencies
+
+        See Also
+        --------
+        dependency_list
+        dependency_map
+
+        Notes
+        -----
+        To visualize the dependencies, the following NetworkX function and
+        settings is helpful:
+
+        nx.draw_spectral(d, arrowsize=50, font_size=32, with_labels=True,
+                         node_size=2000, width=3.0, edge_color='lightgrey',
+                         font_weight='bold')
+
+        """
+        dtree = nx.DiGraph()
         for propname in self.keys():
-            if propname not in tree:
-                tree.append(propname)
-            kwargs = self[propname].copy()
-            kwargs.pop('model')
-            kwargs.pop('regen_mode', None)
-            for dependency in kwargs.values():
+            dtree.add_node(propname)
+            for dependency in self[propname].values():
                 if dependency in list(self.keys()):
-                    tree.insert(tree.index(propname), dependency)
-        unique = []
-        [unique.append(item) for item in tree if item not in unique]
-        return unique
+                    dtree.add_edge(dependency, propname)
+        return dtree
+
+    def dependency_map(self):
+        r"""
+        Create a graph of the dependency graph in a decent format
+
+        See Also
+        --------
+        dependency_graph
+        dependency_list
+
+        """
+        dtree = self.dependency_graph()
+        fig = nx.draw_spectral(dtree,
+                               with_labels=True,
+                               arrowsize=50,
+                               node_size=2000,
+                               edge_color='lightgrey',
+                               width=3.0,
+                               font_size=32,
+                               font_weight='bold')
+        return fig
 
     def __str__(self):
         horizontal_rule = '―' * 78
@@ -78,13 +139,10 @@ class ModelsMixin():
         if model.__defaults__:
             vals = list(inspect.getargspec(model).defaults)
             keys = inspect.getargspec(model).args[-len(vals):]
-            # Put defaults into dict_
-            for k, v in zip(keys, vals):
-                # Skip if argument was given in kwargs
-                if k not in kwargs:
+            for k, v in zip(keys, vals):  # Put defaults into kwargs
+                if k not in kwargs:  # Skip if argument was given in kwargs
                     kwargs.update({k: v})
-        # Store all keyword argumnents in model
-        self.models[propname] = kwargs
+        self.models[propname] = kwargs  # Store all keyword argumnents in model
         # Regenerate model values if necessary
         if regen_mode not in ['deferred']:
             self._regen(propname)
@@ -108,15 +166,31 @@ class ModelsMixin():
         """
         if type(propnames) is str:  # Convert string to list if necessary
             propnames = [propnames]
+
         if propnames is None:  # If no props given, then regenerate them all
-            propnames = self.models.dependency_tree()
+            propnames = self.models.dependency_list()
             # If some props are to be excluded, remove them from list
             if len(exclude) > 0:
                 propnames = [i for i in propnames if i not in exclude]
-        else:
-            # Re-order given propnames according to dependency tree
-            all_props = self.models.dependency_tree()
-            propnames = [i for i in all_props if i in propnames]
+
+        # Check if any propnames are not on self, deal with separately
+        self_models = self.models.dependency_list()
+        foreign_models = set(propnames).difference(set(self_models))
+        if len(foreign_models):
+            # If foreign model is found on another object, regenerate it
+            for item in foreign_models:
+                if self._isa('phase'):
+                    for phys in self.project.find_physics(phase=self):
+                        phys.regenerate_models(propnames)
+                if self._isa('network'):
+                    for geom in self.geometries().values():
+                        geom.regenerate_models(propnames)
+            # Remove any foreign models from given list, and proceed
+            propnames = set(propnames).difference(foreign_models)
+
+        # Re-order given propnames according to dependency tree
+        propnames = [i for i in self_models if i in propnames]
+
         # Scan through list of propnames and regenerate each one
         for item in propnames:
             self._regen(item)
@@ -138,7 +212,6 @@ class ModelsMixin():
         else:
             try:
                 self[prop] = model(target=self, **kwargs)
-                logger.debug('Regnerating model: ' + prop)
             except KeyError:
                 logger.warning(prop+' was not run due to missing dependencies')
                 self.models[prop]['regen_mode'] = 'deferred'

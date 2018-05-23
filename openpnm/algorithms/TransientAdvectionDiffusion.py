@@ -15,8 +15,3 @@ class TransientAdvectionDiffusion(TransientReactiveTransport,
         super().__init__(**kwargs)
         # Apply any received settings to overwrite defaults
         self.settings.update(settings)
-        # Save A matrix of the steady sys of eqs
-        self.A = self._build_A()
-        # Define _coef as the molar density
-        phase = self.project.phases()[self.settings['phase']]
-        self._coef = phase[self.settings['molar_density']]

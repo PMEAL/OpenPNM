@@ -21,7 +21,7 @@ class TransientStokesFlowTest:
         mod = op.models.physics.hydraulic_conductance.hagen_poiseuille
         self.phys.add_model(propname='throat.hydraulic_conductance',
                             model=mod,
-                            viscosity='throat.viscosity',
+                            throat_viscosity='throat.viscosity',
                             regen_mode='normal')
 
     def test_transient_stokes_flow(self):
@@ -30,8 +30,8 @@ class TransientStokesFlowTest:
         alg.settings.update({'t_scheme': 'implicit', 't_step': 1,
                              't_output': 100, 't_tolerance': 1e-08})
         alg.set_IC(0)
-        alg.set_dirichlet_BC(pores=self.net.pores('back'), values=1)
-        alg.set_dirichlet_BC(pores=self.net.pores('front'), values=0)
+        alg.set_value_BC(pores=self.net.pores('back'), values=1)
+        alg.set_value_BC(pores=self.net.pores('front'), values=0)
         alg.run()
         x = [0., 0., 0.,
              0.22636, 0.37759, 0.43854,

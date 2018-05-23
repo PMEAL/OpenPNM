@@ -22,10 +22,9 @@ class Dispersion(ReactiveTransport):
     '''
     def __init__(self, settings={}, **kwargs):
         super().__init__(**kwargs)
-        logger.info('Create ' + self.__class__.__name__ + ' Object')
         self.settings.update({'quantity': 'pore.mole_fraction',
                               'hydraulic_conductance':
-                                  'throat.hydraulic_conductance',
+                              'throat.hydraulic_conductance',
                               'diffusivity': 'pore.diffusivity',
                               'pressure': 'pore.pressure'})
         self.settings.update(settings)
@@ -75,12 +74,11 @@ class Dispersion(ReactiveTransport):
             self._pure_A = None
         if self._pure_A is None:
             w = -Qij1 + Qij1 / (1 - np.exp(Peij1))
-            am1 = network.create_adjacency_matrix(weights=w)
+            am1 = -network.create_adjacency_matrix(weights=w)
             w = -Qij2 / (1 - np.exp(Peij2))
-            A = network.create_adjacency_matrix(weights=w)
+            A = -network.create_adjacency_matrix(weights=w)
             A_diags = laplacian(am1)
             # Overwrite the diagonal
             A.setdiag(A_diags.diagonal())
             self._pure_A = A
-        self._A = self._pure_A.copy()
-        return self._A
+        self.A = self._pure_A.copy()

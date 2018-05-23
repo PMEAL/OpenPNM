@@ -2,15 +2,15 @@ import openpnm as op
 import scipy as _sp
 
 
-def bulk_diffusion(target, molar_density='pore.molar_density',
-                   pore_diffusivity='pore.diffusivity',
-                   throat_diffusivity='throat.diffusivity',
-                   pore_area='pore.area',
-                   pore_diameter='pore.diameter',
-                   throat_area='throat.area',
-                   throat_length='throat.length',
-                   shape_factor='throat.shape_factor',
-                   calc_pore_len=False):
+def ordinary_diffusion(target,
+                       pore_diffusivity='pore.diffusivity',
+                       throat_diffusivity='throat.diffusivity',
+                       pore_area='pore.area',
+                       pore_diameter='pore.diameter',
+                       throat_area='throat.area',
+                       throat_length='throat.length',
+                       shape_factor='throat.shape_factor',
+                       calc_pore_len=False):
     r"""
     Calculate the diffusive conductance of conduits in network, where a
     conduit is ( 1/2 pore - full throat - 1/2 pore ) based on the areas
@@ -38,16 +38,19 @@ def bulk_diffusion(target, molar_density='pore.molar_density',
     # Get properties in every pore in the network
     parea = network[pore_area]
     pdia = network[pore_diameter]
-    DABp = phase[pore_diffusivity]
     # Get the properties of every throat
     tarea = network[throat_area]
     tlen = network[throat_length]
     # Interpolate pore phase property values to throats
-    ct = phase.interpolate_data(propname=molar_density)
     try:
         DABt = phase[throat_diffusivity]
     except KeyError:
         DABt = phase.interpolate_data(propname=pore_diffusivity)
+    try:
+        DABp = phase[pore_diffusivity]
+    except KeyError:
+        DABp = phase.interpolate_data(propname=throat_diffusivity)
+
     if calc_pore_len:
         lengths = op.utils.misc.conduit_lengths(network, mode='centroid')
         plen1 = lengths[:, 0]
@@ -59,11 +62,11 @@ def bulk_diffusion(target, molar_density='pore.molar_density',
     plen1[plen1 <= 0] = 1e-12
     plen2[plen2 <= 0] = 1e-12
     # Find g for half of pore 1
-    gp1 = ct*(DABp*parea)[Ps[:, 0]] / plen1
+    gp1 = (DABp*parea)[Ps[:, 0]] / plen1
     gp1[_sp.isnan(gp1)] = _sp.inf
     gp1[~(gp1 > 0)] = _sp.inf  # Set 0 conductance pores (boundaries) to inf
     # Find g for half of pore 2
-    gp2 = ct*(DABp*parea)[Ps[:, 1]] / plen2
+    gp2 = (DABp*parea)[Ps[:, 1]] / plen2
     gp2[_sp.isnan(gp2)] = _sp.inf
     gp2[~(gp2 > 0)] = _sp.inf  # Set 0 conductance pores (boundaries) to inf
     # Find g for full throat, remove any non-positive lengths
@@ -74,7 +77,7 @@ def bulk_diffusion(target, molar_density='pore.molar_density',
     except KeyError:
         sf = _sp.ones(network.num_throats())
     sf[_sp.isnan(sf)] = 1.0
-    gt = (1/sf)*ct*DABt*tarea/tlen
+    gt = (1/sf)*DABt*tarea/tlen
     # Set 0 conductance pores (boundaries) to inf
     gt[~(gt > 0)] = _sp.inf
     value = (1/gt + 1/gp1 + 1/gp2)**(-1)

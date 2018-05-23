@@ -20,24 +20,24 @@ class PowerlawAdvectionDiffusionTest:
                                               geometry=self.geo)
         mod1 = op.models.physics.hydraulic_conductance.hagen_poiseuille
         self.phys.add_model(propname='throat.hydraulic_conductance',
-                            model=mod1, viscosity='throat.viscosity',
+                            model=mod1, throat_viscosity='throat.viscosity',
                             regen_mode='normal')
-        mod2 = op.models.physics.diffusive_conductance.bulk_diffusion
+        mod2 = op.models.physics.diffusive_conductance.ordinary_diffusion
         self.phys.add_model(propname='throat.diffusive_conductance',
                             model=mod2, regen_mode='normal')
 
     def test_powerlaw_advection_diffusion_diffusion(self):
         alg1 = op.algorithms.StokesFlow(network=self.net, phase=self.phase)
-        alg1.set_dirichlet_BC(pores=self.net.pores('back'), values=10)
-        alg1.set_dirichlet_BC(pores=self.net.pores('front'), values=0)
+        alg1.set_value_BC(pores=self.net.pores('back'), values=10)
+        alg1.set_value_BC(pores=self.net.pores('front'), values=0)
         alg1.run()
         self.phase[alg1.settings['quantity']] = alg1[alg1.settings['quantity']]
 
         alg2 = op.algorithms.AdvectionDiffusion(network=self.net,
                                                 phase=self.phase)
         alg2.settings.update({'s_scheme': 'powerlaw'})
-        alg2.set_dirichlet_BC(pores=self.net.pores('back'), values=2)
-        alg2.set_dirichlet_BC(pores=self.net.pores('front'), values=0)
+        alg2.set_value_BC(pores=self.net.pores('back'), values=2)
+        alg2.set_value_BC(pores=self.net.pores('front'), values=0)
         alg2.run()
         x = [0., 0., 0.,
              0.78223, 0.97971, 1.06055,
