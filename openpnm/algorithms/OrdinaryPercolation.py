@@ -2,7 +2,7 @@ import scipy as sp
 import numpy as np
 from openpnm.algorithms import GenericAlgorithm
 from openpnm.topotools import site_percolation, bond_percolation
-from openpnm.topotools import remove_isolated_clusters
+from openpnm.topotools import remove_isolated_clusters, ispercolating
 from openpnm.core import logging
 logger = logging.getLogger(__name__)
 
@@ -199,6 +199,57 @@ class OrdinaryPercolation(GenericAlgorithm):
         if overwrite:
             self['throat.residual'] = False
         self['throat.residual'][Ts] = True
+
+    def get_percolation_threshold(self):
+        r"""
+        """
+        if np.sum(self['pore.inlets']) == 0:
+            raise Exception('Inlet pores must be specified first')
+        if np.sum(self['pore.outlets']) == 0:
+            raise Exception('Outlet pores must be specified first')
+        else:
+            Pout = self['pore.outlets']
+        # Do a simple check of pressures on the outlet pores first...
+        if self.settings['access_limited']:
+            thresh = np.amin(self['pore.invasion_pressure'][Pout])
+        else:
+            raise Exception('This is currently only implemented for access ' +
+                            'limited simulations')
+        return thresh
+
+    def is_percolating(self, applied_pressure):
+        r"""
+        Returns a True or False value to indicate if a percolating cluster
+        spans between the inlet and outlet pores that were specified.
+
+        Parameters
+        ----------
+        applied_pressure : scalar, float
+            The pressure at which percolation should be checked
+
+        Returns
+        -------
+        A simple boolean True or False if percolation has occured or not.
+
+        """
+        if np.sum(self['pore.inlets']) == 0:
+            raise Exception('Inlet pores must be specified first')
+        else:
+            Pin = self['pore.inlets']
+        if np.sum(self['pore.outlets']) == 0:
+            raise Exception('Outlet pores must be specified first')
+        else:
+            Pout = self['pore.outlets']
+        # Do a simple check of pressures on the outlet pores first...
+        if np.amin(self['pore.invasion_pressure'][Pout]) > applied_pressure:
+            val = False
+        else:  # ... and do a rigorous check only if necessary
+            mask = self['throat.invasion_pressure'] < applied_pressure
+            am = self.project.network.create_adjacency_matrix(weights=mask,
+                                                              fmt='coo')
+            val = ispercolating(am=am, mode=self.settings['mode'],
+                                inlets=Pin, outlets=Pout)
+        return val
 
     def run(self, points=25, start=None, stop=None):
         r"""

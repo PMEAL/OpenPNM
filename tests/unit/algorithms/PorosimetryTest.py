@@ -4,7 +4,8 @@ import pytest
 mgr = op.Workspace()
 
 
-class DrainageTest:
+class PorosimetryTest:
+
     def setup_class(self):
         self.net = op.network.Cubic(shape=[5, 5, 5], spacing=0.0005)
         self.geo = op.geometry.StickAndBall(network=self.net,
@@ -46,11 +47,8 @@ class DrainageTest:
         self.alg = op.algorithms.Porosimetry(network=self.net)
         self.alg.setup(phase=self.water)
         self.alg['pore.inlets'][self.net.pores('top')] = True
-        try:
+        with pytest.raises(Exception):
             self.alg.set_outlets(pores=self.net.pores('top'))
-        except:
-            flag = True
-        assert flag
 
     def test_set_outlets_without_trapping(self):
         self.alg = op.algorithms.Porosimetry(network=self.net)
@@ -137,7 +135,7 @@ class DrainageTest:
 
 if __name__ == '__main__':
 
-    t = DrainageTest()
+    t = PorosimetryTest()
     t.setup_class()
     self = t
     for item in t.__dir__():

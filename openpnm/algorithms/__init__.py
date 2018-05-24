@@ -16,4 +16,3 @@ from .OrdinaryPercolation import OrdinaryPercolation
 from .InvasionPercolation import InvasionPercolation
 from .MixedInvasionPercolation import MixedInvasionPercolation
 from .Porosimetry import Porosimetry
-from .SiteAndBondPercolation import SiteAndBondPercolation

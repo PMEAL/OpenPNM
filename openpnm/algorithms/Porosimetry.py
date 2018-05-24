@@ -181,6 +181,8 @@ class Porosimetry(OrdinaryPercolation):
         return fig
 
     def results(self, Pc):
+        r"""
+        """
         p_inv, t_inv = super().results(Pc).values()
         phase = self.project.find_phase(self)
         quantity = self.settings['quantity'].split('.')[-1]
