@@ -3,5 +3,7 @@ scipy
 matplotlib
 pandas
 scikit-image
-sympy
+symp
 numba
+testfixtures
+networkx

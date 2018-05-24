@@ -2,7 +2,7 @@ import openpnm as op
 from numpy.testing import assert_approx_equal
 
 
-class ElectricalConductanceTest:
+class ThermalConductanceTest:
     def setup_class(self):
         self.net = op.network.Cubic(shape=[4, 4, 4])
         self.geo = op.geometry.GenericGeometry(network=self.net,
@@ -13,15 +13,15 @@ class ElectricalConductanceTest:
                                               phase=self.phase,
                                               geometry=self.geo)
 
-    def test_electrical_conductance(self):
-        self.phase['pore.conductivity'] = 1
+    def test_thermal_conductance(self):
+        self.phase['pore.thermal_conductivity'] = 1
         self.geo['pore.area'] = 1
         self.geo['pore.diameter'] = 1
         self.geo['throat.area'] = 1
         self.geo['throat.length'] = 0.0001
-        f = op.models.physics.electrical_conductance.series_resistors
+        f = op.models.physics.thermal_conductance.series_resistors
         self.phys.add_model(propname='throat.electrical_conductance',
-                            pore_conductivity='pore.conductivity',
+                            pore_thermal_conductivity='pore.thermal_conductivity',
                             model=f)
         self.phys.regenerate_models()
         a = 0.99990001
@@ -30,7 +30,7 @@ class ElectricalConductanceTest:
 
 if __name__ == '__main__':
 
-    t = ElectricalConductanceTest()
+    t = ThermalConductanceTest()
     self = t
     t.setup_class()
     for item in t.__dir__():

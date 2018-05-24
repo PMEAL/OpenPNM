@@ -6,12 +6,12 @@ module Dispersion: Class for solving advection diffusion
 
 import numpy as np
 from scipy.sparse.csgraph import laplacian
-from openpnm.algorithms import GenericTransport
+from openpnm.algorithms import ReactiveTransport
 from openpnm.core import logging
 logger = logging.getLogger(__name__)
 
 
-class Dispersion(GenericTransport):
+class Dispersion(ReactiveTransport):
     r'''
     A subclass of GenericTransport to simulate advection diffusion.
 
@@ -22,16 +22,14 @@ class Dispersion(GenericTransport):
     '''
     def __init__(self, settings={}, **kwargs):
         super().__init__(**kwargs)
-        logger.info('Create ' + self.__class__.__name__ + ' Object')
         self.settings.update({'quantity': 'pore.mole_fraction',
                               'hydraulic_conductance':
-                                  'throat.hydraulic_conductance',
+                              'throat.hydraulic_conductance',
                               'diffusivity': 'pore.diffusivity',
                               'pressure': 'pore.pressure'})
         self.settings.update(settings)
-        self._A = self._build_A()
 
-    def _build_A(self):
+    def _build_A(self, force=False):
         r"""
         """
         network = self.project.network
@@ -72,12 +70,15 @@ class Dispersion(GenericTransport):
         Peij2[Peij2 > 100] = 100
         Peij2[Peij2 < -100] = -100
 
-        w = -Qij1 + Qij1 / (1 - np.exp(Peij1))
-        am1 = network.create_adjacency_matrix(weights=w)
-        w = -Qij2 / (1 - np.exp(Peij2))
-        A = network.create_adjacency_matrix(weights=w)
-        A_diags = laplacian(am1)
-        # Overwrite the diagonal
-        A.setdiag(A_diags.diagonal())
-        self._A = A
-        return A
+        if force:
+            self._pure_A = None
+        if self._pure_A is None:
+            w = -Qij1 + Qij1 / (1 - np.exp(Peij1))
+            am1 = -network.create_adjacency_matrix(weights=w)
+            w = -Qij2 / (1 - np.exp(Peij2))
+            A = -network.create_adjacency_matrix(weights=w)
+            A_diags = laplacian(am1)
+            # Overwrite the diagonal
+            A.setdiag(A_diags.diagonal())
+            self._pure_A = A
+        self.A = self._pure_A.copy()

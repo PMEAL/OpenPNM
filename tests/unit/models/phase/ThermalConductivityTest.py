@@ -17,7 +17,7 @@ class ThermalConductivityTest:
         self.phase['pore.acentric_factor'] = 11.5  # J/mol K
 
     def test_water(self):
-        f = op.models.phase.thermal_conductivity.water
+        f = op.models.phases.thermal_conductivity.water
         self.phase.add_model(propname='pore.thermal_conductivity',
                              model=f)
         self.phase.regenerate_models()
@@ -25,7 +25,7 @@ class ThermalConductivityTest:
                             0.61047611)
 
     def test_chung(self):
-        f = op.models.phase.thermal_conductivity.chung
+        f = op.models.phases.thermal_conductivity.chung
         self.phase.add_model(propname='pore.thermal_conductivity',
                              model=f)
         self.phase.regenerate_models()
@@ -33,7 +33,7 @@ class ThermalConductivityTest:
                             0.62063913)
 
     def test_sato(self):
-        f = op.models.phase.thermal_conductivity.sato
+        f = op.models.phases.thermal_conductivity.sato
         self.phase.add_model(propname='pore.thermal_conductivity',
                              model=f)
         self.phase.regenerate_models()

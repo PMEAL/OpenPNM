@@ -15,20 +15,20 @@ class DensityTest:
     def test_standard(self):
         # Liquid water
         self.phase.add_model(propname='pore.density',
-                             model=op.models.phase.density.standard)
+                             model=op.models.phases.density.standard)
         assert_approx_equal(self.phase['pore.density'].mean(), 999.702)
 
     def test_ideal_gas(self):
         # Water vapor
         self.phase.add_model(propname='pore.density',
-                             model=op.models.phase.density.ideal_gas)
+                             model=op.models.phases.density.ideal_gas)
         self.phase.regenerate_models()
         assert_approx_equal(self.phase['pore.density'].mean(), 0.73610248)
 
     def test_water(self):
         # Liquid water
         self.phase.add_model(propname='pore.density',
-                             model=op.models.phase.density.water)
+                             model=op.models.phases.density.water)
         self.phase.regenerate_models()
         assert_approx_equal(self.phase['pore.density'].mean(), 996.9522)
 

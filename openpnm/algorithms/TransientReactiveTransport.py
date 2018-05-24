@@ -12,7 +12,7 @@ class TransientReactiveTransport(ReactiveTransport):
 
     def __init__(self, settings={}, **kwargs):
         self.settings.update({'t_initial': 0,
-                              't_final': 5e+03,
+                              't_final': 5e+04,
                               't_step': 0.1,
                               't_output': 1e+08,
                               't_tolerance': 1e-06,
@@ -20,7 +20,6 @@ class TransientReactiveTransport(ReactiveTransport):
                               't_scheme': 'implicit'})
         super().__init__(**kwargs)
         self.settings.update(settings)
-        self._coef = 1  # Coefficient for units consistency
         self._A_steady = None  # Initialize the steady sys of eqs A matrix
 
     def setup(self, phase=None, t_initial='', t_final='', t_step='',
@@ -50,7 +49,7 @@ class TransientReactiveTransport(ReactiveTransport):
         r"""
         """
         network = self.project.network
-        Vi = self._coef*network['pore.volume']
+        Vi = network['pore.volume']
         dt = self.settings['t_step']
         s = self.settings['t_scheme']
         if (s == 'implicit'):
@@ -73,8 +72,7 @@ class TransientReactiveTransport(ReactiveTransport):
         """
         network = self.project.network
         phase = self.project.phases()[self.settings['phase']]
-        physics = self.project.find_physics(phase=phase)
-        Vi = self._coef*network['pore.volume']
+        Vi = network['pore.volume']
         dt = self.settings['t_step']
         s = self.settings['t_scheme']
         if (s == 'implicit'):
@@ -87,16 +85,9 @@ class TransientReactiveTransport(ReactiveTransport):
         b = (f2*(1-f1)*(-self._A_steady)*x_old +
              f2*(Vi/dt)*x_old +
              f3*np.zeros(shape=(self.Np, ), dtype=float))
+        self._update_physics()
         for item in self.settings['sources']:
             Ps = self.pores(item)
-            # Regenerate models with new guess
-            quantity = self.settings['quantity']
-            # Put quantity on phase so physics finds it when regenerating
-            phase[quantity] = self[quantity]
-            # Regenerate models, on either phase or physics
-            phase.regenerate_models(propnames=item)
-            for phys in physics:
-                phys.regenerate_models(propnames=item)
             # Update b
             b[Ps] = b[Ps] - f2*(1-f1)*(phase[item+'.'+'rate'][Ps])
         self._b = b
@@ -107,7 +98,10 @@ class TransientReactiveTransport(ReactiveTransport):
         """
         print('―'*80)
         print('Running TransientTransport')
-        # Create a scratch b from IC to apply BCs to A matrix
+        # If solver used in steady mode, no need to add ICs
+        if (self.settings['t_scheme'] == 'steady'):
+            self[self.settings['quantity']] = 0
+        # Create a scratch b from IC
         self._b = self[self.settings['quantity']]
         self._apply_BCs()
         # Save A matrix (with BCs applied) of the steady sys of eqs
@@ -137,10 +131,6 @@ class TransientReactiveTransport(ReactiveTransport):
         self.settings['t_output'] = to
         outputs = np.append(np.arange(t+to, tf, to), tf)
 
-        # Export the initial field (t=t_initial)
-        vals = self[self.settings['quantity']]
-        self[self.settings['quantity']+'_initial'] = vals
-
         if (s == 'steady'):  # If solver in steady mode, do one iteration
             print('    Running in steady mode')
             x_old = self[self.settings['quantity']]
@@ -148,6 +138,9 @@ class TransientReactiveTransport(ReactiveTransport):
             x_new = self[self.settings['quantity']]
 
         else:  # Do time iterations
+            # Export the initial field (t=t_initial)
+            vals = self[self.settings['quantity']]
+            self[self.settings['quantity']+'_initial'] = vals
             for time in np.arange(t+dt, tf+dt, dt):
                 if (res_t >= tol):  # Check if the steady state is reached
                     print('    Current time step: '+str(time)+' s')
@@ -184,7 +177,7 @@ class TransientReactiveTransport(ReactiveTransport):
         self._A = (self._A_t).copy()
         self._b = (self._b_t).copy()
         self._apply_BCs()
-        self._apply_sources(s=self.settings['t_scheme'])
+        self._t_apply_sources(s=self.settings['t_scheme'])
         if x is None:
             x = np.zeros(shape=[self.Np, ], dtype=float)
         x_new = self._solve()
@@ -196,3 +189,20 @@ class TransientReactiveTransport(ReactiveTransport):
         else:
             print('            Tolerance not met: ' + str(res_r))
             self._t_run_reactive(x=x_new)
+
+    def _t_apply_sources(self, s=None):
+        f1 = 1
+        if (s == 'cranknicolson'):
+            f1 = 0.5
+        phase = self.project.phases()[self.settings['phase']]
+        self._update_physics()
+        for item in self.settings['sources']:
+            Ps = self.pores(item)
+            # Add S1 to diagonal of A
+            # TODO: We need this to NOT overwrite the A and b, but create
+            # copy, otherwise we have to regenerate A and b on each loop
+            datadiag = self.A.diagonal()
+            datadiag[Ps] = datadiag[Ps] + f1*phase[item+'.'+'S1'][Ps]
+            self.A.setdiag(datadiag)
+            # Add S2 to b
+            self.b[Ps] = self.b[Ps] - f1*phase[item+'.'+'S2'][Ps]

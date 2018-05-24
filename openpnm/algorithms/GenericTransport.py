@@ -45,10 +45,10 @@ class GenericTransport(GenericAlgorithm):
             self.settings['phase'] = phase.name
         self.settings.update(kwargs)
 
-    def set_dirichlet_BC(self, pores, values):
+    def set_value_BC(self, pores, values):
         r"""
-        Apply *Dirichlet* boundary conditons to the specified pore locations.
-        Dirichlet conditions refer to constant *quantity* (e.g. pressure).
+        Apply constant value boundary conditons to the specified pore
+        locations. These are sometimes referred to as Dirichlet conditions.
 
         Parameters
         ----------
@@ -65,16 +65,15 @@ class GenericTransport(GenericAlgorithm):
         The definition of ``quantity`` is specified in the algorithm's
         ``settings``, e.g. ``alg.settings['quentity'] = 'pore.pressure'``.
         """
-        self._set_BC(pores=pores, bctype='dirichlet', bcvalues=values,
+        self._set_BC(pores=pores, bctype='value', bcvalues=values,
                      mode='merge')
 
-    def set_neumann_BC(self, pores, values):
+    def set_rate_BC(self, pores, values):
         r"""
-        Apply *Neumann*-type boundary conditons to the specified pore
-        locations. Neumann conditions technnically refer to the *gradient* of
-        the *quantity* (e.g. dP/dz), while in OpenPNM this means the flow-rate
-        of the quantity, which is the gradient multiplied by the conductance
-        (e.g n = g dP/dz).
+        Apply constant rate boundary conditons to the specified pore
+        locations. This is similar to a Neumann boundary condition, but is
+        slightly different since it's the conductance multiplied by the
+        gradient, while Neumann conditions specify just the gradient.
 
         Parameters
         ----------
@@ -91,8 +90,7 @@ class GenericTransport(GenericAlgorithm):
         The definition of ``quantity`` is specified in the algorithm's
         ``settings``, e.g. ``alg.settings['quentity'] = 'pore.pressure'``.
         """
-        self._set_BC(pores=pores, bctype='neumann', bcvalues=values,
-                     mode='merge')
+        self._set_BC(pores=pores, bctype='rate', bcvalues=values, mode='merge')
 
     def _set_BC(self, pores, bctype, bcvalues=None, mode='merge'):
         r"""
@@ -107,8 +105,8 @@ class GenericTransport(GenericAlgorithm):
             Specifies the type or the name of boundary condition to apply. The
             types can be one one of the following:
 
-            - *'dirichlet'* : Specify the quantity in each location
-            - *'neumann'* : Specify the flow rate into each location
+            - *'value'* : Specify the value of the quantity in each location
+            - *'rate'* : Specify the flow rate into each location
 
         bcvalues : int or array_like
             The boundary value to apply, such as concentration or rate.  If
@@ -135,7 +133,7 @@ class GenericTransport(GenericAlgorithm):
 
         """
         # Hijack the parse_mode function to verify bctype argument
-        bctype = self._parse_mode(bctype, allowed=['dirichlet', 'neumann'],
+        bctype = self._parse_mode(bctype, allowed=['value', 'rate'],
                                   single=True)
         mode = self._parse_mode(mode, allowed=['merge', 'overwrite', 'remove'],
                                 single=True)
@@ -146,16 +144,10 @@ class GenericTransport(GenericAlgorithm):
             raise Exception('The number of boundary values must match the ' +
                             'number of locations')
 
-        # Label pores where a boundary condition will be applied
-        if ('pore.'+bctype not in self.keys()) or (mode == 'overwrite'):
-            self['pore.'+bctype] = False
-        self['pore.'+bctype][pores] = True
-
         # Store boundary values
-        if ('pore.'+bctype+'_value' not in self.keys()) or \
-           (mode == 'overwrite'):
-            self['pore.'+bctype+'_value'] = np.nan
-        self['pore.'+bctype+'_value'][pores] = values
+        if ('pore.bc_'+bctype not in self.keys()) or (mode == 'overwrite'):
+            self['pore.bc_'+bctype] = np.nan
+        self['pore.bc_'+bctype][pores] = values
 
     def remove_BC(self, pores=None):
         r"""
@@ -170,12 +162,10 @@ class GenericTransport(GenericAlgorithm):
         """
         if pores is None:
             pores = self.Ps
-        if 'pore.dirichlet' in self.keys():
-            self['pore.dirichlet'][pores] = False
-            self['pore.dirichlet_value'][pores] = np.nan
-        if 'pore.neumann' in self.keys():
-            self['pore.neumann'][pores] = False
-            self['pore.neumann_value'][pores] = np.nan
+        if 'pore.bc_value' in self.keys():
+            self['pore.bc_value'][pores] = np.nan
+        if 'pore.rate' in self.keys():
+            self['pore.bc_rate'][pores] = sp.nan
 
     def _build_A(self, force=False):
         r"""
@@ -249,18 +239,18 @@ class GenericTransport(GenericAlgorithm):
         adding values to the *A* and *b* matrices.
 
         """
-        if 'pore.neumann' in self.keys():
+        if 'pore.bc_rate' in self.keys():
             # Update b
-            ind = self['pore.neumann']
-            self.b[ind] = self['pore.neumann_value'][ind]
-        if 'pore.dirichlet' in self.keys():
+            ind = np.isfinite(self['pore.bc_rate'])
+            self.b[ind] = self['pore.bc_rate'][ind]
+        if 'pore.bc_value' in self.keys():
             f = np.amax(np.absolute(self.A.data))
             # Update b
-            ind = self['pore.dirichlet']
-            self.b[ind] = f*self['pore.dirichlet_value'][ind]
+            ind = np.isfinite(self['pore.bc_value'])
+            self.b[ind] = f*self['pore.bc_value'][ind]
             # Update A
-            # Find all entries on rows associated with dirichlet pores
-            P_bc = self.toindices(self['pore.dirichlet'])
+            # Find all entries on rows associated with value bc
+            P_bc = self.toindices(np.isfinite(self['pore.bc_value']))
             indrow = np.in1d(self.A.row, P_bc)
             self.A.data[indrow] = 0  # Remove entries from A for all BC rows
             datadiag = self.A.diagonal()  # Add diagonal entries back into A
@@ -420,8 +410,8 @@ class GenericTransport(GenericAlgorithm):
 
         # Determine boundary conditions by analyzing algorithm object
         inlets, outlets = self._get_inlets_and_outlets()
-        Ps = self.pores('pore.dirichlet')
-        BCs = np.unique(self['pore.dirichlet_value'][Ps])
+        Ps = np.isfinite(self['pore.bc_value'])
+        BCs = np.unique(self['pore.bc_value'][Ps])
         Dx = np.abs(np.diff(BCs))
 
         # Fetch area and length of domain
@@ -433,10 +423,10 @@ class GenericTransport(GenericAlgorithm):
 
     def _get_inlets_and_outlets(self):
         # Determine boundary conditions by analyzing algorithm object
-        Ps = self.pores('pore.dirichlet')
-        BCs = np.unique(self['pore.dirichlet_value'][Ps])
-        inlets = np.where(self['pore.dirichlet_value'] == np.amax(BCs))[0]
-        outlets = np.where(self['pore.dirichlet_value'] == np.amin(BCs))[0]
+        Ps = np.isfinite(self['pore.bc_value'])
+        BCs = np.unique(self['pore.bc_value'][Ps])
+        inlets = np.where(self['pore.bc_value'] == np.amax(BCs))[0]
+        outlets = np.where(self['pore.bc_value'] == np.amin(BCs))[0]
         return (inlets, outlets)
 
     def _get_domain_area(self):

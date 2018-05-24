@@ -11,7 +11,7 @@ class DiffusivityTest:
         self.phase['pore.viscosity'] = 1.75e-5  # Pa.s
 
     def test_fuller(self):
-        f = op.models.phase.diffusivity.fuller
+        f = op.models.phases.diffusivity.fuller
         self.phase.add_model(propname='pore.diffusivity',
                              model=f,
                              MA=0.032,
@@ -22,7 +22,7 @@ class DiffusivityTest:
         assert_approx_equal(self.phase['pore.diffusivity'].mean(), 2.06754784e-05)
 
     def test_fuller_scaling(self):
-        f = op.models.phase.diffusivity.fuller_scaling
+        f = op.models.phases.diffusivity.fuller_scaling
         self.phase.add_model(propname='pore.diffusivity',
                              model=f,
                              DABo=1.79712526e-05,
@@ -32,7 +32,7 @@ class DiffusivityTest:
         assert_approx_equal(self.phase['pore.diffusivity'].mean(), 2.06754784e-05)
 
     def test_tyn_calus(self):
-        f = op.models.phase.diffusivity.tyn_calus
+        f = op.models.phases.diffusivity.tyn_calus
         self.phase.add_model(propname='pore.diffusivity',
                              model=f,
                              VA=16.5,
@@ -43,7 +43,7 @@ class DiffusivityTest:
         assert_approx_equal(self.phase['pore.diffusivity'].mean(), 9.84851806e-05)
 
     def test_tyn_calus_scaling(self):
-        f = op.models.phase.diffusivity.tyn_calus_scaling
+        f = op.models.phases.diffusivity.tyn_calus_scaling
         self.phase.add_model(propname='pore.diffusivity',
                              model=f,
                              DABo=5.26300839e-05,
