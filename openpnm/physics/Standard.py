@@ -61,7 +61,7 @@ class Standard(GenericPhysics):
                            model=mods.diffusive_conductance.ordinary_diffusion)
         if 'pore.surface_tension' in phase.keys() and \
            'pore.contact_angle' in phase.keys():
-            self.add_model(propname='throat.capillary_pressure',
+            self.add_model(propname='throat.entry_pressure',
                            model=mods.capillary_pressure.washburn)
         if 'pore.thermal_conductivity' in phase.keys():
             self.add_model(propname='throat.thermal_conductance',
