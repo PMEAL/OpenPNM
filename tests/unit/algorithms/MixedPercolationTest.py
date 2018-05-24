@@ -38,13 +38,14 @@ class MixedPercolationTest:
         self.inlets = [0]
         self.outlets = [Np*Np - 1]
 
-    def run_mp(self, trapping=False, resdiual=False, snap=False,
+    def run_mp(self, trapping=False, residual=False, snap=False,
                plot=False, flowrate=None):
         IP_1 = mp(network=self.net)
-        IP_1.settings['residual_saturation']=resdiual
         IP_1.settings['snap_off']=snap
         IP_1.setup(phase=self.phase)
         IP_1.set_inlets(pores=self.inlets)
+        if residual:
+            IP_1.set_residual(pores=self.phase['pore.occupancy'])
         IP_1.run()
         if trapping:
             IP_1.set_outlets(self.outlets)
@@ -217,7 +218,6 @@ class MixedPercolationTest:
         IP_1 = mp(network=self.net)
         self.phase['pore.occupancy'] = False
         self.phase['throat.occupancy'] = False
-        IP_1.settings['partial_saturation']=True
         IP_1.settings['snap_off']=False
         IP_1.setup(phase=self.phase)
         inv_points = np.arange(0, 100, 1, dtype=float)
@@ -227,6 +227,7 @@ class MixedPercolationTest:
         for i, Pc in enumerate(inv_points):
             IP_1.reset()
             IP_1.set_inlets(pores=self.inlets)
+            IP_1.set_residual(pores=self.phase['pore.occupancy'])
             IP_1.run(max_pressure=Pc)
             IP_1.results()
             Pinv_Pc = self.phase['pore.invasion_pressure']
@@ -281,7 +282,6 @@ class MixedPercolationTest:
         phys['throat.entry_pressure']=np.arange(0, net.Nt, dtype=float)
         phys['pore.entry_pressure']=np.arange(0, net.Np, dtype=float)
         IP_1 = mp(network=self.net)
-        IP_1.settings['residual_saturation']=True
         IP_1.settings['snap_off']=False
         IP_1.setup(phase=self.phase)
         T = 20
@@ -291,6 +291,7 @@ class MixedPercolationTest:
         self.phase['pore.occupancy'][P1] = False
         self.phase['pore.occupancy'][P2] = True
         IP_1.set_inlets(pores=self.inlets)
+        IP_1.set_residual(pores=self.phase['pore.occupancy'])
         assert len(IP_1.queue) == 2
 
     def test_big_clusters(self):
@@ -307,10 +308,10 @@ class MixedPercolationTest:
         self.phase['throat.occupancy'] = False
         self.phase['pore.occupancy'] = np.random.random(net.Np) < 0.25
         IP_1 = mp(network=self.net)
-        IP_1.settings['residual_saturation']=True
         IP_1.settings['snap_off']=False
         IP_1.setup(phase=self.phase)
         IP_1.set_inlets(pores=self.inlets)
+        IP_1.set_residual(pores=self.phase['pore.occupancy'])
         IP_1.run()
         IP_1.results()
         assert np.all(self.phase['pore.invasion_sequence'] > -1)
@@ -330,10 +331,10 @@ class MixedPercolationTest:
         self.phase['throat.occupancy'] = False
         self.phase['pore.occupancy'] = np.random.random(net.Np) < 0.25
         IP_1 = mp(network=self.net)
-        IP_1.settings['residual_saturation']=True
         IP_1.settings['snap_off']=False
         IP_1.setup(phase=self.phase)
         IP_1.set_inlets(pores=self.inlets)
+        IP_1.set_residual(pores=self.phase['pore.occupancy'])
         IP_1.run()
         IP_1.set_outlets(self.outlets)
         IP_1.apply_trapping()

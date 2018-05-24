@@ -40,20 +40,58 @@ class MixedInvasionPercolation(GenericPercolation):
                               'pore_entry_pressure': 'pore.entry_pressure',
                               'throat_entry_pressure': 'throat.entry_pressure',
                               'mode': 'mixed',
-                              'residual_saturation': False,
                               'snap_off': False,
                               'invade_isolated_Ts': False})
 
-    def setup(self, phase):
+    def setup(self,
+              phase=None,
+              mode='',
+              pore_entry_pressure='',
+              throat_entry_pressure='',
+              snap_off='',
+              invade_isolated_Ts='',
+              pore_volume='',
+              throat_volume=''):
         r"""
-        Set up the required parameters for the algorithm
+        Used to specify necessary arguments to the simulation.  This method is
+        useful for resetting the algorithm or applying more explicit control.
 
         Parameters
         ----------
         phase : OpenPNM Phase object
-            The phase to be injected into the Network.  The Phase must have the
-            capillary entry pressure values for the system.
+            The Phase object containing the physical properties of the invading
+            fluid.
 
+        mode : string
+            Specifies the type of percolation process to simulate.  Options
+            are:
+
+            **'mixed'** - The percolation process is controlled by bond and
+            site entry thresholds.
+
+            **'bond'** - The percolation process is controlled by bond entry
+            thresholds.
+
+            **'site'** - The percolation process is controlled by site entry
+            thresholds.
+
+        pore_entry_pressure : string
+            The dictionary key on the Phase object where the pore entry
+            pressure values are stored.  The default is
+            'pore.capillary_pressure'.  This is only accessed if the ``mode``
+            is set to site percolation.
+
+        throat_entry_pressure : string
+            The dictionary key on the Phase object where the throat entry
+            pressure values are stored.  The default is
+            'throat.capillary_pressure'.  This is only accessed if the ``mode``
+            is set to bond percolation.
+
+        'pore_volume' : string
+            The dictionary key containing the pore volume information.
+
+        'throat_volume' : string
+            The dictionary key containing the pore volume information.
         """
         self._phase = phase
         self['throat.entry_pressure'] = phase[self.settings['throat_entry_pressure']]
@@ -133,11 +171,6 @@ class MixedInvasionPercolation(GenericPercolation):
         if self.settings['snap_off']:
             self._apply_snap_off()
 
-        if self.settings['residual_saturation']:
-            self._apply_residual_sat()
-        else:
-            self.invasion_running = [True]*len(self.queue)
-
     def _add_ts2q(self, pore, queue):
         """
         Helper method to add throats to the cluster queue
@@ -211,6 +244,11 @@ class MixedInvasionPercolation(GenericPercolation):
         self.high_Pc = np.ones(len(self.queue))*-np.inf
         outlets = self['pore.outlets']
         terminate_clusters = np.sum(outlets) > 0
+        if not hasattr(self, 'invasion_running'):
+            self.invasion_running = [True]*len(self.queue)
+        else:
+            # created by set_residual
+            pass
         while np.any(self.invasion_running) and not np.all(self.max_p_reached):
             # Loop over clusters
             for c_num in np.argwhere(self.invasion_running).flatten():
@@ -635,12 +673,12 @@ class MixedInvasionPercolation(GenericPercolation):
             logger.warning("Phase " + self._phase.name + " doesn't have " +
                            "property " + snap_off)
 
-    def _apply_residual_sat(self):
+    def set_residual(self, pores=[], overwrite=False):
         r"""
         Method to start invasion in a network w. residual saturation.
         Called after inlets are set.
 
-        Looks at pore.occupancy on the phase only and treats inner throats, i.e.
+        Currently works for pores only and treats inner throats, i.e.
         those that connect two pores in the cluster as invaded and outer ones
         as uninvaded. Uninvaded throats are added to a new residual cluster
         queue but do not start invading independently if not connected to an
@@ -653,10 +691,26 @@ class MixedInvasionPercolation(GenericPercolation):
         Step 4. For those that are isolated set the queue to not invading.
         Step 5. (in run) When isolated cluster is met my invading cluster it
                 merges in and starts invading
+
+        Parameters
+        ----------
+        pores : array_like
+            The pores locations that are to be filled with invader at the
+            beginning of the simulation.
+
+        overwrite : boolean
+            If ``True`` then all existing inlet locations will be removed and
+            then the supplied locations will be added.  If ``False``, then
+            supplied locations are added to any already existing locations.
+
         """
+        Ps = self._parse_indices(pores)
+        if overwrite:
+            self['pore.residual'] = False
+        self['pore.residual'][Ps] = True
+        residual = self['pore.residual']
         net = self.project.network
         conns = net['throat.conns']
-        residual = self._phase['pore.occupancy'].astype(bool)
         rclusters = site_percolation(conns, residual).sites
         rcluster_ids = np.unique(rclusters[rclusters > -1])
         initial_num = len(self.queue)-1
