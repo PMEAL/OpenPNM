@@ -220,7 +220,8 @@ class OrdinaryPercolation(GenericAlgorithm):
     def is_percolating(self, applied_pressure):
         r"""
         Returns a True or False value to indicate if a percolating cluster
-        spans between the inlet and outlet pores that were specified.
+        spans between the inlet and outlet pores that were specified at the
+        given applied pressure.
 
         Parameters
         ----------
