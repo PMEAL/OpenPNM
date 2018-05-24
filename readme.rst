@@ -69,7 +69,6 @@ The following code block illustrates how to use OpenPNM to perform a mercury int
     >>> MIP.set_inlets(pores=pn.pores(['top', 'bottom']))
     >>> MIP.setup(phase=Hg)
     >>> MIP.run()
-    >>> MIP.plot_intrusion_curve()
 
 The network can be visualized in `Paraview <http://www.paraview.org>`_ giving the following:
 
