@@ -2,8 +2,10 @@ import uuid
 import scipy as sp
 import scipy.sparse as sprs
 import scipy.spatial as sptl
+import scipy.sparse.csgraph as csg
 from openpnm.core import Base, Workspace, ModelsMixin, logging
 from openpnm import topotools
+from openpnm.utils import HealthDict
 logger = logging.getLogger()
 ws = Workspace()
 
@@ -13,55 +15,66 @@ class GenericNetwork(Base, ModelsMixin):
     GenericNetwork - Base class to construct pore networks
 
     """
-    def __init__(self, simulation=None, settings={}, **kwargs):
+    def __init__(self, project=None, settings={}, **kwargs):
         self.settings.setdefault('prefix', 'net')
         self.settings.update(settings)
-        super().__init__(simulation=simulation, **kwargs)
-        self._gen_ids()
+        super().__init__(project=project, **kwargs)
 
         # Initialize adjacency and incidence matrix dictionaries
         self._im = {}
         self._am = {}
 
-    def __setitem__(self, prop, value):
-        if prop == 'throat.conns':
+    def __setitem__(self, key, value):
+        if key == 'throat.conns':
             if sp.shape(value)[1] != 2:
                 logger.error('Wrong size for throat conns!')
             else:
                 if sp.any(value[:, 0] > value[:, 1]):
-                    logger.warning('Converting throat.conns to be upper \
-                                    triangular')
+                    logger.warning('Converting throat.conns to be upper ' +
+                                   'triangular')
                     value = sp.sort(value, axis=1)
-        super().__setitem__(prop, value)
+        if self.project:
+            for item in self.project.geometries().values():
+                exclude = {'pore.all', 'throat.all'}
+                if key in set(item.keys()).difference(exclude):
+                    raise Exception(key+' already exists on '+item.name)
+        super().__setitem__(key, value)
 
     def __getitem__(self, key):
+        # Deal with special keys first
         if key.split('.')[-1] == self.name:
             element = key.split('.')[0]
             return self[element+'.all']
-        if key not in self.keys():
-            logger.debug(key + ' not on Network, check on Geometries')
-            geoms = self.simulation.geometries().values()
-            return self._interleave_data(key, geoms)
-        else:
-            return super().__getitem__(key)
+        if key.split('.')[-1] == '_id':
+            self._gen_ids()
+        # Now get values if present, or regenerate them
+        vals = self.get(key)
+        if vals is None:  # Invoke interleave data
+            geoms = self.project.geometries().values()
+            vals = self._interleave_data(key, geoms)
+        return vals
 
     def _gen_ids(self):
-        if 'pore._id' not in self.keys():
+        if ('pore._id' not in self.keys()):
             self['pore._id'] = [str(uuid.uuid4()) for i in self.Ps]
         else:
-            # If ids are missing it will from the end of the array...hopefully
-            if self['pore._id'][-1] == '':
-                inds = sp.where(self['pore._id'] == '')[0]
+            IDs = super().__getitem__('pore._id')
+            # Missing IDs will be at end of the array...hopefully
+            if (IDs[-1] == '') or (len(IDs) == 0):
+                inds = sp.where(IDs == '')[0]
                 temp = [str(uuid.uuid4()) for i in range(len(inds))]
-                self['pore._id'][inds] = temp
-        if 'throat._id' not in self.keys():
+                IDs[inds] = temp
+                self['pore._id'] = IDs
+        if ('throat._id' not in self.keys()):
             self['throat._id'] = [str(uuid.uuid4()) for i in self.Ts]
         else:
-            # If ids are missing it will from the end of the array...hopefully
-            if self['throat._id'][-1] == '':
-                inds = sp.where(self['throat._id'] == '')[0]
+            IDs = super().__getitem__('throat._id')
+            # Missing IDs will be at end of the array...hopefully
+            if (IDs[-1] == '') or (len(IDs) == 0):
+                inds = sp.where(IDs == '')[0]
                 temp = [str(uuid.uuid4()) for i in range(len(inds))]
-                self['throat._id'][inds] = temp
+                IDs[inds] = temp
+                self['throat._id'] = temp
 
     def get_adjacency_matrix(self, fmt='coo'):
         r"""
@@ -93,16 +106,13 @@ class GenericNetwork(Base, ModelsMixin):
         """
         # Retrieve existing matrix if available
         if fmt in self._am.keys():
-            logger.info('Desired adjacency matrix already present')
             am = self._am[fmt]
         elif self._am.keys():
-            logger.info('Desired adjacency matrix not present, converting...')
             am = self._am[list(self._am.keys())[0]]
             tofmt = getattr(am, 'to'+fmt)
             am = tofmt()
             self._am[fmt] = am
         else:
-            logger.info('No Adjacency Matrix not present, building...')
             am = self.create_adjacency_matrix(weights=self.Ts, fmt=fmt)
             self._am[fmt] = am
         return am
@@ -159,9 +169,16 @@ class GenericNetwork(Base, ModelsMixin):
         Parameters
         ----------
         weights : array_like, optional
-            An Nt-long array containing the throat values to enter into the
-            matrix (in graph theory these are known as the 'weights').  If
-            omitted, ones are used to create a standard adjacency matrix
+            An array containing the throat values to enter into the matrix
+            (in graph theory these are known as the 'weights').
+
+            If the array is Nt-long, it implies that the matrix is symmetric,
+            so the upper and lower triangular regions are mirror images.  If
+            it is 2*Nt-long then it is assumed that the first Nt elements are
+            for the upper triangle, and the last Nt element are for the lower
+            triangular.
+
+            If omitted, ones are used to create a standard adjacency matrix
             representing connectivity only.
 
         fmt : string, optional
@@ -177,7 +194,8 @@ class GenericNetwork(Base, ModelsMixin):
 
         triu : boolean (default is ``False``)
             If ``True``, the returned sparse matrix only contains the upper-
-            triangular elements.
+            triangular elements.  This argument is ignored if the ``weights``
+            array is 2*Nt-long.
 
         drop_zeros : boolean (default is ``False``)
             If ``True``, applies the ``eliminate_zeros`` method of the sparse
@@ -204,20 +222,27 @@ class GenericNetwork(Base, ModelsMixin):
         >>> import openpnm as op
         >>> pn = op.network.Cubic(shape=[5, 5, 5])
         >>> weights = sp.rand(pn.num_throats(), ) < 0.5
-        >>> temp = pn.create_adjacency_matrix(weights=weights, fmt='csr')
+        >>> am = pn.create_adjacency_matrix(weights=weights, fmt='csr')
 
         """
         # Check if provided data is valid
         if weights is None:
             weights = sp.ones((self.Nt,), dtype=int)
-        elif sp.shape(weights)[0] != self.Nt:
-            raise Exception('Received weights are incorrect length')
+        elif sp.shape(weights)[0] not in [self.Nt, 2*self.Nt, (self.Nt, 2)]:
+            raise Exception('Received weights are of incorrect length')
 
         # Append row & col to each other, and data to itself
         conn = self['throat.conns']
         row = conn[:, 0]
         col = conn[:, 1]
-        if not triu:
+        if weights.shape == (2*self.Nt,):
+            row = sp.append(row, conn[:, 1])
+            col = sp.append(col, conn[:, 0])
+        elif weights.shape == (self.Nt, 2):
+            row = sp.append(row, conn[:, 1])
+            col = sp.append(col, conn[:, 0])
+            weights = weights.flatten(order='F')
+        elif not triu:
             row = sp.append(row, conn[:, 1])
             col = sp.append(col, conn[:, 0])
             weights = sp.append(weights, weights)
@@ -290,7 +315,7 @@ class GenericNetwork(Base, ModelsMixin):
         >>> import openpnm as op
         >>> pn = op.network.Cubic(shape=[5, 5, 5])
         >>> weights = sp.rand(pn.num_throats(), ) < 0.5
-        >>> temp = pn.create_incidence_matrix(weights=weights, sprsfmt='csr')
+        >>> im = pn.create_incidence_matrix(weights=weights, fmt='csr')
         """
         # Check if provided data is valid
         if weights is None:
@@ -356,11 +381,11 @@ class GenericNetwork(Base, ModelsMixin):
         --------
         >>> import openpnm as op
         >>> pn = op.network.Cubic(shape=[5, 5, 5])
-        >>> pn.find_connected_pores(throats=[0,1])
+        >>> pn.find_connected_pores(throats=[0, 1])
         array([[0, 1],
-               [0, 5]])
-        >>> pn.find_connected_pores(throats=[0,1], flatten=True)
-        array([0, 1, 5])
+               [1, 2]])
+        >>> pn.find_connected_pores(throats=[0, 1], flatten=True)
+        array([0, 1, 2])
 
         Notes
         -----
@@ -463,15 +488,20 @@ class GenericNetwork(Base, ModelsMixin):
         >>> pn.find_neighbor_pores(pores=[0, 1], mode='union', excl_self=False)
         array([ 0,  1,  2,  5,  6, 25, 26])
         >>> pn.find_neighbor_pores(pores=[0, 2], flatten=False)
-        [[ 1,  5, 25], [ 1,  3,  7, 27]]
+        [[1, 5, 25], [1, 3, 7, 27]]
         >>> pn.find_neighbor_pores(pores=[0, 2], mode='intersection')
         array([1])
         >>> pn.find_neighbor_pores(pores=[0, 2], mode='exclusive_or')
         array([ 3,  5,  7, 25, 27])
         """
         pores = self._parse_indices(pores)
+        if sp.size(pores) == 0:
+            return sp.array([], ndmin=1, dtype=int)
+        if 'lil' not in self._am.keys():
+            self.get_adjacency_matrix(fmt='lil')
         neighbors = topotools.find_neighbor_sites(sites=pores, logic=mode,
-                                                  am=self.am, flatten=flatten,
+                                                  am=self._am['lil'],
+                                                  flatten=flatten,
                                                   exclude_input=excl_self)
         return neighbors
 
@@ -517,13 +547,18 @@ class GenericNetwork(Base, ModelsMixin):
         >>> import openpnm as op
         >>> pn = op.network.Cubic(shape=[5, 5, 5])
         >>> pn.find_neighbor_throats(pores=[0, 1])
-        array([0, 1, 2, 3, 4, 5])
+        array([  0,   1, 100, 101, 200, 201])
         >>> pn.find_neighbor_throats(pores=[0, 1], flatten=False)
-        array([array([0, 1, 2]), array([0, 3, 4, 5])], dtype=object)
+        [[0, 100, 200], [0, 1, 101, 201]]
         """
         pores = self._parse_indices(pores)
+        if sp.size(pores) == 0:
+            return sp.array([], ndmin=1, dtype=int)
+        if 'lil' not in self._im.keys():
+            self.get_incidence_matrix(fmt='lil')
         neighbors = topotools.find_neighbor_bonds(sites=pores, logic=mode,
-                                                  im=self.im, flatten=flatten)
+                                                  im=self._im['lil'],
+                                                  flatten=flatten)
         return neighbors
 
     def _find_neighbors(self, pores, element, **kwargs):
@@ -644,11 +679,11 @@ class GenericNetwork(Base, ModelsMixin):
         >>> import openpnm as op
         >>> pn = op.network.Cubic(shape=[3, 3, 3])
         >>> pn.find_nearby_pores(pores=[0, 1], r=1)
-        array([array([ 1,  5, 25]), array([ 0,  2,  6, 26])], dtype=object)
+        array([array([1, 3, 9]), array([ 0,  2,  4, 10])], dtype=object)
         >>> pn.find_nearby_pores(pores=[0, 1], r=0.5)
         array([], shape=(2, 0), dtype=int64)
         >>> pn.find_nearby_pores(pores=[0, 1], r=1, flatten=True)
-        array([ 2,  5,  6, 25, 26])
+        array([ 2,  3,  4,  9, 10])
         """
         pores = self._parse_indices(pores)
         # Handle an empty array if given
@@ -664,8 +699,8 @@ class GenericNetwork(Base, ModelsMixin):
         # Sort the indices in each list
         [Pn[i].sort() for i in range(0, sp.size(pores))]
         if flatten:  # Convert list of lists to a flat nd-array
-            temp = sp.hstack(Pn)
-            Pn = sp.unique(Pn)
+            temp = sp.concatenate((Pn))
+            Pn = sp.unique(temp)
             if excl_self:  # Remove inputs if necessary
                 Pn = Pn[~sp.in1d(Pn, pores)]
         else:  # Convert list of lists to an nd-array of nd-arrays
@@ -676,3 +711,94 @@ class GenericNetwork(Base, ModelsMixin):
         if Pn.dtype == float:
             Pn = Pn.astype(sp.int64)
         return Pn
+
+    def check_network_health(self):
+        r"""
+        This method check the network topological health by checking for:
+
+            (1) Isolated pores
+            (2) Islands or isolated clusters of pores
+            (3) Duplicate throats
+            (4) Bidirectional throats (ie. symmetrical adjacency matrix)
+            (5) Headless throats
+
+        Returns
+        -------
+        A dictionary containing the offending pores or throat numbers under
+        each named key.
+
+        It also returns a list of which pores and throats should be trimmed
+        from the network to restore health.  This list is a suggestion only,
+        and is based on keeping the largest cluster and trimming the others.
+
+        Notes
+        -----
+        - Does not yet check for duplicate pores
+        - Does not yet suggest which throats to remove
+        - This is just a 'check' and does not 'fix' the problems it finds
+        """
+
+        health = HealthDict()
+        health['disconnected_clusters'] = []
+        health['isolated_pores'] = []
+        health['trim_pores'] = []
+        health['duplicate_throats'] = []
+        health['bidirectional_throats'] = []
+        health['headless_throats'] = []
+        health['looped_throats'] = []
+
+        # Check for headless throats
+        hits = sp.where(self['throat.conns'] > self.Np - 1)[0]
+        if sp.size(hits) > 0:
+            health['headless_throats'] = sp.unique(hits)
+            return health
+
+        # Check for throats that loop back onto the same pore
+        P12 = self['throat.conns']
+        hits = sp.where(P12[:, 0] == P12[:, 1])[0]
+        if sp.size(hits) > 0:
+            health['looped_throats'] = hits
+
+        # Check for individual isolated pores
+        Ps = self.num_neighbors(self.pores())
+        if sp.sum(Ps == 0) > 0:
+            health['isolated_pores'] = sp.where(Ps == 0)[0]
+
+        # Check for separated clusters of pores
+        temp = []
+        am = self.create_adjacency_matrix(fmt='coo', triu=True)
+        Cs = csg.connected_components(am, directed=False)[1]
+        if sp.unique(Cs).size > 1:
+            for i in sp.unique(Cs):
+                temp.append(sp.where(Cs == i)[0])
+            b = sp.array([len(item) for item in temp])
+            c = sp.argsort(b)[::-1]
+            for i in range(0, len(c)):
+                health['disconnected_clusters'].append(temp[c[i]])
+                if i > 0:
+                    health['trim_pores'].extend(temp[c[i]])
+
+        # Check for duplicate throats
+        am = self.create_adjacency_matrix(fmt='csr', triu=True).tocoo()
+        hits = sp.where(am.data > 1)[0]
+        if len(hits):
+            mergeTs = []
+            hits = sp.vstack((am.row[hits], am.col[hits])).T
+            ihits = hits[:, 0] + 1j*hits[:, 1]
+            conns = self['throat.conns']
+            iconns = conns[:, 0] + 1j*conns[:, 1]  # Convert to imaginary
+            for item in ihits:
+                mergeTs.append(sp.where(iconns == item)[0])
+            health['duplicate_throats'] = mergeTs
+
+        # Check for bidirectional throats
+        adjmat = self.create_adjacency_matrix(fmt='coo')
+        num_full = adjmat.sum()
+        temp = sprs.triu(adjmat, k=1)
+        num_upper = temp.sum()
+        if num_full > num_upper:
+            biTs = sp.where(self['throat.conns'][:, 0] >
+                            self['throat.conns'][:, 1])[0]
+            health['bidirectional_throats'] = biTs.tolist()
+
+        return health

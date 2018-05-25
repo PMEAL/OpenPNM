@@ -2,6 +2,7 @@ from openpnm.core import Base, Workspace, logging, ModelsMixin
 from openpnm.utils import PrintableDict
 logger = logging.getLogger(__name__)
 ws = Workspace()
+from numpy import ones
 
 
 class GenericPhase(Base, ModelsMixin):
@@ -22,26 +23,50 @@ class GenericPhase(Base, ModelsMixin):
 
     """
 
-    def __init__(self, network, settings={}, **kwargs):
-        self.settings.setdefault('prefix', 'phase')
+    def __init__(self, network=None, project=None, settings={}, **kwargs):
+        # Define some default settings
+        self.settings.update({'prefix': 'phase'})
+        # Overwrite with user supplied settings, if any
         self.settings.update(settings)
-        super().__init__(Np=network.Np, Nt=network.Nt,
-                         simulation=network.simulation, **kwargs)
+
+        # Deal with network or project arguments
+        if network is not None:
+            if project is not None:
+                assert network is project.network
+            else:
+                project = network.project
+
+        super().__init__(project=project, **kwargs)
+
+        # If project has a network object, adjust pore and throat sizes
+        network = self.project.network
+        if network:
+            self['pore.all'] = ones((network.Np, ), dtype=bool)
+            self['throat.all'] = ones((network.Nt, ), dtype=bool)
+
         # Set standard conditions on the fluid to get started
         self['pore.temperature'] = 298.0
         self['pore.pressure'] = 101325.0
 
+    def __setitem__(self, key, value):
+        if self.project:
+            for item in self.project.find_physics(phase=self):
+                exclude = {'pore.all', 'throat.all'}
+                if key in set(item.keys()).difference(exclude):
+                    raise Exception(key+' already exists on '+item.name)
+        super().__setitem__(key, value)
+
     def __getitem__(self, key):
         element = key.split('.')[0]
+        # Deal with special keys first
         if key.split('.')[-1] == '_id':
-            net = self.simulation.network
+            net = self.project.network
             return net[element+'._id']
         if key.split('.')[-1] == self.name:
             return self[element+'.all']
-        if key not in self.keys():
-            logger.debug(key + ' not on Phase, constructing data from Physics')
-            names = self.simulation.find_physics(phase=self)
-            physics = [self.simulation.physics()[i] for i in names]
-            return self._interleave_data(key, physics)
-        else:
-            return super().__getitem__(key)
+        # Now get values if present, or regenerate them
+        vals = self.get(key)
+        if vals is None:
+            physics = self.project.find_physics(phase=self)
+            vals = self._interleave_data(key, physics)
+        return vals

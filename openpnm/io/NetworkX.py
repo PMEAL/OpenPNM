@@ -1,6 +1,6 @@
 import scipy as sp
 import networkx as nx
-from openpnm.core import logging, Simulation
+from openpnm.core import logging
 from openpnm.io import GenericIO
 from openpnm.network import GenericNetwork
 logger = logging.getLogger(__name__)
@@ -10,6 +10,7 @@ class NetworkX(GenericIO):
     r"""
     This class is meant specifcally for exchanging data with NetworkX, which
     is a common tool for dealing with network structures.
+
     Notes
     -----
     1. Each node in a NetworkX object (i.e. ``G``) can be assigned properties
@@ -35,7 +36,7 @@ class NetworkX(GenericIO):
     """
 
     @classmethod
-    def load(cls, G, simulation=None):
+    def from_networkx(cls, G, project=None):
         r"""
         Add data to an OpenPNM Network from a undirected NetworkX graph object.
 
@@ -47,18 +48,15 @@ class NetworkX(GenericIO):
             gaps, i.e. ``G.nodes() = [0,1,3,4,5]`` is not allowed and should be
             mapped to ``G.nodes() = [0,1,2,3,4]``.
 
-        simulation : OpenPNM Simulation object
-            A GenericNetwork is created and added to the specified Simulation.
-            If no Simulation object is supplied then one will be created and
-            returned.
+        project : OpenPNM Project object
+            A GenericNetwork is created and added to the specified Project.
+            If no Project is supplied then one will be created and returned.
 
-        Notes
-        -----
-        This function used to accept a path to a YAML file that was created by
-        NetworkX.  The functionality has been changed, so that now you pass
-        an actual NetworkX graph object.  If you have a network saved as a
-        YAML file, you can open it in NetworkX first then pass the resulting
-        object to this function.
+        Returns
+        -------
+        An OpenPNM Project containing a GenericNetwork with all the data from
+        the NetworkX object.
+
         """
         net = {}
 
@@ -138,28 +136,24 @@ class NetworkX(GenericIO):
                 net['throat.'+item][i] = val
             i += 1
 
-        network = GenericNetwork(simulation=simulation)
+        network = GenericNetwork(project=project)
         network = cls._update_network(network=network, net=net)
-        network._gen_ids()
-        return network
+        return network.project
 
     @classmethod
-    def save(cls, simulation):
+    def to_networkx(cls, network):
         r"""
         Write OpenPNM Network to a NetworkX object.
 
         Parameters
         ----------
-        simulation : OpenPNM Simulation Object
-            The OpenPNM Simulation containing the Network to be converted to a
-            NetworkX object
+        network : OpenPNM Network Object
+            The OpenPNM Network to be converted to a NetworkX object
 
         Returns
         -------
         A NetworkX object with all pore/throat properties attached to it
         """
-        network = simulation.network
-
         # Ensure network is an OpenPNM Network object.
         if not isinstance(network, GenericNetwork):
             raise('Provided network is not an OpenPNM Network.')

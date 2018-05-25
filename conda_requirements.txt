@@ -3,3 +3,6 @@ scipy
 matplotlib
 pandas
 scikit-image
+sympy
+testfixtures
+networkx

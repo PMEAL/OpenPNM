@@ -47,7 +47,7 @@ class Cubic(GenericNetwork):
 
     """
     def __init__(self, shape, spacing=[1, 1, 1], connectivity=6, name=None,
-                 simulation=None):
+                 project=None):
 
         arr = np.atleast_3d(np.empty(shape))
 
@@ -107,8 +107,9 @@ class Cubic(GenericNetwork):
         self['throat.conns'] = pairs
 
         super().__init__(Np=points.shape[0], Nt=pairs.shape[0], name=name,
-                         simulation=simulation)
-
+                         project=project)
+        self['pore.internal'] = True
+        self['throat.internal'] = True
         self._label_surfaces()
 
     def _label_surfaces(self):
@@ -121,11 +122,6 @@ class Cubic(GenericNetwork):
         for label in labels:
             if 'pore.'+label not in self.keys():
                 self['pore.'+label] = False
-        if 'pore.boundary' in self.keys():
-            internal = -self['pore.boundary']
-        else:
-            internal = self['pore.all']
-        self['pore.internal'] = internal
         self['pore.front'][x <= x.min()] = True
         self['pore.back'][x >= x.max()] = True
         self['pore.left'][y <= y.min()] = True
@@ -149,9 +145,11 @@ class Cubic(GenericNetwork):
         Notes
         -----
         This method uses ``clone_pores`` to clone the surface pores (labeled
-        'left','right', etc), then shifts them to the periphery of the domain,
-        and gives them the label 'right_face', 'left_face', etc.
+        'left', 'right', etc), then shifts them to the periphery of the domain,
+        and gives them the label 'right_boundary', 'left_boundary', etc.
         """
+        if type(labels) == str:
+            labels = [labels]
         x, y, z = self['pore.coords'].T
         Lcx, Lcy, Lcz = self._spacing
 
@@ -190,3 +188,48 @@ class Cubic(GenericNetwork):
         return spacing
 
     spacing = property(fget=_get_spacing)
+
+    def to_array(self, values):
+        r"""
+        Converts the values to a rectangular array with the same shape as the
+        network
+
+        Parameters
+        ----------
+        values : array_like
+            An Np-long array of values to convert to
+
+        Notes
+        -----
+        This method can break on networks that have had boundaries added.  It
+        will usually work IF the given values came only from 'internal'
+        pores.
+        """
+        if sp.shape(values)[0] > self.num_pores('internal'):
+            raise Exception('The array shape does not match the network')
+        Ps = sp.array(self['pore.index'][self.pores('internal')], dtype=int)
+        arr = sp.ones(self._shape)*sp.nan
+        ind = sp.unravel_index(Ps, self._shape)
+        arr[ind[0], ind[1], ind[2]] = values
+        return arr
+
+    def from_array(self, array, propname):
+        r"""
+        Apply data to the network based on a rectangular array filled with
+        values.  Each array location corresponds to a pore in the network.
+        Parameters
+        ----------
+        array : array_like
+            The rectangular array containing the values to be added to the
+            network. This array must be the same shape as the original network.
+        propname : string
+            The name of the pore property being added.
+        """
+        array = sp.atleast_3d(array)
+        if sp.shape(array) != self._shape:
+            raise Exception('The array shape does not match the network')
+        temp = array.flatten()
+        Ps = sp.array(self['pore.index'][self.pores('internal')], dtype=int)
+        propname = 'pore.' + propname.split('.')[-1]
+        self[propname] = sp.nan
+        self[propname][self.pores('internal')] = temp[Ps]

@@ -1,6 +1,9 @@
 import scipy as sp
+import numpy as np
 import openpnm as op
+from pathlib import Path
 from openpnm.core import logging
+from openpnm.utils import flat_list
 logger = logging.getLogger(__name__)
 
 
@@ -16,33 +19,15 @@ class GenericIO():
         raise NotImplementedError("The \'load\' method for this class " +
                                   "does not exist yet")
 
-    @staticmethod
-    def split_geometry(network):
-        r"""
-        This method accepts an OpenPNM Network object and removes all geometry
-        related pore and throat properties, (basically all values other than
-        ```'pore.coords'``` and ```throat.conns```), and places them on a
-        GenericGeometry object.  Any labels on the Network are left intact.
-
-        Parameters
-        ----------
-        network : OpenPNM Network Object
-            The Network that possesses the geometrical values
-
-        Returns
-        -------
-        geometry : OpenPNM Geometry Object
-            The new GenericGeometry object that was created to contain the
-            geometrical pore and throat properties.
-
-        """
-        geom = op.geometry.GenericGeometry(network=network,
-                                           pores=network.Ps,
-                                           throats=network.Ts)
-        for item in network.props():
-            if item not in ['pore.coords', 'throat.conns']:
-                geom.update({item: network.pop(item)})
-        return geom
+    @classmethod
+    def _convert_data(cls, project):
+        # Convert arrays of 1's and/or 0's to booleans
+        for obj in project:
+            for item in obj.keys():
+                ra = obj[item]
+                if (ra.dtype == int) and (ra.max() <= 1) and (ra.min() >= 0):
+                    obj.update({item: ra.astype(bool)})
+        return project
 
     @classmethod
     def _update_network(cls, network, net):
@@ -70,8 +55,6 @@ class GenericIO():
             if (net[item].dtype is int) and (net[item].max() == 1):
                 net[item] = net[item].astype(bool)
             # Write data to network object
-            if item in network:
-                logger.warning('\''+item+'\' already present...overwriting')
             network.update({item: net[item]})
 
         network._gen_ids()
@@ -79,28 +62,33 @@ class GenericIO():
         return network
 
     @classmethod
-    def _write_file(cls, filename, ext):
-        ext = ext.replace('.', '').lower()
-        filename = filename.rstrip('.'+ext)
-        filename = filename+'.'+ext
-        try:
-            logger.warning(filename+' already exists, contents will be ' +
-                           'overwritten')
-            f = open(filename, mode='w')
-        except:
-            f = open(filename, mode='x')
-        return f
+    def _parse_filename(cls, filename, path='', ext=''):
+        p = Path(path)
+        p = p.resolve()
+        p = p.joinpath(filename)
+        # If extension not part of filename
+        if p.suffix == '':
+            try:
+                p = p.with_suffix(ext)
+            except ValueError:
+                p = p.with_suffix('.'+ext)
+        return p
 
     @classmethod
-    def _read_file(cls, filename, ext, mode='r'):
-        ext = ext.replace('.', '').lower()
-        if not filename.endswith('.'+ext):
-            filename = filename+'.'+ext
-        f = open(filename, mode=mode)
-        return f
-
-    @classmethod
-    def _parse_phases(cls, phases):
-        if type(phases) is not list:  # Ensure it's a list
-            phases = [phases]
-        return phases
+    def _parse_args(cls, network, phases):
+        # Convert network to a list, even if empty
+        if network is None:
+            network = []
+        else:
+            network = flat_list(network)
+        # Ensure phases is a list, even if empty
+        phases = flat_list(phases)
+        # Get handle to project object
+        if len(network) == 0:
+            if len(phases) == 0:
+                raise Exception('Must specify one of network or phase')
+            else:
+                project = phases[0].project
+        else:
+            project = network[0].project
+        return (project, network, phases)

@@ -1,6 +1,6 @@
 import os as os
 import scipy as sp
-from openpnm.core import logging, Simulation
+from openpnm.core import logging, Project
 from openpnm.network import GenericNetwork
 from openpnm.io import GenericIO
 from openpnm.topotools import trim
@@ -21,7 +21,7 @@ class MARock(GenericIO):
     """
 
     @classmethod
-    def load(cls, path, voxel_size=1, simulation=None):
+    def load(cls, path, voxel_size=1, project=None):
         r"""
         Load data from a 3DMA-Rock extracted network.  This format consists of
         two files: 'rockname.np2th' and 'rockname.th2pn'.  They should be
@@ -45,15 +45,14 @@ class MARock(GenericIO):
             scale the voxel counts to actual dimension. It is recommended that
             this value be in SI units [m] to work well with OpenPNM.
 
-        simulation : OpenPNM Simulation object
-            A GenericNetwork is created and added to the specified Simulation.
-            If no Simulation object is supplied then one will be created and
-            returned.
+        project : OpenPNM Project object
+            A GenericNetwork is created and added to the specified Project.
+            If no Project is supplied then one will be created and returned.
 
         """
 
         net = {}
-
+        path = path.resolve()
         for file in os.listdir(path):
             if file.endswith(".np2th"):
                 np2th_file = os.path.join(path, file)
@@ -113,13 +112,13 @@ class MARock(GenericIO):
         net['throat.area'] = (voxel_size**2)*net['throat.area']
         net['pore.volume'] = (voxel_size**3)*net['pore.volume']
 
-        if simulation is None:
-            simulation = Simulation(name=path)
-        network = GenericNetwork(simulation=simulation)
+        if project is None:
+            project = Project(name=path)
+        network = GenericNetwork(project=project)
         network = cls._update_network(network=network, net=net)
 
         # Trim headless throats before returning
         ind = sp.where(network['throat.conns'][:, 0] == -1)[0]
         trim(network=network, throats=ind)
 
-        return simulation
+        return project

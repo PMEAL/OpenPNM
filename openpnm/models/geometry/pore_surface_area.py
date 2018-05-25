@@ -1,10 +1,4 @@
-r"""
-===============================================================================
-Submodule -- pore_surface_area
-===============================================================================
-
-"""
-import scipy as _sp
+import numpy as _np
 
 
 def sphere(target, pore_diameter='pore.diameter', throat_area='throat.area'):
@@ -29,21 +23,19 @@ def sphere(target, pore_diameter='pore.diameter', throat_area='throat.area'):
         since their insection with the pore are removed from the computation.
 
     """
-    network = target.simulation.network
+    network = target.project.network
     R = target[pore_diameter]/2
-    Asurf = 4*_sp.constants.pi*R**2
+    Asurf = 4*_np.pi*R**2
     Tn = network.find_neighbor_throats(pores=target.Ps, flatten=False)
-    Tsurf = _sp.array([_sp.sum(network[throat_area][Ts]) for Ts in Tn])
+    Tsurf = _np.array([_np.sum(network[throat_area][Ts]) for Ts in Tn])
     value = Asurf - Tsurf
     return value
 
 
 def cube(target, pore_diameter='pore.diameter', throat_area='throat.area'):
     r"""
-    Calculates internal surface area of pore bodies assuming they are spherical
-    then subtracts the area of the neighboring throats in a crude way, by
-    simply considering the throat cross-sectional area, thus not accounting
-    for the actual curvature of the intersection.
+    Calculates internal surface area of pore bodies assuming they are cubes
+    then subtracts the area of the neighboring throats.
 
     Parameters
     ----------
@@ -59,9 +51,9 @@ def cube(target, pore_diameter='pore.diameter', throat_area='throat.area'):
         The dictioanry key to the throat area array.  Throat areas are needed
         since their insection with the pore are removed from the computation.
     """
-    network = target.simulation.network
+    network = target.project.network
     D = target[pore_diameter]
     Tn = network.find_neighbor_throats(pores=target.Ps, flatten=False)
-    Tsurf = _sp.array([_sp.sum(network[throat_area][Ts]) for Ts in Tn])
+    Tsurf = _np.array([_np.sum(network[throat_area][Ts]) for Ts in Tn])
     value = 6*D**2 - Tsurf
     return value

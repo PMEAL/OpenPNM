@@ -1,9 +1,9 @@
 import pickle
-from openpnm.core import logging, Simulation, Base
-from openpnm.network import GenericNetwork
-from openpnm.utils import NestedDict, FlatDict
+from openpnm.core import logging, Workspace
+from openpnm.utils import NestedDict, FlatDict, sanitize_dict
 from openpnm.io import GenericIO
 logger = logging.getLogger(__name__)
+ws = Workspace()
 
 
 class Dict(GenericIO):
@@ -16,27 +16,81 @@ class Dict(GenericIO):
     """
 
     @classmethod
-    def from_dict(cls, dct, simulation=None):
+    def from_dict(cls, dct, project=None, delim=' | '):
+        r"""
+        This method converts a correctly formatted dictionary into OpenPNM
+        objects, and returns a handle to the *project* containing them.
 
-        # Now parse through dict and put values on correct objects
-        dct = FlatDict(dct, delimiter='/')
-        sim = NestedDict()
-        for item in dct.keys():
-            level = item.split('/')
-            sim[level[-2]][level[-1]] = dct[item]
+        Parameters
+        ----------
+        dct : dictionary
+            The Python dictionary containing the data.  The nesting and
+            labeling of the dictionary is used to create the appropriate
+            OpenPNM objects.
 
-        if simulation is None:
-            simulation = Simulation()
+        project : OpenPNM Project Object
+            The project with which the created objects should be associated.
+            If not supplied, one will be created.
 
-        for item in sim.keys():
-            obj = Base(simulation=simulation)
-            obj.update(sim[item])
-            obj._name = item
+        Returns
+        -------
+        An OpenPNM Project containing the objects created to store the given
+        data.
 
-        return simulation
+        """
+        if project is None:
+            project = ws.new_project()
+
+        # Uncategorize pore/throat and labels/properties, if present
+        fd = FlatDict(dct, delimiter=delim)
+        # If . is the delimiter, replace with | otherwise things break
+        if delim == '.':
+            delim = ' | '
+            for key in list(fd.keys()):
+                new_key = key.replace('.', delim)
+                fd[new_key] = fd.pop(key)
+        d = FlatDict(delimiter=delim)
+        for key in list(fd.keys()):
+            new_key = key.replace('pore' + delim, 'pore.')
+            new_key = new_key.replace('throat' + delim, 'throat.')
+            new_key = new_key.replace('labels' + delim, '')
+            new_key = new_key.replace('properties' + delim, '')
+            d[new_key] = fd.pop(key)
+
+        # Plase data into correctly categorized dicts, for later handling
+        objs = {'network': NestedDict(),
+                'geometry': NestedDict(),
+                'physics': NestedDict(),
+                'phase': NestedDict(),
+                'algorithm': NestedDict(),
+                'base': NestedDict()}
+        for item in d.keys():
+            path = item.split(delim)
+            if len(path) > 2:
+                if path[-3] in objs.keys():
+                    # Item is categorized by type, so note it
+                    objs[path[-3]][path[-2]][path[-1]] = d[item]
+                else:
+                    # item is nested, not categorized; make it a base
+                    objs['base'][path[-2]][path[-1]] = d[item]
+            else:
+                # If not categorized by type, make it a base
+                objs['base'][path[-2]][path[-1]] = d[item]
+
+        # Convert to OpenPNM Objects, attempting to infer type
+        for objtype in objs.keys():
+            for name in objs[objtype].keys():
+                # Create empty object, using dummy name to avoid error
+                obj = project._new_object(objtype=objtype, name='')
+                # Overwrite name
+                obj._set_name(name=name, validate=False)
+                # Update new object with data from dict
+                obj.update(objs[objtype][name])
+
+        return project
 
     @classmethod
-    def to_dict(cls, network, phases=[], element=['pore', 'throat'],
+    def to_dict(cls, network=None, phases=[], element=['pore', 'throat'],
                 interleave=True, flatten=True, categorize_by=[]):
         r"""
         Returns a single dictionary object containing data from the given
@@ -45,7 +99,7 @@ class Dict(GenericIO):
 
         Parameters
         ----------
-        network : OpenPNM Network Object
+        network : OpenPNM Network Object (optional)
             The network containing the desired data
 
         phases : list of OpenPNM Phase Objects (optional, default is none)
@@ -105,11 +159,10 @@ class Dict(GenericIO):
         *HDF5* file directly, since the hierarchy is dictated by the placement
         of '/' characters.
         """
-        phases = cls._parse_phases(phases=phases)
-        simulation = network.simulation
-
-        d = NestedDict()
-        delim = '/'
+        project, network, phases = cls._parse_args(network=network,
+                                                   phases=phases)
+        delim = ' | '
+        d = NestedDict(delimiter=delim)
 
         def build_path(obj, key):
             propname = delim + key
@@ -117,7 +170,7 @@ class Dict(GenericIO):
             datatype = ''
             arr = obj[key]
             if 'object' in categorize_by:
-                prefix = obj.isa()
+                prefix = obj._isa()
             if 'element' in categorize_by:
                 propname = delim + key.replace('.', delim)
             if 'data' in categorize_by:
@@ -128,113 +181,102 @@ class Dict(GenericIO):
             path = prefix + delim + obj.name + datatype + propname
             return path
 
-        for key in network.keys(element=element):
-            path = build_path(obj=network, key=key,)
-            d[path] = network[key]
+        for net in network:
+            for key in net.keys(element=element, mode='all'):
+                path = build_path(obj=net, key=key)
+                d[path] = net[key]
 
-        for geo in simulation.geometries().values():
-            for key in geo.keys(element=element):
-                if interleave:
-                    path = build_path(obj=network, key=key)
-                    d[path] = network[key]
-                else:
-                    path = build_path(obj=geo, key=key)
-                    if flatten:
+            for geo in project.geometries().values():
+                for key in geo.keys(element=element, mode='all'):
+                    if interleave:
+                        path = build_path(obj=net, key=key)
+                        d[path] = net[key]
+                    else:
+                        path = build_path(obj=geo, key=key)
+                        if flatten:
+                            d[path] = geo[key]
+                        elif 'object' in categorize_by:
+                            path = path.split(delim)
+                            path.insert(0, 'network')
+                            path.insert(1, net.name)
+                            path = delim.join(path)
+                        else:
+                            path = path.split(delim)
+                            path.insert(1, net.name)
+                            path = delim.join(path)
                         d[path] = geo[key]
-                    elif 'object' not in categorize_by:
-                        path = path.split(delim)
-                        path.insert(1, network.name)
-                        path = delim.join(path)
-                    d[path] = geo[key]
 
         for phase in phases:
-            for key in phase.keys(element=element):
+            for key in phase.keys(element=element, mode='all'):
                 path = build_path(obj=phase, key=key)
                 d[path] = phase[key]
 
-            for physics in simulation.find_physics(phase=phase):
-                phys = simulation.physics()[physics]
-                for key in phys.keys(element=element):
-                    if interleave:
-                        path = build_path(obj=phase, key=key)
-                        d[path] = phase[key]
-                    else:
-                        path = build_path(obj=phys, key=key)
-                        if flatten:
+            for phys in project.find_physics(phase=phase):
+                if phys:
+                    for key in phys.keys(element=element, mode='all'):
+                        if interleave:
+                            path = build_path(obj=phase, key=key)
+                            d[path] = phase[key]
+                        else:
+                            path = build_path(obj=phys, key=key)
+                            if flatten:
+                                d[path] = phys[key]
+                            elif 'object' in categorize_by:
+                                path = path.split(delim)
+                                path.insert(0, 'phase')
+                                path.insert(1, phase.name)
+                                path = delim.join(path)
+                            else:
+                                path = path.split(delim)
+                                path.insert(1, phase.name)
+                                path = delim.join(path)
                             d[path] = phys[key]
-                        elif 'object' not in categorize_by:
-                            path = path.split(delim)
-                            path.insert(1, phase.name)
-                            path = delim.join(path)
-                        d[path] = phys[key]
 
         if 'root' in d.keys():
             d = d['root']
+        if 'project' in categorize_by:
+            new_d = NestedDict()
+            new_d[project.name] = d
+            d = new_d
         return d
 
     @classmethod
-    def save(cls, network, phases=[], filename=''):
+    def save(cls, dct, filename):
         r"""
-        Saves data from the given objects into the specified file.
+        Saves data from the given dictionary into the specified file.
 
         Parameters
         ----------
-        network : OpenPNM Network Object
-            The network containing the desired data
+        dct : dictionary
+            A dictionary to save to file, presumably obtained from the
+            ``to_dict`` method of this class.
 
-        phases : list of OpenPNM Phase Objects (optional, default is none)
-            A list of phase objects whose data are to be included
-
-        Notes
-        -----
-        This function enforces a specific dictionary format, so that it
-        can be consistently interpreted by the ``load`` function.  To get
-        a dictionary with a different format use the ``get`` method, and then
-        optionally save it to a file manually using the ``pickle`` standard
-        library.
-
-        This method only saves the data, not any of the pore-scale models or
-        other attributes.  To save an actual OpenPNM Simulation use the
-        ``Workspace`` object.
+        filename : string or path object
+            The filename to store the dictionary.
 
         """
-        simulation = network.simulation
-        if filename == '':
-            filename = simulation.name
-        else:
-            filename = filename.rsplit('.dct', 1)[0]
-        d = cls.to_dict(simulation=simulation, phases=phases,
-                        interleave=True, categorize=False)
-        for item in list(d.keys()):
-            new_name = item.split('.')
-            d[new_name[1] + '.' + new_name[2]] = d.pop(item)
-        pickle.dump(d, open(filename + '.dct', 'wb'))
+        fname = cls._parse_filename(filename=filename, ext='dct')
+        dct = sanitize_dict(dct)
+        with open(fname, 'wb') as f:
+            pickle.dump(dct, f)
 
     @classmethod
-    def load(cls, filename, simulation=None):
+    def load(cls, filename):
         r"""
-        Load data from the specified file into an OpenPNM simulation
+        Load data from the specified file into a Python dictionary
 
         Parameters
         ----------
-        filname : string
-            The path to the file to be openned
-
-        simulation : OpenPNM Simulation object
-            A GenericNetwork is created and added to the specified Simulation.
-            If no Simulation object is supplied then one will be created and
-            returned.
+        filename : string
+            The path to the file to be opened
 
         Notes
         -----
-        This function is designed to open files creating using the ``save``
-        function, which have a specific format.
+        This returns a Python dictionary which can be converted into OpenPNM
+        objects using the ``from_dict`` method of this class.
 
         """
-        with cls._read_file(filename=filename, ext='dct', mode='rb') as f:
-            net = pickle.load(f)
-        if simulation is None:
-            simulation = Simulation(name=filename.split('.')[0])
-        network = GenericNetwork(simulation=simulation)
-        network = cls._update_network(network=network, net=net)
-        return simulation
+        fname = cls._parse_filename(filename)
+        with open(fname, 'rb') as f:
+            dct = pickle.load(f)
+        return dct

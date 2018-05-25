@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 import os
 import sys
 from distutils.util import convert_path
@@ -36,14 +34,11 @@ setup(
         'openpnm',
         'openpnm.core',
         'openpnm.network',
-        'openpnm.network.models',
         'openpnm.geometry',
-        'openpnm.geometry.models',
         'openpnm.phases',
-        'openpnm.phases.models',
         'openpnm.physics',
-        'openpnm.physics.models',
         'openpnm.utils',
+        'openpnm.models',
         'openpnm.algorithms',
         'openpnm.topotools'
     ],
@@ -54,10 +49,11 @@ setup(
         'scikit-image',
         'transforms3d',
         'pandas',
-        'flatdict'
-    ],
+        'flatdict',
+        'h5py'],
+
     author='OpenPNM Team',
     author_email='jgostick@uwaterloo.ca',
     download_url='https://github.com/pmeal/OpenPNM/',
-    url='https://github.com/pmeal/OpenPNM'
+    url='http://openpnm.org'
 )

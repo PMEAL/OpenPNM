@@ -1,31 +1,35 @@
-r"""
-===============================================================================
-Submodule -- electrical_conductance
-===============================================================================
-
-"""
-
 import scipy as _sp
 
 
-def series_resistors(target, conductivity='pore.electrical_conductivity',
-                     pore_area='pore.area', pore_diameter='pore.diameter',
-                     throat_area='throat.area', throat_length='throat.length'):
+def series_resistors(target,
+                     pore_conductivity='pore.electrical_conductivity',
+                     throat_conductivity='throat.electrical_conductivity',
+                     pore_area='pore.area',
+                     pore_diameter='pore.diameter',
+                     throat_area='throat.area',
+                     throat_length='throat.length'):
     r"""
-    Calculates the electrical conductance of throat assuming cylindrical geometry
+    Calculates the electrical conductance of throat assuming cylindrical
+    geometry
 
     Parameters
     ----------
 
 
     """
-    network = target.simulation.network
-    phase = target.simulation.find_phase(target)
+    network = target.project.network
+    phase = target.project.find_phase(target)
     # Get Nt-by-2 list of pores connected to each throat
     Ps = network['throat.conns']
     # Get properties in every pore in the network
-    sigmap = phase[conductivity]
-    sigmat = phase.interpolate_data(conductivity)
+    try:
+        sigmat = phase[throat_conductivity]
+    except KeyError:
+        sigmat = phase.interpolate_data(propname=pore_conductivity)
+    try:
+        sigmap = phase[pore_conductivity]
+    except KeyError:
+        sigmap = phase.interpolate_data(propname=throat_conductivity)
     # Find g for half of pore 1
     parea = network[pore_area]
     pdia = network[pore_diameter]

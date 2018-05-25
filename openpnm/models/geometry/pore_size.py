@@ -1,13 +1,7 @@
-r"""
-===============================================================================
-pore_diameter
-===============================================================================
-
-"""
-from openpnm.core import logging
-from . import misc as _misc
-import scipy as _sp
-_logger = logging.getLogger(__name__)
+from openpnm.core import logging as _logging
+from openpnm.models import misc as _misc
+import numpy as _np
+_logger = _logging.getLogger(__name__)
 
 
 def weibull(target, shape, scale, loc, seeds='pore.seed'):
@@ -33,9 +27,10 @@ def generic(target, func, seeds='pore.seed'):
 generic.__doc__ = _misc.generic.__doc__
 
 
-def random(target, seed=None, num_range=[0, 1]):
+def largest_sphere(target, fixed_diameter='pore.fixed_diameter', iters=10):
     r"""
-    Assign pore sizes from a random distribution
+    Finds the maximum diameter pore that can be placed in each location without
+    overlapping any neighbors.
 
     Parameters
     ----------
@@ -44,31 +39,9 @@ def random(target, seed=None, num_range=[0, 1]):
         length of the calculated array, and also provides access to other
         necessary properties.
 
-    seed : int
-        The starting seed value to send to Scipy's random number generator.
-        The default is None, which means different distribution is returned
-        each time the model is run.
-
-    num_range : list
-        A two element list indicating the low and high end of the returned
-        numbers.  The default is [0, 1] but this can be adjusted to produce
-        pore sizes directly; for instance pores between 10 and 100 um can be
-        generated with ``num_range = [0.00001, 0.0001]``.
-    """
-    return _misc.random(target, element='pore', seed=seed, num_range=num_range)
-
-
-def largest_sphere(target, pore_diameter='pore.diameter', iters=10):
-    r"""
-    Finds the maximum diameter pore that can be place in each location that
-    does not overlap with any neighbors.
-
-    Parameters
-    ----------
-    target : OpenPNM Object
-        The object which this model is associated with. This controls the
-        length of the calculated array, and also provides access to other
-        necessary properties.
+    fixed_diameter : string
+        The dictionary key containing the pore diameter values already
+        assigned to network, if any.
 
     iters : integer
         The number of iterations to perform when searching for maximum
@@ -88,32 +61,34 @@ def largest_sphere(target, pore_diameter='pore.diameter', iters=10):
     again.
 
     """
-    network = target.simulation.network
+    network = target.project.network
     try:
-        D = network[pore_diameter]
-        nans = _sp.isnan(D)
-        D[nans] = 0.0
-    except:
-        D = _sp.zeros([network.Np, ], dtype=float)
+        # Fetch any existing pore diameters on the network
+        D = network[fixed_diameter]
+        # Set any unassigned values (nans) to 0
+        D[_np.isnan(D)] = 0
+    except KeyError:
+        D = _np.zeros([network.Np, ], dtype=float)
     Ps = network.pores(target.name)
     C1 = network['pore.coords'][network['throat.conns'][:, 0]]
     C2 = network['pore.coords'][network['throat.conns'][:, 1]]
-    L = _sp.sqrt(_sp.sum((C1 - C2)**2, axis=1))
+    L = _np.sqrt(_np.sum((C1 - C2)**2, axis=1))
     while iters >= 0:
         iters -= 1
-        Lt = L - _sp.sum(D[network['throat.conns']], axis=1)/2
+        Lt = L - _np.sum(D[network['throat.conns']], axis=1)/2
         am = network.create_adjacency_matrix(weights=Lt, fmt='lil')
-        D[Ps] = D[Ps] + _sp.array([_sp.amin(row) for row in am.data])[Ps]*0.95
-    if _sp.any(D < 0):
+        D[Ps] = D[Ps] + _np.array([_np.amin(row) for row in am.data])[Ps]*0.95
+    if _np.any(D < 0):
         _logger.warning('Negative pore diameters found!  Neighboring pores' +
-                        ' must be larger than the pore spacing.')
+                        ' are larger than the pore spacing.')
     return D[network.pores(target.name)]
 
 
-def equivalent_sphere(target, pore_volume='pore.volume'):
+def equivalent_diameter(target, pore_volume='pore.volume',
+                        pore_shape='sphere'):
     r"""
-    Calculate pore diameter as the diameter of a sphere with an equivalent
-    volume.
+    Calculates the diameter of a sphere or edge-length of a cube with same
+    volume as the pore.
 
     Parameters
     ----------
@@ -124,8 +99,16 @@ def equivalent_sphere(target, pore_volume='pore.volume'):
 
     pore_volume : string
         The dictionary key containing the pore volume values
+
+    pore_shape : string
+        The shape of the pore body to assume when back-calculating from
+        volume.  Options are 'sphere' (default) or 'cube'.
+
     """
     from scipy.special import cbrt
     pore_vols = target[pore_volume]
-    value = cbrt(6*pore_vols/_sp.pi)
+    if pore_shape.startswith('sph'):
+        value = cbrt(6*pore_vols/_np.pi)
+    elif pore_shape.startswith('cub'):
+        value = cbrt(pore_vols)
     return value

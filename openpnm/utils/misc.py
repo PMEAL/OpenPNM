@@ -9,8 +9,7 @@ class PrintableList(list):
         lines = [horizontal_rule]
         self.sort()
         for i, item in enumerate(self):
-            if '._' not in item:
-                lines.append('{0}\t: {1}'.format(i + 1, item))
+            lines.append('{0}\t: {1}'.format(i + 1, item))
         lines.append(horizontal_rule)
         return '\n'.join(lines)
 
@@ -44,25 +43,49 @@ class PrintableDict(OrderedDict):
         return '\n'.join(lines)
 
 
-class NestedDict(PrintableDict):
+class SettingsDict(PrintableDict):
 
-    def __init__(self, delimiter='/', **kwargs):
+    def __missing__(self, key):
+        self[key] = None
+        return self[key]
+
+
+class NestedDict(dict):
+
+    def __init__(self, mapping={}, delimiter='/'):
         super().__init__()
         self.delimiter = delimiter
-        for item in kwargs:
-            self[item] = kwargs[item]
+        self.update(mapping)
+        self.unravel()
 
     def __setitem__(self, key, value):
-        path = key.split(self.delimiter)
+        path = key.split(self.delimiter, 1)
         if len(path) > 1:
-            key = path.pop(0)
-            self[key][self.delimiter.join(path)] = value
+            if path[0] not in self.keys():
+                self[path[0]] = NestedDict(delimiter=self.delimiter)
+            self[path[0]][path[1]] = value
         else:
             super().__setitem__(key, value)
 
     def __missing__(self, key):
-        self[key] = NestedDict()
+        self[key] = NestedDict(delimiter=self.delimiter)
         return self[key]
+
+    def unravel(self):
+        for item in self.keys():
+            self[item] = self.pop(item)
+
+    def to_dict(self, dct=None):
+        if dct is None:
+            dct = self
+        plain_dict = dict()
+        for key in dct.keys():
+            value = dct[key]
+            if hasattr(value, 'keys'):
+                plain_dict[key] = self.to_dict(value)
+            else:
+                plain_dict[key] = value
+        return plain_dict
 
     def keys(self, dicts=True, values=True):
         k = list(super().keys())
@@ -136,7 +159,7 @@ def toc(quiet=False):
         else:
             return t
     else:
-        print("Toc: start time not set")
+        raise Exception('Start time not set, call tic first')
 
 
 def unique_list(input_list):
@@ -163,71 +186,33 @@ def unique_list(input_list):
     return output_list
 
 
-def amalgamate_data(objs=[], delimiter='_'):
+def flat_list(input_list):
     r"""
-    Returns a dictionary containing ALL pore data from all netowrk and/or
-    phase objects received as arguments
+    Given a list of nested lists of arbitrary depth, returns a single level or
+    'flat' list.
 
-    Parameters
-    ----------
-    obj : list of OpenPNM objects
-        The network and Phase objects whose data should be amalgamated into a
-        single dict
-
-    delimiter : string
-        The delimiter to place between the prop name and the object name.  For
-        instance \'pore.air_molar_density\' or \'pore.air|molar_density'\.  The
-        use of underscores can be problematic for reloading the data since they
-        are also used in multiple word properties.  The default is '_' for
-        backwards compatibility, but the '|' option is preferred.
-
-    Returns
-    -------
-    A standard Python dict containing all the data from the supplied OpenPNM
-    objects
     """
-    if type(objs) is not list:
-        objs = list(objs)
-    data_amalgamated = {}
-    dlim = delimiter
-    exclusion_list = ['pore.centroid', 'pore.vertices', 'throat.centroid',
-                      'throat.offset_vertices', 'throat.vertices', 'throat.normal',
-                      'throat.perimeter', 'pore.vert_index', 'throat.vert_index']
-    for item in objs:
-        mro = [module.__name__ for module in item.__class__.__mro__]
-        # If Network object, combine Geometry and Network keys
-        if 'GenericNetwork' in mro:
-            keys = []
-            for key in list(item.keys()):
-                keys.append(key)
-            for geom in item._geometries:
-                for key in list(geom.keys()):
-                    if key not in keys:
-                        keys.append(key)
+    x = input_list
+    if isinstance(x, list):
+        return [a for i in x for a in flat_list(i)]
+    else:
+        return [x]
+
+
+def sanitize_dict(input_dict):
+    r"""
+    Given a nested dictionary, ensures that all nested dicts are normal
+    Python dicts.  This is necessary for pickling, or just converting
+    an 'auto-vivifying' dict to something that acts normal.
+    """
+    plain_dict = dict()
+    for key in input_dict.keys():
+        value = input_dict[key]
+        if hasattr(value, 'keys'):
+            plain_dict[key] = sanitize_dict(value)
         else:
-            if 'GenericPhase' in mro:
-                keys = []
-                for key in list(item.keys()):
-                    keys.append(key)
-                for physics in item._physics:
-                    for key in list(physics.keys()):
-                        if key not in keys:
-                            keys.append(key)
-        keys.sort()
-        for key in keys:
-            if key not in exclusion_list:
-                try:
-                    if _sp.amax(item[key]) < _sp.inf:
-                        element = key.split('.')[0]
-                        propname = key.split('.')[1]
-                        dict_name = element + '.' + item.name + dlim + propname
-                        if key in ['pore.coords', 'throat.conns',
-                                   'pore.all', 'throat.all']:
-                            dict_name = key
-                        data_amalgamated.update({dict_name: item[key]})
-                except TypeError:
-                    pass
-    return data_amalgamated
+            plain_dict[key] = value
+    return plain_dict
 
 
 def conduit_lengths(network, throats=None, mode='pore'):

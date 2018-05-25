@@ -1,7 +1,7 @@
 import openpnm as op
 from openpnm.io import Dict
-import scipy as sp
-import pytest
+import py
+import os
 
 
 class DictTest:
@@ -58,6 +58,14 @@ class DictTest:
         ws = op.core.Workspace()
         ws.clear()
 
+    def test_to_dict_missing_all_physics(self):
+        net = op.network.Cubic(shape=[4, 4, 4])
+        op.geometry.GenericGeometry(network=net, pores=net.Ps, throats=net.Ts)
+        phase = op.phases.GenericPhase(network=net)
+
+        Dict.to_dict(network=net, phases=[phase], flatten=True,
+                     interleave=True, categorize_by=[])
+
     def test_to_dict_flattened_interleaved(self):
         D = Dict.to_dict(network=self.net, phases=[self.phase_1, self.phase_2],
                          flatten=True, interleave=True, categorize_by=[])
@@ -73,8 +81,7 @@ class DictTest:
         D = Dict.to_dict(network=self.net, phases=[self.phase_1, self.phase_2],
                          flatten=True, interleave=False, categorize_by=[])
 
-        a = set(['net_01', 'geo_01', 'geo_02', 'phase_01', 'phys_01',
-                 'phys_02', 'phase_02', 'phys_03', 'phys_04'])
+        a = set([i.name for i in self.net.project])
 
         assert a == set(D.keys())
         assert set(['geo_01', 'geo_02']).isdisjoint(D['net_01'].keys())
@@ -122,14 +129,18 @@ class DictTest:
         b = set(['net_01', 'phase_01', 'phase_02'])
         c = set(['labels', 'properties'])
         d = set(['pore', 'throat'])
+        e = set(['network', 'phase'])
 
         # Ensure categorized by object
-        assert a == set(D.keys())
+        assert e == set(D.keys())
 
         # Ensure flatten, which occurs when categorized by object
-        assert set(['geo_01', 'geo_02']).issubset(D['geometry'].keys())
-        assert set(['phase_01', 'phase_02']).issubset(D['phase'].keys())
-        assert set(['phys_01', 'phys_02']).issubset(D['physics'].keys())
+        keys = D['network']['net_01']['geometry'].keys()
+        assert set(['geo_01', 'geo_02']).issubset(keys)
+        keys = D['phase'].keys()
+        assert set(['phase_01', 'phase_02']).issubset(keys)
+        keys = D['phase']['phase_01']['physics'].keys()
+        assert set(['phys_01', 'phys_02']).issubset(keys)
 
     def test_to_dict_not_flat_not_interleaved_categorized_by_data(self):
         D = Dict.to_dict(network=self.net, phases=[self.phase_1, self.phase_2],
@@ -197,8 +208,7 @@ class DictTest:
         assert d.issubset(D['phase_02']['phys_04'].keys())
         assert d.issubset(D['phase_02']['phys_04'].keys())
 
-
-    def test_to_dict_not_flat_not_interleaved_categorized_by_element_data(self):
+    def test_to_dict_not_flat_not_interleaved_cat_by_element_data(self):
         D = Dict.to_dict(network=self.net, phases=[self.phase_1, self.phase_2],
                          flatten=False, interleave=False,
                          categorize_by=['element', 'data'])
@@ -216,18 +226,7 @@ class DictTest:
         assert set(['phys_01', 'phys_02']).issubset(D['phase_01'].keys())
         assert set(['phys_03', 'phys_04']).issubset(D['phase_02'].keys())
 
-        # Ensure categorized by data
-        assert c.issubset(D['net_01'].keys())
-        assert c.issubset(D['phase_01'].keys())
-        assert c.issubset(D['phase_02'].keys())
-        assert c.issubset(D['net_01']['geo_01'].keys())
-        assert c.issubset(D['net_01']['geo_02'].keys())
-        assert c.issubset(D['phase_01']['phys_01'].keys())
-        assert c.issubset(D['phase_01']['phys_02'].keys())
-        assert c.issubset(D['phase_02']['phys_03'].keys())
-        assert c.issubset(D['phase_02']['phys_04'].keys())
-
-        # Ensure categorized by element
+        # Ensure categorized by data and element
         assert d.issubset(D['net_01']['properties'].keys())
         assert d.issubset(D['net_01']['labels'].keys())
         assert d.issubset(D['phase_01']['properties'].keys())
@@ -247,7 +246,7 @@ class DictTest:
         assert d.issubset(D['phase_02']['phys_04']['properties'].keys())
         assert d.issubset(D['phase_02']['phys_04']['labels'].keys())
 
-    def test_to_dict_not_flat_not_interleaved_categorized_by_element_data_object(self):
+    def test_to_dict_not_flat_not_interleaved_cat_by_element_data_object(self):
         D = Dict.to_dict(network=self.net, phases=[self.phase_1, self.phase_2],
                          flatten=False, interleave=False,
                          categorize_by=['element', 'data', 'object'])
@@ -256,46 +255,46 @@ class DictTest:
         b = set(['net_01', 'phase_01', 'phase_02'])
         c = set(['labels', 'properties'])
         d = set(['pore', 'throat'])
+        e = set(['network', 'phase'])
 
-        # Check if categorized by object
-        assert a == set(D.keys())
+        # Check if categorized by object, but not flattened
+        assert e == set(D.keys())
+        assert 'geometry' in D['network']['net_01'].keys()
+        assert 'physics' in D['phase']['phase_01'].keys()
+        assert 'physics' in D['phase']['phase_02'].keys()
 
-        # Ensure it's flattened, which occurs when categorized by object
-        assert set(['geo_01', 'geo_02']).isdisjoint(D['network']['net_01'].keys())
-        assert set(['phys_01', 'phys_02']).isdisjoint(D['phase']['phase_01'].keys())
-        assert set(['phys_03', 'phys_04']).isdisjoint(D['phase']['phase_02'].keys())
-
-        # Check if categorized by data
-        assert c.issubset(D['network']['net_01'].keys())
-        assert c.issubset(D['phase']['phase_01'].keys())
-        assert c.issubset(D['phase']['phase_02'].keys())
-        assert c.issubset(D['geometry']['geo_01'].keys())
-        assert c.issubset(D['geometry']['geo_02'].keys())
-        assert c.issubset(D['physics']['phys_01'].keys())
-        assert c.issubset(D['physics']['phys_02'].keys())
-        assert c.issubset(D['physics']['phys_03'].keys())
-        assert c.issubset(D['physics']['phys_04'].keys())
-
-        # Ensure it's categorized by element
+        # Ensure it's categorized by object, data, and element
         assert d.issubset(D['network']['net_01']['labels'].keys())
         assert d.issubset(D['phase']['phase_01']['properties'].keys())
         assert d.issubset(D['phase']['phase_01']['labels'].keys())
         assert d.issubset(D['phase']['phase_02']['properties'].keys())
         assert d.issubset(D['phase']['phase_02']['labels'].keys())
-        assert d.issubset(D['geometry']['geo_01']['properties'].keys())
-        assert d.issubset(D['geometry']['geo_01']['labels'].keys())
-        assert d.issubset(D['geometry']['geo_02']['properties'].keys())
-        assert d.issubset(D['geometry']['geo_02']['labels'].keys())
-        assert d.issubset(D['physics']['phys_01']['properties'].keys())
-        assert d.issubset(D['physics']['phys_01']['labels'].keys())
-        assert d.issubset(D['physics']['phys_02']['properties'].keys())
-        assert d.issubset(D['physics']['phys_02']['labels'].keys())
-        assert d.issubset(D['physics']['phys_03']['properties'].keys())
-        assert d.issubset(D['physics']['phys_03']['labels'].keys())
-        assert d.issubset(D['physics']['phys_04']['properties'].keys())
-        assert d.issubset(D['physics']['phys_04']['labels'].keys())
+        path = D['network']['net_01']['geometry']['geo_01']['properties']
+        assert d.issubset(path.keys())
+        path = D['network']['net_01']['geometry']['geo_01']['labels']
+        assert d.issubset(path.keys())
+        path = D['network']['net_01']['geometry']['geo_02']['properties']
+        assert d.issubset(path.keys())
+        path = D['network']['net_01']['geometry']['geo_02']['labels']
+        assert d.issubset(path.keys())
+        path = D['phase']['phase_01']['physics']['phys_01']['properties']
+        assert d.issubset(path.keys())
+        path = D['phase']['phase_01']['physics']['phys_01']['labels']
+        assert d.issubset(path.keys())
+        D['phase']['phase_01']['physics']['phys_02']['properties']
+        assert d.issubset(path.keys())
+        path = D['phase']['phase_01']['physics']['phys_02']['labels']
+        assert d.issubset(path.keys())
+        path = D['phase']['phase_02']['physics']['phys_03']['properties']
+        assert d.issubset(path.keys())
+        path = D['phase']['phase_02']['physics']['phys_03']['labels']
+        assert d.issubset(path.keys())
+        path = D['phase']['phase_02']['physics']['phys_04']['properties']
+        assert d.issubset(path.keys())
+        path = D['phase']['phase_02']['physics']['phys_04']['labels']
+        assert d.issubset(path.keys())
 
-    def test_to_dict_not_flat_not_interleaved_categorized_by_element_object(self):
+    def test_to_dict_not_flat_not_interleaved_cat_by_element_object(self):
         D = Dict.to_dict(network=self.net, phases=[self.phase_1, self.phase_2],
                          flatten=False, interleave=False,
                          categorize_by=['element', 'object'])
@@ -304,14 +303,16 @@ class DictTest:
         b = set(['net_01', 'phase_01', 'phase_02'])
         c = set(['labels', 'properties'])
         d = set(['pore', 'throat'])
+        e = set(['network', 'phase'])
 
         # Check if categorized by object
-        assert a == set(D.keys())
+        assert e == set(D.keys())
 
-        # Ensure it's flattened, which occurs when categorized by object
-        assert set(['geo_01', 'geo_02']).isdisjoint(D['network']['net_01'].keys())
-        assert set(['phys_01', 'phys_02']).isdisjoint(D['phase']['phase_01'].keys())
-        assert set(['phys_03', 'phys_04']).isdisjoint(D['phase']['phase_02'].keys())
+        # Check if categorized by object, but not flattened
+        assert e == set(D.keys())
+        assert 'geometry' in D['network']['net_01'].keys()
+        assert 'physics' in D['phase']['phase_01'].keys()
+        assert 'physics' in D['phase']['phase_02'].keys()
 
         # Ensure it's categorized by element
         assert d.issubset(D['network']['net_01'].keys())
@@ -319,48 +320,200 @@ class DictTest:
         assert d.issubset(D['phase']['phase_01'].keys())
         assert d.issubset(D['phase']['phase_02'].keys())
         assert d.issubset(D['phase']['phase_02'].keys())
-        assert d.issubset(D['geometry']['geo_01'].keys())
-        assert d.issubset(D['geometry']['geo_01'].keys())
-        assert d.issubset(D['geometry']['geo_02'].keys())
-        assert d.issubset(D['geometry']['geo_02'].keys())
-        assert d.issubset(D['physics']['phys_01'].keys())
-        assert d.issubset(D['physics']['phys_01'].keys())
-        assert d.issubset(D['physics']['phys_02'].keys())
-        assert d.issubset(D['physics']['phys_02'].keys())
-        assert d.issubset(D['physics']['phys_03'].keys())
-        assert d.issubset(D['physics']['phys_03'].keys())
-        assert d.issubset(D['physics']['phys_04'].keys())
-        assert d.issubset(D['physics']['phys_04'].keys())
+        assert d.issubset(D['network']['net_01']['geometry']['geo_01'].keys())
+        assert d.issubset(D['network']['net_01']['geometry']['geo_01'].keys())
+        assert d.issubset(D['network']['net_01']['geometry']['geo_02'].keys())
+        assert d.issubset(D['network']['net_01']['geometry']['geo_02'].keys())
+        assert d.issubset(D['phase']['phase_01']['physics']['phys_01'].keys())
+        assert d.issubset(D['phase']['phase_01']['physics']['phys_01'].keys())
+        assert d.issubset(D['phase']['phase_01']['physics']['phys_02'].keys())
+        assert d.issubset(D['phase']['phase_01']['physics']['phys_02'].keys())
+        assert d.issubset(D['phase']['phase_02']['physics']['phys_03'].keys())
+        assert d.issubset(D['phase']['phase_02']['physics']['phys_03'].keys())
+        assert d.issubset(D['phase']['phase_02']['physics']['phys_04'].keys())
+        assert d.issubset(D['phase']['phase_02']['physics']['phys_04'].keys())
 
     def test_to_dict_flat_not_interleaved_categorized_by_element(self):
         D = Dict.to_dict(network=self.net, phases=[self.phase_1, self.phase_2],
                          flatten=True, interleave=False,
                          categorize_by=['element'])
 
+        assert set(D.keys()) == set([i.name for i in self.net.project])
+
+        d = set(['pore', 'throat'])
+        assert d.issubset(D['net_01'].keys())
+        assert d.issubset(D['geo_01'].keys())
+        assert d.issubset(D['geo_02'].keys())
+        assert d.issubset(D['phase_01'].keys())
+        assert d.issubset(D['phase_02'].keys())
+        assert d.issubset(D['phys_01'].keys())
+        assert d.issubset(D['phys_02'].keys())
+        assert d.issubset(D['phys_03'].keys())
+        assert d.issubset(D['phys_04'].keys())
+
     def test_to_dict_flat_not_interleaved_categorized_by_data(self):
         D = Dict.to_dict(network=self.net, phases=[self.phase_1, self.phase_2],
                          flatten=True, interleave=False,
                          categorize_by=['data'])
+
+        assert set(D.keys()) == set([i.name for i in self.net.project])
+
+        c = set(['labels', 'properties'])
+        assert c.issubset(D['net_01'].keys())
+        assert c.issubset(D['geo_01'].keys())
+        assert c.issubset(D['geo_02'].keys())
+        assert c.issubset(D['phase_01'].keys())
+        assert c.issubset(D['phase_02'].keys())
+        assert c.issubset(D['phys_01'].keys())
+        assert c.issubset(D['phys_02'].keys())
+        assert c.issubset(D['phys_03'].keys())
+        assert c.issubset(D['phys_04'].keys())
 
     def test_to_dict_flat_not_interleaved_categorized_by_data_element(self):
         D = Dict.to_dict(network=self.net, phases=[self.phase_1, self.phase_2],
                          flatten=True, interleave=False,
                          categorize_by=['data', 'element'])
 
+        assert set(D.keys()) == set([i.name for i in self.net.project])
+
+        d = set(['pore', 'throat'])
+        assert d.issubset(D['net_01']['labels'].keys())
+        assert d.issubset(D['net_01']['properties'].keys())
+        assert d.issubset(D['geo_01']['labels'].keys())
+        assert d.issubset(D['geo_01']['properties'].keys())
+        assert d.issubset(D['geo_02']['labels'].keys())
+        assert d.issubset(D['geo_02']['properties'].keys())
+        assert d.issubset(D['phase_01']['labels'].keys())
+        assert d.issubset(D['phase_01']['properties'].keys())
+        assert d.issubset(D['phase_02']['labels'].keys())
+        assert d.issubset(D['phase_02']['properties'].keys())
+        assert d.issubset(D['phys_01']['labels'].keys())
+        assert d.issubset(D['phys_01']['properties'].keys())
+        assert d.issubset(D['phys_02']['labels'].keys())
+        assert d.issubset(D['phys_02']['properties'].keys())
+        assert d.issubset(D['phys_03']['labels'].keys())
+        assert d.issubset(D['phys_03']['properties'].keys())
+        assert d.issubset(D['phys_04']['labels'].keys())
+        assert d.issubset(D['phys_04']['properties'].keys())
+
     def test_to_dict_interleaved_categorized_by_element(self):
         D = Dict.to_dict(network=self.net, phases=[self.phase_1, self.phase_2],
                          flatten=False, interleave=True,
                          categorize_by=['element'])
+
+        b = set(['net_01', 'phase_01', 'phase_02'])
+        assert set(D.keys()) == b
+
+        d = set(['pore', 'throat'])
+        assert d.issubset(D['net_01'].keys())
+        assert d.issubset(D['phase_01'].keys())
+        assert d.issubset(D['phase_02'].keys())
 
     def test_to_dict_interleaved_categorized_by_data(self):
         D = Dict.to_dict(network=self.net, phases=[self.phase_1, self.phase_2],
                          flatten=False, interleave=True,
                          categorize_by=['data'])
 
+        b = set(['net_01', 'phase_01', 'phase_02'])
+        assert set(D.keys()) == b
+
+        d = set(['labels', 'properties'])
+        assert d.issubset(D['net_01'].keys())
+        assert d.issubset(D['phase_01'].keys())
+        assert d.issubset(D['phase_02'].keys())
+
     def test_to_dict_interleaved_categorized_by_data_element(self):
         D = Dict.to_dict(network=self.net, phases=[self.phase_1, self.phase_2],
                          flatten=False, interleave=True,
                          categorize_by=['data', 'element'])
+
+        b = set(['net_01', 'phase_01', 'phase_02'])
+        assert set(D.keys()) == b
+
+        d = set(['pore', 'throat'])
+        assert d.issubset(D['net_01']['labels'].keys())
+        assert d.issubset(D['net_01']['properties'].keys())
+        assert d.issubset(D['phase_01']['labels'].keys())
+        assert d.issubset(D['phase_01']['properties'].keys())
+        assert d.issubset(D['phase_02']['labels'].keys())
+        assert d.issubset(D['phase_02']['properties'].keys())
+
+    def test_to_dict_categorize_by_project(self):
+        D = Dict.to_dict(network=self.net, phases=[self.phase_1, self.phase_2],
+                         flatten=False, interleave=True,
+                         categorize_by=['project'])
+        assert 'sim_01' in D.keys()
+
+    def test_from_dict_interleaved_categorized_by_object(self):
+        D = Dict.to_dict(network=self.net, phases=[self.phase_1],
+                         flatten=False, interleave=True,
+                         categorize_by=['object'])
+        proj = Dict.from_dict(D)
+        assert len(proj) == 2
+        assert len(proj.geometries().values()) == 0
+        assert len(proj.phases().values()) == 1
+        assert len(proj.physics().values()) == 0
+
+    def test_from_dict_interleaved_not_categorized(self):
+        D = Dict.to_dict(network=self.net, phases=[self.phase_1],
+                         flatten=False, interleave=True,
+                         categorize_by=[])
+        proj = Dict.from_dict(D)
+        assert len(proj) == 2
+        assert len(proj.geometries().values()) == 0
+        assert len(proj.phases().values()) == 0
+        assert len(proj.physics().values()) == 0
+
+    def test_from_dict_not_interleaved_flatted_categorized_by_object(self):
+        D = Dict.to_dict(network=self.net, phases=[self.phase_1],
+                         flatten=True, interleave=False,
+                         categorize_by=['object'])
+        proj = Dict.from_dict(D)
+        assert len(proj) == 6
+        assert len(proj.geometries().values()) == 2
+        assert len(proj.phases().values()) == 1
+        assert len(proj.physics().values()) == 2
+
+    def test_from_dict_not_interleaved_not_flatted_categorized_by_object(self):
+        D = Dict.to_dict(network=self.net, phases=[self.phase_1],
+                         flatten=False, interleave=False,
+                         categorize_by=['object'])
+        proj = Dict.from_dict(D)
+        assert len(proj) == 6
+        assert len(proj.geometries().values()) == 2
+        assert len(proj.phases().values()) == 1
+        assert len(proj.physics().values()) == 2
+
+    def test_from_dict_not_interleaved_not_flatted_cat_by_obj_data_elem(self):
+        D = Dict.to_dict(network=self.net, phases=[self.phase_1],
+                         flatten=False, interleave=False,
+                         categorize_by=['object', 'element', 'data'])
+        # Ensure that data and element categorizations are ripped out
+        proj = Dict.from_dict(D)
+        assert len(proj) == 6
+        assert len(proj.geometries().values()) == 2
+        assert len(proj.phases().values()) == 1
+        assert len(proj.physics().values()) == 2
+
+    def test_from_dict_not_interleaved_not_flatted_not_categorized(self):
+        D = Dict.to_dict(network=self.net, phases=[self.phase_1],
+                         flatten=False, interleave=False,
+                         categorize_by=[])
+        proj = Dict.from_dict(D)
+        assert len(proj) == 6
+        assert len(proj.geometries().values()) == 0
+        assert len(proj.phases().values()) == 0
+        assert len(proj.physics().values()) == 0
+
+    def test_save_and_load(self, tmpdir):
+        D = Dict.to_dict(network=self.net, phases=[self.phase_1],
+                         flatten=False, interleave=False,
+                         categorize_by=[])
+        fname = tmpdir.join('test.dct')
+        Dict.save(dct=D, filename=fname)
+        dct = Dict.load(filename=fname)
+        assert len(dct.keys()) == 2
+        os.remove(fname)
 
 
 if __name__ == '__main__':
@@ -371,4 +524,7 @@ if __name__ == '__main__':
     for item in t.__dir__():
         if item.startswith('test'):
             print('running test: '+item)
-            t.__getattribute__(item)()
+            try:
+                t.__getattribute__(item)()
+            except TypeError:
+                t.__getattribute__(item)(tmpdir=py.path.local())
