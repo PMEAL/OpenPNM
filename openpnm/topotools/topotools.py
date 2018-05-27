@@ -248,6 +248,85 @@ def im_to_am(im):
         im = im.tocoo(copy=False)
 
 
+def tri_to_am(tri):
+    r"""
+    Given a Delaunay Triangulation object from Scipy's ``spatial`` module,
+    converts to a sparse adjacency matrix network representation.
+
+    Parameters
+    ----------
+    tri : Delaunay Triangulation Object
+        This object is produced by ``scipy.spatial.Delaunay``
+
+    Returns
+    -------
+    A sparse adjacency matrix in COO format.  The network is undirected
+    and unweighted, so the adjacency matrix is upper-triangular and all the
+    weights are set to 1.
+
+    """
+    # Create an empty list-of-list matrix
+    lil = sprs.lil_matrix((tri.npoints, tri.npoints))
+    # Scan through Delaunay triangulation to retrieve pairs
+    indices, indptr = tri.vertex_neighbor_vertices
+    for k in range(tri.npoints):
+        lil.rows[k] = indptr[indices[k]:indices[k+1]]
+    # Convert to coo format
+    lil.data = lil.rows  # Just a dummy array to make things work properly
+    coo = lil.tocoo()
+    # Set weights to 1's
+    coo.data = sp.ones_like(coo.data)
+    # Remove diagonal, and convert to csr remove duplicates
+    am = sp.sparse.triu(A=coo, k=1, format='csr')
+    # The convert back to COO and return
+    am = am.tocoo()
+    return am
+
+
+def vor_to_am(vor):
+    r"""
+    Given a Voronoi tessellation object from Scipy's ``spatial`` module,
+    converts to a sparse adjacency matrix network representation in COO format.
+
+    Parameters
+    ----------
+    vor : Voronoi Tessellation object
+        This object is produced by ``scipy.spatial.Voronoi``
+
+    Returns
+    -------
+    A sparse adjacency matrix in COO format.  The network is undirected
+    and unweighted, so the adjacency matrix is upper-triangular and all the
+    weights are set to 1.
+
+    """
+    # Create adjacency matrix in lil format for quick matrix construction
+    N = vor.vertices.shape[0]
+    rc = [[], []]
+    for ij in vor.ridge_dict.keys():
+        row = vor.ridge_dict[ij].copy()
+        # Make sure voronoi cell closes upon itself
+        row.append(row[0])
+        # Add connections to rc list
+        rc[0].extend(row[:-1])
+        rc[1].extend(row[1:])
+    rc = sp.vstack(rc).T
+    # Make adj mat upper triangular
+    rc = sp.sort(rc, axis=1)
+    # Remove any pairs with ends at infinity (-1)
+    keep = ~sp.any(rc == -1, axis=1)
+    rc = rc[keep]
+    data = sp.ones_like(rc[:, 0])
+    # Build adj mat in COO format
+    M = N = sp.amax(rc) + 1
+    am = sprs.coo_matrix((data, (rc[:, 0], rc[:, 1])), shape=(M, N))
+    # Remove diagonal, and convert to csr remove duplicates
+    am = sp.sparse.triu(A=am, k=1, format='csr')
+    # The convert back to COO and return
+    am = am.tocoo()
+    return am
+
+
 def trim(network, pores=[], throats=[]):
     '''
     Remove pores or throats from the network.
