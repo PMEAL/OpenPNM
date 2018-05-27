@@ -1,14 +1,18 @@
 import openpnm as op
 ws = op.Workspace()
 proj = ws.new_project()
-pn = op.network.Cubic(shape=[5, 5, 5], project=proj)
-geom = op.geometry.StickAndBall(network=pn, pores=pn.Ps, throats=pn.Ts)
-air = op.phases.Air(network=pn)
-phys = op.physics.Standard(network=pn, phase=air, geometry=geom)
 
-alg = op.algorithms.GenericTransport(network=pn)
-alg.setup(phase=air, quantity='pore.mole_fraction',
-          conductance='throat.diffusive_conductance')
-alg.set_value_BC(pores=pn.pores('left'), values=1)
-alg.set_value_BC(pores=pn.pores('right'), values=0)
-alg.run()
+pts = op.topotools.generate_base_points(num_points=1000, domain_size=[1, 1, 1])
+
+dn = op.network.Delaunay(points=pts, shape=[1, 1, 1], trim_domain=True)
+
+#gn = op.network.Gabriel(num_points=100, shape=[1, 1, 1])
+
+
+vn = op.network.Voronoi(points=pts, shape=[1, 1, 1], trim_domain=True)
+op.topotools.plot_connections(network=vn)
+
+dvd = op.network.DelaunayVoronoiDual(points=pts, shape=[1, 1, 1], trim_domain=True)
+Ps = dvd.pores('delaunay')
+op.topotools.trim(network=dvd, pores=Ps)
+op.topotools.plot_connections(network=dvd)

@@ -2,6 +2,7 @@ from .GenericNetwork import GenericNetwork
 from .Cubic import Cubic
 from .CubicDual import CubicDual
 from .CubicTemplate import CubicTemplate
+from .GenericTessellation import GenericTessellation
 from .Delaunay import Delaunay
 from .DelaunayVoronoiDual import DelaunayVoronoiDual
 from .Gabriel import Gabriel

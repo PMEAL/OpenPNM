@@ -8,12 +8,13 @@ Voronoi networks, including connectings between them
 from openpnm import topotools
 import scipy as sp
 import scipy.spatial as sptl
-from openpnm.network import GenericNetwork
+from openpnm.network import GenericTessellation
+from openpnm.topotools import trim
 from openpnm.core import logging
 logger = logging.getLogger(__name__)
 
 
-class DelaunayVoronoiDual(GenericNetwork):
+class DelaunayVoronoiDual(GenericTessellation):
     r"""
     A dual network based on complementary Voronoi and Delaunay networks.  A
     Delaunay tessellation or triangulation is performed on randomly distributed
@@ -160,7 +161,6 @@ class DelaunayVoronoiDual(GenericNetwork):
         self['throat.conns'] = conns
         if coords.shape[1] == 2:  # Make points 3D if necessary
             coords = sp.vstack((coords.T, sp.zeros((coords.shape[0], )))).T
-        self['pore.coords'] = coords
         self['pore.coords'] = sp.around(coords, decimals=10)
 
         # Label all pores and throats by type
@@ -183,75 +183,17 @@ class DelaunayVoronoiDual(GenericNetwork):
 
         # Trim all pores that lie outside of the specified domain
         if trim_domain:
-            self._trim_domain(domain_size=shape)
+            self._trim_external_pores(shape=shape)
 
-    def _trim_domain(self, domain_size=None):
-        r"""
-        Trims pores that lie outside the specified domain.
+    def _trim_external_pores(self, shape):
+        r'''
+        '''
+        # Call the super class's find_external_pores function first
+        Ps = super()._find_external_pores(shape=shape)
 
-        Parameters
-        ----------
-        domain_size : array_like
-            The size and shape of the domain beyond which points should be
-            trimmed. The argument is treated as follows:
-
-            **sphere** : If a scalar or single element list is received, it's
-            treated as the radius [r] of a sphere centered on [0, 0, 0].
-
-            **cylinder** : If a two-element list is received it's treated as
-            the radius and height of a cylinder [r, z] whose central axis
-            starts at [0, 0, 0] and extends in the positive z-direction.
-
-            **rectangle** : If a three element list is received, it's treated
-            as the outer corner of rectangle [x, y, z] whose opposite corner
-            lies at [0, 0, 0].
-
-        Notes
-        -----
-        This function assumes that some Delaunay nodes exist outside the
-        given ``domain_size``.  These points can either be the result of
-        reflecting the base points or simply creating points beyond the
-        domain.  Without these extra points the Voronoi network would contain
-        points at inf.
-        """
-        # Label external pores for trimming below
+        # Create list of external pores
         self['pore.external'] = False
-        if len(domain_size) == 1:  # Spherical
-            # Trim external Delaunay pores
-            r = sp.sqrt(sp.sum(self['pore.coords']**2, axis=1))
-            Ps = (r > domain_size)*self['pore.delaunay']
-            self['pore.external'][Ps] = True
-            # Trim external Voronoi pores
-            Ps = ~self['pore.external']*self['pore.delaunay']
-            Ps = self.find_neighbor_pores(pores=Ps)
-            Ps = ~self.tomask(pores=Ps)*self['pore.voronoi']
-            self['pore.external'][Ps] = True
-        elif len(domain_size) == 2:  # Cylindrical
-            # Trim external Delaunay pores outside radius
-            r = sp.sqrt(sp.sum(self['pore.coords'][:, [0, 1]]**2, axis=1))
-            Ps = (r > domain_size[0])*self['pore.delaunay']
-            self['pore.external'][Ps] = True
-            # Trim external Delaunay pores above and below cylinder
-            Ps1 = self['pore.coords'][:, 2] > domain_size[1]
-            Ps2 = self['pore.coords'][:, 2] < 0
-            Ps = self['pore.delaunay']*(Ps1 + Ps2)
-            self['pore.external'][Ps] = True
-            # Trim external Voronoi pores
-            Ps = ~self['pore.external']*self['pore.delaunay']
-            Ps = self.find_neighbor_pores(pores=Ps)
-            Ps = ~self.tomask(pores=Ps)*self['pore.voronoi']
-            self['pore.external'][Ps] = True
-        elif len(domain_size) == 3:  # Rectilinear
-            # Trim external Delaunay pores
-            Ps1 = sp.any(self['pore.coords'] > domain_size, axis=1)
-            Ps2 = sp.any(self['pore.coords'] < [0, 0, 0], axis=1)
-            Ps = self['pore.delaunay']*(Ps1 + Ps2)
-            self['pore.external'][Ps] = True
-            # Trim external Voronoi pores
-            Ps = ~self['pore.external']*self['pore.delaunay']
-            Ps = self.find_neighbor_pores(pores=Ps)
-            Ps = ~self.tomask(pores=Ps)*self['pore.voronoi']
-            self['pore.external'][Ps] = True
+        self['pore.external'][Ps] = True
 
         # Begin process of removing, adjusting, and labeling pores
         self['pore.surface'] = False
@@ -277,12 +219,12 @@ class DelaunayVoronoiDual(GenericNetwork):
 
         # Trim external pores
         Ps = self.pores('external')
-        topotools.trim(network=self, pores=Ps)
+        trim(network=self, pores=Ps)
 
         # Trim throats between Delaunay surface pores
         Ps = self.pores(labels=['surface', 'delaunay'], mode='intersection')
         Ts = self.find_neighbor_throats(pores=Ps, mode='intersection')
-        topotools.trim(network=self, throats=Ts)
+        trim(network=self, throats=Ts)
 
         # Move Delaunay surface pores to centroid of Voronoi facet
         Ps = self.pores(labels=['surface', 'delaunay'], mode='intersection')
