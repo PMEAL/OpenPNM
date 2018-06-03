@@ -3,11 +3,13 @@ import openpnm as op
 ws = op.Workspace()
 proj = ws.new_project()
 
-s = [1, 1, 0]
+s = [1, 0]
 pts = op.topotools.generate_base_points(num_points=200, domain_size=s, reflect=True)
 
 vn = op.network.DelaunayVoronoiDual(points=pts, shape=s)
-fig = op.topotools.plot_coordinates(network=vn, color='r')
+fig = op.topotools.plot_coordinates(network=vn,
+#                                    pores=vn.pores('delaunay'),
+                                    color='r')
 fig = op.topotools.plot_connections(network=vn,
                                     throats=vn['throat.delaunay'],
                                     color='b',

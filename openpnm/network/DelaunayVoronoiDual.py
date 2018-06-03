@@ -8,6 +8,7 @@ Voronoi networks, including connectings between them
 import scipy as sp
 import scipy.spatial as sptl
 import scipy.sparse as sprs
+from skimage.filters import rank_order
 from openpnm.network import GenericNetwork
 from openpnm import topotools
 from openpnm.core import logging
@@ -119,47 +120,27 @@ class DelaunayVoronoiDual(GenericNetwork):
         pts_all = sp.vstack((vor.points, vor.vertices))
         Nall = sp.shape(pts_all)[0]
 
-        if 1:
-            # Create adjacency matrix in lil format for quick construction
-            am = sprs.lil_matrix((Nall, Nall))
-            for ridge in vor.ridge_dict.keys():
-                # Make Delaunay-to-Delauny connections
-                [am.rows[i].extend([ridge[0], ridge[1]]) for i in ridge]
-                # Get voronoi vertices for current ridge
-                row = vor.ridge_dict[ridge].copy()
-                # Index Voronoi vertex numbers by Npts
-                row = [i + vor.npoints for i in row]
-                # Make Voronoi-to-Delaunay connections
-                [am.rows[i].extend(row) for i in ridge]
-                # Make Voronoi-to-Voronoi connections
-                row.append(row[0])
-                [am.rows[row[i]].append(row[i+1]) for i in range(len(row)-1)]
+        # Create adjacency matrix in lil format for quick construction
+        am = sprs.lil_matrix((Nall, Nall))
+        for ridge in vor.ridge_dict.keys():
+            # Make Delaunay-to-Delauny connections
+            [am.rows[i].extend([ridge[0], ridge[1]]) for i in ridge]
+            # Get voronoi vertices for current ridge
+            row = vor.ridge_dict[ridge].copy()
+            # Index Voronoi vertex numbers by number of delaunay points
+            row = [i + vor.npoints for i in row]
+            # Make Voronoi-to-Delaunay connections
+            [am.rows[i].extend(row) for i in ridge]
+            # Make Voronoi-to-Voronoi connections
+            row.append(row[0])
+            [am.rows[row[i]].append(row[i+1]) for i in range(len(row)-1)]
 
-            # Finalize adjacency matrix by assigning data values
-            am.data = am.rows  # Values don't matter, only shape, so use 'rows'
-            # Convert to COO format for direct acces to row and col
-            am = am.tocoo()
-            # Extract rows and cols
-            conns = sp.vstack((am.row, am.col)).T
-
-        if 0:  # Trying to vectorize:
-            # Get delaunay connections directly
-            tri_conns = vor.ridge_points
-            # Find voronoi connections using topotools function
-            vor_am = topotools.vor_to_am(vor)
-            vor_conns = sp.vstack((vor_am.row, vor_am.col)).T + vor.npoints
-            # Find delaunay-to-voronoi interconnections
-            a = [[i]*len(vor.regions[i]) for i in range(len(vor.regions))]
-            inter_conns = sp.vstack((sp.hstack(a), sp.hstack(vor.regions)))
-            inter_conns = inter_conns.T.astype(int)  # Transpose and make int
-            # Trim references to -1 before adjusting values
-            keep = ~sp.any(inter_conns <= 0, axis=1)
-            inter_conns = inter_conns[keep]
-            # Adjust values to voronoi and delaunay sites
-            inter_conns[:, 1] += vor.npoints
-            inter_conns[:, 0] -= 1
-            # Combine all into single array
-            conns = sp.concatenate((tri_conns, vor_conns, inter_conns), axis=0)
+        # Finalize adjacency matrix by assigning data values
+        am.data = am.rows  # Values don't matter, only shape, so use 'rows'
+        # Convert to COO format for direct acces to row and col
+        am = am.tocoo()
+        # Extract rows and cols
+        conns = sp.vstack((am.row, am.col)).T
 
         # Convert to sanitized adjacency matrix
         am = topotools.conns_to_am(conns)
@@ -208,10 +189,12 @@ class DelaunayVoronoiDual(GenericNetwork):
         r'''
         '''
         # Find all pores within the domain
-        Ps = ~topotools.isoutside(coords=self['pore.coords'], shape=shape)
+        Ps = topotools.isoutside(coords=self['pore.coords'], shape=shape)
+        self['pore.external'] = False
+        self['pore.external'][Ps] = True
 
         # Find which internal pores are delaunay
-        Ps = Ps*self['pore.delaunay']
+        Ps = (~self['pore.external'])*self['pore.delaunay']
 
         # Find all pores connected to an internal delaunay pore
         Ps = self.find_neighbor_pores(pores=Ps, excl_self=False)
@@ -222,26 +205,18 @@ class DelaunayVoronoiDual(GenericNetwork):
 
         # Trim all bad pores
         topotools.trim(network=self, pores=~self['pore.keep'])
-        del self['pore.keep']
 
         # Now label surface pores
         self['pore.surface'] = False
-        self['throat.surface'] = False
-
-        # Label external delaunay pores as surface
-        Ps = topotools.isoutside(coords=self['pore.coords'], shape=shape)
-
-        # Find which external pores are delaunay
-        Ps = Ps*self['pore.delaunay']
-        self['pore.surface'][Ps] = True
+        self['pore.surface'] = self['pore.delaunay']*self['pore.external']
 
         # Label Voronoi pores on surface
-        Ps = self.pores('surface')
-        Ps = self.find_neighbor_pores(pores=Ps)
+        Ps = self.find_neighbor_pores(pores=self.pores('surface'))
         Ps = self['pore.voronoi']*self.tomask(pores=Ps)
         self['pore.surface'][Ps] = True
 
         # Label Voronoi and interconnect throats on surface
+        self['throat.surface'] = False
         Ps = self.pores('surface')
         Ts = self.find_neighbor_throats(pores=Ps, mode='intersection')
         self['throat.surface'][Ts] = True
@@ -251,19 +226,17 @@ class DelaunayVoronoiDual(GenericNetwork):
         Ts = self.find_neighbor_throats(pores=Ps, mode='intersection')
         topotools.trim(network=self, throats=Ts)
 
-        # Move Delaunay surface pores to centroid of Voronoi facet
-        Ps = self.pores(labels=['surface', 'delaunay'], mode='intersection')
-        for P in Ps:
-            Ns = self.find_neighbor_pores(pores=P)
-            Ns = Ps = self['pore.voronoi']*self.tomask(pores=Ns)
-            coords = sp.mean(self['pore.coords'][Ns], axis=0)
-            self['pore.coords'][P] = coords
+#        # Move Delaunay surface pores to centroid of Voronoi facet
+#        Ps = self.pores(labels=['surface', 'delaunay'], mode='intersection')
+#        for P in Ps:
+#            Ns = self.find_neighbor_pores(pores=P)
+#            Ns = Ps = self['pore.voronoi']*self.tomask(pores=Ns)
+#            coords = sp.mean(self['pore.coords'][Ns], axis=0)
+#            self['pore.coords'][P] = coords
 
-#        self['pore.internal'] = ~self['pore.surface']
-#        self['throat.internal'] = ~self['throat.surface']
-#
-#        # Clean-up
-#        del self['pore.external']
+        # Clean-up
+        del self['pore.external']
+        del self['pore.keep']
 
     def find_throat_facets(self, throats=None):
         r"""
