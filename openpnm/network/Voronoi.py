@@ -4,7 +4,6 @@ Voronoi: Generate random networks based on the Voronoi Tessellation
 ===============================================================================
 
 """
-
 from openpnm.network import DelaunayVoronoiDual
 from openpnm import topotools
 from openpnm.core import logging
