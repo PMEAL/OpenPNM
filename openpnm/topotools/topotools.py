@@ -634,8 +634,8 @@ def label_faces(network, tol=0.1):
     network['pore.right'] = (crds[:, 1] > (1-tol)*ymax) * Psurf
     network['pore.top'] = (crds[:, 2] > (1-tol)*zmax) * Psurf
     network['pore.front'] = (crds[:, 0] < (xmin + tol*xspan)) * Psurf
-    network['pore.left'] = (crds[:, 1] < (xmin + tol*xspan)) * Psurf
-    network['pore.bottom'] = (crds[:, 2] < (xmin + tol*xspan)) * Psurf
+    network['pore.left'] = (crds[:, 1] < (xmin + tol*yspan)) * Psurf
+    network['pore.bottom'] = (crds[:, 2] < (xmin + tol*zspan)) * Psurf
 
 
 def find_surface_pores(network, markers=None, label='surface'):
@@ -1081,10 +1081,7 @@ def subdivide(network, pores, shape, labels=[]):
         shift = network['pore.coords'][P] - networkspacing/2
         new_net['pore.coords'] += shift
         Pn = network.find_neighbor_pores(pores=P)
-        try:
-            Pn_new_net = network.pores(labels)
-        except:
-            Pn_new_net = []
+        Pn_new_net = network.pores(labels)
         Pn_old_net = Pn[~sp.in1d(Pn, Pn_new_net)]
         Np1 = network.Np
         extend(pore_coords=new_net['pore.coords'],
@@ -1489,7 +1486,9 @@ def _scale_3d_axes(ax, X, Y, Z):
         except AttributeError:
             pass
 
-def plot_networkx(network, plot_throats=True, labels=None, colors=None, scale=10):
+
+def plot_networkx(network, plot_throats=True, labels=None, colors=None,
+                  scale=10):
     r'''
     Returns a pretty 2d plot for 2d OpenPNM networks.
 
@@ -1540,8 +1539,8 @@ def plot_networkx(network, plot_throats=True, labels=None, colors=None, scale=10
     return G
 
 
-
-def generate_base_points(num_points, domain_size, density_map=None, reflect=True):
+def generate_base_points(num_points, domain_size, density_map=None,
+                         reflect=True):
     r"""
     Generates a set of base points for passing into the Tessellation-based
     Network classes.  The points can be distributed in spherical, cylindrical,
