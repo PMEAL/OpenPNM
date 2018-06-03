@@ -327,6 +327,62 @@ def vor_to_am(vor):
     return am
 
 
+def isoutside(coords, shape):
+    r"""
+    Identifies points that lie outside the specified region.
+
+    Parameters
+    ----------
+    domain_size : array_like
+        The size and shape of the domain beyond which points should be
+        trimmed. The argument is treated as follows:
+
+        **sphere** : If a scalar or single element list is received, it's
+        treated as the radius [r] of a sphere centered on [0, 0, 0].
+
+        **cylinder** : If a two-element list is received it's treated as
+        the radius and height of a cylinder [r, z] whose central axis
+        starts at [0, 0, 0] and extends in the positive z-direction.
+
+        **rectangle** : If a three element list is received, it's treated
+        as the outer corner of rectangle [x, y, z] whose opposite corner
+        lies at [0, 0, 0].
+
+    Returns
+    -------
+    An Np-long mask of True values indicating pores that lie outside the
+    domain.
+
+    """
+    # Label external pores for trimming below
+    if len(shape) == 1:  # Spherical
+        # Find external points
+        r = sp.sqrt(sp.sum(coords**2, axis=1))
+        Ps = r > shape[0]
+    elif len(shape) == 2:  # Cylindrical
+        # Find external pores outside radius
+        r = sp.sqrt(sp.sum(coords[:, [0, 1]]**2, axis=1))
+        Ps = r > shape[0]
+        # Find external pores above and below cylinder
+        if shape[1] > 0:
+            Ps = Ps + (coords[:, 2] > shape[1])
+            Ps = Ps + (coords[:, 2] < 0)
+        else:
+            pass
+    elif len(shape) == 3:  # Rectilinear
+        shape = sp.array(shape, dtype=float)
+        try:
+            lo_lim = shape[:, 0]
+            hi_lim = shape[:, 1]
+        except IndexError:
+            lo_lim = sp.array([0, 0, 0])
+            hi_lim = shape
+        Ps1 = sp.any(coords > hi_lim, axis=1)
+        Ps2 = sp.any(coords < lo_lim, axis=1)
+        Ps = Ps1 + Ps2
+    return Ps
+
+
 def trim(network, pores=[], throats=[]):
     '''
     Remove pores or throats from the network.
@@ -1423,11 +1479,11 @@ def plot_networkx(network, plot_throats=True, labels=None, colors=None, scale=10
 
 
 
-def generate_base_points(num_points, domain_size, prob=None, reflect=True):
+def generate_base_points(num_points, domain_size, density_map=None, reflect=True):
     r"""
-    Generates a set of base points for passing into the DelaunayVoronoiDual
-    class.  The points can be distributed in spherical, cylindrical, or
-    rectilinear patterns.
+    Generates a set of base points for passing into the Tessellation-based
+    Network classes.  The points can be distributed in spherical, cylindrical,
+    or rectilinear patterns, as well as 2D and 3D (disks and squares).
 
     Parameters
     ----------
@@ -1444,34 +1500,41 @@ def generate_base_points(num_points, domain_size, prob=None, reflect=True):
 
         **cylinder** : If a two-element list is received it's treated as the
         radius and height of a cylinder [r, z] positioned at [0, 0, 0] and
-        extending in the positive z-direction.
+        extending in the positive z-direction.  If the z dimension is 0, a
+        disk of radius r is created.
 
         **rectangle** : If a three element list is received, it's treated
         as the outer corner of rectangle [x, y, z] whose opposite corner lies
-        at [0, 0, 0].
+        at [0, 0, 0].  If the z dimension is 0, a rectangle of size X-by-Y is
+        created.
 
-    prob : 3D array, optional
-        A 3D array that contains fractional (0-1) values indicating the
-        liklihood that a point in that region should be kept.  If not specified
-        an array containing 1's in the shape of a sphere, cylinder, or cube is
-        generated, depnending on the give ``domain_size`` with zeros outside.
-        When specifying a custom probabiliy map is it recommended to also set
-        values outside the given domain to zero.  If not, then the correct
-        shape will still be returned, but with too few points in it.
+    density_map : array, optional
+        A an array that contains fractional values (0 < i < 1) indicating the
+        liklihood that a point in that region should be kept.  The size of this
+        array can be anything, but the shape must match the ``domain_size``;
+        that is for a 3D network the shape of the ``density_map`` can be
+        [10, 10, 10] or [50, 50, 50], depending on how important the resolution
+        of the density distribution is.  For a 2D network the ``density_map``
+        should be [10, 10].
+
+        When specifying
+        a custom probabiliy map is it recommended to also set values outside
+        the given domain to zero.  If not, then the correct shape will still
+        be returned, but with too few points in it.
+
+    reflect : boolean
+        If True, the the base points are generated as specified, the reflected
+        about each face of the domain.  This essentially tricks the
+        tessellation functions into creating smooth flat faces at the
+        boundaries once these excess pores are trimmed.
+
 
     Notes
     -----
-    This method places the given number of points within the specified domain,
-    then reflects these points across each domain boundary.  This results in
-    smooth flat faces at the boundaries once these excess pores are trimmed.
-
     The reflection approach tends to create larger pores near the surfaces, so
-    it might be necessary to use the ``prob`` argument to specify a slightly
-    higher density of points near the surfaces.
+    it might be necessary to use the ``density_map`` argument to specify a
+    slightly higher density of points near the surfaces.
 
-    For rough faces, it is necessary to define a larger than desired domain
-    then trim to the desired size.  This will discard the reflected points
-    plus some of the original points.
 
     Examples
     --------
@@ -1492,10 +1555,11 @@ def generate_base_points(num_points, domain_size, prob=None, reflect=True):
     >>> prob = prob / sp.amax(prob)  # Normalize between 0 and 1
     >>> pts = op.topotools.generate_base_points(num_points=50,
     ...                                         domain_size=[2],
-    ...                                         prob=prob)
-    >>> net = op.network.DelaunayVoronoiDual(points=pts, shape=[2])
+    ...                                         density_map=prob)
+    >>> net = op.network.DelaunayVoronoiDual(points=pts, shape=[1, 1, 1])
     """
     def _try_points(num_points, prob):
+        prob = sp.atleast_3d(prob)
         prob = sp.array(prob)/sp.amax(prob)  # Ensure prob is normalized
         base_pts = []
         N = 0
@@ -1508,15 +1572,18 @@ def generate_base_points(num_points, domain_size, prob=None, reflect=True):
                 N += 1
         base_pts = sp.array(base_pts)
         return base_pts
+
     if len(domain_size) == 1:  # Spherical
         domain_size = sp.array(domain_size)
-        if prob is None:
-            prob = sp.ones([41, 41, 41])
-            prob[20, 20, 20] = 0
-            prob = spim.distance_transform_bf(prob) <= 20
-        base_pts = _try_points(num_points, prob)
+        r = domain_size[0]
+        if density_map is None:
+            # Make an image of a sphere filled with ones and use _try_points
+            density_map = sp.ones([41, 41, 41])
+            density_map[20, 20, 20] = 0
+            density_map = spim.distance_transform_edt(density_map) < 20
+        base_pts = _try_points(num_points, density_map)
         # Convert to spherical coordinates
-        [X, Y, Z] = sp.array(base_pts - [0.5, 0.5, 0.5]).T  # Center at origin
+        [X, Y, Z] = sp.array(base_pts - [0.5, 0.5, 0.5]).T
         r = 2*sp.sqrt(X**2 + Y**2 + Z**2)*domain_size[0]
         theta = 2*sp.arctan(Y/X)
         phi = 2*sp.arctan(sp.sqrt(X**2 + Y**2)/Z)
@@ -1525,22 +1592,23 @@ def generate_base_points(num_points, domain_size, prob=None, reflect=True):
         [r, theta, phi] = [r[inds], theta[inds], phi[inds]]
         # Reflect base points across perimeter
         if reflect:
-            new_r = 2*domain_size - r
-            r = sp.hstack([r, new_r])
-            theta = sp.hstack([theta, theta])
-            phi = sp.hstack([phi, phi])
+            r, theta, phi = reflect_base_points(sp.vstack((r, theta, phi)),
+                                                domain_size)
         # Convert to Cartesean coordinates
         X = r*sp.cos(theta)*sp.sin(phi)
         Y = r*sp.sin(theta)*sp.sin(phi)
         Z = r*sp.cos(phi)
         base_pts = sp.vstack([X, Y, Z]).T
-    elif len(domain_size) == 2:  # Cylindrical
+
+    elif len(domain_size) == 2:  # Cylindrical or Disk
         domain_size = sp.array(domain_size)
-        if prob is None:
-            prob = sp.ones([41, 41, 41])
-#            prob[20, 20, :] = 0
-#            prob = spim.distance_transform_bf(prob) <= 20
-        base_pts = _try_points(num_points, prob)
+        if density_map is None:
+            density_map = sp.ones([41, 41, 41])
+            density_map[20, 20, :] = 0
+            if domain_size[1] == 0:  # Disk
+                density_map = density_map[:, :, 0]
+            density_map = spim.distance_transform_edt(density_map) < 20
+        base_pts = _try_points(num_points, density_map)
         # Convert to cylindrical coordinates
         [X, Y, Z] = sp.array(base_pts - [0.5, 0.5, 0]).T  # Center on z-axis
         r = 2*sp.sqrt(X**2 + Y**2)*domain_size[0]
@@ -1552,32 +1620,26 @@ def generate_base_points(num_points, domain_size, prob=None, reflect=True):
         inds = ~((z > domain_size[1]) + (z < 0))
         [r, theta, z] = [r[inds], theta[inds], z[inds]]
         if reflect:
-            # Reflect base points about faces and perimeter
-            new_r = 2*domain_size[0] - r
-            r = sp.hstack([r, new_r])
-            theta = sp.hstack([theta, theta])
-            z = sp.hstack([z, z])
-            if len(sp.unique(z)) > 1:  # If not a disk
-                r = sp.hstack([r, r, r])
-                theta = sp.hstack([theta, theta, theta])
-                z = sp.hstack([z, -z, 2-z])
+            r, theta, z = reflect_base_points(sp.vstack([r, theta, z]),
+                                              domain_size)
         # Convert to Cartesean coordinates
         X = r*sp.cos(theta)
         Y = r*sp.sin(theta)
         Z = z
         base_pts = sp.vstack([X, Y, Z]).T
-    elif len(domain_size) == 3:  # Rectilinear
-        if prob is None:
-            prob = sp.ones([10, 10, 10], dtype=float)
-        base_pts = _try_points(num_points, prob)
+    elif len(domain_size) == 3:  # Cube or square
+        if density_map is None:
+            density_map = sp.ones([41, 41, 41])
+            if domain_size[2] == 0:
+                density_map = density_map[:, :, 0]
+        base_pts = _try_points(num_points, density_map)
         base_pts = base_pts*domain_size
-        # Add reflected points
         if reflect:
             base_pts = reflect_base_points(base_pts, domain_size)
     return base_pts
 
 
-def reflect_base_points(base_pts=None, domain_size=None):
+def reflect_base_points(base_pts, domain_size):
     r'''
     Helper function for relecting a set of points about the faces of a
     rectangular domain
@@ -1585,25 +1647,48 @@ def reflect_base_points(base_pts=None, domain_size=None):
     Parameters
     ----------
     base_pts : 3d array
-        The coordinates of the base_pts to be reflected
+        The coordinates of the base_pts to be reflected in the coordinate
+        system corresponding to the the domain as follows:
+            '**spherical**' : [r, theta, phi]
+            '**cylindrical** or **circular**' : [r, theta, z]
+            '**rectangular** or **square**' : [x, y, z]
 
-    domain_size : list or array of length 3
+    domain_size : list or array
         The upper coordinate of the face normal to the reflection along
         each axis. Lower bound is assumed to be zero
     '''
     domain_size = sp.array(domain_size)
-    Nx, Ny, Nz = domain_size
-    # Reflect base points about all 6 faces
-    orig_pts = base_pts
-    base_pts = sp.vstack((base_pts, [-1, 1, 1]*orig_pts +
-                                    [2.0*Nx, 0, 0]))
-    base_pts = sp.vstack((base_pts, [1, -1, 1]*orig_pts +
-                                    [0, 2.0*Ny, 0]))
-    base_pts = sp.vstack((base_pts, [1, 1, -1]*orig_pts +
-                                    [0, 0, 2.0*Nz]))
-    base_pts = sp.vstack((base_pts, [-1, 1, 1]*orig_pts))
-    base_pts = sp.vstack((base_pts, [1, -1, 1]*orig_pts))
-    base_pts = sp.vstack((base_pts, [1, 1, -1]*orig_pts))
+    if len(domain_size) == 1:
+        r, theta, phi = base_pts
+        new_r = 2*domain_size[0] - r
+        r = sp.hstack([r, new_r])
+        theta = sp.hstack([theta, theta])
+        phi = sp.hstack([phi, phi])
+        base_pts = sp.vstack((r, theta, phi))
+    if len(domain_size) == 2:
+        r, theta, z = base_pts
+        new_r = 2*domain_size[0] - r
+        r = sp.hstack([r, new_r])
+        theta = sp.hstack([theta, theta])
+        z = sp.hstack([z, z])
+        if domain_size[1] != 0:  # If not a disk
+            r = sp.hstack([r, r, r])
+            theta = sp.hstack([theta, theta, theta])
+            z = sp.hstack([z, -z, 2-z])
+        base_pts = sp.vstack((r, theta, z))
+    elif len(domain_size) == 3:
+        Nx, Ny, Nz = domain_size
+        # Reflect base points about all 6 faces
+        orig_pts = base_pts
+        base_pts = sp.vstack((base_pts, [-1, 1, 1]*orig_pts +
+                                        [2.0*Nx, 0, 0]))
+        base_pts = sp.vstack((base_pts, [1, -1, 1]*orig_pts +
+                                        [0, 2.0*Ny, 0]))
+        base_pts = sp.vstack((base_pts, [1, 1, -1]*orig_pts +
+                                        [0, 0, 2.0*Nz]))
+        base_pts = sp.vstack((base_pts, [-1, 1, 1]*orig_pts))
+        base_pts = sp.vstack((base_pts, [1, -1, 1]*orig_pts))
+        base_pts = sp.vstack((base_pts, [1, 1, -1]*orig_pts))
     return base_pts
 
 

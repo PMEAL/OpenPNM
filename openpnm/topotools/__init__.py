@@ -12,6 +12,7 @@ from .topotools import find_pore_to_pore_distance
 from .topotools import find_clusters
 from .topotools import generate_base_points
 from .topotools import iscoplanar
+from .topotools import isoutside
 from .topotools import issymmetric
 from .topotools import istriu
 from .topotools import istril

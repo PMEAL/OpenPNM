@@ -11,7 +11,11 @@ class GenericTessellation(GenericNetwork):
             if num_points is None:
                 raise Exception('Must specify either "points" or "num_points"')
             points = generate_base_points(num_points=num_points,
-                                          domain_size=shape)
+                                          domain_size=shape,
+                                          reflect=True)
+        else:
+            # Should we check to ensure that points are reflected?
+            pass
 
         # Deal with points that are only 2D...they break Delaunay
         if points.shape[1] == 3 and len(sp.unique(points[:, 2])) == 1:
@@ -50,15 +54,17 @@ class GenericTessellation(GenericNetwork):
         if len(shape) == 1:  # Spherical
             # Find external pores
             r = sp.sqrt(sp.sum(self['pore.coords']**2, axis=1))
-            Ps = (r > shape)
+            Ps = r > shape[0]
         elif len(shape) == 2:  # Cylindrical
             # Find external pores outside radius
             r = sp.sqrt(sp.sum(self['pore.coords'][:, [0, 1]]**2, axis=1))
-            Ps = (r > shape[0])
+            Ps = r > shape[0]
             # Find external pores above and below cylinder
-            Ps1 = self['pore.coords'][:, 2] > shape[1]
-            Ps2 = self['pore.coords'][:, 2] < 0
-            Ps = Ps*(Ps1 + Ps2)
+            if shape[1] > 0:
+                Ps = Ps + (self['pore.coords'][:, 2] > shape[1])
+                Ps = Ps + (self['pore.coords'][:, 2] < 0)
+            else:
+                pass
         elif len(shape) == 3:  # Rectilinear
             shape = sp.array(shape, dtype=float)
             try:

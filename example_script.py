@@ -2,17 +2,19 @@ import openpnm as op
 ws = op.Workspace()
 proj = ws.new_project()
 
-pts = op.topotools.generate_base_points(num_points=1000, domain_size=[1, 1, 1])
+s = [1]
 
-dn = op.network.Delaunay(points=pts, shape=[1, 1, 1], trim_domain=True)
+pts = op.topotools.generate_base_points(num_points=500, domain_size=s, reflect=True)
 
-#gn = op.network.Gabriel(num_points=100, shape=[1, 1, 1])
+vn = op.network.DelaunayVoronoiDual(points=pts, shape=s)
+fig = op.topotools.plot_connections(network=vn, throats=vn['throat.voronoi'], color='g')
+#fig = op.topotools.plot_connections(network=vn, throats=vn['throat.interconnect'], fig=fig, color='r')
+#fig = op.topotools.plot_connections(network=vn, throats=vn['throat.delaunay'], fig=fig, color='b')
 
 
-vn = op.network.Voronoi(points=pts, shape=[1, 1, 1], trim_domain=True)
-op.topotools.plot_connections(network=vn)
+#import matplotlib.pyplot as plt
+#from mpl_toolkits.mplot3d import Axes3D
+#fig = plt.figure()
+#ax = fig.add_subplot(111, projection='3d')
+#ax.scatter(xs=pts[:, 0], ys=pts[:, 1], zs=pts[:, 2]).
 
-dvd = op.network.DelaunayVoronoiDual(points=pts, shape=[1, 1, 1], trim_domain=True)
-Ps = dvd.pores('delaunay')
-op.topotools.trim(network=dvd, pores=Ps)
-op.topotools.plot_connections(network=dvd)
