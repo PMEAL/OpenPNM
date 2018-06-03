@@ -32,3 +32,4 @@ from .topotools import trim
 from .topotools import trim_occluded_throats
 from .topotools import vor_to_am
 from .topotools import tri_to_am
+from .topotools import conns_to_am

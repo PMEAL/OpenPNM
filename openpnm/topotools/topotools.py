@@ -327,6 +327,60 @@ def vor_to_am(vor):
     return am
 
 
+def conns_to_am(conns, shape=None, force_triu=True, drop_diag=True,
+                drop_dupes=True, drop_negs=True):
+    r"""
+    Converts a list of connections into a Scipy sparse adjacency matrix
+
+    Parameters
+    ----------
+    conns : array_like, N x 2
+        The list of site-to-site connections
+
+    shape : list, optional
+        The shape of the array.  If none is given then it is inferred from the
+        maximum value in ``conns`` array.
+
+    force_triu : boolean
+        If True (default), then all connections are assumed undirected, and
+        moved to the upper triangular portion of the array
+
+    drop_diag : boolean
+        If True (default), then connections from a site and itself are removed.
+
+    drop_dupes : boolean
+        If True (default), then all pairs of sites sharing multiple connections
+        are reduced to a single connection.
+
+    drop_negs : boolean
+        If True (default), then all connections with one or both ends pointing
+        to a negative number are removed.
+
+    """
+    if force_triu:  # Sort connections to [low, high]
+        conns = sp.sort(conns, axis=1)
+    if drop_negs:  # Remove connections to -1
+        keep = ~sp.any(conns < 0, axis=1)
+        conns = conns[keep]
+    if drop_diag:  # Remove connections of [self, self]
+        keep = sp.where(conns[:, 0] != conns[:, 1])[0]
+        conns = conns[keep]
+    # Now convert to actual sparse array in COO format
+    data = sp.ones_like(conns[:, 0], dtype=int)
+    if shape is None:
+        N = conns.max() + 1
+        shape = (N, N)
+    am = sprs.coo_matrix((data, (conns[:, 0], conns[:, 1])), shape=shape)
+    if drop_dupes:  # Convert to csr and back too coo
+        am = am.tocsr()
+        am = am.tocoo()
+    # Perform one last check on adjacency matrix
+    missing = sp.where(sp.bincount(conns.flatten()) == 0)[0]
+    if sp.size(missing) or sp.any(am.col.max() < (shape[0] - 1)):
+        print('WARNING: Some nodes are not connected to any bonds')
+    return am
+
+
 def isoutside(coords, shape):
     r"""
     Identifies points that lie outside the specified region.
@@ -1298,11 +1352,19 @@ def plot_connections(network, throats=None, fig=None, **kwargs):
     else:
         Ts = network._parse_indices(indices=throats)
 
+    if len(sp.unique(network['pore.coords'][:, 2])) == 1:
+        ThreeD = False
+    else:
+        ThreeD = True
+
     if fig is None:
         fig = plt.figure()
-        ax = fig.add_subplot(111, projection='3d')
+        if ThreeD:
+            ax = fig.add_subplot(111, projection='3d')
+        else:
+            ax = fig.gca()
     else:
-        ax = fig.get_axes()[0]
+        ax = fig.gca()
 
     # Create dummy indexing to sp.inf
     i = -1*sp.ones((sp.size(Ts)*3, ), dtype=int)
@@ -1321,10 +1383,10 @@ def plot_connections(network, throats=None, fig=None, **kwargs):
     X = sp.hstack([network['pore.coords'][:, 0], inf])
     Y = sp.hstack([network['pore.coords'][:, 1], inf])
     Z = sp.hstack([network['pore.coords'][:, 2], inf])
-    ax.plot(xs=X[i], ys=Y[i], zs=Z[i], **kwargs)
-
-    if len(sp.unique(network['pore.coords'][:, 2])) == 1:
-        ax.view_init(90, 0)
+    if ThreeD:
+        ax.plot(xs=X[i], ys=Y[i], zs=Z[i], **kwargs)
+    else:
+        ax.plot(X[i], Y[i], **kwargs)
 
     return fig
 
@@ -1382,11 +1444,19 @@ def plot_coordinates(network, pores=None, fig=None, **kwargs):
     else:
         Ps = network._parse_indices(indices=pores)
 
+    if len(sp.unique(network['pore.coords'][:, 2])) == 1:
+        ThreeD = False
+    else:
+        ThreeD = True
+
     if fig is None:
         fig = plt.figure()
-        ax = fig.add_subplot(111, projection='3d')
+        if ThreeD:
+            ax = fig.add_subplot(111, projection='3d')
+        else:
+            ax = fig.add_subplot(111)
     else:
-        ax = fig.get_axes()[0]
+        ax = fig.gca()
 
     # Collect specified coordinates
     X = network['pore.coords'][Ps, 0]
@@ -1394,10 +1464,10 @@ def plot_coordinates(network, pores=None, fig=None, **kwargs):
     Z = network['pore.coords'][Ps, 2]
     _scale_3d_axes(ax=ax, X=X, Y=Y, Z=Z)
 
-    ax.scatter(xs=X, ys=Y, zs=Z, **kwargs)
-
-    if len(sp.unique(network['pore.coords'][:, 2])) == 1:
-        ax.view_init(90, 0)
+    if ThreeD:
+        ax.scatter(xs=X, ys=Y, zs=Z, **kwargs)
+    else:
+        ax.scatter(X, Y, **kwargs)
 
     return fig
 
@@ -1414,7 +1484,10 @@ def _scale_3d_axes(ax, X, Y, Z):
         mid_z = (Z.max()+Z.min()) * 0.5
         ax.set_xlim(mid_x - max_range, mid_x + max_range)
         ax.set_ylim(mid_y - max_range, mid_y + max_range)
-        ax.set_zlim(mid_z - max_range, mid_z + max_range)
+        try:
+            ax.set_zlim(mid_z - max_range, mid_z + max_range)
+        except AttributeError:
+            pass
 
 def plot_networkx(network, plot_throats=True, labels=None, colors=None, scale=10):
     r'''
@@ -1616,6 +1689,7 @@ def generate_base_points(num_points, domain_size, density_map=None, reflect=True
         Y = r*sp.sin(theta)
         Z = z
         base_pts = sp.vstack([X, Y, Z]).T
+
     elif len(domain_size) == 3:  # Cube or square
         if density_map is None:
             density_map = sp.ones([41, 41, 41])
@@ -1625,6 +1699,7 @@ def generate_base_points(num_points, domain_size, density_map=None, reflect=True
         base_pts = base_pts*domain_size
         if reflect:
             base_pts = reflect_base_points(base_pts, domain_size)
+
     return base_pts
 
 
@@ -1671,13 +1746,14 @@ def reflect_base_points(base_pts, domain_size):
         orig_pts = base_pts
         base_pts = sp.vstack((base_pts, [-1, 1, 1]*orig_pts +
                                         [2.0*Nx, 0, 0]))
+        base_pts = sp.vstack((base_pts, [-1, 1, 1]*orig_pts))
         base_pts = sp.vstack((base_pts, [1, -1, 1]*orig_pts +
                                         [0, 2.0*Ny, 0]))
-        base_pts = sp.vstack((base_pts, [1, 1, -1]*orig_pts +
-                                        [0, 0, 2.0*Nz]))
-        base_pts = sp.vstack((base_pts, [-1, 1, 1]*orig_pts))
         base_pts = sp.vstack((base_pts, [1, -1, 1]*orig_pts))
-        base_pts = sp.vstack((base_pts, [1, 1, -1]*orig_pts))
+        if domain_size[2] != 0:
+            base_pts = sp.vstack((base_pts, [1, 1, -1]*orig_pts +
+                                            [0, 0, 2.0*Nz]))
+            base_pts = sp.vstack((base_pts, [1, 1, -1]*orig_pts))
     return base_pts
 
 
