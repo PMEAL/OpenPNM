@@ -85,7 +85,7 @@ class InvasionPercolation(GenericAlgorithm):
         super().__init__(**kwargs)
         self.settings.update({'pore_volume': 'pore.volume',
                               'throat_volume': 'throat.volume',
-                              'entry_pressure': 'throat.capillary_pressure'})
+                              'entry_pressure': 'throat.entry_pressure'})
 
     def setup(self, phase, entry_pressure='', pore_volume='', throat_volume=''):
         r"""
@@ -234,7 +234,10 @@ class InvasionPercolation(GenericAlgorithm):
         # Normalized cumulative volume filled into saturation
         S = Vinv_cum/(Vp.sum() + Vt.sum())
         # Find throat invasion step where Snwp was reached
-        N = sp.where(S < Snwp)[0][-1]
+        try:
+            N = sp.where(S < Snwp)[0][-1]
+        except:
+            N = np.inf
         data = {'pore.occupancy': Np <= N, 'throat.occupancy': Nt <= N}
         return data
 
