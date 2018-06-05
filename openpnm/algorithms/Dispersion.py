@@ -53,7 +53,7 @@ class Dispersion(ReactiveTransport):
         if force:
             self._pure_A = None
         if self._pure_A is None:
-            w = Qij / (1 - np.exp(Peij))
+            w = -Qij / (1 - np.exp(Peij))
             A = network.create_adjacency_matrix(weights=w)
             A = laplacian(A)
             self._pure_A = A
