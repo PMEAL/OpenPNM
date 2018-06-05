@@ -48,7 +48,7 @@ class AdvectionDiffusion(ReactiveTransport):
         network = self.project.network
         phase = self.project.phases()[self.settings['phase']]
         conns = network['throat.conns']
-        
+
         P = phase[self.settings['pressure']]
         gh = phase[self.settings['hydraulic_conductance']]
         gd = phase[self.settings['diffusive_conductance']]

@@ -36,7 +36,7 @@ class Dispersion(ReactiveTransport):
         network = self.project.network
         phase = self.project.phases()[self.settings['phase']]
         conns = network['throat.conns']
-        
+
         P = phase[self.settings['pressure']]
         gh = phase[self.settings['hydraulic_conductance']]
         gd = phase[self.settings['diffusive_conductance']]
@@ -57,4 +57,4 @@ class Dispersion(ReactiveTransport):
             A = network.create_adjacency_matrix(weights=w)
             A = laplacian(A)
             self._pure_A = A
-        self.A = self._pure_A.copy()        
+        self.A = self._pure_A.copy()
