@@ -22,7 +22,7 @@ class Dispersion(ReactiveTransport):
     '''
     def __init__(self, settings={}, **kwargs):
         super().__init__(**kwargs)
-        self.settings.update({'quantity': 'pore.mole_fraction',
+        self.settings.update({'quantity': 'pore.concentration',
                               'hydraulic_conductance':
                               'throat.hydraulic_conductance',
                               'diffusive_conductance':

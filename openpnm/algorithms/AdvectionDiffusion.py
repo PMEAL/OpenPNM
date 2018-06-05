@@ -14,7 +14,7 @@ class AdvectionDiffusion(ReactiveTransport):
     def __init__(self, settings={}, **kwargs):
         super().__init__(**kwargs)
         # Set some default settings
-        self.settings.update({'quantity': 'pore.mole_fraction',
+        self.settings.update({'quantity': 'pore.concentration',
                               'diffusive_conductance':
                               'throat.diffusive_conductance',
                               'hydraulic_conductance':

@@ -15,7 +15,7 @@ class FickianDiffusion(ReactiveTransport):
 
     def __init__(self, settings={}, **kwargs):
         super().__init__(**kwargs)
-        self.settings.update({'quantity': 'pore.mole_fraction',
+        self.settings.update({'quantity': 'pore.concentration',
                               'conductance': 'throat.diffusive_conductance'})
         self.settings.update(settings)
 
