@@ -10,8 +10,9 @@ ws = Workspace()
 
 class Project(list):
 
-    def __init__(self, name=None):
-        super().__init__()
+    def __init__(self, *args, **kwargs):
+        name = kwargs.pop('name', None)
+        super().__init__(*args, **kwargs)
         # Register self with workspace
         ws[name] = self
         self._grid = {}
