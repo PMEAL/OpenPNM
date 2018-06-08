@@ -2,6 +2,7 @@ import pickle
 import openpnm
 import time
 import copy
+import warnings
 from openpnm.core import logging
 from openpnm.utils import SettingsDict
 logger = logging.getLogger()
@@ -35,7 +36,7 @@ class Workspace(dict):
         if project in self.values():
             self.pop(project.name, None)
         if not isinstance(project, openpnm.core.Project):
-            project = openpnm.core.Project(project)
+            project = openpnm.core.Project(project, name=name)
         super().__setitem__(name, project)
 
     def _setloglevel(self, level):
@@ -65,10 +66,25 @@ class Workspace(dict):
         d = {}
         for sim in self.values():
             d[sim.name] = sim
-        pickle.dump(d, open(filename + '.pnm', 'wb'))
+        with open(filename + '.pnm', 'wb') as f:
+            pickle.dump(d, f)
 
     def load_workspace(self, filename):
         r"""
+        Loads a saved OpenPNM session from a 'pnm' file.  If the 'pnm' file
+        contains multiple *Projects*, they will all be loaded.  Any *Projects*
+        present in the current *Workspace* will be deleted.
+
+        Parameters
+        ----------
+        filename : string or path object
+            Can be a string such as 'saved_file.pnm'.  The string can include
+            absolute path such as 'C:\networks\saved_file.pnm', or can be a
+            relative path such as '..\..\saved_file.pnm', which will look
+            2 directories above the current working directory.  Can also be a
+            path object object such as that produced by ``pathlib`` or
+            ``os.path`` in the standard library.
+
         """
         self.clear()
         self.load_project(filename=filename)
@@ -76,7 +92,7 @@ class Workspace(dict):
     def save_project(self, project, filename=''):
         r"""
         Save given project to a 'pnm' file, including all of associated
-        objects, but not Algorithms.
+        objects including algorithms.
 
         Parameters
         ----------
@@ -93,27 +109,56 @@ class Workspace(dict):
 
         # Save dictionary as pickle
         d = {project.name: project}
-        pickle.dump(d, open(filename + '.pnm', 'wb'))
+        with open(filename + '.pnm', 'wb') as f:
+            pickle.dump(d, f)
 
-    def load_project(self, filename):
+    def load_project(self, filename, overwrite=False):
         r"""
-        Loads a project from the specified 'pnm' file and adds it
-        to the Workspace
+        Loads a *Project* from the specified 'pnm' file and adds it to the
+        *Workspace*.  This will *not* delete any existing *Projects* in the
+        *Workspace* and will rename any *Projects* being loaded if necessary.
 
         Parameters
         ----------
-        filename : string
-            The name of the file containing the Network project to load
+        filename : string or path object
+            Can be a string such as 'saved_file.pnm'.  The string can include
+            absolute path such as 'C:\networks\saved_file.pnm', or can be a
+            relative path such as '..\..\saved_file.pnm', which will look
+            2 directories above the current working directory.  Can also be a
+            path object object such as that produced by ``pathlib`` or
+            ``os.path`` in the standard library.
+
         """
         filename = filename.rsplit('.pnm', 1)[0]
-        d = pickle.load(open(filename + '.pnm', 'rb'))
-        if type(d) is dict:
-            for name in d.keys():
-                self[name] = d[name]
-        elif type(d) is list:
-            self[filename] = d
-        else:
-            raise Exception('Can only load a dict of lists or a list')
+        temp = {}  # Read file into temporary dict
+        with open(filename + '.pnm', 'rb') as f:
+            d = pickle.load(f)
+            # A normal pnm file is a dict of lists (projects)
+            if type(d) is dict:
+                for name in d.keys():
+                    # If dict item is a list, assume it's a valid project
+                    if isinstance(d[name], list):
+                        temp[name] = d[name]
+                    else:
+                        warnings.warn('File contents must be a dictionary, ' +
+                                      'of lists, or a single list')
+            else:
+                if isinstance(d, list):  # If pickle contains a single list
+                    temp[filename] = d
+                else:
+                    warnings.warn('File contents must be a dictionary, ' +
+                                  'of lists, or a single list')
+
+        # Now scan through temp dict to ensure valid types and names
+        conflicts = set(temp.keys()).intersection(set(self.keys()))
+        for name in list(temp.keys()):
+            if name in conflicts:
+                new_name = self._gen_name()
+                warnings.warn('A project named ' + name + ' already exists, ' +
+                              'renaming to ' + new_name)
+                self[new_name] = temp[name]
+            else:
+                self[name] = temp[name]
 
     def close_project(self, project):
         r"""
