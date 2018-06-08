@@ -105,8 +105,13 @@ class Workspace(dict):
         """
         filename = filename.rsplit('.pnm', 1)[0]
         d = pickle.load(open(filename + '.pnm', 'rb'))
-        for name in d.keys():
-            self[name] = d[name]
+        if type(d) is dict:
+            for name in d.keys():
+                self[name] = d[name]
+        elif type(d) is list:
+            self[filename] = d
+        else:
+            raise Exception('Can only load a dict of lists or a list')
 
     def close_project(self, project):
         r"""

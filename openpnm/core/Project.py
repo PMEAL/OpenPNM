@@ -19,15 +19,33 @@ class Project(list):
         self.comments = 'Using OpenPNM ' + openpnm.__version__
 
     def extend(self, obj):
-        if hasattr(obj, '_mro'):
-            if 'GenericNetwork' in obj._mro():
-                if self.network:
-                    raise Exception('Project already has a network')
-            super().append(obj)
-        else:
-            raise Exception('Only OpenPNM objects can be added')
+        r"""
+        This function is used to add objects to the project.  Arguments can
+        be single OpenPNM objects, an OpenPNM project list, or a plain list of
+        OpenPNM objects.
+
+        """
+        if type(obj) is not list:
+            obj = [obj]
+        for item in obj:
+            if hasattr(item, '_mro'):
+                if 'GenericNetwork' in item._mro():
+                    if self.network:
+                        raise Exception('Project already has a network')
+                # Must use append since extend breaks the dicts up into
+                # separate objects, while append keeps it as a single object.
+                super().append(item)
+            else:
+                raise Exception('Only OpenPNM objects can be added')
 
     def append(self, obj):
+        r"""
+        The Project object must be kept as a flat list, so the append function
+        which can normally be used to insert a list into a list.  Thus, this
+        subclass basically prevents the normal append operation and simply
+        calls ``extend``.
+
+        """
         self.extend(obj)
 
     def clear(self, objtype=[]):
