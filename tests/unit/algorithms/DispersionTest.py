@@ -39,8 +39,8 @@ class DispersionTest:
         alg2.set_value_BC(pores=self.net.pores('front'), values=0)
         alg2.run()
         x = [0., 0., 0.,
-             0.97645, 1.18766, 1.37642,
-             1.6639, 1.79117, 1.76755,
+             1.03441, 1.25552, 1.47347,
+             1.71339, 1.87639, 1.85104,
              2., 2., 2.]
         y = sp.around(alg2[alg2.settings['quantity']], decimals=5)
         assert sp.all(x == y)
