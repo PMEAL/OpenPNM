@@ -60,15 +60,14 @@ The following code block illustrates how to use OpenPNM to perform a mercury int
 
 .. code-block:: python
 
-    >>> import OpenPNM as op
-    >>> pn = op.Network.Cubic(shape=[10, 10, 10], spacing=0.0001)
-    >>> geo = op.Geometry.Stick_and_Ball(network=pn, pores=pn.Ps,
-    ...                                  throats=pn.Ts)
-    >>> Hg = op.Phases.Mercury(network=pn)
-    >>> Air = op.Phases.Air(network=pn)
-    >>> phys = op.Physics.Standard(network=pn, phase=Hg, pores=pn.Ps,
-    ...                            throats=pn.Ts)
-    >>> MIP = op.Algorithms.Drainage(network=pn)
+    >>> import openpnm as op
+    >>> pn = op.network.Cubic(shape=[10, 10, 10], spacing=0.0001)
+    >>> geo = op.geometry.StickAndBall(network=pn, pores=pn.Ps,
+    ...                                throats=pn.Ts)
+    >>> Hg = op.phases.Mercury(network=pn)
+    >>> Air = op.phases.Air(network=pn)
+    >>> phys = op.physics.Standard(network=pn, phase=Hg, geometry=geo)
+    >>> MIP = op.algorithms.Drainage(network=pn)
     >>> MIP.setup(invading_phase=Hg, defending_phase=Air)
     >>> MIP.set_inlets(pores=pn.pores(['top', 'bottom']))
     >>> MIP.run()
