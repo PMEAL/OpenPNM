@@ -84,6 +84,7 @@ class WorkspaceTest:
         self.ws.clear()
         with pytest.warns(UserWarning):
             self.ws.load_project('single_object.pnm')
+        os.remove('single_object.pnm')
 
     def test_load_project_with_name_conflict(self):
         self.ws.clear()
@@ -93,6 +94,7 @@ class WorkspaceTest:
         self.ws.save_project(proj, filename='test.pnm')
         with pytest.warns(UserWarning):
             self.ws.load_project('test.pnm')
+        os.remove('test.pnm')
 
     def test_save_and_load_workspace(self):
         proj1 = self.ws.new_project('test_proj_1')
