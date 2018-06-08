@@ -34,6 +34,8 @@ class Workspace(dict):
             raise Exception("A project named " + name + " already exists")
         if project in self.values():
             self.pop(project.name, None)
+        if not isinstance(project, openpnm.core.Project):
+            project = openpnm.core.Project(project)
         super().__setitem__(name, project)
 
     def _setloglevel(self, level):
