@@ -83,7 +83,7 @@ def ordinary_diffusion(target,
     except KeyError:
         sf = _sp.ones(network.num_throats())
     sf[_sp.isnan(sf)] = 1.0
-    gt = (1/sf)*ct*DABt*tarea/tlen
+    gt = (1/sf)*DABt*tarea/tlen
     # Set 0 conductance pores (boundaries) to inf
     gt[~(gt > 0)] = _sp.inf
     value = (1/gt + 1/gp[:, 0] + 1/gp[:, 1])**(-1)

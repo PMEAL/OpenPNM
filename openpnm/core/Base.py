@@ -1,4 +1,5 @@
 from collections import namedtuple
+import matplotlib.pyplot as plt
 from openpnm.core import Workspace, logging
 from openpnm.utils.misc import PrintableList, SettingsDict, HealthDict
 import scipy as sp
@@ -103,7 +104,6 @@ class Base(dict):
         if validate:
             self.project._validate_name(name)
         if self._name is not None:
-            logger.info('Changing the name of '+self.name+' to '+name)
             # Rename any label arrays in other objects
             for item in self.project:
                 if 'pore.'+self.name in item.keys():
@@ -145,6 +145,9 @@ class Base(dict):
 
             **'props'** : Removes all numerical property values from the object
             dictionary.
+
+            **'model_data'** : Removes only numerical data that was produced
+            by an associated model.
 
             **'labels'** : Removes all labels from the object dictionary,
             except those relating to the pore and throat locations of
@@ -188,8 +191,13 @@ class Base(dict):
         4
 
         """
-        allowed = ['props', 'labels', 'all']
+        allowed = ['props', 'labels', 'model_data', 'all']
         mode = self._parse_mode(mode=mode, allowed=allowed)
+        if 'model_data' in mode:
+            for item in self.models.keys():
+                print('deleting ' + item)
+                del self[item]
+            mode.remove('model_data')
         for item in self.keys(mode=mode, element=element):
             if item not in ['pore.all', 'throat.all']:
                 if item.split('.')[1] not in self.project.names:
@@ -264,25 +272,6 @@ class Base(dict):
         if element:
             temp = [i for i in temp if i.split('.')[0] in element]
         return temp
-
-#    def get(self, key, value=None):
-#        r"""
-#        This sub-classed method attempts to retrieve the requested item,
-#        and if it is not found among the data, the pore-scale model of the
-#        same name is run if present.  If successful, the newly calculated
-#        values are retrieved and returned, otherwise the given default value
-#        is returned.
-#
-#        """
-#        v = super().get(key, value)
-#        if v is None:
-#            if hasattr(self, 'models'):
-#                if key in self.models.keys():
-#                    if self.models[key]['regen_mode'] in ['deferred']:
-#                        logger.debug(key+' not found, regenerating model')
-#                        self.regenerate_models(propnames=key)
-#                        v = self.get(key=key, value=value)
-#        return v
 
     # -------------------------------------------------------------------------
     """Data Query Methods"""
@@ -1166,6 +1155,41 @@ class Base(dict):
         element = self._parse_element(element=element, single=True)
         temp = sp.size(super(Base, self).__getitem__(element+'.all'))
         return temp
+
+    def show_hist(self, props=[], bins=20, **kwargs):
+        r"""
+        Show a quick plot of key property distributions.
+
+        Parameters
+        ----------
+        props : string or list of strings
+            The pore and/or throat properties to be plotted as histograms
+
+        bins : int or array_like
+            The number of bins to use when generating the histogram.  If an
+            array is given they are used as the bin spacing instead.
+
+        Notes
+        -----
+        Other keyword arguments are passed to the ``matplotlib.pyplot.hist``
+        function.
+        """
+        if type(props) is str:
+            props = [props]
+        N = len(props)
+        if N == 1:
+            r = 1
+            c = 1
+        elif N < 4:
+            r = 1
+            c = N
+        else:
+            r = int(sp.ceil(N**0.5))
+            c = int(sp.floor(N**0.5))
+
+        for i in range(len(props)):
+            plt.subplot(r, c, i+1)
+            plt.hist(self[props[i]], bins=bins, **kwargs)
 
     def check_data_health(self, props=[], element=None):
         r"""

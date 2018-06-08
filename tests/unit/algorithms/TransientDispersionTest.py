@@ -3,7 +3,7 @@ import scipy as sp
 import pytest
 
 
-class PowerlawAdvectionDiffusionTest:
+class TransientDispersionTest:
 
     def setup_class(self):
         sp.random.seed(0)
@@ -20,28 +20,28 @@ class PowerlawAdvectionDiffusionTest:
                                               geometry=self.geo)
         mod1 = op.models.physics.hydraulic_conductance.hagen_poiseuille
         self.phys.add_model(propname='throat.hydraulic_conductance',
-                            model=mod1, throat_viscosity='throat.viscosity',
-                            regen_mode='normal')
+                            model=mod1, regen_mode='normal')
         mod2 = op.models.physics.diffusive_conductance.ordinary_diffusion
         self.phys.add_model(propname='throat.diffusive_conductance',
                             model=mod2, regen_mode='normal')
 
-    def test_powerlaw_advection_diffusion_diffusion(self):
+    def test_transient_dispersion(self):
         alg1 = op.algorithms.StokesFlow(network=self.net, phase=self.phase)
         alg1.set_value_BC(pores=self.net.pores('back'), values=10)
         alg1.set_value_BC(pores=self.net.pores('front'), values=0)
         alg1.run()
         self.phase[alg1.settings['quantity']] = alg1[alg1.settings['quantity']]
 
-        alg2 = op.algorithms.AdvectionDiffusion(network=self.net,
-                                                phase=self.phase)
-        alg2.settings.update({'s_scheme': 'powerlaw'})
+        alg2 = op.algorithms.TransientDispersion(network=self.net,
+                                                         phase=self.phase)
+        alg2.settings.update({'t_scheme': 'steady'})
+        alg2.set_IC(0)
         alg2.set_value_BC(pores=self.net.pores('back'), values=2)
         alg2.set_value_BC(pores=self.net.pores('front'), values=0)
         alg2.run()
         x = [0., 0., 0.,
-             1.03186, 1.25229, 1.46662,
-             1.71123, 1.87497, 1.84824,
+             1.03441, 1.25552, 1.47347,
+             1.71339, 1.87639, 1.85104,
              2., 2., 2.]
         y = sp.around(alg2[alg2.settings['quantity']], decimals=5)
         assert sp.all(x == y)
@@ -53,7 +53,7 @@ class PowerlawAdvectionDiffusionTest:
 
 if __name__ == '__main__':
 
-    t = PowerlawAdvectionDiffusionTest()
+    t = TransientDispersionTest()
     t.setup_class()
     for item in t.__dir__():
         if item.startswith('test'):

@@ -9,7 +9,7 @@ class ElectricalConductivityTest:
         self.phase['pore.volume_fraction'] = 0.5
 
     def test_percolating_continua(self):
-        f = op.models.phase.electrical_conductivity.percolating_continua
+        f = op.models.phases.electrical_conductivity.percolating_continua
         self.phase.add_model(propname='pore.effective_conductivity',
                              model=f,
                              phi_crit=0.25,
