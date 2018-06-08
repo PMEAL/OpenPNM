@@ -3,6 +3,7 @@ import openpnm
 import time
 import copy
 import warnings
+from pathlib import Path
 from openpnm.core import logging
 from openpnm.utils import SettingsDict
 logger = logging.getLogger()
@@ -58,6 +59,27 @@ class Workspace(dict):
 
     def save_workspace(self, filename=''):
         r"""
+        Saves all the current *Projects* to a single 'pnm' file.
+
+        Parameters
+        ----------
+        filename : string, optional
+            If no filename is given, the a name is genrated using the current
+            time and date. See Notes for more information on valid file names.
+
+        See Also
+        --------
+        save_project
+
+        Notes
+        -----
+        The filename can be a string such as 'saved_file.pnm'.  The string can
+        include absolute path such as 'C:\networks\saved_file.pnm', or can
+        be a relative path such as '..\..\saved_file.pnm', which will look
+        2 directories above the current working directory.  Can also be a
+        path object object such as that produced by ``pathlib`` or
+        ``os.path`` in the Python standard library.
+
         """
         if filename == '':
             filename = 'workspace' + '_' + time.strftime('%Y%b%d_%H%M%p')
@@ -77,13 +99,21 @@ class Workspace(dict):
 
         Parameters
         ----------
-        filename : string or path object
-            Can be a string such as 'saved_file.pnm'.  The string can include
-            absolute path such as 'C:\networks\saved_file.pnm', or can be a
-            relative path such as '..\..\saved_file.pnm', which will look
-            2 directories above the current working directory.  Can also be a
-            path object object such as that produced by ``pathlib`` or
-            ``os.path`` in the standard library.
+        filename : string, optional
+            The name of the file to open.  See Notes for more information.
+
+        See Also
+        --------
+        load_project
+
+        Notes
+        -----
+        The filename can be a string such as 'saved_file.pnm'.  The string can
+        include absolute path such as 'C:\networks\saved_file.pnm', or can
+        be a relative path such as '..\..\saved_file.pnm', which will look
+        2 directories above the current working directory.  Can also be a
+        path object object such as that produced by ``pathlib`` or
+        ``os.path`` in the Python standard library.
 
         """
         self.clear()
@@ -100,12 +130,24 @@ class Workspace(dict):
             The project to save
 
         filename : string, optional
-            If no filename is given, the given project name is used
+            If no filename is given, the given project name is used. See Notes
+            for more information.
+
+        See Also
+        --------
+        save_workspace
+
+        Notes
+        -----
+        The filename can be a string such as 'saved_file.pnm'.  The string can
+        include absolute path such as 'C:\networks\saved_file.pnm', or can
+        be a relative path such as '..\..\saved_file.pnm', which will look
+        2 directories above the current working directory.  Can also be a
+        path object object such as that produced by ``pathlib`` or
+        ``os.path`` in the Python standard library.
+
         """
-        if filename == '':
-            filename = project.name
-        else:
-            filename = filename.rsplit('.pnm', 1)[0]
+        filename = self._parse_filename(filename=filename, ext='pnm')
 
         # Save dictionary as pickle
         d = {project.name: project}
@@ -121,17 +163,25 @@ class Workspace(dict):
         Parameters
         ----------
         filename : string or path object
-            Can be a string such as 'saved_file.pnm'.  The string can include
-            absolute path such as 'C:\networks\saved_file.pnm', or can be a
-            relative path such as '..\..\saved_file.pnm', which will look
-            2 directories above the current working directory.  Can also be a
-            path object object such as that produced by ``pathlib`` or
-            ``os.path`` in the standard library.
+            The name of the file to open.  See Notes for more information.
+
+        See Also
+        --------
+        load_workspace
+
+        Notes
+        -----
+        The filename can be a string such as 'saved_file.pnm'.  The string can
+        include absolute path such as 'C:\networks\saved_file.pnm', or can
+        be a relative path such as '..\..\saved_file.pnm', which will look
+        2 directories above the current working directory.  Can also be a
+        path object object such as that produced by ``pathlib`` or
+        ``os.path`` in the Python standard library.
 
         """
-        filename = filename.rsplit('.pnm', 1)[0]
+        filename = self._parse_filename(filename=filename, ext='pnm')
         temp = {}  # Read file into temporary dict
-        with open(filename + '.pnm', 'rb') as f:
+        with open(filename, 'rb') as f:
             d = pickle.load(f)
             # A normal pnm file is a dict of lists (projects)
             if type(d) is dict:
@@ -159,6 +209,15 @@ class Workspace(dict):
                 self[new_name] = temp[name]
             else:
                 self[name] = temp[name]
+
+    def _parse_filename(self, filename, ext='pnm'):
+        p = Path(filename)
+        p = p.resolve()
+        # If extension not part of filename
+        ext = ext.strip('.')
+        if p.suffix != ('.' + ext):
+            p = p.with_suffix(p.suffix + '.' + ext)
+        return p
 
     def close_project(self, project):
         r"""
