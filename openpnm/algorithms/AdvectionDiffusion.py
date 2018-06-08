@@ -68,7 +68,6 @@ class AdvectionDiffusion(ReactiveTransport):
                 A = network.create_adjacency_matrix(weights=w)
             elif (s_dis == 'powerlaw'):
                 Peij = np.absolute(Qij/gd)
-                print(Peij)
                 w = gd*np.maximum(0, (1-0.1*Peij)**5) + np.maximum(0, -Qij)
                 A = network.create_adjacency_matrix(weights=w)
             A = laplacian(A)
