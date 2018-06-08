@@ -3,7 +3,7 @@ import scipy as sp
 
 ws = op.Workspace()
 proj = ws.new_project()
-pn = op.network.Cubic(shape=[5, 5, 1], project=proj)
+pn = op.network.Cubic(shape=[15, 15, 1], project=proj)
 geom = op.geometry.GenericGeometry(network=pn, pores=pn.Ps, throats=pn.Ts)
 geom['pore.diameter'] = sp.rand(pn.Np)
 geom.add_model(propname='throat.unit_vector',
@@ -39,15 +39,15 @@ phys.add_model(propname='throat.diffusive_conductance',
 alg = op.algorithms.FickianDiffusion(network=pn)
 alg.setup(phase=air, quantity='pore.mole_fraction',
           conductance='throat.diffusive_conductance')
-alg.set_dirichlet_BC(pores=pn.pores('left'), values=1)
-alg.set_dirichlet_BC(pores=pn.pores('right'), values=0)
+alg.set_value_BC(pores=pn.pores('left'), values=1)
+alg.set_value_BC(pores=pn.pores('right'), values=0)
 alg.run()
 
 
 import matplotlib.pyplot as plt
 cmap = plt.cm.jet
-norm = plt.Normalize(vmin=sp.amin(pn['pore.diameter']/2),
-                     vmax=sp.amax(pn['pore.diameter']/2))
+norm = plt.Normalize(vmin=sp.amin(alg['pore.mole_fraction']),
+                     vmax=sp.amax(alg['pore.mole_fraction']))
 for t in pn.Ts:
     x = geom['throat.endpoints'][t, 0][0], geom['throat.endpoints'][t, 1][0]
     y = geom['throat.endpoints'][t, 0][1], geom['throat.endpoints'][t, 1][1]
@@ -55,7 +55,8 @@ for t in pn.Ts:
 for p in pn.Ps:
     xy = pn['pore.coords'][p, :2]
     r = pn['pore.diameter'][p]/2
-    circle1 = plt.Circle(xy, r, color=cmap(norm(r)), clip_on=False)
+    c = alg['pore.mole_fraction'][p]
+    circle1 = plt.Circle(xy, r, color=cmap(norm(c)), clip_on=False)
     fig = plt.gcf()
     ax = fig.gca()
     ax.add_artist(circle1)
