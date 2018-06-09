@@ -264,8 +264,8 @@ class Project(list):
 
         Raises
         ------
-        An Exception is raise if the object is a Network.
-        2
+        An Exception is raised if the object is a Network.
+
         """
         if obj._isa() in ['geometry', 'physics', 'algorithm']:
             self._purge(obj)
