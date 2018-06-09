@@ -1,6 +1,7 @@
 import time
 import pickle
 import h5py
+from pathlib import Path
 from openpnm.core import Workspace
 from openpnm.utils.misc import SettingsDict, HealthDict, PrintableList
 import openpnm
@@ -41,9 +42,9 @@ class Project(list):
 
     def append(self, obj):
         r"""
-        The Project object must be kept as a flat list, so the append function
-        which can normally be used to insert a list into a list.  Thus, this
-        subclass basically prevents the normal append operation and simply
+        The Project (a list) must be kept as a flat list, so the append
+        function, which can normally be used to insert a list into a list, is
+        overloaded to basically prevent the normal append operation and simply
         calls ``extend``.
 
         """
@@ -105,14 +106,23 @@ class Project(list):
             obj = super().__getitem__(key)
         return obj
 
-    def names(self):
-        r"""
-        Returns a list of all object names
-        """
-        names = PrintableList([obj.name for obj in self])
-        return names
-
     def find_phase(self, obj):
+        r"""
+        Find the Phase associated with a given object.
+
+        Parameters
+        ----------
+        obj : OpenPNM Object
+            Can either be a Physics or Algorithm object
+
+        Returns
+        -------
+        An OpenPNM Phase object.
+
+        Raises
+        ------
+        If no Phase object can be found, then an Exception is raised.
+        """
         # If received phase, just return self
         if obj._isa('phase'):
             return obj
@@ -128,6 +138,23 @@ class Project(list):
         raise Exception('Cannot find a phase associated with '+obj.name)
 
     def find_geometry(self, physics):
+        r"""
+        Find the Geometry associated with a given Physics
+
+        Parameters
+        ----------
+        physics : OpenPNM Physics Object
+            Must be a Physics object
+
+        Returns
+        -------
+        An OpenPNM Geometry object
+
+        Raises
+        ------
+        If no Geometry object can be found, then an Exception is raised.
+
+        """
         # If geometry happens to be in settings, look it up directly
         if 'geometry' in physics.settings.keys():
             geom = self.geometries()[physics.settings['geometry']]
@@ -140,6 +167,40 @@ class Project(list):
         raise Exception('Cannot find a geometry associated with '+physics.name)
 
     def find_physics(self, geometry=None, phase=None):
+        r"""
+        Find the Physics object(s) associated with a given Geometry, Phase,
+        or combination.
+
+        Parameters
+        ----------
+        geometry : OpenPNM Geometry Object
+            The Geometry object for which the Physics object(s) are sought
+
+        phase : OpenPNM Phase Object
+            The Phase object for which the Physics object(s) are sought
+
+        Returns
+        -------
+        A list containing the Physics object(s).  If only a ``geometry`` is
+        specified the the Physics for all Phases is returned.  If only a
+        ``phase`` is specified, then the Physics for all Geometries is
+        returned.  If both ``geometry`` and ``phase`` is specified then
+        the list only contains a single Physics.  If no Physics is found, the
+        the list will be empty.  See the Notes section for more information.
+
+        See Also
+        --------
+        grid
+
+        Notes
+        -----
+        The Project has an ``grid`` attribute that shows the association of
+        all objects.  If each Geometry represents a row and each Phase is a
+        column, then each row/col intersection represents a Physics. This
+        method finds the PHysics' at each intersection
+
+        """
+
         if geometry and phase:
             physics = self.find_physics(geometry=geometry)
             phases = list(self.phases().values())
@@ -193,6 +254,18 @@ class Project(list):
 
     def purge_object(self, obj):
         r"""
+        Remove an object from the Project.  This removes all references to
+        the object from all other objects (i.e. removes labels)
+
+        Parameters
+        ----------
+        obj : OpenPNM Object
+            The object to purge
+
+        Raises
+        ------
+        An Exception is raise if the object is a Network.
+        2
         """
         if obj._isa() in ['geometry', 'physics', 'algorithm']:
             self._purge(obj)
@@ -339,6 +412,17 @@ class Project(list):
             is boolean data it does not consume large amounts of memory and
             probably does not need to be dumped.
 
+        See Also
+        --------
+        _fetch_data
+
+        Notes
+        -----
+        In principle, after data is fetched from and HDF5 file, it should
+        physically stay there until it's called upon.  This let users manage
+        the data as if it's in memory, even though it isn't.  This behavior
+        has not been confirmed yet, which is why these functions are hidden.
+
         """
         with h5py.File(self.name + '.hdf5') as f:
             for obj in self:
@@ -359,6 +443,18 @@ class Project(list):
         r"""
         Retrieve data from an HDF5 file and place onto correct objects in the
         project
+
+        See Also
+        --------
+        _dump_data
+
+        Notes
+        -----
+        In principle, after data is fetched from and HDF5 file, it should
+        physically stay there until it's called upon.  This let users manage
+        the data as if it's in memory, even though it isn't.  This behavior
+        has not been confirmed yet, which is why these functions are hidden.
+
         """
         with h5py.File(self.name + '.hdf5') as f:
             # Reload data into project
