@@ -83,12 +83,11 @@ class Workspace(dict):
         """
         if filename == '':
             filename = 'workspace' + '_' + time.strftime('%Y%b%d_%H%M%p')
-        else:
-            filename = filename.rsplit('.pnm', 1)[0]
+        filename = self._parse_filename(filename=filename, ext='pnm')
         d = {}
         for sim in self.values():
             d[sim.name] = sim
-        with open(filename + '.pnm', 'wb') as f:
+        with open(filename, 'wb') as f:
             pickle.dump(d, f)
 
     def load_workspace(self, filename):
@@ -127,7 +126,7 @@ class Workspace(dict):
         Parameters
         ----------
         project : OpenPNM Project
-            The project to save
+            The project to save.
 
         filename : string, optional
             If no filename is given, the given project name is used. See Notes
@@ -147,11 +146,13 @@ class Workspace(dict):
         ``os.path`` in the Python standard library.
 
         """
+        if filename == '':
+            filename = project.name
         filename = self._parse_filename(filename=filename, ext='pnm')
 
         # Save dictionary as pickle
         d = {project.name: project}
-        with open(filename + '.pnm', 'wb') as f:
+        with open(filename, 'wb') as f:
             pickle.dump(d, f)
 
     def load_project(self, filename, overwrite=False):

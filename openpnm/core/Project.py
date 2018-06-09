@@ -218,10 +218,12 @@ class Project(list):
             obj = [obj]
         for item in obj:
             filename = item.name + '.' + item.settings['prefix']
-            pickle.dump({item.name: item}, open(filename, 'wb'))
+            with open(filename, 'wb') as f:
+                pickle.dump({item.name: item}, f)
 
     def load_object(self, filename):
-        d = pickle.load(open(filename, 'rb'))
+        with open(filename, 'rb') as f:
+            d = pickle.load(f)
         for item in d.keys():
             self.extend(d[item])
 
