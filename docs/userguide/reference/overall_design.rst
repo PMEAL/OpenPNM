@@ -4,53 +4,32 @@
 Overall Design
 ###############################################################################
 
-The design of OpenPNM is to separate different types of properties between different objects.  There are 5 types: **Network**, **Geometry**, **Phase**, **Physics**, and **Algorithms**.  Each of these are described in more detail below, but their names clearly indicate what sort of data or calculations are assigned to each.
-
-The image below outlines how each of the main objects in OpenPNM descend from the Python ``dict`` class.  Using the Object Oriented Programming (OOP) paradigm, each of the main OpenPNM objects actually descend from a common class called **Core**.  The **Core** class defines the majority of the functionality, which is then enhanced and extended by each descendent.  This extra functionality is explored in more detail for each main object in the sections below.
+OpenPNM separates different types of properties between different objects.  There are 5 types: **Network**, **Geometry**, **Phase**, **Physics**, and **Algorithms**.  Each of these are described in more detail below, but their names hopefully indicate what sort of data or roles are assigned to each.
 
 .. image:: http://i.imgur.com/k4Far1W.png
    :width: 800 px
    :align: center
 
 ===============================================================================
-Core
+Base
 ===============================================================================
 
-**Core** is a subclass of the Python Dictionary or ``dict``.  A ``dict`` is a very handy data structure that can store any piece of data by name, using the following:
+The OpenPNM **Base** class, from which all other OpenPNM objects descend, is a subclass of the Python Dictionary or ``dict``.
 
-.. code-block:: python
-
-    >>> # Instantiate a dict and add some values by name
-    >>> foo = dict()
-    >>> foo['an_int'] = 1
-    >>> foo['a_list'] = [1, 2, 3]
-    >>> foo['a_string'] = 'bar'
-    >>> # And data can be retrieved by name
-    >>> foo['an_int']
-    1
-    >>> foo['a_list']
-    [1, 2, 3]
-
-The Python ``dict`` class comes with a variety of methods for adding, removing, and inspecting the data stored within.  The following command will generate a list of all these methods, which include things like ``pop`` for removing items from the dictionary, and ``keys`` for listing all the current dictionary entries.   The following line inspects the ``dict`` object and retrieves a list of all methods it has available to it, which is stored in ``methods``.
-
-.. code-block:: python
-
-    >>> methods = [item for item in dir(foo) if not item.startswith('_')]
-
-The **Core** class possess all of these methods, plus another few dozen methods that were added by OpenPNM.  These additional methods also pertain to the manipulation of data, but are specific to the types of data used in OpenPNM.
+In addition to the methods included on every ``dict`` (e.g. ``pop``, ``keys``, etc), the OpenPNM **Base** class has quite a few additional methods for working specifically with OpenPNM data.  These are described below:
 
 -------------------------------------------------------------------------------
 1.  Querying Defined Properties and Labels
 -------------------------------------------------------------------------------
-**Returns a list of which properties or labels exist in the dictionary**
+**Returns a list of the properties or labels that exist in the dictionary**
 
 These methods are basically the same as the ``keys`` method, but return a subset of the entries.  Any arrays of Boolean type are considered labels, while all other are properties.  The returned list outputs a nicely formatted table to the command line when it is printed.
 
 .. autosummary::
     :toctree: generated/
 
-    ~OpenPNM.Base.Core.props()
-    ~OpenPNM.Base.Core.labels()
+    ~openpnm.core.Base.props()
+    ~openpnm.core.Base.labels()
 
 -------------------------------------------------------------------------------
 2. Counting Pores and Throats
@@ -62,10 +41,10 @@ Both optionally accept a list of labels and returns the number of pores or throa
 .. autosummary::
     :toctree: generated/
 
-    ~OpenPNM.Base.Core.num_pores()
-    ~OpenPNM.Base.Core.num_throats()
-    ~OpenPNM.Base.Core.Np
-    ~OpenPNM.Base.Core.Nt
+    ~openpnm.core.Base.num_pores()
+    ~openpnm.core.Base.num_throats()
+    ~openpnm.core.Base.Np
+    ~openpnm.core.Base.Nt
 
 -------------------------------------------------------------------------------
 3.  Retrieving a List of Specific Pores and Throats
@@ -75,10 +54,10 @@ Returns a list of pore or throat indices.  Both optionally accept a list of labe
 .. autosummary::
     :toctree: generated/
 
-    ~OpenPNM.Base.Core.pores()
-    ~OpenPNM.Base.Core.throats()
-    ~OpenPNM.Base.Core.Ps
-    ~OpenPNM.Base.Core.Ts
+    ~openpnm.core.Base.pores()
+    ~openpnm.core.Base.throats()
+    ~openpnm.core.Base.Ps
+    ~openpnm.core.Base.Ts
 
 -------------------------------------------------------------------------------
 4.  Converting Between Masks and Indices
@@ -88,65 +67,50 @@ These methods allow the conversion between numeric indices and Boolean masks.
 .. autosummary::
     :toctree: generated/
 
-    ~OpenPNM.Base.Core.tomask()
-    ~OpenPNM.Base.Core.toindices()
+    ~openpnm.core.Base.tomask()
+    ~openpnm.core.Base.toindices()
 
 -------------------------------------------------------------------------------
 5.  Mapping Pore and Throat Indices Between Objects
 -------------------------------------------------------------------------------
-Each **Core** object has it's own internal numbering scheme, so these methods are for converting the pore or throat indices from one object to another.  Practically speaking this usually means mapping from a **Geometry** or **Physics** object onto the **Network**, so ``Pnet`` and ``Tnet`` are short-cuts for retrieving a list of pore or throat indices on the network.
+Each **Base** object has it's own internal numbering scheme, so these methods are for converting the pore or throat indices from one object to another.
 
 .. autosummary::
     :toctree: generated/
 
-    ~OpenPNM.Base.Core.map_pores()
-    ~OpenPNM.Base.Core.map_throats()
-    ~OpenPNM.Base.Core.Pnet
-    ~OpenPNM.Base.Core.Tnet
+    ~openpnm.core.Base.map_pores()
+    ~openpnm.core.Base.map_throats()
 
 -------------------------------------------------------------------------------
-6.  Looking Up Other Objects in the Simulation
--------------------------------------------------------------------------------
-When each object is instantiated it is associated with the other objects within the simulation.  These methods allow for retrieval of these other objects.
-
-.. autosummary::
-    :toctree: generated/
-
-    ~OpenPNM.Base.Core.network
-    ~OpenPNM.Base.Core.geometries
-    ~OpenPNM.Base.Core.phases
-    ~OpenPNM.Base.Core.physics
-
--------------------------------------------------------------------------------
-7.  Interpolating Between Pore and Throat Data
+6.  Interpolating Between Pore and Throat Data
 -------------------------------------------------------------------------------
 Data is often calculated or assigned to pores or throats only.  This method enables the conversion of data between these.
 
 .. autosummary::
     :toctree: generated/
 
-    ~OpenPNM.Base.Core.interpolate_data()
+    ~openpnm.core.Base.interpolate_data()
 
 -------------------------------------------------------------------------------
-8.  Check the Health of all Data Arrays
+7.  Check the Health of all Data Arrays
 -------------------------------------------------------------------------------
-Checks whether any data on the object is not well formed, such as containing NaNs, or infs.  This is handy be running an algorithm to ensure that all necessary properties have been defined everywhere.
+Checks whether any data on the object is not well formed, such as containing NaNs, or infs.  This is handy before running an algorithm to ensure that all necessary properties have been defined everywhere.
 
 .. autosummary::
     :toctree: generated/
 
-    ~OpenPNM.Base.Core.check_data_health()
+    ~openpnm.core.Base.check_data_health()
 
 -------------------------------------------------------------------------------
-9.  Using Pore-Scale Models
+8.  Using Pore-Scale Models
 -------------------------------------------------------------------------------
-The ``models`` attribute actually contains a nested dictionary which stores all the information related to the pore-scale models.  This is described elsewhere in detail.  ``add_model`` and ``regenerate`` are wrapper or helper methods to provide quicker access to the ``add`` and ``regenerate`` methods of the ``models`` dict.
+The ``models`` attribute actually contains a nested dictionary which stores all the information related to the pore-scale models.  This is described elsewhere in detail.  ``add_model`` and ``regenerate_models`` provide a way to interact with models.
 
 .. autosummary::
     :toctree: generated/
 
-    ~OpenPNM.Base.Core.add_model()
-    ~OpenPNM.Base.Core.regenerate()
+    ~openpnm.core.Base.add_model()
+    ~openpnm.core.Base.regenerate_models()
 
 -------------------------------------------------------------------------------
 10.  Find and Set the Object's Name
@@ -156,7 +120,7 @@ Contains a unique string identifier for the object.  It can be specified or assi
 .. autosummary::
     :toctree: generated/
 
-    ~OpenPNM.Base.Core.name
+    ~openpnm.core.Base.name
 
 ===============================================================================
 Network

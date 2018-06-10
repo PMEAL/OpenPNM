@@ -1,5 +1,7 @@
 .. _workspace:
 
+pyreverse -AS -o png -p openpnm "C:\Users\Jeff\Dropbox\Flash Sync\Code\Git\OpenPNM\openpnm\core"
+
 ##############################################################################
 Workspace Manager
 ##############################################################################
@@ -11,21 +13,21 @@ All OpenPNM objects register themselves with this single **Workspace** when they
 
 .. code-block:: python
 
-    >>> import OpenPNM as op
-    >>> mgr = op.Base.Workspace()
+    >>> import openpnm as op
+    >>> mgr = op.core.Workspace()
     >>> mgr.clear()  # Clear workspace of any pre-existing objects
     >>> mgr.keys()
     dict_keys([])
-    >>> pn = op.Network.Cubic(shape=[5, 5, 5], name='foo')
+    >>> pn = op.network.Cubic(shape=[5, 5, 5], name='foo')
     >>> list(mgr.keys())
     ['foo']
-    >>> pn2 = op.Network.Cubic(shape=[5, 5, 5], name='bar')
+    >>> pn2 = op.network.Cubic(shape=[5, 5, 5], name='bar')
     >>> sorted(list(mgr.keys()))
     ['bar', 'foo']
     >>> pn is mgr['foo']  # The object stored as 'foo' actually pn
     True
 
-The **Workspace** object also tracks the relationships between the OpenPNM Core objects (see :ref:`class_hierarchy`), and the ``print`` function outputs a formatted list of each simulation's structure:
+The **Workspace** object also tracks the relationships between the OpenPNM objects, and the ``print`` function outputs a formatted list of each simulation's structure:
 
 .. code-block:: python
 

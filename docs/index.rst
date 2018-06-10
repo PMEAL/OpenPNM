@@ -9,10 +9,6 @@
    :target: https://codecov.io/github/PMEAL/OpenPNM
 
 
-###############################################################################
-Overview of OpenPNM
-###############################################################################
-
 *OpenPNM* is an open source project aiming to provide porous media researchers with a ready-made framework for performing a wide range of pore network simulations.
 
 ===============================================================================
