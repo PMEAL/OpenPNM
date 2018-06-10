@@ -211,10 +211,10 @@ class BaseTest:
         a = self.net.num_pores(labels=['top', 'front'], mode='intersection')
         assert a == 3
 
-#    def test_num_pores_two_labels_not_intersection(self):
-#        a = self.net.num_pores(labels=['top', 'front'],
-#                               mode='not_intersection')
-#        assert a == 12
+    def test_num_pores_two_labels_not(self):
+        a = self.net.num_pores(labels=['top', 'front'],
+                               mode='not')
+        assert a == 12
 
     def test_num_pores_two_labels_difference(self):
         a = self.net.num_pores(labels=['top', 'front'], mode='difference')
@@ -676,29 +676,49 @@ class BaseTest:
         geom['pore.blah'] = True
         assert sp.sum(net['pore.blah']) == geom.Np
 
+    def test_getitem_with_no_matches(self):
+        self.geo.pop('pore.blah', None)
+        with pytest.raises(KeyError):
+            self.geo['pore.blah']
+
     def test_interpolate_data(self):
         a = self.geo.interpolate_data(propname='throat.diameter')
         assert a.size == self.geo.Np
         a = self.geo.interpolate_data(propname='pore.diameter')
         assert a.size == self.geo.Nt
 
-#    def test_get_regenerate_on_demand(self):
-#        self.geo.regenerate_models()
-#        models = list(self.geo.models.keys())
-#        assert len(set(self.geo.keys()).intersection(models)) == 2
-#        for item in models:
-#            del self.geo[item]
-#        assert len(set(self.geo.keys()).intersection(models)) == 0
-#        for item in models:
-#            self.geo.models[item]['regen_mode'] = 'deferred'
-#            arr = self.geo[item]
-#            self.geo.models[item]['regen_mode'] = 'normal'
-#        assert len(set(self.geo.keys()).intersection(models)) == 2
-#
-#    def test_get_no_matches(self):
-#        self.geo.pop('pore.blah', None)
-#        with pytest.raises(KeyError):
-#            self.geo['pore.blah']
+    def test_interleave_data_with_unyts_on_all(self):
+        import unyt
+        pn = op.network.Cubic(shape=[10, 1, 1])
+        geo1 = op.geometry.GenericGeometry(network=pn, pores=[0, 1, 2, 3, 4])
+        geo2 = op.geometry.GenericGeometry(network=pn, pores=[5, 6, 7, 8, 9])
+        geo1['pore.test'] = sp.rand(geo1.Np, ) * unyt.m
+        geo2['pore.test'] = sp.rand(geo2.Np, ) * unyt.m
+        assert hasattr(pn['pore.test'], 'units')
+
+    def test_interleave_data_with_unyts_on_only_one(self):
+        import unyt
+        pn = op.network.Cubic(shape=[10, 1, 1])
+        geo1 = op.geometry.GenericGeometry(network=pn, pores=[0, 1, 2, 3, 4])
+        geo2 = op.geometry.GenericGeometry(network=pn, pores=[5, 6, 7, 8, 9])
+        geo1['pore.test'] = sp.rand(geo1.Np, )
+        geo2['pore.test'] = sp.rand(geo2.Np, ) * unyt.m
+        assert hasattr(pn['pore.test'], 'units')
+
+    def test_interpolate_date_with_unyts(self):
+        import unyt
+        pn = op.network.Cubic(shape=[10, 1, 1])
+        geo = op.geometry.GenericGeometry(network=pn, pores=pn.Ps)
+        geo['pore.test'] = sp.rand(geo.Np, ) * unyt.m
+        a = geo.interpolate_data('pore.test')
+        assert hasattr(a, 'units')
+
+    def test_interpolate_date_with_unyts_but_none_assigned(self):
+        pn = op.network.Cubic(shape=[10, 1, 1])
+        geo = op.geometry.GenericGeometry(network=pn, pores=pn.Ps)
+        geo['pore.test'] = sp.rand(geo.Np, )
+        b = geo.interpolate_data('pore.test')
+        assert not hasattr(b, 'units')
 
 
 if __name__ == '__main__':
