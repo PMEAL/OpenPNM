@@ -40,8 +40,8 @@ class HybridAdvectionDiffusionTest:
         alg2.set_value_BC(pores=self.net.pores('front'), values=0)
         alg2.run()
         x = [0., 0., 0.,
-             0.76426, 0.95371, 1.04171,
-             1.49682, 1.71469, 1.61261,
+             1.0595, 1.29479, 1.57193,
+             1.73395, 1.89233, 1.88419,
              2., 2., 2.]
         y = sp.around(alg2[alg2.settings['quantity']], decimals=5)
         assert sp.all(x == y)
