@@ -43,8 +43,8 @@ class TransientAdvectionDiffusionTest:
         alg2.set_value_BC(pores=self.net.pores('front'), values=0)
         alg2.run()
         x = [0., 0., 0.,
-             0.78223, 0.97971, 1.06055,
-             1.50462, 1.73478, 1.60123,
+             1.03186, 1.25229, 1.46662,
+             1.71123, 1.87497, 1.84824,
              2., 2., 2.]
         y = sp.around(alg2[alg2.settings['quantity']], decimals=5)
         assert sp.all(x == y)

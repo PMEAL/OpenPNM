@@ -22,10 +22,11 @@ class Dispersion(ReactiveTransport):
     '''
     def __init__(self, settings={}, **kwargs):
         super().__init__(**kwargs)
-        self.settings.update({'quantity': 'pore.mole_fraction',
+        self.settings.update({'quantity': 'pore.concentration',
                               'hydraulic_conductance':
                               'throat.hydraulic_conductance',
-                              'diffusivity': 'pore.diffusivity',
+                              'diffusive_conductance':
+                              'throat.diffusive_conductance',
                               'pressure': 'pore.pressure'})
         self.settings.update(settings)
 
@@ -34,51 +35,26 @@ class Dispersion(ReactiveTransport):
         """
         network = self.project.network
         phase = self.project.phases()[self.settings['phase']]
+        conns = network['throat.conns']
+
         P = phase[self.settings['pressure']]
-        D = np.mean(phase[self.settings['diffusivity']])
-        gh_0 = phase[self.settings['hydraulic_conductance']]
-        conns1 = network['throat.conns']
-        conns2 = np.flip(conns1, axis=1)
+        gh = phase[self.settings['hydraulic_conductance']]
+        gd = phase[self.settings['diffusive_conductance']]
+        gd = np.tile(gd, 2)
 
-        # Calculating effective length and area
-        dp = network['pore.diameter']
-        Vp = network['pore.volume']
-        Vt = network['throat.volume']
-        Lt = network['throat.length']
-        Le_0 = Lt + (dp[conns1[:, 0]] + dp[conns1[:, 1]])/2
-        Le = np.tile(Le_0, 2)
-        Ae = (Vt + Vp[conns1[:, 0]] + Vp[conns1[:, 1]]) / Le_0
-        Ae = np.tile(Ae, 2)
+        Qij = -gh*np.diff(P[conns], axis=1).squeeze()
+        Qij = np.append(Qij, -Qij)
+        Peij = Qij/gd
 
-        Qij1 = gh_0*np.diff(P[conns1], axis=1).squeeze()
-        Qij1 = np.append(Qij1, -Qij1)
-        Uij1 = Qij1 / Ae
-        Peij1 = Uij1 * Le / D
-
-        Qij2 = gh_0*np.diff(P[conns2], axis=1).squeeze()
-        Qij2 = np.append(Qij2, -Qij2)
-        Uij2 = Qij2 / Ae
-        Peij2 = Uij2 * Le / D
-
-        Peij1[(Peij1 < 1e-10) & (Peij1 >= 0)] = 1e-10
-        Peij1[(Peij1 > -1e-10) & (Peij1 <= 0)] = -1e-10
-        Peij1[Peij1 > 100] = 100
-        Peij1[Peij1 < -100] = -100
-
-        Peij2[(Peij2 < 1e-10) & (Peij2 >= 0)] = 1e-10
-        Peij2[(Peij2 > -1e-10) & (Peij2 <= 0)] = -1e-10
-        Peij2[Peij2 > 100] = 100
-        Peij2[Peij2 < -100] = -100
+        Peij[(Peij < 1e-10) & (Peij >= 0)] = 1e-10
+        Peij[(Peij > -1e-10) & (Peij <= 0)] = -1e-10
+        Qij = Peij*gd
 
         if force:
             self._pure_A = None
         if self._pure_A is None:
-            w = -Qij1 + Qij1 / (1 - np.exp(Peij1))
-            am1 = -network.create_adjacency_matrix(weights=w)
-            w = -Qij2 / (1 - np.exp(Peij2))
-            A = -network.create_adjacency_matrix(weights=w)
-            A_diags = laplacian(am1)
-            # Overwrite the diagonal
-            A.setdiag(A_diags.diagonal())
+            w = -Qij / (1 - np.exp(Peij))
+            A = network.create_adjacency_matrix(weights=w)
+            A = laplacian(A)
             self._pure_A = A
         self.A = self._pure_A.copy()
