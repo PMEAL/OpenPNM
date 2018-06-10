@@ -1424,6 +1424,8 @@ def plot_coordinates(network, pores=None, fig=None, **kwargs):
         fig = plt.figure()
         if ThreeD:
             ax = fig.add_subplot(111, projection='3d')
+        else:
+            ax = fig.add_subplot(111)
     else:
         ax = fig.get_axes()[0]
 
@@ -1431,7 +1433,8 @@ def plot_coordinates(network, pores=None, fig=None, **kwargs):
     X = network['pore.coords'][Ps, 0]
     Y = network['pore.coords'][Ps, 1]
     Z = network['pore.coords'][Ps, 2]
-    _scale_3d_axes(ax=ax, X=X, Y=Y, Z=Z)
+    if ThreeD:
+        _scale_3d_axes(ax=ax, X=X, Y=Y, Z=Z)
 
     if ThreeD:
         ax.scatter(xs=X, ys=Y, zs=Z, **kwargs)

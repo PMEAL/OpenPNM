@@ -5,3 +5,5 @@ pandas
 scikit-image
 sympy
 numba
+testfixtures
+networkx

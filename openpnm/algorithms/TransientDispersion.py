@@ -1,11 +1,10 @@
-from openpnm.algorithms import TransientReactiveTransport, StokesFlow
+from openpnm.algorithms import TransientReactiveTransport, Dispersion
 from openpnm.core import logging
 logger = logging.getLogger(__name__)
 
 
-class TransientStokesFlow(TransientReactiveTransport, StokesFlow):
+class TransientDispersion(TransientReactiveTransport, Dispersion):
     r"""
-    A subclass of GenericTransport to simulate Stokes flow.
 
     """
 

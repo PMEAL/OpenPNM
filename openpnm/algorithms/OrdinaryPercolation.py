@@ -1,5 +1,7 @@
 import scipy as sp
 import numpy as np
+import matplotlib.pyplot as plt
+from collections import namedtuple
 from openpnm.algorithms import GenericAlgorithm
 from openpnm.topotools import site_percolation, bond_percolation
 from openpnm.topotools import remove_isolated_clusters, ispercolating
@@ -334,6 +336,64 @@ class OrdinaryPercolation(GenericAlgorithm):
         Tseq = sp.searchsorted(sp.unique(Tinv), Tinv)
         self['pore.invasion_sequence'] = Pseq
         self['throat.invasion_sequence'] = Tseq
+
+    def get_intrusion_data(self, Pc=None):
+        r"""
+        Obtain the numerical values of the calculated intrusion curve
+
+        Returns
+        -------
+        A named-tuple containing arrays of applied capillary pressures and
+        invading phase saturation.
+
+        """
+        net = self.project.network
+        if Pc is None:
+            # Infer list of applied capillary pressures
+            points = np.unique(self['throat.invasion_pressure'])
+            # Add a low pressure point to the list to improve graph
+            points = np.concatenate(([0], points))
+            if points[-1] == np.inf:  # Remove infinity from points if present
+                points = points[:-1]
+        else:
+            points = np.array(Pc)
+        # Get pore and throat volumes
+        Pvol = net[self.settings['pore_volume']]
+        Tvol = net[self.settings['throat_volume']]
+        Total_vol = np.sum(Pvol) + np.sum(Tvol)
+        # Find cumulative filled volume at each applied capillary pressure
+        Vnwp_t = []
+        Vnwp_p = []
+        Vnwp_all = []
+        for p in points:
+            # Calculate filled pore volumes
+            p_inv, t_inv = self.results(p).values()
+            Vp = np.sum(Pvol*p_inv)
+            Vt = np.sum(Tvol*t_inv)
+            Vnwp_p.append(Vp)
+            Vnwp_t.append(Vt)
+            Vnwp_all.append(Vp + Vt)
+        # Convert volumes to saturations by normalizing with total pore volume
+        Snwp_all = [V/Total_vol for V in Vnwp_all]
+        pc_curve = namedtuple('pc_curve', ('Pcap', 'Snwp'))
+        data = pc_curve(points, Snwp_all)
+        return data
+
+    def plot_intrusion_curve(self, fig=None):
+        r"""
+        Plot the percolation curve as the invader volume or number fraction vs
+        the applied capillary pressure.
+
+        """
+        # Begin creating nicely formatted plot
+        x, y = self.get_intrusion_data()
+        if fig is None:
+            fig = plt.figure()
+        plt.semilogx(x, y, 'ko-')
+        plt.ylabel('Invading Phase Saturation')
+        plt.xlabel('Capillary Pressure')
+        plt.grid(True)
+        return fig
 
     def results(self, Pc):
         r"""
