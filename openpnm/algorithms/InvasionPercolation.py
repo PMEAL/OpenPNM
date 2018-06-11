@@ -237,7 +237,7 @@ class InvasionPercolation(GenericAlgorithm):
         try:
             N = sp.where(S < Snwp)[0][-1]
         except:
-            N = np.inf
+            N = -np.inf
         data = {'pore.occupancy': Np <= N, 'throat.occupancy': Nt <= N}
         return data
 
