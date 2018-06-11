@@ -59,7 +59,7 @@ def conduit_conductance(target, throat_conductance,
         mask = Tinv + sp.any(Pinv, axis=1)
     else:
         raise Exception('Unrecongnized mode '+mode)
-    value = phase[throat_conductance]
+    value = phase[throat_conductance].copy()
     value[mask] = value[mask]*factor
     # Now map throats onto target object
     Ts = phase.map_throats(ids=target['throat._id'])
