@@ -23,6 +23,7 @@ class Delaunay(DelaunayVoronoiDual):
         # Initialize network object
         super().__init__(shape=shape, points=points, **kwargs)
         topotools.trim(network=self, pores=self.pores(['voronoi']))
-        pop = ['pore.voronoi', 'throat.voronoi', 'throat.interconnect']
+        pop = ['pore.voronoi', 'throat.voronoi', 'throat.interconnect',
+               'pore.delaunay', 'throat.delaunay']
         for item in pop:
             del self[item]

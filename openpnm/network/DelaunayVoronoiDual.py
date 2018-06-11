@@ -73,7 +73,7 @@ class DelaunayVoronoiDual(GenericNetwork):
     Points will be automatically generated if none are given:
 
     >>> import openpnm as op
-    >>> net = op.network.DelaunayVoronoiDual(num_points=50)
+    >>> net = op.network.DelaunayVoronoiDual(num_points=50, shape=[1, 1, 1])
 
     The resulting network can be quickly visualized with
     ``op.topotools.plot_connections(net)``.  This plotting function also
@@ -226,13 +226,19 @@ class DelaunayVoronoiDual(GenericNetwork):
         Ts = self.find_neighbor_throats(pores=Ps, mode='intersection')
         topotools.trim(network=self, throats=Ts)
 
-#        # Move Delaunay surface pores to centroid of Voronoi facet
-#        Ps = self.pores(labels=['surface', 'delaunay'], mode='intersection')
-#        for P in Ps:
-#            Ns = self.find_neighbor_pores(pores=P)
-#            Ns = Ps = self['pore.voronoi']*self.tomask(pores=Ns)
-#            coords = sp.mean(self['pore.coords'][Ns], axis=0)
-#            self['pore.coords'][P] = coords
+        # Move Delaunay surface pores to centroid of Voronoi facet
+        Ps = self.pores(labels=['surface', 'delaunay'], mode='intersection')
+        for P in Ps:
+            Ns = self.find_neighbor_pores(pores=P)
+            Ns = Ps = self['pore.voronoi']*self.tomask(pores=Ns)
+            coords = sp.mean(self['pore.coords'][Ns], axis=0)
+            self['pore.coords'][P] = coords
+
+        self['pore.internal'] = ~self['pore.surface']
+        Ps = self.pores('internal')
+        Ts = self.find_neighbor_throats(pores=Ps, mode='intersection')
+        self['throat.internal'] = False
+        self['throat.internal'][Ts] = True
 
         # Clean-up
         del self['pore.external']
@@ -306,7 +312,7 @@ class DelaunayVoronoiDual(GenericNetwork):
                                                     reflect=True)
         else:
             # Should we check to ensure that points are reflected?
-            pass
+            points = sp.array(points)
 
         # Deal with points that are only 2D...they break Delaunay
         if points.shape[1] == 3 and len(sp.unique(points[:, 2])) == 1:
