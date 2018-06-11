@@ -47,7 +47,7 @@ class InvasionPercolation(GenericAlgorithm):
     Create an invading phase, and attach the capillary pressure model:
 
     >>> water = op.phases.Water(network=pn)
-    >>> water.add_model(propname='throat.capillary_pressure',
+    >>> water.add_model(propname='throat.entry_pressure',
     ...                 model=op.models.physics.capillary_pressure.washburn)
 
     Initialize an invasion percolation object and define inlets:

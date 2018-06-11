@@ -1,5 +1,6 @@
 from openpnm.algorithms import OrdinaryPercolation
 from openpnm.core import logging
+import numpy as np
 logger = logging.getLogger()
 
 default_settings = {'pore_volume': 'pore.volume',
@@ -125,7 +126,7 @@ class Porosimetry(OrdinaryPercolation):
         p_inv, t_inv = super().results(Pc).values()
         phase = self.project.find_phase(self)
         quantity = self.settings['quantity'].split('.')[-1]
-        lpf = 1
+        lpf = np.array([1])
         if self.settings['pore_partial_filling']:
             # Set pressure on phase to current capillary pressure
             phase['pore.'+quantity] = Pc
@@ -135,7 +136,7 @@ class Porosimetry(OrdinaryPercolation):
             # Fetch partial filling fraction from phase object (0->1)
             lpf = phase[self.settings['pore_partial_filling']]
         # Calculate filled throat volumes
-        ltf = 1
+        ltf = np.array([1])
         if self.settings['throat_partial_filling']:
             # Set pressure on phase to current capillary pressure
             phase['throat.'+quantity] = Pc
