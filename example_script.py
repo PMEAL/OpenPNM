@@ -10,18 +10,18 @@ vn = op.network.DelaunayVoronoiDual(points=pts, shape=s)
 fig = op.topotools.plot_coordinates(network=vn,
 #                                    pores=vn.pores('delaunay'),
                                     color='r')
-fig = op.topotools.plot_connections(network=vn,
-                                    throats=vn['throat.delaunay'],
-                                    color='b',
-                                    fig=fig)
+#fig = op.topotools.plot_connections(network=vn,
+#                                    throats=vn['throat.delaunay'],
+#                                    color='b',
+#                                    fig=fig)
 fig = op.topotools.plot_connections(network=vn,
                                     throats=vn['throat.voronoi'],
-                                    color='m',
-                                    fig=fig)
-fig = op.topotools.plot_connections(network=vn,
-                                    throats=vn['throat.interconnect'],
                                     color='g',
                                     fig=fig)
+#fig = op.topotools.plot_connections(network=vn,
+#                                    throats=vn['throat.interconnect'],
+#                                    color='g',
+#                                    fig=fig)
 
 #import matplotlib.pyplot as plt
 #from mpl_toolkits.mplot3d import Axes3D

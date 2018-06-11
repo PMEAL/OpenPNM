@@ -1017,7 +1017,7 @@ def subdivide(network, pores, shape, labels=[]):
     if 'Cubic' not in mro:
         raise Exception('Subdivide is only supported for Cubic Networks')
     from openpnm.network import Cubic
-    pores = sp.array(pores, ndmin=1)
+    pores = network._parse_indices(pores)
 
     # Checks to find boundary pores in the selected pores
     if 'pore.boundary' in network.labels():
@@ -1081,7 +1081,10 @@ def subdivide(network, pores, shape, labels=[]):
         shift = network['pore.coords'][P] - networkspacing/2
         new_net['pore.coords'] += shift
         Pn = network.find_neighbor_pores(pores=P)
-        Pn_new_net = network.pores(labels)
+        try:
+            Pn_new_net = network.pores(labels)
+        except KeyError:
+            Pn_new_net = []
         Pn_old_net = Pn[~sp.in1d(Pn, Pn_new_net)]
         Np1 = network.Np
         extend(pore_coords=new_net['pore.coords'],
@@ -1615,7 +1618,7 @@ def generate_base_points(num_points, domain_size, density_map=None,
     >>> prob = spim.distance_transform_edt(im)
     >>> prob = prob / sp.amax(prob)  # Normalize between 0 and 1
     >>> pts = op.topotools.generate_base_points(num_points=50,
-    ...                                         domain_size=[2],
+    ...                                         domain_size=[1, 1, 1],
     ...                                         density_map=prob)
     >>> net = op.network.DelaunayVoronoiDual(points=pts, shape=[1, 1, 1])
     """

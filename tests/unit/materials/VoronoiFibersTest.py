@@ -1,4 +1,5 @@
 import openpnm as op
+from openpnm.topotools import reflect_base_points
 import openpnm.models.geometry as gm
 import scipy as sp
 
@@ -6,23 +7,21 @@ import scipy as sp
 class VoronoiTest:
 
     def setup_class(self):
-        bp = sp.array([[0.25, 0.25, 0.25], [0.25, 0.75, 0.25],
-                       [0.75, 0.25, 0.25], [0.75, 0.75, 0.25],
-                       [0.25, 0.25, 0.75], [0.25, 0.75, 0.75],
-                       [0.75, 0.25, 0.75], [0.75, 0.75, 0.75]])
+        bp = sp.array([[0.00, 0.00, 0.00], [0.00, 1.00, 0.00],
+                       [1.00, 0.00, 0.00], [1.00, 1.00, 0.00],
+                       [1.00, 0.00, 1.00], [0.00, 1.00, 1.00],
+                       [0.00, 0.00, 1.00], [1.00, 1.00, 1.00]])
         scale = 1e-4
-        sp.random.seed(1)
-        p = (sp.random.random([len(bp), 3])-0.5)/10000
-        bp += p
+        bp = reflect_base_points(bp*scale, [1, 1, 1])
         self.wrk = op.core.Workspace()
         self.net = op.materials.VoronoiFibers(fiber_rad=2e-6,
                                               resolution=1e-6,
-                                              shape=[scale, scale, scale],
-                                              points=bp*scale,
+                                              shape=[scale]*3,
+                                              points=bp,
                                               name='test')
         self.prj = self.net.project
-        self.del_geom = self.prj.geometries()['test_del']
-        self.vor_geom = self.prj.geometries()['test_vor']
+#        self.del_geom = self.prj.geometries()['test_del']
+#        self.vor_geom = self.prj.geometries()['test_vor']
 
     def test_props_all(self):
         a = self.del_geom.props()
@@ -43,7 +42,11 @@ class VoronoiTest:
 
 
 if __name__ == '__main__':
+
     t = VoronoiTest()
     t.setup_class()
-    t.test_props_all()
-    t.test_get_fibre_slice()
+    for item in t.__dir__():
+        if item.startswith('test'):
+            print('running test: '+item)
+            t.__getattribute__(item)()
+    self = t

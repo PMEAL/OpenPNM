@@ -61,11 +61,6 @@ class VoronoiFibers(DelaunayVoronoiDual):
 
         By default, a domain size of [1, 1, 1] is used.
 
-    trim_domain : Boolean
-        If true (default) all nodes outside the given ``shape`` are
-        removed, along with all their throats.  Setting this argument to False
-        will skip this removal if an alternative manual trimming is preferred.
-
     fiber_rad: float
         fiber radius to apply to Voronoi edges when calculating pore and throat
         sizes
@@ -87,14 +82,15 @@ class VoronoiFibers(DelaunayVoronoiDual):
     """
 
     def __init__(self, num_points=None, points=None, shape=[1, 1, 1],
-                 trim_domain=True, fiber_rad=None, resolution=1e-2, **kwargs):
+                 fiber_rad=None, resolution=1e-2, **kwargs):
         if len(shape) != 3:
             logger.exceptions(msg='Only rectangular shapes are supported')
         if fiber_rad is None:
             logger.exception(msg='Please initialize class with a fiber_rad')
         self.fiber_rad = fiber_rad
         self.resolution = resolution
-        super().__init__(num_points, points, shape, trim_domain, **kwargs)
+        super().__init__(num_points=num_points, points=points, shape=shape,
+                         **kwargs)
         DelaunayGeometry(network=self,
                          pores=self.pores('delaunay'),
                          throats=self.throats('delaunay'),
