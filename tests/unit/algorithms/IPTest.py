@@ -16,7 +16,7 @@ class IPTest:
                                               phase=self.water,
                                               geometry=self.geo)
         mod = op.models.physics.capillary_pressure.washburn
-        self.phys.add_model(propname='throat.capillary_pressure',
+        self.phys.add_model(propname='throat.entry_pressure',
                             model=mod)
 
     def test_set_inlets_overwrite(self):
