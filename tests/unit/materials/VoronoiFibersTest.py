@@ -7,12 +7,12 @@ import scipy as sp
 class VoronoiTest:
 
     def setup_class(self):
-        bp = sp.array([[0.00, 0.00, 0.00], [0.00, 1.00, 0.00],
-                       [1.00, 0.00, 0.00], [1.00, 1.00, 0.00],
-                       [1.00, 0.00, 1.00], [0.00, 1.00, 1.00],
-                       [0.00, 0.00, 1.00], [1.00, 1.00, 1.00]])
+        bp = sp.array([[0.25, 0.25, 0.25], [0.25, 0.75, 0.25],
+                       [0.75, 0.25, 0.25], [0.75, 0.75, 0.25],
+                       [0.75, 0.25, 0.75], [0.25, 0.75, 0.75],
+                       [0.25, 0.25, 0.75], [0.75, 0.75, 0.75]])
         scale = 1e-4
-        bp = reflect_base_points(bp*scale, [1, 1, 1])
+        bp = reflect_base_points(bp, [1, 1, 1])*scale
         self.wrk = op.core.Workspace()
         self.net = op.materials.VoronoiFibers(fiber_rad=2e-6,
                                               resolution=1e-6,
@@ -20,8 +20,8 @@ class VoronoiTest:
                                               points=bp,
                                               name='test')
         self.prj = self.net.project
-#        self.del_geom = self.prj.geometries()['test_del']
-#        self.vor_geom = self.prj.geometries()['test_vor']
+        self.del_geom = self.prj.geometries()['test_del']
+        self.vor_geom = self.prj.geometries()['test_vor']
 
     def test_props_all(self):
         a = self.del_geom.props()

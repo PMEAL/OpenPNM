@@ -16,6 +16,7 @@ from openpnm.utils.misc import unique_list
 import openpnm.utils.vertexops as vo
 from scipy.stats import itemfreq
 logger = logging.getLogger(__name__)
+from tqdm import tqdm
 
 
 class VoronoiFibers(DelaunayVoronoiDual):
@@ -91,6 +92,7 @@ class VoronoiFibers(DelaunayVoronoiDual):
         self.resolution = resolution
         super().__init__(num_points=num_points, points=points, shape=shape,
                          **kwargs)
+
         DelaunayGeometry(network=self,
                          pores=self.pores('delaunay'),
                          throats=self.throats('delaunay'),
