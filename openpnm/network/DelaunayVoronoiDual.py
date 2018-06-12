@@ -128,7 +128,7 @@ class DelaunayVoronoiDual(GenericNetwork):
             # Get voronoi vertices for current ridge
             row = vor.ridge_dict[ridge].copy()
             # Index Voronoi vertex numbers by number of delaunay points
-            row = [i + vor.npoints for i in row]
+            row = [i + vor.npoints for i in row if i > -1]
             # Make Voronoi-to-Delaunay connections
             [am.rows[i].extend(row) for i in ridge]
             # Make Voronoi-to-Voronoi connections

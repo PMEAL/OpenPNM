@@ -1,6 +1,7 @@
 import scipy as sp
 import scipy.ndimage as spim
 import scipy.sparse as sprs
+import warnings
 from scipy.sparse import csgraph
 from openpnm.core import logging, Workspace
 from openpnm.utils.misc import PrintableDict
@@ -377,7 +378,7 @@ def conns_to_am(conns, shape=None, force_triu=True, drop_diag=True,
     # Perform one last check on adjacency matrix
     missing = sp.where(sp.bincount(conns.flatten()) == 0)[0]
     if sp.size(missing) or sp.any(am.col.max() < (shape[0] - 1)):
-        print('WARNING: Some nodes are not connected to any bonds')
+        warnings.warn('Some nodes are not connected to any bonds')
     return am
 
 
