@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import openpnm as op
+import scipy as sp
 ws = op.Workspace()
 proj = ws.new_project()
 
