@@ -167,6 +167,8 @@ def find_connecting_bonds(sites, am):
 def apply_logic(neighbors, logic):
     if neighbors.ndim > 1:
         neighbors = sp.hstack(neighbors)
+    if neighbors.dtype == float:
+        neighbors = neighbors.astype(int)
     if logic == 'union':
         neighbors = sp.unique(neighbors)
     elif logic == 'exclusive_or':
@@ -497,9 +499,9 @@ def trim(network, pores=[], throats=[]):
             if key.split('.')[1] not in ['all']:
                 temp = item.pop(key)
                 if key.split('.')[0] == 'throat':
-                    item[key] = temp[Ts]
+                    item.update({key: temp[Ts]})
                 if key.split('.')[0] == 'pore':
-                    item[key] = temp[Ps]
+                    item.update({key: temp[Ps]})
 
     # Update the throat conn list using ids
     id_map = dict(zip(network['pore._id'], network.Ps))
@@ -782,7 +784,7 @@ def clone_pores(network, pores, labels=['clone'], mode='parents'):
 
 
 def stitch(network, donor, P_network, P_donor, method='nearest',
-           len_max=sp.inf, label_suffix=''):
+           len_max=sp.inf, len_min=0, label_suffix=''):
     r'''
     Stitches a second a network to the current network.
 
@@ -841,7 +843,7 @@ def stitch(network, donor, P_network, P_donor, method='nearest',
     '''
     # Ensure Networks have no associated objects yet
     if (len(network.project) > 1) or (len(donor.project) > 1):
-        raise Exception('Cannot stitch a Network with active sibling objects')
+        raise Exception('Cannot stitch a Network with active objects')
     network['throat.stitched'] = False
     # Get the initial number of pores and throats
     N_init = {}
@@ -853,10 +855,10 @@ def stitch(network, donor, P_network, P_donor, method='nearest',
         C1 = network['pore.coords'][P_network]
         C2 = donor['pore.coords'][P_donor]
         D = sp.spatial.distance.cdist(C1, C2)
-        [P1_ind, P2_ind] = sp.where(D <= len_max)
+        [P1_ind, P2_ind] = sp.where((D <= len_max) * (D >= len_min))
         conns = sp.vstack((P1[P1_ind], P2[P2_ind])).T
     else:
-        raise RuntimeError('<{}> method not supported'.format(method))
+        raise Exception('<{}> method not supported'.format(method))
 
     # Enter donor's pores into the Network
     extend(network=network, pore_coords=donor['pore.coords'])
