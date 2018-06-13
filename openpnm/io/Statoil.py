@@ -50,6 +50,7 @@ class Statoil(GenericIO):
 
         # ---------------------------------------------------------------------
         # Parse the link1 file
+        path = Path(path)
         filename = Path(path.resolve(), prefix+'_link1.dat')
         with open(filename, mode='r') as f:
             link1 = pd.read_table(filepath_or_buffer=f,
