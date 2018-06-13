@@ -2,8 +2,8 @@ import matplotlib.pyplot as plt
 import openpnm as op
 import scipy as sp
 ws = op.Workspace()
-proj = ws.new_project()
 
-pn = op.network.Bravais(shape=[6, 5, 4], mode='fcc', project=proj)
+bcc = op.network.Bravais(shape=[2, 3, 4], mode='bcc')
+fcc = op.network.Bravais(shape=[2, 3, 4], mode='fcc')
 
-op.io.VTK.save(network=pn, filename='sim_02')
+op.io.VTK.save(network=fcc, filename='sim_02')

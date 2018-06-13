@@ -49,6 +49,19 @@ class Bravais(GenericNetwork):
             Ts = self.find_neighbor_throats(pores=self.pores('face_sites'),
                                             mode='intersection')
             topotools.trim(network=self, throats=Ts)
+            # Deal with labels
+            Ps1 = self['pore.corner_sites']
+            Ps2 = self['pore.face_sites']
+            self.clear(mode='labels')
+            self['pore.corner_sites'] = Ps1
+            self['pore.face_sites'] = Ps2
+            Ts = self.find_neighbor_throats(pores=self.pores('corner_sites'),
+                                            mode='intersection')
+            self['throat.corner_to_corner'] = False
+            self['throat.corner_to_corner'][Ts] = True
+            Ts = self.find_neighbor_throats(pores=self.pores('face_sites'))
+            self['throat.corner_to_face'] = False
+            self['throat.corner_to_face'][Ts] = True
         elif mode == 'hcp':
             pass
         elif mode == 'sc':
