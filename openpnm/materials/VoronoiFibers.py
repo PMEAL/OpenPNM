@@ -16,7 +16,6 @@ from openpnm.utils.misc import unique_list
 import openpnm.utils.vertexops as vo
 from scipy.stats import itemfreq
 logger = logging.getLogger(__name__)
-from tqdm import tqdm
 
 
 class VoronoiFibers(DelaunayVoronoiDual):
