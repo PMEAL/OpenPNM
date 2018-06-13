@@ -783,6 +783,55 @@ def clone_pores(network, pores, labels=['clone'], mode='parents'):
     network._im.clear()
 
 
+def merge(network, donor=[]):
+    r"""
+    Combine multiple networks into one with
+
+    Parameters
+    ----------
+    network : OpenPNM Network Object
+        The network to which all the other networks should be added.
+
+    donor : OpenPNM Network Object or list of Objects
+        The network object(s) to add to the given network
+
+    Notes
+    -----
+    This methods does *not* attempt to stitch the networks topologically
+
+    See Also
+    --------
+    extend
+    trim
+    stitch
+
+    """
+    if type(donor) != list:
+        donor = [donor]
+    for net in donor:
+        network['pore.coords'] = sp.vstack((network['pore.coords'],
+                                            net['pore.coords']))
+        network['throat.conns'] = sp.vstack((network['throat.conns'],
+                                             net['throat.conns'] + network.Np))
+        network.update({'pore.all': sp.ones((sp.shape(network['pore.coords'])[0],), dtype=bool)})
+        network.update({'throat.all': sp.ones((sp.shape(network['throat.conns'])[0],), dtype=bool)})
+        for key in net.keys():
+            if key.split('.')[1] not in ['conns', 'coords', '_id', 'all']:
+                if key in network.keys():
+                    try:
+                        temp = sp.hstack((network[key], net[key]))
+                    except ValueError:
+                        temp = sp.vstack((network[key], net[key]))
+                    network[key] = temp
+                else:
+                    if net[key].dtype == bool:
+                        network[key] = False
+                        network[key][network.Np:] = net[key]
+                    else:
+                        print(key)
+                        raise Exception('Adding numerical vals not ready yet')
+
+
 def stitch(network, donor, P_network, P_donor, method='nearest',
            len_max=sp.inf, len_min=0, label_suffix=''):
     r'''
@@ -791,7 +840,7 @@ def stitch(network, donor, P_network, P_donor, method='nearest',
     Parameters
     ----------
     networK : OpenPNM Network Object
-        The Network that will to which to donor Network will be attached
+        The Network to which to donor Network will be attached
 
     donor : OpenPNM Network Object
         The Network to stitch on to the current Network
@@ -855,7 +904,7 @@ def stitch(network, donor, P_network, P_donor, method='nearest',
         C1 = network['pore.coords'][P_network]
         C2 = donor['pore.coords'][P_donor]
         D = sp.spatial.distance.cdist(C1, C2)
-        [P1_ind, P2_ind] = sp.where((D <= len_max) * (D >= len_min))
+        [P1_ind, P2_ind] = sp.where(D <= len_max)
         conns = sp.vstack((P1[P1_ind], P2[P2_ind])).T
     else:
         raise Exception('<{}> method not supported'.format(method))

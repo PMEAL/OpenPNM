@@ -27,28 +27,41 @@ class Bravais(GenericNetwork):
             topotools.trim(network=self, pores=net.pores(['left', 'right',
                                                           'front', 'back',
                                                           'top', 'bottom']))
+            self['pore.coords'] -= 0.5
+            # Deal with labels
+            Ps1 = self['pore.secondary']
             self.clear(mode='labels')
+            self['pore.corner_sites'] = Ps1
+
         elif mode == 'fcc':
             shape = np.array(shape)
+            # Create base cubic network of corner sites
             net1 = Cubic(shape=shape)
             net1['pore.corner_sites'] = True
+            # Create 3 networks to become face sites
             net2 = Cubic(shape=shape - [1, 1, 0])
-            net2['pore.coords'] += np.array([0.5, 0.5, 0])
             net3 = Cubic(shape=shape - [1, 0, 1])
-            net3['pore.coords'] += np.array([0.5, 0, 0.5])
             net4 = Cubic(shape=shape - [0, 1, 1])
+            net2['pore.coords'] += np.array([0.5, 0.5, 0])
+            net3['pore.coords'] += np.array([0.5, 0, 0.5])
             net4['pore.coords'] += np.array([0, 0.5, 0.5])
-            topotools.extend(network=net2,
-                             pore_coords=net3['pore.coords'])
-            topotools.extend(network=net2,
-                             pore_coords=net4['pore.coords'])
             net2['pore.face_sites'] = True
-            topotools.stitch(net1, net2, net1.Ps, net2.Ps, len_min=.7,
-                             len_max=.75)
+            net3['pore.face_sites'] = True
+            net4['pore.face_sites'] = True
+            # Remove throats from net2 (trim doesn't work when removing ALL)
+            for n in [net2, net3, net4]:
+                n.clear(element='throat', mode='all')
+                n.update({'throat.all': np.array([], dtype=bool)})
+                n.update({'throat.conns': np.ndarray([0, 2], dtype=bool)})
+            # Join networks 2, 3 and 4 into one with all face sites
+            topotools.stitch(net2, net3, net2.Ps, net3.Ps,
+                             len_min=0.70, len_max=0.75)
+            topotools.stitch(net2, net4, net2.Ps, net4.Ps,
+                             len_min=0.70, len_max=0.75)
+            # Join face sites network with the corner sites network
+            topotools.stitch(net1, net2, net1.Ps, net2.Ps,
+                             len_min=0.70, len_max=0.75)
             self.update(net1)
-            Ts = self.find_neighbor_throats(pores=self.pores('face_sites'),
-                                            mode='intersection')
-            topotools.trim(network=self, throats=Ts)
             # Deal with labels
             Ps1 = self['pore.corner_sites']
             Ps2 = self['pore.face_sites']
