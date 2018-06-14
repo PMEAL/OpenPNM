@@ -17,11 +17,12 @@ class Bravais(GenericNetwork):
     """
     def __init__(self, shape, mode, spacing=1, **kwargs):
         super().__init__(**kwargs)
+        shape = np.array(shape)
+        if np.any(shape < 2):
+            raise Exception('Bravais lattice networks must have at least 2 '
+                            'pores in all directions')
         if mode == 'bcc':
-            shape = np.array(shape) + 1
-            if np.any(shape < 2):
-                raise Exception('The bcc network must have at least 2 pores' +
-                                'in all directions')
+            shape += 1
             net = CubicDual(shape=shape, spacing=spacing)
             self.update(net)
             topotools.trim(network=self, pores=net.pores(['left', 'right',
@@ -32,6 +33,19 @@ class Bravais(GenericNetwork):
             Ps1 = self['pore.secondary']
             self.clear(mode='labels')
             self['pore.corner_sites'] = Ps1
+            self['pore.body_sites'] = ~Ps1
+            Ts = self.find_neighbor_throats(pores=self.pores('body_sites'),
+                                            mode='exclusive_or')
+            self['throat.corner_to_body'] = False
+            self['throat.corner_to_body'][Ts] = True
+            Ts = self.find_neighbor_throats(pores=self.pores('corner_sites'),
+                                            mode='intersection')
+            self['throat.corner_to_corner'] = False
+            self['throat.corner_to_corner'][Ts] = True
+            Ts = self.find_neighbor_throats(pores=self.pores('body_sites'),
+                                            mode='intersection')
+            self['throat.body_to_body'] = False
+            self['throat.body_to_body'][Ts] = True
 
         elif mode == 'fcc':
             shape = np.array(shape)
@@ -76,9 +90,9 @@ class Bravais(GenericNetwork):
             self['throat.corner_to_face'] = False
             self['throat.corner_to_face'][Ts] = True
         elif mode == 'hcp':
-            pass
+            raise Exception('hcp is not implemented yet')
         elif mode == 'sc':
-            net = CubicDual(shape=shape, spacing=spacing)
+            net = Cubic(shape=shape, spacing=spacing, **kwargs)
             self.update(net)
         else:
             raise Exception('Unrecognized lattice type: ' + mode)

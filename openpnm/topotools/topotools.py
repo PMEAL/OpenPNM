@@ -824,11 +824,12 @@ def merge(network, donor=[]):
                         temp = sp.vstack((network[key], net[key]))
                     network[key] = temp
                 else:
+                    warnings.warn(key + ' not on receiving network...adding')
                     if net[key].dtype == bool:
                         network[key] = False
-                        network[key][network.Np:] = net[key]
+                        s = sp.shape(net[key])[0]
+                        network[key][-s:] = net[key]
                     else:
-                        print(key)
                         raise Exception('Adding numerical vals not ready yet')
 
 
