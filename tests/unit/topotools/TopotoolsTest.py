@@ -1,5 +1,6 @@
 import openpnm as op
 import numpy as np
+import pytest
 from numpy.testing import assert_approx_equal
 from openpnm import topotools
 
@@ -104,6 +105,20 @@ class TopotoolsTest:
                               mode='isolated')
         assert net.Np == 150
         assert net.Nt == 300
+
+    def test_merge_networks(self):
+        net1 = op.network.Cubic(shape=[3, 3, 3])
+        net2 = op.network.Cubic(shape=[3, 3, 3])
+        net1['pore.test1'] = True
+        net1['pore.test2'] = 10
+        net2['pore.test3'] = True
+        net2['pore.test4'] = 10.0
+        with pytest.warns(UserWarning):
+            topotools.merge(net1, net2)
+        assert np.sum(net1['pore.test1']) == 27
+        assert np.sum(net1['pore.test3']) == 27
+        assert np.sum(net1['pore.test2']) == 270
+        assert np.sum(np.isnan(net1['pore.test4'])) == 27
 
 
 if __name__ == '__main__':

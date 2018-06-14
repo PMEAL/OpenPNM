@@ -783,9 +783,10 @@ def clone_pores(network, pores, labels=['clone'], mode='parents'):
     network._im.clear()
 
 
-def merge(network, donor=[]):
+def merge_networks(network, donor=[]):
     r"""
-    Combine multiple networks into one with
+    Combine multiple networks into one without doing any topological
+    manipulations (such as stiching nearby pores to each other).
 
     Parameters
     ----------
@@ -827,10 +828,10 @@ def merge(network, donor=[]):
                     warnings.warn(key + ' not on receiving network...adding')
                     if net[key].dtype == bool:
                         network[key] = False
-                        s = sp.shape(net[key])[0]
-                        network[key][-s:] = net[key]
                     else:
-                        raise Exception('Adding numerical vals not ready yet')
+                        network[key] = sp.nan
+                    s = sp.shape(net[key])[0]
+                    network[key][-s:] = net[key]
 
 
 def stitch(network, donor, P_network, P_donor, method='nearest',
