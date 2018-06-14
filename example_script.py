@@ -8,5 +8,3 @@ fcc['pore.coords'] += [3, 0, 0]
 
 topotools.merge_networks(fcc, bcc)
 op.io.VTK.save(network=fcc, filename='sim_02')
-
-
