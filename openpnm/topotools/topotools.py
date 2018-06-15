@@ -818,6 +818,7 @@ def merge_networks(network, donor=[]):
     for key in set(network.keys()).union(set(donor.keys())):
         if key.split('.')[1] not in ['conns', 'coords', '_id', 'all']:
             if key in network.keys():
+                pop_flag = False
                 if key not in donor.keys():
                     logger.debug('Adding ' + key + ' to donor')
                     # If key not on donor add it first
@@ -825,12 +826,15 @@ def merge_networks(network, donor=[]):
                         donor[key] = False
                     else:
                         donor[key] = sp.nan
+                    pop_flag = True
                 # Then merge it with existing array on network
                 try:
                     temp = sp.hstack((network[key], donor[key]))
                 except ValueError:
                     temp = sp.vstack((network[key], donor[key]))
                 network[key] = temp
+                if pop_flag:
+                    donor.pop(key, None)
             else:
                 # If key not on network add it first
                 logger.debug('Adding ' + key + ' to network')

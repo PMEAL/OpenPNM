@@ -94,6 +94,9 @@ class Bravais(GenericNetwork):
         elif mode == 'sc':
             net = Cubic(shape=shape, spacing=spacing, **kwargs)
             self.update(net)
+            self.clear(mode='labels')
+            self['pore.corner_sites'] = True
+            self['throat.corner_to_corner'] = True
         else:
             raise Exception('Unrecognized lattice type: ' + mode)
 
