@@ -113,12 +113,11 @@ class TopotoolsTest:
         net1['pore.test2'] = 10
         net2['pore.test3'] = True
         net2['pore.test4'] = 10.0
-        with pytest.warns(UserWarning):
-            topotools.merge_networks(net1, net2)
+        topotools.merge_networks(net1, net2)
         assert np.sum(net1['pore.test1']) == 27
         assert np.sum(net1['pore.test3']) == 27
-        assert np.sum(net1['pore.test2']) == 270
-        assert np.sum(np.isnan(net1['pore.test4'])) == 27
+        assert np.sum(net1['pore.test2'][:27]) == 270
+        assert np.sum(net1['pore.test4'][27:]) == 270
 
 
 if __name__ == '__main__':
