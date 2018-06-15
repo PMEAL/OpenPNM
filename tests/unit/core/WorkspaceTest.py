@@ -2,6 +2,7 @@ import openpnm as op
 import scipy as sp
 import pytest
 import os
+import pickle
 
 
 class WorkspaceTest:
@@ -61,6 +62,39 @@ class WorkspaceTest:
         assert 'test_proj' in self.ws.keys()
         self.ws.clear()
         os.remove('test_proj.pnm')
+
+    def test_save_and_load_project_from_pickled_list(self):
+        proj = self.ws.new_project()
+        pn = op.network.Cubic(shape=[3, 3, 3], project=proj)
+        air = op.phases.Air(network=pn)
+        pickle.dump([pn, air], open('test.pnm', 'wb'))
+        self.ws.clear()
+        self.ws.load_project('test.pnm')
+        self.ws.clear()
+        os.remove('test.pnm')
+
+    def test_save_and_load_project_from_pickled_object(self):
+        a = sp.ones((10, ))
+        pickle.dump(a, open('single_object.pnm', 'wb'))
+        self.ws.clear()
+        with pytest.warns(UserWarning):
+            self.ws.load_project('single_object.pnm')
+        b = {'test': a}
+        pickle.dump(b, open('single_object.pnm', 'wb'))
+        self.ws.clear()
+        with pytest.warns(UserWarning):
+            self.ws.load_project('single_object.pnm')
+        os.remove('single_object.pnm')
+
+    def test_load_project_with_name_conflict(self):
+        self.ws.clear()
+        proj = self.ws.new_project(name='test')
+        pn = op.network.Cubic(shape=[3, 3, 3], project=proj)
+        op.phases.Air(network=pn)
+        self.ws.save_project(proj, filename='test.pnm')
+        with pytest.warns(UserWarning):
+            self.ws.load_project('test.pnm')
+        os.remove('test.pnm')
 
     def test_save_and_load_workspace(self):
         proj1 = self.ws.new_project('test_proj_1')

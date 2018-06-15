@@ -14,27 +14,7 @@
 Overview of OpenPNM
 ###############################################################################
 
-*OpenPNM* is an open source project aiming to provide porous media researchers with a ready-made framework for performing a wide range of pore network simulations.  The main features and capabilities of OpenPNM are:
-
-.. list-table::
-
-    * - **Defines a universal means of representing any network topology based on a sparse representation of the adjacency matrix**
-        - Includes network generators for creating cubic or random networks with arbitrary connectivity
-    * - **Provides a set of tools for querying, inspecting, and manipulating topology**
-        - Including finding neighboring pores, labeling specific locations, adding or removing pores and throats, joining networks, subdividing and merging pores to create multiscale models, and much more
-    * - **Stores pore and throat property data in vectorized format**
-        - Allows for fast calculations even on large networks
-        - Supports the familiar and advanced array access features such as direct indexing, slicing, Boolean masking, etc.
-    * - **A mechanism for calculating the pore-scale properties that define the geometrical (i.e. pore radius), thermophysical (i.e. viscosity), and physics (i.e. hydraulic conductance) properties of the simulation**
-        - The interdependence of some properties on other properties is naturally included so values can be regenerated when changes occur (i.e. viscosity can be updated when temperature changed)
-        - This mechanism was designed to allow users to easily create new customized pore-scale models suitable for their specific domain
-        - A wide assortment of pore-scale transport parameter, pore size calculations, and thermophysical property models are included
-    * - **A suite of algorithms for performing network simulations**
-        - Including invasion percolation, capillary drainage, mass diffusion, permeability and so on.
-        - All transport algorithms can be run transiently and with multiple reactions
-    * - **Supports saving, loading, importing and exporting data in numerous formats**
-        -  Allows importing networks generated or extracted by other codes, as well as exporting data for post-processing and visualization
-        - Saving and loading of simulations allows for batch processing of simulations to be analyzed at a later point
+*OpenPNM* is an open source project aiming to provide porous media researchers with a ready-made framework for performing a wide range of pore network simulations.
 
 ===============================================================================
 Installation
@@ -60,18 +40,14 @@ The following code block illustrates how to use OpenPNM to perform a mercury int
 
 .. code-block:: python
 
-    >>> import OpenPNM as op
-    >>> pn = op.Network.Cubic(shape=[10, 10, 10], spacing=0.0001)
-    >>> geo = op.Geometry.Stick_and_Ball(network=pn, pores=pn.Ps,
-    ...                                  throats=pn.Ts)
-    >>> Hg = op.Phases.Mercury(network=pn)
-    >>> Air = op.Phases.Air(network=pn)
-    >>> phys = op.Physics.Standard(network=pn, phase=Hg, pores=pn.Ps,
-    ...                            throats=pn.Ts)
-    >>> MIP = op.Algorithms.Drainage(network=pn)
-    >>> MIP.setup(invading_phase=Hg, defending_phase=Air)
-    >>> MIP.set_inlets(pores=pn.pores(['top', 'bottom']))
-    >>> MIP.run()
+    >>> import openpnm as op
+    >>> pn = op.network.Cubic(shape=[10, 10, 10], spacing=0.0001)
+    >>> geo = op.geometry.StickAndBall(network=pn, pores=pn.Ps,
+    ...                                throats=pn.Ts)
+    >>> Hg = op.phases.Mercury(network=pn)
+    >>> Air = op.phases.Air(network=pn)
+    >>> phys = op.physics.Standard(network=pn, phase=Hg, geometry=geo)
+
 
 The network can be visualized in `Paraview <http://www.paraview.org>`_ giving the following:
 

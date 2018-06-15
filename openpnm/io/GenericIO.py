@@ -62,10 +62,9 @@ class GenericIO():
         return network
 
     @classmethod
-    def _parse_filename(cls, filename, path='', ext=''):
-        p = Path(path)
+    def _parse_filename(cls, filename, ext=''):
+        p = Path(filename)
         p = p.resolve()
-        p = p.joinpath(filename)
         # If extension not part of filename
         if p.suffix == '':
             try:

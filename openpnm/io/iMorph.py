@@ -1,5 +1,6 @@
 import os as os
 import scipy as sp
+from pathlib import Path
 from openpnm.core import logging
 from openpnm.io import GenericIO
 from openpnm.network import GenericNetwork
@@ -62,6 +63,7 @@ class iMorph(GenericIO):
         the network and a geometry object.
         """
         #
+        path = Path(path)
         node_file = os.path.join(path.resolve(), node_file)
         graph_file = os.path.join(path.resolve(), graph_file)
         # parsing the nodes file

@@ -56,7 +56,8 @@ class GenericIOTest:
 
     def test_parse_filename_dot_extension_with_path(self, tmpdir):
         filename = 'test'+str(self.count())+'.ext'
-        fname = op.io.GenericIO._parse_filename(filename=filename, path=tmpdir)
+        filename = os.path.join(tmpdir.dirname, filename)
+        fname = op.io.GenericIO._parse_filename(filename=filename)
         self.create_write_and_close_file(fname)
 
     def test_parse_filename_path_in_filename_dot_extension(self, tmpdir):
