@@ -34,7 +34,7 @@ class BravaisTest:
             op.network.Bravais(shape=[3, 3, 3], mode='hcp')
 
     def test_generation_bad_mode(self):
-        with pytest.raises(Exception):
+        with pytest.raises(NotImplemented):
             op.network.Bravais(shape=[3, 3, 3], mode='bad_mode')
 
     def test_generation_sc(self):

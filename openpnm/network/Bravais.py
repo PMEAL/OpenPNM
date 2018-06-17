@@ -1,14 +1,15 @@
 """
 ===============================================================================
-Bravais:
+Bravais: Cubic lattices with crystallographic structures like fcc and bcc
 ===============================================================================
 
 """
-from openpnm.network import GenericNetwork, Cubic, CubicDual
+from openpnm.network import GenericNetwork, Cubic
 from openpnm import topotools
-from openpnm.core import logging
+from openpnm.core import logging, Workspace
 import numpy as np
 logger = logging.getLogger(__name__)
+ws = Workspace()
 
 
 class Bravais(GenericNetwork):
@@ -22,18 +23,22 @@ class Bravais(GenericNetwork):
             raise Exception('Bravais lattice networks must have at least 2 '
                             'pores in all directions')
         if mode == 'bcc':
-            shape += 1
-            net = CubicDual(shape=shape, spacing=spacing)
-            self.update(net)
-            topotools.trim(network=self, pores=net.pores(['left', 'right',
-                                                          'front', 'back',
-                                                          'top', 'bottom']))
-            self['pore.coords'] -= 0.5
+            # Make a basic cubic for the coner pores
+            net1 = Cubic(shape=shape)
+            net1['pore.net1'] = True
+            # Create a smaller cubic for the body pores, and shift it
+            net2 = Cubic(shape=shape-1)
+            net2['pore.net2'] = True
+            net2['pore.coords'] += 0.5
+            # Stitch them together
+            topotools.stitch(net1, net2, net1.Ps, net2.Ps, len_max=0.99)
+            self.update(net1)
+
             # Deal with labels
-            Ps1 = self['pore.secondary']
+            Ps1 = self['pore.net2']
             self.clear(mode='labels')
-            self['pore.corner_sites'] = Ps1
-            self['pore.body_sites'] = ~Ps1
+            self['pore.corner_sites'] = ~Ps1
+            self['pore.body_sites'] = Ps1
             Ts = self.find_neighbor_throats(pores=self.pores('body_sites'),
                                             mode='exclusive_or')
             self['throat.corner_to_body'] = False
@@ -90,7 +95,7 @@ class Bravais(GenericNetwork):
             self['throat.corner_to_face'] = False
             self['throat.corner_to_face'][Ts] = True
         elif mode == 'hcp':
-            raise Exception('hcp is not implemented yet')
+            raise NotImplemented('hcp is not implemented yet')
         elif mode == 'sc':
             net = Cubic(shape=shape, spacing=spacing, **kwargs)
             self.update(net)
