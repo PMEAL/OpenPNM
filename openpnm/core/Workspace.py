@@ -20,8 +20,15 @@ def singleton(cls):
     return getinstance
 
 
-@singleton
+#@singleton
 class Workspace(dict):
+
+    __instance__ = None
+
+    def __new__(cls, *args, **kwargs):
+        if Workspace.__instance__ is None:
+            Workspace.__instance__ = dict.__new__(cls)
+        return Workspace.__instance__
 
     def __init__(self):
         super().__init__()

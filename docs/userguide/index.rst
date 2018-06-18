@@ -1,4 +1,3 @@
-.. _userguide_index:
 
 ###############################################################################
 **User Guide**
@@ -7,6 +6,11 @@
 Contents:
 
 .. toctree::
-   :maxdepth: 2
+    :maxdepth: 2
 
-   reference/index.rst
+    overall_design.rst
+    data_storage.rst
+    topology.rst
+    workspace_and_project.rst
+    models.rst
+    customizing.rst

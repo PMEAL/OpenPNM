@@ -9,5 +9,10 @@ Contents:
 .. toctree::
    :maxdepth: 3
 
-   core.rst
+   core/index.rst
    network/index.rst
+   geometry/index.rst
+   phases/index.rst
+   physics/index.rst
+   algorithms/index.rst
+   topotools/index.rst

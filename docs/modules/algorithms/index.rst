@@ -1,18 +1,10 @@
-.. _network_index:
+.. _algorithms_index:
 
 ================================================================================
-Network
+Algorithms
 ================================================================================
-
-Contents:
 
 .. toctree::
    :maxdepth: 3
 
-   generic.rst
-   cubic.rst
-   cubic_dual.rst
-   voronoi.rst
-   delaunay.rst
-   gabriel.rst
-   delaunay_voronoi_dual.rst
+   generic_transport.rst

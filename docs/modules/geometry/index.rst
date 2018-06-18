@@ -1,7 +1,7 @@
-.. _network_index:
+.. _geometry_index:
 
 ================================================================================
-Network
+**Geometry**
 ================================================================================
 
 Contents:
@@ -9,10 +9,5 @@ Contents:
 .. toctree::
    :maxdepth: 3
 
-   generic.rst
-   cubic.rst
-   cubic_dual.rst
-   voronoi.rst
-   delaunay.rst
-   gabriel.rst
-   delaunay_voronoi_dual.rst
+   generic_geometry.rst
+   stick_and_ball.rst

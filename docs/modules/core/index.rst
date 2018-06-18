@@ -1,11 +1,14 @@
-.. _module_core:
+.. _core_index:
 
 ================================================================================
-Core
+**Core**
 ================================================================================
 
-The ``core`` module contains several classes
+Contents:
 
-.. autoclass:: openpnm.core.Base
-   :members:
-   :show-inheritance:
+.. toctree::
+   :maxdepth: 3
+
+   base.rst
+   project.rst
+   workspace.rst

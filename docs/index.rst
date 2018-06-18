@@ -20,9 +20,9 @@ Documentation
 
     installation.rst
     quick_start.rst
+    examples.rst
     userguide/index.rst
     modules/index.rst
-
 
 ===============================================================================
 Example Usage

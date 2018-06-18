@@ -1,7 +1,7 @@
-.. _network_index:
+.. _phases_index:
 
 ================================================================================
-Network
+**Phases**
 ================================================================================
 
 Contents:
@@ -9,10 +9,7 @@ Contents:
 .. toctree::
    :maxdepth: 3
 
-   generic.rst
-   cubic.rst
-   cubic_dual.rst
-   voronoi.rst
-   delaunay.rst
-   gabriel.rst
-   delaunay_voronoi_dual.rst
+   generic_phase.rst
+   air.rst
+   water.rst
+   mercury.rst

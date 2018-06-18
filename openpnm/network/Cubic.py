@@ -41,9 +41,13 @@ class Cubic(GenericNetwork):
     Examples
     --------
     >>> import openpnm as op
-    >>> pn = op.network.Cubic(shape=[3,4,5])
+    >>> pn = op.network.Cubic(shape=[5, 5, 5])
     >>> pn.Np
-    60
+    125
+
+    .. image:: /modules/network/88d00ec3-5494-46f9-8262-cdb0def87702.png
+        :width: 500px
+        :align: center
 
     """
     def __init__(self, shape, spacing=[1, 1, 1], connectivity=6, name=None,
