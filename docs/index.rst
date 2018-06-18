@@ -16,10 +16,13 @@ Documentation
 ===============================================================================
 
 .. toctree::
-    :maxdepth: 3
+    :maxdepth: 10
 
+    installation.rst
+    quick_start.rst
     userguide/index.rst
-    docOpenPNM.rst
+    modules/index.rst
+
 
 ===============================================================================
 Example Usage

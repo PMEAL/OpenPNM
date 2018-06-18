@@ -4,7 +4,7 @@
 Data Storage
 ###############################################################################
 
-Each OpenPNM Core object is a Python *dictionary* which is similar to a structured variable or *struct* in other languages.  This allows data to be stored and accessed by name, with a syntax like ``network['pore.diameter']``.   Inside each *dict* are stored numerous arrays containing pore or throat data corresponding to the *key* (i.e. ``'pore.diameter'`` values).
+Each OpenPNM object is a Python *dictionary* which allows data to be stored and accessed by name, with a syntax like ``network['pore.diameter']``.   Inside each *dict* are stored numerous arrays containing pore or throat data corresponding to the *key* (i.e. ``'pore.diameter'`` values).
 
 All pore and throat data are stored in arrays of either *Np* or *Nt* length representing the number of pores and throats on the object, respectively.  This means that each pore (or throat) has a number that is implicitly indicated by it's location in the arrays.  All properties for pore *i* or throat *j* are stored in the array at the element *i* or *j*.  Thus, the diameter for pore 15 is stored in the ``'pore.diameter'`` array in element 15, and the length of throat 32 is stored in the ``'throat.length'`` array at element 32.  This array-based approach is ideal when using the Numpy and Scipy libraries which are designed for elementwise, vectorized programming.  For instance, the volume of each throats can be found simultaneously using ``T_vol = 3.1415*(network['throat.radius']**2) * network['throat.length']``.  ``T_vol`` will be an *Nt*-long array of values, assuming ``'throat.length'`` and ``'throat.radius'`` were also *Nt*-long.
 

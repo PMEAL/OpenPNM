@@ -1,12 +1,13 @@
-.. _userguide_index:
+.. _modules_index:
 
 ###############################################################################
-**User Guide**
+**Module API**
 ###############################################################################
 
 Contents:
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
 
-   reference/index.rst
+   core.rst
+   network/index.rst

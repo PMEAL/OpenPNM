@@ -15,6 +15,29 @@ logger = logging.getLogger(__name__)
 
 class Delaunay(GenericNetwork):
     r"""
+    Generates a random network by performing at Delaunay Triangulation or
+    tessellation on a given set of input points.
+
+    Parameters
+    ----------
+    num_points : scalar
+        The number of points to place in the domain, which will become the
+        pore centers after the tessellation is performed.  This value is
+        ignored if ``points`` are given.
+
+    points : array_like
+        An array of coordinates indicating the [x, y, z] locations of each
+        point to use in the tessellation.
+
+    Notes
+    -----
+    This class always performs the tessellation on the set of points, but
+    trims any points that lie outside the given domain ``shape``.
+
+    Examples
+    --------
+    >>> import openpnm as op
+    >>> gn = op.network.Delaunay(num_points=50, shape=[1, 1, 0])
 
 
     """
