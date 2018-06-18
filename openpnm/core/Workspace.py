@@ -7,21 +7,18 @@ from openpnm.utils import SettingsDict
 logger = logging.getLogger()
 
 
-def singleton(cls):
-    r'''
-    This is based on PEP318
-    '''
-    instances = {}
-
-    def getinstance():
-        if cls not in instances:
-            instances[cls] = cls()
-        return instances[cls]
-    return getinstance
-
-
-#@singleton
 class Workspace(dict):
+    r"""
+    The **Workspace** object provides the highest level of adminstrative
+    control over active OpenPNM sessions.  It is a 1`dictionary`` that stores a
+    list of all open **Projects** by name.
+
+    Methods
+    -------
+    save_workspace :
+
+
+    """
 
     __instance__ = None
 

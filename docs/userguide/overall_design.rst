@@ -13,8 +13,3 @@ Base
 The OpenPNM **Base** class, from which all other main OpenPNM objects descend, is a subclass of the Python Dictionary or ``dict``.
 
 In addition to the methods included on every ``dict`` (e.g. ``pop``, ``keys``, etc), the OpenPNM **Base** class has quite a few additional methods for working specifically with OpenPNM data.
-
-.. autosummary::
-   :toctree: _overall_design
-
-   openpnm.core.Base

@@ -45,7 +45,7 @@ class Cubic(GenericNetwork):
     >>> pn.Np
     125
 
-    .. image:: /modules/network/88d00ec3-5494-46f9-8262-cdb0def87702.png
+    .. image:: /static/images/88d00ec3-5494-46f9-8262-cdb0def87702.png
         :width: 500px
         :align: center
 
