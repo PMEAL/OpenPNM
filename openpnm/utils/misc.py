@@ -215,6 +215,38 @@ def sanitize_dict(input_dict):
     return plain_dict
 
 
+def models_to_table(obj):
+    r"""
+
+    """
+    row = '+' + '-'*3 + '+' + '-'*22 + '+' + '-'*18 + '+' + '-'*26 + '+'
+    fmt = '{0:1s} {1:1s} {2:1s} {3:20s} {4:1s} {5:16s} {6:1s} {7:24s} {8:1s}'
+    lines = []
+    lines.append(row)
+    lines.append(fmt.format('|', '#', '|', 'Property Name', '|', 'Parameter',
+                            '|', 'Value', '|'))
+    lines.append(row.replace('-', '='))
+    for i, item in enumerate(obj.models.keys()):
+        prop = item
+        if len(prop) > 20:
+            prop = item[:17] + "..."
+        temp = obj.models[item].copy()
+        model = str(temp.pop('model')).split(' ')[1]
+        lines.append(fmt.format('|', str(i+1), '|', prop, '|', 'model:',
+                                '|', model, '|'))
+        lines.append(row)
+        for param in temp.keys():
+            p1 = param
+            if len(p1) > 16:
+                p1 = p1[:14] + '...'
+            p2 = str(temp[param])
+            if len(p2) > 24:
+                p2 = p2[:21] + '...'
+            lines.append(fmt.format('|', '', '|', '', '|', p1, '|', p2, '|'))
+            lines.append(row)
+    return '\n'.join(lines)
+
+
 def conduit_lengths(network, throats=None, mode='pore'):
     r"""
     Return the respective lengths of the conduit components defined by the throat
