@@ -44,4 +44,5 @@ The following illustrates the usage of the Workspace and Project objects.
     []
     >>> # Now create a network and associate it with proj1
     >>> pn = op.network.Cubic(shape=[3, 3, 3], project=proj1)
-    >>> proj1
+    >>> pn in proj1
+    True

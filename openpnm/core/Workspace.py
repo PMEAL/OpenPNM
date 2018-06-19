@@ -7,16 +7,18 @@ from openpnm.utils import SettingsDict
 logger = logging.getLogger()
 
 
+class SettingsDict(SettingsDict):
+    def __setitem__(self, key, value):
+        if key == 'loglevel':
+            logger.setLevel(value)
+        super().__setitem__(key, value)
+
+
 class Workspace(dict):
     r"""
     The **Workspace** object provides the highest level of adminstrative
-    control over active OpenPNM sessions.  It is a 1`dictionary`` that stores a
-    list of all open **Projects** by name.
-
-    Methods
-    -------
-    save_workspace :
-
+    control over active OpenPNM sessions.  It is a `dictionary`` that stores
+    a list of all open **Projects** by name.
 
     """
 
@@ -39,14 +41,6 @@ class Workspace(dict):
         if project in self.values():
             self.pop(project.name, None)
         super().__setitem__(name, project)
-
-    def _setloglevel(self, level):
-        logger.setLevel(level)
-
-    def _getloglevel(self):
-        return 'Log level is currently set to: ' + str(logger.level)
-
-    loglevel = property(fget=_getloglevel, fset=_setloglevel)
 
     def _create_console_handles(self, project):
         r"""

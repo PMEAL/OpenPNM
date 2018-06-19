@@ -94,31 +94,3 @@ The *union* is a single set of unique values obtained by combining the two sets,
 * ``'union'`` returns a list of unique locations neighboring any input pores
 * ``'intersection'`` returns a list of locations that are neighbors to at least two inputs pores
 * ``'exclusive_or'`` returns a list of locations that are only neighbors to one of the input pores
-
--------------------------------------------------------------------------------
-Finding the Throat Between Two Pores, and Pores Connected to a Throat
--------------------------------------------------------------------------------
-
-Given a throat or list of throats, it's possible to find all the pores they connect:
-
-.. code-block:: python
-
->>> pn.find_connected_pores(throats=[1, 2, 3])
-array([[1, 2],
-       [2, 3],
-       [3, 4]])
->>> pn.find_connected_pores(throats=[1, 2, 3], flatten=True)
-array([1, 2, 3, 4])
-
-The first call above returns a *n-by-2* array of pores found on each end of the given throats.  The order of the results corresponds to the order of the received throats.  Note that when ``flatten`` is **True** in the second call, the method returns a single array containing all the unique values of the pores which are connected.  This function also has a ``mode`` argument that applies *set-theory* type filtering of the results, but this only applies when ``flatten`` is **True**.
-
-It is also possible to find the throat that connect given pairs of pores:
-
-.. code-block:: python
-
-    >>> pn.find_connecting_throat(P1=0, P2=1)
-    [[0]]
-    >>> pn.find_connecting_throat(P1=[0, 1, 2], P2=[1, 2, 5])
-    [[0], [1], []]
-
-When two lists of pores (``P1`` and ``P2``) are received, the returned is a list of throat numbers in the same order as the received list.  In the second call above throat 0 connects pores 0 & 1, throat 2 connects pores 1 & 2, and pores 2 and 5 are not directly connected hence an empty array is returned.

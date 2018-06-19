@@ -847,7 +847,7 @@ def subdivide(network, pores, shape, labels=[]):
         div = sp.array(shape, ndmin=1)
         single_dim = None
     else:
-        single_dim = sp.where(sp.array(network._shape) == 1)[0]
+        single_dim = sp.where(sp.array(network.shape) == 1)[0]
         if sp.size(single_dim) == 0:
             single_dim = None
         if sp.size(shape) == 3:
@@ -859,8 +859,7 @@ def subdivide(network, pores, shape, labels=[]):
             else:
                 dim = single_dim
             div[dim] = 1
-            div[-sp.array(div, ndmin=1, dtype=bool)] = sp.array(shape,
-                                                                ndmin=1)
+            div[-sp.array(div, ndmin=1, dtype=bool)] = sp.array(shape, ndmin=1)
 
     # Creating small network and handling labels
     networkspacing = network.spacing

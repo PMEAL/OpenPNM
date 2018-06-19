@@ -15,8 +15,8 @@ logger = logging.getLogger(__name__)
 
 class Delaunay(GenericNetwork):
     r"""
-    Generates a random network by performing at Delaunay Triangulation or
-    tessellation on a given set of input points.
+    Generates a random network by performing at Delaunay triangulation (aka
+    tessellation) on a set of base points.
 
     Parameters
     ----------
@@ -27,12 +27,35 @@ class Delaunay(GenericNetwork):
 
     points : array_like
         An array of coordinates indicating the [x, y, z] locations of each
-        point to use in the tessellation.
+        point to use in the tessellation.  Note that the points must be given
+        in rectilinear coordinates regardless of which domain ``shape`` was
+        specified.  To convert between coordinate systems see the
+        ``convert_coords`` function in the ``openpnm.topotools`` module.
+
+    shape : array_like
+        The size of the domain.  It's possible to create cubic, cylindrical,
+        or spherical domains, as well as 2D square and circular by changing
+        the domain ``shape`` as follows:
+
+        [x, y, z] - will produce a normal cubic domain of dimension x, and
+        and z
+
+        [x, y, 0] - will produce a 2D square domain of size x by y
+
+        [r, z] - will produce a cylindrical domain with a radius of r and
+        height of z
+
+        [r, 0] - will produce a 2D circular domain with a radius of r
+
+        [r] - will produce a spherical domain with a radius of r
 
     Notes
     -----
-    This class always performs the tessellation on the set of points, but
-    trims any points that lie outside the given domain ``shape``.
+    This class always performs the tessellation on the full set of points, then
+    trims any points that lie outside the given domain ``shape``.  This is
+    important for cases where base points have been reflected about the domain
+    edges since all reflected points are deleted to reveal the smoothly
+    tessellated surface.
 
     Examples
     --------
