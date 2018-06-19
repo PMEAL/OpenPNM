@@ -188,6 +188,7 @@ class Cubic(GenericNetwork):
         This method uses ``clone_pores`` to clone the surface pores (labeled
         'left', 'right', etc), then shifts them to the periphery of the domain,
         and gives them the label 'right_boundary', 'left_boundary', etc.
+
         """
         if type(labels) == str:
             labels = [labels]
@@ -254,6 +255,7 @@ class Cubic(GenericNetwork):
         This method can break on networks that have had boundaries added.  It
         will usually work IF the given values came only from 'internal'
         pores.
+
         """
         if sp.shape(values)[0] > self.num_pores('internal'):
             raise Exception('The array shape does not match the network')
@@ -267,13 +269,16 @@ class Cubic(GenericNetwork):
         r"""
         Apply data to the network based on a rectangular array filled with
         values.  Each array location corresponds to a pore in the network.
+
         Parameters
         ----------
         array : array_like
             The rectangular array containing the values to be added to the
             network. This array must be the same shape as the original network.
+
         propname : string
             The name of the pore property being added.
+
         """
         array = sp.atleast_3d(array)
         if sp.shape(array) != self._shape:

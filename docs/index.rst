@@ -13,10 +13,14 @@ Welcome to the OpenPNM Documentation
    :target: https://codecov.io/github/PMEAL/OpenPNM
 
 .. toctree::
-    :maxdepth: 2
+    :maxdepth: 1
 
-    installation.rst
-    quick_start.rst
-    examples.rst
+    getting_started/index.rst
     userguide/index.rst
     modules/index.rst
+
+
+----
+
+* :ref:`genindex`
+* :ref:`modindex`

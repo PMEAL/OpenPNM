@@ -3,33 +3,22 @@
 import sys
 import os
 import datetime
-import guzzle_sphinx_theme
 
 sys.path.insert(0, os.path.abspath('.'))
-sys.path.append(os.path.abspath('../'))
-
-
-def setup(app):
-    app.add_javascript('/static/js/copybutton.js')
+sys.path.insert(0, os.path.abspath('../'))
 
 # General configuration ------------------------------------------------------
 extensions = ['sphinx.ext.autodoc',
               'sphinx.ext.napoleon',
               'sphinx.ext.autosummary',
-              'sphinx.ext.todo',
               'sphinx.ext.ifconfig',
               'sphinx.ext.viewcode',
-              'guzzle_sphinx_theme']
+              'sphinx.ext.mathjax']
 
-todo_include_todos = True
 autosummary_generate = True
-modindex_common_prefix = ['OpenPNM.']
-
-
-html_theme_path = guzzle_sphinx_theme.html_theme_path()
 
 # Add any paths that contain templates here, relative to this directory.
-templates_path = ['templates']
+templates_path = []
 
 # The suffix of source filenames.
 source_suffix = '.rst'
@@ -79,18 +68,18 @@ exclude_patterns = ['_build']
 # pygments_style = 'sphinx'
 
 # A list of ignored prefixes for module index sorting.
-# modindex_common_prefix = []
+modindex_common_prefix = ['openpnm']
 
 
 # -- Options for HTML output --------------------------------------------------
 
 # The theme to use for HTML and HTML Help pages.
-html_theme = 'guzzle_sphinx_theme'
+html_theme = 'sphinx_rtd_theme'
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
-html_theme_options = {"project_nav_name": "OpenPNM",}
+html_theme_options = {}
 
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".
@@ -129,7 +118,7 @@ html_static_path = ['static']
 # html_domain_indices = True
 
 # If false, no index is generated.
-# html_use_index = True
+html_use_index = True
 
 # If true, the index is split into individual pages for each letter.
 # html_split_index = False

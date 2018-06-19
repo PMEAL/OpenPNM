@@ -884,7 +884,7 @@ class Base(dict):
 
         Notes
         -----
-        - This uses an unweighted average, without attempting to account for
+        This uses an unweighted average, without attempting to account for
         distances or sizes of pores and throats.
 
         Examples
@@ -894,6 +894,7 @@ class Base(dict):
         >>> pn['pore.value'] = [1, 2, 3]
         >>> pn.interpolate_data('pore.value')
         array([1.5, 2.5])
+
         """
         mro = self._mro()
         if 'GenericNetwork' in mro:
