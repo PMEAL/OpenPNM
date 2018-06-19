@@ -69,14 +69,14 @@ class Cubic(GenericNetwork):
     Examples
     --------
     >>> import openpnm as op
-    >>> pn = op.network.Cubic(shape=[5, 5, 5] spacing=[1, 1, 1])
+    >>> pn = op.network.Cubic(shape=[5, 5, 5], spacing=[1, 1, 1])
     >>> pn.Np
     125
 
     And it can be plotted for quick visualization using:
 
-    >>> fig = op.topotools.plot_connections(pn)
-    >>> fig = op.topotools.plot_coordinates(pn, c='r', s='75')
+    >>> fig = op.topotools.plot_connections(network=pn)
+    >>> fig = op.topotools.plot_coordinates(network=pn, c='r', s=75, fig=fig)
 
     This should produce a Matplotlib figure like below.  For larger networks
     and more control over presentation use
@@ -220,16 +220,16 @@ class Cubic(GenericNetwork):
         P12 = self['throat.conns']
         C12 = self['pore.coords'][P12]
         V = np.abs(np.squeeze(np.diff(C12, axis=1)))
-        if sp.any(sp.sum(V == 0, axis=1) != 2):
+        if np.any(np.sum(V == 0, axis=1) != 2):
             raise Exception('A unique value of spacing could not be found')
         spacing = [None, None, None]
         for axis in [0, 1, 2]:
-            temp = sp.unique(V[:, axis])
-            if sp.size(temp) > 2:
+            temp = np.unique(np.around(V[:, axis], decimals=10))
+            if np.size(temp) > 2:
                 raise Exception('A unique value of spacing could not be found')
             else:
                 spacing[axis] = temp[1]
-        return spacing
+        return sp.array(spacing)
 
     spacing = property(fget=_get_spacing)
 
