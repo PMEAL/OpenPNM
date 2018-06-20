@@ -1,9 +1,9 @@
-.. _base_api:
+.. _modelsdict_api:
 
 --------------------------------------------------------------------------------
-Base
+ModelsDict
 --------------------------------------------------------------------------------
 
-.. autoclass:: openpnm.core.Base
+.. autoclass:: openpnm.core.ModelsDict
    :members:
    :show-inheritance:

@@ -1,9 +1,9 @@
-.. _subdomain_api:
+.. _modelsmixin_api:
 
 --------------------------------------------------------------------------------
-Subdomain
+ModelsMixin
 --------------------------------------------------------------------------------
 
-.. autoclass:: openpnm.core.Subdomain
+.. autoclass:: openpnm.core.ModelsMixin
    :members:
    :show-inheritance:
