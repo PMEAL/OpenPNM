@@ -381,7 +381,7 @@ def extend(network, pore_coords=[], throat_conns=[], labels=[]):
 
     # Increase size of any prop or label arrays aready on Network
     for item in list(network.keys()):
-        if item.split('.')[1] not in ['coords', 'conns', 'all']:
+        if item.split('.')[1] not in ['coords', 'conns', 'all', '_id']:
             N = network._count(element=item.split('.')[0])
             arr = network.pop(item)
             s = arr.shape
