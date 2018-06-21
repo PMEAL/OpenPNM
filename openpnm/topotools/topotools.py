@@ -293,6 +293,15 @@ def trim(network, pores=[], throats=[]):
             Tkeep[Ts] = False
     if sp.size(throats) > 0:
         Tkeep[throats] = False
+        # The folling IF catches the special case of deleting ALL throats
+        # It removes all throat proap, adds 'all', and skips rest of function
+        if not sp.any(Tkeep):
+            logger.info('Removing ALL throats from network')
+            for item in network.keys():
+                if item.split('.')[0] == 'throat':
+                    del network[item]
+            network['throat.all'] = sp.array([], ndmin=1)
+            return
 
     # Temporarily store throat conns ids for processing later
     network['throat._id_conns'] = network['pore._id'][network['throat.conns']]
