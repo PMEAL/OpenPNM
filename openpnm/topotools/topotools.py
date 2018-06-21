@@ -288,6 +288,8 @@ def trim(network, pores=[], throats=[]):
     Tkeep = sp.copy(network['throat.all'])
     if sp.size(pores) > 0:
         Pkeep[pores] = False
+        if not sp.any(Pkeep):
+            raise Exception('Cannot delete ALL pores')
         Ts = network.find_neighbor_throats(pores)
         if len(Ts) > 0:
             Tkeep[Ts] = False
@@ -360,7 +362,7 @@ def extend(network, pore_coords=[], throat_conns=[], labels=[]):
 
     '''
     if len(network.project.phases()) > 0:
-        raise Exception('Network has active Phases, copy network to a new ' +
+        raise Exception('Project has active Phases, copy network to a new ' +
                         'project and try again')
 
     Np_old = network.num_pores()
