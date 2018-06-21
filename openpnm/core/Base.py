@@ -750,6 +750,9 @@ class Base(dict):
         just a convenience function and is a compliment to ``tomask``.
 
         """
+        if sp.amax(mask) > 1:
+            raise Exception('Recieved mask is invalid, with values above 1')
+        mask = sp.array(mask, dtype=bool)
         indices = self._parse_indices(mask)
         return indices
 
@@ -1256,9 +1259,6 @@ class Base(dict):
         if indices is None:
             indices = sp.array([], ndmin=1, dtype=int)
         locs = sp.array(indices, ndmin=1)
-        # Try to infer if int or float array is actually boolean mask
-        if sp.all(sp.in1d(locs, [0, 1])) and locs.size in [self.Nt, self.Np]:
-            locs = sp.array(locs, dtype=bool)
         # If boolean array, convert to indices
         if locs.dtype == bool:
             if sp.size(locs) == self.Np:
