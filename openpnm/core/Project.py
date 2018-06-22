@@ -1,3 +1,4 @@
+from pathlib import Path
 import time
 import pickle
 import h5py
@@ -287,29 +288,26 @@ class Project(list):
     def save_object(self, obj):
         r"""
         """
-        if not isinstance(obj, list):
-            obj = [obj]
-        for item in obj:
-            filename = item.name + '.' + item.settings['prefix']
-            with open(filename, 'wb') as f:
-                pickle.dump({item.name: item}, f)
+        filename = obj.name + '.' + obj.settings['prefix']
+        pickle.dump(obj, open(filename, 'wb'))
 
     def load_object(self, filename):
-        with open(filename, 'rb') as f:
-            d = pickle.load(f)
-        for item in d.keys():
-            self.extend(d[item])
+        path = Path(filename)
+        ext = path.suffix.strip('.')
+        d = pickle.load(open(filename, 'rb'))
+        obj = self._new_object(objtype=ext)
+        obj.update(d)
 
     def _new_object(self, objtype, name=None):
-        if objtype == 'network':
+        if objtype.startswith('net'):
             obj = openpnm.network.GenericNetwork(project=self, name=name)
-        elif objtype == 'geometry':
+        elif objtype.startswith('geo'):
             obj = openpnm.geometry.GenericGeometry(project=self, name=name)
-        elif objtype == 'phase':
+        elif objtype.startswith('pha'):
             obj = openpnm.phases.GenericPhase(project=self, name=name)
-        elif objtype == 'physics':
+        elif objtype.startswith('phy'):
             obj = openpnm.physics.GenericPhysics(project=self, name=name)
-        elif objtype == 'algorithm':
+        elif objtype.startswith('alg'):
             obj = openpnm.algorithm.GenericAlgorithm(project=self, name=name)
         else:
             obj = openpnm.core.Base(project=self, name=name)
