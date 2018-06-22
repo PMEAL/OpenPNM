@@ -552,22 +552,11 @@ class GenericNetwork(Base, ModelsMixin):
         pores = self._parse_indices(pores)
         if sp.size(pores) == 0:
             return sp.array([], ndmin=1, dtype=int)
-        if flatten:
-            temp = sp.in1d(self['throat.conns'].flatten(), pores)
-            temp = sp.reshape(temp, (self.Nt, 2))
-            if mode == 'union':
-                neighbors = sp.where(sp.any(temp, axis=1))[0]
-            if mode == 'intersection':
-                neighbors = sp.where(sp.all(temp, axis=1))[0]
-            if mode == 'exclusive_or':
-                neighbors = sp.where(sp.sum(temp, axis=1) == 1)[0]
-            neighbors = sp.array(neighbors, dtype=int)
-        else:
-            if 'lil' not in self._im.keys():
-                self.get_incidence_matrix(fmt='lil')
-            neighbors = topotools.find_neighbor_bonds(sites=pores, logic=mode,
-                                                      im=self._im['lil'],
-                                                      flatten=flatten)
+        if 'lil' not in self._im.keys():
+            self.get_incidence_matrix(fmt='lil')
+        neighbors = topotools.find_neighbor_bonds(sites=pores, logic=mode,
+                                                  im=self._im['lil'],
+                                                  flatten=flatten)
         return neighbors
 
     def _find_neighbors(self, pores, element, **kwargs):

@@ -290,6 +290,8 @@ def trim(network, pores=[], throats=[]):
         Pkeep[pores] = False
         if not sp.any(Pkeep):
             raise Exception('Cannot delete ALL pores')
+        # Performing customized find_neighbor_throats which is much faster, but
+        # not general for other types of queries
         temp = sp.in1d(network['throat.conns'].flatten(), pores)
         temp = sp.reshape(temp, (network.Nt, 2))
         Ts = sp.any(temp, axis=1)
