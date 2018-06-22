@@ -2,9 +2,11 @@ import openpnm as op
 ws = op.Workspace()
 proj = ws.new_project()
 pn = op.network.Cubic(shape=[5, 5, 5], project=proj)
-geom = op.geometry.StickAndBall(network=pn, pores=pn.Ps, throats=pn.Ts)
+Ps = pn.pores(['left', 'right'])
+Ps = pn.tomask(Ps)
+geom1 = op.geometry.StickAndBall(network=pn, pores=pn.Ps, throats=pn.Ts)
 air = op.phases.Air(network=pn)
-phys = op.physics.Standard(network=pn, phase=air, geometry=geom)
+phys1 = op.physics.Standard(network=pn, phase=air, geometry=geom1)
 
 alg = op.algorithms.GenericTransport(network=pn)
 alg.setup(phase=air, quantity='pore.mole_fraction',

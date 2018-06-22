@@ -1,8 +1,10 @@
+import unyt
 from collections import namedtuple
 import matplotlib.pyplot as plt
 from openpnm.core import Workspace, logging
 from openpnm.utils.misc import PrintableList, SettingsDict, HealthDict
 import scipy as sp
+import warnings
 logger = logging.getLogger(__name__)
 ws = Workspace()
 
@@ -55,15 +57,11 @@ class Base(dict):
                 self.__setitem__(key+'.'+prop, value[item])
             return
 
-        value = sp.array(value, ndmin=1)  # Convert value to an ndarray
+        if not isinstance(value, sp.ndarray):
+            value = sp.array(value, ndmin=1)  # Convert value to an ndarray
 
         # Enforce correct dict naming
-        element = key.split('.')[0]
-        if element == 'constant':
-            super(Base, self).__setitem__(key, value)
-            return
-        else:
-            element = self._parse_element(element, single=True)
+        element = self._parse_element(element=key.split('.')[0], single=True)
 
         # Skip checks for 'coords', 'conns'
         if key in ['pore.coords', 'throat.conns']:
@@ -77,7 +75,7 @@ class Base(dict):
                 if sp.shape(self[key]) == (0, ):
                     super(Base, self).__setitem__(key, value)
                 else:
-                    logger.warning(key+' is already defined.')
+                    warnings.warn(key+' is already defined.')
             else:
                 super(Base, self).__setitem__(key, value)
             return
@@ -804,17 +802,17 @@ class Base(dict):
         N = self.project.network._count(element)
 
         # Fetch sources list depending on object type?
-        # proj = self.project
-        # if self._isa('network'):
-        #     sources = list(proj.geometries().values())
-        # elif self._isa('phase'):
-        #     sources = list(proj.phases().values())
-        # elif self._isa('physics')
-        #     sources = list(proj.physics().values())
-        # elif self._isa('physics'):
-        #     sources = list(proj.geometries().values())
-        # else:
-        #     pass
+#        proj = self.project
+#        if self._isa('network'):
+#            sources = list(proj.geometries().values())
+#        elif self._isa('phase'):
+#            sources = list(proj.phases().values())
+#        elif self._isa('physics'):
+#            sources = list(proj.physics().values())
+#        elif self._isa('physics'):
+#            sources = list(proj.geometries().values())
+#        else:
+#            pass
 
         # Attempt to 'get' the requested array from each object
         # Use 'get' so that missing keys return None, instead of KeyError
@@ -867,6 +865,13 @@ class Base(dict):
                 temp_arr[inds] = vals
             else:
                 temp_arr[inds] = dummy_val[atype[0]]
+        # Check if any arrays have units, if so then apply them to result
+        units = [a.units for a in arrs if hasattr(a, 'units')]
+        if len(units) > 0:
+            if len(set(units)) == 1:
+                temp_arr *= units[0]
+            else:
+                raise Exception('Units on the interleaved array are not equal')
         return temp_arr
 
     def interpolate_data(self, propname):
@@ -930,6 +935,8 @@ class Base(dict):
             data[Ps] = self[propname]
             Ps12 = net['throat.conns'][Ts]
             values = sp.mean(data[Ps12], axis=1)
+        if hasattr(self[propname], 'units'):
+            values *= self[propname].units
         return values
 
     def filter_by_label(self, pores=[], throats=[], labels=None, mode='union'):
