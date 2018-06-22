@@ -13,8 +13,7 @@ extensions = ['sphinx.ext.autodoc',
               'sphinx.ext.autosummary',
               'sphinx.ext.ifconfig',
               'sphinx.ext.viewcode',
-              'sphinx.ext.mathjax',
-              'sphinxjp.themes.basicstrap']
+              'sphinx.ext.mathjax',]
 
 html_theme = 'sphinx_rtd_theme'
 
