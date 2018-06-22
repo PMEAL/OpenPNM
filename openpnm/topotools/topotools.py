@@ -312,6 +312,8 @@ def trim(network, pores=[], throats=[]):
     # Temporarily store throat conns and pore map for processing later
     Np_old = network.Np
     Nt_old = network.Nt
+    Pkeep_inds = sp.where(Pkeep)[0]
+    Tkeep_inds = sp.where(Tkeep)[0]
     Pmap = sp.ones((network.Np,), dtype=int)*-1
     Pid = network['pore._id']
     Tid = network['throat._id']
@@ -321,8 +323,8 @@ def trim(network, pores=[], throats=[]):
     # Delete specified pores and throats from all objects
     for obj in network.project:
         if (obj.Np == Np_old) and (obj.Nt == Nt_old):
-            Ps = sp.where(Pkeep)[0]
-            Ts = sp.where(Tkeep)[0]
+            Ps = Pkeep_inds
+            Ts = Tkeep_inds
         else:
             Ps = obj.map_pores(ids=Pid[Pkeep])
             Ts = obj.map_throats(ids=Tid[Tkeep])
