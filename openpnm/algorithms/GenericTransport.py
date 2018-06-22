@@ -369,33 +369,28 @@ class GenericTransport(GenericAlgorithm):
 
         network = self.project.network
         phase = self.project.phases()[self.settings['phase']]
-        conductance = phase[self.settings['conductance']]
+        g = phase[self.settings['conductance']]
         quantity = self[self.settings['quantity']]
 
         P12 = network['throat.conns']
         X12 = quantity[P12]
         f = (-1)**np.argsort(X12, axis=1)[:, 1]
-        g = conductance
         Dx = np.abs(np.diff(X12, axis=1).squeeze())
         Qt = -f*g*Dx
 
         if len(throats) and len(pores):
             raise Exception('Must specify either pores or throats, not both')
         elif len(throats):
-            if mode == 'single':
-                R = np.absolute(Qt[throats])
+            R = np.absolute(Qt[throats])
             if mode == 'group':
-                R = np.absolute(np.sum(Qt[throats]))
+                R = np.sum(R)
         elif len(pores):
-            if mode == 'single':
-                Qp = np.zeros((self.Np, ))
-                np.add.at(Qp, P12[:, 0], -Qt)
-                np.add.at(Qp, P12[:, 1], Qt)
-                R = Qp[pores]
-            elif mode == 'group':
-                Ts = network.find_neighbor_throats(pores=pores,
-                                                   mode='exclusive_or')
-                R = np.sum(Qt[Ts])
+            Qp = np.zeros((self.Np, ))
+            np.add.at(Qp, P12[:, 0], -Qt)
+            np.add.at(Qp, P12[:, 1], Qt)
+            R = Qp[pores]
+            if mode == 'group':
+                R = np.sum(R)
         return np.array(R, ndmin=1)
 
     def _calc_eff_prop(self):

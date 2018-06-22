@@ -288,35 +288,60 @@ def trim(network, pores=[], throats=[]):
     Tkeep = sp.copy(network['throat.all'])
     if sp.size(pores) > 0:
         Pkeep[pores] = False
-        Ts = network.find_neighbor_throats(pores)
+        if not sp.any(Pkeep):
+            raise Exception('Cannot delete ALL pores')
+        # Performing customized find_neighbor_throats which is much faster, but
+        # not general for other types of queries
+        temp = sp.in1d(network['throat.conns'].flatten(), pores)
+        temp = sp.reshape(temp, (network.Nt, 2))
+        Ts = sp.any(temp, axis=1)
         if len(Ts) > 0:
             Tkeep[Ts] = False
     if sp.size(throats) > 0:
         Tkeep[throats] = False
+        # The folling IF catches the special case of deleting ALL throats
+        # It removes all throat props, adds 'all', and skips rest of function
+        if not sp.any(Tkeep):
+            logger.info('Removing ALL throats from network')
+            for item in network.keys():
+                if item.split('.')[0] == 'throat':
+                    del network[item]
+            network['throat.all'] = sp.array([], ndmin=1)
+            return
 
-    # Temporarily store throat conns ids for processing later
-    network['throat._id_conns'] = network['pore._id'][network['throat.conns']]
+    # Temporarily store throat conns and pore map for processing later
+    Np_old = network.Np
+    Nt_old = network.Nt
+    Pkeep_inds = sp.where(Pkeep)[0]
+    Tkeep_inds = sp.where(Tkeep)[0]
+    Pmap = sp.ones((network.Np,), dtype=int)*-1
+    Pid = network['pore._id']
+    Tid = network['throat._id']
+    tpore1 = network['throat.conns'][:, 0]
+    tpore2 = network['throat.conns'][:, 1]
 
     # Delete specified pores and throats from all objects
-    for item in reversed(network.project):
-        Ps = item.map_pores(ids=network['pore._id'][Pkeep])
-        Ts = item.map_throats(ids=network['throat._id'][Tkeep])
-        item.update({'pore.all': sp.ones((sp.size(Ps),), dtype=bool)})
-        item.update({'throat.all': sp.ones((sp.size(Ts),), dtype=bool)})
-        for key in list(item.keys()):
-            if key.split('.')[1] not in ['all']:
-                temp = item.pop(key)
-                if key.split('.')[0] == 'throat':
-                    item[key] = temp[Ts]
-                if key.split('.')[0] == 'pore':
-                    item[key] = temp[Ps]
+    for obj in network.project:
+        if (obj.Np == Np_old) and (obj.Nt == Nt_old):
+            Ps = Pkeep_inds
+            Ts = Tkeep_inds
+        else:
+            Ps = obj.map_pores(ids=Pid[Pkeep])
+            Ts = obj.map_throats(ids=Tid[Tkeep])
+        for key in list(obj.keys()):
+            temp = obj.pop(key)
+            if key.split('.')[0] == 'throat':
+                obj.update({key: temp[Ts]})
+            if key.split('.')[0] == 'pore':
+                obj.update({key: temp[Ps]})
 
-    # Update the throat conn list using ids
-    id_map = dict(zip(network['pore._id'], network.Ps))
-    conns = network['throat._id_conns']
-    temp = [(id_map.get(i[0], -1), id_map.get(i[1], -1)) for i in conns]
-    network.update({'throat.conns': sp.array(temp)})
-    del network['throat._id_conns']
+    # Remap throat connections
+    Pmap[Pkeep] = sp.arange(0, sp.sum(Pkeep))
+    Tnew1 = Pmap[tpore1[Tkeep]]
+    Tnew2 = Pmap[tpore2[Tkeep]]
+    network.update({'throat.conns': sp.vstack((Tnew1, Tnew2)).T})
+
+    # Clear adjacency and incidence matrices which will be out of date now
     network._am.clear()
     network._im.clear()
 
@@ -351,7 +376,7 @@ def extend(network, pore_coords=[], throat_conns=[], labels=[]):
 
     '''
     if len(network.project.phases()) > 0:
-        raise Exception('Network has active Phases, copy network to a new ' +
+        raise Exception('Project has active Phases, copy network to a new ' +
                         'project and try again')
 
     Np_old = network.num_pores()
@@ -372,7 +397,7 @@ def extend(network, pore_coords=[], throat_conns=[], labels=[]):
 
     # Increase size of any prop or label arrays aready on Network
     for item in list(network.keys()):
-        if item.split('.')[1] not in ['coords', 'conns', 'all']:
+        if item.split('.')[1] not in ['coords', 'conns', 'all', '_id']:
             N = network._count(element=item.split('.')[0])
             arr = network.pop(item)
             s = arr.shape
