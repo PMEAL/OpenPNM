@@ -1123,11 +1123,14 @@ def plot_connections(network, throats=None, fig=None, **kwargs):
         useful for inspecting a small region of the network.  If no throats are
         specified then all throats are shown.
 
-    fig and **kwargs: Matplotlib figure handle and line property arguments
-        If a ``fig`` is supplied, then the topology will be overlaid.  By also
-        passing in different line properties such as ``color`` and limiting
-        which ``throats`` are plots, this makes it possible to plot different
-        types of throats on the same plot.
+    fig : Matplotlib figure handle and line property arguments
+        If a ``fig`` is supplied, then the topology will be overlaid on this
+        plot.  This makes it possible to combine coordinates and connections,
+        and to color different throats differently (see ``kwargs``)
+
+    kwargs : other named arguments
+        By also in different line properties such as ``color`` it's possible to
+        plot several different sets of connections with unique colors.
 
         For information on available line style options, visit the Matplotlib
         documentation on the `web
@@ -1138,6 +1141,10 @@ def plot_connections(network, throats=None, fig=None, **kwargs):
     The figure handle returned by this method can be passed into
     ``plot_coordinates`` to create a plot that combines pore coordinates and
     throat connections, and vice versa.
+
+    See Also
+    --------
+    plot_coordinates
 
     Examples
     --------
@@ -1212,11 +1219,14 @@ def plot_coordinates(network, pores=None, fig=None, **kwargs):
         useful for inspecting a small region of the network.  If no pores are
         specified then all are shown.
 
-    fig and **kwargs: Matplotlib figure handle and line property arguments
-        If a ``fig`` is supplied, then the topology will be overlaid.  By also
-        passing in different marker properties such as size (``s``) and
-        limiting which ``pores`` are plotted, this makes it possible to plot
-        different types of pores on the same plot.
+    fig : Matplotlib figure handle
+        If a ``fig`` is supplied, then the coordinates will be overlaid.  This
+        enables the plotting of multiple different sets of pores as well as
+        throat connections from ``plot_connections``.
+
+    kwargs : dict
+        By also  in different marker properties such as size (``s``) and color
+        (``c``).
 
         For information on available marker style options, visit the Matplotlib
         documentation on the `web
@@ -1227,6 +1237,10 @@ def plot_coordinates(network, pores=None, fig=None, **kwargs):
     The figure handle returned by this method can be passed into
     ``plot_topology`` to create a plot that combines pore coordinates and
     throat connections, and vice versa.
+
+    See Also
+    --------
+    plot_connections
 
     Examples
     --------

@@ -4,7 +4,11 @@
 Quick Start
 ================================================================================
 
-The following is meant to give a few short recipes to illustrate the basic usage of OpenPNM.
+.. contents:: Contents of this Page
+    :depth: 2
+
+
+The following is meant to give a very quick overview of how OpenPNM works.
 
 --------------------------------------------------------------------------------
 Creating a Network

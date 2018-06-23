@@ -13,7 +13,8 @@ extensions = ['sphinx.ext.autodoc',
               'sphinx.ext.autosummary',
               'sphinx.ext.ifconfig',
               'sphinx.ext.viewcode',
-              'sphinx.ext.mathjax',]
+              'sphinx.ext.mathjax',
+              'matplotlib.sphinxext.plot_directive']
 
 html_theme = 'sphinx_rtd_theme'
 
