@@ -4,22 +4,58 @@
 Quick Start
 ================================================================================
 
-The following is meant to give a few short recipes to illustrate the basic usage
-of OpenPNM.
+The following is meant to give a few short recipes to illustrate the basic usage of OpenPNM.
 
 --------------------------------------------------------------------------------
 Creating a Network
 --------------------------------------------------------------------------------
 
-The following code block illustrates how to use OpenPNM to perform a mercury intrusion porosimetry simulation in just 10 lines:
+The first step in an OpenPNM project is to create a network.
 
 .. code-block:: python
 
     >>> import openpnm as op
     >>> pn = op.network.Cubic(shape=[10, 10, 10], spacing=0.0001)
+
+The ``network`` module has a number of network types to chose from:
+
+.. currentmodule:: openpnm.network
+
+.. autosummary::
+   :nosignatures:
+
+   Cubic
+   CubicDual
+   CubicTemplate
+   Bravais
+   Delaunay
+   Voronoi
+   Gabriel
+   DelaunayVoronoiDual
+
+--------------------------------------------------------------------------------
+Adding Geometrical Properties
+--------------------------------------------------------------------------------
+
+The network only contain topological and spatial information, so it is necessary to add geometrical information by creating a Geometry object:
+
+.. code-block:: python
+
     >>> geo = op.geometry.StickAndBall(network=pn, pores=pn.Ps, throats=pn.Ts)
+
+In this case the `StickAndBall` class was used, which has preset pore-scale models that calculate properties such as diameters and volumes, based on the assumption that the pores are spherical and the throats are cylinders.
+
+--------------------------------------------------------------------------------
+Creating Phases
+--------------------------------------------------------------------------------
+
+Phases must created to calculate the thermophysical properties of the fluids (and solids) used in the simulations.
+
     >>> Hg = op.phases.Mercury(network=pn)
-    >>> Air = op.phases.Air(network=pn)
+
+OpenPNM includes a few common phases, including  :ref:`air_api` and :ref:`water_api`, but also a wealth of pore-scale models for calculating properties of different phases.
+
+
     >>> phys = op.physics.Standard(network=pn, phase=Hg, geometry=geo)
 
 The network can be visualized in `Paraview <http://www.paraview.org>`_ giving the following:

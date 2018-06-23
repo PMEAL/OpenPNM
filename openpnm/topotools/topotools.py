@@ -1130,9 +1130,8 @@ def plot_connections(network, throats=None, fig=None, **kwargs):
         types of throats on the same plot.
 
         For information on available line style options, visit the Matplotlib
-        documentation at:
-
-        http://matplotlib.org/api/lines_api.html#matplotlib.lines.Line2D
+        documentation on the `web
+        <http://matplotlib.org/api/lines_api.html#matplotlib.lines.Line2D>`_
 
     Notes
     -----
@@ -1220,9 +1219,8 @@ def plot_coordinates(network, pores=None, fig=None, **kwargs):
         different types of pores on the same plot.
 
         For information on available marker style options, visit the Matplotlib
-        documentation at:
-
-        http://matplotlib.org/api/lines_api.html#matplotlib.lines.Line2D
+        documentation on the `web
+        <http://matplotlib.org/api/lines_api.html#matplotlib.lines.Line2D>`_
 
     Notes
     -----

@@ -1,5 +1,3 @@
-
-
 def standard(target, mol_weight='pore.molecular_weight',
              molar_density='pore.molar_density'):
     r"""
