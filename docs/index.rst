@@ -17,4 +17,3 @@ Welcome to the OpenPNM Documentation
 ----
 
 * :ref:`genindex`
-* :ref:`modindex`

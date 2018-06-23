@@ -4,7 +4,7 @@ import scipy as sp
 def water(target, temperature='pore.temperature', salinity='pore.salinity'):
     r"""
     Calculates surface tension of pure water or seawater at atmospheric
-    pressure using Eq. (28) given by Sharqawy et. al [1]_. Values at
+    pressure using Eq. (28) given by Sharqawy et al. Values at
     temperature higher than the normal boiling temperature are calculated at
     the saturation pressure.
 
@@ -36,7 +36,7 @@ def water(target, temperature='pore.temperature', salinity='pore.salinity'):
 
     References
     ----------
-    [1] Sharqawy M. H., Lienhard J. H., and Zubair, S. M., Desalination and
+    Sharqawy M. H., Lienhard J. H., and Zubair, S. M., Desalination and
     Water Treatment, 2010.
 
     """

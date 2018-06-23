@@ -4,9 +4,9 @@ import scipy as sp
 def water(target, temperature='pore.temperature', salinity='pore.salinity'):
     r"""
     Calculates thermal conductivity of pure water or seawater at atmospheric
-    pressure using the correlation given in [1]_. Values at temperature higher
-    than the normal boiling temperature are calculated at the saturation
-    pressure.
+    pressure using the correlation given by Jamieson and Tudhope. Values at
+    temperature higher  the normal boiling temperature are calculated at the
+    saturation pressure.
 
     Parameters
     ----------
@@ -25,18 +25,19 @@ def water(target, temperature='pore.temperature', salinity='pore.salinity'):
 
     Returns
     -------
-    k_sw, the thermal conductivity of water/seawater in [W/m.K]
+    The thermal conductivity of water/seawater in [W/m.K]
 
     Notes
     -----
     T must be in K, and S in g of salt per kg of phase, or ppt (parts per
-        thousand)
+    thousand)
+
     VALIDITY: 273 < T < 453 K; 0 < S < 160 g/kg;
     ACCURACY: 3 %
 
     References
     ----------
-    [1] D. T. Jamieson, and J. S. Tudhope, Desalination, 8, 393-401, 1970.
+    D. T. Jamieson, and J. S. Tudhope, Desalination, 8, 393-401, 1970.
 
     """
     T = target[temperature]

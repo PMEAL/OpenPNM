@@ -52,7 +52,7 @@ def ideal_gas(target, pressure='pore.pressure', temperature='pore.temperature',
 def water(target, temperature='pore.temperature', salinity='pore.salinity'):
     r"""
     Calculates density of pure water or seawater at atmospheric pressure
-    using Eq. (8) given by Sharqawy et. al [1]_. Values at temperature higher
+    using Eq. (8) given by Sharqawy et. al [1]. Values at temperature higher
     than the normal boiling temperature are calculated at the saturation
     pressure.
 
@@ -86,7 +86,7 @@ def water(target, temperature='pore.temperature', salinity='pore.salinity'):
     References
     ----------
     [1] Sharqawy M. H., Lienhard J. H., and Zubair, S. M., Desalination and
-        Water Treatment, 2010.
+    Water Treatment, 2010.
 
     """
     T = target[temperature]
