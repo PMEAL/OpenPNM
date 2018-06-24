@@ -5,7 +5,7 @@ Quick Start
 ================================================================================
 
 .. contents:: Contents of this Page
-    :depth: 2
+    :depth: 3
 
 
 The following is meant to give a very quick overview of how OpenPNM works.
@@ -20,6 +20,11 @@ The first step in an OpenPNM project is to create a network.
 
     >>> import openpnm as op
     >>> pn = op.network.Cubic(shape=[10, 10, 10], spacing=0.0001)
+
+The resulting network can be quickly visualized using ``plot_coordinates`` and
+``plot_connections`` in the :ref:`topotools_api` module to get the following:
+
+.. plot:: pyplots\\getting_started_plot_cubic_network.py
 
 The ``network`` module has a number of network types to chose from:
 
@@ -41,37 +46,140 @@ The ``network`` module has a number of network types to chose from:
 Adding Geometrical Properties
 --------------------------------------------------------------------------------
 
-The network only contain topological and spatial information, so it is necessary to add geometrical information by creating a Geometry object:
+The Network only contain spatial information (pore coordinates) and topological information (throat connections), so it is necessary to add geometrical information by creating a Geometry object:
 
 .. code-block:: python
 
-    >>> geo = op.geometry.StickAndBall(network=pn, pores=pn.Ps, throats=pn.Ts)
+    >>> Ps = pn.pores('all')
+    >>> Ts = pn.throats('all')
+    >>> geo = op.geometry.StickAndBall(network=pn, pores=Ps, throats=Ts)
 
-In this case the `StickAndBall` class was used, which has preset pore-scale models that calculate properties such as diameters and volumes, based on the assumption that the pores are spherical and the throats are cylinders.
+In this case the `StickAndBall` class was used, which has preset pore-scale models that calculate properties such as pore diameters and throat lengths, based on the assumption that the pores are spherical and the throats are cylinders.
+
+.. note::
+
+    (1) The Network (``pn``) was passed to the Geometry class as an argument, so that ``geo`` knows which network it's associated with.
+
+    (2) the Geometry was assigned to specified pores (``Ps``) and throats (``Ts``), in this case it was 'all' of them but it's possible to use several different Geometry objects for different subsets of the domain.  This explained in more detail here XXX.
 
 --------------------------------------------------------------------------------
 Creating Phases
 --------------------------------------------------------------------------------
 
-Phases must created to calculate the thermophysical properties of the fluids (and solids) used in the simulations.
+Phases must created to calculate the thermophysical properties of the fluids (and solids) used in the simulations:
 
-    >>> Hg = op.phases.Mercury(network=pn)
+    >>> hg = op.phases.Mercury(network=pn)
+    >>> h2o = op.phases.Wather(network=pn)
 
-OpenPNM includes a few common phases, including  :ref:`air_api` and :ref:`water_api`, but also a wealth of pore-scale models for calculating properties of different phases.
+OpenPNM includes a few common phases, including :ref:`mercury_api`, :ref:`air_api` and :ref:`water_api`, but also a set of pore-scale models for calculating properties of different phases.
+
+.. note::
+
+    Phase objects are associated with a Network, but they are not assigned to specific pores and throats.  This is because phases can exist anywhere and everywhere in the domain, and can move around.
+
+--------------------------------------------------------------------------------
+Assigning Pore-Scale Physics Models
+--------------------------------------------------------------------------------
+
+    >>> phys1 = op.physics.GenericPhysics(network=pn, phase=hg, geometry=geo)
+    >>> phys2 = op.physics.GenericPhysics(network=pn, phase=h20, geometry=geo)
+
+The ``GenericPhysics`` class was used, which has NO pore-scale models attached.  We will add this manually in the next step.
+
+.. note::
+
+    (1) The Network must be given as an argument the Physics knows which network it's associated with
+
+    (2) One Physics object is required for each Phase, since physics models require thermophysical properties.  For example, the Hagan-Poisseuille equation requires the viscosity of the phase.
+
+    (3) Each Physics object is also associated with a Geometry.  The reason for this is to assign different pore-scale physics models to different regions.  In this case both are associated with ``geo`` since there is only one Geometry in the whole domain.
+
+................................................................................
+Assigning Pore-Scale Models
+................................................................................
+
+We must assign models to each of our Physics.  The ``hg`` phase will be used to simulate a Porosimetry experiment, so it needs a capillary pressure model, and ``h2o`` will be used in a permeability simulation so we must define a hydraulic conductance.   The following shows how to fetch models from the ``models`` library, attach them to the target object, and specify the model parameters:
+
+.. code-block:: python
+
+    >>> model = op.models.physics.capillary_pressure.washburn
+    >>> hg.add_model(propname='throat.entry_pressure',
+    ...              model=model,
+    ...              contact_angle='pore.contact_angle',
+    ...              surface_tension='pore.surface_tension')
+    >>> model = op.models.physics.hydraulic_conductance.hagen_poiseuille
+    >>> h2o.add_model(propname='throat.hydraulic_conductance',
+    ...               model=model,
+    ...               viscosity='pore.viscosity',
+    ...               pore_diameter='pore.diameter',
+    ...               throat_length='throat.length',
+    ...               throat_area='throat.area')
+
+--------------------------------------------------------------------------------
+Performing Some Simulations
+--------------------------------------------------------------------------------
+
+The final step is to conduct a few simulations.  The most important steps in validating a pore network model is to ensure that it reproduces experimentally measured porosimetry curves and absolute permeability.
+
+................................................................................
+Simulating Mercury Porosimetry
+................................................................................
+
+.. code-block:: python
+
+    >>> mip = op.algorithms.Porosimetry(network=pn)
+    >>> mip.setup(invading_phase=hg)
+    >>> mip.set_inlets(pn.pores(['left', 'right', 'top', 'bottom', 'front',
+    ...                          'back']))
+    >>> mip.run(npts=25)
+    >>> mip.
+
+Which can be visualized using the ``plot_porosimetry_curve`` method of the Porosimetry class:
+
+.. plot:: pyplots\\getting_started_mip_curve.py
+
+................................................................................
+Calculating Network Permeability
+................................................................................
+
+Similarly for the permeability calculation:
+
+.. code-block:: python
+
+    >>> perm = op.algorithms.StokesFlow(network=pn)
+    >>> perm.setup(phase=h2o)
+    >>> perm.set_value_BC(pores=pn.pores('left'), values=1)
+    >>> perm.set_value_BC(pores=pn.pores('right'), values=0)
+    >>> perm.run()
+
+The above code solves for the pressure in each pore and stores the result as ``perm['pore.pressure']``.  To find the permeability of the network, there is a ``calc_permeability`` method on the StokeFlow class:
+
+    >>> perm.domain_area = (10*0.0001)**2
+    >>> perm.domain_length = (10*0.0001)
+    >>> K = perm.calc_permeability()
+
+.. note::
+
+    (1) The ``calc_permeability`` finds K by inverting Darcy's law, and looking up all the necessary information (pressure drop, viscosity) from the objects.
+
+    (2) If the domain area and length are not given, an attempt is made to estimate them but it's more accurate to provide it.
+
+--------------------------------------------------------------------------------
+Saving Project and Exporting to Paraview
+--------------------------------------------------------------------------------
+
+Now that the simulation is finished, it can be saved to a ``.pnm`` file for future use.  OpenPNM has two levels of *management*: the Workspace and the Project.  Each Project contains a single network and its associated object (all the code in this guide are in a single Project).  The Workspace contains all the active Projects.  You can save the entire Workspace including all active Projects, or you can save a single Project.
+
+Each object has a ``project`` attribute which returns a handle to the Project to which it belongs.
+
+.. code-block: python
+
+    >>> proj = pn.project
+    >>> proj.
 
 
-    >>> phys = op.physics.Standard(network=pn, phase=Hg, geometry=geo)
 
-The network can be visualized in `Paraview <http://www.paraview.org>`_ giving the following:
 
-.. image:: http://i.imgur.com/GbUNy0b.png
-   :width: 500 px
-   :align: center
 
-The drainage curve can be visualized with ``MIP.plot_drainage_curve()`` giving something like this:
-
-.. image:: http://i.imgur.com/ZxuCict.png
-   :width: 500 px
-   :align: center
 
 A collection of examples has been started as a new Github repository: `OpenPNM-Examples <https://www.github.com/PMEAL/OpenPNM-Examples>`_.
