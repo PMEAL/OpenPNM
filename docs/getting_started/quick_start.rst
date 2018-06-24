@@ -175,11 +175,10 @@ Each object has a ``project`` attribute which returns a handle to the Project to
 .. code-block: python
 
     >>> proj = pn.project
-    >>> proj.
+    >>> proj.save_project()
 
+The Project object also has the ability to ``export_data`` to various formats, including VTK for viewing in `Paraview <http://www.paraview.org>`_.  Using Paraview provides much better visualization than the ``plot_connections`` and ``plot_coordinates`` used above:
 
-
-
-
-
-A collection of examples has been started as a new Github repository: `OpenPNM-Examples <https://www.github.com/PMEAL/OpenPNM-Examples>`_.
+.. image:: http://i.imgur.com/GbUNy0b.png
+   :width: 500 px
+   :align: center
