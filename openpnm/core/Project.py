@@ -287,18 +287,51 @@ class Project(list):
 
     def save_object(self, obj):
         r"""
+        Save a single object to a file
+
+        Parameters
+        ----------
+        obj : OpenPNM object
+            The object to be saved.  The file name will be taken from the
+            object name, and the file extension will be object type ('net',
+            'geo', 'phys', 'phase', or 'alg')
         """
         filename = obj.name + '.' + obj.settings['prefix']
         pickle.dump(obj, open(filename, 'wb'))
 
     def load_object(self, filename):
+        r"""
+        Load a single object from a file into the Project
+
+        Parameters
+        ----------
+        filename : string or path object
+            The name and location of the file to load.
+
+        """
         path = Path(filename)
         ext = path.suffix.strip('.')
         d = pickle.load(open(filename, 'rb'))
         obj = self._new_object(objtype=ext)
         obj.update(d)
 
+    def save_project(self, filename=''):
+        r"""
+        Save the current project to a ``pnm`` file.
+
+        Parameters
+        ----------
+        filename : string or path object
+            The name of the file.  Can include an absolute or relative path
+            as well.  If only a filename is given it will be saved in the
+            current working directory.
+
+        """
+        ws.save_project(project=self, filename=filename)
+
     def _new_object(self, objtype, name=None):
+        r"""
+        """
         if objtype.startswith('net'):
             obj = openpnm.network.GenericNetwork(project=self, name=name)
         elif objtype.startswith('geo'):
