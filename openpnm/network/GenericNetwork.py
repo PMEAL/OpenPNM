@@ -12,7 +12,22 @@ ws = Workspace()
 
 class GenericNetwork(Base, ModelsMixin):
     r"""
+    This generic class contains the main functionality used by all networks
 
+    Parameters
+    ----------
+    coords : array_like
+        An Np-by-3 array of [x, y, z] coordinates for each pore.
+
+    conns : array_like
+        An Nt-by-2 array of [head, tail] connections between pores.
+
+    Notes
+    -----
+    The GenericNetwork class houses a number of methods used for querying and
+    managing the network's spatial and topological information.  The following
+    table gives a very short overview of the methods added those already found
+    on the ``openpnm.core.Base`` class.
 
     +-----------------------------+-------------------------------------------+
     | Method or Attribute         | Functionality                             |
@@ -29,11 +44,9 @@ class GenericNetwork(Base, ModelsMixin):
     | ``get_incidence_matrix``    | Retrieve an existing incidence matrix in  |
     |                             | the specified format (from ``im``)        |
     +-----------------------------+-------------------------------------------+
-    | ``am``                      | A ``dict`` containing adjacency matrices  |
-    |                             | in several formats with weights of 1      |
+    | ``am``                      | Returns the adjacency matrix in COO format|
     +-----------------------------+-------------------------------------------+
-    | ``im``                      | A ``dict`` containing incidence matrices  |
-    |                             | in several formats with weights of 1      |
+    | ``im``                      | Returns the incidence matrix in COO format|
     +-----------------------------+-------------------------------------------+
     | ``find_neighbor_pores``     | For a given set of pores, find all        |
     |                             | neighboring pores                         |
@@ -57,13 +70,50 @@ class GenericNetwork(Base, ModelsMixin):
     |                             | as isolated pores                         |
     +-----------------------------+-------------------------------------------+
 
-
     Examples
     --------
     >>> import openpnm as op
-    >>> coords = [[0, 0, 0], [1, 0, 0], [1, 1, 0], [0, 1, 0], [0.5, 0.5, 1]]
-    >>> conns = [[0, 1], [1, 2], [2, 3], [0, 3], [0, 4], [1, 4], [2, 4], [3, 4]]
-    >>> pn = op.network.GenericNetwork()
+
+    Create some pore coordinates and connections manually and assign to a
+    GenericNetwork instance.  Consider a linear network of 4 pores and 3
+    throats:
+
+        0 ―― 1 ―― 3 ―― 2
+
+    >>> coords = [[0, 0, 0], [1, 0, 0], [2, 0, 0], [3, 0, 0]]
+    >>> conns = [[0, 1], [1, 3], [2, 3]]
+    >>> pn = op.network.GenericNetwork(conns=conns, coords=coords)
+
+    Networks have two required properties: 'pore.coords' and 'throat.conns'.
+    These arrays indicate the spatial location of each pore, and which pores
+    are connected to which.  Without these the Network object cannot function.
+
+    >>> print(pn.props())
+    ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+    1       : pore.coords
+    2       : throat.conns
+    ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+
+    The GenericNetwork class has several methods for querying the topology.
+
+    >>> Ps = pn.find_neighbor_pores(pores=1)
+    >>> print(Ps)
+    [0 3]
+    >>> Ts = pn.find_neighbor_throats(pores=[0, 1])
+    >>> print(Ts)
+    [0 1]
+    >>> print(pn.num_neighbors(2))
+    [2]
+
+    All of the topological queries are accomplished by inspecting the adjacency
+    and incidence matrices.  They are created on demand, and are stored for
+    future use.
+
+    >>> pn.am
+    <5x5 sparse matrix of type '<class 'numpy.int32'>'
+        with 10 stored elements in COOrdinate format>
+
+    The adjacency and incidence matrix are stored as scipy.sparse matrices.
 
     """
     def __init__(self, project=None, settings={}, **kwargs):

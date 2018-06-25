@@ -1,14 +1,13 @@
-r'''
-###############################################################################
-:mod:`Subdomain`
-###############################################################################
-
-'''
 from openpnm.core import Base
 import numpy as np
 
 
 class Subdomain(Base):
+    r"""
+    This subclass of the Base class provides the ability assign the object
+    to specific locations (pores and throats) in the domain.
+
+    """
 
     def __getitem__(self, key):
         element = key.split('.')[0]

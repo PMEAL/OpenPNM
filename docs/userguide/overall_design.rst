@@ -27,6 +27,16 @@ Finally, Physics objects exist at the intersection of a row and a column.  This 
 With this grid analogy in mind, we can now dive into an explanation of each object and it's particular abilities.
 
 ================================================================================
+Object Inheritance Structure
+================================================================================
+
+OpenPNM consists of 5 main object types: Network, Phases, Geometries, Physics, and Algorithms.  The inheritance structure of each of these objects is shown in the diagram below.  Each of these objects is a subclass of the :ref:`base_api` class, described in more detail in the next section.  Some of these object also have the ability to store pore-scale models added via the :ref:`modelsmixin_api` mixin class.  Finally, some objects are applied only to subdomains rather than the entire domains, so these inherit from the :ref:`subdomain_api` class, which is itself a subclass of Base.
+
+.. image:: /../docs/static/images/Overall_Inheritance_Diagram.png
+    :width: 800px
+    :align: center
+
+================================================================================
 The Base Class
 ================================================================================
 
@@ -36,13 +46,42 @@ All the objects in OpenPNM are subclasses of a single :ref:`base_api` class, whi
     :noindex:
 
 ================================================================================
-Network
+Networks
 ================================================================================
 
 The :ref:`generic_network_api` class add more methods to the Base class than any other type in OpenPNM.  These added methods are all related to the querying of topological information such as finding neighboring throats, or nearby pores. The table below gives a high level overview of these methods.  For a deeper discussion of the topological data format used by OpenPNM (and thus how these queries are performed) refer to :ref:`topology`.
 
 .. autoclass:: openpnm.network.GenericNetwork
     :noindex:
+
+================================================================================
+Phases and the ModelsMixin
+================================================================================
+
+The :ref:`generic_phase_api` class is very simple subclass of `The Base Class`_.  The subclass itself adds *no* additional methods beyond those of Base, *but* it uses multiple inheritance, so inherits 3 methods from :ref:`modelsmixin_api`, and an added attribute called ``models`` which is a :ref:`modelsdict_api` object that stores the models and their respective parameters.
+
+.. autoclass:: openpnm.phases.GenericPhase
+    :noindex:
+
+================================================================================
+Subdomains: Geometry and Physics
+================================================================================
+
+Geometry and Physics objects are the only two object types can be assigned to a subset of the full domain. This ability is included in the :ref:`subdomain_api` class which is a child of the normal Base class.  The only functionality added to ``Subdomain`` is the ability to set and remove which locations (pores and throats) the object is assigned to.
+
+================================================================================
+Algorithms
+================================================================================
+
+Like the other classes discussed above, the :ref:`generic_algorithm_api` class inherits from Base, but because every algorithm is a bit different and they tend to be more complicated, the details won't be discussed here.  
+
+
+
+
+
+
+
+
 
 
 
