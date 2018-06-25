@@ -95,7 +95,7 @@ class Bravais(GenericNetwork):
             self['throat.corner_to_face'] = False
             self['throat.corner_to_face'][Ts] = True
         elif mode == 'hcp':
-            raise NotImplemented('hcp is not implemented yet')
+            raise NotImplementedError('hcp is not implemented yet')
         elif mode == 'sc':
             net = Cubic(shape=shape, spacing=spacing, **kwargs)
             self.update(net)
