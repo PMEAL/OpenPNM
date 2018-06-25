@@ -30,11 +30,11 @@ class BravaisTest:
         assert bcc.num_throats('throat.body_to_body') == 12
 
     def test_generation_hcp(self):
-        with pytest.raises(Exception):
+        with pytest.raises(NotImplementedError):
             op.network.Bravais(shape=[3, 3, 3], mode='hcp')
 
     def test_generation_bad_mode(self):
-        with pytest.raises(NotImplementedError):
+        with pytest.raises(Exception):
             op.network.Bravais(shape=[3, 3, 3], mode='bad_mode')
 
     def test_generation_sc(self):
