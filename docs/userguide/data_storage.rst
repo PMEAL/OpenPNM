@@ -137,55 +137,42 @@ This results can also be viewed with ``print(pn.labels())``.
    All objects are instantiated with a ``'pore.all'`` and ``'throat.all'`` label.  These arrays are essential to the framework since they are used to define how long the 'pore' and 'throat' data arrays must be.  In other words, the ``__setitem__`` method checks to make sure that any 'pore' array it receives has the same length as ``'pore.all'``.
 
 ===============================================================================
-Counts and Indices
-===============================================================================
-One of the most common questions about a network is "*how many pores and throats does it have?*"  This can be answered  easily with the ``num_pores`` and ``num_throats`` methods.  Because these methods are used so often, there are also shortcuts: ``Np`` and ``Nt``.
-
-.. code-block:: python
-
-    >>> pn.num_pores()
-    27
-    >>> pn.Np
-    27
-
-It is also possible to *count* only pores that have a certain label:
-
-.. code-block:: python
-
-    >>> pn.num_pores('top')
-    9
-
-These counting methods actually work by counting the number of ``True`` elements in the given *label* array.
-
-Another highly used feature is to retrieve a list of pores or throats that have a certain label applied to them, which is of course is the entire purpose of the *labels* concept.  To receive a list of pores on the *'top'* of the **Network**:
-
-.. code-block:: python
-
-    >>> list(pn.pores('top'))
-    [2, 5, 8, 11, 14, 17, 20, 23, 26]
-
-The ``pores`` and ``throats`` methods both accept a *'mode'* argument that allows for *set-theory* logic to be applied to the query, such as returning 'unions' and 'intersections' of locations.
-
-Often, one wants a list of *all** pore or throat indices on an object, so there are shortcut methods for this: ``Ps`` and ``Ts``.
-
-It is also possible to filter a list of pores or throats according to their labels using ``filter_by_label``:
-
-.. code-block:: python
-
-    >>> Ps = pn.pores('top')
-    >>> list(Ps)
-    [2, 5, 8, 11, 14, 17, 20, 23, 26]
-    >>> list(pn.filter_by_label(pores=Ps, labels='left'))
-    [2, 11, 20]
-
-The ``filter_by_label`` method also accepts a ``mode`` argument that applies additional filtering to the returned list using *set-theory*-type logic.  In this case, the method will find sets of pores or throats that satisfies each given label, then determines the *union*, *intersection*, or *difference* of the given sets.
-
-===============================================================================
 Data Exchange Between Objects
 ===============================================================================
 
-One of the features in OpenPNM is the ability to model heterogeneous materials by apply different pore-scale models to different regions.  This is done by (a) creating a unique **Geometry** object for each region (i.e. small pores vs big pores) and (b) creating unique **Physics** object for each region as well (i.e. Knudsen diffusion vs Fickian diffusion).  One consequence of this segregation of properties is that a *single* array containing values for all locations in the domain cannot be directly obtained.  It is possible to manually piece together values from different regions, but this is cumbersome.  OpenPNM offers a shortcut for this, by making it possible to query **Geometry** properties via the **Network** object, and **Physics** properties from the associated **Phase** object:
+One of the features in OpenPNM is the ability to model heterogeneous materials by applying different pore-scale models to different regions.  This is done by (a) creating a unique **Geometry** object for each region (i.e. small pores vs big pores) and (b) creating unique **Physics** object for each region as well (i.e. Knudsen diffusion vs Fickian diffusion).  One consequence of this segregation of properties is that a *single* array containing values for all locations in the domain cannot be directly obtained.  OpenPNM offers a shortcut for this, known as ``interleave_data``, which makes it possible to query **Geometry** properties via the **Network** object, and **Physics** properties from the associated **Phase** object:
 
-::
+Let's demonstrate this by creating a network and assigning two separate geometries to each half of the network:
 
-    Documentation not finished yet
+.. code-block:: python
+
+    >>> import openpnm as op
+    >>> pn = op.network.Cubic([5, 5, 5])
+    >>> geo1 = op.geometry.GenericGeometry(network=pn, pores=range(0, 75),
+    ...                                    throats=range(0, 150))
+    >>> geo2 = op.geometry.GenericGeometry(network=pn, pores=range(75, 125),
+    ...                                    throats=range(150, 300))
+    >>> geo1['pore.diameter'] = 1.0
+    >>> geo2['pore.diameter'] = 0.1
+
+Each of the Geometry objects has a 'pore.diameter' array with different values.  To obtain a single array of 'pore.diameter' with values in the correct locations, we can use the Network as follows:
+
+.. code-block:: python
+
+    >>> Dp = pn['pore.diameter']
+    >>> print(Dp[70:80])
+    array([1. , 1. , 1. , 1. , 1. , 0.1, 0.1, 0.1, 0.1, 0.1])
+
+As can be seen, the 'pore.diameter' array contains values from both Geometry objects, and they are in their correction locations in terms of the domain number system.  This is referred to as ``interleave_data``.  It also works to obtain Physics values via their associated Phase object.
+
+Interleaving of data also works in the reverse direction, so that data only present on the network can be accessed via the Geometry objects:
+
+.. code-block:: python
+
+    >>> coords = geo1['pore.coords']
+    >>> print(coords[0:3])
+    array([[0.5, 0.5, 0.5],
+           [0.5, 0.5, 1.5],
+           [0.5, 0.5, 2.5]])
+
+Data **cannot** be written in this way, so that you cannot write 'pore.diameter' values from the Network.
