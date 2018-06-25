@@ -12,3 +12,9 @@ alg.setup(phase=air, quantity='pore.mole_fraction',
 alg.set_value_BC(pores=pn.pores('left'), values=1)
 alg.set_value_BC(pores=pn.pores('right'), values=0)
 alg.run()
+
+for item in pn.__dir__():
+    if not item.startswith('_'):
+        if item not in dict().__dir__():
+            if item not in op.core.Base().__dir__():
+                print(item)

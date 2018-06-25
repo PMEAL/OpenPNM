@@ -12,7 +12,58 @@ ws = Workspace()
 
 class GenericNetwork(Base, ModelsMixin):
     r"""
-    GenericNetwork - Base class to construct pore networks
+
+
+    +-----------------------------+-------------------------------------------+
+    | Method or Attribute         | Functionality                             |
+    +=============================+===========================================+
+    | ``create_adjacency_matrix`` | Create an adjacency matrix using given    |
+    |                             | weights in a specified format             |
+    +-----------------------------+-------------------------------------------+
+    | ``create_incidence_matrix`` | Create an incidence matrix using given    |
+    |                             | weights in a specified format             |
+    +-----------------------------+-------------------------------------------+
+    | ``get_adjacency_matrix``    | Retrieve an existing adjacency matrix in  |
+    |                             | the specified format (from ``am``)        |
+    +-----------------------------+-------------------------------------------+
+    | ``get_incidence_matrix``    | Retrieve an existing incidence matrix in  |
+    |                             | the specified format (from ``im``)        |
+    +-----------------------------+-------------------------------------------+
+    | ``am``                      | A ``dict`` containing adjacency matrices  |
+    |                             | in several formats with weights of 1      |
+    +-----------------------------+-------------------------------------------+
+    | ``im``                      | A ``dict`` containing incidence matrices  |
+    |                             | in several formats with weights of 1      |
+    +-----------------------------+-------------------------------------------+
+    | ``find_neighbor_pores``     | For a given set of pores, find all        |
+    |                             | neighboring pores                         |
+    +-----------------------------+-------------------------------------------+
+    | ``find_neighbor_throats``   | For a given set of pores, find all        |
+    |                             | neighboring throats                       |
+    +-----------------------------+-------------------------------------------+
+    | ``find_connecting_throat``  | For each pair of throats find the pores   |
+    |                             | they connect                              |
+    +-----------------------------+-------------------------------------------+
+    | ``find_connected_pores``    | For each throat, find the pores which it  |
+    |                             | connects                                  |
+    +-----------------------------+-------------------------------------------+
+    | ``num_neighbors``           | For a given set of pores find the number  |
+    |                             | of neighbors for each                     |
+    +-----------------------------+-------------------------------------------+
+    | ``find_nearby_pores``       | For a given set of pores, find pores that |
+    |                             | are within a certain distance             |
+    +-----------------------------+-------------------------------------------+
+    | ``check_network_health``    | Check the topology for any problems such  |
+    |                             | as isolated pores                         |
+    +-----------------------------+-------------------------------------------+
+
+
+    Examples
+    --------
+    >>> import openpnm as op
+    >>> coords = [[0, 0, 0], [1, 0, 0], [1, 1, 0], [0, 1, 0], [0.5, 0.5, 1]]
+    >>> conns = [[0, 1], [1, 2], [2, 3], [0, 3], [0, 4], [1, 4], [2, 4], [3, 4]]
+    >>> pn = op.network.GenericNetwork()
 
     """
     def __init__(self, project=None, settings={}, **kwargs):

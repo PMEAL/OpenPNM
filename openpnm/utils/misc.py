@@ -44,7 +44,11 @@ class PrintableDict(OrderedDict):
 
 
 class SettingsDict(PrintableDict):
-
+    r"""
+    The SettingsDict implements the __missing__ magic method, which returns
+    None instead of KeyError.  This is useful for checking the value of a
+    settings without first ensuring it exists.
+    """
     def __missing__(self, key):
         self[key] = None
         return self[key]

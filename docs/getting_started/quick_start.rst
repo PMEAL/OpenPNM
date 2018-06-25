@@ -22,7 +22,7 @@ The first step in an OpenPNM project is to create a network.
     >>> pn = op.network.Cubic(shape=[10, 10, 10], spacing=0.0001)
 
 The resulting network can be quickly visualized using ``plot_coordinates`` and
-``plot_connections`` in the :ref:`topotools_api` module to get the following:
+``plot_connections`` in the :ref:`topotools_index` module to get the following:
 
 .. plot:: pyplots\\getting_started_plot_cubic_network.py
 
@@ -68,6 +68,8 @@ Creating Phases
 
 Phases must created to calculate the thermophysical properties of the fluids (and solids) used in the simulations:
 
+.. code-block:: python
+
     >>> hg = op.phases.Mercury(network=pn)
     >>> h2o = op.phases.Wather(network=pn)
 
@@ -80,6 +82,8 @@ OpenPNM includes a few common phases, including :ref:`mercury_api`, :ref:`air_ap
 --------------------------------------------------------------------------------
 Assigning Pore-Scale Physics Models
 --------------------------------------------------------------------------------
+
+.. code-block:: python
 
     >>> phys1 = op.physics.GenericPhysics(network=pn, phase=hg, geometry=geo)
     >>> phys2 = op.physics.GenericPhysics(network=pn, phase=h20, geometry=geo)
@@ -172,7 +176,7 @@ Now that the simulation is finished, it can be saved to a ``.pnm`` file for futu
 
 Each object has a ``project`` attribute which returns a handle to the Project to which it belongs.
 
-.. code-block: python
+.. code-block:: python
 
     >>> proj = pn.project
     >>> proj.save_project()
