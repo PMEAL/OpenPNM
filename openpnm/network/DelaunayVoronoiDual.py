@@ -1,10 +1,3 @@
-"""
-===============================================================================
-DelaunayVoronoiDual: Generate a random network with complementary Delaunay and
-Voronoi networks, including connectings between them
-===============================================================================
-
-"""
 import scipy as sp
 import scipy.spatial as sptl
 import scipy.sparse as sprs
@@ -17,18 +10,18 @@ logger = logging.getLogger(__name__)
 
 class DelaunayVoronoiDual(GenericNetwork):
     r"""
-    A dual network based on complementary Voronoi and Delaunay networks.  A
-    Delaunay tessellation or triangulation is performed on randomly distributed
-    base points, then the corresponding Voronoi diagram is generated.  Finally,
-    each Delaunay nodes is connected to it's neighboring Voronoi vertices to
-    create interaction between the two networks.
+    Creates a dual network based on complementary Voronoi and Delaunay networks.
+    A Delaunay tessellation is performed on a set of base points then the
+    corresponding Voronoi diagram is generated.  Finally, each Delaunay node
+    is connected to it's neighboring Voronoi vertices to create interaction
+    between the two networks.
 
     All pores and throats are labelled according to their network (i.e.
     'pore.delaunay'), so they can be each assigned to a different Geometry.
 
     The dual-nature of this network is meant for modeling transport in the void
     and solid space simultaneously by treating one network (i.e. Delaunay) as
-    voids and the other (i.e. Voronoi) as solid.  Interation such as heat
+    voids and the other (i.e. Voronoi) as solid.  Interaction such as heat
     transfer between the solid and void can be accomplished via the
     interconnections between the Delaunay and Voronoi nodes.
 
@@ -47,39 +40,43 @@ class DelaunayVoronoiDual(GenericNetwork):
         can be trimmed.
 
     shape : array_like
-        The size and shape of the domain using for generating and trimming
-        excess points. The argument is treated as follows:
+        The size of the domain.  It's possible to create cubic, cylindrical,
+        or spherical domains, as well as 2D square and circular by changing
+        the domain ``shape`` as follows:
 
-        **sphere** : If a scalar or single element list is received, it's
-        treated as the radius [r] of a sphere centered on [0, 0, 0].
+        [x, y, z] - will produce a normal cubic domain of dimension x, and
+        and z
 
-        **cylinder** : If a two-element list is received it's treated as
-        the radius and height of a cylinder [r, z] whose central axis
-        starts at [0, 0, 0] and extends in the positive z-direction.
+        [x, y, 0] - will produce a 2D square domain of size x by y
 
-        **rectangle** : If a three element list is received, it's treated
-        as the outer corner of rectangle [x, y, z] whose opposite corner
-        lies at [0, 0, 0].
+        [r, z] - will produce a cylindrical domain with a radius of r and
+        height of z
 
-        By default, a domain size of [1, 1, 1] is used.
+        [r, 0] - will produce a 2D circular domain with a radius of r
 
-    trim_domain : Boolean
-        If true (default) all nodes outside the given ``shape`` are
-        removed, along with all their throats.  Setting this argument to False
-        will skip this removal if an alternative manual trimming is preferred.
+        [r] - will produce a spherical domain with a radius of r
 
     Examples
     --------
     Points will be automatically generated if none are given:
 
     >>> import openpnm as op
-    >>> net = op.network.DelaunayVoronoiDual(num_points=50, shape=[1, 1, 1])
+    >>> net = op.network.DelaunayVoronoiDual(num_points=50, shape=[1, 1, 0])
 
-    The resulting network can be quickly visualized with
-    ``op.topotools.plot_connections(net)``.  This plotting function also
-    supports showing limited sets of throats for more clear inspection such as
-    ``op.topotools.plot_connections(net, throats=net.throats('surface'))``.
-    See its documentation for details.
+    The resulting network can be quickly visualized:
+
+    >>> fig = op.topotools.plot_connections(network=net,
+    ...                                     throats=net.throats('voronoi'),
+    ...                                     color='b')
+    >>> fig = op.topotools.plot_connections(network=net,
+    ...                                     throats=net.throats('delaunay'),
+    ...                                     fig=fig, color='r')
+    >>> fig = op.topotools.plot_connections(network=net,
+    ...                                     throats=net.throats('intercon*'),
+    ...                                     fig=fig, color='g')
+
+    .. image:: /../docs/static/images/delaunay_voronoi_dual_network.png
+        :align: center
 
     The default shape is a unit cube, but it's also possible to generate
     cylinders and spheres by specifying the domain size as [r, z] or [r],
@@ -91,14 +88,11 @@ class DelaunayVoronoiDual(GenericNetwork):
     More control over the distribution of base points can be achieved by
     calling ``topotools.generate_base_points`` directly:
 
-    >>> pts = op.topotools.generate_base_points(num_points=50,
+    >>> pts = op.topotools.generate_base_points(num_points=200,
     ...                                         domain_size=[1, 5])
     >>> pts -= [0, 0, 1]  # Shift points in the negative z-direction
     >>> cyl = op.network.DelaunayVoronoiDual(points=pts, shape=[1, 3])
-
-    All points lying below the z=0 plane and above the z=3 plane are trimmed,
-    which gives the network *rough* ends since the points near the plane of
-    reflection are all trimmed.
+    >>> fig = op.topotools.plot_connections(network=cyl)
 
     """
 

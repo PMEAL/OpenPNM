@@ -34,8 +34,8 @@ class Air(GenericPhase):
     of the relevant state variables.
 
     This object is initialized at standard conditions of 298 K and 101325 Pa.
-    If these conditions are changed it is a simple matter of calling
-    ``regenerate_models`` method to recalculate all of the model properties.
+    If these conditions are changed the dependent properties can be
+    recalculated by calling ``regenerate_models``.
 
     All of these parameters can be adjusted manually by editing the entries in
     the **ModelsDict** stored in the ``models`` attribute of the object.
