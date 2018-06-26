@@ -1,5 +1,6 @@
 import os as os
 import scipy as sp
+from pathlib import Path
 from openpnm.core import logging, Project
 from openpnm.network import GenericNetwork
 from openpnm.io import GenericIO
@@ -52,6 +53,7 @@ class MARock(GenericIO):
         """
 
         net = {}
+        path = Path(path)
         path = path.resolve()
         for file in os.listdir(path):
             if file.endswith(".np2th"):

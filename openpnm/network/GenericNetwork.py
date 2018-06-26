@@ -116,11 +116,19 @@ class GenericNetwork(Base, ModelsMixin):
     The adjacency and incidence matrix are stored as scipy.sparse matrices.
 
     """
-    def __init__(self, project=None, settings={}, **kwargs):
+    def __init__(self, conns=None, coords=None, project=None, settings={},
+                 **kwargs):
         self.settings.setdefault('prefix', 'net')
         self.settings.update(settings)
         super().__init__(project=project, **kwargs)
-
+        if coords is not None:
+            Np = sp.shape(coords)[0]
+            self['pore.all'] = sp.ones(Np, dtype=bool)
+            self['pore.coords'] = coords
+        if conns is not None:
+            Nt = sp.shape(conns)[0]
+            self['throat.all'] = sp.ones(Nt, dtype=bool)
+            self['throat.conns'] = conns
         # Initialize adjacency and incidence matrix dictionaries
         self._im = {}
         self._am = {}

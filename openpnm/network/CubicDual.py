@@ -8,8 +8,9 @@ CubicDual: Generate a cubic lattice with an interpentrating dual network
 import scipy as sp
 from openpnm.network import GenericNetwork, Cubic
 from openpnm import topotools
-from openpnm.core import logging
+from openpnm.core import logging, Workspace
 logger = logging.getLogger(__name__)
+ws = Workspace()
 
 
 class CubicDual(GenericNetwork):
@@ -128,4 +129,4 @@ class CubicDual(GenericNetwork):
         net['throat.internal'][Ts] = True
         # Transfer all dictionary items from 'net' to 'self'
         [self.update({item: net[item]}) for item in net]
-        self.project.remove(self)
+        ws.close_project(net.project)
