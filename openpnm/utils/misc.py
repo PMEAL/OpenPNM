@@ -88,6 +88,17 @@ class SettingsDict(PrintableDict):
     The SettingsDict implements the __missing__ magic method, which returns
     None instead of KeyError.  This is useful for checking the value of a
     settings without first ensuring it exists.
+
+    Examples
+    --------
+    >>> from openpnm.utils import SettingsDict
+    >>> sd = SettingsDict()
+    >>> sd['test'] = True
+    >>> print(sd['test'])
+    True
+    >>> print(sd['not_a_valid_key'])
+    None
+
     """
     def __missing__(self, key):
         self[key] = None

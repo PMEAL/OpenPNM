@@ -14,6 +14,8 @@ Contents:
    geometry/index.rst
    phases/index.rst
    physics/index.rst
+   materials/index.rst
    algorithms/index.rst
    topotools/index.rst
    models/index.rst
+   utils/index.rst
