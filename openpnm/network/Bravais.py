@@ -14,6 +14,87 @@ ws = Workspace()
 
 class Bravais(GenericNetwork):
     r"""
+    Creates non-random networks with more interesting and dense pore
+    arrangements based on various crystal lattice structures.
+
+    More information on Bravais lattice notation can be `found on wikipedia
+    <https://en.wikipedia.org/wiki/Bravais_lattice>`_.
+
+    Parameters
+    ----------
+    shape : array_like
+        The number of pores in each direction.  This value is a bit ambiguous
+        for the more complex unit cells used here, but generally refers to the
+        the number for 'corner' sites
+
+    spacing : array_like (optional)
+        The spacing between pores in all three directions.  Like the ``shape``
+        this is a bit ambiguous but refers to the spacing between corner sites.
+        Essentially it controls the dimensions of the unit cell.  It a scalar
+        is given it is applied to all directions.  The default is 1.
+
+    mode : string
+        The type of lattice to create.  Options are:
+
+        - **'sc'** : Simple cubic (Same as ``Cubic``)
+        - **'bcc'** : Body-centered cubic lattice
+        - **'fcc'** : Face-centered cubic lattice
+        - **'hcp'** : Hexagonal close packed (Note Implemented Yet)
+
+    See Also
+    --------
+    Cubic
+    CubicDual
+
+    Notes
+    -----
+    The pores are labelled as beloning to 'corner_sites' and 'body_sites' in
+    bcc or 'face_sites' in fcc.  Throats are labelled by the which type of
+    pores they connect, e.g. 'throat.corner_to_body'.
+
+    Limitations
+    -----------
+    Bravais lattice can also have a skew to them, but this is not implemented
+    yet.
+
+    Support for 2D networks has not been added yet.
+
+    Hexagonal Close Packed (hcp) has not been implemented yet, but is on the
+    todo list.
+
+    Examples
+    --------
+    >>> import openpnm as op
+    >>> sc = op.network.Bravais(shape=[3, 3, 3], mode='sc')
+    >>> bcc = op.network.Bravais(shape=[3, 3, 3], mode='bcc')
+    >>> fcc = op.network.Bravais(shape=[3, 3, 3], mode='fcc')
+    >>> sc.Np, bcc.Np, fcc.Np
+    (27, 35, 63)
+
+    Since these three networks all have the same domain size, it is clear that
+    both 'bcc' and 'fcc' have more pores per unit volume.  This is particularly
+    helpful for modeling higher porosity materials.
+
+    They all have the same number corner sites, which corresponds to the
+    [3, 3, 3] shape that was specified:
+
+    >>> sc.num_pores('corner*'), bcc.num_pores('cor*'), fcc.num_pores('cor*')
+    (27, 27, 27)
+
+    Visualization of these three networks can be done quickly using the
+    functions in topotools.  Firstly, merge them all into a single network
+    for convenience:
+
+    >>> bcc['pore.coords'][:, 0] += 3
+    >>> fcc['pore.coords'][:, 0] += 6
+    >>> op.topotools.merge_networks(sc, [bcc, fcc])
+    >>> op.topotools.plot_connections(sc)
+
+    .. image:: /../docs/static/images/bravais_networks.png
+        :align: center
+
+    For larger networks and more control over presentation use `Paraview
+    <http://www.paraview.org>`_.
 
     """
     def __init__(self, shape, mode, spacing=1, **kwargs):

@@ -798,7 +798,7 @@ def merge_networks(network, donor=[]):
 
     Notes
     -----
-    This methods does *not* attempt to stitch the networks topologically
+    This methods does *not* attempt to stitch the networks topologically.
 
     See Also
     --------
@@ -807,44 +807,51 @@ def merge_networks(network, donor=[]):
     stitch
 
     """
-    network['pore.coords'] = sp.vstack((network['pore.coords'],
-                                        donor['pore.coords']))
-    network['throat.conns'] = sp.vstack((network['throat.conns'],
-                                         donor['throat.conns'] + network.Np))
-    p_all = sp.ones((sp.shape(network['pore.coords'])[0],), dtype=bool)
-    t_all = sp.ones((sp.shape(network['throat.conns'])[0],), dtype=bool)
-    network.update({'pore.all': p_all})
-    network.update({'throat.all': t_all})
-    for key in set(network.keys()).union(set(donor.keys())):
-        if key.split('.')[1] not in ['conns', 'coords', '_id', 'all']:
-            if key in network.keys():
-                pop_flag = False
-                if key not in donor.keys():
-                    logger.debug('Adding ' + key + ' to donor')
-                    # If key not on donor add it first
-                    if network[key].dtype == bool:
-                        donor[key] = False
-                    else:
-                        donor[key] = sp.nan
-                    pop_flag = True
-                # Then merge it with existing array on network
-                try:
-                    temp = sp.hstack((network[key], donor[key]))
-                except ValueError:
-                    temp = sp.vstack((network[key], donor[key]))
-                network[key] = temp
-                if pop_flag:
-                    donor.pop(key, None)
-            else:
-                # If key not on network add it first
-                logger.debug('Adding ' + key + ' to network')
-                if donor[key].dtype == bool:
-                    network[key] = False
+    if type(donor) == list:
+        donors = donor
+    else:
+        donors = [donor]
+
+    for donor in donors:
+        network['pore.coords'] = sp.vstack((network['pore.coords'],
+                                            donor['pore.coords']))
+        network['throat.conns'] = sp.vstack((network['throat.conns'],
+                                             donor['throat.conns'] +
+                                             network.Np))
+        p_all = sp.ones((sp.shape(network['pore.coords'])[0],), dtype=bool)
+        t_all = sp.ones((sp.shape(network['throat.conns'])[0],), dtype=bool)
+        network.update({'pore.all': p_all})
+        network.update({'throat.all': t_all})
+        for key in set(network.keys()).union(set(donor.keys())):
+            if key.split('.')[1] not in ['conns', 'coords', '_id', 'all']:
+                if key in network.keys():
+                    pop_flag = False
+                    if key not in donor.keys():
+                        logger.debug('Adding ' + key + ' to donor')
+                        # If key not on donor add it first
+                        if network[key].dtype == bool:
+                            donor[key] = False
+                        else:
+                            donor[key] = sp.nan
+                        pop_flag = True
+                    # Then merge it with existing array on network
+                    try:
+                        temp = sp.hstack((network[key], donor[key]))
+                    except ValueError:
+                        temp = sp.vstack((network[key], donor[key]))
+                    network[key] = temp
+                    if pop_flag:
+                        donor.pop(key, None)
                 else:
-                    network[key] = sp.nan
-                # Then append donor values to network
-                s = sp.shape(donor[key])[0]
-                network[key][-s:] = donor[key]
+                    # If key not on network add it first
+                    logger.debug('Adding ' + key + ' to network')
+                    if donor[key].dtype == bool:
+                        network[key] = False
+                    else:
+                        network[key] = sp.nan
+                    # Then append donor values to network
+                    s = sp.shape(donor[key])[0]
+                    network[key][-s:] = donor[key]
 
 
 def stitch(network, donor, P_network, P_donor, method='nearest',

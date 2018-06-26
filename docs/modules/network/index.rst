@@ -13,6 +13,7 @@ Contents:
    cubic.rst
    cubic_dual.rst
    cubic_template.rst
+   bravais.rst
    voronoi.rst
    delaunay.rst
    gabriel.rst

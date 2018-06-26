@@ -78,14 +78,11 @@ class Cubic(GenericNetwork):
     >>> fig = op.topotools.plot_connections(network=pn)
     >>> fig = op.topotools.plot_coordinates(network=pn, c='r', s=75, fig=fig)
 
-    This should produce a Matplotlib figure like below.  For larger networks
-    and more control over presentation use
-    `Paraview <http://www.paraview.org>`_.
-
     .. image:: /../docs/static/images/cubic_network.png
-        :width: 500px
         :align: center
 
+    For larger networks and more control over presentation use `Paraview
+    <http://www.paraview.org>`_.
     """
     def __init__(self, shape, spacing=[1, 1, 1], connectivity=6, name=None,
                  project=None):

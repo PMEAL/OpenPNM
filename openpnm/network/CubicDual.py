@@ -75,8 +75,10 @@ class CubicDual(GenericNetwork):
     >>> fig = op.topotools.plot_coordinates(network=pn, c='r', s=75, fig=fig)
 
     .. image:: /../docs/static/images/cubic_dual_network.png
-        :width: 500px
         :align: center
+
+    For larger networks and more control over presentation use `Paraview
+    <http://www.paraview.org>`_.
 
     """
     def __init__(self, shape, spacing=1, label_1='primary',
