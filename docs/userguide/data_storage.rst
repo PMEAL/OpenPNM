@@ -1,8 +1,11 @@
 .. _data_storage:
 
-###############################################################################
+================================================================================
 Data Storage
-###############################################################################
+================================================================================
+
+.. contents:: Page Contents
+    :depth: 3
 
 Each OpenPNM object is a Python *dictionary* which allows data to be stored and accessed by name, with a syntax like ``network['pore.diameter']``.   Inside each *dict* are stored numerous arrays containing pore or throat data corresponding to the *key* (i.e. ``'pore.diameter'`` values).
 
@@ -14,9 +17,9 @@ Several rules have been implemented to control the integrity of the data:
 #. For the sake of consistency only arrays of length *Np* or *Nt* are allowed in the dictionary. Assigning a scalar value to a dictionary results in the creation of a full length vector, either *Np* or *Nt* long, depending on the name of the array..  This effectively applies the scalar value to all locations in the network.
 #. Any Boolean data will be treated as a *label* while all other numerical data is treated as a *property*.  The difference between these is outlined below.
 
-===============================================================================
+--------------------------------------------------------------------------------
 Properties (aka Data)
-===============================================================================
+--------------------------------------------------------------------------------
 
 The physical details about pores and throats are referred to as *properties*, which includes information such as *pore volume* and *throat length*.  Properties are accessed using Python dictionary syntax to access the array of choice, then Numpy array indexing to access the pore or throat locations of choice:
 
@@ -66,9 +69,9 @@ To quickly see a complete list *properties* on an object use the ``props`` metho
 
 You can also view a nicely formatted list of ``props`` with ``print(pn.props())``.
 
-===============================================================================
+--------------------------------------------------------------------------------
 Labels
-===============================================================================
+--------------------------------------------------------------------------------
 Labels are a means of dynamically creating groups of pores and throats so they can be quickly accessed by the user.  For instance, is helpful to know which pores are on the *'top'* surface.  This label is automatically added by the *Cubic* network generator, so a list of all pores on the *'top'* can be retrieved by simply querying which pores possess the label *'top'* using the ``pores`` method:
 
 .. code-block:: python
@@ -136,9 +139,9 @@ This results can also be viewed with ``print(pn.labels())``.
 
    All objects are instantiated with a ``'pore.all'`` and ``'throat.all'`` label.  These arrays are essential to the framework since they are used to define how long the 'pore' and 'throat' data arrays must be.  In other words, the ``__setitem__`` method checks to make sure that any 'pore' array it receives has the same length as ``'pore.all'``.
 
-===============================================================================
+--------------------------------------------------------------------------------
 Data Exchange Between Objects
-===============================================================================
+--------------------------------------------------------------------------------
 
 One of the features in OpenPNM is the ability to model heterogeneous materials by applying different pore-scale models to different regions.  This is done by (a) creating a unique **Geometry** object for each region (i.e. small pores vs big pores) and (b) creating unique **Physics** object for each region as well (i.e. Knudsen diffusion vs Fickian diffusion).  One consequence of this segregation of properties is that a *single* array containing values for all locations in the domain cannot be directly obtained.  OpenPNM offers a shortcut for this, known as ``interleave_data``, which makes it possible to query **Geometry** properties via the **Network** object, and **Physics** properties from the associated **Phase** object:
 

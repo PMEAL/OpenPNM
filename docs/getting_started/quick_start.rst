@@ -4,9 +4,8 @@
 Quick Start
 ================================================================================
 
-.. contents:: Contents of this Page
+.. contents:: Page Contents
     :depth: 3
-
 
 The following is meant to give a very quick overview of how OpenPNM works.
 

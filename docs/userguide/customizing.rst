@@ -1,8 +1,12 @@
 .. _customizing:
 
-###############################################################################
+================================================================================
 Customizing
-###############################################################################
+================================================================================
+
+.. contents:: Page Contents
+    :depth: 3
+
 The OpenPNM framework was designed specifically with extensibility and customization in mind.  Every user will apply OpenPNM to a unique problem, and will therefore require unique pore scale models, phase properties, algorithms and so on.
 
 There are two ways to customize OpenPNM.  The first is to download the source code and *hack* it.  With this approach it is possible to create your own sub-classes, add pore-scale models, define new topology generators, and to add or change OpenPNM methods.  The other approach is to install OpenPNM in your Python PATH (using ``pip install openpnm``) as with any other package such as Scipy, and write custom functions in a separate 'working directory' rather than in the source code.  In this scenario, you can perform all of the same customizations as the first approach, with the exception of changing OpenPNM's native methods (in fact even this is possible, but that's another story).  The second approach is the recommended way for several reasons.  It avoids accidental changes to the framework, it allows users to keep their 'projects' compartmentalized, and it is much easier for users to contribute their work to OpenPNM project (which we highly encourage) since sections can be 'cut and pasted' or 'merged' into the framework cleanly.  The second approach will be explained in detail below.
@@ -148,18 +152,16 @@ The next step is to actually customize the class.  In OpenPNM, all the subclasse
 
 The first of the above two models creates a property called 'pore.seed', which is just a list of random numbers that will be used to seed the pore size distribution.  The second model uses the Scipy.stats package to generate 'pore.diameter' values from the 'weibull_min' distribution using the given parameters.
 
-===============================================================================
+--------------------------------------------------------------------------------
 Creating Customized Networks
-===============================================================================
+--------------------------------------------------------------------------------
+
 Unlike Geometry, Phase and Physics objects, a Network object requires more than a collection of calls to ``add_model``.  The Network object must provide the 'pore.coords' and 'throat.conns' properties.  The 'pore.coords' is fairly straightforward, as it's just an Np x 3 list of [x,y,z] coordinates for each pore in the Network.  The 'throat.conns' list is much more difficult to produce.  This list is an Nt x 2 list of pairs of connected pore, such as [P1,P2].  OpenPNM comes with two main Network classes: Cubic and Delaunay.  The Cubic class connects each pore to it's immediate 6 neighbors on a cubic lattice, while the Delaunay class places pores randomly in space and determines connections via a Delaunay tessellation.  There are endless possible topology generation schemes that one may wish to develop.
 
 The approach used to subclass GenericGeometry above would also work for Networks, but there is one additional consideration.  Every object must have a 'pore.all' and a 'throat.all' array so that they function properly.  The Network generation must therefore, produce these two arrays as well as the 'pore.coords' and 'throat.conns' described above.
 
-===============================================================================
+--------------------------------------------------------------------------------
 Creating Customized Algorithms
-===============================================================================
+--------------------------------------------------------------------------------
+
 Algorithms can also be customized as described above.  The GenericAlgorithm has a few additional methods that are meant to be implemented by subclasses, such as ``return_results``.  The intention of this method is to send the pertinent results of a calculation 'out' of the Algorithm object and to the correct object in the simulation.  This step is handy, but is not actually necessary.  One can of course manually transfer data from an Algorithm to a Phase, for instance with:
-
-::
-
-    Documentation not finished yet

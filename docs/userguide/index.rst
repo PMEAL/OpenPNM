@@ -1,9 +1,8 @@
+.. _user_guide_index:
 
 ###############################################################################
 **User Guide**
 ###############################################################################
-
-Contents:
 
 .. toctree::
     :maxdepth: 2
@@ -13,4 +12,5 @@ Contents:
     topology.rst
     workspace_and_project.rst
     models.rst
+    algorithms/index.rst
     customizing.rst

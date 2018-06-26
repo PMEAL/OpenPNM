@@ -1,14 +1,15 @@
 .. _topology:
 
-###############################################################################
+================================================================================
 Representing Topology
-###############################################################################
+================================================================================
 
 .. contents:: Page Contents
+    :depth: 3
 
-===============================================================================
+--------------------------------------------------------------------------------
 Storage of Topological Connections
-===============================================================================
+--------------------------------------------------------------------------------
 As the name suggests, pore network modeling borrows significantly from the fields of network and graph theory.  During the development of OpenPNM, it was debated whether existing Python graph theory packages (such as `graph-tool <http://graph-tool.skewed.de/>`_ and `NetworkX <http://networkx.github.io/>`_) should be used to store the network topology.  It was decided that network property data should be simply stored as `Numpy ND-arrays <http://www.numpy.org/>`_).  This format makes the data storage very transparent and familiar since all engineers are used to working with arrays (i.e. vectors), and also very efficiently since this allows code vectorization.  Fortuitously, around the same time as this discussion, Scipy introduced the `compressed sparse graph library <http://docs.scipy.org/doc/scipy/reference/sparse.csgraph.html>`_, which contains numerous graph theory algorithms that take Numpy arrays as arguments.  Therefore, OpenPNM's topology model is implemented using Numpy arrays, which is described in detail below:
 
 The only topology definitions required by OpenPNM are:
@@ -33,21 +34,19 @@ In OpenPNM network topology (or connectivity) is stored as an `adjacency matrix 
     :width: 500 px
     :align: center
 
--------------------------------------------------------------------------------
-Additional Thoughts on Topology Storage
--------------------------------------------------------------------------------
+.. note:: Additional Thoughts on Sparse Storage
 
-* In pore networks there is generally no difference between traversing from pore *i* to pore *j* or from pore *j* to pore *i*, so a 1 is also found at location (*j*, *i*) and the matrix is symmetrical.
+    * In pore networks there is generally no difference between traversing from pore *i* to pore *j* or from pore *j* to pore *i*, so a 1 is also found at location (*j*, *i*) and the matrix is symmetrical.
 
-* Since the adjacency matrix is symmetric, it is redundant to store the entire matrix when only the upper triangular part is necessary.  The ``'throat.conns'`` array only stores the upper triangular information, and *i* is always less than *j*.
+    * Since the adjacency matrix is symmetric, it is redundant to store the entire matrix when only the upper triangular part is necessary.  The ``'throat.conns'`` array only stores the upper triangular information, and *i* is always less than *j*.
 
-* Although this storage scheme is widely known as *IJV*, the ``scipy.sparse`` module calls this the Coordinate or *COO* storage scheme.
+    * Although this storage scheme is widely known as *IJV*, the ``scipy.sparse`` module calls this the Coordinate or *COO* storage scheme.
 
-* Some tasks are best performed on other types of storages scheme, such as *CSR* or *LIL*.  OpenPNM converts between these internally as necessary, but users can generate a desired format using the ``create_adjacency_matrix`` method which accepts the storage type as an argument (i.e. ``'csr'``, ``'lil'``, etc).  For a discussion of sparse storage schemes and the respective merits, see this `Wikipedia article <http://en.wikipedia.org/wiki/Sparse_matrix>`_.
+    * Some tasks are best performed on other types of storages scheme, such as *CSR* or *LIL*.  OpenPNM converts between these internally as necessary, but users can generate a desired format using the ``create_adjacency_matrix`` method which accepts the storage type as an argument (i.e. ``'csr'``, ``'lil'``, etc).  For a discussion of sparse storage schemes and the respective merits, see this `Wikipedia article <http://en.wikipedia.org/wiki/Sparse_matrix>`_.
 
-===============================================================================
+--------------------------------------------------------------------------------
 Performing Network Queries
-===============================================================================
+--------------------------------------------------------------------------------
 
 Querying and inspecting the pores and throats in the **Network** is an important tool for working with networks. The various functions that are included on the **GenericNetwork** class will be demonstrated below on the following cubic network:
 
@@ -56,9 +55,9 @@ Querying and inspecting the pores and throats in the **Network** is an important
     >>> import openpnm as op
     >>> pn = op.network.Cubic(shape=[10, 10, 10])
 
--------------------------------------------------------------------------------
+................................................................................
 Finding Neighboring Pores and Throats
--------------------------------------------------------------------------------
+................................................................................
 
 Given a pore *i*, it possible to find which pores (or throats) are directly connected to it:
 
