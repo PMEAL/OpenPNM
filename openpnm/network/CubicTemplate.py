@@ -5,8 +5,47 @@ from openpnm import topotools
 
 class CubicTemplate(Cubic):
     r"""
+    Generates a cubic lattice network, but with arbitrary domain shape (e.g.
+    spheres, cylinders) as specified by an image mask.
+
+    The class creates a standard Cubic network the same shape as the provided
+    image, then trims pores from the network that are not in the mask.
+
+    Parameters
+    ----------
+    template : array_like
+        The array (image) describing the desired shape of the domain.  All
+        locations in the image that are marked as ``True`` are kept while the
+        rest of trimmed to yeild the shape.
+
+    Notes
+    -----
+    The other arguments are the same as ``Cubic`` except that ``shape`` is
+    inferred from the ``template`` image.
+
+    See Also
+    --------
+    The following methods in ``topotools`` can help generate template images:
+
+    template_cylinder_annulus
+    template_sphere_shell
+
+    Examples
+    --------
+    >>> import openpnm as op
+    >>> im = op.topotools.template_cylinder_annulus(15, 10, 5)
+    >>> pn = op.network.CubicTemplate(template=im)
+
+    And it can be plotted for quick visualization using:
+
+    >>> fig = op.topotools.plot_connections(network=pn)
+
+    .. image:: /../docs/static/images/cubic_template_network.png
+        :width: 500px
+        :align: center
+
     """
-    def __init__(self, template, spacing, **kwargs):
+    def __init__(self, template, spacing=[1, 1, 1], **kwargs):
 
         template = sp.atleast_3d(template)
         super().__init__(shape=template.shape, spacing=spacing, **kwargs)

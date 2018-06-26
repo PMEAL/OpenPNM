@@ -11,3 +11,5 @@ Algorithms
    generic_transport.rst
    reactive_transport.rst
    transient_reactive_transport.rst
+   ordinary_percolation.rst
+   invasion_percolation.rst

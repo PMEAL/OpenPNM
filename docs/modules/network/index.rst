@@ -12,6 +12,7 @@ Contents:
    generic.rst
    cubic.rst
    cubic_dual.rst
+   cubic_template.rst
    voronoi.rst
    delaunay.rst
    gabriel.rst
