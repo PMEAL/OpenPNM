@@ -4,7 +4,7 @@ import scipy.sparse as sprs
 from skimage.filters import rank_order
 from openpnm.network import GenericNetwork
 from openpnm import topotools
-from openpnm.core import logging
+from openpnm.utils import logging
 logger = logging.getLogger(__name__)
 
 

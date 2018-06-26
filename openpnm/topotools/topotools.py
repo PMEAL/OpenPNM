@@ -3,8 +3,7 @@ import scipy.ndimage as spim
 import scipy.sparse as sprs
 import warnings
 from scipy.sparse import csgraph
-from openpnm.core import logging, Workspace
-from openpnm.utils.misc import PrintableDict
+from openpnm.utils import PrintableDict, logging, Workspace
 ws = Workspace()
 logger = logging.getLogger()
 

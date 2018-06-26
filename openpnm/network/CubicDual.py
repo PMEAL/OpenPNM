@@ -1,14 +1,7 @@
-# -*- coding: utf-8 -*-
-"""
-===============================================================================
-CubicDual: Generate a cubic lattice with an interpentrating dual network
-===============================================================================
-
-"""
 import scipy as sp
 from openpnm.network import GenericNetwork, Cubic
 from openpnm import topotools
-from openpnm.core import logging, Workspace
+from openpnm.utils import logging, Workspace
 logger = logging.getLogger(__name__)
 ws = Workspace()
 

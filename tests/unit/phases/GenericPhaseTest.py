@@ -7,5 +7,5 @@ class GenericPhaseTest:
         self.net = op.network.Cubic(shape=[10, 10, 10])
 
     def teardown_class(self):
-        mgr = op.core.Workspace()
+        mgr = op.Workspace()
         mgr.clear()

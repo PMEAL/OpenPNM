@@ -1,7 +1,6 @@
 import inspect
 import networkx as nx
-from openpnm.core import Workspace, logging
-from openpnm.utils.misc import PrintableDict
+from openpnm.utils import PrintableDict, logging, Workspace
 ws = Workspace()
 logger = logging.getLogger()
 

@@ -2,7 +2,7 @@ import os as os
 import scipy as sp
 import pandas as pd
 from openpnm.topotools import trim
-from openpnm.core import logging
+from openpnm.utils import logging
 from openpnm.io import GenericIO
 from openpnm.network import GenericNetwork
 from pathlib import Path

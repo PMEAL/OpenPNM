@@ -56,7 +56,7 @@ class HDF5Test:
         self.phys_4['throat.baz'] = 22
 
     def teardown_class(self):
-        ws = op.core.Workspace()
+        ws = op.Workspace()
         ws.clear()
 
     def test_to_hdf5(self, tmpdir):

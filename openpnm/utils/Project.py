@@ -1,11 +1,10 @@
 import time
 import pickle
 import h5py
-from pathlib import Path
-from openpnm.core import Workspace
-from openpnm.utils.misc import SettingsDict, HealthDict, PrintableList
-import openpnm
 import numpy as np
+import openpnm
+from pathlib import Path
+from openpnm.utils import SettingsDict, HealthDict, PrintableList, Workspace
 ws = Workspace()
 
 

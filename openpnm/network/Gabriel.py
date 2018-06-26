@@ -2,7 +2,7 @@ import scipy as sp
 import scipy.spatial as sptl
 from openpnm.network import Delaunay
 from openpnm.topotools import trim
-from openpnm.core import logging
+from openpnm.utils import logging
 logger = logging.getLogger(__name__)
 
 
@@ -50,7 +50,7 @@ class Gabriel(Delaunay):
 
     Examples
     --------
-    >>> imoprt openpnm as op
+    >>> import openpnm as op
     >>> import scipy as sp
     >>> pts = sp.rand(100, 3) * [1, 1, 0]  # Set z-axis to 0
     >>> gn = op.network.Gabriel(shape=[1, 1, 0], points=pts)

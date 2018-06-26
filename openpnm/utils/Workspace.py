@@ -4,8 +4,7 @@ import time
 import copy
 import warnings
 from pathlib import Path
-from openpnm.core import logging
-from openpnm.utils import SettingsDict
+from openpnm.utils import SettingsDict, logging
 logger = logging.getLogger()
 
 
@@ -42,8 +41,8 @@ class Workspace(dict):
             raise Exception("A project named " + name + " already exists")
         if project in self.values():
             self.pop(project.name, None)
-        if not isinstance(project, openpnm.core.Project):
-            project = openpnm.core.Project(project, name=name)
+        if not isinstance(project, openpnm.utils.Project):
+            project = openpnm.utils.Project(project, name=name)
         super().__setitem__(name, project)
 
     def _create_console_handles(self, project):
@@ -262,7 +261,7 @@ class Workspace(dict):
         generator
 
         """
-        sim = openpnm.core.Project(name=name)
+        sim = openpnm.utils.Project(name=name)
         return sim
 
     def _gen_name(self):

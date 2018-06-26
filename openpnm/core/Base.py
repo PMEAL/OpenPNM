@@ -1,6 +1,6 @@
 from collections import namedtuple
 import matplotlib.pyplot as plt
-from openpnm.core import Workspace, logging
+from openpnm.utils import Workspace, logging
 from openpnm.utils.misc import PrintableList, SettingsDict, HealthDict
 import scipy as sp
 logger = logging.getLogger(__name__)

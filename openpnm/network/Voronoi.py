@@ -1,6 +1,6 @@
 from openpnm.network import DelaunayVoronoiDual
 from openpnm import topotools
-from openpnm.core import logging
+from openpnm.utils import logging
 logger = logging.getLogger(__name__)
 
 

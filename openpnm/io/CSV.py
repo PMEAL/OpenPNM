@@ -1,11 +1,10 @@
 import re
 import scipy as sp
 import pandas as pd
-from openpnm.core import logging, Workspace
 from openpnm.network import GenericNetwork
 from openpnm.io import GenericIO, Dict
 from openpnm.io.Pandas import Pandas
-from openpnm.utils import NestedDict
+from openpnm.utils import NestedDict, logging, Workspace
 logger = logging.getLogger(__name__)
 ws = Workspace()
 

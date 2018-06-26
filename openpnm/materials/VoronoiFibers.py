@@ -9,7 +9,7 @@ from skimage.morphology import convex_hull_image
 from skimage.measure import regionprops
 from openpnm import topotools
 from openpnm.network import DelaunayVoronoiDual
-from openpnm.core import logging
+from openpnm.utils import logging
 import openpnm.models.geometry as gm
 from openpnm.geometry import GenericGeometry
 from openpnm.utils.misc import unique_list

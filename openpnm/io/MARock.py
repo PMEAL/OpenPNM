@@ -1,7 +1,7 @@
 import os as os
 import scipy as sp
 from pathlib import Path
-from openpnm.core import logging, Project
+from openpnm.utils import logging, Project
 from openpnm.network import GenericNetwork
 from openpnm.io import GenericIO
 from openpnm.topotools import trim

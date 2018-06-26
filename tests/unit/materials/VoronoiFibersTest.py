@@ -13,7 +13,7 @@ class VoronoiTest:
                        [0.25, 0.25, 0.75], [0.75, 0.75, 0.75]])
         scale = 1e-4
         bp = reflect_base_points(bp, [1, 1, 1])*scale
-        self.wrk = op.core.Workspace()
+        self.wrk = op.Workspace()
         self.net = op.materials.VoronoiFibers(fiber_rad=2e-6,
                                               resolution=1e-6,
                                               shape=[scale]*3,

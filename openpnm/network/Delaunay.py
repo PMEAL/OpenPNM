@@ -1,6 +1,6 @@
 from openpnm.network import DelaunayVoronoiDual
 from openpnm import topotools
-from openpnm.core import logging
+from openpnm.utils import logging
 logger = logging.getLogger(__name__)
 
 
@@ -65,7 +65,7 @@ class Delaunay(DelaunayVoronoiDual):
 
     Which can be quickly visualized using:
 
-    >>> op.topotools.plot_connections(network=gn)
+    >>> fig = op.topotools.plot_connections(network=gn)
 
     .. image:: /../docs/static/images/delaunay_network_given_points.png
         :align: center
@@ -82,7 +82,7 @@ class Delaunay(DelaunayVoronoiDual):
 
     And visualizing:
 
-    >>> op.topotools.plot_connections(network=gn)
+    >>> fig = op.topotools.plot_connections(network=gn)
 
     .. image:: /../docs/static/images/delaunay_network_w_trimmed_points.png
         :align: center

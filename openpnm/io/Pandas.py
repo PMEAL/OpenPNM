@@ -1,9 +1,8 @@
 import scipy as sp
 from collections import namedtuple
 import pandas as pd
-from openpnm.core import logging
 from openpnm.io import Dict, GenericIO
-from openpnm.utils import FlatDict, sanitize_dict
+from openpnm.utils import FlatDict, sanitize_dict, logging
 logger = logging.getLogger(__name__)
 
 

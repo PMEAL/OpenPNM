@@ -56,8 +56,8 @@ class StickAndBall(GenericGeometry):
 
     Look at the 'pore.diameter' distributions on each object:
 
-    >>> plt.hist(geo1['pore.diameter'], bins=20, alpha=0.5)
-    >>> plt.hist(geo2['pore.diameter'], bins=20, alpha=0.5)
+    >>> fig = plt.hist(geo1['pore.diameter'], bins=20, alpha=0.5)
+    >>> fig = plt.hist(geo2['pore.diameter'], bins=20, alpha=0.5)
 
     The resulting figure shows that these two Geometry object each have a
     different pore size distribution, with ``geo2`` being much smaller:

@@ -5,7 +5,7 @@ from scipy.spatial import ConvexHull
 from scipy.spatial import cKDTree
 from openpnm.topotools import iscoplanar
 from openpnm.algorithms import GenericAlgorithm
-from openpnm.core import logging
+from openpnm.utils import logging
 logger = logging.getLogger(__name__)
 
 

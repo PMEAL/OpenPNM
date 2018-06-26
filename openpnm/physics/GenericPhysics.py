@@ -1,5 +1,5 @@
-from openpnm.core import Subdomain, ModelsMixin, Workspace, logging
-from numpy import ones
+from openpnm.core import Subdomain, ModelsMixin
+from openpnm.utils import Workspace, logging
 logger = logging.getLogger(__name__)
 ws = Workspace()
 

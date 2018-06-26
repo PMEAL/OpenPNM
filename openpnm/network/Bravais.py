@@ -1,12 +1,6 @@
-"""
-===============================================================================
-Bravais: Cubic lattices with crystallographic structures like fcc and bcc
-===============================================================================
-
-"""
 from openpnm.network import GenericNetwork, Cubic
 from openpnm import topotools
-from openpnm.core import logging, Workspace
+from openpnm.utils import logging, Workspace
 import numpy as np
 logger = logging.getLogger(__name__)
 ws = Workspace()
@@ -88,7 +82,7 @@ class Bravais(GenericNetwork):
     >>> bcc['pore.coords'][:, 0] += 3
     >>> fcc['pore.coords'][:, 0] += 6
     >>> op.topotools.merge_networks(sc, [bcc, fcc])
-    >>> op.topotools.plot_connections(sc)
+    >>> fig = op.topotools.plot_connections(sc)
 
     .. image:: /../docs/static/images/bravais_networks.png
         :align: center

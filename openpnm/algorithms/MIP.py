@@ -1,6 +1,6 @@
 import openpnm as op
 from openpnm.algorithms import GenericAlgorithm, Drainage
-from openpnm.core import logging
+from openpnm.utils import logging
 logger = logging.getLogger()
 
 

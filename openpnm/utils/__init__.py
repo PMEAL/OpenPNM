@@ -1,3 +1,4 @@
+import logging as logging
 from .misc import PrintableDict
 from .misc import PrintableList
 from .misc import NestedDict
@@ -9,3 +10,5 @@ from .misc import unique_list
 from .misc import tic, toc
 from flatdict import FlatDict
 from .misc import models_to_table
+from .Workspace import Workspace
+from .Project import Project

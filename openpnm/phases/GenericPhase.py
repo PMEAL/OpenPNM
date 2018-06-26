@@ -1,5 +1,5 @@
-from openpnm.core import Base, Workspace, logging, ModelsMixin
-from openpnm.utils import PrintableDict
+from openpnm.core import Base, ModelsMixin
+from openpnm.utils import PrintableDict, Workspace, logging
 logger = logging.getLogger(__name__)
 ws = Workspace()
 from numpy import ones

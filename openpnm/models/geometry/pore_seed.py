@@ -1,6 +1,6 @@
 import scipy as _sp
 from openpnm.models import misc as _misc
-from openpnm.core import logging as _logging
+from openpnm.utils import logging as _logging
 _logger = _logging.getLogger(__name__)
 
 

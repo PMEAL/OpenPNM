@@ -1,6 +1,6 @@
 import scipy as sp
 import networkx as nx
-from openpnm.core import logging
+from openpnm.utils import logging
 from openpnm.io import GenericIO
 from openpnm.network import GenericNetwork
 logger = logging.getLogger(__name__)

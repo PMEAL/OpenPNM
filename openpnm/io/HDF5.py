@@ -1,9 +1,7 @@
 import h5py
-from openpnm.core import logging, Project
-from openpnm.io import Dict
+from openpnm.io import Dict, GenericIO
 from openpnm.network import GenericNetwork
-from openpnm.utils import FlatDict
-from openpnm.io import GenericIO
+from openpnm.utils import FlatDict, logging, Project
 logger = logging.getLogger(__name__)
 
 

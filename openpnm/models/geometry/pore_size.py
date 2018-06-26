@@ -1,4 +1,4 @@
-from openpnm.core import logging as _logging
+from openpnm.utils import logging as _logging
 from openpnm.models import misc as _misc
 import numpy as _np
 _logger = _logging.getLogger(__name__)

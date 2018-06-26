@@ -1,8 +1,6 @@
-import scipy as sp
 import scipy.io as spio
-from openpnm.core import logging, Workspace
 from openpnm.io import GenericIO, Dict
-from openpnm.utils import FlatDict, sanitize_dict
+from openpnm.utils import FlatDict, sanitize_dict, logging, Workspace
 logger = logging.getLogger(__name__)
 ws = Workspace()
 

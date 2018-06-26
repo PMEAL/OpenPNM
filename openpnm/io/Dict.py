@@ -1,6 +1,6 @@
 import pickle
-from openpnm.core import logging, Workspace
-from openpnm.utils import NestedDict, FlatDict, sanitize_dict
+from openpnm.utils import NestedDict, FlatDict, sanitize_dict, Workspace
+from openpnm.utils import logging
 from openpnm.io import GenericIO
 logger = logging.getLogger(__name__)
 ws = Workspace()
