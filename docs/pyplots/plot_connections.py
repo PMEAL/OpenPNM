@@ -7,4 +7,3 @@ fig = op.topotools.plot_connections(network=pn, throats=Ts)
 Ts = pn.throats('*boundary')
 # Pass existing fig back into function to plot additional throats
 fig = op.topotools.plot_connections(network=pn, throats=Ts, fig=fig, color='r')
-fig.show()

@@ -135,7 +135,7 @@ Simulating Mercury Porosimetry
     >>> mip.set_inlets(pn.pores(['left', 'right', 'top', 'bottom', 'front',
     ...                          'back']))
     >>> mip.run(npts=25)
-    >>> mip.
+    >>> mip.show_XXX
 
 Which can be visualized using the ``plot_porosimetry_curve`` method of the Porosimetry class:
 
