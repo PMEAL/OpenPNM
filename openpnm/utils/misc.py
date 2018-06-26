@@ -4,6 +4,24 @@ from collections import OrderedDict
 
 
 class PrintableList(list):
+    r"""
+    Simple subclass of ``list`` that has nice printing.  Only works flat lists.
+
+    Example
+    -------
+    >>> from openpnm.utils import PrintableList
+    >>> temp = ['item1', 'item2', 'item3']
+    >>> print(PrintableList(temp))
+    ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+    1       : item1
+    2       : item2
+    3       : item3
+    ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+
+    Each line contains the result of ``print(item)`` on each item in the list
+
+    """
+
     def __str__(self):
         horizontal_rule = '―' * 78
         lines = [horizontal_rule]
@@ -19,6 +37,28 @@ class PrintableList(list):
 
 
 class PrintableDict(OrderedDict):
+    r"""
+    Simple subclass of ``dict`` that has nicer printing.
+
+    Example
+    -------
+    >>> from openpnm.utils import PrintableDict
+    >>> from numpy import array as arr
+    >>> d = {'item1': 1, 'item2': '1', 'item3': [1, 1], 'item4': arr([1, 1])}
+    >>> print(PrintableDict(d))
+    ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+    key                                 value
+    ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+    item1                               1
+    item2                               1
+    item3                               [1, 1]
+    item4                               (2,)
+    ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+
+    If the item is a Numpy array the value column will contain the items'
+    shape, otherwise it will contain the result of ``print(item)``
+
+    """
     def __init__(self, *args, **kwargs):
         self._header = 'value'
         if 'header' in kwargs:
@@ -137,16 +177,21 @@ class HealthDict(PrintableDict):
 
 
 def tic():
-    r'''
+    r"""
     Homemade version of matlab tic and toc function, tic starts or resets
     the clock, toc reports the time since the last call of tic.
-    '''
+
+    See Also
+    --------
+    toc
+
+    """
     global _startTime_for_tictoc
     _startTime_for_tictoc = _time.time()
 
 
 def toc(quiet=False):
-    r'''
+    r"""
     Homemade version of matlab tic and toc function, tic starts or resets
     the clock, toc reports the time since the last call of tic.
 
@@ -155,7 +200,12 @@ def toc(quiet=False):
     quiet : Boolean
         If False (default) then a message is output to the console.  If True
         the message is not displayed and the elapsed time is returned.
-    '''
+
+    See Also
+    --------
+    tic
+
+    """
     if '_startTime_for_tictoc' in globals():
         t = _time.time() - _startTime_for_tictoc
         if quiet is False:
@@ -219,12 +269,24 @@ def sanitize_dict(input_dict):
     return plain_dict
 
 
-def models_to_table(obj):
+def models_to_table(obj, params=True):
     r"""
+    Converts a ModelsDict object to a ReST compatible table
 
+    Parameters
+    ----------
+    obj : OpenPNM object
+        Any object that has a ``models`` attribute
+
+    params : boolean
+        Indicates whether or not to include a list of parameter
+        values in the table.  Set to False for just a list of models, and
+        True for a more verbose table with all parameter values.
     """
-    row = '+' + '-'*3 + '+' + '-'*22 + '+' + '-'*18 + '+' + '-'*26 + '+'
-    fmt = '{0:1s} {1:1s} {2:1s} {3:20s} {4:1s} {5:16s} {6:1s} {7:24s} {8:1s}'
+    if not hasattr(obj, 'models'):
+        raise Exception('Received object does not have any models')
+    row = '+' + '-'*4 + '+' + '-'*22 + '+' + '-'*18 + '+' + '-'*26 + '+'
+    fmt = '{0:1s} {1:2s} {2:1s} {3:20s} {4:1s} {5:16s} {6:1s} {7:24s} {8:1s}'
     lines = []
     lines.append(row)
     lines.append(fmt.format('|', '#', '|', 'Property Name', '|', 'Parameter',
@@ -239,15 +301,17 @@ def models_to_table(obj):
         lines.append(fmt.format('|', str(i+1), '|', prop, '|', 'model:',
                                 '|', model, '|'))
         lines.append(row)
-        for param in temp.keys():
-            p1 = param
-            if len(p1) > 16:
-                p1 = p1[:14] + '...'
-            p2 = str(temp[param])
-            if len(p2) > 24:
-                p2 = p2[:21] + '...'
-            lines.append(fmt.format('|', '', '|', '', '|', p1, '|', p2, '|'))
-            lines.append(row)
+        if params:
+            for param in temp.keys():
+                p1 = param
+                if len(p1) > 16:
+                    p1 = p1[:14] + '...'
+                p2 = str(temp[param])
+                if len(p2) > 24:
+                    p2 = p2[:21] + '...'
+                lines.append(fmt.format('|', '', '|', '', '|', p1, '|',
+                                        p2, '|'))
+                lines.append(row)
     return '\n'.join(lines)
 
 
