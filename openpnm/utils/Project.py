@@ -285,6 +285,13 @@ class Project(list):
 
     def save_object(self, obj):
         r"""
+        Saves the given object to a file
+
+        Parameters
+        ----------
+        obj : OpenPNM object
+            The file to be saved.  Depending on the object type, the file
+            extension will be one of 'net', 'geo', 'phase', 'phys' or 'alg'.
         """
         if not isinstance(obj, list):
             obj = [obj]
@@ -551,6 +558,10 @@ class Project(list):
     def check_geometry_health(self):
         r"""
         Perform a check to find pores with overlapping or undefined Geometries
+
+        Returns
+        -------
+        A HealthDict
         """
         health = HealthDict()
         health['overlapping_pores'] = []
@@ -576,6 +587,16 @@ class Project(list):
     def check_physics_health(self, phase):
         r"""
         Perform a check to find pores which have overlapping or missing Physics
+
+        Parameters
+        ----------
+        phase : OpenPNM Phase object
+            The Phase whose Physics should be checked
+
+        Returns
+        -------
+        A HealthDict
+
         """
         health = HealthDict()
         health['overlapping_pores'] = []

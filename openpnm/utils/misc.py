@@ -1,3 +1,4 @@
+import inspect
 import scipy as _sp
 import time as _time
 from collections import OrderedDict
@@ -278,6 +279,37 @@ def sanitize_dict(input_dict):
         else:
             plain_dict[key] = value
     return plain_dict
+
+
+def methods_to_table(obj):
+    r"""
+    """
+    parent = obj.__class__.__mro__[1]
+    temp = inspect.getmembers(parent, predicate=inspect.isroutine)
+    parent_funcs = [i[0] for i in temp if not i[0].startswith('_')]
+
+    temp = inspect.getmembers(obj.__class__, predicate=inspect.isroutine)
+    obj_funcs = [i[0] for i in temp if not i[0].startswith('_')]
+    funcs = set(obj_funcs).difference(set(parent_funcs))
+
+    row = '+' + '-'*4 + '+' + '-'*18 + '+' + '-'*50 + '+'
+    fmt = '{0:1s} {1:2s} {2:1s} {3:16s} {4:1s} {5:48s} {6:1s}'
+    lines = []
+    lines.append(row)
+    lines.append(fmt.format('|', '#', '|', 'Method', '|', 'Description', '|'))
+    lines.append(row.replace('-', '='))
+    for i, item in enumerate(funcs):
+        try:
+            s = getattr(obj, item).__doc__.strip()
+            end = s.find('\n')
+            print(item, end)
+            if end > 48:
+                s = s[:45] + '...'
+            lines.append(fmt.format('|', str(i+1), '|', item, '|', s[:end], '|'))
+            lines.append(row)
+        except:
+            pass
+    return '\n'.join(lines)
 
 
 def models_to_table(obj, params=True):

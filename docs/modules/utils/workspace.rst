@@ -4,6 +4,6 @@
 Workspace
 --------------------------------------------------------------------------------
 
-.. autoclass:: openpnm.core.Workspace
+.. autoclass:: openpnm.utils.Workspace
    :members:
    :show-inheritance:

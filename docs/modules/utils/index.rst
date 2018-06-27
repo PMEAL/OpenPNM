@@ -4,5 +4,10 @@
 **Utilities**
 ================================================================================
 
-.. autoclass:: openpnm.utils.PrintableDict
-.. autoclass:: openpnm.utils.PrintableList
+.. toctree::
+   :maxdepth: 3
+
+   workspace.rst
+   project.rst
+   misc.rst
+   

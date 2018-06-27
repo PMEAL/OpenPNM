@@ -1665,10 +1665,9 @@ def generate_base_points(num_points, domain_size, density_map=None,
         of the density distribution is.  For a 2D network the ``density_map``
         should be [10, 10].
 
-        When specifying
-        a custom probabiliy map is it recommended to also set values outside
-        the given domain to zero.  If not, then the correct shape will still
-        be returned, but with too few points in it.
+        When specifying a custom probabiliy map is it recommended to also set
+        values outside the given domain to zero.  If not, then the correct
+        shape will still be returned, but with too few points in it.
 
     reflect : boolean
         If True, the the base points are generated as specified, the reflected
@@ -1705,6 +1704,7 @@ def generate_base_points(num_points, domain_size, density_map=None,
     ...                                         domain_size=[1, 1, 1],
     ...                                         density_map=prob)
     >>> net = op.network.DelaunayVoronoiDual(points=pts, shape=[1, 1, 1])
+
     """
     def _try_points(num_points, prob):
         prob = sp.atleast_3d(prob)
@@ -1799,13 +1799,27 @@ def reflect_base_points(base_pts, domain_size):
     base_pts : 3d array
         The coordinates of the base_pts to be reflected in the coordinate
         system corresponding to the the domain as follows:
-            '**spherical**' : [r, theta, phi]
-            '**cylindrical** or **circular**' : [r, theta, z]
-            '**rectangular** or **square**' : [x, y, z]
+
+        **spherical** : [r, theta, phi]
+        **cylindrical** or **circular** : [r, theta, z]
+        **rectangular** or **square** : [x, y, z]
 
     domain_size : list or array
-        The upper coordinate of the face normal to the reflection along
-        each axis. Lower bound is assumed to be zero
+        Controls the size and shape of the domain, as follows:
+
+        **sphere** : If a single value is received, its treated as the radius
+        [r] of a sphere centered on [0, 0, 0].
+
+        **cylinder** : If a two-element list is received it's treated as the
+        radius and height of a cylinder [r, z] positioned at [0, 0, 0] and
+        extending in the positive z-direction.  If the z dimension is 0, a
+        disk of radius r is created.
+
+        **rectangle** : If a three element list is received, it's treated
+        as the outer corner of rectangle [x, y, z] whose opposite corner lies
+        at [0, 0, 0].  If the z dimension is 0, a rectangle of size X-by-Y is
+        created.
+
     '''
     domain_size = sp.array(domain_size)
     if len(domain_size) == 1:

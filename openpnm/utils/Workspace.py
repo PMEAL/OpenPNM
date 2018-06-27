@@ -21,6 +21,19 @@ class Workspace(dict):
     control over active OpenPNM sessions.  It is a `dictionary`` that stores
     a list of all open **Projects** by name.
 
+    This class is a
+    `singleton <https://en.wikipedia.org/wiki/Singleton_pattern>`_ so that
+    whenever it is instantiated, the same instance is obtained.  This allows
+    it to maintain a definitive record of all open Projects.
+
+    Notes
+    -----
+    The Workspace object contains a variety of functions that one might expect
+    from the 'file-menu' in a typical GUI.  The table below provides a list
+    along with a brief description.
+
+
+
     """
 
     __instance__ = None
@@ -56,7 +69,7 @@ class Workspace(dict):
 
     def save_workspace(self, filename=''):
         r"""
-        Saves all the current *Projects* to a single 'pnm' file.
+        Saves all the current Projects to a pnm file
 
         Parameters
         ----------
@@ -89,9 +102,11 @@ class Workspace(dict):
 
     def load_workspace(self, filename):
         r"""
-        Loads a saved OpenPNM session from a 'pnm' file.  If the 'pnm' file
-        contains multiple *Projects*, they will all be loaded.  Any *Projects*
-        present in the current *Workspace* will be deleted.
+        Loads all saved from a pnm file into the Workspace
+
+        If the 'pnm' file contains multiple *Projects*, they will all be
+        loaded.  Any Projects present in the current *Workspace* will be
+        deleted.
 
         Parameters
         ----------
@@ -117,8 +132,9 @@ class Workspace(dict):
 
     def save_project(self, project, filename=''):
         r"""
-        Save given project to a 'pnm' file, including all of associated
-        objects including algorithms.
+        Saves given project to a pnm file
+
+        This will include all of associated objects including algorithms.
 
         Parameters
         ----------
@@ -154,9 +170,11 @@ class Workspace(dict):
 
     def load_project(self, filename, overwrite=False):
         r"""
-        Loads a *Project* from the specified 'pnm' file and adds it to the
-        *Workspace*.  This will *not* delete any existing *Projects* in the
-        *Workspace* and will rename any *Projects* being loaded if necessary.
+        Loads a Project from the specified pnm file
+
+        The loaded project is added to the Workspace . This will *not* delete
+        any existing Projects in the Workspace and will rename any Projects
+        being loaded if necessary.
 
         Parameters
         ----------
@@ -219,6 +237,9 @@ class Workspace(dict):
 
     def close_project(self, project):
         r"""
+        Removes the specified project from the Workspace
+
+        This does not save the project, so any changes will be lost.
         """
         del self[project.name]
 
@@ -247,7 +268,7 @@ class Workspace(dict):
 
     def new_project(self, name=None):
         r"""
-        Creates a new, empty project object
+        Creates a new empty project object
 
         Parameters
         ----------
