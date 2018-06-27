@@ -1,9 +1,9 @@
-.. _invasion_percolation_api:
+.. _voronoi_fibers_api:
 
 --------------------------------------------------------------------------------
-InvasionPercolation
+VoronoiFibers
 --------------------------------------------------------------------------------
 
-.. autoclass:: openpnm.algorithms.InvasionPercolation
+.. autoclass:: openpnm.materials.VoronoiFibers
    :members:
    :show-inheritance:

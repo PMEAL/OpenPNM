@@ -1,9 +1,9 @@
-.. _project_api:
+.. _vtk_api:
 
 --------------------------------------------------------------------------------
-Project
+VTK
 --------------------------------------------------------------------------------
 
-.. autoclass:: openpnm.utils.Project
+.. autoclass:: openpnm.io.VTK
    :members:
    :show-inheritance:

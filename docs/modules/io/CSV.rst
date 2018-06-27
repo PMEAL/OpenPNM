@@ -1,9 +1,9 @@
-.. _project_api:
+.. _csv_api:
 
 --------------------------------------------------------------------------------
-Project
+CSV
 --------------------------------------------------------------------------------
 
-.. autoclass:: openpnm.utils.Project
+.. autoclass:: openpnm.io.CSV
    :members:
    :show-inheritance:

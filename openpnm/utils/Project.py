@@ -9,6 +9,59 @@ ws = Workspace()
 
 
 class Project(list):
+    r"""
+    This class provides a container for all OpenPNM objects in a given
+    simulation.
+
+    A simulation is defined as a Network and all of it's associated objects.
+    When instantiating a Network, a Project can be passed as an argument, but
+    if not given one is created.  When instantiating any other object either
+    a Network or a Project can be supplied.  In the former case, the
+    Network's Project is retrieved and used.  The end result is that all
+    objects are stored in a specific Project.
+
+    The Project to which any object belongs can be retrieved with
+    ``obj.project``.  Conversely, printing a Project displays a list of all
+    objects it contains.
+
+    Moreover, all Projects are registered with the Workspace.  Since there can
+    be only instance of the Workspace it is possible to view all open Projects
+    by printing the Workspace.
+
+    See Also
+    --------
+    Workspace
+
+    Notes
+    -----
+    The following table shows all the methods that are available on the Project
+    objects along with a very brief description:
+
+    +----+------------------+-------------------------------------------------+
+    | #  | Method           | Description                                     |
+    +====+==================+=================================================+
+    | 3  | export_data      | Export the pore and throat data from the giv... |
+    +----+------------------+-------------------------------------------------+
+    | 4  | find_physics     | Find the Physics object(s) associated with a... |
+    +----+------------------+-------------------------------------------------+
+    | 6  | purge_object     | Remove an object from the Project.  This rem... |
+    +----+------------------+-------------------------------------------------+
+    | 7  | check_physics... | Perform a check to find pores which have ove... |
+    +----+------------------+-------------------------------------------------+
+    | 8  | find_geometry    | Find the Geometry associated with a given Ph... |
+    +----+------------------+-------------------------------------------------+
+    | 9  | load_object      | Loads a single object from a file               |
+    +----+------------------+-------------------------------------------------+
+    | 10 | import_data      |                                                 |
+    +----+------------------+-------------------------------------------------+
+    | 11 | check_geometr... | Perform a check to find pores with overlappi... |
+    +----+------------------+-------------------------------------------------+
+    | 13 | find_phase       | Find the Phase associated with a given object.  |
+    +----+------------------+-------------------------------------------------+
+    | 14 | save_object      | Saves the given object to a file                |
+    +----+------------------+-------------------------------------------------+
+
+    """
 
     def __init__(self, *args, **kwargs):
         name = kwargs.pop('name', None)
@@ -301,6 +354,13 @@ class Project(list):
                 pickle.dump({item.name: item}, f)
 
     def load_object(self, filename):
+        r"""
+        Loads a single object from a file
+
+        Parameters
+        ----------
+
+        """
         with open(filename, 'rb') as f:
             d = pickle.load(f)
         for item in d.keys():

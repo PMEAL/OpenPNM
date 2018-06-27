@@ -1,3 +1,15 @@
+r"""
+===============================================================================
+openpnm.io
+===============================================================================
+
+This module contains functionality for importing and export data between
+OpenPNM and other formats.
+
+Note that saving and loading OpenPNM data in its own format is done through
+the Workspace and Project objects
+
+"""
 from .GenericIO import GenericIO
 from .Dict import Dict
 from .VTK import VTK

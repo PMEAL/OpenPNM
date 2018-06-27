@@ -1,15 +1,13 @@
-.. _core_index:
+.. _io_index:
 
 ================================================================================
-**Core**
+**IO**
 ================================================================================
 
-.. automodule:: openpnm.core
+.. automodule:: openpnm.io
 
 .. toctree::
    :maxdepth: 3
 
-   base.rst
-   subdomain.rst
-   modelsmixin.rst
-   modelsdict.rst
+   VTK.rst
+   CSV.rst

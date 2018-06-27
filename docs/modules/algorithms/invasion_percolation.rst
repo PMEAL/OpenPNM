@@ -1,9 +1,5 @@
-.. _project_api:
+.. _invasion_percolation_api:
 
 --------------------------------------------------------------------------------
-Project
+InvasionPercolation
 --------------------------------------------------------------------------------
-
-.. autoclass:: openpnm.utils.Project
-   :members:
-   :show-inheritance:

@@ -4,6 +4,8 @@
 Network
 ================================================================================
 
+.. automodule:: openpnm.network
+
 Contents:
 
 .. toctree::

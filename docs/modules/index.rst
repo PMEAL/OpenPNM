@@ -18,4 +18,5 @@ Contents:
    algorithms/index.rst
    topotools/index.rst
    models/index.rst
+   io/index.rst
    utils/index.rst

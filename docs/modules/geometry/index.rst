@@ -4,7 +4,7 @@
 **Geometry**
 ================================================================================
 
-Contents:
+.. automodule:: openpnm.geometry
 
 .. toctree::
    :maxdepth: 3

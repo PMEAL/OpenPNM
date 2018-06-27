@@ -1,3 +1,12 @@
+r"""
+===============================================================================
+openpnm.network
+===============================================================================
+
+This module houses the Network generators
+
+"""
+
 from .GenericNetwork import GenericNetwork
 from .Cubic import Cubic
 from .CubicDual import CubicDual

@@ -1,3 +1,14 @@
+r"""
+===============================================================================
+openpnm.topotools
+===============================================================================
+
+This module contains a large selection of functions that deal specifically with
+network topology.
+
+
+"""
+
 from .topotools import add_boundary_pores
 from .topotools import clone_pores
 from .topotools import connect_pores

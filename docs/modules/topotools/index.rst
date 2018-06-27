@@ -4,6 +4,8 @@
 **Topotools**
 ================================================================================
 
+.. automodule:: openpnm.topotools
+
 .. autofunction:: openpnm.topotools.add_boundary_pores
 .. autofunction:: openpnm.topotools.add_boundary_pores
 .. autofunction:: openpnm.topotools.clone_pores

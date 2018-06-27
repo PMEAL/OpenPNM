@@ -4,6 +4,8 @@
 Algorithms
 ================================================================================
 
+.. automodule:: openpnm.algorithms
+
 .. toctree::
    :maxdepth: 3
 
@@ -13,3 +15,4 @@ Algorithms
    transient_reactive_transport.rst
    ordinary_percolation.rst
    invasion_percolation.rst
+   porosimetry.rst

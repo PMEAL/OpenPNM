@@ -1,9 +1,5 @@
-.. _project_api:
+.. _cubic_berea_api:
 
 --------------------------------------------------------------------------------
-Project
+CubicBerea
 --------------------------------------------------------------------------------
-
-.. autoclass:: openpnm.utils.Project
-   :members:
-   :show-inheritance:

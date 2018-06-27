@@ -4,6 +4,8 @@
 **Materials**
 ================================================================================
 
+.. automodule:: openpnm.materials
+
 Contents:
 
 .. toctree::

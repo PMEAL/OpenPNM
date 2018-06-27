@@ -292,8 +292,8 @@ def methods_to_table(obj):
     obj_funcs = [i[0] for i in temp if not i[0].startswith('_')]
     funcs = set(obj_funcs).difference(set(parent_funcs))
 
-    row = '+' + '-'*4 + '+' + '-'*18 + '+' + '-'*50 + '+'
-    fmt = '{0:1s} {1:2s} {2:1s} {3:16s} {4:1s} {5:48s} {6:1s}'
+    row = '+' + '-'*4 + '+' + '-'*18 + '+' + '-'*49 + '+'
+    fmt = '{0:1s} {1:2s} {2:1s} {3:16s} {4:1s} {5:47s} {6:1s}'
     lines = []
     lines.append(row)
     lines.append(fmt.format('|', '#', '|', 'Method', '|', 'Description', '|'))
@@ -302,12 +302,12 @@ def methods_to_table(obj):
         try:
             s = getattr(obj, item).__doc__.strip()
             end = s.find('\n')
-            print(item, end)
-            if end > 48:
-                s = s[:45] + '...'
-            lines.append(fmt.format('|', str(i+1), '|', item, '|', s[:end], '|'))
+            if end > 47:
+                s = s[:44] + '...'
+            lines.append(fmt.format('|', str(i+1), '|', item, '|',
+                                    s[:end], '|'))
             lines.append(row)
-        except:
+        except AttributeError:
             pass
     return '\n'.join(lines)
 
