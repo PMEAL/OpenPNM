@@ -14,6 +14,7 @@ class ThroatSurfaceAreaTest:
         self.phys = op.physics.GenericPhysics(network=self.net,
                                               phase=self.air,
                                               geometry=self.geo)
+        self.geo['pore.diameter'] = 0.2
         self.geo['throat.length'] = 1
         self.geo['throat.diameter'] = 0.1
 
@@ -34,12 +35,20 @@ class ThroatSurfaceAreaTest:
         assert_approx_equal(a, b)
 
     def test_equivalent_area_spherical_pores(self):
-        self.geo['pore.diameter'] = 0.2
         self.geo['throat.area'] = np.pi * self.geo['throat.diameter']**2 / 4
         self.geo.add_model(propname='throat.equivalent_area',
                            model=mods.equivalent_area_spherical_pores,
                            regen_mode='normal')
         a = np.array([0.008798571])
+        b = np.unique(self.geo['throat.equivalent_area'])
+        assert_approx_equal(a, b)
+
+    def test_equivalent_area_circular_pores(self):
+        self.geo['throat.area'] = self.geo['throat.diameter']
+        self.geo.add_model(propname='throat.equivalent_area',
+                           model=mods.equivalent_area_circular_pores,
+                           regen_mode='normal')
+        a = np.array([0.1073520])
         b = np.unique(self.geo['throat.equivalent_area'])
         assert_approx_equal(a, b)
 
