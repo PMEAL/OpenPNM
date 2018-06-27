@@ -1,7 +1,8 @@
 r"""
-===============================================================================
-openpnm.physics
-===============================================================================
+
+**openpnm.physics**
+
+----
 
 This module contains the GenericPhysics class, along with a few preconfigured
 classes that include common pore-scale physical models

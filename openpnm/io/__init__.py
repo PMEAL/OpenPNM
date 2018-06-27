@@ -1,7 +1,8 @@
 r"""
-===============================================================================
-openpnm.io
-===============================================================================
+
+**openpnm.io**
+
+----
 
 This module contains functionality for importing and export data between
 OpenPNM and other formats.

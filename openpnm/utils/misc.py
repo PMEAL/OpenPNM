@@ -292,11 +292,11 @@ def methods_to_table(obj):
     obj_funcs = [i[0] for i in temp if not i[0].startswith('_')]
     funcs = set(obj_funcs).difference(set(parent_funcs))
 
-    row = '+' + '-'*4 + '+' + '-'*18 + '+' + '-'*49 + '+'
-    fmt = '{0:1s} {1:2s} {2:1s} {3:16s} {4:1s} {5:47s} {6:1s}'
+    row = '+' + '-'*22 + '+' + '-'*49 + '+'
+    fmt = '{0:1s} {1:20s} {2:1s} {3:47s} {4:1s}'
     lines = []
     lines.append(row)
-    lines.append(fmt.format('|', '#', '|', 'Method', '|', 'Description', '|'))
+    lines.append(fmt.format('|', 'Method', '|', 'Description', '|'))
     lines.append(row.replace('-', '='))
     for i, item in enumerate(funcs):
         try:
@@ -304,8 +304,7 @@ def methods_to_table(obj):
             end = s.find('\n')
             if end > 47:
                 s = s[:44] + '...'
-            lines.append(fmt.format('|', str(i+1), '|', item, '|',
-                                    s[:end], '|'))
+            lines.append(fmt.format('|', item, '|', s[:end], '|'))
             lines.append(row)
         except AttributeError:
             pass

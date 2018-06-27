@@ -1,10 +1,11 @@
 r"""
-===============================================================================
-openpnm.models
-===============================================================================
 
-A library of pore-scale models for calculating geometrical, thermophysical,
-and multiphysics properties
+**openpnm.models**
+
+----
+
+This module is library of pore-scale models for calculating geometrical,
+thermophysical, and multiphysics transport properties
 
 """
 

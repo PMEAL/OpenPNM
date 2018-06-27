@@ -7,7 +7,7 @@
 Contents:
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
    core/index.rst
    network/index.rst

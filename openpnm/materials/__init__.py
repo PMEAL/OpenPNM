@@ -1,7 +1,8 @@
 r"""
-===============================================================================
-openpnm.materials
-===============================================================================
+
+**openpnm.materials**
+
+----
 
 This module provides a library of preconfigured Network-Geometry combinations
 
