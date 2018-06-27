@@ -39,7 +39,7 @@ class ThroatSurfaceAreaTest:
         self.geo.add_model(propname='throat.equivalent_area',
                            model=mods.equivalent_area_spherical_pores,
                            regen_mode='normal')
-        a = np.array([0.008385833])
+        a = np.array([0.008798571])
         b = np.unique(self.geo['throat.equivalent_area'])
         assert_approx_equal(a, b)
 
