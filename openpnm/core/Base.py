@@ -249,16 +249,17 @@ class Base(dict):
     def clear(self, element=None, mode='all'):
         r"""
         A subclassed version of the standard dict's clear method.  This can be
-        used to selectively clear certain aspects of the object, including
-        properties and/or labels.  It can also clear everything,
-        except for the 'pore.all' and 'throat.all' labels which are required
-        for object to remain functional.
+        used to selectively clear certain data from the object, including
+        properties and/or labels.  Importantly, it does NOT clear items that
+        are required to maintain the integrity of the simulation.  These are
+        arrays that define the topology (ie. 'pore.all', 'pore.coords',
+        'throat.all', 'throat.conns'), as well as arrays that indicate
 
         Parameters
         ----------
         element : string or list of strings
             Can be either 'pore' or 'throat', which specifies whether 'pore'
-            and/or 'throat' data should be cleared.  The default is both.
+            and/or 'throat' arrays should be cleared.  The default is both.
 
         mode : string or list of strings
             This controls what is cleared from the object.  Options are:
@@ -266,7 +267,7 @@ class Base(dict):
             **'props'** : Removes all numerical property values from the object
             dictionary.
 
-            **'model_data'** : Removes only numerical data that was produced
+            **'model_data'** : Removes only numerical data that were produced
             by an associated model.
 
             **'labels'** : Removes all labels from the object dictionary,
@@ -277,11 +278,7 @@ class Base(dict):
 
         Notes
         -----
-        If you wish to completey reset the object, you can do so manually
-        by looping over the keys and deleting each one, then re-adding
-        'pore.all' and 'throat.all' using the ``update`` command.
-
-        If you wish to selectively remove some properties but not other, use
+        If you wish to selectively remove some properties but not others, use
         something like ``del object['pore.blah']`` at the python prompt.
         Obviously this can be done in a for-loop to remove a list of items.
 
@@ -295,7 +292,7 @@ class Base(dict):
         >>> len(pn.labels())  # Kept only 'pore.all' and 'throat.all'
         2
         >>> geom = op.geometry.GenericGeometry(network=pn, pores=pn.Ps,
-        ...                                    throats=pn.Ts)
+        ...                                    throats=pn.Ts, name='geo1')
         >>> len(pn.labels())  # 2 new labels were added for geometry locations
         4
         >>> pn.clear(mode='labels')
@@ -305,12 +302,13 @@ class Base(dict):
         2
         >>> pn.clear(element='pore', mode='props')
         >>> 'pore.coords' in pn.keys()  # The pore property was removed
-        False
-        >>> pn.clear()  # Remove everything except protected labels
-        >>> len(pn.keys())
-        4
+        True
+        >>> pn.clear()  # Remove everything except protected labels and arrays
+        >>> print(sorted(list(pn.keys(element='pore', mode='all'))))
+        ['pore.all', 'pore.coords', 'pore.geo1']
 
         """
+        protected = ['pore.all', 'throat.all', 'pore.coords', 'throat.conns']
         allowed = ['props', 'labels', 'model_data', 'all']
         mode = self._parse_mode(mode=mode, allowed=allowed)
         if 'model_data' in mode:
@@ -319,7 +317,7 @@ class Base(dict):
                 del self[item]
             mode.remove('model_data')
         for item in self.keys(mode=mode, element=element):
-            if item not in ['pore.all', 'throat.all']:
+            if item not in protected:
                 if item.split('.')[1] not in self.project.names:
                     del self[item]
 
@@ -870,6 +868,9 @@ class Base(dict):
         just a convenience function and is a compliment to ``tomask``.
 
         """
+        if sp.amax(mask) > 1:
+            raise Exception('Recieved mask is invalid, with values above 1')
+        mask = sp.array(mask, dtype=bool)
         indices = self._parse_indices(mask)
         return indices
 
@@ -1377,9 +1378,6 @@ class Base(dict):
         if indices is None:
             indices = sp.array([], ndmin=1, dtype=int)
         locs = sp.array(indices, ndmin=1)
-        # Try to infer if int or float array is actually boolean mask
-        if sp.all(sp.in1d(locs, [0, 1])) and locs.size in [self.Nt, self.Np]:
-            locs = sp.array(locs, dtype=bool)
         # If boolean array, convert to indices
         if locs.dtype == bool:
             if sp.size(locs) == self.Np:

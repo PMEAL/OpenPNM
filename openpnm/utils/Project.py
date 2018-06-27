@@ -404,7 +404,9 @@ class Project(list):
 
     def _dump_data(self, mode=['props']):
         r"""
-        Dump data from all objects in project to an HDF5 file
+        Dump data from all objects in project to an HDF5 file.  Note that
+        'pore.coords', 'throat.conns', 'pore.all', 'throat.all', and all
+        labels pertaining to the linking of objects are kept.
 
         Parameters
         ----------
@@ -424,7 +426,7 @@ class Project(list):
 
         Notes
         -----
-        In principle, after data is fetched from and HDF5 file, it should
+        In principle, after data is fetched from an HDF5 file, it should
         physically stay there until it's called upon.  This let users manage
         the data as if it's in memory, even though it isn't.  This behavior
         has not been confirmed yet, which is why these functions are hidden.

@@ -50,7 +50,7 @@ class CubicTemplate(Cubic):
     def __init__(self, template, spacing=[1, 1, 1], **kwargs):
 
         template = sp.atleast_3d(template)
-        super().__init__(shape=template.shape, spacing=spacing, **kwargs)
+        super().__init__(shape=template.shape, **kwargs)
 
         coords = sp.unravel_index(range(template.size), template.shape)
         self['pore.template_coords'] = sp.vstack(coords).T
