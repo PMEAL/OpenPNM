@@ -33,6 +33,16 @@ class ThroatSurfaceAreaTest:
         b = np.unique(self.geo['throat.area'])
         assert_approx_equal(a, b)
 
+    def test_equivalent_area_spherical_pores(self):
+        self.geo['pore.diameter'] = 0.2
+        self.geo['throat.area'] = np.pi * self.geo['throat.diameter']**2 / 4
+        self.geo.add_model(propname='throat.equivalent_area',
+                           model=mods.equivalent_area_spherical_pores,
+                           regen_mode='normal')
+        a = np.array([0.008385833])
+        b = np.unique(self.geo['throat.equivalent_area'])
+        assert_approx_equal(a, b)
+
 
 if __name__ == '__main__':
 
