@@ -57,9 +57,9 @@ class GenericGeometry(Subdomain, ModelsMixin):
                                   regeneration mode:        normal
     ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 
-    The results of the model can be seen using the ``show_histogram`` function:
+    The results of the model can be seen using the ``show_hist`` function:
 
-    >>> geom.show_histogram('pore.size')
+    >>> geom.show_hist('pore.size')
 
     .. image:: /../docs/static/images/generic_geometry_histogram.png
         :width: 500px

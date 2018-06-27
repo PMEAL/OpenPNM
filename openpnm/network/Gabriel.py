@@ -59,7 +59,7 @@ class Gabriel(Delaunay):
     Now compare them side by side:
 
     >>> gn['pore.coords'] += [1, 0, 0]
-    >>> topotools.merge_networks(dn, gn)
+    >>> op.topotools.merge_networks(dn, gn)
     >>> fig = topotools.plot_connections(dn)
     >>> fig = topotools.plot_coordinates(dn, c='r', s=100, fig=fig)
 

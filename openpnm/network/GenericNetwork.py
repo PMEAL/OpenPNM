@@ -124,11 +124,11 @@ class GenericNetwork(Base, ModelsMixin):
         if coords is not None:
             Np = sp.shape(coords)[0]
             self['pore.all'] = sp.ones(Np, dtype=bool)
-            self['pore.coords'] = coords
+            self['pore.coords'] = sp.array(coords)
         if conns is not None:
             Nt = sp.shape(conns)[0]
             self['throat.all'] = sp.ones(Nt, dtype=bool)
-            self['throat.conns'] = conns
+            self['throat.conns'] = sp.array(conns)
         # Initialize adjacency and incidence matrix dictionaries
         self._im = {}
         self._am = {}
