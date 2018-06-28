@@ -7,10 +7,11 @@ from numpy import ones
 
 class GenericPhase(Base, ModelsMixin):
     r"""
-    Base class to generate a generic phase object.  The user must specify
-    models and parameters for all the properties they require. Classes for
-    several common phases are included with OpenPNM and can be found under
-    ``openpnm.phases``.
+    This generic class is meant as a starter for custom Phase objects
+
+    This class produces a blank-slate object with no pore-scale models for
+    calculating any thermophysical properties.  Users must add models and
+    specify parameters for all the properties they require.
 
     Parameters
     ----------
@@ -20,6 +21,50 @@ class GenericPhase(Base, ModelsMixin):
     name : str, optional
         A unique string name to identify the Phase object, typically same as
         instance name but can be anything.
+
+    Examples
+    --------
+    Create a new empty phase:
+
+    >>> import openpnm as op
+    >>> pn = op.network.Cubic([10, 10, 10])
+    >>> phase = op.phases.GenericPhase(network=pn)
+
+    And add a model:
+
+    >>> phase.add_model(propname='pore.molar_density',
+    ...                 model=op.models.phases.molar_density.ideal_gas)
+
+    Now confirm that the model was added and data was calculated.  The
+    ``models`` attribute can be printed:
+
+    >>> print(phase.models)
+    ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+    #   Property Name             Parameter                 Value
+    ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+    1   pore.molar_density        model:                    ideal_gas
+                                  pressure:                 pore.pressure
+                                  temperature:              pore.temperature
+                                  regeneration mode:        normal
+    ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+
+    And the Phase itself has a nice printout:
+
+    >>> print(phase)
+    ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+    openpnm.phases.GenericPhase:    phase_01
+    ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+    #     Properties                                    Valid Values
+    ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+    1     pore.molar_density                             1000 / 1000
+    2     pore.pressure                                  1000 / 1000
+    3     pore.temperature                               1000 / 1000
+    ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+    #     Labels                                        Assigned Locations
+    ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+    1     pore.all                                      1000
+    2     throat.all                                    2700
+    ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 
     """
 

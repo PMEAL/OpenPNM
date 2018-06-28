@@ -14,11 +14,11 @@ Overview of Module
 .. automodule:: openpnm.models
 
 --------------------------------------------------------------------------------
-Links to Detailed Class Documentation
+Links to Detailed Submodule Documentation
 --------------------------------------------------------------------------------
 
 .. toctree::
-   :maxdepth: 3
+   :maxdepth: 2
 
    misc.rst
    geometry.rst

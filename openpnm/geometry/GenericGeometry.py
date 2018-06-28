@@ -6,9 +6,10 @@ ws = Workspace()
 
 class GenericGeometry(Subdomain, ModelsMixin):
     r"""
-    This generic class is meant as a starter for custom Geometries. It has no
-    pore-scale models assigned to it, so a a blank slate.  Note that all
-    OpenPNM Geometry sub-classes are just GenericGeometry instances with a
+    This generic class is meant as a starter for custom Geometry objects
+
+    It has no pore-scale models assigned to it, so a a blank slate.  Note that
+    all OpenPNM Geometry sub-classes are just GenericGeometry instances with a
     number of models added.
 
     Parameters

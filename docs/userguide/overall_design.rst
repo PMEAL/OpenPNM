@@ -33,7 +33,7 @@ With this grid analogy in mind, we can now dive into an explanation of each obje
 Object Inheritance Structure
 --------------------------------------------------------------------------------
 
-OpenPNM consists of 5 main object types: Network, Phases, Geometries, Physics, and Algorithms.  The inheritance structure of each of these objects is shown in the diagram below.  Each of these objects is a subclass of the :ref:`base_api` class, described in more detail in the next section.  Some of these object also have the ability to store pore-scale models added via the :ref:`modelsmixin_api` mixin class.  Finally, some objects are applied only to subdomains rather than the entire domains, so these inherit from the :ref:`subdomain_api` class, which is itself a subclass of Base.
+OpenPNM consists of 5 main object types: Network, Phases, Geometries, Physics, and Algorithms.  The inheritance structure of each of these objects is shown in the diagram below.  Each of these objects is a subclass of the :ref:`base_api` class, described in more detail in the next section.  Some objects are applied only to subdomains rather than the entire domains, so these inherit from the :ref:`subdomain_api` class, which is itself a subclass of Base. Finally, some of these objects also have the ability to store pore-scale models added via the :ref:`modelsmixin_api` mixin class.  Imagine the ModelsMixin class as adding a few new methods and attribute to the classes.
 
 .. image:: /../docs/static/images/Overall_Inheritance_Diagram.png
     :width: 800px

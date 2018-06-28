@@ -20,5 +20,14 @@ Links to Detailed Class Documentation
 .. toctree::
    :maxdepth: 3
 
-   VTK.rst
+   dict.rst
    CSV.rst
+   VTK.rst
+   HDF5.rst
+   XDMF.rst
+   mat.rst
+   networkx.rst
+   pandas.rst
+   statoil.rst
+   marock.rst
+   imorph.rst

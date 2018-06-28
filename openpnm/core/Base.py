@@ -89,7 +89,7 @@ class Base(dict):
     Examples
     --------
     It is possible to create an instance of Base, although it is not very
-    useful excpet for demonstration purposes as done here.
+    useful except for demonstration purposes as done here.
 
     >>> import openpnm as op
     >>> obj = op.core.Base(Np=4, Nt=5)
@@ -119,6 +119,7 @@ class Base(dict):
     [0 3]
 
     Find the number of pores with label:
+
     >>> print(obj.num_pores('new_label'))
     2
 

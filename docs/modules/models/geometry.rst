@@ -1,11 +1,21 @@
 .. _geom_models_api:
 
---------------------------------------------------------------------------------
+================================================================================
 Geometry Models
---------------------------------------------------------------------------------
+================================================================================
 
 .. contents:: Contents of this Page
-    :depth: 2
+    :depth: 3
+
+--------------------------------------------------------------------------------
+Overview of Submodule
+--------------------------------------------------------------------------------
+
+.. automodule:: openpnm.models.geometry
+
+--------------------------------------------------------------------------------
+Detailed Model Documentation
+--------------------------------------------------------------------------------
 
 ................................................................................
 Pore Size
@@ -17,12 +27,16 @@ Pore Size
 .. autofunction:: openpnm.models.geometry.pore_size.largest_sphere
 .. autofunction:: openpnm.models.geometry.pore_size.equivalent_diameter
 
+----
+
 ................................................................................
 Pore Volume
 ................................................................................
 
 .. autofunction:: openpnm.models.geometry.pore_volume.sphere
 .. autofunction:: openpnm.models.geometry.pore_volume.cube
+
+----
 
 ................................................................................
 Pore Seed
@@ -31,6 +45,8 @@ Pore Seed
 .. autofunction:: openpnm.models.geometry.pore_seed.random
 .. autofunction:: openpnm.models.geometry.pore_seed.spatially_correlated
 
+----
+
 ................................................................................
 Pore Surface Area
 ................................................................................
@@ -38,12 +54,16 @@ Pore Surface Area
 .. autofunction:: openpnm.models.geometry.pore_surface_area.sphere
 .. autofunction:: openpnm.models.geometry.pore_surface_area.cube
 
+----
+
 ................................................................................
 Throat Area
 ................................................................................
 
 .. autofunction:: openpnm.models.geometry.throat_area.cylinder
 .. autofunction:: openpnm.models.geometry.throat_area.cuboid
+
+----
 
 ................................................................................
 Throat Size
@@ -55,11 +75,15 @@ Throat Size
 .. autofunction:: openpnm.models.geometry.throat_size.from_neighbor_pores
 .. autofunction:: openpnm.models.geometry.throat_size.equivalent_diameter
 
+----
+
 ................................................................................
 Throat Length
 ................................................................................
 
 .. autofunction:: openpnm.models.geometry.throat_length.straight
+
+----
 
 ................................................................................
 Throat Perimeter
@@ -67,6 +91,8 @@ Throat Perimeter
 
 .. autofunction:: openpnm.models.geometry.throat_perimeter.cylinder
 .. autofunction:: openpnm.models.geometry.throat_perimeter.cuboid
+
+----
 
 ................................................................................
 Throat Surface Area
@@ -76,6 +102,8 @@ Throat Surface Area
 .. autofunction:: openpnm.models.geometry.throat_surface_area.cuboid
 .. autofunction:: openpnm.models.geometry.throat_surface_area.extrusion
 
+----
+
 ................................................................................
 Throat Volume
 ................................................................................
@@ -83,6 +111,8 @@ Throat Volume
 .. autofunction:: openpnm.models.geometry.throat_volume.cylinder
 .. autofunction:: openpnm.models.geometry.throat_volume.cuboid
 .. autofunction:: openpnm.models.geometry.throat_volume.extrusion
+
+----
 
 ................................................................................
 Throat Shape Factor

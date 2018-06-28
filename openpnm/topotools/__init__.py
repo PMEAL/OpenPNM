@@ -4,7 +4,7 @@ r"""
 
 ----
 
-This module contains a large selection of functions that deal specifically with
+This module contains a selection of functions that deal specifically with
 network topology.
 
 

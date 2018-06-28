@@ -171,7 +171,7 @@ The above code solves for the pressure in each pore and stores the result as ``p
 Saving Project and Exporting to Paraview
 --------------------------------------------------------------------------------
 
-Now that the simulation is finished, it can be saved to a ``.pnm`` file for future use.  OpenPNM has two levels of *management*: the Workspace and the Project.  Each Project contains a single network and its associated object (all the code in this guide are in a single Project).  The Workspace contains all the active Projects.  You can save the entire Workspace including all active Projects, or you can save a single Project.
+Now that the simulation is finished, it can be saved to a ``.pnm`` file for future use.  OpenPNM has two levels of *management*: the Workspace and the Project.  Each Project contains a single network and its associated object (all the code in this guide are a single Project).  The Workspace contains all the active Projects.  You can save the entire Workspace including all active Projects, or you can save a single Project.
 
 Each object has a ``project`` attribute which returns a handle to the Project to which it belongs.
 
