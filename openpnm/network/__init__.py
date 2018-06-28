@@ -37,7 +37,7 @@ families of topology: periodic lattices and tessellations of random points.
 | Gabriel             | Random network formed by Gabriel tessellation of      |
 |                     | arbitrary base points                                 |
 +---------------------+-------------------------------------------------------+
-| DelaunayVoronoiDual | Combined and interconnect Voronoi and Delaunay        |
+| DelaunayVoronoiDual | Combined and interconnected Voronoi and Delaunay      |
 |                     | tessellations                                         |
 +---------------------+-------------------------------------------------------+
 

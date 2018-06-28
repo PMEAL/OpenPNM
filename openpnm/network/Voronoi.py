@@ -6,7 +6,7 @@ logger = logging.getLogger(__name__)
 
 class Voronoi(DelaunayVoronoiDual):
     r"""
-    Creates a network based on a Voronoi tessellation of arbitrary base points.
+    Random network formed by Voronoi tessellation of arbitrary base points
 
     Parameters
     ----------

@@ -8,9 +8,10 @@ logger = logging.getLogger(__name__)
 
 class Gabriel(Delaunay):
     r"""
-    Creates a Gabriel network from a given set of base points.  This operates
-    by performing a Deluanay tessellation, then removing connections that do
-    not adhere to the definition of the `Gabriel graph
+    Random network formed by Gabriel tessellation of arbitrary base points
+
+    This operates by performing a Deluanay tessellation, then removing
+    connections that do not adhere to the definition of the `Gabriel graph
     <https://en.wikipedia.org/wiki/Gabriel_graph>`_
 
     This produces a network that has fewer throats than a Delaunay network.

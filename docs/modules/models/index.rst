@@ -17,8 +17,6 @@ Overview of Module
 Links to Detailed Class Documentation
 --------------------------------------------------------------------------------
 
-Contents:
-
 .. toctree::
    :maxdepth: 3
 

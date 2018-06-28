@@ -7,7 +7,8 @@ logger = logging.getLogger(__name__)
 
 class HDF5(GenericIO):
     r"""
-
+    The HDF5 (Hierarchical Data Format) file is good for high-peformance, long
+    term data storage
     """
 
     @classmethod

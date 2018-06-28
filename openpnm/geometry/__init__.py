@@ -7,9 +7,19 @@ r"""
 The ``geometry`` module contains the ``GenericGeometry`` class, and an
 assortment of subclasses that implement specific pore-scale geometrical models
 
----
+----
 
-**Geometry Library**
+**The GenericGeometry Class**
+
+Geometry objects (as well as Physics objects) are ``Subdomain`` subclasses,
+which allow them to be assigned to subset of the full domain (although this is
+not alway necessary).  This functionality was added so that networks with
+distinct regions could be modelled by giving each region its own Geometry
+with unique models (e.g. to give a bi-modal pore size distribution).
+
+----
+
+**Library of Preconfigured Geometry Classes**
 
 This module contains a small selection of Geometry classes that are
 pre-configured with a selection of pore-scale models.  These classes provide
@@ -54,11 +64,28 @@ The table belows shows the specific models used on ``StickAndBall``:
 
 ----
 
-**The GenericGeometry Class**
+**Customizing a Preconfigured Geometry Instance**
 
-Geometry objects (as well as Physics objects) are ``Subdomain`` subclasses,
-which allow them to be assigned to subset of the full domain, although this is
-not necessary.
+Perhaps the ``StickAndBall`` class is almost suitable but you wish to increase
+the pores sizes.  The following example illustrates how to alter the
+``'pore.size'`` model accordingly:
+
+>>> import openpnm as op
+>>> pn = op.network.Cubic([5, 5, 5])
+>>> geo = op.geometry.StickAndBall(network=pn, pores=pn.Ps, throats=pn.Ts)
+
+We can reach into the ``models`` attribute and change the parameters of any
+model as follows:
+
+>>> max(geo['pore.diameter']) < 0.1  # Confirm largest pore is less than 0.1
+True
+>>> geo.models['pore.seed']['num_range'] = [0.5, 0.95]
+>>> geo.regenerate_models()  # Must regenerate all models
+>>> max(geo['pore.diameter']) > 0.5  # Largest pore is now bigger than 0.5
+True
+
+This example illustrated that you can change one property ('pore.seed') and
+that change can be cascaded to all dependent properties ('pore.diameter').
 
 """
 from .GenericGeometry import GenericGeometry

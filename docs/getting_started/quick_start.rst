@@ -45,7 +45,7 @@ The ``network`` module has a number of network types to chose from:
 Adding Geometrical Properties
 --------------------------------------------------------------------------------
 
-The Network only contain spatial information (pore coordinates) and topological information (throat connections), so it is necessary to add geometrical information by creating a Geometry object:
+The Network only contains spatial information (pore coordinates) and topological information (throat connections), so it is necessary to add geometrical information by creating a Geometry object:
 
 .. code-block:: python
 

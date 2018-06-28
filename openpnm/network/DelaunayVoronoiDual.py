@@ -10,7 +10,8 @@ logger = logging.getLogger(__name__)
 
 class DelaunayVoronoiDual(GenericNetwork):
     r"""
-    Creates a dual network based on complementary Voronoi and Delaunay networks.
+    Combined and interconnected Voronoi and Delaunay tessellations
+
     A Delaunay tessellation is performed on a set of base points then the
     corresponding Voronoi diagram is generated.  Finally, each Delaunay node
     is connected to it's neighboring Voronoi vertices to create interaction

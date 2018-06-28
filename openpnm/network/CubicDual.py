@@ -8,15 +8,12 @@ ws = Workspace()
 
 class CubicDual(GenericNetwork):
     r"""
-    Generates a cubic network of the specified size and shape, then inserts
-    a second cubic network into the center of its lattice cells (N-1 pores
-    in all directions).  These two networks are further connected by throats
-    enabling material to be exchanged between them.
+    Body centered cubic lattice plus face centered nodes on the surfaces
 
     This network is essentially a *'bcc'* lattice, *except* that the seconary
-    network has pores on each face of the domain, which breaks the body-centric
-    arranagement.  This allows boundary conditions to be applied to the
-    seconary network for transport simuations.
+    network (body-centered pores) has pores on each face of the domain, which
+    breaks the body-centric arranagement.  This allows boundary conditions to
+    be applied to the seconary network for transport simuations.
 
     Parameters
     ----------

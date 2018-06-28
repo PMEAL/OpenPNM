@@ -11,11 +11,12 @@ logger = logging.getLogger(__name__)
 
 class Statoil(GenericIO):
     r"""
-    This class is for loading data stored in the 'Statoil' file format.  More
-    specifically, this file format is used by the network extraction code of
-    Blunt's group at Imperial College London, so this class can be used to load
-    and work with those network.  Numerous datasets are available for download
-    from the group's `website <http://tinyurl.com/zurko4q>`_.
+    The StatOil format is used by the Maximal Ball network extraction code of
+    the Imperial College London group
+
+    This class can be used to load and work with those networks.  Numerous
+    datasets are available for download from the group's
+    `website <http://tinyurl.com/zurko4q>`_.
 
     The so-called 'Statoil' format consists of 4 different files in a single
     folder.  The data is stored in columns with each corresponding to a

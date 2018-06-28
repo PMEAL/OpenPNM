@@ -9,8 +9,11 @@ ws = Workspace()
 
 class VTK(GenericIO):
     r"""
-    Class for writing a Vtp file to be read by ParaView
+    The Visualization Toolkit (VTK) format defined by Kitware and used by
+    Paraview
 
+    Because OpenPNM data is unstructured, the actual output format is VTP,
+    not VTK.
     """
 
     _TEMPLATE = '''
@@ -48,7 +51,7 @@ class VTK(GenericIO):
 
         filename : string, optional
             Filename to write data.  If no name is given the file is named
-            after ther network
+            after the network
 
         """
         project, network, phases = cls._parse_args(network=network,

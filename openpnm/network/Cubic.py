@@ -13,7 +13,8 @@ from openpnm import topotools
 
 class Cubic(GenericNetwork):
     r"""
-    Generates a Cubic network of the specified size, spacing, and connectivity.
+    Simple cubic lattice with connectivity from 6 to 26
+
     Though simple, the Cubic network offers many advantages such as easy
     visualization and accurate determination of domain area and length in
     transport calculations.

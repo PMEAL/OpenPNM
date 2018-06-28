@@ -7,7 +7,7 @@ ws = Workspace()
 
 class MAT(GenericIO):
     r"""
-    Class for reading and writing OpenPNM data to a Matlab 'mat' file
+    MAT files are a format used by Matlab
 
     Notes
     -----

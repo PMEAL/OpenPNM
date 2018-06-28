@@ -6,8 +6,7 @@ logger = logging.getLogger(__name__)
 
 class Delaunay(DelaunayVoronoiDual):
     r"""
-    Generates a random network by performing at Delaunay triangulation (aka
-    tessellation) on a set of base points.
+    Random network formed by Delaunay tessellation of arbitrary base points
 
     Parameters
     ----------

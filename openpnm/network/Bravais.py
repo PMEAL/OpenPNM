@@ -8,8 +8,11 @@ ws = Workspace()
 
 class Bravais(GenericNetwork):
     r"""
-    Creates non-random networks with more interesting and dense pore
-    arrangements based on various crystal lattice structures.
+    Crystal lattice types including fcc, bcc, sc, and hcp
+
+    These arrangements not only allow more dense packing than the standard
+    Cubic for higher porosity materials, but also have more interesting
+    non-straight connections between the various pore sites.
 
     More information on Bravais lattice notation can be `found on wikipedia
     <https://en.wikipedia.org/wiki/Bravais_lattice>`_.

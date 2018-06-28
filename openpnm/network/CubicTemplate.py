@@ -5,8 +5,8 @@ from openpnm import topotools
 
 class CubicTemplate(Cubic):
     r"""
-    Generates a cubic lattice network, but with arbitrary domain shape (e.g.
-    spheres, cylinders) as specified by an image mask.
+    Simple cubic lattice with arbitrary domain shape specified by a template
+    image
 
     The class creates a standard Cubic network the same shape as the provided
     image, then trims pores from the network that are not in the mask.

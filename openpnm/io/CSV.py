@@ -11,8 +11,8 @@ ws = Workspace()
 
 class CSV(GenericIO):
     r"""
-    This class is used for reading and writing CSV files containing pore and
-    throat property data.
+    Reads and writes CSV (comma-separated-value files) containing pore and
+    throat data
 
     Notes
     -----
