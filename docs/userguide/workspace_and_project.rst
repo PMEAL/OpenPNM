@@ -49,3 +49,82 @@ The following illustrates the usage of the Workspace and Project objects.
     >>> pn = op.network.Cubic(shape=[3, 3, 3], project=proj1)
     >>> pn in proj1
     True
+
+Each Project can only have *one* Network.  If you try to create a second
+Network with the same Project, OpenPNM will complain:
+
+.. code-block:: python
+
+    >>> try:
+    >>>     pn2 = op.network.Cubic(shape=[3, 3, 3], project=proj1)
+    >>> except Exception:
+    >>>     print('An exception should occur')
+
+Conversely, since each Network *must* be associated with a Project, one is
+automatically created if *not* specified:
+
+.. code-block:: python
+
+    >>> pn2 = op.network.Cubic(shape=[3, 3, 3])
+    >>> proj2 = pn2.project
+    >>> proj1 == proj2
+    False
+
+Now that we've successfully created 2 Networks, there will be 2 Projects open
+in the Workspace:
+
+.. code-block:: python
+
+    >>> print(ws.keys())
+    dict_keys(['one', 'sim_01'])
+
+The second Project was created automatically, and given a default name of
+'sim_01'.
+
+When adding other objects, either the Network or the Project can be specified,
+which is possible since there is only one Network per Project:
+
+.. code-block:: python
+
+    >>> geo1 = op.geometry.GenericGeometry(network=pn1, pores=pn1.Ps, throats=pn1.Ts, name='geo_01')
+    >>> geo2 = op.geometry.GenericGeometry(project=proj2, pores=pn2.Ps, throats=pn2.Ts, name='geo_02')
+
+Projects can fetched from the Workspace by name, and renamed if
+desired:
+
+.. code-block:: python
+
+    >>> proj2 = ws['sim_01']
+    >>> proj2.name = 'two'
+    >>> print(ws.keys())
+    dict_keys(['one', 'two'])
+
+
+................................................................................
+Removing and Moving Objects in a Project
+................................................................................
+
+Removing an object from a Project can be done with the ``purge_object`` method
+or with the ``remove`` method of the ``list`` class (which has been subclassed
+to be a wrapper for ``purge_object``).
+
+.. code-block:: python
+
+    >>> geo1 in proj1
+    True
+    >>> proj1.purge_object(geo1)
+    >>> geo1 in proj1
+    False
+
+It's also quite easy to copy objects between projects.  For e
+
+
+
+
+
+
+
+
+
+
+.
