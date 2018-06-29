@@ -8,14 +8,14 @@ MixedInvasionPercolation: IP allowing pores and throats to invade separately
 import heapq as hq
 import scipy as sp
 import numpy as np
-from openpnm.algorithms import GenericPercolation
+from openpnm.algorithms import GenericAlgorithm
 from openpnm.topotools import site_percolation, bond_percolation
 import logging
 import matplotlib.pyplot as plt
 logger = logging.getLogger(__name__)
 
 
-class MixedInvasionPercolation(GenericPercolation):
+class MixedInvasionPercolation(GenericAlgorithm):
     r"""
     An implemetation of invasion percolation which can invade bonds, sites or a
     mixture of both. Inlets can be treated as individual injection points that
@@ -152,9 +152,7 @@ class MixedInvasionPercolation(GenericPercolation):
         else:
             logger.error("Either 'inlets' or 'clusters' must be passed to" +
                          " setup method")
-
         self.queue = []
-
         for i, cluster in enumerate(clusters):
             self.queue.append([])
             # Perform initial analysis on input pores
@@ -170,6 +168,35 @@ class MixedInvasionPercolation(GenericPercolation):
                 logger.warning("Some inlet clusters have no pores")
         if self.settings['snap_off']:
             self._apply_snap_off()
+
+    def set_outlets(self, pores=[], overwrite=False):
+        r"""
+        Set the locations through which defender exits the network.
+        This is only necessary if 'trapping' was set to True when ``setup``
+        was called.
+
+        Parameters
+        ----------
+        pores : array_like
+            Locations where the defender can exit the network.  Any defender
+            that does not have access to these sites will be trapped.
+
+        overwrite : boolean
+            If ``True`` then all existing outlet locations will be removed and
+            then the supplied locations will be added.  If ``False`` (default),
+            then supplied locations are added to any already existing outlet
+            locations.
+
+        """
+        if self.settings['trapping'] is False:
+            logger.warning('Setting outlets is meaningless unless trapping ' +
+                           'was set to True during setup')
+        Ps = self._parse_indices(pores)
+        if np.sum(self['pore.inlets'][Ps]) > 0:
+            raise Exception('Some outlets are already defined as inlets')
+        if overwrite:
+            self['pore.outlets'] = False
+        self['pore.outlets'][Ps] = True
 
     def _add_ts2q(self, pore, queue):
         """

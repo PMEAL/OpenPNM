@@ -12,7 +12,6 @@ from .Dispersion import Dispersion
 from .TransientDispersion import TransientDispersion
 from .FourierConduction import FourierConduction
 from .OhmicConduction import OhmicConduction
-from .GenericPercolation import GenericPercolation
 from .OrdinaryPercolation import OrdinaryPercolation
 from .InvasionPercolation import InvasionPercolation
 from .MixedInvasionPercolation import MixedInvasionPercolation
