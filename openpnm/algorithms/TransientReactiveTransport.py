@@ -102,10 +102,12 @@ class TransientReactiveTransport(ReactiveTransport):
         if (self.settings['t_scheme'] == 'steady'):
             self[self.settings['quantity']] = 0
         # Create a scratch b from IC
-        self._b = self[self.settings['quantity']]
+        self._b = (self[self.settings['quantity']]).copy()
         self._apply_BCs()
         # Save A matrix (with BCs applied) of the steady sys of eqs
         self._A_steady = (self._A).copy()
+        # Save the initial field with the boundary conditions applied
+        self[self.settings['quantity']] = (self._b).copy()
         # Override A and b according to t_scheme and apply BCs
         self._t_update_A()
         self._t_update_b()

@@ -6,6 +6,10 @@ from scipy.spatial import cKDTree
 from openpnm.topotools import iscoplanar
 from openpnm.algorithms import GenericAlgorithm
 from openpnm.core import logging
+# check if petsc4py is available
+import importlib
+if (importlib.util.find_spec('petsc4py') is not None):
+    from openpnm.utils.petsclinsolv import petscSparseLinearSolver as sls
 logger = logging.getLogger(__name__)
 
 
@@ -165,7 +169,7 @@ class GenericTransport(GenericAlgorithm):
         if 'pore.bc_value' in self.keys():
             self['pore.bc_value'][pores] = np.nan
         if 'pore.rate' in self.keys():
-            self['pore.bc_rate'][pores] = sp.nan
+            self['pore.bc_rate'][pores] = np.nan
 
     def _build_A(self, force=False):
         r"""
@@ -315,8 +319,24 @@ class GenericTransport(GenericAlgorithm):
             b = self.b
             if b is None:
                 raise Exception('The b matrix has not been built yet')
-        solver = getattr(sprs.linalg, self.settings['solver'])
-        x = solver(A=A.tocsr(), b=b)
+
+        if self.settings['solver'] == 'petsc':
+            # Check if petsc is available
+            petsc = importlib.util.find_spec('petsc4py')
+            if not petsc:
+                raise Exception('petsc is not installed')
+            if not self.settings['petsc_solver']:
+                self.settings['petsc_solver'] = 'cg'
+            if not self.settings['petsc_precond']:
+                self.settings['petsc_precond'] = 'jacobi'
+            # Define the petsc linear system converting the scipy objects
+            ls = sls(A=A.tocsr(), b=b)
+            x = sls.petsc_solve(ls, solver=self.settings['petsc_solver'],
+                                preconditioner=self.settings['petsc_precond'])
+            del(ls)  # Clean
+        else:
+            solver = getattr(sprs.linalg, self.settings['solver'])
+            x = solver(A=A.tocsr(), b=b)
         return x
 
     def results(self):
