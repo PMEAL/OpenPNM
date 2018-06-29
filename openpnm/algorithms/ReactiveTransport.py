@@ -43,6 +43,10 @@ class ReactiveTransport(GenericTransport):
                 phys.regenerate_models(propnames=item)
 
     def _apply_sources(self):
+        if self.settings['t_scheme'] == 'cranknicolson':
+            f1 = 0.5
+        else:
+            f1 = 1
         phase = self.project.phases()[self.settings['phase']]
         self._update_physics()
         for item in self.settings['sources']:
@@ -50,11 +54,11 @@ class ReactiveTransport(GenericTransport):
             # Add S1 to diagonal of A
             # TODO: We need this to NOT overwrite the A and b, but create
             # copy, otherwise we have to regenerate A and b on each loop
-            datadiag = self.A.diagonal()
-            datadiag[Ps] = datadiag[Ps] + phase[item+'.'+'S1'][Ps]
-            self.A.setdiag(datadiag)
+            datadiag = self._A.diagonal().copy()
+            datadiag[Ps] = datadiag[Ps] - f1*phase[item+'.'+'S1'][Ps]
+            self._A.setdiag(datadiag)
             # Add S2 to b
-            self.b[Ps] = self.b[Ps] - phase[item+'.'+'S2'][Ps]
+            self._b[Ps] = self._b[Ps] + f1*phase[item+'.'+'S2'][Ps]
 
     def run(self, x=None):
         r"""
@@ -73,20 +77,19 @@ class ReactiveTransport(GenericTransport):
         return x
 
     def _run_reactive(self, x):
-        if self.settings['quantity'] not in self.keys():
-            self[self.settings['quantity']] = 0
+        if x is None:
+            x = np.zeros(shape=[self.Np, ], dtype=float)
+        self[self.settings['quantity']] = x
         self._build_A()
         self._build_b()
         self._apply_BCs()
         self._apply_sources()
-        if x is None:
-            x = np.zeros(shape=[self.Np, ], dtype=float)
         x_new = self._solve()
         self[self.settings['quantity']] = x_new
         res = np.sum(np.absolute(x**2 - x_new**2))
         if res < self.settings['tolerance']:
-            print('Solution converged: ' + str(res))
+            logger.info('Solution converged: ' + str(res))
             return x_new
         else:
-            print('Tolerance not met: ' + str(res))
+            logger.info('Tolerance not met: ' + str(res))
             self._run_reactive(x=x_new)
