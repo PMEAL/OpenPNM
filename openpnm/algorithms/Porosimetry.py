@@ -1,5 +1,5 @@
 from openpnm.algorithms import OrdinaryPercolation
-from openpnm.core import logging
+from openpnm.utils import logging
 import numpy as np
 logger = logging.getLogger()
 
