@@ -185,6 +185,11 @@ class BaseTest:
         inds_out = self.net.toindices(mask*1.0)
         assert sp.all(inds_in == inds_out)
 
+    def test_toindices_invalid_mask(self):
+        mask = self.net.Np
+        with pytest.raises(Exception):
+            self.net.toindices(mask)
+
     def test_toindices_wrong_mask(self):
         mask = sp.zeros((self.net.Nt)-2, dtype=bool)
         mask[[0, 3, 6]] = True
