@@ -1,6 +1,7 @@
 import time
 import pickle
 import h5py
+from pathlib import Path
 from openpnm.core import Workspace
 from openpnm.utils.misc import SettingsDict, HealthDict, PrintableList
 import openpnm
@@ -10,8 +11,9 @@ ws = Workspace()
 
 class Project(list):
 
-    def __init__(self, name=None):
-        super().__init__()
+    def __init__(self, *args, **kwargs):
+        name = kwargs.pop('name', None)
+        super().__init__(*args, **kwargs)
         # Register self with workspace
         ws[name] = self
         self._grid = {}
@@ -19,15 +21,33 @@ class Project(list):
         self.comments = 'Using OpenPNM ' + openpnm.__version__
 
     def extend(self, obj):
-        if hasattr(obj, '_mro'):
-            if 'GenericNetwork' in obj._mro():
-                if self.network:
-                    raise Exception('Project already has a network')
-            super().append(obj)
-        else:
-            raise Exception('Only OpenPNM objects can be added')
+        r"""
+        This function is used to add objects to the project.  Arguments can
+        be single OpenPNM objects, an OpenPNM project list, or a plain list of
+        OpenPNM objects.
+
+        """
+        if type(obj) is not list:
+            obj = [obj]
+        for item in obj:
+            if hasattr(item, '_mro'):
+                if 'GenericNetwork' in item._mro():
+                    if self.network:
+                        raise Exception('Project already has a network')
+                # Must use append since extend breaks the dicts up into
+                # separate objects, while append keeps it as a single object.
+                super().append(item)
+            else:
+                raise Exception('Only OpenPNM objects can be added')
 
     def append(self, obj):
+        r"""
+        The Project (a list) must be kept as a flat list, so the append
+        function, which can normally be used to insert a list into a list, is
+        overloaded to basically prevent the normal append operation and simply
+        calls ``extend``.
+
+        """
         self.extend(obj)
 
     def clear(self, objtype=[]):
@@ -86,14 +106,23 @@ class Project(list):
             obj = super().__getitem__(key)
         return obj
 
-    def names(self):
-        r"""
-        Returns a list of all object names
-        """
-        names = PrintableList([obj.name for obj in self])
-        return names
-
     def find_phase(self, obj):
+        r"""
+        Find the Phase associated with a given object.
+
+        Parameters
+        ----------
+        obj : OpenPNM Object
+            Can either be a Physics or Algorithm object
+
+        Returns
+        -------
+        An OpenPNM Phase object.
+
+        Raises
+        ------
+        If no Phase object can be found, then an Exception is raised.
+        """
         # If received phase, just return self
         if obj._isa('phase'):
             return obj
@@ -109,6 +138,23 @@ class Project(list):
         raise Exception('Cannot find a phase associated with '+obj.name)
 
     def find_geometry(self, physics):
+        r"""
+        Find the Geometry associated with a given Physics
+
+        Parameters
+        ----------
+        physics : OpenPNM Physics Object
+            Must be a Physics object
+
+        Returns
+        -------
+        An OpenPNM Geometry object
+
+        Raises
+        ------
+        If no Geometry object can be found, then an Exception is raised.
+
+        """
         # If geometry happens to be in settings, look it up directly
         if 'geometry' in physics.settings.keys():
             geom = self.geometries()[physics.settings['geometry']]
@@ -121,6 +167,40 @@ class Project(list):
         raise Exception('Cannot find a geometry associated with '+physics.name)
 
     def find_physics(self, geometry=None, phase=None):
+        r"""
+        Find the Physics object(s) associated with a given Geometry, Phase,
+        or combination.
+
+        Parameters
+        ----------
+        geometry : OpenPNM Geometry Object
+            The Geometry object for which the Physics object(s) are sought
+
+        phase : OpenPNM Phase Object
+            The Phase object for which the Physics object(s) are sought
+
+        Returns
+        -------
+        A list containing the Physics object(s).  If only a ``geometry`` is
+        specified the the Physics for all Phases is returned.  If only a
+        ``phase`` is specified, then the Physics for all Geometries is
+        returned.  If both ``geometry`` and ``phase`` is specified then
+        the list only contains a single Physics.  If no Physics is found, the
+        the list will be empty.  See the Notes section for more information.
+
+        See Also
+        --------
+        grid
+
+        Notes
+        -----
+        The Project has an ``grid`` attribute that shows the association of
+        all objects.  If each Geometry represents a row and each Phase is a
+        column, then each row/col intersection represents a Physics. This
+        method finds the PHysics' at each intersection
+
+        """
+
         if geometry and phase:
             physics = self.find_physics(geometry=geometry)
             phases = list(self.phases().values())
@@ -174,6 +254,18 @@ class Project(list):
 
     def purge_object(self, obj):
         r"""
+        Remove an object from the Project.  This removes all references to
+        the object from all other objects (i.e. removes labels)
+
+        Parameters
+        ----------
+        obj : OpenPNM Object
+            The object to purge
+
+        Raises
+        ------
+        An Exception is raised if the object is a Network.
+
         """
         if obj._isa() in ['geometry', 'physics', 'algorithm']:
             self._purge(obj)
@@ -199,10 +291,12 @@ class Project(list):
             obj = [obj]
         for item in obj:
             filename = item.name + '.' + item.settings['prefix']
-            pickle.dump({item.name: item}, open(filename, 'wb'))
+            with open(filename, 'wb') as f:
+                pickle.dump({item.name: item}, f)
 
     def load_object(self, filename):
-        d = pickle.load(open(filename, 'rb'))
+        with open(filename, 'rb') as f:
+            d = pickle.load(f)
         for item in d.keys():
             self.extend(d[item])
 
@@ -304,7 +398,9 @@ class Project(list):
 
     def _dump_data(self, mode=['props']):
         r"""
-        Dump data from all objects in project to an HDF5 file
+        Dump data from all objects in project to an HDF5 file.  Note that
+        'pore.coords', 'throat.conns', 'pore.all', 'throat.all', and all
+        labels pertaining to the linking of objects are kept.
 
         Parameters
         ----------
@@ -317,6 +413,17 @@ class Project(list):
             **'labels'** : Boolean data that are used as labels.  Since this
             is boolean data it does not consume large amounts of memory and
             probably does not need to be dumped.
+
+        See Also
+        --------
+        _fetch_data
+
+        Notes
+        -----
+        In principle, after data is fetched from an HDF5 file, it should
+        physically stay there until it's called upon.  This let users manage
+        the data as if it's in memory, even though it isn't.  This behavior
+        has not been confirmed yet, which is why these functions are hidden.
 
         """
         with h5py.File(self.name + '.hdf5') as f:
@@ -338,6 +445,18 @@ class Project(list):
         r"""
         Retrieve data from an HDF5 file and place onto correct objects in the
         project
+
+        See Also
+        --------
+        _dump_data
+
+        Notes
+        -----
+        In principle, after data is fetched from and HDF5 file, it should
+        physically stay there until it's called upon.  This let users manage
+        the data as if it's in memory, even though it isn't.  This behavior
+        has not been confirmed yet, which is why these functions are hidden.
+
         """
         with h5py.File(self.name + '.hdf5') as f:
             # Reload data into project
