@@ -45,26 +45,15 @@ class VoronoiFibers(DelaunayVoronoiDual):
         A list of coordinates for pre-generated points, typically produced
         using ``generate_base_points`` in topotools.  Note that base points
         should extend beyond the domain so that degenerate Voronoi points
-        can be trimmed.
+        can be trimmed.  Note: the spherical and cylindrical options
+        cannot be used here.
 
     shape : array_like
         The size and shape of the domain using for generating and trimming
-        excess points. The argument is treated as follows:
-
-        **sphere** : Not supported.
-
-        **cylinder** : Not supported.
-
-        **rectangle** : If a three element list is received, it's treated
-        as the outer corner of rectangle [x, y, z] whose opposite corner
-        lies at [0, 0, 0].
+        excess points. It's treated as the outer corner of rectangle [x, y, z]
+        whose opposite corner lies at [0, 0, 0].
 
         By default, a domain size of [1, 1, 1] is used.
-
-    trim_domain : Boolean
-        If true (default) all nodes outside the given ``shape`` are
-        removed, along with all their throats.  Setting this argument to False
-        will skip this removal if an alternative manual trimming is preferred.
 
     fiber_rad: float
         fiber radius to apply to Voronoi edges when calculating pore and throat
@@ -87,14 +76,17 @@ class VoronoiFibers(DelaunayVoronoiDual):
     """
 
     def __init__(self, num_points=None, points=None, shape=[1, 1, 1],
-                 trim_domain=True, fiber_rad=None, resolution=1e-2, **kwargs):
-        if len(shape) != 3:
-            logger.exceptions(msg='Only rectangular shapes are supported')
+                 fiber_rad=None, resolution=1e-2, **kwargs):
+        shape = np.array(shape)
+        if (len(shape) != 3) or np.any(shape == 0):
+            raise Exception('Only 3D, rectangular shapes are supported')
         if fiber_rad is None:
             logger.exception(msg='Please initialize class with a fiber_rad')
         self.fiber_rad = fiber_rad
         self.resolution = resolution
-        super().__init__(num_points, points, shape, trim_domain, **kwargs)
+        super().__init__(num_points=num_points, points=points, shape=shape,
+                         **kwargs)
+
         DelaunayGeometry(network=self,
                          pores=self.pores('delaunay'),
                          throats=self.throats('delaunay'),
