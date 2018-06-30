@@ -1659,12 +1659,16 @@ def generate_base_points(num_points, domain_size, density_map=None,
         tessellation functions into creating smooth flat faces at the
         boundaries once these excess pores are trimmed.
 
-
     Notes
     -----
     The reflection approach tends to create larger pores near the surfaces, so
     it might be necessary to use the ``density_map`` argument to specify a
     slightly higher density of points near the surfaces.
+
+    The ``Voronoi``, ``Delaunay``, ``Gabriel``, and ``DelunayVoronoiDual``
+    classes can *techncially* handle base points with spherical or cylindrical
+    domains, but the reflection across round surfaces does not create perfect
+    Voronoi cells so the surfaces will not be smooth.
 
 
     Examples
@@ -1775,20 +1779,23 @@ def generate_base_points(num_points, domain_size, density_map=None,
 def reflect_base_points(base_pts, domain_size):
     r'''
     Helper function for relecting a set of points about the faces of a
-    rectangular domain
+    given domain.
 
     Parameters
     ----------
-    base_pts : 3d array
+    base_pts : array_like
         The coordinates of the base_pts to be reflected in the coordinate
         system corresponding to the the domain as follows:
-            '**spherical**' : [r, theta, phi]
-            '**cylindrical** or **circular**' : [r, theta, z]
-            '**rectangular** or **square**' : [x, y, z]
 
-    domain_size : list or array
+        '**spherical**' : [r, theta, phi]
+
+        '**cylindrical** or **circular**' : [r, theta, z]
+
+        '**rectangular** or **square**' : [x, y, z]
+
+    domain_size : array_lie
         The upper coordinate of the face normal to the reflection along
-        each axis. Lower bound is assumed to be zero
+        each axis. Lower bound is assumed to be zero.
     '''
     domain_size = sp.array(domain_size)
     if len(domain_size) == 1:
