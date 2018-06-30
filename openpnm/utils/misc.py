@@ -73,7 +73,7 @@ class PrintableDict(OrderedDict):
     def __str__(self):
         header = '―' * 78
         lines = [header]
-        lines.append('{0:<35s} {1}'.format('key', self._header))
+        lines.append('{0:<35s} {1}'.format(self._key, self._value))
         lines.append(header)
         for item in list(self.keys()):
             if type(self[item]) == _sp.ndarray:
@@ -176,7 +176,7 @@ class HealthDict(PrintableDict):
     returns False.
     """
     def __init__(self, header='status', **kwargs):
-        super().__init__(header=header, **kwargs)
+        super().__init__(value=header, **kwargs)
 
     def _get_health(self):
         health = True

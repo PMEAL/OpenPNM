@@ -2,6 +2,8 @@ import openpnm as op
 from openpnm.topotools import reflect_base_points
 import openpnm.models.geometry as gm
 import scipy as sp
+from openpnm.utils import vertexops as vo
+import matplotlib.pyplot as plt
 
 
 class VoronoiTest:
@@ -40,10 +42,19 @@ class VoronoiTest:
         slc = self.del_geom._get_fiber_slice(index=[0, 50, 0])
         assert sp.shape(slc) == (101, 101)
 
+    def test_plot_pore(self):
+        vo.plot_pore(self.del_geom, pores=self.del_geom.pores())
+        plt.close('all')
+
+    def test_plot_throat(self):
+        vo.plot_throat(self.del_geom, throats=[0])
+        plt.close('all')
+
 
 if __name__ == '__main__':
 
     t = VoronoiTest()
+    self = t
     t.setup_class()
     for item in t.__dir__():
         if item.startswith('test'):

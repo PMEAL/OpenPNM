@@ -45,19 +45,13 @@ class VoronoiFibers(DelaunayVoronoiDual):
         A list of coordinates for pre-generated points, typically produced
         using ``generate_base_points`` in topotools.  Note that base points
         should extend beyond the domain so that degenerate Voronoi points
-        can be trimmed.
+        can be trimmed.  Note: the spherical and cylindrical options
+        cannot be used here.
 
     shape : array_like
         The size and shape of the domain using for generating and trimming
-        excess points. The argument is treated as follows:
-
-        **sphere** : Not supported.
-
-        **cylinder** : Not supported.
-
-        **rectangle** : If a three element list is received, it's treated
-        as the outer corner of rectangle [x, y, z] whose opposite corner
-        lies at [0, 0, 0].
+        excess points. It's treated as the outer corner of rectangle [x, y, z]
+        whose opposite corner lies at [0, 0, 0].
 
         By default, a domain size of [1, 1, 1] is used.
 
@@ -83,8 +77,9 @@ class VoronoiFibers(DelaunayVoronoiDual):
 
     def __init__(self, num_points=None, points=None, shape=[1, 1, 1],
                  fiber_rad=None, resolution=1e-2, **kwargs):
-        if len(shape) != 3:
-            logger.exceptions(msg='Only rectangular shapes are supported')
+        shape = np.array(shape)
+        if (len(shape) != 3) or np.any(shape == 0):
+            raise Exception('Only 3D, rectangular shapes are supported')
         if fiber_rad is None:
             logger.exception(msg='Please initialize class with a fiber_rad')
         self.fiber_rad = fiber_rad

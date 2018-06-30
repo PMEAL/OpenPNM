@@ -41,21 +41,12 @@ class DelaunayVoronoiDual(GenericNetwork):
         can be trimmed.
 
     shape : array_like
-        The size of the domain.  It's possible to create cubic, cylindrical,
-        or spherical domains, as well as 2D square and circular by changing
-        the domain ``shape`` as follows:
+        The size and shape of the domain using for generating and trimming
+        excess points. The coordinates are treated as the outer corner of a
+        rectangle [x, y, z] whose opposite corner lies at [0, 0, 0].
 
-        [x, y, z] - will produce a normal cubic domain of dimension x, and
-        and z
-
-        [x, y, 0] - will produce a 2D square domain of size x by y
-
-        [r, z] - will produce a cylindrical domain with a radius of r and
-        height of z
-
-        [r, 0] - will produce a 2D circular domain with a radius of r
-
-        [r] - will produce a spherical domain with a radius of r
+        By default, a domain size of [1, 1, 1] is used.  To create a 2D network
+        set the 3D dimension to 0.
 
     Examples
     --------
@@ -65,35 +56,6 @@ class DelaunayVoronoiDual(GenericNetwork):
     >>> net = op.network.DelaunayVoronoiDual(num_points=50, shape=[1, 1, 0])
 
     The resulting network can be quickly visualized:
-
-    >>> fig = op.topotools.plot_connections(network=net,
-    ...                                     throats=net.throats('voronoi'),
-    ...                                     color='b')
-    >>> fig = op.topotools.plot_connections(network=net,
-    ...                                     throats=net.throats('delaunay'),
-    ...                                     fig=fig, color='r')
-    >>> fig = op.topotools.plot_connections(network=net,
-    ...                                     throats=net.throats('intercon*'),
-    ...                                     fig=fig, color='g')
-
-    .. image:: /../docs/static/images/delaunay_voronoi_dual_network.png
-        :align: center
-
-    The default shape is a unit cube, but it's also possible to generate
-    cylinders and spheres by specifying the domain size as [r, z] or [r],
-    respectively:
-
-    >>> sph = op.network.DelaunayVoronoiDual(num_points=50, shape=[1])
-    >>> cyl = op.network.DelaunayVoronoiDual(num_points=50, shape=[1, 1])
-
-    More control over the distribution of base points can be achieved by
-    calling ``topotools.generate_base_points`` directly:
-
-    >>> pts = op.topotools.generate_base_points(num_points=200,
-    ...                                         domain_size=[1, 5])
-    >>> pts -= [0, 0, 1]  # Shift points in the negative z-direction
-    >>> cyl = op.network.DelaunayVoronoiDual(points=pts, shape=[1, 3])
-    >>> fig = op.topotools.plot_connections(network=cyl)
 
     """
 

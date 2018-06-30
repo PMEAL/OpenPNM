@@ -11,6 +11,7 @@ network topology.
 """
 
 from .topotools import add_boundary_pores
+from .topotools import bond_percolation
 from .topotools import clone_pores
 from .topotools import connect_pores
 from .topotools import extend
@@ -26,6 +27,7 @@ from .topotools import generate_base_points
 from .topotools import iscoplanar
 from .topotools import isoutside
 from .topotools import issymmetric
+from .topotools import ispercolating
 from .topotools import istriu
 from .topotools import istril
 from .topotools import istriangular
@@ -37,6 +39,8 @@ from .topotools import plot_coordinates
 from .topotools import plot_networkx
 from .topotools import reduce_coordination
 from .topotools import reflect_base_points
+from .topotools import remove_isolated_clusters
+from .topotools import site_percolation
 from .topotools import stitch
 from .topotools import subdivide
 from .topotools import template_cylinder_annulus
