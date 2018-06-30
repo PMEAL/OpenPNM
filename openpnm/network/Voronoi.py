@@ -14,14 +14,14 @@ class Voronoi(DelaunayVoronoiDual):
     r"""
 
     """
-    def __init__(self, num_points=None, shape=None, points=None,
-                 trim_domain=False, **kwargs):
-
-        super().__init__(num_points=num_points, shape=shape, points=points,
-                         trim_domain=trim_domain, **kwargs)
-        topotools.trim(self, pores=self.pores('delaunay'))
-        del self['throat.interconnect']
-        del self['throat.delaunay']
-        del self['pore.delaunay']
-        del self['pore.voronoi']
-        del self['throat.voronoi']
+    def __init__(self, shape=None, num_points=None, points=None, **kwargs):
+        # Clean-up input points
+        points = self._parse_points(shape=shape,
+                                    num_points=num_points,
+                                    points=points)
+        # Initialize network object
+        super().__init__(shape=shape, points=points, **kwargs)
+        topotools.trim(network=self, pores=self.pores('delaunay'))
+        pop = ['pore.delaunay', 'throat.delaunay', 'throat.interconnect']
+        for item in pop:
+            del self[item]

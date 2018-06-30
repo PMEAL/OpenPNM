@@ -1,5 +1,6 @@
 import openpnm as op
 import numpy as np
+import pytest
 from numpy.testing import assert_approx_equal
 from openpnm import topotools
 
@@ -105,6 +106,20 @@ class TopotoolsTest:
         assert net.Np == 150
         assert net.Nt == 300
 
+    def test_merge_networks(self):
+        net1 = op.network.Cubic(shape=[3, 3, 3])
+        net2 = op.network.Cubic(shape=[3, 3, 3])
+        net1['pore.test1'] = True
+        net1['pore.test2'] = 10
+        net2['pore.test3'] = True
+        net2['pore.test4'] = 10.0
+        topotools.merge_networks(net1, net2)
+        assert np.sum(net1['pore.test1']) == 27
+        assert np.sum(net1['pore.test3']) == 27
+        assert np.sum(net1['pore.test2'][:27]) == 270
+        assert np.sum(net1['pore.test4'][27:]) == 270
+        assert 'pore.test1' not in net2
+        assert 'pore.test2' not in net2
     def test_ispercolating(self):
         net = op.network.Cubic(shape=[10, 10, 10], connectivity=26)
         tmask = net['throat.all']
@@ -117,6 +132,7 @@ class TopotoolsTest:
         val = topotools.ispercolating(am=am, mode='site',
                                       inlets=Pin, outlets=Pout)
         assert val
+
 
 if __name__ == '__main__':
 
