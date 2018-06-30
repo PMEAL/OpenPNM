@@ -59,89 +59,57 @@ def conduit_conductance(target, throat_conductance,
         mask = Tinv + sp.any(Pinv, axis=1)
     else:
         raise Exception('Unrecongnized mode '+mode)
-    value = phase[throat_conductance]
+    value = phase[throat_conductance].copy()
     value[mask] = value[mask]*factor
     # Now map throats onto target object
     Ts = phase.map_throats(ids=target['throat._id'])
     return value[Ts]
 
 
-def late_throat_filling(target, Pc, Swp_star=0.11, eta=3,
-                        throat_entry_pressure='throat.capillary_pressure'):
+def late_filling(target, pressure='pore.pressure',
+                 Pc_star='pore.pc_star',
+                 Swp_star=0.2, eta=3):
     r"""
-    Calculates the fraction of a throat filled with invading fluid based on
-    the capillary pressure in the system.  The invading phase volume is
-    calculated from:
+    Calculates the fraction of a pore or throat filled with invading fluid
+    based on the capillary pressure in the invading phase.  The invading phase
+    volume is calculated from:
 
         .. math::
-            S_{nwp} = 1 - S_{wp}^{*} (P_{inv}/P_{c})^{\eta}
+            S_{nwp} = 1 - S_{wp}^{*} (P^{*}/P_{c})^{\eta}
 
     Parameters
     ----------
-    Pc : float
-        The capillary pressure in the non-wetting phase (Pc > 0)
+    pressure : string
+        The capillary pressure in the non-wetting phase (Pc > 0).
 
-    eta : float
-        Exponent to control the rate at which wetting phase is displaced
+    Pc_star : string
+        The minimum pressure required to create an interface within the pore
+        body or throat.  Typically this would be calculated using the Washburn
+        equation.
 
     Swp_star : float
-        The residual wetting phase in an invaded throat immediately after
-        nonwetting phase invasion
+        The residual wetting phase in an invaded pore or throat at a pressure
+        of ``pc_star``.
 
-    throat_entry_pressure : string
-        The dictionary key containing throat entry pressures.
+    eta : float
+        Exponent controlling the rate at which wetting phase is displaced with
+        increasing pressure.
 
     Returns
     -------
-    A Nt-list of containing the fraction of each throat that is filled with
-    non-wetting phase.
+    An array containing the fraction of each pore or throat that would be
+    filled with non-wetting phase at the given phase pressure.  This does not
+    account for whether or not the element is actually invaded, which requires
+    a percolation algorithm of some sort.
 
     """
-    Swp = sp.ones(target.Nt,)
-    if Pc > 0:
-        Swp = Swp_star*(target[throat_entry_pressure]/Pc)**eta
-    values = (1 - Swp)
-    return values
-
-
-def late_pore_filling(target, Pc, Swp_star=0.2, eta=3,
-                      throat_entry_pressure='throat.capillary_pressure'):
-    r"""
-    Calculates the fraction of a pore filled with invading fluid based on
-    the capillary pressure in the system.  The invading phase volume is
-    calculated from:
-
-        .. math::
-            S_{nwp} = 1 - S_{wp}^{*} (P_{inv}/P_{c})^{\eta}
-
-    Parameters
-    ----------
-    Pc : float`
-        The capillary pressure in the non-wetting phase (Pc > 0)
-
-    eta : float
-        Exponent to control the rate at which wetting phase is displaced
-
-    Swp_star : float
-        The residual wetting phase in an invaded pore immediately after
-        nonwetting phase invasion
-
-    throat_entry_pressure : string
-        The dictionary key containing throat entry pressures.
-    Returns
-    -------
-    A Np-list of containing the fraction of each pore that is filled with non-
-    wetting phase.
-
-    """
+    element = pressure.split('.')[0]
     phase = target.project.find_phase(target)
-    # Find PcStar
-    from openpnm.models.misc import from_neighbor_throats
-    pc_star = from_neighbor_throats(target=phase,
-                                    throat_prop=throat_entry_pressure,
-                                    mode='min')
-    Swp = sp.ones(target.Np,)
-    if Pc > 0:
-        Swp = Swp_star*(pc_star/Pc)**eta
-    values = (1 - Swp)
+    pc_star = phase[Pc_star]
+    Pc = phase[pressure]
+    # Remove any 0's from the Pc array to prevent numpy div by 0 warning
+    Pc = sp.maximum(Pc, 1e-9)
+    Swp = Swp_star*((pc_star/Pc)**eta)
+    values = sp.clip(1 - Swp, 0.0, 1.0)
+    values = values[phase._get_indices(element=element)]
     return values

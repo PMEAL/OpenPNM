@@ -1,13 +1,6 @@
-# -*- coding: utf-8 -*-
-"""
-===============================================================================
-module __GenericAlgorithm__: Base class to build custom algorithms
-===============================================================================
-
-"""
+import numpy as np
 from openpnm.core import Base, logging
 logger = logging.getLogger()
-import numpy as np
 
 
 class GenericAlgorithm(Base):

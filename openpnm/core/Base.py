@@ -17,7 +17,7 @@ class Base(dict):
         # The SettingsDict implements the __missing__ magic method, which
         # returns None instead of KeyError.  This is useful for checking the
         # value of a settings without first ensuring it exists.
-        instance.settings = SettingsDict()
+        instance.settings = SettingsDict(key='Settings', value='Values')
         return instance
 
     def __init__(self, Np=0, Nt=0, name=None, project=None):
