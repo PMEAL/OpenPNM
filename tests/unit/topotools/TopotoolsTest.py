@@ -120,6 +120,7 @@ class TopotoolsTest:
         assert np.sum(net1['pore.test4'][27:]) == 270
         assert 'pore.test1' not in net2
         assert 'pore.test2' not in net2
+
     def test_ispercolating(self):
         net = op.network.Cubic(shape=[10, 10, 10], connectivity=26)
         tmask = net['throat.all']
