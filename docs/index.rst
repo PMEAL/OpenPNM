@@ -8,20 +8,13 @@ Welcome to the OpenPNM Documentation
 
 
 +------------------------------+------------------------------------------------------+
-|.. toctree::                  | **Example: Extracted Berea Sandstone Network**       |
+|.. toctree::                  |.. toctree::                                          |
+|    :maxdepth: 2              |    :maxdepth: 1                                      |
+|                              |                                                      |
+|    getting_started/index.rst |    modules/index.rst                                 |
++------------------------------+------------------------------------------------------+
+|.. toctree::                  |* :ref:`genindex`                                     |
 |    :maxdepth: 2              |                                                      |
 |                              |                                                      |
-|    getting_started/index.rst |                                                      |
-+------------------------------+------------------------------------------------------+
-|.. toctree::                  |.. image:: /../docs/static/images/extracted_berea.png |
-|    :maxdepth: 2              |    :width: 400 px                                    |
-|                              |    :align: center                                    |
 |    userguide/index.rst       |                                                      |
-+------------------------------+                                                      |
-|.. toctree::                  |                                                      |
-|    :maxdepth: 1              |                                                      |
-|                              |                                                      |
-|    modules/index.rst         |                                                      |
-+------------------------------+                                                      |
-|* :ref:`genindex`             |                                                      |
 +------------------------------+------------------------------------------------------+
