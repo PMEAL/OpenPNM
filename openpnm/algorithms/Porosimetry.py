@@ -8,7 +8,7 @@ default_settings = {'pore_volume': 'pore.volume',
                     'mode': 'bond',
                     'access_limited': True,
                     'quantity': 'pressure',
-                    'throat_entry_threshold': 'throat.entry_pressure',
+                    'throat_entry_pressure': 'throat.entry_pressure',
                     'late_pore_filling': '',
                     'late_throat_filling': ''}
 
@@ -49,7 +49,7 @@ class Porosimetry(OrdinaryPercolation):
             'pressure'.  Note that there is no need to specify 'pore' and/or
             'throat' with this as the given value will apply to both.
 
-        throat_entry_threshold : string
+        throat_entry_pressure : string
             The dictionary key on the Phase object where the throat entry
             pressure values are stored.  The default is
             'throat.entry_pressure'.

@@ -63,5 +63,4 @@ Multiphase
 ................................................................................
 
 .. autofunction:: openpnm.models.physics.multiphase.conduit_conductance
-.. autofunction:: openpnm.models.physics.multiphase.late_pore_filling
-.. autofunction:: openpnm.models.physics.multiphase.late_throat_filling
+.. autofunction:: openpnm.models.physics.multiphase.late_filling
