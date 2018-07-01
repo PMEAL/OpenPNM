@@ -23,7 +23,9 @@ The first step in an OpenPNM project is to create a network.
 The resulting network can be quickly visualized using ``plot_coordinates`` and
 ``plot_connections`` in the :ref:`topotools_index` module to get the following:
 
-.. plot:: pyplots\\getting_started_plot_cubic_network.py
+.. image:: /../docs/static/images/quick_start_cubic_network.png
+    :width: 800px
+    :align: center
 
 The ``network`` module has a number of network types to chose from:
 
@@ -137,9 +139,11 @@ Simulating Mercury Porosimetry
     >>> mip.run(npts=25)
     >>> mip.show_XXX
 
-Which can be visualized using the ``plot_porosimetry_curve`` method of the Porosimetry class:
+Which can be visualized using the ``plot_intrusion_curve`` method of the Porosimetry class:
 
-.. plot:: pyplots\\getting_started_mip_curve.py
+.. image:: /../docs/static/images/quick_start_drainage_curve.png
+    :width: 800px
+    :align: center
 
 ................................................................................
 Calculating Network Permeability

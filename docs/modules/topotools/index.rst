@@ -28,9 +28,7 @@ Topotools
 .. autofunction:: openpnm.topotools.label_faces
 .. autofunction:: openpnm.topotools.merge_pores
 .. autofunction:: openpnm.topotools.plot_connections
-.. plot:: pyplots\\plot_connections.py
 .. autofunction:: openpnm.topotools.plot_coordinates
-.. plot:: pyplots\\plot_coordinates.py
 .. autofunction:: openpnm.topotools.reduce_coordination
 .. autofunction:: openpnm.topotools.reflect_base_points
 .. autofunction:: openpnm.topotools.stitch
