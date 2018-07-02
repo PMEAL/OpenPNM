@@ -560,6 +560,8 @@ class GenericLinearTransport(GenericAlgorithm):
 
         if A is None:
             A = self.A
+            A.indices = A.indices.astype(np.int64)
+            A.indptr = A.indptr.astype(np.int64)
         if b is None:
             b = self.b
         if self._iterative_solver is None:
