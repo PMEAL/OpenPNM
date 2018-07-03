@@ -52,9 +52,7 @@ def straight(target, pore_diameter='pore.diameter', L_negative=1e-9):
     throats = network.throats(target.name)
     pore1 = network['throat.conns'][:, 0]
     pore2 = network['throat.conns'][:, 1]
-    C1 = network['pore.coords'][pore1]
-    C2 = network['pore.coords'][pore2]
-    E = _sp.sqrt(_sp.sum((C1-C2)**2, axis=1))  # Euclidean distance
+    E = ctc(target, pore_diameter=pore_diameter)
     D1 = network[pore_diameter][pore1]
     D2 = network[pore_diameter][pore2]
     value = E-(D1+D2)/2.
