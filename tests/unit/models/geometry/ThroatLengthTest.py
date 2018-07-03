@@ -40,10 +40,10 @@ class ThroatStraightTest:
         assert np.allclose(0.96429286, Lt)
         assert np.allclose(0.01785357, L2)
 
-    def test_truncated_pyramid_length(self):
+    def test_truncated_pyramid(self):
         self.geo['pore.diameter'] = 0.05
         self.geo.add_model(propname='throat.conduit_lengths',
-                           model=mods.truncated_pyramid_length,
+                           model=mods.truncated_pyramid,
                            regen_mode='normal')
         L1 = np.unique(self.geo['throat.conduit_lengths.pore1'])
         Lt = np.unique(self.geo['throat.conduit_lengths.throat'])
