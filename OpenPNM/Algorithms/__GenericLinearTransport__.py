@@ -6,6 +6,7 @@ module __GenericLinearTransport__: Class for solving linear transport processes
 
 """
 import scipy as sp
+import  numpy as np
 import scipy.sparse as sprs
 import scipy.sparse.linalg as sprslin
 from OpenPNM.Algorithms import GenericAlgorithm
