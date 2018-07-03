@@ -31,10 +31,10 @@ class ThroatSurfaceAreaTest:
         assert_approx_equal(np.array([0.007853982]), AEqTr)
         assert_approx_equal(np.array([0.02065897]), AEqP2)
 
-    def test_truncated_pyramid_area(self):
+    def test_truncated_pyramid(self):
         self.geo['throat.area'] = self.geo['throat.diameter']**2
         self.geo.add_model(propname='throat.equivalent_area',
-                           model=mods.truncated_pyramid_area,
+                           model=mods.truncated_pyramid,
                            regen_mode='normal')
         AEqP1 = np.unique(self.geo['throat.equivalent_area.pore1'])
         AEqTr = np.unique(self.geo['throat.equivalent_area.throat'])
