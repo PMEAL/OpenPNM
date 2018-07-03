@@ -3,6 +3,31 @@ from openpnm.core import logging as _logging
 _logger = _logging.getLogger(__name__)
 
 
+def ctc(target, pore_diameter='pore.diameter'):
+    r"""
+    Calculate throat length assuming point-like pores, i.e. center-to-center
+    distance between pores.
+
+    Parameters
+    ----------
+    target : OpenPNM Object
+        The object which this model is associated with. This controls the
+        length of the calculated array, and also provides access to other
+        necessary properties.
+
+    pore_diameter : string
+        Dictionary key of the pore diameter values
+
+    """
+    network = target.project.network
+    throats = network.throats(target.name)
+    cn = network['throat.conns']
+    C1 = network['pore.coords'][cn[:, 0]]
+    C2 = network['pore.coords'][cn[:, 1]]
+    E = _sp.sqrt(_sp.sum((C1-C2)**2, axis=1))
+    return E[throats]
+
+
 def straight(target, pore_diameter='pore.diameter', L_negative=1e-9):
     r"""
     Calculate throat length
