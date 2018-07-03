@@ -3,6 +3,7 @@ import openpnm
 import time
 import copy
 import warnings
+import numpy as np
 from pathlib import Path
 from openpnm.core import logging
 from openpnm.utils import SettingsDict
@@ -277,6 +278,31 @@ class Workspace(dict):
                 n.append(int(item.split('sim_')[1]))
         name = 'sim_'+str(max(n)+1).zfill(2)
         return name
+
+    def _gen_ids(self, size):
+        r"""
+        Generates a sequence of integers of the given size, starting at 1
+        greater than the last produced value.
+
+        The Workspace object keeps track of the most recent value, which
+        persists until the current python session is restarted, so the
+        returned array contains unique values for the given session.
+
+        Parameters
+        ----------
+        size : int
+            The number of values to return
+
+        Returns
+        -------
+        A Numpy array of the specified size, containing integer values starting
+        from the last used values.
+        """
+        if not hasattr(self, '_next_id'):
+            self._next_id = 0
+        ids = np.arange(self._next_id, self._next_id + size, dtype=np.int64)
+        self._next_id += size
+        return ids
 
     def __str__(self):
         s = []
