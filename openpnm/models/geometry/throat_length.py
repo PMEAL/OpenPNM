@@ -63,3 +63,35 @@ def straight(target, pore_diameter='pore.diameter', L_negative=1e-9):
         Ts = _sp.where(value < 0)[0]
         value[Ts] = L_negative
     return value
+
+
+def spherical_pores(target, pore_diameter='pore.diameter',
+                    throat_diameter='throat.diameter'):
+    r"""
+    Calculate conduit lengths, i.e. pore 1 length, throat length,
+    and pore 2 length, assuming that pores are spheres.
+
+    Parameters
+    ----------
+    target : OpenPNM Object
+        The object which this model is associated with. This controls the
+        length of the calculated array, and also provides access to other
+        necessary properties.
+
+    pore_diameter : string
+        Dictionary key of the pore diameter values
+
+    throat_diameter : string
+        Dictionary key of the throat diameter values
+
+    """
+    network = target.project.network
+    cn = network['throat.conns']
+    d1 = target[pore_diameter][cn[:, 0]]
+    d2 = target[pore_diameter][cn[:, 1]]
+    dt = target[throat_diameter]
+    L1 = _sp.sqrt(d1**2 - dt**2) / 2            # Effective length of pore 1
+    L2 = _sp.sqrt(d2**2 - dt**2) / 2            # Effective length of pore 2
+    L = ctc(target, pore_diameter=pore_diameter)
+    Lt = L - (L1+L2)                            # Effective length of throat
+    return {'throat.pore1': L1, 'throat.throat': Lt, 'throat.pore2': L2}
