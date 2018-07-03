@@ -27,7 +27,7 @@ class StickAndBall(GenericGeometry):
         self.add_model(propname='pore.seed',
                        model=mods.misc.random,
                        element='pore',
-                       num_range=[0, 0.1],
+                       num_range=[0.5, 1.0],
                        seed=None)
 
         self.add_model(propname='pore.max_size',
