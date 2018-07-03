@@ -75,3 +75,14 @@ class StickAndBall(GenericGeometry):
         self.add_model(propname='throat.area',
                        model=mods.geometry.throat_area.cylinder,
                        throat_diameter='throat.diameter')
+
+        self.add_model(propname='throat.conduit_lengths',
+                       model=mods.geometry.throat_length.spherical_pores,
+                       pore_diameter='pore.diameter',
+                       throat_diameter='throat.diameter')
+
+        self.add_model(propname='throat.equivalent_area',
+                       model=mods.geometry.throat_equivalent_area.spherical_pores,
+                       throat_area='throat.area',
+                       pore_diameter='pore.diameter',
+                       throat_conduit_lengths='throat.conduit_lengths')
