@@ -20,12 +20,11 @@ def ctc(target, pore_diameter='pore.diameter'):
 
     """
     network = target.project.network
-    throats = network.throats(target.name)
     cn = network['throat.conns']
     C1 = network['pore.coords'][cn[:, 0]]
     C2 = network['pore.coords'][cn[:, 1]]
     E = _sp.sqrt(_sp.sum((C1-C2)**2, axis=1))
-    return E[throats]
+    return E
 
 
 def straight(target, pore_diameter='pore.diameter', L_negative=1e-9):
