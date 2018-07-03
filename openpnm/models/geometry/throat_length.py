@@ -95,3 +95,27 @@ def spherical_pores(target, pore_diameter='pore.diameter',
     L = ctc(target, pore_diameter=pore_diameter)
     Lt = L - (L1+L2)                            # Effective length of throat
     return {'throat.pore1': L1, 'throat.throat': Lt, 'throat.pore2': L2}
+
+
+def circular_pores(target, pore_diameter='pore.diameter',
+                    throat_diameter='throat.diameter'):
+    r"""
+    Calculate conduit lengths, i.e. pore 1 length, throat length,
+    and pore 2 length, assuming that pores are circles.
+
+    Parameters
+    ----------
+    target : OpenPNM Object
+        The object which this model is associated with. This controls the
+        length of the calculated array, and also provides access to other
+        necessary properties.
+
+    pore_diameter : string
+        Dictionary key of the pore diameter values
+
+    throat_diameter : string
+        Dictionary key of the throat diameter values
+
+    """
+    return spherical_pores(target, pore_diameter=pore_diameter,
+                           throat_diameter=throat_diameter)
