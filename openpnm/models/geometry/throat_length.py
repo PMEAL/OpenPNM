@@ -113,8 +113,8 @@ def truncated_pyramid_length(target, pore_diameter='pore.diameter'):
     """
     network = target.project.network
     cn = network['throat.conns']
-    L1 = target[pore_diameter][cn[:, 0]]        # Effective length of pore1
-    L2 = target[pore_diameter][cn[:, 1]]        # Effective length of pore2
+    L1 = 0.5*target[pore_diameter][cn[:, 0]]        # Effective length of pore1
+    L2 = 0.5*target[pore_diameter][cn[:, 1]]        # Effective length of pore2
     L = ctc(target, pore_diameter=pore_diameter)
     Lt = L - (L1+L2)                            # Effective length of throat
     return {'throat.pore1': L1, 'throat.throat': Lt, 'throat.pore2': L2}
