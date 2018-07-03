@@ -72,7 +72,7 @@ Phases must created to calculate the thermophysical properties of the fluids (an
 .. code-block:: python
 
     >>> hg = op.phases.Mercury(network=pn)
-    >>> h2o = op.phases.Wather(network=pn)
+    >>> h2o = op.phases.Water(network=pn)
 
 OpenPNM includes a few common phases, including :ref:`mercury_api`, :ref:`air_api` and :ref:`water_api`, but also a set of pore-scale models for calculating properties of different phases.
 
@@ -93,7 +93,7 @@ The ``GenericPhysics`` class was used, which has NO pore-scale models attached. 
 
 .. note::
 
-    (1) The Network must be given as an argument the Physics knows which network it's associated with
+    (1) The Network must be given as an argument so that the Physics knows which network it's associated with
 
     (2) One Physics object is required for each Phase, since physics models require thermophysical properties.  For example, the Hagan-Poisseuille equation requires the viscosity of the phase.
 
@@ -124,7 +124,7 @@ We must assign models to each of our Physics.  The ``hg`` phase will be used to 
 Performing Some Simulations
 --------------------------------------------------------------------------------
 
-The final step is to conduct a few simulations.  The most important steps in validating a pore network model is to ensure that it reproduces experimentally measured porosimetry curves and absolute permeability.
+We are now ready to conduct some simulations.  The most important step in validating a pore network model is to ensure that it reproduces experimentally measured porosimetry curves and absolute permeability.
 
 ................................................................................
 Simulating Mercury Porosimetry
@@ -159,15 +159,15 @@ Similarly for the permeability calculation:
     >>> perm.set_value_BC(pores=pn.pores('right'), values=0)
     >>> perm.run()
 
-The above code solves for the pressure in each pore and stores the result as ``perm['pore.pressure']``.  To find the permeability of the network, there is a ``calc_permeability`` method on the StokeFlow class:
+The above code solves for the pressure in each pore and stores the result as ``perm['pore.pressure']``.  To find the permeability of the network, there is a ``calc_eff_permeability`` method on the StokeFlow class:
 
     >>> perm.domain_area = (10*0.0001)**2
     >>> perm.domain_length = (10*0.0001)
-    >>> K = perm.calc_permeability()
+    >>> K = perm.calc_eff_permeability()
 
 .. note::
 
-    (1) The ``calc_permeability`` finds K by inverting Darcy's law, and looking up all the necessary information (pressure drop, viscosity) from the objects.
+    (1) The ``calc_eff_permeability`` method finds K by inverting Darcy's law, and looking up all the necessary information (pressure drop, viscosity) from the objects which the algorithm is associated.
 
     (2) If the domain area and length are not given, an attempt is made to estimate them but it's more accurate to provide it.
 

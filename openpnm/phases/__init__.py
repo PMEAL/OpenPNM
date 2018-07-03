@@ -30,7 +30,7 @@ models that predict the thermophysical properties of certain common phases.
 +-------------+---------------------------------------------------------------+
 | Air         | A mixture of O2 and N2, but no humidity                       |
 +-------------+---------------------------------------------------------------+
-| Mercury     | Useful porosimetry simulations, assumed theta is 140          |
+| Mercury     | Useful for porosimetry simulations, assumed theta is 140      |
 +-------------+---------------------------------------------------------------+
 
 ----
@@ -50,20 +50,30 @@ Now add the pore-scale model for viscosity from the ``models`` module:
 
 >>> oil.add_model(propname='pore.viscosity',
 ...               model=op.models.misc.polynomial,
-...               a=[1000, -20, 3],
+...               a=[50000, 1, -.1],
 ...               prop='pore.temperature')
 
 Upon adding the model, values are immediately calculated at the Phase's
 current temperature:
 
 >>> oil['pore.viscosity'][0]
-273372.0
+41417.6
 
 If the temperature is changed, the model can be regenerated to update the
 viscosity values:
 
 >>> oil['pore.temperature'] = 355
->>> oil
+>>> oil['pore.viscosity'][0]
+41417.6
+
+Note that the oil viscosity has NOT changed!  To propigate the new temperature
+to all the other calculated pore-scale properties, call the
+``regenerate_models`` function:
+
+>>> oil.regenerate_models()
+>>> oil['pore.viscosity'][0]
+37752.5
+
 """
 from .GenericPhase import GenericPhase
 from .Air import Air

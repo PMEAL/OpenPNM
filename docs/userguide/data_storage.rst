@@ -25,9 +25,9 @@ The physical details about pores and throats are referred to as *properties*, wh
 
 .. code-block:: python
 
-    >>> import OpenPNM
+    >>> import openpnm as op
     >>> import scipy as sp
-    >>> pn = OpenPNM.Network.Cubic(shape=[3, 3, 3])
+    >>> pn = op.network.Cubic(shape=[3, 3, 3])
     >>> pn['pore.coords'][1]
     array([0.5, 0.5, 1.5])
 

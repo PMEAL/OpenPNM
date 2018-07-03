@@ -1,5 +1,8 @@
-.. _cubic_berea_api:
+.. _berea_cubic_api:
 
 --------------------------------------------------------------------------------
-CubicBerea
+BereaCubic
 --------------------------------------------------------------------------------
+
+.. autoclass:: openpnm.materials.BereaCubic
+   :members:

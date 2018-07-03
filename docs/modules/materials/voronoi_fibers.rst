@@ -6,4 +6,3 @@ VoronoiFibers
 
 .. autoclass:: openpnm.materials.VoronoiFibers
    :members:
-   :show-inheritance:

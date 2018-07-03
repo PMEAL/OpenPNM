@@ -1,4 +1,4 @@
-.. Modelling multiphase transport in fuel cells: The power of pore-scale approaches:
+.. _models_guide:
 
 ================================================================================
 Pore Scale Models
@@ -27,10 +27,10 @@ This process is demonstrated by adding a random pore seed model to a **Geometry*
 
 .. code-block:: Python
 
-    >>> import OpenPNM
-    >>> pn = OpenPNM.Network.TestNet()
-    >>> geom = OpenPNM.Geometry.GenericGeometry(network=pn,pores=pn.Ps,throats=pn.Ts)
-    >>> mod = OpenPNM.Geometry.models.pore_misc.random  # Get a handle to the desired model
+    >>> import openpnm as op
+    >>> pn = op.network.Cubic([5, 5, 5])
+    >>> geom = op.geometry.GenericGeometry(network=pn, pores=pn.Ps, throats=pn.Ts)
+    >>> mod = op.models.geometry.pore_misc.random  # Get a handle to the desired model
     >>> geom.add_model(propname='pore.seed', model=mod, seed=0)
 
 The *'propname'* and *'model'* arguments are required by the ``add_model`` method, and all other arguments such *'seed'* are passed on the model (In this case it specifies the initialization value for the random number generator).
@@ -59,14 +59,6 @@ When the ``add_model`` method of the **Core** object is called, it collects all 
 
 .. code-block:: Python
 
-    ------------------------------------------------------------
-    OpenPNM.Geometry.models.pore_misc.random
-    ------------------------------------------------------------
-    Argument Name        Value / (Default)
-    ------------------------------------------------------------
-    num_range            [0, 1] / ([0, 1])
-    regen_mode           normal / (---)
-    seed                 0 / (None)
-    ------------------------------------------------------------
+    >>> pass
 
 Once creation of the **ModelWrapper** is complete, its stored in the **ModelsDict** under the specified *'propname'*.  When ``regenerate`` is called, each of the models stored in the **ModelsDict** is run, in order.  When the ``run`` method on the **ModelWrapper** is called, the handle to the model is retrieved from *'models'*, and it is then called with ALL other entries in the **ModelWrapper** sent as keyword arguments.
