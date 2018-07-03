@@ -93,7 +93,7 @@ def spherical_pores(target, pore_diameter='pore.diameter',
     L2 = _sp.sqrt(d2**2 - dt**2) / 2            # Effective length of pore 2
     L = ctc(target, pore_diameter=pore_diameter)
     Lt = L - (L1+L2)                            # Effective length of throat
-    return {'throat.pore1': L1, 'throat.throat': Lt, 'throat.pore2': L2}
+    return {'pore1': L1, 'throat': Lt, 'pore2': L2}
 
 
 def circular_pores(target, pore_diameter='pore.diameter',
