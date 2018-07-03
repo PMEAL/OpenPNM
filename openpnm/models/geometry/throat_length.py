@@ -39,6 +39,9 @@ def straight(target, pore_diameter='pore.diameter', L_negative=1e-9):
         length of the calculated array, and also provides access to other
         necessary properties.
 
+    pore_diameter : string
+        Dictionary key of the pore diameter values
+
     L_negative : float
         The default throat length to use when negative lengths are found.  The
         default is 1 nm.  To accept negative throat lengths, set this value to
