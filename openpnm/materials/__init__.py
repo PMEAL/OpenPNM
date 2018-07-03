@@ -31,6 +31,37 @@ Examples
 >>> import openpnm as op
 >>> proj = op.materials.BereaCubic(shape=[5, 5, 5])
 
+The Materials classes create a Project instance, so the Network and Geometry
+objects must be retrieved explicitly:
+
+>>> net = proj.network
+>>> print(net.props())
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+1       : pore.coords
+2       : throat.conns
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+>>> print(proj.geometries().keys())
+dict_keys(['geo_01'])
+>>> geo = proj.geometries()['geo_01']
+>>> print(geo)
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+openpnm.geometry.GenericGeometry:       geo_01
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+#     Properties                                    Valid Values
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+1     pore.diameter                                   125 / 125
+2     pore.seed                                       125 / 125
+3     pore.volume                                     125 / 125
+4     throat.diameter                                1036 / 1036
+5     throat.length                                  1036 / 1036
+6     throat.volume                                  1036 / 1036
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+#     Labels                                        Assigned Locations
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+1     pore.all                                      125
+2     throat.all                                    1036
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+
 
 """
 from .VoronoiFibers import VoronoiFibers
