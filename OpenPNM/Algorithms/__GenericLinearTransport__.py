@@ -6,6 +6,7 @@ module __GenericLinearTransport__: Class for solving linear transport processes
 
 """
 import scipy as sp
+import  numpy as np
 import scipy.sparse as sprs
 import scipy.sparse.linalg as sprslin
 from OpenPNM.Algorithms import GenericAlgorithm
@@ -560,6 +561,8 @@ class GenericLinearTransport(GenericAlgorithm):
 
         if A is None:
             A = self.A
+            A.indices = A.indices.astype(np.int64)
+            A.indptr = A.indptr.astype(np.int64)
         if b is None:
             b = self.b
         if self._iterative_solver is None:
