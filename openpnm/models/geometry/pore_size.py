@@ -20,6 +20,14 @@ def normal(target, scale, loc, seeds='pore.seed'):
 normal.__doc__ = _misc.normal.__doc__
 
 
+def random(target, seed=None, num_range=[0, 1]):
+    return _misc.random(target=target, element='pore', seed=seed,
+                        num_range=num_range)
+
+
+normal.__doc__ = _misc.normal.__doc__
+
+
 def generic(target, func, seeds='pore.seed'):
     return _misc.generic(target=target, func=func, seeds=seeds)
 

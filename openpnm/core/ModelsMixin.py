@@ -168,7 +168,7 @@ class ModelsMixin():
     #   Property Name             Parameter                 Value
     ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
     1   pore.test                 model:                    constant
-                                  value:                    2.0
+                                  value:                    2
                                   regeneration mode:        normal
     ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 

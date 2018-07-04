@@ -33,21 +33,13 @@ class Gabriel(Delaunay):
         ignored if ``points`` are given.
 
     shape : array_like
-        The size of the domain.  It's possible to create cubic, cylindrical,
-        or spherical domains, as well as 2D square and circular by changing
-        the domain ``shape`` as follows:
+        The size of the domain.  It's possible to create cubic, or 2D square
+        domains by changing the domain ``shape`` as follows:
 
         [x, y, z] - will produce a normal cubic domain of dimension x, and
         and z
 
         [x, y, 0] - will produce a 2D square domain of size x by y
-
-        [r, z] - will produce a cylindrical domain with a radius of r and
-        height of z
-
-        [r, 0] - will produce a 2D circular domain with a radius of r
-
-        [r] - will produce a spherical domain with a radius of r
 
     Examples
     --------
@@ -61,8 +53,8 @@ class Gabriel(Delaunay):
 
     >>> gn['pore.coords'] += [1, 0, 0]
     >>> op.topotools.merge_networks(dn, gn)
-    >>> fig = topotools.plot_connections(dn)
-    >>> fig = topotools.plot_coordinates(dn, c='r', s=100, fig=fig)
+    >>> fig = op.topotools.plot_connections(dn)
+    >>> fig = op.topotools.plot_coordinates(dn, c='r', s=100, fig=fig)
 
     .. image:: /../docs/static/images/gabriel_network.png
         :align: center

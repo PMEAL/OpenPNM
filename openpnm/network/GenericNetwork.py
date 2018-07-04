@@ -90,8 +90,8 @@ class GenericNetwork(Base, ModelsMixin):
 
     >>> print(pn.props())
     ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-    1       : pore.coords
-    2       : throat.conns
+    1     : pore.coords
+    2     : throat.conns
     ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 
     The GenericNetwork class has several methods for querying the topology.
@@ -103,17 +103,11 @@ class GenericNetwork(Base, ModelsMixin):
     >>> print(Ts)
     [0 1]
     >>> print(pn.num_neighbors(2))
-    [2]
+    [1]
 
     All of the topological queries are accomplished by inspecting the adjacency
     and incidence matrices.  They are created on demand, and are stored for
-    future use.
-
-    >>> pn.am
-    <5x5 sparse matrix of type '<class 'numpy.int32'>'
-        with 10 stored elements in COOrdinate format>
-
-    The adjacency and incidence matrix are stored as scipy.sparse matrices.
+    future use to save construction time.
 
     """
     def __init__(self, conns=None, coords=None, project=None, settings={},

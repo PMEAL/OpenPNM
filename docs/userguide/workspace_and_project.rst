@@ -46,19 +46,12 @@ The following illustrates the usage of the Workspace and Project objects.
     >>> proj1
     []
     >>> # Now create a network and associate it with proj1
-    >>> pn = op.network.Cubic(shape=[3, 3, 3], project=proj1)
-    >>> pn in proj1
+    >>> pn1 = op.network.Cubic(shape=[3, 3, 3], project=proj1)
+    >>> pn1 in proj1
     True
 
 Each Project can only have *one* Network.  If you try to create a second
-Network with the same Project, OpenPNM will complain:
-
-.. code-block:: python
-
-    >>> try:
-    >>>     pn2 = op.network.Cubic(shape=[3, 3, 3], project=proj1)
-    >>> except Exception:
-    >>>     print('An exception should occur')
+Network with the same Project, OpenPNM will complain.
 
 Conversely, since each Network *must* be associated with a Project, one is
 automatically created if *not* specified:

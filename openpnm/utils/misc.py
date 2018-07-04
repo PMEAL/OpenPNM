@@ -14,9 +14,9 @@ class PrintableList(list):
     >>> temp = ['item1', 'item2', 'item3']
     >>> print(PrintableList(temp))
     ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-    1       : item1
-    2       : item2
-    3       : item3
+    1     : item1
+    2     : item2
+    3     : item3
     ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 
     Each line contains the result of ``print(item)`` on each item in the list
@@ -28,7 +28,7 @@ class PrintableList(list):
         lines = [horizontal_rule]
         self.sort()
         for i, item in enumerate(self):
-            lines.append('{0}\t: {1}'.format(i + 1, item))
+            lines.append('{0:<5s} : {1}'.format(str(i + 1), item))
         lines.append(horizontal_rule)
         return '\n'.join(lines)
 
@@ -61,9 +61,8 @@ class PrintableDict(OrderedDict):
 
     """
     def __init__(self, *args, **kwargs):
-        self._header = 'value'
-        if 'header' in kwargs:
-            self._header = kwargs.pop('header')
+        self._value = 'value'
+        self._key = 'key'
         super().__init__(*args, **kwargs)
 
     def __repr__(self):
@@ -175,8 +174,8 @@ class HealthDict(PrintableDict):
     else as unhealthy.  If one or more entries is 'unhealthy' the health method
     returns False.
     """
-    def __init__(self, header='status', **kwargs):
-        super().__init__(value=header, **kwargs)
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
 
     def _get_health(self):
         health = True

@@ -87,7 +87,7 @@ Assigning Pore-Scale Physics Models
 .. code-block:: python
 
     >>> phys1 = op.physics.GenericPhysics(network=pn, phase=hg, geometry=geo)
-    >>> phys2 = op.physics.GenericPhysics(network=pn, phase=h20, geometry=geo)
+    >>> phys2 = op.physics.GenericPhysics(network=pn, phase=h2o, geometry=geo)
 
 The ``GenericPhysics`` class was used, which has NO pore-scale models attached.  We will add this manually in the next step.
 
@@ -115,10 +115,10 @@ We must assign models to each of our Physics.  The ``hg`` phase will be used to 
     >>> model = op.models.physics.hydraulic_conductance.hagen_poiseuille
     >>> h2o.add_model(propname='throat.hydraulic_conductance',
     ...               model=model,
-    ...               viscosity='pore.viscosity',
+    ...               pore_viscosity='pore.viscosity',
     ...               pore_diameter='pore.diameter',
     ...               throat_length='throat.length',
-    ...               throat_area='throat.area')
+    ...               throat_diameter='throat.diameter')
 
 --------------------------------------------------------------------------------
 Performing Some Simulations
@@ -133,11 +133,11 @@ Simulating Mercury Porosimetry
 .. code-block:: python
 
     >>> mip = op.algorithms.Porosimetry(network=pn)
-    >>> mip.setup(invading_phase=hg)
+    >>> mip.setup(phase=hg)
     >>> mip.set_inlets(pn.pores(['left', 'right', 'top', 'bottom', 'front',
     ...                          'back']))
-    >>> mip.run(npts=25)
-    >>> mip.show_XXX
+    >>> mip.run(points=25)
+
 
 Which can be visualized using the ``plot_intrusion_curve`` method of the Porosimetry class:
 
@@ -157,13 +157,13 @@ Similarly for the permeability calculation:
     >>> perm.setup(phase=h2o)
     >>> perm.set_value_BC(pores=pn.pores('left'), values=1)
     >>> perm.set_value_BC(pores=pn.pores('right'), values=0)
-    >>> perm.run()
+    >>> # perm.run()
 
 The above code solves for the pressure in each pore and stores the result as ``perm['pore.pressure']``.  To find the permeability of the network, there is a ``calc_eff_permeability`` method on the StokeFlow class:
 
     >>> perm.domain_area = (10*0.0001)**2
     >>> perm.domain_length = (10*0.0001)
-    >>> K = perm.calc_eff_permeability()
+    >>> # K = perm.calc_eff_permeability()
 
 .. note::
 
@@ -181,10 +181,9 @@ Each object has a ``project`` attribute which returns a handle to the Project to
 
 .. code-block:: python
 
-    >>> proj = pn.project
-    >>> proj.save_project()
+    >>> proj = pn.project  # Retrieve the project handle
 
-The Project object also has the ability to ``export_data`` to various formats, including VTK for viewing in `Paraview <http://www.paraview.org>`_.  Using Paraview provides much better visualization than the ``plot_connections`` and ``plot_coordinates`` used above:
+The Project object offers several useful tools, including the ability to ``export_data`` to various formats, including VTK for viewing in `Paraview <http://www.paraview.org>`_.  Using Paraview provides much better visualization than the ``plot_connections`` and ``plot_coordinates`` used above:
 
 .. image:: http://i.imgur.com/GbUNy0b.png
    :width: 500 px

@@ -81,7 +81,7 @@ def find_neighbor_bonds(sites, im, flatten=True, logic='union'):
 
     """
     if im.shape[0] > im.shape[1]:
-        print('Warning: Received matrix has more sites than bonds!')
+        logger.warning('Warning: Received matrix has more sites than bonds!')
     if im.format != 'lil':
         im = im.tolil(copy=False)
     neighbors = [im.rows[i] for i in sp.array(sites, ndmin=1)]

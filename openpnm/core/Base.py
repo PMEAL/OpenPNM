@@ -107,9 +107,9 @@ class Base(dict):
 
     >>> print(obj.labels())
     ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-    1       : pore.all
-    2       : pore.new_label
-    3       : throat.all
+    1     : pore.all
+    2     : pore.new_label
+    3     : throat.all
     ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 
     Use the label to fetch pores where it was applied:
@@ -1531,11 +1531,12 @@ class Base(dict):
     def __str__(self):
         horizonal_rule = '―' * 78
         lines = [horizonal_rule]
-        lines.append(self.__module__.replace('__', '') + ': \t' + self.name)
+        lines.append(self.__module__.replace('__', '') + ' : ' + self.name)
         lines.append(horizonal_rule)
         lines.append("{0:<5s} {1:<45s} {2:<10s}".format('#',
                                                         'Properties',
                                                         'Valid Values'))
+        fmt = "{0:<5d} {1:<45s} {2:>5d} / {3:<5d}"
         lines.append(horizonal_rule)
         props = list(set(self.keys()).difference(set(self.labels())))
         props.sort()
@@ -1547,13 +1548,11 @@ class Base(dict):
             if self[item].dtype == object:  # Print objects differently
                 invalid = [i for i in self[item] if i is None]
                 defined = sp.size(self[item]) - len(invalid)
-                fmt = "{0:<5d} {1:<45s} {2:>5d} / {3:<5d}"
                 lines.append(fmt.format(i + 1, prop, defined, required))
             elif '._' not in prop:
                 a = sp.isnan(self[item])
                 defined = sp.shape(self[item])[0] \
                     - a.sum(axis=0, keepdims=(a.ndim-1) == 0)[0]
-                fmt = "{0:<5d} {1:<45s} {2:>5d} / {3:<5d}"
                 lines.append(fmt.format(i + 1, prop, defined, required))
         lines.append(horizonal_rule)
         lines.append("{0:<5s} {1:<45s} {2:<10s}".format('#',
@@ -1562,12 +1561,12 @@ class Base(dict):
         lines.append(horizonal_rule)
         labels = self.labels()
         labels.sort()
+        fmt = "{0:<5d} {1:<45s} {2:<10d}"
         for i, item in enumerate(labels):
             prop = item
             if len(prop) > 35:
                 prop = prop[0:32] + '...'
             if '._' not in prop:
-                fmt = "{0:<5d} {1:<45s} {2:<10d}"
                 lines.append(fmt.format(i + 1, prop, sp.sum(self[item])))
         lines.append(horizonal_rule)
         return '\n'.join(lines)

@@ -56,14 +56,14 @@ Attempts to write an array of the wrong size will result in an error:
 
 .. code-block:: python
 
-    >>> pn['pore.baz'] = [2, 3, 4]
+    pn['pore.baz'] = [2, 3, 4]
 
 To quickly see a complete list *properties* on an object use the ``props`` method.  You can specify whether only *pore* or *throat* properties should be returned, but the default is both:
 
 .. code-block:: python
 
     >>> pn.props()
-    ['pore.bar', 'pore.coords', 'pore.foo', 'pore.index', 'throat.conns']
+    ['pore.bar', 'pore.coords', 'pore.foo', 'throat.conns']
     >>> pn.props('throat')
     ['throat.conns']
 
@@ -131,7 +131,7 @@ The ``labels`` method can be used to obtain a list of all defined labels. This m
 .. code-block:: python
 
     >>> pn.labels()
-    ['pore.all', 'pore.back', 'pore.bottom', 'pore.dummy_1', 'pore.dummy_2', 'pore.front', 'pore.internal', 'pore.left', 'pore.right', 'pore.top', 'throat.all']
+    ['pore.all', 'pore.back', 'pore.bottom', 'pore.dummy_1', 'pore.dummy_2', 'pore.front', 'pore.internal', 'pore.left', 'pore.right', 'pore.top', 'throat.all', 'throat.internal']
 
 This results can also be viewed with ``print(pn.labels())``.
 
@@ -164,7 +164,7 @@ Each of the Geometry objects has a 'pore.diameter' array with different values. 
 
     >>> Dp = pn['pore.diameter']
     >>> print(Dp[70:80])
-    array([1. , 1. , 1. , 1. , 1. , 0.1, 0.1, 0.1, 0.1, 0.1])
+    [1.  1.  1.  1.  1.  0.1 0.1 0.1 0.1 0.1]
 
 As can be seen, the 'pore.diameter' array contains values from both Geometry objects, and they are in their correction locations in terms of the domain number system.  This is referred to as ``interleave_data``.  It also works to obtain Physics values via their associated Phase object.
 
@@ -174,8 +174,8 @@ Interleaving of data also works in the reverse direction, so that data only pres
 
     >>> coords = geo1['pore.coords']
     >>> print(coords[0:3])
-    array([[0.5, 0.5, 0.5],
-           [0.5, 0.5, 1.5],
-           [0.5, 0.5, 2.5]])
+    [[0.5 0.5 0.5]
+     [0.5 0.5 1.5]
+     [0.5 0.5 2.5]]
 
 Data **cannot** be written in this way, so that you cannot write 'pore.diameter' values from the Network.

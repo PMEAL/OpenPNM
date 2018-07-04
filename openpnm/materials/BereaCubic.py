@@ -40,7 +40,7 @@ class BereaCubic(Project):
     >>> proj = op.materials.BereaCubic(shape=[8, 9, 10])
     """
 
-    def __init__(self, shape, name='BereaCubic', **kwargs):
+    def __init__(self, shape, name=None, **kwargs):
         super().__init__(name=name)
 
         net = Cubic(shape=shape, spacing=1e-4, connectivity=26,

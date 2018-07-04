@@ -30,7 +30,7 @@ This process is demonstrated by adding a random pore seed model to a **Geometry*
     >>> import openpnm as op
     >>> pn = op.network.Cubic([5, 5, 5])
     >>> geom = op.geometry.GenericGeometry(network=pn, pores=pn.Ps, throats=pn.Ts)
-    >>> mod = op.models.geometry.pore_misc.random  # Get a handle to the desired model
+    >>> mod = op.models.geometry.pore_size.random  # Get a handle to the desired model
     >>> geom.add_model(propname='pore.seed', model=mod, seed=0)
 
 The *'propname'* and *'model'* arguments are required by the ``add_model`` method, and all other arguments such *'seed'* are passed on the model (In this case it specifies the initialization value for the random number generator).

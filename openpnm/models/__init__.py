@@ -37,10 +37,10 @@ object reveals that these two data items are indeed present.
 
 >>> print(pn.props())
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-1       : pore.coords
-2       : pore.diameter
-3       : pore.seed
-4       : throat.conns
+1     : pore.coords
+2     : pore.diameter
+3     : pore.seed
+4     : throat.conns
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 
 The actual models and their respective parameters are also stored on the
