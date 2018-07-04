@@ -13,9 +13,10 @@ class DiffusiveConductanceTest:
         self.geo['throat.diameter'] = 1.0
         self.geo['throat.length'] = 1e-9
         self.geo['throat.area'] = 1
-        self.air = op.phases.Air(network=self.net)
+        self.phase = op.phases.GenericPhase(network=self.net)
+        self.phase['pore.diffusivity'] = 2.06754784e-05
         self.phys = op.physics.GenericPhysics(network=self.net,
-                                              phase=self.air,
+                                              phase=self.phase,
                                               geometry=self.geo)
 
     def test_ordinary_diffusion(self):
