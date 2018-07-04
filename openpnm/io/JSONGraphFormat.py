@@ -1,3 +1,9 @@
+import os
+import pickle
+from pathlib import Path
+
+import jsonschema
+
 from openpnm.core import logging
 from openpnm.io import GenericIO
 logger = logging.getLogger(__name__)
@@ -14,7 +20,25 @@ class JSONGraphFormat(GenericIO):
     """
 
     @classmethod
-    def save(cls, network, phases=[], filename=''):
+    def __validate_json__(self, json_file):
+        # Validate name of schema file
+        relative_path_to_schema_filename = '../../utils/jgf_schema.pkl'
+        schema_filename = Path(os.path.realpath(__file__), relative_path_to_schema_filename)
+        schema_filename = self._parse_filename(filename=schema_filename, ext='pkl')
+
+        # Load schema from pickle file
+        with open(schema_filename, 'rb') as file:
+            schema = pickle.load(file)
+
+        # Validate JSON agains schema
+        try:
+            jsonschema.validate(json_file, schema)
+            return True
+        except jsonschema.exceptions.ValidationError:
+            return False
+
+    @classmethod
+    def save(self, network, phases=[], filename=''):
         r"""
         Write the wetwork to disk as a JGF file.
 
