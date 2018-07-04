@@ -172,9 +172,7 @@ class ModelsMixin():
                                   regeneration mode:        normal
     ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 
-
     """
-
 
     def add_model(self, propname, model, regen_mode='normal', **kwargs):
         r"""
