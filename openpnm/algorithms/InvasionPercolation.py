@@ -2,7 +2,7 @@ import heapq as hq
 import scipy as sp
 import numpy as np
 from openpnm.algorithms import GenericAlgorithm
-from openpnm.core import logging
+from openpnm.utils import logging
 logger = logging.getLogger(__name__)
 
 

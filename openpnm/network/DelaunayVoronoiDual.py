@@ -1,34 +1,28 @@
-"""
-===============================================================================
-DelaunayVoronoiDual: Generate a random network with complementary Delaunay and
-Voronoi networks, including connectings between them
-===============================================================================
-
-"""
 import scipy as sp
 import scipy.spatial as sptl
 import scipy.sparse as sprs
 from skimage.filters import rank_order
 from openpnm.network import GenericNetwork
 from openpnm import topotools
-from openpnm.core import logging
+from openpnm.utils import logging
 logger = logging.getLogger(__name__)
 
 
 class DelaunayVoronoiDual(GenericNetwork):
     r"""
-    A dual network based on complementary Voronoi and Delaunay networks.  A
-    Delaunay tessellation or triangulation is performed on randomly distributed
-    base points, then the corresponding Voronoi diagram is generated.  Finally,
-    each Delaunay node is connected to it's neighboring Voronoi vertices to
-    create interaction between the two networks.
+    Combined and interconnected Voronoi and Delaunay tessellations
+
+    A Delaunay tessellation is performed on a set of base points then the
+    corresponding Voronoi diagram is generated.  Finally, each Delaunay node
+    is connected to it's neighboring Voronoi vertices to create interaction
+    between the two networks.
 
     All pores and throats are labelled according to their network (i.e.
     'pore.delaunay'), so they can be each assigned to a different Geometry.
 
     The dual-nature of this network is meant for modeling transport in the void
     and solid space simultaneously by treating one network (i.e. Delaunay) as
-    voids and the other (i.e. Voronoi) as solid.  Interation such as heat
+    voids and the other (i.e. Voronoi) as solid.  Interaction such as heat
     transfer between the solid and void can be accomplished via the
     interconnections between the Delaunay and Voronoi nodes.
 
@@ -59,13 +53,9 @@ class DelaunayVoronoiDual(GenericNetwork):
     Points will be automatically generated if none are given:
 
     >>> import openpnm as op
-    >>> net = op.network.DelaunayVoronoiDual(num_points=50, shape=[1, 1, 1])
+    >>> net = op.network.DelaunayVoronoiDual(num_points=50, shape=[1, 1, 0])
 
-    The resulting network can be quickly visualized with
-    ``op.topotools.plot_connections(net)``.  This plotting function also
-    supports showing limited sets of throats for more clear inspection such as
-    ``op.topotools.plot_connections(net, throats=net.throats('surface'))``.
-    See its documentation for details.
+    The resulting network can be quickly visualized:
 
     """
 

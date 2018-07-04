@@ -1,47 +1,75 @@
-# -*- coding: utf-8 -*-
-"""
-===============================================================================
-CubicDual: Generate a cubic lattice with an interpentrating dual network
-===============================================================================
-
-"""
 import scipy as sp
 from openpnm.network import GenericNetwork, Cubic
 from openpnm import topotools
-from openpnm.core import logging, Workspace
+from openpnm.utils import logging, Workspace
 logger = logging.getLogger(__name__)
 ws = Workspace()
 
 
 class CubicDual(GenericNetwork):
     r"""
-    Generates a cubic network of the specified size and shape, then inserts
-    as second cubic network to the corners of its lattice cells.  These two
-    networks are further connected by throats enabling material to be
-    exchanged between them.
+    Body centered cubic lattice plus face centered nodes on the surfaces
+
+    This network is essentially a *'bcc'* lattice, *except* that the seconary
+    network (body-centered pores) has pores on each face of the domain, which
+    breaks the body-centric arranagement.  This allows boundary conditions to
+    be applied to the seconary network for transport simuations.
 
     Parameters
     ----------
-    name : string
-        A unique name for the network
-
     shape : list of ints
         The size and shape of the primary cubic network in terms of the
         number of pores in each direction.  Secondary nodes will be added at
-        corners of each unit cell so the dual network will generaly have a
-        size of ''shape'' + 1.
+        centers of each unit cell.
 
     spacing : list of floats
         The distance between pores of the primary network in each of the
         principal directions
 
-    label_1 and label_2 : strings
-        The labels to apply to the primary and secondary cubic lattices, which
-        defaults to 'primary' and 'secondary' respectively.
+    label_1 : string
+        The label to apply to the primary cubic lattices, which defaults to
+        'primary'
+
+    label_2 : string
+        The label to apply to the secondary cubic lattices, which defaults to
+        'seconary'
+
+    project : OpenPNM Project object (optional)
+        If not provided one will be generated and the network will be assigned
+        to it.  It can be retrieved from ``net.project``.
+
+    name : string
+        A unique name for the network
+
+    See Also
+    --------
+    Bravais
 
     Examples
     --------
-    >>>
+    >>> import openpnm as op
+    >>> pn = op.network.CubicDual(shape=[3, 3, 3])
+    >>> pn.num_pores('pore.primary')  # Normal cubic network is present
+    27
+    >>> pn.Np  # But more pores are present from seconary network
+    59
+
+    And it can be plotted for quick visualization using:
+
+    >>> fig = op.topotools.plot_connections(network=pn,
+    ...                                     throats=pn.throats('primary'),
+    ...                                     color='b')
+    >>> fig = op.topotools.plot_connections(network=pn,
+    ...                                     throats=pn.throats('secondary'),
+    ...                                     color='r')
+    >>> fig = op.topotools.plot_coordinates(network=pn, c='r', s=75, fig=fig)
+
+    .. image:: /../docs/static/images/cubic_dual_network.png
+        :align: center
+
+    For larger networks and more control over presentation use `Paraview
+    <http://www.paraview.org>`_.
+
     """
     def __init__(self, shape, spacing=1, label_1='primary',
                  label_2='secondary', **kwargs):

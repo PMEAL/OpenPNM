@@ -2,8 +2,7 @@ import scipy as sp
 import numpy as np
 import openpnm as op
 from pathlib import Path
-from openpnm.core import logging
-from openpnm.utils import flat_list
+from openpnm.utils import flat_list, logging
 logger = logging.getLogger(__name__)
 
 

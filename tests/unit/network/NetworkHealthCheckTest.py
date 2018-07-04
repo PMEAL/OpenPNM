@@ -7,7 +7,7 @@ import pytest
 class CheckNetworkHealthTest:
 
     def setup_class(self):
-        self.ws = op.core.Workspace()
+        self.ws = op.Workspace()
         self.ws.clear()
         self.proj = self.ws.new_project()
         self.net = op.network.Cubic(shape=[2, 2, 2], project=self.proj)

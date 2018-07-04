@@ -31,7 +31,7 @@ class SubdomainTest:
         self.phys2['pore.blah'] = 2.0
 
     def teardown_class(self):
-        ws = op.core.Workspace()
+        ws = op.Workspace()
         ws.clear()
 
     def test_drop_locations_from_geom_successively_with_single_geometry(self):

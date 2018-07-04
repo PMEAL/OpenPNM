@@ -1,5 +1,6 @@
+from openpnm.core import Base
+from openpnm.utils import logging
 import numpy as np
-from openpnm.core import Base, logging
 logger = logging.getLogger()
 
 

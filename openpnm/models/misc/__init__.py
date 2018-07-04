@@ -1,3 +1,15 @@
+r"""
+
+**openpnm.models.misc**
+
+----
+
+This submodule contains models for calculating general or generic values
+that are useful for all other pore-scale models, such as scaling values, or
+generating an array of random numbers.
+
+"""
+
 from .misc import constant
 from .misc import product
 from .misc import random

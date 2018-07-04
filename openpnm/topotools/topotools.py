@@ -4,8 +4,7 @@ import scipy.sparse as sprs
 import warnings
 import porespy as ps
 from scipy.sparse import csgraph
-from openpnm.core import logging, Workspace
-from openpnm.utils.misc import PrintableDict
+from openpnm.utils import PrintableDict, logging, Workspace
 ws = Workspace()
 logger = logging.getLogger()
 
@@ -82,7 +81,7 @@ def find_neighbor_bonds(sites, im, flatten=True, logic='union'):
 
     """
     if im.shape[0] > im.shape[1]:
-        print('Warning: Received matrix has more sites than bonds!')
+        logger.warning('Warning: Received matrix has more sites than bonds!')
     if im.format != 'lil':
         im = im.tolil(copy=False)
     neighbors = [im.rows[i] for i in sp.array(sites, ndmin=1)]
@@ -676,7 +675,7 @@ def trim(network, pores=[], throats=[]):
     tpore2 = network['throat.conns'][:, 1]
 
     # Delete specified pores and throats from all objects
-    for obj in network.project:
+    for obj in network.project[::-1]:
         if (obj.Np == Np_old) and (obj.Nt == Nt_old):
             Ps = Pkeep_inds
             Ts = Tkeep_inds
@@ -986,7 +985,7 @@ def merge_networks(network, donor=[]):
 
     Notes
     -----
-    This methods does *not* attempt to stitch the networks topologically
+    This methods does *not* attempt to stitch the networks topologically.
 
     See Also
     --------
@@ -995,44 +994,51 @@ def merge_networks(network, donor=[]):
     stitch
 
     """
-    network['pore.coords'] = sp.vstack((network['pore.coords'],
-                                        donor['pore.coords']))
-    network['throat.conns'] = sp.vstack((network['throat.conns'],
-                                         donor['throat.conns'] + network.Np))
-    p_all = sp.ones((sp.shape(network['pore.coords'])[0],), dtype=bool)
-    t_all = sp.ones((sp.shape(network['throat.conns'])[0],), dtype=bool)
-    network.update({'pore.all': p_all})
-    network.update({'throat.all': t_all})
-    for key in set(network.keys()).union(set(donor.keys())):
-        if key.split('.')[1] not in ['conns', 'coords', '_id', 'all']:
-            if key in network.keys():
-                pop_flag = False
-                if key not in donor.keys():
-                    logger.debug('Adding ' + key + ' to donor')
-                    # If key not on donor add it first
-                    if network[key].dtype == bool:
-                        donor[key] = False
-                    else:
-                        donor[key] = sp.nan
-                    pop_flag = True
-                # Then merge it with existing array on network
-                try:
-                    temp = sp.hstack((network[key], donor[key]))
-                except ValueError:
-                    temp = sp.vstack((network[key], donor[key]))
-                network[key] = temp
-                if pop_flag:
-                    donor.pop(key, None)
-            else:
-                # If key not on network add it first
-                logger.debug('Adding ' + key + ' to network')
-                if donor[key].dtype == bool:
-                    network[key] = False
+    if type(donor) == list:
+        donors = donor
+    else:
+        donors = [donor]
+
+    for donor in donors:
+        network['pore.coords'] = sp.vstack((network['pore.coords'],
+                                            donor['pore.coords']))
+        network['throat.conns'] = sp.vstack((network['throat.conns'],
+                                             donor['throat.conns'] +
+                                             network.Np))
+        p_all = sp.ones((sp.shape(network['pore.coords'])[0],), dtype=bool)
+        t_all = sp.ones((sp.shape(network['throat.conns'])[0],), dtype=bool)
+        network.update({'pore.all': p_all})
+        network.update({'throat.all': t_all})
+        for key in set(network.keys()).union(set(donor.keys())):
+            if key.split('.')[1] not in ['conns', 'coords', '_id', 'all']:
+                if key in network.keys():
+                    pop_flag = False
+                    if key not in donor.keys():
+                        logger.debug('Adding ' + key + ' to donor')
+                        # If key not on donor add it first
+                        if network[key].dtype == bool:
+                            donor[key] = False
+                        else:
+                            donor[key] = sp.nan
+                        pop_flag = True
+                    # Then merge it with existing array on network
+                    try:
+                        temp = sp.hstack((network[key], donor[key]))
+                    except ValueError:
+                        temp = sp.vstack((network[key], donor[key]))
+                    network[key] = temp
+                    if pop_flag:
+                        donor.pop(key, None)
                 else:
-                    network[key] = sp.nan
-                # Then append donor values to network
-                s = sp.shape(donor[key])[0]
-                network[key][-s:] = donor[key]
+                    # If key not on network add it first
+                    logger.debug('Adding ' + key + ' to network')
+                    if donor[key].dtype == bool:
+                        network[key] = False
+                    else:
+                        network[key] = sp.nan
+                    # Then append donor values to network
+                    s = sp.shape(donor[key])[0]
+                    network[key][-s:] = donor[key]
 
 
 def stitch(network, donor, P_network, P_donor, method='nearest',
@@ -1291,7 +1297,7 @@ def subdivide(network, pores, shape, labels=[]):
         div = sp.array(shape, ndmin=1)
         single_dim = None
     else:
-        single_dim = sp.where(sp.array(network._shape) == 1)[0]
+        single_dim = sp.where(sp.array(network.shape) == 1)[0]
         if sp.size(single_dim) == 0:
             single_dim = None
         if sp.size(shape) == 3:
@@ -1303,8 +1309,7 @@ def subdivide(network, pores, shape, labels=[]):
             else:
                 dim = single_dim
             div[dim] = 1
-            div[-sp.array(div, ndmin=1, dtype=bool)] = sp.array(shape,
-                                                                ndmin=1)
+            div[-sp.array(div, ndmin=1, dtype=bool)] = sp.array(shape, ndmin=1)
 
     # Creating small network and handling labels
     networkspacing = network.spacing
@@ -1568,22 +1573,28 @@ def plot_connections(network, throats=None, fig=None, **kwargs):
         useful for inspecting a small region of the network.  If no throats are
         specified then all throats are shown.
 
-    fig and **kwargs: Matplotlib figure handle and line property arguments
-        If a ``fig`` is supplied, then the topology will be overlaid.  By also
-        passing in different line properties such as ``color`` and limiting
-        which ``throats`` are plots, this makes it possible to plot different
-        types of throats on the same plot.
+    fig : Matplotlib figure handle and line property arguments
+        If a ``fig`` is supplied, then the topology will be overlaid on this
+        plot.  This makes it possible to combine coordinates and connections,
+        and to color different throats differently (see ``kwargs``)
+
+    kwargs : other named arguments
+        By also in different line properties such as ``color`` it's possible to
+        plot several different sets of connections with unique colors.
 
         For information on available line style options, visit the Matplotlib
-        documentation at:
-
-        http://matplotlib.org/api/lines_api.html#matplotlib.lines.Line2D
+        documentation on the `web
+        <http://matplotlib.org/api/lines_api.html#matplotlib.lines.Line2D>`_
 
     Notes
     -----
     The figure handle returned by this method can be passed into
     ``plot_coordinates`` to create a plot that combines pore coordinates and
     throat connections, and vice versa.
+
+    See Also
+    --------
+    plot_coordinates
 
     Examples
     --------
@@ -1660,22 +1671,28 @@ def plot_coordinates(network, pores=None, fig=None, **kwargs):
         useful for inspecting a small region of the network.  If no pores are
         specified then all are shown.
 
-    fig and **kwargs: Matplotlib figure handle and line property arguments
-        If a ``fig`` is supplied, then the topology will be overlaid.  By also
-        passing in different marker properties such as size (``s``) and
-        limiting which ``pores`` are plotted, this makes it possible to plot
-        different types of pores on the same plot.
+    fig : Matplotlib figure handle
+        If a ``fig`` is supplied, then the coordinates will be overlaid.  This
+        enables the plotting of multiple different sets of pores as well as
+        throat connections from ``plot_connections``.
+
+    kwargs : dict
+        By also  in different marker properties such as size (``s``) and color
+        (``c``).
 
         For information on available marker style options, visit the Matplotlib
-        documentation at:
-
-        http://matplotlib.org/api/lines_api.html#matplotlib.lines.Line2D
+        documentation on the `web
+        <http://matplotlib.org/api/lines_api.html#matplotlib.lines.Line2D>`_
 
     Notes
     -----
     The figure handle returned by this method can be passed into
     ``plot_topology`` to create a plot that combines pore coordinates and
     throat connections, and vice versa.
+
+    See Also
+    --------
+    plot_connections
 
     Examples
     --------
@@ -1837,10 +1854,9 @@ def generate_base_points(num_points, domain_size, density_map=None,
         of the density distribution is.  For a 2D network the ``density_map``
         should be [10, 10].
 
-        When specifying
-        a custom probabiliy map is it recommended to also set values outside
-        the given domain to zero.  If not, then the correct shape will still
-        be returned, but with too few points in it.
+        When specifying a custom probabiliy map is it recommended to also set
+        values outside the given domain to zero.  If not, then the correct
+        shape will still be returned, but with too few points in it.
 
     reflect : boolean
         If True, the the base points are generated as specified, the reflected
@@ -1881,6 +1897,7 @@ def generate_base_points(num_points, domain_size, density_map=None,
     ...                                         domain_size=[1, 1, 1],
     ...                                         density_map=prob)
     >>> net = op.network.DelaunayVoronoiDual(points=pts, shape=[1, 1, 1])
+
     """
     def _try_points(num_points, prob):
         prob = sp.atleast_3d(prob)
@@ -1976,15 +1993,26 @@ def reflect_base_points(base_pts, domain_size):
         The coordinates of the base_pts to be reflected in the coordinate
         system corresponding to the the domain as follows:
 
-        '**spherical**' : [r, theta, phi]
+        **spherical** : [r, theta, phi]
+        **cylindrical** or **circular** : [r, theta, z]
+        **rectangular** or **square** : [x, y, z]
 
-        '**cylindrical** or **circular**' : [r, theta, z]
+    domain_size : list or array
+        Controls the size and shape of the domain, as follows:
 
-        '**rectangular** or **square**' : [x, y, z]
+        **sphere** : If a single value is received, its treated as the radius
+        [r] of a sphere centered on [0, 0, 0].
 
-    domain_size : array_lie
-        The upper coordinate of the face normal to the reflection along
-        each axis. Lower bound is assumed to be zero.
+        **cylinder** : If a two-element list is received it's treated as the
+        radius and height of a cylinder [r, z] positioned at [0, 0, 0] and
+        extending in the positive z-direction.  If the z dimension is 0, a
+        disk of radius r is created.
+
+        **rectangle** : If a three element list is received, it's treated
+        as the outer corner of rectangle [x, y, z] whose opposite corner lies
+        at [0, 0, 0].  If the z dimension is 0, a rectangle of size X-by-Y is
+        created.
+
     '''
     domain_size = sp.array(domain_size)
     if len(domain_size) == 1:

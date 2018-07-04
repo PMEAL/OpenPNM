@@ -1,4 +1,4 @@
-from openpnm.core import Workspace, logging
+from openpnm.utils import Workspace, logging
 from openpnm.physics import GenericPhysics
 from openpnm.models import physics as mods
 logger = logging.getLogger(__name__)

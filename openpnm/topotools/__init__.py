@@ -1,3 +1,15 @@
+r"""
+
+**openpnm.topotools**
+
+----
+
+This module contains a selection of functions that deal specifically with
+network topology.
+
+
+"""
+
 from .topotools import add_boundary_pores
 from .topotools import bond_percolation
 from .topotools import clone_pores
