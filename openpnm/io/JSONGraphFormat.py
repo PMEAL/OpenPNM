@@ -4,6 +4,7 @@ import pickle
 from pathlib import Path
 
 import jsonschema
+import scipy as sp
 
 from openpnm.core import logging
 from openpnm.io import GenericIO
@@ -88,4 +89,20 @@ class JSONGraphFormat(GenericIO):
             if not self.__validate_json__(json_file):
                 raise(Exception('Error - ' + filename + ' is not in the JSON Graph Format.'))
 
-        return project
+        # Extract graph metadata from JSON
+        number_of_nodes = json_file['graph']['metadata']['number_of_nodes']
+        number_of_links = json_file['graph']['metadata']['number_of_links']
+
+        # Extract node geometry from JSON
+        nodes = sorted(json_file['graph']['nodes'], key=lambda node: int(node['id']))
+        x = sp.array([node['metadata']['node_coordinates']['x'] for node in nodes])
+        y = sp.array([node['metadata']['node_coordinates']['y'] for node in nodes])
+        z = sp.array([node['metadata']['node_coordinates']['z'] for node in nodes])
+        node_squared_radius = sp.array([node['metadata']['node_squared_radius'] for node in nodes])
+
+        # Extract link geometry from JSON
+        edges = sorted(json_file['graph']['edges'], key=lambda edge: int(edge['id']))
+        source = sp.array([int(edge['source']) for edge in edges])
+        target = sp.array([int(edge['target']) for edge in edges])
+        link_length = sp.array([edge['metadata']['link_length'] for edge in edges])
+        link_squared_radius = sp.array([edge['metadata']['link_squared_radius'] for edge in edges])
