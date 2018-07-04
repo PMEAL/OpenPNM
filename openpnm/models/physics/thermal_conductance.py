@@ -1,22 +1,14 @@
-r"""
-===============================================================================
-Submodule -- thermal_conductance
-===============================================================================
-
-"""
-
 import scipy as _sp
 
 
 def series_resistors(target,
                      pore_thermal_conductivity='pore.thermal_conductivity',
                      throat_thermal_conductivity='throat.thermal_conductivity',
-                     throat_diffusivity='throat.diffusivity',
                      throat_equivalent_area='throat.equivalent_area',
                      throat_conduit_lengths='throat.conduit_lengths'):
     r"""
-    Calculate the thermal conductance of void conduits in network ( 1/2 pore - full
-    throat - 1/2 pore ) based on size (assuming cylindrical geometry)
+    Calculate the thermal conductance of conduits in network, where a
+    conduit is ( 1/2 pore - full throat - 1/2 pore ) based on the areas
 
     Parameters
     ----------
