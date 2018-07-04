@@ -1,4 +1,3 @@
-import openpnm as op
 import scipy as _sp
 
 
