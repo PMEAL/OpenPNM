@@ -1,4 +1,4 @@
-from openpnm.core import logging as _logging
+from openpnm.utils import logging as _logging
 from openpnm.models import misc as _misc
 import numpy as _np
 _logger = _logging.getLogger(__name__)
@@ -15,6 +15,14 @@ weibull.__doc__ = _misc.weibull.__doc__
 def normal(target, scale, loc, seeds='pore.seed'):
     return _misc.normal(target=target, scale=scale, loc=loc,
                         seeds=seeds)
+
+
+normal.__doc__ = _misc.normal.__doc__
+
+
+def random(target, seed=None, num_range=[0, 1]):
+    return _misc.random(target=target, element='pore', seed=seed,
+                        num_range=num_range)
 
 
 normal.__doc__ = _misc.normal.__doc__

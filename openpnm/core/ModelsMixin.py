@@ -1,12 +1,22 @@
 import inspect
 import networkx as nx
-from openpnm.core import Workspace, logging
-from openpnm.utils.misc import PrintableDict
+from openpnm.utils import PrintableDict, logging, Workspace
 ws = Workspace()
 logger = logging.getLogger()
 
 
 class ModelsDict(PrintableDict):
+    r"""
+    This subclassed dictionary is assigned to the ``models`` attribute of
+    all objects that inherit from the ``ModelsMixin`` class.  Each dictionary
+    entry corresponds to an entry in the target object's dictionary, and
+    contains the models and associated parameters for generating the model.
+
+    The main features of this subclass are three methods the help resolve the
+    order in which models should be called: ``dependency_list``,
+    ``dependency_graph``, and ``dependency_map``.
+
+    """
 
     def dependency_list(self):
         r'''
@@ -102,6 +112,67 @@ class ModelsDict(PrintableDict):
 
 
 class ModelsMixin():
+    r"""
+    This class is meant to be combined by the Base class in multiple
+    inheritence.  This approach is used since Network and Algorithm do not
+    need to have any ``models`` attribute, while Phase, Geometry, and Physics
+    do.  By using a mixin class, all objects can inherit from Base while
+    the model functionality can be added only where needed.
+
+    Notes
+    -----
+    The following table gives a brief overview of the methods that are added
+    to the object by this mixin.  In addition to these methods, a ``models``
+    attribute is also added, which is a dictionary that contains all of the
+    models and their parameters.
+
+    +----------------------+--------------------------------------------------+
+    | Method or Attribute  | Functionality                                    |
+    +======================+==================================================+
+    | ``add_model``        | Add a given model and parameters to the object   |
+    +----------------------+--------------------------------------------------+
+    | ``regenerate_model`` | Runs the model(s) to recalculate data            |
+    +----------------------+--------------------------------------------------+
+    | ``remove_model``     | Removes specified model as well as it's data     |
+    +----------------------+--------------------------------------------------+
+
+    Examples
+    --------
+    >>> import openpnm as op
+
+    Create a Demo class using Base and ModelsMixin:
+
+    >>> class Demo(op.core.Base, op.core.ModelsMixin):
+    ...     pass
+    >>> temp = Demo(Np=3, Nt=2)
+
+    The new class has the normal Base methods:
+
+    >>> print(temp.num_pores())
+    3
+
+    But also has those needed for working with models.  For instance, a sipmle
+    model can be added as follows:
+
+    >>> temp.add_model(propname='pore.test',
+    ...                model=op.models.misc.constant,
+    ...                value=2)
+    >>> print(temp['pore.test'])
+    [2 2 2]
+
+    All the models and their respective parameters are stored in the ``models``
+    attribute:
+
+    >>> print(temp.models)
+    ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+    #   Property Name             Parameter                 Value
+    ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+    1   pore.test                 model:                    constant
+                                  value:                    2
+                                  regeneration mode:        normal
+    ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+
+    """
 
     def add_model(self, propname, model, regen_mode='normal', **kwargs):
         r"""

@@ -26,7 +26,7 @@ class BoundaryTest:
         self.geo.regenerate_models()
 
     def teardown_class(self):
-        mgr = op.core.Workspace()
+        mgr = op.Workspace()
         mgr.clear()
 
     def test_plot_histogram(self):

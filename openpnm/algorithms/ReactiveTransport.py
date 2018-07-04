@@ -1,6 +1,6 @@
 import numpy as np
 from openpnm.algorithms import GenericTransport
-from openpnm.core import logging
+from openpnm.utils import logging
 logger = logging.getLogger(__name__)
 
 

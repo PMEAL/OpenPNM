@@ -5,6 +5,14 @@ import h5py
 
 
 class XDMF(GenericIO):
+    r"""
+    The eXtensible Data Model Format combines XML descriptors with HDF5 data
+    storage
+
+
+    For more information visit the webiste:
+    `(XDMF.org <http://www.xdmf.org/index.php/Main_Page>)`_
+    """
 
     _header = '''<?xml version="1.0" ?>
                  <!DOCTYPE Xdmf SYSTEM "Xdmf.dtd" []>'''
