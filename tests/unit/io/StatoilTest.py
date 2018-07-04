@@ -14,7 +14,7 @@ class StatoilTest:
         ws.settings['local_data'] = True
 
     def teardown_class(self):
-        ws = op.core.Workspace()
+        ws = op.Workspace()
         ws.clear()
 
     def test_load_F42A(self):

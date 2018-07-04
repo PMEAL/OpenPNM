@@ -1,17 +1,19 @@
 from xml.etree import ElementTree as ET
 import numpy as np
-from openpnm.core import logging, Workspace
 from openpnm.network import GenericNetwork
 from openpnm.io import GenericIO, Dict
-from openpnm.utils import FlatDict
+from openpnm.utils import logging, Workspace, FlatDict
 logger = logging.getLogger(__name__)
 ws = Workspace()
 
 
 class VTK(GenericIO):
     r"""
-    Class for writing a Vtp file to be read by ParaView
+    The Visualization Toolkit (VTK) format defined by Kitware and used by
+    Paraview
 
+    Because OpenPNM data is unstructured, the actual output format is VTP,
+    not VTK.
     """
 
     _TEMPLATE = '''
@@ -49,7 +51,7 @@ class VTK(GenericIO):
 
         filename : string, optional
             Filename to write data.  If no name is given the file is named
-            after ther network
+            after the network
 
         """
         project, network, phases = cls._parse_args(network=network,

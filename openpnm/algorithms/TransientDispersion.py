@@ -1,5 +1,5 @@
 from openpnm.algorithms import TransientReactiveTransport, Dispersion
-from openpnm.core import logging
+from openpnm.utils import logging
 logger = logging.getLogger(__name__)
 
 

@@ -1,3 +1,15 @@
+r"""
+
+**openpnm.models.physics**
+
+----
+
+This submodule contains models for calculating properties related to physical
+transport processes, including conductances, reaction rates, and capillary
+effects
+
+"""
+
 from . import capillary_pressure
 from . import diffusive_conductance
 from . import electrical_conductance

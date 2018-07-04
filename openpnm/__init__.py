@@ -7,6 +7,8 @@ if _sys.version_info < (3, 5):
 
 __version__ = '2.0.0-b'
 
+from . import utils
+from .utils import Workspace, Project
 from . import core
 from . import models
 from . import network
@@ -15,10 +17,8 @@ from . import geometry
 from . import phases
 from . import physics
 from . import algorithms
-from . import utils
 from . import io
 from . import materials
-from .core import Workspace, Project
 
 
 # Set up logging to file - see previous section for more details

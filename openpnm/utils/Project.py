@@ -1,16 +1,67 @@
-from pathlib import Path
 import time
 import pickle
 import h5py
-from pathlib import Path
-from openpnm.core import Workspace
-from openpnm.utils.misc import SettingsDict, HealthDict, PrintableList
-import openpnm
 import numpy as np
+import openpnm
+from pathlib import Path
+from openpnm.utils import SettingsDict, HealthDict, PrintableList, Workspace
 ws = Workspace()
 
 
 class Project(list):
+    r"""
+    This class provides a container for all OpenPNM objects in a given
+    simulation.
+
+    A simulation is defined as a Network and all of it's associated objects.
+    When instantiating a Network, a Project can be passed as an argument, but
+    if not given one is created.  When instantiating any other object either
+    a Network or a Project can be supplied.  In the former case, the
+    Network's Project is retrieved and used.  The end result is that all
+    objects are stored in a specific Project.
+
+    The Project to which any object belongs can be retrieved with
+    ``obj.project``.  Conversely, printing a Project displays a list of all
+    objects it contains.
+
+    Moreover, all Projects are registered with the Workspace.  Since there can
+    be only instance of the Workspace it is possible to view all open Projects
+    by printing the Workspace.
+
+    See Also
+    --------
+    Workspace
+
+    Notes
+    -----
+    The following table shows all the methods that are available on the Project
+    objects along with a very brief description:
+
+    +----+------------------+-------------------------------------------------+
+    | #  | Method           | Description                                     |
+    +====+==================+=================================================+
+    | 3  | export_data      | Export the pore and throat data from the giv... |
+    +----+------------------+-------------------------------------------------+
+    | 4  | find_physics     | Find the Physics object(s) associated with a... |
+    +----+------------------+-------------------------------------------------+
+    | 6  | purge_object     | Remove an object from the Project.  This rem... |
+    +----+------------------+-------------------------------------------------+
+    | 7  | check_physics... | Perform a check to find pores which have ove... |
+    +----+------------------+-------------------------------------------------+
+    | 8  | find_geometry    | Find the Geometry associated with a given Ph... |
+    +----+------------------+-------------------------------------------------+
+    | 9  | load_object      | Loads a single object from a file               |
+    +----+------------------+-------------------------------------------------+
+    | 10 | import_data      |                                                 |
+    +----+------------------+-------------------------------------------------+
+    | 11 | check_geometr... | Perform a check to find pores with overlappi... |
+    +----+------------------+-------------------------------------------------+
+    | 13 | find_phase       | Find the Phase associated with a given object.  |
+    +----+------------------+-------------------------------------------------+
+    | 14 | save_object      | Saves the given object to a file                |
+    +----+------------------+-------------------------------------------------+
+
+    """
 
     def __init__(self, *args, **kwargs):
         name = kwargs.pop('name', None)
@@ -287,33 +338,33 @@ class Project(list):
 
     def save_object(self, obj):
         r"""
-        Save a single object to a file
+        Saves the given object to a file
 
         Parameters
         ----------
         obj : OpenPNM object
-            The object to be saved.  The file name will be taken from the
-            object name, and the file extension will be object type ('net',
-            'geo', 'phys', 'phase', or 'alg')
+            The file to be saved.  Depending on the object type, the file
+            extension will be one of 'net', 'geo', 'phase', 'phys' or 'alg'.
         """
-        filename = obj.name + '.' + obj.settings['prefix']
-        pickle.dump(obj, open(filename, 'wb'))
+        if not isinstance(obj, list):
+            obj = [obj]
+        for item in obj:
+            filename = item.name + '.' + item.settings['prefix']
+            with open(filename, 'wb') as f:
+                pickle.dump({item.name: item}, f)
 
     def load_object(self, filename):
         r"""
-        Load a single object from a file into the Project
+        Loads a single object from a file
 
         Parameters
         ----------
-        filename : string or path object
-            The name and location of the file to load.
 
         """
-        path = Path(filename)
-        ext = path.suffix.strip('.')
-        d = pickle.load(open(filename, 'rb'))
-        obj = self._new_object(objtype=ext)
-        obj.update(d)
+        with open(filename, 'rb') as f:
+            d = pickle.load(f)
+        for item in d.keys():
+            self.extend(d[item])
 
     def save_project(self, filename=''):
         r"""
@@ -585,6 +636,10 @@ class Project(list):
     def check_geometry_health(self):
         r"""
         Perform a check to find pores with overlapping or undefined Geometries
+
+        Returns
+        -------
+        A HealthDict
         """
         health = HealthDict()
         health['overlapping_pores'] = []
@@ -610,6 +665,16 @@ class Project(list):
     def check_physics_health(self, phase):
         r"""
         Perform a check to find pores which have overlapping or missing Physics
+
+        Parameters
+        ----------
+        phase : OpenPNM Phase object
+            The Phase whose Physics should be checked
+
+        Returns
+        -------
+        A HealthDict
+
         """
         health = HealthDict()
         health['overlapping_pores'] = []
