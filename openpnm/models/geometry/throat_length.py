@@ -95,6 +95,7 @@ def spherical_pores(target, pore_diameter='pore.diameter',
     Lt = L - (L1+L2)                            # Effective length of throat
     return {'pore1': L1, 'throat': Lt, 'pore2': L2}
 
+
 def truncated_pyramid(target, pore_diameter='pore.diameter'):
     r"""
     Calculate conduit lengths, i.e. pore 1 length, throat length,
