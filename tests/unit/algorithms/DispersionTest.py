@@ -7,42 +7,35 @@ class DispersionTest:
 
     def setup_class(self):
         sp.random.seed(0)
-        self.net = op.network.Cubic(shape=[4, 3, 1], spacing=1e-4)
-        self.geo = op.geometry.StickAndBall(network=self.net,
-                                            pores=self.net.Ps,
-                                            throats=self.net.Ts)
+        self.net = op.network.Cubic(shape=[4, 3, 1], spacing=1.0)
+        self.geo = op.geometry.GenericGeometry(network=self.net,
+                                               pores=self.net.Ps,
+                                               throats=self.net.Ts)
 
-        self.phase = op.phases.Water(network=self.net)
-        self.phase['throat.viscosity'] = self.phase['pore.viscosity'][0]
-
+        self.phase = op.phases.GenericPhase(network=self.net)
         self.phys = op.physics.GenericPhysics(network=self.net,
                                               phase=self.phase,
                                               geometry=self.geo)
-        mod1 = op.models.physics.hydraulic_conductance.hagen_poiseuille
-        self.phys.add_model(propname='throat.hydraulic_conductance',
-                            model=mod1, throat_viscosity='throat.viscosity',
-                            regen_mode='normal')
-        mod2 = op.models.physics.diffusive_conductance.ordinary_diffusion
-        self.phys.add_model(propname='throat.diffusive_conductance',
-                            model=mod2, regen_mode='normal')
+        self.phys['throat.diffusive_conductance'] = 1e-15
+        self.phys['throat.hydraulic_conductance'] = 1e-15
 
     def test_dispersion(self):
-        alg1 = op.algorithms.StokesFlow(network=self.net, phase=self.phase)
-        alg1.set_value_BC(pores=self.net.pores('back'), values=10)
-        alg1.set_value_BC(pores=self.net.pores('front'), values=0)
-        alg1.run()
-        self.phase[alg1.settings['quantity']] = alg1[alg1.settings['quantity']]
+        sf = op.algorithms.StokesFlow(network=self.net, phase=self.phase)
+        sf.set_value_BC(pores=self.net.pores('back'), values=1)
+        sf.set_value_BC(pores=self.net.pores('front'), values=0)
+        sf.run()
+        self.phase[sf.settings['quantity']] = sf[sf.settings['quantity']]
 
-        alg2 = op.algorithms.Dispersion(network=self.net,
-                                                phase=self.phase)
-        alg2.set_value_BC(pores=self.net.pores('back'), values=2)
-        alg2.set_value_BC(pores=self.net.pores('front'), values=0)
-        alg2.run()
+        ad = op.algorithms.Dispersion(network=self.net, phase=self.phase)
+        ad.set_value_BC(pores=self.net.pores('back'), values=2)
+        ad.set_value_BC(pores=self.net.pores('front'), values=0)
+        ad.run()
+
         x = [0., 0., 0.,
-             1.03441, 1.25552, 1.47347,
-             1.71339, 1.87639, 1.85104,
+             0.89688, 0.89688, 0.89688,
+             1.53953, 1.53953, 1.53953,
              2., 2., 2.]
-        y = sp.around(alg2[alg2.settings['quantity']], decimals=5)
+        y = sp.around(ad[ad.settings['quantity']], decimals=5)
         assert sp.all(x == y)
 
     def teardown_class(self):

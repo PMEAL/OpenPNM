@@ -1,19 +1,21 @@
 import openpnm as op
 import scipy as sp
 import pytest
+from numpy.testing import assert_approx_equal
 
 
 class SubclassedTransportTest:
 
     def setup_class(self):
         self.net = op.network.Cubic(shape=[9, 9, 9])
-        self.geo = op.geometry.StickAndBall(network=self.net,
-                                            pores=self.net.Ps,
-                                            throats=self.net.Ts)
-        self.phase = op.phases.Air(network=self.net)
+        self.geo = op.geometry.GenericGeometry(network=self.net,
+                                               pores=self.net.Ps,
+                                               throats=self.net.Ts)
+        self.phase = op.phases.GenericPhase(network=self.net)
         self.phys = op.physics.GenericPhysics(network=self.net,
                                               phase=self.phase,
                                               geometry=self.geo)
+        self.phase['pore.viscosity'] = 1e-3
 
     def test_fickian_diffusion(self):
         alg = op.algorithms.FickianDiffusion(network=self.net,
@@ -25,7 +27,7 @@ class SubclassedTransportTest:
         alg.domain_area = 81
         alg.domain_length = 9
         Deff = alg.calc_eff_diffusivity()
-        assert sp.around(Deff, decimals=10) == 0.0275097564
+        assert_approx_equal(Deff, 1.12500)
 
     def test_stokes_flow(self):
         alg = op.algorithms.StokesFlow(network=self.net, phase=self.phase)
@@ -36,7 +38,7 @@ class SubclassedTransportTest:
         alg.domain_area = 81
         alg.domain_length = 9
         Keff = alg.calc_eff_permeability()
-        assert sp.around(Keff, decimals=10) == 2.075e-05
+        assert_approx_equal(Keff, 0.001125)
 
     def test_forurier_conduction(self):
         alg = op.algorithms.FourierConduction(network=self.net,
@@ -48,7 +50,7 @@ class SubclassedTransportTest:
         alg.domain_area = 81
         alg.domain_length = 9
         Keff = alg.calc_effective_conductivity()
-        assert sp.around(Keff, decimals=10) == 1.125
+        assert_approx_equal(Keff, 1.125)
 
     def test_ohmic_conduction(self):
         alg = op.algorithms.OhmicConduction(network=self.net, phase=self.phase)
@@ -59,7 +61,7 @@ class SubclassedTransportTest:
         alg.domain_area = 81
         alg.domain_length = 9
         Keff = alg.calc_effective_conductivity()
-        assert sp.around(Keff, decimals=10) == 1.125
+        assert_approx_equal(Keff, 1.125)
 
     def teardown_class(self):
         ws = op.core.Workspace()
