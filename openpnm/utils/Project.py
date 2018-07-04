@@ -366,16 +366,32 @@ class Project(list):
         for item in d.keys():
             self.extend(d[item])
 
+    def save_project(self, filename=''):
+        r"""
+        Save the current project to a ``pnm`` file.
+
+        Parameters
+        ----------
+        filename : string or path object
+            The name of the file.  Can include an absolute or relative path
+            as well.  If only a filename is given it will be saved in the
+            current working directory.
+
+        """
+        ws.save_project(project=self, filename=filename)
+
     def _new_object(self, objtype, name=None):
-        if objtype == 'network':
+        r"""
+        """
+        if objtype.startswith('net'):
             obj = openpnm.network.GenericNetwork(project=self, name=name)
-        elif objtype == 'geometry':
+        elif objtype.startswith('geo'):
             obj = openpnm.geometry.GenericGeometry(project=self, name=name)
-        elif objtype == 'phase':
+        elif objtype.startswith('pha'):
             obj = openpnm.phases.GenericPhase(project=self, name=name)
-        elif objtype == 'physics':
+        elif objtype.startswith('phy'):
             obj = openpnm.physics.GenericPhysics(project=self, name=name)
-        elif objtype == 'algorithm':
+        elif objtype.startswith('alg'):
             obj = openpnm.algorithm.GenericAlgorithm(project=self, name=name)
         else:
             obj = openpnm.core.Base(project=self, name=name)
