@@ -8,6 +8,11 @@ import scipy as sp
 
 from openpnm.core import logging
 from openpnm.io import GenericIO
+from openpnm.models.geometry import (pore_area, pore_surface_area, pore_volume,
+                                     throat_area, throat_length,
+                                     throat_perimeter, throat_surface_area,
+                                     throat_volume)
+from openpnm.network import GenericNetwork
 
 logger = logging.getLogger(__name__)
 
@@ -106,3 +111,22 @@ class JSONGraphFormat(GenericIO):
         target = sp.array([int(edge['target']) for edge in edges])
         link_length = sp.array([edge['metadata']['link_length'] for edge in edges])
         link_squared_radius = sp.array([edge['metadata']['link_squared_radius'] for edge in edges])
+
+        network = GenericNetwork(Np=number_of_nodes, Nt=number_of_links)
+
+        network['pore.index'] = sp.arange(number_of_nodes)
+        network['pore.coords'] = sp.column_stack([x, y, z])
+        network['pore.diameter'] = 2.0 * sp.sqrt(node_squared_radius)
+        network['pore.volume'] = pore_volume.sphere(network)
+        network['pore.area'] = pore_area.sphere(network)
+
+        # network['throat.conns'] = None # throat.length
+        network['throat.diameter'] = 2.0 * sp.sqrt(link_squared_radius)
+        network['throat.length'] = link_length
+        network['throat.area'] = throat_area.cylinder(network)
+        network['throat.volume'] = throat_volume.cylinder(network)
+        network['throat.perimeter'] = throat_perimeter.cylinder(network)
+        network['throat.surface_area'] = throat_surface_area.cylinder(network)
+        print(network)
+
+        return network.project
