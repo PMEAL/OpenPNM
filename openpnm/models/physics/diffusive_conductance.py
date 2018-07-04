@@ -40,17 +40,18 @@ def ordinary_diffusion(target,
 
     """
     network = target.project.network
+    throats = network.map_throats(target['throat._id'])
     phase = target.project.find_phase(target)
     geom = target.project.find_geometry(target)
-    cn = network['throat.conns']
+    cn = network['throat.conns'][throats]
     # Getting equivalent areas
-    A1 = geom[throat_equivalent_area+'.pore1']      # Equivalent area pore 1
-    At = geom[throat_equivalent_area+'.throat']     # Equivalent area throat
-    A2 = geom[throat_equivalent_area+'.pore2']      # Equivalent area pore 2
+    A1 = geom[throat_equivalent_area+'.pore1'][throats]     # Equivalent area pore 1
+    At = geom[throat_equivalent_area+'.throat'][throats]    # Equivalent area throat
+    A2 = geom[throat_equivalent_area+'.pore2'][throats]     # Equivalent area pore 2
     # Getting conduit lengths
-    L1 = geom[throat_conduit_lengths+'.pore1']       # Equivalent length pore 1
-    Lt = geom[throat_conduit_lengths+'.throat']      # Equivalent length throat
-    L2 = geom[throat_conduit_lengths+'.pore2']       # Equivalent length pore 2
+    L1 = geom[throat_conduit_lengths+'.pore1'][throats]     # Equivalent length pore 1
+    Lt = geom[throat_conduit_lengths+'.throat'][throats]    # Equivalent length throat
+    L2 = geom[throat_conduit_lengths+'.pore2'][throats]     # Equivalent length pore 2
     # Interpolate pore phase property values to throats
     try:
         DABt = phase[throat_diffusivity]
@@ -65,16 +66,14 @@ def ordinary_diffusion(target,
     L2[L2 <= 0] = 1e-12
     Lt[Lt <= 0] = 1e-12
     # Find g for half of pore 1
-    gp1 = DABp[cn[:, 0]]*A1 / L1
+    gp1 = DABp[cn[:, 0]] * A1 / L1
     gp1[_sp.isnan(gp1)] = _sp.inf
     gp1[gp1<=0] = _sp.inf  # Set 0 conductance pores (boundaries) to inf
     # Find g for half of pore 2
-    gp2 = DABp[cn[:, 1]]*A2 / L2
+    gp2 = DABp[cn[:, 1]] * A2 / L2
     gp2[_sp.isnan(gp2)] = _sp.inf
     gp2[gp2<=0] = _sp.inf  # Set 0 conductance pores (boundaries) to inf
     # Find g for full throat
-    gt = DABt*At / Lt
+    gt = DABt[throats] * At / Lt
     gt[gt<=0] = _sp.inf
-    value = (1/gt + 1/gp1 + 1/gp2)**(-1)
-    value = value[phase.throats(target.name)]
-    return value
+    return (1/gt + 1/gp1 + 1/gp2)**(-1)
