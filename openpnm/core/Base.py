@@ -1,6 +1,6 @@
 from collections import namedtuple
 import matplotlib.pyplot as plt
-from openpnm.core import Workspace, logging
+from openpnm.utils import Workspace, logging
 from openpnm.utils.misc import PrintableList, SettingsDict, HealthDict
 import scipy as sp
 logger = logging.getLogger(__name__)
@@ -10,14 +10,135 @@ ws = Workspace()
 class Base(dict):
     r"""
     Contains methods for working with the data in the OpenPNM dict objects
+
+    Parameters
+    ----------
+    Np : int, default is 0
+        The total number of pores to be assigned to the object
+
+    Nt : int, default is 0
+        The total number of throats to be assigned to the object
+
+    name : string, optional
+        The unique name of the object.  If not given one will be generated.
+
+    project : OpenPNM Project object, optional
+        The Project with which the object should be assigned.  If not supplied
+        then a new Project is created
+
+    Notes
+    -----
+
+    This Base class is used as the template for all other OpenPNM objects,
+    including Networks, Geometries, Phases, Physics, and Algorithms.  This
+    class is a subclass of the standard ``dict`` so has the usual methods such
+    as ``pop`` and ``keys``, and has extra methods for working specifically
+    with OpenPNM data.  These are outlined briefly in the following table:
+
+    +----------------------+--------------------------------------------------+
+    | Method or Attribute  | Functionality                                    |
+    +======================+==================================================+
+    | ``props``            | List of keys containing numerical arrays         |
+    +----------------------+--------------------------------------------------+
+    | ``labels``           | List of key containing boolean arrays            |
+    +----------------------+--------------------------------------------------+
+    | ``pores``            | List of pore or throat indices with given labels |
+    |                      |                                                  |
+    | ``throats``          |                                                  |
+    +----------------------+--------------------------------------------------+
+    | ``Ps``, ``Ts``       | Indices for ALL pores and throats on object      |
+    +----------------------+--------------------------------------------------+
+    | ``num_pores`` ,      | Counts the number of pores or throats with a     |
+    |                      | given label                                      |
+    | ``num_throats``      |                                                  |
+    +----------------------+--------------------------------------------------+
+    | ``Np``, ``Nt``       | Total number of pores and throats on the object  |
+    +----------------------+--------------------------------------------------+
+    | ``tomask``           | Converts a list of pore or throat indices to a   |
+    |                      | boolean mask                                     |
+    +----------------------+--------------------------------------------------+
+    | ``toindices``        | Converts a boolean mask to pore or throat indices|
+    +----------------------+--------------------------------------------------+
+    | ``map_pores`` ,      | Given indices on object B returns corresponding  |
+    |                      | indices on object A                              |
+    | ``map_throats``      |                                                  |
+    +----------------------+--------------------------------------------------+
+    | ``interpolate_data`` | Given pore or throat data, interpolate the other |
+    +----------------------+--------------------------------------------------+
+    | ``filter_by_label``  | Given indices find those with specific labels    |
+    +----------------------+--------------------------------------------------+
+    | ``show_hist``        | Method for quickly plotting histograms of data   |
+    +----------------------+--------------------------------------------------+
+    | ``check_data_health``| Ensures all data arrays are valid and complete   |
+    +----------------------+--------------------------------------------------+
+
+
+    In addition to the above methods, there are a few attributes which provide
+    access to useful items:
+
+    +----------------+--------------------------------------------------------+
+    | Attribute      | Functionality                                          |
+    +================+========================================================+
+    | ``name``       | The string name of the object, unique to each Project  |
+    +----------------+--------------------------------------------------------+
+    | ``settings``   | A dictionary containing various setting values         |
+    +----------------+--------------------------------------------------------+
+    | ``project``    | A handle to the Project containing the object          |
+    +----------------+--------------------------------------------------------+
+
+    Examples
+    --------
+    It is possible to create an instance of Base, although it is not very
+    useful except for demonstration purposes as done here.
+
+    >>> import openpnm as op
+    >>> obj = op.core.Base(Np=4, Nt=5)
+
+    Now query the object for its basic properties:
+
+    >>> obj.Np, obj.Nt  # Number of pores and throats
+    (4, 5)
+
+    Add a label to the object, as a boolean with True where the label applies:
+
+    >>> obj['pore.new_label'] = [ True, False, False, True]
+
+    See list of available labels and confirm new_label was added:
+
+    >>> print(obj.labels())
+    ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+    1     : pore.all
+    2     : pore.new_label
+    3     : throat.all
+    ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+
+    Use the label to fetch pores where it was applied:
+
+    >>> Ps = obj.pores('new_label')
+    >>> print(Ps)
+    [0 3]
+
+    Find the number of pores with label:
+
+    >>> print(obj.num_pores('new_label'))
+    2
+
+    Convert between indices and boolean mask
+
+    >>> mask = obj.tomask(throats=[0, 2, 4])
+    >>> print(mask)
+    [ True False  True False  True]
+    >>> inds = obj.toindices(mask)
+    >>> print(inds)
+    [0 2 4]
+
     """
 
     def __new__(cls, *args, **kwargs):
         instance = super(Base, cls).__new__(cls, *args, **kwargs)
-        # The SettingsDict implements the __missing__ magic method, which
-        # returns None instead of KeyError.  This is useful for checking the
-        # value of a settings without first ensuring it exists.
-        instance.settings = SettingsDict(key='Settings', value='Values')
+        # It is necessary to set the SettingsDict here since some classes
+        # use it before calling super.__init__()
+        instance.settings = SettingsDict()
         return instance
 
     def __init__(self, Np=0, Nt=0, name=None, project=None):
@@ -885,7 +1006,7 @@ class Base(dict):
 
         Notes
         -----
-        - This uses an unweighted average, without attempting to account for
+        This uses an unweighted average, without attempting to account for
         distances or sizes of pores and throats.
 
         Examples
@@ -895,6 +1016,7 @@ class Base(dict):
         >>> pn['pore.value'] = [1, 2, 3]
         >>> pn.interpolate_data('pore.value')
         array([1.5, 2.5])
+
         """
         mro = self._mro()
         if 'GenericNetwork' in mro:
@@ -1409,11 +1531,12 @@ class Base(dict):
     def __str__(self):
         horizonal_rule = '―' * 78
         lines = [horizonal_rule]
-        lines.append(self.__module__.replace('__', '') + ': \t' + self.name)
+        lines.append(self.__module__.replace('__', '') + ' : ' + self.name)
         lines.append(horizonal_rule)
         lines.append("{0:<5s} {1:<45s} {2:<10s}".format('#',
                                                         'Properties',
                                                         'Valid Values'))
+        fmt = "{0:<5d} {1:<45s} {2:>5d} / {3:<5d}"
         lines.append(horizonal_rule)
         props = list(set(self.keys()).difference(set(self.labels())))
         props.sort()
@@ -1425,13 +1548,11 @@ class Base(dict):
             if self[item].dtype == object:  # Print objects differently
                 invalid = [i for i in self[item] if i is None]
                 defined = sp.size(self[item]) - len(invalid)
-                fmt = "{0:<5d} {1:<45s} {2:>5d} / {3:<5d}"
                 lines.append(fmt.format(i + 1, prop, defined, required))
             elif '._' not in prop:
                 a = sp.isnan(self[item])
                 defined = sp.shape(self[item])[0] \
                     - a.sum(axis=0, keepdims=(a.ndim-1) == 0)[0]
-                fmt = "{0:<5d} {1:<45s} {2:>5d} / {3:<5d}"
                 lines.append(fmt.format(i + 1, prop, defined, required))
         lines.append(horizonal_rule)
         lines.append("{0:<5s} {1:<45s} {2:<10s}".format('#',
@@ -1440,12 +1561,12 @@ class Base(dict):
         lines.append(horizonal_rule)
         labels = self.labels()
         labels.sort()
+        fmt = "{0:<5d} {1:<45s} {2:<10d}"
         for i, item in enumerate(labels):
             prop = item
             if len(prop) > 35:
                 prop = prop[0:32] + '...'
             if '._' not in prop:
-                fmt = "{0:<5d} {1:<45s} {2:<10d}"
                 lines.append(fmt.format(i + 1, prop, sp.sum(self[item])))
         lines.append(horizonal_rule)
         return '\n'.join(lines)

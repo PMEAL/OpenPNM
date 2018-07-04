@@ -1,6 +1,6 @@
 import pickle
-from openpnm.core import logging, Workspace
-from openpnm.utils import NestedDict, FlatDict, sanitize_dict
+from openpnm.utils import NestedDict, FlatDict, sanitize_dict, Workspace
+from openpnm.utils import logging
 from openpnm.io import GenericIO
 logger = logging.getLogger(__name__)
 ws = Workspace()
@@ -8,10 +8,14 @@ ws = Workspace()
 
 class Dict(GenericIO):
     r"""
-    This is the most important class in the ``io`` module.  It is used to
-    generate hierarchical ``dicts`` in a given format for use in many of the
-    the other classes (e.g. ``Pandas`` and ``HDF5``, which are subsequently
-    used in ``CSV`` and ``XDMF``, and so forth).
+    Generates hierarchical ``dicts`` with a high degree of control over the
+    structure.
+
+    This is the most important class in the ``io`` module, since many other
+    classes use this to manipulate and format the data structures.
+
+    Also, it is possible to use Python's ``pickle`` module to save ``dicts``
+    to file.
 
     """
 

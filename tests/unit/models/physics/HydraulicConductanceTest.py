@@ -17,7 +17,7 @@ class HydraulicConductanceTest:
                                               geometry=self.geo)
 
     def teardown_class(self):
-        mgr = op.core.Workspace()
+        mgr = op.Workspace()
         mgr.clear()
 
     def test_hagen_poiseuille(self):

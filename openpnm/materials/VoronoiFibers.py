@@ -9,7 +9,7 @@ from skimage.morphology import convex_hull_image
 from skimage.measure import regionprops
 from openpnm import topotools
 from openpnm.network import DelaunayVoronoiDual
-from openpnm.core import logging
+from openpnm.utils import logging
 import openpnm.models.geometry as gm
 from openpnm.geometry import GenericGeometry
 from openpnm.utils.misc import unique_list
@@ -20,8 +20,9 @@ logger = logging.getLogger(__name__)
 
 class VoronoiFibers(DelaunayVoronoiDual):
     r"""
-    A Material that resembles a carbon fiber paper with straight intersecting
-    fibers. Two geometries are created: DelaunayGeometry defines the pore space
+    Resembles a fibrous paper or mat with straight intersecting fibers.
+
+    Two geometries are created: DelaunayGeometry defines the pore space
     with pores connected by a Delaunay tesselation and VoronoiGeometry defines
     the fiber space with fibers forming the edges of the Voronoi diagram.
     The two geometries are complimentary and can be accessed individually
@@ -63,6 +64,18 @@ class VoronoiFibers(DelaunayVoronoiDual):
         Determines the size of each voxel in the image. Care should be made to
         appropriately set the resolution based on the fiber_radius and the
         shape of the domain so as to remain within memory constraints.
+
+    References
+    ----------
+    This approach to modeling fibrous materials was first presented by
+    Thompson [1] for simulating fluid imbibition in sorbent paper products.
+    Gostick [2], and Tranter et al.[3, 4] have subsequently used it to model
+    electrodes in fuel cells.
+
+    [1] Thompson
+    [2] Gostick
+    [3] Tranter
+    [4] Tranter
 
     Examples
     --------

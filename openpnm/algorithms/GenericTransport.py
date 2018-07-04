@@ -5,12 +5,100 @@ from scipy.spatial import ConvexHull
 from scipy.spatial import cKDTree
 from openpnm.topotools import iscoplanar
 from openpnm.algorithms import GenericAlgorithm
-from openpnm.core import logging
+from openpnm.utils import logging
 logger = logging.getLogger(__name__)
 
 
 class GenericTransport(GenericAlgorithm):
     r"""
+    This class implements steady-state linear transport calculations
+
+    Parameters
+    ----------
+    network : OpenPNM Network object
+        The Network with which this algorithm is associated
+
+    project : OpenPNM Project object, optional
+        A Project can be specified instead of ``network``
+
+    Notes
+    -----
+
+    The following table shows the methods that are accessible to the user
+    for settig up the simulation.
+
+    +---------------------+---------------------------------------------------+
+    | Methods             | Description                                       |
+    +=====================+===================================================+
+    | ``set_value_BC``    | Applies constant value boundary conditions to the |
+    |                     | specified pores                                   |
+    +---------------------+---------------------------------------------------+
+    | ``set_rate_BC``     | Applies constant rate boundary conditions to the  |
+    |                     | specified pores                                   |
+    +---------------------+---------------------------------------------------+
+    | ``remove_BC``       | Removes all boundary conditions from the          |
+    |                     | specified pores                                   |
+    +---------------------+---------------------------------------------------+
+    | ``rate``            | Calculates the total rate of transfer through the |
+    |                     | given pores or throats                            |
+    +---------------------+---------------------------------------------------+
+    | ``setup``           | A shortcut for applying values in the ``settings``|
+    |                     | attribute.                                        |
+    +---------------------+---------------------------------------------------+
+    | ``results``         | Returns the results of the calcualtion as a       |
+    |                     | ``dict`` with the data stored under the 'quantity'|
+    |                     | specified in the ``settings``                     |
+    +---------------------+---------------------------------------------------+
+
+    In addition to the above methods there are also the following attributes:
+
+    +---------------------+---------------------------------------------------+
+    | Attribute           | Description                                       |
+    +=====================+===================================================+
+    | ``A``               | Retrieves the coefficient matrix                  |
+    +---------------------+---------------------------------------------------+
+    | ``b``               | Retrieves the RHS matrix                          |
+    +---------------------+---------------------------------------------------+
+    | ``domain_area``     | The area of the inlet face for determining total  |
+    |                     | flux into the domain. Should be assigned by user  |
+    |                     | but will be estimated if not.                     |
+    +---------------------+---------------------------------------------------+
+    | ``domain_length``   | The length of the domain for determining the      |
+    |                     | total driving force across the domain. Should be  |
+    |                     | assigned by user but will be estimated if not.    |
+    +---------------------+---------------------------------------------------+
+
+    This class contains quite a few hidden methods (preceeded by an
+    underscore) that are called internally.  Since these are critical to the
+    functioning of this algorithm they are worth outlining even though the
+    user does not call them directly:
+
+    +-----------------------+-------------------------------------------------+
+    | Method or Attribute   | Description                                     |
+    +=======================+=================================================+
+    | ``_build_A``          | Builds the **A** matrix based on the            |
+    |                       | 'conductance' specified in ``settings``         |
+    +-----------------------+-------------------------------------------------+
+    | ``_build_b``          | Builds the **b** matrix                         |
+    +-----------------------+-------------------------------------------------+
+    | ``_apply_BCs``        | Applies the given BCs by adjust the **A** and   |
+    |                       | **b** matrices                                  |
+    +-----------------------+-------------------------------------------------+
+    | ``_calc_eff_prop``    | Finds the effective property (e.g. permeability |
+    |                       | coefficient) based on the given BCs             |
+    +-----------------------+-------------------------------------------------+
+    | ``_solve``            | Runs the algorithm using the solver specified   |
+    |                       | in the ``settings``                             |
+    +-----------------------+-------------------------------------------------+
+    | ``_get_domain_area``  | Attempts to estimate the area of the inlet pores|
+    |                       | if not specified by user in ``domain_area``     |
+    +-----------------------+-------------------------------------------------+
+    | ``_get_domain_length``| Attempts to estimate the length between the     |
+    |                       | inlet and outlet faces if not specified by the  |
+    |                       | user in ``domain_length``                       |
+    +-----------------------+-------------------------------------------------+
+
+
     """
 
     def __init__(self, project=None, network=None, phase=None, settings={},
@@ -165,7 +253,7 @@ class GenericTransport(GenericAlgorithm):
         if 'pore.bc_value' in self.keys():
             self['pore.bc_value'][pores] = np.nan
         if 'pore.rate' in self.keys():
-            self['pore.bc_rate'][pores] = sp.nan
+            self['pore.bc_rate'][pores] = np.nan
 
     def _build_A(self, force=False):
         r"""
@@ -176,7 +264,7 @@ class GenericTransport(GenericAlgorithm):
 
         Parameters
         ----------
-        force : Boolean (default is ``False)
+        force : Boolean (default is ``False``)
             If set to ``True`` then the A matrix is built from new.  If
             ``False`` (the default), a cached version of A is returned.  The
             cached version is *clean* in the sense that no boundary conditions

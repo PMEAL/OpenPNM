@@ -3,7 +3,7 @@ import numpy as np
 
 def antoine(target, A, B, C, temperature='pore.temperature'):
     r"""
-    Uses Antoine equation [1]_ to estimate vapor pressure of a pure component
+    Uses Antoine equation [1] to estimate vapor pressure of a pure component
 
     Parameters
     ----------
@@ -34,8 +34,8 @@ def antoine(target, A, B, C, temperature='pore.temperature'):
 
 def water(target, temperature='pore.temperature', salinity='pore.salinity'):
     r"""
-    Calculates vapor pressure of pure water or seawater given by [1]_ based on
-    Raoult's law. The pure water vapor pressure is given by [2]_
+    Calculates vapor pressure of pure water or seawater given by [1] based on
+    Raoult's law. The pure water vapor pressure is given by [2]
 
     Parameters
     ----------

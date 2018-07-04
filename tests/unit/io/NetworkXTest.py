@@ -26,7 +26,7 @@ class NetworkXTest:
         self.geo_2['throat.boo'] = 1
 
     def teardown_class(self):
-        ws = op.core.Workspace()
+        ws = op.Workspace()
         ws.clear()
 
     def test_from_networkx(self):

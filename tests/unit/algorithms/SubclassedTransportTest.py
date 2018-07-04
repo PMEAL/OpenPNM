@@ -62,7 +62,7 @@ class SubclassedTransportTest:
         assert sp.around(Keff, decimals=10) == 1.125
 
     def teardown_class(self):
-        ws = op.core.Workspace()
+        ws = op.Workspace()
         ws.clear()
 
 

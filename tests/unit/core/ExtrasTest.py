@@ -9,7 +9,7 @@ class ExtrasTest:
         ws = op.Workspace()
 
     def teardown_class(self):
-        ws = op.core.Workspace()
+        ws = op.Workspace()
         ws.clear()
 
     def test_initialize_GenericNetwork_without_args(self):
