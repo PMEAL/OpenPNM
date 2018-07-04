@@ -58,8 +58,7 @@ class GenericNetwork(Base, ModelsMixin):
         # Now get values if present, or regenerate them
         vals = self.get(key)
         if vals is None:  # Invoke interleave data
-            geoms = self.project.geometries().values()
-            vals = self._interleave_data(key, geoms)
+            vals = self.interleave_data(key)
         return vals
 
     def _gen_ids(self):

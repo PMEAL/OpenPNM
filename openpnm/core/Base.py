@@ -754,7 +754,7 @@ class Base(dict):
         indices = self._parse_indices(mask)
         return indices
 
-    def _interleave_data(self, prop, sources):
+    def interleave_data(self, prop):
         r"""
         Retrieves requested property from associated objects, to produce a full
         Np or Nt length array.
@@ -804,17 +804,15 @@ class Base(dict):
         N = self.project.network._count(element)
 
         # Fetch sources list depending on object type?
-        # proj = self.project
-        # if self._isa('network'):
-        #     sources = list(proj.geometries().values())
-        # elif self._isa('phase'):
-        #     sources = list(proj.phases().values())
-        # elif self._isa('physics')
-        #     sources = list(proj.physics().values())
-        # elif self._isa('physics'):
-        #     sources = list(proj.geometries().values())
-        # else:
-        #     pass
+        proj = self.project
+        if self._isa() in ['network', 'geometry']:
+            sources = list(proj.geometries().values())
+        elif self._isa() in ['phase', 'physics']:
+            sources = list(proj.find_physics(phase=self))
+        elif self._isa() in ['algorithm', 'base']:
+            sources = [self]
+        else:
+            raise Exception('Unrecognized object type, cannot find dependencies')
 
         # Attempt to 'get' the requested array from each object
         # Use 'get' so that missing keys return None, instead of KeyError
