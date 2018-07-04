@@ -125,7 +125,7 @@ class CapillaryPressureTest:
                         require_pair=True)
         ts = ~net['throat.interconnect']
         assert ~sp.any(sp.isnan(water['throat.snap_off'][ts]))
-        # assert sp.any(sp.isnan(water['throat.snap_off_pair'][ts]))
+        assert sp.any(sp.isnan(water['throat.snap_off_pair'][ts]))
         assert sp.any(~sp.isnan(water['throat.snap_off_pair'][ts]))
 
 
