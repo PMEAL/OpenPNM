@@ -88,10 +88,17 @@ def spherical_pores(target, pore_diameter='pore.diameter',
     d1 = target[pore_diameter][cn[:, 0]]
     d2 = target[pore_diameter][cn[:, 1]]
     dt = target[throat_diameter][throats]
+    L = ctc(target, pore_diameter=pore_diameter)
     L1 = _sp.sqrt(d1**2 - dt**2) / 2            # Effective length of pore 1
     L2 = _sp.sqrt(d2**2 - dt**2) / 2            # Effective length of pore 2
-    L = ctc(target, pore_diameter=pore_diameter)
     Lt = L - (L1+L2)                            # Effective length of throat
+    # Handling throats w/ overlapping pores
+    L1temp = (4*L**2+d1**2-d2**2) / (8*L)
+    L2temp = (4*L**2+d2**2-d1**2) / (8*L)
+    htemp = (2*_sp.sqrt(d1**2/4 - L1temp**2)).real
+    mask_overlap = ((L - (d1+d2)/2) < 0) & (dt < htemp)
+    L1[mask_overlap] = L1temp[mask_overlap]
+    L2[mask_overlap] = L2temp[mask_overlap]
     return {'pore1': L1, 'throat': Lt, 'pore2': L2}
 
 
