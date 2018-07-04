@@ -1,3 +1,4 @@
+import json
 import os
 import pickle
 from pathlib import Path
@@ -6,6 +7,7 @@ import jsonschema
 
 from openpnm.core import logging
 from openpnm.io import GenericIO
+
 logger = logging.getLogger(__name__)
 
 
@@ -55,13 +57,13 @@ class JSONGraphFormat(GenericIO):
         """
 
     @classmethod
-    def load(cls, filename, project=None):
+    def load(self, filename, project=None):
         r"""
         Loads the JGF file onto the given project.
 
         Parameters
         ----------
-        filename : string (optional)
+        filename : string
             The name of the file containing the data to import.  The formatting
             of this file is outlined below.
 
@@ -75,4 +77,15 @@ class JSONGraphFormat(GenericIO):
         If no project object is supplied then one will be created and returned.
 
         """
+        # Ensure input file is valid
+        if not filename.endswith('.json'):
+            raise(Exception('Error - JSONGraphFormat.load() expects a JSON file as input.'))
+        filename = self._parse_filename(filename=filename, ext='json')
+
+        # Load and validate input JSON
+        with open(filename, 'r') as file:
+            json_file = json.load(file)
+            if not self.__validate_json__(json_file):
+                raise(Exception('Error - ' + filename + ' is not in the JSON Graph Format.'))
+
         return project
