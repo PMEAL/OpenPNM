@@ -85,13 +85,14 @@ def spherical_pores(target, pore_diameter='pore.diameter',
 
     """
     network = target.project.network
-    cn = network['throat.conns']
+    throats = network.throats(target.name)
+    cn = network['throat.conns'][throats]
     d1 = target[pore_diameter][cn[:, 0]]
     d2 = target[pore_diameter][cn[:, 1]]
-    dt = target[throat_diameter]
+    dt = target[throat_diameter][throats]
     L1 = _sp.sqrt(d1**2 - dt**2) / 2            # Effective length of pore 1
     L2 = _sp.sqrt(d2**2 - dt**2) / 2            # Effective length of pore 2
-    L = ctc(target, pore_diameter=pore_diameter)
+    L = ctc(target, pore_diameter=pore_diameter)[throats]
     Lt = L - (L1+L2)                            # Effective length of throat
     return {'pore1': L1, 'throat': Lt, 'pore2': L2}
 
@@ -113,10 +114,11 @@ def truncated_pyramid(target, pore_diameter='pore.diameter'):
 
     """
     network = target.project.network
-    cn = network['throat.conns']
+    throats = network.throats(target.name)
+    cn = network['throat.conns'][throats]
     L1 = 0.5*target[pore_diameter][cn[:, 0]]        # Effective length of pore1
     L2 = 0.5*target[pore_diameter][cn[:, 1]]        # Effective length of pore2
-    L = ctc(target, pore_diameter=pore_diameter)
+    L = ctc(target, pore_diameter=pore_diameter)[throats]
     Lt = L - (L1+L2)                                # Effective length of throat
     return {'throat.pore1': L1, 'throat.throat': Lt, 'throat.pore2': L2}
 

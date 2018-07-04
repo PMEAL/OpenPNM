@@ -24,13 +24,14 @@ def spherical_pores(target, throat_area='throat.area', pore_diameter='pore.diame
 
     """
     network = target.project.network
-    cn = network['throat.conns']
+    throats = network.throats(target.name)
+    cn = network['throat.conns'][throats]
     d1 = target[pore_diameter][cn[:, 0]]
     d2 = target[pore_diameter][cn[:, 1]]
-    L1 = target[throat_conduit_lengths+'.pore1']
-    L2 = target[throat_conduit_lengths+'.pore2']
+    L1 = target[throat_conduit_lengths+'.pore1'][throats]
+    L2 = target[throat_conduit_lengths+'.pore2'][throats]
     return {'pore1': d1*L1*_pi / (2*_np.arctanh(2*L1/d1)),
-            'throat': target[throat_area],
+            'throat': target[throat_area][throats],
             'pore2': d2*L2*_pi / (2*_np.arctanh(2*L2/d2))}
 
 
@@ -55,12 +56,13 @@ def truncated_pyramid(target, throat_area='throat.area', pore_diameter='pore.dia
 
     """
     network = target.project.network
-    cn = network['throat.conns']
+    throats = network.throats(target.name)
+    cn = network['throat.conns'][throats]
     d1 = target[pore_diameter][cn[:, 0]]
     d2 = target[pore_diameter][cn[:, 1]]
-    td = _np.sqrt(target[throat_area])
+    td = _np.sqrt(target[throat_area][throats])
     return {'pore1': d1*td,
-            'throat': target[throat_area],
+            'throat': target[throat_area][throats],
             'pore2': d2*td}
 
 
@@ -86,11 +88,12 @@ def circular_pores(target, throat_area='throat.area', pore_diameter='pore.diamet
 
     """
     network = target.project.network
-    cn = network['throat.conns']
+    throats = network.throats(target.name)
+    cn = network['throat.conns'][throats]
     d1 = target[pore_diameter][cn[:, 0]]
     d2 = target[pore_diameter][cn[:, 1]]
-    L1 = target[throat_conduit_lengths+'.pore1']
-    L2 = target[throat_conduit_lengths+'.pore2']
+    L1 = target[throat_conduit_lengths+'.pore1'][throats]
+    L2 = target[throat_conduit_lengths+'.pore2'][throats]
     return {'pore1': 2*L1 / (_np.arctan(2*L1/_np.sqrt(d1**2 - 4*L1**2))),
-            'throat': target[throat_area],
+            'throat': target[throat_area][throats],
             'pore2': 2*L2 / (_np.arctan(2*L2/_np.sqrt(d2**2 - 4*L2**2)))}
