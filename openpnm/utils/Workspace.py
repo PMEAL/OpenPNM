@@ -345,10 +345,11 @@ class Workspace(dict):
             self._next_id = 0
             # But check ids in any objects present first
             for proj in self.values():
-                if 'pore._id' in proj.network.keys():
-                    Pmax = proj.network['pore._id'].max() + 1
-                    Tmax = proj.network['throat._id'].max() + 1
-                    self._next_id = max([Pmax, Tmax, self._next_id])
+                if len(proj) > 0:
+                    if 'pore._id' in proj.network.keys():
+                        Pmax = proj.network['pore._id'].max() + 1
+                        Tmax = proj.network['throat._id'].max() + 1
+                        self._next_id = max([Pmax, Tmax, self._next_id])
         ids = np.arange(self._next_id, self._next_id + size, dtype=np.int64)
         self._next_id += size
         return ids
