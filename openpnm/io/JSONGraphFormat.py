@@ -8,8 +8,7 @@ import scipy as sp
 
 from openpnm.core import logging
 from openpnm.io import GenericIO
-from openpnm.models.geometry import (pore_area, pore_surface_area, pore_volume,
-                                     throat_area, throat_length,
+from openpnm.models.geometry import (pore_area, pore_volume, throat_area,
                                      throat_perimeter, throat_surface_area,
                                      throat_volume)
 from openpnm.network import GenericNetwork
@@ -98,35 +97,40 @@ class JSONGraphFormat(GenericIO):
         number_of_nodes = json_file['graph']['metadata']['number_of_nodes']
         number_of_links = json_file['graph']['metadata']['number_of_links']
 
-        # Extract node geometry from JSON
+        # Extract node properties from JSON
         nodes = sorted(json_file['graph']['nodes'], key=lambda node: int(node['id']))
         x = sp.array([node['metadata']['node_coordinates']['x'] for node in nodes])
         y = sp.array([node['metadata']['node_coordinates']['y'] for node in nodes])
         z = sp.array([node['metadata']['node_coordinates']['z'] for node in nodes])
-        node_squared_radius = sp.array([node['metadata']['node_squared_radius'] for node in nodes])
 
-        # Extract link geometry from JSON
+        # Extract link properties from JSON
         edges = sorted(json_file['graph']['edges'], key=lambda edge: int(edge['id']))
         source = sp.array([int(edge['source']) for edge in edges])
         target = sp.array([int(edge['target']) for edge in edges])
         link_length = sp.array([edge['metadata']['link_length'] for edge in edges])
         link_squared_radius = sp.array([edge['metadata']['link_squared_radius'] for edge in edges])
 
+        # Generate network object
         network = GenericNetwork(Np=number_of_nodes, Nt=number_of_links)
 
-        network['pore.index'] = sp.arange(number_of_nodes)
-        network['pore.coords'] = sp.column_stack([x, y, z])
-        network['pore.diameter'] = 2.0 * sp.sqrt(node_squared_radius)
-        network['pore.volume'] = pore_volume.sphere(network)
-        network['pore.area'] = pore_area.sphere(network)
-
-        # network['throat.conns'] = None # throat.length
-        network['throat.diameter'] = 2.0 * sp.sqrt(link_squared_radius)
+        # Define primitive throat properties
         network['throat.length'] = link_length
+        network['throat.conns'] = sp.column_stack([source, target])
+        network['throat.diameter'] = 2.0 * sp.sqrt(link_squared_radius)
+
+        # Define derived throat properties
         network['throat.area'] = throat_area.cylinder(network)
         network['throat.volume'] = throat_volume.cylinder(network)
         network['throat.perimeter'] = throat_perimeter.cylinder(network)
         network['throat.surface_area'] = throat_surface_area.cylinder(network)
-        print(network)
+
+        # Define primitive pore properties
+        network['pore.index'] = sp.arange(number_of_nodes)
+        network['pore.coords'] = sp.column_stack([x, y, z])
+        network['pore.diameter'] = sp.zeros(number_of_nodes)
+
+        # Define derived pore properties
+        network['pore.area'] = pore_area.sphere(network)
+        network['pore.volume'] = pore_volume.sphere(network)
 
         return network.project
