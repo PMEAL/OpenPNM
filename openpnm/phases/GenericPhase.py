@@ -96,6 +96,5 @@ class GenericPhase(Base, ModelsMixin):
         # Now get values if present, or regenerate them
         vals = self.get(key)
         if vals is None:
-            physics = self.project.find_physics(phase=self)
-            vals = self._interleave_data(key, physics)
+            vals = self.interleave_data(key)
         return vals
