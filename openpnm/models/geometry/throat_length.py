@@ -99,6 +99,7 @@ def spherical_pores(target, pore_diameter='pore.diameter',
     mask_overlap = ((L - (d1+d2)/2) < 0) & (dt < htemp)
     L1[mask_overlap] = L1temp[mask_overlap]
     L2[mask_overlap] = L2temp[mask_overlap]
+    Lt[mask_overlap] = 1e-12
     return {'pore1': L1, 'throat': Lt, 'pore2': L2}
 
 
