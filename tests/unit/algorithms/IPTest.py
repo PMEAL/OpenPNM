@@ -55,8 +55,8 @@ class IPTest:
         Vt_inv = Vt[d['throat.occupancy']].sum()
         S = (Vp_inv + Vt_inv)/(Vtot)
         # Ensure saturation is close to requested value
-        assert S < 0.55
-        assert S > 0.45
+        assert S < 0.6
+        assert S > 0.4
 
     def test_trapping(self):
         alg = op.algorithms.InvasionPercolation(network=self.net)
