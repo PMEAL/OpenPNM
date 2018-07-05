@@ -1,9 +1,3 @@
-r"""
-===============================================================================
-Submodule -- molar_density
-===============================================================================
-
-"""
 import scipy as sp
 
 
@@ -98,12 +92,6 @@ def vanderwaals(target, pressure='pore.pressure',
     Returns
     -------
     rho, the density in [mol/m3]
-
-    Notes
-    -----
-    This equation and its constant coefficients are taken [1]_ which uses the
-    cgs units system. All input parameters are expected in SI, then converted
-    in the method.
 
     """
 

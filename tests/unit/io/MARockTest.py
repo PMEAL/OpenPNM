@@ -12,7 +12,7 @@ class MARockTest:
         ws.clear()
 
     def teardown_class(self):
-        ws = op.core.Workspace()
+        ws = op.Workspace()
         ws.clear()
 
     def test_load_MARock(self, tmpdir):

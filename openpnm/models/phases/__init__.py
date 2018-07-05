@@ -1,3 +1,14 @@
+r"""
+
+**openpnm.models.phases**
+
+----
+
+This submodule contains models for calculating thermophysical properties of
+liquids, gases, and solids.
+
+"""
+
 from . import density
 from . import diffusivity
 from . import electrical_conductivity

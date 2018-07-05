@@ -8,7 +8,7 @@ import pickle
 class WorkspaceTest:
 
     def setup_class(self):
-        self.ws = op.core.Workspace()
+        self.ws = op.Workspace()
         self.ws.clear()
         self.net = op.network.Cubic(shape=[5, 5, 5])
         self.phase = op.phases.Air(network=self.net)

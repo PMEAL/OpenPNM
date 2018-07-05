@@ -1,5 +1,6 @@
 import openpnm as op
 import numpy as np
+import pytest
 from numpy.testing import assert_approx_equal
 from openpnm import topotools
 
@@ -104,6 +105,64 @@ class TopotoolsTest:
                               mode='isolated')
         assert net.Np == 150
         assert net.Nt == 300
+
+    def test_merge_networks(self):
+        net1 = op.network.Cubic(shape=[3, 3, 3])
+        net2 = op.network.Cubic(shape=[3, 3, 3])
+        net1['pore.test1'] = True
+        net1['pore.test2'] = 10
+        net2['pore.test3'] = True
+        net2['pore.test4'] = 10.0
+        topotools.merge_networks(net1, net2)
+        assert np.sum(net1['pore.test1']) == 27
+        assert np.sum(net1['pore.test3']) == 27
+        assert np.sum(net1['pore.test2'][:27]) == 270
+        assert np.sum(net1['pore.test4'][27:]) == 270
+        assert 'pore.test1' not in net2
+        assert 'pore.test2' not in net2
+
+    def test_ispercolating(self):
+        net = op.network.Cubic(shape=[10, 10, 10], connectivity=26)
+        tmask = net['throat.all']
+        Pin = net.pores('left')
+        Pout = net.pores('right')
+        am = net.create_adjacency_matrix(weights=tmask, fmt='coo')
+        val = topotools.ispercolating(am=am, mode='bond',
+                                      inlets=Pin, outlets=Pout)
+        assert val
+        val = topotools.ispercolating(am=am, mode='site',
+                                      inlets=Pin, outlets=Pout)
+        assert val
+
+    def test_trim_pores(self):
+        np.random.seed(1)
+        pn = op.network.Cubic(shape=[2, 2, 2], spacing=1)
+        Ps = pn.pores()[:4]
+        Ts = pn.find_neighbor_throats(pores=Ps, mode='intersection')
+        geo1 = op.geometry.GenericGeometry(network=pn, pores=Ps, throats=Ts)
+        Ps = pn.pores()[4:]
+        Ts = pn.find_neighbor_throats(pores=Ps, mode='union')
+        geo2 = op.geometry.GenericGeometry(network=pn, pores=Ps, throats=Ts)
+        geo1['pore.random'] = np.random.random(geo1.Np)
+        geo2['pore.random'] = np.random.random(geo2.Np)
+        trimmers = pn['pore.random'] < 0.25
+        topotools.trim(pn, pores=pn.pores()[trimmers])
+        assert ~np.any(pn['pore.random'] < 0.25)
+
+    def test_trim_throats(self):
+        np.random.seed(1)
+        pn = op.network.Cubic(shape=[2, 2, 2], spacing=5)
+        Ps = pn.pores()[:4]
+        Ts1 = pn.find_neighbor_throats(pores=Ps, mode='union')
+        geo1 = op.geometry.GenericGeometry(network=pn, pores=Ps, throats=Ts1)
+        Ps = pn.pores()[4:]
+        Ts2 = pn.find_neighbor_throats(pores=Ps, mode='intersection')
+        geo2 = op.geometry.GenericGeometry(network=pn, pores=Ps, throats=Ts2)
+        geo1['throat.random'] = np.random.random(geo1.Nt)
+        geo2['throat.random'] = np.random.random(geo2.Nt)
+        trimmers = pn['throat.random'] < 0.25
+        topotools.trim(pn, throats=pn.throats()[trimmers])
+        assert ~np.any(pn['throat.random'] < 0.25)
 
 
 if __name__ == '__main__':
