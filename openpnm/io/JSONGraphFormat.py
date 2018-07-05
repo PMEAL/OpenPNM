@@ -35,11 +35,11 @@ class JSONGraphFormat(GenericIO):
 
         # Load schema from pickle file
         with open(schema_filename, 'rb') as file:
-            schema = pickle.load(file)
+            jgf_schema = pickle.load(file)
 
         # Validate JSON agains schema
         try:
-            jsonschema.validate(json_file, schema)
+            jsonschema.validate(json_file, jgf_schema)
             return True
         except jsonschema.exceptions.ValidationError:
             return False
