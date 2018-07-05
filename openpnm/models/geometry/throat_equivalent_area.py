@@ -24,10 +24,10 @@ def spherical_pores(target, throat_area='throat.area', pore_diameter='pore.diame
 
     """
     network = target.project.network
-    throats = network.map_throats(target['throat._id'])
+    throats = target.map_throats(target['throat._id'])
     cn = network['throat.conns'][throats]
-    d1 = target[pore_diameter][cn[:, 0]]
-    d2 = target[pore_diameter][cn[:, 1]]
+    d1 = network[pore_diameter][cn[:, 0]]
+    d2 = network[pore_diameter][cn[:, 1]]
     L1 = target[throat_conduit_lengths+'.pore1'][throats]
     L2 = target[throat_conduit_lengths+'.pore2'][throats]
     return {'pore1': d1*L1*_pi / (2*_np.arctanh(2*L1/d1)),
@@ -56,10 +56,10 @@ def truncated_pyramid(target, throat_area='throat.area', pore_diameter='pore.dia
 
     """
     network = target.project.network
-    throats = network.map_throats(target['throat._id'])
+    throats = target.map_throats(target['throat._id'])
     cn = network['throat.conns'][throats]
-    d1 = target[pore_diameter][cn[:, 0]]
-    d2 = target[pore_diameter][cn[:, 1]]
+    d1 = network[pore_diameter][cn[:, 0]]
+    d2 = network[pore_diameter][cn[:, 1]]
     td = _np.sqrt(target[throat_area][throats])
     return {'pore1': d1*td,
             'throat': target[throat_area][throats],
@@ -88,10 +88,10 @@ def circular_pores(target, throat_area='throat.area', pore_diameter='pore.diamet
 
     """
     network = target.project.network
-    throats = network.map_throats(target['throat._id'])
+    throats = target.map_throats(target['throat._id'])
     cn = network['throat.conns'][throats]
-    d1 = target[pore_diameter][cn[:, 0]]
-    d2 = target[pore_diameter][cn[:, 1]]
+    d1 = network[pore_diameter][cn[:, 0]]
+    d2 = network[pore_diameter][cn[:, 1]]
     L1 = target[throat_conduit_lengths+'.pore1'][throats]
     L2 = target[throat_conduit_lengths+'.pore2'][throats]
     return {'pore1': 2*L1 / (_np.arctan(2*L1/_np.sqrt(d1**2 - 4*L1**2))),

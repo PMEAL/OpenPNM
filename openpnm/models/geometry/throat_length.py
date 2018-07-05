@@ -20,7 +20,7 @@ def ctc(target, pore_diameter='pore.diameter'):
 
     """
     network = target.project.network
-    throats = network.map_throats(target['throat._id'])
+    throats = target.map_throats(target['throat._id'])
     cn = network['throat.conns'][throats]
     C1 = network['pore.coords'][cn[:, 0]]
     C2 = network['pore.coords'][cn[:, 1]]
@@ -28,7 +28,7 @@ def ctc(target, pore_diameter='pore.diameter'):
     return E
 
 
-def straight(target, pore_diameter='pore.diameter', L_negative=1e-9):
+def straight(target, pore_diameter='pore.diameter', L_negative=1e-12):
     r"""
     Calculate throat length
 
@@ -48,7 +48,7 @@ def straight(target, pore_diameter='pore.diameter', L_negative=1e-9):
         ``None``.
     """
     network = target.project.network
-    throats = network.map_throats(target['throat._id'])
+    throats = target.map_throats(target['throat._id'])
     cn = network['throat.conns'][throats]
     E = ctc(target, pore_diameter=pore_diameter)
     D1 = network[pore_diameter][cn[:, 0]]
@@ -83,11 +83,11 @@ def spherical_pores(target, pore_diameter='pore.diameter',
 
     """
     network = target.project.network
-    throats = network.map_throats(target['throat._id'])
+    throats = target.map_throats(target['throat._id'])
     cn = network['throat.conns'][throats]
-    d1 = target[pore_diameter][cn[:, 0]]
-    d2 = target[pore_diameter][cn[:, 1]]
-    dt = target[throat_diameter][throats]
+    d1 = network[pore_diameter][cn[:, 0]]
+    d2 = network[pore_diameter][cn[:, 1]]
+    dt = network[throat_diameter][throats]
     L = ctc(target, pore_diameter=pore_diameter)
     L1 = _sp.sqrt(d1**2 - dt**2) / 2            # Effective length of pore 1
     L2 = _sp.sqrt(d2**2 - dt**2) / 2            # Effective length of pore 2
@@ -120,13 +120,13 @@ def truncated_pyramid(target, pore_diameter='pore.diameter'):
 
     """
     network = target.project.network
-    throats = network.map_throats(target['throat._id'])
+    throats = target.map_throats(target['throat._id'])
     cn = network['throat.conns'][throats]
-    L1 = 0.5*target[pore_diameter][cn[:, 0]]        # Effective length of pore1
-    L2 = 0.5*target[pore_diameter][cn[:, 1]]        # Effective length of pore2
+    L1 = 0.5*network[pore_diameter][cn[:, 0]]       # Effective length of pore1
+    L2 = 0.5*network[pore_diameter][cn[:, 1]]       # Effective length of pore2
     L = ctc(target, pore_diameter=pore_diameter)
     Lt = L - (L1+L2)                                # Effective length of throat
-    return {'throat.pore1': L1, 'throat.throat': Lt, 'throat.pore2': L2}
+    return {'pore1': L1, 'throat': Lt, 'pore2': L2}
 
 
 def circular_pores(target, pore_diameter='pore.diameter',
