@@ -748,7 +748,7 @@ class Base(dict):
         ids = sp.array(ids, dtype=sp.int64)
         locations = self._get_indices(element=element)
         hash_map = dict(zip(self[element+'._id'], locations))
-        ind = sp.array([hash_map.get(i, -1) for i in ids])
+        ind = sp.array([hash_map.get(i, -1) for i in ids], dtype=sp.int64)
         mask = sp.zeros(shape=ids.shape, dtype=bool)
         mask[sp.where(ind >= 0)[0]] = True
         if filtered:
