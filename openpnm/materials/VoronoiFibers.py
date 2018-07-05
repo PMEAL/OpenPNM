@@ -82,7 +82,11 @@ class VoronoiFibers(DelaunayVoronoiDual):
     Points will be automatically generated if none are given:
 
     >>> import openpnm as op
-    >>> net = op.materials.VoronoiFibers(num_points=50,
+    >>> ws = op.Workspace()
+    >>> ws.clear()
+    >>> prj = op.Project()
+    >>> net = op.materials.VoronoiFibers(project=prj,
+    ...                                  num_points=50,
     ...                                  shape=[1e-4, 1e-4, 1e-4],
     ...                                  fiber_rad=5e-6,
     ...                                  resolution=1e-6)
