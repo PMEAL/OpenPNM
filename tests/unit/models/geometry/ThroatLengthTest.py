@@ -25,7 +25,7 @@ class ThroatStraightTest:
         assert np.allclose(a, b)
         self.geo['pore.diameter'] = 1.1
         self.geo.regenerate_models(propnames=['throat.length'])
-        assert np.amin(self.geo['throat.length']) == 1e-9
+        assert np.amin(self.geo['throat.length']) == 1e-12
 
     def test_spherical_pores(self):
         self.geo['throat.diameter'] = 0.035
