@@ -16,12 +16,12 @@ class VoronoiTest:
         scale = 1e-4
         bp = reflect_base_points(bp, [1, 1, 1])*scale
         self.wrk = op.Workspace()
-        self.net = op.materials.VoronoiFibers(fiber_rad=2e-6,
+        self.prj = op.materials.VoronoiFibers(fiber_rad=2e-6,
                                               resolution=1e-6,
                                               shape=[scale]*3,
                                               points=bp,
                                               name='test')
-        self.prj = self.net.project
+        self.net = self.prj.network
         self.del_geom = self.prj.geometries()['test_del']
         self.vor_geom = self.prj.geometries()['test_vor']
 
