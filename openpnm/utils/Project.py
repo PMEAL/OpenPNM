@@ -102,6 +102,20 @@ class Project(list):
         """
         self.extend(obj)
 
+    def remove(self, obj):
+        r"""
+        The given object is removed from the project
+
+        This removes the object, along with all it's labels in associated
+        objects, but does NOT remove the associated objects.
+
+        See Also
+        -------
+        purge_object
+
+        """
+        self.purge_object(obj)
+
     def clear(self, objtype=[]):
         r"""
         Clears objects from the project entirely or selectively, depdening on
@@ -304,7 +318,7 @@ class Project(list):
         names = [i.name for i in self]
         return names
 
-    def purge_object(self, obj):
+    def purge_object(self, obj, deep=False):
         r"""
         Remove an object from the Project.  This removes all references to
         the object from all other objects (i.e. removes labels)
@@ -314,12 +328,27 @@ class Project(list):
         obj : OpenPNM Object
             The object to purge
 
+        deep : boolean
+            A flag that indicates whether to  remove associated objects.
+            If ``True``, then removing a Geometry or Phase also removes
+            the associated Physics objects.  If ``False`` (default) then
+            only the given object is removed along with its labels in all
+            associated objects.  Removing a Physics always keeps associated
+            Geometry and Phases since they might also be associated with other
+            Physics objects.
+
         Raises
         ------
         An Exception is raised if the object is a Network.
 
+        Notes
+        -----
+        For a clearer picture of this logic, type ``print(project.grid)`` at
+        the console.  A deep purge of a Geometry is like removing a row, while
+        a Phase is like removing a column.
+
         """
-        if obj._isa() in ['geometry', 'physics', 'algorithm']:
+        if obj._isa() in ['physics', 'algorithm']:
             self._purge(obj)
         if obj._isa() == 'phase':
             physics = self.find_physics(phase=obj)
@@ -334,7 +363,7 @@ class Project(list):
             for key in list(item.keys()):
                 if key.split('.')[-1] == obj.name:
                     del item[key]
-        self.remove(obj)
+        super().remove(obj)
 
     def save_object(self, obj):
         r"""
