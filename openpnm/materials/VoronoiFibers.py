@@ -9,7 +9,7 @@ from skimage.morphology import convex_hull_image
 from skimage.measure import regionprops
 from openpnm import topotools
 from openpnm.network import DelaunayVoronoiDual
-from openpnm.utils import logging
+from openpnm.utils import logging, Project
 import openpnm.models.geometry as gm
 from openpnm.geometry import GenericGeometry
 from openpnm.utils.misc import unique_list
@@ -18,7 +18,7 @@ from scipy.stats import itemfreq
 logger = logging.getLogger(__name__)
 
 
-class VoronoiFibers(DelaunayVoronoiDual):
+class VoronoiFibers(Project):
     r"""
     Resembles a fibrous paper or mat with straight intersecting fibers.
 
@@ -72,10 +72,10 @@ class VoronoiFibers(DelaunayVoronoiDual):
     Gostick [2], and Tranter et al.[3, 4] have subsequently used it to model
     electrodes in fuel cells.
 
-    [1] Thompson
-    [2] Gostick
-    [3] Tranter
-    [4] Tranter
+    [1] K. E. Thompson, AlChE J., 48, 1369 (2002)
+    [2] J. T. Gostick, Journal of the Electrochemical Society 2013, 160, F731.
+    [3] T. G. Tranter et al. Fuel Cells, 2016, 16, 4, 504-515
+    [4] T. G. Tranter et al. Transport in Porous Media, 2018, 121, 3, 597-620
 
     Examples
     --------
@@ -84,33 +84,38 @@ class VoronoiFibers(DelaunayVoronoiDual):
     >>> import openpnm as op
     >>> ws = op.Workspace()
     >>> ws.clear()
-    >>> prj = op.Project()
-    >>> net = op.materials.VoronoiFibers(project=prj,
-    ...                                  num_points=50,
+    >>> prj = op.materials.VoronoiFibers(num_points=50,
     ...                                  shape=[1e-4, 1e-4, 1e-4],
     ...                                  fiber_rad=5e-6,
     ...                                  resolution=1e-6)
     """
 
     def __init__(self, num_points=None, points=None, shape=[1, 1, 1],
-                 fiber_rad=None, resolution=1e-2, **kwargs):
+                 fiber_rad=None, resolution=1e-2, name=None, **kwargs):
+        super().__init__(name=name)
         shape = np.array(shape)
         if (len(shape) != 3) or np.any(shape == 0):
             raise Exception('Only 3D, rectangular shapes are supported')
         if fiber_rad is None:
             logger.exception(msg='Please initialize class with a fiber_rad')
-        self.fiber_rad = fiber_rad
-        self.resolution = resolution
-        super().__init__(num_points=num_points, points=points, shape=shape,
-                         **kwargs)
 
-        DelaunayGeometry(network=self,
-                         pores=self.pores('delaunay'),
-                         throats=self.throats('delaunay'),
+        net = DelaunayVoronoiDual(project=self,
+                                  num_points=num_points,
+                                  points=points,
+                                  shape=shape,
+                                  name=self.name+'_net',
+                                  **kwargs)
+        net.fiber_rad = fiber_rad
+        net.resolution = resolution
+        DelaunayGeometry(project=self,
+                         network=net,
+                         pores=net.pores('delaunay'),
+                         throats=net.throats('delaunay'),
                          name=self.name+'_del')
-        VoronoiGeometry(network=self,
-                        pores=self.pores('voronoi'),
-                        throats=self.throats('voronoi'),
+        VoronoiGeometry(project=self,
+                        network=net,
+                        pores=net.pores('voronoi'),
+                        throats=net.throats('voronoi'),
                         name=self.name+'_vor')
 
 
