@@ -91,12 +91,12 @@ class CapillaryPressureTest:
         bp += p
         fiber_rad = 2e-6
         bp = op.topotools.reflect_base_points(bp, domain_size=[1, 1, 1])
-        net = op.materials.VoronoiFibers(fiber_rad=fiber_rad,
+        prj = op.materials.VoronoiFibers(fiber_rad=fiber_rad,
                                          resolution=1e-6,
                                          shape=[scale, scale, scale],
                                          points=bp*scale,
                                          name='test')
-        prj = net.project
+        net = prj.network
         del_geom = prj.geometries()['test_del']
         vor_geom = prj.geometries()['test_vor']
         f = op.models.physics.capillary_pressure.ransohoff_snap_off
