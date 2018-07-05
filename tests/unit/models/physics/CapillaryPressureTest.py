@@ -81,6 +81,8 @@ class CapillaryPressureTest:
         self.phys.remove_model('throat.capillary_pressure')
 
     def test_ransohoff_snapoff_verts(self):
+        ws = op.Workspace()
+        ws.clear()
         bp = sp.array([[0.25, 0.25, 0.25], [0.25, 0.75, 0.25],
                        [0.75, 0.25, 0.25], [0.75, 0.75, 0.25],
                        [0.25, 0.25, 0.75], [0.25, 0.75, 0.75],

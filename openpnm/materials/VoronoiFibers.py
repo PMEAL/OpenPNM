@@ -103,7 +103,7 @@ class VoronoiFibers(Project):
                                   num_points=num_points,
                                   points=points,
                                   shape=shape,
-                                  name=name+'_net',
+                                  name=self.name+'_net',
                                   **kwargs)
         net.fiber_rad = fiber_rad
         net.resolution = resolution
@@ -111,12 +111,12 @@ class VoronoiFibers(Project):
                          network=net,
                          pores=net.pores('delaunay'),
                          throats=net.throats('delaunay'),
-                         name=name+'_del')
+                         name=self.name+'_del')
         VoronoiGeometry(project=self,
                         network=net,
                         pores=net.pores('voronoi'),
                         throats=net.throats('voronoi'),
-                        name=name+'_vor')
+                        name=self.name+'_vor')
 
 
 class DelaunayGeometry(GenericGeometry):
