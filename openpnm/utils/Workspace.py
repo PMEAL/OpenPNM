@@ -344,7 +344,7 @@ class Workspace(dict):
             # If _next_id has not been set, then assign it
             self._next_id = 0
             # But check ids in any objects present first
-            for proj in self:
+            for proj in self.values():
                 if 'pore._id' in proj.network.keys():
                     Pmax = proj.network['pore._id'].max() + 1
                     Tmax = proj.network['throat._id'].max() + 1
