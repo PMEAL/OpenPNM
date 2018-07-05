@@ -44,7 +44,7 @@ class ThroatStraightTest:
         self.geo['throat.diameter'] = 0.035
         self.geo['pore.diameter'] = 0.05
         self.geo.add_model(propname='throat.conduit_lengths',
-                           model=mods.spherical_pores,
+                           model=mods.truncated_pyramid,
                            regen_mode='normal')
         L1 = np.unique(self.geo['throat.conduit_lengths.pore1'])
         Lt = np.unique(self.geo['throat.conduit_lengths.throat'])
