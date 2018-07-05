@@ -14,7 +14,7 @@ class ModelsTest:
                                             throats=self.net.Ts)
 
     def teardown_class(self):
-        ws = op.core.Workspace()
+        ws = op.Workspace()
         ws.clear()
 
     def test_models_dict_print(self):

@@ -1,15 +1,67 @@
 import time
 import pickle
 import h5py
-from pathlib import Path
-from openpnm.core import Workspace
-from openpnm.utils.misc import SettingsDict, HealthDict, PrintableList
-import openpnm
 import numpy as np
+import openpnm
+from pathlib import Path
+from openpnm.utils import SettingsDict, HealthDict, PrintableList, Workspace
 ws = Workspace()
 
 
 class Project(list):
+    r"""
+    This class provides a container for all OpenPNM objects in a given
+    simulation.
+
+    A simulation is defined as a Network and all of it's associated objects.
+    When instantiating a Network, a Project can be passed as an argument, but
+    if not given one is created.  When instantiating any other object either
+    a Network or a Project can be supplied.  In the former case, the
+    Network's Project is retrieved and used.  The end result is that all
+    objects are stored in a specific Project.
+
+    The Project to which any object belongs can be retrieved with
+    ``obj.project``.  Conversely, printing a Project displays a list of all
+    objects it contains.
+
+    Moreover, all Projects are registered with the Workspace.  Since there can
+    be only instance of the Workspace it is possible to view all open Projects
+    by printing the Workspace.
+
+    See Also
+    --------
+    Workspace
+
+    Notes
+    -----
+    The following table shows all the methods that are available on the Project
+    objects along with a very brief description:
+
+    +----+------------------+-------------------------------------------------+
+    | #  | Method           | Description                                     |
+    +====+==================+=================================================+
+    | 3  | export_data      | Export the pore and throat data from the giv... |
+    +----+------------------+-------------------------------------------------+
+    | 4  | find_physics     | Find the Physics object(s) associated with a... |
+    +----+------------------+-------------------------------------------------+
+    | 6  | purge_object     | Remove an object from the Project.  This rem... |
+    +----+------------------+-------------------------------------------------+
+    | 7  | check_physics... | Perform a check to find pores which have ove... |
+    +----+------------------+-------------------------------------------------+
+    | 8  | find_geometry    | Find the Geometry associated with a given Ph... |
+    +----+------------------+-------------------------------------------------+
+    | 9  | load_object      | Loads a single object from a file               |
+    +----+------------------+-------------------------------------------------+
+    | 10 | import_data      |                                                 |
+    +----+------------------+-------------------------------------------------+
+    | 11 | check_geometr... | Perform a check to find pores with overlappi... |
+    +----+------------------+-------------------------------------------------+
+    | 13 | find_phase       | Find the Phase associated with a given object.  |
+    +----+------------------+-------------------------------------------------+
+    | 14 | save_object      | Saves the given object to a file                |
+    +----+------------------+-------------------------------------------------+
+
+    """
 
     def __init__(self, *args, **kwargs):
         name = kwargs.pop('name', None)
@@ -286,6 +338,13 @@ class Project(list):
 
     def save_object(self, obj):
         r"""
+        Saves the given object to a file
+
+        Parameters
+        ----------
+        obj : OpenPNM object
+            The file to be saved.  Depending on the object type, the file
+            extension will be one of 'net', 'geo', 'phase', 'phys' or 'alg'.
         """
         if not isinstance(obj, list):
             obj = [obj]
@@ -295,21 +354,44 @@ class Project(list):
                 pickle.dump({item.name: item}, f)
 
     def load_object(self, filename):
+        r"""
+        Loads a single object from a file
+
+        Parameters
+        ----------
+
+        """
         with open(filename, 'rb') as f:
             d = pickle.load(f)
         for item in d.keys():
             self.extend(d[item])
 
+    def save_project(self, filename=''):
+        r"""
+        Save the current project to a ``pnm`` file.
+
+        Parameters
+        ----------
+        filename : string or path object
+            The name of the file.  Can include an absolute or relative path
+            as well.  If only a filename is given it will be saved in the
+            current working directory.
+
+        """
+        ws.save_project(project=self, filename=filename)
+
     def _new_object(self, objtype, name=None):
-        if objtype == 'network':
+        r"""
+        """
+        if objtype.startswith('net'):
             obj = openpnm.network.GenericNetwork(project=self, name=name)
-        elif objtype == 'geometry':
+        elif objtype.startswith('geo'):
             obj = openpnm.geometry.GenericGeometry(project=self, name=name)
-        elif objtype == 'phase':
+        elif objtype.startswith('pha'):
             obj = openpnm.phases.GenericPhase(project=self, name=name)
-        elif objtype == 'physics':
+        elif objtype.startswith('phy'):
             obj = openpnm.physics.GenericPhysics(project=self, name=name)
-        elif objtype == 'algorithm':
+        elif objtype.startswith('alg'):
             obj = openpnm.algorithm.GenericAlgorithm(project=self, name=name)
         else:
             obj = openpnm.core.Base(project=self, name=name)
@@ -398,7 +480,9 @@ class Project(list):
 
     def _dump_data(self, mode=['props']):
         r"""
-        Dump data from all objects in project to an HDF5 file
+        Dump data from all objects in project to an HDF5 file.  Note that
+        'pore.coords', 'throat.conns', 'pore.all', 'throat.all', and all
+        labels pertaining to the linking of objects are kept.
 
         Parameters
         ----------
@@ -418,7 +502,7 @@ class Project(list):
 
         Notes
         -----
-        In principle, after data is fetched from and HDF5 file, it should
+        In principle, after data is fetched from an HDF5 file, it should
         physically stay there until it's called upon.  This let users manage
         the data as if it's in memory, even though it isn't.  This behavior
         has not been confirmed yet, which is why these functions are hidden.
@@ -552,6 +636,10 @@ class Project(list):
     def check_geometry_health(self):
         r"""
         Perform a check to find pores with overlapping or undefined Geometries
+
+        Returns
+        -------
+        A HealthDict
         """
         health = HealthDict()
         health['overlapping_pores'] = []
@@ -577,6 +665,16 @@ class Project(list):
     def check_physics_health(self, phase):
         r"""
         Perform a check to find pores which have overlapping or missing Physics
+
+        Parameters
+        ----------
+        phase : OpenPNM Phase object
+            The Phase whose Physics should be checked
+
+        Returns
+        -------
+        A HealthDict
+
         """
         health = HealthDict()
         health['overlapping_pores'] = []

@@ -1,75 +1,109 @@
-"""
-===============================================================================
-Delaunay: Generate random networks based on the Delaunay Tessellation
-===============================================================================
-
-"""
-import scipy as sp
-import scipy.sparse as sprs
-import scipy.spatial as sptl
-from openpnm.network import GenericNetwork
+from openpnm.network import DelaunayVoronoiDual
 from openpnm import topotools
-from openpnm.core import logging
+from openpnm.utils import logging
 logger = logging.getLogger(__name__)
 
 
-class Delaunay(GenericNetwork):
+class Delaunay(DelaunayVoronoiDual):
     r"""
+    Random network formed by Delaunay tessellation of arbitrary base points
 
+    Parameters
+    ----------
+    num_points : scalar
+        The number of points to place in the domain, which will become the
+        pore centers after the tessellation is performed.  This value is
+        ignored if ``points`` are given.
+
+    points : array_like
+        An array of coordinates indicating the [x, y, z] locations of each
+        point to use in the tessellation.  Note that the points must be given
+        in rectilinear coordinates regardless of which domain ``shape`` was
+        specified.  To convert between coordinate systems see the
+        ``convert_coords`` function in the ``openpnm.topotools`` module.
+
+    shape : array_like
+        The size of the domain.  It's possible to create cubic, cylindrical,
+        or spherical domains, as well as 2D square and circular by changing
+        the domain ``shape`` as follows:
+
+        [x, y, z] - will produce a normal cubic domain of dimension x, and
+        and z
+
+        [x, y, 0] - will produce a 2D square domain of size x by y
+
+        [r, z] - will produce a cylindrical domain with a radius of r and
+        height of z
+
+        [r, 0] - will produce a 2D circular domain with a radius of r
+
+        [r] - will produce a spherical domain with a radius of r
+
+    See Also
+    --------
+    Gabriel
+    Voronoi
+    DelaunayVoronoiDual
+
+    Notes
+    -----
+    This class always performs the tessellation on the full set of points, then
+    trims any points that lie outside the given domain ``shape``.
+
+    Examples
+    --------
+    >>> import openpnm as op
+    >>> import scipy as sp
+
+    Supplying custom specified points:
+
+    >>> pts = sp.rand(200, 3)
+    >>> gn = op.network.Delaunay(points=pts, shape=[1, 1, 1])
+    >>> gn.Np
+    200
+
+    Which can be quickly visualized using:
+
+    >>> fig = op.topotools.plot_connections(network=gn)
+
+    .. image:: /../docs/static/images/delaunay_network_given_points.png
+        :align: center
+
+    Upon visualization it can be seen that this network is not very cubic.
+    There are a few ways to combat this, but none will make a truly square
+    domain.  Points can be generated that lie outside the domain ``shape``
+    and they will be automatically trimmed.
+
+    >>> pts = sp.rand(300, 3)*1.2 - 0.1  # Must have more points for same density
+    >>> gn = op.network.Delaunay(points=pts, shape=[1, 1, 1])
+    >>> gn.Np < 300  # Confirm base points have been trimmed
+    True
+
+    And visualizing:
+
+    >>> fig = op.topotools.plot_connections(network=gn)
+
+    .. image:: /../docs/static/images/delaunay_network_w_trimmed_points.png
+        :align: center
+
+    If a domain random base points, but truly flat faces is needed use
+    ``Voronoi``.
 
     """
 
-    def __init__(self, num_points=None, shape=None, points=None, **kwargs):
-        # Deal with input arguments
-        if points is None:
-            if num_points is None:
-                raise Exception('Must specify either "points" or "num_points"')
-            points = topotools.generate_base_points(num_points=num_points,
-                                                    domain_size=shape)
+    def __init__(self, shape=None, num_points=None, points=None, **kwargs):
+        # Clean-up input points
+        points = self._parse_points(shape=shape,
+                                    num_points=num_points,
+                                    points=points)
+        # Initialize network object
+        super().__init__(shape=shape, points=points, **kwargs)
+        topotools.trim(network=self, pores=self.pores(['voronoi']))
+        pop = ['pore.voronoi', 'throat.voronoi', 'throat.interconnect',
+               'pore.delaunay', 'throat.delaunay']
+        for item in pop:
+            del self[item]
 
-        # Deal with points that are only 2D...they break Delaunay
-        if points.shape[1] == 3 and len(sp.unique(points[:, 2])) == 1:
-            points = points[:, :2]
-
-        # Perform Delaunay tessellation on points
-        tri = sptl.Delaunay(points)
-
-        # Create an empty list-of-list matrix
-        lil = sprs.lil_matrix((tri.npoints, tri.npoints))
-        # Scan through Delaunay triangulation to retrieve pairs
-        indices, indptr = tri.vertex_neighbor_vertices
-        for k in range(tri.npoints):
-            lil.rows[k] = indptr[indices[k]:indices[k+1]]
-            lil.data[k] = sp.ones_like(lil.rows[k])
-
-        # Convert to coo format
-        coo = lil.tocoo()
-        # Convert to normal conns
-        conns = sp.vstack((coo.row, coo.col)).T
-        # Convert to upper triangular
-        conns = sp.sort(conns, axis=1)
-        self['throat.conns'] = conns
-
-        if points.shape[1] == 2:  # Make points 3D if necessary
-            points = sp.vstack((points.T, sp.zeros((points.shape[0], )))).T
-        self['pore.coords'] = points
-
-        # coords and conns are needed to initialize GenericNetwork
-        super().__init__(**kwargs)
-
-        # Attach delaunay object in case someone needs it?
-        self._tri = tri
-
-        # Determine which throats constitute the Gabriel graph, for other uses
-        # Find centroid of each pair of nodes
-        c = points[conns]
-        m = (c[:, 0, :] + c[:, 1, :])/2
-        # Find radius of circle connecting each pair of nodes
-        r = sp.sqrt(sp.sum((c[:, 0, :] - c[:, 1, :])**2, axis=1))/2
-        # Use KD-Tree to find distance to nearest neighbors
-        tree = sptl.cKDTree(points)
-        n = tree.query(x=m, k=1)[0]
-        # Identify throats whose centroid is not near an unconnected node
-        g = sp.around(n, decimals=5) == sp.around(r, decimals=5)
-        # Label gabriel throats as such, for use elsewhere if needed
-        self['throat.gabriel'] = g
+        # Trim additional pores that are missed by the parent class's trimming
+        Ps = topotools.isoutside(coords=self['pore.coords'], shape=shape)
+        topotools.trim(network=self, pores=Ps)

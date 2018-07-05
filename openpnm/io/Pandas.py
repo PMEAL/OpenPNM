@@ -1,13 +1,29 @@
 import scipy as sp
 from collections import namedtuple
 import pandas as pd
-from openpnm.core import logging
 from openpnm.io import Dict, GenericIO
-from openpnm.utils import FlatDict, sanitize_dict
+from openpnm.utils import FlatDict, sanitize_dict, logging
 logger = logging.getLogger(__name__)
 
 
 class Pandas(GenericIO):
+    r"""
+    Combines all data arrays into a Pandas DataFrame object
+
+    The structure of a DataFrame is a very close match to OpenPNMs data
+    storage.  Each key becomes a column header in the Dataframe, and each
+    pore or throat entry becomes a row.
+
+    Limitations of the DataFrame are the inability to have multidimensional
+    data in a single column.  The methods on a DataFrame are also oriented
+    towards time-series data.
+
+    Nonetheless, Pandas offers many useful features such as performing
+    statistical analysis on property.  DataFrames also offer *many* options for
+    exporting to other file formats, so if a format is not yet supported
+    by OpenPNM, this could be an solution.
+
+    """
 
     @classmethod
     def to_dataframe(cls, network=None, phases=[], join=False, delim=' | '):
@@ -28,6 +44,14 @@ class Pandas(GenericIO):
             and throat data are combined into a single DataFrame.  This can be
             problematic as it will put NaNs into all the *pore* columns which
             are shorter than the *throat* columns.
+
+        Returns
+        -------
+        Pandas ``DataFrame`` object containing property and label data in each
+        column.  If ``join`` was False (default) the two DataFrames are
+        returned i a named tuple, or else a single DataFrame with pore and
+        throat data in the same file, despite the column length being
+        different.
 
         """
         project, network, phases = cls._parse_args(network=network,
@@ -71,3 +95,9 @@ class Pandas(GenericIO):
             data = nt(pore=pdata, throat=tdata)
 
         return data
+
+    @classmethod
+    def from_dataframe(cls):
+        r"""
+        """
+        raise NotImplementedError()

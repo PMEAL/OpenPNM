@@ -1,12 +1,15 @@
-from openpnm.core import Subdomain, ModelsMixin, Workspace, logging
-from numpy import ones
+from openpnm.core import Subdomain, ModelsMixin
+from openpnm.utils import Workspace, logging
 logger = logging.getLogger(__name__)
 ws = Workspace()
 
 
 class GenericPhysics(Subdomain, ModelsMixin):
     r"""
-    Generic class to generate Physics objects
+    This generic class is meant as a starter for custom Physics objects
+
+    It produces a blank object with no pore-scale models attached.  Users can
+    add models from the ``models`` module (or create their own).
 
     Parameters
     ----------

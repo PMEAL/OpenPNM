@@ -8,7 +8,7 @@ import os
 class ProjectTest:
 
     def setup_class(self):
-        self.ws = op.core.Workspace()
+        self.ws = op.Workspace()
         self.ws.clear()
         self.proj = self.ws.new_project()
         self.net = op.network.Cubic(shape=[2, 2, 2], project=self.proj)
@@ -266,8 +266,8 @@ class ProjectTest:
     def test_dump_and_fetch_data(self):
         proj = self.ws.copy_project(self.proj)
         proj._dump_data()
-        # Ensure all properties are gone
-        assert ~sp.any([len(item.props()) for item in proj])
+        # Ensure only pore.coords and throat.conns are found
+        assert sum([len(item.props()) for item in proj]) == 2
         proj._fetch_data()
         assert sp.any([len(item.props()) for item in proj])
         os.remove(proj.name+'.hdf5')

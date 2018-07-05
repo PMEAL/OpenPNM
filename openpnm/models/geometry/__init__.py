@@ -1,3 +1,13 @@
+r"""
+
+**openpnm.models.geometry**
+
+----
+
+This submodule contains pore-scale models that calculate geometrical properties
+
+"""
+
 from . import pore_size
 from . import pore_seed
 from . import pore_volume

@@ -1,7 +1,7 @@
 import os as os
 import scipy as sp
 from pathlib import Path
-from openpnm.core import logging
+from openpnm.utils import logging
 from openpnm.io import GenericIO
 from openpnm.network import GenericNetwork
 from openpnm.topotools import extend, trim
@@ -11,6 +11,9 @@ logger = logging.getLogger(__name__)
 
 class iMorph(GenericIO):
     r"""
+    iMorph is a graphical interface program that provides some image analysis
+    tools for porous media
+
     Combines two output files from the iMorph program to build a pore network.
     throats_cellsThroatsGraph_Nodes.txt - stores node shape and type
     information throats_cellsThroatsGraph.txt - stores node connectivity
