@@ -103,10 +103,10 @@ def spherical_pores(target, pore_diameter='pore.diameter',
     return {'pore1': L1, 'throat': Lt, 'pore2': L2}
 
 
-def truncated_pyramid(target, pore_diameter='pore.diameter'):
+def truncated_pyramid(target, pore_diameter='pore.diameter',throat_diameter='throat.diameter'):
     r"""
     Calculate conduit lengths, i.e. pore 1 length, throat length,
-    and pore 2 length, assuming that pores are spheres.
+    and pore 2 length, assuming that pores are pyramid.
 
     Parameters
     ----------
@@ -118,15 +118,12 @@ def truncated_pyramid(target, pore_diameter='pore.diameter'):
     pore_diameter : string
         Dictionary key of the pore diameter values
 
+    throat_diameter : string
+        Dictionary key of the throat diameter values
+
     """
-    network = target.project.network
-    throats = target.map_throats(target['throat._id'])
-    cn = network['throat.conns'][throats]
-    L1 = 0.5*network[pore_diameter][cn[:, 0]]       # Effective length of pore1
-    L2 = 0.5*network[pore_diameter][cn[:, 1]]       # Effective length of pore2
-    L = ctc(target, pore_diameter=pore_diameter)
-    Lt = L - (L1+L2)                                # Effective length of throat
-    return {'pore1': L1, 'throat': Lt, 'pore2': L2}
+    return spherical_pores(target, pore_diameter=pore_diameter,
+                           throat_diameter=throat_diameter)
 
 
 def circular_pores(target, pore_diameter='pore.diameter',
