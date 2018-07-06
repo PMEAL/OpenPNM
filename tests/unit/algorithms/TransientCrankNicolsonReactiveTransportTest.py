@@ -11,13 +11,13 @@ class TransientCrankNicolsonReactiveTransportTest:
         self.geo = op.geometry.GenericGeometry(network=self.net,
                                                pores=self.net.Ps,
                                                throats=self.net.Ts)
-        self.geo['pore.volume'] = 1e-24
+        self.geo['pore.volume'] = 1e-18
         self.phase = op.phases.GenericPhase(network=self.net)
         self.phys = op.physics.GenericPhysics(network=self.net,
                                               phase=self.phase,
                                               geometry=self.geo)
-        self.phys['pore.A'] = 1e-10
-        self.phys['pore.k'] = 2
+        self.phys['pore.A'] = -1e-10
+        self.phys['pore.k'] = 1
         self.phys['throat.diffusive_conductance'] = 1e-12
         mod = op.models.physics.generic_source_term.standard_kinetics
         self.phys.add_model(propname='pore.reaction',
@@ -39,9 +39,9 @@ class TransientCrankNicolsonReactiveTransportTest:
         alg.set_value_BC(pores=self.net.pores('left'), values=2)
         alg.set_source(propname='pore.reaction', pores=self.net.pores('right'))
         alg.run()
-        x = [2, 1.04877, 0.09753,
-             2, 1.04877, 0.09753,
-             2, 1.04877, 0.09753]
+        x = [2., 1.63028, 1.26055,
+             2., 1.63028, 1.26055,
+             2., 1.63028, 1.26055]
         y = sp.around(alg[alg.settings['quantity']], decimals=5)
         assert sp.all(x == y)
 

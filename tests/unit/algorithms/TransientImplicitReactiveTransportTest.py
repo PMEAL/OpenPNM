@@ -16,7 +16,7 @@ class TransientImplicitReactiveTransportTest:
         self.phys = op.physics.GenericPhysics(network=self.net,
                                               phase=self.phase,
                                               geometry=self.geo)
-        self.phys['pore.A'] = 1e-7
+        self.phys['pore.A'] = -1e-7
         self.phys['pore.k'] = 2
         self.phys['throat.diffusive_conductance'] = 1e-12
         mod = op.models.physics.generic_source_term.standard_kinetics

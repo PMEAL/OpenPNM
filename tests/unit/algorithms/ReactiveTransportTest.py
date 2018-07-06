@@ -15,7 +15,7 @@ class GenericTransportTest:
                                               phase=self.phase,
                                               geometry=self.geo)
         self.phys['throat.diffusive_conductance'] = 1e-15
-        self.phys['pore.A'] = 1e-10
+        self.phys['pore.A'] = -1e-10
         self.phys['pore.k'] = 2
         mod = op.models.physics.generic_source_term.standard_kinetics
         self.phys.add_model(propname='pore.reaction',
