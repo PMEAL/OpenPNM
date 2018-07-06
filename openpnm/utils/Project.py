@@ -350,10 +350,17 @@ class Project(list):
         """
         if obj._isa() in ['physics', 'algorithm']:
             self._purge(obj)
+        if obj._isa() == 'geometry':
+            if deep:
+                physics = self.find_physics(geometry=obj)
+                for phys in physics:
+                    self._purge(self.physics()[phys.name])
+            self._purge(obj)
         if obj._isa() == 'phase':
-            physics = self.find_physics(phase=obj)
-            for phys in physics:
-                self._purge(self.physics()[phys.name])
+            if deep:
+                physics = self.find_physics(phase=obj)
+                for phys in physics:
+                    self._purge(self.physics()[phys.name])
             self._purge(obj)
         if obj._isa() == 'network':
             raise Exception('Cannot purge a network, just make a new project')
