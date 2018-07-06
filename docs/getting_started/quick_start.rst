@@ -86,8 +86,8 @@ Assigning Pore-Scale Physics Models
 
 .. code-block:: python
 
-    >>> phys1 = op.physics.GenericPhysics(network=pn, phase=hg, geometry=geo)
-    >>> phys2 = op.physics.GenericPhysics(network=pn, phase=h2o, geometry=geo)
+    >>> phys_hg = op.physics.GenericPhysics(network=pn, phase=hg, geometry=geo)
+    >>> phys_h2o = op.physics.GenericPhysics(network=pn, phase=h2o, geometry=geo)
 
 The ``GenericPhysics`` class was used, which has NO pore-scale models attached.  We will add this manually in the next step.
 
@@ -108,17 +108,16 @@ We must assign models to each of our Physics.  The ``hg`` phase will be used to 
 .. code-block:: python
 
     >>> model = op.models.physics.capillary_pressure.washburn
-    >>> hg.add_model(propname='throat.entry_pressure',
-    ...              model=model,
-    ...              contact_angle='pore.contact_angle',
-    ...              surface_tension='pore.surface_tension')
+    >>> phys_hg.add_model(propname='throat.entry_pressure',
+    ...                   model=model,
+    ...                   contact_angle='pore.contact_angle',
+    ...                   surface_tension='pore.surface_tension')
     >>> model = op.models.physics.hydraulic_conductance.hagen_poiseuille
-    >>> h2o.add_model(propname='throat.hydraulic_conductance',
-    ...               model=model,
-    ...               pore_viscosity='pore.viscosity',
-    ...               pore_diameter='pore.diameter',
-    ...               throat_length='throat.length',
-    ...               throat_diameter='throat.diameter')
+    >>> phys_h2o.add_model(propname='throat.hydraulic_conductance',
+    ...                    model=model,
+    ...                    pore_viscosity='pore.viscosity',
+    ...                    throat_equivalent_area='throat.equivalent_area',
+    ...                    throat_conduit_lengths='throat.conduit_lengths')
 
 --------------------------------------------------------------------------------
 Performing Some Simulations
