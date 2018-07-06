@@ -37,7 +37,7 @@ def hagen_poiseuille(target,
 
     (2) This function calculates the specified property for the *entire*
     network then extracts the values for the appropriate throats at the end.
-    
+
     (3) This function assumes cylindrical/rectangular throats (for 3d/2d)
 
     """
