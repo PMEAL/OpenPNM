@@ -88,6 +88,11 @@ def spherical_pores(target, pore_diameter='pore.diameter',
     d1 = network[pore_diameter][cn[:, 0]]
     d2 = network[pore_diameter][cn[:, 1]]
     dt = network[throat_diameter][throats]
+    if _sp.any([_sp.isnan(d1), _sp.isnan(d2), _sp.isnan(dt)]):
+        _logger.warn('Found spanner throats (spans between 2 geometries).' +
+                     ' Either the other geometry is not defined yet, or it' +
+                     ' does not have pore diameter values yet. Run' +
+                     ' regenerate_models() on both geometries to fix.')
     L = ctc(target, pore_diameter=pore_diameter)
     L1 = _sp.sqrt(d1**2 - dt**2) / 2
     L2 = _sp.sqrt(d2**2 - dt**2) / 2
