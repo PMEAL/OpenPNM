@@ -181,7 +181,7 @@ class TransientReactiveTransport(ReactiveTransport):
         self._A = (self._A_t).copy()
         self._b = (self._b_t).copy()
         self._apply_BCs()
-        self._apply_sources(s=self.settings['t_scheme'])
+        self._apply_sources()
         if x is None:
             x = np.zeros(shape=[self.Np, ], dtype=float)
         x_new = self._solve()

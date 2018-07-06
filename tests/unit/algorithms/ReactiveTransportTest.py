@@ -6,7 +6,7 @@ import pytest
 class GenericTransportTest:
 
     def setup_class(self):
-        self.net = op.network.Cubic(shape=[9, 9, 9])
+        self.net = op.network.Cubic(shape=[5, 5, 5])
         self.geo = op.geometry.StickAndBall(network=self.net,
                                             pores=self.net.Ps,
                                             throats=self.net.Ts)
@@ -16,7 +16,7 @@ class GenericTransportTest:
                                               phase=self.phase,
                                               geometry=self.geo)
         self.phys['throat.diffusive_conductance'] = 1.0
-        self.phys['pore.A'] = 1e6
+        self.phys['pore.A'] = -1e6
         self.phys['pore.k'] = 2
         mod = op.models.physics.generic_source_term.standard_kinetics
         self.phys.add_model(propname='pore.reaction',
@@ -34,7 +34,7 @@ class GenericTransportTest:
         alg.set_source(pores=self.net.pores('bottom'), propname='pore.reaction')
         alg.set_value_BC(pores=self.net.pores('top'), values=1)
         alg.run()
-        x = [0.0, 0.125, 0.25, 0.375, 0.5, 0.625, 0.75, 0.875, 1.0]
+        x = [0.001, 0.25, 0.5, 0.75, 1.0]
         y = sp.unique(sp.around(alg['pore.mole_fraction'], decimals=3))
         assert sp.all(x == y)
 
