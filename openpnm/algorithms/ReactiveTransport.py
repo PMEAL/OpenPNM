@@ -59,9 +59,9 @@ class ReactiveTransport(GenericTransport):
             # copy, otherwise we have to regenerate A and b on each loop
             datadiag = self._A.diagonal().copy()
             # Source term relaxation
+            self._update_physics()
             S1_old = phase[item+'.'+'S1'][Ps].copy()
             S2_old = phase[item+'.'+'S2'][Ps].copy()
-            self._update_physics()
             S1 = phase[item+'.'+'S1'][Ps]
             S2 = phase[item+'.'+'S2'][Ps]
             S1 = relax*S1 + (1-relax)*S1_old
