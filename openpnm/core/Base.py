@@ -745,9 +745,10 @@ class Base(dict):
         return sp.arange(0, self.Nt)
 
     def _map(self, ids, element, filtered):
+        ids = sp.array(ids, dtype=sp.int64)
         locations = self._get_indices(element=element)
         hash_map = dict(zip(self[element+'._id'], locations))
-        ind = sp.array([hash_map.get(i, -1) for i in ids])
+        ind = sp.array([hash_map.get(i, -1) for i in ids], dtype=sp.int64)
         mask = sp.zeros(shape=ids.shape, dtype=bool)
         mask[sp.where(ind >= 0)[0]] = True
         if filtered:
@@ -758,7 +759,7 @@ class Base(dict):
 
     def map_pores(self, ids, filtered=True):
         r"""
-        Translates pore ids into indices
+        Translates pore ids to indices on the calling object
 
         Parameters
         ----------
@@ -766,19 +767,22 @@ class Base(dict):
             The ids of the pores whose indices are sought
 
         filtered : boolean (default is ``True``)
-            If ``True`` then a ND-array of indices is returned, otherwise
-            a named-tuple containing the ``indices`` and the ???
+            If ``True`` then a ND-array of indices is returned with missing
+            indices removed, otherwise a named-tuple containing both the
+            ``indices`` and a boolean ``mask`` with ``False`` indicating
+            which ``ids`` were not found.
+
         """
         return self._map(element='pore', ids=ids, filtered=filtered)
 
     def map_throats(self, ids, filtered=True):
         r"""
-        Translates ids to indices
+        Translates throat ids to indices on the calling object
 
         Parameters
         ----------
-        throats : array_like
-            The throat indices for which full network indices are sought
+        ids : array_like
+             The ids of the throats whose indices are sought
 
         filtered : boolean (default is ``True``)
             If ``True`` then a ND-array of indices is returned, otherwise
