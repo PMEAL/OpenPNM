@@ -201,14 +201,6 @@ class PetscSparseLinearSolver(Base):
         Returns a numpy array corresponding to the solution of
         the linear sparse system Ax = b.
 
-        Examples
-        --------
-        >>> import scipy as sp
-        >>> from openpnm_petsc_sparse_linear_solvers import \
-        petsc_sparse_linear_solver as psls
-        >>> ls = psls(alg.A, alg.b)
-        >>> sol=psls.petsc_solve(ls)
-
         Notes
         -----
         Certain combinations of iterative solvers and precondioners
