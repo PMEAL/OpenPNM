@@ -1,7 +1,7 @@
 import numpy as np
 import scipy.sparse as sprs
 from openpnm.algorithms import ReactiveTransport
-from openpnm.core import logging
+from openpnm.utils import logging
 logger = logging.getLogger(__name__)
 
 

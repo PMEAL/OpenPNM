@@ -9,7 +9,7 @@ from skimage.morphology import convex_hull_image
 from skimage.measure import regionprops
 from openpnm import topotools
 from openpnm.network import DelaunayVoronoiDual
-from openpnm.core import logging
+from openpnm.utils import logging, Project
 import openpnm.models.geometry as gm
 from openpnm.geometry import GenericGeometry
 from openpnm.utils.misc import unique_list
@@ -18,10 +18,11 @@ from scipy.stats import itemfreq
 logger = logging.getLogger(__name__)
 
 
-class VoronoiFibers(DelaunayVoronoiDual):
+class VoronoiFibers(Project):
     r"""
-    A Material that resembles a carbon fiber paper with straight intersecting
-    fibers. Two geometries are created: DelaunayGeometry defines the pore space
+    Resembles a fibrous paper or mat with straight intersecting fibers.
+
+    Two geometries are created: DelaunayGeometry defines the pore space
     with pores connected by a Delaunay tesselation and VoronoiGeometry defines
     the fiber space with fibers forming the edges of the Voronoi diagram.
     The two geometries are complimentary and can be accessed individually
@@ -45,26 +46,15 @@ class VoronoiFibers(DelaunayVoronoiDual):
         A list of coordinates for pre-generated points, typically produced
         using ``generate_base_points`` in topotools.  Note that base points
         should extend beyond the domain so that degenerate Voronoi points
-        can be trimmed.
+        can be trimmed.  Note: the spherical and cylindrical options
+        cannot be used here.
 
     shape : array_like
         The size and shape of the domain using for generating and trimming
-        excess points. The argument is treated as follows:
-
-        **sphere** : Not supported.
-
-        **cylinder** : Not supported.
-
-        **rectangle** : If a three element list is received, it's treated
-        as the outer corner of rectangle [x, y, z] whose opposite corner
-        lies at [0, 0, 0].
+        excess points. It's treated as the outer corner of rectangle [x, y, z]
+        whose opposite corner lies at [0, 0, 0].
 
         By default, a domain size of [1, 1, 1] is used.
-
-    trim_domain : Boolean
-        If true (default) all nodes outside the given ``shape`` are
-        removed, along with all their throats.  Setting this argument to False
-        will skip this removal if an alternative manual trimming is preferred.
 
     fiber_rad: float
         fiber radius to apply to Voronoi edges when calculating pore and throat
@@ -75,33 +65,57 @@ class VoronoiFibers(DelaunayVoronoiDual):
         appropriately set the resolution based on the fiber_radius and the
         shape of the domain so as to remain within memory constraints.
 
+    References
+    ----------
+    This approach to modeling fibrous materials was first presented by
+    Thompson [1] for simulating fluid imbibition in sorbent paper products.
+    Gostick [2], and Tranter et al.[3, 4] have subsequently used it to model
+    electrodes in fuel cells.
+
+    [1] K. E. Thompson, AlChE J., 48, 1369 (2002)
+    [2] J. T. Gostick, Journal of the Electrochemical Society 2013, 160, F731.
+    [3] T. G. Tranter et al. Fuel Cells, 2016, 16, 4, 504-515
+    [4] T. G. Tranter et al. Transport in Porous Media, 2018, 121, 3, 597-620
+
     Examples
     --------
     Points will be automatically generated if none are given:
 
     >>> import openpnm as op
-    >>> net = op.materials.VoronoiFibers(num_points=50,
+    >>> ws = op.Workspace()
+    >>> ws.clear()
+    >>> prj = op.materials.VoronoiFibers(num_points=50,
     ...                                  shape=[1e-4, 1e-4, 1e-4],
     ...                                  fiber_rad=5e-6,
     ...                                  resolution=1e-6)
     """
 
     def __init__(self, num_points=None, points=None, shape=[1, 1, 1],
-                 trim_domain=True, fiber_rad=None, resolution=1e-2, **kwargs):
-        if len(shape) != 3:
-            logger.exceptions(msg='Only rectangular shapes are supported')
+                 fiber_rad=None, resolution=1e-2, name=None, **kwargs):
+        super().__init__(name=name)
+        shape = np.array(shape)
+        if (len(shape) != 3) or np.any(shape == 0):
+            raise Exception('Only 3D, rectangular shapes are supported')
         if fiber_rad is None:
             logger.exception(msg='Please initialize class with a fiber_rad')
-        self.fiber_rad = fiber_rad
-        self.resolution = resolution
-        super().__init__(num_points, points, shape, trim_domain, **kwargs)
-        DelaunayGeometry(network=self,
-                         pores=self.pores('delaunay'),
-                         throats=self.throats('delaunay'),
+
+        net = DelaunayVoronoiDual(project=self,
+                                  num_points=num_points,
+                                  points=points,
+                                  shape=shape,
+                                  name=self.name+'_net',
+                                  **kwargs)
+        net.fiber_rad = fiber_rad
+        net.resolution = resolution
+        DelaunayGeometry(project=self,
+                         network=net,
+                         pores=net.pores('delaunay'),
+                         throats=net.throats('delaunay'),
                          name=self.name+'_del')
-        VoronoiGeometry(network=self,
-                        pores=self.pores('voronoi'),
-                        throats=self.throats('voronoi'),
+        VoronoiGeometry(project=self,
+                        network=net,
+                        pores=net.pores('voronoi'),
+                        throats=net.throats('voronoi'),
                         name=self.name+'_vor')
 
 

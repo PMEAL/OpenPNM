@@ -6,40 +6,39 @@ import pytest
 class GenericTransportTest:
 
     def setup_class(self):
-        self.net = op.network.Cubic(shape=[5, 5, 5])
-        self.geo = op.geometry.StickAndBall(network=self.net,
-                                            pores=self.net.Ps,
-                                            throats=self.net.Ts)
-        self.phase = op.phases.Air(network=self.net)
-        self.phase['pore.mole_fraction'] = 0
+        self.net = op.network.Cubic(shape=[9, 9, 9])
+        self.geo = op.geometry.GenericGeometry(network=self.net,
+                                               pores=self.net.Ps,
+                                               throats=self.net.Ts)
+        self.phase = op.phases.GenericPhase(network=self.net)
         self.phys = op.physics.GenericPhysics(network=self.net,
                                               phase=self.phase,
                                               geometry=self.geo)
-        self.phys['throat.diffusive_conductance'] = 1.0
-        self.phys['pore.A'] = -1e6
+        self.phys['throat.diffusive_conductance'] = 1e-15
+        self.phys['pore.A'] = 1e-10
         self.phys['pore.k'] = 2
         mod = op.models.physics.generic_source_term.standard_kinetics
         self.phys.add_model(propname='pore.reaction',
                             model=mod,
                             prefactor='pore.A',
                             exponent='pore.k',
-                            quantity='pore.mole_fraction',
+                            quantity='pore.concentration',
                             regen_mode='normal')
 
     def test_one_value_one_source(self):
-        alg = op.algorithms.ReactiveTransport(network=self.net,
-                                              phase=self.phase)
-        alg.settings['conductance'] = 'throat.diffusive_conductance'
-        alg.settings['quantity'] = 'pore.mole_fraction'
-        alg.set_source(pores=self.net.pores('bottom'), propname='pore.reaction')
-        alg.set_value_BC(pores=self.net.pores('top'), values=1)
-        alg.run()
-        x = [0.001, 0.25, 0.5, 0.75, 1.0]
-        y = sp.unique(sp.around(alg['pore.mole_fraction'], decimals=3))
+        rt = op.algorithms.ReactiveTransport(network=self.net,
+                                             phase=self.phase)
+        rt.settings.update({'conductance': 'throat.diffusive_conductance',
+                            'quantity': 'pore.concentration'})
+        rt.set_source(pores=self.net.pores('bottom'), propname='pore.reaction')
+        rt.set_value_BC(pores=self.net.pores('top'), values=1.0)
+        rt.run()
+        x = [0.0011, 0.1260, 0.2508, 0.3757, 0.5006, 0.6254, 0.7503, 0.8751, 1.0]
+        y = sp.unique(sp.around(rt['pore.concentration'], decimals=4))
         assert sp.all(x == y)
 
     def teardown_class(self):
-        ws = op.core.Workspace()
+        ws = op.Workspace()
         ws.clear()
 
 

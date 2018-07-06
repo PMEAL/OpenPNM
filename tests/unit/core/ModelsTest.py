@@ -14,23 +14,23 @@ class ModelsTest:
                                             throats=self.net.Ts)
 
     def teardown_class(self):
-        ws = op.core.Workspace()
+        ws = op.Workspace()
         ws.clear()
 
     def test_models_dict_print(self):
         s = self.geo.models.__str__().split('\n')
-        assert len(s) == 56
-        assert s.count('―'*78) == 13
+        assert len(s) == 68
+        assert s.count('―'*78) == 15
 
     def test_regenerate_models(self):
         a = len(self.geo.props())
-        assert a == 11
+        assert a == 17
         self.geo.clear(mode='props')
         a = len(self.geo.props())
         assert a == 0
         self.geo.regenerate_models()
         a = len(self.geo.props())
-        assert a == 11
+        assert a == 17
 
     def test_dependency_list(self):
         prj=self.net.project

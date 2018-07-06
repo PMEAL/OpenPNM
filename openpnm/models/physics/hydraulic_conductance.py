@@ -1,77 +1,77 @@
-import openpnm as op
 import scipy as _sp
+from scipy import pi
 
 
 def hagen_poiseuille(target,
                      pore_viscosity='pore.viscosity',
                      throat_viscosity='throat.viscosity',
-                     pore_diameter='pore.diameter',
-                     throat_length='throat.length',
-                     throat_diameter='throat.diameter',
-                     shape_factor='throat.shape_factor',
-                     calc_pore_len=False):
+                     throat_equivalent_area='throat.equivalent_area',
+                     throat_conduit_lengths='throat.conduit_lengths'):
     r"""
-    Calculates the hydraulic conductivity of throat assuming cylindrical
-    geometry using the Hagen-Poiseuille model
+    Calculate the hydraulic conductance of conduits in network, where a
+    conduit is ( 1/2 pore - full throat - 1/2 pore ) based on the areas
 
     Parameters
     ----------
-    network : OpenPNM Network Object
+    target : OpenPNM Object
+        The object which this model is associated with. This controls the
+        length of the calculated array, and also provides access to other
+        necessary properties.
 
-    phase : OpenPNM Phase Object
+    pore_viscosity : string
+        Dictionary key of the pore viscosity values
+
+    throat_viscosity : string
+        Dictionary key of the throat viscosity values
+
+    throat_equivalent_area : string
+        Dictionary key of the throat equivalent area values
+
+    throat_conduit_lengths : string
+        Dictionary key of the throat conduit lengths
 
     Notes
     -----
-    This function calculates the specified property for the *entire* network
-    then extracts the values for the appropriate throats at the end.
+    (1) This function requires that all the necessary phase properties already
+    be calculated.
+
+    (2) This function calculates the specified property for the *entire*
+    network then extracts the values for the appropriate throats at the end.
+
+    (3) This function assumes cylindrical/rectangular throats (for 3d/2d)
 
     """
     network = target.project.network
+    is2d = True if 1 in network._shape else False
+    is2d = False
+    throats = network.map_throats(target['throat._id'])
     phase = target.project.find_phase(target)
-    # Get Nt-by-2 list of pores connected to each throat
-    Ps = network['throat.conns']
-    # Get properties in every pore in the network
-    try:
-        mup = phase[pore_viscosity]
-    except KeyError:
-        mup = phase.interpolate_data(throat_viscosity)
+    geom = target.project.find_geometry(target)
+    cn = network['throat.conns'][throats]
+    # Getting equivalent areas
+    A1 = geom[throat_equivalent_area+'.pore1'][throats]
+    At = geom[throat_equivalent_area+'.throat'][throats]
+    A2 = geom[throat_equivalent_area+'.pore2'][throats]
+    # Getting conduit lengths
+    L1 = geom[throat_conduit_lengths+'.pore1'][throats]
+    Lt = geom[throat_conduit_lengths+'.throat'][throats]
+    L2 = geom[throat_conduit_lengths+'.pore2'][throats]
+    # Interpolate pore phase property values to throats
     try:
         mut = phase[throat_viscosity]
     except KeyError:
-        mut = phase.interpolate_data(pore_viscosity)
-    pdia = network[pore_diameter]
-    if calc_pore_len:
-        lengths = op.utils.misc.conduit_lengths(network, mode='centroid')
-        plen1 = lengths[:, 0]
-        plen2 = lengths[:, 2]
-    else:
-        plen1 = (0.5*pdia[Ps[:, 0]])
-        plen2 = (0.5*pdia[Ps[:, 1]])
-    # Remove any non-positive lengths
-    plen1[plen1 <= 0] = 1e-12
-    plen2[plen2 <= 0] = 1e-12
+        mut = phase.interpolate_data(propname=pore_viscosity)
+    try:
+        mup = phase[pore_viscosity]
+    except KeyError:
+        mup = phase.interpolate_data(propname=throat_viscosity)
     # Find g for half of pore 1
-    gp1 = _sp.pi*(pdia[Ps[:, 0]])**4/(128*plen1*mup[Ps[:, 0]])
+    gp1 = A1**3/(12*pi*mup[cn[:, 0]]*L1) if is2d else A1**2/(8*pi*mup[cn[:, 0]]*L1)
     gp1[_sp.isnan(gp1)] = _sp.inf
-    gp1[~(gp1 > 0)] = _sp.inf  # Set 0 conductance pores (boundaries) to inf
-
     # Find g for half of pore 2
-    gp2 = _sp.pi*(pdia[Ps[:, 1]])**4/(128*plen2*mup[Ps[:, 1]])
+    gp2 = A2**3/(12*pi*mup[cn[:, 1]]*L2) if is2d else A2**2/(8*pi*mup[cn[:, 1]]*L2)
     gp2[_sp.isnan(gp2)] = _sp.inf
-    gp2[~(gp2 > 0)] = _sp.inf  # Set 0 conductance pores (boundaries) to inf
     # Find g for full throat
-    tdia = network[throat_diameter]
-    tlen = network[throat_length]
-    # Remove any non-positive lengths
-    tlen[tlen <= 0] = 1e-12
-    # Get shape factor
-    if shape_factor in network.keys():
-        sf = network[shape_factor]
-    else:
-        sf = _sp.ones(network.num_throats())
-    sf[_sp.isnan(sf)] = 1.0
-    gt = (1/sf)*_sp.pi*(tdia)**4/(128*tlen*mut)
-    gt[~(gt > 0)] = _sp.inf  # Set 0 conductance pores (boundaries) to inf
-    value = (1/gt + 1/gp1 + 1/gp2)**(-1)
-    value = value[phase.throats(target.name)]
-    return value
+    gt = At**3/(12*pi*mup[throats]*Lt) if is2d else At**2/(8*pi*mut[throats]*Lt)
+    gt[_sp.isnan(gt)] = _sp.inf
+    return (1/gt + 1/gp1 + 1/gp2)**(-1)

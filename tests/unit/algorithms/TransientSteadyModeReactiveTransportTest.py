@@ -7,51 +7,45 @@ class TransientSteadyModeReactiveTransportTest:
 
     def setup_class(self):
         sp.random.seed(0)
-        self.net = op.network.Cubic(shape=[3, 3, 1], spacing=1e-4)
-        self.geo = op.geometry.StickAndBall(network=self.net,
-                                            pores=self.net.Ps,
-                                            throats=self.net.Ts)
-
-        self.phase = op.phases.Water(network=self.net)
-        self.phase['throat.viscosity'] = self.phase['pore.viscosity'][0]
-
+        self.net = op.network.Cubic(shape=[3, 3, 1], spacing=1e-6)
+        self.geo = op.geometry.GenericGeometry(network=self.net,
+                                               pores=self.net.Ps,
+                                               throats=self.net.Ts)
+        self.geo['pore.volume'] = 1e-12
+        self.phase = op.phases.GenericPhase(network=self.net)
         self.phys = op.physics.GenericPhysics(network=self.net,
                                               phase=self.phase,
                                               geometry=self.geo)
-        self.phys['pore.A'] = 1e-10
+        self.phys['throat.diffusive_conductance'] = 1e-12
+        self.phys['pore.A'] = 1e-7
         self.phys['pore.k'] = 2
-        mod1 = op.models.physics.hydraulic_conductance.hagen_poiseuille
-        mod2 = op.models.physics.generic_source_term.standard_kinetics
-        self.phys.add_model(propname='throat.conductance',
-                            model=mod1,
-                            throat_viscosity='throat.viscosity',
-                            regen_mode='normal')
+        mod = op.models.physics.generic_source_term.standard_kinetics
         self.phys.add_model(propname='pore.reaction',
-                            model=mod2,
+                            model=mod,
                             prefactor='pore.A',
                             exponent='pore.k',
-                            quantity='pore.pressure',
+                            quantity='pore.concentration',
                             regen_mode='normal')
-        self.s = {'conductance': 'throat.conductance',
-                  'quantity': 'pore.pressure'}
+        self.settings = {'conductance': 'throat.diffusive_conductance',
+                         'quantity': 'pore.concentration'}
 
     def test_transient_steady_mode_reactive_transport(self):
         alg = op.algorithms.TransientReactiveTransport(network=self.net,
                                                        phase=self.phase,
-                                                       settings=self.s)
+                                                       settings=self.settings)
         alg.settings.update({'t_scheme': 'steady', 'r_tolerance': 1e-06})
         alg.set_IC(0)
         alg.set_value_BC(pores=self.net.pores('left'), values=2)
         alg.set_source(propname='pore.reaction', pores=self.net.pores('right'))
         alg.run()
-        x = [2, 8.0339e-01, 4.4e-04,
-             2, 7.3107e-01, 2.1e-04,
-             2, 1.3544e-01, 4e-04]
+        x = [2, 1.00158, 0.00316,
+             2, 1.00158, 0.00316,
+             2, 1.00158, 0.00316]
         y = sp.around(alg[alg.settings['quantity']], decimals=5)
         assert sp.all(x == y)
 
     def teardown_class(self):
-        ws = op.core.Workspace()
+        ws = op.Workspace()
         ws.clear()
 
 

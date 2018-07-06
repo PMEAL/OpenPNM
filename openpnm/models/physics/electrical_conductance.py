@@ -1,49 +1,45 @@
-import scipy as _sp
+from .misc import poisson_conductance
 
 
 def series_resistors(target,
                      pore_conductivity='pore.electrical_conductivity',
                      throat_conductivity='throat.electrical_conductivity',
-                     pore_area='pore.area',
-                     pore_diameter='pore.diameter',
-                     throat_area='throat.area',
-                     throat_length='throat.length'):
+                     throat_equivalent_area='throat.equivalent_area',
+                     throat_conduit_lengths='throat.conduit_lengths'):
     r"""
-    Calculates the electrical conductance of throat assuming cylindrical
-    geometry
+    Calculate the electrical conductance of conduits in network, where a
+    conduit is ( 1/2 pore - full throat - 1/2 pore ) based on the areas
 
     Parameters
     ----------
+    target : OpenPNM Object
+        The object which this model is associated with. This controls the
+        length of the calculated array, and also provides access to other
+        necessary properties.
 
+    pore_thermal_conductivity : string
+        Dictionary key of the pore thermal conductivity values
+
+    throat_thermal_conductivity : string
+        Dictionary key of the throat thermal conductivity values
+
+    throat_equivalent_area : string
+        Dictionary key of the throat equivalent area values
+
+    throat_conduit_lengths : string
+        Dictionary key of the throat conduit lengths
+
+    Notes
+    -----
+    (1) This function requires that all the necessary phase properties already
+    be calculated.
+
+    (2) This function calculates the specified property for the *entire*
+    network then extracts the values for the appropriate throats at the end.
 
     """
-    network = target.project.network
-    phase = target.project.find_phase(target)
-    # Get Nt-by-2 list of pores connected to each throat
-    Ps = network['throat.conns']
-    # Get properties in every pore in the network
-    try:
-        sigmat = phase[throat_conductivity]
-    except KeyError:
-        sigmat = phase.interpolate_data(propname=pore_conductivity)
-    try:
-        sigmap = phase[pore_conductivity]
-    except KeyError:
-        sigmap = phase.interpolate_data(propname=throat_conductivity)
-    # Find g for half of pore 1
-    parea = network[pore_area]
-    pdia = network[pore_diameter]
-    # Remove any non-positive lengths
-    pdia[pdia <= 0] = 0
-    gp1 = sigmap[Ps[:, 0]]*parea[Ps[:, 0]]/(0.5*pdia[Ps[:, 0]])
-    # Find g for half of pore 2
-    gp2 = sigmap[Ps[:, 1]]*parea[Ps[:, 1]]/(0.5*pdia[Ps[:, 1]])
-    # Find g for full throat
-    tarea = network[throat_area]
-    tlen = network[throat_length]
-    # Remove any non-positive lengths
-    tlen[tlen <= 0] = 0
-    gt = sigmat*tarea/tlen
-    value = (1/gt + 1/gp1 + 1/gp2)**(-1)
-    value = value[phase.throats(target.name)]
-    return value
+    return poisson_conductance(target=target,
+                               pore_diffusivity=pore_conductivity,
+                               throat_diffusivity=throat_conductivity,
+                               throat_equivalent_area=throat_equivalent_area,
+                               throat_conduit_lengths=throat_conduit_lengths)
