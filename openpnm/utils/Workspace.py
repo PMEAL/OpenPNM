@@ -1,7 +1,6 @@
 import pickle
 import openpnm
 import time
-import copy
 import warnings
 from pathlib import Path
 from openpnm.utils import SettingsDict, logging
@@ -79,6 +78,11 @@ class Workspace(dict):
         if not isinstance(project, openpnm.utils.Project):
             project = openpnm.utils.Project(project, name=name)
         super().__setitem__(name, project)
+
+    def copy(self):
+        r"""
+        """
+        raise Exception('Cannot copy Workspace, only one can exist at a time')
 
     def _create_console_handles(self, project):
         r"""
@@ -263,7 +267,7 @@ class Workspace(dict):
         """
         del self[project.name]
 
-    def copy_project(self, project, new_name=None):
+    def copy_project(self, project, name=None):
         r"""
         Make a copy of an existing Project
 
@@ -281,10 +285,8 @@ class Workspace(dict):
         A handle to the new Project
 
         """
-        new_sim = copy.deepcopy(project)
-        new_sim._name = hex(id(new_sim))  # Assign temporary name
-        new_sim.name = new_name
-        return new_sim
+        proj = project.copy(name)
+        return proj
 
     def new_project(self, name=None):
         r"""

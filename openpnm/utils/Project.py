@@ -3,6 +3,7 @@ import pickle
 import h5py
 import numpy as np
 import openpnm
+from copy import deepcopy
 from pathlib import Path
 from openpnm.utils import SettingsDict, HealthDict, PrintableList, Workspace
 ws = Workspace()
@@ -143,6 +144,27 @@ class Project(list):
                             self.purge_object(obj)
                 except KeyError:
                     pass
+
+    def copy(self, name=None):
+        r"""
+        Creates a copy of the current project
+
+        Parameters
+        ----------
+        name : string
+            The name to give to the new project.  If not supplied, a name
+            is automatically generated.
+
+        Returns
+        -------
+        A new Project object containing copies of all objects
+
+        """
+        if name is None:
+            name = ws._gen_name()
+        proj = deepcopy(self)
+        ws[name] = proj
+        return proj
 
     @property
     def workspace(self):
