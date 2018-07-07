@@ -59,9 +59,9 @@ class ReactiveTransport(GenericTransport):
             # copy, otherwise we have to regenerate A and b on each loop
             datadiag = self._A.diagonal().copy()
             # Source term relaxation
-            self._update_physics()
             S1_old = phase[item+'.'+'S1'][Ps].copy()
             S2_old = phase[item+'.'+'S2'][Ps].copy()
+            self._update_physics()
             S1 = phase[item+'.'+'S1'][Ps]
             S2 = phase[item+'.'+'S2'][Ps]
             S1 = relax*S1 + (1-relax)*S1_old
@@ -92,6 +92,12 @@ class ReactiveTransport(GenericTransport):
         """
         logger.info('―'*80)
         logger.info('Running ReactiveTransport')
+        # Create S1 & S1 for 1st Picard's iteration
+        if x is None:
+            x = np.zeros(shape=[self.Np, ], dtype=float)
+        self[self.settings['quantity']] = x
+        self._update_physics()
+
         x = self._run_reactive(x=x)
         return x
 
@@ -103,6 +109,7 @@ class ReactiveTransport(GenericTransport):
         res = 1e+06
         for itr in range(int(self.settings['max_iter'])):
             if res >= self.settings['tolerance']:
+                logger.info('Tolerance not met: ' + str(res))
                 self[self.settings['quantity']] = x
                 self._build_A(force=True)
                 self._build_b(force=True)
@@ -114,7 +121,6 @@ class ReactiveTransport(GenericTransport):
                 self[self.settings['quantity']] = x_new
                 res = np.sum(np.absolute(x**2 - x_new**2))
                 x = x_new
-                logger.info('Tolerance not met: ' + str(res))
             elif res < self.settings['tolerance']:
                 logger.info('Solution converged: ' + str(res))
                 break
