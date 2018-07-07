@@ -13,25 +13,25 @@ class DiffusiveConductanceTest:
         self.geo['throat.diameter'] = 1.0
         self.geo['throat.length'] = 1e-9
         self.geo['throat.area'] = 1
-        self.air = op.phases.Air(network=self.net)
+        self.phase = op.phases.GenericPhase(network=self.net)
+        self.phase['pore.diffusivity'] = 2.06754784e-05
         self.phys = op.physics.GenericPhysics(network=self.net,
-                                              phase=self.air,
+                                              phase=self.phase,
                                               geometry=self.geo)
 
     def test_ordinary_diffusion(self):
+        self.geo['throat.conduit_lengths.pore1'] = 0.2
+        self.geo['throat.conduit_lengths.throat'] = 0.6
+        self.geo['throat.conduit_lengths.pore2'] = 0.2
+        self.geo['throat.equivalent_area.pore1'] = 0.2
+        self.geo['throat.equivalent_area.throat'] = 0.2
+        self.geo['throat.equivalent_area.pore2'] = 0.2
         mod = op.models.physics.diffusive_conductance.ordinary_diffusion
-        self.phys.add_model(propname='throat.conductance1',
+        self.phys.add_model(propname='throat.diffusive_conductance',
                             model=mod)
         self.phys.regenerate_models()
-        assert_approx_equal(self.phys['throat.conductance1'].mean(),
-                            2.067547834363044e-05)
-
-        self.phys.add_model(propname='throat.conductance2',
-                            model=mod,
-                            calc_pore_len=True)
-        self.phys.regenerate_models()
-        assert_approx_equal(self.phys['throat.conductance2'].mean(),
-                            2.067547834363044e-05)
+        assert_approx_equal(4.135096e-06,
+                            self.phys['throat.diffusive_conductance'].mean())
 
 
 if __name__ == '__main__':

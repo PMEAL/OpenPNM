@@ -43,6 +43,7 @@ to do this to create an *oil* phase with a temperature dependent viscosity
 model based on a simple 2nd order polynomial:
 
 >>> import openpnm as op
+>>> import numpy as np
 >>> pn = op.network.Cubic([5, 5, 5])
 >>> oil = op.phases.GenericPhase(network=pn)
 
@@ -56,23 +57,23 @@ Now add the pore-scale model for viscosity from the ``models`` module:
 Upon adding the model, values are immediately calculated at the Phase's
 current temperature:
 
->>> oil['pore.viscosity'][0]
-41417.6
+>>> np.round(oil['pore.viscosity'][0])
+41418.0
 
 If the temperature is changed, the model can be regenerated to update the
 viscosity values:
 
 >>> oil['pore.temperature'] = 355
->>> oil['pore.viscosity'][0]
-41417.6
+>>> np.round(oil['pore.viscosity'][0])
+41418.0
 
 Note that the oil viscosity has NOT changed!  To propigate the new temperature
 to all the other calculated pore-scale properties, call the
 ``regenerate_models`` function:
 
 >>> oil.regenerate_models()
->>> oil['pore.viscosity'][0]
-37752.5
+>>> np.round(oil['pore.viscosity'][0])
+37752.0
 
 """
 from .GenericPhase import GenericPhase
