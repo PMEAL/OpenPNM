@@ -41,6 +41,15 @@ class Gabriel(Delaunay):
 
         [x, y, 0] - will produce a 2D square domain of size x by y
 
+    name : string
+        An optional name for the object to help identify it.  If not given,
+        one will be generated.
+
+    project : OpenPNM Project object, optional
+        Each OpenPNM object must be part of a *Project*.  If none is supplied
+        then one will be created and this Network will be automatically
+        assigned to it.  To create a *Project* use ``openpnm.Project()``.
+
     Examples
     --------
     >>> import openpnm as op
@@ -60,7 +69,7 @@ class Gabriel(Delaunay):
         :align: center
 
     """
-    def __init__(self, **kwargs):
+    def __init__(self, shape, num_points=None, name=None, **kwargs):
         # Generate Delaunay tessellation from super class, then trim
         super().__init__(**kwargs)
         points = self['pore.coords']

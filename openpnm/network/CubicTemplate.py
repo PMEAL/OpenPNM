@@ -18,6 +18,15 @@ class CubicTemplate(Cubic):
         locations in the image that are marked as ``True`` are kept while the
         rest of trimmed to yeild the shape.
 
+    name : string
+        An optional name for the object to help identify it.  If not given,
+        one will be generated.
+
+    project : OpenPNM Project object, optional
+        Each OpenPNM object must be part of a *Project*.  If none is supplied
+        then one will be created and this Network will be automatically
+        assigned to it.  To create a *Project* use ``openpnm.Project()``.
+
     Notes
     -----
     The other arguments are the same as ``Cubic`` except that ``shape`` is
@@ -47,7 +56,7 @@ class CubicTemplate(Cubic):
     <http://www.paraview.org>`_.
 
     """
-    def __init__(self, template, spacing=[1, 1, 1], **kwargs):
+    def __init__(self, template, spacing=[1, 1, 1], name=None, **kwargs):
 
         template = sp.atleast_3d(template)
         super().__init__(shape=template.shape, **kwargs)

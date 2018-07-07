@@ -18,21 +18,22 @@ class Voronoi(DelaunayVoronoiDual):
         randomly located points will be generated.
 
     shape : array_like
-        The size of the domain.  It's possible to create cubic, cylindrical,
-        or spherical domains, as well as 2D square and circular by changing
-        the domain ``shape`` as follows:
+        The size of the domain.  It's possible to create cubic as well as 2D
+        square domains by changing the ``shape`` as follows:
 
         [x, y, z] - will produce a normal cubic domain of dimension x, and
         and z
 
         [x, y, 0] - will produce a 2D square domain of size x by y
 
-        [r, z] - will produce a cylindrical domain with a radius of r and
-        height of z
+    name : string
+        An optional name for the object to help identify it.  If not given,
+        one will be generated.
 
-        [r, 0] - will produce a 2D circular domain with a radius of r
-
-        [r] - will produce a spherical domain with a radius of r
+    project : OpenPNM Project object, optional
+        Each OpenPNM object must be part of a *Project*.  If none is supplied
+        then one will be created and this Network will be automatically
+        assigned to it.  To create a *Project* use ``openpnm.Project()``.
 
     Notes
     -----
@@ -41,7 +42,7 @@ class Voronoi(DelaunayVoronoiDual):
     returned network thus will differ from the number of points supplied
 
     """
-    def __init__(self, shape=None, num_points=None, points=None, **kwargs):
+    def __init__(self, shape=None, num_points=None, name=None, **kwargs):
         # Clean-up input points
         points = self._parse_points(shape=shape,
                                     num_points=num_points,
