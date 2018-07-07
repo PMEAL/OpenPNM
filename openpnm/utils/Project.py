@@ -115,7 +115,42 @@ class Project(list):
         purge_object
 
         """
-        self.purge_object(obj)
+        self.purge_object(obj, deep=False)
+
+    def pop(self, index):
+        r"""
+        The object at the given index is removed from the list and returned.
+
+        Notes
+        -----
+        This method uses ``purge_object`` to perform the actual removal of the
+        object. It is reommended to just use that directly instead.
+
+        See Also
+        --------
+        purge_object
+
+        """
+        obj = self[index]
+        self.purge_object(obj, deep=False)
+        return obj
+
+    def insert(self, index, obj):
+        r"""
+        Inserts the supplied object at the specified index in the Project list
+
+        Notes
+        -----
+        The order of the objects in an OpenPNM Project lists do not matter, so
+        it is recommended to just use ``append`` instead.
+
+        See Also
+        --------
+        append
+        extend
+
+        """
+        self.extend(obj)
 
     def clear(self, objtype=[]):
         r"""
