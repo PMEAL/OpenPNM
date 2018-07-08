@@ -96,8 +96,8 @@ class TransientReactiveTransport(ReactiveTransport):
     def run(self, t=None):
         r"""
         """
-        print('―'*80)
-        print('Running TransientTransport')
+        logger.info('―'*80)
+        logger.info('Running TransientTransport')
         # If solver used in steady mode, no need to add ICs
         if (self.settings['t_scheme'] == 'steady'):
             self[self.settings['quantity']] = 0
@@ -116,6 +116,9 @@ class TransientReactiveTransport(ReactiveTransport):
         self._b_t = (self._b).copy()
         if t is None:
             t = self.settings['t_initial']
+        # Create S1 & S1 for 1st Picard's iteration
+        self._update_physics()
+
         self._run_transient(t=t)
 
     def _run_transient(self, t):
@@ -176,20 +179,26 @@ class TransientReactiveTransport(ReactiveTransport):
                             str(time)+' s')
 
     def _t_run_reactive(self, x):
-        if self.settings['quantity'] not in self.keys():
-            self[self.settings['quantity']] = 0
-        self._A = (self._A_t).copy()
-        self._b = (self._b_t).copy()
-        self._apply_BCs()
-        self._apply_sources()
         if x is None:
             x = np.zeros(shape=[self.Np, ], dtype=float)
-        x_new = self._solve()
-        self[self.settings['quantity']] = x_new
-        res_r = np.sum(np.absolute(x**2 - x_new**2))
-        if res_r < self.settings['r_tolerance']:
-            logger.info('            Solution converged: ' + str(res_r))
-            return x_new
-        else:
-            logger.info('            Tolerance not met: ' + str(res_r))
-            self._t_run_reactive(x=x_new)
+        self[self.settings['quantity']] = x
+        relax = self.settings['relaxation_quantity']
+        res = 1e+06
+        for itr in range(int(self.settings['max_iter'])):
+            if res >= self.settings['tolerance']:
+                logger.info('Tolerance not met: ' + str(res))
+                self[self.settings['quantity']] = x
+                self._A = (self._A_t).copy()
+                self._b = (self._b_t).copy()
+                self._apply_BCs()
+                self._apply_sources()
+                x_new = self._solve()
+                # Relaxation
+                x_new = relax*x_new + (1-relax)*self[self.settings['quantity']]
+                self[self.settings['quantity']] = x_new
+                res = np.sum(np.absolute(x**2 - x_new**2))
+                x = x_new
+            elif res < self.settings['tolerance']:
+                logger.info('Solution converged: ' + str(res))
+                break
+        return x_new

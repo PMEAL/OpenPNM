@@ -38,9 +38,9 @@ class TransientSteadyModeReactiveTransportTest:
         alg.set_value_BC(pores=self.net.pores('left'), values=2)
         alg.set_source(propname='pore.reaction', pores=self.net.pores('right'))
         alg.run()
-        x = [2, 1.00158, 0.00316,
-             2, 1.00158, 0.00316,
-             2, 1.00158, 0.00316]
+        x = [2, 1.00158, 0.00317,
+             2, 1.00158, 0.00317,
+             2, 1.00158, 0.00317]
         y = sp.around(alg[alg.settings['quantity']], decimals=5)
         assert sp.all(x == y)
 
