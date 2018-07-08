@@ -69,9 +69,9 @@ class Gabriel(Delaunay):
         :align: center
 
     """
-    def __init__(self, shape, num_points=None, name=None, **kwargs):
+    def __init__(self, shape, num_points=None, **kwargs):
         # Generate Delaunay tessellation from super class, then trim
-        super().__init__(**kwargs)
+        super().__init__(shape=shape, num_points=num_points, **kwargs)
         points = self['pore.coords']
         conns = self['throat.conns']
         # Find centroid of each pair of nodes

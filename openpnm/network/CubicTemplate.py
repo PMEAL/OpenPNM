@@ -56,7 +56,7 @@ class CubicTemplate(Cubic):
     <http://www.paraview.org>`_.
 
     """
-    def __init__(self, template, spacing=[1, 1, 1], name=None, **kwargs):
+    def __init__(self, template, spacing=[1, 1, 1], **kwargs):
 
         template = sp.atleast_3d(template)
         super().__init__(shape=template.shape, **kwargs)

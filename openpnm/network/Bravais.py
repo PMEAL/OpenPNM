@@ -103,7 +103,7 @@ class Bravais(GenericNetwork):
     <http://www.paraview.org>`_.
 
     """
-    def __init__(self, shape, mode, spacing=1, name=None, **kwargs):
+    def __init__(self, shape, mode, spacing=1, **kwargs):
         super().__init__(**kwargs)
         shape = np.array(shape)
         if np.any(shape < 2):

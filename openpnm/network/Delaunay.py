@@ -92,7 +92,7 @@ class Delaunay(DelaunayVoronoiDual):
 
     """
 
-    def __init__(self, shape=None, num_points=None, name=None, **kwargs):
+    def __init__(self, shape=None, num_points=None, **kwargs):
         # Clean-up input points
         points = kwargs.pop('points', None)
         points = self._parse_points(shape=shape,

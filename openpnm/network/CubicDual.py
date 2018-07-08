@@ -73,7 +73,7 @@ class CubicDual(GenericNetwork):
 
     """
     def __init__(self, shape, spacing=1, label_1='primary',
-                 label_2='secondary', name=None, **kwargs):
+                 label_2='secondary', **kwargs):
         super().__init__(**kwargs)
         spacing = sp.array(spacing)
         shape = sp.array(shape)
