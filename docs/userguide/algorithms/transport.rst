@@ -65,7 +65,7 @@ The *A* matrix is composed of a set of linear equation analogous to this one for
 
   >>> alg.A
   <125x125 sparse matrix of type '<class 'numpy.float64'>'
-	with 725 stored elements in COOrdinate format>
+      	with 725 stored elements in COOrdinate format>
 
 For steady-state transport with no source or sink terms the right-hand side matrix, *b* is all 0's (*b* is not stored as a sparse matrix since is just single column).
 
