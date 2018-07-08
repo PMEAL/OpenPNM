@@ -33,7 +33,7 @@ class ModelsTest:
         assert a == 17
 
     def test_dependency_list(self):
-        prj=self.net.project
+        prj = self.net.project
         prj.purge_object(self.geo)
         geom = op.geometry.GenericGeometry(network=self.net,
                                            pores=self.net.Ps)
@@ -57,10 +57,10 @@ class ModelsTest:
                        num_range=[0, 0.1],
                        seed=None)
         tree = np.asarray(geom.models.dependency_list())
-        pos_v = np.argwhere(tree=='pore.volume').flatten()[0]
-        pos_d = np.argwhere(tree=='pore.diameter').flatten()[0]
-        pos_a = np.argwhere(tree=='pore.area').flatten()[0]
-        pos_s = np.argwhere(tree=='pore.seed').flatten()[0]
+        pos_v = np.argwhere(tree == 'pore.volume').flatten()[0]
+        pos_d = np.argwhere(tree == 'pore.diameter').flatten()[0]
+        pos_a = np.argwhere(tree == 'pore.area').flatten()[0]
+        pos_s = np.argwhere(tree == 'pore.seed').flatten()[0]
         assert pos_v > pos_d
         assert pos_d > pos_s
         assert pos_a > pos_d
@@ -101,6 +101,16 @@ class ModelsTest:
 
         with pytest.raises(Exception):
             pn.models.dependency_list()
+
+    def test_missing_dependencies_message(self):
+        pn = op.network.Cubic(shape=[5, 5, 5])
+        geo = op.geometry.StickAndBall(network=pn, pores=pn.Ps, throats=pn.Ts)
+        geo.clear()
+        with LogCapture() as log:
+            geo.regenerate_models(propnames=['pore.diameter'])
+        log.check(('root', 'WARNING', "pore.diameter was not run since the " +
+                   "following properties are missing: ['pore.max_size', " +
+                   "'pore.seed']"))
 
 
 if __name__ == '__main__':
