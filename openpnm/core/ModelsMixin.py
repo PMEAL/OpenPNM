@@ -284,7 +284,17 @@ class ModelsMixin():
             try:
                 self[prop] = model(target=self, **kwargs)
             except KeyError:
-                logger.warning(prop+' was not run due to missing dependencies')
+                missing_deps = []
+                for key in kwargs.values():
+                    if type(key) == str and key.split('.')[0] in ['pore', 'throat']:
+                        try:
+                            self[key]
+                        except KeyError:
+                            missing_deps.append(key)
+
+                        logger.warning(prop+' was not run since the following'
+                                       + ' properties are missing: '
+                                       + str(missing_deps))
                 self.models[prop]['regen_mode'] = 'deferred'
 
     def remove_model(self, propname=None, mode=['model', 'data']):
