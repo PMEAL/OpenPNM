@@ -7,8 +7,8 @@
 .. image:: https://codecov.io/gh/PMEAL/OpenPNM/branch/master/graph/badge.svg
    :target: https://codecov.io/gh/PMEAL/OpenPNM
 
-.. image:: https://readthedocs.org/projects/openpnm/badge/?version=latest
-   :target: http://openpnm.readthedocs.org/
+.. image:: https://img.shields.io/badge/ReadTheDocs-GO-blue.svg
+   :target: http://openpnm.readthedocs.io/en/master/
 
 ###############################################################################
 Overview of OpenPNM
@@ -30,13 +30,13 @@ Or the source code can be downloaded from `Github <https://github.com/pmeal/Open
 
 .. code-block::
 
-   python setup.py
+   pip install -e 'path/to/downloaded/files'
 
 ===============================================================================
 Example Usage
 ===============================================================================
 
-The following code block illustrates how to use OpenPNM to perform a mercury intrusion porosimetry simulation in just 10 lines:
+The following code block illustrates how to use OpenPNM to perform a mercury intrusion porosimetry simulation:
 
 .. code-block:: python
 
@@ -45,13 +45,17 @@ The following code block illustrates how to use OpenPNM to perform a mercury int
     >>> geo = op.geometry.StickAndBall(network=pn, pores=pn.Ps, throats=pn.Ts)
     >>> Hg = op.phases.Mercury(network=pn)
     >>> phys = op.physics.Standard(network=pn, phase=Hg, geometry=geo)
+    >>> mip = op.algorithms.Porosimetry(network=pn)
+    >>> mip.setup(phase=Hg)
+    >>> mip.set_inlets(pores=pn.pores(['left', 'right', 'top', 'bottom']))
+    >>> mip.run()
 
 
 The network can be visualized in `Paraview <http://www.paraview.org>`_ giving the following:
 
 .. image:: https://i.imgur.com/mSDrIBOm.png
 
-The drainage curve can be visualized with ``MIP.plot_drainage_curve()`` giving something like this:
+The drainage curve can be visualized with ``MIP.plot_intrusion_curve()`` giving something like this:
 
 .. image:: https://i.imgur.com/1C2uXt9m.png
 
