@@ -153,7 +153,7 @@ This results can also be viewed with ``print(pn.labels())``.
 Data Exchange Between Objects
 --------------------------------------------------------------------------------
 
-One of the features in OpenPNM is the ability to model heterogeneous materials by applying different pore-scale models to different regions.  This is done by (a) creating a unique **Geometry** object for each region (i.e. small pores vs big pores) and (b) creating unique **Physics** object for each region as well (i.e. Knudsen diffusion vs Fickian diffusion).  One consequence of this segregation of properties is that a *single* array containing values for all locations in the domain cannot be directly obtained.  OpenPNM offers a shortcut for this, known as ``interleave_data``, which makes it possible to query **Geometry** properties via the **Network** object, and **Physics** properties from the associated **Phase** object:
+One of the features in OpenPNM is the ability to model heterogeneous materials by applying different pore-scale models to different regions.  This is done by (a) creating a unique **Geometry** object for each region (i.e. small pores vs big pores) and (b) creating unique **Physics** object for each region as well (i.e. Knudsen diffusion vs Fickian diffusion).  One consequence of this segregation of properties is that a *single* array containing values for all locations in the domain does not exist.  OpenPNM offers a shortcut for this, known as ``interleave_data``, which happens *automatically*, and makes it possible to query **Geometry** properties via the **Network** object, and **Physics** properties from the associated **Phase** object:
 
 Let's demonstrate this by creating a network and assigning two separate geometries to each half of the network:
 
@@ -188,4 +188,17 @@ Interleaving of data also works in the reverse direction, so that data only pres
      [0.5 0.5 1.5]
      [0.5 0.5 2.5]]
 
-Data **cannot** be written in this way, so that you cannot write 'pore.diameter' values from the Network.
+Finally, ``interleave_data`` works between :ref:`subdomain_api`_ objects of the same type, so that if 'pore.volume' is present on one but not another Geometry object, you will get an array of NaNs when asking for it on the object that does not have it:
+
+.. code-block:: python
+
+  >>> geo1['pore.volume'] = 3.0
+  >>> print(geo2['pore.volume'][:5])
+  [nan nan nan nan nan]
+
+
+.. note:: Points to Note
+
+    * Data **cannot** be written in this way, so that you cannot write 'pore.diameter' values from the Network (e.g. pn['pore.diameter'] = 2.0 will result in an error)
+    * Interleaving data occurs automatically if the requested key is not found.  For instance, when you request ``pn['pore.diameter']`` it is not found, so a search is made of the associated Geometry objects and if found an array is built.
+    * If an array named 'pore.foo' is already present on the Network or Phase, it cannot be created on a Geometry or Physics, resepctively, since this would break the automated ``interleave_data`` mechanism, which searches for arrays called 'pore.foo' on all associated objects

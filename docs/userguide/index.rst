@@ -13,4 +13,5 @@
     workspace_and_project.rst
     models.rst
     algorithms/index.rst
+    settings.rst
     customizing.rst

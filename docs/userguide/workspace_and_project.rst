@@ -99,12 +99,12 @@ desired:
 Managing Objects Within a Project
 ................................................................................
 
-The Project object possesses several methods for dealing with the OpenPNM object it contains.  One of the main uses of the Project is to lookup associated objects.  For instance, given a Physics object (`phys`), you can find which Phase it was associated with using:
+The Project object possesses several methods for dealing with the OpenPNM objects it contains.  One of the main uses of the Project is to lookup associated objects.  For instance, given a Physics object (`phys`), you can find which Phase it was associated with using:
 
 .. code-block:: python
 
-proj = phys.project
-phase = proj.find_phase(physics=phys)
+    proj = phys.project
+    phase = proj.find_phase(physics=phys)
 
 Note that the Project with which each object is associated can be reached from its `project` attribute.
 
@@ -112,9 +112,15 @@ In addition to these lookup methods (others are `find_physics` and `find_geometr
 
 When an object is purged, not only is it removed from the Project list, but all references to it in other objects in the form of labels (e.g. net['pore.geo_01']) will be removed.
 
+................................................................................
+Managing Projects Within a Workspace
+................................................................................
 
+The Workspace object possesses methods for working dealing with Project objects, such as saving, loading, closing, and copying them.
 
+Projects are saved with a `.pnm` file format, and this is done using the Python `pickle <https://pymotw.com/3/pickle/index.html>`_ library for serializing objects.  The saved file is actually a `dictionary` that represents a subset of the Workspace, so loading a `.pnm` file is equivalent to unpickling the file then using the Workspace's `update` method to add the contents.  If the contents of the `.pnm` file are a list rather than a dictionary, this also works, so if you manually save a Project as a list (rather then using `save_project`) its still possible to load it using `load_project`.
 
+Another important function of the Workspace is `clone_project`.  As the name suggests, this creates an exact duplicate of a Project and all its objects, but they are unique in memory.  This is useful for creating sub-networks of a master Network to perform small, quick calculations on.  
 
 
 

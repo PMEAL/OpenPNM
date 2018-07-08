@@ -18,16 +18,71 @@ default_settings = {'access_limited': True,
 
 class OrdinaryPercolation(GenericAlgorithm):
     r"""
+    Ordinary percolation simulation with or without access limitations.
+
+    Parameters
+    ----------
+    network : OpenPNM Network object
+        The Network upon which this simulation should be run
+
+    name : string, optional
+        An identifying name for the object.  If none is given then one is
+        generated.
+
+    project : OpenPNM Project object
+        Either a Network or a Project must be specified
+
+    Notes
+    -----
+    Ordinary percolation refers the process of finding all bonds or sites in
+    the network that can be invaded at a given threshold, then setting them
+    all to invaded in a single step.
+
+    Optionally, it is possible to then find the clusters of invaded bonds or
+    sites that are NOT connected to the inlets and setting them back to
+    an uninvaded state.
+
+    An overview of percolation theory can be found on `Wikipedia
+    <https://en.wikipedia.org/wiki/Percolation_theory>`_
+
+    If the simulation is repeated for increasing threshold values until the
+    entire domain is invaded, then a percoaltion curve is obtained.  The
+    threshold at which each site and bond was invaded is recorded, so it is
+    possible to find invading configurations easily using Boolean logic.
+
+    +----------------------+-------------------------------------------------+
+    | Method               | Description                                     |
+    +======================+=================================================+
+    | reset                | Resets the various data arrays on the object... |
+    +----------------------+-------------------------------------------------+
+    | setup                | Used to specify necessary arguments to the s... |
+    +----------------------+-------------------------------------------------+
+    | set_inlets           | Set the locations from which the invader ent... |
+    +----------------------+-------------------------------------------------+
+    | set_outlets          | Set the locations through which defender exi... |
+    +----------------------+-------------------------------------------------+
+    | set_residual         | Specify locations of any residual invader.  ... |
+    +----------------------+-------------------------------------------------+
+    | run                  | Runs the percolation algorithm to determine ... |
+    +----------------------+-------------------------------------------------+
+    | get_percolation_t... | Finds the threshold value where a percolating...|
+    +----------------------+-------------------------------------------------+
+    | is_percolating       | Returns a True or False value to indicate if... |
+    +----------------------+-------------------------------------------------+
+    | get_intrusion_data   | Obtain the numerical values of the calculate... |
+    +----------------------+-------------------------------------------------+
+    | plot_intrusion_curve | Plot the percolation curve as the invader vo... |
+    +----------------------+-------------------------------------------------+
 
     """
 
     def __init__(self, settings={}, **kwargs):
         super().__init__(**kwargs)
         self.settings.update(default_settings)
-        # Apply user settings, if any
-        self.settings.update(settings)
         # Use the reset method to initialize all arrays
         self.reset()
+        # Apply user settings, if any
+        self.settings.update(settings)
 
     def setup(self,
               phase=None,
@@ -51,7 +106,9 @@ class OrdinaryPercolation(GenericAlgorithm):
             If ``True`` the invading phase can only enter the network from the
             invasion sites specified with ``set_inlets``.  Otherwise, invading
             clusters can appear anywhere in the network.  This second case is
-            the normal *ordinary percolation* in the traditional sense.
+            the normal *ordinary percolation* in the traditional sense, while
+            the first case is more physically representative of invading
+            fluids.
 
         mode : string
             Specifies the type of percolation process to simulate.  Options
@@ -107,6 +164,7 @@ class OrdinaryPercolation(GenericAlgorithm):
         state. This is useful for repeating a simulation at different inlet
         conditions, or invasion points for instance.
         """
+        self.settings.update(default_settings)
         self['pore.invasion_pressure'] = np.inf
         self['throat.invasion_pressure'] = np.inf
         self['pore.invasion_sequence'] = -1
@@ -146,8 +204,8 @@ class OrdinaryPercolation(GenericAlgorithm):
     def set_outlets(self, pores=[], overwrite=False):
         r"""
         Set the locations through which defender exits the network.
-        This is only necessary if 'trapping' was set to True when ``setup``
-        was called.
+
+        This is only necessary for calculating the percolation threshold.
 
         Parameters
         ----------
@@ -204,6 +262,9 @@ class OrdinaryPercolation(GenericAlgorithm):
 
     def get_percolation_threshold(self):
         r"""
+        Find the invasion threshold at which a cluster spans from the inlet to
+        the outlet sites
+
         """
         if np.sum(self['pore.inlets']) == 0:
             raise Exception('Inlet pores must be specified first')

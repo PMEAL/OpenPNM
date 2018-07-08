@@ -25,5 +25,6 @@ Links to Detailed Class Documentation
    reactive_transport.rst
    transient_reactive_transport.rst
    ordinary_percolation.rst
-   invasion_percolation.rst
    porosimetry.rst
+   invasion_percolation.rst
+   mixed_percolation.rst
