@@ -7,15 +7,25 @@ Data Storage
 .. contents:: Page Contents
     :depth: 3
 
-Each OpenPNM object is a Python *dictionary* which allows data to be stored and accessed by name, with a syntax like ``network['pore.diameter']``.   Inside each *dict* are stored numerous arrays containing pore or throat data corresponding to the *key* (i.e. ``'pore.diameter'`` values).
+--------------------------------------------------------------------------------
+Dicionaries and Numpy Arrays
+--------------------------------------------------------------------------------
 
-All pore and throat data are stored in arrays of either *Np* or *Nt* length representing the number of pores and throats on the object, respectively.  This means that each pore (or throat) has a number that is implicitly indicated by it's location in the arrays.  All properties for pore *i* or throat *j* are stored in the array at the element *i* or *j*.  Thus, the diameter for pore 15 is stored in the ``'pore.diameter'`` array in element 15, and the length of throat 32 is stored in the ``'throat.length'`` array at element 32.  This array-based approach is ideal when using the Numpy and Scipy libraries which are designed for elementwise, vectorized programming.  For instance, the volume of each throats can be found simultaneously using ``T_vol = 3.1415*(network['throat.radius']**2) * network['throat.length']``.  ``T_vol`` will be an *Nt*-long array of values, assuming ``'throat.length'`` and ``'throat.radius'`` were also *Nt*-long.
+Each OpenPNM object is a Python *dictionary* which allows data to be stored and accessed by name, with a syntax like ``network['pore.diameter']``.   Inside each *dictionary* or `dict` are stored numerous `Numpy arrays <https://docs.scipy.org/doc/numpy/user/>`_ containing pore or throat data corresponding to the *key* (i.e. ``'pore.diameter'`` values).
+
+Numpy arrays are enforced, such that any data written into one of the OpenPNM object dicionaries is converted to a Numpy array.  This is done to ensure that all mathematically operations throughout the code can be consistently done using vectorization.  Note that any subclasses of Numpy arrays, such as Dask arrays or Unyt arrays are also acceptable.
 
 Several rules have been implemented to control the integrity of the data:
 
 #. All array names must begin with either *'pore.'* or *'throat.'* which serves to identify the type of information they contain.
 #. For the sake of consistency only arrays of length *Np* or *Nt* are allowed in the dictionary. Assigning a scalar value to a dictionary results in the creation of a full length vector, either *Np* or *Nt* long, depending on the name of the array..  This effectively applies the scalar value to all locations in the network.
 #. Any Boolean data will be treated as a *label* while all other numerical data is treated as a *property*.  The difference between these is outlined below.
+
+................................................................................
+Pore and Throat Indices
+................................................................................
+
+All pore and throat data are stored in arrays of either *Np* or *Nt* length representing the number of pores and throats on the object, respectively.  This means that each pore (or throat) has a number or index that is implicitly indicated by it's location in the arrays.  All properties for pore *i* or throat *j* are stored in the array at the element *i* or *j*.  Thus, the diameter for pore 15 is stored in the ``'pore.diameter'`` array in element 15, and the length of throat 32 is stored in the ``'throat.length'`` array at element 32.  This array-based approach is ideal when using the Numpy and Scipy libraries which are designed for elementwise, vectorized programming.  For instance, the volume of each throats can be found simultaneously using ``T_vol = 3.1415*(network['throat.radius']**2) * network['throat.length']``.  ``T_vol`` will be an *Nt*-long array of values, because ``'throat.length'`` and ``'throat.radius'`` were also *Nt*-long.
 
 --------------------------------------------------------------------------------
 Properties (aka Data)
