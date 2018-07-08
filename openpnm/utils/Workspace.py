@@ -3,6 +3,7 @@ import openpnm
 import time
 import copy
 import warnings
+import numpy as np
 from pathlib import Path
 from openpnm.utils import SettingsDict, logging
 logger = logging.getLogger()
@@ -315,6 +316,43 @@ class Workspace(dict):
                 n.append(int(item.split('sim_')[1]))
         name = 'sim_'+str(max(n)+1).zfill(2)
         return name
+
+    def _gen_ids(self, size):
+        r"""
+        Generates a sequence of integers of the given ``size``, starting at 1
+        greater than the last produced value.
+
+        The Workspace object keeps track of the most recent value, which
+        persists until the current python session is restarted, so the
+        returned array contains unique values for the given session.
+
+        Parameters
+        ----------
+        size : int
+            The number of values to generate.
+
+        Returns
+        -------
+        A Numpy array of the specified size, containing integer values starting
+        from the last used values.
+
+        Notes
+        -----
+        When a new Workspace is created the
+        """
+        if not hasattr(self, '_next_id'):
+            # If _next_id has not been set, then assign it
+            self._next_id = 0
+            # But check ids in any objects present first
+            for proj in self.values():
+                if len(proj) > 0:
+                    if 'pore._id' in proj.network.keys():
+                        Pmax = proj.network['pore._id'].max() + 1
+                        Tmax = proj.network['throat._id'].max() + 1
+                        self._next_id = max([Pmax, Tmax, self._next_id])
+        ids = np.arange(self._next_id, self._next_id + size, dtype=np.int64)
+        self._next_id += size
+        return ids
 
     def __str__(self):
         s = []

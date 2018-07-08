@@ -7,10 +7,10 @@ def cylinder(target, throat_diameter='throat.diameter'):
 
     Parameters
     ----------
-    geometry : OpenPNM Geometry Object
-        The Geometry object which this model is associated with. This controls
-        the length of the calculated array, and also provides access to other
-        necessary geometric properties.
+    target : OpenPNM Object
+        The object which this model is associated with. This controls the
+        length of the calculated array, and also provides access to other
+        necessary properties.
 
     throat_diameter : string
         Dictionary key of the throat diameter values
@@ -27,10 +27,10 @@ def cuboid(target, throat_diameter='throat.diameter'):
 
     Parameters
     ----------
-    geometry : OpenPNM Geometry Object
-        The Geometry object which this model is associated with. This controls
-        the length of the calculated array, and also provides access to other
-        necessary geometric properties.
+    target : OpenPNM Object
+        The object which this model is associated with. This controls the
+        length of the calculated array, and also provides access to other
+        necessary properties.
 
     throat_diameter : string
         Dictionary key of the throat diameter values

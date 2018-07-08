@@ -12,7 +12,7 @@ class TransientReactiveTransport(ReactiveTransport):
 
     def __init__(self, settings={}, **kwargs):
         self.settings.update({'t_initial': 0,
-                              't_final': 5e+04,
+                              't_final': 10,
                               't_step': 0.1,
                               't_output': 1e+08,
                               't_tolerance': 1e-06,
@@ -102,10 +102,12 @@ class TransientReactiveTransport(ReactiveTransport):
         if (self.settings['t_scheme'] == 'steady'):
             self[self.settings['quantity']] = 0
         # Create a scratch b from IC
-        self._b = self[self.settings['quantity']]
+        self._b = (self[self.settings['quantity']]).copy()
         self._apply_BCs()
         # Save A matrix (with BCs applied) of the steady sys of eqs
         self._A_steady = (self._A).copy()
+        # Save the initial field with the boundary conditions applied
+        self[self.settings['quantity']] = (self._b).copy()
         # Override A and b according to t_scheme and apply BCs
         self._t_update_A()
         self._t_update_b()
@@ -132,7 +134,7 @@ class TransientReactiveTransport(ReactiveTransport):
         outputs = np.append(np.arange(t+to, tf, to), tf)
 
         if (s == 'steady'):  # If solver in steady mode, do one iteration
-            print('    Running in steady mode')
+            logger.info('    Running in steady mode')
             x_old = self[self.settings['quantity']]
             self._t_run_reactive(x=x_old)
             x_new = self[self.settings['quantity']]
@@ -143,7 +145,7 @@ class TransientReactiveTransport(ReactiveTransport):
             self[self.settings['quantity']+'_initial'] = vals
             for time in np.arange(t+dt, tf+dt, dt):
                 if (res_t >= tol):  # Check if the steady state is reached
-                    print('    Current time step: '+str(time)+' s')
+                    logger.info('    Current time step: '+str(time)+' s')
                     x_old = self[self.settings['quantity']]
 
                     self._t_run_reactive(x=x_old)
@@ -151,25 +153,27 @@ class TransientReactiveTransport(ReactiveTransport):
 
                     # Compute the residual
                     res_t = np.sum(np.absolute(x_old**2 - x_new**2))
-                    print('        Residual: '+str(res_t))
+                    logger.info('        Residual: '+str(res_t))
                     # Output transient solutions. Round time to ensure every
                     # value in outputs is exported.
                     if round(time, 12) in outputs:
                         ind = np.where(outputs == round(time, 12))[0][0]
                         self[self.settings['quantity']+'_'+str(ind)] = x_new
-                        print('        Exporting time step: '+str(time)+' s')
+                        logger.info('        Exporting time step: ' +
+                                    str(time)+' s')
                     # Update b and apply BCs
                     self._t_update_b()
                     self._apply_BCs()
                     self._b_t = (self._b).copy()
                 else:  # Stop time iterations if residual < t_tolerance
                     self[self.settings['quantity'] + '_steady'] = x_new
-                    print('        Exporting time step: '+str(time)+' s')
+                    logger.info('        Exporting time step: '+str(time)+' s')
                     break
             if (round(time, 12) == tf):
-                print('    Maximum time step reached: '+str(time)+' s')
+                logger.info('    Maximum time step reached: '+str(time)+' s')
             else:
-                print('    Transient solver converged after: '+str(time)+' s')
+                logger.info('    Transient solver converged after: ' +
+                            str(time)+' s')
 
     def _t_run_reactive(self, x):
         if self.settings['quantity'] not in self.keys():
@@ -177,32 +181,15 @@ class TransientReactiveTransport(ReactiveTransport):
         self._A = (self._A_t).copy()
         self._b = (self._b_t).copy()
         self._apply_BCs()
-        self._t_apply_sources(s=self.settings['t_scheme'])
+        self._apply_sources()
         if x is None:
             x = np.zeros(shape=[self.Np, ], dtype=float)
         x_new = self._solve()
         self[self.settings['quantity']] = x_new
         res_r = np.sum(np.absolute(x**2 - x_new**2))
         if res_r < self.settings['r_tolerance']:
-            print('            Solution converged: ' + str(res_r))
+            logger.info('            Solution converged: ' + str(res_r))
             return x_new
         else:
-            print('            Tolerance not met: ' + str(res_r))
+            logger.info('            Tolerance not met: ' + str(res_r))
             self._t_run_reactive(x=x_new)
-
-    def _t_apply_sources(self, s=None):
-        f1 = 1
-        if (s == 'cranknicolson'):
-            f1 = 0.5
-        phase = self.project.phases()[self.settings['phase']]
-        self._update_physics()
-        for item in self.settings['sources']:
-            Ps = self.pores(item)
-            # Add S1 to diagonal of A
-            # TODO: We need this to NOT overwrite the A and b, but create
-            # copy, otherwise we have to regenerate A and b on each loop
-            datadiag = self.A.diagonal()
-            datadiag[Ps] = datadiag[Ps] + f1*phase[item+'.'+'S1'][Ps]
-            self.A.setdiag(datadiag)
-            # Add S2 to b
-            self.b[Ps] = self.b[Ps] - f1*phase[item+'.'+'S2'][Ps]
