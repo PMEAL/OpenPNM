@@ -66,7 +66,7 @@ The table belows shows the specific models used on ``StickAndBall``:
 
 **Customizing a Preconfigured Geometry Instance**
 
-Perhaps the ``StickAndBall`` class is almost suitable but you wish to increase
+Perhaps the ``StickAndBall`` class is almost suitable but you wish to decrease
 the pores sizes.  The following example illustrates how to alter the
 ``'pore.size'`` model accordingly:
 
@@ -77,11 +77,11 @@ the pores sizes.  The following example illustrates how to alter the
 We can reach into the ``models`` attribute and change the parameters of any
 model as follows:
 
->>> max(geo['pore.diameter']) < 0.1  # Confirm largest pore is less than 0.1
+>>> max(geo['pore.diameter']) < 1.0  # Confirm largest pore is less than 1.0
 True
->>> geo.models['pore.seed']['num_range'] = [0.5, 0.95]
+>>> geo.models['pore.seed']['num_range'] = [0.2, 0.7]
 >>> geo.regenerate_models()  # Must regenerate all models
->>> max(geo['pore.diameter']) > 0.5  # Largest pore is now bigger than 0.5
+>>> max(geo['pore.diameter']) < 0.7  # Largest pore is now less than 0.7
 True
 
 This example illustrated that you can change one property ('pore.seed') and

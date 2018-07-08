@@ -14,6 +14,7 @@ class ThroatSurfaceAreaTest:
         self.phys = op.physics.GenericPhysics(network=self.net,
                                               phase=self.air,
                                               geometry=self.geo)
+        self.geo['pore.diameter'] = 0.2
         self.geo['throat.length'] = 1
         self.geo['throat.diameter'] = 0.1
 

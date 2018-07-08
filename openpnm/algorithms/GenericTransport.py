@@ -6,6 +6,10 @@ from scipy.spatial import cKDTree
 from openpnm.topotools import iscoplanar
 from openpnm.algorithms import GenericAlgorithm
 from openpnm.utils import logging
+# Check if petsc4py is available
+import importlib
+if (importlib.util.find_spec('petsc4py') is not None):
+    from openpnm.utils.petsc import PetscSparseLinearSolver as sls
 logger = logging.getLogger(__name__)
 
 
@@ -363,8 +367,8 @@ class GenericTransport(GenericAlgorithm):
         attribute.
 
         """
-        print('―'*80)
-        print('Running GenericTransport')
+        logger.info('―'*80)
+        logger.info('Running GenericTransport')
         self._run_generic()
 
     def _run_generic(self):
@@ -403,8 +407,35 @@ class GenericTransport(GenericAlgorithm):
             b = self.b
             if b is None:
                 raise Exception('The b matrix has not been built yet')
-        solver = getattr(sprs.linalg, self.settings['solver'])
-        x = solver(A=A.tocsr(), b=b)
+
+        if self.settings['solver'] == 'petsc':
+            # Check if petsc is available
+            petsc = importlib.util.find_spec('petsc4py')
+            if not petsc:
+                raise Exception('petsc is not installed')
+            if not self.settings['petsc_solver']:
+                self.settings['petsc_solver'] = 'cg'
+            if not self.settings['petsc_precondioner']:
+                self.settings['petsc_precondioner'] = 'jacobi'
+            if not self.settings['petsc_atol']:
+                self.settings['petsc_atol'] = 1e-06
+            if not self.settings['petsc_rtol']:
+                self.settings['petsc_rtol'] = 1e-06
+            if not self.settings['petsc_max_it']:
+                self.settings['petsc_max_it'] = 1000
+            # Define the petsc linear system converting the scipy objects
+            ls = sls(A=A.tocsr(), b=b)
+            ls.settings.update({'solver': self.settings['petsc_solver'],
+                                'preconditioner':
+                                    self.settings['petsc_precondioner'],
+                                'atol': self.settings['petsc_atol'],
+                                'rtol': self.settings['petsc_rtol'],
+                                'max_it': self.settings['petsc_max_it']})
+            x = sls.solve(ls)
+            del(ls)  # Clean
+        else:
+            solver = getattr(sprs.linalg, self.settings['solver'])
+            x = solver(A=A.tocsr(), b=b)
         return x
 
     def results(self):
