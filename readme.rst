@@ -65,9 +65,9 @@ A collection of examples is available as a separate Github repository: `OpenPNM-
 Release Management and Versioning
 ===============================================================================
 
-OpenPNM uses `Semantic Versioning <http://semver.org>`_ (i.e. X.Y.Z) to label releases.  All major and minor versions (X.Y.z) are available on `PyPI <https://pypi.python.org/pypi>`_, but bugfixes (x.y.Z) updates are not generally pushed unless the bug is particularly egregious.
+OpenPNM uses `Semantic Versioning <http://semver.org>`_ (i.e. X.Y.Z) to label releases.  All major and minor versions (X.Y.z) are available on `PyPI <https://pypi.python.org/pypi>`_, but bugfixes (x.y.Z) updates are not generally pushed unless the bug is important.
 
-OpenPNM uses the `Github Flow <http://scottchacon.com/2011/08/31/github-flow.html>`_ system of Git branching. Any code added to master is done via Pull Requests (PRs).  When new PRs are merged into the master branch, they are generally *not* given a new version number. Once enough new features have been added, or a sufficient amount of time has passed, the minor release number (x.Y.z) will be incremented. Any code added to the Master branch *between* incrementing the version number is subject to change, but once a version number has been tagged to code can be considered up-to-date and stable.
+OpenPNM uses the `Github Flow <https://guides.github.com/introduction/flow/>`_ system of Git branching, except instead of merging PRs into *master*, they are merged into a branch called *dev*. Any code added to *dev* is done via Pull Requests (PRs).  When new PRs are merged into the *dev* branch, they are generally *not* given a new version number. Once enough new features have been added, the *dev* branch is merged into the *master* branch, and the minor release number (x.Y.z) will be incremented. An exception to this rule are bugfixes which may be found on *master*.  In these cases a PR can be merged into *master* and the version number wil be incremented (x.y.Z) to indicate the fix.  
 
 OpenPNM depends on several other packages widely known as the `Scipy Stack <https://www.scipy.org/stackspec.html>`_.  It is our policy to always support the latest version of all these packages and their dependencies.
 
