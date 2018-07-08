@@ -535,23 +535,35 @@ class MixedInvasionPercolation(GenericAlgorithm):
     def apply_trapping(self, partial=False):
         """
         Apply trapping based on algorithm described by Y. Masson [1].
+
+        Parameters
+        ----------
+        partial : boolean
+            Indicating whether partially filled network
+
+
+        Notes
+        -----
         It is applied as a post-process and runs the percolation algorithm in
-        reverse assessing the occupancy of pore neighbors.
-        3 situations can happen on invasion without trapping:
-            The number of defending clusters stays the same and clusters can
-            shrink
-            A cluster of size one is suppressed
-            A cluster is split into multiple clusters
+        reverse assessing the occupancy of pore neighbors. 3 situations can
+        happen on invasion without trapping:
+
+        * The number of defending clusters stays the same and clusters can shrink
+        * A cluster of size one is suppressed
+        * A cluster is split into multiple clusters
+
         In reverse the following situations can happen:
-            The number of defending clusters stays the same and clusters can
-            grow
-            A cluster of size one is created
-            Mutliple clusters merge into one cluster
+
+        * The number of defending clusters stays the same and clusters can grow
+        * A cluster of size one is created
+        * Mutliple clusters merge into one cluster
+
         With trapping the reversed rules are adjusted so that:
-            Only clusters that do not connect to a sink can grow and merge.
-            At the point that a neighbor connected to a sink is touched the
-            trapped cluster stops growing as this is the point of trapping in
-            forward invasion time.
+
+        * Only clusters that do not connect to a sink can grow and merge.
+        * At the point that a neighbor connected to a sink is touched, the
+        trapped cluster stops growing as this is the point of trapping in
+        forward invasion time.
 
         Logger info displays the invasion Sequence and pore index and a message
         with condition number based on the modified trapping rules and the
@@ -559,24 +571,22 @@ class MixedInvasionPercolation(GenericAlgorithm):
 
         Initially all invaded pores are given cluster label -1
         Outlets / Sinks are given -2
+
         New clusters that grow into fully trapped clusters are either
         identified at the point of breakthrough or grow from nothing if the
         full invasion sequence is run, they are assigned numbers from 0 up.
 
-        Ref:
+        References
+        ----------
         [1] Masson, Y., 2016. A fast two-step algorithm for invasion
         percolation with trapping. Computers & Geosciences, 90, pp.41-48
-
-        Parameters
-        ----------
-        partial : Boolean indicating whether partially filled network
 
         Returns
         -------
         Creates a throat array called 'pore.clusters' in the Algorithm
-        dictionary. Any positive number is a trapped cluster
+        dictionary. Any positive number is a trapped cluster. Also creates 2
+        boolean arrays Np and Nt long called '<element>.trapped'
 
-        Also creates 2 boolean arrays Np and Nt long called '<element>.trapped'
         """
         net = self.project.network
         outlets = self['pore.outlets']
@@ -705,20 +715,6 @@ class MixedInvasionPercolation(GenericAlgorithm):
         Method to start invasion in a network w. residual saturation.
         Called after inlets are set.
 
-        Currently works for pores only and treats inner throats, i.e.
-        those that connect two pores in the cluster as invaded and outer ones
-        as uninvaded. Uninvaded throats are added to a new residual cluster
-        queue but do not start invading independently if not connected to an
-        inlet.
-
-        Step 1. Identify clusters in the phase occupancy.
-        Step 2. Look for clusters that are connected or contain an inlet
-        Step 3. For those that are merge into inlet cluster. May be connected
-                to more than one - run should sort this out
-        Step 4. For those that are isolated set the queue to not invading.
-        Step 5. (in run) When isolated cluster is met my invading cluster it
-                merges in and starts invading
-
         Parameters
         ----------
         pores : array_like
@@ -729,6 +725,23 @@ class MixedInvasionPercolation(GenericAlgorithm):
             If ``True`` then all existing inlet locations will be removed and
             then the supplied locations will be added.  If ``False``, then
             supplied locations are added to any already existing locations.
+
+        Notes
+        -----
+        Currently works for pores only and treats inner throats, i.e.
+        those that connect two pores in the cluster as invaded and outer ones
+        as uninvaded. Uninvaded throats are added to a new residual cluster
+        queue but do not start invading independently if not connected to an
+        inlet.
+
+        Step 1. Identify clusters in the phase occupancy.
+        Step 2. Look for clusters that are connected or contain an inlet
+        Step 3. For those that are merge into inlet cluster. May be connected
+        to more than one - run should sort this out
+        Step 4. For those that are isolated set the queue to not invading.
+        Step 5. (in run) When isolated cluster is met my invading cluster it
+        merges in and starts invading
+
 
         """
         Ps = self._parse_indices(pores)

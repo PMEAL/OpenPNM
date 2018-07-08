@@ -52,6 +52,12 @@ All the objects in OpenPNM are subclasses of a single :ref:`base_api` class, whi
 .. autoclass:: openpnm.core.Base
     :noindex:
 
+................................................................................
+Settings
+................................................................................
+
+All Base objects in OpenPNM have a ``settings`` attribute which is a dictionary that stores information that dicates an objects behavior.  This is particularly useful for Algorithm objects, where information is stores such as the convergence tolerance, maximum number of iterations, and so on.  The list of settings on any objects can be nicly printed with ``print(obj.settings)``.  Settinsg can be changed by hand (``object.settings['setting_x'] = 1``).  Most of the Algorithm object possess a ``setup`` method, which accepts arguments that are then stored in the ``settings`` dictionary.  These ``setup`` methods are helpful because their documentation explains what each settings means or controls.  
+
 --------------------------------------------------------------------------------
 Networks
 --------------------------------------------------------------------------------

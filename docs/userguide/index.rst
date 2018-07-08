@@ -12,6 +12,5 @@
     topology.rst
     workspace_and_project.rst
     models.rst
-    algorithms/index.rst
-    settings.rst
     customizing.rst
+    algorithms/index.rst
