@@ -46,9 +46,9 @@ class Cubic(GenericNetwork):
         ``connectivity`` (i.e. 26) and then delete a fraction of the throats
         using ``openpnm.topotools.reduce_coordination``.
 
-    name : string, optional
-        A unique name for the network.  If none is given a random name will
-        be assigned.
+    name : string
+        An optional name for the object to help identify it.  If not given,
+        one will be generated.
 
     project : OpenPNM Project object, optional
         Each OpenPNM object must be part of a *Project*.  If none is supplied

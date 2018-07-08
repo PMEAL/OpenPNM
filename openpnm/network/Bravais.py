@@ -38,6 +38,15 @@ class Bravais(GenericNetwork):
         - **'fcc'** : Face-centered cubic lattice
         - **'hcp'** : Hexagonal close packed (Note Implemented Yet)
 
+    name : string
+        An optional name for the object to help identify it.  If not given,
+        one will be generated.
+
+    project : OpenPNM Project object, optional
+        Each OpenPNM object must be part of a *Project*.  If none is supplied
+        then one will be created and this Network will be automatically
+        assigned to it.  To create a *Project* use ``openpnm.Project()``.
+
     See Also
     --------
     Cubic

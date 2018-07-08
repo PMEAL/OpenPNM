@@ -53,19 +53,13 @@ class Standard(GenericPhysics):
             Ts = network.throats(geometry.name)
             self.add_locations(pores=Ps, throats=Ts)
 
-        if 'pore.viscosity' in phase.keys():
-            self.add_model(propname='throat.hydraulic_conductance',
-                           model=mods.hydraulic_conductance.hagen_poiseuille)
-        if 'pore.diffusivity' in phase.keys():
-            self.add_model(propname='throat.diffusive_conductance',
-                           model=mods.diffusive_conductance.ordinary_diffusion)
-        if 'pore.surface_tension' in phase.keys() and \
-           'pore.contact_angle' in phase.keys():
-            self.add_model(propname='throat.entry_pressure',
-                           model=mods.capillary_pressure.washburn)
-        if 'pore.thermal_conductivity' in phase.keys():
-            self.add_model(propname='throat.thermal_conductance',
-                           model=mods.thermal_conductance.series_resistors)
-        if 'pore.electrical_conductivity' in phase.keys():
-            self.add_model(propname='throat.electrical_conductance',
-                           model=mods.electrical_conductance.series_resistors)
+        self.add_model(propname='throat.hydraulic_conductance',
+                       model=mods.hydraulic_conductance.hagen_poiseuille)
+        self.add_model(propname='throat.diffusive_conductance',
+                       model=mods.diffusive_conductance.ordinary_diffusion)
+        self.add_model(propname='throat.entry_pressure',
+                       model=mods.capillary_pressure.washburn)
+        self.add_model(propname='throat.thermal_conductance',
+                       model=mods.thermal_conductance.series_resistors)
+        self.add_model(propname='throat.electrical_conductance',
+                       model=mods.electrical_conductance.series_resistors)
