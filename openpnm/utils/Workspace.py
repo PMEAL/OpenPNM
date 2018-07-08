@@ -38,23 +38,23 @@ class Workspace(dict):
     from the 'file-menu' in a typical GUI.  The table below provides a list
     along with a brief description.
 
-    +----+------------------+-------------------------------------------------+
-    | #  | Method           | Description                                     |
-    +====+==================+=================================================+
-    | 1  | new_project      | Creates a new empty Project object              |
-    +----+------------------+-------------------------------------------------+
-    | 2  | load_project     | Loads a Project from the specified 'pnm' file   |
-    +----+------------------+-------------------------------------------------+
-    | 3  | copy_project     | Make a copy of an existing Project              |
-    +----+------------------+-------------------------------------------------+
-    | 4  | load_workspace   | Loads all saved Projects in a 'pnm' file int... |
-    +----+------------------+-------------------------------------------------+
-    | 5  | save_project     | Saves given Project to a 'pnm' file             |
-    +----+------------------+-------------------------------------------------+
-    | 6  | save_workspace   | Saves all the current Projects to a 'pnm' file  |
-    +----+------------------+-------------------------------------------------+
-    | 7  | close_project    | Removes the specified Project from the Works... |
-    +----+------------------+-------------------------------------------------+
+    +------------------+-------------------------------------------------+
+    | Method           | Description                                     |
+    +==================+=================================================+
+    | load_workspace   | Loads all saved Projects in a 'pnm' file int... |
+    +------------------+-------------------------------------------------+
+    | save_workspace   | Saves all the current Projects to a 'pnm' file  |
+    +------------------+-------------------------------------------------+
+    | new_project      | Creates a new empty Project object              |
+    +------------------+-------------------------------------------------+
+    | load_project     | Loads a Project from the specified 'pnm' file   |
+    +------------------+-------------------------------------------------+
+    | save_project     | Saves given Project to a 'pnm' file             |
+    +------------------+-------------------------------------------------+
+    | close_project    | Removes the specified Project from the Works... |
+    +------------------+-------------------------------------------------+
+    | copy_project     | Make a copy of an existing Project              |
+    +------------------+-------------------------------------------------+
 
     """
 

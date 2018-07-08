@@ -9,11 +9,41 @@ default_settings = {'pore_volume': 'pore.volume',
                     'access_limited': True,
                     'quantity': 'pressure',
                     'throat_entry_pressure': 'throat.entry_pressure',
+                    'pore_volume': 'pore.volume',
+                    'throat_volume': 'throat.volume',
                     'late_pore_filling': '',
                     'late_throat_filling': ''}
 
 
 class Porosimetry(OrdinaryPercolation):
+    r"""
+    Simulates mercury instrustion porosimetry using ordinary percolation
+
+    Parameters
+    ----------
+    network : OpenPNM Network object
+        The Network upon which this simulation should be run
+
+    name : string, optional
+        An identifying name for the object.  If none is given then one is
+        generated.
+
+    project : OpenPNM Project object
+        Either a Network or a Project must be specified
+
+    Notes
+    -----
+    Mercury intrusion progresses by applying increasing pressures to the
+    invading mercury phase, and measuring the resultant volume of invading
+    fluid.  This corresponds directly to an ordinary percolation process,
+    with access limitations enabled.
+
+    See Also
+    --------
+    OrdinaryPercolation
+
+
+    """
 
     def __init__(self, settings={}, **kwargs):
         super().__init__(**kwargs)

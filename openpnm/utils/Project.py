@@ -38,29 +38,29 @@ class Project(list):
     The following table shows all the methods that are available on the Project
     objects along with a very brief description:
 
-    +----+------------------+-------------------------------------------------+
-    | #  | Method           | Description                                     |
-    +====+==================+=================================================+
-    | 3  | export_data      | Export the pore and throat data from the giv... |
-    +----+------------------+-------------------------------------------------+
-    | 4  | find_physics     | Find the Physics object(s) associated with a... |
-    +----+------------------+-------------------------------------------------+
-    | 6  | purge_object     | Remove an object from the Project.  This rem... |
-    +----+------------------+-------------------------------------------------+
-    | 7  | check_physics... | Perform a check to find pores which have ove... |
-    +----+------------------+-------------------------------------------------+
-    | 8  | find_geometry    | Find the Geometry associated with a given Ph... |
-    +----+------------------+-------------------------------------------------+
-    | 9  | load_object      | Loads a single object from a file               |
-    +----+------------------+-------------------------------------------------+
-    | 10 | import_data      |                                                 |
-    +----+------------------+-------------------------------------------------+
-    | 11 | check_geometr... | Perform a check to find pores with overlappi... |
-    +----+------------------+-------------------------------------------------+
-    | 13 | find_phase       | Find the Phase associated with a given object.  |
-    +----+------------------+-------------------------------------------------+
-    | 14 | save_object      | Saves the given object to a file                |
-    +----+------------------+-------------------------------------------------+
+    +------------------+-------------------------------------------------+
+    | Method           | Description                                     |
+    +==================+=================================================+
+    | export_data      | Export the pore and throat data from the giv... |
+    +------------------+-------------------------------------------------+
+    | import_data      |                                                 |
+    +------------------+-------------------------------------------------+
+    | purge_object     | Remove an object from the Project.  This rem... |
+    +------------------+-------------------------------------------------+
+    | load_object      | Loads a single object from a file               |
+    +------------------+-------------------------------------------------+
+    | save_object      | Saves the given object to a file                |
+    +------------------+-------------------------------------------------+
+    | find_physics     | Find the Physics object(s) associated with a... |
+    +------------------+-------------------------------------------------+
+    | find_geometry    | Find the Geometry associated with a given Ph... |
+    +------------------+-------------------------------------------------+
+    | find_phase       | Find the Phase associated with a given object.  |
+    +------------------+-------------------------------------------------+
+    | check_geometr... | Perform a check to find pores with overlappi... |
+    +------------------+-------------------------------------------------+
+    | check_physics... | Perform a check to find pores which have ove... |
+    +------------------+-------------------------------------------------+
 
     """
 

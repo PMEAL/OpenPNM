@@ -93,3 +93,5 @@ The *union* is a single set of unique values obtained by combining the two sets,
 * ``'union'`` returns a list of unique locations neighboring any input pores
 * ``'intersection'`` returns a list of locations that are neighbors to at least two inputs pores
 * ``'exclusive_or'`` returns a list of locations that are only neighbors to one of the input pores
+
+In addition to these neighbor lookups, the GenericNetwork class also offers several other methods that complete the suite of lookup tools:  ``find_connected_pores``, ``find_connecting_throats`` and ``find_nearby_pores``.  There are also many more tools related to Network queries and manipulations in the :ref:`topotools_index` module.  

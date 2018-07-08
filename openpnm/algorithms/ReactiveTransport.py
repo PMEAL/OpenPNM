@@ -84,11 +84,6 @@ class ReactiveTransport(GenericTransport):
         x : ND-array
             Initial guess of unknown variable
 
-        relaxation : float
-                Under relaxation parameter, a float between 0 and 1.
-                relaxation = 1, no relaxation (fast but may be unstable).
-                relaxation < 1, improved stability but may be slow.
-
         """
         logger.info('―'*80)
         logger.info('Running ReactiveTransport')
