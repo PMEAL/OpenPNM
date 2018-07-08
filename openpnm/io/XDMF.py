@@ -11,7 +11,7 @@ class XDMF(GenericIO):
 
 
     For more information visit the webiste:
-    `(XDMF.org <http://www.xdmf.org/index.php/Main_Page>)`_
+    `XDMF.org <http://www.xdmf.org/index.php/Main_Page>`_
     """
 
     _header = '''<?xml version="1.0" ?>

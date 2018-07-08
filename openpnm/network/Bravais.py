@@ -58,14 +58,12 @@ class Bravais(GenericNetwork):
     bcc or 'face_sites' in fcc.  Throats are labelled by the which type of
     pores they connect, e.g. 'throat.corner_to_body'.
 
-    Limitations
-    -----------
-    Bravais lattice can also have a skew to them, but this is not implemented
+    Limitations:
+
+    * Bravais lattice can also have a skew to them, but this is not implemented
     yet.
-
-    Support for 2D networks has not been added yet.
-
-    Hexagonal Close Packed (hcp) has not been implemented yet, but is on the
+    * Support for 2D networks has not been added yet.
+    * Hexagonal Close Packed (hcp) has not been implemented yet, but is on the
     todo list.
 
     Examples
