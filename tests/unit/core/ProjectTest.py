@@ -262,6 +262,37 @@ class ProjectTest:
         proj.clear()
         assert len(proj) == 0
 
+    def test_pop(self):
+        proj = self.ws.copy_project(self.net.project)
+        geo1 = proj.geometries()['geo_01']
+        geo2 = proj.pop(1)
+        assert geo1 is geo2
+        assert geo1 not in proj
+
+    def test_insert(self):
+        proj = self.ws.copy_project(self.net.project)
+        geo1 = proj.geometries()['geo_01']
+        geo2 = proj.pop(1)
+        assert geo1 is geo2
+        assert geo1 not in proj
+        proj.insert(1, geo2)
+
+    def test_copy(self):
+        proj = self.ws.copy_project(self.net.project)
+        proj.network.name = 'foo22'
+        proj2 = proj.copy()
+        assert proj.name != proj2.name
+        assert proj2.network.name == 'foo22'
+        assert proj is not proj2
+        assert len(proj) == len(proj2)
+        assert proj.names == proj2.names
+
+    def test_remove(self):
+        proj = self.ws.copy_project(self.net.project)
+        geo1 = proj.geometries()['geo_01']
+        proj.remove(geo1)
+        assert geo1 not in proj
+
     def test_getitem(self):
         a = self.proj[0]
         b = self.proj[a.name]
