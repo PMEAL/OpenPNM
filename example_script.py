@@ -2,7 +2,7 @@ import openpnm as op
 ws = op.Workspace()
 proj = ws.new_project()
 
-pn = op.network.Cubic(shape=[15, 15, 15], spacing=1e-4, project=proj)
+pn = op.network.Cubic(shape=[10, 10, 10], spacing=1e-4, project=proj)
 geo = op.geometry.StickAndBall(network=pn, pores=pn.Ps, throats=pn.Ts)
 air = op.phases.Air(network=pn, name='air')
 water = op.phases.Water(network=pn, name='h2o')
@@ -35,7 +35,7 @@ phys_air.add_model(propname='pore.2nd_order_rxn', model=mod,
                    prefactor='pore.A', exponent='pore.n')
 rxn = op.algorithms.FickianDiffusion(network=pn)
 rxn.setup(phase=air)
-Ps = pn.find_nearby_pores(pores=2000, r=5e-4, flatten=True)
+Ps = pn.find_nearby_pores(pores=500, r=5e-4, flatten=True)
 rxn.set_source(propname='pore.2nd_order_rxn', pores=Ps)
 rxn.set_value_BC(pores=pn.pores('top'), values=1)
 rxn.run()

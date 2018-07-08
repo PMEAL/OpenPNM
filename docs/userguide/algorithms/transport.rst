@@ -44,7 +44,7 @@ Continuing with the example from above:
   >>> alg.setup(phase=phase, quantity='pore.quantity', conductance='throat.conductance')
 
 ................................................................................
-Building the Coefficient and Right-Hand Size Matrices
+Building the Coefficient and Right-Hand Side Matrices
 ................................................................................
 
 The material balance around a given pore *i* assuming steady-state and no reaction results in the following:
@@ -108,7 +108,7 @@ The ``_solve`` method computes *x* and returns it.  The ``run`` method, which es
 Reactive Transport
 --------------------------------------------------------------------------------
 
-The ReactiveTransport class inherits directly from GenericTransport, so inherits all of the mechanism described above, plus the ability to include non-linear source and sink terms.  The balance equation around a pore *i* in the presence of a source/sink term is:
+The ReactiveTransport class inherits directly from GenericTransport, so inherits all of the mechanism described above, plus the ability to include non-linear source/sink terms.  The balance equation around a pore *i* in the presence of a source/sink term is:
 
 .. math::
 
@@ -177,6 +177,8 @@ To run the simulation using explicit steps:
   >>> alg._update_physics()
   >>> alg._apply_sources()
   >>> x = alg._run_reactive(x=None)
+
+It is not necessary to actually call the above methods, use ``run`` instead.
 
 --------------------------------------------------------------------------------
 Transient and Reactive Transport

@@ -1,7 +1,7 @@
-import xml.etree.cElementTree as ET
-from openpnm.io import Dict, GenericIO
-from openpnm.utils import FlatDict
 import h5py
+import xml.etree.cElementTree as ET
+from flatdict import FlatDict
+from openpnm.io import Dict, GenericIO
 
 
 class XDMF(GenericIO):
