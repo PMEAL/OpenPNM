@@ -65,7 +65,7 @@ class ProjectTest:
             "――――――――――――――――――――――――――――――――――――――――――――――――"
         assert print(self.proj.grid) == print(s)
 
-    def test_purge_geom(self):
+    def test_purge_geom_shallow(self):
         proj = self.ws.copy_project(self.net.project)
         net = proj.network
         geo1 = proj.geometries()['geo_01']
@@ -83,7 +83,24 @@ class ProjectTest:
         assert 'throat.' + geo2.name in net.keys()
         self.ws.close_project(proj)
 
-    def test_purge_phys(self):
+    def test_purge_geom_deep(self):
+        proj = self.ws.copy_project(self.net.project)
+        geo1 = proj.geometries()['geo_01']
+        geo2 = proj.geometries()['geo_02']
+        phys11 = proj.physics()['phys_01']
+        phys12 = proj.physics()['phys_02']
+        phys21 = proj.physics()['phys_03']
+        phys22 = proj.physics()['phys_04']
+        proj.purge_object(geo1, deep=True)
+        assert geo1 not in proj
+        assert geo2 in proj
+        assert phys11 not in proj
+        assert phys12 in proj
+        assert phys21 not in proj
+        assert phys22 in proj
+        self.ws.close_project(proj)
+
+    def test_purge_phys_shallow(self):
         proj = self.ws.copy_project(self.net.project)
         phase = proj.phases()['phase_01']
         phys1 = proj.physics()['phys_01']
@@ -97,15 +114,32 @@ class ProjectTest:
         assert 'throat.' + phys1.name not in phase.keys()
         self.ws.close_project(proj)
 
-    def test_purge_phase(self):
+    def test_purge_phase_shallow(self):
         proj = self.ws.copy_project(self.net.project)
         phase = proj.phases()['phase_01']
         phys1 = proj.physics()['phys_01']
         phys2 = proj.physics()['phys_02']
         proj.purge_object(phase)
-        assert phys1 not in proj
-        assert phys2 not in proj
         assert phase not in proj
+        assert phys1 in proj
+        assert phys2 in proj
+        self.ws.close_project(proj)
+
+    def test_purge_phase_deep(self):
+        proj = self.ws.copy_project(self.net.project)
+        phase1 = proj.phases()['phase_01']
+        phase2 = proj.phases()['phase_02']
+        phys11 = proj.physics()['phys_01']
+        phys12 = proj.physics()['phys_02']
+        phys21 = proj.physics()['phys_03']
+        phys22 = proj.physics()['phys_04']
+        proj.purge_object(phase1, deep=True)
+        assert phase1 not in proj
+        assert phase2 in proj
+        assert phys11 not in proj
+        assert phys12 not in proj
+        assert phys21 in proj
+        assert phys22 in proj
         self.ws.close_project(proj)
 
     def test_purge_network(self):
@@ -224,7 +258,7 @@ class ProjectTest:
         proj = self.ws.copy_project(self.net.project)
         assert len(proj) == 9
         proj.clear(objtype=['phase'])
-        assert len(proj) == 3
+        assert len(proj) == 7
         proj.clear()
         assert len(proj) == 0
 

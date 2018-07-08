@@ -386,10 +386,10 @@ class Project(list):
             The object to purge
 
         deep : boolean
-            A flag that indicates whether to  remove associated objects.
+            A flag that indicates whether to remove associated objects.
             If ``True``, then removing a Geometry or Phase also removes
             the associated Physics objects.  If ``False`` (default) then
-            only the given object is removed along with its labels in all
+            only the given object is removed, along with its labels in all
             associated objects.  Removing a Physics always keeps associated
             Geometry and Phases since they might also be associated with other
             Physics objects.
