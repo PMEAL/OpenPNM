@@ -88,20 +88,6 @@ Boundary conditions are specified by the user with the ``set_value_BC`` and/or `
 
   >>> alg.set_value_BC(pores=pn.pores('left'), values=1)
   >>> alg.set_rate_BC(pores=pn.pores('right'), values=1)
-  >>> print(alg)
-  ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-  openpnm.algorithms.GenericTransport : alg_01
-  ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-  #     Properties                                    Valid Values
-  ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-  1     pore.bc_rate                                     25 / 125
-  2     pore.bc_value                                    25 / 125
-  ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-  #     Labels                                        Assigned Locations
-  ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-  1     pore.all                                      125
-  2     throat.all                                    300
-  ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 
 ................................................................................
 Choosing a Solver and Running the Simulation
