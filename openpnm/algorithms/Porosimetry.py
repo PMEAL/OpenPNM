@@ -9,6 +9,8 @@ default_settings = {'pore_volume': 'pore.volume',
                     'access_limited': True,
                     'quantity': 'pressure',
                     'throat_entry_pressure': 'throat.entry_pressure',
+                    'pore_volume': 'pore.volume',
+                    'throat_volume': 'throat.volume',
                     'late_pore_filling': '',
                     'late_throat_filling': ''}
 

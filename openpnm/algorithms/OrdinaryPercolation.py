@@ -164,7 +164,6 @@ class OrdinaryPercolation(GenericAlgorithm):
         state. This is useful for repeating a simulation at different inlet
         conditions, or invasion points for instance.
         """
-        self.settings.update(default_settings)
         self['pore.invasion_pressure'] = np.inf
         self['throat.invasion_pressure'] = np.inf
         self['pore.invasion_sequence'] = -1
