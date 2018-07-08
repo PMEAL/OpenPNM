@@ -19,10 +19,22 @@ class Boundary(GenericGeometry):
     ----------
     network : OpenPNM Network object
         The Network to which the Geometry object should be associated
-    pores, throats : array_like
-        The pores and/or throats where the Geometry should be applied
+
+    pores : array_like
+        The pores indice where the Geometry should be applied
+
+    throat : array_like
+        The throat indices where the Geometry should be applied
+
     shape: str
         Stick and Ball or Cube and Cuboid? ('spheres','cubes')
+
+    name : string, optional
+        A name to help identify the object, if not given one is automatically
+        generated
+
+    project : OpenPNM Project, optional
+        Either a Network or a Project must be specified
 
     Examples
     --------

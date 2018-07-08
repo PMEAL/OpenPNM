@@ -182,7 +182,10 @@ class Project(list):
 
     def copy(self, name=None):
         r"""
-        Creates a copy of the current project
+        Creates a deep copy of the current project
+
+        A deep copy means that new, unique versions of all the objects are
+        created but with identical data and properties.
 
         Parameters
         ----------
