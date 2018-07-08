@@ -3,6 +3,7 @@ import pickle
 import h5py
 import numpy as np
 import openpnm
+from copy import deepcopy
 from pathlib import Path
 from openpnm.utils import SettingsDict, HealthDict, PrintableList, Workspace
 ws = Workspace()
@@ -102,6 +103,55 @@ class Project(list):
         """
         self.extend(obj)
 
+    def remove(self, obj):
+        r"""
+        The given object is removed from the project
+
+        This removes the object, along with all it's labels in associated
+        objects, but does NOT remove the associated objects.
+
+        See Also
+        -------
+        purge_object
+
+        """
+        self.purge_object(obj, deep=False)
+
+    def pop(self, index):
+        r"""
+        The object at the given index is removed from the list and returned.
+
+        Notes
+        -----
+        This method uses ``purge_object`` to perform the actual removal of the
+        object. It is reommended to just use that directly instead.
+
+        See Also
+        --------
+        purge_object
+
+        """
+        obj = self[index]
+        self.purge_object(obj, deep=False)
+        return obj
+
+    def insert(self, index, obj):
+        r"""
+        Inserts the supplied object at the specified index in the Project list
+
+        Notes
+        -----
+        The order of the objects in an OpenPNM Project lists do not matter, so
+        it is recommended to just use ``append`` instead.
+
+        See Also
+        --------
+        append
+        extend
+
+        """
+        self.extend(obj)
+
     def clear(self, objtype=[]):
         r"""
         Clears objects from the project entirely or selectively, depdening on
@@ -129,6 +179,30 @@ class Project(list):
                             self.purge_object(obj)
                 except KeyError:
                     pass
+
+    def copy(self, name=None):
+        r"""
+        Creates a deep copy of the current project
+
+        A deep copy means that new, unique versions of all the objects are
+        created but with identical data and properties.
+
+        Parameters
+        ----------
+        name : string
+            The name to give to the new project.  If not supplied, a name
+            is automatically generated.
+
+        Returns
+        -------
+        A new Project object containing copies of all objects
+
+        """
+        if name is None:
+            name = ws._gen_name()
+        proj = deepcopy(self)
+        ws[name] = proj
+        return proj
 
     @property
     def workspace(self):
@@ -304,7 +378,7 @@ class Project(list):
         names = [i.name for i in self]
         return names
 
-    def purge_object(self, obj):
+    def purge_object(self, obj, deep=False):
         r"""
         Remove an object from the Project.  This removes all references to
         the object from all other objects (i.e. removes labels)
@@ -314,17 +388,39 @@ class Project(list):
         obj : OpenPNM Object
             The object to purge
 
+        deep : boolean
+            A flag that indicates whether to remove associated objects.
+            If ``True``, then removing a Geometry or Phase also removes
+            the associated Physics objects.  If ``False`` (default) then
+            only the given object is removed, along with its labels in all
+            associated objects.  Removing a Physics always keeps associated
+            Geometry and Phases since they might also be associated with other
+            Physics objects.
+
         Raises
         ------
         An Exception is raised if the object is a Network.
 
+        Notes
+        -----
+        For a clearer picture of this logic, type ``print(project.grid)`` at
+        the console.  A deep purge of a Geometry is like removing a row, while
+        a Phase is like removing a column.
+
         """
-        if obj._isa() in ['geometry', 'physics', 'algorithm']:
+        if obj._isa() in ['physics', 'algorithm']:
+            self._purge(obj)
+        if obj._isa() == 'geometry':
+            if deep:
+                physics = self.find_physics(geometry=obj)
+                for phys in physics:
+                    self._purge(self.physics()[phys.name])
             self._purge(obj)
         if obj._isa() == 'phase':
-            physics = self.find_physics(phase=obj)
-            for phys in physics:
-                self._purge(self.physics()[phys.name])
+            if deep:
+                physics = self.find_physics(phase=obj)
+                for phys in physics:
+                    self._purge(self.physics()[phys.name])
             self._purge(obj)
         if obj._isa() == 'network':
             raise Exception('Cannot purge a network, just make a new project')
@@ -334,7 +430,7 @@ class Project(list):
             for key in list(item.keys()):
                 if key.split('.')[-1] == obj.name:
                     del item[key]
-        self.remove(obj)
+        super().remove(obj)
 
     def save_object(self, obj):
         r"""

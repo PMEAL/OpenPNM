@@ -39,7 +39,8 @@ class CubicDual(GenericNetwork):
         to it.  It can be retrieved from ``net.project``.
 
     name : string
-        A unique name for the network
+        An optional name for the object to help identify it.  If not given,
+        one will be generated.
 
     See Also
     --------

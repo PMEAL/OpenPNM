@@ -48,6 +48,15 @@ class DelaunayVoronoiDual(GenericNetwork):
         By default, a domain size of [1, 1, 1] is used.  To create a 2D network
         set the 3D dimension to 0.
 
+    name : string
+        An optional name for the object to help identify it.  If not given,
+        one will be generated.
+
+    project : OpenPNM Project object, optional
+        Each OpenPNM object must be part of a *Project*.  If none is supplied
+        then one will be created and this Network will be automatically
+        assigned to it.  To create a *Project* use ``openpnm.Project()``.
+
     Examples
     --------
     Points will be automatically generated if none are given:
@@ -55,12 +64,13 @@ class DelaunayVoronoiDual(GenericNetwork):
     >>> import openpnm as op
     >>> net = op.network.DelaunayVoronoiDual(num_points=50, shape=[1, 1, 0])
 
-    The resulting network can be quickly visualized:
+    The resulting network can be quickly visualized using
+    ``opnepnm.topotools.plot_connections``.
 
     """
 
-    def __init__(self, shape, num_points=None, points=None, **kwargs):
-
+    def __init__(self, shape, num_points=None, **kwargs):
+        points = kwargs.pop('points', None)
         points = self._parse_points(shape=shape,
                                     num_points=num_points,
                                     points=points)
