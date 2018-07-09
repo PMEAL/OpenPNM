@@ -38,12 +38,10 @@ def hagen_poiseuille(target,
     (2) This function calculates the specified property for the *entire*
     network then extracts the values for the appropriate throats at the end.
 
-    (3) This function assumes cylindrical/rectangular throats (for 3d/2d)
+    (3) This function assumes cylindrical throats
 
     """
     network = target.project.network
-    is2d = True if 1 in network._shape else False
-    is2d = False
     throats = network.map_throats(target['throat._id'])
     phase = target.project.find_phase(target)
     geom = target.project.find_geometry(target)
@@ -66,12 +64,12 @@ def hagen_poiseuille(target,
     except KeyError:
         mup = phase.interpolate_data(propname=throat_viscosity)
     # Find g for half of pore 1
-    gp1 = A1**3/(12*pi*mup[cn[:, 0]]*L1) if is2d else A1**2/(8*pi*mup[cn[:, 0]]*L1)
+    gp1 = A1**2/(8*pi*mup[cn[:, 0]]*L1)
     gp1[_sp.isnan(gp1)] = _sp.inf
     # Find g for half of pore 2
-    gp2 = A2**3/(12*pi*mup[cn[:, 1]]*L2) if is2d else A2**2/(8*pi*mup[cn[:, 1]]*L2)
+    gp2 = A2**2/(8*pi*mup[cn[:, 1]]*L2)
     gp2[_sp.isnan(gp2)] = _sp.inf
     # Find g for full throat
-    gt = At**3/(12*pi*mup[throats]*Lt) if is2d else At**2/(8*pi*mut[throats]*Lt)
+    gt = At**2/(8*pi*mut[throats]*Lt)
     gt[_sp.isnan(gt)] = _sp.inf
     return (1/gt + 1/gp1 + 1/gp2)**(-1)
