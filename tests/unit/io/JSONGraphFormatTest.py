@@ -29,6 +29,19 @@ class JSONGraphFormatTest:
         assert net.Np == 2
         assert net.Nt == 1
 
+        # Ensure existence of pore properties
+        pore_props = {'pore.index', 'pore.coords', 'pore.diameter',
+                      'pore.area', 'pore.volume'}
+        assert pore_props.issubset(net.props())
+
+        # Ensure correctness of pore properties
+        assert sp.array_equal(net['pore.area'], sp.array([0, 0]))
+        assert sp.array_equal(net['pore.index'], sp.array([0, 1]))
+        assert sp.array_equal(net['pore.volume'], sp.array([0, 0]))
+        assert sp.array_equal(net['pore.diameter'], sp.array([0, 0]))
+        assert sp.array_equal(net['pore.coords'][0], sp.array([0, 0, 0]))
+        assert sp.array_equal(net['pore.coords'][1], sp.array([1, 1, 1]))
+
         # Ensure existence of throat properties
         throat_props = {'throat.length', 'throat.conns', 'throat.diameter',
                         'throat.area', 'throat.volume', 'throat.perimeter',
@@ -45,19 +58,6 @@ class JSONGraphFormatTest:
         assert net['throat.volume'] == sp.pi * squared_radius * length
         assert net['throat.perimeter'] == 2.0 * sp.pi * sp.sqrt(squared_radius)
         assert net['throat.surface_area'] == 2.0 * sp.sqrt(squared_radius) * sp.pi * length
-
-        # Ensure existence of pore properties
-        pore_props = {'pore.index', 'pore.coords', 'pore.diameter',
-                      'pore.area', 'pore.volume'}
-        assert pore_props.issubset(net.props())
-
-        # Ensure correctness of pore properties
-        assert sp.array_equal(net['pore.area'], sp.array([0, 0]))
-        assert sp.array_equal(net['pore.index'], sp.array([0, 1]))
-        assert sp.array_equal(net['pore.volume'], sp.array([0, 0]))
-        assert sp.array_equal(net['pore.diameter'], sp.array([0, 0]))
-        assert sp.array_equal(net['pore.coords'][0], sp.array([0, 0, 0]))
-        assert sp.array_equal(net['pore.coords'][1], sp.array([1, 1, 1]))
 
 
 if __name__ == '__main__':
