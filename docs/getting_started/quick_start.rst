@@ -27,21 +27,7 @@ The resulting network can be quickly visualized using ``plot_coordinates`` and
     :width: 800px
     :align: center
 
-The ``network`` module has a number of network types to chose from:
-
-.. currentmodule:: openpnm.network
-
-.. autosummary::
-   :nosignatures:
-
-   Cubic
-   CubicDual
-   CubicTemplate
-   Bravais
-   Delaunay
-   Voronoi
-   Gabriel
-   DelaunayVoronoiDual
+The ``network`` module has a number of network types to chose from, and they can be found on the :ref:`network_index` page.
 
 --------------------------------------------------------------------------------
 Adding Geometrical Properties

@@ -188,7 +188,7 @@ Interleaving of data also works in the reverse direction, so that data only pres
      [0.5 0.5 1.5]
      [0.5 0.5 2.5]]
 
-Finally, ``interleave_data`` works between :ref:`subdomain_api`_ objects of the same type, so that if 'pore.volume' is present on one but not another Geometry object, you will get an array of NaNs when asking for it on the object that does not have it:
+Finally, ``interleave_data`` works between :ref:`subdomain_api` objects of the same type, so that if 'pore.volume' is present on one but not another Geometry object, you will get an array of NaNs when asking for it on the object that does not have it:
 
 .. code-block:: python
 

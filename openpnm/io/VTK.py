@@ -1,8 +1,9 @@
 from xml.etree import ElementTree as ET
+from flatdict import FlatDict
 import numpy as np
 from openpnm.network import GenericNetwork
 from openpnm.io import GenericIO, Dict
-from openpnm.utils import logging, Workspace, FlatDict
+from openpnm.utils import logging, Workspace
 logger = logging.getLogger(__name__)
 ws = Workspace()
 
