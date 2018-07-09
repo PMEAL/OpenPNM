@@ -60,6 +60,46 @@ class JSONGraphFormat(GenericIO):
             Phases that have properties we want to write to file
 
         """
+        # Ensure output file is valid
+        filename = self._parse_filename(filename=filename, ext='json')
+
+        try:
+            required_props = {'pore.diameter', 'pore.coords', 'throat.length',
+                              'throat.conns', 'throat.diameter'}
+            assert required_props.issubset(network.props())
+        except AssertionError:
+            raise(Exception('Error - network is missing one of: ' + str(required_props)))
+
+        graph_metadata_obj = {"number_of_nodes": network.Np, "number_of_links": network.Nt}
+        nodes_obj = [{
+                        'id': str(ps),
+                        'metadata': {
+                            'node_squared_radius': (network['pore.diameter'][ps] / 2)**2,
+                            'node_coordinates': {
+                                'x': network['pore.coords'][ps, 0],
+                                'y': network['pore.coords'][ps, 1],
+                                'z': network['pore.coords'][ps, 2]
+                            }
+                        }
+                    } for ps in network.Ps]
+        edges_obj = [{
+                        'id': str(ts),
+                        'source': str(network['throat.conns'][ts, 0]),
+                        'target': str(network['throat.conns'][ts, 1]),
+                        'metadata': {
+                            'link_length': network['throat.length'][ts],
+                            'link_squared_radius': (network['throat.diameter'][ts] / 2)**2
+                        }
+                    } for ts in network.Ts]
+        graph_obj = {'metadata': graph_metadata_obj, 'nodes': nodes_obj, 'edges': edges_obj}
+        json_obj = {'graph': graph_obj}
+
+        if not self.__validate_json__(json_obj):
+            raise(Exception('Error - ' + filename + ' is not in the JSON Graph Format.'))
+
+        # Load and validate input JSON
+        with open(filename, 'w') as file:
+            json.dump(json_obj, file, indent=2)
 
     @classmethod
     def load(self, filename, project=None):
