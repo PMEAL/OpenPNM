@@ -83,8 +83,6 @@ class JSONGraphFormat(GenericIO):
 
         """
         # Ensure input file is valid
-        if not filename.endswith('.json'):
-            raise(Exception('Error - JSONGraphFormat.load() expects a JSON file as input.'))
         filename = self._parse_filename(filename=filename, ext='json')
 
         # Load and validate input JSON
