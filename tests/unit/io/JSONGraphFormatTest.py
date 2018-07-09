@@ -51,6 +51,14 @@ class JSONGraphFormatTest:
                       'pore.area', 'pore.volume'}
         assert pore_props.issubset(net.props())
 
+        # Ensure correctness of pore properties
+        assert sp.array_equal(net['pore.area'], sp.array([0, 0]))
+        assert sp.array_equal(net['pore.index'], sp.array([0, 1]))
+        assert sp.array_equal(net['pore.volume'], sp.array([0, 0]))
+        assert sp.array_equal(net['pore.diameter'], sp.array([0, 0]))
+        assert sp.array_equal(net['pore.coords'][0], sp.array([0, 0, 0]))
+        assert sp.array_equal(net['pore.coords'][1], sp.array([1, 1, 1]))
+
 
 if __name__ == '__main__':
     # All the tests in this file can be run with 'playing' this file
