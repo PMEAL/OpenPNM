@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 import os
 import sys
 from distutils.util import convert_path
@@ -9,13 +7,13 @@ except ImportError:
     from distutils.core import setup
 
 # Check Python version
-if sys.version_info < (3, 4):
-    raise Exception('OpenPNM requires Python 3.4 or greater to run')
+if sys.version_info < (3, 6):
+    raise Exception('openpnm requires Python 3.6 or greater to run')
 
 sys.path.append(os.getcwd())
 
 main_ = {}
-ver_path = convert_path('OpenPNM/__init__.py')
+ver_path = convert_path('openpnm/__init__.py')
 with open(ver_path) as f:
     for line in f:
         if line.startswith('__version__'):
@@ -23,42 +21,43 @@ with open(ver_path) as f:
 
 setup(
     name='OpenPNM',
-    description = 'A framework for conducting pore network modeling simulations of multiphase transport in porous materials.',
+    description = 'A framework for conducting pore network modeling simulations of multiphase transport in porous materials',
     version=main_['__version__'],
     classifiers=[
-        'Development Status :: 5 - Production/Stable',
+        'Development Status :: 4 - Beta',
         'License :: OSI Approved :: MIT License',
         'Programming Language :: Python',
         'Topic :: Scientific/Engineering',
         'Topic :: Scientific/Engineering :: Physics'
     ],
     packages=[
-        'OpenPNM',
-        'OpenPNM.Base',
-        'OpenPNM.Network',
-        'OpenPNM.Network.models',
-        'OpenPNM.Geometry',
-        'OpenPNM.Geometry.models',
-        'OpenPNM.Phases',
-        'OpenPNM.Phases.models',
-        'OpenPNM.Physics',
-        'OpenPNM.Physics.models',
-        'OpenPNM.Utilities',
-        'OpenPNM.Algorithms',
-        'OpenPNM.Postprocessing'
+        'openpnm',
+        'openpnm.core',
+        'openpnm.network',
+        'openpnm.geometry',
+        'openpnm.phases',
+        'openpnm.physics',
+        'openpnm.utils',
+        'openpnm.models',
+        'openpnm.algorithms',
+        'openpnm.topotools'
     ],
     install_requires=[
         'numpy',
-        'scipy>=0.14.0',
+        'scipy',
         'matplotlib',
         'scikit-image',
-        'transforms3d',
-        'dill',
         'pandas',
-        'pyyaml'
-    ],
+        'sympy',
+        'numba',
+        'networkx',
+        'h5py',
+        'porespy',
+        'transforms3d',
+        'flatdict'],
+
     author='OpenPNM Team',
-    author_email='jeff.gostick@mcgill.ca',
+    author_email='jgostick@uwaterloo.ca',
     download_url='https://github.com/pmeal/OpenPNM/',
-    url='https://github.com/pmeal/OpenPNM'
+    url='http://openpnm.org'
 )

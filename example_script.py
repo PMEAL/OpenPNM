@@ -1,54 +1,44 @@
-import OpenPNM as op
-# Initialize workspace, and clear it just to be safe
-ws = op.Base.Workspace()
-ws.clear()
+import openpnm as op
+ws = op.Workspace()
+proj = ws.new_project()
 
-# Create Topological Network object
-pn = op.Network.Cubic(shape=[15, 5, 5], spacing=1)
-pn.add_boundaries()
+pn = op.network.Cubic(shape=[10, 10, 10], spacing=1e-4, project=proj)
+geo = op.geometry.StickAndBall(network=pn, pores=pn.Ps, throats=pn.Ts)
+air = op.phases.Air(network=pn, name='air')
+water = op.phases.Water(network=pn, name='h2o')
+hg = op.phases.Mercury(network=pn, name='hg')
+phys_air = op.physics.Standard(network=pn, phase=air, geometry=geo)
+phys_water = op.physics.Standard(network=pn, phase=water, geometry=geo)
+phys_hg = op.physics.Standard(network=pn, phase=hg, geometry=geo)
 
-# Create Geometry object for internal pores
-Ps = pn.pores('boundary', mode='not')
-Ts = pn.find_neighbor_throats(pores=Ps, mode='intersection', flatten=True)
-geom = op.Geometry.Stick_and_Ball(network=pn, pores=Ps, throats=Ts)
-# Create Geometry object for boundary pores
-Ps = pn.pores('boundary')
-Ts = pn.find_neighbor_throats(pores=Ps, mode='not_intersection')
-boun = op.Geometry.Boundary(network=pn, pores=Ps, throats=Ts)
+mip = op.algorithms.Porosimetry(network=pn)
+mip.setup(phase=hg)
+mip.set_inlets(pores=pn.pores(['top', 'bottom']))
+mip.run()
+hg.update(mip.results(Pc=70000))
+# mip.plot_intrusion_curve()
 
-# Create Phase objects
-air = op.Phases.Air(network=pn, name='air')
-water = op.Phases.Water(network=pn, name='water')
+perm = op.algorithms.StokesFlow(network=pn)
+perm.setup(phase=water)
+perm.set_value_BC(pores=pn.pores('right'), values=0)
+perm.set_value_BC(pores=pn.pores('left'), values=101325)
+perm.run()
+water.update(perm.results())
+# print(perm.calc_eff_permeability())
 
-# Create one Physics object for each phase
-Ps = pn.pores()
-Ts = pn.throats()
-phys_water = op.Physics.Standard(network=pn, phase=water, pores=Ps, throats=Ts)
-phys_air = op.Physics.Standard(network=pn, phase=air, pores=Ps, throats=Ts)
+# Add reaction term to phys_air
+mod = op.models.physics.generic_source_term.standard_kinetics
+phys_air['pore.n'] = 2
+phys_air['pore.A'] = -1e-5
+phys_air.add_model(propname='pore.2nd_order_rxn', model=mod,
+                   quantity='pore.concentration',
+                   prefactor='pore.A', exponent='pore.n')
+rxn = op.algorithms.FickianDiffusion(network=pn)
+rxn.setup(phase=air)
+Ps = pn.find_nearby_pores(pores=500, r=5e-4, flatten=True)
+rxn.set_source(propname='pore.2nd_order_rxn', pores=Ps)
+rxn.set_value_BC(pores=pn.pores('top'), values=1)
+rxn.run()
+air.update(rxn.results())
 
-# Begin Simulations
-# 1. Perform a Drainage Experiment
-drainage = op.Algorithms.Drainage(network=pn)
-drainage.setup(invading_phase=water, defending_phase=air)
-Ps = pn.pores(labels=['bottom_boundary'])
-drainage.set_inlets(pores=Ps)
-drainage.run()
-drainage.return_results(Pc=7000)
-
-# 2. Perform Invasion Percolation
-inlets = pn.pores('bottom_boundary')
-IP_1 = op.Algorithms.InvasionPercolation(network=pn)
-IP_1.run(phase=water, inlets=inlets)
-IP_1.return_results()
-
-# 3. Perform Fickian Diffusion'''
-fickian = op.Algorithms.FickianDiffusion(network=pn, phase=air)
-Ps_bc1 = pn.pores('right_boundary')
-fickian.set_boundary_conditions(bctype='Dirichlet', bcvalue=0.6, pores=Ps_bc1)
-Ps_bc2 = pn.pores('left_boundary')
-fickian.set_boundary_conditions(bctype='Dirichlet', bcvalue=0.4, pores=Ps_bc2)
-fickian.run()
-fickian.return_results()
-
-# Export to VTK
-op.export_data(network=pn, filename='example', fileformat='VTK')
+proj.export_data(network=pn, phases=[hg, air, water], filename='output.vtp')

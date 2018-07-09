@@ -3,35 +3,32 @@ sudo: false
 language: python
 
 python:
-  - "3.5"
   - "3.6"
 
 before_install:
+  # This let's plot be virtually displayed
   - export DISPLAY=:99.0
   - sh -e /etc/init.d/xvfb start
-  - wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
-  - bash miniconda.sh -b -p $HOME/miniconda
-  - export PATH="$HOME/miniconda/bin:$PATH"
 
 install:
-  - conda install --yes python=$TRAVIS_PYTHON_VERSION --file requirements.txt
+  - wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh;
+  - bash miniconda.sh -b -p $HOME/miniconda
+  - export PATH="$HOME/miniconda/bin:$PATH"
+  - hash -r
+  - conda config --set always_yes yes --set changeps1 no
+  - conda update -q conda
+  - conda info -a
+  - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION
+  - source activate test-environment
+  - conda install --file conda_requirements.txt
   - pip install -r test_requirements.txt
   - python setup.py install
 
 script:
-  - ./bin/test pep8 cov
+  - python ./bin/test pep8 cov
 
 after_success:
   - codecov
 
 notifications:
   email: false
-
-deploy:
-  provider: pypi
-  distribution: sdist
-  user: jgostick
-  password:
-    secure: kFTCsi4mSzZgasxKRIjAk2/Y/GvasoecrwCDiwoxFSwpbW6K1TPiSHZgBrlwFyZt3F7/1zXA+Ji5Oi6jXfhdpIiyOk70Ht1G9DRQ/yBvVKjLUM87qxAYRGDrXNQor4oRsWg2J+VdYUx3tUck2vp8hh873HP0uAGmcaWNHv3TxhA=
-    tags: true
-    branch: master
