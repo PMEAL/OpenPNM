@@ -1,8 +1,10 @@
 import os
 from pathlib import Path
 
-import openpnm as op
 import py
+import scipy as sp
+
+import openpnm as op
 
 
 class JSONGraphFormatTest:
@@ -17,8 +19,9 @@ class JSONGraphFormatTest:
 
     def test_load(self):
         # Load JSON file and ensure project integrity
-        path = Path(os.path.realpath(__file__), '../../fixtures/JSONGraphFormat')
-        project = op.io.JSONGraphFormat.load(path + '/2nodes_1link.json')
+        path = Path(os.path.realpath(__file__), '../../../fixtures/JSONGraphFormat')
+        filename = Path(path.resolve(), '2nodes_1link.json')
+        project = op.io.JSONGraphFormat.load(filename)
         assert len(project) == 1
 
         # Ensure overal network properties
@@ -31,6 +34,17 @@ class JSONGraphFormatTest:
                         'throat.area', 'throat.volume', 'throat.perimeter',
                         'throat.surface_area'}
         assert throat_props.issubset(net.props())
+
+        # Ensure correctness of throat properties
+        length = 1.73205080757
+        squared_radius = 5.169298742047715
+        assert net['throat.length'] == length
+        assert net['throat.area'] == sp.pi * squared_radius
+        assert sp.array_equal(net['throat.conns'], sp.array([[0, 1]]))
+        assert net['throat.diameter'] == 2.0 * sp.sqrt(squared_radius)
+        assert net['throat.volume'] == sp.pi * squared_radius * length
+        assert net['throat.perimeter'] == 2.0 * sp.pi * sp.sqrt(squared_radius)
+        assert net['throat.surface_area'] == 2.0 * sp.sqrt(squared_radius) * sp.pi * length
 
         # Ensure existence of pore properties
         pore_props = {'pore.index', 'pore.coords', 'pore.diameter',
