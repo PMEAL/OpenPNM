@@ -1,9 +1,9 @@
-.. _invasion_percolation_api:
+.. _mixed_percolation_api:
 
 --------------------------------------------------------------------------------
-InvasionPercolation
+MixedInvasionPercolation
 --------------------------------------------------------------------------------
 
-.. autoclass:: openpnm.algorithms.InvasionPercolation
+.. autoclass:: openpnm.algorithms.MixedInvasionPercolation
    :members:
    :show-inheritance:

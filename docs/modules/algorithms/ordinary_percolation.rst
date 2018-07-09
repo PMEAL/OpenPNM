@@ -3,3 +3,7 @@
 --------------------------------------------------------------------------------
 OrdinaryPercolation
 --------------------------------------------------------------------------------
+
+.. autoclass:: openpnm.algorithms.OrdinaryPercolation
+   :members:
+   :show-inheritance:

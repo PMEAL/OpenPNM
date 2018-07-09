@@ -9,7 +9,6 @@ Miscellaneous Classes, Functions, and Tools
 .. autoclass:: openpnm.utils.NestedDict
 .. autoclass:: openpnm.utils.SettingsDict
 .. autoclass:: openpnm.utils.HealthDict
-.. autoclass:: openpnm.utils.FlatDict
 
 .. autofunction:: openpnm.utils.flat_list
 .. autofunction:: openpnm.utils.sanitize_dict

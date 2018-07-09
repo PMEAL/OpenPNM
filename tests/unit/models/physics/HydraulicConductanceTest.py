@@ -9,11 +9,14 @@ class HydraulicConductanceTest:
                                                pores=self.net.Ps,
                                                throats=self.net.Ts)
         self.geo['pore.diameter'] = 1.0
+        self.geo['pore.area'] = 1.0
         self.geo['throat.diameter'] = 1.0
-        self.geo['throat.length'] = 1.0e-9
-        self.air = op.phases.Air(network=self.net)
+        self.geo['throat.length'] = 1e-9
+        self.geo['throat.area'] = 1
+        self.phase = op.phases.GenericPhase(network=self.net)
+        self.phase['pore.viscosity'] = 1.84444452e-05
         self.phys = op.physics.GenericPhysics(network=self.net,
-                                              phase=self.air,
+                                              phase=self.phase,
                                               geometry=self.geo)
 
     def teardown_class(self):
@@ -21,15 +24,17 @@ class HydraulicConductanceTest:
         mgr.clear()
 
     def test_hagen_poiseuille(self):
+        self.geo['throat.conduit_lengths.pore1'] = 0.2
+        self.geo['throat.conduit_lengths.throat'] = 0.6
+        self.geo['throat.conduit_lengths.pore2'] = 0.2
+        self.geo['throat.equivalent_area.pore1'] = 0.2
+        self.geo['throat.equivalent_area.throat'] = 0.2
+        self.geo['throat.equivalent_area.pore2'] = 0.2
         mod = op.models.physics.hydraulic_conductance.hagen_poiseuille
-        self.phys.add_model(propname='throat.conductance1',
+        self.phys.add_model(propname='throat.hydraulic_conductance',
                             model=mod)
-        assert_approx_equal(self.phys['throat.conductance1'].mean(), 1330.68207684)
-
-        self.phys.add_model(propname='throat.conductance2',
-                            model=mod,
-                            calc_pore_len=True)
-        assert_approx_equal(self.phys['throat.conductance2'].mean(), 1330.68207684)
+        assert_approx_equal(self.phys['throat.hydraulic_conductance'].mean(),
+                            86.28882)
 
 
 if __name__ == '__main__':

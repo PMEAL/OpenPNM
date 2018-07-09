@@ -7,8 +7,8 @@ except ImportError:
     from distutils.core import setup
 
 # Check Python version
-if sys.version_info < (3, 4):
-    raise Exception('openpnm requires Python 3.4 or greater to run')
+if sys.version_info < (3, 6):
+    raise Exception('openpnm requires Python 3.6 or greater to run')
 
 sys.path.append(os.getcwd())
 
@@ -21,10 +21,10 @@ with open(ver_path) as f:
 
 setup(
     name='OpenPNM',
-    description = 'A framework for conducting pore network modeling simulations of multiphase transport in porous materials.',
+    description = 'A framework for conducting pore network modeling simulations of multiphase transport in porous materials',
     version=main_['__version__'],
     classifiers=[
-        'Development Status :: 5 - Production/Stable',
+        'Development Status :: 4 - Beta',
         'License :: OSI Approved :: MIT License',
         'Programming Language :: Python',
         'Topic :: Scientific/Engineering',
@@ -47,11 +47,14 @@ setup(
         'scipy',
         'matplotlib',
         'scikit-image',
-        'transforms3d',
         'pandas',
-        'flatdict',
+        'sympy',
+        'numba',
+        'networkx',
         'h5py',
-        'porespy'],
+        'porespy',
+        'transforms3d',
+        'flatdict'],
 
     author='OpenPNM Team',
     author_email='jgostick@uwaterloo.ca',

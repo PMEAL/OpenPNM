@@ -1,8 +1,8 @@
 import pickle
 import openpnm
 import time
-import copy
 import warnings
+import numpy as np
 from pathlib import Path
 from openpnm.utils import SettingsDict, logging
 logger = logging.getLogger()
@@ -38,23 +38,23 @@ class Workspace(dict):
     from the 'file-menu' in a typical GUI.  The table below provides a list
     along with a brief description.
 
-    +----+------------------+-------------------------------------------------+
-    | #  | Method           | Description                                     |
-    +====+==================+=================================================+
-    | 1  | new_project      | Creates a new empty Project object              |
-    +----+------------------+-------------------------------------------------+
-    | 2  | load_project     | Loads a Project from the specified 'pnm' file   |
-    +----+------------------+-------------------------------------------------+
-    | 3  | copy_project     | Make a copy of an existing Project              |
-    +----+------------------+-------------------------------------------------+
-    | 4  | load_workspace   | Loads all saved Projects in a 'pnm' file int... |
-    +----+------------------+-------------------------------------------------+
-    | 5  | save_project     | Saves given Project to a 'pnm' file             |
-    +----+------------------+-------------------------------------------------+
-    | 6  | save_workspace   | Saves all the current Projects to a 'pnm' file  |
-    +----+------------------+-------------------------------------------------+
-    | 7  | close_project    | Removes the specified Project from the Works... |
-    +----+------------------+-------------------------------------------------+
+    +------------------+-------------------------------------------------+
+    | Method           | Description                                     |
+    +==================+=================================================+
+    | load_workspace   | Loads all saved Projects in a 'pnm' file int... |
+    +------------------+-------------------------------------------------+
+    | save_workspace   | Saves all the current Projects to a 'pnm' file  |
+    +------------------+-------------------------------------------------+
+    | new_project      | Creates a new empty Project object              |
+    +------------------+-------------------------------------------------+
+    | load_project     | Loads a Project from the specified 'pnm' file   |
+    +------------------+-------------------------------------------------+
+    | save_project     | Saves given Project to a 'pnm' file             |
+    +------------------+-------------------------------------------------+
+    | close_project    | Removes the specified Project from the Works... |
+    +------------------+-------------------------------------------------+
+    | copy_project     | Make a copy of an existing Project              |
+    +------------------+-------------------------------------------------+
 
     """
 
@@ -79,6 +79,11 @@ class Workspace(dict):
         if not isinstance(project, openpnm.utils.Project):
             project = openpnm.utils.Project(project, name=name)
         super().__setitem__(name, project)
+
+    def copy(self):
+        r"""
+        """
+        raise Exception('Cannot copy Workspace, only one can exist at a time')
 
     def _create_console_handles(self, project):
         r"""
@@ -263,7 +268,7 @@ class Workspace(dict):
         """
         del self[project.name]
 
-    def copy_project(self, project, new_name=None):
+    def copy_project(self, project, name=None):
         r"""
         Make a copy of an existing Project
 
@@ -281,10 +286,8 @@ class Workspace(dict):
         A handle to the new Project
 
         """
-        new_sim = copy.deepcopy(project)
-        new_sim._name = hex(id(new_sim))  # Assign temporary name
-        new_sim.name = new_name
-        return new_sim
+        proj = project.copy(name)
+        return proj
 
     def new_project(self, name=None):
         r"""
@@ -315,6 +318,43 @@ class Workspace(dict):
                 n.append(int(item.split('sim_')[1]))
         name = 'sim_'+str(max(n)+1).zfill(2)
         return name
+
+    def _gen_ids(self, size):
+        r"""
+        Generates a sequence of integers of the given ``size``, starting at 1
+        greater than the last produced value.
+
+        The Workspace object keeps track of the most recent value, which
+        persists until the current python session is restarted, so the
+        returned array contains unique values for the given session.
+
+        Parameters
+        ----------
+        size : int
+            The number of values to generate.
+
+        Returns
+        -------
+        A Numpy array of the specified size, containing integer values starting
+        from the last used values.
+
+        Notes
+        -----
+        When a new Workspace is created the
+        """
+        if not hasattr(self, '_next_id'):
+            # If _next_id has not been set, then assign it
+            self._next_id = 0
+            # But check ids in any objects present first
+            for proj in self.values():
+                if len(proj) > 0:
+                    if 'pore._id' in proj.network.keys():
+                        Pmax = proj.network['pore._id'].max() + 1
+                        Tmax = proj.network['throat._id'].max() + 1
+                        self._next_id = max([Pmax, Tmax, self._next_id])
+        ids = np.arange(self._next_id, self._next_id + size, dtype=np.int64)
+        self._next_id += size
+        return ids
 
     def __str__(self):
         s = []
