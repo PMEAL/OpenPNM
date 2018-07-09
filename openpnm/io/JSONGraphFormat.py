@@ -6,7 +6,7 @@ from pathlib import Path
 import jsonschema
 import scipy as sp
 
-from openpnm.core import logging
+from openpnm.utils import logging
 from openpnm.io import GenericIO
 from openpnm.models.geometry import (pore_area, pore_volume, throat_area,
                                      throat_perimeter, throat_surface_area,
