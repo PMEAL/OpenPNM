@@ -81,11 +81,11 @@ class JSONGraphFormat(GenericIO):
             {
                 'id': str(ps),
                 'metadata': {
-                    'node_squared_radius': (network['pore.diameter'][ps]/2)**2,
+                    'node_squared_radius': int(network['pore.diameter'][ps]/2)**2,
                     'node_coordinates': {
-                        'x': network['pore.coords'][ps, 0],
-                        'y': network['pore.coords'][ps, 1],
-                        'z': network['pore.coords'][ps, 2]
+                        'x': int(network['pore.coords'][ps, 0]),
+                        'y': int(network['pore.coords'][ps, 1]),
+                        'z': int(network['pore.coords'][ps, 2])
                     }
                 }
             } for ps in network.Ps]
@@ -97,8 +97,8 @@ class JSONGraphFormat(GenericIO):
                 'source': str(network['throat.conns'][ts, 0]),
                 'target': str(network['throat.conns'][ts, 1]),
                 'metadata': {
-                    'link_length': network['throat.length'][ts],
-                    'link_squared_radius': (network['throat.diameter'][ts]/2)**2
+                    'link_length': float(network['throat.length'][ts]),
+                    'link_squared_radius': float(network['throat.diameter'][ts]/2)**2
                 }
             } for ts in network.Ts]
 
