@@ -118,6 +118,7 @@ class Bravais(GenericNetwork):
             # Stitch them together
             topotools.stitch(net1, net2, net1.Ps, net2.Ps, len_max=0.99)
             self.update(net1)
+            ws.close_project(net1.project)
 
             # Deal with labels
             Ps1 = self['pore.net2']
@@ -166,6 +167,7 @@ class Bravais(GenericNetwork):
             topotools.stitch(net1, net2, net1.Ps, net2.Ps,
                              len_min=0.70, len_max=0.75)
             self.update(net1)
+            ws.close_project(net1.project)
             # Deal with labels
             Ps1 = self['pore.corner_sites']
             Ps2 = self['pore.face_sites']
@@ -182,8 +184,9 @@ class Bravais(GenericNetwork):
         elif mode == 'hcp':
             raise NotImplementedError('hcp is not implemented yet')
         elif mode == 'sc':
-            net = Cubic(shape=shape, spacing=spacing, **kwargs)
+            net = Cubic(shape=shape, spacing=spacing)
             self.update(net)
+            ws.close_project(net.project)
             self.clear(mode='labels')
             self['pore.corner_sites'] = True
             self['throat.corner_to_corner'] = True
