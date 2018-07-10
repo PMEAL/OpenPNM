@@ -48,7 +48,7 @@ def straight(target, pore_diameter='pore.diameter', L_negative=1e-12):
         ``None``.
     """
     network = target.project.network
-    throats = network.map_throats(target['throat._id'])
+    throats = network.map_throats(throats=target.Ts, target=target)
     cn = network['throat.conns'][throats]
     E = ctc(target, pore_diameter=pore_diameter)
     D1 = network[pore_diameter][cn[:, 0]]
@@ -83,7 +83,7 @@ def spherical_pores(target, pore_diameter='pore.diameter',
 
     """
     network = target.project.network
-    throats = network.map_throats(target['throat._id'])
+    throats = network.map_throats(throats=target.Ts, target=target)
     cn = network['throat.conns'][throats]
     d1 = network[pore_diameter][cn[:, 0]]
     d2 = network[pore_diameter][cn[:, 1]]
