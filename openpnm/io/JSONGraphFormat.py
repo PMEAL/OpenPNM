@@ -63,6 +63,7 @@ class JSONGraphFormat(GenericIO):
         # Ensure output file is valid
         filename = self._parse_filename(filename=filename, ext='json')
 
+        # Ensure network contains the required properties
         try:
             required_props = {'pore.diameter', 'pore.coords', 'throat.length',
                               'throat.conns', 'throat.diameter'}
@@ -71,32 +72,45 @@ class JSONGraphFormat(GenericIO):
             raise Exception('Error - network is missing one of: ' +
                             str(required_props))
 
+        # Create 'metadata' JSON object
         graph_metadata_obj = {'number_of_nodes': network.Np,
                               'number_of_links': network.Nt}
-                        'id': str(ps),
-                        'metadata': {
+
+        # Create 'nodes' JSON object
+        nodes_obj = [
+            {
+                'id': str(ps),
+                'metadata': {
                     'node_squared_radius': (network['pore.diameter'][ps]/2)**2,
-                            'node_coordinates': {
-                                'x': network['pore.coords'][ps, 0],
-                                'y': network['pore.coords'][ps, 1],
-                                'z': network['pore.coords'][ps, 2]
-                            }
-                        }
-                    } for ps in network.Ps]
-        edges_obj = [{
-                        'id': str(ts),
-                        'source': str(network['throat.conns'][ts, 0]),
-                        'target': str(network['throat.conns'][ts, 1]),
-                        'metadata': {
-                            'link_length': network['throat.length'][ts],
+                    'node_coordinates': {
+                        'x': network['pore.coords'][ps, 0],
+                        'y': network['pore.coords'][ps, 1],
+                        'z': network['pore.coords'][ps, 2]
+                    }
+                }
+            } for ps in network.Ps]
+
+        # Create 'edges' JSON object
+        edges_obj = [
+            {
+                'id': str(ts),
+                'source': str(network['throat.conns'][ts, 0]),
+                'target': str(network['throat.conns'][ts, 1]),
+                'metadata': {
+                    'link_length': network['throat.length'][ts],
                     'link_squared_radius': (network['throat.diameter'][ts]/2)**2
-                        }
-                    } for ts in network.Ts]
+                }
+            } for ts in network.Ts]
+
+        # Build 'graph' JSON object from 'metadata', 'nodes' and 'edges'
         graph_obj = {'metadata': graph_metadata_obj,
                      'nodes': nodes_obj,
                      'edges': edges_obj}
+
+        # Build full JSON object
         json_obj = {'graph': graph_obj}
 
+        # Validate generated JSON object with respect to JGF schema
         if not self.__validate_json__(json_obj):
             raise Exception(f'Error - {filename} is not in the JSON Graph Format.')
 
