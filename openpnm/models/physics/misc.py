@@ -42,13 +42,13 @@ def poisson_conductance(target, pore_diffusivity, throat_diffusivity,
     geom = target.project.find_geometry(target)
     cn = network['throat.conns'][throats]
     # Getting equivalent areas
-    A1 = geom[throat_equivalent_area+'.pore1'][throats]
-    At = geom[throat_equivalent_area+'.throat'][throats]
-    A2 = geom[throat_equivalent_area+'.pore2'][throats]
+    A1 = geom[throat_equivalent_area+'.pore1']
+    At = geom[throat_equivalent_area+'.throat']
+    A2 = geom[throat_equivalent_area+'.pore2']
     # Getting conduit lengths
-    L1 = geom[throat_conduit_lengths+'.pore1'][throats]
-    Lt = geom[throat_conduit_lengths+'.throat'][throats]
-    L2 = geom[throat_conduit_lengths+'.pore2'][throats]
+    L1 = geom[throat_conduit_lengths+'.pore1']
+    Lt = geom[throat_conduit_lengths+'.throat']
+    L2 = geom[throat_conduit_lengths+'.pore2']
     # Interpolate pore phase property values to throats
     try:
         Dt = phase[throat_diffusivity]
@@ -66,5 +66,5 @@ def poisson_conductance(target, pore_diffusivity, throat_diffusivity,
     gp2[_sp.isnan(gp2)] = _sp.inf
     # Find g for full throat
     gt = Dt[throats] * At / Lt
-    gt[gt<=0] = _sp.inf
+    gt[_sp.isnan(gt)] = _sp.inf
     return (1/gt + 1/gp1 + 1/gp2)**(-1)
