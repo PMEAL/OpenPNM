@@ -435,7 +435,10 @@ class GenericTransport(GenericAlgorithm):
             del(ls)  # Clean
         else:
             solver = getattr(sprs.linalg, self.settings['solver'])
-            x = solver(A=A.tocsr(), b=b)
+            A = A.tocsr()
+            A.indices = A.indices.astype(np.int64)
+            A.indptr = A.indptr.astype(np.int64)
+            x = solver(A=A, b=b)
         return x
 
     def results(self):
