@@ -42,7 +42,7 @@ def hagen_poiseuille(target,
 
     """
     network = target.project.network
-    throats = network.map_throats(target['throat._id'])
+    throats = network.map_throats(throats=target.Ts, target=target)
     phase = target.project.find_phase(target)
     geom = target.project.find_geometry(target)
     cn = network['throat.conns'][throats]

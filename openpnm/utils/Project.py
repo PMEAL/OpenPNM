@@ -341,9 +341,9 @@ class Project(list):
                 physics = self.find_physics(phase=phase)
                 temp = None
                 for phys in physics:
-                    Ps = phase.map_pores(phys['pore._id'])
+                    Ps = phase.map_pores(pores=phys.Ps, target=phys)
                     physPs = phase.tomask(pores=Ps)
-                    Ts = phase.map_throats(phys['throat._id'])
+                    Ts = phase.map_throats(throats=phys.Ts, target=phys)
                     physTs = phase.tomask(throats=Ts)
                     if np.all(geoPs == physPs) and np.all(geoTs == physTs):
                         temp = phys

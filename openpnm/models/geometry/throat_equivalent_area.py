@@ -2,7 +2,8 @@ from numpy import pi as _pi
 import numpy as _np
 
 
-def spherical_pores(target, throat_area='throat.area', pore_diameter='pore.diameter',
+def spherical_pores(target, throat_area='throat.area',
+                    pore_diameter='pore.diameter',
                     throat_conduit_lengths='throat.conduit_lengths'):
     r"""
     Calculate equivalent cross-sectional area for a conduit consisting of two
@@ -24,7 +25,7 @@ def spherical_pores(target, throat_area='throat.area', pore_diameter='pore.diame
 
     """
     network = target.project.network
-    throats = network.map_throats(target['throat._id'])
+    throats = network.map_throats(throats=target.Ts, target=target)
     cn = network['throat.conns'][throats]
     d1 = network[pore_diameter][cn[:, 0]]
     d2 = network[pore_diameter][cn[:, 1]]
@@ -35,11 +36,13 @@ def spherical_pores(target, throat_area='throat.area', pore_diameter='pore.diame
             'pore2': d2*L2*_pi / (2*_np.arctanh(2*L2/d2))}
 
 
-def truncated_pyramid(target, throat_area='throat.area', pore_diameter='pore.diameter'):
+def truncated_pyramid(target, throat_area='throat.area',
+                      pore_diameter='pore.diameter'):
     r"""
     Calculate equivalent cross-sectional area for a conduit consisting of two
-    truncated pyramid pores and a constant cross-section throat. This area can be later
-    used to calculate hydraulic or diffusive conductance of the conduit.
+    truncated pyramid pores and a constant cross-section throat. This area can
+    be later used to calculate hydraulic or diffusive conductance of the
+    conduit.
 
     Parameters
     ----------
@@ -56,7 +59,7 @@ def truncated_pyramid(target, throat_area='throat.area', pore_diameter='pore.dia
 
     """
     network = target.project.network
-    throats = network.map_throats(target['throat._id'])
+    throats = network.map_throats(throats=target.Ts, target=target)
     cn = network['throat.conns'][throats]
     d1 = network[pore_diameter][cn[:, 0]]
     d2 = network[pore_diameter][cn[:, 1]]
@@ -66,7 +69,8 @@ def truncated_pyramid(target, throat_area='throat.area', pore_diameter='pore.dia
             'pore2': d2*td}
 
 
-def circular_pores(target, throat_area='throat.area', pore_diameter='pore.diameter',
+def circular_pores(target, throat_area='throat.area',
+                   pore_diameter='pore.diameter',
                    throat_conduit_lengths='throat.conduit_lengths'):
     r"""
     Calculate equivalent cross-sectional area for a conduit consisting of two
@@ -88,7 +92,7 @@ def circular_pores(target, throat_area='throat.area', pore_diameter='pore.diamet
 
     """
     network = target.project.network
-    throats = network.map_throats(target['throat._id'])
+    throats = network.map_throats(throats=target.Ts, target=target)
     cn = network['throat.conns'][throats]
     d1 = network[pore_diameter][cn[:, 0]]
     d2 = network[pore_diameter][cn[:, 1]]

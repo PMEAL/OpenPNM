@@ -757,37 +757,62 @@ class Base(dict):
             t = namedtuple('index_map', ('indices', 'mask'))
             return t(ind, mask)
 
-    def map_pores(self, ids, filtered=True):
+    def map_pores(self, pores, target, filtered=True):
         r"""
-        Translates pore ids to indices on the calling object
+        Given a list of pore on a target object, finds indices of
+        those pores on the calling object
 
         Parameters
         ----------
-        ids : array_like
-            The ids of the pores whose indices are sought
+        pores : array_like
+            The indices of the pores on the target object
+
+        target : OpenPNM Base object
+            The object corresponding to the indices given in ``pores``
 
         filtered : boolean (default is ``True``)
             If ``True`` then a ND-array of indices is returned with missing
             indices removed, otherwise a named-tuple containing both the
             ``indices`` and a boolean ``mask`` with ``False`` indicating
-            which ``ids`` were not found.
+            which locations were not found.
+
+        Returns
+        -------
+        Pore indices on the calling object corresponding to the same pores
+        on the target object.  Can be an array or a tuple containing an array
+        and a mask, depending on the value of ``filtered``.
 
         """
+        ids = target['pore._id'][pores]
         return self._map(element='pore', ids=ids, filtered=filtered)
 
-    def map_throats(self, ids, filtered=True):
+    def map_throats(self, throats, target, filtered=True):
         r"""
-        Translates throat ids to indices on the calling object
+        Given a list of throats on a target object, finds indices of
+        those throats on the calling object
 
         Parameters
         ----------
-        ids : array_like
-             The ids of the throats whose indices are sought
+        throats : array_like
+            The indices of the throats on the target object
+
+        target : OpenPNM Base object
+            The object corresponding to the indices given in ``throats``
 
         filtered : boolean (default is ``True``)
-            If ``True`` then a ND-array of indices is returned, otherwise
-            a named-tuple containing the ``indices`` and the ???
+            If ``True`` then a ND-array of indices is returned with missing
+            indices removed, otherwise a named-tuple containing both the
+            ``indices`` and a boolean ``mask`` with ``False`` indicating
+            which locations were not found.
+
+        Returns
+        -------
+        Throat indices on the calling object corresponding to the same throats
+        on the target object.  Can be an array or a tuple containing an array
+        and a mask, depending on the value of ``filtered``.
+
         """
+        ids = target['throat._id'][throats]
         return self._map(element='throat', ids=ids, filtered=filtered)
 
     def _tomask(self, indices, element):

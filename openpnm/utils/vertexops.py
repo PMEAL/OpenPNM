@@ -282,9 +282,8 @@ def pore2centroid(network):
     for geom_name in network.geometries():
         geometry = network.geometries(geom_name)[0]
         if 'pore.centroid' in geometry.props():
-            net_pores, geom_pores = geometry.map_pores(network,
-                                                       geometry.pores(),
-                                                       True).values()
+            net_pores = network.pores(geometry.name)
+            geom_pores = network.map_pors(poress=geometry.Ts, target=geometry)
             for i in range(len(geom_pores)):
                 network['pore.coords'][net_pores[i]] = \
                     geometry['pore.centroid'][geom_pores[i]]
@@ -408,11 +407,11 @@ def plot_pore(geometry, pores, fig=None, axis_bounds=None,
     from mpl_toolkits.mplot3d.art3d import Poly3DCollection
     if len(pores) > 0:
         net = geometry.network
-        net_pores = net.map_pores(geometry['pore._id'][pores])
+        net_pores = net.map_pores(pores=pores, target=geometry)
         centroids = geometry['pore.centroid'][pores]
         coords = net['pore.coords'][net_pores]
         net_throats = net.find_neighbor_throats(pores=net_pores)
-        throats = geometry.map_throats(net['throat._id'][net_throats])
+        throats = geometry.map_throats(throats=net_throats, target=net)
         tcentroids = geometry["throat.centroid"][throats]
         # Can't create volume from one throat
         if 1 <= len(throats):

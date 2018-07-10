@@ -20,7 +20,7 @@ def ctc(target, pore_diameter='pore.diameter'):
 
     """
     network = target.project.network
-    throats = network.map_throats(target['throat._id'])
+    throats = network.map_throats(throats=target.Ts, target=target)
     cn = network['throat.conns'][throats]
     C1 = network['pore.coords'][cn[:, 0]]
     C2 = network['pore.coords'][cn[:, 1]]
@@ -106,7 +106,7 @@ def spherical_pores(target, pore_diameter='pore.diameter',
     L2[mask_overlap] = L2temp[mask_overlap]
     Lt[mask_overlap] = L_negative
     # Removing negative lengths
-    if _sp.any([L1<0, L2<0, Lt<0]) and L_negative is not None:
+    if _sp.any([L1 < 0, L2 < 0, Lt < 0]) and L_negative is not None:
         _logger.warn('Negative pore/throat lengths are calculated. Arbitrary' +
                      ' positive length assigned: ' + str(L_negative))
         L1[L1 < 0] = L_negative
@@ -140,7 +140,7 @@ def truncated_pyramid(target, pore_diameter='pore.diameter',
 
 
 def circular_pores(target, pore_diameter='pore.diameter',
-                    throat_diameter='throat.diameter'):
+                   throat_diameter='throat.diameter'):
     r"""
     Calculate conduit lengths, i.e. pore 1 length, throat length,
     and pore 2 length, assuming that pores are circles.

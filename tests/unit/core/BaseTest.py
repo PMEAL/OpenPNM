@@ -572,25 +572,46 @@ class BaseTest:
         assert self.net['pore.test_dict.test1'].shape == (self.net.Np, )
         assert 'pore.test_dict.test2' in self.net.keys()
 
-    def test_pore_mapping(self):
+    def test_map_pores(self):
         a = self.geo21['pore._id']
         b = self.geo22['pore._id']
         assert a.size == self.geo21.Np
         assert b.size == self.geo22.Np
         assert ~sp.any(sp.in1d(a, b))
-        assert sp.all(self.net2.map_pores(a) == self.net2.pores(self.geo21.name))
-        assert sp.all(self.net2.map_pores(b) == self.net2.pores(self.geo22.name))
+        Pgeo21 = self.net2.map_pores(pores=self.geo21.Ps, target=self.geo21)
+        assert sp.all(Pgeo21 == self.net2.pores(self.geo21.name))
+        Pgeo22 = self.net2.map_pores(pores=self.geo22.Ps, target=self.geo22)
+        assert sp.all(Pgeo22 == self.net2.pores(self.geo22.name))
 
-    def test_throat_mapping(self):
+    def test_map_throats(self):
         a = self.geo21['throat._id']
         assert a.size == self.geo21.Nt
-        assert sp.all(self.net2.map_throats(a) == self.net2.throats(self.geo21.name))
+        Tgeo21 = self.net2.map_throats(throats=self.geo21.Ts, target=self.geo21)
+        assert sp.all(Tgeo21 == self.net2.throats(self.geo21.name))
 
     def test_map_pores_unfiltered(self):
-        a = self.geo['pore._id']
-        b = self.net.map_pores(a, filtered=False)
+        b = self.net.map_pores(pores=self.geo.Ps, target=self.geo, filtered=False)
         assert sp.all(b.indices == self.net.pores(self.geo.name))
         assert b.mask.size == self.geo.Np
+
+    def test_map_pores_unfiltered_missing(self):
+        Ps = self.net2.Ps[15:20]
+        b = self.geo22.map_pores(pores=Ps, target=self.net2, filtered=False)
+        assert sum(b.mask) == 2
+        assert len(b.mask) == 5
+
+    def test_map_pores_reverse(self):
+        Ps = self.net2.Ps[:5]
+        b = self.geo21.map_pores(pores=Ps, target=self.net2)
+        assert sp.all(b == [0, 1, 2, 3, 4])
+        Ps = self.net2.Ps[-5:]
+        b = self.geo22.map_pores(pores=Ps, target=self.net2)
+        assert sp.all(b == [4, 5, 6, 7, 8])
+
+    def test_map_pores_missing(self):
+        Ps = self.net2.Ps[:5]
+        b = self.geo22.map_pores(pores=Ps, target=self.net2)
+        assert len(b) == 0
 
     def test_interleave_data_bool(self):
         net = op.network.Cubic(shape=[2, 2, 2])

@@ -62,7 +62,7 @@ def conduit_conductance(target, throat_conductance,
     value = phase[throat_conductance].copy()
     value[mask] = value[mask]*factor
     # Now map throats onto target object
-    Ts = phase.map_throats(ids=target['throat._id'])
+    Ts = network.map_throats(throats=target.Ts, target=target)
     return value[Ts]
 
 
