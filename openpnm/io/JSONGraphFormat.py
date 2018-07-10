@@ -22,19 +22,19 @@ class JSONGraphFormat(GenericIO):
 
     Notes
     -----
-    The JGF standard must contain data formatted according to http://jsongraphformat.info and
-    enforced by JSON schema validation.
+    The JGF standard must contain data formatted according to
+    http://jsongraphformat.info and enforced by JSON schema validation.
     """
 
     @classmethod
     def __validate_json__(self, json_file):
         # Validate name of schema file
-        relative_path_to_schema_filename = '../../utils/jgf_schema.pkl'
-        schema_filename = Path(os.path.realpath(__file__), relative_path_to_schema_filename)
-        schema_filename = self._parse_filename(filename=schema_filename, ext='pkl')
+        relative_path = '../../utils/jgf_schema.pkl'
+        schema_file = Path(os.path.realpath(__file__), relative_path)
+        schema_file = self._parse_filename(filename=schema_file, ext='pkl')
 
         # Load schema from pickle file
-        with open(schema_filename, 'rb') as file:
+        with open(schema_file, 'rb') as file:
             jgf_schema = pickle.load(file)
 
         # Validate JSON agains schema
@@ -68,13 +68,14 @@ class JSONGraphFormat(GenericIO):
                               'throat.conns', 'throat.diameter'}
             assert required_props.issubset(network.props())
         except AssertionError:
-            raise(Exception('Error - network is missing one of: ' + str(required_props)))
+            raise Exception('Error - network is missing one of: ' +
+                            str(required_props))
 
-        graph_metadata_obj = {"number_of_nodes": network.Np, "number_of_links": network.Nt}
-        nodes_obj = [{
+        graph_metadata_obj = {'number_of_nodes': network.Np,
+                              'number_of_links': network.Nt}
                         'id': str(ps),
                         'metadata': {
-                            'node_squared_radius': (network['pore.diameter'][ps] / 2)**2,
+                    'node_squared_radius': (network['pore.diameter'][ps]/2)**2,
                             'node_coordinates': {
                                 'x': network['pore.coords'][ps, 0],
                                 'y': network['pore.coords'][ps, 1],
@@ -88,14 +89,16 @@ class JSONGraphFormat(GenericIO):
                         'target': str(network['throat.conns'][ts, 1]),
                         'metadata': {
                             'link_length': network['throat.length'][ts],
-                            'link_squared_radius': (network['throat.diameter'][ts] / 2)**2
+                    'link_squared_radius': (network['throat.diameter'][ts]/2)**2
                         }
                     } for ts in network.Ts]
-        graph_obj = {'metadata': graph_metadata_obj, 'nodes': nodes_obj, 'edges': edges_obj}
+        graph_obj = {'metadata': graph_metadata_obj,
+                     'nodes': nodes_obj,
+                     'edges': edges_obj}
         json_obj = {'graph': graph_obj}
 
         if not self.__validate_json__(json_obj):
-            raise(Exception('Error - ' + filename + ' is not in the JSON Graph Format.'))
+            raise Exception(f'Error - {filename} is not in the JSON Graph Format.')
 
         # Load and validate input JSON
         with open(filename, 'w') as file:
@@ -129,7 +132,7 @@ class JSONGraphFormat(GenericIO):
         with open(filename, 'r') as file:
             json_file = json.load(file)
             if not self.__validate_json__(json_file):
-                raise(Exception('Error - ' + filename + ' is not in the JSON Graph Format.'))
+                raise Exception(f'Error - {filename} is not in the JSON Graph Format.')
 
         # Extract graph metadata from JSON
         number_of_nodes = json_file['graph']['metadata']['number_of_nodes']
@@ -146,7 +149,8 @@ class JSONGraphFormat(GenericIO):
         source = sp.array([int(edge['source']) for edge in edges])
         target = sp.array([int(edge['target']) for edge in edges])
         link_length = sp.array([edge['metadata']['link_length'] for edge in edges])
-        link_squared_radius = sp.array([edge['metadata']['link_squared_radius'] for edge in edges])
+        link_squared_radius = sp.array(
+            [edge['metadata']['link_squared_radius'] for edge in edges])
 
         # Generate network object
         network = GenericNetwork(Np=number_of_nodes, Nt=number_of_links)

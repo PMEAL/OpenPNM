@@ -29,7 +29,8 @@ class JSONGraphFormatTest:
 
     def test_load(self):
         # Load JSON file and ensure project integrity
-        path = Path(os.path.realpath(__file__), '../../../fixtures/JSONGraphFormat')
+        path = Path(os.path.realpath(__file__),
+                    '../../../fixtures/JSONGraphFormat')
         filename = Path(path.resolve(), '2nodes_1link.json')
         project = op.io.JSONGraphFormat.load(filename)
         assert len(project) == 1
@@ -67,7 +68,8 @@ class JSONGraphFormatTest:
         assert net['throat.diameter'] == 2.0 * sp.sqrt(squared_radius)
         assert net['throat.volume'] == sp.pi * squared_radius * length
         assert net['throat.perimeter'] == 2.0 * sp.pi * sp.sqrt(squared_radius)
-        assert net['throat.surface_area'] == 2.0 * sp.sqrt(squared_radius) * sp.pi * length
+        assert net['throat.surface_area'] == 2.0 * \
+            sp.sqrt(squared_radius) * sp.pi * length
 
 
 if __name__ == '__main__':
