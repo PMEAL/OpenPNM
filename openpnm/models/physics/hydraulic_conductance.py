@@ -47,13 +47,13 @@ def hagen_poiseuille(target,
     geom = target.project.find_geometry(target)
     cn = network['throat.conns'][throats]
     # Getting equivalent areas
-    A1 = geom[throat_equivalent_area+'.pore1'][throats]
-    At = geom[throat_equivalent_area+'.throat'][throats]
-    A2 = geom[throat_equivalent_area+'.pore2'][throats]
+    A1 = geom[throat_equivalent_area+'.pore1']
+    At = geom[throat_equivalent_area+'.throat']
+    A2 = geom[throat_equivalent_area+'.pore2']
     # Getting conduit lengths
-    L1 = geom[throat_conduit_lengths+'.pore1'][throats]
-    Lt = geom[throat_conduit_lengths+'.throat'][throats]
-    L2 = geom[throat_conduit_lengths+'.pore2'][throats]
+    L1 = geom[throat_conduit_lengths+'.pore1']
+    Lt = geom[throat_conduit_lengths+'.throat']
+    L2 = geom[throat_conduit_lengths+'.pore2']
     # Interpolate pore phase property values to throats
     try:
         mut = phase[throat_viscosity]
