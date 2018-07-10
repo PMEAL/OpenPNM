@@ -17,6 +17,16 @@ class JSONGraphFormatTest:
         ws = op.Workspace()
         ws.clear()
 
+    def test_validation_success(self):
+        json_obj = {'graph': {'nodes': [{'id': "0"}]}}  # 'id' is a string
+        jgf = op.io.JSONGraphFormat()
+        assert jgf.__validate_json__(json_obj)
+
+    def test_validation_failure(self):
+        json_obj = {'graph': {'nodes': [{'id': 0}]}}    # 'id' is not a string
+        jgf = op.io.JSONGraphFormat()
+        assert not jgf.__validate_json__(json_obj)
+
     def test_load(self):
         # Load JSON file and ensure project integrity
         path = Path(os.path.realpath(__file__), '../../../fixtures/JSONGraphFormat')
