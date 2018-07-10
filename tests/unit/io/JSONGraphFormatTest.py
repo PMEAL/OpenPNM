@@ -1,4 +1,5 @@
 import copy
+import json
 import os
 from pathlib import Path
 
@@ -48,6 +49,93 @@ class JSONGraphFormatTest:
             op.io.JSONGraphFormat.save(net, filename=filename)
         expected_error = 'Error - network is missing one of:'
         assert expected_error in str(e_info.value)
+
+    def test_save_success(self):
+        path = Path(os.path.realpath(__file__),
+                    '../../../fixtures/JSONGraphFormat')
+        filename = Path(path.resolve(), 'save_success.json')
+        op.io.JSONGraphFormat.save(self.net, filename=filename)
+
+        # Read newly created file
+        with open(filename, 'r') as file:
+            json_file = json.load(file)
+
+        # Ensure correctnes of overal network properties
+        assert json_file['graph']['metadata']['number_of_nodes'] == self.net.Np
+        assert json_file['graph']['metadata']['number_of_links'] == self.net.Nt
+
+        # Ensure correctnes of node list properties
+        nodes = sorted(json_file['graph']['nodes'], key=lambda node: int(node['id']))
+        assert len(nodes) == self.net.Np
+        assert isinstance(nodes, list)
+
+        # Sweep all nodes in the list
+        for node in nodes:
+            assert isinstance(node, dict)
+
+            # Ensure correctnes of node property types
+            assert 'id' in node
+            assert 'metadata' in node
+            assert isinstance(node['id'], str)
+            assert isinstance(node['metadata'], dict)
+
+            # Ensure correctnes of node property values
+            assert int(node['id']) < self.net.Np
+
+            # Ensure correctnes of node metadata types
+            assert 'node_coordinates' in node['metadata']
+            assert 'node_squared_radius' in node['metadata']
+            assert 'x' in node['metadata']['node_coordinates']
+            assert 'y' in node['metadata']['node_coordinates']
+            assert 'z' in node['metadata']['node_coordinates']
+            assert isinstance(node['metadata']['node_coordinates'], dict)
+            assert isinstance(node['metadata']['node_squared_radius'], int)
+            assert isinstance(node['metadata']['node_coordinates']['x'], int)
+            assert isinstance(node['metadata']['node_coordinates']['y'], int)
+            assert isinstance(node['metadata']['node_coordinates']['z'], int)
+
+            # Ensure correctness of node metadata values
+            assert node['metadata']['node_squared_radius'] == 1
+            assert node['metadata']['node_coordinates']['x'] * 2 % 2 == 0
+            assert node['metadata']['node_coordinates']['y'] * 2 % 2 == 0
+            assert node['metadata']['node_coordinates']['z'] * 2 % 2 == 0
+
+        # Ensure correctnes of edge list properties
+        edges = sorted(json_file['graph']['edges'], key=lambda edge: int(edge['id']))
+        assert len(edges) == self.net.Nt
+        assert isinstance(edges, list)
+
+        # Sweep all edges in the list
+        for edge in edges:
+            assert isinstance(edge, dict)
+
+            # Ensure correctnes of edge property types
+            assert 'id' in edge
+            assert 'source' in edge
+            assert 'target' in edge
+            assert 'metadata' in edge
+            assert isinstance(edge['id'], str)
+            assert isinstance(edge['source'], str)
+            assert isinstance(edge['target'], str)
+            assert isinstance(edge['metadata'], dict)
+
+            # Ensure correctnes of edge property values
+            assert int(edge['id']) < self.net.Nt
+            assert int(edge['source']) < self.net.Np
+            assert int(edge['target']) < self.net.Np
+
+            # Ensure correctnes of edge metadata types
+            assert 'link_length' in edge['metadata']
+            assert 'link_squared_radius' in edge['metadata']
+            assert isinstance(edge['metadata']['link_length'], float)
+            assert isinstance(edge['metadata']['link_squared_radius'], float)
+
+            # Ensure correctnes of edge metadata values
+            assert edge['metadata']['link_length'] == 1.0
+            assert edge['metadata']['link_squared_radius'] == 1.0
+
+        # Remove test file after completion
+        os.remove(filename)
 
     def test_load_failure(self):
         path = Path(os.path.realpath(__file__),
