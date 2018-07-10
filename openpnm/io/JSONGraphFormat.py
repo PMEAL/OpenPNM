@@ -45,7 +45,7 @@ class JSONGraphFormat(GenericIO):
             return False
 
     @classmethod
-    def save(self, network, phases=[], filename=''):
+    def save(self, network, filename=''):
         r"""
         Write the wetwork to disk as a JGF file.
 
@@ -55,11 +55,8 @@ class JSONGraphFormat(GenericIO):
 
         filename : string
             Desired file name, defaults to network name if not given
-
-        phases : list of phase objects ([])
-            Phases that have properties we want to write to file
-
         """
+
         # Ensure output file is valid
         filename = self._parse_filename(filename=filename, ext='json')
 
@@ -133,8 +130,8 @@ class JSONGraphFormat(GenericIO):
         Returns
         -------
         If no project object is supplied then one will be created and returned.
-
         """
+
         # Ensure input file is valid
         filename = self._parse_filename(filename=filename, ext='json')
 
