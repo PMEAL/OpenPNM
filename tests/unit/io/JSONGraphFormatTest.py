@@ -1,7 +1,9 @@
+import copy
 import os
 from pathlib import Path
 
 import py
+import pytest
 import scipy as sp
 
 import openpnm as op
@@ -12,6 +14,11 @@ class JSONGraphFormatTest:
     def setup_class(self):
         ws = op.Workspace()
         ws.settings['local_data'] = True
+        self.net = op.network.Cubic(shape=[2, 2, 2])
+        self.net['pore.diameter'] = 2.0 * sp.ones(self.net.Np)
+        self.net['throat.diameter'] = 2.0 * sp.ones(self.net.Nt)
+        self.net.add_model(propname='throat.length',
+                           model=op.models.geometry.throat_length.ctc)
 
     def teardown_class(self):
         ws = op.Workspace()
@@ -27,6 +34,20 @@ class JSONGraphFormatTest:
         jgf = op.io.JSONGraphFormat()
         assert not jgf.__validate_json__(json_obj)
 
+    def test_save_failure(self):
+        path = Path(os.path.realpath(__file__),
+                    '../../../fixtures/JSONGraphFormat')
+        filename = Path(path.resolve(), 'save_failure.json')
+
+        # Create a deep copy of network with one required property missing
+        net = copy.deepcopy(self.net)
+        net.pop('pore.diameter')
+
+        # Ensure an exception was thrown
+        with pytest.raises(Exception) as e_info:
+            op.io.JSONGraphFormat.save(net, filename=filename)
+        expected_error = 'Error - network is missing one of:'
+        assert expected_error in str(e_info.value)
 
     def test_load_failure(self):
         path = Path(os.path.realpath(__file__),
