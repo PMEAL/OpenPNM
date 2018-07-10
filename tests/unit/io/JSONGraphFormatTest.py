@@ -152,7 +152,7 @@ class JSONGraphFormatTest:
         # Load JSON file and ensure project integrity
         path = Path(os.path.realpath(__file__),
                     '../../../fixtures/JSONGraphFormat')
-        filename = Path(path.resolve(), '2nodes_1link.json')
+        filename = Path(path.resolve(), 'valid.json')
         project = op.io.JSONGraphFormat.load(filename)
         assert len(project) == 1
 
