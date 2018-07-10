@@ -110,10 +110,6 @@ class JSONGraphFormat(GenericIO):
         # Build full JSON object
         json_obj = {'graph': graph_obj}
 
-        # Validate generated JSON object with respect to JGF schema
-        if not self.__validate_json__(json_obj):
-            raise Exception(f'Error - {filename} is not in the JSON Graph Format.')
-
         # Load and validate input JSON
         with open(filename, 'w') as file:
             json.dump(json_obj, file, indent=2)
