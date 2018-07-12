@@ -16,13 +16,15 @@ phys.add_model(propname='pore.late_filling',
                model=op.models.physics.multiphase.late_filling,
                pressure='pore.pressure',
                Pc_star='pore.pc_star',
-               eta=1, Swp_star=0.4)
+               eta=1, Swp_star=0.4,
+               regen_mode='deferred')
 phys['throat.pc_star'] = phys['throat.entry_pressure']
 phys.add_model(propname='throat.late_filling',
                model=op.models.physics.multiphase.late_filling,
                pressure='throat.pressure',
                Pc_star='throat.pc_star',
-               eta=1, Swp_star=0.2)
+               eta=1, Swp_star=0.2,
+               regen_mode='deferred')
 
 mip = op.algorithms.Porosimetry(project=proj)
 mip.set_inlets(pores=pn.pores('left'))
@@ -30,3 +32,4 @@ mip.setup(phase=hg)
 mip.set_partial_filling(propname='pore.late_filling')
 mip.set_partial_filling(propname='throat.late_filling')
 mip.run(points=20, stop=1e7)
+mip.plot_intrusion_curve()
