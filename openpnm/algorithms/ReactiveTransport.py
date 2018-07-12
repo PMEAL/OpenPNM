@@ -108,8 +108,8 @@ class ReactiveTransport(GenericTransport):
                 self[self.settings['quantity']] = x
                 self._build_A(force=True)
                 self._build_b(force=True)
-                self._apply_BCs()
                 self._apply_sources()
+                self._apply_BCs()
                 x_new = self._solve()
                 # Relaxation
                 x_new = relax*x_new + (1-relax)*self[self.settings['quantity']]
