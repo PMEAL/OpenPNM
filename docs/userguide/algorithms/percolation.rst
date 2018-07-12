@@ -40,7 +40,7 @@ as imbibition and this may progress by different physical mechanisms such as fil
 OP is a quasi-static algorithm which has more of a basis in graph theory than real physical simulations of transport in porous media. It is useful for gathering information about the pore size distribution,
 but not really for simulating multiphysics. However, it's advantages is that it can be very fast and appropriate for simulating common experimental data such as mercury intrusion porosimetry.
 
-For this purpose we have provided a Porosimetry class which is a subclass of the OrdinaryPercolation class with some settings and additional methods to account for late pore filling:
+For this purpose we have provided a ``Porosimetry`` class which is a subclass of the ``OrdinaryPercolation`` class with some settings and additional methods to account for late pore filling:
 a phenomena that occurs when a highly non-wetting phase such as mercury enters a pore whereby small spaces are not completely filled and only done so later when the pressure increases further.
 This behaviour is accounted for heuristically with the following model:
 
@@ -90,20 +90,52 @@ An MIP simulation can be run with the following commands:
 Invasion Percolation
 --------------------------------------------------------------------------------
 
-Invasion Percolation (IP) again typically has two modes: site and bond, but also allows for site and bond percolation which we describe in the next section.
-Similarly to OP we are again concerned with analysis of the entry pressure. However, instead of identifying connected clusters and invading them all in one step, we identify the neighboring elements
-of the invading cluster and invaded one at a time based on the path of least resistance. This method allows for a more accurate representation of transient flow and for more physical models associated with
+Our most basic implementation, the ``InvasionPercolation`` class only operates in bond mode.
+Similarly to OP we are concerned with analysis of the entry pressure. However, instead of identifying connected clusters and invading them all in one step, we identify the neighboring elements
+of the invading cluster and further invade one neighbor at a time along the path of least resistance. This method allows for a more accurate representation of transient flow and for more physical models associated with
 the position and advancement of the meniscus within a given element. Phenomena such as trapping where clusters can become isolated, co-operative pore filling and snap off are also only possible with IP.
 It is possible to define multiple inlet clusters which may progress at different rates and pressures, again allowing for more physical situations to be simulated. The draw-back to IP is that for larger networks
-it can be significantly slower, although care has been taken to optimize the algorithms as much as possible. When running IP in site mode the capillary pressure of the pores are used and all throats connected to an
-invaded pore are also considered to be invaded. Conversely, when running in bond mode, the entry pressure of the throats is used and connected pores are automatically invaded.
-This is really a convention used to speed up calculations with reasoning being that throats are typically smaller than pores. Therefore, for drainage the throats require a higher capillary pressure and so once the meniscus has reached this point
-it can freely enter a larger connected space making bond percolation the most appropriate. The reverse scenario is imbibition where larger spaces provide greater resistance to flow (the ink bottle effect) and so site percolation is appropriate.
+it can be significantly slower, although care has been taken to optimize the algorithms as much as possible using python's `heapq module <https://docs.python.org/3.0/library/heapq.html>`_.
+The heapq is basically a sorted list with the smallest element at the front of the queue. So when an invasion takes place a new pore is invaded and all of the connected throats are added to the queue and become automatically sorted by entry pressure.
+The next throat is then selected from the front of the queue as this is the smallest entry pressure accessible to the invading cluster and the process repeats until the network is fully invaded.
+A full invasion simulation using a 2D network can be run with the following commands:
+
+.. code-block:: python
+
+ >>> import openpnm as op
+ >>> import matplotlib.pyplot as plt
+ >>> import scipy as sp
+ >>> ws = op.Workspace()
+ >>> proj = ws.new_project()
+ >>> S = sp.array([100, 100, 1])
+ >>> pn = op.network.Cubic(shape=S, spacing=0.0001)
+ >>> geom = op.geometry.StickAndBall(network=pn, pores=pn.Ps, throats=pn.Ts)
+ >>> water = op.phases.Water(network=pn)
+ >>> water.add_model(propname='throat.entry_pressure',
+ ...                 model=op.models.physics.capillary_pressure.washburn)
+ >>> ip = op.algorithms.InvasionPercolation(network=pn)
+ >>> ip.setup(phase=water)
+ >>> ip.set_inlets(pores=[0])
+ >>> ip.run()
+ >>> water.update(ip.results(Snwp=0.5))
+ >>> plt.subplot(1, 2, 1)
+ >>> plt.imshow(sp.reshape(ip['pore.invasion_sequence'], newshape=S[S > 1]))
+ >>> plt.subplot(1, 2, 2)
+ >>> plt.imshow(sp.reshape(water['pore.occupancy'], newshape=S[S > 1]))
+
+Which produces the following output
+
+.. image:: https://imgur.com/VPf24cN.png
 
 --------------------------------------------------------------------------------
 Mixed Invasion Percolation
 --------------------------------------------------------------------------------
 
-As mentioned before, Mixed Invasion Percolation, is a special case of IP where both pores and throats can be invaded on an individual basis, this is appropriate when the wettability of the invading and defending phases are similar,
+Mixed Invasion Percolation, is a special case of IP where both pores and/or throats can be invaded on an individual basis, this is appropriate when the wettability of the invading and defending phases are similar,
 in this case the porous media is said to have neutral wettability. Other factors other than simple pore and throat sizes can determine the shape and displacement of the meniscus and Mixed IP allows for processes in both pores and throats to happen in the same simulation such
 as cooperative pore filling and throat snap-off.
+
+When running Mixed IP in site mode the capillary pressure of the pores are used and all throats connected to an
+invaded pore are also considered to be invaded on the same step as the pore. Conversely, when running in bond mode, the entry pressure of the throats is used and connected pores are automatically invaded.
+This is really a convention used to speed up calculations with reasoning being that throats are typically smaller than pores. Therefore, for drainage the throats require a higher capillary pressure and so once the meniscus has reached this point
+it can freely enter a larger connected space making bond percolation the most appropriate. The reverse scenario is imbibition where larger spaces provide greater resistance to flow (the ink bottle effect) and so site percolation is appropriate.
