@@ -87,6 +87,9 @@ class VTK(GenericIO):
             array = am[key]
             if array.dtype == np.bool:
                 array = array.astype(int)
+            if np.any(np.isnan(array)):
+                logger.warning(key + ' has nans, will not write to file')
+                continue
             if array.size != num_points:
                 continue
             element = VTK._array_to_element(key, array)
@@ -98,6 +101,9 @@ class VTK(GenericIO):
             array = am[key]
             if array.dtype == np.bool:
                 array = array.astype(int)
+            if np.any(np.isnan(array)):
+                logger.warning(key + ' has nans, will not write to file')
+                continue
             if array.size != num_throats:
                 continue
             element = VTK._array_to_element(key, array)
