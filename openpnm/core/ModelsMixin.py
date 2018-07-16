@@ -151,7 +151,7 @@ class ModelsMixin():
     >>> print(temp.num_pores())
     3
 
-    But also has those needed for working with models.  For instance, a sipmle
+    But also has those needed for working with models.  For instance, a simple
     model can be added as follows:
 
     >>> temp.add_model(propname='pore.test',
@@ -270,7 +270,7 @@ class ModelsMixin():
             # Start be regenerating models on self
             for item in propnames:
                 self._regen(item)
-            # Then regen models on associated physics, if any in other_models
+            # Then regen models on associated objects, if any in other_models
             for phys in self.project.find_physics(phase=self):
                 phys.regenerate_models(propnames=other_models, deep=False)
         elif self._isa('network'):  # Repeat for other object types
