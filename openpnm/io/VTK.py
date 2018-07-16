@@ -36,7 +36,7 @@ class VTK(GenericIO):
     '''.strip()
 
     @classmethod
-    def save(cls, network, phases=[], filename='', delim=' | '):
+    def save(cls, network, phases=[], filename='', delim=' | ', fill_nans=None):
         r"""
         Save network and phase data to a single vtp file for visualizing in
         Paraview
@@ -53,6 +53,18 @@ class VTK(GenericIO):
         filename : string, optional
             Filename to write data.  If no name is given the file is named
             after the network
+
+        delim : string
+            Specify which character is used to delimit the data names.  The
+            default is ' | ' which creates a nice clean output in the Paraview
+            pipeline viewer (e.g. net | property | pore | diameter)
+
+        fill_nans : scalar
+            The value to use to replace NaNs with.  The VTK file format does
+            not work with NaNs, so they must be dealt with.  The default is
+            `None` which means property arrays with NaNs are not written to the
+            file.  Other useful options might be 0 or -1, but the user must
+            be aware that these are not real values, only place holders.
 
         """
         project, network, phases = cls._parse_args(network=network,
@@ -83,31 +95,21 @@ class VTK(GenericIO):
         lines_node.append(offsets)
 
         point_data_node = piece_node.find('PointData')
-        for key in key_list:
-            array = am[key]
-            if array.dtype == np.bool:
-                array = array.astype(int)
-            if np.any(np.isnan(array)):
-                logger.warning(key + ' has nans, will not write to file')
-                continue
-            if array.size != num_points:
-                continue
-            element = VTK._array_to_element(key, array)
-            if element is not None:
-                point_data_node.append(element)
-
         cell_data_node = piece_node.find('CellData')
         for key in key_list:
             array = am[key]
             if array.dtype == np.bool:
                 array = array.astype(int)
             if np.any(np.isnan(array)):
-                logger.warning(key + ' has nans, will not write to file')
-                continue
-            if array.size != num_throats:
-                continue
+                if fill_nans is None:
+                    logger.warning(key + ' has nans, will not write to file')
+                    continue
+                else:
+                    array[np.isnan(array)] = fill_nans
             element = VTK._array_to_element(key, array)
-            if element is not None:
+            if (array.size == num_points) and element:
+                point_data_node.append(element)
+            elif (array.size == num_throats) and element:
                 cell_data_node.append(element)
 
         if filename == '':
