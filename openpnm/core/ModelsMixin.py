@@ -218,7 +218,7 @@ class ModelsMixin():
         if regen_mode not in ['deferred']:
             self._regen(propname)
 
-    def regenerate_models(self, propnames=None, exclude=[]):
+    def regenerate_models(self, propnames=None, exclude=[], deep=False):
         r"""
         Re-runs the specified model or models.
 
@@ -234,41 +234,53 @@ class ModelsMixin():
             to exclude specific models.  It may be more convenient to supply
             as list of 2 models to exclude than to specify 8 models to include.
 
+        deep : boolean
+            Specifies whether or not to regenerate models on all associated
+            objects.  For instance, if ``True``, then all Physics models will
+            be regenerated when method is called on the corresponding Phase.
+            The default is ``False``.  Note that including specific models in
+            the ``propnames`` argument will also trigger the calling of models
+            on associated objects.  For instance, including
+            'throat.hydraulic_conductance' in the list of ``propname`` when
+            this method is called on a Phase will regenerate this model on
+            all associated Physics.
+
         """
         if type(propnames) is str:  # Convert string to list if necessary
             propnames = [propnames]
-
         if propnames is None:  # If no props given, then regenerate them all
             propnames = self.models.dependency_list()
             # If some props are to be excluded, remove them from list
             if len(exclude) > 0:
                 propnames = [i for i in propnames if i not in exclude]
-
-        # Check if any propnames are not on self, deal with separately
-        self_models = self.models.dependency_list()
-        foreign_models = set(propnames).difference(set(self_models))
-        if len(foreign_models):
-            # If foreign model is found on another object, regenerate it
-            for item in foreign_models:
-                if self._isa('phase'):
-                    for phys in self.project.find_physics(phase=self):
-                        phys.regenerate_models(propnames)
-                if self._isa('network'):
-                    for geom in self.geometries().values():
-                        geom.regenerate_models(propnames)
-            # Remove any foreign models from given list, and proceed
-            propnames = set(propnames).difference(foreign_models)
-
         # Re-order given propnames according to dependency tree
+        self_models = self.models.dependency_list()
         propnames = [i for i in self_models if i in propnames]
 
-        # Scan through list of propnames and regenerate each one
-        for item in propnames:
-            self._regen(item)
+        # Check if any propnames are not on self, deal with separately
+        other_models = list(set(propnames).difference(set(self_models)))
+        if deep:
+            other_models = None
+        if self._isa() in ['phase', 'physics']:
+            phase = self.project.find_phase(self)
+            for item in propnames:
+                phase._regen(item)
+            for phys in self.project.find_physics(phase=phase):
+                phys.regenerate_models(propnames=other_models)
+        if self._isa() in ['network', 'geometry']:
+            network = self.project.network
+            for item in propnames:
+                network._regen(item)
+            for geom in self.project.geometries().values():
+                geom.regenerate_models(propnames=other_models)
 
     def _regen(self, prop):
         # Create a temporary dict of all model arguments
-        kwargs = self.models[prop].copy()
+        try:
+            kwargs = self.models[prop].copy()
+        except KeyError:
+            logger.info(prop+' not found, will retry if deep is True')
+            return
         # Pop model and regen_mode from temporary dict
         model = kwargs.pop('model')
         regen_mode = kwargs.pop('regen_mode', None)
@@ -284,6 +296,7 @@ class ModelsMixin():
             try:
                 self[prop] = model(target=self, **kwargs)
             except KeyError:
+                # Find names of missing dependencies and print nice warning
                 missing_deps = []
                 for key in kwargs.values():
                     if type(key) == str and key.split('.')[0] in ['pore', 'throat']:
