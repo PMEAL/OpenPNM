@@ -436,6 +436,8 @@ class GenericTransport(GenericAlgorithm):
         else:
             solver = getattr(sprs.linalg, self.settings['solver'])
             x = solver(A=A.tocsr(), b=b)
+        if type(x) == tuple:
+            x = x[0] 
         return x
 
     def results(self):
