@@ -246,6 +246,9 @@ class ModelsMixin():
             all associated Physics.
 
         """
+        # If empty list of propnames was given, do nothing and return
+        if type(propnames) is list and len(propnames) == 0:
+            return
         if type(propnames) is str:  # Convert string to list if necessary
             propnames = [propnames]
         if propnames is None:  # If no props given, then regenerate them all
@@ -257,22 +260,37 @@ class ModelsMixin():
         self_models = self.models.dependency_list()
         propnames = [i for i in self_models if i in propnames]
 
-        # Check if any propnames are not on self, deal with separately
-        other_models = list(set(propnames).difference(set(self_models)))
         if deep:
-            other_models = None
-        if self._isa() in ['phase', 'physics']:
-            phase = self.project.find_phase(self)
+            other_models = None  # Will trigger regen of ALL models
+        else:
+            # Make list of given propnames that are not in self
+            other_models = list(set(propnames).difference(set(self_models)))
+        # The following has some redundant lines, but is easier to understand
+        if self._isa('phase'):
+            # Start be regenerating models on self
             for item in propnames:
-                phase._regen(item)
-            for phys in self.project.find_physics(phase=phase):
-                phys.regenerate_models(propnames=other_models)
-        if self._isa() in ['network', 'geometry']:
-            network = self.project.network
+                self._regen(item)
+            # Then regen models on associated physics, if any in other_models
+            for phys in self.project.find_physics(phase=self):
+                phys.regenerate_models(propnames=other_models, deep=False)
+        elif self._isa('network'):  # Repeat for other object types
             for item in propnames:
-                network._regen(item)
+                self._regen(item)
             for geom in self.project.geometries().values():
-                geom.regenerate_models(propnames=other_models)
+                geom.regenerate_models(propnames=other_models, deep=False)
+        elif self._isa('physics'):
+            phase = self.project.find_phase(self)
+            phase.regenerate_models(other_models, deep=False)
+            for item in propnames:
+                self._regen(item)
+        elif self._isa('geometry'):
+            network = self.project.network
+            network.regenerate_models(other_models, deep=False)
+            for item in propnames:
+                self._regen(item)
+        else:
+            for item in propnames:
+                self._regen(item)
 
     def _regen(self, prop):
         # Create a temporary dict of all model arguments
