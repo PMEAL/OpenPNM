@@ -51,6 +51,21 @@ class BaseTest:
         ws = op.Workspace()
         ws.clear()
 
+    def test_clear_model_data(self):
+        pn = op.network.Cubic([5, 5, 5])
+        phase = op.phases.Water(network=pn)
+        a = len(phase)
+        phase.clear(mode='model_data')
+        assert len(phase) == (a - len(phase.models))
+        # Clear non existing data
+        phase.clear(mode='model_data')
+        assert len(phase) == (a - len(phase.models))
+
+    def test_clear_model_data_when_model_returns_dictionary(self):
+        pn = op.network.Cubic([5, 5, 5])
+        geo = op.geometry.StickAndBall(network=pn, pores=pn.Ps, throats=pn.Ts)
+        geo.clear(mode='model_data')
+
     def test_pores(self):
         a = self.net.pores()
         assert sp.all(a == sp.arange(0, self.net.Np))
@@ -67,9 +82,9 @@ class BaseTest:
         a = self.net.pores(labels=['top', 'front'], mode='intersection')
         assert sp.all(a == [2, 5, 8])
 
-#    def test_pores_two_labels_not_intersection(self):
-#        a = self.net.pores(labels=['top', 'front'], mode='not_intersection')
-#        assert sp.all(a == [0, 1, 3, 4, 6, 7, 11, 14, 17, 20, 23, 26])
+    def test_pores_two_labels_not_intersection(self):
+        a = self.net.pores(labels=['top', 'front'], mode='not_intersection')
+        assert sp.all(a == [0, 1, 3, 4, 6, 7, 11, 14, 17, 20, 23, 26])
 
     def test_pores_two_labels_difference(self):
         a = self.net.pores(labels=['top', 'front'], mode='difference')
@@ -91,10 +106,10 @@ class BaseTest:
         a = self.net.throats(labels=['label1', 'label2'], mode='intersection')
         assert sp.all(a == [3, 4, 5])
 
-#    def test_throats_two_labels_not_intersection(self):
-#        a = self.net.throats(labels=['label1', 'label2'],
-#                             mode='not_intersection')
-#        assert sp.all(a == [0, 1, 2, 6, 7, 8])
+    def test_throats_two_labels_not_intersection(self):
+        a = self.net.throats(labels=['label1', 'label2'],
+                             mode='not_intersection')
+        assert sp.all(a == [0, 1, 2, 6, 7, 8])
 
     def test_filter_by_label_pores_no_label(self):
         Ps = self.net.pores(['top', 'bottom', 'front'])
@@ -216,10 +231,10 @@ class BaseTest:
         a = self.net.num_pores(labels=['top', 'front'], mode='intersection')
         assert a == 3
 
-#    def test_num_pores_two_labels_not_intersection(self):
-#        a = self.net.num_pores(labels=['top', 'front'],
-#                               mode='not_intersection')
-#        assert a == 12
+    def test_num_pores_two_labels_not_intersection(self):
+        a = self.net.num_pores(labels=['top', 'front'],
+                               mode='not_intersection')
+        assert a == 12
 
     def test_num_pores_two_labels_difference(self):
         a = self.net.num_pores(labels=['top', 'front'], mode='difference')
@@ -242,10 +257,10 @@ class BaseTest:
                                  mode='intersection')
         assert a == 3
 
-#    def test_num_throats_two_labels_notintersection(self):
-#        a = self.net.num_throats(labels=['label1', 'label2'],
-#                                 mode='not_intersection')
-#        assert a == 6
+    def test_num_throats_two_labels_notintersection(self):
+        a = self.net.num_throats(labels=['label1', 'label2'],
+                                 mode='not_intersection')
+        assert a == 6
 
     def test_num_throats_two_labels_difference(self):
         a = self.net.num_throats(labels=['label1', 'label2'],
@@ -687,23 +702,10 @@ class BaseTest:
         a = self.geo.interpolate_data(propname='pore.diameter')
         assert a.size == self.geo.Nt
 
-#    def test_get_regenerate_on_demand(self):
-#        self.geo.regenerate_models()
-#        models = list(self.geo.models.keys())
-#        assert len(set(self.geo.keys()).intersection(models)) == 2
-#        for item in models:
-#            del self.geo[item]
-#        assert len(set(self.geo.keys()).intersection(models)) == 0
-#        for item in models:
-#            self.geo.models[item]['regen_mode'] = 'deferred'
-#            arr = self.geo[item]
-#            self.geo.models[item]['regen_mode'] = 'normal'
-#        assert len(set(self.geo.keys()).intersection(models)) == 2
-#
-#    def test_get_no_matches(self):
-#        self.geo.pop('pore.blah', None)
-#        with pytest.raises(KeyError):
-#            self.geo['pore.blah']
+    def test_get_no_matches(self):
+        self.geo.pop('pore.blah', None)
+        with pytest.raises(KeyError):
+            self.geo['pore.blah']
 
 
 if __name__ == '__main__':
