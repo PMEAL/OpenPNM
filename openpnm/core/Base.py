@@ -466,6 +466,14 @@ class Base(dict):
         vals = set(vals).difference(temp)
         # Convert to nice list for printing
         vals = PrintableList(list(vals))
+        # Repeat for associated objects if deep is True
+        if deep:
+            if self._isa('phase'):
+                for item in self.project.find_physics(phase=self):
+                    vals += item.props(element=element, mode=mode, deep=False)
+            if self._isa('network'):
+                for item in self.project.geometries().values():
+                    vals += item.props(element=element, mode=mode, deep=False)
         return vals
 
     def _get_labels(self, element, locations, mode):
