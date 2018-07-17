@@ -94,7 +94,7 @@ class ReactiveTransport(GenericTransport):
         self._update_physics()
 
         x = self._run_reactive(x=x)
-        return x
+        self[self.settings['quantity']] = x
 
     def _run_reactive(self, x):
         if x is None:

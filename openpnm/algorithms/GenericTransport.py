@@ -438,8 +438,9 @@ class GenericTransport(GenericAlgorithm):
             solver = getattr(sprs.linalg, self.settings['solver'])
             func = inspect.getargspec(solver)[0]
             if 'tol' in func:
-                tol = max(np.amax(np.absolute(self._A)),
-                          np.amax(np.absolute(self._b)))*1e-06
+                norm_A = sprs.linalg.norm(self._A)
+                norm_b = np.linalg.norm(self._b)
+                tol = min(norm_A, norm_b)*1e-06
                 x = solver(A=A.tocsr(), b=b, tol=tol)
             else:
                 x = solver(A=A.tocsr(), b=b)
