@@ -6,6 +6,7 @@ from scipy.spatial import cKDTree
 from openpnm.topotools import iscoplanar
 from openpnm.algorithms import GenericAlgorithm
 from openpnm.utils import logging
+import inspect
 # Check if petsc4py is available
 import importlib
 if (importlib.util.find_spec('petsc4py') is not None):
@@ -435,9 +436,15 @@ class GenericTransport(GenericAlgorithm):
             del(ls)  # Clean
         else:
             solver = getattr(sprs.linalg, self.settings['solver'])
-            x = solver(A=A.tocsr(), b=b)
+            func = inspect.getargspec(solver)[0]
+            if 'tol' in func:
+                tol = max(np.amax(np.absolute(self._A)),
+                          np.amax(np.absolute(self._b)))*1e-06
+                x = solver(A=A.tocsr(), b=b, tol=tol)
+            else:
+                x = solver(A=A.tocsr(), b=b)
         if type(x) == tuple:
-            x = x[0] 
+            x = x[0]
         return x
 
     def results(self):
