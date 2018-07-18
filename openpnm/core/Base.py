@@ -313,9 +313,11 @@ class Base(dict):
         allowed = ['props', 'labels', 'model_data', 'all']
         mode = self._parse_mode(mode=mode, allowed=allowed)
         if 'model_data' in mode:
-            for item in self.models.keys():
-                print('deleting ' + item)
-                del self[item]
+            for item in list(self.keys()):
+                temp = '.'.join(item.split('.')[0:2])
+                if temp in self.models.keys():
+                    logger.info('deleting ' + item)
+                    del self[item]
             mode.remove('model_data')
         for item in self.keys(mode=mode, element=element):
             if item not in protected:
