@@ -122,6 +122,8 @@ class GenericTransport(GenericAlgorithm):
         self._pure_A = None
         self._b = None
         self._pure_b = None
+        self['pore.bc_rate'] = np.nan
+        self['pore.bc_value'] = np.nan
 
     def setup(self, phase=None, **kwargs):
         r"""
@@ -209,19 +211,18 @@ class GenericTransport(GenericAlgorithm):
         mode : string, optional
             Controls how the conditions are applied.  Options are:
 
-            - *'merge'*: (Default) Adds supplied boundary conditions to already
+            *'merge'*: (Default) Adds supplied boundary conditions to already
             existing conditions.
+
+            *'overwrite'*: Deletes all boundary condition on object then add
+            the given ones
 
         Notes
         -----
         It is not possible to have multiple boundary conditions for a
-        specified location in one algorithm. Use ``mode='remove'`` to
+        specified location in one algorithm. Use ``remove_BCs`` to
         clear existing BCs before applying new ones or ``mode='overwrite'``
         which removes all existing BC's before applying the new ones.
-
-        Instead of using ``mode='remove'`` you can also set certain locations
-        to NaN using ``mode='merge'``, which is equivalent to removing the BCs
-        from those locations.
 
         """
         # Hijack the parse_mode function to verify bctype argument
