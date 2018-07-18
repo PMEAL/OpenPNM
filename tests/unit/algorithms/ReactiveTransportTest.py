@@ -37,19 +37,24 @@ class GenericTransportTest:
         y = sp.unique(sp.around(rt['pore.concentration'], decimals=4))
         assert sp.all(x == y)
 
-    def test_source_not_override_BCs(self):
+    def test_source_over_BCs(self):
         rt = op.algorithms.ReactiveTransport(network=self.net,
                                              phase=self.phase)
         rt.settings.update({'conductance': 'throat.diffusive_conductance',
                             'quantity': 'pore.concentration'})
         rt.set_value_BC(pores=self.net.pores('left'), values=1.0)
         rt.set_value_BC(pores=self.net.pores('right'), values=0.5)
-        rt.set_source(pores=self.net.Ps, propname='pore.reaction')
-        rt.run()
-        yleft = rt['pore.concentration'][self.net.pores('left')].mean()
-        yright = rt['pore.concentration'][self.net.pores('right')].mean()
-        assert yleft == 1.0
-        assert yright == 0.5
+        with pytest.raises(Exception):
+            rt.set_source(pores=self.net.Ps, propname='pore.reaction')
+
+    def test_BCs_over_source(self):
+        rt = op.algorithms.ReactiveTransport(network=self.net,
+                                             phase=self.phase)
+        rt.settings.update({'conductance': 'throat.diffusive_conductance',
+                            'quantity': 'pore.concentration'})
+        rt.set_source(pores=self.net.pores('left'), propname='pore.reaction')
+        with pytest.raises(Exception):
+            rt.set_value_BC(pores=self.net.pores('left'), values=1.0)
 
     def teardown_class(self):
         ws = op.Workspace()

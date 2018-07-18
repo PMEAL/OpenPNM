@@ -39,7 +39,7 @@ class ReactiveTransport(GenericTransport):
 
         if (not np.all(np.isnan(self['pore.bc_value'][locs]))) or \
            (not np.all(np.isnan(self['pore.bc_rate'][locs]))):
-            raise Exception('Boundary conditions already present in given' +
+            raise Exception('Boundary conditions already present in given ' +
                             'pores, cannot also assign source terms')
         self[propname] = locs
         self.settings['sources'].append(propname)
