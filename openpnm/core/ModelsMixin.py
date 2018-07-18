@@ -238,12 +238,8 @@ class ModelsMixin():
             Specifies whether or not to regenerate models on all associated
             objects.  For instance, if ``True``, then all Physics models will
             be regenerated when method is called on the corresponding Phase.
-            The default is ``False``.  Note that including specific models in
-            the ``propnames`` argument will also trigger the calling of models
-            on associated objects.  For instance, including
-            'throat.hydraulic_conductance' in the list of ``propname`` when
-            this method is called on a Phase will regenerate this model on
-            all associated Physics.
+            The default is ``False``.  The method does not work in reverse,
+            so regenerating models on a Physics will not update a Phase.
 
         """
         # If empty list of propnames was given, do nothing and return
@@ -278,16 +274,6 @@ class ModelsMixin():
                 self._regen(item)
             for geom in self.project.geometries().values():
                 geom.regenerate_models(propnames=other_models, deep=False)
-        elif self._isa('physics'):
-            phase = self.project.find_phase(self)
-            phase.regenerate_models(other_models, deep=False)
-            for item in propnames:
-                self._regen(item)
-        elif self._isa('geometry'):
-            network = self.project.network
-            network.regenerate_models(other_models, deep=False)
-            for item in propnames:
-                self._regen(item)
         else:
             for item in propnames:
                 self._regen(item)
