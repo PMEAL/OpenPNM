@@ -757,7 +757,7 @@ class Base(dict):
             t = namedtuple('index_map', ('indices', 'mask'))
             return t(ind, mask)
 
-    def map_pores(self, pores, target, filtered=True):
+    def map_pores(self, pores, origin, filtered=True):
         r"""
         Given a list of pore on a target object, finds indices of
         those pores on the calling object
@@ -767,7 +767,7 @@ class Base(dict):
         pores : array_like
             The indices of the pores on the target object
 
-        target : OpenPNM Base object
+        origin : OpenPNM Base object
             The object corresponding to the indices given in ``pores``
 
         filtered : boolean (default is ``True``)
@@ -783,10 +783,10 @@ class Base(dict):
         and a mask, depending on the value of ``filtered``.
 
         """
-        ids = target['pore._id'][pores]
+        ids = origin['pore._id'][pores]
         return self._map(element='pore', ids=ids, filtered=filtered)
 
-    def map_throats(self, throats, target, filtered=True):
+    def map_throats(self, throats, origin, filtered=True):
         r"""
         Given a list of throats on a target object, finds indices of
         those throats on the calling object
@@ -796,7 +796,7 @@ class Base(dict):
         throats : array_like
             The indices of the throats on the target object
 
-        target : OpenPNM Base object
+        origin : OpenPNM Base object
             The object corresponding to the indices given in ``throats``
 
         filtered : boolean (default is ``True``)
@@ -812,7 +812,7 @@ class Base(dict):
         and a mask, depending on the value of ``filtered``.
 
         """
-        ids = target['throat._id'][throats]
+        ids = origin['throat._id'][throats]
         return self._map(element='throat', ids=ids, filtered=filtered)
 
     def _tomask(self, indices, element):

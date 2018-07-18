@@ -407,11 +407,11 @@ def plot_pore(geometry, pores, fig=None, axis_bounds=None,
     from mpl_toolkits.mplot3d.art3d import Poly3DCollection
     if len(pores) > 0:
         net = geometry.network
-        net_pores = net.map_pores(pores=pores, target=geometry)
+        net_pores = net.map_pores(pores=pores, origin=geometry)
         centroids = geometry['pore.centroid'][pores]
         coords = net['pore.coords'][net_pores]
         net_throats = net.find_neighbor_throats(pores=net_pores)
-        throats = geometry.map_throats(throats=net_throats, target=net)
+        throats = geometry.map_throats(throats=net_throats, origin=net)
         tcentroids = geometry["throat.centroid"][throats]
         # Can't create volume from one throat
         if 1 <= len(throats):

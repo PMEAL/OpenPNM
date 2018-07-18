@@ -678,8 +678,8 @@ def trim(network, pores=[], throats=[]):
             Ps = Pkeep_inds
             Ts = Tkeep_inds
         else:
-            Ps = obj.map_pores(pores=Pkeep, target=network)
-            Ts = obj.map_throats(throats=Tkeep, target=network)
+            Ps = obj.map_pores(pores=Pkeep, origin=network)
+            Ts = obj.map_throats(throats=Tkeep, origin=network)
         for key in list(obj.keys()):
             temp = obj.pop(key)
             if key.split('.')[0] == 'throat':
