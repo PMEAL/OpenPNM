@@ -41,4 +41,5 @@ rxn.set_value_BC(pores=pn.pores('top'), values=1)
 rxn.run()
 air.update(rxn.results())
 
-proj.export_data(network=pn, phases=[hg, air, water], filename='output.vtp')
+# Output network and phases to a VTP file for visualization in Paraview
+# proj.export_data(network=pn, phases=[hg, air, water], filename='output.vtp')
