@@ -1,6 +1,6 @@
 import logging as _logging
 
-__version__ = '2.0.0-beta'
+__version__ = '2.0.0-b1'
 
 from . import utils
 from .utils import Workspace, Project
