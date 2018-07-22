@@ -435,21 +435,19 @@ class GenericTransport(GenericAlgorithm):
             x = sls.solve(ls)
             del(ls)  # Clean
         else:
-            solver = getattr(sprs.linalg, self.settings['solver'])
-            func = inspect.getargspec(solver)[0]
-            if 'tol' in func:
-                norm_A = sprs.linalg.norm(self._A)
-                norm_b = np.linalg.norm(self._b)
-                tol = min(norm_A, norm_b)*1e-06
-                x = solver(A=A.tocsr(), b=b, tol=tol)
-            else:
-                x = solver(A=A.tocsr(), b=b)
-        if type(x) == tuple:
-            x = x[0]
             A = A.tocsr()
             A.indices = A.indices.astype(np.int64)
             A.indptr = A.indptr.astype(np.int64)
-            x = solver(A=A, b=b)
+            solver = getattr(sprs.linalg, self.settings['solver'])
+            if 'tol' in inspect.getargspec(solver)[0]:
+                norm_A = sprs.linalg.norm(self._A)
+                norm_b = np.linalg.norm(self._b)
+                tol = min(norm_A, norm_b)*1e-06
+                x = solver(A=A, b=b, tol=tol)
+            else:
+                x = solver(A=A, b=b)
+        if type(x) == tuple:
+            x = x[0]
         return x
 
     def results(self):
