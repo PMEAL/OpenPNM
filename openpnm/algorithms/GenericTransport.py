@@ -6,6 +6,7 @@ from scipy.spatial import cKDTree
 from openpnm.topotools import iscoplanar
 from openpnm.algorithms import GenericAlgorithm
 from openpnm.utils import logging
+import inspect
 # Check if petsc4py is available
 import importlib
 if (importlib.util.find_spec('petsc4py') is not None):
@@ -122,6 +123,8 @@ class GenericTransport(GenericAlgorithm):
         self._pure_A = None
         self._b = None
         self._pure_b = None
+        self['pore.bc_rate'] = np.nan
+        self['pore.bc_value'] = np.nan
 
     def setup(self, phase=None, **kwargs):
         r"""
@@ -209,19 +212,18 @@ class GenericTransport(GenericAlgorithm):
         mode : string, optional
             Controls how the conditions are applied.  Options are:
 
-            - *'merge'*: (Default) Adds supplied boundary conditions to already
+            *'merge'*: (Default) Adds supplied boundary conditions to already
             existing conditions.
+
+            *'overwrite'*: Deletes all boundary condition on object then add
+            the given ones
 
         Notes
         -----
         It is not possible to have multiple boundary conditions for a
-        specified location in one algorithm. Use ``mode='remove'`` to
+        specified location in one algorithm. Use ``remove_BCs`` to
         clear existing BCs before applying new ones or ``mode='overwrite'``
         which removes all existing BC's before applying the new ones.
-
-        Instead of using ``mode='remove'`` you can also set certain locations
-        to NaN using ``mode='merge'``, which is equivalent to removing the BCs
-        from those locations.
 
         """
         # Hijack the parse_mode function to verify bctype argument
@@ -434,8 +436,19 @@ class GenericTransport(GenericAlgorithm):
             x = sls.solve(ls)
             del(ls)  # Clean
         else:
+            A = A.tocsr()
+            A.indices = A.indices.astype(np.int64)
+            A.indptr = A.indptr.astype(np.int64)
             solver = getattr(sprs.linalg, self.settings['solver'])
-            x = solver(A=A.tocsr(), b=b)
+            if 'tol' in inspect.getargspec(solver)[0]:
+                norm_A = sprs.linalg.norm(self._A)
+                norm_b = np.linalg.norm(self._b)
+                tol = min(norm_A, norm_b)*1e-06
+                x = solver(A=A, b=b, tol=tol)
+            else:
+                x = solver(A=A, b=b)
+        if type(x) == tuple:
+            x = x[0]
         return x
 
     def results(self):

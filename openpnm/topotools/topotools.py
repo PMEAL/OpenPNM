@@ -669,8 +669,6 @@ def trim(network, pores=[], throats=[]):
     Pkeep_inds = sp.where(Pkeep)[0]
     Tkeep_inds = sp.where(Tkeep)[0]
     Pmap = sp.ones((network.Np,), dtype=int)*-1
-    Pid = network['pore._id']
-    Tid = network['throat._id']
     tpore1 = network['throat.conns'][:, 0]
     tpore2 = network['throat.conns'][:, 1]
 
@@ -680,8 +678,8 @@ def trim(network, pores=[], throats=[]):
             Ps = Pkeep_inds
             Ts = Tkeep_inds
         else:
-            Ps = obj.map_pores(ids=Pid[Pkeep])
-            Ts = obj.map_throats(ids=Tid[Tkeep])
+            Ps = obj.map_pores(pores=Pkeep, origin=network)
+            Ts = obj.map_throats(throats=Tkeep, origin=network)
         for key in list(obj.keys()):
             temp = obj.pop(key)
             if key.split('.')[0] == 'throat':

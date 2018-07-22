@@ -313,9 +313,11 @@ class Base(dict):
         allowed = ['props', 'labels', 'model_data', 'all']
         mode = self._parse_mode(mode=mode, allowed=allowed)
         if 'model_data' in mode:
-            for item in self.models.keys():
-                print('deleting ' + item)
-                del self[item]
+            for item in list(self.keys()):
+                temp = '.'.join(item.split('.')[0:2])
+                if temp in self.models.keys():
+                    logger.info('deleting ' + item)
+                    del self[item]
             mode.remove('model_data')
         for item in self.keys(mode=mode, element=element):
             if item not in protected:
@@ -466,6 +468,14 @@ class Base(dict):
         vals = set(vals).difference(temp)
         # Convert to nice list for printing
         vals = PrintableList(list(vals))
+        # Repeat for associated objects if deep is True
+        if deep:
+            if self._isa('phase'):
+                for item in self.project.find_physics(phase=self):
+                    vals += item.props(element=element, mode=mode, deep=False)
+            if self._isa('network'):
+                for item in self.project.geometries().values():
+                    vals += item.props(element=element, mode=mode, deep=False)
         return vals
 
     def _get_labels(self, element, locations, mode):
@@ -757,37 +767,62 @@ class Base(dict):
             t = namedtuple('index_map', ('indices', 'mask'))
             return t(ind, mask)
 
-    def map_pores(self, ids, filtered=True):
+    def map_pores(self, pores, origin, filtered=True):
         r"""
-        Translates pore ids to indices on the calling object
+        Given a list of pore on a target object, finds indices of
+        those pores on the calling object
 
         Parameters
         ----------
-        ids : array_like
-            The ids of the pores whose indices are sought
+        pores : array_like
+            The indices of the pores on the target object
+
+        origin : OpenPNM Base object
+            The object corresponding to the indices given in ``pores``
 
         filtered : boolean (default is ``True``)
             If ``True`` then a ND-array of indices is returned with missing
             indices removed, otherwise a named-tuple containing both the
             ``indices`` and a boolean ``mask`` with ``False`` indicating
-            which ``ids`` were not found.
+            which locations were not found.
+
+        Returns
+        -------
+        Pore indices on the calling object corresponding to the same pores
+        on the target object.  Can be an array or a tuple containing an array
+        and a mask, depending on the value of ``filtered``.
 
         """
+        ids = origin['pore._id'][pores]
         return self._map(element='pore', ids=ids, filtered=filtered)
 
-    def map_throats(self, ids, filtered=True):
+    def map_throats(self, throats, origin, filtered=True):
         r"""
-        Translates throat ids to indices on the calling object
+        Given a list of throats on a target object, finds indices of
+        those throats on the calling object
 
         Parameters
         ----------
-        ids : array_like
-             The ids of the throats whose indices are sought
+        throats : array_like
+            The indices of the throats on the target object
+
+        origin : OpenPNM Base object
+            The object corresponding to the indices given in ``throats``
 
         filtered : boolean (default is ``True``)
-            If ``True`` then a ND-array of indices is returned, otherwise
-            a named-tuple containing the ``indices`` and the ???
+            If ``True`` then a ND-array of indices is returned with missing
+            indices removed, otherwise a named-tuple containing both the
+            ``indices`` and a boolean ``mask`` with ``False`` indicating
+            which locations were not found.
+
+        Returns
+        -------
+        Throat indices on the calling object corresponding to the same throats
+        on the target object.  Can be an array or a tuple containing an array
+        and a mask, depending on the value of ``filtered``.
+
         """
+        ids = origin['throat._id'][throats]
         return self._map(element='throat', ids=ids, filtered=filtered)
 
     def _tomask(self, indices, element):

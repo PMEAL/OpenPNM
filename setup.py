@@ -54,7 +54,8 @@ setup(
         'h5py',
         'porespy',
         'transforms3d',
-        'flatdict'],
+        'flatdict',
+        'scikit-umfpack'],
 
     author='OpenPNM Team',
     author_email='jgostick@uwaterloo.ca',
