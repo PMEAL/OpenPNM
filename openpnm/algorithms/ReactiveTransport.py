@@ -28,9 +28,34 @@ class ReactiveTransport(GenericTransport):
         pores : array_like
             The pore indices where the source term should be applied
 
+        Notes
+        -----
+        Source terms cannot be applied in pores where boundary conditions have
+        already been set. Attempting to do so will result in an error being
+        raised.
+
         """
+        locs = self.tomask(pores=pores)
+
+        if (not np.all(np.isnan(self['pore.bc_value'][locs]))) or \
+           (not np.all(np.isnan(self['pore.bc_rate'][locs]))):
+            raise Exception('Boundary conditions already present in given ' +
+                            'pores, cannot also assign source terms')
+        self[propname] = locs
         self.settings['sources'].append(propname)
-        self[propname] = self.tomask(pores=pores)
+
+    def _set_BC(self, pores, bctype, bcvalues=None, mode='merge'):
+        # First check that given pores do not have source terms already set
+        for item in self.settings['sources']:
+            if np.any(self[item][pores]):
+                raise Exception('Source term already present in given ' +
+                                'pores, cannot also assign boundary ' +
+                                'conditions')
+        # Then call parent class function if above check passes
+        super()._set_BC(pores=pores, bctype=bctype, bcvalues=bcvalues,
+                        mode=mode)
+
+    _set_BC.__doc__ = GenericTransport._set_BC.__doc__
 
     def _update_physics(self):
         phase = self.project.phases()[self.settings['phase']]
