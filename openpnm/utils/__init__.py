@@ -21,3 +21,9 @@ from .misc import unique_list
 from .misc import tic, toc
 from .Workspace import Workspace
 from .Project import Project
+
+
+log_format = \
+    '%(asctime)s | %(levelname)-8s | %(name)s.%(funcName)s | %(message)s'
+logging.basicConfig(level=logging.WARNING, format=log_format)
+del log_format

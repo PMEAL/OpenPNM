@@ -1,5 +1,3 @@
-import logging as _logging
-
 __version__ = '2.0.0-beta'
 
 from . import utils
@@ -14,10 +12,3 @@ from . import physics
 from . import algorithms
 from . import io
 from . import materials
-
-
-# Set up logging to file - see previous section for more details
-log_format = \
-    '%(asctime)s | %(levelname)-8s | %(name)s.%(funcName)s | %(message)s'
-_logging.basicConfig(level=_logging.WARNING, format=log_format)
-del log_format
