@@ -12,6 +12,20 @@ class TransientAdvectionDiffusion(TransientReactiveTransport,
     """
 
     def __init__(self, settings={}, **kwargs):
+        def_set = {'gui': {'setup':        {'phase': None,
+                                            'quantity': '',
+                                            'conductance': '',
+                                            },
+                           'set_rate_BC':  {'pores': None,
+                                            'values': None,
+                                            },
+                           'set_value_BC': {'pores': None,
+                                            'values': None},
+                           'set_source':   {'pores': None,
+                                            'propname': '',
+                                            },
+                           }
+                   }
         super().__init__(**kwargs)
-        # Apply any received settings to overwrite defaults
+        self.settings.update(def_set)
         self.settings.update(settings)
