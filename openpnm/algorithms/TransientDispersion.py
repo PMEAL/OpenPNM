@@ -9,6 +9,57 @@ class TransientDispersion(TransientReactiveTransport, Dispersion):
     """
 
     def __init__(self, settings={}, **kwargs):
+        def_set = {'gui': {'setup':        {'quantity': '',
+                                            'diffusive_conductance': '',
+                                            'hydraulic_conductance': '',
+                                            'pressure': '',
+                                            't_initial': None,
+                                            't_final': None,
+                                            't_step': None,
+                                            't_output': None,
+                                            't_tolerance': None,
+                                            't_scheme': ''
+                                            },
+                           'set_IC':       {'values': None,
+                                            },
+                           'set_rate_BC':  {'pores': None,
+                                            'values': None,
+                                            },
+                           'set_value_BC': {'pores': None,
+                                            'values': None},
+                           'set_source':   {'pores': None,
+                                            'propname': '',
+                                            },
+                           }
+                   }
         super().__init__(**kwargs)
-        # Apply any received settings to overwrite defaults
+        self.settings.update(def_set)
         self.settings.update(settings)
+
+    def setup(self, phase=None, quantity='', diffusive_conductance='',
+              hydraulic_conductance='', pressure='',
+              t_initial=None, t_final=None, t_step=None, t_output=None,
+              t_tolerance=None, t_scheme='', **kwargs):
+        if phase:
+            self.settings['phase'] = phase.name
+        if quantity:
+            self.settings['quantity'] = quantity
+        if diffusive_conductance:
+            self.settings['diffusive_conductance'] = diffusive_conductance
+        if hydraulic_conductance:
+            self.settings['hydraulic_conductance'] = hydraulic_conductance
+        if pressure:
+            self.settings['pressure'] = pressure
+        if t_initial:
+            self.settings['t_initial'] = t_initial
+        if t_final:
+            self.settings['t_final'] = t_final
+        if t_step:
+            self.settings['t_step'] = t_step
+        if t_output:
+            self.settings['t_output'] = t_output
+        if t_tolerance:
+            self.settings['t_tolerance'] = t_tolerance
+        if t_scheme:
+            self.settings['t_scheme'] = t_scheme
+        self.settings.update(kwargs)
