@@ -20,6 +20,14 @@ class TransientReactiveTransport(ReactiveTransport):
                    't_scheme': 'implicit',
                    'gui': {'setup':        {'quantity': '',
                                             'conductance': '',
+                                            't_initial': None,
+                                            't_final': None,
+                                            't_step': None,
+                                            't_output': None,
+                                            't_tolerance': None,
+                                            't_scheme': ''
+                                            },
+                           'set_IC':       {'values': None,
                                             },
                            'set_rate_BC':  {'pores': None,
                                             'values': None,
@@ -36,10 +44,15 @@ class TransientReactiveTransport(ReactiveTransport):
         self.settings.update(settings)
         self._A_steady = None  # Initialize the steady sys of eqs A matrix
 
-    def setup(self, phase=None, t_initial='', t_final='', t_step='',
-              t_output='', t_tolerance='', t_scheme='', **kwargs):
+    def setup(self, phase=None, quantity='', conductance='',
+              t_initial=None, t_final=None, t_step=None, t_output=None,
+              t_tolerance=None, t_scheme='', **kwargs):
         if phase:
             self.settings['phase'] = phase.name
+        if quantity:
+            self.settings['quantity'] = quantity
+        if conductance:
+            self.settings['conductance'] = conductance
         if t_initial:
             self.settings['t_initial'] = t_initial
         if t_final:
