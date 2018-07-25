@@ -12,8 +12,7 @@ class TransientAdvectionDiffusion(TransientReactiveTransport,
     """
 
     def __init__(self, settings={}, **kwargs):
-        def_set = {'gui': {'setup':        {'phase': None,
-                                            'quantity': '',
+        def_set = {'gui': {'setup':        {'quantity': '',
                                             'conductance': '',
                                             },
                            'set_rate_BC':  {'pores': None,

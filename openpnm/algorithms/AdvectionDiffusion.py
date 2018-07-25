@@ -12,15 +12,11 @@ class AdvectionDiffusion(ReactiveTransport):
     """
 
     def __init__(self, settings={}, **kwargs):
-        def_set = {'gui': {'quantity': 'pore.concentration',
-                           'diffusive_conductance':
-                               'throat.diffusive_conductance',
-                           'hydraulic_conductance':
-                               'throat.hydraulic_conductance',
-                           'pressure': 'pore.pressure',
-                           's_scheme': 'powerlaw',
-                           'setup':        {'phase': None,
-                                            'quantity': '',
+        def_set = {'quantity': 'pore.concentration',
+                   'diffusive_conductance': 'throat.diffusive_conductance',
+                   'hydraulic_conductance': 'throat.hydraulic_conductance',
+                   'pressure': 'pore.pressure', 's_scheme': 'powerlaw',
+                   'gui': {'setup':        {'quantity': '',
                                             'conductance': '',
                                             },
                            'set_rate_BC':  {'pores': None,
@@ -36,7 +32,6 @@ class AdvectionDiffusion(ReactiveTransport):
         super().__init__(**kwargs)
         self.settings.update(def_set)
         self.settings.update(settings)
-
 
     def setup(self, phase=None, quantity='', diffusive_conductance='',
               hydraulic_conductance='', pressure='', s_scheme='', **kwargs):
