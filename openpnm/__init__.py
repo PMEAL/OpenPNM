@@ -1,3 +1,11 @@
+r"""
+**OpenPNM**
+
+OpenPNM is a package for performing pore network simulations of transport in
+porous materials
+
+"""
+
 __version__ = '2.0.0-beta'
 
 from . import utils

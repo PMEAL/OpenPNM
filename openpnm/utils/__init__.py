@@ -24,6 +24,6 @@ from .Project import Project
 
 
 log_format = \
-    '%(asctime)s | %(levelname)-8s | %(name)s.%(funcName)s | %(message)s'
+    '|%(levelname)-s|%(message)s'
 logging.basicConfig(level=logging.WARNING, format=log_format)
 del log_format
