@@ -11,14 +11,28 @@ class TransientReactiveTransport(ReactiveTransport):
     """
 
     def __init__(self, settings={}, **kwargs):
-        self.settings.update({'t_initial': 0,
-                              't_final': 10,
-                              't_step': 0.1,
-                              't_output': 1e+08,
-                              't_tolerance': 1e-06,
-                              'r_tolerance': 1e-04,
-                              't_scheme': 'implicit'})
+        def_set = {'t_initial': 0,
+                   't_final': 10,
+                   't_step': 0.1,
+                   't_output': 1e+08,
+                   't_tolerance': 1e-06,
+                   'r_tolerance': 1e-04,
+                   't_scheme': 'implicit',
+                   'gui': {'setup':        {'quantity': '',
+                                            'conductance': '',
+                                            },
+                           'set_rate_BC':  {'pores': None,
+                                            'values': None,
+                                            },
+                           'set_value_BC': {'pores': None,
+                                            'values': None},
+                           'set_source':   {'pores': None,
+                                            'propname': '',
+                                            },
+                           }
+                   }
         super().__init__(**kwargs)
+        self.settings.update(def_set)
         self.settings.update(settings)
         self._A_steady = None  # Initialize the steady sys of eqs A matrix
 

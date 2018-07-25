@@ -33,15 +33,35 @@ class MixedInvasionPercolation(GenericAlgorithm):
 
     """
 
-    def __init__(self, **kwargs):
+    def __init__(self, settings={}, **kwargs):
+        def_set = {'pore_volume': 'pore.volume',
+                   'throat_volume': 'throat.volume',
+                   'pore_entry_pressure': 'pore.entry_pressure',
+                   'throat_entry_pressure': 'throat.entry_pressure',
+                   'mode': 'mixed',
+                   'snap_off': False,
+                   'invade_isolated_Ts': False,
+                   'gui': {'setup':        {'mode': '',
+                                            'pore_entry_pressure': '',
+                                            'throat_entry_pressure': '',
+                                            'snap_off': '',
+                                            'invade_isolated_Ts': '',
+                                            'pore_volume': '',
+                                            'throat_volume': '',
+                                            },
+                           'set_rate_BC':  {'pores': None,
+                                            'values': None,
+                                            },
+                           'set_value_BC': {'pores': None,
+                                            'values': None},
+                           'set_source':   {'pores': None,
+                                            'propname': '',
+                                            },
+                           }
+                   }
         super().__init__(**kwargs)
-        self.settings.update({'pore_volume': 'pore.volume',
-                              'throat_volume': 'throat.volume',
-                              'pore_entry_pressure': 'pore.entry_pressure',
-                              'throat_entry_pressure': 'throat.entry_pressure',
-                              'mode': 'mixed',
-                              'snap_off': False,
-                              'invade_isolated_Ts': False})
+        self.settings.update(def_set)
+        self.settings.update(settings)
 
     def setup(self,
               phase=None,
@@ -91,7 +111,7 @@ class MixedInvasionPercolation(GenericAlgorithm):
             The dictionary key containing the pore volume information.
 
         'throat_volume' : string
-            The dictionary key containing the pore volume information.
+            The dictionary key containing the throat volume information.
         """
         self._phase = phase
         self['throat.entry_pressure'] = phase[self.settings['throat_entry_pressure']]
