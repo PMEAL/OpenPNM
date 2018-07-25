@@ -776,6 +776,10 @@ def extend(network, pore_coords=[], throat_conns=[], labels=[]):
                     network['throat.'+label] = False
                 network['throat.'+label][Ts] = True
 
+    # Clear adjacency and incidence matrices which will be out of date now
+    network._am.clear()
+    network._im.clear()
+
 
 def reduce_coordination(network, z):
     r"""
@@ -963,7 +967,7 @@ def clone_pores(network, pores, labels=['clone'], mode='parents'):
         network['pore.'+item][network.pores('all') >= Np] = True
         network['throat.'+item][network.throats('all') >= Nt] = True
 
-    # Any existing adjacency and incidence matrices will be invalid
+    # Clear adjacency and incidence matrices which will be out of date now
     network._am.clear()
     network._im.clear()
 
@@ -1037,6 +1041,10 @@ def merge_networks(network, donor=[]):
                     # Then append donor values to network
                     s = sp.shape(donor[key])[0]
                     network[key][-s:] = donor[key]
+
+    # Clear adjacency and incidence matrices which will be out of date now
+    network._am.clear()
+    network._im.clear()
 
 
 def stitch(network, donor, P_network, P_donor, method='nearest',

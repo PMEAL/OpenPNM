@@ -73,19 +73,19 @@ class CubicDual(GenericNetwork):
 
     """
     def __init__(self, shape, spacing=1, label_1='primary',
-                 label_2='secondary', **kwargs):
+                 label_2='secondary', add_boundary_pores=[], **kwargs):
         super().__init__(**kwargs)
         spacing = sp.array(spacing)
         shape = sp.array(shape)
         # Deal with non-3D shape arguments
         shape = sp.pad(shape, [0, 3-shape.size], mode='constant',
                        constant_values=1)
-        net = Cubic(shape=shape, spacing=[1, 1, 1])
+        net = Cubic(shape=shape, spacing=1)
         net['throat.'+label_1] = True
         net['pore.'+label_1] = True
         single_dim = shape == 1
         shape[single_dim] = 2
-        dual = Cubic(shape=shape-1, spacing=[1, 1, 1])
+        dual = Cubic(shape=shape-1, spacing=1)
         faces = [['front', 'back'], ['left', 'right'], ['top', 'bottom']]
         faces = [faces[i] for i in sp.where(~single_dim)[0]]
         faces = sp.array(faces).flatten().tolist()
@@ -99,7 +99,6 @@ class CubicDual(GenericNetwork):
                          len_max=1)
         net['throat.interconnect'] = net['throat.stitched']
         del net['throat.stitched']
-        net['pore.coords'] *= spacing
         # Clean-up labels
         net['pore.surface'] = False
         net['throat.surface'] = False
@@ -123,3 +122,60 @@ class CubicDual(GenericNetwork):
         # Transfer all dictionary items from 'net' to 'self'
         [self.update({item: net[item]}) for item in net]
         ws.close_project(net.project)
+        self.add_boundary_pores(labels=add_boundary_pores, spacing=[1, 1, 1])
+        # Finally, scale network to requested spacing
+        net['pore.coords'] *= spacing
+
+    def add_boundary_pores(self, labels, spacing):
+        r"""
+        Add boundary pores to the specified faces of the network
+
+        Pores are offset from the faces by 1/2 a the given ``spacing``, such
+        that they lie directly on the boundaries.
+
+        Parameters
+        ----------
+        labels : string or list of strings
+            The labels indicating the pores defining each face where boundary
+            pores are to be added (e.g. 'left' or ['left', 'right'])
+
+        spacing : scalar or array_like
+            The spacing of the network (e.g. [1, 1, 1]).  This must be given
+            since it can be quite difficult to infer from the network,
+            for instance if boundary pores have already added to other faces.
+
+        """
+        spacing = sp.array(spacing)
+        if spacing.size == 1:
+            spacing = sp.ones(3)*spacing
+        for item in labels:
+            Ps = self.pores(item)
+            coords = sp.absolute(self['pore.coords'][Ps])
+            axis = sp.count_nonzero(sp.diff(coords, axis=0), axis=0) == 0
+            offset = sp.array(axis, dtype=int)/2
+            if sp.amin(coords) == sp.amin(coords[:, sp.where(axis)[0]]):
+                offset = -1*offset
+            topotools.add_boundary_pores(network=self, pores=Ps, offset=offset,
+                                         apply_label=item + '_boundary')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
