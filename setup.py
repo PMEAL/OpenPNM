@@ -20,7 +20,7 @@ with open(ver_path) as f:
             exec(line, main_)
 
 setup(
-    name='OpenPNM',
+    name='openpnm',
     description = 'A framework for conducting pore network modeling simulations of multiphase transport in porous materials',
     version=main_['__version__'],
     classifiers=[
@@ -38,9 +38,15 @@ setup(
         'openpnm.phases',
         'openpnm.physics',
         'openpnm.utils',
+        'openpnm.io',
         'openpnm.models',
+        'openpnm.models.misc',
+        'openpnm.models.geometry',
+        'openpnm.models.phases',
+        'openpnm.models.physics',
         'openpnm.algorithms',
-        'openpnm.topotools'
+        'openpnm.topotools',
+        'openpnm.materials',
     ],
     install_requires=[
         'numpy',
