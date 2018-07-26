@@ -27,7 +27,8 @@ class TransientAdvectionDiffusionTest:
         sf.run()
         self.phase[sf.settings['quantity']] = sf[sf.settings['quantity']]
 
-        ad = op.algorithms.TransientDispersion(network=self.net, phase=self.phase)
+        ad = op.algorithms.TransientAdvectionDiffusion(network=self.net,
+                                                       phase=self.phase)
         ad.settings.update({'t_scheme': 'implicit', 's_scheme': 'powerlaw',
                             't_step': 1, 't_output': 50, 't_final': 100,
                             't_tolerance': 1e-20})
@@ -37,8 +38,8 @@ class TransientAdvectionDiffusionTest:
         ad.run()
 
         x = [0., 0., 0.,
-             0.89688, 0.89688, 0.89688,
-             1.53953, 1.53953, 1.53953,
+             0.89653, 0.89653, 0.89653,
+             1.53924, 1.53924, 1.53924,
              2., 2., 2.]
         y = sp.around(ad[ad.settings['quantity']], decimals=5)
         assert sp.all(x == y)
