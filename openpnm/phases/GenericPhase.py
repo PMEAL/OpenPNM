@@ -75,10 +75,8 @@ class GenericPhase(Base, ModelsMixin):
             self['throat.all'] = ones((network.Nt, ), dtype=bool)
 
         # Set standard conditions on the fluid to get started
-        self.add_model(propname='pore.temperature',
-                       model=mods.misc.constant, value=298.0)
-        self.add_model(propname='pore.pressure',
-                       model=mods.misc.constant, value=101325.0)
+        self['pore.temperature'] = 298.0
+        self['pore.pressure'] = 101325.0
 
     def __setitem__(self, key, value):
         if self.project:
