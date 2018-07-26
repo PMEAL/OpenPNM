@@ -42,15 +42,11 @@ class Water(GenericPhase):
     +===+======================+==================+==========================+
     | 1 | pore.density         | model:           | water                    |
     +---+----------------------+------------------+--------------------------+
-    |   |                      | regen_mode       | normal                   |
-    +---+----------------------+------------------+--------------------------+
     |   |                      | temperature      | pore.temperature         |
     +---+----------------------+------------------+--------------------------+
     |   |                      | salinity         | pore.salinity            |
     +---+----------------------+------------------+--------------------------+
     | 2 | pore.molar_density   | model:           | standard                 |
-    +---+----------------------+------------------+--------------------------+
-    |   |                      | regen_mode       | normal                   |
     +---+----------------------+------------------+--------------------------+
     |   |                      | mol_weight       | pore.molecular_weight    |
     +---+----------------------+------------------+--------------------------+
@@ -58,15 +54,11 @@ class Water(GenericPhase):
     +---+----------------------+------------------+--------------------------+
     | 3 | pore.surface_tension | model:           | water                    |
     +---+----------------------+------------------+--------------------------+
-    |   |                      | regen_mode       | normal                   |
-    +---+----------------------+------------------+--------------------------+
     |   |                      | temperature      | pore.temperature         |
     +---+----------------------+------------------+--------------------------+
     |   |                      | salinity         | pore.salinity            |
     +---+----------------------+------------------+--------------------------+
     | 4 | pore.thermal_cond... | model:           | water                    |
-    +---+----------------------+------------------+--------------------------+
-    |   |                      | regen_mode       | normal                   |
     +---+----------------------+------------------+--------------------------+
     |   |                      | temperature      | pore.temperature         |
     +---+----------------------+------------------+--------------------------+
@@ -80,13 +72,9 @@ class Water(GenericPhase):
     +---+----------------------+------------------+--------------------------+
     |   |                      | C                | 236.191                  |
     +---+----------------------+------------------+--------------------------+
-    |   |                      | regen_mode       | normal                   |
-    +---+----------------------+------------------+--------------------------+
     |   |                      | temperature      | pore.temperature         |
     +---+----------------------+------------------+--------------------------+
     | 6 | pore.viscosity       | model:           | water                    |
-    +---+----------------------+------------------+--------------------------+
-    |   |                      | regen_mode       | normal                   |
     +---+----------------------+------------------+--------------------------+
     |   |                      | temperature      | pore.temperature         |
     +---+----------------------+------------------+--------------------------+
@@ -98,12 +86,27 @@ class Water(GenericPhase):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-        self['pore.molecular_weight'] = 0.01802
-        self['pore.critical_pressure'] = 2.2064E7
-        self['pore.critical_temperature'] = 647.1
-        self['pore.critical_volume'] = 0.003106
-        self['pore.contact_angle'] = 110.0
-        self['pore.diffusivity'] = 1e-9
+        self.add_model(propname='pore.molecular_weight',
+                       model=mods.misc.constant,
+                       value=0.01802)
+        self.add_model(propname='pore.critical_pressure',
+                       model=mods.misc.constant,
+                       value=2.2064E7)
+        self.add_model(propname='pore.critical_temperature',
+                       model=mods.misc.constant,
+                       value=647.1)
+        self.add_model(propname='pore.critical_volume',
+                       model=mods.misc.constant,
+                       value=0.003106)
+        self.add_model(propname='pore.contact_angle',
+                       model=mods.misc.constant,
+                       value=110.0)
+        self.add_model(propname='pore.electrical_conductivity',
+                       model=mods.misc.constant,
+                       value=1e-15)
+        self.add_model(propname='pore.diffusivity',
+                       model=mods.misc.constant,
+                       value=1e-9)
         self.add_model(propname='pore.density',
                        model=mods.phases.density.water)
         self.add_model(propname='pore.molar_density',

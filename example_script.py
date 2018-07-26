@@ -1,5 +1,6 @@
 import openpnm as op
 ws = op.Workspace()
+ws.settings['loglevel'] = 40
 proj = ws.new_project()
 
 pn = op.network.Cubic(shape=[10, 10, 10], spacing=1e-4, project=proj)
@@ -32,7 +33,8 @@ phys_air['pore.n'] = 2
 phys_air['pore.A'] = -1e-5
 phys_air.add_model(propname='pore.2nd_order_rxn', model=mod,
                    quantity='pore.concentration',
-                   prefactor='pore.A', exponent='pore.n')
+                   prefactor='pore.A', exponent='pore.n',
+                   regen_mode='deferred')
 rxn = op.algorithms.FickianDiffusion(network=pn)
 rxn.setup(phase=air)
 Ps = pn.find_nearby_pores(pores=500, r=5e-4, flatten=True)

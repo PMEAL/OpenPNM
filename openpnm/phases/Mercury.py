@@ -109,11 +109,28 @@ class Mercury(GenericPhase):
     """
     def __init__(self, name=None, **kwargs):
         super().__init__(name=name, **kwargs)
-        self['pore.molecular_weight'] = 0.2006
-        self['pore.critical_pressure'] = 1.662E8
-        self['pore.critical_temperature'] = 1733
-        self['pore.critical_volume'] = 0.000189
-        self['pore.contact_angle'] = 140
+
+        self.add_model(propname='pore.molecular_weight',
+                       model=mods.misc.constant,
+                       value=0.2006)
+        self.add_model(propname='pore.critical_pressure',
+                       model=mods.misc.constant,
+                       value=1.662E8)
+        self.add_model(propname='pore.critical_temperature',
+                       model=mods.misc.constant,
+                       value=1733)
+        self.add_model(propname='pore.critical_volume',
+                       model=mods.misc.constant,
+                       value=0.000189)
+        self.add_model(propname='pore.contact_angle',
+                       model=mods.misc.constant,
+                       value=140.0)
+        self.add_model(propname='pore.electrical_conductivity',
+                       model=mods.misc.constant,
+                       value=1e6)
+        self.add_model(propname='pore.diffusivity',
+                       model=mods.misc.constant,
+                       value=1e-9)
         self.add_model(propname='pore.vapor_pressure',
                        model=mods.phases.vapor_pressure.antoine,
                        A=9.85767, B=3007.129, C=-10.001)
