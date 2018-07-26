@@ -38,6 +38,12 @@ class Bravais(GenericNetwork):
         - **'fcc'** : Face-centered cubic lattice
         - **'hcp'** : Hexagonal close packed (Note Implemented Yet)
 
+    add_boundary_pores : string or list of strings
+        Indicate which faces, if any, to add boundary pores by label (e.g.
+        'left', 'right', etc).  This argument is actually passed to
+        ``add_boundary_pores``, so refer to that method for more information.
+
+
     name : string
         An optional name for the object to help identify it.  If not given,
         one will be generated.
@@ -101,7 +107,8 @@ class Bravais(GenericNetwork):
     <http://www.paraview.org>`_.
 
     """
-    def __init__(self, shape, mode, spacing=1, **kwargs):
+    def __init__(self, shape, mode, spacing=1, add_boundary_pores=[],
+                 **kwargs):
         super().__init__(**kwargs)
         shape = np.array(shape)
         if np.any(shape < 2):
@@ -181,8 +188,10 @@ class Bravais(GenericNetwork):
             Ts = self.find_neighbor_throats(pores=self.pores('face_sites'))
             self['throat.corner_to_face'] = False
             self['throat.corner_to_face'][Ts] = True
+
         elif mode == 'hcp':
             raise NotImplementedError('hcp is not implemented yet')
+
         elif mode == 'sc':
             net = Cubic(shape=shape, spacing=spacing)
             self.update(net)
@@ -190,8 +199,12 @@ class Bravais(GenericNetwork):
             self.clear(mode='labels')
             self['pore.corner_sites'] = True
             self['throat.corner_to_corner'] = True
+
         else:
             raise Exception('Unrecognized lattice type: ' + mode)
 
-        topotools.label_faces(self)
+        # Finally scale network to specified spacing
         self['pore.coords'] *= np.array(spacing)
+
+    def add_boundary_pores(self, labels, spacing):
+        pass
