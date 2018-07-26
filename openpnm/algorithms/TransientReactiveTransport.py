@@ -208,7 +208,7 @@ class TransientReactiveTransport(ReactiveTransport):
         relax = self.settings['relaxation_quantity']
         res = 1e+06
         for itr in range(int(self.settings['max_iter'])):
-            if res >= self.settings['tolerance']:
+            if res >= self.settings['r_tolerance']:
                 logger.info('Tolerance not met: ' + str(res))
                 self[self.settings['quantity']] = x
                 self._A = (self._A_t).copy()
@@ -221,7 +221,7 @@ class TransientReactiveTransport(ReactiveTransport):
                 self[self.settings['quantity']] = x_new
                 res = np.sum(np.absolute(x**2 - x_new**2))
                 x = x_new
-            elif res < self.settings['tolerance']:
+            elif res < self.settings['r_tolerance']:
                 logger.info('Solution converged: ' + str(res))
                 break
         return x_new
