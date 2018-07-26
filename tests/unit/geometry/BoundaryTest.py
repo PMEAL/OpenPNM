@@ -16,11 +16,9 @@ class BoundaryTest:
                                             pores=Ps_int,
                                             throats=Ts_int)
         self.boun1 = op.geometry.Boundary(network=self.net,
-                                          shape='spheres',
                                           pores=Ps_boun[Pb_mask],
                                           throats=Ts_boun[Tb_mask])
         self.boun2 = op.geometry.Boundary(network=self.net,
-                                          shape='cubes',
                                           pores=Ps_boun[~Pb_mask],
                                           throats=Ts_boun[~Tb_mask])
         self.geo.regenerate_models()
