@@ -28,16 +28,13 @@ class Dispersion(ReactiveTransport):
                    'gui': {'setup':        {'quantity': '',
                                             'diffusive_conductance': '',
                                             'hydraulic_conductance': '',
-                                            'pressure': ''
-                                            },
+                                            'pressure': ''},
                            'set_rate_BC':  {'pores': None,
-                                            'values': None,
-                                            },
+                                            'values': None},
                            'set_value_BC': {'pores': None,
                                             'values': None},
                            'set_source':   {'pores': None,
-                                            'propname': '',
-                                            },
+                                            'propname': ''}
                            }
                    }
         super().__init__(**kwargs)

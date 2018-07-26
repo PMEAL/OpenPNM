@@ -17,16 +17,13 @@ class StokesFlow(ReactiveTransport):
         def_set = {'quantity': 'pore.pressure',
                    'conductance': 'throat.hydraulic_conductance',
                    'gui': {'setup':        {'quantity': '',
-                                            'conductance': '',
-                                            },
+                                            'conductance': ''},
                            'set_rate_BC':  {'pores': None,
-                                            'values': None,
-                                            },
+                                            'values': None},
                            'set_value_BC': {'pores': None,
                                             'values': None},
                            'set_source':   {'pores': None,
-                                            'propname': '',
-                                            },
+                                            'propname': ''}
                            }
                    }
         super().__init__(**kwargs)

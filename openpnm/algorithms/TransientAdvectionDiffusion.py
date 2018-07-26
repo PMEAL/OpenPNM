@@ -22,18 +22,14 @@ class TransientAdvectionDiffusion(TransientReactiveTransport,
                                             't_step': None,
                                             't_output': None,
                                             't_tolerance': None,
-                                            't_scheme': ''
-                                            },
-                           'set_IC':       {'values': None,
-                                            },
+                                            't_scheme': ''},
+                           'set_IC':       {'values': None},
                            'set_rate_BC':  {'pores': None,
-                                            'values': None,
-                                            },
+                                            'values': None},
                            'set_value_BC': {'pores': None,
                                             'values': None},
                            'set_source':   {'pores': None,
-                                            'propname': '',
-                                            },
+                                            'propname': ''}
                            }
                    }
         super().__init__(**kwargs)

@@ -13,9 +13,20 @@ class OhmicConduction(ReactiveTransport):
     """
 
     def __init__(self, settings={}, **kwargs):
+        def_set = {'quantity': 'pore.voltage',
+                   'conductance': 'throat.electrical_conductance',
+                   'gui': {'setup':        {'quantity': '',
+                                            'conductance': ''},
+                           'set_rate_BC':  {'pores': None,
+                                            'values': None},
+                           'set_value_BC': {'pores': None,
+                                            'values': None},
+                           'set_source':   {'pores': None,
+                                            'propname': ''}
+                           }
+                   }
         super().__init__(**kwargs)
-        self.settings.update({'quantity': 'pore.voltage',
-                              'conductance': 'throat.electrical_conductance'})
+        self.settings.update(def_set)
         self.settings.update(settings)
 
     def setup(self, phase=None, quantity='', conductance='', **kwargs):

@@ -45,14 +45,19 @@ class Porosimetry(OrdinaryPercolation):
                    'throat_volume': 'throat.volume',
                    'late_pore_filling': '',
                    'late_throat_filling': '',
-                   'gui': {'setup': {'phase': None,
-                                     'quantity': '',
+                   'gui': {'setup': {'quantity': '',
+                                     'throat_entry_pressure': '',
                                      'pore_volume': '',
                                      'throat_volume': '',
                                      'late_pore_filling': '',
-                                     'late_throat_filling': '',
-                                     'throat_entry_pressure': '',
-                                     }
+                                     'late_throat_filling': ''},
+                           'set_inlets':   {'pores': None,
+                                            'overwrite': False},
+                           'set_outlets':  {'pores': None,
+                                            'overwrite': False},
+                           'set_residual': {'pores': None,
+                                            'throats': None,
+                                            'overwrite': False}
                            }
                    }
         super().__init__(**kwargs)
