@@ -75,7 +75,7 @@ class OrdinaryPercolation(GenericAlgorithm):
                    'pore_entry_threshold': 'pore.entry_pressure',
                    'throat_entry_threshold': 'throat.entry_pressure',
                    'pore_volume': '',
-                   'throat_volume': ''}
+                   'throat_volume': '',
                    'gui': {'setup':        {'access_limited': None,
                                             'mode': '',
                                             'throat_entry_pressure': '',
