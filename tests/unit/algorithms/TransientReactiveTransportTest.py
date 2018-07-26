@@ -65,7 +65,7 @@ class TransientImplicitReactiveTransportTest:
         alg = op.algorithms.TransientReactiveTransport(network=self.net,
                                                        phase=self.phase,
                                                        settings=self.settings)
-        alg.settings.update({'t_scheme': 'steady', 'r_tolerance': 1e-06})
+        alg.settings.update({'t_scheme': 'steady', 'r_tolerance': 1e-03})
         alg.set_IC(0)
         alg.set_value_BC(pores=self.net.pores('left'), values=2)
         alg.set_source(propname='pore.reaction', pores=self.net.pores('right'))
@@ -74,6 +74,7 @@ class TransientImplicitReactiveTransportTest:
              2, 1.00158, 0.00317,
              2, 1.00158, 0.00317]
         y = sp.around(alg[alg.settings['quantity']], decimals=5)
+        print (x, y)
         assert sp.all(x == y)
 
     def test_adding_bc_over_sources(self):
