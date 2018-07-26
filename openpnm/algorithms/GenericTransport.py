@@ -64,14 +64,6 @@ class GenericTransport(GenericAlgorithm):
     +---------------------+---------------------------------------------------+
     | ``b``               | Retrieves the RHS matrix                          |
     +---------------------+---------------------------------------------------+
-    | ``domain_area``     | The area of the inlet face for determining total  |
-    |                     | flux into the domain. Should be assigned by user  |
-    |                     | but will be estimated if not.                     |
-    +---------------------+---------------------------------------------------+
-    | ``domain_length``   | The length of the domain for determining the      |
-    |                     | total driving force across the domain. Should be  |
-    |                     | assigned by user but will be estimated if not.    |
-    +---------------------+---------------------------------------------------+
 
     This class contains quite a few hidden methods (preceeded by an
     underscore) that are called internally.  Since these are critical to the
@@ -96,11 +88,11 @@ class GenericTransport(GenericAlgorithm):
     |                       | in the ``settings``                             |
     +-----------------------+-------------------------------------------------+
     | ``_get_domain_area``  | Attempts to estimate the area of the inlet pores|
-    |                       | if not specified by user in ``domain_area``     |
+    |                       | if not specified by user                        |
     +-----------------------+-------------------------------------------------+
     | ``_get_domain_length``| Attempts to estimate the length between the     |
     |                       | inlet and outlet faces if not specified by the  |
-    |                       | user in ``domain_length``                       |
+    |                       | user                                            |
     +-----------------------+-------------------------------------------------+
 
 
@@ -525,11 +517,22 @@ class GenericTransport(GenericAlgorithm):
                 R = np.sum(R)
         return np.array(R, ndmin=1)
 
-    def _calc_eff_prop(self):
+    def _calc_eff_prop(self, domain_area=None, domain_length=None):
         r"""
-        Returns the main parameters for calculating the effective property
-        in a linear transport equation.  It also checks for the proper
-        boundary conditions, inlets and outlets.
+        Calculate the effective transport through the network
+
+        Parameters
+        ----------
+        domain_area : scalar
+            The area of the inlet and/or outlet face (which shold match)
+
+        domain_length : scalar
+            The length of the domain between the inlet and outlet faces
+
+        Returns
+        -------
+        The effective transport property through the network
+
         """
         if self.settings['quantity'] not in self.keys():
             raise Exception('The algorithm has not been run yet. Cannot ' +
@@ -540,12 +543,13 @@ class GenericTransport(GenericAlgorithm):
         Ps = np.isfinite(self['pore.bc_value'])
         BCs = np.unique(self['pore.bc_value'][Ps])
         Dx = np.abs(np.diff(BCs))
-
-        # Fetch area and length of domain
-        A = self.domain_area
-        L = self.domain_length
         flow = self.rate(pores=inlets)
-        D = np.sum(flow)*L/A/Dx
+        # Fetch area and length of domain
+        if domain_area is None:
+            domain_area = self._get_domain_area
+        if domain_length is None:
+            domain_length = self._get_domain_length
+        D = np.sum(flow)*domain_length/domain_area/Dx
         return D
 
     def _get_inlets_and_outlets(self):
@@ -578,14 +582,9 @@ class GenericTransport(GenericAlgorithm):
             hull_in = ConvexHull(points=inlets[:, Nin])
             hull_out = ConvexHull(points=outlets[:, Nout])
             if hull_in.volume != hull_out.volume:
+            area = hull_in.volume  # In 2D volume=area, area=perimeter
+        return area
                 logger.error('Inlet and outlet faces are different area')
-            self._area = hull_in.volume  # In 2D volume=area, area=perimeter
-        return self._area
-
-    def _set_domain_area(self, area):
-        self._area = area
-
-    domain_area = property(fget=_get_domain_area, fset=_set_domain_area)
 
     def _get_domain_length(self):
         if not hasattr(self, '_length'):
@@ -602,11 +601,6 @@ class GenericTransport(GenericAlgorithm):
             tree = cKDTree(data=inlets)
             Ls = np.unique(np.around(tree.query(x=outlets)[0], decimals=5))
             if np.size(Ls) != 1:
+            length = Ls[0]
+        return length
                 logger.error('A unique value of length could not be found')
-            self._length = Ls[0]
-        return self._length
-
-    def _set_domain_length(self, length):
-        self._length = length
-
-    domain_length = property(fget=_get_domain_length, fset=_set_domain_length)
