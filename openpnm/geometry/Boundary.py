@@ -56,18 +56,22 @@ class Boundary(GenericGeometry):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self['pore.diameter'] = 1e-12
+        self['pore.diameter'] = 0.0
         self.add_model(propname='throat.diameter',
                        model=mm.from_neighbor_pores,
                        pore_prop='pore.diameter',
                        mode='max')
-        self['pore.volume'] = 1e-36
+        self['pore.volume'] = 0.0
         self['pore.seed'] = 1.0
         self['throat.seed'] = 1.0
-        self['throat.volume'] = 1e-36
+        self['throat.volume'] = 0.0
         self.add_model(propname='throat.length',
                        model=gm.throat_length.straight)
         self.add_model(propname='throat.area',
                        model=gm.throat_area.cylinder)
         self.add_model(propname='throat.surface_area',
                        model=gm.throat_surface_area.cylinder)
+        self.add_model(propname='throat.conduit_lengths',
+                       model=gm.throat_length.boundary)
+        self.add_model(propname='throat.equivalent_area',
+                       model=gm.throat_equivalent_area.boundary)
