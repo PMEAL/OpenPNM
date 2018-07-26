@@ -74,7 +74,6 @@ class TransientImplicitReactiveTransportTest:
              2, 1.00158, 0.00317,
              2, 1.00158, 0.00317]
         y = sp.around(alg[alg.settings['quantity']], decimals=5)
-        print (x, y)
         assert sp.all(x == y)
 
     def test_adding_bc_over_sources(self):
