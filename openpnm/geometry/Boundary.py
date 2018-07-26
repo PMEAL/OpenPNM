@@ -15,6 +15,12 @@ class Boundary(GenericGeometry):
     r"""
     Boundary subclass of GenericGeometry.
 
+    The aim of this class is to assign geometric properties to boundary pores
+    that are appropriate, such as 0 volume pores (for invasion simulations and
+    porosity calculations) and very large throats (to offer negligible
+    resistance in transport calculations).  When necessary, this class assumes
+    that the pores are spherical and the throats are cylindrical.
+
     Parameters
     ----------
     network : OpenPNM Network object
@@ -23,11 +29,8 @@ class Boundary(GenericGeometry):
     pores : array_like
         The pores indice where the Geometry should be applied
 
-    throat : array_like
+    throats : array_like
         The throat indices where the Geometry should be applied
-
-    shape: str
-        Stick and Ball or Cube and Cuboid? ('spheres','cubes')
 
     name : string, optional
         A name to help identify the object, if not given one is automatically
@@ -51,7 +54,7 @@ class Boundary(GenericGeometry):
 
     """
 
-    def __init__(self, shape='spheres', **kwargs):
+    def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self['pore.diameter'] = 1e-12
         self.add_model(propname='throat.diameter',
@@ -64,13 +67,7 @@ class Boundary(GenericGeometry):
         self['throat.volume'] = 1e-36
         self.add_model(propname='throat.length',
                        model=gm.throat_length.straight)
-        if shape == 'spheres':
-            self.add_model(propname='throat.area',
-                           model=gm.throat_area.cylinder)
-            self.add_model(propname='throat.surface_area',
-                           model=gm.throat_surface_area.cylinder)
-        elif shape == 'cubes':
-            self.add_model(propname='throat.area',
-                           model=gm.throat_area.cuboid)
-            self.add_model(propname='throat.surface_area',
-                            model=gm.throat_surface_area.cuboid)
+        self.add_model(propname='throat.area',
+                       model=gm.throat_area.cylinder)
+        self.add_model(propname='throat.surface_area',
+                       model=gm.throat_surface_area.cylinder)
