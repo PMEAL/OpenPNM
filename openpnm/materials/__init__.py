@@ -19,8 +19,6 @@ The table below gives a list of available Material generators:
 +---------------------+-------------------------------------------------------+
 | Material Name       | Description                                           |
 +=====================+=======================================================+
-| CubicBerea          | A traditional Berea Sandstone on a Cubic lattice      |
-+---------------------+-------------------------------------------------------+
 | VoronoiFibers       | Resembles a fibrous paper or mat with straight        |
 |                     | intersecting fibers.                                  |
 +---------------------+-------------------------------------------------------+
@@ -45,5 +43,5 @@ dict_keys(['geo_01'])
 >>> geo = proj.geometries()['geo_01']
 
 """
+
 from .VoronoiFibers import VoronoiFibers
-from .BereaCubic import BereaCubic
