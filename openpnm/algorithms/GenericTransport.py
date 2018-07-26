@@ -564,21 +564,21 @@ class GenericTransport(GenericAlgorithm):
             inlets = network['pore.coords'][Pin]
             outlets = network['pore.coords'][Pout]
             if not iscoplanar(inlets):
-                raise Exception('Detected inlet pores are not coplanar')
+                logger.error('Detected inlet pores are not coplanar')
             if not iscoplanar(outlets):
-                raise Exception('Detected outlet pores are not coplanar')
+                logger.error('Detected outlet pores are not coplanar')
             Nin = np.ptp(inlets, axis=0) > 0
             if Nin.all():
-                raise Exception('Detected inlets are not oriented along a ' +
-                                'principle axis')
+                logger.warning('Detected inlets are not oriented along a ' +
+                               'principle axis')
             Nout = np.ptp(outlets, axis=0) > 0
             if Nout.all():
-                raise Exception('Detected outlets are not oriented along a ' +
-                                'principle axis')
+                logger.warning('Detected outlets are not oriented along a ' +
+                               'principle axis')
             hull_in = ConvexHull(points=inlets[:, Nin])
             hull_out = ConvexHull(points=outlets[:, Nout])
             if hull_in.volume != hull_out.volume:
-                raise Exception('Inlet and outlet faces are different area')
+                logger.error('Inlet and outlet faces are different area')
             self._area = hull_in.volume  # In 2D volume=area, area=perimeter
         return self._area
 
@@ -596,13 +596,13 @@ class GenericTransport(GenericAlgorithm):
             inlets = network['pore.coords'][Pin]
             outlets = network['pore.coords'][Pout]
             if not iscoplanar(inlets):
-                raise Exception('Detected inlet pores are not coplanar')
+                logger.error('Detected inlet pores are not coplanar')
             if not iscoplanar(outlets):
-                raise Exception('Detected inlet pores are not coplanar')
+                logger.error('Detected inlet pores are not coplanar')
             tree = cKDTree(data=inlets)
             Ls = np.unique(np.around(tree.query(x=outlets)[0], decimals=5))
             if np.size(Ls) != 1:
-                raise Exception('A unique value of length could not be found')
+                logger.error('A unique value of length could not be found')
             self._length = Ls[0]
         return self._length
 
