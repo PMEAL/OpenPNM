@@ -580,6 +580,9 @@ class GenericTransport(GenericAlgorithm):
     def _get_domain_area(self, inlets=None, outlets=None):
         logger.warning('Attempting to estimate inlet area...will be low')
         network = self.project.network
+        # Abort if network is not 3D
+        if np.sum(np.ptp(network['pore.coords'], axis=0) == 0) > 0:
+            raise Exception('The network is not 3D, specify area manually')
         if inlets is None:
             inlets = self._get_inlets()
         if outlets is None:

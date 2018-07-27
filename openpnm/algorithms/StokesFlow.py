@@ -56,8 +56,8 @@ class StokesFlow(ReactiveTransport):
             self.settings['conductance'] = conductance
         super().setup(**kwargs)
 
-    def calc_permeability_coefficient(self, inlets=None, outlets=None,
-                                      domain_area=None, domain_length=None):
+    def calc_effective_permeability(self, inlets=None, outlets=None,
+                                    domain_area=None, domain_length=None):
         r"""
         This calculates the effective permeability in this linear transport
         algorithm.
