@@ -2,9 +2,9 @@ import numpy as np
 import scipy.stats as spts
 
 
-def numpy_func(target, prop, func, **kwargs):
+def generic_function(target, prop, func, **kwargs):
     r"""
-    Runs an arbitrary Numpy function on the given data
+    Runs an arbitrary function on the given data
 
     This allows users to place a customized Numpy calculation into the
     automatated model regeneration pipeline.
@@ -284,10 +284,12 @@ def normal(target, seeds, scale, loc):
     return value
 
 
-def generic(target, seeds, func):
+def generic_distribution(target, seeds, func):
     r"""
     Accepts an 'rv_frozen' object from the Scipy.stats submodule and returns
-    values from the distribution for the given seeds using the ``ppf`` method.
+    values from the distribution for the given seeds
+
+    This uses the ``ppf`` method of the stats object
 
     Parameters
     ----------
