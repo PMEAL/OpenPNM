@@ -11,21 +11,44 @@ class TransientReactiveTransport(ReactiveTransport):
     """
 
     def __init__(self, settings={}, **kwargs):
-        self.settings.update({'t_initial': 0,
-                              't_final': 10,
-                              't_step': 0.1,
-                              't_output': 1e+08,
-                              't_tolerance': 1e-06,
-                              'r_tolerance': 1e-04,
-                              't_scheme': 'implicit'})
+        def_set = {'t_initial': 0,
+                   't_final': 10,
+                   't_step': 0.1,
+                   't_output': 1e+08,
+                   't_tolerance': 1e-06,
+                   'r_tolerance': 1e-04,
+                   't_scheme': 'implicit',
+                   'gui': {'setup':        {'quantity': '',
+                                            'conductance': '',
+                                            't_initial': None,
+                                            't_final': None,
+                                            't_step': None,
+                                            't_output': None,
+                                            't_tolerance': None,
+                                            't_scheme': ''},
+                           'set_IC':       {'values': None},
+                           'set_rate_BC':  {'pores': None,
+                                            'values': None},
+                           'set_value_BC': {'pores': None,
+                                            'values': None},
+                           'set_source':   {'pores': None,
+                                            'propname': ''}
+                           }
+                   }
         super().__init__(**kwargs)
+        self.settings.update(def_set)
         self.settings.update(settings)
         self._A_steady = None  # Initialize the steady sys of eqs A matrix
 
-    def setup(self, phase=None, t_initial='', t_final='', t_step='',
-              t_output='', t_tolerance='', t_scheme='', **kwargs):
+    def setup(self, phase=None, quantity='', conductance='',
+              t_initial=None, t_final=None, t_step=None, t_output=None,
+              t_tolerance=None, t_scheme='', **kwargs):
         if phase:
             self.settings['phase'] = phase.name
+        if quantity:
+            self.settings['quantity'] = quantity
+        if conductance:
+            self.settings['conductance'] = conductance
         if t_initial:
             self.settings['t_initial'] = t_initial
         if t_final:
@@ -185,7 +208,7 @@ class TransientReactiveTransport(ReactiveTransport):
         relax = self.settings['relaxation_quantity']
         res = 1e+06
         for itr in range(int(self.settings['max_iter'])):
-            if res >= self.settings['tolerance']:
+            if res >= self.settings['r_tolerance']:
                 logger.info('Tolerance not met: ' + str(res))
                 self[self.settings['quantity']] = x
                 self._A = (self._A_t).copy()
@@ -198,7 +221,7 @@ class TransientReactiveTransport(ReactiveTransport):
                 self[self.settings['quantity']] = x_new
                 res = np.sum(np.absolute(x**2 - x_new**2))
                 x = x_new
-            elif res < self.settings['tolerance']:
+            elif res < self.settings['r_tolerance']:
                 logger.info('Solution converged: ' + str(res))
                 break
         return x_new
