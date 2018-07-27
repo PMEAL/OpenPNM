@@ -153,8 +153,15 @@ class DelaunayGeometry(GenericGeometry):
         self['throat.volume'] = sp.zeros(1, dtype=float)
         self['throat.length'] = sp.ones(1, dtype=float)
         self['throat.length'] *= self.network.fiber_rad*2
-        self['throat.c2c'] = self._throat_c2c()
+        cen_lens = self._throat_c2c()
+        self['throat.c2c'] = np.sum(cen_lens, axis=1)
+        cen_lens[cen_lens <= 0.0] = 1e-12
+        self['throat.centroid_lengths.pore1'] = cen_lens[:, 0]
+        self['throat.centroid_lengths.throat'] = cen_lens[:, 1]
+        self['throat.centroid_lengths.pore2'] = cen_lens[:, 2]
         # Configurable Models
+        self.add_model(propname='throat.equivalent_area',
+                       model=gm.throat_equivalent_area.boundary)
         self.add_model(propname='throat.shape_factor',
                        model=gm.throat_shape_factor.compactness)
         self.add_model(propname='pore.diameter',
@@ -238,10 +245,12 @@ class DelaunayGeometry(GenericGeometry):
         v1 = t_cen-p_cen[p1]
         v2 = t_cen-p_cen[p2]
         check_nan = ~sp.any(sp.isnan(v1 + v2), axis=1)
-        value = sp.ones(Nt, dtype=float)*sp.nan
+        value = sp.ones([Nt, 3], dtype=float)*sp.nan
         for i in range(Nt):
             if check_nan[i]:
-                value[i] = sp.linalg.norm(v1[i])+sp.linalg.norm(v2[i])
+                value[i, 0] = sp.linalg.norm(v1[i]) - self.network.fiber_rad
+                value[i, 1] = self.network.fiber_rad*2
+                value[i, 2] = sp.linalg.norm(v2[i]) - self.network.fiber_rad
         return value[net.throats(self.name)]
 
     def _throat_props(self):
@@ -811,6 +820,10 @@ class VoronoiGeometry(GenericGeometry):
         self.add_model(propname='throat.shape_factor',
                        model=gm.throat_shape_factor.compactness,
                        regen_mode=rm)
+        self.add_model(propname='throat.conduit_lengths',
+                       model=gm.throat_length.spherical_pores)
+        self.add_model(propname='throat.equivalent_area',
+                       model=gm.throat_equivalent_area.boundary)
 
     def _throat_props(self):
         r'''
