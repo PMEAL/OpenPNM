@@ -2,6 +2,11 @@ import numpy as np
 import scipy.stats as spts
 
 
+def numpy_func(target, prop, func, **kwargs):
+    values = target[prop]
+    return func(values, **kwargs)
+
+
 def constant(target, value):
     r"""
     Places a constant value into the target object

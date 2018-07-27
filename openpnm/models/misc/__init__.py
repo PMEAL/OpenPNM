@@ -10,6 +10,7 @@ generating an array of random numbers.
 
 """
 
+from .misc import numpy_func
 from .misc import constant
 from .misc import product
 from .misc import random
