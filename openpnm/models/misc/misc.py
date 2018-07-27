@@ -3,8 +3,45 @@ import scipy.stats as spts
 
 
 def numpy_func(target, prop, func, **kwargs):
+    r"""
+    Runs an arbitrary Numpy function on the given data
+
+    This allows users to place a customized Numpy calculation into the
+    automatated model regeneration pipeline.
+
+    Parameters
+    ----------
+    target : OpenPNM Object
+        The object which this model is associated with. This controls the
+        length of the calculated array, and also provides access to other
+        necessary properties.
+
+    prop : string
+        The dictionary key containing the array to be operated on
+
+    func : Numpy function
+        A handle to the function to apply
+
+    kwargs : keyward arguments
+        All arguments required by the specific Numpy function
+
+    Examples
+    --------
+    >>> import openpnm as op
+    >>> import numpy as np
+    >>> pn = op.network.Cubic(shape=[5, 5, 5])
+    >>> geo = op.geometry.GenericGeometry(network=pn, pores=pn.Ps, throats=pn.Ts)
+    >>> geo['pore.rand'] = np.random.rand(geo.Np)
+    >>> geo.add_model(propname='pore.cos',
+    ...               model=op.models.misc.numpy_func,
+    ...               func=np.cos,
+    ...               prop='pore.rand')
+    """
     values = target[prop]
-    return func(values, **kwargs)
+    result = func(values, **kwargs)
+    if not isinstance(result, np.ndarray):
+        raise Exception('Given Numpy function must return an array')
+    return result
 
 
 def constant(target, value):
