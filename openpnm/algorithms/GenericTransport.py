@@ -517,12 +517,21 @@ class GenericTransport(GenericAlgorithm):
                 R = np.sum(R)
         return np.array(R, ndmin=1)
 
-    def _calc_eff_prop(self, domain_area=None, domain_length=None):
+    def _calc_eff_prop(self, inlets=None, outlets=None,
+                       domain_area=None, domain_length=None):
         r"""
         Calculate the effective transport through the network
 
         Parameters
         ----------
+        inlets : array_like
+            The pores where the inlet boundary conditions were applied.  If
+            not given an attempt is made to infer them from the algorithm.
+
+        outlets : array_like
+            The pores where the outlet boundary conditions were applied.  If
+            not given an attempt is made to infer them from the algorithm.
+
         domain_area : scalar
             The area of the inlet and/or outlet face (which shold match)
 
@@ -538,69 +547,81 @@ class GenericTransport(GenericAlgorithm):
             raise Exception('The algorithm has not been run yet. Cannot ' +
                             'calculate effective property.')
 
-        # Determine boundary conditions by analyzing algorithm object
-        inlets, outlets = self._get_inlets_and_outlets()
         Ps = np.isfinite(self['pore.bc_value'])
         BCs = np.unique(self['pore.bc_value'][Ps])
         Dx = np.abs(np.diff(BCs))
+        if inlets is None:
+            inlets = self._get_inlets()
         flow = self.rate(pores=inlets)
         # Fetch area and length of domain
         if domain_area is None:
-            domain_area = self._get_domain_area
+            domain_area = self._get_domain_area(inlets=inlets,
+                                                outlets=outlets)
         if domain_length is None:
-            domain_length = self._get_domain_length
+            domain_length = self._get_domain_length(inlets=inlets,
+                                                    outlets=outlets)
         D = np.sum(flow)*domain_length/domain_area/Dx
         return D
 
-    def _get_inlets_and_outlets(self):
+    def _get_inlets(self):
         # Determine boundary conditions by analyzing algorithm object
         Ps = np.isfinite(self['pore.bc_value'])
         BCs = np.unique(self['pore.bc_value'][Ps])
         inlets = np.where(self['pore.bc_value'] == np.amax(BCs))[0]
+        return inlets
+
+    def _get_outlets(self):
+        # Determine boundary conditions by analyzing algorithm object
+        Ps = np.isfinite(self['pore.bc_value'])
+        BCs = np.unique(self['pore.bc_value'][Ps])
         outlets = np.where(self['pore.bc_value'] == np.amin(BCs))[0]
-        return (inlets, outlets)
+        return outlets
 
-    def _get_domain_area(self):
-        if not hasattr(self, '_area'):
-            logger.warning('Attempting to estimate inlet area...will be low')
-            network = self.project.network
-            Pin, Pout = self._get_inlets_and_outlets()
-            inlets = network['pore.coords'][Pin]
-            outlets = network['pore.coords'][Pout]
-            if not iscoplanar(inlets):
-                logger.error('Detected inlet pores are not coplanar')
-            if not iscoplanar(outlets):
-                logger.error('Detected outlet pores are not coplanar')
-            Nin = np.ptp(inlets, axis=0) > 0
-            if Nin.all():
-                logger.warning('Detected inlets are not oriented along a ' +
-                               'principle axis')
-            Nout = np.ptp(outlets, axis=0) > 0
-            if Nout.all():
-                logger.warning('Detected outlets are not oriented along a ' +
-                               'principle axis')
-            hull_in = ConvexHull(points=inlets[:, Nin])
-            hull_out = ConvexHull(points=outlets[:, Nout])
-            if hull_in.volume != hull_out.volume:
-            area = hull_in.volume  # In 2D volume=area, area=perimeter
+    def _get_domain_area(self, inlets=None, outlets=None):
+        logger.warning('Attempting to estimate inlet area...will be low')
+        network = self.project.network
+        if inlets is None:
+            inlets = self._get_inlets()
+        if outlets is None:
+            outlets = self._get_outlets()
+        inlets = network['pore.coords'][inlets]
+        outlets = network['pore.coords'][outlets]
+        if not iscoplanar(inlets):
+            logger.error('Detected inlet pores are not coplanar')
+        if not iscoplanar(outlets):
+            logger.error('Detected outlet pores are not coplanar')
+        Nin = np.ptp(inlets, axis=0) > 0
+        if Nin.all():
+            logger.warning('Detected inlets are not oriented along a ' +
+                           'principle axis')
+        Nout = np.ptp(outlets, axis=0) > 0
+        if Nout.all():
+            logger.warning('Detected outlets are not oriented along a ' +
+                           'principle axis')
+        hull_in = ConvexHull(points=inlets[:, Nin])
+        hull_out = ConvexHull(points=outlets[:, Nout])
+        if hull_in.volume != hull_out.volume:
+            logger.error('Inlet and outlet faces are different area')
+        area = hull_in.volume  # In 2D volume=area, area=perimeter
         return area
-                logger.error('Inlet and outlet faces are different area')
 
-    def _get_domain_length(self):
-        if not hasattr(self, '_length'):
-            logger.warning('Attempting to estimate domain length... ' +
-                           'could be low if boundary pores were not added')
-            network = self.project.network
-            Pin, Pout = self._get_inlets_and_outlets()
-            inlets = network['pore.coords'][Pin]
-            outlets = network['pore.coords'][Pout]
-            if not iscoplanar(inlets):
-                logger.error('Detected inlet pores are not coplanar')
-            if not iscoplanar(outlets):
-                logger.error('Detected inlet pores are not coplanar')
-            tree = cKDTree(data=inlets)
-            Ls = np.unique(np.around(tree.query(x=outlets)[0], decimals=5))
-            if np.size(Ls) != 1:
-            length = Ls[0]
+    def _get_domain_length(self, inlets=None, outlets=None):
+        logger.warning('Attempting to estimate domain length... ' +
+                       'could be low if boundary pores were not added')
+        network = self.project.network
+        if inlets is None:
+            inlets = self._get_inlets()
+        if outlets is None:
+            outlets = self._get_outlets()
+        inlets = network['pore.coords'][inlets]
+        outlets = network['pore.coords'][outlets]
+        if not iscoplanar(inlets):
+            logger.error('Detected inlet pores are not coplanar')
+        if not iscoplanar(outlets):
+            logger.error('Detected inlet pores are not coplanar')
+        tree = cKDTree(data=inlets)
+        Ls = np.unique(np.around(tree.query(x=outlets)[0], decimals=5))
+        if np.size(Ls) != 1:
+            logger.error('A unique value of length could not be found')
+        length = Ls[0]
         return length
-                logger.error('A unique value of length could not be found')

@@ -24,9 +24,7 @@ class SubclassedTransportTest:
         alg.set_value_BC(pores=self.net.pores('top'), values=1)
         alg.set_value_BC(pores=self.net.pores('bottom'), values=0)
         alg.run()
-        alg.domain_area = 81
-        alg.domain_length = 9
-        Deff = alg.calc_eff_diffusivity()
+        Deff = alg.calc_eff_diffusivity(domain_area=81, domain_length=9)
         assert_approx_equal(Deff, 1.12500)
 
     def test_stokes_flow(self):
@@ -35,9 +33,7 @@ class SubclassedTransportTest:
         alg.set_value_BC(pores=self.net.pores('top'), values=101325)
         alg.set_value_BC(pores=self.net.pores('bottom'), values=0)
         alg.run()
-        alg.domain_area = 81
-        alg.domain_length = 9
-        Keff = alg.calc_eff_permeability()
+        Keff = alg.calc_permeability_coefficient(domain_area=81, domain_length=9)
         assert_approx_equal(Keff, 0.001125)
 
     def test_forurier_conduction(self):
@@ -47,9 +43,7 @@ class SubclassedTransportTest:
         alg.set_value_BC(pores=self.net.pores('top'), values=101325)
         alg.set_value_BC(pores=self.net.pores('bottom'), values=0)
         alg.run()
-        alg.domain_area = 81
-        alg.domain_length = 9
-        Keff = alg.calc_effective_conductivity()
+        Keff = alg.calc_effective_conductivity(domain_area=81, domain_length=9)
         assert_approx_equal(Keff, 1.125)
 
     def test_ohmic_conduction(self):
@@ -58,9 +52,7 @@ class SubclassedTransportTest:
         alg.set_value_BC(pores=self.net.pores('top'), values=101325)
         alg.set_value_BC(pores=self.net.pores('bottom'), values=0)
         alg.run()
-        alg.domain_area = 81
-        alg.domain_length = 9
-        Keff = alg.calc_effective_conductivity()
+        Keff = alg.calc_effective_conductivity(domain_area=81, domain_length=9)
         assert_approx_equal(Keff, 1.125)
 
     def teardown_class(self):
