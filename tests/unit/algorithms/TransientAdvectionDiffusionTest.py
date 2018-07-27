@@ -22,6 +22,8 @@ class TransientAdvectionDiffusionTest:
 
     def test_transient_advection_diffusion(self):
         sf = op.algorithms.StokesFlow(network=self.net, phase=self.phase)
+        sf.setup(quantity='pore.pressure',
+                 conductance='throat.hydraulic_conductance')
         sf.set_value_BC(pores=self.net.pores('back'), values=1)
         sf.set_value_BC(pores=self.net.pores('front'), values=0)
         sf.run()
@@ -29,9 +31,12 @@ class TransientAdvectionDiffusionTest:
 
         ad = op.algorithms.TransientAdvectionDiffusion(network=self.net,
                                                        phase=self.phase)
-        ad.settings.update({'t_scheme': 'implicit', 's_scheme': 'powerlaw',
-                            't_step': 1, 't_output': 50, 't_final': 100,
-                            't_tolerance': 1e-20})
+        ad.setup(quantity='pore.concentration',
+                 diffusive_conductance='throat.diffusive_conductance',
+                 hydraulic_conductance='throat.hydraulic_conductance',
+                 pressure='pore.pressure', t_initial=0, t_final=100,
+                 t_step=1, t_output=50, t_tolerance=1e-20,
+                 s_scheme='powerlaw', t_scheme='implicit')
         ad.set_IC(0)
         ad.set_value_BC(pores=self.net.pores('back'), values=2)
         ad.set_value_BC(pores=self.net.pores('front'), values=0)

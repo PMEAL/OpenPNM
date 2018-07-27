@@ -33,8 +33,11 @@ class TransientImplicitReactiveTransportTest:
         alg = op.algorithms.TransientReactiveTransport(network=self.net,
                                                        phase=self.phase,
                                                        settings=self.settings)
-        alg.settings.update({'t_scheme': 'implicit', 't_step': 0.1,
-                             't_tolerance': 1e-07, 'r_tolerance': 1e-06})
+        alg.setup(quantity='pore.concentration',
+                  conductance='throat.diffusive_conductance',
+                  t_initial=0, t_final=1000, t_step=0.1, t_output=100,
+                  t_tolerance=1e-07, t_scheme='implicit')
+        alg.settings.update({'r_tolerance': 1e-06})
         alg.set_IC(0)
         alg.set_value_BC(pores=self.net.pores('left'), values=2)
         alg.set_source(propname='pore.reaction', pores=self.net.pores('right'))
