@@ -156,12 +156,10 @@ class DelaunayGeometry(GenericGeometry):
         cen_lens = self._throat_c2c()
         self['throat.c2c'] = np.sum(cen_lens, axis=1)
         cen_lens[cen_lens <= 0.0] = 1e-12
-        self['throat.centroid_lengths.pore1'] = cen_lens[:, 0]
-        self['throat.centroid_lengths.throat'] = cen_lens[:, 1]
-        self['throat.centroid_lengths.pore2'] = cen_lens[:, 2]
+        self['throat.conduit_lengths.pore1'] = cen_lens[:, 0]
+        self['throat.conduit_lengths.throat'] = cen_lens[:, 1]
+        self['throat.conduit_lengths.pore2'] = cen_lens[:, 2]
         # Configurable Models
-        self.add_model(propname='throat.equivalent_area',
-                       model=gm.throat_equivalent_area.boundary)
         self.add_model(propname='throat.shape_factor',
                        model=gm.throat_shape_factor.compactness)
         self.add_model(propname='pore.diameter',
@@ -171,6 +169,8 @@ class DelaunayGeometry(GenericGeometry):
                        pore_diameter='pore.diameter')
         self.add_model(propname='throat.surface_area',
                        model=gm.throat_surface_area.extrusion)
+        self.add_model(propname='throat.equivalent_area',
+                       model=gm.throat_equivalent_area.boundary)
         self.regenerate_models()
 
     def _t_normals(self):
