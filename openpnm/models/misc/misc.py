@@ -1,13 +1,15 @@
 import numpy as np
 import scipy.stats as spts
+from openpnm.utils import logging
+logger = logging.getLogger()
 
 
 def generic_function(target, prop, func, **kwargs):
     r"""
     Runs an arbitrary function on the given data
 
-    This allows users to place a customized Numpy calculation into the
-    automatated model regeneration pipeline.
+    This allows users to place a customized calculation into the automatated
+    model regeneration pipeline.
 
     Parameters
     ----------
@@ -27,20 +29,23 @@ def generic_function(target, prop, func, **kwargs):
 
     Examples
     --------
+    The following example shows how to use a Numpy function, but any function
+    can be used, as long as it returns an array object:
+
     >>> import openpnm as op
     >>> import numpy as np
     >>> pn = op.network.Cubic(shape=[5, 5, 5])
     >>> geo = op.geometry.GenericGeometry(network=pn, pores=pn.Ps, throats=pn.Ts)
     >>> geo['pore.rand'] = np.random.rand(geo.Np)
     >>> geo.add_model(propname='pore.cos',
-    ...               model=op.models.misc.numpy_func,
+    ...               model=op.models.misc.generic_function,
     ...               func=np.cos,
     ...               prop='pore.rand')
     """
     values = target[prop]
     result = func(values, **kwargs)
     if not isinstance(result, np.ndarray):
-        raise Exception('Given Numpy function must return an array')
+        logger.warning('Given function must return a Numpy array')
     return result
 
 
@@ -309,13 +314,26 @@ def generic_distribution(target, seeds, func):
     Examples
     --------
     The following code illustrates the process of obtaining a 'frozen' Scipy
-    stats object, and visualizes the corresponding distribution using a
-    Matplotlib histogram:
+    stats object and adding it as a model:
 
     >>> import scipy
-    >>> func = scipy.stats.weibull_min(c=2, scale=.0001, loc=0)
+    >>> import openpnm as op
+    >>> pn = op.network.Cubic(shape=[3, 3, 3])
+    >>> geo = op.geometry.GenericGeometry(network=pn, pores=pn.Ps, throats=pn.Ts)
+    >>> geo.add_model(propname='pore.seed',
+    ...               model=op.models.geometry.pore_seed.random)
+
+    Now retrieve the stats distribution and add to ``geo`` as a model:
+
+    >>> stats_obj = scipy.stats.weibull_min(c=2, scale=.0001, loc=0)
+    >>> geo.add_model(propname='pore.size',
+    ...               model=op.models.geometry.pore_size.generic_distribution,
+    ...               seeds='pore.seed',
+    ...               func=stats_obj)
+
+
     >>> import matplotlib.pyplot as plt
-    >>> fig = plt.hist(func.ppf(q=scipy.rand(1000)), bins=50)
+    >>> fig = plt.hist(stats_obj.ppf(q=scipy.rand(1000)), bins=50)
 
     """
     seeds = target[seeds]

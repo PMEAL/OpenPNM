@@ -40,9 +40,9 @@ class MiscTest:
                            prop3='pore.value3')
         assert sp.all(sp.unique(self.geo['pore.result2']) == 8)
 
-    def test_numpy_func(self):
+    def test_generic_function(self):
         self.geo['pore.rand'] = sp.rand(self.geo.Np)
-        self.geo.add_model(model=mods.numpy_func,
+        self.geo.add_model(model=mods.generic_function,
                            func=sp.clip,
                            propname='pore.clipped',
                            prop='pore.rand',
