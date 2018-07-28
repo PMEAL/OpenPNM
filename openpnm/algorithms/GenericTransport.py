@@ -109,10 +109,22 @@ class GenericTransport(GenericAlgorithm):
     def __init__(self, project=None, network=None, phase=None, settings={},
                  **kwargs):
         # Set some default settings
-        self.settings.update({'phase': None,
-                              'conductance': None,
-                              'quantity': None,
-                              'solver': 'spsolve'})
+        def_set = {'phase': None,
+                   'conductance': None,
+                   'quantity': None,
+                   'solver': 'spsolve',
+                   'gui': {'setup':        {'quantity': '',
+                                            'conductance': ''},
+                           'set_rate_BC':  {'pores': None,
+                                            'values': None},
+                           'set_value_BC': {'pores': None,
+                                            'values': None},
+                           'remove_BC':    {'pores': None}
+                           }
+                   }
+        self.settings.update(def_set)
+        self.settings.update(settings)
+
         self.setup(phase=phase, **settings)
         # If network given, get project, otherwise let parent class create it
         if network is not None:
@@ -126,7 +138,7 @@ class GenericTransport(GenericAlgorithm):
         self['pore.bc_rate'] = np.nan
         self['pore.bc_value'] = np.nan
 
-    def setup(self, phase=None, **kwargs):
+    def setup(self, phase=None, quantity='', conductance='', **kwargs):
         r"""
         This method takes several arguments that are essential to running the
         algorithm and adds them to the settings.
@@ -138,6 +150,10 @@ class GenericTransport(GenericAlgorithm):
         """
         if phase:
             self.settings['phase'] = phase.name
+        if quantity:
+            self.settings['quantity'] = quantity
+        if conductance:
+            self.settings['conductance'] = conductance
         self.settings.update(kwargs)
 
     def set_value_BC(self, pores, values):

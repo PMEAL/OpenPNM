@@ -21,13 +21,19 @@ class PowerlawAdvectionDiffusionTest:
 
     def test_powerlaw_advection_diffusion_diffusion(self):
         sf = op.algorithms.StokesFlow(network=self.net, phase=self.phase)
+        sf.setup(quantity='pore.pressure',
+                 conductance='throat.hydraulic_conductance')
         sf.set_value_BC(pores=self.net.pores('back'), values=1)
         sf.set_value_BC(pores=self.net.pores('front'), values=0)
         sf.run()
         self.phase[sf.settings['quantity']] = sf[sf.settings['quantity']]
 
-        ad = op.algorithms.AdvectionDiffusion(network=self.net, phase=self.phase)
-        ad.settings.update({'s_scheme': 'powerlaw'})
+        ad = op.algorithms.AdvectionDiffusion(network=self.net,
+                                              phase=self.phase)
+        ad.setup(quantity='pore.concentration',
+                 diffusive_conductance='throat.diffusive_conductance',
+                 hydraulic_conductance='throat.hydraulic_conductance',
+                 pressure='pore.pressure', s_scheme='powerlaw')
         ad.set_value_BC(pores=self.net.pores('back'), values=2)
         ad.set_value_BC(pores=self.net.pores('front'), values=0)
         ad.run()

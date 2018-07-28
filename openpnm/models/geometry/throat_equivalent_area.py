@@ -101,3 +101,28 @@ def circular_pores(target, throat_area='throat.area',
     return {'pore1': 2*L1 / (_np.arctan(2*L1/_np.sqrt(d1**2 - 4*L1**2))),
             'throat': target[throat_area],
             'pore2': 2*L2 / (_np.arctan(2*L2/_np.sqrt(d2**2 - 4*L2**2)))}
+
+
+def boundary(target, pore_area='pore.area', throat_area='throat.area',
+             label='pore.internal'):
+    r"""
+    A method to be applied to boundary throats that copies the values from the
+    internal pore, if throat area values already exist use those
+    """
+    network = target.project.network
+    throats = network.map_throats(throats=target.Ts, origin=target)
+    conns = network['throat.conns'][throats]
+    labelled_ps = network[label][conns]
+    p1 = conns[:, 0]
+    p2 = conns[:, 1]
+    # copy p index if label is false
+    # label must be true for at least one pore
+    p1[~labelled_ps[:, 0]] = p2[~labelled_ps[:, 0]]
+    p2[~labelled_ps[:, 1]] = p1[~labelled_ps[:, 1]]
+    ea_p1 = network[pore_area][p1]
+    ea_p2 = network[pore_area][p2]
+    if throat_area in target.keys():
+        ea_ts = target[throat_area]
+    else:
+        ea_ts = ea_p1
+    return {'pore1': ea_p1, 'throat': ea_ts, 'pore2': ea_p2}
