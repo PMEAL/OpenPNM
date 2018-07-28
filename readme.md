@@ -1,6 +1,6 @@
-![https://pypi.python.org/pypi/openpnm](https://badge.fury.io/py/openpnm.svg) | ![https://travis-ci.org/PMEAL/OpenPNM](https://travis-ci.org/PMEAL/OpenPNM.svg?branch=master) |
-![https://codecov.io/gh/PMEAL/OpenPNM](https://codecov.io/gh/PMEAL/OpenPNM/branch/master/graph/badge.svg)
-| ![http://openpnm.readthedocs.io/en/master/](https://img.shields.io/badge/ReadTheDocs-GO-blue.svg)
+[![](https://badge.fury.io/py/openpnm.svg)](https://pypi.python.org/pypi/openpnm)  [![](https://travis-ci.org/PMEAL/OpenPNM.svg?branch=master)](https://travis-ci.org/PMEAL/OpenPNM)
+[![](https://codecov.io/gh/PMEAL/OpenPNM/branch/master/graph/badge.svg)](https://codecov.io/gh/PMEAL/OpenPNM)
+[![](https://img.shields.io/badge/ReadTheDocs-GO-blue.svg)](http://openpnm.readthedocs.io/en/master/)
 
 # Overview of OpenPNM
 
@@ -17,7 +17,7 @@ pip install openpnm
 Or the source code can be downloaded from [Github](https://github.com/pmeal/OpenPNM/) and installed by running:
 
 ```
-   pip install -e 'path/to/downloaded/files'
+pip install -e 'path/to/downloaded/files'
 ```
 
 The advantage to installing from the source code is that you can edit the files and have access to your changes each time you import *OpenPNM*.
