@@ -802,7 +802,7 @@ def reduce_coordination(network, z):
     trim(network=network, throats=Ts)
 
 
-def label_faces(network, tol=0.1):
+def label_faces(network, tol=0.0):
     r"""
     Finds pores on the surface of the network and labels them according to
     whether they are on the *top*, *bottom*, etc.  This function assumes the
@@ -812,6 +812,13 @@ def label_faces(network, tol=0.1):
     ----------
     network : OpenPNM Network object
         The network to apply the labels
+
+    tol : scalar
+        The tolerance for defining what counts as a surface pore, which is
+        specifically meant for random networks.  All pores with ``tol`` of
+        the maximum or minimum along each axis are counts as pores.  The
+        default is 0.
+
     """
     find_surface_pores(network)
     Psurf = network['pore.surface']
@@ -822,12 +829,12 @@ def label_faces(network, tol=0.1):
     yspan = ymax - ymin
     zmin, zmax = sp.amin(crds[:, 2]), sp.amax(crds[:, 2])
     zspan = zmax - zmin
-    network['pore.back'] = (crds[:, 0] > (1-tol)*xmax) * Psurf
-    network['pore.right'] = (crds[:, 1] > (1-tol)*ymax) * Psurf
-    network['pore.top'] = (crds[:, 2] > (1-tol)*zmax) * Psurf
-    network['pore.front'] = (crds[:, 0] < (xmin + tol*xspan)) * Psurf
-    network['pore.left'] = (crds[:, 1] < (xmin + tol*yspan)) * Psurf
-    network['pore.bottom'] = (crds[:, 2] < (xmin + tol*zspan)) * Psurf
+    network['pore.back'] = (crds[:, 0] >= (1-tol)*xmax) * Psurf
+    network['pore.right'] = (crds[:, 1] >= (1-tol)*ymax) * Psurf
+    network['pore.top'] = (crds[:, 2] >= (1-tol)*zmax) * Psurf
+    network['pore.front'] = (crds[:, 0] <= (xmin + tol*xspan)) * Psurf
+    network['pore.left'] = (crds[:, 1] <= (ymin + tol*yspan)) * Psurf
+    network['pore.bottom'] = (crds[:, 2] <= (zmin + tol*zspan)) * Psurf
 
 
 def find_surface_pores(network, markers=None, label='surface'):
