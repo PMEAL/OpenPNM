@@ -37,11 +37,18 @@ phys_air.add_model(propname='pore.2nd_order_rxn', model=mod,
                    regen_mode='deferred')
 rxn = op.algorithms.FickianDiffusion(network=pn)
 rxn.setup(phase=air)
-Ps = pn.find_nearby_pores(pores=500, r=5e-4, flatten=True)
+Ps = pn.find_nearby_pores(pores=50, r=5e-4, flatten=True)
 rxn.set_source(propname='pore.2nd_order_rxn', pores=Ps)
 rxn.set_value_BC(pores=pn.pores('top'), values=1)
 rxn.run()
 air.update(rxn.results())
+
+fd = op.algorithms.FickianDiffusion(network=pn)
+fd.setup(phase=air)
+fd.set_value_BC(pores=pn.pores('left'), values=1)
+fd.set_value_BC(pores=pn.pores('right'), values=0)
+fd.run()
+fd.calc_eff_diffusivity()
 
 # Output network and phases to a VTP file for visualization in Paraview
 # proj.export_data(network=pn, phases=[hg, air, water], filename='output.vtp')
