@@ -34,13 +34,13 @@ class MixedInvasionPercolation(GenericAlgorithm):
     """
 
     def __init__(self, settings={}, **kwargs):
-        def_set = {'pore_volume': 'pore.volume',
-                   'throat_volume': 'throat.volume',
-                   'pore_entry_pressure': 'pore.entry_pressure',
+        def_set = {'pore_entry_pressure': 'pore.entry_pressure',
                    'throat_entry_pressure': 'throat.entry_pressure',
                    'mode': 'mixed',
                    'snap_off': False,
                    'invade_isolated_Ts': False,
+                   'late_pore_filling': '',
+                   'late_throat_filling': '',
                    'gui': {'setup':        {'mode': '',
                                             'pore_entry_pressure': '',
                                             'throat_entry_pressure': '',
@@ -73,8 +73,8 @@ class MixedInvasionPercolation(GenericAlgorithm):
               throat_entry_pressure='',
               snap_off='',
               invade_isolated_Ts='',
-              pore_volume='',
-              throat_volume=''):
+              late_pore_filling='',
+              late_throat_filling=''):
         r"""
         Used to specify necessary arguments to the simulation.  This method is
         useful for resetting the algorithm or applying more explicit control.
@@ -110,15 +110,30 @@ class MixedInvasionPercolation(GenericAlgorithm):
             'throat.capillary_pressure'.  This is only accessed if the ``mode``
             is set to bond percolation.
 
-        'pore_volume' : string
-            The dictionary key containing the pore volume information.
+        pore_partial_filling : string
+            The name of the model used to determine partial pore filling as
+            a function of applied pressure.
 
-        'throat_volume' : string
-            The dictionary key containing the throat volume information.
+        throat_partial_filling : string
+            The name of the model used to determine partial throat filling as
+            a function of applied pressure.
         """
-        self._phase = phase
-        self['throat.entry_pressure'] = phase[self.settings['throat_entry_pressure']]
-        self['pore.entry_pressure'] = phase[self.settings['pore_entry_pressure']]
+        if phase:
+            self.settings['phase'] = phase.name
+        if throat_entry_pressure:
+            self.settings['throat_entry_pressure'] = throat_entry_pressure
+            phase = self.project.find_phase(self)
+        self['throat.entry_pressure'] = \
+            phase[self.settings['throat_entry_pressure']]
+        if pore_entry_pressure:
+            self.settings['pore_entry_pressure'] = pore_entry_pressure
+            phase = self.project.find_phase(self)
+        self['pore.entry_pressure'] = \
+            phase[self.settings['pore_entry_pressure']]
+        if late_pore_filling:
+            self.settings['late_pore_filling'] = late_pore_filling
+        if late_throat_filling:
+            self.settings['late_throat_filling'] = late_throat_filling
         self.reset()
 
     def reset(self):
@@ -399,43 +414,44 @@ class MixedInvasionPercolation(GenericAlgorithm):
             pores = self.Ps
         if len(throats) == 0:
             throats = self.Ts
-        self._phase['throat.invasion_sequence'] = sp.nan
-        self._phase['pore.invasion_sequence'] = sp.nan
-        self._phase['throat.invasion_sequence'][throats] = \
+        phase = self.project.find_phase(self)
+        phase['throat.invasion_sequence'] = sp.nan
+        phase['pore.invasion_sequence'] = sp.nan
+        phase['throat.invasion_sequence'][throats] = \
             self['throat.invasion_sequence'][throats]
-        self._phase['pore.invasion_sequence'][pores] = \
+        phase['pore.invasion_sequence'][pores] = \
             self['pore.invasion_sequence'][pores]
-        self._phase['throat.cluster'] = self['throat.cluster']
-        self._phase['pore.cluster'] = self['pore.cluster']
+        phase['throat.cluster'] = self['throat.cluster']
+        phase['pore.cluster'] = self['pore.cluster']
         if Pc is not None:
             if 'pore.invasion_pressure' in self.keys():
                 self['throat.occupancy'] = self['throat.invasion_pressure'] <= Pc
                 self['pore.occupancy'] = self['pore.invasion_pressure'] <= Pc
-                self._phase['throat.occupancy'] = self['throat.occupancy']
-                self._phase['pore.occupancy'] = self['pore.occupancy']
+                phase['throat.occupancy'] = self['throat.occupancy']
+                phase['pore.occupancy'] = self['pore.occupancy']
             else:
                 logger.warning("Occupancy not updated, please run " +
                                "extract_drainage() method to populate" +
                                " the invasion_pressure data")
         if "pore.invasion_pressure" in self.props():
-            self._phase['pore.invasion_pressure'] = \
+            phase['pore.invasion_pressure'] = \
                 self['pore.invasion_pressure']
-            self._phase['throat.invasion_pressure'] = \
+            phase['throat.invasion_pressure'] = \
                 self['throat.invasion_pressure']
         if "pore.invasion_saturation" in self.props():
-            self._phase['pore.invasion_saturation'] = \
+            phase['pore.invasion_saturation'] = \
                 self['pore.invasion_saturation']
-            self._phase['throat.invasion_saturation'] = \
+            phase['throat.invasion_saturation'] = \
                 self['throat.invasion_saturation']
         if "pore.trapped" in self.labels():
-            self._phase['pore.trapped'] = self['pore.trapped']
+            phase['pore.trapped'] = self['pore.trapped']
         if "pore.trapping_sequence" in self.props():
-            self._phase['pore.trapping_sequence'] = \
+            phase['pore.trapping_sequence'] = \
                 self['pore.trapping_sequence']
         if "throat.trapped" in self.labels():
-            self._phase['throat.trapped'] = self['throat.trapped']
+            phase['throat.trapped'] = self['throat.trapped']
         if "throat.trapping_sequence" in self.props():
-            self._phase['throat.trapping_sequence'] = \
+            phase['throat.trapping_sequence'] = \
                 self['throat.trapping_sequence']
 
     def apply_flow(self, flowrate):
@@ -473,7 +489,8 @@ class MixedInvasionPercolation(GenericAlgorithm):
         ee = sp.cumsum(T_vol[bb] / flowrate)
         t = sp.zeros((self.Nt,))
         t[bb] = ee  # Convert back to original order
-        self._phase['throat.invasion_time'] = t
+        phase = self.project.find_phase(self)
+        phase['throat.invasion_time'] = t
 
     def plot_drainage_curve(self, fig=None, inv_points=None, npts=100,
                             lpf=False, trapping_outlets=None):
@@ -710,8 +727,9 @@ class MixedInvasionPercolation(GenericAlgorithm):
             logger.info("Number of trapped throats: " + str(num_tTs))
             self['throat.invasion_sequence'][self['throat.trapped']] = -1
             # Assumes invasion has run to the end
-            self._phase['pore.occupancy'] = ~self['pore.trapped']
-            self._phase['throat.occupancy'] = ~self['throat.trapped']
+            phase = self.project.find_phase(self)
+            phase['pore.occupancy'] = ~self['pore.trapped']
+            phase['throat.occupancy'] = ~self['throat.trapped']
         else:
             logger.info("No trapped clusters found")
 
@@ -721,16 +739,17 @@ class MixedInvasionPercolation(GenericAlgorithm):
         This is probably wrong!!!! Each one needs to start a new cluster.
         """
         net = self.project.network
+        phase = self.project.find_phase(self)
         if queue is None:
             queue = self.queue[0]
         try:
-            Pc_snap_off = self._phase[snap_off]
+            Pc_snap_off = phase[snap_off]
             logger.info("Adding snap off pressures to queue")
             for T in net.throats():
                 if not np.isnan(Pc_snap_off[T]):
                     hq.heappush(queue, [Pc_snap_off[T], T, 'throat'])
         except:
-            logger.warning("Phase " + self._phase.name + " doesn't have " +
+            logger.warning("Phase " + phase.name + " doesn't have " +
                            "property " + snap_off)
 
     def set_residual(self, pores=[], overwrite=False):
