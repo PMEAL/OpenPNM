@@ -46,11 +46,6 @@ class Cubic(GenericNetwork):
         ``connectivity`` (i.e. 26) and then delete a fraction of the throats
         using ``openpnm.topotools.reduce_coordination``.
 
-    add_boundary_pores : string or list of strings
-        Indicate which faces, if any, to add boundary pores by label (e.g.
-        'left', 'right', etc).  This argument is actually passed to
-        ``add_boundary_pores``, so refer to that method for more information.
-
     name : string
         An optional name for the object to help identify it.  If not given,
         one will be generated.
@@ -91,7 +86,7 @@ class Cubic(GenericNetwork):
     <http://www.paraview.org>`_.
     """
     def __init__(self, shape, spacing=[1, 1, 1], connectivity=6, name=None,
-                 project=None, add_boundary_pores=[]):
+                 project=None):
 
         arr = np.atleast_3d(np.empty(shape))
 
@@ -172,8 +167,6 @@ class Cubic(GenericNetwork):
         self['throat.surface'] = False
         Ts = self.find_neighbor_throats(pores=Ps, mode='intersection')
         self['throat.surface'][Ts] = True
-        # Add boundary pores to specified faces
-        self.add_boundary_pores(labels=add_boundary_pores)
         # Scale network to requested spacing
         self['pore.coords'] *= spacing
 

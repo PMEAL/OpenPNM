@@ -41,12 +41,12 @@ class DelaunayVoronoiDual(GenericNetwork):
         can be trimmed.
 
     shape : array_like
-        The size and shape of the domain using for generating and trimming
+        The size and shape of the domain used for generating and trimming
         excess points. The coordinates are treated as the outer corner of a
         rectangle [x, y, z] whose opposite corner lies at [0, 0, 0].
 
         By default, a domain size of [1, 1, 1] is used.  To create a 2D network
-        set the 3D dimension to 0.
+        set the Z-dimension to 0.
 
     name : string
         An optional name for the object to help identify it.  If not given,
@@ -69,7 +69,7 @@ class DelaunayVoronoiDual(GenericNetwork):
 
     """
 
-    def __init__(self, shape, num_points=None, **kwargs):
+    def __init__(self, shape=[1, 1, 1], num_points=None, **kwargs):
         points = kwargs.pop('points', None)
         points = self._parse_points(shape=shape,
                                     num_points=num_points,
@@ -286,3 +286,11 @@ class DelaunayVoronoiDual(GenericNetwork):
             points = points[:, :2]
 
         return points
+
+    def add_boundary_pores(self, label, offset):
+        r"""
+        """
+        offset = sp.array(offset)
+        if (offset.size == 3) or (offset.shape == ()):
+            Ps = self.pores(label)
+            topotools.add_boundary_pores(network=self, pores=Ps)

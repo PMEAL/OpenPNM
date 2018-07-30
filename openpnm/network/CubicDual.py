@@ -73,7 +73,7 @@ class CubicDual(GenericNetwork):
 
     """
     def __init__(self, shape, spacing=1, label_1='primary',
-                 label_2='secondary', add_boundary_pores=[], **kwargs):
+                 label_2='secondary', **kwargs):
         super().__init__(**kwargs)
         spacing = sp.array(spacing)
         shape = sp.array(shape)
@@ -122,7 +122,6 @@ class CubicDual(GenericNetwork):
         # Transfer all dictionary items from 'net' to 'self'
         [self.update({item: net[item]}) for item in net]
         ws.close_project(net.project)
-        self.add_boundary_pores(labels=add_boundary_pores, spacing=[1, 1, 1])
         # Finally, scale network to requested spacing
         net['pore.coords'] *= spacing
 
@@ -130,7 +129,7 @@ class CubicDual(GenericNetwork):
         r"""
         Add boundary pores to the specified faces of the network
 
-        Pores are offset from the faces by 1/2 a the given ``spacing``, such
+        Pores are offset from the faces by 1/2 of the given ``spacing``, such
         that they lie directly on the boundaries.
 
         Parameters
@@ -157,25 +156,3 @@ class CubicDual(GenericNetwork):
                 offset = -1*offset
             topotools.add_boundary_pores(network=self, pores=Ps, offset=offset,
                                          apply_label=item + '_boundary')
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

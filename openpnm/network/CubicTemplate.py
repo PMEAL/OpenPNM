@@ -18,6 +18,10 @@ class CubicTemplate(Cubic):
         locations in the image that are marked as ``True`` are kept while the
         rest of trimmed to yeild the shape.
 
+    spacing : array_like, optional
+        The spacing between pore centers in each direction. If not given, then
+        [1, 1, 1] is assumed.
+
     name : string
         An optional name for the object to help identify it.  If not given,
         one will be generated.

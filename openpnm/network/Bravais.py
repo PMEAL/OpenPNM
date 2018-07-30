@@ -38,12 +38,6 @@ class Bravais(GenericNetwork):
         - **'fcc'** : Face-centered cubic lattice
         - **'hcp'** : Hexagonal close packed (Note Implemented Yet)
 
-    add_boundary_pores : string or list of strings
-        Indicate which faces, if any, to add boundary pores by label (e.g.
-        'left', 'right', etc).  This argument is actually passed to
-        ``add_boundary_pores``, so refer to that method for more information.
-
-
     name : string
         An optional name for the object to help identify it.  If not given,
         one will be generated.
@@ -107,8 +101,7 @@ class Bravais(GenericNetwork):
     <http://www.paraview.org>`_.
 
     """
-    def __init__(self, shape, mode, spacing=1, add_boundary_pores=[],
-                 **kwargs):
+    def __init__(self, shape, mode, spacing=1, **kwargs):
         super().__init__(**kwargs)
         shape = np.array(shape)
         if np.any(shape < 2):
@@ -204,7 +197,41 @@ class Bravais(GenericNetwork):
             raise Exception('Unrecognized lattice type: ' + mode)
 
         # Finally scale network to specified spacing
+        topotools.label_faces(self)
+        Ps = self.pores(['left', 'right', 'top', 'bottom', 'front', 'back'])
+        Ps = self.tomask(pores=Ps)
+        self['pore.surface'] = Ps
+        self['pore.internal'] = ~Ps
         self['pore.coords'] *= np.array(spacing)
 
     def add_boundary_pores(self, labels, spacing):
-        pass
+        r"""
+        Add boundary pores to the specified faces of the network
+
+        Pores are offset from the faces by 1/2 of the given ``spacing``, such
+        that they lie directly on the boundaries.
+
+        Parameters
+        ----------
+        labels : string or list of strings
+            The labels indicating the pores defining each face where boundary
+            pores are to be added (e.g. 'left' or ['left', 'right'])
+
+        spacing : scalar or array_like
+            The spacing of the network (e.g. [1, 1, 1]).  This must be given
+            since it can be quite difficult to infer from the network,
+            for instance if boundary pores have already added to other faces.
+
+        """
+        spacing = np.array(spacing)
+        if spacing.size == 1:
+            spacing = np.ones(3)*spacing
+        for item in labels:
+            Ps = self.pores(item)
+            coords = np.absolute(self['pore.coords'][Ps])
+            axis = np.count_nonzero(np.diff(coords, axis=0), axis=0) == 0
+            offset = np.array(axis, dtype=int)/2
+            if np.amin(coords) == np.amin(coords[:, np.where(axis)[0]]):
+                offset = -1*offset
+            topotools.add_boundary_pores(network=self, pores=Ps, offset=offset,
+                                         apply_label=item + '_boundary')
