@@ -17,11 +17,11 @@ def normal(target, scale, loc, seeds='throat.seed'):
 normal.__doc__ = _misc.normal.__doc__
 
 
-def generic(target, func, seeds='throat.seed'):
-    return _misc.generic(target=target, func=func, seeds=seeds)
+def generic_distribution(target, func, seeds='throat.seed'):
+    return _misc.generic_distribution(target=target, func=func, seeds=seeds)
 
 
-generic.__doc__ = _misc.generic.__doc__
+generic_distribution.__doc__ = _misc.generic_distribution.__doc__
 
 
 def from_neighbor_pores(target, pore_prop='pore.diameter', mode='min'):
