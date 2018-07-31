@@ -3,7 +3,7 @@ import scipy as sp
 import pytest
 
 
-class TransientFickianDiffusionTest:
+class TransientFourierConductionTest:
 
     def setup_class(self):
         sp.random.seed(0)
@@ -16,16 +16,14 @@ class TransientFickianDiffusionTest:
         self.phys = op.physics.GenericPhysics(network=self.net,
                                               phase=self.phase,
                                               geometry=self.geo)
-        self.phys['throat.diffusive_conductance'] = 1e-15
-        self.phys['throat.hydraulic_conductance'] = 1e-15
+        self.phys['throat.thermal_conductance'] = 1e-15
         self.geo['pore.volume'] = 1e-27
-        self.phase['pore.molar_density'] = 55500
 
     def test_transient_fickian_diffusion(self):
-        alg = op.algorithms.TransientFickianDiffusion(network=self.net,
-                                                      phase=self.phase)
-        alg.setup(quantity='pore.concentration',
-                  conductance='throat.diffusive_conductance',
+        alg = op.algorithms.TransientFourierConduction(network=self.net,
+                                                       phase=self.phase)
+        alg.setup(quantity='pore.temperature',
+                  conductance='throat.thermal_conductance',
                   t_initial=0, t_final=1000, t_step=1, t_output=100,
                   t_tolerance=1e-08, t_scheme='implicit')
         alg.set_IC(0)
@@ -46,7 +44,7 @@ class TransientFickianDiffusionTest:
 
 if __name__ == '__main__':
 
-    t = TransientFickianDiffusionTest()
+    t = TransientFourierConductionTest()
     t.setup_class()
     for item in t.__dir__():
         if item.startswith('test'):

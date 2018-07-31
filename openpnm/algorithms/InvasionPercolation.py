@@ -80,12 +80,21 @@ class InvasionPercolation(GenericAlgorithm):
         ``plt.imshow(sp.reshape(water['pore.occupancy'], newshape=S[S > 1]))``
 
     """
-
-    def __init__(self, **kwargs):
+    def __init__(self, settings={}, **kwargs):
+        def_set = {'pore_volume': 'pore.volume',
+                   'throat_volume': 'throat.volume',
+                   'entry_pressure': 'throat.entry_pressure',
+                   'gui': {'setup':          {'entry_pressure': '',
+                                              'pore_volume': '',
+                                              'throat_volume': ''},
+                           'set_inlets':     {'pores': None,
+                                              'overwrite': False},
+                           'apply_trapping': {'outlets': None}
+                           }
+                   }
         super().__init__(**kwargs)
-        self.settings.update({'pore_volume': 'pore.volume',
-                              'throat_volume': 'throat.volume',
-                              'entry_pressure': 'throat.entry_pressure'})
+        self.settings.update(def_set)
+        self.settings.update(settings)
 
     def setup(self, phase, entry_pressure='', pore_volume='', throat_volume=''):
         r"""

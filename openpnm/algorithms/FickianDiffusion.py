@@ -44,18 +44,14 @@ class FickianDiffusion(ReactiveTransport):
     def __init__(self, settings={}, **kwargs):
         def_set = {'quantity': 'pore.concentration',
                    'conductance': 'throat.diffusive_conductance',
-                   'gui': {'setup':        {'phase': None,
-                                            'quantity': '',
-                                            'conductance': '',
-                                            },
+                   'gui': {'setup':        {'quantity': '',
+                                            'conductance': ''},
                            'set_rate_BC':  {'pores': None,
-                                            'values': None,
-                                            },
+                                            'values': None},
                            'set_value_BC': {'pores': None,
                                             'values': None},
                            'set_source':   {'pores': None,
-                                            'propname': '',
-                                            },
+                                            'propname': ''}
                            }
                    }
         super().__init__(**kwargs)
@@ -96,13 +92,24 @@ class FickianDiffusion(ReactiveTransport):
             self.settings['conductance'] = conductance
         super().setup(**kwargs)
 
-    def calc_eff_diffusivity(self, domain_area=None, domain_length=None):
+    def calc_eff_diffusivity(self, inlets=None, outlets=None,
+                             domain_area=None, domain_length=None):
         r"""
         This calculates the effective diffusivity in this linear transport
         algorithm.
 
         Parameters
         ----------
+        inlets : array_like
+            The pores where the inlet composition boundary conditions were
+            applied.  If not given an attempt is made to infer them from the
+            algorithm.
+
+        outlets : array_like
+            The pores where the outlet composition boundary conditions were
+            applied.  If not given an attempt is made to infer them from the
+            algorithm.
+
         domain_area : scalar, optional
             The area of the inlet (and outlet) boundary faces.  If not given
             then an attempt is made to estimate it, but it is usually
@@ -119,8 +126,6 @@ class FickianDiffusion(ReactiveTransport):
         around the inlet and outlet pores which do not necessarily lie on the
         edge of the domain, resulting in underestimation of sizes.
         """
-        if domain_area:
-            self.domain_area = domain_area
-        if domain_length:
-            self.domain_length = domain_length
-        return self._calc_eff_prop()
+        return self._calc_eff_prop(inlets=inlets, outlets=outlets,
+                                   domain_area=domain_area,
+                                   domain_length=domain_length)

@@ -142,7 +142,6 @@ class Bravais(GenericNetwork):
             shape = np.array(shape)
             # Create base cubic network of corner sites
             net1 = Cubic(shape=shape)
-            net1['pore.corner_sites'] = True
             # Create 3 networks to become face sites
             net2 = Cubic(shape=shape - [1, 1, 0])
             net3 = Cubic(shape=shape - [1, 0, 1])
@@ -150,9 +149,6 @@ class Bravais(GenericNetwork):
             net2['pore.coords'] += np.array([0.5, 0.5, 0])
             net3['pore.coords'] += np.array([0.5, 0, 0.5])
             net4['pore.coords'] += np.array([0, 0.5, 0.5])
-            net2['pore.face_sites'] = True
-            net3['pore.face_sites'] = True
-            net4['pore.face_sites'] = True
             # Remove throats from net2 (trim doesn't work when removing ALL)
             for n in [net2, net3, net4]:
                 n.clear(element='throat', mode='all')
@@ -169,11 +165,10 @@ class Bravais(GenericNetwork):
             self.update(net1)
             ws.close_project(net1.project)
             # Deal with labels
-            Ps1 = self['pore.corner_sites']
-            Ps2 = self['pore.face_sites']
             self.clear(mode='labels')
-            self['pore.corner_sites'] = Ps1
-            self['pore.face_sites'] = Ps2
+            Ps = np.any(np.mod(self['pore.coords'], 1) == 0, axis=1)
+            self['pore.face_sites'] = Ps
+            self['pore.corner_sites'] = ~Ps
             Ts = self.find_neighbor_throats(pores=self.pores('corner_sites'),
                                             mode='intersection')
             self['throat.corner_to_corner'] = False
