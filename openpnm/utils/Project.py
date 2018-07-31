@@ -359,6 +359,61 @@ class Project(list):
             phys = list(self.physics().values())
             return phys
 
+    def find_parent(self, obj):
+        r"""
+        Find the parent object associated with a given object.
+        For geometry the network is found, for physics the phase is found and
+        for all other objects which are defined for all the pores and throats
+        themselves are found.
+
+        Parameters
+        ----------
+        obj : OpenPNM Object
+            Can be any object
+
+        Returns
+        -------
+        An OpenPNM object
+
+        """
+        if 'Subdomain' not in obj._mro():
+            # Network, Phase, Alg
+            return obj
+        else:
+            if obj._isa() == 'geometry':
+                # Geom
+                return self.network
+            else:
+                # Phys
+                return self.find_phase(obj)
+
+    def find_child(self, obj):
+        r"""
+        Find the child object(s) associated with a given object.
+        For the network geometry is found, for the phase physics is found and
+        for Subdomain objects themselves are returned.
+
+        Parameters
+        ----------
+        obj : OpenPNM Object
+            Can be any object
+
+        Returns
+        -------
+        An OpenPNM object
+
+        """
+        if 'Subdomain' in obj._mro():
+            # Network, Phase, Alg
+            return obj
+        else:
+            if obj._isa() == 'network':
+                # Network
+                return self.geometries()
+            else:
+                # Phase
+                return self.find_physics(obj)
+
     def _validate_name(self, name):
         if name in self.names:
             raise Exception('An object already exists named '+name)
