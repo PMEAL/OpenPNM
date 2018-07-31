@@ -68,7 +68,6 @@ class MixedInvasionPercolation(GenericAlgorithm):
 
     def setup(self,
               phase=None,
-              mode='',
               pore_entry_pressure='',
               throat_entry_pressure='',
               snap_off='',
@@ -85,30 +84,15 @@ class MixedInvasionPercolation(GenericAlgorithm):
             The Phase object containing the physical properties of the invading
             fluid.
 
-        mode : string
-            Specifies the type of percolation process to simulate.  Options
-            are:
-
-            **'mixed'** - The percolation process is controlled by bond and
-            site entry thresholds.
-
-            **'bond'** - The percolation process is controlled by bond entry
-            thresholds.
-
-            **'site'** - The percolation process is controlled by site entry
-            thresholds.
-
         pore_entry_pressure : string
             The dictionary key on the Phase object where the pore entry
             pressure values are stored.  The default is
-            'pore.capillary_pressure'.  This is only accessed if the ``mode``
-            is set to site percolation.
+            'pore.capillary_pressure'.
 
         throat_entry_pressure : string
             The dictionary key on the Phase object where the throat entry
             pressure values are stored.  The default is
-            'throat.capillary_pressure'.  This is only accessed if the ``mode``
-            is set to bond percolation.
+            'throat.capillary_pressure'.
 
         pore_partial_filling : string
             The name of the model used to determine partial pore filling as
@@ -130,6 +114,10 @@ class MixedInvasionPercolation(GenericAlgorithm):
             phase = self.project.find_phase(self)
         self['pore.entry_pressure'] = \
             phase[self.settings['pore_entry_pressure']]
+        if snap_off:
+            self.settings['snap_off'] = snap_off
+        if invade_isolated_Ts:
+            self.settings['invade_isolated_Ts'] = invade_isolated_Ts
         if late_pore_filling:
             self.settings['late_pore_filling'] = late_pore_filling
         if late_throat_filling:
