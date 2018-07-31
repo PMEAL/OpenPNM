@@ -19,6 +19,17 @@ class BravaisTest:
         assert fcc.num_throats('throat.corner_to_corner') == 54
         assert fcc.num_throats('throat.corner_to_face') == 240
 
+    def test_fcc_add_boundary_pores(self):
+        fcc = op.network.Bravais(shape=[3, 3, 3], mode='fcc')
+        Np = fcc.Np
+        fcc.add_boundary_pores(labels=['left', 'right'], spacing=1)
+        assert fcc.Np > Np
+        assert fcc.Np == (Np + 18 + 8)
+        assert 'pore.left_boundary' in fcc.keys()
+        assert 'pore.right_boundary' in fcc.keys()
+        assert 'pore.top_boundary' not in fcc.keys()
+        assert 'pore.bottom_boundary' not in fcc.keys()
+
     def test_generation_bcc(self):
         bcc = op.network.Bravais(shape=[3, 3, 3], mode='bcc')
         assert bcc.Np == 35
@@ -28,6 +39,17 @@ class BravaisTest:
         assert bcc.num_throats('throat.corner_to_corner') == 54
         assert bcc.num_throats('throat.corner_to_body') == 64
         assert bcc.num_throats('throat.body_to_body') == 12
+
+    def test_bcc_add_boundary_pores(self):
+        bcc = op.network.Bravais(shape=[3, 3, 3], mode='bcc')
+        Np = bcc.Np
+        bcc.add_boundary_pores(labels=['left', 'right'], spacing=1)
+        assert bcc.Np > Np
+        assert bcc.Np == (Np + 18)
+        assert 'pore.left_boundary' in bcc.keys()
+        assert 'pore.right_boundary' in bcc.keys()
+        assert 'pore.top_boundary' not in bcc.keys()
+        assert 'pore.bottom_boundary' not in bcc.keys()
 
     def test_generation_hcp(self):
         with pytest.raises(NotImplementedError):
