@@ -146,8 +146,6 @@ class Cubic(GenericNetwork):
 
         super().__init__(Np=points.shape[0], Nt=pairs.shape[0], name=name,
                          project=project)
-        self['pore.internal'] = True
-        self['throat.internal'] = True
         # Label faces
         x, y, z = self['pore.coords'].T
         labels = ['front', 'back', 'left', 'right', 'bottom', 'top']
@@ -167,6 +165,8 @@ class Cubic(GenericNetwork):
         self['throat.surface'] = False
         Ts = self.find_neighbor_throats(pores=Ps, mode='intersection')
         self['throat.surface'][Ts] = True
+        self['pore.internal'] = ~self['pore.surface']
+        self['throat.internal'] = ~self['throat.surface']
         # Scale network to requested spacing
         self['pore.coords'] *= spacing
 

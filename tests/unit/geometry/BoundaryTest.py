@@ -24,6 +24,8 @@ class BoundaryTest:
                                           pores=Ps_boun[~Pb_mask],
                                           throats=Ts_boun[~Tb_mask])
         self.geo.regenerate_models()
+        self.boun1.regenerate_models()
+        self.boun2.regenerate_models()
 
     def teardown_class(self):
         mgr = op.Workspace()

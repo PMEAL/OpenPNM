@@ -1396,7 +1396,7 @@ def subdivide(network, pores, shape, labels=[]):
             network['pore.surface_' + l] = False
         new_net['pore.coords'] = sp.copy(old_coords)
 
-    network._label_surfaces()
+    label_faces(network=network)
     for l in main_labels:
         del network['pore.surface_'+l]
     trim(network=network, pores=pores)
