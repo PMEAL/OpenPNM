@@ -176,8 +176,10 @@ class Bravais(GenericNetwork):
             Ts = self.find_neighbor_throats(pores=self.pores('face_sites'))
             self['throat.corner_to_face'] = False
             self['throat.corner_to_face'][Ts] = True
+
         elif mode == 'hcp':
             raise NotImplementedError('hcp is not implemented yet')
+
         elif mode == 'sc':
             net = Cubic(shape=shape, spacing=spacing)
             self.update(net)
@@ -185,17 +187,46 @@ class Bravais(GenericNetwork):
             self.clear(mode='labels')
             self['pore.corner_sites'] = True
             self['throat.corner_to_corner'] = True
+
         else:
             raise Exception('Unrecognized lattice type: ' + mode)
-        # Add face labels
-        self['pore.front'] = self['pore.coords'][:, 0] <= 0.5
-        self['pore.back'] = self['pore.coords'][:, 0] >= (shape[0] - 0.5)
-        self['pore.left'] = self['pore.coords'][:, 1] <= 0.5
-        self['pore.right'] = self['pore.coords'][:, 1] >= (shape[1] - 0.5)
-        self['pore.bottom'] = self['pore.coords'][:, 2] <= 0.5
-        self['pore.top'] = self['pore.coords'][:, 2] >= (shape[2] - 0.5)
-        Ps = self.pores(['left', 'right', 'front', 'back', 'top', 'bottom'])
-        self['pore.surface'] = self.tomask(pores=Ps)
-        self['pore.internal'] = ~self.tomask(pores=Ps)
-        # Finally scale coords to requested spacing
+
+        # Finally scale network to specified spacing
+        topotools.label_faces(self)
+        Ps = self.pores(['left', 'right', 'top', 'bottom', 'front', 'back'])
+        Ps = self.tomask(pores=Ps)
+        self['pore.surface'] = Ps
+        self['pore.internal'] = ~Ps
         self['pore.coords'] *= np.array(spacing)
+
+    def add_boundary_pores(self, labels, spacing):
+        r"""
+        Add boundary pores to the specified faces of the network
+
+        Pores are offset from the faces by 1/2 of the given ``spacing``, such
+        that they lie directly on the boundaries.
+
+        Parameters
+        ----------
+        labels : string or list of strings
+            The labels indicating the pores defining each face where boundary
+            pores are to be added (e.g. 'left' or ['left', 'right'])
+
+        spacing : scalar or array_like
+            The spacing of the network (e.g. [1, 1, 1]).  This must be given
+            since it can be quite difficult to infer from the network,
+            for instance if boundary pores have already added to other faces.
+
+        """
+        spacing = np.array(spacing)
+        if spacing.size == 1:
+            spacing = np.ones(3)*spacing
+        for item in labels:
+            Ps = self.pores(item)
+            coords = np.absolute(self['pore.coords'][Ps])
+            axis = np.count_nonzero(np.diff(coords, axis=0), axis=0) == 0
+            offset = np.array(axis, dtype=int)/2
+            if np.amin(coords) == np.amin(coords[:, np.where(axis)[0]]):
+                offset = -1*offset
+            topotools.add_boundary_pores(network=self, pores=Ps, offset=offset,
+                                         apply_label=item + '_boundary')

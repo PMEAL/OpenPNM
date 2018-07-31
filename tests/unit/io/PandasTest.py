@@ -62,13 +62,13 @@ class PandasTest:
     def test_to_dataframe_not_joined(self):
         df = Pandas.to_dataframe(network=self.net, phases=[self.phase_1],
                                  join=False)
-        assert len(df.pore.keys()) == 21
-        assert len(df.throat.keys()) == 12
+        assert len(df.pore.keys()) == 22
+        assert len(df.throat.keys()) == 13
 
     def test_to_dataframe_joined(self):
         df = Pandas.to_dataframe(network=self.net, phases=[self.phase_1],
                                  join=True)
-        assert len(df.keys()) == 33
+        assert len(df.keys()) == 35
 
     def test_save(self):
         with pytest.raises(NotImplementedError):
