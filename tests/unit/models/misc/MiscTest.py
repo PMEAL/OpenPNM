@@ -40,6 +40,16 @@ class MiscTest:
                            prop3='pore.value3')
         assert sp.all(sp.unique(self.geo['pore.result2']) == 8)
 
+    def test_generic_function(self):
+        self.geo['pore.rand'] = sp.rand(self.geo.Np)
+        self.geo.add_model(model=mods.generic_function,
+                           func=sp.clip,
+                           propname='pore.clipped',
+                           prop='pore.rand',
+                           a_min=0.2, a_max=0.8)
+        assert sp.amax(self.geo['pore.clipped']) == 0.8
+        assert sp.amin(self.geo['pore.clipped']) == 0.2
+
     def test_scaled(self):
         self.geo['pore.value4'] = 4
         self.geo.add_model(model=mods.scaled,

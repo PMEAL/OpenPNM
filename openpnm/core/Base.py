@@ -288,7 +288,7 @@ class Base(dict):
         >>> import openpnm as op
         >>> pn = op.network.Cubic(shape=[5, 5, 5])
         >>> len(pn.labels())  # There are 10 total labels on the network
-        10
+        12
         >>> pn.clear(mode='labels')
         >>> len(pn.labels())  # Kept only 'pore.all' and 'throat.all'
         2
@@ -572,9 +572,9 @@ class Base(dict):
         >>> import openpnm as op
         >>> pn = op.network.Cubic(shape=[5, 5, 5])
         >>> pn.labels(pores=[0, 1, 5, 6])
-        ['pore.all', 'pore.bottom', 'pore.front', 'pore.internal', 'pore.left']
+        ['pore.all', 'pore.bottom', 'pore.front', 'pore.left', 'pore.surface']
         >>> pn.labels(pores=[0, 1, 5, 6], mode='intersection')
-        ['pore.all', 'pore.front', 'pore.internal']
+        ['pore.all', 'pore.front', 'pore.surface']
         """
         labels = PrintableList()
         # Short-circuit query when no pores or throats are given
