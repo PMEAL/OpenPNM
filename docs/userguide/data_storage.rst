@@ -141,7 +141,7 @@ The ``labels`` method can be used to obtain a list of all defined labels. This m
 .. code-block:: python
 
     >>> pn.labels()
-    ['pore.all', 'pore.back', 'pore.bottom', 'pore.dummy_1', 'pore.dummy_2', 'pore.front', 'pore.internal', 'pore.left', 'pore.right', 'pore.top', 'throat.all', 'throat.internal']
+    ['pore.all', 'pore.back', 'pore.bottom', 'pore.dummy_1', 'pore.dummy_2', 'pore.front', 'pore.internal', 'pore.left', 'pore.right', 'pore.surface', 'pore.top', 'throat.all', 'throat.internal', 'throat.surface']
 
 This results can also be viewed with ``print(pn.labels())``.
 
