@@ -53,10 +53,6 @@ class MixedInvasionPercolation(GenericAlgorithm):
                            'set_outlets':  {'pores': None,
                                             'overwrite': False},
                            'apply_flow':   {'flowrate': None},
-                           'evaluate_late_pore_filling': {'Pc': None,
-                                                          'Swp_init': None,
-                                                          'eta': None,
-                                                          'wetting_phase': False},
                            'apply_trapping':             {'partial': False},
                            'set_residual':               {'pores': None,
                                                           'overwrite': False}
@@ -481,11 +477,12 @@ class MixedInvasionPercolation(GenericAlgorithm):
         phase['throat.invasion_time'] = t
 
     def plot_drainage_curve(self, fig=None, inv_points=None, npts=100,
-                            lpf=False, trapping_outlets=None):
+                            trapping_outlets=None):
         r"""
         Plot a simple drainage curve
         """
         net = self.project.network
+        phase = self.project.find_phase(self)
         if "pore.invasion_pressure" not in self.props():
             logger.error("Cannot plot drainage curve. Please run " +
                          " algorithm first")
@@ -505,15 +502,30 @@ class MixedInvasionPercolation(GenericAlgorithm):
         num_p = np.zeros(len(inv_points), dtype=int)
         num_t = np.zeros(len(inv_points), dtype=int)
         for i, Pc in enumerate(inv_points):
-            if lpf:
-                frac = self.evaluate_late_pore_filling(Pc,
-                                                       Swp_init=0.25,
-                                                       eta=2.5)
+            if self.settings['pore_partial_filling']:
+                # Set pressure on phase to current capillary pressure
+                phase['pore.pressure'] = Pc
+                # Regenerate corresponding physics model
+                for phys in self.project.find_physics(phase=phase):
+                    phys.regenerate_models(self.settings['pore_partial_filling'])
+                # Fetch partial filling fraction from phase object (0->1)
+                frac = phase[self.settings['pore_partial_filling']]
                 p_vol = net['pore.volume']*frac
             else:
                 p_vol = net['pore.volume']
+            if self.settings['throat_partial_filling']:
+                # Set pressure on phase to current capillary pressure
+                phase['throat.pressure'] = Pc
+                # Regenerate corresponding physics model
+                for phys in self.project.find_physics(phase=phase):
+                    phys.regenerate_models(self.settings['throat_partial_filling'])
+                # Fetch partial filling fraction from phase object (0->1)
+                frac = phase[self.settings['throat_partial_filling']]
+                t_vol = net['throat.volume']*frac
+            else:
+                t_vol = net['throat.volume']
             sat_p[i] = np.sum(p_vol[inv_p <= Pc])
-            sat_t[i] = np.sum(net['throat.volume'][inv_t <= Pc])
+            sat_t[i] = np.sum(t_vol[inv_t <= Pc])
             num_p[i] = np.sum(inv_p <= Pc)
             num_t[i] = np.sum(inv_t <= Pc)
 
@@ -535,30 +547,9 @@ class MixedInvasionPercolation(GenericAlgorithm):
                  loc=3, ncol=3, borderaxespad=0)
         a.set_xlabel("Capillary Pressure [Pa]")
         a.set_ylabel("Saturation")
+        a.set_ybound(lower=0.0, upper=1.0)
         return fig, tot_sat, num_p, num_t
 
-    def evaluate_late_pore_filling(self, Pc, Swp_init=0.75, eta=3.0,
-                                   wetting_phase=False):
-        r"""
-        Compute the volume fraction of the phase in each pore given an initial
-        wetting phase fraction (Swp_init) and a growth exponent (eta)
-        returns the fraction of the pore volume occupied by wetting or
-        non-wetting phase.
-        Assumes Non-wetting phase displaces wetting phase
-        """
-        net = self.project.network
-        try:
-            Swp = np.ones(len(self['pore.invasion_pressure']))
-            mask = self['pore.invasion_pressure'] < Pc
-            Swp[mask] = Swp_init*(self['pore.invasion_pressure'][mask]/Pc)**eta
-            Swp[np.isnan(Swp)] = 1.0
-        except:
-            Swp = np.ones(net.Np)
-        Snwp = 1-Swp
-        if wetting_phase:
-            return Swp
-        else:
-            return Snwp
 
     def apply_trapping(self, partial=False):
         """

@@ -13,6 +13,7 @@ wrk.loglevel = 50
 class MixedPercolationTest:
 
     def setup_class(self, Np=5):
+        wrk.clear()
         # Create Topological Network object
         self.net = op.network.Cubic([Np, Np, 1], spacing=1)
         self.geo = op.geometry.GenericGeometry(network=self.net,
@@ -52,8 +53,7 @@ class MixedPercolationTest:
             IP_1.apply_trapping()
         inv_points = np.arange(0, 100, 1)
         # returns data as well as plotting
-        alg_data = IP_1.plot_drainage_curve(inv_points=inv_points,
-                                            lpf=False)
+        alg_data = IP_1.plot_drainage_curve(inv_points=inv_points)
         IP_1.results()
         if plot:
             plt.figure()
@@ -381,6 +381,44 @@ class MixedPercolationTest:
         IP_1.results()
         assert np.any(IP_1['throat.invasion_sequence'][outlets]>-1)
         assert np.any(IP_1['throat.invasion_sequence']==-1)
+
+    def test_partial_filling(self):
+        self.setup_class(Np=100)
+        net = self.net
+        phys = self.phys
+        np.random.seed(1)
+        phys['throat.entry_pressure'] = np.random.random(net.Nt)*10000 + 5000
+        phys['pore.entry_pressure'] = 0.0
+        phys.add_model(propname='pore.pc_star',
+                       model=op.models.misc.from_neighbor_throats,
+                       throat_prop='throat.entry_pressure',
+                       mode='min')
+        phys.add_model(propname='pore.late_filling',
+                       model=op.models.physics.multiphase.late_filling,
+                       pressure='pore.pressure',
+                       Pc_star='pore.pc_star',
+                       eta=1, Swp_star=0.4)
+        phys['throat.pc_star'] = phys['throat.entry_pressure']
+        phys.add_model(propname='throat.late_filling',
+                       model=op.models.physics.multiphase.late_filling,
+                       pressure='throat.pressure',
+                       Pc_star='throat.pc_star',
+                       eta=1, Swp_star=0.2)
+        inlets = net.pores('left')
+        outlets = net.pores('right')
+        IP_1 = mp(network=self.net)
+        IP_1.setup(phase=self.phase)
+        IP_1.set_inlets(pores=inlets)
+        IP_1.set_outlets(pores=outlets)
+        IP_1.run()
+        inv_points = np.arange(phys['throat.entry_pressure'].min(),
+                               phys['throat.entry_pressure'].max(), 100)
+        alg_data = IP_1.plot_drainage_curve(inv_points=inv_points)
+        IP_1.settings['pore_partial_filling'] = 'pore.late_filling'
+        IP_1.settings['throat_partial_filling'] = 'throat.late_filling'
+        alg_data_lpf = IP_1.plot_drainage_curve(inv_points=inv_points)
+        assert np.any(alg_data_lpf[1] - alg_data[1] < 0.0)
+        assert ~np.any(alg_data_lpf[1] - alg_data[1] > 0.0)
 
 
 if __name__ == '__main__':
