@@ -10,6 +10,7 @@ import scipy as sp
 import numpy as np
 from openpnm.algorithms import GenericAlgorithm
 from openpnm.topotools import site_percolation, bond_percolation
+from collections import namedtuple
 import logging
 import matplotlib.pyplot as plt
 logger = logging.getLogger(__name__)
@@ -381,42 +382,64 @@ class MixedInvasionPercolation(GenericAlgorithm):
                 hq.heappush(self.queue[c2keep], temp)
         self.invasion_running[c2empty] = False
 
-    def results(self, pores=[], throats=[], Pc=None):
+    def results(self, Pc):
         r"""
         Places the results of the IP simulation into the Phase object.
 
         Parameters
         ----------
-        pores and throats : array_like
-            The list of pores and throats whose values should be returned to
-            the Phase object.  Default is all of them.
+        Pc : float
+            Capillary Pressure at which phase configuration was reached
 
         """
-        pores = sp.array(pores, ndmin=1)
-        throats = sp.array(throats, ndmin=1)
-        if len(pores) == 0:
-            pores = self.Ps
-        if len(throats) == 0:
-            throats = self.Ts
+
+        phase = self.project.find_phase(self)
+        net = self.project.network
+        inv_p = self['pore.invasion_pressure'].copy()
+        inv_t = self['throat.invasion_pressure'].copy()
+        # Handle trapped pores and throats by moving their pressure up to be
+        # ignored
+        if np.sum(self['pore.invasion_sequence'] == -1) > 0:
+            inv_p[self['pore.invasion_sequence'] == -1] = Pc + 1
+        if np.sum(self['throat.invasion_sequence'] == -1) > 0:
+            inv_t[self['throat.invasion_sequence'] == -1] = Pc + 1
+        p_inv = inv_p <= Pc
+        t_inv = inv_t <= Pc
+
+        if self.settings['pore_partial_filling']:
+            # Set pressure on phase to current capillary pressure
+            phase['pore.pressure'] = Pc
+            # Regenerate corresponding physics model
+            for phys in self.project.find_physics(phase=phase):
+                phys.regenerate_models(self.settings['pore_partial_filling'])
+            # Fetch partial filling fraction from phase object (0->1)
+            frac = phase[self.settings['pore_partial_filling']]
+            p_vol = net['pore.volume']*frac
+        else:
+            p_vol = net['pore.volume']
+        if self.settings['throat_partial_filling']:
+            # Set pressure on phase to current capillary pressure
+            phase['throat.pressure'] = Pc
+            # Regenerate corresponding physics model
+            for phys in self.project.find_physics(phase=phase):
+                phys.regenerate_models(self.settings['throat_partial_filling'])
+            # Fetch partial filling fraction from phase object (0->1)
+            frac = phase[self.settings['throat_partial_filling']]
+            t_vol = net['throat.volume']*frac
+        else:
+            t_vol = net['throat.volume']
+        return {'pore.occupancy': p_inv*p_vol, 'throat.occupancy': t_inv*t_vol}
+
+    def copy_alg_data_to_phase(self):
+        r'''
+        '''
         phase = self.project.find_phase(self)
         phase['throat.invasion_sequence'] = sp.nan
         phase['pore.invasion_sequence'] = sp.nan
-        phase['throat.invasion_sequence'][throats] = \
-            self['throat.invasion_sequence'][throats]
-        phase['pore.invasion_sequence'][pores] = \
-            self['pore.invasion_sequence'][pores]
+        phase['throat.invasion_sequence'] = self['throat.invasion_sequence']
+        phase['pore.invasion_sequence'] = self['pore.invasion_sequence']
         phase['throat.cluster'] = self['throat.cluster']
         phase['pore.cluster'] = self['pore.cluster']
-        if Pc is not None:
-            if 'pore.invasion_pressure' in self.keys():
-                self['throat.occupancy'] = self['throat.invasion_pressure'] <= Pc
-                self['pore.occupancy'] = self['pore.invasion_pressure'] <= Pc
-                phase['throat.occupancy'] = self['throat.occupancy']
-                phase['pore.occupancy'] = self['pore.occupancy']
-            else:
-                logger.warning("Occupancy not updated, please run " +
-                               "extract_drainage() method to populate" +
-                               " the invasion_pressure data")
         if "pore.invasion_pressure" in self.props():
             phase['pore.invasion_pressure'] = \
                 self['pore.invasion_pressure']
@@ -476,13 +499,11 @@ class MixedInvasionPercolation(GenericAlgorithm):
         phase = self.project.find_phase(self)
         phase['throat.invasion_time'] = t
 
-    def plot_drainage_curve(self, fig=None, inv_points=None, npts=100,
-                            trapping_outlets=None):
+    def get_intrusion_data(self, inv_points=None):
         r"""
         Plot a simple drainage curve
         """
         net = self.project.network
-        phase = self.project.find_phase(self)
         if "pore.invasion_pressure" not in self.props():
             logger.error("Cannot plot drainage curve. Please run " +
                          " algorithm first")
@@ -492,42 +513,11 @@ class MixedInvasionPercolation(GenericAlgorithm):
             inv_points = np.unique(ok_Pc)
         sat_p = np.zeros(len(inv_points))
         sat_t = np.zeros(len(inv_points))
-        inv_p = self['pore.invasion_pressure']
-        inv_t = self['throat.invasion_pressure']
-        # Handle trapped pores and throats
-        if np.sum(self['pore.invasion_sequence'] == -1) > 0:
-            inv_p[self['pore.invasion_sequence'] == -1] = 2*inv_points.max()
-        if np.sum(self['throat.invasion_sequence'] == -1) > 0:
-            inv_t[self['throat.invasion_sequence'] == -1] = 2*inv_points.max()
-        num_p = np.zeros(len(inv_points), dtype=int)
-        num_t = np.zeros(len(inv_points), dtype=int)
+
         for i, Pc in enumerate(inv_points):
-            if self.settings['pore_partial_filling']:
-                # Set pressure on phase to current capillary pressure
-                phase['pore.pressure'] = Pc
-                # Regenerate corresponding physics model
-                for phys in self.project.find_physics(phase=phase):
-                    phys.regenerate_models(self.settings['pore_partial_filling'])
-                # Fetch partial filling fraction from phase object (0->1)
-                frac = phase[self.settings['pore_partial_filling']]
-                p_vol = net['pore.volume']*frac
-            else:
-                p_vol = net['pore.volume']
-            if self.settings['throat_partial_filling']:
-                # Set pressure on phase to current capillary pressure
-                phase['throat.pressure'] = Pc
-                # Regenerate corresponding physics model
-                for phys in self.project.find_physics(phase=phase):
-                    phys.regenerate_models(self.settings['throat_partial_filling'])
-                # Fetch partial filling fraction from phase object (0->1)
-                frac = phase[self.settings['throat_partial_filling']]
-                t_vol = net['throat.volume']*frac
-            else:
-                t_vol = net['throat.volume']
-            sat_p[i] = np.sum(p_vol[inv_p <= Pc])
-            sat_t[i] = np.sum(t_vol[inv_t <= Pc])
-            num_p[i] = np.sum(inv_p <= Pc)
-            num_t[i] = np.sum(inv_t <= Pc)
+            res = self.results(Pc=Pc)
+            sat_p[i] = np.sum(res['pore.occupancy'])
+            sat_t[i] = np.sum(res['throat.occupancy'])
 
         pvol = np.sum(net['pore.volume'])
         tvol = np.sum(net['throat.volume'])
@@ -537,19 +527,28 @@ class MixedInvasionPercolation(GenericAlgorithm):
         sat_p /= tot_vol
         sat_t /= tot_vol
         tot_sat /= tot_vol
+        pc_curve = namedtuple('pc_curve', ('Pcap', 'S_pore',
+                                           'S_throat', 'S_tot'))
+        data = pc_curve(inv_points, sat_p, sat_t, tot_sat)
+        return data
+
+    def plot_intrusion_curve(self, fig=None, inv_points=None):
+        r"""
+        Plot a simple drainage curve
+        """
+        data = self.get_intrusion_data(inv_points)
         if fig is None:
             fig = plt.figure()
         a = fig.add_subplot(111)
-        a.plot(inv_points, sat_p, 'r*-', label='pore')
-        a.plot(inv_points, sat_t, 'b*-', label='throat')
-        a.plot(inv_points, tot_sat, 'g*-', label='total')
+        a.plot(data.Pcap, data.S_pore, 'r*-', label='pore')
+        a.plot(data.Pcap, data.S_throat, 'b*-', label='throat')
+        a.plot(data.Pcap, data.S_tot, 'g*-', label='total')
         a.legend(bbox_to_anchor=(0, 1.02, 1, 0.102),
                  loc=3, ncol=3, borderaxespad=0)
         a.set_xlabel("Capillary Pressure [Pa]")
         a.set_ylabel("Saturation")
         a.set_ybound(lower=0.0, upper=1.0)
-        return fig, tot_sat, num_p, num_t
-
+        return fig
 
     def apply_trapping(self, partial=False):
         """
