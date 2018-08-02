@@ -360,21 +360,23 @@ def from_neighbor_throats(target, throat_prop='throat.seed', mode='min'):
         Controls how the pore property is calculated.  Options are 'min',
         'max' and 'mean'.
     """
-    network = target.project.network
-    Ps = target.pores()
-    data = target[throat_prop]
+    prj = target.project
+    network = prj.network
+    lookup = prj.find_full_domain(target)
+    Ps = lookup.map_pores(target.pores(), target)
+    data = lookup[throat_prop]
     neighborTs = network.find_neighbor_throats(pores=Ps,
                                                flatten=False,
                                                mode='intersection')
     values = np.ones((np.shape(Ps)[0],))*np.nan
     if mode == 'min':
-        for pore in Ps:
+        for pore in range(len(Ps)):
             values[pore] = np.amin(data[neighborTs[pore]])
     if mode == 'max':
-        for pore in Ps:
+        for pore in range(len(Ps)):
             values[pore] = np.amax(data[neighborTs[pore]])
     if mode == 'mean':
-        for pore in Ps:
+        for pore in range(len(Ps)):
             values[pore] = np.mean(data[neighborTs[pore]])
     return values
 
@@ -399,10 +401,12 @@ def from_neighbor_pores(target, pore_prop='pore.seed', mode='min'):
         'max' and 'mean'.
 
     """
-    network = target.project.network
-    throats = network.throats(target.name)
+    prj = target.project
+    network = prj.network
+    throats = network.map_throats(target.throats(), target)
     P12 = network.find_connected_pores(throats)
-    pvalues = network[pore_prop][P12]
+    lookup = prj.find_full_domain(target)
+    pvalues = lookup[pore_prop][P12]
     if mode == 'min':
         value = np.amin(pvalues, axis=1)
     if mode == 'max':
