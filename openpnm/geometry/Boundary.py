@@ -56,22 +56,37 @@ class Boundary(GenericGeometry):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        # Temporary value to make function below work
         self['pore.diameter'] = 0.0
         self.add_model(propname='throat.diameter',
                        model=mm.from_neighbor_pores,
                        pore_prop='pore.diameter',
                        mode='max')
+        # Make slightly smaller than pore
+        self['throat.diameter'] /= 1.01
+        # Copy value from throat model just added
+        self.add_model(propname='pore.diameter',
+                       model=mm.from_neighbor_throats,
+                       throat_prop='throat.diameter',
+                       mode='max')
+        # Make slightly bigger than throat
+        self['pore.diameter'] *= 1.01
+        self.add_model(propname='pore.area',
+                       model=gm.pore_area.sphere)
+
         self['pore.volume'] = 0.0
         self['pore.seed'] = 1.0
         self['throat.seed'] = 1.0
-        self['throat.volume'] = 0.0
+
         self.add_model(propname='throat.length',
                        model=gm.throat_length.straight)
         self.add_model(propname='throat.area',
                        model=gm.throat_area.cylinder)
+        self.add_model(propname='throat.volume',
+                       model=gm.throat_volume.extrusion)
         self.add_model(propname='throat.surface_area',
                        model=gm.throat_surface_area.cylinder)
         self.add_model(propname='throat.conduit_lengths',
-                       model=gm.throat_length.boundary)
+                       model=gm.throat_length.spherical_pores)
         self.add_model(propname='throat.equivalent_area',
-                       model=gm.throat_equivalent_area.boundary)
+                       model=gm.throat_equivalent_area.spherical_pores)
