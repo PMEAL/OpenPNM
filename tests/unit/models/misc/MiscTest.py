@@ -178,6 +178,38 @@ class MiscTest:
         tseed = sp.mean(self.geo['pore.seed'][P12], axis=1)
         assert_array_almost_equal_nulp(self.geo['throat.seed'], tseed)
 
+    def test_from_neighbors_multi_geom(self):
+        net = op.network.Cubic(shape=[5, 5, 5])
+        Ps1 = net.pores('internal')
+        Ts1 = net.throats('internal')
+        geo1 = op.geometry.GenericGeometry(network=net,
+                                           pores=Ps1,
+                                           throats=Ts1)
+        Ps2 = net.pores('internal', mode='not')
+        Ts2 = net.throats('internal', mode='not')
+        geo2 = op.geometry.GenericGeometry(network=net,
+                                           pores=Ps2,
+                                           throats=Ts2)
+        geo1['pore.rand1'] = sp.random.random(geo1.Np)
+        geo2['pore.rand1'] = sp.random.random(geo2.Np)
+        geo1.add_model(model=mods.from_neighbor_pores,
+                       propname='throat.rand1',
+                       pore_prop='pore.rand1',
+                       mode='min')
+        test = sp.amin(net['pore.rand1'][net['throat.conns']], axis=1)[Ts1]
+        assert sp.all(test == geo1['throat.rand1'])
+        geo1['throat.rand2'] = sp.random.random(geo1.Nt)
+        geo2['throat.rand2'] = sp.random.random(geo2.Nt)
+        geo2.add_model(model=mods.from_neighbor_throats,
+                       propname='pore.rand2',
+                       throat_prop='throat.rand2',
+                       mode='max')
+        test = sp.zeros(geo2.Np).astype(bool)
+        for i, pore in enumerate(net.pores(geo2.name)):
+            Ts = net.find_neighbor_throats(pores=pore)
+            T_max = sp.amax(net['throat.rand2'][Ts])
+            test[i] = net['pore.rand2'][pore] == T_max
+        assert sp.all(test)
 
 if __name__ == '__main__':
 
