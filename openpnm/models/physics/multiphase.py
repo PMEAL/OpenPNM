@@ -104,6 +104,7 @@ def late_filling(target, pressure='pore.pressure',
 
     """
     element = pressure.split('.')[0]
+    network = target.project.network
     phase = target.project.find_phase(target)
     pc_star = phase[Pc_star]
     Pc = phase[pressure]
@@ -111,5 +112,11 @@ def late_filling(target, pressure='pore.pressure',
     Pc = sp.maximum(Pc, 1e-9)
     Swp = Swp_star*((pc_star/Pc)**eta)
     values = sp.clip(1 - Swp, 0.0, 1.0)
-    values = values[phase._get_indices(element=element)]
+    # Now map element onto target object
+    if element == 'throat':
+        Ts = network.map_throats(throats=target.Ts, origin=target)
+        values = values[Ts]
+    else:
+        Ps = network.map_pores(pores=target.Ps, origin=target)
+        values = values[Ps]
     return values
