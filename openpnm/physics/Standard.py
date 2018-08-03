@@ -63,4 +63,3 @@ class Standard(GenericPhysics):
                        model=mods.thermal_conductance.series_resistors)
         self.add_model(propname='throat.electrical_conductance',
                        model=mods.electrical_conductance.series_resistors)
-        self['pore.entry_pressure'] = 0.0

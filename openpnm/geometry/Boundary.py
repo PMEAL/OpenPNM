@@ -57,20 +57,25 @@ class Boundary(GenericGeometry):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         # Temporary value to make function below work
+        self.regenerate_models()
+
+    def regenerate_models(self):
         self['pore.diameter'] = 0.0
         self.add_model(propname='throat.diameter',
                        model=mm.from_neighbor_pores,
                        pore_prop='pore.diameter',
                        mode='max')
         # Make slightly smaller than pore
-        self['throat.diameter'] /= 1.01
+        self['throat.diameter'] /= 1.1
         # Copy value from throat model just added
         self.add_model(propname='pore.diameter',
                        model=mm.from_neighbor_throats,
                        throat_prop='throat.diameter',
                        mode='max')
         # Make slightly bigger than throat
-        self['pore.diameter'] *= 1.01
+        self['pore.diameter'] *= 1.1
+        del self.models['throat.diameter']
+        del self.models['pore.diameter']
         self.add_model(propname='pore.area',
                        model=gm.pore_area.sphere)
 
@@ -87,6 +92,6 @@ class Boundary(GenericGeometry):
         self.add_model(propname='throat.surface_area',
                        model=gm.throat_surface_area.cylinder)
         self.add_model(propname='throat.conduit_lengths',
-                       model=gm.throat_length.spherical_pores)
+                       model=gm.throat_length.boundary)
         self.add_model(propname='throat.equivalent_area',
-                       model=gm.throat_equivalent_area.spherical_pores)
+                       model=gm.throat_equivalent_area.boundary)
