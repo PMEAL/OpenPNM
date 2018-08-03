@@ -173,40 +173,49 @@ class DelaunayVoronoiDual(GenericNetwork):
         # Trim all bad pores
         topotools.trim(network=self, pores=~self['pore.keep'])
 
-        # Now label surface pores
-        self['pore.surface'] = False
-        self['pore.surface'] = self['pore.delaunay']*self['pore.external']
+        # Now label boundary pores
+        self['pore.boundary'] = False
+        self['pore.boundary'] = self['pore.delaunay']*self['pore.external']
 
-        # Label Voronoi pores on surface
-        Ps = self.find_neighbor_pores(pores=self.pores('surface'))
+        # Label Voronoi pores on boundary
+        Ps = self.find_neighbor_pores(pores=self.pores('boundary'))
         Ps = self['pore.voronoi']*self.tomask(pores=Ps)
-        self['pore.surface'][Ps] = True
+        self['pore.boundary'][Ps] = True
 
-        # Label Voronoi and interconnect throats on surface
-        self['throat.surface'] = False
-        Ps = self.pores('surface')
+        # Label Voronoi and interconnect throats on boundary
+        self['throat.boundary'] = False
+        Ps = self.pores('boundary')
         Ts = self.find_neighbor_throats(pores=Ps, mode='intersection')
-        self['throat.surface'][Ts] = True
+        self['throat.boundary'][Ts] = True
 
-        # Trim throats between Delaunay surface pores
-        Ps = self.pores(labels=['surface', 'delaunay'], mode='intersection')
+        # Trim throats between Delaunay boundary pores
+        Ps = self.pores(labels=['boundary', 'delaunay'], mode='intersection')
         Ts = self.find_neighbor_throats(pores=Ps, mode='intersection')
         topotools.trim(network=self, throats=Ts)
 
-        # Move Delaunay surface pores to centroid of Voronoi facet
-        Ps = self.pores(labels=['surface', 'delaunay'], mode='intersection')
+        # Move Delaunay boundary pores to centroid of Voronoi facet
+        Ps = self.pores(labels=['boundary', 'delaunay'], mode='intersection')
         for P in Ps:
             Ns = self.find_neighbor_pores(pores=P)
             Ns = Ps = self['pore.voronoi']*self.tomask(pores=Ns)
             coords = sp.mean(self['pore.coords'][Ns], axis=0)
             self['pore.coords'][P] = coords
 
-        self['pore.internal'] = ~self['pore.surface']
+        self['pore.internal'] = ~self['pore.boundary']
         Ps = self.pores('internal')
         Ts = self.find_neighbor_throats(pores=Ps, mode='intersection')
         self['throat.internal'] = False
         self['throat.internal'][Ts] = True
 
+        # Label surface pores and throats between boundary and internal
+        Ts = self.throats(['boundary', 'internal'], mode='not')
+        self['throat.surface'] = False
+        self['throat.surface'][Ts] = True
+        surf_pores = self['throat.conns'][Ts].flatten()
+        surf_pores = sp.unique(surf_pores[~self['pore.boundary'][surf_pores]])
+        self['pore.surface'] = False
+        self['pore.surface'][surf_pores] = True
+        self['pore.internal'][surf_pores] = False
         # Clean-up
         del self['pore.external']
         del self['pore.keep']
