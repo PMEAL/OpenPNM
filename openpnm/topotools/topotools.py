@@ -136,6 +136,24 @@ def find_neighbor_bonds(sites, im, flatten=True, logic='or'):
         known as 'intersection' in set theory and (somtimes) as 'all' in
         boolean logic.  Both keywords are accepted and treated as 'and'.
 
+    Returns
+    -------
+    An array containing the neighboring bonds filtered by the given logic.  If
+    ``flatten`` is ``False`` then the result is a list of lists containing the
+    neighbors of each given input site.
+
+    See Also
+    --------
+    find_complement
+
+    Notes
+    -----
+    The ``logic`` options are applied to neighboring bonds only, thus it is not
+    possible to obtain bonds that are part of the global set but not neighbors.
+    This is because (a) the list global bonds might be very large, and (b) it
+    is not possible to return a list of neighbors for each input site if global
+    sites are considered.
+
     """
     if im.format != 'lil':
         im = im.tolil(copy=False)
@@ -200,6 +218,18 @@ def find_connected_sites(bonds, am, flatten=True, logic='or'):
         **'and'** : Only neighbors shared by all input bonds.  This is also
         known as 'intersection' in set theory and (somtimes) as 'all' in
         boolean logic.  Both keywords are accepted and treated as 'and'.
+
+    Returns
+    -------
+    An array containing the connected sites, filtered by the given logic.  If
+    ``flatten`` is ``False`` then the result is a list of lists containing the
+    neighbors of each given input bond.  In this latter case, sites that
+    have been filtered by the given logic are indicated by nans, thus the
+    array contains float values and is not suitable for indexing.
+
+    See Also
+    --------
+    find_complement
 
     """
     if am.format != 'coo':
@@ -270,21 +300,50 @@ def find_connecting_bonds(sites, am):
     return neighbors
 
 
-def find_complement(sites, am):
+def find_complement(am, sites=None, bonds=None, asmask=False):
     r"""
     Finds the complementary sites to a given set of input sites
 
     Parameters
     ----------
-    sites : array_like
-        The sett of sites for which the complement is sought
-
     am : scipy.sparse matrix
         The adjacency matrix of the network.
+
+    sites : array_like (optional)
+        The set of sites for which the complement is sought
+
+    bonds : array_like (optional)
+        The set of bonds for which the complement is sought
+
+    asmask : boolean
+        If set to ``True`` the result is returned as a boolean mask of the
+        correct length with ``True`` values indicate the complements.  The
+        default is ``False`` which returns a list of indices instead.
+
+    Returns
+    -------
+    An array containing indices of ``sites`` (or ``bonds``) not part of the
+    input list.
+
+    Notes
+    -----
+    Either ``sites`` or ``bonds`` must be specified
+
     """
-    sites = sp.unique(sites)
-    comp = sp.arange(am.shape[0])[sites]
-    return comp
+    if sites:
+        inds = sp.unique(sites)
+        N = am.shape[0]
+    elif bonds:
+        inds = sp.unique(bonds)
+        N = int(am.nnz/2)
+    else:
+        raise Exception('Either sites or bonds must be specified')
+    mask = sp.ones(shape=N, dtype=bool)
+    mask[inds] = False
+    if asmask:
+        return mask
+    else:
+        return sp.arange(N)[mask]
 
 
 def apply_logic(neighbors, logic):
