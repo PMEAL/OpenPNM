@@ -107,16 +107,34 @@ class VoronoiFibers(Project):
                                   **kwargs)
         net.fiber_rad = fiber_rad
         net.resolution = resolution
-        DelaunayGeometry(project=self,
-                         network=net,
-                         pores=net.pores('delaunay'),
-                         throats=net.throats('delaunay'),
-                         name=self.name+'_del')
+        del_geom = DelaunayGeometry(project=self,
+                                    network=net,
+                                    pores=net.pores('delaunay'),
+                                    throats=net.throats('delaunay'),
+                                    name=self.name+'_del')
         VoronoiGeometry(project=self,
                         network=net,
                         pores=net.pores('voronoi'),
                         throats=net.throats('voronoi'),
                         name=self.name+'_vor')
+        # Tidy up network
+        h = net.check_network_health()
+        if len(h['trim_pores']) > 0:
+            topotools.trim(network=net, pores=h['trim_pores'])
+        # Copy the Delaunay throat diameters to the boundary pores
+        Ps = net.pores(['delaunay', 'boundary'], mode='intersection')
+        map_Ps = del_geom.map_pores(pores=Ps, origin=net)
+        all_Ts = net.find_neighbor_throats(pores=Ps, flatten=False)
+        for i, Ts in enumerate(all_Ts):
+            Ts = np.asarray(Ts)
+            Ts = Ts[net['throat.delaunay'][Ts]]
+            if len(Ts) > 0:
+                map_Ts = del_geom.map_throats(throats=Ts, origin=net)
+                td = del_geom['throat.diameter'][map_Ts]
+                ta = del_geom['throat.area'][map_Ts]
+                del_geom['pore.diameter'][map_Ps[i]] = td
+                del_geom['pore.area'][map_Ps[i]] = ta
+        del_geom.regenerate_models(propnames=['throat.equivalent_area'])
 
 
 class DelaunayGeometry(GenericGeometry):
@@ -481,7 +499,10 @@ class DelaunayGeometry(GenericGeometry):
         Work out the voxels inside the convex hull of the voronoi vertices of
         each pore
         """
-        Ps = self.network.pores(['internal', 'delaunay'], mode='intersection')
+        i = self.network['pore.internal']
+        s = self.network['pore.surface']
+        d = self.network['pore.delaunay']
+        Ps = self.network.pores()[np.logical_and(d, np.logical_or(i, s))]
         inds = self.network._map(ids=self['pore._id'][Ps], element='pore',
                                  filtered=True)
         # Get the fiber image
