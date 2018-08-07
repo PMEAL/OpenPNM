@@ -10,7 +10,7 @@ logger = logging.getLogger()
 
 
 def find_neighbor_sites(sites, am, flatten=True, exclude_input=True,
-                        logic='union'):
+                        logic='or'):
     r"""
     Given a symmetric adjacency matrix, finds all sites that are connected
     to the input sites.
@@ -22,39 +22,85 @@ def find_neighbor_sites(sites, am, flatten=True, exclude_input=True,
         sites *i* and *j* are connected, the matrix contains non-zero values
         at locations (i, j) and (j, i).
 
-    flatten : boolean (default is ``True``)
-        Indicates whether the returned result is a compressed array of all
+    flatten : boolean
+        If ``True`` (default) the returned result is a compressed array of all
         neighbors, or a list of lists with each sub-list containing the
         neighbors for each input site.
 
     exclude_input : boolean (default is ``True``)
-        If ``flatten`` is ``True``, then this flag will remove the input sites
-        from the result, otherwise it's ignored.
+        If ``True`` (default) the input sites will be removed from the result.
 
     logic : string
-        Specifies logic to apply to a flattened list.  Options are:
+        Specifies logic to filter the resulting list.  Options are:
 
-        **'union'** : (default) All neighbors of the input sites
+        **'or'** : (default) All neighbors of the input sites.  This is also
+        known as the 'union' in set theory or 'any' in boolean logic.  Both
+        keywords are accepted and treated as 'or'.
 
-        **'intersection'** : Only neighbors shared by all input sites
+        **'xor'** : Only neighbors of one and only one input site.  This is
+        useful for finding the sites that are not shared by any of the input
+        sites.
 
-        **'exclusive_or'** : Only neighbors not shared by any input sites
+        **'xnor'** : Neighbors that are shared by two or more input sites. This
+        is equivalent to finding all neighbors with 'or', minus those found
+        with 'xor', and is useful for finding neighbors that the inputs have
+        in common.
+
+        **'and'** : Only neighbors shared by all input sites.  This is also
+        known as 'intersection' in set theory and (somtimes) as 'all' in
+        boolean logic.  Both keywords are accepted and treated as 'and'.
+
+    Returns
+    -------
+    An array containing the neighboring sites filtered by the given logic.  If
+    ``flatten`` is ``False`` then the result is a list of lists containing the
+    neighbors of each input site.
+
+    See Also
+    --------
+    find_complement
+
+    Notes
+    -----
+    The ``logic`` options are applied to neighboring sites only, thus it is not
+    possible to obtain sites that are part of the global set but not neighbors.
+    This is because (a) the list global sites might be very large, and (b) it
+    is not possible to return a list of neighbors for each input site if global
+    sites are considered.
 
     """
     if am.format != 'lil':
         am = am.tolil(copy=False)
-    neighbors = [am.rows[i] for i in sp.array(sites, ndmin=1)]
-    if flatten:
-        neighbors.append(sites)
-        neighbors = sp.hstack(neighbors)
-        neighbors = apply_logic(neighbors=neighbors, logic=logic)
-        if exclude_input:
-            neighbors = neighbors[sp.in1d(neighbors, sites, invert=True,
-                                          assume_unique=True)]
+    n_sites = am.shape[0]
+    rows = [am.rows[i] for i in sp.array(sites, ndmin=1)]
+    neighbors = sp.hstack(rows)  # Flatten list to apply logic
+    if logic in ['or', 'union', 'any']:
+        neighbors = sp.unique(neighbors)
+    elif logic in ['xor', 'exclusive_or']:
+        neighbors = sp.unique(sp.where(sp.bincount(neighbors) == 1)[0])
+    elif logic in ['xnor', 'shared']:
+        neighbors = sp.unique(sp.where(sp.bincount(neighbors) > 1)[0])
+    elif logic in ['and', 'intersection']:
+        neighbors = set(neighbors)
+        [neighbors.intersection_update(i) for i in rows]
+        neighbors = sp.array(list(neighbors), dtype=int, ndmin=1)
+    else:
+        raise Exception('Specified logic is not implemented')
+    if exclude_input:
+        mask = sp.ones(shape=n_sites, dtype=bool)
+        mask[sites] = False
+        neighbors = neighbors[mask[neighbors]]
+    if (flatten is False) and (neighbors.size > 0):
+        mask = sp.zeros(shape=n_sites, dtype=bool)
+        mask[neighbors] = True
+        for i in range(len(rows)):
+            vals = sp.array(rows[i])
+            rows[i] = vals[mask[vals]]
+        neighbors = rows
     return neighbors
 
 
-def find_neighbor_bonds(sites, im, flatten=True, logic='union'):
+def find_neighbor_bonds(sites, im, flatten=True, logic='or'):
     r"""
     Given an incidence matrix, finds all sites that are connected to the
     input sites.
@@ -63,7 +109,7 @@ def find_neighbor_bonds(sites, im, flatten=True, logic='union'):
     ----------
     im : scipy.sparse matrix
         The incidence matrix of the network.  Must be shaped as (N-sites,
-        N-bonds), with non-zeros indicating which bonds are connected.
+        N-bonds), with non-zeros indicating which sites are connected.
 
     flatten : boolean (default is ``True``)
         Indicates whether the returned result is a compressed array of all
@@ -71,27 +117,54 @@ def find_neighbor_bonds(sites, im, flatten=True, logic='union'):
         neighbors for each input site.
 
     logic : string
-        Specifies logic to apply to a flattened list.  Options are:
+        Specifies logic to filter the resulting list.  Options are:
 
-        **'union'** : (default) All neighbors of the input sites
+        **'or'** : (default) All neighbors of the input sites.  This is also
+        known as the 'union' in set theory or 'any' in boolean logic.  Both
+        keywords are accepted and treated as 'or'.
 
-        **'intersection'** : Only neighbors shared by all input sites
+        **'xor'** : Only neighbors of one and only one input site.  This is
+        useful for finding the sites that are not shared by any of the input
+        sites.
 
-        **'exclusive_or'** : Only neighbors not shared by any input sites
+        **'xnor'** : Neighbors that are shared by two or more input sites. This
+        is equivalent to finding all neighbors with 'or', minus those found
+        with 'xor', and is useful for finding neighbors that the inputs have
+        in common.
+
+        **'and'** : Only neighbors shared by all input sites.  This is also
+        known as 'intersection' in set theory and (somtimes) as 'all' in
+        boolean logic.  Both keywords are accepted and treated as 'and'.
 
     """
-    if im.shape[0] > im.shape[1]:
-        logger.warning('Warning: Received matrix has more sites than bonds!')
     if im.format != 'lil':
         im = im.tolil(copy=False)
-    neighbors = [im.rows[i] for i in sp.array(sites, ndmin=1)]
-    if flatten:
-        neighbors = sp.concatenate(neighbors)
-        neighbors = apply_logic(neighbors=neighbors, logic=logic)
+    rows = [im.rows[i] for i in sp.array(sites, ndmin=1)]
+    neighbors = sp.hstack(rows)
+    n_bonds = int(im.nnz/2)
+    if logic in ['or', 'union', 'any']:
+        neighbors = sp.unique(neighbors)
+    elif logic in ['xor', 'exclusive_or']:
+        neighbors = sp.unique(sp.where(sp.bincount(neighbors) == 1)[0])
+    elif logic in ['xnor', 'shared']:
+        neighbors = sp.unique(sp.where(sp.bincount(neighbors) > 1)[0])
+    elif logic in ['and', 'intersection']:
+        neighbors = set(neighbors)
+        [neighbors.intersection_update(i) for i in rows]
+        neighbors = sp.array(list(neighbors), dtype=int, ndmin=1)
+    else:
+        raise Exception('Specified logic is not implemented')
+    if (flatten is False) and (neighbors.size > 0):
+        mask = sp.zeros(shape=n_bonds, dtype=bool)
+        mask[neighbors] = True
+        for i in range(len(rows)):
+            vals = sp.array(rows[i])
+            rows[i] = vals[mask[vals]]
+        neighbors = rows
     return neighbors
 
 
-def find_connected_sites(bonds, am, flatten=True, logic='union'):
+def find_connected_sites(bonds, am, flatten=True, logic='or'):
     r"""
     Given an adjacency matrix, finds which sites are connected to the input
     bonds.
@@ -109,23 +182,56 @@ def find_connected_sites(bonds, am, flatten=True, logic='union'):
         neighbors for each input site.
 
     logic : string
-        Specifies logic to apply to a flattened list.  Options are:
+        Specifies logic to filter the resulting list.  Options are:
 
-        **'union'** : (default) All neighbors of the input sites
+        **'or'** : (default) All neighbors of the input bonds.  This is also
+        known as the 'union' in set theory or (sometimes) 'any' in boolean
+        logic.  Both keywords are accepted and treated as 'or'.
 
-        **'intersection'** : Only neighbors shared by all input sites
+        **'xor'** : Only neighbors of one and only one input bond.  This is
+        useful for finding the sites that are not shared by any of the input
+        bonds.
 
-        **'exclusive_or'** : Only neighbors not shared by any input sites
+        **'xnor'** : Neighbors that are shared by two or more input bonds. This
+        is equivalent to finding all neighbors with 'or', minus those found
+        with 'xor', and is useful for finding neighbors that the inputs have
+        in common.
+
+        **'and'** : Only neighbors shared by all input bonds.  This is also
+        known as 'intersection' in set theory and (somtimes) as 'all' in
+        boolean logic.  Both keywords are accepted and treated as 'and'.
+
     """
     if am.format != 'coo':
         am = am.tocoo(copy=False)
     bonds = sp.array(bonds, ndmin=1)
-    if flatten:
-        neighbors = sp.hstack((am.row[bonds], am.col[bonds]))
-        neighbors = apply_logic(neighbors=neighbors, logic=logic)
+    neighbors = sp.hstack((am.row[bonds], am.col[bonds]))
+    n_sites = sp.amax(neighbors)
+    if logic in ['or', 'union', 'any']:
+        neighbors = sp.unique(neighbors)
+    elif logic in ['xor', 'exclusive_or']:
+        neighbors = sp.unique(sp.where(sp.bincount(neighbors) == 1)[0])
+    elif logic in ['xnor', 'shared']:
+        neighbors = sp.unique(sp.where(sp.bincount(neighbors) > 1)[0])
+    elif logic in ['and', 'intersection']:
+        temp = sp.vstack((am.row[bonds], am.col[bonds])).T.tolist()
+        temp = [set(pair) for pair in temp]
+        neighbors = temp[0]
+        [neighbors.intersection_update(pair) for pair in temp[1:]]
+        neighbors = sp.array(list(neighbors), dtype=int, ndmin=1)
     else:
-        neighbors = sp.vstack((am.row[bonds], am.col[bonds])).T
-        neighbors = sp.array(neighbors, dtype=int)
+        raise Exception('Specified logic is not implemented')
+    if (flatten is False) and (neighbors.size > 0):
+        mask = sp.zeros(shape=n_sites+1, dtype=bool)
+        mask[neighbors] = True
+        temp = sp.hstack((am.row[bonds], am.col[bonds]))
+        temp[~mask[temp]] = -1
+        inds = sp.where(temp == -1)[0]
+        if len(inds):
+            temp = temp.astype(float)
+            temp[inds] = sp.nan
+        temp = sp.reshape(a=temp, newshape=[len(bonds), 2], order='F')
+        neighbors = temp
     return neighbors
 
 
@@ -145,7 +251,7 @@ def find_connecting_bonds(sites, am):
 
     Returns
     -------
-    Returns a list the same length as P1 (and P2) with the each element
+    Returns a list the same length as P1 (and P2) with each element
     containing the throat number that connects the corresponding pores,
     or `None`` if pores are not connected.
 
@@ -164,17 +270,32 @@ def find_connecting_bonds(sites, am):
     return neighbors
 
 
+def find_complement(sites, am):
+    r"""
+    Finds the complementary sites to a given set of input sites
+
+    Parameters
+    ----------
+    sites : array_like
+        The sett of sites for which the complement is sought
+
+    am : scipy.sparse matrix
+        The adjacency matrix of the network.
+    """
+    sites = sp.unique(sites)
+    comp = sp.arange(am.shape[0])[sites]
+    return comp
+
+
 def apply_logic(neighbors, logic):
-    if neighbors.ndim > 1:
-        neighbors = sp.hstack(neighbors)
     if neighbors.dtype == float:
         neighbors = neighbors.astype(int)
-    if logic == 'union':
+    if logic in ['union', 'or', 'any']:
         neighbors = sp.unique(neighbors)
-    elif logic == 'exclusive_or':
+    elif logic in ['exclusive_or', 'xor']:
         # neighbors that occur only once are NOT shared with other sites
         neighbors = sp.unique(sp.where(sp.bincount(neighbors) == 1)[0])
-    elif logic == 'intersection':
+    elif logic in ['intersection', 'and', 'all']:
         # neighbors that occur more than once ARE shared with other sites
         neighbors = sp.unique(sp.where(sp.bincount(neighbors) > 1)[0])
     else:
