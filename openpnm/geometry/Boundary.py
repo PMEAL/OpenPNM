@@ -43,12 +43,13 @@ class Boundary(GenericGeometry):
     --------
     >>> import openpnm
     >>> pn = openpnm.network.Cubic(shape=[3, 3, 3])
-    >>> Ps_int = pn.pores(labels=['top', 'bottom'], mode='not')
-    >>> Ps_boun = pn.pores(labels=['top', 'bottom'], mode='union')
-    >>> Ts_int = pn.throats(labels=['internal'])
-    >>> Ts_boun = pn.throats(labels=['internal'], mode='not')
-    >>> geo = openpnm.geometry.GenericGeometry(network=pn,
-    ...                                        pores=Ps_int, throats=Ts_int)
+    >>> pn.add_boundary_pores()
+    >>> Ps_int = pn.pores(labels=['*boundary'], mode='not')
+    >>> Ps_boun = pn.pores(labels=['*boundary'])
+    >>> Ts_int = pn.throats(labels=['*boundary'], mode='not')
+    >>> Ts_boun = pn.throats(labels=['*boundary'])
+    >>> geo = openpnm.geometry.StickAndBall(network=pn,
+    ...                                     pores=Ps_int, throats=Ts_int)
     >>> boun = openpnm.geometry.Boundary(network=pn, pores=Ps_boun,
     ...                                  throats=Ts_boun)
 
