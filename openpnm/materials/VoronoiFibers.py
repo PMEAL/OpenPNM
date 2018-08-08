@@ -1,6 +1,7 @@
 import scipy as sp
 import numpy as np
 import scipy.spatial as sptl
+from scipy.spatial import ConvexHull
 import matplotlib.pyplot as plt
 from transforms3d import _gohlketransforms as tr
 from scipy import ndimage
@@ -13,7 +14,6 @@ from openpnm.utils import logging, Project
 import openpnm.models.geometry as gm
 from openpnm.geometry import GenericGeometry
 from openpnm.utils.misc import unique_list
-import openpnm.utils.vertexops as vo
 from scipy.stats import itemfreq
 logger = logging.getLogger(__name__)
 
@@ -582,9 +582,8 @@ class DelaunayGeometry(GenericGeometry):
         fiber_rad = np.around((fiber_rad-(vox_len/2))/vox_len, 0).astype(int)
         verts = self['throat.vertices']
         [vxmin, vxmax, vymin,
-         vymax, vzmin, vzmax] = vo.vertex_dimension(geometry=self,
-                                                    face1=self.pores(),
-                                                    parm='minmax')
+         vymax, vzmin, vzmax] = self.vertex_dimension(face1=self.pores(),
+                                                      parm='minmax')
         # Translate vertices so that minimum occurs at the origin
         for index in range(len(verts)):
             verts[index] -= np.array([vxmin, vymin, vzmin])
@@ -791,6 +790,289 @@ class DelaunayGeometry(GenericGeometry):
         ax.legend(handles, labels, loc=1)
         plt.legend(bbox_to_anchor=(1, 1), loc=2, borderaxespad=0.)
         return fig
+
+    def plot_throat(self, throats, fig=None):
+        r"""
+        Plot a throat or list of throats in 2D showing key data
+
+        Parameters
+        ----------
+        throats : list or array containing throat indices tp include in figure
+
+        fig : matplotlib figure object to place plot in
+        """
+        throat_list = []
+        for throat in throats:
+            if throat in range(self.num_throats()):
+                throat_list.append(throat)
+            else:
+                logger.warn('Throat: ' + str(throat) + ' not part of geometry')
+        if len(throat_list) > 0:
+            verts = self['throat.vertices'][throat_list]
+            offsets = self['throat.offset_vertices'][throat_list]
+            normals = self['throat.normal'][throat_list]
+            coms = self['throat.centroid'][throat_list]
+            incentre = self['throat.incenter'][throat_list]
+            inradius = 0.5*self['throat.indiameter'][throat_list]
+            row_col = np.ceil(np.sqrt(len(throat_list)))
+            for i in range(len(throat_list)):
+                if fig is None:
+                    fig = plt.figure()
+                ax = fig.add_subplot(row_col, row_col, i+1)
+                vert_2D = self._rotate_and_chop(verts[i], normals[i],
+                                                [0, 0, 1])
+                hull = ConvexHull(vert_2D, qhull_options='QJ Pp')
+                for simplex in hull.simplices:
+                    plt.plot(vert_2D[simplex, 0], vert_2D[simplex, 1], 'k-',
+                             linewidth=2)
+                plt.scatter(vert_2D[:, 0], vert_2D[:, 1])
+                offset_2D = self._rotate_and_chop(offsets[i], normals[i],
+                                                  [0, 0, 1])
+                offset_hull = ConvexHull(offset_2D, qhull_options='QJ Pp')
+                for simplex in offset_hull.simplices:
+                    plt.plot(offset_2D[simplex, 0], offset_2D[simplex, 1],
+                             'g-', linewidth=2)
+                plt.scatter(offset_2D[:, 0], offset_2D[:, 1])
+                # Make sure the plot looks nice by finding the greatest
+                # range of points and setting the plot to look square
+                xmax = vert_2D[:, 0].max()
+                xmin = vert_2D[:, 0].min()
+                ymax = vert_2D[:, 1].max()
+                ymin = vert_2D[:, 1].min()
+                x_range = xmax - xmin
+                y_range = ymax - ymin
+                if (x_range > y_range):
+                    my_range = x_range
+                else:
+                    my_range = y_range
+                lower_bound_x = xmin - my_range*0.5
+                upper_bound_x = xmin + my_range*1.5
+                lower_bound_y = ymin - my_range*0.5
+                upper_bound_y = ymin + my_range*1.5
+                plt.axis((lower_bound_x, upper_bound_x, lower_bound_y,
+                          upper_bound_y))
+                plt.grid(b=True, which='major', color='b', linestyle='-')
+                centroid = self._rotate_and_chop(coms[i], normals[i],
+                                                 [0, 0, 1])
+                incent = self._rotate_and_chop(incentre[i], normals[i],
+                                               [0, 0, 1])
+                plt.scatter(centroid[0][0], centroid[0][1])
+                plt.scatter(incent[0][0], incent[0][1], c='r')
+                # Plot incircle
+                t = np.linspace(0, 2*np.pi, 200)
+                u = inradius[i]*np.cos(t)+incent[0][0]
+                v = inradius[i]*np.sin(t)+incent[0][1]
+                plt.plot(u, v, 'r-')
+                ax.ticklabel_format(style='sci', scilimits=(0, 0))
+        else:
+            logger.error("Please provide throat indices")
+        return fig
+
+    def plot_pore(self, pores, fig=None, axis_bounds=None,
+                  include_points=False):
+        r"""
+        Plot all throats around a given pore or list of pores in 3D
+
+        Parameters
+        ----------
+        pores : list or array containing pore indices tp include in figure
+
+        fig : matplotlib figure object to place plot in
+
+        axis_bounds : list of [xmin, xmax, ymin, ymax, zmin, zmax] values
+            to limit axes to
+
+        include_points : bool
+            Determines whether to scatter pore and throat centroids
+        """
+        from mpl_toolkits.mplot3d.art3d import Poly3DCollection
+        if len(pores) > 0:
+            net = self.network
+            net_pores = net.map_pores(pores=pores, origin=self)
+            centroids = self['pore.centroid'][pores]
+            coords = net['pore.coords'][net_pores]
+            net_throats = net.find_neighbor_throats(pores=net_pores)
+            throats = self.map_throats(throats=net_throats, origin=net)
+            tcentroids = self["throat.centroid"][throats]
+            # Can't create volume from one throat
+            if 1 <= len(throats):
+                verts = self['throat.vertices'][throats]
+                normals = self['throat.normal'][throats]
+                # Get verts in hull order
+                ordered_verts = []
+                for i in range(len(verts)):
+                    vert_2D = self._rotate_and_chop(verts[i], normals[i],
+                                                    [0, 0, 1])
+                    hull = ConvexHull(vert_2D, qhull_options='QJ Pp')
+                    ordered_verts.append(verts[i][hull.vertices])
+                offsets = self['throat.offset_vertices'][throats]
+                ordered_offs = []
+                for i in range(len(offsets)):
+                    offs_2D = self._rotate_and_chop(offsets[i], normals[i],
+                                                    [0, 0, 1])
+                    offs_hull = ConvexHull(offs_2D, qhull_options='QJ Pp')
+                    ordered_offs.append(offsets[i][offs_hull.vertices])
+                # Get domain extents for setting axis
+                if axis_bounds is None:
+                    [xmin, xmax, ymin, ymax, zmin, zmax] = \
+                        self.vertex_dimension(net_pores, parm='minmax')
+                else:
+                    [xmin, xmax, ymin, ymax, zmin, zmax] = axis_bounds
+                if fig is None:
+                    fig = plt.figure()
+                ax = fig.gca(projection='3d')
+                outer_items = Poly3DCollection(ordered_verts, linewidths=1,
+                                               alpha=0.2, zsort='min')
+                outer_face_colours = [(1, 0, 0, 0.01)]
+                outer_items.set_facecolor(outer_face_colours)
+                ax.add_collection(outer_items)
+                inner_items = Poly3DCollection(ordered_offs, linewidths=1,
+                                               alpha=0.2, zsort='min')
+                inner_face_colours = [(0, 0, 1, 0.01)]
+                inner_items.set_facecolor(inner_face_colours)
+                ax.add_collection(inner_items)
+                ax.set_xlim(xmin, xmax)
+                ax.set_ylim(ymin, ymax)
+                ax.set_zlim(zmin, zmax)
+                if include_points:
+                    ax.scatter(centroids[:, 0],
+                               centroids[:, 1],
+                               centroids[:, 2],
+                               c='y')
+                    ax.scatter(tcentroids[:, 0],
+                               tcentroids[:, 1],
+                               tcentroids[:, 2],
+                               c='r')
+                    ax.scatter(coords[:, 0], coords[:, 1], coords[:, 2], c='b')
+                ax.ticklabel_format(style='sci', scilimits=(0, 0))
+            else:
+                self.plot_throat(throats, fig)
+        else:
+            logger.error('Please provide pore indices')
+        return fig
+
+    def _rotate_and_chop(self, verts, normal, axis=[0, 0, 1]):
+        r"""
+        Method to rotate a set of vertices (or coords) to align with an axis
+        points must be coplanar and normal must be given
+        Chops axis coord to give vertices back in 2D
+        Used to prepare verts for printing or calculating convex hull in order
+        to arrange them in hull order for calculations and printing
+        """
+        xaxis = [1, 0, 0]
+        yaxis = [0, 1, 0]
+        zaxis = [0, 0, 1]
+        angle = tr.angle_between_vectors(normal, axis)
+        if angle == 0.0 or angle == np.pi:
+            # We are already aligned
+            facet = verts
+        else:
+            M = tr.rotation_matrix(tr.angle_between_vectors(normal, axis),
+                                   tr.vector_product(normal, axis))
+            try:
+                facet = np.dot(verts, M[:3, :3].T)
+            except ValueError:
+                pass
+        try:
+            x = facet[:, 0]
+            y = facet[:, 1]
+            z = facet[:, 2]
+        except IndexError:
+            x = facet[0]
+            y = facet[1]
+            z = facet[2]
+        # Work out span of points and set axes scales to cover this and be
+        # equal in both dimensions
+        if axis == xaxis:
+            output = np.column_stack((y, z))
+        elif axis == yaxis:
+            output = np.column_stack((x, z))
+        elif axis == zaxis:
+            output = np.column_stack((x, y))
+        else:
+            output = facet
+        return output
+
+    def vertex_dimension(self, face1=[], face2=[], parm='volume'):
+        r"""
+        Return the domain extent based on the vertices
+
+        This function is better than using the pore coords as they may be far
+        away from the original domain size.  And will alter the effective
+        properties which should be based on the original domain sizes. Takes
+        one or two sets of pores and works out different geometric properties
+        if "length" is specified and two lists are given the planarity is
+        determined and the appropriate length (x,y,z) is returned.
+
+        Parameters
+        ----------
+        face1 : list or array containing pore indices for a face to include in
+            calculations.
+
+        parm : string
+            Determines what information is returned:
+                volume, area (_xy, _xz, _yz), length (_x, _y, _z), minmax.
+            Default volume.
+
+        """
+        prj = self.project
+        network = prj.network
+        pores = np.array([], dtype=int)
+        if 0 < len(face1):
+            pores = np.hstack((pores, face1))
+        if 0 < len(face2):
+            pores = np.hstack((pores, face2))
+        face1_coords = np.around(network['pore.coords'][face1], 12)
+        face2_coords = np.around(network['pore.coords'][face2], 12)
+        face1_planar = np.zeros(3)
+        face2_planar = np.zeros(3)
+        planar = np.zeros(3)
+        for i in range(3):
+            if len(np.unique(face1_coords[:, i])) == 1:
+                face1_planar[i] = 1
+            if len(np.unique(face2_coords[:, i])) == 1:
+                face2_planar[i] = 1
+        if 0 < len(face1) and 0 < len(face2):
+            planar = face1_planar*face2_planar
+        elif 0 < len(face1):
+            planar = face1_planar
+        elif 0 < len(face2):
+            planar = face2_planar
+        else:
+            return 0
+        verts = []
+        for pore in pores:
+            for vert in np.asarray(list(self['pore.vertices'][pore])):
+                verts.append(vert)
+        verts = np.asarray(verts)
+
+        vx_min = verts[:, 0].min()
+        vx_max = verts[:, 0].max()
+        vy_min = verts[:, 1].min()
+        vy_max = verts[:, 1].max()
+        vz_min = verts[:, 2].min()
+        vz_max = verts[:, 2].max()
+        output = 0
+        width = np.around(vx_max-vx_min, 10)
+        depth = np.around(vy_max-vy_min, 10)
+        height = np.around(vz_max-vz_min, 10)
+        if parm == 'volume':
+            output = width*depth*height
+        elif parm == 'area_xy' or (parm == 'area' and planar[2] == 1):
+            output = width*depth
+        elif parm == 'area_xz' or (parm == 'area' and planar[1] == 1):
+            output = width*height
+        elif parm == 'area_yz' or (parm == 'area' and planar[0] == 1):
+            output = depth*height
+        elif parm == 'length_x' or (parm == 'length' and planar[0] == 1):
+            output = width
+        elif parm == 'length_y'or (parm == 'length' and planar[1] == 1):
+            output = depth
+        elif parm == 'length_z'or (parm == 'length' and planar[2] == 1):
+            output = height
+        elif parm == 'minmax':
+            output = [vx_min, vx_max, vy_min, vy_max, vz_min, vz_max]
+        return output
 
 
 class VoronoiGeometry(GenericGeometry):
