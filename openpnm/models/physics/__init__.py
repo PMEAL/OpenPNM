@@ -18,3 +18,4 @@ from . import thermal_conductance
 from . import hydraulic_conductance
 from . import multiphase
 from . import generic_source_term
+from . import meniscus
