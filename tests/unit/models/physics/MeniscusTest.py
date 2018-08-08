@@ -30,25 +30,24 @@ class MeniscusTest:
             if len(check) > 0:
                 assert 1 == 2
 
-    def test_purcell(self):
+    def test_toroidal(self):
         phys = self.phys
         r_tor = 1e-6
         phys.add_model(propname='throat.purcell_pressure',
                        model=pm.capillary_pressure.purcell,
                        r_toroid=r_tor)
-        phys.add_model(propname='throat.purcell_men_alpha',
-                       model=pm.meniscus.purcell_filling_angle,
+        phys.add_model(propname='throat.tor_pressure',
+                       model=pm.meniscus.toroidal,
+                       mode='max',
+                       r_toroid=r_tor)
+        phys.add_model(propname='throat.tor_meniscus',
+                       model=pm.meniscus.toroidal,
+                       mode='men',
                        r_toroid=r_tor,
-                       Pc=5000)
-        phys.add_model(propname='throat.purcell_men_rad',
-                       model=pm.meniscus.purcell_meniscus_radius,
-                       filling_angle='throat.purcell_men_alpha',
-                       r_toroid=r_tor)
-        phys.add_model(propname='throat.purcell_men_cen',
-                       model=pm.meniscus.purcell_meniscus_center,
-                       filling_angle='throat.purcell_men_alpha',
-                       men_rad='throat.purcell_men_rad',
-                       r_toroid=r_tor)
+                       target_Pc=5000)
+        a = sp.around(phys['throat.purcell_pressure'], 10)
+        b = sp.around(phys['throat.tor_pressure'], 10)
+        assert sp.allclose(a, b)
         h = phys.check_data_health()
         for check in h.values():
             if len(check) > 0:
