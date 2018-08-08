@@ -140,6 +140,7 @@ class DelaunayVoronoiDual(GenericNetwork):
 
         # Trim all pores that lie outside of the specified domain
         self._trim_external_pores(shape=shape)
+        self._label_faces()
 
     @property
     def tri(self):
@@ -296,10 +297,48 @@ class DelaunayVoronoiDual(GenericNetwork):
 
         return points
 
-    def add_boundary_pores(self, label, offset):
+    def _label_faces(self):
+        r'''
+        Label the pores sitting on the faces of the domain in accordance with
+        the conventions used for cubic etc.
+        '''
+        coords = sp.around(self['pore.coords'], decimals=10)
+        min_labels = ['front', 'left', 'bottom']
+        max_labels = ['back', 'right', 'top']
+        min_coords = sp.amin(coords, axis=0)
+        max_coords = sp.amax(coords, axis=0)
+        for ax in range(3):
+            self['pore.' + min_labels[ax]] = coords[:, ax] == min_coords[ax]
+            self['pore.' + max_labels[ax]] = coords[:, ax] == max_coords[ax]
+
+    def add_boundary_pores(self, labels=['top', 'bottom', 'front', 'back',
+                                         'left', 'right'], offset=None):
         r"""
+        Add boundary pores to the specified faces of the network
+
+        Pores are offset from the faces of the domain.
+
+        Parameters
+        ----------
+        labels : string or list of strings
+            The labels indicating the pores defining each face where boundary
+            pores are to be added (e.g. 'left' or ['left', 'right'])
+
+        offset : scalar or array_like
+            The spacing of the network (e.g. [1, 1, 1]).  This must be given
+            since it can be quite difficult to infer from the network,
+            for instance if boundary pores have already added to other faces.
+
         """
         offset = sp.array(offset)
-        if (offset.size == 3) or (offset.shape == ()):
-            Ps = self.pores(label)
-            topotools.add_boundary_pores(network=self, pores=Ps)
+        if offset.size == 1:
+            offset = sp.ones(3)*offset
+        for item in labels:
+            Ps = self.pores(item)
+            coords = sp.absolute(self['pore.coords'][Ps])
+            axis = sp.count_nonzero(sp.diff(coords, axis=0), axis=0) == 0
+            ax_off = sp.array(axis, dtype=int)*offset
+            if sp.amin(coords) == sp.amin(coords[:, sp.where(axis)[0]]):
+                ax_off = -1*ax_off
+            topotools.add_boundary_pores(network=self, pores=Ps, offset=ax_off,
+                                         apply_label=item + '_boundary')
