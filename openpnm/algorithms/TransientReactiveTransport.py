@@ -7,7 +7,25 @@ logger = logging.getLogger(__name__)
 
 class TransientReactiveTransport(ReactiveTransport):
     r"""
-    A subclass of GenericTransport to perform transient and steady simulations.
+    A subclass of ReactiveTransport to perform transient and steady-state
+    simulations.
+
+    Parameters
+    ----------
+    network : OpenPNM Network object
+        The Network with which this algorithm is associated
+
+    project : OpenPNM Project object
+        Either a Network or a Project must be specified
+
+    Notes
+    -----
+
+    This subclass performs steady and transient simulations of transport
+    phenomena with reactions when source terms are added. It has 3 time
+    discretization schemes; 'steady' to perform a steady-state simulation, and
+    'implicit' (fast, 1st order accurate) and 'cranknicolson' (slow, 2nd order
+    accurate) both for transient simulations.
     """
 
     def __init__(self, settings={}, **kwargs):
@@ -43,6 +61,44 @@ class TransientReactiveTransport(ReactiveTransport):
     def setup(self, phase=None, quantity='', conductance='',
               t_initial=None, t_final=None, t_step=None, t_output=None,
               t_tolerance=None, t_scheme='', **kwargs):
+        r"""
+        This method takes several arguments that are essential to running the
+        algorithm and adds them to the settings.
+
+        Parameters
+        ----------
+        phase : OpenPNM Phase object
+            The phase on which the algorithm is to be run. If no value is
+            given, the existing value is kept.
+
+        quantity : string
+            The name of the physical quantity to be calcualted such as
+            ``'pore.xxx'``.
+
+        conductance : string
+            The name of the pore-scale transport conductance values. These
+            are typically calculated by a model attached to a *Physics* object
+            associated with the given *Phase*. Example; ``'throat.yyy'``.
+
+        t_initial: 0,
+
+        t_final: 10,
+
+        t_step: 0.1,
+
+        t_output: 1e+08,
+
+        t_tolerance: 1e-06,
+
+        r_tolerance: 1e-04,
+
+        t_scheme: 'implicit'
+
+        Notes
+        -----
+        Any additional arguments are added to the ``settings`` dictionary of
+        the object.
+        """
         if phase:
             self.settings['phase'] = phase.name
         if quantity:
