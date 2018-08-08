@@ -428,6 +428,38 @@ class MixedPercolationTest:
         assert np.any(alg_data_lpf.S_tot - alg_data.S_tot < 0.0)
         assert ~np.any(alg_data_lpf.S_tot - alg_data.S_tot > 0.0)
 
+    def test_coop_pore_filling(self):
+        pn = op.network.Cubic(shape=[3, 3, 3], spacing=2.5e-5)
+        geo = op.geometry.StickAndBall(network=pn,
+                                       pores=pn.pores(),
+                                       throats=pn.throats())
+        geo.add_model(propname='throat.centroid',
+                      model=op.models.geometry.throat_centroid.pore_coords)
+        geo.add_model(propname='throat.normal',
+                      model=op.models.geometry.throat_vector.pore_to_pore)
+        water = op.phases.Water(network=pn)
+        water['pore.contact_angle'] = 40
+        phys = op.physics.Standard(network=pn, phase=water, geometry=geo)
+        r_tor = 5e-6
+        phys.add_model(propname='throat.entry_pressure',
+                       model=op.models.physics.meniscus.toroidal,
+                       r_toroid=r_tor,
+                       mode='max')
+        phys.add_model(propname='throat.meniscus',
+                       model=op.models.physics.meniscus.toroidal,
+                       mode='men',
+                       r_toroid=r_tor,
+                       target_Pc=5000)
+        phys['pore.entry_pressure'] = 0.0
+        ip = op.algorithms.MixedInvasionPercolation(network=pn)
+        ip.setup(phase=water)
+        ip.setup(cooperative_pore_filling='throat.meniscus')
+        points = np.arange(0, 1, 0.1)*ip._max_pressure()
+        ip.setup_coop_filling(inv_points=points)
+        ip.set_inlets(pores=pn.pores('bottom'))
+        ip.run()
+        assert np.any(~np.isnan(ip.tt_Pc))
+
 
 if __name__ == '__main__':
     t = MixedPercolationTest()
