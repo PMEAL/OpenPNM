@@ -6,6 +6,7 @@ Submodule -- throat_vector
 """
 from transforms3d import _gohlketransforms as tr
 
+
 def pore_to_pore(target):
     r"""
     Calculates throat vector as straight path between connected pores.

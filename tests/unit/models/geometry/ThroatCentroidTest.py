@@ -17,8 +17,8 @@ class ThroatCentroidTest:
     def test_pore_coords(self):
         self.geo.add_model(propname='throat.centroid',
                            model=gm.throat_centroid.pore_coords)
-        assert np.all(self.geo['throat.centroid'][:, 0]
-                      - np.arange(1, 5, 1) == 0)
+        a = np.arange(1, 5, 1)
+        assert np.allclose(a, self.geo['throat.centroid'][:, 0])
         assert np.all(self.geo['throat.centroid'][:, 1] == 0.5)
         assert np.all(self.geo['throat.centroid'][:, 2] == 0.5)
 
