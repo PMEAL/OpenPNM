@@ -580,11 +580,10 @@ class DelaunayGeometry(GenericGeometry):
         vox_len = self.network.resolution
         # Voxel length of fiber radius
         fiber_rad = np.around((fiber_rad-(vox_len/2))/vox_len, 0).astype(int)
-        net = self.network
         verts = self['throat.vertices']
         [vxmin, vxmax, vymin,
-         vymax, vzmin, vzmax] = vo.vertex_dimension(net,
-                                                    net.pores('delaunay'),
+         vymax, vzmin, vzmax] = vo.vertex_dimension(geometry=self,
+                                                    face1=self.pores(),
                                                     parm='minmax')
         # Translate vertices so that minimum occurs at the origin
         for index in range(len(verts)):

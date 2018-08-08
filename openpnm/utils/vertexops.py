@@ -159,7 +159,7 @@ def _linear_scale_factor(points=None,
     return lin_scale
 
 
-def vertex_dimension(network, face1=[], face2=[], parm='volume'):
+def vertex_dimension(geometry, face1=[], face2=[], parm='volume'):
     r"""
     Return the domain extent based on the vertices
 
@@ -195,14 +195,16 @@ def vertex_dimension(network, face1=[], face2=[], parm='volume'):
     >>> # vo.vertex_dimension(pn, B1, B2, 'minmax') == [0.0, 3.0, 0.0, 2.0, 0.0, 1.0]
     True
     """
+    prj = geometry.project
+    network = prj.network
     pores = np.array([], dtype=int)
     if 0 < len(face1):
         pores = np.hstack((pores, face1))
     if 0 < len(face2):
         pores = np.hstack((pores, face2))
 
-    face1_coords = network['pore.coords'][face1]
-    face2_coords = network['pore.coords'][face2]
+    face1_coords = np.around(network['pore.coords'][face1], 12)
+    face2_coords = np.around(network['pore.coords'][face2], 12)
     face1_planar = np.zeros(3)
     face2_planar = np.zeros(3)
     planar = np.zeros(3)
@@ -220,10 +222,10 @@ def vertex_dimension(network, face1=[], face2=[], parm='volume'):
     else:
         return 0
 
-    if 'pore.vertices' in network.props():
+    if 'pore.vertices' in geometry.props():
         verts = []
         for pore in pores:
-            for vert in np.asarray(list(network['pore.vertices'][pore])):
+            for vert in np.asarray(list(geometry['pore.vertices'][pore])):
                 verts.append(vert)
         verts = np.asarray(verts)
     else:
