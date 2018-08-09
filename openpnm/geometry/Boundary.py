@@ -104,4 +104,3 @@ class Boundary(GenericGeometry):
     def regenerate_models(self):
         self._do_element_sizes()
         super().regenerate_models()
-
