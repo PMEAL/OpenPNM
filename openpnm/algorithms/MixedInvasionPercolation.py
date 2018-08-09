@@ -442,7 +442,6 @@ class MixedInvasionPercolation(GenericAlgorithm):
             t_vol = net['throat.volume']
         return {'pore.occupancy': p_inv*p_vol, 'throat.occupancy': t_inv*t_vol}
 
-
     def apply_flow(self, flowrate):
         r"""
         Convert the invaded sequence into an invaded time for a given flow rate
