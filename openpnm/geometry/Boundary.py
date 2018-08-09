@@ -57,10 +57,33 @@ class Boundary(GenericGeometry):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        # Temporary value to make function below work
-        self.regenerate_models()
+        self._do_element_sizes()
+        self.add_model(propname='pore.area',
+                       model=gm.pore_area.sphere)
+        self.add_model(propname='pore.volume',
+                       model=mm.constant,
+                       value=0.0)
+        self.add_model(propname='pore.seed',
+                       model=mm.constant,
+                       value=1.0)
+        self.add_model(propname='throat.seed',
+                       model=mm.constant,
+                       value=1.0)
+        self.add_model(propname='throat.length',
+                       model=gm.throat_length.straight)
+        self.add_model(propname='throat.area',
+                       model=gm.throat_area.cylinder)
+        self.add_model(propname='throat.volume',
+                       model=gm.throat_volume.extrusion)
+        self.add_model(propname='throat.surface_area',
+                       model=gm.throat_surface_area.cylinder)
+        self.add_model(propname='throat.conduit_lengths',
+                       model=gm.throat_length.boundary)
+        self.add_model(propname='throat.equivalent_area',
+                       model=gm.throat_equivalent_area.boundary)
 
-    def regenerate_models(self):
+    def _do_element_sizes(self):
+        # Temporary value to make function below work
         self['pore.diameter'] = 0.0
         self.add_model(propname='throat.diameter',
                        model=mm.from_neighbor_pores,
@@ -77,22 +100,8 @@ class Boundary(GenericGeometry):
         self['pore.diameter'] *= 1.1
         del self.models['throat.diameter']
         del self.models['pore.diameter']
-        self.add_model(propname='pore.area',
-                       model=gm.pore_area.sphere)
 
-        self['pore.volume'] = 0.0
-        self['pore.seed'] = 1.0
-        self['throat.seed'] = 1.0
+    def regenerate_models(self):
+        self._do_element_sizes()
+        super().regenerate_models()
 
-        self.add_model(propname='throat.length',
-                       model=gm.throat_length.straight)
-        self.add_model(propname='throat.area',
-                       model=gm.throat_area.cylinder)
-        self.add_model(propname='throat.volume',
-                       model=gm.throat_volume.extrusion)
-        self.add_model(propname='throat.surface_area',
-                       model=gm.throat_surface_area.cylinder)
-        self.add_model(propname='throat.conduit_lengths',
-                       model=gm.throat_length.boundary)
-        self.add_model(propname='throat.equivalent_area',
-                       model=gm.throat_equivalent_area.boundary)
