@@ -79,34 +79,34 @@ class TransientReactiveTransport(ReactiveTransport):
             are typically calculated by a model attached to a *Physics* object
             associated with the given *Phase*. Example; ``'throat.yyy'``.
 
-        t_initial: scalar, smaller than 't_final'
+        t_initial : scalar, smaller than 't_final'
             The simulation's start time. The default value is 0.
 
-        t_final: scalar, bigger than 't_initial'
+        t_final : scalar, bigger than 't_initial'
             The simulation's end time. The default value is 10.
 
-        t_step: scalar, between 't_initial' and 't_final'
+        t_step : scalar, between 't_initial' and 't_final'
             The simulation's time step. The default value is 0.1.
 
-        t_output: scalar
+        t_output : scalar
             Output interval to store transient solutions. The default value
             is 1e+08. Initial and steady-state (if reached) fields are always
             stored. If 't_output' > 't_final', no transient data is stored.
             If 't_output' is not a multiple of 't_step', 't_output' will be
             approximated.
 
-        t_tolerance: scalar
+        t_tolerance : scalar
             Transient solver tolerance. The simulation stops (before reaching
             't_final') when the residual falls below 't_tolerance'. The
             default value is 1e-06. The 'residual' measures the variation from
             one time-step to another in the value of the 'quantity' solved for. 
 
-        r_tolerance: scalar
+        r_tolerance : scalar
             Tolerance to achieve within each time step. The solver passes to
             next time step when 'residual' falls below 'r_tolerance'. The
             default value is 1e-04.
 
-        t_scheme: string
+        t_scheme : string
             The time discretization scheme. Three options available: 'steady'
             to perform a steady-state simulation, and 'implicit' (fast, 1st
             order accurate) and 'cranknicolson' (slow, 2nd order accurate) both
@@ -140,12 +140,12 @@ class TransientReactiveTransport(ReactiveTransport):
 
     def set_IC(self, values):
         r"""
-        Simulation initial conditions
+        A method to set simulation initial conditions
 
         Parameters
         ----------
-        values: array_like or scalar
-            Set the initial conditions through an 'Np' long array. 'Np' being
+        values : ND-array or scalar
+            Set the initial conditions using an 'Np' long array. 'Np' being
             the number of pores. If a scalar is given, the same value is
             imposed to all pores.
         """
@@ -211,7 +211,7 @@ class TransientReactiveTransport(ReactiveTransport):
 
         Parameters
         ----------
-        t: scalar
+        t : scalar
             The time to start the simulation from. If no time is specified, the
             simulation starts from 't_initial' defined in the settings.
         """
@@ -242,11 +242,17 @@ class TransientReactiveTransport(ReactiveTransport):
 
     def _run_transient(self, t):
         """r
-        Performs a transient simulation according to the specified settings.
+        Performs a transient simulation according to the specified settings
+        updating 'b' and calling '_t_run_reactive' at each time step.
         Stops after reaching the end time 't_final' or after achieving the
         specified tolerance 't_tolerance'. Stores the initial and steady-state
         (if obtained) fields in addition to transient data (according to the
         specified 't_output').
+
+        Parameters
+        ----------
+        t : scalar
+            The time to start the simulation from.
 
         Notes
         -----
@@ -262,7 +268,7 @@ class TransientReactiveTransport(ReactiveTransport):
         to = self.settings['t_output']
         tol = self.settings['t_tolerance']
         s = self.settings['t_scheme']
-        res_t = 1  # Initialize the residual
+        res_t = 1e+06  # Initialize the residual
 
         # Make sure 'tf' and 'to' are multiples of 'dt'
         tf = tf + (dt-(tf % dt))*((tf % dt) != 0)
@@ -314,6 +320,27 @@ class TransientReactiveTransport(ReactiveTransport):
                             str(time)+' s')
 
     def _t_run_reactive(self, x):
+        """r
+        Repeatedly updates transient 'A', 'b', and the solution guess within
+        each time step according to the applied source term then calls '_solve'
+        to solve the resulting system of linear equations. Stops when the
+        residual falls below 'r_tolerance'.
+
+        Parameters
+        ----------
+        x : ND-array
+            Initial guess of unknown variable
+
+        Returns
+        -------
+        x_new : ND-array
+            Solution array.
+
+        Notes
+        -----
+        Description of 'relaxation_quantity' and 'max_iter' settings can be
+        found in the parent class 'ReactiveTransport' documentation.
+        """
         if x is None:
             x = np.zeros(shape=[self.Np, ], dtype=float)
         self[self.settings['quantity']] = x
