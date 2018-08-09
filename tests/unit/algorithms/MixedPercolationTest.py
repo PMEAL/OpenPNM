@@ -266,10 +266,9 @@ class MixedPercolationTest:
         # Set the inlets as the pores with zero entry Pc
         IP_1.set_inlets(clusters=[[0], [4]])
         IP_1.run()
-        IP_1.copy_alg_data_to_phase()
         # Clusters should merge on first row and all pores after the first row
         # should be part of the same cluster
-        assert len(np.unique(self.phase['pore.cluster'][5:])) == 1
+        assert len(np.unique(IP_1['pore.cluster'][5:])) == 1
 
     def test_connected_residual_clusters(self):
         net = self.net

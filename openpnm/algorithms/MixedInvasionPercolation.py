@@ -442,36 +442,6 @@ class MixedInvasionPercolation(GenericAlgorithm):
             t_vol = net['throat.volume']
         return {'pore.occupancy': p_inv*p_vol, 'throat.occupancy': t_inv*t_vol}
 
-    def copy_alg_data_to_phase(self):
-        r'''
-        '''
-        phase = self.project.find_phase(self)
-        phase['throat.invasion_sequence'] = sp.nan
-        phase['pore.invasion_sequence'] = sp.nan
-        phase['throat.invasion_sequence'] = self['throat.invasion_sequence']
-        phase['pore.invasion_sequence'] = self['pore.invasion_sequence']
-        phase['throat.cluster'] = self['throat.cluster']
-        phase['pore.cluster'] = self['pore.cluster']
-        if "pore.invasion_pressure" in self.props():
-            phase['pore.invasion_pressure'] = \
-                self['pore.invasion_pressure']
-            phase['throat.invasion_pressure'] = \
-                self['throat.invasion_pressure']
-        if "pore.invasion_saturation" in self.props():
-            phase['pore.invasion_saturation'] = \
-                self['pore.invasion_saturation']
-            phase['throat.invasion_saturation'] = \
-                self['throat.invasion_saturation']
-        if "pore.trapped" in self.labels():
-            phase['pore.trapped'] = self['pore.trapped']
-        if "pore.trapping_sequence" in self.props():
-            phase['pore.trapping_sequence'] = \
-                self['pore.trapping_sequence']
-        if "throat.trapped" in self.labels():
-            phase['throat.trapped'] = self['throat.trapped']
-        if "throat.trapping_sequence" in self.props():
-            phase['throat.trapping_sequence'] = \
-                self['throat.trapping_sequence']
 
     def apply_flow(self, flowrate):
         r"""
