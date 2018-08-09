@@ -7,22 +7,21 @@ logger = logging.getLogger(__name__)
 
 class TransientReactiveTransport(ReactiveTransport):
     r"""
-    A subclass of ReactiveTransport to perform transient and steady-state
-    simulations.
+    A subclass of ReactiveTransport for transient/steady-state simulations
 
     Parameters
     ----------
     network : OpenPNM Network object
-        The Network with which this algorithm is associated
+        The Network with which this algorithm is associated.
 
     project : OpenPNM Project object
-        Either a Network or a Project must be specified
+        Either a Network or a Project must be specified.
 
     Notes
     -----
 
     This subclass performs steady and transient simulations of transport
-    phenomena with reactions when source terms are added. It has 3 time
+    phenomena with reactions when source terms are added. It supports 3 time
     discretization schemes; 'steady' to perform a steady-state simulation, and
     'implicit' (fast, 1st order accurate) and 'cranknicolson' (slow, 2nd order
     accurate) both for transient simulations.
@@ -63,7 +62,7 @@ class TransientReactiveTransport(ReactiveTransport):
               t_tolerance=None, t_scheme='', **kwargs):
         r"""
         This method takes several arguments that are essential to running the
-        algorithm and adds them to the settings.
+        algorithm and adds them to the settings
 
         Parameters
         ----------
@@ -80,24 +79,44 @@ class TransientReactiveTransport(ReactiveTransport):
             are typically calculated by a model attached to a *Physics* object
             associated with the given *Phase*. Example; ``'throat.yyy'``.
 
-        t_initial: 0,
+        t_initial: scalar, smaller than 't_final'
+            The simulation's start time. The default value is 0.
 
-        t_final: 10,
+        t_final: scalar, bigger than 't_initial'
+            The simulation's end time. The default value is 10.
 
-        t_step: 0.1,
+        t_step: scalar, between 't_initial' and 't_final'
+            The simulation's time step. The default value is 0.1.
 
-        t_output: 1e+08,
+        t_output: scalar
+            Output interval to store transient solutions. The default value
+            is 1e+08. Initial and steady-state (if reached) fields are always
+            stored. If 't_output' > 't_final', no transient data is stored.
+            If 't_output' is not a multiple of 't_step', 't_output' will be
+            approximated.
 
-        t_tolerance: 1e-06,
+        t_tolerance: scalar
+            Transient solver tolerance. The simulation stops (before reaching
+            't_final') when the residual falls below 't_tolerance'. The
+            default value is 1e-06. The 'residual' measures the variation from
+            one time-step to another in the value of the 'quantity' solved for. 
 
-        r_tolerance: 1e-04,
+        r_tolerance: scalar
+            Tolerance to achieve within each time step. The solver passes to
+            next time step when 'residual' falls below 'r_tolerance'. The
+            default value is 1e-04.
 
-        t_scheme: 'implicit'
+        t_scheme: string
+            The time discretization scheme. Three options available: 'steady'
+            to perform a steady-state simulation, and 'implicit' (fast, 1st
+            order accurate) and 'cranknicolson' (slow, 2nd order accurate) both
+            for transient simulations. The default value is 'implicit'.
 
         Notes
         -----
-        Any additional arguments are added to the ``settings`` dictionary of
-        the object.
+        More settings can be adjusted in the presence of a non-linear source
+        term such as under-relaxation.
+        See the 'ReactiveTransport' class documentation for details.
         """
         if phase:
             self.settings['phase'] = phase.name
@@ -121,11 +140,20 @@ class TransientReactiveTransport(ReactiveTransport):
 
     def set_IC(self, values):
         r"""
+        Simulation initial conditions
+
+        Parameters
+        ----------
+        values: array_like or scalar
+            Set the initial conditions through an 'Np' long array. 'Np' being
+            the number of pores. If a scalar is given, the same value is
+            imposed to all pores.
         """
         self[self.settings['quantity']] = values
 
     def _t_update_A(self):
         r"""
+        A method to update 'A' matrix at each time step according to 't_scheme'
         """
         network = self.project.network
         Vi = network['pore.volume']
@@ -148,6 +176,8 @@ class TransientReactiveTransport(ReactiveTransport):
 
     def _t_update_b(self):
         r"""
+        A method to update 'b' array at each time step according to
+        't_scheme' and the source term value
         """
         network = self.project.network
         phase = self.project.phases()[self.settings['phase']]
@@ -174,6 +204,16 @@ class TransientReactiveTransport(ReactiveTransport):
 
     def run(self, t=None):
         r"""
+        Builds 'A' matrix of the steady system of equations to be used at each
+        time step to build transient 'A' and 'b'. Imposes the initial
+        conditions and stores the initial field. Initialize transient 'A', 'b',
+        and source term (if present) and finally calls the transient solver.
+
+        Parameters
+        ----------
+        t: scalar
+            The time to start the simulation from. If no time is specified, the
+            simulation starts from 't_initial' defined in the settings.
         """
         logger.info('―'*80)
         logger.info('Running TransientTransport')
@@ -201,6 +241,22 @@ class TransientReactiveTransport(ReactiveTransport):
         self._run_transient(t=t)
 
     def _run_transient(self, t):
+        """r
+        Performs a transient simulation according to the specified settings.
+        Stops after reaching the end time 't_final' or after achieving the
+        specified tolerance 't_tolerance'. Stores the initial and steady-state
+        (if obtained) fields in addition to transient data (according to the
+        specified 't_output').
+
+        Notes
+        -----
+        Transient solutions are stored on the object under
+        ``pore.quantity_timeStepIndex`` where *quantity* is specified in the
+        ``settings`` attribute. Initial field is stored as
+        ``pore.quantity_initial``. Steady-state solution (if reached) is stored
+        as ``pore.quantity_steady``. Current solution is stored as
+        ``pore.quantity``.
+        """
         tf = self.settings['t_final']
         dt = self.settings['t_step']
         to = self.settings['t_output']

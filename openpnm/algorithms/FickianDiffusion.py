@@ -12,7 +12,7 @@ class FickianDiffusion(ReactiveTransport):
     network : OpenPNM Network object
         The network on which this algorithm operates
 
-    project : OpenPNM Projecxt object
+    project : OpenPNM Project object
         Either a network or a project must be specified
 
     name : string, optional
