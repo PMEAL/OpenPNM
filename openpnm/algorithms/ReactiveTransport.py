@@ -8,13 +8,51 @@ class ReactiveTransport(GenericTransport):
     r"""
     """
 
-    def __init__(self, **kwargs):
-        self.settings.update({'sources': [],
-                              'tolerance': 0.001,
-                              'max_iter': 10000,
-                              'relaxation_source': 1,
-                              'relaxation_quantity': 1})
+    def __init__(self, settings={}, **kwargs):
+        def_set = {'sources': [],
+                   'r_tolerance': 0.001,
+                   'max_iter': 5000,
+                   'relaxation_source': 1,
+                   'relaxation_quantity': 1,
+                   'gui': {'setup':        {'quantity': '',
+                                            'conductance': '',
+                                            'r_tolerance': None,
+                                            'max_iter': None,
+                                            'relaxation_source': None,
+                                            'relaxation_quantity': None},
+                           'set_rate_BC':  {'pores': None,
+                                            'values': None},
+                           'set_value_BC': {'pores': None,
+                                            'values': None},
+                           'set_source':   {'pores': None,
+                                            'propname': ''}
+                           }
+                   }
         super().__init__(**kwargs)
+        self.settings.update(def_set)
+        self.settings.update(settings)
+
+    def setup(self, phase=None, quantity='', conductance='', r_tolerance=None,
+              max_iter=None, relaxation_source=None,
+              relaxation_quantity=None, **kwargs):
+        r"""
+
+        """
+        if phase:
+            self.settings['phase'] = phase.name
+        if quantity:
+            self.settings['quantity'] = quantity
+        if conductance:
+            self.settings['conductance'] = conductance
+        if r_tolerance:
+            self.settings['r_tolerance'] = r_tolerance
+        if max_iter:
+            self.settings['max_iter'] = max_iter
+        if relaxation_source:
+            self.settings['relaxation_source'] = relaxation_source
+        if relaxation_quantity:
+            self.settings['relaxation_quantity'] = relaxation_quantity
+        super().setup(**kwargs)
 
     def set_source(self, propname, pores):
         r"""
@@ -28,9 +66,34 @@ class ReactiveTransport(GenericTransport):
         pores : array_like
             The pore indices where the source term should be applied
 
+        Notes
+        -----
+        Source terms cannot be applied in pores where boundary conditions have
+        already been set. Attempting to do so will result in an error being
+        raised.
+
         """
+        locs = self.tomask(pores=pores)
+
+        if (not np.all(np.isnan(self['pore.bc_value'][locs]))) or \
+           (not np.all(np.isnan(self['pore.bc_rate'][locs]))):
+            raise Exception('Boundary conditions already present in given ' +
+                            'pores, cannot also assign source terms')
+        self[propname] = locs
         self.settings['sources'].append(propname)
-        self[propname] = self.tomask(pores=pores)
+
+    def _set_BC(self, pores, bctype, bcvalues=None, mode='merge'):
+        # First check that given pores do not have source terms already set
+        for item in self.settings['sources']:
+            if np.any(self[item][pores]):
+                raise Exception('Source term already present in given ' +
+                                'pores, cannot also assign boundary ' +
+                                'conditions')
+        # Then call parent class function if above check passes
+        super()._set_BC(pores=pores, bctype=bctype, bcvalues=bcvalues,
+                        mode=mode)
+
+    _set_BC.__doc__ = GenericTransport._set_BC.__doc__
 
     def _update_physics(self):
         phase = self.project.phases()[self.settings['phase']]
@@ -94,7 +157,7 @@ class ReactiveTransport(GenericTransport):
         self._update_physics()
 
         x = self._run_reactive(x=x)
-        return x
+        self[self.settings['quantity']] = x
 
     def _run_reactive(self, x):
         if x is None:
@@ -103,7 +166,7 @@ class ReactiveTransport(GenericTransport):
         relax = self.settings['relaxation_quantity']
         res = 1e+06
         for itr in range(int(self.settings['max_iter'])):
-            if res >= self.settings['tolerance']:
+            if res >= self.settings['r_tolerance']:
                 logger.info('Tolerance not met: ' + str(res))
                 self[self.settings['quantity']] = x
                 self._build_A(force=True)
@@ -116,7 +179,7 @@ class ReactiveTransport(GenericTransport):
                 self[self.settings['quantity']] = x_new
                 res = np.sum(np.absolute(x**2 - x_new**2))
                 x = x_new
-            elif res < self.settings['tolerance']:
+            elif res < self.settings['r_tolerance']:
                 logger.info('Solution converged: ' + str(res))
                 break
         return x_new

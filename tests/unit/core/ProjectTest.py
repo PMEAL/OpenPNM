@@ -254,6 +254,21 @@ class ProjectTest:
         b = proj.physics().values()
         assert sp.all([item in b for item in a])
 
+    def test_find_full_domain_geometry(self):
+        proj = self.proj
+        geo1 = proj.geometries()['geo_01']
+        assert proj.find_full_domain(geo1)._isa() == 'network'
+
+    def test_find_full_domain_physics(self):
+        proj = self.proj
+        phys1 = proj.physics()['phys_01']
+        assert proj.find_full_domain(phys1)._isa() == 'phase'
+
+    def test_find_full_domain_phase(self):
+        proj = self.proj
+        phase1 = proj.phases()['phase_01']
+        assert proj.find_full_domain(phase1)._isa() == 'phase'
+
     def test_clear(self):
         proj = self.ws.copy_project(self.net.project)
         assert len(proj) == 9

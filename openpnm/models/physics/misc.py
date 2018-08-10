@@ -37,18 +37,17 @@ def poisson_conductance(target, pore_diffusivity, throat_diffusivity,
 
     """
     network = target.project.network
-    throats = network.map_throats(target['throat._id'])
+    throats = network.map_throats(throats=target.Ts, origin=target)
     phase = target.project.find_phase(target)
-    geom = target.project.find_geometry(target)
     cn = network['throat.conns'][throats]
     # Getting equivalent areas
-    A1 = geom[throat_equivalent_area+'.pore1']
-    At = geom[throat_equivalent_area+'.throat']
-    A2 = geom[throat_equivalent_area+'.pore2']
+    A1 = network[throat_equivalent_area+'.pore1'][throats]
+    At = network[throat_equivalent_area+'.throat'][throats]
+    A2 = network[throat_equivalent_area+'.pore2'][throats]
     # Getting conduit lengths
-    L1 = geom[throat_conduit_lengths+'.pore1']
-    Lt = geom[throat_conduit_lengths+'.throat']
-    L2 = geom[throat_conduit_lengths+'.pore2']
+    L1 = network[throat_conduit_lengths+'.pore1'][throats]
+    Lt = network[throat_conduit_lengths+'.throat'][throats]
+    L2 = network[throat_conduit_lengths+'.pore2'][throats]
     # Interpolate pore phase property values to throats
     try:
         Dt = phase[throat_diffusivity]

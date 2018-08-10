@@ -5,7 +5,8 @@ from scipy import pi
 def hagen_poiseuille(target,
                      pore_viscosity='pore.viscosity',
                      throat_viscosity='throat.viscosity',
-                     throat_equivalent_area='throat.equivalent_area',
+                     pore_diameter='pore.diameter',
+                     throat_diameter='throat.diameter',
                      throat_conduit_lengths='throat.conduit_lengths'):
     r"""
     Calculate the hydraulic conductance of conduits in network, where a
@@ -38,22 +39,22 @@ def hagen_poiseuille(target,
     (2) This function calculates the specified property for the *entire*
     network then extracts the values for the appropriate throats at the end.
 
-    (3) This function assumes cylindrical throats
+    (3) This function assumes cylindrical throats with constant cross-section
+    area
 
     """
     network = target.project.network
-    throats = network.map_throats(target['throat._id'])
+    throats = network.map_throats(throats=target.Ts, origin=target)
     phase = target.project.find_phase(target)
-    geom = target.project.find_geometry(target)
     cn = network['throat.conns'][throats]
     # Getting equivalent areas
-    A1 = geom[throat_equivalent_area+'.pore1']
-    At = geom[throat_equivalent_area+'.throat']
-    A2 = geom[throat_equivalent_area+'.pore2']
+    D1 = network[pore_diameter][cn[:, 0]]
+    Dt = network[throat_diameter][throats]
+    D2 = network[pore_diameter][cn[:, 1]]
     # Getting conduit lengths
-    L1 = geom[throat_conduit_lengths+'.pore1']
-    Lt = geom[throat_conduit_lengths+'.throat']
-    L2 = geom[throat_conduit_lengths+'.pore2']
+    L1 = network[throat_conduit_lengths+'.pore1'][throats]
+    Lt = network[throat_conduit_lengths+'.throat'][throats]
+    L2 = network[throat_conduit_lengths+'.pore2'][throats]
     # Interpolate pore phase property values to throats
     try:
         mut = phase[throat_viscosity]
@@ -64,12 +65,12 @@ def hagen_poiseuille(target,
     except KeyError:
         mup = phase.interpolate_data(propname=throat_viscosity)
     # Find g for half of pore 1
-    gp1 = A1**2/(8*pi*mup[cn[:, 0]]*L1)
+    gp1 = pi*D1/(64*mup[cn[:, 0]]*_sp.arctanh(2*L1/D1))
     gp1[_sp.isnan(gp1)] = _sp.inf
     # Find g for half of pore 2
-    gp2 = A2**2/(8*pi*mup[cn[:, 1]]*L2)
+    gp2 = pi*D2/(64*mup[cn[:, 1]]*_sp.arctanh(2*L2/D2))
     gp2[_sp.isnan(gp2)] = _sp.inf
     # Find g for full throat
-    gt = At**2/(8*pi*mut[throats]*Lt)
+    gt = pi*Dt**4/(128*mut[throats]*Lt)
     gt[_sp.isnan(gt)] = _sp.inf
     return (1/gt + 1/gp1 + 1/gp2)**(-1)

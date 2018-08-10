@@ -103,11 +103,12 @@ class Air(GenericPhase):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-        self['pore.molecular_weight'] = 0.02896
+        self['pore.molecular_weight'] = 0.0291
         self['pore.critical_pressure'] = 3.786E6
         self['pore.critical_temperature'] = 132.5
         self['pore.critical_volume'] = 0.002917
-        self['pore.contact_angle'] = 110.0
+        self['pore.contact_angle'] = 180.0
+        self['pore.surface_tension'] = 0.072
         self.add_model(propname='pore.molar_density',
                        model=mods.phases.molar_density.ideal_gas)
         self.add_model(propname='pore.diffusivity',
@@ -118,6 +119,9 @@ class Air(GenericPhase):
                        model=mods.misc.polynomial,
                        prop='pore.temperature',
                        a=[0.00422791, 0.0000789606, -1.56383E-08])
+        self.add_model(propname='pore.electrical_conductivity',
+                       model=mods.misc.constant,
+                       value=1e-15)
         self.add_model(propname='pore.viscosity',
                        model=mods.misc.polynomial,
                        prop='pore.temperature',

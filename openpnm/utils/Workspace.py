@@ -63,11 +63,12 @@ class Workspace(dict):
     def __new__(cls, *args, **kwargs):
         if Workspace.__instance__ is None:
             Workspace.__instance__ = dict.__new__(cls)
+            cls.settings = SettingsDict()
+            cls.settings['loglevel'] = 40
         return Workspace.__instance__
 
     def __init__(self):
         super().__init__()
-        self.settings = SettingsDict()
 
     def __setitem__(self, name, project):
         if name is None:

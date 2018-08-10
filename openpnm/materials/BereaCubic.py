@@ -36,8 +36,6 @@ class BereaCubic(Project):
     Examples
     --------
 
-    >>> import openpnm as op
-    >>> proj = op.materials.BereaCubic(shape=[8, 9, 10])
     """
 
     def __init__(self, shape, name=None, **kwargs):

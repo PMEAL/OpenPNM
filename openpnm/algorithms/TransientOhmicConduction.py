@@ -1,18 +1,17 @@
-from openpnm.algorithms import TransientReactiveTransport, Dispersion
+from openpnm.algorithms import TransientReactiveTransport, OhmicConduction
 from openpnm.utils import logging
 logger = logging.getLogger(__name__)
 
 
-class TransientDispersion(TransientReactiveTransport, Dispersion):
+class TransientOhmicConduction(TransientReactiveTransport, OhmicConduction):
     r"""
+    A subclass of GenericTransport to simulate Ohmic conduction.
 
     """
 
     def __init__(self, settings={}, **kwargs):
         def_set = {'gui': {'setup':        {'quantity': '',
-                                            'diffusive_conductance': '',
-                                            'hydraulic_conductance': '',
-                                            'pressure': '',
+                                            'conductance': '',
                                             't_initial': None,
                                             't_final': None,
                                             't_step': None,
@@ -32,20 +31,15 @@ class TransientDispersion(TransientReactiveTransport, Dispersion):
         self.settings.update(def_set)
         self.settings.update(settings)
 
-    def setup(self, phase=None, quantity='', diffusive_conductance='',
-              hydraulic_conductance='', pressure='',
+    def setup(self, phase=None, quantity='', conductance='',
               t_initial=None, t_final=None, t_step=None, t_output=None,
               t_tolerance=None, t_scheme='', **kwargs):
         if phase:
             self.settings['phase'] = phase.name
         if quantity:
             self.settings['quantity'] = quantity
-        if diffusive_conductance:
-            self.settings['diffusive_conductance'] = diffusive_conductance
-        if hydraulic_conductance:
-            self.settings['hydraulic_conductance'] = hydraulic_conductance
-        if pressure:
-            self.settings['pressure'] = pressure
+        if conductance:
+            self.settings['conductance'] = conductance
         if t_initial:
             self.settings['t_initial'] = t_initial
         if t_final:
