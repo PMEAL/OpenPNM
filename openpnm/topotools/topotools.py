@@ -25,9 +25,11 @@ def find_neighbor_sites(sites, am, flatten=True, exclude_input=True,
     flatten : boolean
         If ``True`` (default) the returned result is a compressed array of all
         neighbors, or a list of lists with each sub-list containing the
-        neighbors for each input site.
+        neighbors for each input site.  Note that an *unflattened* list might
+        be slow to generate since it is a Python ``list`` rather than a Numpy
+        array.
 
-    exclude_input : boolean (default is ``True``)
+    exclude_input : boolean
         If ``True`` (default) the input sites will be removed from the result.
 
     logic : string
@@ -78,9 +80,9 @@ def find_neighbor_sites(sites, am, flatten=True, exclude_input=True,
         neighbors = sp.unique(neighbors)
     elif logic in ['xor', 'exclusive_or']:
         neighbors = sp.unique(sp.where(sp.bincount(neighbors) == 1)[0])
-    elif logic in ['xnor', 'shared']:
+    elif logic in ['xnor']:
         neighbors = sp.unique(sp.where(sp.bincount(neighbors) > 1)[0])
-    elif logic in ['and', 'intersection']:
+    elif logic in ['and', 'all', 'intersection']:
         neighbors = set(neighbors)
         [neighbors.intersection_update(i) for i in rows]
         neighbors = sp.array(list(neighbors), dtype=int, ndmin=1)
@@ -90,13 +92,16 @@ def find_neighbor_sites(sites, am, flatten=True, exclude_input=True,
         mask = sp.ones(shape=n_sites, dtype=bool)
         mask[sites] = False
         neighbors = neighbors[mask[neighbors]]
-    if (flatten is False) and (neighbors.size > 0):
-        mask = sp.zeros(shape=n_sites, dtype=bool)
-        mask[neighbors] = True
-        for i in range(len(rows)):
-            vals = sp.array(rows[i])
-            rows[i] = vals[mask[vals]]
-        neighbors = rows
+    if (flatten is False):
+        if (neighbors.size > 0):
+            mask = sp.zeros(shape=n_sites, dtype=bool)
+            mask[neighbors] = True
+            for i in range(len(rows)):
+                vals = sp.array(rows[i])
+                rows[i] = vals[mask[vals]]
+            neighbors = rows
+        else:
+            neighbors = [sp.array([], dtype=int) for i in range(len(sites))]
     return neighbors
 
 
@@ -114,7 +119,9 @@ def find_neighbor_bonds(sites, im, flatten=True, logic='or'):
     flatten : boolean (default is ``True``)
         Indicates whether the returned result is a compressed array of all
         neighbors, or a list of lists with each sub-list containing the
-        neighbors for each input site.
+        neighbors for each input site.  Note that an *unflattened* list might
+        be slow to generate since it is a Python ``list`` rather than a Numpy
+        array.
 
     logic : string
         Specifies logic to filter the resulting list.  Options are:
@@ -150,9 +157,9 @@ def find_neighbor_bonds(sites, im, flatten=True, logic='or'):
     -----
     The ``logic`` options are applied to neighboring bonds only, thus it is not
     possible to obtain bonds that are part of the global set but not neighbors.
-    This is because (a) the list global bonds might be very large, and (b) it
-    is not possible to return a list of neighbors for each input site if global
-    sites are considered.
+    This is because (a) the list of global bonds might be very large, and
+    (b) it is not possible to return a list of neighbors for each input site
+    if global sites are considered.
 
     """
     if im.format != 'lil':
@@ -166,19 +173,22 @@ def find_neighbor_bonds(sites, im, flatten=True, logic='or'):
         neighbors = sp.unique(sp.where(sp.bincount(neighbors) == 1)[0])
     elif logic in ['xnor', 'shared']:
         neighbors = sp.unique(sp.where(sp.bincount(neighbors) > 1)[0])
-    elif logic in ['and', 'intersection']:
+    elif logic in ['and', 'all', 'intersection']:
         neighbors = set(neighbors)
         [neighbors.intersection_update(i) for i in rows]
         neighbors = sp.array(list(neighbors), dtype=int, ndmin=1)
     else:
         raise Exception('Specified logic is not implemented')
-    if (flatten is False) and (neighbors.size > 0):
-        mask = sp.zeros(shape=n_bonds, dtype=bool)
-        mask[neighbors] = True
-        for i in range(len(rows)):
-            vals = sp.array(rows[i])
-            rows[i] = vals[mask[vals]]
-        neighbors = rows
+    if (flatten is False):
+        if (neighbors.size > 0):
+            mask = sp.zeros(shape=n_bonds, dtype=bool)
+            mask[neighbors] = True
+            for i in range(len(rows)):
+                vals = sp.array(rows[i])
+                rows[i] = vals[mask[vals]]
+            neighbors = rows
+        else:
+            neighbors = [sp.array([], dtype=int) for i in range(len(sites))]
     return neighbors
 
 
@@ -197,7 +207,9 @@ def find_connected_sites(bonds, am, flatten=True, logic='or'):
     flatten : boolean (default is ``True``)
         Indicates whether the returned result is a compressed array of all
         neighbors, or a list of lists with each sub-list containing the
-        neighbors for each input site.
+        neighbors for each input site.  Note that an *unflattened* list might
+        be slow to generate since it is a Python ``list`` rather than a Numpy
+        array.
 
     logic : string
         Specifies logic to filter the resulting list.  Options are:
@@ -224,8 +236,8 @@ def find_connected_sites(bonds, am, flatten=True, logic='or'):
     An array containing the connected sites, filtered by the given logic.  If
     ``flatten`` is ``False`` then the result is a list of lists containing the
     neighbors of each given input bond.  In this latter case, sites that
-    have been filtered by the given logic are indicated by nans, thus the
-    array contains float values and is not suitable for indexing.
+    have been removed by the given logic are indicated by ``nans``, thus the
+    array is of type ``float`` and is not suitable for indexing.
 
     See Also
     --------
@@ -243,7 +255,7 @@ def find_connected_sites(bonds, am, flatten=True, logic='or'):
         neighbors = sp.unique(sp.where(sp.bincount(neighbors) == 1)[0])
     elif logic in ['xnor', 'shared']:
         neighbors = sp.unique(sp.where(sp.bincount(neighbors) > 1)[0])
-    elif logic in ['and', 'intersection']:
+    elif logic in ['and', 'all', 'intersection']:
         temp = sp.vstack((am.row[bonds], am.col[bonds])).T.tolist()
         temp = [set(pair) for pair in temp]
         neighbors = temp[0]
@@ -251,17 +263,20 @@ def find_connected_sites(bonds, am, flatten=True, logic='or'):
         neighbors = sp.array(list(neighbors), dtype=int, ndmin=1)
     else:
         raise Exception('Specified logic is not implemented')
-    if (flatten is False) and (neighbors.size > 0):
-        mask = sp.zeros(shape=n_sites+1, dtype=bool)
-        mask[neighbors] = True
-        temp = sp.hstack((am.row[bonds], am.col[bonds]))
-        temp[~mask[temp]] = -1
-        inds = sp.where(temp == -1)[0]
-        if len(inds):
-            temp = temp.astype(float)
-            temp[inds] = sp.nan
-        temp = sp.reshape(a=temp, newshape=[len(bonds), 2], order='F')
-        neighbors = temp
+    if (flatten is False):
+        if (neighbors.size > 0):
+            mask = sp.zeros(shape=n_sites+1, dtype=bool)
+            mask[neighbors] = True
+            temp = sp.hstack((am.row[bonds], am.col[bonds]))
+            temp[~mask[temp]] = -1
+            inds = sp.where(temp == -1)[0]
+            if len(inds):
+                temp = temp.astype(float)
+                temp[inds] = sp.nan
+            temp = sp.reshape(a=temp, newshape=[len(bonds), 2], order='F')
+            neighbors = temp
+        else:
+            neighbors = [sp.array([], dtype=int) for i in range(len(bonds))]
     return neighbors
 
 
@@ -302,7 +317,7 @@ def find_connecting_bonds(sites, am):
 
 def find_complement(am, sites=None, bonds=None, asmask=False):
     r"""
-    Finds the complementary sites to a given set of input sites
+    Finds the complementary sites (or bonds) to a given set of inputs
 
     Parameters
     ----------
@@ -322,8 +337,8 @@ def find_complement(am, sites=None, bonds=None, asmask=False):
 
     Returns
     -------
-    An array containing indices of ``sites`` (or ``bonds``) not part of the
-    input list.
+    An array containing indices of the sites (or bonds) that are not part of
+    the input list.
 
     Notes
     -----
@@ -344,22 +359,6 @@ def find_complement(am, sites=None, bonds=None, asmask=False):
         return mask
     else:
         return sp.arange(N)[mask]
-
-
-def apply_logic(neighbors, logic):
-    if neighbors.dtype == float:
-        neighbors = neighbors.astype(int)
-    if logic in ['union', 'or', 'any']:
-        neighbors = sp.unique(neighbors)
-    elif logic in ['exclusive_or', 'xor']:
-        # neighbors that occur only once are NOT shared with other sites
-        neighbors = sp.unique(sp.where(sp.bincount(neighbors) == 1)[0])
-    elif logic in ['intersection', 'and', 'all']:
-        # neighbors that occur more than once ARE shared with other sites
-        neighbors = sp.unique(sp.where(sp.bincount(neighbors) > 1)[0])
-    else:
-        raise Exception('Unsupported logic type: '+logic)
-    return neighbors.astype(int)
 
 
 def istriu(am):

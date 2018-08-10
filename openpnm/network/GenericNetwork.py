@@ -78,6 +78,8 @@ class GenericNetwork(Base, ModelsMixin):
     GenericNetwork instance.  Consider a linear network of 4 pores and 3
     throats:
 
+    ::
+
         0 ―― 1 ―― 3 ―― 2
 
     >>> coords = [[0, 0, 0], [1, 0, 0], [2, 0, 0], [3, 0, 0]]
@@ -447,25 +449,35 @@ class GenericNetwork(Base, ModelsMixin):
             List of throats numbers
 
         flatten : boolean, optional
-            If flatten is True (default) a 1D array of unique pore numbers
-            is returned. If flatten is False each location in the the returned
-            array contains a sub-arras of neighboring pores for each input
-            throat, in the order they were sent.
+            If ``True`` (default) a 1D array of unique pore numbers is
+            returned. If ``False`` each location in the the returned array
+            contains a sub-arras of neighboring pores for each input throat,
+            in the order they were sent.
 
-        mode : string, optional
-            Specifies which neighbors should be returned.  The options are:
+        mode : string
+            Specifies logic to filter the resulting list.  Options are:
 
-            **'union'** : (default) All neighbors of the input pores
+            **'or'** : (default) All neighbors of the input throats.  This is
+            also known as the 'union' in set theory or 'any' in boolean logic.
+            Both keywords are accepted and treated as 'or'.
 
-            **'intersection'** : Only neighbors shared by all input pores
+            **'xor'** : Only neighbors of one and only one input throat.  This
+            is useful for finding the sites that are not shared by any of the
+            input throats.
 
-            **'exclusive_or'** : Only neighbors not shared by any input
-            pores
+            **'xnor'** : Neighbors that are shared by two or more input
+            throats. This is equivalent to finding all neighbors with 'or',
+            minus those found with 'xor', and is useful for finding neighbors
+            that the inputs have in common.
+
+            **'and'** : Only neighbors shared by all input throats.  This is
+            also known as 'intersection' in set theory and (somtimes) as 'all'
+            in boolean logic.  Both keywords are accepted and treated as 'and'.
 
         Returns
         -------
-        1D array (if flatten is True) or ndarray of arrays (if flatten is
-        False)
+        1D array (if ``flatten`` is ``True``) or ndarray of arrays (if
+        ``flatten`` is ``False``)
 
         Examples
         --------
@@ -477,11 +489,6 @@ class GenericNetwork(Base, ModelsMixin):
         >>> pn.find_connected_pores(throats=[0, 1], flatten=True)
         array([0, 1, 2])
 
-        Notes
-        -----
-        This method basically just looks into the pn['throat.conns'] array and
-        retrieves the pores for each input throat.  The flatten option merely
-        stacks the two columns and eliminate non-unique values.
         """
         Ts = self._parse_indices(throats)
         am = self.get_adjacency_matrix(fmt='coo')
@@ -491,18 +498,18 @@ class GenericNetwork(Base, ModelsMixin):
 
     def find_connecting_throat(self, P1, P2):
         r"""
-        Return the throat number connecting pairs of pores
+        Return the throat index connecting pairs of pores
 
         Parameters
         ----------
         P1 , P2 : array_like
-            The pore numbers whose throats are sought.  These can be vectors
-            of pore numbers, but must be the same length
+            The indices of the pores whose throats are sought.  These can be
+            vectors of indices, but must be the same length
 
         Returns
         -------
         Returns a list the same length as P1 (and P2) with the each element
-        containing the throat number that connects the corresponding pores,
+        containing the throat index that connects the corresponding pores,
         or `None`` if pores are not connected.
 
         Notes
@@ -524,36 +531,46 @@ class GenericNetwork(Base, ModelsMixin):
         return Ts
 
     def find_neighbor_pores(self, pores, mode='union', flatten=True,
-                            excl_self=True):
+                            exclude_input=True):
         r"""
-        Returns a list of pores neighboring the given pore(s)
+        Returns a list of pores that are direct neighbors to the given pore(s)
 
         Parameters
         ----------
         pores : array_like
-            ID numbers of pores whose neighbors are sought.
+            Indices of the pores whose neighbors are sought
 
-        flatten : boolean, optional
-            If flatten is True  a 1D array of unique pore ID numbers is
-            returned. If flatten is False the returned array contains arrays
-            of neighboring pores for each input pore, in the order they were
-            sent.
+        flatten : boolean
+            If ``True`` (default) the returned result is a compressed array of
+            all neighbors.  If ``False``, a list of lists with each sub-list
+            containing the neighbors for each input site.  Note that an
+            *unflattened* list might be slow to generate since it is a Python
+            ``list`` rather than a Numpy ``array``.
 
-        excl_self : bool
-            If this is True (default) then the input pores are not included in
-            the returned list.  This option only applies when input pores are
-            in fact neighbors to each other, otherwise they are not part of the
-            returned list anyway.
+        exclude_input : bool
+            If ``True`` (default) then the input pores are not included in
+            the returned list(s).
 
-        mode : string, optional
-            Specifies which neighbors should be returned.  The options are:
+        mode : string
+            Specifies logic to filter the resulting list.  Options are:
 
-            **'union'** : (default) All neighbors of the input pores
+            **'or'** : (default) All neighbors of the input pores.  This is
+            also known as the 'union' in set theory or 'any' in boolean logic.
+            Both keywords are accepted and treated as 'or'.
 
-            **'intersection'** : Only neighbors shared by all input pores
+            **'xor'** : Only neighbors of one and only one input pore.  This
+            is useful for finding the pores that are not shared by any of the
+            input pores.  This is known as 'exclusive_or' in set theory, and
+            is an accepted input.
 
-            **'exclusive_or'** : Only neighbors not shared by any input
-            pores
+            **'xnor'** : Neighbors that are shared by two or more input pores.
+            This is equivalent to finding all neighbors with 'or', minus those
+            found with 'xor', and is useful for finding neighbors that the
+            inputs have in common.
+
+            **'and'** : Only neighbors shared by all input pores.  This is also
+            known as 'intersection' in set theory and (somtimes) as 'all' in
+            boolean logic.  Both keywords are accepted and treated as 'and'.
 
         Returns
         -------
@@ -564,8 +581,11 @@ class GenericNetwork(Base, ModelsMixin):
 
         Notes
         -----
-        If ``flatten`` is ``False``, then ``mode`` and ``excl_self`` are
-        ignored.
+        The ``logic`` options are applied to neighboring pores only, thus it
+        is not possible to obtain pores that are part of the global set but
+        not neighbors. This is because (a) the list of global pores might be
+        very large, and (b) it is not possible to return a list of neighbors
+        for each input pores if global pores are considered.
 
         Examples
         --------
@@ -575,7 +595,8 @@ class GenericNetwork(Base, ModelsMixin):
         array([ 1,  3,  5,  7, 25, 27])
         >>> pn.find_neighbor_pores(pores=[0, 1])
         array([ 2,  5,  6, 25, 26])
-        >>> pn.find_neighbor_pores(pores=[0, 1], mode='union', excl_self=False)
+        >>> pn.find_neighbor_pores(pores=[0, 1], mode='union',
+        ...                        exclude_input=False)
         array([ 0,  1,  2,  5,  6, 25, 26])
         >>> pn.find_neighbor_pores(pores=[0, 2], flatten=False)
         [[1, 5, 25], [1, 3, 7, 27]]
@@ -592,7 +613,7 @@ class GenericNetwork(Base, ModelsMixin):
         neighbors = topotools.find_neighbor_sites(sites=pores, logic=mode,
                                                   am=self._am['lil'],
                                                   flatten=flatten,
-                                                  exclude_input=excl_self)
+                                                  exclude_input=exclude_input)
         return neighbors
 
     def find_neighbor_throats(self, pores, mode='union', flatten=True):
@@ -605,20 +626,30 @@ class GenericNetwork(Base, ModelsMixin):
             Indices of pores whose neighbors are sought
 
         flatten : boolean, optional
-            If flatten is True (default) a 1D array of unique throat ID numbers
-            is returned. If flatten is False the returned array contains arrays
-            of neighboring throat ID numbers for each input pore, in the order
+            If ``True`` (default) a 1D array of unique throat indices is
+            returned. If ``False`` the returned array contains arrays of
+            neighboring throat indices for each input pore, in the order
             they were sent.
 
-        mode : string, optional
-            Specifies which neighbors should be returned.  The options are:
+        mode : string
+            Specifies logic to filter the resulting list.  Options are:
 
-            **'union'** : (default) All neighbors of the input pores
+            **'or'** : (default) All neighbors of the input pores.  This is
+            also known as the 'union' in set theory or 'any' in boolean logic.
+            Both keywords are accepted and treated as 'or'.
 
-            **'intersection'** : Only neighbors shared by all input pores
+            **'xor'** : Only neighbors of one and only one input pore.  This
+            is useful for finding the thraots that are not shared by any of the
+            input pores.
 
-            **'exclusive_or'** : Only neighbors not shared by any input
-            pores
+            **'xnor'** : Neighbors that are shared by two or more input pores.
+            This is equivalent to finding all neighbors with 'or', minus those
+            found with 'xor', and is useful for finding neighbors that the
+            inputs have in common.
+
+            **'and'** : Only neighbors shared by all input pores.  This is also
+            known as 'intersection' in set theory and (somtimes) as 'all' in
+            boolean logic.  Both keywords are accepted and treated as 'and'.
 
         Returns
         -------
@@ -629,8 +660,11 @@ class GenericNetwork(Base, ModelsMixin):
 
         Notes
         -----
-        If ``flatten`` is ``False``, then ``mode`` and ``excl_self`` are
-        ignored.
+        The ``logic`` options are applied to neighboring bonds only, thus it
+        is not possible to obtain bonds that are part of the global set but
+        not neighbors. This is because (a) the list of global bonds might be
+        very large, and (b) it is not possible to return a list of neighbors
+        for each input site if global sites are considered.
 
         Examples
         --------
@@ -640,6 +674,7 @@ class GenericNetwork(Base, ModelsMixin):
         array([  0,   1, 100, 101, 200, 201])
         >>> pn.find_neighbor_throats(pores=[0, 1], flatten=False)
         [[0, 100, 200], [0, 1, 101, 201]]
+
         """
         pores = self._parse_indices(pores)
         if sp.size(pores) == 0:
@@ -661,11 +696,10 @@ class GenericNetwork(Base, ModelsMixin):
             neighbors = self.find_neighbor_throats(pores=pores, **kwargs)
         return neighbors
 
-    def num_neighbors(self, pores, element='pore', flatten=False,
-                      mode='union'):
+    def num_neighbors(self, pores, mode='or', flatten=False,
+                      exclude_input=True):
         r"""
-        Returns an array containing the number of neigbhoring pores or throats
-        for each given input pore
+        Returns the number of neigbhoring pores for each given input pore
 
         Parameters
         ----------
@@ -674,27 +708,29 @@ class GenericNetwork(Base, ModelsMixin):
 
         flatten : boolean (optional)
             If ``False`` (default) the number of pores neighboring each input
-            pore as an array the same length as ``pores``.  If ``True`` the sum
-            total number of is counted.
+            pore as an array the same length as ``pores``.  If ``True`` the
+            sum total number of is counted.
 
-        element : string
-            Indicates whether to count number of neighboring pores or throats.
-            For some complex networks, such as extracted networks, several
-            throats may exist between two pores, so this query will return
-            different results depending on whether 'pores' (default) or
-            'throats' is specified.
-
-        mode : string (This is ignored if ``flatten`` is False)
+        mode : string
             The logic to apply to the returned count of pores.
 
-            **'union'** : (Default) The sum of all neighbors connected all
-            input pores.
+            **'or'** : (default) All neighbors of the input pores.  This is
+            also known as the 'union' in set theory or 'any' in boolean logic.
+            Both keywords are accepted and treated as 'or'.
 
-            **'intersection'** : The number of neighboring pores that are
-            shared by all input pores.
+            **'xor'** : Only neighbors of one and only one input pore.  This
+            is useful for counting the pores that are not shared by any of the
+            input pores.  This is known as 'exclusive_or' in set theory, and
+            is an accepted input.
 
-            **'exclusive_or'** : The number of neighboring pores that are
-            NOT shared by any input pores.
+            **'xnor'** : Neighbors that are shared by two or more input pores.
+            This is equivalent to counting all neighbors with 'or', minus those
+            found with 'xor', and is useful for finding neighbors that the
+            inputs have in common.
+
+            **'and'** : Only neighbors shared by all input pores.  This is also
+            known as 'intersection' in set theory and (somtimes) as 'all' in
+            boolean logic.  Both keywords are accepted and treated as 'and'.
 
         Returns
         -------
@@ -704,9 +740,9 @@ class GenericNetwork(Base, ModelsMixin):
         Notes
         -----
         This method literally just counts the number of elements in the array
-        returned by ``find_neighbor_pores`` or ``find_neighbor_throats`` and
-        uses the same logic.  Explore those methods if uncertain about the
-        meaning of the ``mode`` argument here.
+        returned by ``find_neighbor_pores`` using the same logic.  Explore
+        those methods if uncertain about the meaning of the ``mode`` argument
+        here.
 
         See Also
         --------
@@ -721,13 +757,13 @@ class GenericNetwork(Base, ModelsMixin):
         array([3, 4])
         >>> pn.num_neighbors(pores=[0, 2], flatten=True)
         6
-        >>> pn.num_neighbors(pores=[0, 2], mode='intersection', flatten=True)
+        >>> pn.num_neighbors(pores=[0, 2], mode='and', flatten=True)
         1
         """
         pores = self._parse_indices(pores)
         # Count number of neighbors
-        num = self._find_neighbors(pores, element=element, flatten=flatten,
-                                   mode=mode)
+        num = self.find_neighbor_pores(pores, flatten=flatten,
+                                       mode=mode, exclude_input=exclude_input)
         if flatten:
             num = sp.size(num)
         else:

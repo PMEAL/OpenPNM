@@ -1,4 +1,15 @@
 r"""
+
+::
+
+     o-o                o--o  o   o o   o
+    o   o               |   | |\  | |\ /|
+    |   | o-o  o-o o-o  o--o  | \ | | o |
+    o   o |  | |-' |  | |     |  \| |   |
+     o-o  o-o  o-o o  o o     o   o o   o
+          |
+          o
+
 **OpenPNM**
 
 OpenPNM is a package for performing pore network simulations of transport in
