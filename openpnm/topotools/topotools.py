@@ -9,7 +9,7 @@ ws = Workspace()
 logger = logging.getLogger()
 
 
-def find_neighbor_sites(sites, am, flatten=True, exclude_input=True,
+def find_neighbor_sites(sites, am, flatten=True, include_input=True,
                         logic='or'):
     r"""
     Given a symmetric adjacency matrix, finds all sites that are connected
@@ -29,8 +29,8 @@ def find_neighbor_sites(sites, am, flatten=True, exclude_input=True,
         be slow to generate since it is a Python ``list`` rather than a Numpy
         array.
 
-    exclude_input : boolean
-        If ``True`` (default) the input sites will be removed from the result.
+    include_input : boolean
+        If ``False`` (default) the input sites will be removed from the result.
 
     logic : string
         Specifies logic to filter the resulting list.  Options are:
@@ -88,10 +88,16 @@ def find_neighbor_sites(sites, am, flatten=True, exclude_input=True,
         neighbors = sp.array(list(neighbors), dtype=int, ndmin=1)
     else:
         raise Exception('Specified logic is not implemented')
-    if exclude_input:
-        mask = sp.ones(shape=n_sites, dtype=bool)
+    # Deal with whether or not to include input
+    mask = sp.zeros(shape=n_sites, dtype=bool)
+    if not include_input:
+        mask[neighbors] = True
         mask[sites] = False
-        neighbors = neighbors[mask[neighbors]]
+        neighbors = sp.where(mask)[0]
+    else:
+        mask[neighbors] = True
+        mask[sites] = True
+        neighbors = sp.where(mask)[0]
     if (flatten is False):
         if (neighbors.size > 0):
             mask = sp.zeros(shape=n_sites, dtype=bool)
@@ -248,12 +254,13 @@ def find_connected_sites(bonds, am, flatten=True, logic='or'):
         am = am.tocoo(copy=False)
     bonds = sp.array(bonds, ndmin=1)
     neighbors = sp.hstack((am.row[bonds], am.col[bonds]))
-    n_sites = sp.amax(neighbors)
+    if neighbors.size:
+        n_sites = sp.amax(neighbors)
     if logic in ['or', 'union', 'any']:
         neighbors = sp.unique(neighbors)
     elif logic in ['xor', 'exclusive_or']:
         neighbors = sp.unique(sp.where(sp.bincount(neighbors) == 1)[0])
-    elif logic in ['xnor', 'shared']:
+    elif logic in ['xnor']:
         neighbors = sp.unique(sp.where(sp.bincount(neighbors) > 1)[0])
     elif logic in ['and', 'all', 'intersection']:
         temp = sp.vstack((am.row[bonds], am.col[bonds])).T.tolist()
@@ -264,7 +271,7 @@ def find_connected_sites(bonds, am, flatten=True, logic='or'):
     else:
         raise Exception('Specified logic is not implemented')
     if (flatten is False):
-        if (neighbors.size > 0):
+        if neighbors.size:
             mask = sp.zeros(shape=n_sites+1, dtype=bool)
             mask[neighbors] = True
             temp = sp.hstack((am.row[bonds], am.col[bonds]))

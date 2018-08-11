@@ -531,7 +531,7 @@ class GenericNetwork(Base, ModelsMixin):
         return Ts
 
     def find_neighbor_pores(self, pores, mode='union', flatten=True,
-                            exclude_input=True):
+                            include_input=False):
         r"""
         Returns a list of pores that are direct neighbors to the given pore(s)
 
@@ -547,8 +547,8 @@ class GenericNetwork(Base, ModelsMixin):
             *unflattened* list might be slow to generate since it is a Python
             ``list`` rather than a Numpy ``array``.
 
-        exclude_input : bool
-            If ``True`` (default) then the input pores are not included in
+        include_input : bool
+            If ``False`` (default) then the input pores are not included in
             the returned list(s).
 
         mode : string
@@ -596,7 +596,7 @@ class GenericNetwork(Base, ModelsMixin):
         >>> pn.find_neighbor_pores(pores=[0, 1])
         array([ 2,  5,  6, 25, 26])
         >>> pn.find_neighbor_pores(pores=[0, 1], mode='union',
-        ...                        exclude_input=False)
+        ...                        include_input=True)
         array([ 0,  1,  2,  5,  6, 25, 26])
         >>> pn.find_neighbor_pores(pores=[0, 2], flatten=False)
         [[1, 5, 25], [1, 3, 7, 27]]
@@ -613,7 +613,7 @@ class GenericNetwork(Base, ModelsMixin):
         neighbors = topotools.find_neighbor_sites(sites=pores, logic=mode,
                                                   am=self._am['lil'],
                                                   flatten=flatten,
-                                                  exclude_input=exclude_input)
+                                                  include_input=include_input)
         return neighbors
 
     def find_neighbor_throats(self, pores, mode='union', flatten=True):
@@ -696,8 +696,7 @@ class GenericNetwork(Base, ModelsMixin):
             neighbors = self.find_neighbor_throats(pores=pores, **kwargs)
         return neighbors
 
-    def num_neighbors(self, pores, mode='or', flatten=False,
-                      exclude_input=True):
+    def num_neighbors(self, pores, mode='or', flatten=False):
         r"""
         Returns the number of neigbhoring pores for each given input pore
 
@@ -763,14 +762,14 @@ class GenericNetwork(Base, ModelsMixin):
         pores = self._parse_indices(pores)
         # Count number of neighbors
         num = self.find_neighbor_pores(pores, flatten=flatten,
-                                       mode=mode, exclude_input=exclude_input)
+                                       mode=mode, include_input=False)
         if flatten:
             num = sp.size(num)
         else:
             num = sp.array([sp.size(i) for i in num], dtype=int)
         return num
 
-    def find_nearby_pores(self, pores, r, flatten=False, excl_self=True):
+    def find_nearby_pores(self, pores, r, flatten=False, include_input=False):
         r"""
         Find all pores within a given radial distance of the input pore(s)
         regardless of whether or not they are toplogically connected.
@@ -783,9 +782,9 @@ class GenericNetwork(Base, ModelsMixin):
         r : scalar
             The maximum radius within which the search should be performed
 
-        excl_self : bool
+        include_input : bool
             Controls whether the input pores should be included in the returned
-            list.  The default is True which means they are not included.
+            list.  The default is ``False`` which means they are not included.
 
         flatten : bool
             If true returns a single list of all pores that match the criteria,
@@ -823,14 +822,14 @@ class GenericNetwork(Base, ModelsMixin):
         # Perform search
         Pn = kd_pores.query_ball_tree(kd, r=r)
         # Sort the indices in each list
-        [Pn[i].sort() for i in range(0, sp.size(pores))]
+        # [Pn[i].sort() for i in range(0, sp.size(pores))]
         if flatten:  # Convert list of lists to a flat nd-array
             temp = sp.concatenate((Pn))
             Pn = sp.unique(temp)
-            if excl_self:  # Remove inputs if necessary
+            if include_input:  # Remove inputs if necessary
                 Pn = Pn[~sp.in1d(Pn, pores)]
         else:  # Convert list of lists to an nd-array of nd-arrays
-            if excl_self:  # Remove inputs if necessary
+            if include_input:  # Remove inputs if necessary
                 [Pn[i].remove(pores[i]) for i in range(0, sp.size(pores))]
             temp = [sp.array(Pn[i]) for i in range(0, sp.size(pores))]
             Pn = sp.array(temp)
