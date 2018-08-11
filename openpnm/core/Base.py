@@ -573,7 +573,7 @@ class Base(dict):
         >>> pn = op.network.Cubic(shape=[5, 5, 5])
         >>> pn.labels(pores=[0, 1, 5, 6])
         ['pore.all', 'pore.bottom', 'pore.front', 'pore.left', 'pore.surface']
-        >>> pn.labels(pores=[0, 1, 5, 6], mode='intersection')
+        >>> pn.labels(pores=[0, 1, 5, 6], mode='xnor')
         ['pore.all', 'pore.front', 'pore.surface']
         """
         labels = PrintableList()
@@ -644,7 +644,7 @@ class Base(dict):
             for item in labels:  # Iterate over labels and collect all indices
                 info = self[element+'.'+item.split('.')[-1]]
                 xnor = xnor + sp.int8(info)
-            ind = (nor > 1)
+            ind = (xnor > 1)
         else:
             raise Exception('Unsupported mode: '+mode)
         # Extract indices from boolean mask
@@ -720,7 +720,7 @@ class Base(dict):
         >>> Ps = pn.pores(labels=['top', 'front'], mode='union')
         >>> Ps[:5]  # Look at first 5 pore indices
         array([0, 1, 2, 3, 4])
-        >>> pn.pores(labels=['top', 'front'], mode='intersection')
+        >>> pn.pores(labels=['top', 'front'], mode='xnor')
         array([ 4,  9, 14, 19, 24])
         """
         ind = self._get_indices(element='pore', labels=labels, mode=mode)
@@ -1265,7 +1265,7 @@ class Base(dict):
         25
         >>> pn.num_pores(labels=['top', 'front'], mode='union')
         45
-        >>> pn.num_pores(labels=['top', 'front'], mode='intersection')
+        >>> pn.num_pores(labels=['top', 'front'], mode='xnor')
         5
 
         """

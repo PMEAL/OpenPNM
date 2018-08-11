@@ -481,7 +481,7 @@ class DelaunayGeometry(GenericGeometry):
         Work out the voxels inside the convex hull of the voronoi vertices of
         each pore
         """
-        Ps = self.network.pores(['internal', 'delaunay'], mode='intersection')
+        Ps = self.network.pores(['internal', 'delaunay'], mode='xnor')
         inds = self.network._map(ids=self['pore._id'][Ps], element='pore',
                                  filtered=True)
         # Get the fiber image

@@ -216,7 +216,7 @@ class GraphToolsTest:
     def test_find_neighbor_sites_unflattened_or(self):
         am = self.net.create_adjacency_matrix(fmt='lil')
         Ps = topotools.find_neighbor_sites(sites=[0, 1, 2], am=am, logic='or',
-                                           flatten=False, exclude_input=False)
+                                           flatten=False, include_input=True)
         assert len(Ps) == 3
         assert np.all(Ps[0] == [1, 3])
         assert np.all(Ps[1] == [0, 2, 3, 4])
@@ -226,7 +226,7 @@ class GraphToolsTest:
         am = self.net.create_adjacency_matrix(fmt='lil')
         Ps = topotools.find_neighbor_sites(sites=[0, 1, 2], am=am,
                                            logic='xor',
-                                           flatten=False, exclude_input=False)
+                                           flatten=False, include_input=True)
         assert len(Ps) == 3
         assert np.all(Ps[0] == [])
         assert np.all(Ps[1] == [0, 2, 4])
@@ -235,7 +235,7 @@ class GraphToolsTest:
     def test_find_neighbor_sites_unflattened_xor_empty_set(self):
         am = self.net.create_adjacency_matrix(fmt='lil')
         Ps = topotools.find_neighbor_sites(sites=[0, 1, 2], am=am, logic='or',
-                                           flatten=False, exclude_input=False)
+                                           flatten=False, include_input=True)
         assert len(Ps) == 3
         assert np.all(Ps[0] == [1, 3])
         assert np.all(Ps[1] == [0, 2, 3, 4])
@@ -245,7 +245,7 @@ class GraphToolsTest:
         am = self.net.create_adjacency_matrix(fmt='lil')
         Ps = topotools.find_neighbor_sites(sites=[0, 1, 2], am=am,
                                            logic='xnor',
-                                           flatten=False, exclude_input=False)
+                                           flatten=False, include_input=True)
         assert len(Ps) == 3
         assert np.all(Ps[0] == [1, 3])
         assert np.all(Ps[1] == [0, 2, 3])
@@ -254,7 +254,7 @@ class GraphToolsTest:
     def test_find_neighbor_sites_unflattened_and(self):
         am = self.net.create_adjacency_matrix(fmt='lil')
         Ps = topotools.find_neighbor_sites(sites=[0, 2], am=am, logic='and',
-                                           flatten=False, exclude_input=False)
+                                           flatten=False, include_input=True)
         assert len(Ps) == 2
         assert np.all(Ps[0] == [1])
         assert np.all(Ps[1] == [1])
@@ -262,7 +262,7 @@ class GraphToolsTest:
     def test_find_neighbor_sites_unflattened_and_empty_set(self):
         am = self.net.create_adjacency_matrix(fmt='lil')
         Ps = topotools.find_neighbor_sites(sites=[0, 1, 2], am=am, logic='and',
-                                           flatten=False, exclude_input=True)
+                                           flatten=False, include_input=False)
         assert len(Ps) == 3
         assert np.all(Ps[0] == [])
         assert np.all(Ps[1] == [])

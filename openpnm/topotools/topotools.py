@@ -9,7 +9,7 @@ ws = Workspace()
 logger = logging.getLogger()
 
 
-def find_neighbor_sites(sites, am, flatten=True, include_input=True,
+def find_neighbor_sites(sites, am, flatten=True, include_input=False,
                         logic='or'):
     r"""
     Given a symmetric adjacency matrix, finds all sites that are connected
@@ -983,7 +983,7 @@ def reduce_coordination(network, z):
     network['throat.mst'][Ts] = True
 
     # Trim throats not on the spanning tree to acheive desired coordination
-    Ts = sp.random.permutation(network.throats('mst', mode='complement'))
+    Ts = sp.random.permutation(network.throats('mst', mode='nor'))
     Ts = Ts[:int(network.Nt - network.Np*(z/2))]
     trim(network=network, throats=Ts)
 
@@ -1150,7 +1150,7 @@ def clone_pores(network, pores, labels=['clone'], mode='parents'):
         tclone = sp.vstack((parents, clones)).T
         extend(network=network, pore_coords=pclone, throat_conns=tclone)
     if mode == 'siblings':
-        ts = network.find_neighbor_throats(pores=pores, mode='intersection')
+        ts = network.find_neighbor_throats(pores=pores, mode='xnor')
         tclone = network['throat.conns'][ts] + network.num_pores()
         extend(network=network, pore_coords=pclone, throat_conns=tclone)
     if mode == 'isolated':
@@ -1565,7 +1565,7 @@ def subdivide(network, pores, shape, labels=[]):
             if neighbor in Pn_old_net:
                 coplanar_labels = network.labels(pores=nearest_neighbor)
                 new_neighbors = network.pores(coplanar_labels,
-                                              mode='intersection')
+                                              mode='xnor')
                 # This might happen to the edge of the small network
                 if sp.size(new_neighbors) == 0:
                     labels = network.labels(pores=nearest_neighbor,
@@ -2464,7 +2464,7 @@ def find_path(network, pore_pairs, weights=None):
         ans.append(Ps[row][0])
         ans.reverse()
         pores.append(sp.array(ans, dtype=int))
-        Ts = network.find_neighbor_throats(pores=ans, mode='intersection')
+        Ts = network.find_neighbor_throats(pores=ans, mode='xnor')
         throats.append(sp.array(Ts, dtype=int))
     pdict = PrintableDict
     dict_ = pdict(**{'pores': pores, 'throats': throats})

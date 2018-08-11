@@ -600,9 +600,9 @@ class GenericNetwork(Base, ModelsMixin):
         array([ 0,  1,  2,  5,  6, 25, 26])
         >>> pn.find_neighbor_pores(pores=[0, 2], flatten=False)
         [[1, 5, 25], [1, 3, 7, 27]]
-        >>> pn.find_neighbor_pores(pores=[0, 2], mode='intersection')
+        >>> pn.find_neighbor_pores(pores=[0, 2], mode='xnor')
         array([1])
-        >>> pn.find_neighbor_pores(pores=[0, 2], mode='exclusive_or')
+        >>> pn.find_neighbor_pores(pores=[0, 2], mode='xor')
         array([ 3,  5,  7, 25, 27])
         """
         pores = self._parse_indices(pores)
@@ -762,7 +762,7 @@ class GenericNetwork(Base, ModelsMixin):
         pores = self._parse_indices(pores)
         # Count number of neighbors
         num = self.find_neighbor_pores(pores, flatten=flatten,
-                                       mode=mode, include_input=False)
+                                       mode=mode, include_input=True)
         if flatten:
             num = sp.size(num)
         else:

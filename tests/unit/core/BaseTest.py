@@ -42,7 +42,7 @@ class BaseTest:
                                                  pores=Ps,
                                                  throats=Ts)
         Ps = sp.arange(18, 27)
-        Ts = self.net2.find_neighbor_pores(Ps, mode='intersection')
+        Ts = self.net2.find_neighbor_pores(Ps, mode='xnor')
         self.geo22 = op.geometry.GenericGeometry(network=self.net2,
                                                  pores=Ps,
                                                  throats=Ts)
@@ -79,7 +79,7 @@ class BaseTest:
         assert sp.all(a == [0, 1, 2, 3, 4, 5, 6, 7, 8, 11, 14, 17, 20, 23, 26])
 
     def test_pores_two_labels_intersection(self):
-        a = self.net.pores(labels=['top', 'front'], mode='intersection')
+        a = self.net.pores(labels=['top', 'front'], mode='xnor')
         assert sp.all(a == [2, 5, 8])
 
     def test_pores_two_labels_not_intersection(self):
@@ -103,7 +103,7 @@ class BaseTest:
         assert sp.all(a == [0, 1, 2, 3, 4, 5, 6, 7, 8])
 
     def test_throats_two_labels_intersection(self):
-        a = self.net.throats(labels=['label1', 'label2'], mode='intersection')
+        a = self.net.throats(labels=['label1', 'label2'], mode='xnor')
         assert sp.all(a == [3, 4, 5])
 
     def test_throats_two_labels_not_intersection(self):
@@ -228,7 +228,7 @@ class BaseTest:
         assert a == 15
 
     def test_num_pores_two_labels_intersection(self):
-        a = self.net.num_pores(labels=['top', 'front'], mode='intersection')
+        a = self.net.num_pores(labels=['top', 'front'], mode='xnor')
         assert a == 3
 
     def test_num_pores_two_labels_not_intersection(self):
@@ -254,7 +254,7 @@ class BaseTest:
 
     def test_num_throats_two_labels_intersection(self):
         a = self.net.num_throats(labels=['label1', 'label2'],
-                                 mode='intersection')
+                                 mode='xnor')
         assert a == 3
 
     def test_num_throats_two_labels_notintersection(self):

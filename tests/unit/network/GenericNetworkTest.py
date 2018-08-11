@@ -43,7 +43,7 @@ class GenericNetworkTest:
         assert sp.all(a == [1, 3, 10, 12, 100, 102])
 
     def test_find_neighbor_pores_numeric_intersection(self):
-        a = self.net.find_neighbor_pores(pores=[0, 2], mode='intersection')
+        a = self.net.find_neighbor_pores(pores=[0, 2], mode='xnor')
         assert sp.all(a == [1])
 
     def test_find_neighbor_pores_numeric_exclusive_or(self):
@@ -86,7 +86,7 @@ class GenericNetworkTest:
         assert sp.all(a == [0, 1, 2, 900, 902, 1800, 1802])
 
     def test_find_neighbor_throats_numeric_intersection(self):
-        a = self.net.find_neighbor_throats(pores=[0, 2], mode='intersection')
+        a = self.net.find_neighbor_throats(pores=[0, 2], mode='xnor')
         assert sp.size(a) == 0
 
     def test_find_neighbor_throats_numeric_exclusive_or(self):
@@ -109,7 +109,7 @@ class GenericNetworkTest:
     def test_num_neighbors_pores_with_modes(self):
         a = self.net.num_neighbors(pores=[0, 2], mode='union', flatten=True)
         assert a == 6
-        a = self.net.num_neighbors(pores=[0, 2], mode='intersection',
+        a = self.net.num_neighbors(pores=[0, 2], mode='xnor',
                                    flatten=True)
         assert a == 1
         a = self.net.num_neighbors(pores=[0, 2], mode='exclusive_or',

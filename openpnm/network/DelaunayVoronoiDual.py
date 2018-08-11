@@ -185,16 +185,16 @@ class DelaunayVoronoiDual(GenericNetwork):
         # Label Voronoi and interconnect throats on surface
         self['throat.surface'] = False
         Ps = self.pores('surface')
-        Ts = self.find_neighbor_throats(pores=Ps, mode='intersection')
+        Ts = self.find_neighbor_throats(pores=Ps, mode='xnor')
         self['throat.surface'][Ts] = True
 
         # Trim throats between Delaunay surface pores
-        Ps = self.pores(labels=['surface', 'delaunay'], mode='intersection')
-        Ts = self.find_neighbor_throats(pores=Ps, mode='intersection')
+        Ps = self.pores(labels=['surface', 'delaunay'], mode='xnor')
+        Ts = self.find_neighbor_throats(pores=Ps, mode='xnor')
         topotools.trim(network=self, throats=Ts)
 
         # Move Delaunay surface pores to centroid of Voronoi facet
-        Ps = self.pores(labels=['surface', 'delaunay'], mode='intersection')
+        Ps = self.pores(labels=['surface', 'delaunay'], mode='xnor')
         for P in Ps:
             Ns = self.find_neighbor_pores(pores=P)
             Ns = Ps = self['pore.voronoi']*self.tomask(pores=Ns)
@@ -203,7 +203,7 @@ class DelaunayVoronoiDual(GenericNetwork):
 
         self['pore.internal'] = ~self['pore.surface']
         Ps = self.pores('internal')
-        Ts = self.find_neighbor_throats(pores=Ps, mode='intersection')
+        Ts = self.find_neighbor_throats(pores=Ps, mode='xnor')
         self['throat.internal'] = False
         self['throat.internal'][Ts] = True
 
