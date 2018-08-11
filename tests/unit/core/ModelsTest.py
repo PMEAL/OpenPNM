@@ -132,12 +132,12 @@ class ModelsTest:
         phys = op.physics.Standard(network=pn, phase=phase, geometry=geo)
         phase.clear(mode='model_data')
         phys.clear()
-        assert len(phase) == 12  # Only pore and throat.all remain
+        assert len(phase) == 13
         phys.regenerate_models(propnames=None, deep=False)
-        assert len(phase) == 12  # Still only pore and throat.all
-        assert len(phys) == 3  # Only one property was regenerated
+        assert len(phase) == 13
+        assert len(phys) == 4
         phys.regenerate_models(propnames=None, deep=True)
-        assert len(phase) == 12  # Phase models are not regenerated
+        assert len(phase) == 13
 
     def test_regenerate_models_on_network_with_deep(self):
         pn = op.network.Cubic(shape=[5, 5, 5])

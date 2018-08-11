@@ -288,7 +288,7 @@ class Base(dict):
         >>> import openpnm as op
         >>> pn = op.network.Cubic(shape=[5, 5, 5])
         >>> len(pn.labels())  # There are 10 total labels on the network
-        10
+        12
         >>> pn.clear(mode='labels')
         >>> len(pn.labels())  # Kept only 'pore.all' and 'throat.all'
         2
@@ -572,9 +572,9 @@ class Base(dict):
         >>> import openpnm as op
         >>> pn = op.network.Cubic(shape=[5, 5, 5])
         >>> pn.labels(pores=[0, 1, 5, 6])
-        ['pore.all', 'pore.bottom', 'pore.front', 'pore.internal', 'pore.left']
+        ['pore.all', 'pore.bottom', 'pore.front', 'pore.left', 'pore.surface']
         >>> pn.labels(pores=[0, 1, 5, 6], mode='intersection')
-        ['pore.all', 'pore.front', 'pore.internal']
+        ['pore.all', 'pore.front', 'pore.surface']
         """
         labels = PrintableList()
         # Short-circuit query when no pores or throats are given
@@ -599,49 +599,60 @@ class Base(dict):
                                       mode=mode)
         return labels
 
-    def _get_indices(self, element, labels='all', mode='union'):
+    def _get_indices(self, element, labels='all', mode='or'):
         r"""
         This is the actual method for getting indices, but should not be called
-        directly.  Use pores or throats instead.
+        directly.  Use ``pores`` or ``throats`` instead.
         """
         # Parse and validate all input values.
-        allowed = ['union', 'intersection', 'not_intersection', 'not',
-                   'difference', 'complement']
-        mode = self._parse_mode(mode=mode, allowed=allowed, single=True)
         element = self._parse_element(element, single=True)
         labels = self._parse_labels(labels=labels, element=element)
         if element+'.all' not in self.keys():
             raise Exception('Cannot proceed without {}.all'.format(element))
 
         # Begin computing label array
-        if mode in ['union']:
+        if mode in ['or', 'any', 'union']:
             union = sp.zeros_like(self[element+'.all'], dtype=bool)
             for item in labels:  # Iterate over labels and collect all indices
                 union = union + self[element+'.'+item.split('.')[-1]]
             ind = union
-        elif mode in ['intersection']:
+        elif mode in ['and', 'all', 'intersection']:
             intersect = sp.ones_like(self[element+'.all'], dtype=bool)
             for item in labels:  # Iterate over labels and collect all indices
                 intersect = intersect*self[element+'.'+item.split('.')[-1]]
             ind = intersect
-        elif mode in ['not_intersection']:
-            none = sp.zeros_like(self[element+'.all'], dtype=int)
+        elif mode in ['xor', 'exclusive_or']:
+            xor = sp.zeros_like(self[element+'.all'], dtype=int)
             for item in labels:  # Iterate over labels and collect all indices
                 info = self[element+'.'+item.split('.')[-1]]
-                none = none + sp.int8(info)
-            ind = (none == 1)
-        elif mode in ['not', 'difference', 'complement']:
-            none = sp.zeros_like(self[element+'.all'], dtype=int)
+                xor = xor + sp.int8(info)
+            ind = (xor == 1)
+        elif mode in ['nor', 'not', 'none']:
+            nor = sp.zeros_like(self[element+'.all'], dtype=int)
             for item in labels:  # Iterate over labels and collect all indices
                 info = self[element+'.'+item.split('.')[-1]]
-                none = none + sp.int8(info)
-            ind = (none == 0)
+                nor = nor + sp.int8(info)
+            ind = (nor == 0)
+        elif mode in ['nand']:
+            nand = sp.zeros_like(self[element+'.all'], dtype=int)
+            for item in labels:  # Iterate over labels and collect all indices
+                info = self[element+'.'+item.split('.')[-1]]
+                nand = nand + sp.int8(info)
+            ind = (nand == (len(labels) - 1))
+        elif mode in ['xnor']:
+            xnor = sp.zeros_like(self[element+'.all'], dtype=int)
+            for item in labels:  # Iterate over labels and collect all indices
+                info = self[element+'.'+item.split('.')[-1]]
+                xnor = xnor + sp.int8(info)
+            ind = (nor > 1)
+        else:
+            raise Exception('Unsupported mode: '+mode)
         # Extract indices from boolean mask
         ind = sp.where(ind)[0]
         ind = ind.astype(dtype=int)
         return ind
 
-    def pores(self, labels='all', mode='union'):
+    def pores(self, labels='all', mode='or', asmask=False):
         r"""
         Returns pore indicies where given labels exist, according to the logic
         specified by the mode argument.
@@ -649,35 +660,58 @@ class Base(dict):
         Parameters
         ----------
         labels : string or list of strings
-            The label(s) whose pores locations are requested.  If omitted, all
-            pore inidices are returned. This argument also accepts '*' for
-            wildcard searches.
+            The label(s) whose pores locations are requested.  This argument
+            also accepts '*' for wildcard searches.
 
         mode : string
             Specifies how the query should be performed.  The options are:
 
-            **'union'** : (default) All pores with ANY of the given labels are
+            **'or'** : (default) Pores with *one or more* of the given labels
+            are returned.  This is also known as the 'union' in set theory or
+            'any' in boolean logic. Both keywords are accepted and treated as
+            'or'.
+
+            **'and'** : Pores with *all* of the given labels are returned.
+            This is also known as 'intersection' in set theory and (somtimes)
+            'all' in boolean logic.  Both keywords are accepted and treated as
+            'and'.
+
+            **'xor'** : Pores with *only one* of the given labels are returned.
+            This is known as 'exclusive_or' in set theory, and is an accepted
+            input.
+
+            **'nor'** : Pores with *none* of the given labels are returned.
+            This is equivalent to 'not' in set theory and 'none' in boolean
+            logic.  Both keywords are accepted and treated as 'nor'.
+
+            **'nand'** : Pores with *all but one* of the given labels are
             returned.
 
-            **'intersection'** : Only pore with ALL the given labels are
-            returned. This is equivalent to ``intersection`` which is
-            deprecated.
+            **'xnor'** : Pores with *more than one* of the given labels are
+            returned.
 
-            **'exclusive_or'** : Only pores with exactly ONE of the given
-            labels are returned.
-
-            **'complement'** : Only pores with NONE of the given labels are
-            returned. This is equivalent to ``not_intersection`` which is
-            deprecated.
+        asmask : boolean
+            If ``True`` then a boolean array of length Np is returned with
+            ``True`` values indicating the pores that satisfy the query.
 
         Returns
         -------
-        A Numpy array containing pore indices where the specified label(s)
-        exist.
+        A Numpy array containing pore indices filtered by the logic specified
+        in ``mode``.
 
         See Also
         --------
         throats
+
+        Notes
+        -----
+        Technically, *nand* and *xnor* should also return pores with *none* of
+        the labels but these are not included.  This makes the returned list
+        more useful.
+
+        To perform more complex or compound queries, you can opt to receive
+        the result a a boolean mask (``asmask=True``), the manipulate the
+        arrays manually.
 
         Examples
         --------
@@ -690,6 +724,8 @@ class Base(dict):
         array([ 4,  9, 14, 19, 24])
         """
         ind = self._get_indices(element='pore', labels=labels, mode=mode)
+        if asmask:
+            ind = self.tomask(pores=ind)
         return ind
 
     @property
@@ -699,7 +735,7 @@ class Base(dict):
         """
         return sp.arange(0, self.Np)
 
-    def throats(self, labels='all', mode='union'):
+    def throats(self, labels='all', mode='or', asmask=False):
         r"""
         Returns throat locations where given labels exist, according to the
         logic specified by the mode argument.
@@ -714,22 +750,38 @@ class Base(dict):
         mode : string
             Specifies how the query should be performed.  The options are:
 
-            **'union'** : (default) All throats with ANY of the given labels
-            are returned.
+            **'or'** : (default) Throats with *one or more* of the given labels
+            are returned.  This is also known as the 'union' in set theory or
+            'any' in boolean logic. Both keywords are accepted and treated as
+            'or'.
 
-            **'all'** : Only throats with ALL the given labels are
-            counted.
+            **'and'** : Throats with *all* of the given labels are returned.
+            This is also known as 'intersection' in set theory and (somtimes)
+            'all' in boolean logic.  Both keywords are accepted and treated as
+            'and'.
 
-            **'one'** : Only throats with exactly ONE of the
-            given labels are counted.
+            **'xor'** : Throats with *only one* of the given labels are returned.
+            This is known as 'exclusive_or' in set theory, and is an accepted
+            input.
 
-            **'none'** : Only throats with NONE of the given labels are
+            **'nor'** : Throats with *none* of the given labels are returned.
+            This is equivalent to 'not' in set theory and 'none' in boolean
+            logic.  Both keywords are accepted and treated as 'nor'.
+
+            **'nand'** : Throats with *all but one* of the given labels are
             returned.
+
+            **'xnor'** : Throats with *more than one* of the given labels are
+            returned.
+
+        asmask : boolean
+            If ``True`` then a boolean array of length Nt is returned with
+            ``True`` values indicating the throats that satisfy the query.
 
         Returns
         -------
-        A Numpy array containing the throat indices where the specified
-        label(s) exist.
+        A Numpy array containing throat indices filtered by the logic specified
+        in ``mode``.
 
         See Also
         --------
@@ -745,6 +797,8 @@ class Base(dict):
 
         """
         ind = self._get_indices(element='throat', labels=labels, mode=mode)
+        if asmask:
+            ind = self.tomask(throats=ind)
         return ind
 
     @property
