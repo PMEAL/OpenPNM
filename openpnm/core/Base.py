@@ -481,91 +481,89 @@ class Base(dict):
     def _get_labels(self, element, locations, mode):
         r"""
         This is the actual label getter method, but it should not be called
-        directly.  Wrapper methods have been created, use ``labels``.
+        directly.  Use ``labels`` instead.
         """
         # Parse inputs
         locations = self._parse_indices(locations)
-        allowed = ['none', 'union', 'intersection', 'complement', 'not',
-                   'count', 'mask', 'difference']
-        mode = self._parse_mode(mode=mode, allowed=allowed, single=True)
         element = self._parse_element(element=element)
         # Collect list of all pore OR throat labels
         labels = self.keys(mode='labels', element=element)
         labels.sort()
         labels = sp.array(labels)  # Convert to ND-array for following checks
-        arr = sp.zeros((sp.shape(locations)[0], len(labels)), dtype=bool)
-        col = 0
-        for item in labels:
-            arr[:, col] = self[item][locations]
-            col = col + 1
-        if mode in ['count']:
-            return sp.sum(arr, axis=1)
-        if mode in ['union']:
-            temp = labels[sp.sum(arr, axis=0) > 0]
-            temp.tolist()
-            return PrintableList(temp)
-        if mode in ['intersection']:
-            temp = labels[sp.sum(arr, axis=0) == sp.shape(locations, )[0]]
-            temp.tolist()
-            return PrintableList(temp)
-        if mode in ['not', 'complement', 'difference']:
-            temp = labels[sp.sum(arr, axis=0) != sp.shape(locations, )[0]]
-            temp.tolist()
-            return PrintableList(temp)
-        if mode in ['mask']:
-            return arr
-        if mode in ['none']:
-            temp = sp.ndarray((sp.shape(locations, )[0], ), dtype=object)
-            for i in sp.arange(0, sp.shape(locations, )[0]):
-                temp[i] = list(labels[arr[i, :]])
-            return temp
+        # Make an 2D array with locations in rows and labels in cols
+        arr = sp.vstack([self[item][locations] for item in labels]).T
+        num_hits = sp.sum(arr, axis=0)  # Number of locations with each label
+        if mode in ['or', 'union', 'any']:
+            temp = labels[num_hits > 0]
+        elif mode in ['and', 'intersection']:
+            temp = labels[num_hits == locations.size]
+        elif mode in ['xor', 'exclusive_or']:
+            temp = labels[num_hits == 1]
+        elif mode in ['nor', 'not', 'none']:
+            temp = labels[num_hits == 0]
+        elif mode in ['nand']:
+            temp = labels[num_hits == (locations.size - 1)]
+        elif mode in ['xnor', 'nxor']:
+            temp = labels[num_hits > 1]
         else:
             logger.error('unrecognized mode:'+str(mode))
+        return PrintableList(temp)
 
     def labels(self, pores=[], throats=[], element=None, mode='union'):
         r"""
-        Returns the labels applied to specified pore or throat locations
+        Returns a list of labels present on the object.
+
+        Additionally, this function can return labels applied to a specified
+        set of pores or throats.
 
         Parameters
         ----------
+        element : string
+            Controls whether pore or throat labels are returned.  If empty then
+            both are returned (default).
+
         pores (or throats) : array_like
             The pores (or throats) whose labels are sought.  If left empty a
             list containing all pore and throat labels is returned.
 
-        element : string
-            Controls whether pore or throat labels are returned.  If empty then
-            both are returned.
-
         mode : string, optional
-            Controls how the query should be performed
+            Controls how the query should be performed.  Only applicable
+            when ``pores`` or ``throats`` are specified:
 
-            **'none'** : An N x Li list of all labels applied to each input
-            pore (or throats). Li can vary betwen pores (and throats)
+            **'or'**: Returns the labels that are assigned to *any* of the
+            given locations.  'union' and 'any' are also accepted.
 
-            **'union'** : A list of labels applied to ANY of the given pores
-            (or throats)
+            **'and'**: Labels that are present on *all* the given locations.
+            'intersection' and 'all' are also accepted.
 
-            **'intersection'** : Label applied to ALL of the given pores
-            (or throats)
+            **'xor'** : Labels that are present on *only one* of the given
+            locations.  'exclusive_or' is also accepted.
 
-            **'complement'** : Labels NOT applied to ALL pores (or throats)
+            **'nor'**: Labels that are *not* present on any of the given
+            locations.  'none' and 'not' are also accepted.
 
-            **'count'** : The number of labels on each pores (or throats)
+            **'nand'**: Labels that are present on *all but one* of the given
+            locations
 
-            **'mask'**: returns an N x Lt array, where each row corresponds to
-            a pore (or throat) location, and each column contains the truth
-            value for the existance of labels as returned from
-            ``labels(element='pores')``.
+            **'xnor'**: Labels that are present on *more than one* of the given
+            locations.  'nxor' is also accepted.
 
         Returns
         -------
-        A list containing the dictionary keys on the object, limited by the
+        A list containing the labels on the object.  If ``pores`` or
+        ``throats`` are given, the results are filtered according to
         specified ``mode``.
 
         See Also
         --------
         props
         keys
+
+        Notes
+        -----
+        Technically, *nand* and *xnor* should also return pores with *none* of
+        the labels but these are not included.  This makes the returned list
+        more useful.
 
         Examples
         --------
@@ -576,26 +574,17 @@ class Base(dict):
         >>> pn.labels(pores=[0, 1, 5, 6], mode='xnor')
         ['pore.all', 'pore.front', 'pore.surface']
         """
-        labels = PrintableList()
         # Short-circuit query when no pores or throats are given
         if (sp.size(pores) == 0) and (sp.size(throats) == 0):
-            element = self._parse_element(element=element)
-            for item in element:
-                a = set([key for key in self.keys()
-                         if key.split('.')[0] == item])
-                b = set([key for key in self.keys()
-                         if self[key].dtype == bool])
-                labels.extend(list(a.intersection(b)))
+            labels = PrintableList(self.keys(element=element, mode='labels'))
         elif (sp.size(pores) > 0) and (sp.size(throats) > 0):
             raise Exception('Cannot perform label query on pores and ' +
                             'throats simultaneously')
         elif sp.size(pores) > 0:
-            labels = self._get_labels(element='pore',
-                                      locations=pores,
+            labels = self._get_labels(element='pore', locations=pores,
                                       mode=mode)
         elif sp.size(throats) > 0:
-            labels = self._get_labels(element='throat',
-                                      locations=throats,
+            labels = self._get_labels(element='throat', locations=throats,
                                       mode=mode)
         return labels
 

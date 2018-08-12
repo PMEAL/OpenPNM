@@ -41,12 +41,12 @@ def find_neighbor_sites(sites, am, flatten=True, include_input=False,
 
         **'xor'** : Only neighbors of one and only one input site.  This is
         useful for finding the sites that are not shared by any of the input
-        sites.
+        sites.  'exclusive_or' is also accepted.
 
         **'xnor'** : Neighbors that are shared by two or more input sites. This
         is equivalent to finding all neighbors with 'or', minus those found
         with 'xor', and is useful for finding neighbors that the inputs have
-        in common.
+        in common.  'nxor' is also accepted.
 
         **'and'** : Only neighbors shared by all input sites.  This is also
         known as 'intersection' in set theory and (somtimes) as 'all' in
@@ -80,7 +80,7 @@ def find_neighbor_sites(sites, am, flatten=True, include_input=False,
         neighbors = sp.unique(neighbors)
     elif logic in ['xor', 'exclusive_or']:
         neighbors = sp.unique(sp.where(sp.bincount(neighbors) == 1)[0])
-    elif logic in ['xnor']:
+    elif logic in ['xnor', 'nxor']:
         neighbors = sp.unique(sp.where(sp.bincount(neighbors) > 1)[0])
     elif logic in ['and', 'all', 'intersection']:
         neighbors = set(neighbors)
@@ -138,12 +138,12 @@ def find_neighbor_bonds(sites, im, flatten=True, logic='or'):
 
         **'xor'** : Only neighbors of one and only one input site.  This is
         useful for finding the sites that are not shared by any of the input
-        sites.
+        sites.  'exclusive_or' is also accepted'.
 
         **'xnor'** : Neighbors that are shared by two or more input sites. This
         is equivalent to finding all neighbors with 'or', minus those found
         with 'xor', and is useful for finding neighbors that the inputs have
-        in common.
+        in common.  'nxor' is also accepted.
 
         **'and'** : Only neighbors shared by all input sites.  This is also
         known as 'intersection' in set theory and (somtimes) as 'all' in
@@ -226,12 +226,12 @@ def find_connected_sites(bonds, am, flatten=True, logic='or'):
 
         **'xor'** : Only neighbors of one and only one input bond.  This is
         useful for finding the sites that are not shared by any of the input
-        bonds.
+        bonds.  'exclusive_or' is also accepted.
 
         **'xnor'** : Neighbors that are shared by two or more input bonds. This
         is equivalent to finding all neighbors with 'or', minus those found
         with 'xor', and is useful for finding neighbors that the inputs have
-        in common.
+        in common.  'nxor' is also accepted.
 
         **'and'** : Only neighbors shared by all input bonds.  This is also
         known as 'intersection' in set theory and (somtimes) as 'all' in
