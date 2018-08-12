@@ -1,8 +1,6 @@
 import openpnm as op
 from openpnm.topotools import reflect_base_points
-import openpnm.models.geometry as gm
 import scipy as sp
-from openpnm.utils import vertexops as vo
 import matplotlib.pyplot as plt
 
 
@@ -60,12 +58,31 @@ class VoronoiTest:
         assert sp.shape(slc) == (101, 101)
 
     def test_plot_pore(self):
-        vo.plot_pore(self.del_geom, pores=self.del_geom.pores())
+        self.del_geom.plot_pore(pores=self.del_geom.pores())
         plt.close('all')
 
     def test_plot_throat(self):
-        vo.plot_throat(self.del_geom, throats=[0])
+        self.del_geom.plot_throat(throats=[0])
         plt.close('all')
+
+    def test_vertex_dimension(self):
+        prj = op.materials.VoronoiFibers(num_points=100,
+                                         fiber_rad=0.2,
+                                         resolution=0.1,
+                                         shape=[3, 2, 1],
+                                         name='test2')
+        net = prj.network
+        del_geom = prj.geometries()['test2_del']
+        B1 = net.pores(['left', 'delaunay'], mode='intersection')
+        B2 = net.pores(['right', 'delaunay'], mode='intersection')
+        assert del_geom.vertex_dimension(B1, B2, 'volume') == 6.0
+        assert del_geom.vertex_dimension(B1, B2, 'area') == 3.0
+        assert del_geom.vertex_dimension(B1, B2, 'length') == 2.0
+        assert del_geom.vertex_dimension(B1, B2, 'area_xy') == 6.0
+        assert del_geom.vertex_dimension(B1, B2, 'area_yz') == 2.0
+        assert del_geom.vertex_dimension(B1, B2, 'area_xz') == 3.0
+        assert del_geom.vertex_dimension(B1, B2, 'minmax') == \
+            [0.0, 3.0, 0.0, 2.0, 0.0, 1.0]
 
 
 if __name__ == '__main__':
