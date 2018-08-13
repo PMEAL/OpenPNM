@@ -1648,7 +1648,7 @@ def merge_pores(network, pores, labels=['merged']):
     Pn = network.find_neighbor_pores(pores=pores,
                                      mode='union',
                                      flatten=True,
-                                     excl_self=True)
+                                     include_input=False)
     xyz = sp.mean(network['pore.coords'][pores], axis=0)
     extend(network, pore_coords=xyz, labels=labels)
     Pnew = network.Ps[-1]
@@ -1800,7 +1800,7 @@ def plot_connections(network, throats=None, fig=None, **kwargs):
     >>> import openpnm as op
     >>> pn = op.network.Cubic(shape=[10, 10, 3])
     >>> pn.add_boundary_pores()
-    >>> Ts = pn.throats('*boundary', mode='complement')
+    >>> Ts = pn.throats('*boundary', mode='nor')
     >>> # Create figure showing boundary throats
     >>> fig = op.topotools.plot_connections(network=pn, throats=Ts)
     >>> Ts = pn.throats('*boundary')

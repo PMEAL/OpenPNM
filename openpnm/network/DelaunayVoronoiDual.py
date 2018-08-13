@@ -164,7 +164,7 @@ class DelaunayVoronoiDual(GenericNetwork):
         Ps = (~self['pore.external'])*self['pore.delaunay']
 
         # Find all pores connected to an internal delaunay pore
-        Ps = self.find_neighbor_pores(pores=Ps, excl_self=False)
+        Ps = self.find_neighbor_pores(pores=Ps, include_input=True)
 
         # Mark them all as keepers
         self['pore.keep'] = False

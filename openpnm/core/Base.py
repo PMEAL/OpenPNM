@@ -1210,7 +1210,7 @@ class Base(dict):
         ind = mask[locations]
         return locations[ind]
 
-    def num_pores(self, labels='all', mode='union'):
+    def num_pores(self, labels='all', mode='or'):
         r"""
         Returns the number of pores of the specified labels
 
@@ -1226,16 +1226,16 @@ class Base(dict):
         mode : string, optional
             Specifies how the count should be performed.  The options are:
 
-            **'union'** : (default) All pores with ANY of the given labels are
+            **'or'** : (default) All pores with ANY of the given labels are
             counted.
 
-            **intersection** : Only pores with ALL the given labels are
+            **and** : Only pores with ALL the given labels are
             counted.
 
-            **'exclusive_or'** : Only pores with exactly one of the given
+            **'xor'** : Only pores with exactly one of the given
             labels are counted.
 
-            **'complement'** : Only pores with none of the given labels are
+            **'nor'** : Only pores with none of the given labels are
             counted.
 
         Returns
@@ -1256,7 +1256,7 @@ class Base(dict):
         125
         >>> pn.num_pores(labels=['top'])
         25
-        >>> pn.num_pores(labels=['top', 'front'], mode='union')
+        >>> pn.num_pores(labels=['top', 'front'], mode='or')
         45
         >>> pn.num_pores(labels=['top', 'front'], mode='xnor')
         5
@@ -1287,16 +1287,16 @@ class Base(dict):
         mode : string, optional
             Specifies how the count should be performed.  The options are:
 
-            **'union'** : (default) All throats with ANY of the given labels
+            **'or'** : (default) All throats with ANY of the given labels
             are counted.
 
-            **'intersection'** : Only throats with ALL the given labels are
+            **'and'** : Only throats with ALL the given labels are
             counted.
 
-            **'exclusive_or'** : Only throats with exactly one of the given
+            **'xor'** : Only throats with exactly one of the given
             labels are counted.
 
-            **'complement'** : Only throats with none of the given labels are
+            **'nor'** : Only throats with none of the given labels are
             counted.
 
         Returns
