@@ -125,7 +125,8 @@ class CubicDual(GenericNetwork):
         # Finally, scale network to requested spacing
         net['pore.coords'] *= spacing
 
-    def add_boundary_pores(self, labels, spacing):
+    def add_boundary_pores(self, labels=['top', 'bottom', 'front', 'back',
+                                         'left', 'right'], spacing=None):
         r"""
         Add boundary pores to the specified faces of the network
 
@@ -151,7 +152,7 @@ class CubicDual(GenericNetwork):
             Ps = self.pores(item)
             coords = sp.absolute(self['pore.coords'][Ps])
             axis = sp.count_nonzero(sp.diff(coords, axis=0), axis=0) == 0
-            offset = sp.array(axis, dtype=int)/2
+            offset = sp.array(axis, dtype=int)*spacing/2
             if sp.amin(coords) == sp.amin(coords[:, sp.where(axis)[0]]):
                 offset = -1*offset
             topotools.add_boundary_pores(network=self, pores=Ps, offset=offset,

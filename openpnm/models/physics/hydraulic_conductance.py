@@ -65,10 +65,14 @@ def hagen_poiseuille(target,
     except KeyError:
         mup = phase.interpolate_data(propname=throat_viscosity)
     # Find g for half of pore 1
-    gp1 = pi*D1/(64*mup[cn[:, 0]]*_sp.arctanh(2*L1/D1))
+    sf1 = 2*L1/D1
+    sf1[sf1 >= 1.0] = 0.999
+    gp1 = pi*D1/(64*mup[cn[:, 0]]*_sp.arctanh(sf1))
     gp1[_sp.isnan(gp1)] = _sp.inf
     # Find g for half of pore 2
-    gp2 = pi*D2/(64*mup[cn[:, 1]]*_sp.arctanh(2*L2/D2))
+    sf2 = 2*L2/D2
+    sf2[sf2 >= 1.0] = 0.999
+    gp2 = pi*D2/(64*mup[cn[:, 1]]*_sp.arctanh(sf2))
     gp2[_sp.isnan(gp2)] = _sp.inf
     # Find g for full throat
     gt = pi*Dt**4/(128*mut[throats]*Lt)
