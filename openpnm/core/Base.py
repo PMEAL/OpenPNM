@@ -571,8 +571,6 @@ class Base(dict):
         >>> pn = op.network.Cubic(shape=[5, 5, 5])
         >>> pn.labels(pores=[0, 1, 5, 6])
         ['pore.all', 'pore.bottom', 'pore.front', 'pore.left', 'pore.surface']
-        >>> pn.labels(pores=[0, 1, 5, 6], mode='xnor')
-        ['pore.all', 'pore.front', 'pore.surface']
         """
         # Short-circuit query when no pores or throats are given
         if (sp.size(pores) == 0) and (sp.size(throats) == 0):

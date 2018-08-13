@@ -75,7 +75,9 @@ def find_neighbor_sites(sites, am, flatten=True, include_input=False,
         am = am.tolil(copy=False)
     n_sites = am.shape[0]
     rows = [am.rows[i] for i in sp.array(sites, ndmin=1)]
-    neighbors = sp.hstack(rows)  # Flatten list to apply logic
+    if len(rows) == 0:
+        return []
+    neighbors = sp.hstack(rows).astype(sp.int64)  # Flatten list to apply logic
     if logic in ['or', 'union', 'any']:
         neighbors = sp.unique(neighbors)
     elif logic in ['xor', 'exclusive_or']:
@@ -85,25 +87,21 @@ def find_neighbor_sites(sites, am, flatten=True, include_input=False,
     elif logic in ['and', 'all', 'intersection']:
         neighbors = set(neighbors)
         [neighbors.intersection_update(i) for i in rows]
-        neighbors = sp.array(list(neighbors), dtype=int, ndmin=1)
+        neighbors = sp.array(list(neighbors), dtype=sp.int64, ndmin=1)
     else:
         raise Exception('Specified logic is not implemented')
-    # Deal with whether or not to include input
+    # Deal with removing inputs or not
     mask = sp.zeros(shape=n_sites, dtype=bool)
+    mask[neighbors] = True
     if not include_input:
-        mask[neighbors] = True
         mask[sites] = False
+    # Finally flatten or not
+    if flatten:
         neighbors = sp.where(mask)[0]
     else:
-        mask[neighbors] = True
-        mask[sites] = True
-        neighbors = sp.where(mask)[0]
-    if (flatten is False):
         if (neighbors.size > 0):
-            mask = sp.zeros(shape=n_sites, dtype=bool)
-            mask[neighbors] = True
             for i in range(len(rows)):
-                vals = sp.array(rows[i])
+                vals = sp.array(rows[i], dtype=sp.int64)
                 rows[i] = vals[mask[vals]]
             neighbors = rows
         else:
@@ -170,8 +168,10 @@ def find_neighbor_bonds(sites, im, flatten=True, logic='or'):
     """
     if im.format != 'lil':
         im = im.tolil(copy=False)
-    rows = [im.rows[i] for i in sp.array(sites, ndmin=1)]
-    neighbors = sp.hstack(rows)
+    rows = [im.rows[i] for i in sp.array(sites, ndmin=1, dtype=sp.int64)]
+    if len(rows) == 0:
+        return []
+    neighbors = sp.hstack(rows).astype(sp.int64)
     n_bonds = int(im.nnz/2)
     if logic in ['or', 'union', 'any']:
         neighbors = sp.unique(neighbors)
@@ -190,11 +190,11 @@ def find_neighbor_bonds(sites, im, flatten=True, logic='or'):
             mask = sp.zeros(shape=n_bonds, dtype=bool)
             mask[neighbors] = True
             for i in range(len(rows)):
-                vals = sp.array(rows[i])
+                vals = sp.array(rows[i], dtype=sp.int64)
                 rows[i] = vals[mask[vals]]
             neighbors = rows
         else:
-            neighbors = [sp.array([], dtype=int) for i in range(len(sites))]
+            neighbors = [sp.array([], dtype=sp.int64) for i in range(len(sites))]
     return neighbors
 
 
@@ -253,7 +253,9 @@ def find_connected_sites(bonds, am, flatten=True, logic='or'):
     if am.format != 'coo':
         am = am.tocoo(copy=False)
     bonds = sp.array(bonds, ndmin=1)
-    neighbors = sp.hstack((am.row[bonds], am.col[bonds]))
+    if len(bonds) == 0:
+        return []
+    neighbors = sp.hstack((am.row[bonds], am.col[bonds])).astype(sp.int64)
     if neighbors.size:
         n_sites = sp.amax(neighbors)
     if logic in ['or', 'union', 'any']:
@@ -267,14 +269,14 @@ def find_connected_sites(bonds, am, flatten=True, logic='or'):
         temp = [set(pair) for pair in temp]
         neighbors = temp[0]
         [neighbors.intersection_update(pair) for pair in temp[1:]]
-        neighbors = sp.array(list(neighbors), dtype=int, ndmin=1)
+        neighbors = sp.array(list(neighbors), dtype=sp.int64, ndmin=1)
     else:
         raise Exception('Specified logic is not implemented')
-    if (flatten is False):
+    if flatten is False:
         if neighbors.size:
             mask = sp.zeros(shape=n_sites+1, dtype=bool)
             mask[neighbors] = True
-            temp = sp.hstack((am.row[bonds], am.col[bonds]))
+            temp = sp.hstack((am.row[bonds], am.col[bonds])).astype(sp.int64)
             temp[~mask[temp]] = -1
             inds = sp.where(temp == -1)[0]
             if len(inds):
@@ -283,7 +285,7 @@ def find_connected_sites(bonds, am, flatten=True, logic='or'):
             temp = sp.reshape(a=temp, newshape=[len(bonds), 2], order='F')
             neighbors = temp
         else:
-            neighbors = [sp.array([], dtype=int) for i in range(len(bonds))]
+            neighbors = [sp.array([], dtype=sp.int64) for i in range(len(bonds))]
     return neighbors
 
 
@@ -317,6 +319,8 @@ def find_connecting_bonds(sites, am):
     if am.format != 'dok':
         am = am.todok(copy=False)
     sites = sp.array(sites, ndmin=2)
+    if len(sites) == 0:
+        return []
     z = tuple(zip(sites[:, 0], sites[:, 1]))
     neighbors = [am.get(z[i], None) for i in range(len(z))]
     return neighbors

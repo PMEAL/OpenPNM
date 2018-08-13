@@ -485,9 +485,9 @@ class GenericNetwork(Base, ModelsMixin):
         >>> pn = op.network.Cubic(shape=[5, 5, 5])
         >>> pn.find_connected_pores(throats=[0, 1])
         array([[0, 1],
-               [1, 2]])
+               [1, 2]] dtype=int64)
         >>> pn.find_connected_pores(throats=[0, 1], flatten=True)
-        array([0, 1, 2])
+        array([0, 1, 2], dtype=int64)
 
         """
         Ts = self._parse_indices(throats)
@@ -592,18 +592,18 @@ class GenericNetwork(Base, ModelsMixin):
         >>> import openpnm as op
         >>> pn = op.network.Cubic(shape=[5, 5, 5])
         >>> pn.find_neighbor_pores(pores=[0, 2])
-        array([ 1,  3,  5,  7, 25, 27])
+        array([ 1,  3,  5,  7, 25, 27], dtype=int64)
         >>> pn.find_neighbor_pores(pores=[0, 1])
-        array([ 2,  5,  6, 25, 26])
+        array([ 2,  5,  6, 25, 26], dtype=int64)
         >>> pn.find_neighbor_pores(pores=[0, 1], mode='union',
         ...                        include_input=True)
-        array([ 0,  1,  2,  5,  6, 25, 26])
+        array([ 0,  1,  2,  5,  6, 25, 26], dtype=int64))
         >>> pn.find_neighbor_pores(pores=[0, 2], flatten=False)
-        [[1, 5, 25], [1, 3, 7, 27]]
+        [array([ 1,  5, 25], dtype=int64), array([ 1,  3,  7, 27], dtype=int64)]
         >>> pn.find_neighbor_pores(pores=[0, 2], mode='xnor')
-        array([1])
+        array([1], dtype=int64)
         >>> pn.find_neighbor_pores(pores=[0, 2], mode='xor')
-        array([ 3,  5,  7, 25, 27])
+        array([ 3,  5,  7, 25, 27], dtype=int64)
         """
         pores = self._parse_indices(pores)
         if sp.size(pores) == 0:
@@ -671,9 +671,9 @@ class GenericNetwork(Base, ModelsMixin):
         >>> import openpnm as op
         >>> pn = op.network.Cubic(shape=[5, 5, 5])
         >>> pn.find_neighbor_throats(pores=[0, 1])
-        array([  0,   1, 100, 101, 200, 201])
+        array([  0,   1, 100, 101, 200, 201], dtype=int64)
         >>> pn.find_neighbor_throats(pores=[0, 1], flatten=False)
-        [[0, 100, 200], [0, 1, 101, 201]]
+        [array([  0, 100, 200], dtype=int64), array([  0,   1, 101, 201], dtype=int64)]
 
         """
         pores = self._parse_indices(pores)
@@ -784,7 +784,7 @@ class GenericNetwork(Base, ModelsMixin):
 
         include_input : bool
             Controls whether the input pores should be included in the returned
-            list.  The default is ``False`` which means they are not included.
+            list.  The default is ``False``.
 
         flatten : bool
             If true returns a single list of all pores that match the criteria,
@@ -804,11 +804,11 @@ class GenericNetwork(Base, ModelsMixin):
         >>> import openpnm as op
         >>> pn = op.network.Cubic(shape=[3, 3, 3])
         >>> pn.find_nearby_pores(pores=[0, 1], r=1)
-        array([array([1, 3, 9]), array([ 0,  2,  4, 10])], dtype=object)
+        [array([3, 9], dtype=int64), array([ 2,  4, 10], dtype=int64)]
         >>> pn.find_nearby_pores(pores=[0, 1], r=0.5)
-        array([], shape=(2, 0), dtype=int64)
+        [array([], dtype=int64), array([], dtype=int64)]
         >>> pn.find_nearby_pores(pores=[0, 1], r=1, flatten=True)
-        array([ 2,  3,  4,  9, 10])
+        array([ 2,  3,  4,  9, 10], dtype=int64)
         """
         pores = self._parse_indices(pores)
         # Handle an empty array if given
@@ -820,21 +820,28 @@ class GenericNetwork(Base, ModelsMixin):
         kd = sptl.cKDTree(self['pore.coords'])
         kd_pores = sptl.cKDTree(self['pore.coords'][pores])
         # Perform search
-        Pn = kd_pores.query_ball_tree(kd, r=r)
-        # Sort the indices in each list
-        # [Pn[i].sort() for i in range(0, sp.size(pores))]
-        if flatten:  # Convert list of lists to a flat nd-array
-            temp = sp.concatenate((Pn))
-            Pn = sp.unique(temp)
-            if include_input:  # Remove inputs if necessary
-                Pn = Pn[~sp.in1d(Pn, pores)]
-        else:  # Convert list of lists to an nd-array of nd-arrays
-            if include_input:  # Remove inputs if necessary
-                [Pn[i].remove(pores[i]) for i in range(0, sp.size(pores))]
-            temp = [sp.array(Pn[i]) for i in range(0, sp.size(pores))]
-            Pn = sp.array(temp)
-        if Pn.dtype == float:
-            Pn = Pn.astype(sp.int64)
+        Ps_within_r = kd_pores.query_ball_tree(kd, r=r)
+        # Remove self from each list
+        for i in range(len(Ps_within_r)):
+            Ps_within_r[i].remove(pores[i])
+        # Convert to flattened list by default
+        temp = sp.concatenate((Ps_within_r))
+        Pn = sp.unique(temp).astype(sp.int64)
+        # Remove inputs if necessary
+        if include_input is False:
+            Pn = Pn[~sp.in1d(Pn, pores)]
+        # Convert list of lists to a list of nd-arrays
+        if flatten is False:
+            if len(Pn) == 0:  # Deal with no nearby neighbors
+                Pn = [sp.array([], dtype=sp.int64) for i in pores]
+            else:
+                mask = sp.zeros(shape=sp.amax((Pn.max(), pores.max()))+1,
+                                dtype=bool)
+                mask[Pn] = True
+                temp = []
+                for item in Ps_within_r:
+                    temp.append(sp.array(item, dtype=sp.int64)[mask[item]])
+                Pn = temp
         return Pn
 
     def check_network_health(self):

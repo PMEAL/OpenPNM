@@ -248,7 +248,7 @@ class GraphToolsTest:
                                            flatten=False, include_input=True)
         assert len(Ps) == 3
         assert np.all(Ps[0] == [1, 3])
-        assert np.all(Ps[1] == [0, 2, 3])
+        assert np.all(Ps[1] == [3])
         assert np.all(Ps[2] == [1])
 
     def test_find_neighbor_sites_unflattened_and(self):

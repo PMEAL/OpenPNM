@@ -50,26 +50,34 @@ class GenericNetworkTest:
         a = self.net.find_neighbor_pores(pores=[0, 2], mode='exclusive_or')
         assert sp.all(a == [3, 10, 12, 100, 102])
 
-    def test_find_neighbor_pores_numeric_union_incl_self(self):
+    def test_find_neighbor_pores_numeric_union_include_input(self):
         a = self.net.find_neighbor_pores(pores=[0, 2], mode='or',
-                                         exclude_input=False)
-        assert sp.all(a == [0, 1, 2, 3, 10, 12, 100, 102])
+                                         include_input=True)
+        assert sp.all(a == [1, 3, 10, 12, 100, 102])
+        a = self.net.find_neighbor_pores(pores=[0, 1], mode='or',
+                                         include_input=True)
+        assert sp.all(a == [0, 1, 2, 10, 11, 100, 101])
 
-    def test_find_neighbor_pores_numeric_intersection_incl_self(self):
+    def test_find_neighbor_pores_numeric_intersection_include_input(self):
         a = self.net.find_neighbor_pores(pores=[0, 2], mode='and',
-                                         exclude_input=False)
-        assert sp.all(a == [0, 1, 2])
+                                         include_input=True)
+        assert sp.all(a == [1])
+        a = self.net.find_neighbor_pores(pores=[0, 1], mode='and',
+                                         include_input=True)
+        assert sp.all(a == [])
 
-    def test_find_neighbor_pores_numeric_intersection_excl_self(self):
+    def test_find_neighbor_pores_numeric_intersection_exclude_input(self):
         a = self.net.find_neighbor_pores(pores=[0, 2], mode='and',
-                                         exclude_input=True)
+                                         include_input=False)
         assert sp.all(a == [1])
 
-    def test_find_neighbor_pores_numeric_exclusive_or_incl_self(self):
-        a = self.net.find_neighbor_pores(pores=[0, 2],
-                                         mode='exclusive_or',
-                                         exclude_input=False)
-        assert sp.all(a == [0, 2, 3, 10, 12, 100, 102])
+    def test_find_neighbor_pores_numeric_exclusive_or_include_input(self):
+        a = self.net.find_neighbor_pores(pores=[0, 2], mode='exclusive_or',
+                                         include_input=True)
+        assert sp.all(a == [3, 10, 12, 100, 102])
+        a = self.net.find_neighbor_pores(pores=[0, 1], mode='exclusive_or',
+                                         include_input=True)
+        assert sp.all(a == [0, 1, 2, 10, 11, 100, 101])
 
     def test_find_neighbor_throats_empty(self):
         a = self.net.find_neighbor_throats(pores=[])
@@ -124,18 +132,21 @@ class GenericNetworkTest:
         assert isinstance(a, sp.ndarray)
 
     def test_find_nearby_pores_distance_1(self):
-        a = self.net.find_nearby_pores(pores=[0, 1], r=1, exclude_input=True)
+        a = self.net.find_nearby_pores(pores=[0, 1], r=1, flatten=False,
+                                       include_input=True)
         b = self.net.find_neighbor_pores(pores=[0, 1], flatten=False,
-                                         exclude_input=False)
+                                         include_input=True)
         assert sp.all([sp.all(a[i] == b[i]) for i in range(0, len(a))])
 
     def test_find_nearby_pores_distance_2(self):
         a = self.net.find_nearby_pores(pores=[0, 1], r=2)
-        assert sp.all([sp.size(a[i]) for i in [0, 1]] == [10, 14])
+        assert sp.all([sp.size(a[i]) for i in [0, 1]] == [9, 13])
 
     def test_find_nearby_pores_distance_0(self):
-        a = self.net.find_nearby_pores(pores=[0, 1], r=1e-9)
+        a = self.net.find_nearby_pores(pores=[0, 1], r=1e-9, flatten=False)
         assert sp.shape(a) == (2, 0)
+        a = self.net.find_nearby_pores(pores=[0, 1], r=1e-9, flatten=True)
+        assert a.shape == (0,)
 
     def test_find_nearby_pores_distance_1_flattened(self):
         a = self.net.find_nearby_pores(pores=[0, 1], r=1, flatten=True)
@@ -146,9 +157,9 @@ class GenericNetworkTest:
         a = self.net.find_nearby_pores(pores=[0, 1], r=2, flatten=True)
         assert sp.size(a) == 15
 
-    def test_find_nearby_pores_distance_2_flattened_inclself(self):
+    def test_find_nearby_pores_distance_2_flattened_include_input(self):
         a = self.net.find_nearby_pores(pores=[0, 1], r=2,
-                                       flatten=True, exclude_input=False)
+                                       flatten=True, include_input=True)
         assert sp.size(a) == 17
         assert sp.all(sp.in1d([0, 1], a))
 
