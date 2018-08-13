@@ -483,11 +483,13 @@ class GenericNetwork(Base, ModelsMixin):
         --------
         >>> import openpnm as op
         >>> pn = op.network.Cubic(shape=[5, 5, 5])
-        >>> pn.find_connected_pores(throats=[0, 1])
-        array([[0, 1],
-               [1, 2]] dtype=int64)
-        >>> pn.find_connected_pores(throats=[0, 1], flatten=True)
-        array([0, 1, 2], dtype=int64)
+        >>> Ps = pn.find_connected_pores(throats=[0, 1])
+        >>> print(Ps)
+        [[0 1]
+         [1 2]]
+        >>> Ps = pn.find_connected_pores(throats=[0, 1], flatten=True)
+        >>> print(Ps)
+        [0 1 2]
 
         """
         Ts = self._parse_indices(throats)
@@ -591,19 +593,24 @@ class GenericNetwork(Base, ModelsMixin):
         --------
         >>> import openpnm as op
         >>> pn = op.network.Cubic(shape=[5, 5, 5])
-        >>> pn.find_neighbor_pores(pores=[0, 2])
-        array([ 1,  3,  5,  7, 25, 27], dtype=int64)
-        >>> pn.find_neighbor_pores(pores=[0, 1])
-        array([ 2,  5,  6, 25, 26], dtype=int64)
-        >>> pn.find_neighbor_pores(pores=[0, 1], mode='union',
-        ...                        include_input=True)
-        array([ 0,  1,  2,  5,  6, 25, 26], dtype=int64))
-        >>> pn.find_neighbor_pores(pores=[0, 2], flatten=False)
+        >>> Ps = pn.find_neighbor_pores(pores=[0, 2])
+        >>> print(Ps)
+        [ 1  3  5  7 25 27]
+        >>> Ps = pn.find_neighbor_pores(pores=[0, 1])
+        >>> print(Ps)
+        [ 2  5  6 25 26]
+        >>> Ps = pn.find_neighbor_pores(pores=[0, 1], mode='union',
+        ...                             include_input=True)
+        [ 0  1  2  5  6 25 26]
+        >>> Ps = pn.find_neighbor_pores(pores=[0, 2], flatten=False)
+        >>> print(Ps)
         [array([ 1,  5, 25], dtype=int64), array([ 1,  3,  7, 27], dtype=int64)]
-        >>> pn.find_neighbor_pores(pores=[0, 2], mode='xnor')
-        array([1], dtype=int64)
-        >>> pn.find_neighbor_pores(pores=[0, 2], mode='xor')
-        array([ 3,  5,  7, 25, 27], dtype=int64)
+        >>> Ps = pn.find_neighbor_pores(pores=[0, 2], mode='xnor')
+        >>> print(Ps)
+        [1]
+        >>> Ps = pn.find_neighbor_pores(pores=[0, 2], mode='xor')
+        >>> print(Ps)
+        [ 3  5  7 25 27]
         """
         pores = self._parse_indices(pores)
         if sp.size(pores) == 0:
@@ -670,9 +677,11 @@ class GenericNetwork(Base, ModelsMixin):
         --------
         >>> import openpnm as op
         >>> pn = op.network.Cubic(shape=[5, 5, 5])
-        >>> pn.find_neighbor_throats(pores=[0, 1])
-        array([  0,   1, 100, 101, 200, 201], dtype=int64)
-        >>> pn.find_neighbor_throats(pores=[0, 1], flatten=False)
+        >>> Ts = pn.find_neighbor_throats(pores=[0, 1])
+        >>> print(Ts)
+        [  0   1 100 101 200 201]
+        >>> Ts = pn.find_neighbor_throats(pores=[0, 1], flatten=False)
+        >>> print(Ts)
         [array([  0, 100, 200], dtype=int64), array([  0,   1, 101, 201], dtype=int64)]
 
         """
@@ -752,11 +761,14 @@ class GenericNetwork(Base, ModelsMixin):
         --------
         >>> import openpnm as op
         >>> pn = op.network.Cubic(shape=[5, 5, 5])
-        >>> pn.num_neighbors(pores=[0, 1], flatten=False)
-        array([3, 4])
-        >>> pn.num_neighbors(pores=[0, 2], flatten=True)
+        >>> Np = pn.num_neighbors(pores=[0, 1], flatten=False)
+        >>> print(Np)
+        [3 4]
+        >>> Np = pn.num_neighbors(pores=[0, 2], flatten=True)
+        >>> print(Np)
         6
-        >>> pn.num_neighbors(pores=[0, 2], mode='and', flatten=True)
+        >>> Np = pn.num_neighbors(pores=[0, 2], mode='and', flatten=True)
+        >>> print(Np)
         1
         """
         pores = self._parse_indices(pores)
@@ -803,12 +815,15 @@ class GenericNetwork(Base, ModelsMixin):
         --------
         >>> import openpnm as op
         >>> pn = op.network.Cubic(shape=[3, 3, 3])
-        >>> pn.find_nearby_pores(pores=[0, 1], r=1)
+        >>> Ps = pn.find_nearby_pores(pores=[0, 1], r=1)
+        >>> print(Ps)
         [array([3, 9], dtype=int64), array([ 2,  4, 10], dtype=int64)]
-        >>> pn.find_nearby_pores(pores=[0, 1], r=0.5)
+        >>> Ps = pn.find_nearby_pores(pores=[0, 1], r=0.5)
+        >>> print(Ps)
         [array([], dtype=int64), array([], dtype=int64)]
-        >>> pn.find_nearby_pores(pores=[0, 1], r=1, flatten=True)
-        array([ 2,  3,  4,  9, 10], dtype=int64)
+        >>> Ps = pn.find_nearby_pores(pores=[0, 1], r=1, flatten=True)
+        >>> print(Ps)
+        [ 2  3  4  9 10]
         """
         pores = self._parse_indices(pores)
         # Handle an empty array if given
