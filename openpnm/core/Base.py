@@ -506,7 +506,7 @@ class Base(dict):
         elif mode in ['xnor', 'nxor']:
             temp = labels[num_hits > 1]
         else:
-            logger.error('unrecognized mode:'+str(mode))
+            raise Exception('Unrecognized mode:'+str(mode))
         return PrintableList(temp)
 
     def labels(self, pores=[], throats=[], element=None, mode='union'):
@@ -628,7 +628,7 @@ class Base(dict):
                 info = self[element+'.'+item.split('.')[-1]]
                 nand = nand + sp.int8(info)
             ind = (nand == (len(labels) - 1))
-        elif mode in ['xnor']:
+        elif mode in ['xnor', 'nxor']:
             xnor = sp.zeros_like(self[element+'.all'], dtype=int)
             for item in labels:  # Iterate over labels and collect all indices
                 info = self[element+'.'+item.split('.')[-1]]
@@ -1151,17 +1151,24 @@ class Base(dict):
 
             Controls how the filter is applied.  Options include:
 
-            **'union'** : (default) All locations with ANY of the given labels
-            are kept.
+            **'or'**: (default) Returns a list of all the given locations
+            where *any* of the given labels exist.  This is equivalent to
+            'union' and 'any' which are also accepted.
 
-            **'intersection'** : Only locations with ALL the given labels are
-            kept.
+            **'and'**: Only locations with *all* the given labels are kept.
+            This is equivalent to 'intersection' and 'all', which are also
+            accepted.
 
-            **'exlusive_or'** : Only locations with exactly one of the
-            given labels are kept.
+            **'xor'**: Only locations with exactly *one* of the given labels
+            are kept.  'exclusive_or' is also accepted.
 
-            **'complement'** : Only locations with none of the given labels
-            are kept.
+            **'nor'**: Only locations with *none* of the given labels are
+            kept.  This is equivalent to 'none' and 'not' which are also
+            accepted.
+
+            **'xnor'**: Not implemented yet
+
+            **'nand'**: Not implemented yet
 
         See Also
         --------
@@ -1180,16 +1187,14 @@ class Base(dict):
         >>> pn = op.network.Cubic(shape=[5, 5, 5])
         >>> pn.filter_by_label(pores=[0, 1, 5, 6], labels='left')
         array([0, 1])
-        >>> Ps = pn.pores(['top', 'bottom', 'front'], mode='union')
+        >>> Ps = pn.pores(['top', 'bottom', 'front'], mode='or')
         >>> pn.filter_by_label(pores=Ps, labels=['top', 'front'],
-        ...                    mode='intersection')
+        ...                    mode='and')
         array([ 4,  9, 14, 19, 24])
         """
-        allowed = ['union', 'intersection', 'exclusive_or', 'complement']
-        mode = self._parse_mode(mode=mode, allowed=allowed, single=True)
         # Convert inputs to locations and element
         if (sp.size(throats) > 0) and (sp.size(pores) > 0):
-            raise Exception('Can only filter either pores OR labels per call')
+            raise Exception('Can only filter either pores OR labels')
         if sp.size(pores) > 0:
             element = 'pore'
             locations = self._parse_indices(pores)
@@ -1198,7 +1203,6 @@ class Base(dict):
             locations = self._parse_indices(throats)
         else:
             return(sp.array([], dtype=int))
-        # Do it
         labels = self._parse_labels(labels=labels, element=element)
         labels = [element+'.'+item.split('.')[-1] for item in labels]
         all_locs = self._get_indices(element=element, labels=labels, mode=mode)
