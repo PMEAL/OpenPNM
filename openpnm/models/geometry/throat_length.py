@@ -164,16 +164,14 @@ def circular_pores(target, pore_diameter='pore.diameter',
 
 
 def boundary(target, pore_diameter='pore.diameter',
-             throat_length='throat.length',
-             min_value=1e-12):
+             throat_length='throat.length'):
     r"""
-    Take the pore radius - half throat length for internal pores and
-    use a minimum value for the zero diameter elements
+    Take the pore radius for the bulk pore, the throat length for the throat
+    and use a minimum value for the boundary pores
     """
     net = target.project.network
     throats = net.map_throats(throats=target.Ts, origin=target)
     conns = net['throat.conns'][throats]
     tl = target[throat_length]
-    p_lens = (net[pore_diameter][conns] - _sp.vstack((tl, tl)).T)/2
-    p_lens[p_lens <= 0.0] = min_value
+    p_lens = 0.999*net[pore_diameter][conns]/2
     return {'pore1': p_lens[:, 0], 'throat': tl, 'pore2': p_lens[:, 1]}
