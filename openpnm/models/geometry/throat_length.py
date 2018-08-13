@@ -30,7 +30,8 @@ def ctc(target, pore_diameter='pore.diameter'):
 
 def straight(target, pore_diameter='pore.diameter', L_negative=1e-12):
     r"""
-    Calculate throat length
+    Calculate throat length assuming no overlap between the throat and adjacent
+    pores.
 
     Parameters
     ----------
