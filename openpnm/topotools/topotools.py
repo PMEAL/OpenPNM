@@ -1578,7 +1578,7 @@ def subdivide(network, pores, shape, labels=[]):
                 # This might happen to the edge of the small network
                 if sp.size(new_neighbors) == 0:
                     labels = network.labels(pores=nearest_neighbor,
-                                            mode='intersection')
+                                            mode='xnor')
                     common_label = [l for l in labels if 'surface_' in l]
                     new_neighbors = network.pores(common_label)
             elif neighbor in Pn_new_net:

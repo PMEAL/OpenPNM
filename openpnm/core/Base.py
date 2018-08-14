@@ -625,7 +625,7 @@ class Base(dict):
             for item in labels:  # Iterate over labels and collect all indices
                 info = self[element+'.'+item.split('.')[-1]]
                 nand = nand + sp.int8(info)
-            ind = (nand == (len(labels) - 1))
+            ind = (nand < len(labels)) * (nand > 0)
         elif mode in ['xnor', 'nxor']:
             xnor = sp.zeros_like(self[element+'.all'], dtype=int)
             for item in labels:  # Iterate over labels and collect all indices
@@ -671,7 +671,7 @@ class Base(dict):
             This is equivalent to 'not' in set theory and 'none' in boolean
             logic.  Both keywords are accepted and treated as 'nor'.
 
-            **'nand'** : Pores with *all but one* of the given labels are
+            **'nand'** : Pores with *not all* of the given labels are
             returned.
 
             **'xnor'** : Pores with *more than one* of the given labels are
@@ -755,7 +755,7 @@ class Base(dict):
             This is equivalent to 'not' in set theory and 'none' in boolean
             logic.  Both keywords are accepted and treated as 'nor'.
 
-            **'nand'** : Throats with *all but one* of the given labels are
+            **'nand'** : Pores with *not all* of the given labels are
             returned.
 
             **'xnor'** : Throats with *more than one* of the given labels are
