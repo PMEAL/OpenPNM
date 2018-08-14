@@ -182,6 +182,44 @@ def circular_pores(target, pore_diameter='pore.diameter',
                            L_negative=L_negative)
 
 
+def conduit_lengths(target, throat_centroid='throat.centroid',
+                    throat_length='throat.length'):
+    r"""
+    Calculate conduit lengths. A conduit is basically a pore-throat-pore
+    assembly. This method returns a dictionary with the keys 'pore1', 'throat',
+    and 'pore2'.
+
+    Parameters
+    ----------
+    target : OpenPNM Object
+        The object which this model is associated with. This controls the
+        length of the calculated array, and also provides access to other
+        necessary properties.
+
+    throat_centroid : string
+        Dictionary key of the throat centroid values
+
+    throat_diameter : string
+        Dictionary key of the throat length values
+
+    """
+    network = target.project.network
+    throats = network.map_throats(throats=target.Ts, origin=target)
+    cn = network['throat.conns'][throats]
+    XYZt = network[throat_centroid][throats]
+    XYZp = network['pore.coords']
+    L1 = _sp.linalg.norm(XYZp[cn[:, 0]] - XYZt, axis=1)
+    print(L1.mean())
+    L2 = _sp.linalg.norm(XYZp[cn[:, 1]] - XYZt, axis=1)
+    print(L2.mean())
+    print((L1+L2).mean())
+    Lt = network[throat_length][throats]
+    print(Lt)
+    L1 = L1 - Lt/2
+    L2 = L2 - Lt/2
+    return {'pore1': L1, 'throat': Lt, 'pore2': L2}
+
+
 def boundary(target, pore_diameter='pore.diameter',
              throat_length='throat.length'):
     r"""
