@@ -822,7 +822,7 @@ class GenericNetwork(Base, ModelsMixin):
         [array([3, 9]), array([ 2,  4, 10])]
         >>> Ps = pn.find_nearby_pores(pores=[0, 1], r=0.5)
         >>> print(Ps)
-        [array([]), array([])]
+        [array([], dtype=int64), array([], dtype=int64)]
         >>> Ps = pn.find_nearby_pores(pores=[0, 1], r=1, flatten=True)
         >>> print(Ps)
         [ 2  3  4  9 10]
