@@ -195,7 +195,7 @@ class DelaunayVoronoiDual(GenericNetwork):
         topotools.trim(network=self, throats=Ts)
 
         # Move Delaunay boundary pores to centroid of Voronoi facet
-        Ps = self.pores(labels=['surface', 'delaunay'], mode='xnor')
+        Ps = self.pores(labels=['boundary', 'delaunay'], mode='xnor')
         for P in Ps:
             Ns = self.find_neighbor_pores(pores=P)
             Ns = Ps = self['pore.voronoi']*self.tomask(pores=Ns)
