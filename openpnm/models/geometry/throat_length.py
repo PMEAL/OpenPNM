@@ -45,7 +45,7 @@ def straight(target, pore_diameter='pore.diameter', L_negative=1e-12):
 
     L_negative : float
         The default throat length to use when negative lengths are found.  The
-        default is 1 nm.  To accept negative throat lengths, set this value to
+        default is 1 pm.  To accept negative throat lengths, set this value to
         ``None``.
     """
     network = target.project.network
@@ -66,8 +66,7 @@ def straight(target, pore_diameter='pore.diameter', L_negative=1e-12):
 def spherical_pores(target, pore_diameter='pore.diameter',
                     throat_diameter='throat.diameter', L_negative=1e-12):
     r"""
-    Calculate conduit lengths, i.e. pore 1 length, throat length,
-    and pore 2 length, assuming that pores are spheres.
+    Calculate throat length, asusming pores are perfect spheres.
 
     Parameters
     ----------
