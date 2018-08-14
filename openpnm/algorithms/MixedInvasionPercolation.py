@@ -882,7 +882,144 @@ class MixedInvasionPercolation(GenericAlgorithm):
             max_pPc = 0.0
         return np.max([max_tPc, max_pPc])
 
+    def _my_dot(self, a, b):
+        return a[:, 0]*b[:, 0] + a[:, 1]*b[:, 1] + a[:, 2]*b[:, 2]
+
+    def trilaterate_v(self, P1, P2, P3, r1, r2, r3):
+        r'''
+        Find whether 3 spheres intersect
+        '''
+        temp1 = P2-P1
+        e_x = temp1/np.linalg.norm(temp1, axis=1)[:, np.newaxis]
+        temp2 = P3-P1
+        i = self._my_dot(e_x, temp2)[:, np.newaxis]
+        temp3 = temp2 - i*e_x
+        e_y = temp3/np.linalg.norm(temp3, axis=1)[:, np.newaxis]
+        d = np.linalg.norm(P2-P1, axis=1)[:, np.newaxis]
+        j = self._my_dot(e_y, temp2)[:, np.newaxis]
+        x = (r1*r1 - r2*r2 + d*d) / (2*d)
+        y = (r1*r1 - r3*r3 - 2*i*x + (i*i) + (j*j)) / (2*j)
+        temp4 = r1*r1 - x*x - y*y
+        return temp4 >= 0
+
     def setup_coop_filling(self, inv_points=None):
+        r"""
+        Evaluate the cooperative pore filling condition that the combined
+        filling angle in next neighbor throats cannot exceed the geometric
+        angle between their throat planes.
+        This is used when the invading fluid has access to multiple throats
+        connected to a pore
+        """
+        net = self.project.network
+        phase = self.project.find_phase(self)
+        all_phys = self.project.find_physics(phase=phase)
+        if inv_points is None:
+            inv_points = np.arange(0, 1.01, .01)*self._max_pressure()
+        # Throat-Throat cooperative filling pressure
+        self.tt_Pc = np.ndarray([self.Nt, self.Nt], dtype=float)
+        self.tt_Pc.fill(sp.nan)
+        start = time.time()
+        cpf = self.settings['cooperative_pore_filling']
+        tfill_angle = cpf + '.alpha'
+        tmen_rad = cpf + '.radius'
+        tmen_cen = cpf + '.center'
+        try:
+            # The following properties will all be there for Voronoi
+            p_centroids = net['pore.centroid']
+            t_centroids = net['throat.centroid']
+            p_diam = net['pore.indiameter']
+            t_norms = net['throat.normal']
+        except:
+            # Chances are this isn't Voronoi so calculate or replace all
+            p_centroids = net['pore.coords']
+            temp = net['pore.coords'][net['throat.conns']]
+            t_centroids = np.mean(temp, axis=1)
+            p_diam = net['pore.diameter']
+            t_norms = net['throat.normal']
+
+        # Collect all throat pairs sharing a pore
+        neighbor_Ts = net.find_neighbor_throats(pores=net.pores(),
+                                                flatten=False)
+        T1 = []
+        T2 = []
+        P = []
+        for p, t_list in enumerate(neighbor_Ts):
+            for tind, t1 in enumerate(t_list):
+                for t2 in t_list[tind+1:]:
+                    T1.append(t1)
+                    T2.append(t2)
+                    P.append(p)
+        T1 = np.asarray(T1)
+        T2 = np.asarray(T2)
+        P = np.asarray(P)
+        p_cen = p_centroids[P]
+        p_rad = p_diam[P]/2
+        # Make sure throat normals are unit vector
+        unit = np.linalg.norm(t_norms, axis=1)
+        t_norms /= np.vstack((unit, unit, unit)).T
+        throat_centres_T1 = t_centroids[T1]
+        throat_normals_T1 = t_norms[T1]
+        throat_centres_T2 = t_centroids[T2]
+        throat_normals_T2 = t_norms[T2]
+        v_T1 = p_cen - throat_centres_T1
+        sign_T1 = np.sign(np.sum(v_T1*throat_normals_T1, axis=1))
+        v_T2 = p_cen - throat_centres_T2
+        sign_T2 = np.sign(np.sum(v_T2*throat_normals_T2, axis=1))
+        for Pc in inv_points:
+            # regenerate model with new target Pc
+            for phys in all_phys:
+                phys.models[cpf]['target_Pc'] = Pc
+                phys.regenerate_models(propnames=cpf)
+
+            cen_T1 = phase[tmen_cen][T1]
+            c3_T1 = np.vstack((cen_T1*sign_T1,
+                               cen_T1*sign_T1,
+                               cen_T1*sign_T1)).T
+            c1 = throat_centres_T1 + c3_T1*throat_normals_T1
+
+            cen_T2 = phase[tmen_cen][T2]
+            c3_T2 = np.vstack((cen_T2*sign_T2,
+                               cen_T2*sign_T2,
+                               cen_T2*sign_T2)).T
+            c2 = throat_centres_T2 + c3_T2*throat_normals_T2
+
+            c2c = (c1-c2)
+            dist = np.linalg.norm(c2c, axis=1)
+            r1 = phase[tmen_rad][T1]
+            r2 = phase[tmen_rad][T2]
+            # nans may exist if pressure is outside the range
+            # set these to zero to be ignored by next step without
+            # causing RuntimeWarning
+            r1[sp.isnan(r1)] = 0
+            r2[sp.isnan(r2)] = 0
+            check_pos = np.logical_and(r1 > 0, r2 > 0)
+            # simple initial distance check on sphere rads
+            check_rads = (r1+r2) >= dist
+            # check whether the filling angle is ok at this Pc
+            check_alpha_T1 = ~sp.isnan(phase[tfill_angle][T1])
+            check_alpha_T2 = ~sp.isnan(phase[tfill_angle][T2])
+            check_alpha = check_alpha_T1*check_alpha_T2
+            # check whether this throat pair already has a coop value
+            check_nans = sp.isnan(self.tt_Pc[T1, T2])
+            mask = check_pos*check_alpha*check_nans*check_rads
+            # if all checks pass
+            if np.any(mask):
+                # Check if intersecting circle lies within pore
+                inter = self.trilaterate_v(P1=c1[mask],
+                                           P2=c2[mask],
+                                           P3=p_cen[mask],
+                                           r1=r1[mask][:, np.newaxis],
+                                           r2=r2[mask][:, np.newaxis],
+                                           r3=p_rad[mask][:, np.newaxis])
+                inter = inter.flatten()
+                if np.any(inter):
+                    self.tt_Pc[T1[mask][inter], T2[mask][inter]] = Pc
+                    self.tt_Pc[T2[mask][inter], T1[mask][inter]] = Pc
+
+        logger.info("Coop filling finished in " +
+                    str(np.around(time.time()-start, 2)) + " s")
+
+    def setup_coop_filling_old(self, inv_points=None):
         r"""
         Evaluate the cooperative pore filling condition that the combined
         filling angle in next neighbor throats cannot exceed the geometric
