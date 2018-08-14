@@ -1,14 +1,13 @@
-from numpy import pi as _pi
-import numpy as _np
+from scipy import pi as _pi
+import scipy as _sp
 
 
-def spherical_pores(target, throat_area='throat.area',
-                    pore_diameter='pore.diameter',
-                    throat_conduit_lengths='throat.conduit_lengths'):
+def flow_spherical_pores(target, pore_diameter='throat.area',
+                         pore_diameter='pore.diameter',
+                         conduit_lengths='throat.conduit_lengths'):
     r"""
-    Calculate equivalent cross-sectional area for a conduit consisting of two
-    spherical pores and a constant cross-section throat. This area can be later
-    used to calculate hydraulic or diffusive conductance of the conduit.
+    Calculate conduit shape factors for hydraulic conductance to account for
+    conduit shape and variable cross-section area.
 
     Parameters
     ----------
