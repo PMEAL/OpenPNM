@@ -1,16 +1,16 @@
-import scipy as _sp
-from scipy import pi
+from .misc import generic_conductance
 
 
 def hagen_poiseuille(target,
                      pore_viscosity='pore.viscosity',
                      throat_viscosity='throat.viscosity',
-                     pore_diameter='pore.diameter',
-                     throat_diameter='throat.diameter',
-                     throat_conduit_lengths='throat.conduit_lengths'):
+                     pore_area='pore.area',
+                     throat_area='throat.area',
+                     conduit_lengths='throat.conduit_lengths',
+                     conduit_shape_factors='throat.flow_shape_factor'):
     r"""
     Calculate the hydraulic conductance of conduits in network, where a
-    conduit is ( 1/2 pore - full throat - 1/2 pore ) based on the areas
+    conduit is ( 1/2 pore - full throat - 1/2 pore ). See notes section.
 
     Parameters
     ----------
@@ -25,11 +25,14 @@ def hagen_poiseuille(target,
     throat_viscosity : string
         Dictionary key of the throat viscosity values
 
-    throat_equivalent_area : string
-        Dictionary key of the throat equivalent area values
+    pore_area : string
+        Dictionary key of the pore area values
 
-    throat_conduit_lengths : string
-        Dictionary key of the throat conduit lengths
+    throat_area : string
+        Dictionary key of the throat area values
+
+    conduit_shape_factors : string
+        Dictionary key of the conduit FLOW shape factor values
 
     Notes
     -----
@@ -40,41 +43,14 @@ def hagen_poiseuille(target,
     network then extracts the values for the appropriate throats at the end.
 
     (3) This function assumes cylindrical throats with constant cross-section
-    area
+    area. Corrections for different shapes and variable cross-section area can
+    be imposed by passing the proper flow_shape_factor argument.
 
     """
-    network = target.project.network
-    throats = network.map_throats(throats=target.Ts, origin=target)
-    phase = target.project.find_phase(target)
-    cn = network['throat.conns'][throats]
-    # Getting equivalent areas
-    D1 = network[pore_diameter][cn[:, 0]]
-    Dt = network[throat_diameter][throats]
-    D2 = network[pore_diameter][cn[:, 1]]
-    # Getting conduit lengths
-    L1 = network[throat_conduit_lengths+'.pore1'][throats]
-    Lt = network[throat_conduit_lengths+'.throat'][throats]
-    L2 = network[throat_conduit_lengths+'.pore2'][throats]
-    # Interpolate pore phase property values to throats
-    try:
-        mut = phase[throat_viscosity]
-    except KeyError:
-        mut = phase.interpolate_data(propname=pore_viscosity)
-    try:
-        mup = phase[pore_viscosity]
-    except KeyError:
-        mup = phase.interpolate_data(propname=throat_viscosity)
-    # Find g for half of pore 1
-    sf1 = 2*L1/D1
-    sf1[sf1 >= 1.0] = 0.999
-    gp1 = pi*D1/(64*mup[cn[:, 0]]*_sp.arctanh(sf1))
-    gp1[_sp.isnan(gp1)] = _sp.inf
-    # Find g for half of pore 2
-    sf2 = 2*L2/D2
-    sf2[sf2 >= 1.0] = 0.999
-    gp2 = pi*D2/(64*mup[cn[:, 1]]*_sp.arctanh(sf2))
-    gp2[_sp.isnan(gp2)] = _sp.inf
-    # Find g for full throat
-    gt = pi*Dt**4/(128*mut[throats]*Lt)
-    gt[_sp.isnan(gt)] = _sp.inf
-    return (1/gt + 1/gp1 + 1/gp2)**(-1)
+    return generic_conductance(target=target, mechanism='flow',
+                               pore_diffusivity=pore_viscosity,
+                               throat_diffusivity=throat_viscosity,
+                               pore_area=pore_area,
+                               throat_area=throat_area,
+                               conduit_lengths=conduit_lengths,
+                               conduit_shape_factors=conduit_shape_factors)
