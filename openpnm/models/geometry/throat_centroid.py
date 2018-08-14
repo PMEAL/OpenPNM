@@ -1,4 +1,5 @@
 import scipy as _sp
+from .throat_length import ctc
 
 
 def straight(target, pore_diameter='pore.diameter',
@@ -34,7 +35,7 @@ def straight(target, pore_diameter='pore.diameter',
     throats = network.map_throats(throats=target.Ts, origin=target)
     xyz = network['pore.coords']
     cn = network['throat.conns'][throats]
-    L = _sp.linalg.norm(xyz[cn[:, 0]] - xyz[cn[:, 1]])
+    L = ctc(target=target, pore_diameter=pore_diameter)
     unit_vec = (xyz[cn[:, 1]] - xyz[cn[:, 0]]) / L
     Lt = network[throat_length][throats]
     D1 = network[pore_diameter][cn[:, 0]]
@@ -69,8 +70,8 @@ def spherical_pores(target, pore_diameter='pore.diameter',
     throats = network.map_throats(throats=target.Ts, origin=target)
     xyz = network['pore.coords']
     cn = network['throat.conns'][throats]
-    L = _sp.linalg.norm(xyz[cn[:, 0]] - xyz[cn[:, 1]])
-    unit_vec = (xyz[cn[:, 1]] - xyz[cn[:, 0]]) / L
+    L = ctc(target=target, pore_diameter=pore_diameter)
+    unit_vec = (xyz[cn[:, 1]] - xyz[cn[:, 0]]) / L.reshape((len(L), 1))
     Lt = network[throat_length][throats]
     Dt = network[throat_diameter][throats]
     D1 = network[pore_diameter][cn[:, 0]]
