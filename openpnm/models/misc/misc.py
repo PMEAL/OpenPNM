@@ -367,7 +367,7 @@ def from_neighbor_throats(target, throat_prop='throat.seed', mode='min'):
     data = lookup[throat_prop]
     neighborTs = network.find_neighbor_throats(pores=Ps,
                                                flatten=False,
-                                               mode='xnor')
+                                               mode='or')
     values = np.ones((np.shape(Ps)[0],))*np.nan
     if mode == 'min':
         for pore in range(len(Ps)):
