@@ -2,15 +2,15 @@ from .misc import generic_conductance
 
 
 def hagen_poiseuille(target,
-                     pore_viscosity='pore.viscosity',
-                     throat_viscosity='throat.viscosity',
                      pore_area='pore.area',
                      throat_area='throat.area',
+                     pore_viscosity='pore.viscosity',
+                     throat_viscosity='throat.viscosity',
                      conduit_lengths='throat.conduit_lengths',
-                     conduit_shape_factors='throat.flow_shape_factor'):
+                     conduit_shape_factors='throat.flow_shape_factors'):
     r"""
     Calculate the hydraulic conductance of conduits in network, where a
-    conduit is ( 1/2 pore - full throat - 1/2 pore ). See notes section.
+    conduit is ( 1/2 pore - full throat - 1/2 pore ). See the notes section.
 
     Parameters
     ----------
@@ -34,6 +34,12 @@ def hagen_poiseuille(target,
     conduit_shape_factors : string
         Dictionary key of the conduit FLOW shape factor values
 
+    Returns
+    -------
+    g : ndarray
+        Array containing hydraulic conductance values for conduits in the
+        geometry attached to the given physics object.
+
     Notes
     -----
     (1) This function requires that all the necessary phase properties already
@@ -47,10 +53,10 @@ def hagen_poiseuille(target,
     be imposed by passing the proper flow_shape_factor argument.
 
     """
-    return generic_conductance(target=target, mechanism='flow',
-                               pore_diffusivity=pore_viscosity,
-                               throat_diffusivity=throat_viscosity,
+    return generic_conductance(target=target, transport_type='flow',
                                pore_area=pore_area,
                                throat_area=throat_area,
+                               pore_diffusivity=pore_viscosity,
+                               throat_diffusivity=throat_viscosity,
                                conduit_lengths=conduit_lengths,
                                conduit_shape_factors=conduit_shape_factors)
