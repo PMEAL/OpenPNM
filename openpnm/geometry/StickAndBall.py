@@ -206,19 +206,17 @@ class StickAndBall(GenericGeometry):
                        factor=0.5,
                        prop='throat.max_size')
 
+        self.add_model(propname='throat.endpoints',
+                       model=mods.geometry.throat_endpoints.spherical_pores,
+                       pore_diameter='pore.diameter',
+                       throat_diameter='throat.diameter')
+
         self.add_model(propname='throat.length',
-                       model=mods.geometry.throat_length.spherical_pores,
-                       L_negative=1e-12,
-                       pore_diameter='pore.diameter')
+                       model=mods.geometry.throat_length.straight,
+                       throat_endpoints='throat.endpoints')
 
         self.add_model(propname='throat.surface_area',
                        model=mods.geometry.throat_surface_area.cylinder,
-                       throat_diameter='throat.diameter',
-                       throat_length='throat.length')
-
-        self.add_model(propname='throat.centroid',
-                       model=mods.geometry.throat_centroid.spherical_pores,
-                       pore_diameter='pore.diameter',
                        throat_diameter='throat.diameter',
                        throat_length='throat.length')
 
@@ -233,5 +231,5 @@ class StickAndBall(GenericGeometry):
 
         self.add_model(propname='throat.conduit_lengths',
                        model=mods.geometry.throat_length.conduit_lengths,
-                       throat_centroid='throat.centroid',
+                       throat_endpoints='throat.endpoints',
                        throat_length='throat.length')
