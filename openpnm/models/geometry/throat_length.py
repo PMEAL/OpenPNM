@@ -117,17 +117,3 @@ def conduit_lengths(target, throat_endpoints='throat.endpoints',
     L1 = _norm(C1 - EP1, axis=1)
     L2 = _norm(C2 - EP2, axis=1)
     return {'pore1': L1, 'throat': Lt, 'pore2': L2}
-
-
-def boundary(target, pore_diameter='pore.diameter',
-             throat_length='throat.length'):
-    r"""
-    Take the pore radius for the bulk pore, the throat length for the throat
-    and use a minimum value for the boundary pores
-    """
-    net = target.project.network
-    throats = net.map_throats(throats=target.Ts, origin=target)
-    conns = net['throat.conns'][throats]
-    tl = target[throat_length]
-    p_lens = 0.999*net[pore_diameter][conns]/2
-    return {'pore1': p_lens[:, 0], 'throat': tl, 'pore2': p_lens[:, 1]}
