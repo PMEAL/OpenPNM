@@ -93,14 +93,14 @@ def spherical_pores(target, pore_diameter='pore.diameter',
     # Handle the case where Dt > Dp
     # BUG: conductance models that assume spherical pores --> 0 conductance
     mask = Dt > D1
-    L1[mask] = D1[mask]/2
-    L1[~mask] = _sp.sqrt(D1[~mask]**2 - Dt[~mask]**2) / 2
+    L1[mask] = 0.5 * D1[mask]
+    L1[~mask] = _sp.sqrt(D1**2 - Dt**2)[~mask] / 2
     mask = Dt > D2
-    L2[mask] = D2[mask]/2
-    L2[~mask] = _sp.sqrt(D2[~mask]**2 - Dt[~mask]**2) / 2
+    L2[mask] = 0.5 * D2[mask]
+    L2[~mask] = _sp.sqrt(D2**2 - Dt**2)[~mask] / 2
     # Find throat endpoints
-    EP1 = xyz[cn[:, 0]] + 0.5 * D1[:, None] * unit_vec
-    EP2 = xyz[cn[:, 1]] - 0.5 * D2[:, None] * unit_vec
+    EP1 = xyz[cn[:, 0]] + L1[:, None] * unit_vec
+    EP2 = xyz[cn[:, 1]] - L2[:, None] * unit_vec
     # Handle throats w/ overlapping pores
     L1 = (4*L**2 + D1**2 - D2**2) / (8*L)
     # L2 = (4*L**2 + D2**2 - D1**2) / (8*L)
