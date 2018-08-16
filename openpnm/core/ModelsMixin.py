@@ -208,8 +208,8 @@ class ModelsMixin():
         kwargs.update({'model': model, 'regen_mode': regen_mode})
         # Insepct model to extract arguments and default values
         if model.__defaults__:
-            vals = list(inspect.getargspec(model).defaults)
-            keys = inspect.getargspec(model).args[-len(vals):]
+            vals = list(inspect.getfullargspec(model).defaults)
+            keys = inspect.getfullargspec(model).args[-len(vals):]
             for k, v in zip(keys, vals):  # Put defaults into kwargs
                 if k not in kwargs:  # Skip if argument was given in kwargs
                     kwargs.update({k: v})
