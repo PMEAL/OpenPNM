@@ -150,6 +150,8 @@ class TransientReactiveTransport(ReactiveTransport):
             imposed to all pores.
         """
         self[self.settings['quantity']] = values
+        self[self.settings['quantity']] = (
+                             self[self.settings['quantity']].astype('float64'))
 
     def _t_update_A(self):
         r"""
@@ -219,7 +221,7 @@ class TransientReactiveTransport(ReactiveTransport):
         logger.info('Running TransientTransport')
         # If solver used in steady mode, no need to add ICs
         if (self.settings['t_scheme'] == 'steady'):
-            self[self.settings['quantity']] = 0
+            self[self.settings['quantity']] = 0.0
         # Create a scratch b from IC
         self._b = (self[self.settings['quantity']]).copy()
         self._apply_BCs()

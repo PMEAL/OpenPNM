@@ -207,6 +207,9 @@ def istriangular(am):
 
 
 def issymmetric(am):
+    """
+    A method to check if a square matrix is symmetric.
+    """
     if am.shape[0] != am.shape[1]:
         logger.warning('Matrix is not square, symmetrical is not relevant')
         return False
@@ -214,15 +217,9 @@ def issymmetric(am):
         am = am.tocoo(copy=False)
     if istril(am) or istriu(am):
         return False
-    inds_up = am.row < am.col
-    inds_lo = am.row > am.col
-    # Check if locations of non-zeros are symmetrically distributed
-    if inds_up.size != inds_lo.size:
-        return False
-    # Then check if values are also symmetric
-    data_up = am.data[inds_up]
-    data_lo = am.data[inds_lo]
-    return sp.allclose(data_up, data_lo)
+    # Compare am with its transpose, element wise
+    sym = ((am != am.T).size) == 0
+    return sym
 
 
 def am_to_im(am):
