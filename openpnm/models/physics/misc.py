@@ -1,7 +1,8 @@
 from scipy import pi as pi
+import scipy as _sp
 
 
-def generic_conductance(target, mechanism, pore_diffusivity,
+def generic_conductance(target, transport_type, pore_diffusivity,
                         throat_diffusivity, pore_area, throat_area,
                         conduit_lengths, conduit_shape_factors):
     r"""
@@ -17,19 +18,25 @@ def generic_conductance(target, mechanism, pore_diffusivity,
         necessary properties.
 
     pore_diffusivity : string
-        Dictionary key of the pore diffusivity values
+        Dictionary key of the pore diffusivity values.
 
     throat_diffusivity : string
-        Dictionary key of the throat diffusivity values
+        Dictionary key of the throat diffusivity values.
 
     pore_area : string
-        Dictionary key of the pore area values
+        Dictionary key of the pore area values.
 
     throat_area : string
-        Dictionary key of the throat area values
+        Dictionary key of the throat area values.
 
     shape_factor : string
-        Dictionary key of the conduit shape factor values
+        Dictionary key of the conduit shape factor values.
+
+    Returns
+    -------
+    g : ndarray
+        Array containing conductance values for conduits in the geometry
+        attached to the given physics object.
 
     Notes
     -----
@@ -56,36 +63,44 @@ def generic_conductance(target, mechanism, pore_diffusivity,
     At = network[throat_area][throats]
     A2 = network[pore_area][cn[:, 1]]
     # Getting conduit lengths
-    L1 = network[conduit_lengths+'.pore1'][throats]
-    Lt = network[conduit_lengths+'.throat'][throats]
-    L2 = network[conduit_lengths+'.pore2'][throats]
+    L1 = network[conduit_lengths + '.pore1'][throats]
+    Lt = network[conduit_lengths + '.throat'][throats]
+    L2 = network[conduit_lengths + '.pore2'][throats]
     # Getting shape factors
     try:
-        SF1 = network[conduit_shape_factors+'.pore1'][throats]
-        SFt = network[conduit_shape_factors+'.throat'][throats]
-        SF2 = network[conduit_shape_factors+'.pore2'][throats]
+        SF1 = phase[conduit_shape_factors+'.pore1'][throats]
+        SFt = phase[conduit_shape_factors+'.throat'][throats]
+        SF2 = phase[conduit_shape_factors+'.pore2'][throats]
     except KeyError:
-        SF1 = SF2 = SFt = 1
+        SF1 = SF2 = SFt = 1.0
     # Interpolate pore phase property values to throats
     try:
-        Dt = phase[throat_diffusivity]
+        Dt = phase[throat_diffusivity][throats]
     except KeyError:
-        Dt = phase.interpolate_data(propname=pore_diffusivity)
+        Dt = phase.interpolate_data(propname=pore_diffusivity)[throats]
     try:
-        Dp = phase[pore_diffusivity]
+        D1 = phase[pore_diffusivity][cn[:, 0]]
+        D2 = phase[pore_diffusivity][cn[:, 1]]
     except KeyError:
-        Dp = phase.interpolate_data(propname=throat_diffusivity)
+        D1 = phase.interpolate_data(propname=throat_diffusivity)[cn[:, 0]]
+        D2 = phase.interpolate_data(propname=throat_diffusivity)[cn[:, 1]]
+    # Preallocating g
+    g1, g2, gt = _sp.zeros((3, len(Lt)))
+    # Setting g to inf when Li = 0 (ex. boundary pores)
+    # INFO: This is needed since area could also be zero, which confuses NumPy
+    m1, m2, mt = [Li != 0 for Li in [L1, L2, Lt]]
+    g1[~m1] = g2[~m2] = gt[~mt] = _sp.inf
     # Find g for half of pore 1, throat, and half of pore 2
-    if mechanism == 'flow':
-        gp1 = A1**2/(8*pi*Dp[cn[:, 0]]*L1)
-        gp2 = A2**2/(8*pi*Dp[cn[:, 1]]*L2)
-        gt = At**2/(8*pi*Dt*Lt)
-    elif mechanism == 'diffusion':
-        gp1 = Dp[cn[:, 0]] * A1 / L1
-        gp2 = Dp[cn[:, 1]] * A2 / L2
-        gt = Dt[throats] * At / Lt
+    if transport_type == 'flow':
+        g1[m1] = A1[m1]**2 / (8*pi*D1*L1)[m1]
+        g2[m2] = A2[m2]**2 / (8*pi*D2*L2)[m2]
+        gt[mt] = At[mt]**2 / (8*pi*Dt*Lt)[mt]
+    elif transport_type == 'diffusion':
+        g1[m1] = (D1*A1)[m1] / L1[m1]
+        g2[m2] = (D2*A2)[m2] / L2[m2]
+        gt[mt] = (Dt*At)[mt] / Lt[mt]
     else:
-        raise Exception('Unknown keyword for "mechanism", can only be' +
+        raise Exception('Unknown keyword for "transport_type", can only be' +
                         ' "flow" or "diffusion"')
     # Apply shape factors and calculate the final conductance
-    return (1/gt/SFt + 1/gp1/SF1 + 1/gp2/SF2)**(-1)
+    return (1/gt/SFt + 1/g1/SF1 + 1/g2/SF2)**(-1)
