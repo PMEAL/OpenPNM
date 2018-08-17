@@ -25,7 +25,6 @@ class ThermalConductanceTest:
         self.phase['pore.thermal_conductivity'] = 1
         mod = op.models.physics.thermal_conductance.series_resistors
         self.phys.add_model(propname='throat.thermal_conductance',
-                            pore_thermal_conductivity='pore.thermal_conductivity',
                             model=mod)
         self.phys.regenerate_models()
         actual = self.phys['throat.thermal_conductance'].mean()

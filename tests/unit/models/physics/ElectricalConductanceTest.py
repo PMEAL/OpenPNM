@@ -11,7 +11,7 @@ class ElectricalConductanceTest:
         self.geo['pore.area'] = 1
         self.geo['throat.area'] = 1
         self.phase = op.phases.GenericPhase(network=self.net)
-        self.phase['pore.conductivity'] = 1
+        self.phase['pore.electrical_conductivity'] = 1
         self.phys = op.physics.GenericPhysics(network=self.net,
                                               phase=self.phase,
                                               geometry=self.geo)
@@ -22,7 +22,6 @@ class ElectricalConductanceTest:
         self.geo['throat.conduit_lengths.pore2'] = 0.25
         mod = op.models.physics.electrical_conductance.series_resistors
         self.phys.add_model(propname='throat.electrical_conductance',
-                            pore_conductivity='pore.conductivity',
                             model=mod)
         self.phys.regenerate_models()
         actual = self.phys['throat.electrical_conductance'].mean()

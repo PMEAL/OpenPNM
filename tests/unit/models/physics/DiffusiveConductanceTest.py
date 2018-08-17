@@ -22,7 +22,6 @@ class DiffusiveConductanceTest:
         self.geo['throat.conduit_lengths.pore2'] = 0.25
         mod = op.models.physics.diffusive_conductance.ordinary_diffusion
         self.phys.add_model(propname='throat.diffusive_conductance',
-                            pore_diffusivity='pore.diffusivity',
                             model=mod)
         self.phys.regenerate_models()
         actual = self.phys['throat.diffusive_conductance'].mean()
