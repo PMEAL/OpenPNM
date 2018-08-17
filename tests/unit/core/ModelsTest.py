@@ -19,18 +19,18 @@ class ModelsTest:
 
     def test_models_dict_print(self):
         s = self.geo.models.__str__().split('\n')
-        assert len(s) == 68
+        assert len(s) == 66
         assert s.count('―'*78) == 15
 
     def test_regenerate_models(self):
         a = len(self.geo.props())
-        assert a == 17
+        assert a == 16
         self.geo.clear(mode='props')
         a = len(self.geo.props())
         assert a == 0
         self.geo.regenerate_models()
         a = len(self.geo.props())
-        assert a == 17
+        assert a == 16
 
     def test_dependency_list(self):
         prj = self.net.project
@@ -135,7 +135,7 @@ class ModelsTest:
         assert len(phase) == 13
         phys.regenerate_models(propnames=None, deep=False)
         assert len(phase) == 13
-        assert len(phys) == 4
+        assert len(phys) == 10
         phys.regenerate_models(propnames=None, deep=True)
         assert len(phase) == 13
 
