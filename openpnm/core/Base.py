@@ -180,11 +180,7 @@ class Base(dict):
 
         # Enforce correct dict naming
         element = key.split('.')[0]
-        if element == 'constant':
-            super(Base, self).__setitem__(key, value)
-            return
-        else:
-            element = self._parse_element(element, single=True)
+        element = self._parse_element(element, single=True)
 
         # Skip checks for 'coords', 'conns'
         if key in ['pore.coords', 'throat.conns']:

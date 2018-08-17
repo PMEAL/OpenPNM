@@ -89,10 +89,37 @@ class BaseTest:
     def test_pores_two_labels_nor(self):
         a = self.net.pores(labels=['top', 'front'], mode='nor')
         assert sp.all(a == [9, 10, 12, 13, 15, 16, 18, 19, 21, 22, 24, 25])
+        b = self.net.pores(labels=['top', 'front'], mode='or')
+        c = self.net.tomask(pores=a)*self.net.tomask(pores=b)
+        assert c.sum() == 0
+
+    def test_pores_two_labels_nand(self):
+        a = self.net.pores(labels=['top', 'front'], mode='nand')
+        assert sp.all(a == [0, 1, 3, 4, 6, 7, 11, 14, 17, 20, 23, 26])
+
+    def test_pores_bad_mode(self):
+        with pytest.raises(Exception):
+            self.net.pores(labels=['top', 'front'], mode='bob')
+
+    def test_pores_empty_list(self):
+        a = self.net.pores(labels=[], mode='or')
+        assert a.size == 0
+
+    def test_pores_asmask(self):
+        a = self.net.pores(labels=['top', 'front'], mode='or', asmask=True)
+        assert a.sum() == 15
+        b = self.net.pores(labels=['top', 'front'], mode='or')
+        assert sp.all(sp.where(a)[0] == b)
 
     def test_throats(self):
         a = self.net.throats()
         assert sp.all(a == sp.arange(0, self.net.Nt))
+
+    def test_throats_asmask(self):
+        a = self.net.throats(labels=['internal'], mode='or', asmask=True)
+        assert a.sum() == 6
+        b = self.net.throats(labels=['internal'], mode='or')
+        assert sp.all(sp.where(a)[0] == b)
 
     def test_throats_one_label(self):
         a = self.net.throats(labels='label1')
@@ -166,6 +193,10 @@ class BaseTest:
         a = self.net.filter_by_label(pores=[], labels='top')
         assert sp.size(a) == 0
 
+    def test_filter_by_label_pores_and_throats(self):
+        with pytest.raises(Exception):
+            self.net.filter_by_label(pores=[0, 1, 2], throats=[0, 1, 2])
+
     def test_tomask_pores(self):
         a = self.net.tomask(pores=self.net.pores('top'))
         assert sp.sum(a) == 9
@@ -173,6 +204,10 @@ class BaseTest:
     def test_tomask_throats(self):
         a = self.net.tomask(throats=self.net.throats('label1'))
         assert sp.sum(a) == 6
+
+    def test_tomask_pores_and_throats(self):
+        with pytest.raises(Exception):
+            a = self.net.tomask(throats=[0, 1, 2], pores=[0, 1, 2])
 
     def test_toindices_pores(self):
         mask = sp.zeros((self.net.Np), dtype=bool)
@@ -345,6 +380,10 @@ class BaseTest:
              'throat.'+self.geo.name]
         assert sorted(a) == sorted(b)
 
+    def test_labels_on_pores_and_throats(self):
+        with pytest.raises(Exception):
+            self.net.labels(pores=[0, 1], throats=[0, 1])
+
     def test_labels_on_foo(self):
         with pytest.raises(Exception):
             self.net.labels(element='foo')
@@ -386,6 +425,22 @@ class BaseTest:
         a = self.net.labels(pores=[0, 1, 2], mode='or')
         b = ['pore.all', 'pore.bottom', 'pore.front', 'pore.surface',
              'pore.left', 'pore.'+self.geo.name, 'pore.top']
+        assert sorted(a) == sorted(b)
+
+    def test_labels_pores_mode_and(self):
+        a = self.net.labels(pores=[0, 1, 2], mode='and')
+        b = ['pore.all', 'pore.front', 'pore.geo_01', 'pore.left',
+             'pore.surface']
+        assert sorted(a) == sorted(b)
+
+    def test_labels_pores_mode_xor(self):
+        a = self.net.labels(pores=[0, 1, 2], mode='xor')
+        b = ['pore.bottom', 'pore.top']
+        assert sorted(a) == sorted(b)
+
+    def test_labels_pores_mode_nand(self):
+        a = self.net.labels(pores=[0, 1, 2], mode='nand')
+        b = []
         assert sorted(a) == sorted(b)
 
     def test_labels_pores_mode_xnor(self):
