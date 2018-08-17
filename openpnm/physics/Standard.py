@@ -53,8 +53,12 @@ class Standard(GenericPhysics):
             Ts = network.throats(geometry.name)
             self.add_locations(pores=Ps, throats=Ts)
 
+        self.add_model(propname='throat.flow_shape_factors',
+                       model=mods.flow_shape_factors.ball_and_stick)
         self.add_model(propname='throat.hydraulic_conductance',
                        model=mods.hydraulic_conductance.hagen_poiseuille)
+        self.add_model(propname='throat.poisson_shape_factors',
+                       model=mods.poisson_shape_factors.ball_and_stick)
         self.add_model(propname='throat.diffusive_conductance',
                        model=mods.diffusive_conductance.ordinary_diffusion)
         self.add_model(propname='throat.entry_pressure',
