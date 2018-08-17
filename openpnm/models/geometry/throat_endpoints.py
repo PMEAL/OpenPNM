@@ -42,9 +42,10 @@ def cubic_pores(target, pore_diameter='pore.diameter'):
     EP2 = xyz[cn[:, 1]] - 0.5 * D2 * unit_vec
     # Handle overlapping pores
     overlap = L - 0.5 * (D1+D2) < 0
-    mask = (D1 > D2) & overlap
+    mask = (D1 >= D2) & overlap
     EP2[mask] = EP1[mask]
-    EP1[~mask] = EP2[~mask]
+    mask = (D1 < D2) & overlap
+    EP1[mask] = EP2[mask]
     return {'head': EP1, 'tail': EP2}
 
 
