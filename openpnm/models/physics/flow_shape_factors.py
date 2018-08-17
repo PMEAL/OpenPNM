@@ -173,13 +173,13 @@ def conical_frustum_and_stick(target, pore_area='pore.area',
     # INFO: This is needed since area could also be zero, which confuses NumPy
     m1, m2, mt = [Li != 0 for Li in [L1, L2, Lt]]
     SF1[~m1] = SF2[~m2] = SFt[~mt] = 1
-    # Calculate integral of 1/A^2 (normalized by L)
-    F1[m1] = 16/3 * ((D1**2 + D1*Dt + Dt**2) / (D1**3 * Dt**3 * _pi**2))[m1]
-    F2[m2] = 16/3 * ((D2**2 + D2*Dt + Dt**2) / (D2**3 * Dt**3 * _pi**2))[m2]
-    Ft[mt] = 1 / At[mt]**2
+    # Calculate integral of 1/A^2
+    F1[m1] = 16/3 * (L1*(D1**2 + D1*Dt + Dt**2) / (D1**3 * Dt**3 * _pi**2))[m1]
+    F2[m2] = 16/3 * (L2*(D2**2 + D2*Dt + Dt**2) / (D2**3 * Dt**3 * _pi**2))[m2]
+    Ft[mt] = (Lt/At**2)[mt]
     # Calculate conduit shape factors
-    SF1[m1] = 1 / (A1**2 * F1)[m1]
-    SF2[m2] = 1 / (A2**2 * F2)[m2]
-    SFt[mt] = 1 / (At**2 * Ft)[mt]
+    SF1[m1] = (L1 / (A1**2 * F1))[m1]
+    SF2[m2] = (L2 / (A2**2 * F2))[m2]
+    SFt[mt] = (Lt / (At**2 * Ft))[mt]
     _np.warnings.filterwarnings('default', category=RuntimeWarning)
     return {'pore1': SF1, 'throat': SFt, 'pore2': SF2}
