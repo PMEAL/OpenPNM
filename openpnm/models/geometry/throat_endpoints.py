@@ -141,5 +141,5 @@ def circular_pores(target, pore_diameter='pore.diameter',
     This model should only be applied to ture 2D networks.
 
     """
-    return spherical_pores(target=target, pores_diameter=pore_diameter,
+    return spherical_pores(target=target, pore_diameter=pore_diameter,
                            throat_diameter=throat_diameter)
