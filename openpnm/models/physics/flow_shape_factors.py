@@ -58,7 +58,7 @@ def ball_and_stick(target, pore_area='pore.area',
     Heat and Mass Transfer, 54(17-18), 3970-3978.
 
     """
-    _np.warnings.filterwarnings('ignore')
+    _np.warnings.filterwarnings('ignore', category=RuntimeWarning)
     network = target.project.network
     throats = network.map_throats(throats=target.Ts, origin=target)
     cn = network['throat.conns'][throats]
@@ -75,6 +75,7 @@ def ball_and_stick(target, pore_area='pore.area',
     A2 = network[pore_area][cn[:, 1]]
     At = network[throat_area][throats]
     # Preallocating F, SF
+    # F is INTEGRAL(1/A^2) dx , x : 0 --> L
     F1, F2, Ft = _sp.zeros((3, len(Lt)))
     SF1, SF2, SFt = _sp.ones((3, len(Lt)))
     # Setting SF to 1 when Li = 0 (ex. boundary pores)
@@ -87,14 +88,14 @@ def ball_and_stick(target, pore_area='pore.area',
     F2[M2] = 16/3 * (L2*(D2**2 + D2*Dt + Dt**2) / (D2**3 * Dt**3 * _pi**2))[M2]
     # Handle the rest (true balls and sticks)
     N1, N2 = [(Di > Dt) & mi for Di, mi in zip([D1, D2], [m1, m2])]
-    F1[N1] = (4/(D1**3*_pi**2) * ((2*D1*L1) / (D1**2-4*L1**2) + _atanh((2*L1/D1))))[N1]
-    F2[N2] = (4/(D2**3*_pi**2) * ((2*D2*L2) / (D2**2-4*L2**2) + _atanh((2*L2/D2))))[N2]
+    F1[N1] = (4/(D1**3*_pi**2) * ((2*D1*L1) / (D1**2-4*L1**2) + _atanh(2*L1/D1)))[N1]
+    F2[N2] = (4/(D2**3*_pi**2) * ((2*D2*L2) / (D2**2-4*L2**2) + _atanh(2*L2/D2)))[N2]
     Ft[mt] = (Lt / At**2)[mt]
     # Calculate conduit shape factors
     SF1[m1] = (L1 / (A1**2 * F1))[m1]
     SF2[m2] = (L2 / (A2**2 * F2))[m2]
     SFt[mt] = (Lt / (At**2 * Ft))[mt]
-    _np.warnings.resetwarnings()
+    _np.warnings.filterwarnings('default', category=RuntimeWarning)
     return {'pore1': SF1, 'throat': SFt, 'pore2': SF2}
 
 
@@ -148,6 +149,7 @@ def conical_frustum_and_stick(target, pore_area='pore.area',
     Heat and Mass Transfer, 54(17-18), 3970-3978.
 
     """
+    _np.warnings.filterwarnings('ignore', category=RuntimeWarning)
     network = target.project.network
     throats = network.map_throats(throats=target.Ts, origin=target)
     cn = network['throat.conns'][throats]
@@ -164,6 +166,7 @@ def conical_frustum_and_stick(target, pore_area='pore.area',
     L2 = network[conduit_lengths + '.pore2'][throats]
     Lt = network[conduit_lengths + '.throat'][throats]
     # Preallocating F, SF
+    # F is INTEGRAL(1/A^2) dx , x : 0 --> L
     F1, F2, Ft = _sp.zeros((3, len(Lt)))
     SF1, SF2, SFt = _sp.ones((3, len(Lt)))
     # Setting SF to 1 when Li = 0 (ex. boundary pores)
@@ -178,4 +181,5 @@ def conical_frustum_and_stick(target, pore_area='pore.area',
     SF1[m1] = 1 / (A1**2 * F1)[m1]
     SF2[m2] = 1 / (A2**2 * F2)[m2]
     SFt[mt] = 1 / (At**2 * Ft)[mt]
+    _np.warnings.filterwarnings('default', category=RuntimeWarning)
     return {'pore1': SF1, 'throat': SFt, 'pore2': SF2}
