@@ -47,7 +47,9 @@ class PoissonShapeFactorsTest:
         assert_allclose(SF1, desired=1.0)
         assert_allclose(SF2, desired=1.0)
         assert_allclose(SFt, desired=1.0)
-        self.setup_class()
+        # Reverting changes
+        self.geo['throat.diameter'] = 0.35
+        self.geo['throat.area'] = pi/4*0.35**2
 
     def test_ball_and_stick_with_boundary_pores(self):
         boundary_pores = [1, 8, 12, 55]
@@ -64,7 +66,9 @@ class PoissonShapeFactorsTest:
         SF2_BP = self.phys['throat.poisson_shape_factors.pore2'][BP2].mean()
         assert_allclose(SF1_BP, desired=1.0)
         assert_allclose(SF2_BP, desired=1.0)
-        self.setup_class()
+        # Reverting changes
+        self.geo['throat.conduit_lengths.pore1'] = 0.2
+        self.geo['throat.conduit_lengths.pore2'] = 0.15
 
     def test_conical_frustum_and_stick(self):
         mod = op.models.physics.poisson_shape_factors.conical_frustum_and_stick
@@ -91,7 +95,9 @@ class PoissonShapeFactorsTest:
         assert_allclose(SF1, desired=1.0)
         assert_allclose(SF2, desired=1.0)
         assert_allclose(SFt, desired=1.0)
-        self.setup_class()
+        # Reverting changes
+        self.geo['throat.diameter'] = 0.35
+        self.geo['throat.area'] = pi/4*0.35**2
 
     def test_conical_frustum_and_stick_with_boundary_pores(self):
         boundary_pores = [1, 8, 12, 55]
@@ -108,7 +114,9 @@ class PoissonShapeFactorsTest:
         SF2_BP = self.phys['throat.poisson_shape_factors.pore2'][BP2].mean()
         assert_allclose(SF1_BP, desired=1.0)
         assert_allclose(SF2_BP, desired=1.0)
-        self.setup_class()
+        # Reverting changes
+        self.geo['throat.conduit_lengths.pore1'] = 0.2
+        self.geo['throat.conduit_lengths.pore2'] = 0.15
 
 
 if __name__ == '__main__':

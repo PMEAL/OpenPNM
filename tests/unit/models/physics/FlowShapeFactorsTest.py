@@ -35,6 +35,7 @@ class FlowShapeFactorsTest:
         assert_allclose(SFt, desired=1.0)
 
     def test_ball_and_stick_equal_pore_and_throat_diameter(self):
+        self.setup_class()
         self.geo['throat.diameter'] = 0.5
         self.geo['throat.area'] = pi/4*1**2
         mod = op.models.physics.flow_shape_factors.ball_and_stick
@@ -47,9 +48,12 @@ class FlowShapeFactorsTest:
         assert_allclose(SF1, desired=1.0)
         assert_allclose(SF2, desired=1.0)
         assert_allclose(SFt, desired=1.0)
-        self.setup_class()
+        # Reverting changes
+        self.geo['throat.diameter'] = 0.35
+        self.geo['throat.area'] = pi/4*0.35**2
 
     def test_ball_and_stick_with_boundary_pores(self):
+        self.setup_class()
         boundary_pores = [1, 8, 12, 55]
         conns = self.net['throat.conns']
         BP1 = np.in1d(conns[:, 0], boundary_pores)
@@ -64,9 +68,12 @@ class FlowShapeFactorsTest:
         SF2_BP = self.phys['throat.flow_shape_factors.pore2'][BP2].mean()
         assert_allclose(SF1_BP, desired=1.0)
         assert_allclose(SF2_BP, desired=1.0)
-        self.setup_class()
+        # Reverting changes
+        self.geo['throat.conduit_lengths.pore1'] = 0.2
+        self.geo['throat.conduit_lengths.pore2'] = 0.15
 
     def test_conical_frustum_and_stick(self):
+        self.setup_class()
         mod = op.models.physics.flow_shape_factors.conical_frustum_and_stick
         self.phys.add_model(propname='throat.flow_shape_factors',
                             model=mod)
@@ -79,6 +86,7 @@ class FlowShapeFactorsTest:
         assert_allclose(SFt, desired=1.0)
 
     def test_conical_frustum_and_stick_equal_pore_and_throat_diameter(self):
+        self.setup_class()
         self.geo['throat.diameter'] = 0.5
         self.geo['throat.area'] = pi/4*1**2
         mod = op.models.physics.flow_shape_factors.conical_frustum_and_stick
@@ -91,9 +99,12 @@ class FlowShapeFactorsTest:
         assert_allclose(SF1, desired=1.0)
         assert_allclose(SF2, desired=1.0)
         assert_allclose(SFt, desired=1.0)
-        self.setup_class()
+        # Reverting changes
+        self.geo['throat.diameter'] = 0.35
+        self.geo['throat.area'] = pi/4*0.35**2
 
     def test_conical_frustum_and_stick_with_boundary_pores(self):
+        self.setup_class()
         boundary_pores = [1, 8, 12, 55]
         conns = self.net['throat.conns']
         BP1 = np.in1d(conns[:, 0], boundary_pores)
@@ -108,7 +119,9 @@ class FlowShapeFactorsTest:
         SF2_BP = self.phys['throat.flow_shape_factors.pore2'][BP2].mean()
         assert_allclose(SF1_BP, desired=1.0)
         assert_allclose(SF2_BP, desired=1.0)
-        self.setup_class()
+        # Reverting changes
+        self.geo['throat.conduit_lengths.pore1'] = 0.2
+        self.geo['throat.conduit_lengths.pore2'] = 0.15
 
 
 if __name__ == '__main__':
