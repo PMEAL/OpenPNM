@@ -7,7 +7,7 @@ def ordinary_diffusion(target,
                        pore_diffusivity='pore.diffusivity',
                        throat_diffusivity='throat.diffusivity',
                        conduit_lengths='throat.conduit_lengths',
-                       conduit_shape_factors='throat.diffusion_shape_factors'):
+                       conduit_shape_factors='throat.poisson_shape_factors'):
     r"""
     Calculate the diffusive conductance of conduits in network, where a
     conduit is ( 1/2 pore - full throat - 1/2 pore ). See the notes section.

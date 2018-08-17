@@ -7,7 +7,7 @@ def series_resistors(target,
                      pore_conductivity='pore.electrical_conductivity',
                      throat_conductivity='throat.electrical_conductivity',
                      conduit_lengths='throat.conduit_lengths',
-                     conduit_shape_factors='throat.diffusion_shape_factors'):
+                     conduit_shape_factors='throat.poisson_shape_factors'):
     r"""
     Calculate the electrical conductance of conduits in network, where a
     conduit is ( 1/2 pore - full throat - 1/2 pore ). See the notes section.
