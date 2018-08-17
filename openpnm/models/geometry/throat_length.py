@@ -29,7 +29,7 @@ def ctc(target, pore_diameter='pore.diameter'):
 
 
 def straight(target, throat_endpoints='throat.endpoints',
-             throat_centroid=None):
+             throat_centroid='throat.centroid'):
     r"""
     Calculate throat length. See the notes for more info.
 
@@ -68,9 +68,11 @@ def straight(target, throat_endpoints='throat.endpoints',
     # Calculate throat length
     Lt = _norm(EP1 - EP2, axis=1)
     # Handle the case where pores & throat centroids are not colinear
-    if throat_centroid:
+    try:
         Ct = network[throat_centroid][throats]
         Lt = _norm(Ct - EP1, axis=1) + _norm(Ct - EP2, axis=1)
+    except KeyError:
+        pass
     return Lt
 
 
