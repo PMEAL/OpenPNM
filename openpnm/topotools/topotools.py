@@ -776,6 +776,10 @@ def extend(network, pore_coords=[], throat_conns=[], labels=[]):
                     network['throat.'+label] = False
                 network['throat.'+label][Ts] = True
 
+    # Clear adjacency and incidence matrices which will be out of date now
+    network._am.clear()
+    network._im.clear()
+
 
 def reduce_coordination(network, z):
     r"""
@@ -798,7 +802,7 @@ def reduce_coordination(network, z):
     trim(network=network, throats=Ts)
 
 
-def label_faces(network, tol=0.1):
+def label_faces(network, tol=0.0, label='surface'):
     r"""
     Finds pores on the surface of the network and labels them according to
     whether they are on the *top*, *bottom*, etc.  This function assumes the
@@ -808,9 +812,21 @@ def label_faces(network, tol=0.1):
     ----------
     network : OpenPNM Network object
         The network to apply the labels
+
+    tol : scalar
+        The tolerance for defining what counts as a surface pore, which is
+        specifically meant for random networks.  All pores with ``tol`` of
+        the maximum or minimum along each axis are counts as pores.  The
+        default is 0.
+
+    label : string
+        An identifying label to isolate the pores on the faces of the network.
+        default is 'surface'.
+
     """
-    find_surface_pores(network)
-    Psurf = network['pore.surface']
+    if label not in network.labels():
+        find_surface_pores(network, label=label)
+    Psurf = network['pore.'+label]
     crds = network['pore.coords']
     xmin, xmax = sp.amin(crds[:, 0]), sp.amax(crds[:, 0])
     xspan = xmax - xmin
@@ -818,12 +834,12 @@ def label_faces(network, tol=0.1):
     yspan = ymax - ymin
     zmin, zmax = sp.amin(crds[:, 2]), sp.amax(crds[:, 2])
     zspan = zmax - zmin
-    network['pore.back'] = (crds[:, 0] > (1-tol)*xmax) * Psurf
-    network['pore.right'] = (crds[:, 1] > (1-tol)*ymax) * Psurf
-    network['pore.top'] = (crds[:, 2] > (1-tol)*zmax) * Psurf
-    network['pore.front'] = (crds[:, 0] < (xmin + tol*xspan)) * Psurf
-    network['pore.left'] = (crds[:, 1] < (xmin + tol*yspan)) * Psurf
-    network['pore.bottom'] = (crds[:, 2] < (xmin + tol*zspan)) * Psurf
+    network['pore.back'] = (crds[:, 0] >= (1-tol)*xmax) * Psurf
+    network['pore.right'] = (crds[:, 1] >= (1-tol)*ymax) * Psurf
+    network['pore.top'] = (crds[:, 2] >= (1-tol)*zmax) * Psurf
+    network['pore.front'] = (crds[:, 0] <= (xmin + tol*xspan)) * Psurf
+    network['pore.left'] = (crds[:, 1] <= (ymin + tol*yspan)) * Psurf
+    network['pore.bottom'] = (crds[:, 2] <= (zmin + tol*zspan)) * Psurf
 
 
 def find_surface_pores(network, markers=None, label='surface'):
@@ -839,7 +855,7 @@ def find_surface_pores(network, markers=None, label='surface'):
         The network for which the surface pores are to be found
 
     markers: array_like
-        3 x N array of the marker coordiantes to use in the triangulation.  The
+        3 x N array of the marker coordinates to use in the triangulation.  The
         labeling is performed in one step, so all points are added, and then
         any pores connected to at least one marker is given the provided label.
         By default, this function will automatically generate 6 points outside
@@ -963,7 +979,7 @@ def clone_pores(network, pores, labels=['clone'], mode='parents'):
         network['pore.'+item][network.pores('all') >= Np] = True
         network['throat.'+item][network.throats('all') >= Nt] = True
 
-    # Any existing adjacency and incidence matrices will be invalid
+    # Clear adjacency and incidence matrices which will be out of date now
     network._am.clear()
     network._im.clear()
 
@@ -1037,6 +1053,10 @@ def merge_networks(network, donor=[]):
                     # Then append donor values to network
                     s = sp.shape(donor[key])[0]
                     network[key][-s:] = donor[key]
+
+    # Clear adjacency and incidence matrices which will be out of date now
+    network._am.clear()
+    network._im.clear()
 
 
 def stitch(network, donor, P_network, P_donor, method='nearest',
@@ -1381,7 +1401,7 @@ def subdivide(network, pores, shape, labels=[]):
             network['pore.surface_' + l] = False
         new_net['pore.coords'] = sp.copy(old_coords)
 
-    network._label_surfaces()
+    label_faces(network=network)
     for l in main_labels:
         del network['pore.surface_'+l]
     trim(network=network, pores=pores)
@@ -2194,13 +2214,18 @@ def add_boundary_pores(network, pores, offset, apply_label='boundary'):
     clone_pores(network=network, pores=Ps)
     newPs = network.pores('pore.clone')
     del network['pore.clone']
+    newTs = network.throats('clone')
+    del network['throat.clone']
     # Offset the cloned pores
     network['pore.coords'][newPs] += offset
     # Apply labels to boundary pores (trim leading 'pores' if present)
     label = apply_label.split('.')[-1]
-    label = 'pore.' + label
-    network[label] = False
-    network[label][newPs] = True
+    plabel = 'pore.' + label
+    tlabel = 'throat.' + label
+    network[plabel] = False
+    network[plabel][newPs] = True
+    network[tlabel] = False
+    network[tlabel][newTs] = True
 
 
 def find_path(network, pore_pairs, weights=None):

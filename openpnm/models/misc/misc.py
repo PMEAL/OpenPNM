@@ -1,5 +1,52 @@
 import numpy as np
 import scipy.stats as spts
+from openpnm.utils import logging
+logger = logging.getLogger()
+
+
+def generic_function(target, prop, func, **kwargs):
+    r"""
+    Runs an arbitrary function on the given data
+
+    This allows users to place a customized calculation into the automatated
+    model regeneration pipeline.
+
+    Parameters
+    ----------
+    target : OpenPNM Object
+        The object which this model is associated with. This controls the
+        length of the calculated array, and also provides access to other
+        necessary properties.
+
+    prop : string
+        The dictionary key containing the array to be operated on
+
+    func : Numpy function
+        A handle to the function to apply
+
+    kwargs : keyward arguments
+        All arguments required by the specific Numpy function
+
+    Examples
+    --------
+    The following example shows how to use a Numpy function, but any function
+    can be used, as long as it returns an array object:
+
+    >>> import openpnm as op
+    >>> import numpy as np
+    >>> pn = op.network.Cubic(shape=[5, 5, 5])
+    >>> geo = op.geometry.GenericGeometry(network=pn, pores=pn.Ps, throats=pn.Ts)
+    >>> geo['pore.rand'] = np.random.rand(geo.Np)
+    >>> geo.add_model(propname='pore.cos',
+    ...               model=op.models.misc.generic_function,
+    ...               func=np.cos,
+    ...               prop='pore.rand')
+    """
+    values = target[prop]
+    result = func(values, **kwargs)
+    if not isinstance(result, np.ndarray):
+        logger.warning('Given function must return a Numpy array')
+    return result
 
 
 def constant(target, value):
@@ -242,10 +289,12 @@ def normal(target, seeds, scale, loc):
     return value
 
 
-def generic(target, seeds, func):
+def generic_distribution(target, seeds, func):
     r"""
     Accepts an 'rv_frozen' object from the Scipy.stats submodule and returns
-    values from the distribution for the given seeds using the ``ppf`` method.
+    values from the distribution for the given seeds
+
+    This uses the ``ppf`` method of the stats object
 
     Parameters
     ----------
@@ -265,13 +314,26 @@ def generic(target, seeds, func):
     Examples
     --------
     The following code illustrates the process of obtaining a 'frozen' Scipy
-    stats object, and visualizes the corresponding distribution using a
-    Matplotlib histogram:
+    stats object and adding it as a model:
 
     >>> import scipy
-    >>> func = scipy.stats.weibull_min(c=2, scale=.0001, loc=0)
+    >>> import openpnm as op
+    >>> pn = op.network.Cubic(shape=[3, 3, 3])
+    >>> geo = op.geometry.GenericGeometry(network=pn, pores=pn.Ps, throats=pn.Ts)
+    >>> geo.add_model(propname='pore.seed',
+    ...               model=op.models.geometry.pore_seed.random)
+
+    Now retrieve the stats distribution and add to ``geo`` as a model:
+
+    >>> stats_obj = scipy.stats.weibull_min(c=2, scale=.0001, loc=0)
+    >>> geo.add_model(propname='pore.size',
+    ...               model=op.models.geometry.pore_size.generic_distribution,
+    ...               seeds='pore.seed',
+    ...               func=stats_obj)
+
+
     >>> import matplotlib.pyplot as plt
-    >>> fig = plt.hist(func.ppf(q=scipy.rand(1000)), bins=50)
+    >>> fig = plt.hist(stats_obj.ppf(q=scipy.rand(1000)), bins=50)
 
     """
     seeds = target[seeds]
@@ -298,21 +360,23 @@ def from_neighbor_throats(target, throat_prop='throat.seed', mode='min'):
         Controls how the pore property is calculated.  Options are 'min',
         'max' and 'mean'.
     """
-    network = target.project.network
-    Ps = target.pores()
-    data = target[throat_prop]
+    prj = target.project
+    network = prj.network
+    lookup = prj.find_full_domain(target)
+    Ps = lookup.map_pores(target.pores(), target)
+    data = lookup[throat_prop]
     neighborTs = network.find_neighbor_throats(pores=Ps,
                                                flatten=False,
                                                mode='intersection')
     values = np.ones((np.shape(Ps)[0],))*np.nan
     if mode == 'min':
-        for pore in Ps:
+        for pore in range(len(Ps)):
             values[pore] = np.amin(data[neighborTs[pore]])
     if mode == 'max':
-        for pore in Ps:
+        for pore in range(len(Ps)):
             values[pore] = np.amax(data[neighborTs[pore]])
     if mode == 'mean':
-        for pore in Ps:
+        for pore in range(len(Ps)):
             values[pore] = np.mean(data[neighborTs[pore]])
     return values
 
@@ -337,10 +401,12 @@ def from_neighbor_pores(target, pore_prop='pore.seed', mode='min'):
         'max' and 'mean'.
 
     """
-    network = target.project.network
-    throats = network.throats(target.name)
+    prj = target.project
+    network = prj.network
+    throats = network.map_throats(target.throats(), target)
     P12 = network.find_connected_pores(throats)
-    pvalues = network[pore_prop][P12]
+    lookup = prj.find_full_domain(target)
+    pvalues = lookup[pore_prop][P12]
     if mode == 'min':
         value = np.amin(pvalues, axis=1)
     if mode == 'max':

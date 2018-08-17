@@ -64,14 +64,6 @@ class GenericTransport(GenericAlgorithm):
     +---------------------+---------------------------------------------------+
     | ``b``               | Retrieves the RHS matrix                          |
     +---------------------+---------------------------------------------------+
-    | ``domain_area``     | The area of the inlet face for determining total  |
-    |                     | flux into the domain. Should be assigned by user  |
-    |                     | but will be estimated if not.                     |
-    +---------------------+---------------------------------------------------+
-    | ``domain_length``   | The length of the domain for determining the      |
-    |                     | total driving force across the domain. Should be  |
-    |                     | assigned by user but will be estimated if not.    |
-    +---------------------+---------------------------------------------------+
 
     This class contains quite a few hidden methods (preceeded by an
     underscore) that are called internally.  Since these are critical to the
@@ -96,11 +88,11 @@ class GenericTransport(GenericAlgorithm):
     |                       | in the ``settings``                             |
     +-----------------------+-------------------------------------------------+
     | ``_get_domain_area``  | Attempts to estimate the area of the inlet pores|
-    |                       | if not specified by user in ``domain_area``     |
+    |                       | if not specified by user                        |
     +-----------------------+-------------------------------------------------+
     | ``_get_domain_length``| Attempts to estimate the length between the     |
     |                       | inlet and outlet faces if not specified by the  |
-    |                       | user in ``domain_length``                       |
+    |                       | user                                            |
     +-----------------------+-------------------------------------------------+
 
 
@@ -109,10 +101,22 @@ class GenericTransport(GenericAlgorithm):
     def __init__(self, project=None, network=None, phase=None, settings={},
                  **kwargs):
         # Set some default settings
-        self.settings.update({'phase': None,
-                              'conductance': None,
-                              'quantity': None,
-                              'solver': 'spsolve'})
+        def_set = {'phase': None,
+                   'conductance': None,
+                   'quantity': None,
+                   'solver': 'spsolve',
+                   'gui': {'setup':        {'quantity': '',
+                                            'conductance': ''},
+                           'set_rate_BC':  {'pores': None,
+                                            'values': None},
+                           'set_value_BC': {'pores': None,
+                                            'values': None},
+                           'remove_BC':    {'pores': None}
+                           }
+                   }
+        self.settings.update(def_set)
+        self.settings.update(settings)
+
         self.setup(phase=phase, **settings)
         # If network given, get project, otherwise let parent class create it
         if network is not None:
@@ -126,7 +130,7 @@ class GenericTransport(GenericAlgorithm):
         self['pore.bc_rate'] = np.nan
         self['pore.bc_value'] = np.nan
 
-    def setup(self, phase=None, **kwargs):
+    def setup(self, phase=None, quantity='', conductance='', **kwargs):
         r"""
         This method takes several arguments that are essential to running the
         algorithm and adds them to the settings.
@@ -138,6 +142,10 @@ class GenericTransport(GenericAlgorithm):
         """
         if phase:
             self.settings['phase'] = phase.name
+        if quantity:
+            self.settings['quantity'] = quantity
+        if conductance:
+            self.settings['conductance'] = conductance
         self.settings.update(kwargs)
 
     def set_value_BC(self, pores, values):
@@ -525,88 +533,114 @@ class GenericTransport(GenericAlgorithm):
                 R = np.sum(R)
         return np.array(R, ndmin=1)
 
-    def _calc_eff_prop(self):
+    def _calc_eff_prop(self, inlets=None, outlets=None,
+                       domain_area=None, domain_length=None):
         r"""
-        Returns the main parameters for calculating the effective property
-        in a linear transport equation.  It also checks for the proper
-        boundary conditions, inlets and outlets.
+        Calculate the effective transport through the network
+
+        Parameters
+        ----------
+        inlets : array_like
+            The pores where the inlet boundary conditions were applied.  If
+            not given an attempt is made to infer them from the algorithm.
+
+        outlets : array_like
+            The pores where the outlet boundary conditions were applied.  If
+            not given an attempt is made to infer them from the algorithm.
+
+        domain_area : scalar
+            The area of the inlet and/or outlet face (which shold match)
+
+        domain_length : scalar
+            The length of the domain between the inlet and outlet faces
+
+        Returns
+        -------
+        The effective transport property through the network
+
         """
         if self.settings['quantity'] not in self.keys():
             raise Exception('The algorithm has not been run yet. Cannot ' +
                             'calculate effective property.')
 
-        # Determine boundary conditions by analyzing algorithm object
-        inlets, outlets = self._get_inlets_and_outlets()
         Ps = np.isfinite(self['pore.bc_value'])
         BCs = np.unique(self['pore.bc_value'][Ps])
         Dx = np.abs(np.diff(BCs))
-
-        # Fetch area and length of domain
-        A = self.domain_area
-        L = self.domain_length
+        if inlets is None:
+            inlets = self._get_inlets()
         flow = self.rate(pores=inlets)
-        D = np.sum(flow)*L/A/Dx
+        # Fetch area and length of domain
+        if domain_area is None:
+            domain_area = self._get_domain_area(inlets=inlets,
+                                                outlets=outlets)
+        if domain_length is None:
+            domain_length = self._get_domain_length(inlets=inlets,
+                                                    outlets=outlets)
+        D = np.sum(flow)*domain_length/domain_area/Dx
         return D
 
-    def _get_inlets_and_outlets(self):
+    def _get_inlets(self):
         # Determine boundary conditions by analyzing algorithm object
         Ps = np.isfinite(self['pore.bc_value'])
         BCs = np.unique(self['pore.bc_value'][Ps])
         inlets = np.where(self['pore.bc_value'] == np.amax(BCs))[0]
+        return inlets
+
+    def _get_outlets(self):
+        # Determine boundary conditions by analyzing algorithm object
+        Ps = np.isfinite(self['pore.bc_value'])
+        BCs = np.unique(self['pore.bc_value'][Ps])
         outlets = np.where(self['pore.bc_value'] == np.amin(BCs))[0]
-        return (inlets, outlets)
+        return outlets
 
-    def _get_domain_area(self):
-        if not hasattr(self, '_area'):
-            logger.warning('Attempting to estimate inlet area...will be low')
-            network = self.project.network
-            Pin, Pout = self._get_inlets_and_outlets()
-            inlets = network['pore.coords'][Pin]
-            outlets = network['pore.coords'][Pout]
-            if not iscoplanar(inlets):
-                raise Exception('Detected inlet pores are not coplanar')
-            if not iscoplanar(outlets):
-                raise Exception('Detected outlet pores are not coplanar')
-            Nin = np.ptp(inlets, axis=0) > 0
-            if Nin.all():
-                raise Exception('Detected inlets are not oriented along a ' +
-                                'principle axis')
-            Nout = np.ptp(outlets, axis=0) > 0
-            if Nout.all():
-                raise Exception('Detected outlets are not oriented along a ' +
-                                'principle axis')
-            hull_in = ConvexHull(points=inlets[:, Nin])
-            hull_out = ConvexHull(points=outlets[:, Nout])
-            if hull_in.volume != hull_out.volume:
-                raise Exception('Inlet and outlet faces are different area')
-            self._area = hull_in.volume  # In 2D volume=area, area=perimeter
-        return self._area
+    def _get_domain_area(self, inlets=None, outlets=None):
+        logger.warning('Attempting to estimate inlet area...will be low')
+        network = self.project.network
+        # Abort if network is not 3D
+        if np.sum(np.ptp(network['pore.coords'], axis=0) == 0) > 0:
+            raise Exception('The network is not 3D, specify area manually')
+        if inlets is None:
+            inlets = self._get_inlets()
+        if outlets is None:
+            outlets = self._get_outlets()
+        inlets = network['pore.coords'][inlets]
+        outlets = network['pore.coords'][outlets]
+        if not iscoplanar(inlets):
+            logger.error('Detected inlet pores are not coplanar')
+        if not iscoplanar(outlets):
+            logger.error('Detected outlet pores are not coplanar')
+        Nin = np.ptp(inlets, axis=0) > 0
+        if Nin.all():
+            logger.warning('Detected inlets are not oriented along a ' +
+                           'principle axis')
+        Nout = np.ptp(outlets, axis=0) > 0
+        if Nout.all():
+            logger.warning('Detected outlets are not oriented along a ' +
+                           'principle axis')
+        hull_in = ConvexHull(points=inlets[:, Nin])
+        hull_out = ConvexHull(points=outlets[:, Nout])
+        if hull_in.volume != hull_out.volume:
+            logger.error('Inlet and outlet faces are different area')
+        area = hull_in.volume  # In 2D volume=area, area=perimeter
+        return area
 
-    def _set_domain_area(self, area):
-        self._area = area
-
-    domain_area = property(fget=_get_domain_area, fset=_set_domain_area)
-
-    def _get_domain_length(self):
-        if not hasattr(self, '_length'):
-            logger.warning('Attempting to estimate domain length... ' +
-                           'could be low if boundary pores were not added')
-            network = self.project.network
-            Pin, Pout = self._get_inlets_and_outlets()
-            inlets = network['pore.coords'][Pin]
-            outlets = network['pore.coords'][Pout]
-            if not iscoplanar(inlets):
-                raise Exception('Detected inlet pores are not coplanar')
-            if not iscoplanar(outlets):
-                raise Exception('Detected inlet pores are not coplanar')
-            tree = cKDTree(data=inlets)
-            Ls = np.unique(np.around(tree.query(x=outlets)[0], decimals=5))
-            if np.size(Ls) != 1:
-                raise Exception('A unique value of length could not be found')
-            self._length = Ls[0]
-        return self._length
-
-    def _set_domain_length(self, length):
-        self._length = length
-
-    domain_length = property(fget=_get_domain_length, fset=_set_domain_length)
+    def _get_domain_length(self, inlets=None, outlets=None):
+        logger.warning('Attempting to estimate domain length... ' +
+                       'could be low if boundary pores were not added')
+        network = self.project.network
+        if inlets is None:
+            inlets = self._get_inlets()
+        if outlets is None:
+            outlets = self._get_outlets()
+        inlets = network['pore.coords'][inlets]
+        outlets = network['pore.coords'][outlets]
+        if not iscoplanar(inlets):
+            logger.error('Detected inlet pores are not coplanar')
+        if not iscoplanar(outlets):
+            logger.error('Detected inlet pores are not coplanar')
+        tree = cKDTree(data=inlets)
+        Ls = np.unique(np.around(tree.query(x=outlets)[0], decimals=5))
+        if np.size(Ls) != 1:
+            logger.error('A unique value of length could not be found')
+        length = Ls[0]
+        return length
