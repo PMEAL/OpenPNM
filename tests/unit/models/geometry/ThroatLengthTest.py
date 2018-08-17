@@ -10,10 +10,6 @@ class ThroatStraightTest:
         self.geo = op.geometry.GenericGeometry(network=self.net,
                                                pores=self.net.Ps,
                                                throats=self.net.Ts)
-        self.air = op.phases.Air(network=self.net)
-        self.phys = op.physics.GenericPhysics(network=self.net,
-                                              phase=self.air,
-                                              geometry=self.geo)
         self.base = np.array([0.5, 0.5, 0.5])
         self.geo['throat.endpoints.head'] = np.array([[0, 0.2, 0]]) + self.base
         self.geo['throat.endpoints.tail'] = np.array([[0, 0.7, 0]]) + self.base
