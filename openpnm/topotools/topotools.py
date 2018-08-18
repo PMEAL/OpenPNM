@@ -6,7 +6,7 @@ import porespy as ps
 from scipy.sparse import csgraph
 from openpnm.utils import PrintableDict, logging, Workspace
 ws = Workspace()
-logger = logging.getLogger()
+logger = logging.getLogger(__name__)
 
 
 def find_neighbor_sites(sites, am, flatten=True, include_input=False,
@@ -356,13 +356,13 @@ def find_complement(am, sites=None, bonds=None, asmask=False):
     Either ``sites`` or ``bonds`` must be specified
 
     """
-    if sites and bonds is None:
+    if (sites is not None) and (bonds is None):
         inds = sp.unique(sites)
         N = am.shape[0]
-    elif bonds and sites is None:
+    elif (bonds is not None) and (sites is None):
         inds = sp.unique(bonds)
         N = int(am.nnz/2)
-    elif sites and bonds:
+    elif (bonds is not None) and (sites is not None):
         raise Exception('Only one of sites or bonds can be specified')
     else:
         raise Exception('Either sites or bonds must be specified')
@@ -375,32 +375,45 @@ def find_complement(am, sites=None, bonds=None, asmask=False):
 
 
 def istriu(am):
+    r"""
+    Returns ``True`` is the sparse adjacency matrix is upper triangular
+    """
     if am.shape[0] != am.shape[1]:
-        print('Matrix is not square, triangularity is not relevant')
+        print('Matrix is not square, triangularity is irrelevant')
         return False
     if am.format != 'coo':
         am = am.tocoo(copy=False)
-    return sp.all(am.row < am.col)
+    return sp.all(am.row <= am.col)
 
 
 def istril(am):
+    r"""
+    Returns ``True`` is the sparse adjacency matrix is lower triangular
+    """
     if am.shape[0] != am.shape[1]:
-        print('Matrix is not square, triangularity is not relevant')
+        print('Matrix is not square, triangularity is irrelevant')
         return False
     if am.format != 'coo':
         am = am.tocoo(copy=False)
-    return sp.all(am.row > am.col)
+    return sp.all(am.row >= am.col)
 
 
 def istriangular(am):
+    r"""
+    Returns ``True`` is the sparse adjacency matrix is either upper or lower
+    triangular
+    """
     if am.format != 'coo':
         am = am.tocoo(copy=False)
     return istril(am) or istriu(am)
 
 
 def issymmetric(am):
+    r"""
+    Returns ``True`` is the sparse adjacency matrix is symmetric
+    """
     if am.shape[0] != am.shape[1]:
-        logger.warning('Matrix is not square, symmetrical is not relevant')
+        logger.warning('Matrix is not square, symmetrical is irrelevant')
         return False
     if am.format != 'coo':
         am = am.tocoo(copy=False)
@@ -418,6 +431,9 @@ def issymmetric(am):
 
 
 def am_to_im(am):
+    r"""
+    Convert an adjacency matrix into an incidence matrix
+    """
     if am.shape[0] != am.shape[1]:
         raise Exception('Adjacency matrices must be square')
     if am.format != 'coo':
@@ -435,6 +451,9 @@ def am_to_im(am):
 
 
 def im_to_am(im):
+    r"""
+    Convert an incidence matrix into an adjacency matrix
+    """
     if im.shape[0] == im.shape[1]:
         print('Warning: Received matrix is square which is unlikely')
     if im.shape[0] > im.shape[1]:

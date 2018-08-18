@@ -63,6 +63,9 @@ class Base(dict):
     |                      | indices on object A                              |
     | ``map_throats``      |                                                  |
     +----------------------+--------------------------------------------------+
+    | ``interleave_data``  | Fetches data from associated objects into a      |
+    |                      | single array                                     |
+    +----------------------+--------------------------------------------------+
     | ``interpolate_data`` | Given pore or throat data, interpolate the other |
     +----------------------+--------------------------------------------------+
     | ``filter_by_label``  | Given indices find those with specific labels    |
@@ -251,6 +254,7 @@ class Base(dict):
         are required to maintain the integrity of the simulation.  These are
         arrays that define the topology (ie. 'pore.all', 'pore.coords',
         'throat.all', 'throat.conns'), as well as arrays that indicate
+        associations bewteen objects (ie. 'pore.geo_01').
 
         Parameters
         ----------
@@ -262,21 +266,21 @@ class Base(dict):
             This controls what is cleared from the object.  Options are:
 
             **'props'** : Removes all numerical property values from the object
-            dictionary.
+            dictionary
 
             **'model_data'** : Removes only numerical data that were produced
-            by an associated model.
+            by an associated model
 
             **'labels'** : Removes all labels from the object dictionary,
             except those relating to the pore and throat locations of
-            associated objects.
+            associated objects
 
             **'all'** : Removes both 'props' and 'labels'
 
         Notes
         -----
         If you wish to selectively remove some properties but not others, use
-        something like ``del object['pore.blah']`` at the python prompt. This
+        something like ``del object['pore.blah']`` at the Python prompt. This
         can also be done in a for-loop to remove a list of items.
 
         Examples
@@ -511,10 +515,10 @@ class Base(dict):
 
     def labels(self, pores=[], throats=[], element=None, mode='union'):
         r"""
-        Returns a list of labels present on the object.
+        Returns a list of labels present on the object
 
         Additionally, this function can return labels applied to a specified
-        set of pores or throats.
+        set of pores or throats
 
         Parameters
         ----------
@@ -561,8 +565,8 @@ class Base(dict):
 
         Notes
         -----
-        Technically, *'nand'* and *'xnor'* should also return pores with *none* of
-        the labels but these are not included.  This makes the returned list
+        Technically, *'nand'* and *'xnor'* should also return pores with *none*
+        of the labels but these are not included.  This makes the returned list
         more useful.
 
         Examples
@@ -642,7 +646,7 @@ class Base(dict):
     def pores(self, labels='all', mode='or', asmask=False):
         r"""
         Returns pore indicies where given labels exist, according to the logic
-        specified by the mode argument.
+        specified by the ``mode`` argument.
 
         Parameters
         ----------
@@ -691,7 +695,7 @@ class Base(dict):
         more useful.
 
         To perform more complex or compound queries, you can opt to receive
-        the result a a boolean mask (``asmask=True``), the manipulate the
+        the result a a boolean mask (``asmask=True``), then manipulate the
         arrays manually.
 
         Examples
@@ -719,7 +723,7 @@ class Base(dict):
     def throats(self, labels='all', mode='or', asmask=False):
         r"""
         Returns throat locations where given labels exist, according to the
-        logic specified by the mode argument.
+        logic specified by the ``mode`` argument.
 
         Parameters
         ----------
@@ -798,13 +802,13 @@ class Base(dict):
 
     def map_pores(self, pores, origin, filtered=True):
         r"""
-        Given a list of pore on a target object, finds indices of
-        those pores on the calling object
+        Given a list of pore on a target object, finds indices of those pores
+        on the calling object
 
         Parameters
         ----------
         pores : array_like
-            The indices of the pores on the target object
+            The indices of the pores on the object specifiedin ``origin``
 
         origin : OpenPNM Base object
             The object corresponding to the indices given in ``pores``
@@ -818,8 +822,8 @@ class Base(dict):
         Returns
         -------
         Pore indices on the calling object corresponding to the same pores
-        on the target object.  Can be an array or a tuple containing an array
-        and a mask, depending on the value of ``filtered``.
+        on the ``origin`` object.  Can be an array or a tuple containing an
+        array and a mask, depending on the value of ``filtered``.
 
         """
         ids = origin['pore._id'][pores]
@@ -833,7 +837,7 @@ class Base(dict):
         Parameters
         ----------
         throats : array_like
-            The indices of the throats on the target object
+            The indices of the throats on the object specified in ``origin``
 
         origin : OpenPNM Base object
             The object corresponding to the indices given in ``throats``
@@ -934,7 +938,7 @@ class Base(dict):
         -----
         This behavior could just as easily be accomplished by using the mask
         in ``pn.pores()[mask]`` or ``pn.throats()[mask]``.  This method is
-        just a convenience function and is a compliment to ``tomask``.
+        just a convenience function and is a complement to ``tomask``.
 
         """
         if sp.amax(mask) > 1:
@@ -1003,19 +1007,12 @@ class Base(dict):
         else:
             raise Exception('Unrecognized object type, cannot find dependents')
 
-        # Attempt to 'get' the requested array from each object
-        # Use 'get' so that missing keys return None, instead of KeyError
+        # Attempt to fetch the requested array from each object
         arrs = [item.get(prop, None) for item in sources]
         locs = [self._get_indices(element, item.name) for item in sources]
         sizes = [sp.size(a) for a in arrs]
         if sp.all([item is None for item in arrs]):  # prop not found anywhere
             raise KeyError(prop)
-#        if sp.any([i is None for i in arrs]):  # prop not found everywhere
-#            logger.warning('\''+prop+'\' not found on at least one object')
-#        if sp.sum(sizes) < self._count(element):
-#            logger.warning('Not all '+element+'s are assigned to an object')
-#            N_missing = self._count(element) - sp.sum(sizes)
-#            arrs.append(sp.zeros(shape=(N_missing,), dtype=float)*sp.nan)
 
         # Check the general type of each array
         atype = []
@@ -1120,7 +1117,7 @@ class Base(dict):
             values = sp.mean(data[Ps12], axis=1)
         return values
 
-    def filter_by_label(self, pores=[], throats=[], labels=None, mode='union'):
+    def filter_by_label(self, pores=[], throats=[], labels=None, mode='or'):
         r"""
         Returns which of the supplied pores (or throats) has the specified
         label
@@ -1137,7 +1134,7 @@ class Base(dict):
 
             Controls how the filter is applied.  Options include:
 
-            **'or', 'union', 'any'**: (default) Returns a list of all the given
+            **'or', 'union', 'any'**: (default) Returns a list of the given
             locations where *any* of the given labels exist.
 
             **'and', 'intersection', 'all'**: Only locations where *all* the
@@ -1149,20 +1146,22 @@ class Base(dict):
             **'nor', 'none', 'not'**: Only locations where *none* of the given
             labels are found.
 
-            **'xnor'**: Not implemented yet
+            **'nand'** : Only locations with *some but not all* of the given
+            labels are returned.
 
-            **'nand'**: Not implemented yet
-
-        See Also
-        --------
-        pores
-        throats
+            **'xnor'** : Only locations with *more than one* of the given
+            labels are returned.
 
         Returns
         -------
         A list of pores (or throats) that have been filtered according the
         given criteria.  The returned list is a subset of the received list of
         pores (or throats).
+
+        See Also
+        --------
+        pores
+        throats
 
         Examples
         --------
@@ -1221,7 +1220,7 @@ class Base(dict):
             **'nor', 'none', 'not'** : Pores with *none* of the given labels
             are counted.
 
-            **'nand'** : Pores with *not all* of the given labels are
+            **'nand'** : Pores with *some but not all* of the given labels are
             counted.
 
             **'xnor'** : Pores with *more than one* of the given labels are
@@ -1294,8 +1293,8 @@ class Base(dict):
             **'nor', 'none', 'not'** : Throats with *none* of the given labels
             are counted.
 
-            **'nand'** : Throats with *not all* of the given labels are
-            counted.
+            **'nand'** : Throats with *some but not all* of the given labels
+            are counted.
 
             **'xnor'** : Throats with *more than one* of the given labels are
             counted.
