@@ -6,7 +6,7 @@ import scipy.sparse.csgraph as csg
 from openpnm.core import Base, ModelsMixin
 from openpnm import topotools
 from openpnm.utils import HealthDict, Workspace, logging
-logger = logging.getLogger()
+logger = logging.getLogger(__name__)
 ws = Workspace()
 
 

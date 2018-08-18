@@ -1,7 +1,7 @@
 import numpy as np
 import scipy.stats as spts
 from openpnm.utils import logging
-logger = logging.getLogger()
+logger = logging.getLogger(__name__)
 
 
 def generic_function(target, prop, func, **kwargs):
