@@ -824,52 +824,6 @@ class MixedInvasionPercolation(GenericAlgorithm):
             self['throat.invasion_sequence'][isolated_Ts] = mSeq[isolated_Ts]
             self['throat.cluster'][isolated_Ts] = mClu[isolated_Ts]
 
-    def _perpendicular_vector(self, vec):
-        return np.cross(vec, [1, 1, 1])
-
-    def _circ_points(self, a, b, c):
-        t = np.arange(0, 2*np.pi, 0.1)
-        pts = []
-        for i in range(3):
-            pts.append(c[i] + a[i]*np.sin(t) + b[i]*np.cos(t))
-        return np.asarray(pts).T
-
-    def _check_intersection(self, c1, c2, r1, r2, pore_center, pore_rad):
-        r"""
-        Helper function to determine whether the intersetion between two
-        Spheres formed by growing menisci in the throats lies within the pore
-        body that they connect to
-        """
-        intersection = np.zeros(len(r1), dtype=bool)
-        vec_n = c2 - c1
-        dist = np.linalg.norm(vec_n, axis=1)
-        vec_a = self._perpendicular_vector(vec_n)
-        dist_a = np.linalg.norm(vec_a, axis=1)
-        vec_a *= 1/(np.vstack((dist_a, dist_a, dist_a)).T)
-        vec_b = np.cross(vec_a, vec_n)
-        dist_b = np.linalg.norm(vec_b, axis=1)
-        vec_b *= 1/(np.vstack((dist_b, dist_b, dist_b)).T)
-        x = (dist**2 - r2**2 + r1**2)/(2*dist)
-        # intersection centre
-        p = c1 + (vec_n.T*(x/dist)).T
-        sq = 4 * dist**2 * r1**2 - (dist**2 - r2**2 + r1**2)**2
-        # Could try to vectorize this but it would be pretty complicated!!!
-        for i in range(len(r1)):
-            if sq[i] > 0:
-                # An intersection is found
-                rad = (1/(2*dist[i]))*np.sqrt(sq[i])
-                # Points around circle
-                circle = self._circ_points(vec_a[i]*rad, vec_b[i]*rad, p[i])
-                # If any points on the circle defining the intersection
-                # Are within the pore radius distance from the pore center
-                # The intersection is inside the pore - Not exact as pores
-                # Are irregular shapes
-                c2p = np.linalg.norm(circle-pore_center, axis=1)
-                if np.any(c2p < pore_rad):
-                    intersection[i] = True
-
-        return intersection
-
     def _max_pressure(self):
         phase = self.project.find_phase(self)
         if self.settings['throat_entry_pressure']:
@@ -902,6 +856,55 @@ class MixedInvasionPercolation(GenericAlgorithm):
         temp4 = r1*r1 - x*x - y*y
         return temp4 >= 0
 
+    def _get_throat_pairs(self):
+        r'''
+        Generate an array of pores with all connected throats and pairs of
+        throats that connect to the same pore
+        '''
+        network = self.project.network
+        # Collect all throat pairs sharing a pore as list of lists
+        neighbor_Ts = network.find_neighbor_throats(pores=network.pores(),
+                                                    flatten=False)
+        # Pores associated to throat
+        Ps = []
+        # Throats connected to each pore
+        Ts = []
+        # Pairs of throats sharing a pore
+        T1 = []
+        T2 = []
+        start = 0
+        for p in range(len(neighbor_Ts)):
+            num_t = len(neighbor_Ts[p])
+            Ps = Ps + [p]*num_t
+            Ts = Ts + neighbor_Ts[p]
+            for t1 in range(num_t)[:-1]:
+                for t2 in range(num_t)[t1+1:]:
+                    T1 = T1 + [t1+start]
+                    T2 = T2 + [t2+start]
+            start += num_t
+        # Nt * 2 long
+        Ps = np.asarray(Ps)
+        Ts = np.asarray(Ts)
+        # indices into the above arrays based on throat pairs
+        T1 = np.asarray(T1)
+        T2 = np.asarray(T2)
+        return Ps, Ts, T1, T2
+
+    def _apply_cen_to_throats(self, p_cen, t_cen, t_norm, men_cen):
+        r'''
+        Take the pore center and throat center and work out which way
+        the throat normal is pointing relative to the vector between centers.
+        Offset the meniscus center along the throat vector in the correct
+        direction
+        '''
+        v = p_cen - t_cen
+        sign = np.sign(np.sum(v*t_norm, axis=1))
+        c3 = np.vstack((men_cen*sign,
+                        men_cen*sign,
+                        men_cen*sign)).T
+        coords = t_cen + c3*t_norm
+        return coords
+
     def setup_coop_filling(self, inv_points=None):
         r"""
         Evaluate the cooperative pore filling condition that the combined
@@ -927,214 +930,87 @@ class MixedInvasionPercolation(GenericAlgorithm):
             # The following properties will all be there for Voronoi
             p_centroids = net['pore.centroid']
             t_centroids = net['throat.centroid']
-            p_diam = net['pore.indiameter']
+            p_rad = net['pore.indiameter']/2
             t_norms = net['throat.normal']
         except:
             # Chances are this isn't Voronoi so calculate or replace all
             p_centroids = net['pore.coords']
             temp = net['pore.coords'][net['throat.conns']]
             t_centroids = np.mean(temp, axis=1)
-            p_diam = net['pore.diameter']
+            p_rad = net['pore.diameter']/2
             t_norms = net['throat.normal']
 
-        # Collect all throat pairs sharing a pore
-        neighbor_Ts = net.find_neighbor_throats(pores=net.pores(),
-                                                flatten=False)
-        T1 = []
-        T2 = []
-        P = []
-        for p, t_list in enumerate(neighbor_Ts):
-            for tind, t1 in enumerate(t_list):
-                for t2 in t_list[tind+1:]:
-                    T1.append(t1)
-                    T2.append(t2)
-                    P.append(p)
-        T1 = np.asarray(T1)
-        T2 = np.asarray(T2)
-        P = np.asarray(P)
-        p_cen = p_centroids[P]
-        p_rad = p_diam[P]/2
+        Ps, Ts, T1, T2 = self._get_throat_pairs()
+        # Network indices for the pairs
+        pps = Ps[T1]
+        pt1 = Ts[T1]
+        pt2 = Ts[T2]
+        # Pair pore center and radius
+        pp_cen = p_centroids[pps]
+        pp_rad = p_rad[pps]
         # Make sure throat normals are unit vector
         unit = np.linalg.norm(t_norms, axis=1)
         t_norms /= np.vstack((unit, unit, unit)).T
-        throat_centres_T1 = t_centroids[T1]
-        throat_normals_T1 = t_norms[T1]
-        throat_centres_T2 = t_centroids[T2]
-        throat_normals_T2 = t_norms[T2]
-        v_T1 = p_cen - throat_centres_T1
-        sign_T1 = np.sign(np.sum(v_T1*throat_normals_T1, axis=1))
-        v_T2 = p_cen - throat_centres_T2
-        sign_T2 = np.sign(np.sum(v_T2*throat_normals_T2, axis=1))
+
+        self.Pc_data = {}
         for Pc in inv_points:
             # regenerate model with new target Pc
             for phys in all_phys:
                 phys.models[cpf]['target_Pc'] = Pc
                 phys.regenerate_models(propnames=cpf)
-
-            cen_T1 = phase[tmen_cen][T1]
-            c3_T1 = np.vstack((cen_T1*sign_T1,
-                               cen_T1*sign_T1,
-                               cen_T1*sign_T1)).T
-            c1 = throat_centres_T1 + c3_T1*throat_normals_T1
-
-            cen_T2 = phase[tmen_cen][T2]
-            c3_T2 = np.vstack((cen_T2*sign_T2,
-                               cen_T2*sign_T2,
-                               cen_T2*sign_T2)).T
-            c2 = throat_centres_T2 + c3_T2*throat_normals_T2
-
-            c2c = (c1-c2)
+            men_cen_dist = phase[tmen_cen]
+            # Work out meniscii coord for each direction along the throat
+            men_cen_coord = self._apply_cen_to_throats(p_centroids[Ps],
+                                                       t_centroids[Ts],
+                                                       t_norms[Ts],
+                                                       men_cen_dist[Ts])
+            # Pair centers
+            pc1 = men_cen_coord[T1]
+            pc2 = men_cen_coord[T2]
+            # Center to center vector between neighboring meniscii
+            c2c = (pc1-pc2)
             dist = np.linalg.norm(c2c, axis=1)
-            r1 = phase[tmen_rad][T1]
-            r2 = phase[tmen_rad][T2]
+            # Pair meniscii radii
+            pr1 = phase[tmen_rad][pt1]
+            pr2 = phase[tmen_rad][pt2]
             # nans may exist if pressure is outside the range
             # set these to zero to be ignored by next step without
             # causing RuntimeWarning
-            r1[sp.isnan(r1)] = 0
-            r2[sp.isnan(r2)] = 0
-            check_pos = np.logical_and(r1 > 0, r2 > 0)
+            pr1[sp.isnan(pr1)] = 0
+            pr2[sp.isnan(pr2)] = 0
+            check_pos = np.logical_and(pr1 > 0, pr2 > 0)
             # simple initial distance check on sphere rads
-            check_rads = (r1+r2) >= dist
+            check_rads = (np.abs(pr1+pr2)) >= dist
             # check whether the filling angle is ok at this Pc
-            check_alpha_T1 = ~sp.isnan(phase[tfill_angle][T1])
-            check_alpha_T2 = ~sp.isnan(phase[tfill_angle][T2])
+            check_alpha_T1 = ~sp.isnan(phase[tfill_angle][pt1])
+            check_alpha_T2 = ~sp.isnan(phase[tfill_angle][pt2])
             check_alpha = check_alpha_T1*check_alpha_T2
             # check whether this throat pair already has a coop value
-            check_nans = sp.isnan(self.tt_Pc[T1, T2])
+            check_nans = sp.isnan(self.tt_Pc[pt1, pt2])
+#            mask = check_alpha*check_nans*check_rads
+            # take check_pos out whilst meniscii models mismatch
             mask = check_pos*check_alpha*check_nans*check_rads
             # if all checks pass
             if np.any(mask):
                 # Check if intersecting circle lies within pore
-                inter = self.trilaterate_v(P1=c1[mask],
-                                           P2=c2[mask],
-                                           P3=p_cen[mask],
-                                           r1=r1[mask][:, np.newaxis],
-                                           r2=r2[mask][:, np.newaxis],
-                                           r3=p_rad[mask][:, np.newaxis])
+                inter = self.trilaterate_v(P1=pc1[mask],
+                                           P2=pc2[mask],
+                                           P3=pp_cen[mask],
+                                           r1=pr1[mask][:, np.newaxis],
+                                           r2=pr2[mask][:, np.newaxis],
+                                           r3=pp_rad[mask][:, np.newaxis])
                 inter = inter.flatten()
                 if np.any(inter):
-                    self.tt_Pc[T1[mask][inter], T2[mask][inter]] = Pc
-                    self.tt_Pc[T2[mask][inter], T1[mask][inter]] = Pc
+                    self.tt_Pc[pt1[mask][inter], pt2[mask][inter]] = Pc
+                    self.tt_Pc[pt2[mask][inter], pt1[mask][inter]] = Pc
+            # Save meniscii data for each throat into each connecting pore
+            men_data = {}
+            men_data['Ps'] = Ps
+            men_data['Ts'] = Ts
+            men_data['cen'] = men_cen_coord
+            men_data['rad'] = phase[tmen_rad][Ts]
 
-        logger.info("Coop filling finished in " +
-                    str(np.around(time.time()-start, 2)) + " s")
-
-    def setup_coop_filling_old(self, inv_points=None):
-        r"""
-        Evaluate the cooperative pore filling condition that the combined
-        filling angle in next neighbor throats cannot exceed the geometric
-        angle between their throat planes.
-        This is used when the invading fluid has access to multiple throats
-        connected to a pore
-        """
-        net = self.project.network
-        phase = self.project.find_phase(self)
-        all_phys = self.project.find_physics(phase=phase)
-        if inv_points is None:
-            inv_points = np.arange(0, 1.01, .01)*self._max_pressure()
-        # Throat-Throat cooperative filling pressure
-        self.tt_Pc = np.ndarray([self.Nt, self.Nt], dtype=float)
-        self.tt_Pc.fill(sp.nan)
-        # Dictionary with keys of capillary pressure
-        self.coop_data = {}
-        start = time.time()
-        cpf = self.settings['cooperative_pore_filling']
-        tfill_angle = cpf + '.alpha'
-        tmen_rad = cpf + '.radius'
-        tmen_cen = cpf + '.center'
-        try:
-            # The following properties will all be there for Voronoi
-            p_centroids = net['pore.centroid']
-            t_centroids = net['throat.centroid']
-            p_diam = net['pore.indiameter']
-            t_norms = net['throat.normal']
-        except:
-            # Chances are this isn't Voronoi so calculate or replace all
-            p_centroids = net['pore.coords']
-            temp = net['pore.coords'][net['throat.conns']]
-            t_centroids = np.mean(temp, axis=1)
-            p_diam = net['pore.diameter']
-            t_norms = net['throat.normal']
-
-        for Pc in inv_points:
-            # Dictionary with keys of pore id
-            pore_data = {}
-            # regenerate model with new target Pc
-            for phys in all_phys:
-                phys.models[cpf]['target_Pc'] = Pc
-                phys.regenerate_models(propnames=cpf)
-
-            for pore in net.pores():
-                # Dictionary with keys of throat id
-                throat_data = {}
-                p_cen = p_centroids[pore]
-                p_rad = p_diam[pore]/2
-                throats = net.find_neighbor_throats(pores=pore,
-                                                    flatten=True)
-                throat_centres = t_centroids[throats]
-                throat_normals = t_norms[throats]
-                unit = np.linalg.norm(throat_normals, axis=1)
-                throat_normals /= np.vstack((unit, unit, unit)).T
-                v = p_cen - throat_centres
-                sign = np.sign(np.sum(v*throat_normals, axis=1))
-                cen = phase[tmen_cen][throats]
-                c3 = np.vstack((cen*sign, cen*sign, cen*sign)).T
-                men_cen = throat_centres + c3*throat_normals
-                pairs = []
-                for i, T in enumerate(throats):
-                    men_data = {}
-                    men_data['cen'] = men_cen[i]
-                    men_data['rad'] = phase[tmen_rad][T]
-                    men_data['offset'] = phase[tmen_cen][T]
-                    men_data['alpha'] = phase[tfill_angle][T]
-                    throat_data[T] = men_data
-                for ni in range(len(throats)):
-                    for nj in range(len(throats))[ni+1:]:
-                        pairs.append([ni, nj])
-                pairs = np.asarray(pairs)
-                if len(pairs) > 0:
-                    c1 = men_cen[pairs[:, 0]]
-                    c2 = men_cen[pairs[:, 1]]
-                    c2c = (c1-c2)
-                    dist = np.linalg.norm(c2c, axis=1)
-                    t1 = throats[pairs[:, 0]]
-                    t2 = throats[pairs[:, 1]]
-                    r1 = phase[tmen_rad][t1]
-                    r2 = phase[tmen_rad][t2]
-                    # nans may exist if pressure is outside the range
-                    # set these to zero to be ignored by next step without
-                    # causing RuntimeWarning
-                    r1[sp.isnan(r1)] = 0
-                    r2[sp.isnan(r2)] = 0
-                    check_pos = np.logical_and(r1 > 0, r2 > 0)
-                    # simple initial distance check on sphere rads
-                    check_rads = (r1+r2) >= dist
-                    # check whether the filling angle is ok at this Pc
-                    check_alpha_t1 = ~sp.isnan(phase[tfill_angle][t1])
-                    check_alpha_t2 = ~sp.isnan(phase[tfill_angle][t2])
-                    check_alpha = check_alpha_t1*check_alpha_t2
-                    # check whether this throat pair already has a coop value
-                    check_nans = sp.isnan(self.tt_Pc[t1, t2])
-                    mask = check_pos*check_alpha*check_nans*check_rads
-                    # if all checks pass
-                    if np.any(mask):
-                        # Check if intersecting circle lies within pore
-                        inter = self._check_intersection(c1=c1[mask],
-                                                         c2=c2[mask],
-                                                         r1=r1[mask],
-                                                         r2=r2[mask],
-                                                         pore_center=p_cen,
-                                                         pore_rad=p_rad)
-                        if np.any(inter):
-                            self.tt_Pc[t1[mask][inter], t2[mask][inter]] = Pc
-                            self.tt_Pc[t2[mask][inter], t1[mask][inter]] = Pc
-                        # intersection
-                    # pairs of mensici
-                # pore
-                pore_data[pore] = throat_data
-            # Pc
-            self.coop_data[Pc] = pore_data
-        # Finished
+            self.Pc_data[Pc] = men_data
         logger.info("Coop filling finished in " +
                     str(np.around(time.time()-start, 2)) + " s")
 

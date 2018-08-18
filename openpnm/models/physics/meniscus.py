@@ -65,8 +65,6 @@ def toroidal(target,
     Morrow [1]_, and explored by Gostick [2]_ in the context of a pore network
     model.
 
-    !!! Takes mean contact angle and surface tension !!!
-
     """
     network = target.project.network
     phase = target.project.find_phase(target)
@@ -78,53 +76,59 @@ def toroidal(target,
     theta = 180 - theta
     theta = _sp.deg2rad(theta)
     rt = network[diameter]/2
-    R = r_toroid
-    ratios = rt/R
-    a_max = theta - np.arcsin((np.sin(theta))/(1 + ratios))
+    Rf = r_toroid
 
-    def purcell_pressure(ratio, fill_angle, theta, sigma, R):
-        # Helper function
-        a_max = theta - np.arcsin((np.sin(theta))/(1+ratio))
-        check_max = fill_angle > a_max
-        if np.any(check_max):
-            if np.size(a_max) > 1:
-                fill_angle[check_max] = a_max[check_max]
-            else:
-                fill_angle[check_max] = a_max
-        r_men = R*(1+(ratio)-_sp.cos(fill_angle))/_sp.cos(theta-fill_angle)
-        Pc = 2*sigma/r_men
-        return Pc
+    a, r, R, s, t, p = syp.symbols('a, r, R, s, t, p')
+    rhs = 2*s/(R*(1+(r/R)-syp.cos(a))/syp.cos(t-a))
+#    lhs = p
+#    roots = syp.solve(lhs-rhs, a)
+#    _, r1, r2, _ = roots
+    eit = syp.exp(syp.I*t)
+    # There are 2 non-trivial solutions when rearranging the Purcell Pc eqn
+    # To solve for alpha (a), r1 and r2 - r1 is outside a_min and a_max,
+    # r2 is inside the range. It takes sympy to solve the equations so the
+    # root inside the range is provided below but can be verified by running
+    # the commented out lines above
+    ap = -syp.I*syp.log((R*p*eit + p*r*eit +
+                         syp.sqrt(-(-2*R*p**2*r*eit +
+                                    2*R*p*s*syp.exp(2*syp.I*t) +
+                                    2*R*p*s - p**2*r**2*eit +
+                                    4*s**2*eit)*eit)) / (R*p*eit + 2*s))
+    a_max = t - syp.asin((syp.sin(t))/(1+r/R))
+    a_min = t - syp.pi + syp.asin((syp.sin(t))/(1+r/R))
+    # alpha at given Pc
+    fa_Pc = syp.lambdify((p, r, R, s, t), ap, 'numpy')
+    # Pc at given alpha
+    fPc = syp.lambdify((a, r, R, s, t), rhs, 'numpy')
+    # alphas where max and min Pc occurs
+    fa_max = syp.lambdify((r, R, t), a_max, 'numpy')
+    fa_min = syp.lambdify((r, R, t), a_min, 'numpy')
+    # Values at min and max
+    a_maxs = fa_max(rt, Rf, theta)
+    pc_max = fPc(a_maxs, rt, Rf, sigma, theta)
+    a_mins = fa_min(rt, Rf, theta)
+    pc_min = fPc(a_mins, rt, Rf, sigma, theta)
 
-    Pc_max = purcell_pressure(ratios, a_max, theta, sigma, R)
     if mode == 'max':
-        return Pc_max
+        return pc_max
     elif target_Pc is None:
-        logger.exception(msg='Please supply a target capillary pressure')
-    else:
-        pass
-    fill_angle = _sp.deg2rad(np.linspace(-30, 150, 1001))
-
-    alpha = np.zeros_like(ratios)
-    for T, ratio in enumerate(ratios):
-        mask = np.zeros_like(fill_angle, dtype=bool)
-        nudge = 100
-        all_Pc = purcell_pressure(ratio, fill_angle, theta[T], sigma[T], R)
-        if target_Pc > all_Pc.max():
-            # Target Pc out of range
-            lowest = fill_angle[np.argwhere(all_Pc == all_Pc.max())[0][0]]
-        else:
-            while np.sum(mask) == 0:
-                plus_mask = all_Pc < target_Pc + nudge
-                minus_mask = all_Pc > target_Pc - nudge
-                mask = np.logical_and(plus_mask, minus_mask)
-                if np.sum(mask) == 0:
-                    nudge += 10
-
-            regions = ndimage.find_objects(ndimage.label(mask)[0])
-            rx = [np.mean(fill_angle[regions[r]]) for r in range(len(regions))]
-            root_x = np.asarray(rx)
-            lowest = np.min(root_x)
-        alpha[T] = lowest
+        logger.exception(msg='Please supply a target capillary pressure' +
+                         ' when mode is not max')
+    if np.abs(target_Pc) < 1.0:
+        target_Pc = 1.0
+    # Masks to determine which throats to actually calculate alpha for
+    # Outside the valid range of pressures min or max values are used
+    over_range = target_Pc > pc_max
+    undr_range = target_Pc < pc_min
+    in_range = ~over_range * ~undr_range
+    alpha = np.zeros(len(rt))
+    if np.any(in_range):
+        alpha[in_range] = np.real(fa_Pc(target_Pc, rt[in_range], Rf,
+                                        sigma[in_range], theta[in_range]))
+    if np.any(over_range):
+        alpha[over_range] = a_maxs[over_range]
+    if np.any(undr_range):
+        alpha[undr_range] = a_mins[undr_range]
 
     logger.info('Filling angles calculated for Pc: '+str(target_Pc))
     men_data = {}
@@ -132,17 +136,19 @@ def toroidal(target,
     # Handle potential divide by zero
     f[np.abs(f) == np.pi/2] = f[np.abs(f) == np.pi/2]*(1-1e-12)
     # Meniscus radius
-    r_men = R*(1 + rt/R - np.cos(alpha)) / np.cos((f))
+    r_men = Rf*(1 + rt/Rf - np.cos(alpha)) / np.cos((f))
     # Vertical adjustment for centre of circle
     y_off = r_toroid*np.sin(alpha)
     # Angle between contact point - centre - vertical
     zeta = (theta-alpha-np.pi/2)
     # Distance that center of meniscus is below the plane of the throat
     center = y_off - r_men*np.cos(zeta)
-    men_data['alpha'] = _sp.rad2deg(alpha)
-    men_data['alpha_max'] = a_max
+    men_data['alpha'] = alpha
+    men_data['alpha_max'] = a_maxs
+    men_data['alpha_min'] = a_mins
     men_data['radius'] = r_men
     men_data['center'] = center
+    men_data['zeta'] = zeta
     return men_data
 
 
@@ -151,8 +157,8 @@ def sinusoidal(target,
                target_Pc=None,
                surface_tension='pore.surface_tension',
                contact_angle='pore.contact_angle',
-               pore_diameter='pore.diameter',
-               throat_diameter='throat.diameter',
+               throat_diameter_inner='throat.diameter_inner',
+               throat_diameter_outer='throat.diameter_outer',
                throat_length='throat.length',
                **kwargs):
     r"""
@@ -181,10 +187,10 @@ def sinusoidal(target,
     contact_angle : dict key (string)
         The dictionary key containing the contact angle values to be used. If
         a pore property is given, it is interpolated to a throat list.
-    pore_diameter : dict key (string)
-        The dictionary key containing the pore diameter values to be used.
-    throat_diameter : dict key (string)
-        The dictionary key containing the throat diameter values to be used.
+    throat_diameter_inner : dict key (string)
+        The dictionary key containing the inner throat diameter values.
+    throat_diameter_outer : dict key (string)
+        The dictionary key containing the outer throat diameter values.
     throat_length : dict key (string)
         The dictionary key containing the throat length values to be used.
 
@@ -210,29 +216,17 @@ def sinusoidal(target,
     network = target.project.network
     phase = target.project.find_phase(target)
     element, sigma, theta = _get_key_props(phase=phase,
-                                           diameter=throat_diameter,
+                                           diameter=throat_diameter_inner,
                                            surface_tension=surface_tension,
                                            contact_angle=contact_angle)
     # Symbols
-    # sigma
-    s = syp.Symbol('s')
-    # theta
-    t = syp.Symbol('t')
-    # position of mensicus along throat axis, zero at center
-    x = syp.Symbol('x')
-    # pore radius
-    rp = syp.Symbol('rp')
-    # throat radius
-    rt = syp.Symbol('rt')
-    # throat lenggth
-    l = syp.Symbol('l')
-    # Pressure offset for finding minima
-    off = syp.Symbol('off')
+    # position along throat, pore rad, throat rad, throat length, sigma, theta
+    x, rp, rt, lt, s, t,  = syp.symbols('x, rp, rt, lt, s, t')
     # Equations
     # Radius profile along throat length
-    y = (rp-rt)*(1-syp.cos(2*syp.pi*x/l))/2 + rt
+    y = (rp-rt)*(1-syp.cos(2*syp.pi*x))/2 + rt
     # dr/dx used for filling angle
-    yprime = y.diff(x)
+    yprime = y.diff(x)/lt
     # Filling angle
     alpha = syp.atan(yprime)
     # Meniscus Radius of curvature
@@ -241,113 +235,60 @@ def sinusoidal(target,
     a = syp.sqrt(R*R - y*y)
     # angle between throat axis, meniscus center and meniscus contact point
     gamma = syp.asin(y/R)
-    # Capillary Pressure function with target capillary pressure adjustment for
-    # root finding
-    f = -2*s*syp.cos(alpha+t)/y - off
-    # df/dx used for Newton-Raphson method for root finding
-    fprime = f.diff(x)
+    # Capillary Pressure function
+    f = -2*s*syp.cos(alpha+t)/y
     # Callable expressions
-    rx = syp.lambdify((x, rp, rt, l), y, 'numpy')
-    Pc = syp.lambdify((x, rp, rt, l, s, t, off), f, 'numpy')
-    Pc_prime = syp.lambdify((x, rp, rt, l, s, t, off), fprime, 'numpy')
-    rad_curve = syp.lambdify((x, rp, rt, l, s, t, off), R, 'numpy')
-    c2x = syp.lambdify((x, rp, rt, l, s, t, off), a, 'numpy')
-    fill_angle = syp.lambdify((x, rp, rt, l), alpha, 'numpy')
-    cap_angle = syp.lambdify((x, rp, rt, l, s, t, off), gamma, 'numpy')
+    rx = syp.lambdify((x, rp, rt, lt), y, 'numpy')
+    Pc = syp.lambdify((x, rp, rt, lt, s, t), f, 'numpy')
+    rad_curve = syp.lambdify((x, rp, rt, lt, s, t), R, 'numpy')
+    c2x = syp.lambdify((x, rp, rt, lt, s, t), a, 'numpy')
+    fill_angle = syp.lambdify((x, rp, rt, lt), alpha, 'numpy')
+    cap_angle = syp.lambdify((x, rp, rt, lt, s, t), gamma, 'numpy')
+    theta = np.deg2rad(theta)
     # Network properties
-    throatLength = network[throat_length]
-    poreRad = np.mean(network[pore_diameter][network['throat.conns']], axis=1)
-    poreRad /= 2
-    throatRad = network[throat_diameter]/2
-    Nt = network.Nt
-    # Model ouputs
-    offset = np.zeros(Nt)
-    min_Pc = np.zeros(Nt)
-    max_Pc = np.zeros(Nt)
-    min_arg = np.zeros(Nt, dtype=int)
-    max_arg = np.zeros(Nt, dtype=int)
-    min_point = np.zeros(Nt)
-    max_point = np.zeros(Nt)
-
-    # Preprocessing - go along the throat length and work out min and max Pc
-    # and the position where this occurs
-    for i in range(Nt):
-        points = np.arange(-throatLength[i]/2,
-                           throatLength[i]/2,
-                           throatLength[i]/100)
-        all_Pc = Pc(points,
-                    poreRad[i],
-                    throatRad[i],
-                    throatLength[i],
-                    sigma[i],
-                    np.deg2rad(theta[i]),
-                    offset[i])
-        min_Pc[i] = np.min(all_Pc)
-        max_Pc[i] = np.max(all_Pc)
-        min_arg[i] = np.argmin(all_Pc)
-        max_arg[i] = np.argmax(all_Pc)
-        min_point[i] = points[min_arg[i]]
-        max_point[i] = points[max_arg[i]]
-    if mode == 'max':
-        return max_Pc
-    elif target_Pc is None:
-        logger.exception(msg='Please supply a target capillary pressure')
-    else:
-        pass
-    # If we got this far we're looking for the meniscus information for a
-    # target Capillary pressure
-    Pc_range = max_Pc-min_Pc
-    x_range = max_point - min_point
-
-    # Private helper functions
-    def Newton_Raphson(x0, rp, rt, l, s, t, off):
-        tol = np.ones(len(x0), dtype=float)
-        n = 0
-        n_max = 50
-        while np.any(tol[~np.isnan(tol)] > 1e-6) and n < n_max:
-            func = Pc(x0, rp, rt, l, s, t, off)
-            func_prime = Pc_prime(x0, rp, rt, l, s, t, off)
-            xn = x0 - func/func_prime
-            tol = np.abs((xn - x0)/x0)
-            x0 = xn
-            n += 1
-        return x0
-
-    def in_range(target_Pc):
-        r'''
-        Check whether the target pressure is in range for each throat
-        '''
-        return np.logical_and((target_Pc >= min_Pc), (target_Pc <= max_Pc))
-
-    def get_root(target_Pc):
-        r'''
-        Get the root between the minima and maxima
-        '''
-        # interpolated initial guess
-        x0 = min_point+(x_range*(target_Pc-min_Pc)/(Pc_range))
-        x0[~in_range(target_Pc)] = np.nan
-        # find root with function adjusted for target
-        root = Newton_Raphson(x0,
-                              poreRad,
-                              throatRad,
-                              throatLength,
-                              sigma,
-                              np.deg2rad(theta),
-                              target_Pc)
-        return root
-
+    t_len = network[throat_length]
+    pos = np.arange(-1/2, 1/2, 1e-3)
+    r_ps = network[throat_diameter_outer]/2
+    r_ts = network[throat_diameter_inner]/2
     # Now find the positions of the menisci along each throat axis
+    Y, X = np.meshgrid(r_ts, pos)
+    t_Pc = Pc(X, r_ps, Y, t_len, sigma, theta)
+    # Values of minima and maxima
+    Pc_min = np.min(t_Pc, axis=0)
+    Pc_max = np.max(t_Pc, axis=0)
+    if mode == 'max':
+        return Pc_max
+    elif target_Pc is None:
+        logger.exception(msg='Please supply a target capillary pressure' +
+                         ' when mode is not max')
+    if np.abs(target_Pc) < 1.0:
+        target_Pc = 1.0
+    # Arguments of minima and maxima
+    a_min = np.argmin(t_Pc, axis=0)
+    a_max = np.argmax(t_Pc, axis=0)
+    inds = np.indices(np.shape(t_Pc))
+    # Change values outside the range between minima and maxima to be those
+    # Values
+    mask = inds[0] < np.ones(len(pos))[:, np.newaxis]*a_min
+    t_Pc[mask] = (np.ones(len(pos))[:, np.newaxis]*Pc_min)[mask]
+    mask = inds[0] > np.ones(len(pos))[:, np.newaxis]*a_max
+    t_Pc[mask] = (np.ones(len(pos))[:, np.newaxis]*Pc_max)[mask]
+    # Find the argument at or above the target Pressure
+    mask = t_Pc >= target_Pc
+    arg_x = np.argmax(mask, axis=0)
+    # If outside range change to minima or maxima accordingly
+    arg_x[target_Pc < Pc_min] = a_min[target_Pc < Pc_min]
+    arg_x[target_Pc > Pc_max] = a_max[target_Pc > Pc_max]
+    xpos = pos[arg_x]
+    # Output
     men_data = {}
-    pos = get_root(target_Pc)
-    men_data['pos'] = pos
-    men_data['rx'] = rx(pos, poreRad, throatRad, throatLength)
-    men_data['alpha'] = fill_angle(pos, poreRad, throatRad, throatLength)
-    men_data['beta'] = c2x(pos, poreRad, throatRad, throatLength,
-                           sigma, theta, offset)
-    men_data['gamma'] = cap_angle(pos, poreRad, throatRad, throatLength,
-                                  sigma, theta, offset)
-    men_data['radius'] = rad_curve(pos, poreRad, throatRad, throatLength,
-                                   sigma, theta, offset)
-    men_data['center'] = pos - np.sign(target_Pc)*men_data['alpha']
+    men_data['pos'] = xpos
+    men_data['rx'] = rx(xpos, r_ps, r_ts, t_len)
+    men_data['alpha'] = fill_angle(xpos, r_ps, r_ts, t_len)
+    men_data['c2x'] = c2x(xpos, r_ps, r_ts, t_len, sigma, theta)
+    men_data['gamma'] = cap_angle(xpos, r_ps, r_ts, t_len, sigma, theta)
+    men_data['radius'] = rad_curve(xpos, r_ps, r_ts, t_len, sigma, theta)
+    men_data['center'] = (xpos*t_len +
+                          np.sign(men_data['radius'])*men_data['c2x'])
     logger.info(mode+' calculated for Pc: '+str(target_Pc))
     return men_data
