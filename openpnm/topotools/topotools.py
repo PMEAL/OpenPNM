@@ -251,7 +251,7 @@ def find_connected_sites(bonds, am, flatten=True, logic='or'):
 
     """
     if am.format != 'coo':
-        am = am.tocoo(copy=False)
+        raise Exception('Adjacency matrix must be in COO format')
     bonds = sp.array(bonds, ndmin=1)
     if len(bonds) == 0:
         return []
@@ -319,7 +319,7 @@ def find_connecting_bonds(sites, am):
     if am.format != 'dok':
         am = am.todok(copy=False)
     sites = sp.array(sites, ndmin=2)
-    if len(sites) == 0:
+    if sites.size == 0:
         return []
     z = tuple(zip(sites[:, 0], sites[:, 1]))
     neighbors = [am.get(z[i], None) for i in range(len(z))]
@@ -356,12 +356,14 @@ def find_complement(am, sites=None, bonds=None, asmask=False):
     Either ``sites`` or ``bonds`` must be specified
 
     """
-    if sites:
+    if sites and bonds is None:
         inds = sp.unique(sites)
         N = am.shape[0]
-    elif bonds:
+    elif bonds and sites is None:
         inds = sp.unique(bonds)
         N = int(am.nnz/2)
+    elif sites and bonds:
+        raise Exception('Only one of sites or bonds can be specified')
     else:
         raise Exception('Either sites or bonds must be specified')
     mask = sp.ones(shape=N, dtype=bool)
