@@ -76,7 +76,7 @@ class MixedPercolationTest:
         dat_a = self.run_mp(False, False, False)
         # Sequential w. trapping
         dat_b = self.run_mp(True, False, False)
-#        assert np.all(dat_a[1] == dat_b[1])
+        assert np.all(dat_a[1] == dat_b[1])
 
     def test_case_throats_random(self):
         # Throats only
@@ -102,7 +102,7 @@ class MixedPercolationTest:
         dat_e = self.run_mp(False, False, False)
         # Sequential w. trapping
         dat_f = self.run_mp(True, False, False)
-#        assert np.all(dat_e[1] == dat_f[1])
+        assert np.all(dat_e[1] == dat_f[1])
 
     def test_case_pores_random(self):
         # Random
@@ -127,7 +127,7 @@ class MixedPercolationTest:
         dat_i = self.run_mp(False, False, False)
         # Sequential w. trapping
         dat_j = self.run_mp(True, False, False)
-#        assert np.all(dat_i[1] == dat_j[1])
+        assert np.all(dat_i[1] == dat_j[1])
 
     def test_case_mixed_random(self):
         # Random
@@ -339,7 +339,7 @@ class MixedPercolationTest:
         IP_1.set_outlets(self.outlets)
         IP_1.apply_trapping()
         IP_1.results()
-#        assert np.sum(IP_1['pore.trapped']) ==35
+        assert np.sum(IP_1['pore.trapped']) ==35
 
     def test_invade_isolated_Ts(self):
         self.setup_class(Np=10)

@@ -644,7 +644,8 @@ class MixedInvasionPercolation(GenericAlgorithm):
         # For all the steps after the inlets are set up to break-through
         # Reverse the sequence and assess the neighbors cluster state
         stopped_clusters = np.zeros(net.Np, dtype=bool)
-        all_neighbors = net.find_neighbor_pores(net.pores(), flatten=False)
+        all_neighbors = net.find_neighbor_pores(net.pores(), flatten=False,
+                                                include_input=True)
         for un_seq, pore in inv_seq:
             if ~outlets[pore] and un_seq > -1:  # Don't include outlets
                 nc = clusters[all_neighbors[pore]]  # Neighboring clusters
