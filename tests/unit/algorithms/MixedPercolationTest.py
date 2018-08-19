@@ -60,8 +60,6 @@ class MixedPercolationTest:
             l = np.sqrt(self.net.Np).astype(int)
             plt.imshow(IP_1['pore.invasion_sequence'].reshape([l, l]),
                        cmap=plt.get_cmap('Blues'))
-        else:
-            plt.close()
         if flowrate is not None:
             IP_1.apply_flow(flowrate=flowrate)
         self.alg = IP_1
@@ -246,8 +244,8 @@ class MixedPercolationTest:
         fig = plt.figure()
         self.alg.plot_intrusion_curve(fig)
         del fig
-        self.alg.plot_intrusion_curve()
-        plt.close('all')
+        fig = self.alg.plot_intrusion_curve()
+        del fig
 
     def test_cluster_merging(self):
         phys = self.phys
