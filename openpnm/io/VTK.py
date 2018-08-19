@@ -107,10 +107,8 @@ class VTK(GenericIO):
                     array[np.isnan(array)] = fill_nans
             element = VTK._array_to_element(key, array)
             if (array.size == num_points):
-                print('adding: '+key)
                 point_data_node.append(element)
             elif (array.size == num_throats):
-                print('adding: '+key)
                 cell_data_node.append(element)
 
         if filename == '':
