@@ -1,7 +1,6 @@
 from xml.etree import ElementTree as ET
 from flatdict import FlatDict
 import numpy as np
-from openpnm.network import GenericNetwork
 from openpnm.io import GenericIO, Dict
 from openpnm.utils import logging, Workspace
 logger = logging.getLogger(__name__)
@@ -107,9 +106,11 @@ class VTK(GenericIO):
                 else:
                     array[np.isnan(array)] = fill_nans
             element = VTK._array_to_element(key, array)
-            if (array.size == num_points) and element:
+            if (array.size == num_points):
+                print('adding: '+key)
                 point_data_node.append(element)
-            elif (array.size == num_throats) and element:
+            elif (array.size == num_throats):
+                print('adding: '+key)
                 cell_data_node.append(element)
 
         if filename == '':
