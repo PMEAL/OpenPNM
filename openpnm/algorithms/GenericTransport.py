@@ -344,7 +344,7 @@ class GenericTransport(GenericAlgorithm):
 
     b = property(fget=_get_b, fset=_set_b)
 
-    def _apply_BCs_orig(self):
+    def _apply_BCs_(self):
         r"""
         Applies all the boundary conditions that have been specified, by
         adding values to the *A* and *b* matrices.
@@ -499,10 +499,7 @@ class GenericTransport(GenericAlgorithm):
                 x = solver(A=A, b=b, tol=tol)
             else:
                 sym = issymmetric(A)
-                if sym:
-                    # If A is symmetric & a direct solver
-                    # is used, use spsolve_triangular instead
-                    self.settings['solver'] = 'spsolve_triangular'
+                if (sym and self.settings['solver'] == 'spsolve_triangular'):
                     solver = getattr(sprs.linalg, self.settings['solver'])
                     x = solver(A=sprs.tril(A), b=b)
                 else:
