@@ -83,6 +83,7 @@ An MIP simulation can be run with the following commands:
  >>> mip = op.algorithms.Porosimetry(project=proj)
  >>> mip.setup(phase=hg)
  >>> mip.set_partial_filling(propname='pore.late_filling')
+ >>> mip.set_inlets(pores=pn.pores('bottom'))
  >>> mip.run(points=20, stop=1e7)
  >>> mip.plot_intrusion_curve()
 
