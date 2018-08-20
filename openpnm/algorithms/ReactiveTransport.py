@@ -196,7 +196,7 @@ class ReactiveTransport(GenericTransport):
     def _update_physics(self):
         """r
         Update physics using the current value of 'quantity'
-        
+
         Notes
         -----
         The algorithm directly writes the value of 'quantity' into the phase.
@@ -218,7 +218,7 @@ class ReactiveTransport(GenericTransport):
     def _apply_sources(self):
         """r
         Update 'A' and 'b' applying source terms to specified pores
-        
+
         Notes
         -----
         Applying source terms to 'A' and 'b' is performed after (optionally)

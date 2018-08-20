@@ -99,7 +99,7 @@ class TransientReactiveTransport(ReactiveTransport):
             Transient solver tolerance. The simulation stops (before reaching
             't_final') when the residual falls below 't_tolerance'. The
             default value is 1e-06. The 'residual' measures the variation from
-            one time-step to another in the value of the 'quantity' solved for. 
+            one time-step to another in the value of the 'quantity' solved for.
 
         r_tolerance : scalar
             Tolerance to achieve within each time step. The solver passes to
@@ -150,8 +150,8 @@ class TransientReactiveTransport(ReactiveTransport):
             imposed to all pores.
         """
         self[self.settings['quantity']] = values
-        self[self.settings['quantity']] = (
-                             self[self.settings['quantity']].astype('float64'))
+        converted_array = self[self.settings['quantity']].astype('float64')
+        self[self.settings['quantity']] = converted_array
 
     def _t_update_A(self):
         r"""
