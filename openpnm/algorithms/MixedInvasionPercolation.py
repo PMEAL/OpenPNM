@@ -33,15 +33,17 @@ class MixedInvasionPercolation(GenericAlgorithm):
 
     """
 
-    def __init__(self, settings={}, **kwargs):
-        def_set = {'pore_volume': 'pore.volume',
+    def __init__(self, settings={}, phase=None, **kwargs):
+        def_set = {'phase': None,
+                   'pore_volume': 'pore.volume',
                    'throat_volume': 'throat.volume',
                    'pore_entry_pressure': 'pore.entry_pressure',
                    'throat_entry_pressure': 'throat.entry_pressure',
                    'mode': 'mixed',
                    'snap_off': False,
                    'invade_isolated_Ts': False,
-                   'gui': {'setup':        {'mode': '',
+                   'gui': {'setup':        {'phase': None,
+                                            'mode': '',
                                             'pore_entry_pressure': '',
                                             'throat_entry_pressure': '',
                                             'snap_off': '',
@@ -65,6 +67,8 @@ class MixedInvasionPercolation(GenericAlgorithm):
         super().__init__(**kwargs)
         self.settings.update(def_set)
         self.settings.update(settings)
+        if phase is not None:
+            self.setup(phase=phase)
 
     def setup(self,
               phase=None,

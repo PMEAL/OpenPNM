@@ -23,13 +23,15 @@ class ReactiveTransport(GenericTransport):
     reactions when source terms are added.
     """
 
-    def __init__(self, settings={}, **kwargs):
-        def_set = {'sources': [],
+    def __init__(self, settings={}, phase=None, **kwargs):
+        def_set = {'phase': None,
+                   'sources': [],
                    'r_tolerance': 0.001,
                    'max_iter': 5000,
                    'relaxation_source': 1,
                    'relaxation_quantity': 1,
-                   'gui': {'setup':        {'quantity': '',
+                   'gui': {'setup':        {'phase': None,
+                                            'quantity': '',
                                             'conductance': '',
                                             'r_tolerance': None,
                                             'max_iter': None,
@@ -46,6 +48,8 @@ class ReactiveTransport(GenericTransport):
         super().__init__(**kwargs)
         self.settings.update(def_set)
         self.settings.update(settings)
+        if phase is not None:
+            self.setup(phase=phase)
 
     def setup(self, phase=None, quantity='', conductance='', r_tolerance=None,
               max_iter=None, relaxation_source=None,
