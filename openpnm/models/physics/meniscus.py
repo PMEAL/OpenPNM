@@ -57,31 +57,35 @@ def toroidal(target,
                                            surface_tension=surface_tension,
                                            contact_angle=contact_angle)
     # Mason and Morrow have the definitions switched
-    theta = 180 - theta
     theta = _sp.deg2rad(theta)
     rt = network[diameter]/2
     Rf = r_toroid
 
     a, r, R, s, t, p = syp.symbols('a, r, R, s, t, p')
-    rhs = 2*s/(R*(1+(r/R)-syp.cos(a))/syp.cos(t-a))
+    rhs = -2*s/(R*(1+(r/R)-syp.cos(a))/syp.cos(t-a))
 #    lhs = p
 #    roots = syp.solve(lhs-rhs, a)
 #    _, r1, r2, _ = roots
     eit = syp.exp(syp.I*t)
     # There are 2 non-trivial solutions when rearranging the Purcell Pc eqn
-    # To solve for alpha (a), r1 and r2 - r1 is outside a_min and a_max,
-    # r2 is inside the range. It takes sympy to solve the equations so the
+    # To solve for alpha (a), r1 and r2 - r2 is outside a_min and a_max,
+    # r1 is inside the range. It takes sympy to solve the equations so the
     # root inside the range is provided below but can be verified by running
     # the commented out lines above
-    ap = -syp.I*syp.log((R*p*eit + p*r*eit +
-                         syp.sqrt(-(-2*R*p**2*r*eit +
-                                    2*R*p*s*syp.exp(2*syp.I*t) +
-                                    2*R*p*s - p**2*r**2*eit +
-                                    4*s**2*eit)*eit)) / (R*p*eit + 2*s))
-    a_max = t - syp.asin((syp.sin(t))/(1+r/R))
-    a_min = t - syp.pi + syp.asin((syp.sin(t))/(1+r/R))
+    r1 = -syp.I*syp.log((R*p*eit + p*r*eit -
+                         syp.sqrt((2*R*p**2*r*eit +
+                                   2*R*p*s*syp.exp(2*syp.I*t) +
+                                   2*R*p*s + p**2*r**2*eit -
+                                   4*s**2*eit)*eit))/(R*p*eit - 2*s))
+    r2 = -syp.I*syp.log((R*p*eit + p*r*eit +
+                         syp.sqrt((2*R*p**2*r*eit +
+                                   2*R*p*s*syp.exp(2*syp.I*t) +
+                                   2*R*p*s + p**2*r**2*eit -
+                                   4*s**2*eit)*eit))/(R*p*eit - 2*s))
+    a_min = t - syp.asin((syp.sin(t))/(1+r/R))
+    a_max = t - syp.pi + syp.asin((syp.sin(t))/(1+r/R))
     # alpha at given Pc
-    fa_Pc = syp.lambdify((p, r, R, s, t), ap, 'numpy')
+    fa_Pc = syp.lambdify((p, r, R, s, t), r1, 'numpy')
     # Pc at given alpha
     fPc = syp.lambdify((a, r, R, s, t), rhs, 'numpy')
     # alphas where max and min Pc occurs
@@ -122,7 +126,7 @@ def toroidal(target,
     # Meniscus radius
     r_men = Rf*(1 + rt/Rf - np.cos(alpha)) / np.cos((f))
     # Vertical adjustment for centre of circle
-    y_off = r_toroid*np.sin(alpha)
+    y_off = Rf*np.sin(alpha)
     # Angle between contact point - centre - vertical
     zeta = (theta-alpha-np.pi/2)
     # Distance that center of meniscus is below the plane of the throat

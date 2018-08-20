@@ -978,7 +978,9 @@ class MixedInvasionPercolation(GenericAlgorithm):
             # causing RuntimeWarning
             pr1[sp.isnan(pr1)] = 0
             pr2[sp.isnan(pr2)] = 0
-            check_pos = np.logical_and(pr1 > 0, pr2 > 0)
+            # Negative mensicii radii means positive pressure
+            # Assume meniscii only interact when bulging into pore
+            check_neg = np.logical_and(pr1 < 0, pr2 < 0)
             # simple initial distance check on sphere rads
             check_rads = (np.abs(pr1+pr2)) >= dist
             # check whether the filling angle is ok at this Pc
@@ -987,9 +989,7 @@ class MixedInvasionPercolation(GenericAlgorithm):
             check_alpha = check_alpha_T1*check_alpha_T2
             # check whether this throat pair already has a coop value
             check_nans = sp.isnan(self.tt_Pc[pt1, pt2])
-#            mask = check_alpha*check_nans*check_rads
-            # take check_pos out whilst meniscii models mismatch
-            mask = check_pos*check_alpha*check_nans*check_rads
+            mask = check_neg*check_alpha*check_nans*check_rads
             # if all checks pass
             if np.any(mask):
                 # Check if intersecting circle lies within pore
