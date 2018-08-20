@@ -85,7 +85,6 @@ An MIP simulation can be run with the following commands:
  >>> mip.set_partial_filling(propname='pore.late_filling')
  >>> mip.set_inlets(pores=pn.pores('bottom'))
  >>> mip.run(points=20, stop=1e7)
- >>> mip.plot_intrusion_curve()
 
 --------------------------------------------------------------------------------
 Invasion Percolation
@@ -119,12 +118,9 @@ A full invasion simulation using a 2D network can be run with the following comm
  >>> ip.set_inlets(pores=[0])
  >>> ip.run()
  >>> water.update(ip.results(Snwp=0.5))
- >>> plt.subplot(1, 2, 1)
- >>> plt.imshow(sp.reshape(ip['pore.invasion_sequence'], newshape=S[S > 1]))
- >>> plt.subplot(1, 2, 2)
- >>> plt.imshow(sp.reshape(water['pore.occupancy'], newshape=S[S > 1]))
 
-Which produces the following output
+Images can be produced easily for 2D networks with commands such as ``plt.imshow(sp.reshape(ip['pore.invasion_sequence'], newshape=S[S > 1]))``
+and ``plt.imshow(sp.reshape(water['pore.occupancy'], newshape=S[S > 1]))``, which produces the following output:
 
 .. image:: https://imgur.com/VPf24cN.png
 
