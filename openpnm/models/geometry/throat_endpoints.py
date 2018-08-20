@@ -50,7 +50,8 @@ def cubic_pores(target, pore_diameter='pore.diameter'):
 
 
 def spherical_pores(target, pore_diameter='pore.diameter',
-                    throat_diameter='throat.diameter'):
+                    throat_diameter='throat.diameter',
+                    throat_centroid='throat.centroid'):
     r"""
     Calculate the coordinates of throat endpoints, assuming spherical pores.
     This model accounts for the overlapping lens between pores and throats.
@@ -68,6 +69,9 @@ def spherical_pores(target, pore_diameter='pore.diameter',
     throat_diameter : string
         Dictionary key of the throat diameter values.
 
+    throat_centroid : string, optional
+        Dictionary key of the throat centroid values. See the notes.
+
     Returns
     -------
     EP : dictionary
@@ -76,8 +80,13 @@ def spherical_pores(target, pore_diameter='pore.diameter',
 
     Notes
     -----
-    This model should not be applied to true 2D networks. Use `circular_pores`
-    model instead.
+    (1) This model should not be applied to true 2D networks. Use
+    `circular_pores` model instead.
+
+    (2) By default, this model assumes that throat centroid and pore
+    coordinates are colinear. If that's not the case, such as in extracted
+    networks, `throat_centroid` could be passed as an optional argument, and
+    the model takes care of the rest.
 
     """
     network = target.project.network
@@ -85,7 +94,6 @@ def spherical_pores(target, pore_diameter='pore.diameter',
     xyz = network['pore.coords']
     cn = network['throat.conns'][throats]
     L = _ctc(target=target, pore_diameter=pore_diameter)
-    unit_vec = (xyz[cn[:, 1]] - xyz[cn[:, 0]]) / L[:, None]
     Dt = network[throat_diameter][throats]
     D1 = network[pore_diameter][cn[:, 0]]
     D2 = network[pore_diameter][cn[:, 1]]
@@ -98,21 +106,32 @@ def spherical_pores(target, pore_diameter='pore.diameter',
     mask = Dt > D2
     L2[mask] = 0.5 * D2[mask]
     L2[~mask] = _sp.sqrt(D2[~mask]**2 - Dt[~mask]**2) / 2
+    # Handle non-colinear pores and throat centroids
+    try:
+        TC = network[throat_centroid][throats]
+        LP1T = _sp.linalg.norm(TC - xyz[cn[:, 0]], axis=1)
+        LP2T = _sp.linalg.norm(TC - xyz[cn[:, 1]], axis=1)
+        unit_vec_P1T = (TC - xyz[cn[:, 0]]) / LP1T[:, None]
+        unit_vec_P2T = (TC - xyz[cn[:, 1]]) / LP2T[:, None]
+    except KeyError:
+        unit_vec_P1T = (xyz[cn[:, 1]] - xyz[cn[:, 0]]) / L[:, None]
+        unit_vec_P2T = -1 * unit_vec_P1T
     # Find throat endpoints
-    EP1 = xyz[cn[:, 0]] + L1[:, None] * unit_vec
-    EP2 = xyz[cn[:, 1]] - L2[:, None] * unit_vec
+    EP1 = xyz[cn[:, 0]] + L1[:, None] * unit_vec_P1T
+    EP2 = xyz[cn[:, 1]] + L2[:, None] * unit_vec_P2T
     # Handle throats w/ overlapping pores
     L1 = (4*L**2 + D1**2 - D2**2) / (8*L)
     # L2 = (4*L**2 + D2**2 - D1**2) / (8*L)
     h = (2*_sp.sqrt(D1**2/4 - L1**2)).real
     overlap = L - 0.5 * (D1+D2) < 0
     mask = overlap & (Dt < h)
-    EP1[mask] = EP2[mask] = (xyz[cn[:, 0]] + L1[:, None] * unit_vec)[mask]
+    EP1[mask] = EP2[mask] = (xyz[cn[:, 0]] + L1[:, None] * unit_vec_P1T)[mask]
     return {'head': EP1, 'tail': EP2}
 
 
 def circular_pores(target, pore_diameter='pore.diameter',
-                   throat_diameter='throat.diameter'):
+                   throat_diameter='throat.diameter',
+                   throat_centroid='throat.centroid'):
     r"""
     Calculate the coordinates of throat endpoints, assuming circular pores.
     This model accounts for the overlapping lens between pores and throats.
@@ -130,6 +149,9 @@ def circular_pores(target, pore_diameter='pore.diameter',
     throat_diameter : string
         Dictionary key of the throat diameter values.
 
+    throat_centroid : string, optional
+        Dictionary key of the throat centroid values. See the notes.
+
     Returns
     -------
     EP : dictionary
@@ -138,7 +160,12 @@ def circular_pores(target, pore_diameter='pore.diameter',
 
     Notes
     -----
-    This model should only be applied to ture 2D networks.
+    (1) This model should only be applied to ture 2D networks.
+
+    (2) By default, this model assumes that throat centroid and pore
+    coordinates are colinear. If that's not the case, such as in extracted
+    networks, `throat_centroid` could be passed as an optional argument, and
+    the model takes care of the rest.
 
     """
     return spherical_pores(target=target, pore_diameter=pore_diameter,
