@@ -28,11 +28,11 @@ def random(target, seed=None, num_range=[0, 1]):
 normal.__doc__ = _misc.normal.__doc__
 
 
-def generic(target, func, seeds='pore.seed'):
-    return _misc.generic(target=target, func=func, seeds=seeds)
+def generic_distribution(target, func, seeds='pore.seed'):
+    return _misc.generic_distribution(target=target, func=func, seeds=seeds)
 
 
-generic.__doc__ = _misc.generic.__doc__
+generic_distribution.__doc__ = _misc.generic_distribution.__doc__
 
 
 def largest_sphere(target, fixed_diameter='pore.fixed_diameter', iters=10):

@@ -22,13 +22,21 @@ class TransientDispersionTest:
 
     def test_transient_dispersion(self):
         sf = op.algorithms.StokesFlow(network=self.net, phase=self.phase)
+        sf.setup(quantity='pore.pressure',
+                 conductance='throat.hydraulic_conductance')
         sf.set_value_BC(pores=self.net.pores('back'), values=1)
         sf.set_value_BC(pores=self.net.pores('front'), values=0)
         sf.run()
         self.phase[sf.settings['quantity']] = sf[sf.settings['quantity']]
 
-        ad = op.algorithms.TransientDispersion(network=self.net, phase=self.phase)
-        ad.settings.update({'t_scheme': 'steady'})
+        ad = op.algorithms.TransientDispersion(network=self.net,
+                                               phase=self.phase)
+        ad.setup(quantity='pore.concentration',
+                 diffusive_conductance='throat.diffusive_conductance',
+                 hydraulic_conductance='throat.hydraulic_conductance',
+                 pressure='pore.pressure', t_initial=0, t_final=10,
+                 t_step=0.1, t_output=1e+08, t_tolerance=1e-06,
+                 t_scheme='steady')
         ad.set_IC(0)
         ad.set_value_BC(pores=self.net.pores('back'), values=2)
         ad.set_value_BC(pores=self.net.pores('front'), values=0)

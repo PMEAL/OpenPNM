@@ -12,16 +12,26 @@ class AdvectionDiffusion(ReactiveTransport):
     """
 
     def __init__(self, settings={}, **kwargs):
+        def_set = {'quantity': 'pore.concentration',
+                   'diffusive_conductance': 'throat.diffusive_conductance',
+                   'hydraulic_conductance': 'throat.hydraulic_conductance',
+                   'pressure': 'pore.pressure',
+                   's_scheme': 'powerlaw',
+                   'gui': {'setup':        {'quantity': '',
+                                            'diffusive_conductance': '',
+                                            'hydraulic_conductance': '',
+                                            'pressure': '',
+                                            's_scheme': ''},
+                           'set_rate_BC':  {'pores': None,
+                                            'values': None},
+                           'set_value_BC': {'pores': None,
+                                            'values': None},
+                           'set_source':   {'pores': None,
+                                            'propname': ''}
+                           }
+                   }
         super().__init__(**kwargs)
-        # Set some default settings
-        self.settings.update({'quantity': 'pore.concentration',
-                              'diffusive_conductance':
-                              'throat.diffusive_conductance',
-                              'hydraulic_conductance':
-                              'throat.hydraulic_conductance',
-                              'pressure': 'pore.pressure',
-                              's_scheme': 'powerlaw'})
-        # Apply any received settings to overwrite defaults
+        self.settings.update(def_set)
         self.settings.update(settings)
 
     def setup(self, phase=None, quantity='', diffusive_conductance='',

@@ -21,14 +21,42 @@ class Dispersion(ReactiveTransport):
 
     '''
     def __init__(self, settings={}, **kwargs):
+        def_set = {'quantity': 'pore.concentration',
+                   'diffusive_conductance': 'throat.diffusive_conductance',
+                   'hydraulic_conductance': 'throat.hydraulic_conductance',
+                   'pressure': 'pore.pressure',
+                   'gui': {'setup':        {'quantity': '',
+                                            'diffusive_conductance': '',
+                                            'hydraulic_conductance': '',
+                                            'pressure': ''},
+                           'set_rate_BC':  {'pores': None,
+                                            'values': None},
+                           'set_value_BC': {'pores': None,
+                                            'values': None},
+                           'set_source':   {'pores': None,
+                                            'propname': ''}
+                           }
+                   }
         super().__init__(**kwargs)
-        self.settings.update({'quantity': 'pore.concentration',
-                              'hydraulic_conductance':
-                              'throat.hydraulic_conductance',
-                              'diffusive_conductance':
-                              'throat.diffusive_conductance',
-                              'pressure': 'pore.pressure'})
+        self.settings.update(def_set)
         self.settings.update(settings)
+
+    def setup(self, phase=None, quantity='', diffusive_conductance='',
+              hydraulic_conductance='', pressure='', **kwargs):
+        r"""
+
+        """
+        if phase:
+            self.settings['phase'] = phase.name
+        if quantity:
+            self.settings['quantity'] = quantity
+        if diffusive_conductance:
+            self.settings['diffusive_conductance'] = diffusive_conductance
+        if hydraulic_conductance:
+            self.settings['hydraulic_conductance'] = hydraulic_conductance
+        if pressure:
+            self.settings['pressure'] = pressure
+        super().setup(**kwargs)
 
     def _build_A(self, force=False):
         r"""

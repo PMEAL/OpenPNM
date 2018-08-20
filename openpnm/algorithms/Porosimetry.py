@@ -3,17 +3,6 @@ from openpnm.utils import logging
 import numpy as np
 logger = logging.getLogger()
 
-default_settings = {'pore_volume': 'pore.volume',
-                    'throat_volume': 'throat.volume',
-                    'mode': 'bond',
-                    'access_limited': True,
-                    'quantity': 'pressure',
-                    'throat_entry_pressure': 'throat.entry_pressure',
-                    'pore_volume': 'pore.volume',
-                    'throat_volume': 'throat.volume',
-                    'late_pore_filling': '',
-                    'late_throat_filling': ''}
-
 
 class Porosimetry(OrdinaryPercolation):
     r"""
@@ -46,8 +35,33 @@ class Porosimetry(OrdinaryPercolation):
     """
 
     def __init__(self, settings={}, **kwargs):
+        def_set = {'pore_volume': 'pore.volume',
+                   'throat_volume': 'throat.volume',
+                   'mode': 'bond',
+                   'access_limited': True,
+                   'quantity': 'pressure',
+                   'throat_entry_pressure': 'throat.entry_pressure',
+                   'pore_volume': 'pore.volume',
+                   'throat_volume': 'throat.volume',
+                   'late_pore_filling': '',
+                   'late_throat_filling': '',
+                   'gui': {'setup': {'quantity': '',
+                                     'throat_entry_pressure': '',
+                                     'pore_volume': '',
+                                     'throat_volume': '',
+                                     'late_pore_filling': '',
+                                     'late_throat_filling': ''},
+                           'set_inlets':   {'pores': None,
+                                            'overwrite': False},
+                           'set_outlets':  {'pores': None,
+                                            'overwrite': False},
+                           'set_residual': {'pores': None,
+                                            'throats': None,
+                                            'overwrite': False}
+                           }
+                   }
         super().__init__(**kwargs)
-        self.settings.update(default_settings)
+        self.settings.update(def_set)
         # Apply user settings, if any
         self.settings.update(settings)
         # Use the reset method to initialize all arrays
