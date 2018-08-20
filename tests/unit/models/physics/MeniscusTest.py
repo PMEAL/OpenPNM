@@ -18,8 +18,7 @@ class MeniscusTest:
 
     def test_sinusoidal(self):
         phys = self.phys
-        self.geo['throat.diameter_inner'] = self.geo['throat.diameter']
-        self.geo['throat.diameter_outer'] = self.geo['throat.diameter'] + 5e-6
+        self.geo['throat.amplitude'] = 5e-6
         phys.add_model(propname='throat.sin_pressure',
                        model=pm.meniscus.sinusoidal,
                        mode='max')

@@ -141,8 +141,8 @@ def sinusoidal(target,
                target_Pc=None,
                surface_tension='pore.surface_tension',
                contact_angle='pore.contact_angle',
-               throat_diameter_inner='throat.diameter_inner',
-               throat_diameter_outer='throat.diameter_outer',
+               throat_diameter='throat.diameter',
+               throat_amplitude='throat.amplitude',
                throat_length='throat.length',
                **kwargs):
     r"""
@@ -171,10 +171,11 @@ def sinusoidal(target,
     contact_angle : dict key (string)
         The dictionary key containing the contact angle values to be used. If
         a pore property is given, it is interpolated to a throat list.
-    throat_diameter_inner : dict key (string)
-        The dictionary key containing the inner throat diameter values.
-    throat_diameter_outer : dict key (string)
-        The dictionary key containing the outer throat diameter values.
+    throat_diameter : dict key (string)
+        The dictionary key containing the average throat diameter values.
+    throat_amplitude : dict key (string)
+        The dictionary key containing the amplitude of variation in the throat
+        diameter about the mean.
     throat_length : dict key (string)
         The dictionary key containing the throat length values to be used.
 
@@ -200,15 +201,15 @@ def sinusoidal(target,
     network = target.project.network
     phase = target.project.find_phase(target)
     element, sigma, theta = _get_key_props(phase=phase,
-                                           diameter=throat_diameter_inner,
+                                           diameter=throat_diameter,
                                            surface_tension=surface_tension,
                                            contact_angle=contact_angle)
     # Symbols
-    # position along throat, pore rad, throat rad, throat length, sigma, theta
-    x, rp, rt, lt, s, t,  = syp.symbols('x, rp, rt, lt, s, t')
+    # position along throat, amplitude, throat rad, throat length, sigma, theta
+    x, A, rt, lt, s, t = syp.symbols('x, A, rt, lt, s, t')
     # Equations
     # Radius profile along throat length
-    y = (rp-rt)*(1-syp.cos(2*syp.pi*x))/2 + rt
+    y = A*syp.cos(2*syp.pi*x) + rt
     # dr/dx used for filling angle
     yprime = y.diff(x)/lt
     # Filling angle
@@ -218,25 +219,25 @@ def sinusoidal(target,
     # distance from center of curvature to meniscus contact point (Pythagoras)
     a = syp.sqrt(R*R - y*y)
     # angle between throat axis, meniscus center and meniscus contact point
-    gamma = syp.asin(y/R)
+    gamma = syp.atan(y/a)
     # Capillary Pressure function
     f = -2*s*syp.cos(alpha+t)/y
     # Callable expressions
-    rx = syp.lambdify((x, rp, rt, lt), y, 'numpy')
-    Pc = syp.lambdify((x, rp, rt, lt, s, t), f, 'numpy')
-    rad_curve = syp.lambdify((x, rp, rt, lt, s, t), R, 'numpy')
-    c2x = syp.lambdify((x, rp, rt, lt, s, t), a, 'numpy')
-    fill_angle = syp.lambdify((x, rp, rt, lt), alpha, 'numpy')
-    cap_angle = syp.lambdify((x, rp, rt, lt, s, t), gamma, 'numpy')
+    rx = syp.lambdify((x, A, rt), y, 'numpy')
+    Pc = syp.lambdify((x, A, rt, lt, s, t), f, 'numpy')
+    rad_curve = syp.lambdify((x, A, rt, lt, s, t), R, 'numpy')
+    c2x = syp.lambdify((x, A, rt, lt, s, t), a, 'numpy')
+    fill_angle = syp.lambdify((x, A, rt, lt), alpha, 'numpy')
+    cap_angle = syp.lambdify((x, A, rt, lt, s, t), gamma, 'numpy')
     theta = np.deg2rad(theta)
     # Network properties
     t_len = network[throat_length]
-    pos = np.arange(-1/2, 1/2, 1e-3)
-    r_ps = network[throat_diameter_outer]/2
-    r_ts = network[throat_diameter_inner]/2
+    pos = np.arange(0.1, 0.9, 1e-3)
+    r_amp = network[throat_amplitude]
+    r_ts = network[throat_diameter]/2
     # Now find the positions of the menisci along each throat axis
     Y, X = np.meshgrid(r_ts, pos)
-    t_Pc = Pc(X, r_ps, Y, t_len, sigma, theta)
+    t_Pc = Pc(X, r_amp, Y, t_len, sigma, theta)
     # Values of minima and maxima
     Pc_min = np.min(t_Pc, axis=0)
     Pc_max = np.max(t_Pc, axis=0)
@@ -267,11 +268,11 @@ def sinusoidal(target,
     # Output
     men_data = {}
     men_data['pos'] = xpos
-    men_data['rx'] = rx(xpos, r_ps, r_ts, t_len)
-    men_data['alpha'] = fill_angle(xpos, r_ps, r_ts, t_len)
-    men_data['c2x'] = c2x(xpos, r_ps, r_ts, t_len, sigma, theta)
-    men_data['gamma'] = cap_angle(xpos, r_ps, r_ts, t_len, sigma, theta)
-    men_data['radius'] = rad_curve(xpos, r_ps, r_ts, t_len, sigma, theta)
+    men_data['rx'] = rx(xpos, r_amp, r_ts)
+    men_data['alpha'] = fill_angle(xpos, r_amp, r_ts, t_len)
+    men_data['c2x'] = c2x(xpos, r_amp, r_ts, t_len, sigma, theta)
+    men_data['gamma'] = cap_angle(xpos, r_amp, r_ts, t_len, sigma, theta)
+    men_data['radius'] = rad_curve(xpos, r_amp, r_ts, t_len, sigma, theta)
     men_data['center'] = (xpos*t_len +
                           np.sign(men_data['radius'])*men_data['c2x'])
     logger.info(mode+' calculated for Pc: '+str(target_Pc))
