@@ -97,7 +97,6 @@ class Cubic(GenericNetwork):
 
         points = np.array([i for i, v in np.ndenumerate(arr)], dtype=float)
         points += 0.5
-        points *= spacing
 
         I = np.arange(arr.size).reshape(arr.shape)
 
@@ -147,17 +146,9 @@ class Cubic(GenericNetwork):
 
         super().__init__(Np=points.shape[0], Nt=pairs.shape[0], name=name,
                          project=project)
-        self['pore.internal'] = True
-        self['throat.internal'] = True
-        self._label_surfaces()
-
-    def _label_surfaces(self):
-        r'''
-        Applies the default surface labels to the cubic network
-        '''
+        # Label faces
         x, y, z = self['pore.coords'].T
-        labels = ['internal', 'front', 'back', 'left', 'right', 'bottom',
-                  'top']
+        labels = ['front', 'back', 'left', 'right', 'bottom', 'top']
         for label in labels:
             if 'pore.'+label not in self.keys():
                 self['pore.'+label] = False
@@ -167,31 +158,48 @@ class Cubic(GenericNetwork):
         self['pore.right'][y >= y.max()] = True
         self['pore.bottom'][z <= z.min()] = True
         self['pore.top'][z >= z.max()] = True
+        # Label surface pores
+        self['pore.surface'] = False
+        Ps = self.pores(labels)
+        self['pore.surface'][Ps] = True
+        self['throat.surface'] = False
+        Ts = self.find_neighbor_throats(pores=Ps, mode='intersection')
+        self['throat.surface'][Ts] = True
+        self['pore.internal'] = ~self['pore.surface']
+        self['throat.internal'] = ~self['throat.surface']
+        # Scale network to requested spacing
+        self['pore.coords'] *= spacing
 
     def add_boundary_pores(self, labels=['top', 'bottom', 'front', 'back',
-                                         'left', 'right']):
+                                         'left', 'right'], spacing=None):
         r"""
-        Add pores to the faces of the network for use as boundary pores.  Pores
-        are offset from the faces by 1/2 a lattice spacing such that they lie
-        directly on the boundaries.
+        Add pores to the faces of the network for use as boundary pores.
+
+        Pores are offset from the faces by 1/2 a lattice spacing such that
+        they lie directly on the boundaries.
 
         Parameters
         ----------
-        labels : list of strings
-            Controls which faces the boundary pores are added to.  Options
-            include 'top', 'bottom', 'left', 'right', 'front', and 'back'.
+        labels : string or list of strings
+            The labels indicating the pores defining each face where boundary
+            pores are to be added (e.g. 'left' or ['left', 'right'])
 
-        Notes
-        -----
-        This method uses ``clone_pores`` to clone the surface pores (labeled
-        'left', 'right', etc), then shifts them to the periphery of the domain,
-        and gives them the label 'right_boundary', 'left_boundary', etc.
+        spacing : scalar or array_like
+            The spacing of the network (e.g. [1, 1, 1]).  This should be given
+            since it can be quite difficult to infer from the network, for
+            instance if boundary pores have already added to other faces.
 
         """
         if type(labels) == str:
             labels = [labels]
         x, y, z = self['pore.coords'].T
-        Lcx, Lcy, Lcz = self._spacing
+        if spacing is None:
+            spacing = self._spacing
+        else:
+            spacing = sp.array(spacing)
+            if spacing.size == 1:
+                spacing = sp.ones(3)*spacing
+        Lcx, Lcy, Lcz = spacing
 
         offset = {}
         offset['front'] = offset['left'] = offset['bottom'] = [0, 0, 0]

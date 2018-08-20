@@ -161,3 +161,17 @@ def circular_pores(target, pore_diameter='pore.diameter',
     """
     return spherical_pores(target, pore_diameter=pore_diameter,
                            throat_diameter=throat_diameter)
+
+
+def boundary(target, pore_diameter='pore.diameter',
+             throat_length='throat.length'):
+    r"""
+    Take the pore radius for the bulk pore, the throat length for the throat
+    and use a minimum value for the boundary pores
+    """
+    net = target.project.network
+    throats = net.map_throats(throats=target.Ts, origin=target)
+    conns = net['throat.conns'][throats]
+    tl = target[throat_length]
+    p_lens = 0.999*net[pore_diameter][conns]/2
+    return {'pore1': p_lens[:, 0], 'throat': tl, 'pore2': p_lens[:, 1]}

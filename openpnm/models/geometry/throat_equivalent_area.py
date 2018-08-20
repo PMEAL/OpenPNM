@@ -101,3 +101,19 @@ def circular_pores(target, throat_area='throat.area',
     return {'pore1': 2*L1 / (_np.arctan(2*L1/_np.sqrt(d1**2 - 4*L1**2))),
             'throat': target[throat_area],
             'pore2': 2*L2 / (_np.arctan(2*L2/_np.sqrt(d2**2 - 4*L2**2)))}
+
+
+def boundary(target, pore_area='pore.area', throat_area='throat.area'):
+    r"""
+    A method to be applied to boundary throats that copies the values from the
+    pore_area and throat_area values
+    """
+    network = target.project.network
+    throats = network.map_throats(throats=target.Ts, origin=target)
+    conns = network['throat.conns'][throats]
+    p1 = conns[:, 0]
+    p2 = conns[:, 1]
+    ea_p1 = network[pore_area][p1]
+    ea_p2 = network[pore_area][p2]
+    ea_ts = target[throat_area]
+    return {'pore1': ea_p1, 'throat': ea_ts, 'pore2': ea_p2}
