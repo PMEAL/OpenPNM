@@ -1,25 +1,9 @@
-from scipy import ndimage
 import scipy as _sp
 import numpy as np
 import logging
 import sympy as syp
-import pandas as pd
 from openpnm.models.physics.capillary_pressure import _get_key_props
 logger = logging.getLogger(__name__)
-
-
-def _prop_parser(obj, prop, entity):
-    r'''
-    Helper function to get data in pore or throat format depending on what
-    you want
-    '''
-    if (prop.split('.')[0] == 'pore' and
-       entity.split('.')[0] == 'throat'):
-        value = obj[prop]
-        value = obj.interpolate_data(propname=prop)
-    else:
-        value = obj[prop]
-    return value
 
 
 def toroidal(target,
