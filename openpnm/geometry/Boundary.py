@@ -57,7 +57,7 @@ class Boundary(GenericGeometry):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-#        self._do_element_sizes()
+
         self.add_model(propname='pore.area',
                        model=gm.pore_area.sphere)
 
@@ -72,9 +72,6 @@ class Boundary(GenericGeometry):
                        model=mm.constant, value=1.0)
 
         self.add_model(propname='pore.diameter',
-                       model=mm.constant, value=0.0)
-
-        self.add_model(propname='pore.area',
                        model=mm.constant, value=0.0)
 
         self.add_model(propname='throat.diameter',
@@ -92,6 +89,10 @@ class Boundary(GenericGeometry):
 
         self.add_model(propname='throat.area',
                        model=gm.throat_area.cylinder)
+
+        self.add_model(propname='pore.area',
+                       model=mm.from_neighbor_throats,
+                       throat_prop='throat.area', mode='max')
 
         self.add_model(propname='throat.surface_area',
                        model=gm.throat_surface_area.cylinder)
