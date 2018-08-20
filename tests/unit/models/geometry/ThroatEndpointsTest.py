@@ -1,5 +1,7 @@
 import openpnm as op
 import openpnm.models.geometry.throat_endpoints as mods
+import openpnm.models.geometry as gm
+import openpnm.models.physics as pm
 import numpy as np
 from numpy.testing import assert_allclose
 
@@ -158,6 +160,83 @@ class ThroatEndpointsTest:
         EP2d = np.array([0, 1, 0]) + self.base
         assert_allclose(EP1, desired=EP1d)
         assert_allclose(EP2, desired=EP2d)
+
+    def test_straight_throat(self):
+        r'''
+        For a given network length and fixed cross-sectional area, check that
+        the conductance is independent of number of pores and throat lengths
+        '''
+        # Domain length
+        length = 5.0
+        # Cross-sectional area of pores and throats (cylinder)
+        # Results should be independent of this
+        rad = 0.5
+        area = np.pi*rad**2
+        # Diffusivity in open air
+        D_ab = 1.0
+        # Number of internal pores in network
+        N = np.arange(10, 110, 10)
+        nets = []
+        # Portion of the pore center to center distance attributed to throat
+        # Any value below 1.0 should work
+        throat_portion = 0.1
+
+        def throat_centroid(network):
+            cn = network['throat.conns']
+            return np.mean(network['pore.coords'][cn], axis=1)
+
+        def throat_vector(network):
+            cn = network['throat.conns']
+            vec = (network['pore.coords'][cn[:, 1]] -
+                   network['pore.coords'][cn[:, 0]])
+            return vec/np.linalg.norm(vec, axis=1)[:, np.newaxis]
+
+        conds = []
+        for n in N:
+            lc = length/n
+            net = op.network.Cubic(shape=[n, 1, 1], spacing=lc)
+            net.add_boundary_pores(labels=['front', 'back'])
+
+            Ps = net.pores('*boundary', mode='not')
+            Ts = net.throats('*boundary', mode='not')
+            BPs = net.pores('*boundary')
+            BTs = net.throats('*boundary')
+            geom = op.geometry.GenericGeometry(network=net, pores=Ps,
+                                               throats=Ts)
+            geom['pore.diameter'] = 2*rad
+            geom['throat.diameter'] = 2*rad
+            geom['pore.area'] = area
+            geom['throat.area'] = area
+            net['throat.centroid'] = throat_centroid(net)
+            net['throat.vector'] = throat_vector(net)
+            geom.add_model(propname='throat.ctc',
+                           model=op.models.geometry.throat_length.ctc)
+            geom['throat.length'] = geom['throat.ctc']*throat_portion
+            geom.add_model(propname='throat.endpoints',
+                           model=mods.straight_throat)
+            geom.add_model(propname='throat.conduit_lengths',
+                           model=gm.throat_length.conduit_lengths)
+            boun = op.geometry.Boundary(network=net, pores=BPs, throats=BTs)
+            air = op.phases.Air(network=net)
+            air['pore.diffusivity'] = D_ab
+            phys = op.physics.GenericPhysics(network=net, phase=air,
+                                             geometry=geom)
+            phys.add_model(propname='throat.diffusive_conductance',
+                           model=pm.diffusive_conductance.ordinary_diffusion)
+            physb = op.physics.GenericPhysics(network=net, phase=air,
+                                              geometry=boun)
+            physb.add_model(propname='throat.diffusive_conductance',
+                            model=pm.diffusive_conductance.ordinary_diffusion)
+            FD = op.algorithms.FickianDiffusion(network=net)
+            FD.setup(phase=air)
+            FD.set_value_BC(pores=net.pores('front_boundary'), values=1.0)
+            FD.set_value_BC(pores=net.pores('back_boundary'), values=0.0)
+            FD.run()
+            conds.append(FD.calc_eff_diffusivity(domain_area=area,
+                                                 domain_length=length)[0])
+            nets.append(net)
+        assert np.all(np.around(np.asarray(conds), 12) == D_ab)
+
 
 if __name__ == '__main__':
 
