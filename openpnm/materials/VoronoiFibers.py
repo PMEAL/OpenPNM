@@ -1110,7 +1110,7 @@ class VoronoiGeometry(GenericGeometry):
                        model=gm.throat_area.cylinder,
                        regen_mode=rm)
         self.add_model(propname='throat.length',
-                       model=gm.throat_length.straight,
+                       model=gm.throat_length.piecewise,
                        regen_mode=rm)
         self['throat.c2c'] = self['throat.length']+network.fiber_rad*2
         self.add_model(propname='throat.volume',

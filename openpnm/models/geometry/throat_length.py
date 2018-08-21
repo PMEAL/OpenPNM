@@ -28,10 +28,10 @@ def ctc(target, pore_diameter='pore.diameter'):
     return _norm(C1 - C2, axis=1)
 
 
-def straight(target, throat_endpoints='throat.endpoints',
-             throat_centroid='throat.centroid'):
+def piecewise(target, throat_endpoints='throat.endpoints',
+              throat_centroid='throat.centroid'):
     r"""
-    Calculate throat length. See the notes for more info.
+    Calculate throat length from end points and optionally a centroid
 
     Parameters
     ----------
@@ -44,7 +44,7 @@ def straight(target, throat_endpoints='throat.endpoints',
         Dictionary key of the throat endpoint values.
 
     throat_centroid : string
-        Dictionary key of the throat centroid values, optional. See the notes.
+        Dictionary key of the throat centroid values, optional.
 
     Returns
     -------
@@ -95,14 +95,14 @@ def conduit_lengths(target, throat_endpoints='throat.endpoints',
     throat_diameter : string
         Dictionary key of the throat length values.
 
-    throat_centroid : string
-        Dictionary key of the throat centroid values, optional. See the notes.
+    throat_length : string (optional)
+        Dictionary key of the throat length values.  If not given then the
+        direct distance bewteen the two throat end points is used.
 
     Returns
     -------
-    CL : dictionary
-        Dictionary containing conduit lengths, which can be accessed
-        via the dict keys 'pore1', 'pore2', and 'throat'.
+    Dictionary containing conduit lengths, which can be accessed via the dict
+    keys 'pore1', 'pore2', and 'throat'.
 
     """
     network = target.project.network
@@ -114,7 +114,12 @@ def conduit_lengths(target, throat_endpoints='throat.endpoints',
     # Get throat endpoints and length
     EP1 = network[throat_endpoints + '.head'][throats]
     EP2 = network[throat_endpoints + '.tail'][throats]
-    Lt = network[throat_length][throats]
+    try:
+        # Look up throat length if given
+        Lt = network[throat_length][throats]
+    except KeyError:
+        # Calculate throat length otherwise
+        Lt = _norm(EP1 - EP2, axis=1)
     # Calculate conduit lengths
     L1 = _norm(C1 - EP1, axis=1)
     L2 = _norm(C2 - EP2, axis=1)

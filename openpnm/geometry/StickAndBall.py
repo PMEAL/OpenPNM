@@ -212,7 +212,7 @@ class StickAndBall(GenericGeometry):
                        throat_diameter='throat.diameter')
 
         self.add_model(propname='throat.length',
-                       model=mods.geometry.throat_length.straight,
+                       model=mods.geometry.throat_length.piecewise,
                        throat_endpoints='throat.endpoints')
 
         self.add_model(propname='throat.surface_area',

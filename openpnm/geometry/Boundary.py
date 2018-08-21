@@ -82,7 +82,7 @@ class Boundary(GenericGeometry):
                        model=gm.throat_endpoints.spherical_pores)
 
         self.add_model(propname='throat.length',
-                       model=gm.throat_length.straight)
+                       model=gm.throat_length.piecewise)
 
         self.add_model(propname='throat.conduit_lengths',
                        model=gm.throat_length.conduit_lengths)
