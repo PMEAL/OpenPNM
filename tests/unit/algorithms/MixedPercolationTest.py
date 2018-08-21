@@ -23,7 +23,7 @@ class MixedPercolationTest:
         self.geo.add_model(propname='throat.endpoints',
                            model=gm.throat_endpoints.spherical_pores)
         self.geo.add_model(propname='throat.length',
-                           model=gm.throat_length.straight)
+                           model=gm.throat_length.piecewise)
         self.geo.add_model(propname='throat.volume',
                            model=gm.throat_volume.cylinder,
                            throat_diameter='throat.diameter',

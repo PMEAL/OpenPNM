@@ -14,17 +14,17 @@ class ThroatStraightTest:
         self.geo['throat.endpoints.head'] = np.array([[0, 0.2, 0]]) + self.base
         self.geo['throat.endpoints.tail'] = np.array([[0, 0.7, 0]]) + self.base
 
-    def test_straight(self):
+    def test_piecewise(self):
         self.geo.add_model(propname='throat.length',
-                           model=mods.straight,
+                           model=mods.piecewise,
                            regen_mode='normal')
         actual = self.geo['throat.length'][0]
         assert_approx_equal(actual, desired=0.5)
 
-    def test_straight_with_centroid(self):
+    def test_piecewise_with_centroid(self):
         self.geo['throat.centroid'] = np.array([[0, 0.5, 0.5]]) + self.base
         self.geo.add_model(propname='throat.length',
-                           model=mods.straight,
+                           model=mods.piecewise,
                            regen_mode='normal')
         actual = self.geo['throat.length'][0]
         assert_approx_equal(actual, desired=1.1216117)
