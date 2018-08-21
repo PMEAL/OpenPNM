@@ -188,7 +188,8 @@ class DelaunayGeometry(GenericGeometry):
         self.add_model(propname='throat.surface_area',
                        model=gm.throat_surface_area.extrusion)
         self.add_model(propname='throat.endpoints',
-                       model=gm.throat_endpoints.spherical_pores)
+                       model=gm.throat_endpoints.straight_throat,
+                       throat_vector='throat.normal')
         self.regenerate_models()
 
     def _t_normals(self):
