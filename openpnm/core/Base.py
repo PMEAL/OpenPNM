@@ -175,6 +175,17 @@ class Base(dict):
                 prop = item.replace('pore.', '').replace('throat.', '')
                 self.__setitem__(key+'.'+prop, value[item])
             return
+        # Ensure that 'pore.foo.bar' does not exist before creating 'pore.foo'
+        for item in self.keys():
+            if len(item.split('.')) > 2:
+                if key == '.'.join(item.split('.')[:2]):
+                    raise Exception(key + ' is already in use as a subdict')
+        # Ensure that 'pore.foo' does not exist before creating 'pore.foo.bar'
+        if len(key.split('.')) > 2:
+            for item in self.keys():
+                if '.'.join(key.split('.')[:2]) == item:
+                    raise Exception(item + ' is already in use, cannot make ' +
+                                    'a subdict')
 
         value = sp.array(value, ndmin=1)  # Convert value to an ndarray
 
