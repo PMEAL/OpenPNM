@@ -226,13 +226,16 @@ class TransientReactiveTransport(ReactiveTransport):
         # If solver used in steady mode, no need to add ICs
         if (self.settings['t_scheme'] == 'steady'):
             self[self.settings['quantity']] = 0.0
+
+        # Save A matrix (without BCs applied) of the steady sys of eqs
+        self._A_steady = (self.A).copy()
+
         # Create a scratch b from IC
         self._b = (self[self.settings['quantity']]).copy()
-        self._apply_BCs()
-        # Save A matrix (with BCs applied) of the steady sys of eqs
-        self._A_steady = (self._A).copy()
+        #self._apply_BCs()
+
         # Save the initial field with the boundary conditions applied
-        self[self.settings['quantity']] = (self._b).copy()
+        #self[self.settings['quantity']] = (self._b).copy()
         # Override A and b according to t_scheme and apply BCs
         self._t_update_A()
         self._t_update_b()
@@ -311,10 +314,13 @@ class TransientReactiveTransport(ReactiveTransport):
                         self[self.settings['quantity']+'_'+str(ind)] = x_new
                         logger.info('        Exporting time step: ' +
                                     str(time)+' s')
-                    # Update b and apply BCs
+                    # Update A and b and apply BCs
+                    self._t_update_A()
                     self._t_update_b()
                     self._apply_BCs()
+                    self._A_t = (self._A).copy()
                     self._b_t = (self._b).copy()
+
                 else:  # Stop time iterations if residual < t_tolerance
                     self[self.settings['quantity'] + '_steady'] = x_new
                     logger.info('        Exporting time step: '+str(time)+' s')
@@ -358,7 +364,7 @@ class TransientReactiveTransport(ReactiveTransport):
                 self[self.settings['quantity']] = x
                 self._A = (self._A_t).copy()
                 self._b = (self._b_t).copy()
-                self._apply_BCs()
+                #self._apply_BCs()
                 self._apply_sources()
                 x_new = self._solve()
                 # Relaxation
