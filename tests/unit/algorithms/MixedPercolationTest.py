@@ -243,9 +243,9 @@ class MixedPercolationTest:
         self.run_mp(False, False, False)
         fig = plt.figure()
         self.alg.plot_intrusion_curve(fig)
-        del fig
+        plt.close()
         fig = self.alg.plot_intrusion_curve()
-        del fig
+        plt.close()
 
     def test_cluster_merging(self):
         phys = self.phys
@@ -462,6 +462,6 @@ if __name__ == '__main__':
     t = MixedPercolationTest()
     t.setup_class()
     for item in t.__dir__():
-        if item.startswith('test_coop'):
+        if item.startswith('test'):
             print('running test: '+item)
             t.__getattribute__(item)()

@@ -878,7 +878,7 @@ class MixedInvasionPercolation(GenericAlgorithm):
         for p in range(len(neighbor_Ts)):
             num_t = len(neighbor_Ts[p])
             Ps = Ps + [p]*num_t
-            Ts = Ts + neighbor_Ts[p]
+            Ts = Ts + neighbor_Ts[p].tolist()
             for t1 in range(num_t)[:-1]:
                 for t2 in range(num_t)[t1+1:]:
                     T1 = T1 + [t1+start]
