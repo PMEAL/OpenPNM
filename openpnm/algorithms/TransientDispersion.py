@@ -8,8 +8,10 @@ class TransientDispersion(TransientReactiveTransport, Dispersion):
 
     """
 
-    def __init__(self, settings={}, **kwargs):
-        def_set = {'gui': {'setup':        {'quantity': '',
+    def __init__(self, settings={}, phase=None, **kwargs):
+        def_set = {'phase': None,
+                   'gui': {'setup':        {'phase': None,
+                                            'quantity': '',
                                             'diffusive_conductance': '',
                                             'hydraulic_conductance': '',
                                             'pressure': '',
@@ -31,6 +33,8 @@ class TransientDispersion(TransientReactiveTransport, Dispersion):
         super().__init__(**kwargs)
         self.settings.update(def_set)
         self.settings.update(settings)
+        if phase is not None:
+            self.setup(phase=phase)
 
     def setup(self, phase=None, quantity='', diffusive_conductance='',
               hydraulic_conductance='', pressure='',
