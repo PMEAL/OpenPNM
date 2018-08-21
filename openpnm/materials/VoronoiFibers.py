@@ -122,7 +122,7 @@ class VoronoiFibers(Project):
         if len(h['trim_pores']) > 0:
             topotools.trim(network=net, pores=h['trim_pores'])
         # Copy the Delaunay throat diameters to the boundary pores
-        Ps = net.pores(['delaunay', 'boundary'], mode='intersection')
+        Ps = net.pores(['delaunay', 'boundary'], mode='xnor')
         map_Ps = del_geom.map_pores(pores=Ps, origin=net)
         all_Ts = net.find_neighbor_throats(pores=Ps, flatten=False)
         for i, Ts in enumerate(all_Ts):

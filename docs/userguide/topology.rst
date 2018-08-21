@@ -63,35 +63,42 @@ Given a pore *i*, it possible to find which pores (or throats) are directly conn
 
 .. code-block:: Python
 
-    >>> pn.find_neighbor_pores(pores=1)
-    array([  0,   2,  11, 101])
-    >>> pn.find_neighbor_throats(pores=1)
-    array([   0,    1,  901, 1801])
+    >>> Ps = pn.find_neighbor_pores(pores=1)
+    >>> print(Ps)
+    [  0   2  11 101]
+    >>> Ps = pn.find_neighbor_throats(pores=1)
+    >>> print(Ps)
+    [   0    1  901 1801]
 
 The above queries can be more complex if a list of pores is sent, and the ```mode``` argument is specified.  This is useful for finding neighbors surrounding a set of pores such as the fringes around an invading fluid cluster, or all throats within a cluster:
 
 .. code-block:: python
 
-    >>> pn.find_neighbor_pores(pores=[2, 3, 4], mode='union')  # 'union' is default
-    array([  1,   5,  12,  13,  14, 102, 103, 104])
-    >>> pn.find_neighbor_throats(pores=[2, 3, 4], mode='intersection')
-    array([2, 3])
-    >>> pn.find_neighbor_throats(pores=[2, 3, 4], mode='exclusive_or')
-    array([   1,    4,  902,  903,  904, 1802, 1803, 1804])
+    >>> Ps = pn.find_neighbor_pores(pores=[2, 3, 4], mode='or')  # 'union' is default
+    >>> print(Ps)
+    [  1   5  12  13  14 102 103 104]
+    >>> Ts = pn.find_neighbor_throats(pores=[2, 3, 4], mode='xnor')
+    >>> print(Ts)
+    [2 3]
+    >>> Ts = pn.find_neighbor_throats(pores=[2, 3, 4], mode='exclusive_or')
+    >>> print(Ts)
+    [   1    4  902  903  904 1802 1803 1804]
 
 The ```mode``` argument limits the returned results using *set-theory* type logic.  Consider the following two queries:
 
 .. code-block:: python
 
-    >>> pn.find_neighbor_throats(pores=2)
-    array([   1,    2,  902, 1802])
-    >>> pn.find_neighbor_throats(pores=3)
-    array([   2,    3,  903, 1803])
+    >>> Ts = pn.find_neighbor_throats(pores=2)
+    >>> print(Ts)
+    [   1    2  902 1802]
+    >>> Ts = pn.find_neighbor_throats(pores=3)
+    >>> print(Ts)
+    [   2    3  903 1803]
 
-The *union* is a single set of unique values obtained by combining the two sets, while the *intersection* of these two sets includes only the values present in both (i.e. *2*)  The *difference* of these sets is all the values except those found common to both initial sets.  It's possible to specify as many pores as desired, and the *set-logic* is bit less obvious.  More generally:
+The *or* is a single set of unique values obtained by combining the two sets, while the *intersection* of these two sets includes only the values present in both (i.e. *2*)  The *difference* of these sets is all the values except those found common to both initial sets.  It's possible to specify as many pores as desired, and the *set-logic* is bit less obvious.  More generally:
 
-* ``'union'`` returns a list of unique locations neighboring any input pores
-* ``'intersection'`` returns a list of locations that are neighbors to at least two inputs pores
-* ``'exclusive_or'`` returns a list of locations that are only neighbors to one of the input pores
+* ``'or'`` returns a list of unique locations neighboring any input pores
+* ``'xor'`` returns a list of locations that are only neighbors to one of the input pores
+* ``'xnor'`` returns a list of locations that are neighbors to at least two inputs pores
 
-In addition to these neighbor lookups, the GenericNetwork class also offers several other methods that complete the suite of lookup tools:  ``find_connected_pores``, ``find_connecting_throats`` and ``find_nearby_pores``.  There are also many more tools related to Network queries and manipulations in the :ref:`topotools_index` module.  
+In addition to these neighbor lookups, the GenericNetwork class also offers several other methods that complete the suite of lookup tools:  ``find_connected_pores``, ``find_connecting_throats`` and ``find_nearby_pores``.  There are also many more tools related to Network queries and manipulations in the :ref:`topotools_index` module.

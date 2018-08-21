@@ -386,6 +386,7 @@ class MixedPercolationTest:
 if __name__ == '__main__':
     t = MixedPercolationTest()
     t.setup_class()
+    self = t
     for item in t.__dir__():
         if item.startswith('test'):
             print('running test: '+item)
