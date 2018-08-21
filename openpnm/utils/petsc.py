@@ -131,7 +131,7 @@ class PetscSparseLinearSolver(Base):
         if preconditioner not in preconditioners:
             preconditioner = 'jacobi'
             print('Warning: ' + self.settings['preconditioner'] +
-                  ' not availabe ' + preconditioner + 'used instead.')
+                  ' not availabe, ' + preconditioner + ' used instead.')
 
         if solver in lu_direct_solvers:
             self.ksp = PETSc.KSP()

@@ -69,14 +69,16 @@ class OrdinaryPercolation(GenericAlgorithm):
 
     """
 
-    def __init__(self, settings={}, **kwargs):
-        def_set = {'access_limited': True,
+    def __init__(self, settings={}, phase=None, **kwargs):
+        def_set = {'phase': None,
+                   'access_limited': True,
                    'mode': 'bond',
                    'pore_entry_threshold': 'pore.entry_pressure',
                    'throat_entry_threshold': 'throat.entry_pressure',
                    'pore_volume': '',
                    'throat_volume': '',
-                   'gui': {'setup':        {'access_limited': None,
+                   'gui': {'setup':        {'phase': None,
+                                            'access_limited': None,
                                             'mode': '',
                                             'throat_entry_pressure': '',
                                             'pore_entry_pressure': '',
@@ -97,6 +99,8 @@ class OrdinaryPercolation(GenericAlgorithm):
         self.reset()
         # Apply user settings, if any
         self.settings.update(settings)
+        if phase is not None:
+            self.setup(phase=phase)
 
     def setup(self,
               phase=None,
