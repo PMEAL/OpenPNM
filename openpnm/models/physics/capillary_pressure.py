@@ -148,7 +148,8 @@ def purcell(target, r_toroid, surface_tension='pore.surface_tension',
                                            contact_angle=contact_angle)
     r = network[diameter]/2
     R = r_toroid
-    alpha = theta - 180 + _sp.arcsin(_sp.sin(_sp.radians(theta)/(1+r/R)))
+    alpha = theta - 180 + \
+        _sp.rad2deg(_sp.arcsin(_sp.sin(_sp.radians(theta))/(1+r/R)))
     value = (-2*sigma/r) * \
         (_sp.cos(_sp.radians(theta - alpha)) /
             (1 + R/r*(1 - _sp.cos(_sp.radians(alpha)))))
