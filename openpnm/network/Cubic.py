@@ -163,7 +163,7 @@ class Cubic(GenericNetwork):
         Ps = self.pores(labels)
         self['pore.surface'][Ps] = True
         self['throat.surface'] = False
-        Ts = self.find_neighbor_throats(pores=Ps, mode='intersection')
+        Ts = self.find_neighbor_throats(pores=Ps, mode='xnor')
         self['throat.surface'][Ts] = True
         self['pore.internal'] = ~self['pore.surface']
         self['throat.internal'] = ~self['throat.surface']

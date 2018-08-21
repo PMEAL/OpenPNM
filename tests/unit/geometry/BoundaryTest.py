@@ -82,6 +82,7 @@ class BoundaryTest:
         SF.run()
         assert SF.calc_effective_permeability() > 0
 
+
 if __name__ == '__main__':
 
     t = BoundaryTest()
