@@ -451,17 +451,17 @@ class MixedPercolationTest:
         ip = op.algorithms.MixedInvasionPercolation(network=pn)
         ip.setup(phase=water)
         ip.setup(cooperative_pore_filling='throat.meniscus')
-        points = np.arange(0, 1, 0.1)*ip._max_pressure()
+        points = np.arange(0, 1, 0.05)*ip._max_pressure()
         ip.setup_coop_filling(inv_points=points)
         ip.set_inlets(pores=pn.pores('bottom'))
         ip.run()
-        assert np.any(~np.isnan(ip.tt_Pc))
+        assert np.any(~np.isnan(ip.tt_Pc.data[0]))
 
 
 if __name__ == '__main__':
     t = MixedPercolationTest()
     t.setup_class()
     for item in t.__dir__():
-        if item.startswith('test'):
+        if item.startswith('test_coop'):
             print('running test: '+item)
             t.__getattribute__(item)()

@@ -14,6 +14,7 @@ import time
 from collections import namedtuple
 import logging
 import matplotlib.pyplot as plt
+from scipy.sparse import coo_matrix
 logger = logging.getLogger(__name__)
 
 
@@ -918,9 +919,7 @@ class MixedInvasionPercolation(GenericAlgorithm):
         all_phys = self.project.find_physics(phase=phase)
         if inv_points is None:
             inv_points = np.arange(0, 1.01, .01)*self._max_pressure()
-        # Throat-Throat cooperative filling pressure
-        self.tt_Pc = np.ndarray([self.Nt, self.Nt], dtype=float)
-        self.tt_Pc.fill(sp.nan)
+
         start = time.time()
         cpf = self.settings['cooperative_pore_filling']
         tfill_angle = cpf + '.alpha'
@@ -932,7 +931,7 @@ class MixedInvasionPercolation(GenericAlgorithm):
             t_centroids = net['throat.centroid']
             p_rad = net['pore.indiameter']/2
             t_norms = net['throat.normal']
-        except:
+        except KeyError:
             # Chances are this isn't Voronoi so calculate or replace all
             p_centroids = net['pore.coords']
             temp = net['pore.coords'][net['throat.conns']]
@@ -945,6 +944,20 @@ class MixedInvasionPercolation(GenericAlgorithm):
         pps = Ps[T1]
         pt1 = Ts[T1]
         pt2 = Ts[T2]
+        # Arrays to get upper and lower triangular for reference to later
+        # When checking for phase presence one throat at a time - need to
+        # Check all throat pairs
+        T_all_t1 = Ts[np.concatenate((T1, T2))]
+        T_all_t2 = Ts[np.concatenate((T2, T1))]
+        # Throat-Throat cooperative filling pressure
+        data = np.ones(len(T_all_t1), dtype=float)
+        data.fill(np.nan)
+        # coo format useful for building matrix
+        coo = coo_matrix((data, (T_all_t1, T_all_t2)),
+                         shape=(len(T_all_t1), len(T_all_t2)))
+        # csr useful for indexing into entire matrix when populating with
+        # actual coop filling values
+        self.tt_Pc = coo.tocsr()
         # Pair pore center and radius
         pp_cen = p_centroids[pps]
         pp_rad = p_rad[pps]
@@ -988,7 +1001,7 @@ class MixedInvasionPercolation(GenericAlgorithm):
             check_alpha_T2 = ~sp.isnan(phase[tfill_angle][pt2])
             check_alpha = check_alpha_T1*check_alpha_T2
             # check whether this throat pair already has a coop value
-            check_nans = sp.isnan(self.tt_Pc[pt1, pt2])
+            check_nans = np.asarray(sp.isnan(self.tt_Pc[pt1, pt2]).tolist()[0])
             mask = check_neg*check_alpha*check_nans*check_rads
             # if all checks pass
             if np.any(mask):
@@ -1011,6 +1024,8 @@ class MixedInvasionPercolation(GenericAlgorithm):
             men_data['rad'] = phase[tmen_rad][Ts]
 
             self.Pc_data[Pc] = men_data
+        # Change to lil for single throat lookups
+        self.tt_Pc = self.tt_Pc.tolil()
         logger.info("Coop filling finished in " +
                     str(np.around(time.time()-start, 2)) + " s")
 
@@ -1020,7 +1035,7 @@ class MixedInvasionPercolation(GenericAlgorithm):
         are now given access to the invading phase. Two throats with access to
         the invading phase can cooperatively fill any pores that they are both
         connected to, common pores.
-        The invasion of the throats connected to the common pore is handled
+        The invasion of theses throats connected to the common pore is handled
         elsewhere.
         """
         net = self.project.network
@@ -1035,13 +1050,14 @@ class MixedInvasionPercolation(GenericAlgorithm):
                 a = set(net['throat.conns'][throat])
                 # Get a list of pre-calculated coop filling pressures for all
                 # Throats this throat can coop fill with
-                ts_Pc = self.tt_Pc[throat]
-                ts = np.argwhere(~np.isnan(ts_Pc))
+                ts_Pc = self.tt_Pc.data[throat]
+                # Network indices of throats that can act as filling pairs
+                ts = self.tt_Pc.rows[throat]
                 # If there are any potential coop filling throats
                 if len(ts) > 0:
                     # For each throat find the common pore and the uncommon
                     # pores
-                    for t in ts.flatten():
+                    for i, t in enumerate(ts):
                         # Find common pore (cP) and uncommon pores (uPs)
                         b = set(net['throat.conns'][t])
                         cP = list(a.intersection(b))
@@ -1055,8 +1071,4 @@ class MixedInvasionPercolation(GenericAlgorithm):
                             # The throats that gave access are not invaded now
                             # However, isolated throats between invaded pores
                             # Are taken care of elsewhere...
-                            # This could result in cyclycally calling the
-                            # function.
-                            # If all elements are added to the queue and this
-                            # function does not have access to the invasion seq
-                            hq.heappush(queue, [ts_Pc[t], list(cP), 'pore'])
+                            hq.heappush(queue, [ts_Pc[i], list(cP), 'pore'])
