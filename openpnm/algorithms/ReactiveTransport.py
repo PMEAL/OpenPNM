@@ -271,7 +271,6 @@ class ReactiveTransport(GenericTransport):
             Initial guess of unknown variable
 
         """
-        logger.info('―'*80)
         logger.info('Running ReactiveTransport')
         # Create S1 & S1 for 1st Picard's iteration
         if x is None:

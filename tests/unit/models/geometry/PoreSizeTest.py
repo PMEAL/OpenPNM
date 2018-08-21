@@ -59,7 +59,7 @@ class PoreSizeTest:
         geom2 = op.geometry.GenericGeometry(network=net,
                                             pores=net.pores('top'))
         geom2['pore.fixed_diameter'] = 1.0
-        Ps = net.pores('top', mode='complement')
+        Ps = net.pores('top', mode='nor')
         geom1 = op.geometry.GenericGeometry(network=net, pores=Ps,
                                             throats=net.Ts)
         geom1.add_model(propname='pore.diameter',

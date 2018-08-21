@@ -648,7 +648,8 @@ class MixedInvasionPercolation(GenericAlgorithm):
         # For all the steps after the inlets are set up to break-through
         # Reverse the sequence and assess the neighbors cluster state
         stopped_clusters = np.zeros(net.Np, dtype=bool)
-        all_neighbors = net.find_neighbor_pores(net.pores(), flatten=False)
+        all_neighbors = net.find_neighbor_pores(net.pores(), flatten=False,
+                                                include_input=True)
         for un_seq, pore in inv_seq:
             if ~outlets[pore] and un_seq > -1:  # Don't include outlets
                 nc = clusters[all_neighbors[pore]]  # Neighboring clusters
@@ -708,7 +709,7 @@ class MixedInvasionPercolation(GenericAlgorithm):
             self['throat.trapped'] = np.zeros([net.Nt], dtype=bool)
             for c in np.unique(clusters[clusters >= 0]):
                 c_ts = net.find_neighbor_throats(clusters == c,
-                                                 mode='intersection')
+                                                 mode='xnor')
                 self['throat.trapped'][c_ts] = True
             num_tTs = np.sum(self['throat.trapped'])
             logger.info("Number of trapped throats: " + str(num_tTs))
@@ -798,7 +799,7 @@ class MixedInvasionPercolation(GenericAlgorithm):
             self['pore.cluster'][rPs] = cluster_num
             Ts = net.find_neighbor_throats(pores=rPs,
                                            flatten=True,
-                                           mode='intersection')
+                                           mode='xnor')
             self['throat.cluster'][Ts] = cluster_num
             self['pore.invasion_sequence'][rPs] = 0
             self['throat.invasion_sequence'][Ts] = 0

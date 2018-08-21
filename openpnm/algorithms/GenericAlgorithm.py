@@ -1,7 +1,7 @@
 from openpnm.core import Base
 from openpnm.utils import logging
 import numpy as np
-logger = logging.getLogger()
+logger = logging.getLogger(__name__)
 
 
 class GenericAlgorithm(Base):
