@@ -2,7 +2,7 @@ import inspect
 import networkx as nx
 from openpnm.utils import PrintableDict, logging, Workspace
 ws = Workspace()
-logger = logging.getLogger()
+logger = logging.getLogger(__name__)
 
 
 class ModelsDict(PrintableDict):

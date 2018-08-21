@@ -14,21 +14,21 @@ class LabelTest:
         assert 'pore.surface' in net.keys()
         assert 'pore.internal' in net.keys()
         assert net.num_pores('left') == 25
-        assert net.num_pores(['left', 'top'], mode='intersection') == 4
+        assert net.num_pores(['left', 'top'], mode='xnor') == 4
 
     def test_bravais_bcc(self):
         net = op.network.Bravais(shape=[4, 4, 4], mode='bcc')
         assert 'pore.surface' in net.keys()
         assert 'pore.internal' in net.keys()
         assert net.num_pores('left') == 16
-        assert net.num_pores(['left', 'top'], mode='intersection') == 4
+        assert net.num_pores(['left', 'top'], mode='xnor') == 4
 
     def test_bravais_sc(self):
         net = op.network.Bravais(shape=[4, 4, 4], mode='sc')
         assert 'pore.surface' in net.keys()
         assert 'pore.internal' in net.keys()
         assert net.num_pores('left') == 16
-        assert net.num_pores(['left', 'top'], mode='intersection') == 4
+        assert net.num_pores(['left', 'top'], mode='xnor') == 4
 
 
 if __name__ == '__main__':
