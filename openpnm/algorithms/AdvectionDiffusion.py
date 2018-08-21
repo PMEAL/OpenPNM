@@ -7,7 +7,7 @@ logger = logging.getLogger(__name__)
 
 class AdvectionDiffusion(ReactiveTransport):
     r"""
-    A subclass of GenericTransport to simulate advection diffusion.
+    A subclass of GenericTransport to simulate advection diffusion
 
     """
 
