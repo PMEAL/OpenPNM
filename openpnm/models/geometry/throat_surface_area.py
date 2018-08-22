@@ -4,7 +4,7 @@ import scipy as _sp
 def cylinder(target, throat_diameter='throat.diameter',
              throat_length='throat.length'):
     r"""
-    Calculate surface area for a cylindrical throat
+    Calculate surface area for a cylindrical throat.
 
     Parameters
     ----------
@@ -29,7 +29,7 @@ def cylinder(target, throat_diameter='throat.diameter',
 def cuboid(target, throat_diameter='throat.diameter',
            throat_length='throat.length'):
     r"""
-    Calculate surface area for a cuboid throat
+    Calculate surface area for a cuboid throat.
 
     Parameters
     ----------
