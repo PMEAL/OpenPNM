@@ -180,6 +180,7 @@ class MiscTest:
 
     def test_from_neighbors_multi_geom(self):
         net = op.network.Cubic(shape=[5, 5, 5])
+        net.add_boundary_pores()
         Ps1 = net.pores('internal')
         Ts1 = net.throats('internal')
         geo1 = op.geometry.GenericGeometry(network=net,
