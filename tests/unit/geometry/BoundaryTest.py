@@ -74,7 +74,7 @@ class BoundaryTest:
         FD.set_value_BC(pores=pn.pores('top_boundary'), values=1.0)
         FD.set_value_BC(pores=pn.pores('bottom_boundary'), values=0.0)
         FD.run()
-        assert FD.calc_eff_diffusivity() > 0
+        assert FD.calc_effective_diffusivity() > 0
         SF = op.algorithms.StokesFlow(network=pn)
         SF.setup(phase=air)
         SF.set_value_BC(pores=pn.pores('top_boundary'), values=1.0)

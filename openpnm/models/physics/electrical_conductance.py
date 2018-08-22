@@ -1,14 +1,16 @@
-from .misc import poisson_conductance
+from .misc import generic_conductance
 
 
 def series_resistors(target,
+                     pore_area='pore.area',
+                     throat_area='throat.area',
                      pore_conductivity='pore.electrical_conductivity',
                      throat_conductivity='throat.electrical_conductivity',
-                     throat_equivalent_area='throat.equivalent_area',
-                     throat_conduit_lengths='throat.conduit_lengths'):
+                     conduit_lengths='throat.conduit_lengths',
+                     conduit_shape_factors='throat.poisson_shape_factors'):
     r"""
     Calculate the electrical conductance of conduits in network, where a
-    conduit is ( 1/2 pore - full throat - 1/2 pore ) based on the areas
+    conduit is ( 1/2 pore - full throat - 1/2 pore ). See the notes section.
 
     Parameters
     ----------
@@ -23,11 +25,20 @@ def series_resistors(target,
     throat_thermal_conductivity : string
         Dictionary key of the throat thermal conductivity values
 
-    throat_equivalent_area : string
-        Dictionary key of the throat equivalent area values
+    pore_area : string
+        Dictionary key of the pore area values
 
-    throat_conduit_lengths : string
-        Dictionary key of the throat conduit lengths
+    throat_area : string
+        Dictionary key of the throat area values
+
+    conduit_shape_factors : string
+        Dictionary key of the conduit DIFFUSION shape factor values
+
+    Returns
+    -------
+    g : ndarray
+        Array containing electrical conductance values for conduits in the
+        geometry attached to the given physics object.
 
     Notes
     -----
@@ -37,9 +48,15 @@ def series_resistors(target,
     (2) This function calculates the specified property for the *entire*
     network then extracts the values for the appropriate throats at the end.
 
+    (3) This function assumes cylindrical throats with constant cross-section
+    area. Corrections for different shapes and variable cross-section area can
+    be imposed by passing the proper flow_shape_factor argument.
+
     """
-    return poisson_conductance(target=target,
+    return generic_conductance(target=target, transport_type='diffusion',
+                               pore_area=pore_area,
+                               throat_area=throat_area,
                                pore_diffusivity=pore_conductivity,
                                throat_diffusivity=throat_conductivity,
-                               throat_equivalent_area=throat_equivalent_area,
-                               throat_conduit_lengths=throat_conduit_lengths)
+                               conduit_lengths=conduit_lengths,
+                               conduit_shape_factors=conduit_shape_factors)
