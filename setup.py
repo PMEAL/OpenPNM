@@ -24,7 +24,7 @@ setup(
     description = 'A framework for conducting pore network modeling simulations of multiphase transport in porous materials',
     version=main_['__version__'],
     classifiers=[
-        'Development Status :: 5 - Production',
+        'Development Status :: 5 - Production/Stable',
         'License :: OSI Approved :: MIT License',
         'Programming Language :: Python',
         'Topic :: Scientific/Engineering',
