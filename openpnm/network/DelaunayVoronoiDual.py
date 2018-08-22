@@ -216,7 +216,6 @@ class DelaunayVoronoiDual(GenericNetwork):
         surf_pores = sp.unique(surf_pores[~self['pore.boundary'][surf_pores]])
         self['pore.surface'] = False
         self['pore.surface'][surf_pores] = True
-        self['pore.internal'][surf_pores] = False
         # Clean-up
         del self['pore.external']
         del self['pore.keep']
