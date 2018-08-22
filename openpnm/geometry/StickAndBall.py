@@ -192,7 +192,8 @@ class StickAndBall(GenericGeometry):
 
         self.add_model(propname='pore.volume',
                        model=mods.geometry.pore_volume.sphere,
-                       pore_diameter='pore.diameter')
+                       pore_diameter='pore.diameter',
+                       conduit_lengths='throat.conduit_lengths')
 
         self.add_model(propname='throat.max_size',
                        model=mods.misc.from_neighbor_pores,
@@ -201,7 +202,7 @@ class StickAndBall(GenericGeometry):
 
         self.add_model(propname='throat.diameter',
                        model=mods.misc.scaled,
-                       factor=0.5,
+                       factor=0.99,
                        prop='throat.max_size')
 
         self.add_model(propname='throat.endpoints',
