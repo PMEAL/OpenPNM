@@ -1,7 +1,9 @@
 from numpy import pi as _pi
+import numpy as _np
 
 
-def sphere(target, pore_diameter='pore.diameter'):
+def sphere(target, pore_diameter='pore.diameter',
+           conduit_lengths='throat.conduit_lengths'):
     r"""
     Calculate pore volume from diameter assuming a spherical pore body
 
@@ -16,8 +18,18 @@ def sphere(target, pore_diameter='pore.diameter'):
         The dictionary key of the pore diameter values
 
     """
-    diams = target[pore_diameter]
-    value = _pi/6*diams**3
+    network = target.project.network
+    Rp = target[pore_diameter] / 2
+    L1 = target[conduit_lengths + '.pore1']
+    L2 = target[conduit_lengths + '.pore2']
+    L = _np.append(L1, L2)
+    am = network.create_adjacency_matrix(weights=L)
+    am = _pi/3 * (-3*am.multiply(Rp[:, None]**2) + am.power(3))
+    temp = _np.matlib.repeat(Rp, _np.diff(am.indptr))
+    am.data += _pi*2/3 * temp**3
+    V_lens = am.sum(axis=1)
+    V0 = 4/3*_pi*Rp**3
+    value = V0 - V_lens.T[0]
     return value
 
 
