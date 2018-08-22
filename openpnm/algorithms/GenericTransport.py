@@ -336,7 +336,7 @@ class GenericTransport(GenericAlgorithm):
 
     b = property(fget=_get_b, fset=_set_b)
 
-    def _apply_BCs_fast(self):
+    def _apply_BCs(self):
         r"""
         Applies all the boundary conditions that have been specified, by
         adding values to the *A* and *b* matrices.
@@ -355,37 +355,6 @@ class GenericTransport(GenericAlgorithm):
             self.b[~ind] -= (self.A.tocsr() * x_BC)[~ind]
             # Update A
             P_bc = self.toindices(ind)
-            indrow = np.isin(self.A.row, P_bc)
-            indcol = np.isin(self.A.col, P_bc)
-            self.A.data[indrow] = 0  # Remove entries from A for all BC rows
-            self.A.data[indcol] = 0  # Remove entries from A for all BC cols
-            datadiag = self.A.diagonal()  # Add diagonal entries back into A
-            datadiag[P_bc] = np.ones_like(P_bc, dtype=float)
-            self.A.setdiag(datadiag)
-            self.A.eliminate_zeros()  # Remove 0 entries
-
-    def _apply_BCs(self):
-        r"""
-        Applies all the boundary conditions that have been specified, by
-        adding values to the *A* and *b* matrices.
-        """
-        if 'pore.bc_rate' in self.keys():
-            # Update b
-            ind = np.isfinite(self['pore.bc_rate'])
-            self.b[ind] = self['pore.bc_rate'][ind]
-        if 'pore.bc_value' in self.keys():
-            # Update b (impose bc values)
-            ind = np.isfinite(self['pore.bc_value'])
-            self.b[ind] = self['pore.bc_value'][ind]
-            # Update b (substract quantities from b to keep A symmetric)
-            P_bc = self.toindices(np.isfinite(self['pore.bc_value']))
-            for i in range(len(P_bc)):
-                data = sprs.coo_matrix.getcol(self.A, P_bc[i])*self.b[P_bc[i]]
-                data = np.reshape(data.toarray(), (data.toarray().size,))
-                v = np.arange(self.b.size)
-                indices = [v[i] for i in range(len(v)) if v[i] not in P_bc]
-                self.b[indices] -= data[indices]
-            # Update A
             indrow = np.isin(self.A.row, P_bc)
             indcol = np.isin(self.A.col, P_bc)
             self.A.data[indrow] = 0  # Remove entries from A for all BC rows
