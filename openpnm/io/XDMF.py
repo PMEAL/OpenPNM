@@ -43,7 +43,11 @@ class XDMF(GenericIO):
 
         if filename == '':
             filename = project.name
-        f = h5py.File(filename+".hdf", "w")
+        path = cls._parse_filename(filename=filename, ext='xdf')
+        fname_xdf = path.name
+        fname_hdf = path.stem+".hdf"
+        path = path.parent
+        f = h5py.File(path.joinpath(fname_hdf), "w")
 
         d = Dict.to_dict(network, phases=phases, interleave=True,
                          flatten=False, categorize_by=['element', 'data'])
@@ -91,7 +95,7 @@ class XDMF(GenericIO):
                 attr_type = 'Scalar'
                 shape = f[item].shape
                 dims = ''.join([str(i) + ' ' for i in list(shape)[::-1]])
-                hdf_loc = f.filename + ":" + item
+                hdf_loc = fname_hdf + ":" + item
                 attr = create_data_item(value=hdf_loc,
                                         Dimensions=dims,
                                         Format='HDF',
@@ -112,7 +116,7 @@ class XDMF(GenericIO):
         domain.append(grid)
         root.append(domain)
 
-        with open(filename+'.xmf', 'w') as file:
+        with open(path.joinpath(fname_xdf), 'w') as file:
             file.write(cls._header)
             file.write(ET.tostring(root).decode("utf-8"))
 

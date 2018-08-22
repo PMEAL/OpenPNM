@@ -65,11 +65,9 @@ class GenericIO():
         p = Path(filename)
         p = p.resolve()
         # If extension not part of filename
-        if p.suffix == '':
-            try:
-                p = p.with_suffix(ext)
-            except ValueError:
-                p = p.with_suffix('.'+ext)
+        ext = '.'+(ext.strip('.'))
+        if p.suffix != ext:
+            p = p.with_suffix(ext)
         return p
 
     @classmethod
