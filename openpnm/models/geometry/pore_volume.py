@@ -27,9 +27,9 @@ def sphere(target, pore_diameter='pore.diameter',
     am = _pi/3 * (-3*am.multiply(Rp[:, None]**2) + am.power(3))
     temp = _np.matlib.repeat(Rp, _np.diff(am.indptr))
     am.data += _pi*2/3 * temp**3
-    V_lens = am.sum(axis=1)
+    V_lens = _np.array(am.sum(axis=1)).reshape(Rp.size)
     V0 = 4/3*_pi*Rp**3
-    value = V0 - V_lens.T[0]
+    value = V0 - V_lens
     return value
 
 
