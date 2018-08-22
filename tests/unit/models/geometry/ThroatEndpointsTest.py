@@ -346,8 +346,9 @@ class ThroatEndpointsTest:
             FD.set_value_BC(pores=net.pores('front_boundary'), values=1.0)
             FD.set_value_BC(pores=net.pores('back_boundary'), values=0.0)
             FD.run()
-            conds.append(FD.calc_eff_diffusivity(domain_area=area,
-                                                 domain_length=length)[0])
+            D = FD.calc_effective_diffusivity(domain_area=area,
+                                              domain_length=length)
+            conds.append(D[0])
             nets.append(net)
         assert np.all(np.around(np.asarray(conds), 12) == D_ab)
 
