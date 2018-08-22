@@ -81,7 +81,7 @@ Throat Size
 Throat Length
 ................................................................................
 
-.. autofunction:: openpnm.models.geometry.throat_length.straight
+.. autofunction:: openpnm.models.geometry.throat_length.piecewise
 
 ----
 

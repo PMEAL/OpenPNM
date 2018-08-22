@@ -8,8 +8,8 @@ class HydraulicConductanceTest:
         self.geo = op.geometry.GenericGeometry(network=self.net,
                                                pores=self.net.Ps,
                                                throats=self.net.Ts)
-        self.geo['pore.diameter'] = 1.0
-        self.geo['throat.diameter'] = 0.5
+        self.geo['pore.area'] = 1.0
+        self.geo['throat.area'] = 0.5
         self.phase = op.phases.GenericPhase(network=self.net)
         self.phase['pore.viscosity'] = 1e-5
         self.phys = op.physics.GenericPhysics(network=self.net,
@@ -21,14 +21,14 @@ class HydraulicConductanceTest:
         mgr.clear()
 
     def test_hagen_poiseuille(self):
-        self.geo['throat.conduit_lengths.pore1'] = 0.2
+        self.geo['throat.conduit_lengths.pore1'] = 0.25
         self.geo['throat.conduit_lengths.throat'] = 0.6
-        self.geo['throat.conduit_lengths.pore2'] = 0.2
+        self.geo['throat.conduit_lengths.pore2'] = 0.15
         mod = op.models.physics.hydraulic_conductance.hagen_poiseuille
         self.phys.add_model(propname='throat.hydraulic_conductance',
                             model=mod)
-        assert_approx_equal(self.phys['throat.hydraulic_conductance'].mean(),
-                            244.8579)
+        actual = self.phys['throat.hydraulic_conductance'].mean()
+        assert_approx_equal(actual, desired=1421.0262776)
 
 
 if __name__ == '__main__':

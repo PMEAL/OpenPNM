@@ -12,7 +12,7 @@ class FickianDiffusion(ReactiveTransport):
     network : OpenPNM Network object
         The network on which this algorithm operates
 
-    project : OpenPNM Projecxt object
+    project : OpenPNM Project object
         Either a network or a project must be specified
 
     name : string, optional
@@ -41,10 +41,12 @@ class FickianDiffusion(ReactiveTransport):
 
     """
 
-    def __init__(self, settings={}, **kwargs):
-        def_set = {'quantity': 'pore.concentration',
+    def __init__(self, settings={}, phase=None, **kwargs):
+        def_set = {'phase': None,
+                   'quantity': 'pore.concentration',
                    'conductance': 'throat.diffusive_conductance',
-                   'gui': {'setup':        {'quantity': '',
+                   'gui': {'setup':        {'phase': None,
+                                            'quantity': '',
                                             'conductance': ''},
                            'set_rate_BC':  {'pores': None,
                                             'values': None},
@@ -57,6 +59,8 @@ class FickianDiffusion(ReactiveTransport):
         super().__init__(**kwargs)
         self.settings.update(def_set)
         self.settings.update(settings)
+        if phase is not None:
+            self.setup(phase=phase)
 
     def setup(self, phase=None, quantity='', conductance='', **kwargs):
         r"""
@@ -92,8 +96,8 @@ class FickianDiffusion(ReactiveTransport):
             self.settings['conductance'] = conductance
         super().setup(**kwargs)
 
-    def calc_eff_diffusivity(self, inlets=None, outlets=None,
-                             domain_area=None, domain_length=None):
+    def calc_effective_diffusivity(self, inlets=None, outlets=None,
+                                   domain_area=None, domain_length=None):
         r"""
         This calculates the effective diffusivity in this linear transport
         algorithm.
