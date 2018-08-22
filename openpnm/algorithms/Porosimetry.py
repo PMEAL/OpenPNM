@@ -1,7 +1,7 @@
 from openpnm.algorithms import OrdinaryPercolation
 from openpnm.utils import logging
 import numpy as np
-logger = logging.getLogger()
+logger = logging.getLogger(__name__)
 
 
 class Porosimetry(OrdinaryPercolation):
@@ -34,8 +34,9 @@ class Porosimetry(OrdinaryPercolation):
 
     """
 
-    def __init__(self, settings={}, **kwargs):
-        def_set = {'pore_volume': 'pore.volume',
+    def __init__(self, settings={}, phase=None, **kwargs):
+        def_set = {'phase': None,
+                   'pore_volume': 'pore.volume',
                    'throat_volume': 'throat.volume',
                    'mode': 'bond',
                    'access_limited': True,
@@ -45,7 +46,8 @@ class Porosimetry(OrdinaryPercolation):
                    'throat_volume': 'throat.volume',
                    'late_pore_filling': '',
                    'late_throat_filling': '',
-                   'gui': {'setup': {'quantity': '',
+                   'gui': {'setup': {'phase': None,
+                                     'quantity': '',
                                      'throat_entry_pressure': '',
                                      'pore_volume': '',
                                      'throat_volume': '',
@@ -66,6 +68,8 @@ class Porosimetry(OrdinaryPercolation):
         self.settings.update(settings)
         # Use the reset method to initialize all arrays
         self.reset()
+        if phase is not None:
+            self.setup(phase=phase)
 
     def setup(self,
               phase=None,

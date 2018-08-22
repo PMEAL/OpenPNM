@@ -57,50 +57,45 @@ class Boundary(GenericGeometry):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self._do_element_sizes()
+
         self.add_model(propname='pore.area',
                        model=gm.pore_area.sphere)
+
         self.add_model(propname='pore.volume',
-                       model=mm.constant,
-                       value=0.0)
+                       model=mm.constant, value=0.0)
+
         self.add_model(propname='pore.seed',
                        model=mm.constant,
                        value=1.0)
-        self.add_model(propname='throat.seed',
-                       model=mm.constant,
-                       value=1.0)
-        self.add_model(propname='throat.length',
-                       model=gm.throat_length.straight)
-        self.add_model(propname='throat.area',
-                       model=gm.throat_area.cylinder)
-        self.add_model(propname='throat.volume',
-                       model=gm.throat_volume.extrusion)
-        self.add_model(propname='throat.surface_area',
-                       model=gm.throat_surface_area.cylinder)
-        self.add_model(propname='throat.conduit_lengths',
-                       model=gm.throat_length.boundary)
-        self.add_model(propname='throat.equivalent_area',
-                       model=gm.throat_equivalent_area.boundary)
 
-    def _do_element_sizes(self):
-        # Temporary value to make function below work
-        self['pore.diameter'] = 0.0
+        self.add_model(propname='throat.seed',
+                       model=mm.constant, value=1.0)
+
+        self.add_model(propname='pore.diameter',
+                       model=mm.constant, value=0.0)
+
         self.add_model(propname='throat.diameter',
                        model=mm.from_neighbor_pores,
-                       pore_prop='pore.diameter',
-                       mode='max')
-        # Make slightly smaller than pore
-        self['throat.diameter'] /= 1.1
-        # Copy value from throat model just added
-        self.add_model(propname='pore.diameter',
-                       model=mm.from_neighbor_throats,
-                       throat_prop='throat.diameter',
-                       mode='max')
-        # Make slightly bigger than throat
-        self['pore.diameter'] *= 1.1
-        del self.models['throat.diameter']
-        del self.models['pore.diameter']
+                       pore_prop='pore.diameter', mode='max')
 
-    def regenerate_models(self):
-        self._do_element_sizes()
-        super().regenerate_models()
+        self.add_model(propname='throat.endpoints',
+                       model=gm.throat_endpoints.spherical_pores)
+
+        self.add_model(propname='throat.length',
+                       model=gm.throat_length.piecewise)
+
+        self.add_model(propname='throat.conduit_lengths',
+                       model=gm.throat_length.conduit_lengths)
+
+        self.add_model(propname='throat.area',
+                       model=gm.throat_area.cylinder)
+
+        self.add_model(propname='pore.area',
+                       model=mm.from_neighbor_throats,
+                       throat_prop='throat.area', mode='max')
+
+        self.add_model(propname='throat.surface_area',
+                       model=gm.throat_surface_area.cylinder)
+
+        self.add_model(propname='throat.volume',
+                       model=gm.throat_volume.extrusion)

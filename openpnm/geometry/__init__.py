@@ -53,7 +53,7 @@ The table belows shows the specific models used on ``StickAndBall``:
 +----+----------------------+------------------+--------------------------+
 | 7  | throat.diameter      | model:           | scaled                   |
 +----+----------------------+------------------+--------------------------+
-| 8  | throat.length        | model:           | straight                 |
+| 8  | throat.length        | model:           | piecewise                |
 +----+----------------------+------------------+--------------------------+
 | 9  | throat.surface_area  | model:           | cylinder                 |
 +----+----------------------+------------------+--------------------------+

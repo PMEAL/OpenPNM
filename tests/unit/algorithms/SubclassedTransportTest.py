@@ -1,6 +1,4 @@
 import openpnm as op
-import scipy as sp
-import pytest
 from numpy.testing import assert_approx_equal
 
 
@@ -26,10 +24,10 @@ class SubclassedTransportTest:
         alg.set_value_BC(pores=Pin, values=1)
         alg.set_value_BC(pores=Pout, values=0)
         alg.run()
-        Deff = alg.calc_eff_diffusivity()
-        Deff = alg.calc_eff_diffusivity(domain_area=81, domain_length=9)
-        Deff = alg.calc_eff_diffusivity(domain_area=81, domain_length=9,
-                                        inlets=Pin, outlets=Pout)
+        Deff = alg.calc_effective_diffusivity()
+        Deff = alg.calc_effective_diffusivity(domain_area=81, domain_length=9)
+        Deff = alg.calc_effective_diffusivity(domain_area=81, domain_length=9,
+                                              inlets=Pin, outlets=Pout)
         assert_approx_equal(Deff, 1.12500)
 
     def test_stokes_flow(self):

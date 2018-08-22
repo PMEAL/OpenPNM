@@ -4,6 +4,7 @@ import scipy.sparse.csgraph as spgr
 from scipy.spatial import ConvexHull
 from scipy.spatial import cKDTree
 from openpnm.topotools import iscoplanar
+from openpnm.topotools import issymmetric
 from openpnm.algorithms import GenericAlgorithm
 from openpnm.utils import logging
 import inspect
@@ -448,13 +449,19 @@ class GenericTransport(GenericAlgorithm):
             A.indices = A.indices.astype(np.int64)
             A.indptr = A.indptr.astype(np.int64)
             solver = getattr(sprs.linalg, self.settings['solver'])
-            if 'tol' in inspect.getargspec(solver)[0]:
+            if 'tol' in inspect.getfullargspec(solver)[0]:
+                # If an iterative solver is used, set tol
                 norm_A = sprs.linalg.norm(self._A)
                 norm_b = np.linalg.norm(self._b)
                 tol = min(norm_A, norm_b)*1e-06
                 x = solver(A=A, b=b, tol=tol)
             else:
-                x = solver(A=A, b=b)
+                sym = issymmetric(A)
+                if (sym and self.settings['solver'] == 'spsolve_triangular'):
+                    solver = getattr(sprs.linalg, self.settings['solver'])
+                    x = solver(A=sprs.tril(A), b=b)
+                else:
+                    x = solver(A=A, b=b)
         if type(x) == tuple:
             x = x[0]
         return x

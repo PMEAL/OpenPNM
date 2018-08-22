@@ -71,7 +71,7 @@ def test_open_air_diffusivity():
 #    Diff.run()
 #    Diff.domain_area = 25
 #    Diff.domain_length = 5
-#    Diff_deff = Diff.calc_eff_diffusivity()/Dab
+#    Diff_deff = Diff.calc_effective_diffusivity()/Dab
 #    assert np.round(Diff_deff, 3) == 1
 
 

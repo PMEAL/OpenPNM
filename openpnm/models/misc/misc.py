@@ -1,7 +1,7 @@
 import numpy as np
 import scipy.stats as spts
 from openpnm.utils import logging
-logger = logging.getLogger()
+logger = logging.getLogger(__name__)
 
 
 def generic_function(target, prop, func, **kwargs):
@@ -367,7 +367,7 @@ def from_neighbor_throats(target, throat_prop='throat.seed', mode='min'):
     data = lookup[throat_prop]
     neighborTs = network.find_neighbor_throats(pores=Ps,
                                                flatten=False,
-                                               mode='intersection')
+                                               mode='or')
     values = np.ones((np.shape(Ps)[0],))*np.nan
     if mode == 'min':
         for pore in range(len(Ps)):
