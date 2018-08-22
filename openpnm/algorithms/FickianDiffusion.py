@@ -96,8 +96,8 @@ class FickianDiffusion(ReactiveTransport):
             self.settings['conductance'] = conductance
         super().setup(**kwargs)
 
-    def calc_eff_diffusivity(self, inlets=None, outlets=None,
-                             domain_area=None, domain_length=None):
+    def calc_effective_diffusivity(self, inlets=None, outlets=None,
+                                   domain_area=None, domain_length=None):
         r"""
         This calculates the effective diffusivity in this linear transport
         algorithm.
