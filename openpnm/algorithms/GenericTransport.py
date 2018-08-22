@@ -336,7 +336,7 @@ class GenericTransport(GenericAlgorithm):
 
     b = property(fget=_get_b, fset=_set_b)
 
-    def _apply_BCs_(self):
+    def _apply_BCs_orig(self):
         r"""
         Applies all the boundary conditions that have been specified, by
         adding values to the *A* and *b* matrices.
@@ -370,12 +370,10 @@ class GenericTransport(GenericAlgorithm):
             # Update b
             ind = np.isfinite(self['pore.bc_rate'])
             self.b[ind] = self['pore.bc_rate'][ind]
-
         if 'pore.bc_value' in self.keys():
             # Update b (impose bc values)
             ind = np.isfinite(self['pore.bc_value'])
             self.b[ind] = self['pore.bc_value'][ind]
-
             # Update b (substract quantities from b to keep A symmetric)
             P_bc = self.toindices(np.isfinite(self['pore.bc_value']))
             for i in range(len(P_bc)):
@@ -384,7 +382,6 @@ class GenericTransport(GenericAlgorithm):
                 v = np.arange(self.b.size)
                 indices = [v[i] for i in range(len(v)) if v[i] not in P_bc]
                 self.b[indices] -= data[indices]
-
             # Update A
             indrow = np.isin(self.A.row, P_bc)
             indcol = np.isin(self.A.col, P_bc)
