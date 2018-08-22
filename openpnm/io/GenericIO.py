@@ -64,6 +64,8 @@ class GenericIO():
     def _parse_filename(cls, filename, ext=''):
         p = Path(filename)
         p = p.resolve()
+        if ext == '':
+            ext = p.suffix
         # If extension not part of filename
         ext = '.'+(ext.strip('.'))
         if p.suffix != ext:

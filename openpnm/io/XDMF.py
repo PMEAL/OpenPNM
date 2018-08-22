@@ -43,7 +43,8 @@ class XDMF(GenericIO):
 
         if filename == '':
             filename = project.name
-        path = cls._parse_filename(filename=filename, ext='xdf')
+        path = cls._parse_filename(filename=filename, ext='xmf')
+        # Path is a pathlib object, so slice it up as needed
         fname_xdf = path.name
         fname_hdf = path.stem+".hdf"
         path = path.parent
