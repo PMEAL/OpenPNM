@@ -54,6 +54,9 @@ class VTKTest:
         self.phys_4['pore.baz'] = 22
         self.phys_4['throat.baz'] = 22
 
+        self.net['pore.object'] = sp.ones(self.net, dtype=object)
+        self.net.check_data_health()
+
     def teardown_class(self):
         ws = op.Workspace()
         ws.clear()

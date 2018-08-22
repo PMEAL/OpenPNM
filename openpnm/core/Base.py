@@ -1440,7 +1440,9 @@ class Base(dict):
                 props = [props]
         for item in props:
             health[item] = []
-            if sp.sum(sp.isnan(self[item])) > 0:
+            if self[item].dtype == 'O':
+                health[item] = 'No checks on object'
+            elif sp.sum(sp.isnan(self[item])) > 0:
                 health[item] = 'Has NaNs'
             elif sp.shape(self[item])[0] != self._count(item.split('.')[0]):
                 health[item] = 'Wrong Length'

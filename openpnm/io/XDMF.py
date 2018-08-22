@@ -2,6 +2,8 @@ import h5py
 import xml.etree.cElementTree as ET
 from flatdict import FlatDict
 from openpnm.io import Dict, GenericIO
+from openpnm.utils import logging
+logger = logging.getLogger(__name__)
 
 
 class XDMF(GenericIO):
@@ -51,7 +53,11 @@ class XDMF(GenericIO):
         # Make HDF5 file with all datasets, and no groups
         D = FlatDict(d, delimiter='/')
         for item in D.keys():
-            if 'U' in str(D[item][0].dtype):
+            if D[item].dtype == 'O':
+                logger.warning(item + ' has dtype object,' +
+                               ' will not write to file')
+                del D[item]
+            elif 'U' in str(D[item][0].dtype):
                 pass
             else:
                 f.create_dataset(name='/'+item, shape=D[item].shape,
