@@ -449,7 +449,7 @@ class GenericTransport(GenericAlgorithm):
             A.indices = A.indices.astype(np.int64)
             A.indptr = A.indptr.astype(np.int64)
             solver = getattr(sprs.linalg, self.settings['solver'])
-            if 'tol' in inspect.getargspec(solver)[0]:
+            if 'tol' in inspect.getfullargspec(solver)[0]:
                 # If an iterative solver is used, set tol
                 norm_A = sprs.linalg.norm(self._A)
                 norm_b = np.linalg.norm(self._b)
