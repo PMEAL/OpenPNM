@@ -56,6 +56,8 @@ class XDMFTest:
         self.phys_4['pore.baz'] = 22
         self.phys_4['throat.baz'] = 22
 
+        self.net['pore.object'] = sp.ones(self.net.Np, dtype=object)
+
     def teardown_class(self):
         ws = op.Workspace()
         ws.clear()

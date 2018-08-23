@@ -81,7 +81,11 @@ class HDF5(GenericIO):
         for item in d.keys():
             tempname = '_'.join(item.split('.'))
             arr = d[item]
-            if 'U' in str(arr[0].dtype):
+            if d[item].dtype == 'O':
+                logger.warning(item + ' has dtype object,' +
+                               ' will not write to file')
+                del d[item]
+            elif 'U' in str(arr[0].dtype):
                 pass
             else:
                 f.create_dataset(name='/'+tempname, shape=arr.shape,

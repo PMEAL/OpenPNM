@@ -165,8 +165,8 @@ class Cubic(GenericNetwork):
         self['throat.surface'] = False
         Ts = self.find_neighbor_throats(pores=Ps, mode='xnor')
         self['throat.surface'][Ts] = True
-        self['pore.internal'] = ~self['pore.surface']
-        self['throat.internal'] = ~self['throat.surface']
+        self['pore.internal'] = True
+        self['throat.internal'] = True
         # Scale network to requested spacing
         self['pore.coords'] *= spacing
 

@@ -914,6 +914,11 @@ class MixedInvasionPercolation(GenericAlgorithm):
         angle between their throat planes.
         This is used when the invading fluid has access to multiple throats
         connected to a pore
+
+        Parameters
+        ----------
+        inv_points : array_like
+            The invasion pressures at which to assess coopertive pore filling.
         """
         net = self.project.network
         phase = self.project.find_phase(self)
@@ -966,7 +971,6 @@ class MixedInvasionPercolation(GenericAlgorithm):
         unit = np.linalg.norm(t_norms, axis=1)
         t_norms /= np.vstack((unit, unit, unit)).T
 
-        self.Pc_data = {}
         for Pc in inv_points:
             # regenerate model with new target Pc
             for phys in all_phys:
@@ -1024,7 +1028,6 @@ class MixedInvasionPercolation(GenericAlgorithm):
             men_data['cen'] = men_cen_coord
             men_data['rad'] = phase[tmen_rad][Ts]
 
-            self.Pc_data[Pc] = men_data
         # Change to lil for single throat lookups
         self.tt_Pc = self.tt_Pc.tolil()
         logger.info("Coop filling finished in " +

@@ -573,8 +573,8 @@ class Base(dict):
         --------
         >>> import openpnm as op
         >>> pn = op.network.Cubic(shape=[5, 5, 5])
-        >>> pn.labels(pores=[0, 1, 5, 6])
-        ['pore.all', 'pore.bottom', 'pore.front', 'pore.left', 'pore.surface']
+        >>> pn.labels(pores=[11, 12])
+        ['pore.all', 'pore.front', 'pore.internal', 'pore.surface']
         """
         # Short-circuit query when no pores or throats are given
         if (sp.size(pores) == 0) and (sp.size(throats) == 0):
@@ -1440,7 +1440,9 @@ class Base(dict):
                 props = [props]
         for item in props:
             health[item] = []
-            if sp.sum(sp.isnan(self[item])) > 0:
+            if self[item].dtype == 'O':
+                health[item] = 'No checks on object'
+            elif sp.sum(sp.isnan(self[item])) > 0:
                 health[item] = 'Has NaNs'
             elif sp.shape(self[item])[0] != self._count(item.split('.')[0]):
                 health[item] = 'Wrong Length'

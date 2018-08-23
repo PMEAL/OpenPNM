@@ -17,7 +17,7 @@ porous materials
 
 """
 
-__version__ = '2.0.0-b3'
+__version__ = '2.0.0'
 
 from . import utils
 from .utils import Workspace, Project
