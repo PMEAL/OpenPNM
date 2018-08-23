@@ -366,7 +366,8 @@ class TransientReactiveTransport(ReactiveTransport):
                 self[self.settings['quantity']] = x_new
                 res = np.sum(np.absolute(x**2 - x_new**2))
                 x = x_new
-            elif res < self.settings['r_tolerance']:
+            if (res < self.settings['r_tolerance'] or
+                    self.settings['sources'] == []):
                 logger.info('Solution converged: ' + str(res))
                 break
         return x_new

@@ -4,7 +4,6 @@ import scipy.sparse.csgraph as spgr
 from scipy.spatial import ConvexHull
 from scipy.spatial import cKDTree
 from openpnm.topotools import iscoplanar
-from openpnm.topotools import issymmetric
 from openpnm.algorithms import GenericAlgorithm
 from openpnm.utils import logging
 import inspect
