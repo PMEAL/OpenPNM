@@ -454,17 +454,17 @@ class GenericTransport(GenericAlgorithm):
             solver = getattr(sprs.linalg, self.settings['solver'])
             if 'tol' in inspect.getfullargspec(solver)[0]:
                 # If an iterative solver is used, set tol
-                norm_A = sprs.linalg.norm(self._A)
-                norm_b = np.linalg.norm(self._b)
-                tol = min(norm_A, norm_b)*1e-06
+                min_A = min(abs(sprs.coo_matrix.min(self._A)),
+                            abs(sprs.coo_matrix.min(-self._A)))
+                min_b = np.min(self._b[self._b != 0])
+                min_Ab = min(min_A, min_b)
+                if min_Ab == 0:
+                    tol = 1e-06
+                else:
+                    tol = min_Ab*1e-06
                 x = solver(A=A, b=b, tol=tol)
             else:
-                sym = issymmetric(A)
-                if (sym and self.settings['solver'] == 'spsolve_triangular'):
-                    solver = getattr(sprs.linalg, self.settings['solver'])
-                    x = solver(A=sprs.tril(A), b=b)
-                else:
-                    x = solver(A=A, b=b)
+                x = solver(A=A, b=b)
         if type(x) == tuple:
             x = x[0]
         return x
