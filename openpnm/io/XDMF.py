@@ -79,7 +79,7 @@ class XDMF(GenericIO):
         # geometry coordinates
         row, col = f["coordinates"].shape
         dims = ' '.join((str(row), str(col)))
-        hdf_loc = f.filename + ":coordinates"
+        hdf_loc = fname_hdf + ":coordinates"
         geo_data = create_data_item(value=hdf_loc, Dimensions=dims,
                                     Format='HDF', DataType="Float")
         geo = create_geometry(GeometryType="XYZ")
@@ -88,7 +88,7 @@ class XDMF(GenericIO):
         # topolgy connections
         row, col = f["connections"].shape  # col first then row
         dims = ' '.join((str(row), str(col)))
-        hdf_loc = f.filename + ":connections"
+        hdf_loc = fname_hdf + ":connections"
         topo_data = create_data_item(value=hdf_loc, Dimensions=dims,
                                      Format="HDF", NumberType="Int")
         topo = create_topology(TopologyType="Polyline",
