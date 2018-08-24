@@ -101,7 +101,7 @@ def toroidal(target,
         return pc_max
     elif target_Pc is None:
         logger.exception(msg='Please supply a target capillary pressure' +
-                         ' when mode is not max')
+                         ' when mode is "men"')
     if np.abs(target_Pc) < 1.0:
         target_Pc = 1.0
     # Masks to determine which throats to actually calculate alpha for
@@ -148,11 +148,12 @@ def sinusoidal(target,
                throat_diameter='throat.diameter',
                throat_amplitude='throat.amplitude',
                throat_length='throat.length',
+               touch_length='throat.touch_length',
                **kwargs):
     r"""
     The profile of a throat is approximated with a sinusoidal function
     that depends on the average of the connecting pore diameters and throat
-    diamater. It represents a converging-diverging geometry that has a minima
+    diameter. It represents a converging-diverging geometry that has a minima
     at the mid-point of the throat and produces similar behaviour to the
     Purcell model but allows for a more slowly varying profile at the
     ends of the throat.
@@ -166,6 +167,8 @@ def sinusoidal(target,
     mode : string (Default is 'max')
         Determines what information to send back. Options are:
         'max' : the maximum capillary pressure along the throat axis, does not
+        'touch' : the maximum capillary pressure a meniscus can sustain before
+                  touching a solid feature
         'men' : return the meniscus info for a target pressure
     target_Pc : float (Default is None)
         The target capillary pressure for use with mode 'men'
@@ -182,7 +185,10 @@ def sinusoidal(target,
         diameter about the mean.
     throat_length : dict key (string)
         The dictionary key containing the throat length values to be used.
-
+    touch_length : dict key (string)
+        The dictionary key containing the maximum length that a meniscus can
+        protrude into the connecting pore before touching a solid feature and
+        therfore invading
     Notes
     -----
     The capillary pressure equation for a sinusoidal throat is extended from
@@ -245,16 +251,35 @@ def sinusoidal(target,
     # Values of minima and maxima
     Pc_min = np.min(t_Pc, axis=0)
     Pc_max = np.max(t_Pc, axis=0)
-    if mode == 'max':
-        return Pc_max
-    elif target_Pc is None:
-        logger.exception(msg='Please supply a target capillary pressure' +
-                         ' when mode is not max')
-    if np.abs(target_Pc) < 1.0:
-        target_Pc = 1.0
     # Arguments of minima and maxima
     a_min = np.argmin(t_Pc, axis=0)
     a_max = np.argmax(t_Pc, axis=0)
+    if mode == 'max':
+        return Pc_max
+    elif mode == 'touch':
+        all_rad = rad_curve(X, r_amp, Y, t_len, sigma, theta)
+        all_c2x = c2x(X, r_amp, Y, t_len, sigma, theta)
+        all_cen = X*t_len + np.sign(all_rad)*all_c2x
+        dist = all_cen + np.abs(all_rad)
+        # Only count lengths where meniscus bulges into pore
+        dist[all_rad > 0] = 0.0
+        touch_len = network[touch_length] + t_len/2
+        mask = dist > touch_len
+        arg_touch = np.argmax(mask, axis=0)
+        # Make sure we only count ones that happen before max pressure
+        # And above min pressure (which will be erroneous)
+        arg_in_range = (arg_touch < a_max) * (arg_touch > a_min)
+        arg_touch[~arg_in_range] = a_max[~arg_in_range]
+        x_touch = pos[arg_touch]
+        # Return the pressure at which a touch happens
+        Pc_touch = Pc(x_touch, r_amp, r_ts, t_len, sigma, theta)
+        return Pc_touch
+    elif target_Pc is None:
+        logger.exception(msg='Please supply a target capillary pressure' +
+                         ' when mode is "men"')
+    if np.abs(target_Pc) < 1.0:
+        target_Pc = 1.0
+
     inds = np.indices(np.shape(t_Pc))
     # Change values outside the range between minima and maxima to be those
     # Values
@@ -277,7 +302,9 @@ def sinusoidal(target,
     men_data['c2x'] = c2x(xpos, r_amp, r_ts, t_len, sigma, theta)
     men_data['gamma'] = cap_angle(xpos, r_amp, r_ts, t_len, sigma, theta)
     men_data['radius'] = rad_curve(xpos, r_amp, r_ts, t_len, sigma, theta)
-    men_data['center'] = (xpos*t_len +
+    # xpos is relative to the start of the throat not the center
+    # Coop filling assumes center of throat
+    men_data['center'] = ((xpos-0.5)*t_len +
                           np.sign(men_data['radius'])*men_data['c2x'])
     logger.info(mode+' calculated for Pc: '+str(target_Pc))
     return men_data
