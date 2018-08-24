@@ -42,7 +42,8 @@ class MixedPercolationTest:
     def run_mp(self, trapping=False, residual=False, snap=False,
                plot=False, flowrate=None):
         IP_1 = mp(network=self.net)
-        IP_1.settings['snap_off'] = snap
+        if snap:
+            IP_1.settings['snap_off'] = 'throat.snap_off'
         IP_1.setup(phase=self.phase)
         IP_1.set_inlets(pores=self.inlets)
         if residual:
@@ -318,7 +319,6 @@ class MixedPercolationTest:
         self.phase['throat.occupancy'] = False
         self.phase['pore.occupancy'] = np.random.random(net.Np) < 0.25
         IP_1 = mp(network=self.net)
-        IP_1.settings['snap_off']=False
         IP_1.setup(phase=self.phase)
         IP_1.set_inlets(pores=self.inlets)
         IP_1.set_residual(pores=self.phase['pore.occupancy'])
@@ -340,7 +340,6 @@ class MixedPercolationTest:
         self.phase['throat.occupancy'] = False
         self.phase['pore.occupancy'] = np.random.random(net.Np) < 0.25
         IP_1 = mp(network=self.net)
-        IP_1.settings['snap_off']=False
         IP_1.setup(phase=self.phase)
         IP_1.set_inlets(pores=self.inlets)
         IP_1.set_residual(pores=self.phase['pore.occupancy'])
@@ -387,7 +386,7 @@ class MixedPercolationTest:
         assert np.any(IP_1['throat.invasion_sequence'][outlets]>-1)
         assert np.any(IP_1['throat.invasion_sequence']==-1)
 
-    def test_partial_filling(self):
+    def test_late_filling(self):
         self.setup_class(Np=100)
         net = self.net
         phys = self.phys
@@ -419,8 +418,8 @@ class MixedPercolationTest:
         inv_points = np.arange(phys['throat.entry_pressure'].min(),
                                phys['throat.entry_pressure'].max(), 100)
         alg_data = IP_1.get_intrusion_data(inv_points=inv_points)
-        IP_1.settings['pore_partial_filling'] = 'pore.late_filling'
-        IP_1.settings['throat_partial_filling'] = 'throat.late_filling'
+        IP_1.settings['late_pore_filling'] = 'pore.late_filling'
+        IP_1.settings['late_throat_filling'] = 'throat.late_filling'
         alg_data_lpf = IP_1.get_intrusion_data(inv_points=inv_points)
         assert np.any(alg_data_lpf.S_tot - alg_data.S_tot < 0.0)
         assert ~np.any(alg_data_lpf.S_tot - alg_data.S_tot > 0.0)
