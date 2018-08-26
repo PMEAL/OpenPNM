@@ -101,6 +101,9 @@ def largest_sphere(target, fixed_diameter='pore.fixed_diameter', iters=5):
         _np.minimum.at(Dadd, P12[:, 0], Lt)
         _np.minimum.at(Dadd, P12[:, 1], Lt)
         D += Dadd
+    if _np.any(D < 0):
+        _logger.info('Negative pore diameters found!  Neighboring pores are ' +
+                     'larger than the pore spacing.')
     return D[network.pores(target.name)]
 
 
