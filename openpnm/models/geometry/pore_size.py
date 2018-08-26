@@ -89,8 +89,8 @@ def largest_sphere(target, fixed_diameter='pore.fixed_diameter', iters=5):
         # Set any unassigned values (nans) to 0
         D[_np.isnan(D)] = 0
     except KeyError:
-        _logger.info('Pore sizes not present, calculating starting valuesas ' +
-                     'half-way to the nearest neighbor')
+        _logger.info('Pore sizes not present, calculating starting values ' +
+                     'as half-way to the nearest neighbor')
         D = _np.inf*_np.ones([network.Np, ], dtype=float)
         _np.minimum.at(D, P12[:, 0], L)
         _np.minimum.at(D, P12[:, 1], L)
