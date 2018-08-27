@@ -28,7 +28,7 @@ class MeniscusTest:
                        model=pm.meniscus.toroidal,
                        mode='touch',
                        r_toroid=r_tor)
-        assert sp.all(phys['throat.tor_touch'] < phys['throat.tor_max'])
+        assert sp.any(phys['throat.tor_touch'] < phys['throat.tor_max'])
 
     def test_sinusoidal_touch(self):
         phys = self.phys
