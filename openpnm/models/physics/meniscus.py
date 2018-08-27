@@ -12,7 +12,8 @@ def toroidal(target,
              target_Pc=None,
              surface_tension='pore.surface_tension',
              contact_angle='pore.contact_angle',
-             diameter='throat.diameter'):
+             diameter='throat.diameter',
+             touch_length='throat.touch_length'):
     r"""
     Calculate the filling angle (alpha) for a given capillary pressure
 
@@ -38,7 +39,10 @@ def toroidal(target,
         a pore property is given, it is interpolated to a throat list.
     diameter : dict key (string)
         The dictionary key containing the throat diameter values to be used.
-
+    touch_length : dict key (string)
+        The dictionary key containing the maximum length that a meniscus can
+        protrude into the connecting pore before touching a solid feature and
+        therfore invading
 
     Notes
     -----
@@ -99,6 +103,34 @@ def toroidal(target,
 
     if mode == 'max':
         return pc_max
+    elif mode == 'touch':
+        pos = np.linspace(-np.pi/2, np.pi/2, 91)[:: -1]
+        Y, X = np.meshgrid(rt, pos)
+        f = theta-X
+        # Handle potential divide by zero
+        f[np.abs(f) == np.pi/2] = f[np.abs(f) == np.pi/2]*(1-1e-12)
+        # Meniscus radius
+        r_men = Rf*(1 + Y/Rf - np.cos(X)) / np.cos((f))
+        # Vertical adjustment for centre of circle
+        y_off = Rf*np.sin(X)
+        # Angle between contact point - centre - vertical
+        zeta = (f-np.pi/2)
+        # Distance that center of meniscus is below the plane of the throat
+        center = y_off - r_men*np.cos(zeta)
+        dist = center + r_men
+        # Only count lengths where meniscus bulges into pore
+        dist[r_men > 0] = 0.0
+        touch_len = network[touch_length]
+        mask = dist < -touch_len
+        arg_touch = np.argmax(mask, axis=0)
+        # Make sure we only count ones that happen before max pressure
+        # And above min pressure (which will be erroneous)
+        x_touch = pos[arg_touch]
+        arg_in_range = (x_touch > a_maxs) * (x_touch < a_mins)
+        x_touch[~arg_in_range] = x_touch[~arg_in_range]
+        # Return the pressure at which a touch happens
+        Pc_touch = fPc(x_touch, rt, Rf, sigma, theta)
+        return Pc_touch
     elif target_Pc is None:
         logger.exception(msg='Please supply a target capillary pressure' +
                          ' when mode is "men"')

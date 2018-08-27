@@ -16,6 +16,20 @@ class MeniscusTest:
                                         phase=self.phase,
                                         geometry=self.geo)
 
+    def test_toroidal_touch(self):
+        phys = self.phys
+        r_tor = 1e-6
+        self.geo['throat.touch_length'] = 2e-6
+        phys.add_model(propname='throat.tor_max',
+                       model=pm.meniscus.toroidal,
+                       mode='max',
+                       r_toroid=r_tor)
+        phys.add_model(propname='throat.tor_touch',
+                       model=pm.meniscus.toroidal,
+                       mode='touch',
+                       r_toroid=r_tor)
+        assert sp.all(phys['throat.tor_touch'] < phys['throat.tor_max'])
+
     def test_sinusoidal_touch(self):
         phys = self.phys
         self.geo['throat.amplitude'] = 5e-6
