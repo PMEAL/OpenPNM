@@ -463,7 +463,8 @@ class GenericTransport(GenericAlgorithm):
             if settings['solver'] in direct:
                 x = solver(A=A, b=b)
             elif settings['solver'] in iterative:
-                x, exit_code = solver(A=A, b=b, tol=tol)
+                x, exit_code = solver(A=A, b=b, tol=tol,
+                                      maxiter=settings['maxiter'])
                 if exit_code > 0:
                     raise Exception('SciPy solver did not converge!')
 
