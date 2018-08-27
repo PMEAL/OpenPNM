@@ -438,7 +438,7 @@ class GenericTransport(GenericAlgorithm):
         # Set tolerance for iterative solvers
         min_A = np.abs(A.data).min()
         min_b = np.min(b[np.nonzero(b)])
-        tol = min(min_A, min_b) * 1e-04
+        tol = min(min_A, min_b) * def_set['atol']
 
         # Default behavior -> use Scipy
         if type(settings) == str:
