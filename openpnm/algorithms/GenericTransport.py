@@ -414,6 +414,17 @@ class GenericTransport(GenericAlgorithm):
         algorithm.
 
         """
+        settings = self.settings['solver']
+        if type(settings) not in (str, dict):
+            raise Exception('Unrecognized solver. Either pass string or dict.')
+        # Define default settings for iterative solvers
+        def_set = {'family': 'scipy',
+                   'solver': 'cg',
+                   'preconditioner': 'jacobi',
+                   'atol': 1e-6, 'rtol': 1e-6,
+                   'maxiter': 1000}
+
+        # ???: What is this for? Also, why are we duplicating A, b?
         if A is None:
             A = self.A
             if A is None:
@@ -422,52 +433,59 @@ class GenericTransport(GenericAlgorithm):
             b = self.b
             if b is None:
                 raise Exception('The b matrix has not been built yet')
+        A = A.tocsr()
 
-        if self.settings['solver'] == 'petsc':
+        # Set tolerance for iterative solvers
+        min_A = np.abs(A.data).min()
+        min_b = np.min(b[np.nonzero(b)])
+        tol = min(min_A, min_b) * 1e-04
+
+        # Default behavior -> use Scipy
+        if type(settings) == str:
+            temp = settings
+            settings = def_set.copy()
+            if temp in ['pyamg', 'petsc', 'scipy']:
+                settings.update(family=temp)
+            else:
+                settings.update(solver=temp)
+        elif type(settings) == dict:
+            def_set.update(settings)
+            settings.update(def_set)
+
+        # SciPy
+        if settings['family'] == 'scipy':
+            A.indices = A.indices.astype(np.int64)
+            A.indptr = A.indptr.astype(np.int64)
+            direct = ['spsolve', 'spsolve_triangular']
+            iterative = ['bicg', 'bicgstab', 'cg', 'cgs', 'gmres', 'lgmres',
+                         'minres', 'gcrotmk', 'qmr']
+            solver = getattr(sprs.linalg, settings['solver'])
+            if settings['solver'] in direct:
+                x = solver(A=A, b=b)
+            elif settings['solver'] in iterative:
+                x, exit_code = solver(A=A, b=b, tol=tol)
+                if exit_code > 0:
+                    raise Exception('SciPy solver did not converge!')
+
+        # PETSc
+        if settings['family'] == 'petsc':
             # Check if petsc is available
             petsc = importlib.util.find_spec('petsc4py')
             if not petsc:
-                raise Exception('petsc is not installed')
-            if not self.settings['petsc_solver']:
-                self.settings['petsc_solver'] = 'cg'
-            if not self.settings['petsc_precondioner']:
-                self.settings['petsc_precondioner'] = 'jacobi'
-            if not self.settings['petsc_atol']:
-                self.settings['petsc_atol'] = 1e-06
-            if not self.settings['petsc_rtol']:
-                self.settings['petsc_rtol'] = 1e-06
-            if not self.settings['petsc_max_it']:
-                self.settings['petsc_max_it'] = 1000
+                raise Exception('PETSc is not installed.')
             # Define the petsc linear system converting the scipy objects
-            ls = sls(A=A.tocsr(), b=b)
-            ls.settings.update({'solver': self.settings['petsc_solver'],
-                                'preconditioner':
-                                    self.settings['petsc_precondioner'],
-                                'atol': self.settings['petsc_atol'],
-                                'rtol': self.settings['petsc_rtol'],
-                                'max_it': self.settings['petsc_max_it']})
-            x = sls.solve(ls)
-            del(ls)  # Clean
-        else:
-            A = A.tocsr()
-            A.indices = A.indices.astype(np.int64)
-            A.indptr = A.indptr.astype(np.int64)
-            solver = getattr(sprs.linalg, self.settings['solver'])
-            if 'tol' in inspect.getfullargspec(solver)[0]:
-                # If an iterative solver is used, set tol
-                min_A = min(abs(sprs.coo_matrix.min(self._A)),
-                            abs(sprs.coo_matrix.min(-self._A)))
-                min_b = np.min(self._b[self._b != 0])
-                min_Ab = min(min_A, min_b)
-                if min_Ab == 0:
-                    tol = 1e-06
-                else:
-                    tol = min_Ab*1e-06
-                x = solver(A=A, b=b, tol=tol)
-            else:
-                x = solver(A=A, b=b)
-        if type(x) == tuple:
-            x = x[0]
+            ls = SLS(A=A, b=b)
+            ls.settings.update(settings)
+            x = SLS.solve(ls)
+            del(ls)
+
+        # PyAMG
+        if settings['family'] == 'pyamg':
+            B = np.ones((self.A.shape[0], 1))
+            mc = min(10, int(A.shape[0]//4))
+            ml = pyamg.smoothed_aggregation_solver(A, B, max_coarse=mc)
+            x = ml.solve(b=b, tol=tol)
+
         return x
 
     def results(self):
