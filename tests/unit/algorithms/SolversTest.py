@@ -2,7 +2,6 @@ import openpnm as op
 import scipy as sp
 import importlib
 import numpy.testing as nt
-sp.random.seed(1)
 
 
 class SolversTest:
@@ -16,7 +15,7 @@ class SolversTest:
         self.phys = op.physics.GenericPhysics(network=self.net,
                                               phase=self.phase,
                                               geometry=self.geom)
-        self.phys['throat.conductance'] = sp.random.rand(self.net.Nt)
+        self.phys['throat.conductance'] = sp.linspace(1, 5, num=self.net.Nt)
         self.alg = op.algorithms.GenericTransport(network=self.net)
         self.alg.settings.update(quantity='pore.x',
                                  conductance='throat.conductance')
@@ -30,7 +29,7 @@ class SolversTest:
             self.alg.settings['solver'] = solver
             self.alg.run()
             xmean = self.alg['pore.x'].mean()
-            nt.assert_allclose(actual=xmean, desired=0.47766957)
+            nt.assert_allclose(actual=xmean, desired=0.5875950426)
 
     def test_scipy_iterative(self):
         solvers = ['bicg', 'bicgstab', 'cg', 'cgs', 'qmr', 'gcrotmk', 'gmres',
@@ -39,7 +38,7 @@ class SolversTest:
             self.alg.settings['solver'] = solver
             self.alg.run()
             xmean = self.alg['pore.x'].mean()
-            nt.assert_allclose(actual=xmean, desired=0.47766957)
+            nt.assert_allclose(actual=xmean, desired=0.587595, rtol=1e-5)
 
     def test_scipy_iterative_diverge(self):
         solvers = ['bicg', 'bicgstab', 'cg', 'cgs', 'qmr', 'gcrotmk', 'gmres',
@@ -55,7 +54,7 @@ class SolversTest:
         self.alg.settings['solver'] = 'pyamg'
         self.alg.run()
         xmean = self.alg['pore.x'].mean()
-        nt.assert_allclose(actual=xmean, desired=0.47766957)
+        nt.assert_allclose(actual=xmean, desired=0.587595, rtol=1e-5)
 
     def test_petsc(self):
         self.alg.settings['solver'] = 'petsc'
@@ -65,7 +64,7 @@ class SolversTest:
         else:
             self.alg.run()
             xmean = self.alg['pore.x'].mean()
-            nt.assert_allclose(actual=xmean, desired=0.47766957)
+            nt.assert_allclose(actual=xmean, desired=0.587595, rtol=1e-5)
 
 
 if __name__ == '__main__':
