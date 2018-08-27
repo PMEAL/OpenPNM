@@ -790,10 +790,12 @@ class Base(dict):
     def _map(self, ids, element, filtered):
         ids = sp.array(ids, dtype=sp.int64)
         locations = self._get_indices(element=element)
-        hash_map = dict(zip(self[element+'._id'], locations))
-        ind = sp.array([hash_map.get(i, -1) for i in ids], dtype=sp.int64)
+        self_in_ids = sp.isin(ids, self[element+'._id'], assume_unique=True)
+        ids_in_self = sp.isin(self[element+'._id'], ids, assume_unique=True)
         mask = sp.zeros(shape=ids.shape, dtype=bool)
-        mask[sp.where(ind >= 0)[0]] = True
+        mask[self_in_ids] = True
+        ind = sp.ones_like(mask, dtype=sp.int64) * -1
+        ind[self_in_ids] = locations[ids_in_self]
         if filtered:
             return ind[mask]
         else:

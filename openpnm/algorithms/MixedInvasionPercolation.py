@@ -39,18 +39,14 @@ class MixedInvasionPercolation(GenericAlgorithm):
     def __init__(self, settings={}, **kwargs):
         def_set = {'pore_entry_pressure': 'pore.entry_pressure',
                    'throat_entry_pressure': 'throat.entry_pressure',
-                   'mode': 'mixed',
-                   'snap_off': False,
+                   'snap_off': '',
                    'invade_isolated_Ts': False,
                    'late_pore_filling': '',
                    'late_throat_filling': '',
-                   'gui': {'setup':        {'mode': '',
-                                            'pore_entry_pressure': '',
+                   'gui': {'setup':        {'pore_entry_pressure': '',
                                             'throat_entry_pressure': '',
                                             'snap_off': '',
-                                            'invade_isolated_Ts': '',
-                                            'pore_volume': '',
-                                            'throat_volume': ''},
+                                            'invade_isolated_Ts': ''},
                            'set_inlets':   {'pores': None,
                                             'clusters': None},
                            'set_outlets':  {'pores': None,
@@ -70,7 +66,7 @@ class MixedInvasionPercolation(GenericAlgorithm):
               pore_entry_pressure='pore.entry_pressure',
               throat_entry_pressure='throat.entry_pressure',
               snap_off='',
-              invade_isolated_Ts='',
+              invade_isolated_Ts=False,
               late_pore_filling='',
               late_throat_filling='',
               cooperative_pore_filling=''):
@@ -94,12 +90,20 @@ class MixedInvasionPercolation(GenericAlgorithm):
             pressure values are stored.  The default is
             'throat.capillary_pressure'.
 
-        pore_partial_filling : string
-            The name of the model used to determine partial pore filling as
+        snap_off : string
+            The dictionary key on the Phase object where the throat snap-off
+            pressure values are stored.
+
+        invade_isolated_Ts : boolean
+            If True, isolated throats are invaded at the higher invasion
+            pressure of their connected pores.
+
+        late_pore_filling : string
+            The name of the model used to determine late pore filling as
             a function of applied pressure.
 
-        throat_partial_filling : string
-            The name of the model used to determine partial throat filling as
+        late_throat_filling : string
+            The name of the model used to determine late throat filling as
             a function of applied pressure.
 
         cooperative_pore_filling : string
@@ -419,25 +423,25 @@ class MixedInvasionPercolation(GenericAlgorithm):
         p_inv = inv_p <= Pc
         t_inv = inv_t <= Pc
 
-        if self.settings['pore_partial_filling']:
+        if self.settings['late_pore_filling']:
             # Set pressure on phase to current capillary pressure
             phase['pore.pressure'] = Pc
             # Regenerate corresponding physics model
             for phys in self.project.find_physics(phase=phase):
-                phys.regenerate_models(self.settings['pore_partial_filling'])
+                phys.regenerate_models(self.settings['late_pore_filling'])
             # Fetch partial filling fraction from phase object (0->1)
-            frac = phase[self.settings['pore_partial_filling']]
+            frac = phase[self.settings['late_pore_filling']]
             p_vol = net['pore.volume']*frac
         else:
             p_vol = net['pore.volume']
-        if self.settings['throat_partial_filling']:
+        if self.settings['late_throat_filling']:
             # Set pressure on phase to current capillary pressure
             phase['throat.pressure'] = Pc
             # Regenerate corresponding physics model
             for phys in self.project.find_physics(phase=phase):
-                phys.regenerate_models(self.settings['throat_partial_filling'])
+                phys.regenerate_models(self.settings['late_throat_filling'])
             # Fetch partial filling fraction from phase object (0->1)
-            frac = phase[self.settings['throat_partial_filling']]
+            frac = phase[self.settings['late_throat_filling']]
             t_vol = net['throat.volume']*frac
         else:
             t_vol = net['throat.volume']
@@ -694,13 +698,14 @@ class MixedInvasionPercolation(GenericAlgorithm):
         else:
             logger.info("No trapped clusters found")
 
-    def _apply_snap_off(self, snap_off='throat.snap_off', queue=None):
+    def _apply_snap_off(self, queue=None):
         r"""
         Add all the throats to the queue with snap off pressure
         This is probably wrong!!!! Each one needs to start a new cluster.
         """
         net = self.project.network
         phase = self.project.find_phase(self)
+        snap_off = self.settings['snap_off']
         if queue is None:
             queue = self.queue[0]
         try:
@@ -709,7 +714,7 @@ class MixedInvasionPercolation(GenericAlgorithm):
             for T in net.throats():
                 if not np.isnan(Pc_snap_off[T]):
                     hq.heappush(queue, [Pc_snap_off[T], T, 'throat'])
-        except:
+        except KeyError:
             logger.warning("Phase " + phase.name + " doesn't have " +
                            "property " + snap_off)
 
@@ -875,14 +880,32 @@ class MixedInvasionPercolation(GenericAlgorithm):
         T1 = []
         T2 = []
         start = 0
-        for p in range(len(neighbor_Ts)):
-            num_t = len(neighbor_Ts[p])
-            Ps = Ps + [p]*num_t
-            Ts = Ts + neighbor_Ts[p].tolist()
+        # Build lookup pair index arrays for each coordination number up to the
+        # Maximum coordination max_c
+        max_c = sp.amax(network.num_neighbors(pores=network.Ps, flatten=False))
+        pair_T1 = []
+        pair_T2 = []
+        logger.info('Building throat pair matrices')
+        for num_t in range(max_c+1):
+            temp1 = []
+            temp2 = []
             for t1 in range(num_t)[:-1]:
                 for t2 in range(num_t)[t1+1:]:
-                    T1 = T1 + [t1+start]
-                    T2 = T2 + [t2+start]
+                    temp1.append(t1)
+                    temp2.append(t2)
+            pair_T1.append(np.asarray(temp1))
+            pair_T2.append(np.asarray(temp2))
+        for p, nTs in enumerate(neighbor_Ts):
+            num_t = len(nTs)
+            for i in range(num_t):
+                Ps.append(p)
+                Ts.append(nTs[i])
+            # Pair indices into Ts
+            tempt1 = pair_T1[num_t] + start
+            tempt2 = pair_T2[num_t] + start
+            for i in range(len(tempt1)):
+                T1.append(tempt1[i])
+                T2.append(tempt2[i])
             start += num_t
         # Nt * 2 long
         Ps = np.asarray(Ps)
@@ -890,6 +913,7 @@ class MixedInvasionPercolation(GenericAlgorithm):
         # indices into the above arrays based on throat pairs
         T1 = np.asarray(T1)
         T2 = np.asarray(T2)
+
         return Ps, Ts, T1, T2
 
     def _apply_cen_to_throats(self, p_cen, t_cen, t_norm, men_cen):
@@ -1058,7 +1082,11 @@ class MixedInvasionPercolation(GenericAlgorithm):
                 # Network indices of throats that can act as filling pairs
                 ts = self.tt_Pc.rows[throat]
                 # If there are any potential coop filling throats
-                if len(ts) > 0:
+                if np.any(~np.isnan(ts_Pc)):
+                    ts_Pc = np.asarray(ts_Pc)
+                    ts = np.asarray(ts)
+                    ts = ts[~np.isnan(ts_Pc)]
+                    ts_Pc = ts_Pc[~np.isnan(ts_Pc)]
                     # For each throat find the common pore and the uncommon
                     # pores
                     for i, t in enumerate(ts):
