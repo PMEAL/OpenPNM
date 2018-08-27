@@ -6,11 +6,13 @@ from scipy.spatial import cKDTree
 from openpnm.topotools import iscoplanar
 from openpnm.algorithms import GenericAlgorithm
 from openpnm.utils import logging
-import inspect
-# Check if petsc4py is available
 import importlib
+# Check if petsc4py is available
 if (importlib.util.find_spec('petsc4py') is not None):
-    from openpnm.utils.petsc import PetscSparseLinearSolver as sls
+    from openpnm.utils.petsc import PETScSparseLinearSolver as SLS
+# Check if pyamg is available
+if (importlib.util.find_spec('pyamg') is not None):
+    import pyamg
 logger = logging.getLogger(__name__)
 
 
