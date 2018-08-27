@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 import logging
 from transforms3d import _gohlketransforms as tr
+from openpnm.models import physics as pm
 logger = logging.getLogger(__name__)
 
 
@@ -260,3 +261,61 @@ def ransohoff_snap_off(target,
                 str(np.around(100*np.sum(angles_ok)/np.size(angles_ok), 0)) +
                 "% of throats")
     return value
+
+
+def purcell_bidirectional(target, r_toroid,
+                          surface_tension='pore.surface_tension',
+                          contact_angle='pore.contact_angle',
+                          throat_diameter='throat.diameter',
+                          pore_diameter='pore.diameter'):
+    r"""
+    Computes the throat capillary entry pressure assuming the throat is a
+    toroid. Makes use of the toroidal meniscus model with mode touch.
+    This model accounts for mensicus protrusion into adjacent pores and
+    touching solid features.
+    It is bidirectional becauase the connected pores generally have different
+    sizes and this determines how far the meniscus can protrude.
+
+    Parameters
+    ----------
+    target : OpenPNM Object
+        The object for which these values are being calculated.  This
+        controls the length of the calculated array, and also provides
+        access to other necessary thermofluid properties.
+
+    r_toroid : float or array_like
+        The radius of the toroid surrounding the pore
+
+    sigma : dict key (string)
+        The dictionary key containing the surface tension values to be used.
+        If a pore property is given, it is interpolated to a throat list.
+
+    theta : dict key (string)
+        The dictionary key containing the contact angle values to be used.
+        If a pore property is given, it is interpolated to a throat list.
+
+    throat_diameter : dict key (string)
+        The dictionary key containing the throat diameter values to be used.
+
+    pore_diameter : dict key (string)
+        The dictionary key containing the pore diameter values to be used.
+    Notes
+    """
+    network = target.project.network
+    conns = network['throat.conns']
+    values = {}
+    for p in range(2):
+        network['throat.temp_diameter'] = network[pore_diameter][conns[:, p]]
+        key = 'throat.touch_pore_'+str(p)
+        target.add_model(propname=key,
+                         model=pm.meniscus.toroidal,
+                         mode='touch',
+                         r_toroid=r_toroid,
+                         throat_diameter=throat_diameter,
+                         surface_tension=surface_tension,
+                         contact_angle=contact_angle,
+                         touch_length='throat.temp_diameter')
+        values[str(p)] = target[key]
+        target.remove_model(key)
+    del network['throat.temp_diameter']
+    return values

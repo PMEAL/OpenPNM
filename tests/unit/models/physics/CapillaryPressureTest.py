@@ -74,6 +74,19 @@ class CapillaryPressureTest:
         assert_approx_equal(self.water['throat.capillary_pressure'][0], a)
         self.phys.remove_model('throat.capillary_pressure')
 
+    def test_purcell_bidirectional(self):
+        f = op.models.physics.capillary_pressure.purcell_bidirectional
+        self.geo['pore.touch'] = (sp.random.random(self.geo.Np)+0.5)*0.1
+        self.phys.add_model(propname='throat.bidirectional',
+                            model=f,
+                            r_toroid=0.1,
+                            surface_tension='pore.surface_tension',
+                            contact_angle='pore.contact_angle',
+                            pore_diameter='pore.touch')
+        diff = (self.phys['throat.bidirectional.0'] -
+                self.phys['throat.bidirectional.1'])
+        assert sp.any(diff != 0)
+
     def test_ransohoff_snapoff_verts(self):
         ws = op.Workspace()
         ws.clear()
