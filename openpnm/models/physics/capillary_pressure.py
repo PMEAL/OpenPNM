@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 import logging
 from transforms3d import _gohlketransforms as tr
+from openpnm.models import physics as pm
 logger = logging.getLogger(__name__)
 
 
@@ -54,11 +55,11 @@ def washburn(target, surface_tension='pore.surface_tension',
         controls the length of the calculated array, and also provides
         access to other necessary thermofluid properties.
 
-    sigma : string
+    surface_tension : string
         The dictionary key containing the surface tension values to be used. If
         a pore property is given, it is interpolated to a throat list.
 
-    theta : string
+    contact_angle : string
         The dictionary key containing the contact angle values to be used. If
         a pore property is given, it is interpolated to a throat list.
 
@@ -109,11 +110,11 @@ def purcell(target, r_toroid, surface_tension='pore.surface_tension',
     r_toroid : float or array_like
         The radius of the toroid surrounding the pore
 
-    sigma : dict key (string)
+    surface_tension : dict key (string)
         The dictionary key containing the surface tension values to be used.
         If a pore property is given, it is interpolated to a throat list.
 
-    theta : dict key (string)
+    contact_angle : dict key (string)
         The dictionary key containing the contact angle values to be used.
         If a pore property is given, it is interpolated to a throat list.
 
@@ -162,20 +163,17 @@ def purcell(target, r_toroid, surface_tension='pore.surface_tension',
 
 def ransohoff_snap_off(target,
                        shape_factor=2.0,
-                       require_pair=False,
-                       contact_angle='pore.contact_angle',
-                       surface_tension='pore.surface_tension',
-                       diameter='throat.diameter',
                        wavelength=5e-6,
+                       require_pair=False,
+                       surface_tension='pore.surface_tension',
+                       contact_angle='pore.contact_angle',
+                       diameter='throat.diameter',
                        vertices='throat.offset_vertices',
                        **kwargs):
     r"""
     Computes the capillary snap-off pressure assuming the throat is cylindrical
     with converging-diverging change in diamater - like the Purcell model.
     The wavelength of the change in diamater is the fiber radius.
-    Ref: Ransohoff, T.C., Gauglitz, P.A. and Radke, C.J., 1987. Snap‐off of gas
-    bubbles in smoothly constricted noncircular capillaries. AIChE Journal,
-    33(5), pp.753-765.
 
     Parameters
     ----------
@@ -183,23 +181,39 @@ def ransohoff_snap_off(target,
         The object for which these values are being calculated.  This
         controls the length of the calculated array, and also provides
         access to other necessary thermofluid properties.
+
     shape_factor :
         constant dependent on the shape of throat cross-section 1.75 - 2.0, see
         Ref
-    sigma : dict key (string)
-        The dictionary key containing the surface tension values to be used. If
-        a pore property is given, it is interpolated to a throat list.
+
+    wavelength : float or array like
+        The transverse interfacial radius of curvature at the neck
+        (fiber radius in fibrous media)
+
+    require_pair : bool
+        Controls whether snap-off requires a pair of arc meniscii to occur.
+
+    surface_tension : dict key (string)
+        The dictionary key containing the surface tension values to be used.
+        If a pore property is given, it is interpolated to a throat list.
+
+    contact_angle : dict key (string)
+        The dictionary key containing the contact angle values to be used.
+        If a pore property is given, it is interpolated to a throat list.
+
     throat_diameter : dict key (string)
         The dictionary key containing the throat diameter values to be used.
-    wavelength :
-        The dictionary key containing the radius of the transverse interfacial
-        radius of curvature at the neck (fiber radius in fibrous media)
 
     Notes
     -----
     This equation should be used to calculate the snap off capillary pressure
     in fribrous media
 
+    References
+    ----------
+    [1]: Ransohoff, T.C., Gauglitz, P.A. and Radke, C.J., 1987. Snap‐off of gas
+    bubbles in smoothly constricted noncircular capillaries. AIChE Journal,
+    33(5), pp.753-765.
     """
     phase = target.project.find_phase(target)
     geometry = target.project.find_geometry(target)
@@ -260,3 +274,127 @@ def ransohoff_snap_off(target,
                 str(np.around(100*np.sum(angles_ok)/np.size(angles_ok), 0)) +
                 "% of throats")
     return value
+
+
+def purcell_bidirectional(target, r_toroid,
+                          surface_tension='pore.surface_tension',
+                          contact_angle='pore.contact_angle',
+                          throat_diameter='throat.diameter',
+                          pore_diameter='pore.diameter'):
+    r"""
+    Computes the throat capillary entry pressure assuming the throat is a
+    toroid. Makes use of the toroidal meniscus model with mode touch.
+    This model accounts for mensicus protrusion into adjacent pores and
+    touching solid features.
+    It is bidirectional becauase the connected pores generally have different
+    sizes and this determines how far the meniscus can protrude.
+
+    Parameters
+    ----------
+    target : OpenPNM Object
+        The object for which these values are being calculated.  This
+        controls the length of the calculated array, and also provides
+        access to other necessary thermofluid properties.
+
+    r_toroid : float or array_like
+        The radius of the toroid surrounding the pore
+
+    surface_tension : dict key (string)
+        The dictionary key containing the surface tension values to be used.
+        If a pore property is given, it is interpolated to a throat list.
+
+    contact_angle : dict key (string)
+        The dictionary key containing the contact angle values to be used.
+        If a pore property is given, it is interpolated to a throat list.
+
+    throat_diameter : dict key (string)
+        The dictionary key containing the throat diameter values to be used.
+
+    pore_diameter : dict key (string)
+        The dictionary key containing the pore diameter values to be used.
+    Notes
+    """
+    network = target.project.network
+    conns = network['throat.conns']
+    values = {}
+    for p in range(2):
+        network['throat.temp_diameter'] = network[pore_diameter][conns[:, p]]
+        key = 'throat.touch_pore_'+str(p)
+        target.add_model(propname=key,
+                         model=pm.meniscus.toroidal,
+                         mode='touch',
+                         r_toroid=r_toroid,
+                         throat_diameter=throat_diameter,
+                         surface_tension=surface_tension,
+                         contact_angle=contact_angle,
+                         touch_length='throat.temp_diameter')
+        values[str(p)] = target[key]
+        target.remove_model(key)
+    del network['throat.temp_diameter']
+    return values
+
+
+def sinusoidal_bidirectional(target,
+                             surface_tension='pore.surface_tension',
+                             contact_angle='pore.contact_angle',
+                             throat_diameter='throat.diameter',
+                             throat_amplitude='throat.amplitude',
+                             throat_length='throat.length',
+                             pore_diameter='pore.diameter'):
+    r"""
+    Computes the throat capillary entry pressure assuming the throat has a
+    sinusoisal profile.
+    Makes use of the toroidal meniscus model with mode touch.
+    This model accounts for mensicus protrusion into adjacent pores and
+    touching solid features.
+    It is bidirectional becauase the connected pores generally have different
+    sizes and this determines how far the meniscus can protrude.
+
+    Parameters
+    ----------
+    target : OpenPNM Object
+        The object for which these values are being calculated.  This
+        controls the length of the calculated array, and also provides
+        access to other necessary thermofluid properties
+
+    surface_tension : dict key (string)
+        The dictionary key containing the surface tension values to be used.
+        If a pore property is given, it is interpolated to a throat list.
+
+    contact_angle : dict key (string)
+        The dictionary key containing the contact angle values to be used.
+        If a pore property is given, it is interpolated to a throat list.
+
+    throat_diameter : dict key (string)
+        The dictionary key containing the throat diameter values to be used.
+
+    throat_amplitude : dict key (string)
+        The dictionary key containing the amplitude of variation in the throat
+        diameter about the mean.
+
+    throat_length : dict key (string)
+        The dictionary key containing the throat length values to be used.
+
+    pore_diameter : dict key (string)
+        The dictionary key containing the pore diameter values to be used.
+    Notes
+    """
+    network = target.project.network
+    conns = network['throat.conns']
+    values = {}
+    for p in range(2):
+        network['throat.temp_diameter'] = network[pore_diameter][conns[:, p]]
+        key = 'throat.touch_pore_'+str(p)
+        target.add_model(propname=key,
+                         model=pm.meniscus.sinusoidal,
+                         mode='touch',
+                         surface_tension=surface_tension,
+                         contact_angle=contact_angle,
+                         throat_diameter=throat_diameter,
+                         throat_amplitude=throat_amplitude,
+                         throat_length=throat_length,
+                         touch_length='throat.temp_diameter')
+        values[str(p)] = target[key]
+        target.remove_model(key)
+    del network['throat.temp_diameter']
+    return values
