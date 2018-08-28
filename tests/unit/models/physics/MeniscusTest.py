@@ -71,7 +71,8 @@ class MeniscusTest:
         phys.add_model(propname='throat.tor_pressure',
                        model=pm.meniscus.toroidal,
                        mode='max',
-                       r_toroid=r_tor)
+                       r_toroid=r_tor,
+                       num_points=1000)
         phys.add_model(propname='throat.tor_meniscus',
                        model=pm.meniscus.toroidal,
                        mode='men',
