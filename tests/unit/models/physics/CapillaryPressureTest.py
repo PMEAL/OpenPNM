@@ -83,8 +83,8 @@ class CapillaryPressureTest:
                             surface_tension='pore.surface_tension',
                             contact_angle='pore.contact_angle',
                             pore_diameter='pore.touch')
-        diff = (self.phys['throat.bidirectional.0'] -
-                self.phys['throat.bidirectional.1'])
+        diff = (self.phys['throat.bidirectional'][:, 0] -
+                self.phys['throat.bidirectional'][:, 1])
         assert sp.any(diff != 0)
 
     def test_sinusoidal_bidirectional(self):
@@ -97,8 +97,8 @@ class CapillaryPressureTest:
                             surface_tension='pore.surface_tension',
                             contact_angle='pore.contact_angle',
                             pore_diameter='pore.touch')
-        diff = (self.phys['throat.bidirectional.0'] -
-                self.phys['throat.bidirectional.1'])
+        diff = (self.phys['throat.bidirectional'][:, 0] -
+                self.phys['throat.bidirectional'][:, 1])
         assert sp.any(diff != 0)
 
     def test_ransohoff_snapoff_verts(self):

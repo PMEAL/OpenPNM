@@ -328,10 +328,10 @@ def purcell_bidirectional(target, r_toroid,
                          surface_tension=surface_tension,
                          contact_angle=contact_angle,
                          touch_length='throat.temp_diameter')
-        values[str(p)] = target[key]
+        values[p] = target[key]
         target.remove_model(key)
     del network['throat.temp_diameter']
-    return values
+    return np.vstack((values[0], values[1])).T
 
 
 def sinusoidal_bidirectional(target,
@@ -394,7 +394,7 @@ def sinusoidal_bidirectional(target,
                          throat_amplitude=throat_amplitude,
                          throat_length=throat_length,
                          touch_length='throat.temp_diameter')
-        values[str(p)] = target[key]
+        values[p] = target[key]
         target.remove_model(key)
     del network['throat.temp_diameter']
-    return values
+    return np.vstack((values[0], values[1])).T
