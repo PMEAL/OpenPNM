@@ -22,24 +22,31 @@ def toroidal(target,
         The object for which these values are being calculated.  This
         controls the length of the calculated array, and also provides
         access to other necessary thermofluid properties.
+
     mode : string (Default is 'max')
         Determines what information to send back. Options are:
         'max' : the maximum capillary pressure along the throat axis
         'touch' : the maximum capillary pressure a meniscus can sustain before
                   touching a solid feature
         'men' : return the meniscus info for a target pressure
+
     r_toroid : float or array_like
         The radius of the toroid surrounding the pore
+
     target_Pc : float
         The target capillary pressure
+
     surface_tension : dict key (string)
         The dictionary key containing the surface tension values to be used. If
         a pore property is given, it is interpolated to a throat list.
+
     contact_angle : dict key (string)
         The dictionary key containing the contact angle values to be used. If
         a pore property is given, it is interpolated to a throat list.
+
     throat_diameter : dict key (string)
         The dictionary key containing the throat diameter values to be used.
+
     touch_length : dict key (string)
         The dictionary key containing the maximum length that a meniscus can
         protrude into the connecting pore before touching a solid feature and
@@ -54,6 +61,15 @@ def toroidal(target,
     Morrow [1]_, and explored by Gostick [2]_ in the context of a pore network
     model.
 
+    References
+    ----------
+
+    .. [1] G. Mason, N. R. Morrow, Effect of contact angle on capillary
+           displacement curvatures in pore throats formed by spheres. J.
+           Colloid Interface Sci. 168, 130 (1994).
+    .. [2] J. Gostick, Random pore network modeling of fibrous PEMFC gas
+           diffusion media using Voronoi and Delaunay tessellations. J.
+           Electrochem. Soc. 160, F731 (2013).
     """
     network = target.project.network
     phase = target.project.find_phase(target)
@@ -183,31 +199,40 @@ def sinusoidal(target,
         The object for which these values are being calculated.  This
         controls the length of the calculated array, and also provides
         access to other necessary thermofluid properties.
+
     mode : string (Default is 'max')
         Determines what information to send back. Options are:
         'max' : the maximum capillary pressure along the throat axis, does not
         'touch' : the maximum capillary pressure a meniscus can sustain before
                   touching a solid feature
         'men' : return the meniscus info for a target pressure
+
     target_Pc : float (Default is None)
         The target capillary pressure for use with mode 'men'
+
     surface_tension : dict key (string)
         The dictionary key containing the surface tension values to be used. If
         a pore property is given, it is interpolated to a throat list.
+
     contact_angle : dict key (string)
         The dictionary key containing the contact angle values to be used. If
         a pore property is given, it is interpolated to a throat list.
+
     throat_diameter : dict key (string)
         The dictionary key containing the average throat diameter values.
+
     throat_amplitude : dict key (string)
         The dictionary key containing the amplitude of variation in the throat
         diameter about the mean.
+
     throat_length : dict key (string)
         The dictionary key containing the throat length values to be used.
+
     touch_length : dict key (string)
         The dictionary key containing the maximum length that a meniscus can
         protrude into the connecting pore before touching a solid feature and
         therfore invading
+
     Notes
     -----
     The capillary pressure equation for a sinusoidal throat is extended from
