@@ -277,6 +277,7 @@ def ransohoff_snap_off(target,
 
 
 def purcell_bidirectional(target, r_toroid,
+                          num_points=1e2,
                           surface_tension='pore.surface_tension',
                           contact_angle='pore.contact_angle',
                           throat_diameter='throat.diameter',
@@ -298,6 +299,10 @@ def purcell_bidirectional(target, r_toroid,
 
     r_toroid : float or array_like
         The radius of the toroid surrounding the pore
+
+    num_points : float (Default 100)
+        The number of divisions to make along the profile length to assess the
+        meniscus properties in order to find the touch length.
 
     surface_tension : dict key (string)
         The dictionary key containing the surface tension values to be used.
@@ -324,6 +329,7 @@ def purcell_bidirectional(target, r_toroid,
                          model=pm.meniscus.toroidal,
                          mode='touch',
                          r_toroid=r_toroid,
+                         num_points=num_points,
                          throat_diameter=throat_diameter,
                          surface_tension=surface_tension,
                          contact_angle=contact_angle,
@@ -335,6 +341,7 @@ def purcell_bidirectional(target, r_toroid,
 
 
 def sinusoidal_bidirectional(target,
+                             num_points=1e2,
                              surface_tension='pore.surface_tension',
                              contact_angle='pore.contact_angle',
                              throat_diameter='throat.diameter',
@@ -356,6 +363,10 @@ def sinusoidal_bidirectional(target,
         The object for which these values are being calculated.  This
         controls the length of the calculated array, and also provides
         access to other necessary thermofluid properties
+
+    num_points : float (Default 100)
+        The number of divisions to make along the profile length to assess the
+        meniscus properties in order to find the touch length.
 
     surface_tension : dict key (string)
         The dictionary key containing the surface tension values to be used.
@@ -388,6 +399,7 @@ def sinusoidal_bidirectional(target,
         target.add_model(propname=key,
                          model=pm.meniscus.sinusoidal,
                          mode='touch',
+                         num_points=num_points,
                          surface_tension=surface_tension,
                          contact_angle=contact_angle,
                          throat_diameter=throat_diameter,

@@ -9,6 +9,7 @@ def toroidal(target,
              mode='max',
              r_toroid=5e-6,
              target_Pc=None,
+             num_points=1e2,
              surface_tension='pore.surface_tension',
              contact_angle='pore.contact_angle',
              throat_diameter='throat.diameter',
@@ -35,6 +36,11 @@ def toroidal(target,
 
     target_Pc : float
         The target capillary pressure
+
+    num_points : float (Default 100)
+        The number of divisions to make along the profile length to assess the
+        meniscus properties in order to find target pressures, touch lengths,
+        minima and maxima.
 
     surface_tension : dict key (string)
         The dictionary key containing the surface tension values to be used. If
@@ -107,7 +113,7 @@ def toroidal(target,
     theta = np.deg2rad(theta)
     # Network properties
     throatRad = network[throat_diameter]/2
-    pos = np.arange(-r_toroid*0.999, r_toroid*0.999, r_toroid*1e-3)
+    pos = np.arange(-r_toroid*0.999, r_toroid*0.999, r_toroid/num_points)
     fiberRad = np.ones(len(throatRad))*r_toroid
     # Now find the positions of the menisci along each throat axis
     Y, X = np.meshgrid(throatRad, pos)
@@ -178,6 +184,7 @@ def toroidal(target,
 def sinusoidal(target,
                mode='max',
                target_Pc=None,
+               num_points=1e2,
                surface_tension='pore.surface_tension',
                contact_angle='pore.contact_angle',
                throat_diameter='throat.diameter',
@@ -209,6 +216,11 @@ def sinusoidal(target,
 
     target_Pc : float (Default is None)
         The target capillary pressure for use with mode 'men'
+
+    num_points : float (Default 100)
+        The number of divisions to make along the profile length to assess the
+        meniscus properties in order to find target pressures, touch lengths,
+        minima and maxima.
 
     surface_tension : dict key (string)
         The dictionary key containing the surface tension values to be used. If
@@ -287,7 +299,7 @@ def sinusoidal(target,
     theta = np.deg2rad(theta)
     # Network properties
     t_len = network[throat_length]
-    pos = np.arange(0.1, 0.9, 1e-3)
+    pos = np.arange(0.1, 0.9, 1/num_points)
     r_amp = network[throat_amplitude]
     r_ts = network[throat_diameter]/2
     # Now find the positions of the menisci along each throat axis
