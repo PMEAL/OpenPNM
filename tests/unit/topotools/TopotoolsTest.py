@@ -138,7 +138,7 @@ class TopotoolsTest:
         np.random.seed(1)
         pn = op.network.Cubic(shape=[2, 2, 2], spacing=1)
         Ps = pn.pores()[:4]
-        Ts = pn.find_neighbor_throats(pores=Ps, mode='intersection')
+        Ts = pn.find_neighbor_throats(pores=Ps, mode='xnor')
         geo1 = op.geometry.GenericGeometry(network=pn, pores=Ps, throats=Ts)
         Ps = pn.pores()[4:]
         Ts = pn.find_neighbor_throats(pores=Ps, mode='union')
@@ -153,10 +153,10 @@ class TopotoolsTest:
         np.random.seed(1)
         pn = op.network.Cubic(shape=[2, 2, 2], spacing=5)
         Ps = pn.pores()[:4]
-        Ts1 = pn.find_neighbor_throats(pores=Ps, mode='union')
+        Ts1 = pn.find_neighbor_throats(pores=Ps, mode='or')
         geo1 = op.geometry.GenericGeometry(network=pn, pores=Ps, throats=Ts1)
         Ps = pn.pores()[4:]
-        Ts2 = pn.find_neighbor_throats(pores=Ps, mode='intersection')
+        Ts2 = pn.find_neighbor_throats(pores=Ps, mode='xnor')
         geo2 = op.geometry.GenericGeometry(network=pn, pores=Ps, throats=Ts2)
         geo1['throat.random'] = np.random.random(geo1.Nt)
         geo2['throat.random'] = np.random.random(geo2.Nt)

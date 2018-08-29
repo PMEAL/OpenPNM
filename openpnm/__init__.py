@@ -1,4 +1,15 @@
 r"""
+
+::
+
+     o-o                o--o  o   o o   o
+    o   o               |   | |\  | |\ /|
+    |   | o-o  o-o o-o  o--o  | \ | | o |
+    o   o |  | |-' |  | |     |  \| |   |
+     o-o  o-o  o-o o  o o     o   o o   o
+          |
+          o
+
 **OpenPNM**
 
 OpenPNM is a package for performing pore network simulations of transport in
@@ -6,7 +17,7 @@ porous materials
 
 """
 
-__version__ = '2.0.0-b2'
+__version__ = '2.0.1'
 
 from . import utils
 from .utils import Workspace, Project

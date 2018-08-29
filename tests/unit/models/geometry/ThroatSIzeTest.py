@@ -9,8 +9,8 @@ class ThroatSizeTest:
     def setup_class(self):
         self.net = op.network.Cubic(shape=[2, 2, 2])
         self.net.add_boundary_pores()
-        Ps = self.net.pores('*boundary', mode='complement')
-        Ts = self.net.throats('*boundary', mode='complement')
+        Ps = self.net.pores('*boundary', mode='nor')
+        Ts = self.net.throats('*boundary', mode='nor')
         self.geo = op.geometry.GenericGeometry(network=self.net,
                                                pores=Ps,
                                                throats=Ts)

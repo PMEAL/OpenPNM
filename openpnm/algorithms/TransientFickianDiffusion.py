@@ -9,8 +9,10 @@ class TransientFickianDiffusion(TransientReactiveTransport, FickianDiffusion):
 
     """
 
-    def __init__(self, settings={}, **kwargs):
-        def_set = {'gui': {'setup':        {'quantity': '',
+    def __init__(self, settings={}, phase=None, **kwargs):
+        def_set = {'phase': None,
+                   'gui': {'setup':        {'phase': None,
+                                            'quantity': '',
                                             'conductance': '',
                                             't_initial': None,
                                             't_final': None,
@@ -30,6 +32,8 @@ class TransientFickianDiffusion(TransientReactiveTransport, FickianDiffusion):
         super().__init__(**kwargs)
         self.settings.update(def_set)
         self.settings.update(settings)
+        if phase is not None:
+            self.setup(phase=phase)
 
     def setup(self, phase=None, quantity='', conductance='',
               t_initial=None, t_final=None, t_step=None, t_output=None,

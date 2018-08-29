@@ -339,24 +339,27 @@ class GenericTransport(GenericAlgorithm):
         r"""
         Applies all the boundary conditions that have been specified, by
         adding values to the *A* and *b* matrices.
-
         """
         if 'pore.bc_rate' in self.keys():
             # Update b
             ind = np.isfinite(self['pore.bc_rate'])
             self.b[ind] = self['pore.bc_rate'][ind]
         if 'pore.bc_value' in self.keys():
-            f = np.amax(np.absolute(self.A.data))
-            # Update b
+            # Update b (impose bc values)
             ind = np.isfinite(self['pore.bc_value'])
-            self.b[ind] = f*self['pore.bc_value'][ind]
+            self.b[ind] = self['pore.bc_value'][ind]
+            # Update b (substract quantities from b to keep A symmetric)
+            x_BC = np.zeros_like(self.b)
+            x_BC[ind] = self.b[ind]
+            self.b[~ind] -= (self.A.tocsr() * x_BC)[~ind]
             # Update A
-            # Find all entries on rows associated with value bc
-            P_bc = self.toindices(np.isfinite(self['pore.bc_value']))
-            indrow = np.in1d(self.A.row, P_bc)
+            P_bc = self.toindices(ind)
+            indrow = np.isin(self.A.row, P_bc)
+            indcol = np.isin(self.A.col, P_bc)
             self.A.data[indrow] = 0  # Remove entries from A for all BC rows
+            self.A.data[indcol] = 0  # Remove entries from A for all BC cols
             datadiag = self.A.diagonal()  # Add diagonal entries back into A
-            datadiag[P_bc] = f*np.ones_like(P_bc, dtype=float)
+            datadiag[P_bc] = np.ones_like(P_bc, dtype=float)
             self.A.setdiag(datadiag)
             self.A.eliminate_zeros()  # Remove 0 entries
 
@@ -448,10 +451,16 @@ class GenericTransport(GenericAlgorithm):
             A.indices = A.indices.astype(np.int64)
             A.indptr = A.indptr.astype(np.int64)
             solver = getattr(sprs.linalg, self.settings['solver'])
-            if 'tol' in inspect.getargspec(solver)[0]:
-                norm_A = sprs.linalg.norm(self._A)
-                norm_b = np.linalg.norm(self._b)
-                tol = min(norm_A, norm_b)*1e-06
+            if 'tol' in inspect.getfullargspec(solver)[0]:
+                # If an iterative solver is used, set tol
+                min_A = min(abs(sprs.coo_matrix.min(self._A)),
+                            abs(sprs.coo_matrix.min(-self._A)))
+                min_b = np.min(self._b[self._b != 0])
+                min_Ab = min(min_A, min_b)
+                if min_Ab == 0:
+                    tol = 1e-06
+                else:
+                    tol = min_Ab*1e-06
                 x = solver(A=A, b=b, tol=tol)
             else:
                 x = solver(A=A, b=b)

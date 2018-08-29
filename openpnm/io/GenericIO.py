@@ -64,12 +64,12 @@ class GenericIO():
     def _parse_filename(cls, filename, ext=''):
         p = Path(filename)
         p = p.resolve()
+        if ext == '':
+            ext = p.suffix
         # If extension not part of filename
-        if p.suffix == '':
-            try:
-                p = p.with_suffix(ext)
-            except ValueError:
-                p = p.with_suffix('.'+ext)
+        ext = '.'+(ext.strip('.'))
+        if p.suffix != ext:
+            p = p.with_suffix(ext)
         return p
 
     @classmethod

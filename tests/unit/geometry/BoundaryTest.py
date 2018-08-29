@@ -6,21 +6,24 @@ class BoundaryTest:
 
     def setup_class(self):
         self.net = op.network.Cubic(shape=[3, 3, 3])
-        Ps_int = self.net.pores(labels=['top', 'bottom'], mode='not')
-        Ps_boun = self.net.pores(labels=['top', 'bottom'], mode='union')
+        self.net.add_boundary_pores()
+        Ps_int = self.net.pores(labels=['top_boundary', 'bottom_boundary'],
+                                mode='not')
+        Ps_boun = self.net.pores(labels=['top_boundary', 'bottom_boundary'],
+                                 mode='union')
         Pb_mask = np.random.random(len(Ps_boun)) < 0.5
-        Ts_int = self.net.throats(labels=['internal'])
-        Ts_boun = self.net.throats(labels=['internal'], mode='not')
-        Tb_mask = np.random.random(len(Ts_boun)) < 0.5
+        Ts_int = self.net.throats(labels=['internal', 'surface'], mode='union')
+        TB_1 = self.net.find_neighbor_throats(pores=Ps_boun[Pb_mask])
+        TB_2 = self.net.find_neighbor_throats(pores=Ps_boun[~Pb_mask])
         self.geo = op.geometry.StickAndBall(network=self.net,
                                             pores=Ps_int,
                                             throats=Ts_int)
         self.boun1 = op.geometry.Boundary(network=self.net,
                                           pores=Ps_boun[Pb_mask],
-                                          throats=Ts_boun[Tb_mask])
+                                          throats=TB_1)
         self.boun2 = op.geometry.Boundary(network=self.net,
                                           pores=Ps_boun[~Pb_mask],
-                                          throats=Ts_boun[~Tb_mask])
+                                          throats=TB_2)
         self.geo.regenerate_models()
         self.boun1.regenerate_models()
         self.boun2.regenerate_models()
@@ -41,16 +44,16 @@ class BoundaryTest:
     def test_boundary_with_alg(self):
         pn = op.network.Cubic(shape=[5, 5, 5], spacing=2.5e-5)
         pn.add_boundary_pores()
-        Ps_int = pn.pores(labels=['internal'])
-        Ps_boun = pn.pores(labels=['internal'], mode='not')
-        Ts_int = pn.throats(labels=['internal'])
-        Ts_boun = pn.throats(labels=['internal'], mode='not')
+        Ps_int = pn.pores(labels=['*boundary'], mode='not')
+        Ps_boun = pn.pores(labels=['*boundary'])
+        Ts_int = pn.throats(labels=['*boundary'], mode='not')
+        Ts_boun = pn.throats(labels=['*boundary'])
         geo = op.geometry.StickAndBall(network=pn,
                                        pores=Ps_int, throats=Ts_int)
         boun = op.geometry.Boundary(network=pn, pores=Ps_boun,
                                     throats=Ts_boun)
-        boun.regenerate_models()
         geo.regenerate_models()
+        boun.regenerate_models()
         air = op.phases.Air(network=pn)
         phys_air_geo = op.physics.Standard(network=pn,
                                            phase=air,
@@ -60,20 +63,24 @@ class BoundaryTest:
                                             geometry=boun)
         phys_air_boun.regenerate_models()
         phys_air_geo.regenerate_models()
-        # I have commented these tests for now while we discuss how to handle
-        # boundary pores
-#        FD = op.algorithms.FickianDiffusion(network=pn)
-#        FD.setup(phase=air)
-#        FD.set_value_BC(pores=pn.pores('top_boundary'), values=1.0)
-#        FD.set_value_BC(pores=pn.pores('bottom_boundary'), values=0.0)
-#        FD.run()
-#        checks = phys_air_geo.check_data_health().values()
-#        for check in checks:
-#            assert len(check) == 0
-#        checks = phys_air_boun.check_data_health().values()
-#        for check in checks:
-#            assert len(check) == 0
-#        assert FD.calc_eff_diffusivity() > 0
+        checks = phys_air_geo.check_data_health().values()
+        for check in checks:
+            assert len(check) == 0
+        checks = phys_air_boun.check_data_health().values()
+        for check in checks:
+            assert len(check) == 0
+        FD = op.algorithms.FickianDiffusion(network=pn)
+        FD.setup(phase=air)
+        FD.set_value_BC(pores=pn.pores('top_boundary'), values=1.0)
+        FD.set_value_BC(pores=pn.pores('bottom_boundary'), values=0.0)
+        FD.run()
+        assert FD.calc_effective_diffusivity() > 0
+        SF = op.algorithms.StokesFlow(network=pn)
+        SF.setup(phase=air)
+        SF.set_value_BC(pores=pn.pores('top_boundary'), values=1.0)
+        SF.set_value_BC(pores=pn.pores('bottom_boundary'), values=0.0)
+        SF.run()
+        assert SF.calc_effective_permeability() > 0
 
 
 if __name__ == '__main__':
