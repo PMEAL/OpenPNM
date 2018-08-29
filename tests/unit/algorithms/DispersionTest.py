@@ -1,5 +1,6 @@
 import openpnm as op
 import scipy as sp
+from numpy.testing import assert_allclose
 
 
 class DispersionTest:
@@ -18,15 +19,15 @@ class DispersionTest:
         self.phys['throat.diffusive_conductance'] = 1e-15
         self.phys['throat.hydraulic_conductance'] = 1e-15
 
-    def test_dispersion(self):
         sf = op.algorithms.StokesFlow(network=self.net, phase=self.phase)
         sf.setup(quantity='pore.pressure',
                  conductance='throat.hydraulic_conductance')
         sf.set_value_BC(pores=self.net.pores('back'), values=1)
         sf.set_value_BC(pores=self.net.pores('front'), values=0)
         sf.run()
-        self.phase[sf.settings['quantity']] = sf[sf.settings['quantity']]
+        self.phase.update(sf.results())
 
+    def test_dispersion(self):
         ad = op.algorithms.Dispersion(network=self.net, phase=self.phase)
         ad.setup(quantity='pore.concentration',
                  diffusive_conductance='throat.diffusive_conductance',
@@ -37,11 +38,24 @@ class DispersionTest:
         ad.run()
 
         x = [0., 0., 0.,
-             0.89688, 0.89688, 0.89688,
-             1.53953, 1.53953, 1.53953,
+             0.89688173, 0.89688173, 0.89688173,
+             1.53952557, 1.53952557, 1.53952557,
              2., 2., 2.]
-        y = sp.around(ad[ad.settings['quantity']], decimals=5)
-        assert sp.all(x == y)
+        y = ad[ad.settings['quantity']]
+        assert_allclose(actual=y, desired=x)
+
+    def test_outflow_BC(self):
+        ad = op.algorithms.Dispersion(network=self.net, phase=self.phase)
+        ad.setup(quantity='pore.concentration',
+                 diffusive_conductance='throat.diffusive_conductance',
+                 hydraulic_conductance='throat.hydraulic_conductance',
+                 pressure='pore.pressure')
+        ad.set_value_BC(pores=self.net.pores('back'), values=2)
+        ad.set_outflow_BC(pores=self.net.pores('front'))
+        ad.run()
+
+        y = ad[ad.settings['quantity']].mean()
+        assert_allclose(actual=y, desired=2)
 
     def teardown_class(self):
         ws = op.Workspace()
