@@ -58,7 +58,6 @@ class AdvectionDiffusion(ReactiveTransport):
         super().setup(**kwargs)
 
     def _build_A(self, force=False):
-        print('build A AD')
         s_dis = self.settings['s_scheme']
         network = self.project.network
         phase = self.project.phases()[self.settings['phase']]
