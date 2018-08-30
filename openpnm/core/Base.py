@@ -394,6 +394,44 @@ class Base(dict):
             temp = [i for i in temp if i.split('.')[0] in element]
         return temp
 
+    def get(self, keys, default=None):
+        r"""
+        This subclassed method can be used to obtain a dictionary containing
+        subset of data on the object
+
+        Parameters
+        ----------
+        keys : string or list of strings
+            The item or items to retrieve.
+
+        default : any object
+            The value to return in the event that the requested key(s) is not
+            found.  The default is ``None``.
+
+        Returns
+        -------
+        If a single string is given in ``keys``, this method behaves exactly
+        as the ``dict's`` native ``get`` method and returns just the item
+        requested (or the ``default`` if not found).  If, however, a list of
+        strings is received, then a dictionary containing each of the
+        requested items is returned.
+
+        Examples
+        --------
+        >>> import openpnm as op
+        >>> pn = op.network.Cubic(shape=[5, 5, 5])
+        >>> pore_props = pn.props(element='pore')
+        >>> subset = pn.get(keys=pore_props)
+
+        """
+        if type(keys) is str:
+            return super().get(keys, default)
+        else:
+            ret = {}
+            for k in keys:
+                ret[k] = super().get(k, default)
+        return ret
+
     # -------------------------------------------------------------------------
     """Data Query Methods"""
     # -------------------------------------------------------------------------
