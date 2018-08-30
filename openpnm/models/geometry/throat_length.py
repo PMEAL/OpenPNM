@@ -1,4 +1,4 @@
-from scipy.linalg import norm as _norm
+from scipy import sqrt as _sqrt
 from openpnm.utils import logging as _logging
 _logger = _logging.getLogger(__name__)
 
@@ -25,7 +25,7 @@ def ctc(target, pore_diameter='pore.diameter'):
     cn = network['throat.conns'][throats]
     C1 = network['pore.coords'][cn[:, 0]]
     C2 = network['pore.coords'][cn[:, 1]]
-    return _norm(C1 - C2, axis=1)
+    return _sqrt(((C1 - C2)**2).sum(axis=1))
 
 
 def piecewise(target, throat_endpoints='throat.endpoints',
@@ -66,11 +66,12 @@ def piecewise(target, throat_endpoints='throat.endpoints',
     EP1 = network[throat_endpoints + '.head'][throats]
     EP2 = network[throat_endpoints + '.tail'][throats]
     # Calculate throat length
-    Lt = _norm(EP1 - EP2, axis=1)
+    Lt = _sqrt(((EP1 - EP2)**2).sum(axis=1))
     # Handle the case where pores & throat centroids are not colinear
     try:
         Ct = network[throat_centroid][throats]
-        Lt = _norm(Ct - EP1, axis=1) + _norm(Ct - EP2, axis=1)
+        Lt = _sqrt(((Ct - EP1)**2).sum(axis=1)) + \
+            _sqrt(((Ct - EP2)**2).sum(axis=1))
     except KeyError:
         pass
     return Lt
@@ -119,8 +120,8 @@ def conduit_lengths(target, throat_endpoints='throat.endpoints',
         Lt = network[throat_length][throats]
     except KeyError:
         # Calculate throat length otherwise
-        Lt = _norm(EP1 - EP2, axis=1)
+        Lt = _sqrt(((EP1 - EP2)**2).sum(axis=1))
     # Calculate conduit lengths
-    L1 = _norm(C1 - EP1, axis=1)
-    L2 = _norm(C2 - EP2, axis=1)
+    L1 = _sqrt(((C1 - EP1)**2).sum(axis=1))
+    L2 = _sqrt(((C2 - EP2)**2).sum(axis=1))
     return {'pore1': L1, 'throat': Lt, 'pore2': L2}
