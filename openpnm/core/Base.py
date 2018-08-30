@@ -424,12 +424,13 @@ class Base(dict):
         >>> subset = pn.get(keys=pore_props)
 
         """
-        if type(keys) is str:
-            return super().get(keys, default)
-        else:
+        # If a list of several keys is passed, then create a subdict
+        if type(keys) is list:
             ret = {}
             for k in keys:
                 ret[k] = super().get(k, default)
+        else:  # Otherwise return numpy array
+            ret = super().get(keys, default)
         return ret
 
     # -------------------------------------------------------------------------
