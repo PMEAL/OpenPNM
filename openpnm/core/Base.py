@@ -416,16 +416,33 @@ class Base(dict):
         strings is received, then a dictionary containing each of the
         requested items is returned.
 
+        Notes
+        -----
+        This is useful for creating Pandas Dataframes of a specific subset of
+        data.  Note that a Dataframe can be initialized with a ``dict``, but
+        all columns must be the same length.  (e.g. ``df = pd.Dataframe(d)``)
+
         Examples
         --------
         >>> import openpnm as op
         >>> pn = op.network.Cubic(shape=[5, 5, 5])
         >>> pore_props = pn.props(element='pore')
         >>> subset = pn.get(keys=pore_props)
+        >>> print(len(subset))  # Only pore.coords, so gives dict with 1 array
+        1
+        >>> subset = pn.get(['pore.top', 'pore.bottom'])
+        >>> print(len(subset))  # Returns a dict with the 2 requested array
+        2
+
+        It behaves exactly as normal with a dict key string is supplied:
+
+        >>> array = pn.get('pore.coords')
+        >>> print(array.shape)  # Returns requested array
+        (125, 3)
 
         """
         # If a list of several keys is passed, then create a subdict
-        if type(keys) is list:
+        if isinstance(keys, list):
             ret = {}
             for k in keys:
                 ret[k] = super().get(k, default)
