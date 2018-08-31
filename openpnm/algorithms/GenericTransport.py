@@ -436,6 +436,10 @@ class GenericTransport(GenericAlgorithm):
             self.settings['solver_family'] = 'scipy'
             self.settings['solver_type'] = 'spsolve'
             self.settings['solver_atol'] = def_set['solver_atol']
+        if self.settings['solver'] == 'pyamg':
+            self.settings['solver_family'] = 'pyamg'
+        if self.settings['solver'] == 'petsc':
+            self.settings['solver_family'] = 'petsc'
 
         # Set tolerance for iterative solvers
         min_A = np.abs(A.data).min()
