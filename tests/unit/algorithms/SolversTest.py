@@ -25,8 +25,9 @@ class SolversTest:
 
     def test_scipy_direct(self):
         solvers = ['spsolve']
+        self.alg.settings['solver_family'] = 'scipy'
         for solver in solvers:
-            self.alg.settings['solver'] = solver
+            self.alg.settings['solver_type'] = solver
             self.alg.run()
             xmean = self.alg['pore.x'].mean()
             nt.assert_allclose(actual=xmean, desired=0.5875950426)
@@ -34,8 +35,9 @@ class SolversTest:
     def test_scipy_iterative(self):
         solvers = ['bicg', 'bicgstab', 'cg', 'cgs', 'qmr', 'gcrotmk', 'gmres',
                    'lgmres', 'minres']
+        self.alg.settings['solver_family'] = 'scipy'
         for solver in solvers:
-            self.alg.settings['solver'] = solver
+            self.alg.settings['solver_type'] = solver
             self.alg.run()
             xmean = self.alg['pore.x'].mean()
             nt.assert_allclose(actual=xmean, desired=0.587595, rtol=1e-5)
@@ -43,21 +45,22 @@ class SolversTest:
     def test_scipy_iterative_diverge(self):
         solvers = ['bicg', 'bicgstab', 'cg', 'cgs', 'qmr', 'gcrotmk', 'gmres',
                    'lgmres', 'minres']
-        self.alg.settings['solver'] = {'family': 'scipy', 'maxiter': 1}
+        self.alg.settings.update(solver_family='scipy',
+                                 solver_maxiter=1)
         for solver in solvers:
-            self.alg.settings['solver']['solver'] = solver
+            self.alg.settings['solver_type'] = solver
             with nt.assert_raises(Exception):
                 self.alg.run()
-        self.alg.settings['solver'].update(maxiter=100)
+        self.alg.settings.update(solver_maxiter=100)
 
     def test_pyamg(self):
-        self.alg.settings['solver'] = 'pyamg'
+        self.alg.settings['solver_family'] = 'pyamg'
         self.alg.run()
         xmean = self.alg['pore.x'].mean()
         nt.assert_allclose(actual=xmean, desired=0.587595, rtol=1e-5)
 
     def test_petsc(self):
-        self.alg.settings['solver'] = 'petsc'
+        self.alg.settings['solver_family'] = 'petsc'
         if importlib.util.find_spec('petsc4py') is None:
             with nt.assert_raises(Exception):
                 self.alg.run()
