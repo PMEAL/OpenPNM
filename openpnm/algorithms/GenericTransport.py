@@ -495,6 +495,8 @@ class GenericTransport(GenericAlgorithm):
                 x, exit_code = solver(A=A, b=b, tol=tol,
                                       maxiter=self.settings['solver_maxiter'])
                 if exit_code > 0:
+                    if np.linalg.norm(A*x-b) < tol:
+                        return x
                     raise Exception('SciPy solver did not converge! ' +
                                     'Exit code: ' + str(exit_code))
             else:
