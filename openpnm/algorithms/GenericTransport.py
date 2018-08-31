@@ -153,7 +153,7 @@ class GenericTransport(GenericAlgorithm):
             self.settings['quantity'] = quantity
         if conductance:
             self.settings['conductance'] = conductance
-        self.settings.update(kwargs)
+        self.settings.update(**kwargs)
 
     def set_value_BC(self, pores, values):
         r"""
