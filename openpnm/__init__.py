@@ -63,7 +63,7 @@ try:
     if repo.active_branch.name != 'master':
         commit_id = repo.active_branch.commit.hexsha[:6]
         __version__ = __version__ + '-' + str(commit_id)
-except InvalidGitRepositoryError:
+except:
     pass
 
 from . import utils
