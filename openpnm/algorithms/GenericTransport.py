@@ -6,10 +6,10 @@ from scipy.spatial import ConvexHull
 from scipy.spatial import cKDTree
 from openpnm.topotools import iscoplanar
 from openpnm.algorithms import GenericAlgorithm
-from openpnm.utils import logging
-from docrep import DocstringProcessor
+from openpnm.utils import logging, Docorator
 logger = logging.getLogger(__name__)
-docstrings = DocstringProcessor()
+docstr = Docorator()
+
 # Set some default settings
 def_set = {'phase': None,
            'conductance': None,
@@ -31,7 +31,7 @@ def_set = {'phase': None,
            }
 
 
-@docstrings.get_sectionsf('GenericTransport.class', sections=['Parameters'])
+@docstr.get_sectionsf('GenericTransport.class', sections=['Parameters'])
 class GenericTransport(GenericAlgorithm):
     r"""
     This class implements steady-state linear transport calculations
@@ -106,6 +106,7 @@ class GenericTransport(GenericAlgorithm):
     |                       | in the ``settings``                             |
     +-----------------------+-------------------------------------------------+
     | ``_get_domain_area``  | Attempts to estimate the area of the inlet pores|
+
     |                       | if not specified by user                        |
     +-----------------------+-------------------------------------------------+
     | ``_get_domain_length``| Attempts to estimate the length between the     |
@@ -115,20 +116,14 @@ class GenericTransport(GenericAlgorithm):
 
 
     """
-    _docstr = docstrings
-
-    def __init__(self, project=None, network=None, phase=None, settings={},
-                 **kwargs):
+    def __init__(self, phase=None, settings={}, **kwargs):
+        super().__init__(**kwargs)
         # Apply default settings
         self.settings.update(def_set)
         # Overwrite any given in init
         self.settings.update(settings)
         # Assign phase if given during init
         self.setup(phase=phase)
-        # If network given, get project, otherwise let parent class create it
-        if network is not None:
-            project = network.project
-        super().__init__(project=project, **kwargs)
         # Create some instance attributes
         self._A = None
         self._pure_A = None
@@ -137,9 +132,9 @@ class GenericTransport(GenericAlgorithm):
         self['pore.bc_rate'] = np.nan
         self['pore.bc_value'] = np.nan
 
-    @_docstr.get_sectionsf('GenericTransport.setup',
-                           sections=['Parameters', 'Other Parameters'])
-    @_docstr.dedent
+    @docstr.get_sectionsf('GenericTransport.setup',
+                          sections=['Parameters', 'Other Parameters'])
+    @docstr.dedent
     def setup(self, phase=None, quantity='', conductance='', **kwargs):
         r"""
         This method takes several arguments that are essential to running the
@@ -602,8 +597,8 @@ class GenericTransport(GenericAlgorithm):
                 R = np.sum(R)
         return np.array(R, ndmin=1)
 
-    @_docstr.get_sectionsf('GenericTransport._calc_eff_prop',
-                           sections=['Parameters', 'Notes'])
+    @docstr.get_sectionsf('GenericTransport._calc_eff_prop',
+                          sections=['Parameters', 'Notes'])
     def _calc_eff_prop(self, inlets=None, outlets=None,
                        domain_area=None, domain_length=None):
         r"""

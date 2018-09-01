@@ -1,9 +1,10 @@
 from openpnm.algorithms import ReactiveTransport
-from openpnm.utils import logging
+from openpnm.utils import logging, Docorator
 logger = logging.getLogger(__name__)
+docstr = Docorator()
 
 
-@ReactiveTransport._docstr.dedent
+@docstr.dedent
 class FickianDiffusion(ReactiveTransport):
     r"""
     A class to simulate binary diffusion.
@@ -33,8 +34,6 @@ class FickianDiffusion(ReactiveTransport):
     be supplied, but if they are not an attempt is made to calculate them.
 
     """
-    _docstr = ReactiveTransport._docstr
-
     def __init__(self, settings={}, phase=None, **kwargs):
         def_set = {'phase': None,
                    'quantity': 'pore.concentration',
@@ -56,7 +55,7 @@ class FickianDiffusion(ReactiveTransport):
         if phase is not None:
             self.setup(phase=phase)
 
-    @_docstr.dedent
+    @docstr.dedent
     def setup(self, phase=None, quantity='', conductance='', **kwargs):
         r"""
         This method takes several arguments that are essential to running the
@@ -96,7 +95,7 @@ class FickianDiffusion(ReactiveTransport):
             self.settings['conductance'] = conductance
         super().setup(**kwargs)
 
-    @_docstr.dedent
+    @docstr.dedent
     def calc_effective_diffusivity(self, inlets=None, outlets=None,
                                    domain_area=None, domain_length=None):
         r"""

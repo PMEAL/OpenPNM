@@ -44,18 +44,14 @@ class GenericAlgorithm(Base):
         self.settings.setdefault('prefix', 'alg')
         self.settings.update(settings)
         if network is not None:
-            project = network.project
-        super().__init__(project=project, **kwargs)
-
-        # Deal with network or project arguments
-        if network is not None:
             if project is not None:
                 assert network is project.network
             else:
                 project = network.project
-        if project:
-            self['pore.all'] = np.ones((project.network.Np, ), dtype=bool)
-            self['throat.all'] = np.ones((project.network.Nt, ), dtype=bool)
+        super().__init__(project=project, **kwargs)
+
+        self['pore.all'] = np.ones((self.project.network.Np, ), dtype=bool)
+        self['throat.all'] = np.ones((self.project.network.Nt, ), dtype=bool)
 
     def results(self):
         r"""

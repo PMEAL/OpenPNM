@@ -1,8 +1,9 @@
 import numpy as np
 import scipy.sparse as sprs
 from openpnm.algorithms import ReactiveTransport
-from openpnm.utils import logging
+from openpnm.utils import logging, Docorator
 logger = logging.getLogger(__name__)
+docstr = Docorator()
 
 
 class TransientReactiveTransport(ReactiveTransport):
@@ -61,6 +62,9 @@ class TransientReactiveTransport(ReactiveTransport):
         if phase is not None:
             self.setup(phase=phase)
 
+    @docstr.get_sectionsf('TransientReactiveTransport.setup',
+                          sections=['Parameters', 'Other Parameters'])
+    @docstr.dedent
     def setup(self, phase=None, quantity='', conductance='',
               t_initial=None, t_final=None, t_step=None, t_output=None,
               t_tolerance=None, t_scheme='', **kwargs):
@@ -70,46 +74,31 @@ class TransientReactiveTransport(ReactiveTransport):
 
         Parameters
         ----------
-        phase : OpenPNM Phase object
-            The phase on which the algorithm is to be run. If no value is
-            given, the existing value is kept.
+        %(ReactiveTransport.setup.parameters)s
 
-        quantity : string
-            The name of the physical quantity to be calcualted such as
-            ``'pore.xxx'``.
-
-        conductance : string
-            The name of the pore-scale transport conductance values. These
-            are typically calculated by a model attached to a *Physics* object
-            associated with the given *Phase*. Example; ``'throat.yyy'``.
-
+        Other Parameters
+        ----------------
         t_initial : scalar, smaller than 't_final'
             The simulation's start time. The default value is 0.
-
         t_final : scalar, bigger than 't_initial'
             The simulation's end time. The default value is 10.
-
         t_step : scalar, between 't_initial' and 't_final'
             The simulation's time step. The default value is 0.1.
-
         t_output : scalar
             Output interval to store transient solutions. The default value
             is 1e+08. Initial and steady-state (if reached) fields are always
             stored. If 't_output' > 't_final', no transient data is stored.
             If 't_output' is not a multiple of 't_step', 't_output' will be
             approximated.
-
         t_tolerance : scalar
             Transient solver tolerance. The simulation stops (before reaching
             't_final') when the residual falls below 't_tolerance'. The
             default value is 1e-06. The 'residual' measures the variation from
             one time-step to another in the value of the 'quantity' solved for.
-
         r_tolerance : scalar
             Tolerance to achieve within each time step. The solver passes to
             next time step when 'residual' falls below 'r_tolerance'. The
             default value is 1e-04.
-
         t_scheme : string
             The time discretization scheme. Three options available: 'steady'
             to perform a steady-state simulation, and 'implicit' (fast, 1st
@@ -118,9 +107,7 @@ class TransientReactiveTransport(ReactiveTransport):
 
         Notes
         -----
-        More settings can be adjusted in the presence of a non-linear source
-        term such as under-relaxation.
-        See the 'ReactiveTransport' class documentation for details.
+        pass
         """
         if phase:
             self.settings['phase'] = phase.name

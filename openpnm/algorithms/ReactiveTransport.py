@@ -1,12 +1,12 @@
 import numpy as np
 from openpnm.algorithms import GenericTransport
-from openpnm.utils import logging
+from openpnm.utils import logging, Docorator
 logger = logging.getLogger(__name__)
+docstr = Docorator()
 
 
-@GenericTransport._docstr.get_sectionsf('ReactiveTransport.class',
-                                        sections=['Parameters'])
-@GenericTransport._docstr.dedent
+@docstr.get_sectionsf('ReactiveTransport.class', sections=['Parameters'])
+@docstr.dedent
 class ReactiveTransport(GenericTransport):
     r"""
     A subclass for steady-state simulations with (optionally) source terms
@@ -16,8 +16,6 @@ class ReactiveTransport(GenericTransport):
     %(GenericTransport.class.parameters)s
 
     """
-    _docstr = GenericTransport._docstr
-
     def __init__(self, settings={}, phase=None, **kwargs):
         def_set = {'phase': None,
                    'sources': [],
@@ -46,10 +44,9 @@ class ReactiveTransport(GenericTransport):
         if phase is not None:
             self.setup(phase=phase)
 
-    @_docstr.get_sectionsf('ReactiveTransport.setup',
-                           sections=['Parameters', 'Other Parameters',
-                                     'Notes'])
-    @_docstr.dedent
+    @docstr.get_sectionsf('ReactiveTransport.setup',
+                          sections=['Parameters', 'Other Parameters', 'Notes'])
+    @docstr.dedent
     def setup(self, phase=None, quantity='', conductance='', r_tolerance=None,
               max_iter=None, relaxation_source=None,
               relaxation_quantity=None, **kwargs):
