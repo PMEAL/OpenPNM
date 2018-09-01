@@ -71,18 +71,11 @@ class FickianDiffusion(ReactiveTransport):
 
         Parameters
         ----------
-        phase : OpenPNM Phase object
-            The phase on which the algorithm is to be run.
+        %(ReactiveTransport.setup.parameters)s
 
-        quantity : string
-            (default is ``'pore.mole_fraction'``)  The name of the physical
-            quantity to be calculated.
-
-        conductance : string
-            (default is ``'throat.diffusive_conductance'``) The name of the
-            pore-scale transport conductance values.  These are typically
-            calculated by a model attached to a *Physics* object associated
-            with the given *Phase*.
+        Other Parameters
+        ----------------
+        %(ReactiveTransport.setup.other_parameters)s
 
         Notes
         -----

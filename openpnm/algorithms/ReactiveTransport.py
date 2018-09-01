@@ -3,6 +3,7 @@ from openpnm.algorithms import GenericTransport
 from openpnm.utils import logging
 logger = logging.getLogger(__name__)
 
+
 class ReactiveTransport(GenericTransport):
     r"""
     A subclass for steady-state simulations with (optionally) source terms
@@ -46,7 +47,7 @@ class ReactiveTransport(GenericTransport):
         if phase is not None:
             self.setup(phase=phase)
 
-    @_docstr.get_sectionsf('ReactiveTransport.setup', sections=['Parameters', 'Notes'])
+    @_docstr.get_sectionsf('ReactiveTransport.setup', sections=['Parameters', 'Other Parameters', 'Notes'])
     @_docstr.dedent
     def setup(self, phase=None, quantity='', conductance='', r_tolerance=None,
               max_iter=None, relaxation_source=None,
@@ -57,33 +58,22 @@ class ReactiveTransport(GenericTransport):
 
         Parameters
         ----------
-        phase : OpenPNM Phase object
-            The phase on which the algorithm is to be run. If no value is
-            given, the existing value is kept.
+        %(GenericTransport.setup.parameters)s
 
-        quantity : string
-            The name of the physical quantity to be calcualted such as
-            ``'pore.xxx'``.
-
-        conductance : string
-            The name of the pore-scale transport conductance values. These
-            are typically calculated by a model attached to a *Physics* object
-            associated with the given *Phase*. Example; ``'throat.yyy'``.
-
+        Other Parameters
+        ----------------
+        %(GenericTransport.setup.other_parameters)s
         r_tolerance : scalar
             Tolerance to achieve. The solver returns a solution when 'residual'
             falls below 'r_tolerance'. The default value is 0.001.
-
         max_iter : scalar
             The maximum number of iterations the solver can perform to find
             a solution. The default value is 5000.
-
         relaxation_source : scalar, between 0 and 1
             A relaxation factor to control under-relaxation of the source term.
             Factor approaching 0 : improved stability but slow simulation.
             Factor approaching 1 : fast simulation but may be unstable.
             Default value is 1 (no under-relaxation).
-
         relaxation_quantity :  scalar, between 0 and 1
             A relaxation factor to control under-relaxation for the quantity
             solving for.
@@ -93,8 +83,6 @@ class ReactiveTransport(GenericTransport):
 
         Notes
         -----
-        %(GenericTransport.setup.notes)s
-
         Under-relaxation is a technique used for improving stability of a
         computation, particularly in the presence of highly non-linear terms.
         Under-relaxation used here limits the change in a variable from one
