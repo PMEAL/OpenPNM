@@ -4,17 +4,16 @@ from openpnm.utils import logging
 logger = logging.getLogger(__name__)
 
 
+@GenericTransport._docstr.get_sectionsf('ReactiveTransport.class',
+                                        sections=['Parameters'])
+@GenericTransport._docstr.dedent
 class ReactiveTransport(GenericTransport):
     r"""
     A subclass for steady-state simulations with (optionally) source terms
 
     Parameters
     ----------
-    network : OpenPNM Network object
-        The Network with which this algorithm is associated.
-
-    project : OpenPNM Project object
-        Either a Network or a Project must be specified.
+    %(GenericTransport.class.parameters)s
 
     """
     _docstr = GenericTransport._docstr
@@ -75,7 +74,7 @@ class ReactiveTransport(GenericTransport):
             Factor approaching 0 : improved stability but slow simulation.
             Factor approaching 1 : fast simulation but may be unstable.
             Default value is 1 (no under-relaxation).
-        relaxation_quantity :  scalar, between 0 and 1
+        relaxation_quantity : scalar, between 0 and 1
             A relaxation factor to control under-relaxation for the quantity
             solving for.
             Factor approaching 0 : improved stability but slow simulation.

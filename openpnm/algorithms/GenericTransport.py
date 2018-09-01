@@ -9,7 +9,7 @@ from openpnm.algorithms import GenericAlgorithm
 from openpnm.utils import logging
 from docrep import DocstringProcessor
 logger = logging.getLogger(__name__)
-
+docstrings = DocstringProcessor()
 # Set some default settings
 def_set = {'phase': None,
            'conductance': None,
@@ -31,6 +31,7 @@ def_set = {'phase': None,
            }
 
 
+@docstrings.get_sectionsf('GenericTransport.class', sections=['Parameters'])
 class GenericTransport(GenericAlgorithm):
     r"""
     This class implements steady-state linear transport calculations
@@ -39,13 +40,13 @@ class GenericTransport(GenericAlgorithm):
     ----------
     network : OpenPNM Network object
         The Network with which this algorithm is associated
-
     project : OpenPNM Project object, optional
         A Project can be specified instead of ``network``
+    name : string
+        A unique name to give to the object. If not specified one is generated.
 
     Notes
     -----
-
     The following table shows the methods that are accessible to the user
     for settig up the simulation.
 
@@ -114,7 +115,7 @@ class GenericTransport(GenericAlgorithm):
 
 
     """
-    _docstr = DocstringProcessor()
+    _docstr = docstrings
 
     def __init__(self, project=None, network=None, phase=None, settings={},
                  **kwargs):
@@ -168,8 +169,8 @@ class GenericTransport(GenericAlgorithm):
         solver_type : string
             The specific solver to use.  For instance, if ``solver_family`` is
             ``scipy`` then you can specify any of the iterative solvers such as
-            ``cg`` or ``gmres``.  [More info here]
-            (https://docs.scipy.org/doc/scipy/reference/sparse.linalg.html)
+            ``cg`` or ``gmres``.  `More info here
+            <https://docs.scipy.org/doc/scipy/reference/sparse.linalg.html>`_
         solver_preconditioner : string
             This is used by the PETSc solver to specify which preconditioner
             to use.  The default is ``jacobi``.
@@ -601,6 +602,8 @@ class GenericTransport(GenericAlgorithm):
                 R = np.sum(R)
         return np.array(R, ndmin=1)
 
+    @_docstr.get_sectionsf('GenericTransport._calc_eff_prop',
+                           sections=['Parameters', 'Notes'])
     def _calc_eff_prop(self, inlets=None, outlets=None,
                        domain_area=None, domain_length=None):
         r"""
@@ -609,22 +612,27 @@ class GenericTransport(GenericAlgorithm):
         Parameters
         ----------
         inlets : array_like
-            The pores where the inlet boundary conditions were applied.  If
-            not given an attempt is made to infer them from the algorithm.
-
+            The pores where the inlet composition boundary conditions were
+            applied.  If not given an attempt is made to infer them from the
+            algorithm.
         outlets : array_like
-            The pores where the outlet boundary conditions were applied.  If
-            not given an attempt is made to infer them from the algorithm.
+            The pores where the outlet composition boundary conditions were
+            applied.  If not given an attempt is made to infer them from the
+            algorithm.
+        domain_area : scalar, optional
+            The area of the inlet (and outlet) boundary faces.  If not given
+            then an attempt is made to estimate it, but it is usually
+            underestimated.
+        domain_length : scalar, optional
+            The length of the domain between the inlet and outlet boundary
+            faces.  If not given then an attempt is made to estimate it, but it
+            is usually underestimated.
 
-        domain_area : scalar
-            The area of the inlet and/or outlet face (which shold match)
-
-        domain_length : scalar
-            The length of the domain between the inlet and outlet faces
-
-        Returns
-        -------
-        The effective transport property through the network
+        Notes
+        -----
+        The area and length of the domain are found using the bounding box
+        around the inlet and outlet pores which do not necessarily lie on the
+        edge of the domain, resulting in underestimation of sizes.
 
         """
         if self.settings['quantity'] not in self.keys():

@@ -3,41 +3,34 @@ from openpnm.utils import logging
 logger = logging.getLogger(__name__)
 
 
+@ReactiveTransport._docstr.dedent
 class FickianDiffusion(ReactiveTransport):
     r"""
     A class to simulate binary diffusion.
 
     Parameters
     ----------
-    network : OpenPNM Network object
-        The network on which this algorithm operates
-
-    project : OpenPNM Project object
-        Either a network or a project must be specified
-
-    name : string, optional
-        A unique name to give the object for easier identification.  If not
-        given, one is generated.
+    %(ReactiveTransport.class.parameters)s
 
     Notes
     -----
     Fickian diffusion in porous materials occurs in the void space, but
-    becuase the diffusion is defined to pores it is impacted by the porosity
+    because the diffusion is confined to pores it is impacted by the porosity
     and tortuosity of the network.  Thus the total diffusive flux through the
     network is reduced.  This class can be used to simualte diffusion-reaction
-    in domains with arbitrarily complex boundary conditions, or it can be used
+    in domains with customized boundary conditions, or it can be used
     to calculate the effective diffusivity of the network by applying
     controlled boundary conditions on opposing faces, calculate the diffusion
     rate, and inverting Fick's first law:
 
     .. math::
 
-        D_{eff} = N_{A}*L/(A*\Delta C_{A})
+        D_{eff} = N_{A}L/(A\Delta C_{A})
 
     This class includes a method for calculating Deff automatically assuming
-    appropriate boundary conditions were applied (``calc_eff_diffusivity``).
-    The length and area of the domain should be supplied, but if they are
-    not an attempt is made to calculate them.
+    appropriate boundary conditions were applied
+    (``calc_effective_diffusivity``). The length and area of the domain should
+    be supplied, but if they are not an attempt is made to calculate them.
 
     """
     _docstr = ReactiveTransport._docstr
@@ -79,16 +72,20 @@ class FickianDiffusion(ReactiveTransport):
 
         %(ReactiveTransport.setup.other_parameters)s
 
+        %(ReactiveTransport.setup.notes)s
+
+        ----
+
         The following settings are used to control the behavior of the solver:
 
         %(GenericTransport.setup.other_parameters)s
+
 
         Notes
         -----
         Any additional arguments are added to the ``settings`` dictionary of
         the object.
 
-        %(ReactiveTransport.setup.notes)s
 
         """
         if phase:
@@ -99,39 +96,20 @@ class FickianDiffusion(ReactiveTransport):
             self.settings['conductance'] = conductance
         super().setup(**kwargs)
 
+    @_docstr.dedent
     def calc_effective_diffusivity(self, inlets=None, outlets=None,
                                    domain_area=None, domain_length=None):
         r"""
-        This calculates the effective diffusivity in this linear transport
-        algorithm.
+        Calculates the effective diffusivity of the network
 
         Parameters
         ----------
-        inlets : array_like
-            The pores where the inlet composition boundary conditions were
-            applied.  If not given an attempt is made to infer them from the
-            algorithm.
-
-        outlets : array_like
-            The pores where the outlet composition boundary conditions were
-            applied.  If not given an attempt is made to infer them from the
-            algorithm.
-
-        domain_area : scalar, optional
-            The area of the inlet (and outlet) boundary faces.  If not given
-            then an attempt is made to estimate it, but it is usually
-            underestimated.
-
-        domain_length : scalar, optional
-            The length of the domain between the inlet and outlet boundary
-            faces.  If not given then an attempt is made to estimate it, but it
-            is usually underestimated.
+        %(GenericTransport._calc_eff_prop.parameters)s
 
         Notes
         -----
-        The area and length of the domain are found using the bounding box
-        around the inlet and outlet pores which do not necessarily lie on the
-        edge of the domain, resulting in underestimation of sizes.
+        %(GenericTransport._calc_eff_prop.notes)s
+
         """
         return self._calc_eff_prop(inlets=inlets, outlets=outlets,
                                    domain_area=domain_area,
