@@ -16,7 +16,7 @@ if (importlib.util.find_spec('petsc4py') is not None):
     petsc4py.init(sys.argv)
 
 
-class PetscSparseLinearSolver(Base):
+class PETScSparseLinearSolver(Base):
     r"""
     Solve the sparse linear system Ax = b using petsc solvers. Parallel
     computing is supported and matrix partitioning over the available cores is
@@ -40,7 +40,7 @@ class PetscSparseLinearSolver(Base):
                               'preconditioner': 'jacobi',
                               'atol': 1e-06,
                               'rtol': 1e-06,
-                              'max_it': 1000})
+                              'maxiter': 1000})
         self.A = A
         self.b = b
 
@@ -154,7 +154,7 @@ class PetscSparseLinearSolver(Base):
             self.ksp.setType(solver)
 
         self.ksp.setTolerances(self.settings['atol'], self.settings['rtol'],
-                               self.settings['max_it'])
+                               self.settings['maxiter'])
 
     def _initialize_b_x(self):
         r"""
