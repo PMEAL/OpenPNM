@@ -23,7 +23,7 @@ Pore Size
 
 .. autofunction:: openpnm.models.geometry.pore_size.weibull
 .. autofunction:: openpnm.models.geometry.pore_size.normal
-.. autofunction:: openpnm.models.geometry.pore_size.generic
+.. autofunction:: openpnm.models.geometry.pore_size.generic_distribution
 .. autofunction:: openpnm.models.geometry.pore_size.largest_sphere
 .. autofunction:: openpnm.models.geometry.pore_size.equivalent_diameter
 
@@ -71,7 +71,7 @@ Throat Size
 
 .. autofunction:: openpnm.models.geometry.throat_size.weibull
 .. autofunction:: openpnm.models.geometry.throat_size.normal
-.. autofunction:: openpnm.models.geometry.throat_size.generic
+.. autofunction:: openpnm.models.geometry.throat_size.generic_distribution
 .. autofunction:: openpnm.models.geometry.throat_size.from_neighbor_pores
 .. autofunction:: openpnm.models.geometry.throat_size.equivalent_diameter
 
