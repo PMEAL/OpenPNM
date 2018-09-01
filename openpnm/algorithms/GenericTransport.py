@@ -136,12 +136,13 @@ class GenericTransport(GenericAlgorithm):
         self['pore.bc_rate'] = np.nan
         self['pore.bc_value'] = np.nan
 
-    @_docstr.get_sectionsf('GenericTransport.setup', sections=['Parameters', 'Other Parameters'])
+    @_docstr.get_sectionsf('GenericTransport.setup',
+                           sections=['Parameters', 'Other Parameters'])
     @_docstr.dedent
     def setup(self, phase=None, quantity='', conductance='', **kwargs):
         r"""
         This method takes several arguments that are essential to running the
-        algorithm and adds them to the settings.
+        algorithm and adds them to the ``settings`` attribute
 
         Parameters
         ----------

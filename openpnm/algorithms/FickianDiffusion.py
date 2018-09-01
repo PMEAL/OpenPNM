@@ -75,7 +75,13 @@ class FickianDiffusion(ReactiveTransport):
 
         Other Parameters
         ----------------
+        The following settings are used by the source term iterations:
+
         %(ReactiveTransport.setup.other_parameters)s
+
+        The following settings are used to control the behavior of the solver:
+
+        %(GenericTransport.setup.other_parameters)s
 
         Notes
         -----

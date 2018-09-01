@@ -47,7 +47,9 @@ class ReactiveTransport(GenericTransport):
         if phase is not None:
             self.setup(phase=phase)
 
-    @_docstr.get_sectionsf('ReactiveTransport.setup', sections=['Parameters', 'Other Parameters', 'Notes'])
+    @_docstr.get_sectionsf('ReactiveTransport.setup',
+                           sections=['Parameters', 'Other Parameters',
+                                     'Notes'])
     @_docstr.dedent
     def setup(self, phase=None, quantity='', conductance='', r_tolerance=None,
               max_iter=None, relaxation_source=None,
@@ -62,7 +64,6 @@ class ReactiveTransport(GenericTransport):
 
         Other Parameters
         ----------------
-        %(GenericTransport.setup.other_parameters)s
         r_tolerance : scalar
             Tolerance to achieve. The solver returns a solution when 'residual'
             falls below 'r_tolerance'. The default value is 0.001.
@@ -80,6 +81,8 @@ class ReactiveTransport(GenericTransport):
             Factor approaching 0 : improved stability but slow simulation.
             Factor approaching 1 : fast simulation but may be unstable.
             Default value is 1 (no under-relaxation).
+
+        %(GenericTransport.setup.other_parameters)s
 
         Notes
         -----
