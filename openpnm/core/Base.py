@@ -150,7 +150,11 @@ class Base(dict):
         if project is None:
             project = ws.new_project()
         project.extend(self)
-        self.name = name
+        if name is None:
+            name = project._generate_name(self)
+            self._name = name
+        elif project._validate_name(name):
+            self._name = name
         self.update({'pore.all': sp.ones(shape=(Np, ), dtype=bool)})
         self.update({'throat.all': sp.ones(shape=(Nt, ), dtype=bool)})
 

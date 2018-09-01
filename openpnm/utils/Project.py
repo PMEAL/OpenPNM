@@ -394,6 +394,7 @@ class Project(list):
             for key in item.keys():
                 if key.split('.')[1] == name:
                     raise Exception('A property/label is already named '+name)
+        return True
 
     def _generate_name(self, obj):
         prefix = obj.settings['prefix']
