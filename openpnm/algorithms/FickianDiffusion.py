@@ -40,6 +40,7 @@ class FickianDiffusion(ReactiveTransport):
     not an attempt is made to calculate them.
 
     """
+    _docstr = ReactiveTransport._docstr
 
     def __init__(self, settings={}, phase=None, **kwargs):
         def_set = {'phase': None,
@@ -62,6 +63,7 @@ class FickianDiffusion(ReactiveTransport):
         if phase is not None:
             self.setup(phase=phase)
 
+    @_docstr.dedent
     def setup(self, phase=None, quantity='', conductance='', **kwargs):
         r"""
         This method takes several arguments that are essential to running the
@@ -86,6 +88,8 @@ class FickianDiffusion(ReactiveTransport):
         -----
         Any additional arguments are added to the ``settings`` dictionary of
         the object.
+
+        %(ReactiveTransport.setup.notes)s
 
         """
         if phase:

@@ -10,4 +10,5 @@ h5py
 porespy
 transforms3d
 flatdict
+repdoc
 scikit-umfpack

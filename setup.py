@@ -61,6 +61,7 @@ setup(
         'porespy',
         'transforms3d',
         'flatdict',
+        'repdoc',
         'scikit-umfpack'],
 
     author='OpenPNM Team',

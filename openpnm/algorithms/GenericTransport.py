@@ -6,6 +6,7 @@ from scipy.spatial import cKDTree
 from openpnm.topotools import iscoplanar
 from openpnm.algorithms import GenericAlgorithm
 from openpnm.utils import logging
+from docrep import DocstringProcessor
 import inspect
 # Check if petsc4py is available
 import importlib
@@ -97,6 +98,7 @@ class GenericTransport(GenericAlgorithm):
 
 
     """
+    _docstr = DocstringProcessor()
 
     def __init__(self, project=None, network=None, phase=None, settings={},
                  **kwargs):
@@ -130,6 +132,8 @@ class GenericTransport(GenericAlgorithm):
         self['pore.bc_rate'] = np.nan
         self['pore.bc_value'] = np.nan
 
+    @_docstr.get_sectionsf('GenericTransport.setup', sections=['Parameters', 'Notes'])
+    @_docstr.dedent
     def setup(self, phase=None, quantity='', conductance='', **kwargs):
         r"""
         This method takes several arguments that are essential to running the

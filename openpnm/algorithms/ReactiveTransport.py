@@ -3,7 +3,6 @@ from openpnm.algorithms import GenericTransport
 from openpnm.utils import logging
 logger = logging.getLogger(__name__)
 
-
 class ReactiveTransport(GenericTransport):
     r"""
     A subclass for steady-state simulations with (optionally) source terms
@@ -16,12 +15,8 @@ class ReactiveTransport(GenericTransport):
     project : OpenPNM Project object
         Either a Network or a Project must be specified.
 
-    Notes
-    -----
-
-    This subclass performs steady simulations of transport phenomena with
-    reactions when source terms are added.
     """
+    _docstr = GenericTransport._docstr
 
     def __init__(self, settings={}, phase=None, **kwargs):
         def_set = {'phase': None,
@@ -51,6 +46,8 @@ class ReactiveTransport(GenericTransport):
         if phase is not None:
             self.setup(phase=phase)
 
+    @_docstr.get_sectionsf('ReactiveTransport.setup', sections=['Parameters', 'Notes'])
+    @_docstr.dedent
     def setup(self, phase=None, quantity='', conductance='', r_tolerance=None,
               max_iter=None, relaxation_source=None,
               relaxation_quantity=None, **kwargs):
@@ -96,6 +93,8 @@ class ReactiveTransport(GenericTransport):
 
         Notes
         -----
+        %(GenericTransport.setup.notes)s
+
         Under-relaxation is a technique used for improving stability of a
         computation, particularly in the presence of highly non-linear terms.
         Under-relaxation used here limits the change in a variable from one
