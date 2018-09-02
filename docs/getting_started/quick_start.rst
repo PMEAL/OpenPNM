@@ -64,11 +64,13 @@ OpenPNM includes a few common phases, including :ref:`mercury_api`, :ref:`air_ap
 
 .. note::
 
-    Phase objects are associated with a Network, but they are not assigned to specific pores and throats.  This is because phases can exist anywhere and everywhere in the domain, and can move around.
+    Phase objects are associated with a Network, but they are not assigned to specific pores and throats.  This is because phases can exist anywhere and everywhere in the domain, and can move around.  Basically, OpenPNM calculates the phase properties in all locations, and tracks the location of phases using occupancy arrays.
 
 --------------------------------------------------------------------------------
-Assigning Pore-Scale Physics Models
+Creating Physics Objects
 --------------------------------------------------------------------------------
+
+Physics objects calculate the pore-scale physics for each fluid.  For instance, the hydraulic conductance of air is different than water due to differing viscosity.  Thus, one physics object is required per phase:
 
 .. code-block:: python
 
