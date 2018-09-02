@@ -62,7 +62,7 @@ setup(
         'porespy',
         'transforms3d',
         'flatdict',
-        'repdoc',
+        'docrep',
         'easydev',
         ],
 
