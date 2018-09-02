@@ -34,14 +34,4 @@ class TransientFickianDiffusion(TransientReactiveTransport, FickianDiffusion):
         self.settings.update(def_set)
         self.settings.update(settings)
         if phase is not None:
-            self.setup(phase=phase)
-
-    @docstr.dedent
-    def setup(self, **kwargs):
-        r"""
-        Other Parameters
-        ----------------
-        %(TransientReactiveTransport.setup.other_parameters)s
-
-        """
-        super().update(**kwargs)
+            self.settings['phase'] = phase.name
