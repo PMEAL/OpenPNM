@@ -53,6 +53,7 @@ setup(
         'scipy',
         'matplotlib',
         'scikit-image',
+        'scikit-umfpack',
         'pandas',
         'sympy',
         'numba',
@@ -62,7 +63,8 @@ setup(
         'transforms3d',
         'flatdict',
         'repdoc',
-        'scikit-umfpack'],
+        'easydev',
+        ],
 
     author='OpenPNM Team',
     author_email='jgostick@uwaterloo.ca',

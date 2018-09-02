@@ -3,6 +3,7 @@ scipy
 pyamg
 matplotlib
 scikit-image
+scikit-umfpack
 pandas
 sympy
 numba
@@ -12,4 +13,4 @@ porespy
 transforms3d
 flatdict
 repdoc
-scikit-umfpack
+easydev

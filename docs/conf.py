@@ -3,6 +3,8 @@
 import sys
 import os
 import datetime
+import shutil
+import easydev
 
 sys.path.insert(0, os.path.abspath('.'))
 sys.path.insert(0, os.path.abspath('../'))
@@ -14,7 +16,11 @@ extensions = ['sphinx.ext.autodoc',
               'sphinx.ext.ifconfig',
               'sphinx.ext.viewcode',
               'sphinx.ext.mathjax',
-              'matplotlib.sphinxext.plot_directive']
+              'matplotlib.sphinxext.plot_directive',
+              'easydev.copybutton']
+
+jscopybutton_path = easydev.copybutton.get_copybutton_path()
+shutil.copy(jscopybutton_path, 'static')
 
 html_theme = 'sphinx_rtd_theme'
 
