@@ -472,7 +472,7 @@ class GenericTransport(GenericAlgorithm):
         A = A.tocsr()
 
         # Default behavior -> use Scipy's default solver (spsolve)
-        if self.settings['solver'] in ['spsolve', 'umfpack']:
+        if 'solver' not in self.settings.keys():
             self.settings['solver_family'] = 'scipy'
             self.settings['solver_type'] = 'spsolve'
         if self.settings['solver'] == 'pyamg':
