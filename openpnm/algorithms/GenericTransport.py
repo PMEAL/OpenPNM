@@ -475,16 +475,16 @@ class GenericTransport(GenericAlgorithm):
         if self.settings['solver'] in ['spsolve', 'umfpack']:
             self.settings['solver_family'] = 'scipy'
             self.settings['solver_type'] = 'spsolve'
-            self.settings['solver_atol'] = def_set['solver_atol']
         if self.settings['solver'] == 'pyamg':
             self.settings['solver_family'] = 'pyamg'
         if self.settings['solver'] == 'petsc':
             self.settings['solver_family'] = 'petsc'
 
         # Set tolerance for iterative solvers
+        rtol = self.settings['solver_rtol']
         min_A = np.abs(A.data).min()
         min_b = np.abs(b).min() or 1e100
-        tol = min(min_A, min_b) * self.settings['solver_atol']
+        atol = min(min_A, min_b) * rtol
 
         # SciPy
         if self.settings['solver_family'] == 'scipy':
@@ -494,11 +494,9 @@ class GenericTransport(GenericAlgorithm):
                          'minres', 'gcrotmk', 'qmr']
             solver = getattr(sprs.linalg, self.settings['solver_type'])
             if self.settings['solver_type'] in iterative:
-                x, exit_code = solver(A=A, b=b, tol=tol,
+                x, exit_code = solver(A=A, b=b, atol=atol, tol=rtol,
                                       maxiter=self.settings['solver_maxiter'])
                 if exit_code > 0:
-                    if np.linalg.norm(A*x-b) < tol:
-                        return x
                     raise Exception('SciPy solver did not converge! ' +
                                     'Exit code: ' + str(exit_code))
             else:
