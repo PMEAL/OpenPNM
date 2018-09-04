@@ -525,7 +525,7 @@ class GenericTransport(GenericAlgorithm):
             B = np.ones((self.A.shape[0], 1))
             mc = min(10, int(A.shape[0]//4))
             ml = pyamg.smoothed_aggregation_solver(A, B, max_coarse=mc)
-            x = ml.solve(b=b, tol=tol)
+            x = ml.solve(b=b, tol=atol)
             return x
 
     def results(self):
