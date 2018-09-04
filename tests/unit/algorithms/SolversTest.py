@@ -33,18 +33,18 @@ class SolversTest:
             nt.assert_allclose(actual=xmean, desired=0.5875950426)
 
     def test_scipy_iterative(self):
-        solvers = ['bicg', 'bicgstab', 'cg', 'cgs', 'qmr', 'gcrotmk', 'gmres',
-                   'lgmres', 'minres']
+        solvers = ['bicg', 'bicgstab', 'cg', 'cgs', 'qmr', 'gcrotmk',
+                   'gmres', 'lgmres']
         self.alg.settings['solver_family'] = 'scipy'
         for solver in solvers:
             self.alg.settings['solver_type'] = solver
             self.alg.run()
             xmean = self.alg['pore.x'].mean()
-            nt.assert_allclose(actual=xmean, desired=0.587595, rtol=1e-5)
+            nt.assert_allclose(actual=xmean, desired=0.587595, rtol=1e-4)
 
     def test_scipy_iterative_diverge(self):
-        solvers = ['bicg', 'bicgstab', 'cg', 'cgs', 'qmr', 'gcrotmk', 'gmres',
-                   'lgmres', 'minres']
+        solvers = ['bicg', 'bicgstab', 'cg', 'cgs', 'qmr', 'gcrotmk',
+                   'gmres', 'lgmres']
         self.alg.settings.update(solver_family='scipy',
                                  solver_maxiter=1)
         for solver in solvers:
