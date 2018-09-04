@@ -15,7 +15,7 @@ def_set = {'phase': None,
            'conductance': None,
            'quantity': None,
            'solver_family': 'scipy',
-           'solver_type': 'cg',
+           'solver_type': 'spsolve',
            'solver_preconditioner': 'jacobi',
            'solver_atol': 1e-6,
            'solver_rtol': 1e-6,
@@ -472,9 +472,6 @@ class GenericTransport(GenericAlgorithm):
         A = A.tocsr()
 
         # Default behavior -> use Scipy's default solver (spsolve)
-        if 'solver' not in self.settings.keys():
-            self.settings['solver_family'] = 'scipy'
-            self.settings['solver_type'] = 'spsolve'
         if self.settings['solver'] == 'pyamg':
             self.settings['solver_family'] = 'pyamg'
         if self.settings['solver'] == 'petsc':
