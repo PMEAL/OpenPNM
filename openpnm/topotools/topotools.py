@@ -2010,7 +2010,7 @@ def plot_networkx(network, plot_throats=True, labels=None, colors=None,
     '''
     import networkx as nx
     x, y, z = network['pore.coords'].T
-    x, y = [j for j in [x, y, z] if len(sp.unique(j)) > 1]
+    x, y = [j for j in [x, y, z] if not sp.allclose(j, j.mean())]
 
     G = nx.Graph()
     pos = {network.Ps[i]: [x[i], y[i]] for i in range(network.Np)}

@@ -1,3 +1,5 @@
+import pyamg
+import importlib
 import numpy as np
 import scipy.sparse as sprs
 import scipy.sparse.csgraph as spgr
@@ -6,12 +8,27 @@ from scipy.spatial import cKDTree
 from openpnm.topotools import iscoplanar
 from openpnm.algorithms import GenericAlgorithm
 from openpnm.utils import logging
-import inspect
-# Check if petsc4py is available
-import importlib
-if (importlib.util.find_spec('petsc4py') is not None):
-    from openpnm.utils.petsc import PetscSparseLinearSolver as sls
 logger = logging.getLogger(__name__)
+
+# Set some default settings
+def_set = {'phase': None,
+           'conductance': None,
+           'quantity': None,
+           'solver_family': 'scipy',
+           'solver_type': 'spsolve',
+           'solver_preconditioner': 'jacobi',
+           'solver_atol': 1e-6,
+           'solver_rtol': 1e-6,
+           'solver_maxiter': 5000,
+           'gui': {'setup':        {'quantity': '',
+                                    'conductance': ''},
+                   'set_rate_BC':  {'pores': None,
+                                    'values': None},
+                   'set_value_BC': {'pores': None,
+                                    'values': None},
+                   'remove_BC':    {'pores': None}
+                   }
+           }
 
 
 class GenericTransport(GenericAlgorithm):
@@ -100,24 +117,12 @@ class GenericTransport(GenericAlgorithm):
 
     def __init__(self, project=None, network=None, phase=None, settings={},
                  **kwargs):
-        # Set some default settings
-        def_set = {'phase': None,
-                   'conductance': None,
-                   'quantity': None,
-                   'solver': 'spsolve',
-                   'gui': {'setup':        {'quantity': '',
-                                            'conductance': ''},
-                           'set_rate_BC':  {'pores': None,
-                                            'values': None},
-                           'set_value_BC': {'pores': None,
-                                            'values': None},
-                           'remove_BC':    {'pores': None}
-                           }
-                   }
+        # Apply default settings
         self.settings.update(def_set)
+        # Overwrite any given in init
         self.settings.update(settings)
-
-        self.setup(phase=phase, **settings)
+        # Assign phase if given during init
+        self.setup(phase=phase)
         # If network given, get project, otherwise let parent class create it
         if network is not None:
             project = network.project
@@ -135,10 +140,51 @@ class GenericTransport(GenericAlgorithm):
         This method takes several arguments that are essential to running the
         algorithm and adds them to the settings.
 
-        Notes
-        -----
-        This generic version should be subclassed, and the arguments given
-        suitable default names.
+        Parameters
+        ----------
+        phase : OpenPNM Phase object
+            The phase on which the algorithm is to be run.
+
+        quantity : string
+            The name of the physical quantity to be calculated.
+
+        conductance : string
+            The name of the pore-scale transport conductance values.  These
+            are typically calculated by a model attached to a *Physics* object
+            associated with the given *Phase*.
+
+        solver : string
+            To use the default scipy solver, set this value to `spsolve` or
+            `umfpack`.  To use an iterative solver or a non-scipy solver,
+            additional arguments are required as described next.
+
+        solver_family : string
+            The solver package to use.  OpenPNM currently supports ``scipy``,
+            ``pyamg`` and ``petsc`` (if you have it installed).  The default is
+            ``scipy``.
+
+        solver_type : string
+            The specific solver to use.  For instance, if ``solver_family`` is
+            ``scipy`` then you can specify any of the iterative solvers such as
+            ``cg`` or ``gmres``.  [More info here]
+            (https://docs.scipy.org/doc/scipy/reference/sparse.linalg.html)
+
+        solver_preconditioner : string
+            This is used by the PETSc solver to specify which preconditioner
+            to use.  The default is ``jacobi``.
+
+        solver_atol : scalar
+            Used to control the accuracy to which the iterative solver aims.
+            The default is 1e-6.
+
+        solver_rtol : scalar
+            Used by PETSc as an additional tolerance control.  The default is
+            1e-6.
+
+        solver_maxiter : scalar
+            Limits the number of iterations to attempt before quiting when
+            aiming for the specified tolerance. The default is 5000.
+
         """
         if phase:
             self.settings['phase'] = phase.name
@@ -146,7 +192,7 @@ class GenericTransport(GenericAlgorithm):
             self.settings['quantity'] = quantity
         if conductance:
             self.settings['conductance'] = conductance
-        self.settings.update(kwargs)
+        self.settings.update(**kwargs)
 
     def set_value_BC(self, pores, values):
         r"""
@@ -266,7 +312,7 @@ class GenericTransport(GenericAlgorithm):
             pores = self.Ps
         if 'pore.bc_value' in self.keys():
             self['pore.bc_value'][pores] = np.nan
-        if 'pore.rate' in self.keys():
+        if 'pore.bc_rate' in self.keys():
             self['pore.bc_rate'][pores] = np.nan
 
     def _build_A(self, force=False):
@@ -345,12 +391,13 @@ class GenericTransport(GenericAlgorithm):
             ind = np.isfinite(self['pore.bc_rate'])
             self.b[ind] = self['pore.bc_rate'][ind]
         if 'pore.bc_value' in self.keys():
+            f = np.abs(self.A.data).mean()
             # Update b (impose bc values)
             ind = np.isfinite(self['pore.bc_value'])
-            self.b[ind] = self['pore.bc_value'][ind]
+            self.b[ind] = self['pore.bc_value'][ind] * f
             # Update b (substract quantities from b to keep A symmetric)
-            x_BC = np.zeros_like(self.b)
-            x_BC[ind] = self.b[ind]
+            x_BC = np.zeros(self.b.shape)
+            x_BC[ind] = self['pore.bc_value'][ind]
             self.b[~ind] -= (self.A.tocsr() * x_BC)[~ind]
             # Update A
             P_bc = self.toindices(ind)
@@ -359,7 +406,7 @@ class GenericTransport(GenericAlgorithm):
             self.A.data[indrow] = 0  # Remove entries from A for all BC rows
             self.A.data[indcol] = 0  # Remove entries from A for all BC cols
             datadiag = self.A.diagonal()  # Add diagonal entries back into A
-            datadiag[P_bc] = np.ones_like(P_bc, dtype=float)
+            datadiag[P_bc] = np.ones_like(P_bc, dtype=np.float64) * f
             self.A.setdiag(datadiag)
             self.A.eliminate_zeros()  # Remove 0 entries
 
@@ -412,6 +459,8 @@ class GenericTransport(GenericAlgorithm):
         algorithm.
 
         """
+        # Fetch A and b from self if not given, and throw error if they've not
+        # been calculated
         if A is None:
             A = self.A
             if A is None:
@@ -420,53 +469,61 @@ class GenericTransport(GenericAlgorithm):
             b = self.b
             if b is None:
                 raise Exception('The b matrix has not been built yet')
+        A = A.tocsr()
 
+        # Default behavior -> use Scipy's default solver (spsolve)
+        if self.settings['solver'] == 'pyamg':
+            self.settings['solver_family'] = 'pyamg'
         if self.settings['solver'] == 'petsc':
-            # Check if petsc is available
-            petsc = importlib.util.find_spec('petsc4py')
-            if not petsc:
-                raise Exception('petsc is not installed')
-            if not self.settings['petsc_solver']:
-                self.settings['petsc_solver'] = 'cg'
-            if not self.settings['petsc_precondioner']:
-                self.settings['petsc_precondioner'] = 'jacobi'
-            if not self.settings['petsc_atol']:
-                self.settings['petsc_atol'] = 1e-06
-            if not self.settings['petsc_rtol']:
-                self.settings['petsc_rtol'] = 1e-06
-            if not self.settings['petsc_max_it']:
-                self.settings['petsc_max_it'] = 1000
-            # Define the petsc linear system converting the scipy objects
-            ls = sls(A=A.tocsr(), b=b)
-            ls.settings.update({'solver': self.settings['petsc_solver'],
-                                'preconditioner':
-                                    self.settings['petsc_precondioner'],
-                                'atol': self.settings['petsc_atol'],
-                                'rtol': self.settings['petsc_rtol'],
-                                'max_it': self.settings['petsc_max_it']})
-            x = sls.solve(ls)
-            del(ls)  # Clean
-        else:
-            A = A.tocsr()
+            self.settings['solver_family'] = 'petsc'
+
+        # Set tolerance for iterative solvers
+        rtol = self.settings['solver_rtol']
+        min_A = np.abs(A.data).min()
+        min_b = np.abs(b).min() or 1e100
+        atol = min(min_A, min_b) * rtol
+
+        # SciPy
+        if self.settings['solver_family'] == 'scipy':
             A.indices = A.indices.astype(np.int64)
             A.indptr = A.indptr.astype(np.int64)
-            solver = getattr(sprs.linalg, self.settings['solver'])
-            if 'tol' in inspect.getfullargspec(solver)[0]:
-                # If an iterative solver is used, set tol
-                min_A = min(abs(sprs.coo_matrix.min(self._A)),
-                            abs(sprs.coo_matrix.min(-self._A)))
-                min_b = np.min(self._b[self._b != 0])
-                min_Ab = min(min_A, min_b)
-                if min_Ab == 0:
-                    tol = 1e-06
-                else:
-                    tol = min_Ab*1e-06
-                x = solver(A=A, b=b, tol=tol)
+            iterative = ['bicg', 'bicgstab', 'cg', 'cgs', 'gmres', 'lgmres',
+                         'minres', 'gcrotmk', 'qmr']
+            solver = getattr(sprs.linalg, self.settings['solver_type'])
+            if self.settings['solver_type'] in iterative:
+                x, exit_code = solver(A=A, b=b, atol=atol, tol=rtol,
+                                      maxiter=self.settings['solver_maxiter'])
+                if exit_code > 0:
+                    raise Exception('SciPy solver did not converge! ' +
+                                    'Exit code: ' + str(exit_code))
             else:
                 x = solver(A=A, b=b)
-        if type(x) == tuple:
-            x = x[0]
-        return x
+            return x
+
+        # PETSc
+        if self.settings['solver_family'] == 'petsc':
+            # Check if petsc is available
+            if importlib.util.find_spec('petsc4py'):
+                from openpnm.utils.petsc import PETScSparseLinearSolver as SLS
+            else:
+                raise Exception('PETSc is not installed.')
+            # Define the petsc linear system converting the scipy objects
+            ls = SLS(A=A, b=b)
+            sets = self.settings
+            sets = {k: v for k, v in sets.items() if k.startswith('solver_')}
+            sets = {k.split('solver_')[1]: v for k, v in sets.items()}
+            ls.settings.update(sets)
+            x = SLS.solve(ls)
+            del(ls)
+            return x
+
+        # PyAMG
+        if self.settings['solver_family'] == 'pyamg':
+            B = np.ones((self.A.shape[0], 1))
+            mc = min(10, int(A.shape[0]//4))
+            ml = pyamg.smoothed_aggregation_solver(A, B, max_coarse=mc)
+            x = ml.solve(b=b, tol=atol)
+            return x
 
     def results(self):
         r"""
