@@ -485,12 +485,12 @@ class GenericTransport(GenericAlgorithm):
 
         # SciPy
         if self.settings['solver_family'] == 'scipy':
-            A.indices = A.indices.astype(np.int64)
-            A.indptr = A.indptr.astype(np.int64)
             iterative = ['bicg', 'bicgstab', 'cg', 'cgs', 'gmres', 'lgmres',
                          'minres', 'gcrotmk', 'qmr']
             solver = getattr(sprs.linalg, self.settings['solver_type'])
             if self.settings['solver_type'] in iterative:
+                A.indices = A.indices.astype(np.int64)
+                A.indptr = A.indptr.astype(np.int64)
                 x, exit_code = solver(A=A, b=b, atol=atol, tol=rtol,
                                       maxiter=self.settings['solver_maxiter'])
                 if exit_code > 0:
