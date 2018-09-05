@@ -1,3 +1,4 @@
+import pyamg
 import importlib
 import numpy as np
 import scipy.sparse as sprs
@@ -15,7 +16,7 @@ def_set = {'phase': None,
            'conductance': None,
            'quantity': None,
            'solver_family': 'scipy',
-           'solver_type': 'cg',
+           'solver_type': 'spsolve',
            'solver_preconditioner': 'jacobi',
            'solver_atol': 1e-6,
            'solver_rtol': 1e-6,
@@ -385,12 +386,13 @@ class GenericTransport(GenericAlgorithm):
             ind = np.isfinite(self['pore.bc_rate'])
             self.b[ind] = self['pore.bc_rate'][ind]
         if 'pore.bc_value' in self.keys():
+            f = np.abs(self.A.data).mean()
             # Update b (impose bc values)
             ind = np.isfinite(self['pore.bc_value'])
-            self.b[ind] = self['pore.bc_value'][ind]
+            self.b[ind] = self['pore.bc_value'][ind] * f
             # Update b (substract quantities from b to keep A symmetric)
-            x_BC = np.zeros_like(self.b)
-            x_BC[ind] = self.b[ind]
+            x_BC = np.zeros(self.b.shape)
+            x_BC[ind] = self['pore.bc_value'][ind]
             self.b[~ind] -= (self.A.tocsr() * x_BC)[~ind]
             # Update A
             P_bc = self.toindices(ind)
@@ -399,7 +401,7 @@ class GenericTransport(GenericAlgorithm):
             self.A.data[indrow] = 0  # Remove entries from A for all BC rows
             self.A.data[indcol] = 0  # Remove entries from A for all BC cols
             datadiag = self.A.diagonal()  # Add diagonal entries back into A
-            datadiag[P_bc] = np.ones_like(P_bc, dtype=float)
+            datadiag[P_bc] = np.ones_like(P_bc, dtype=np.float64) * f
             self.A.setdiag(datadiag)
             self.A.eliminate_zeros()  # Remove 0 entries
 
@@ -465,19 +467,16 @@ class GenericTransport(GenericAlgorithm):
         A = A.tocsr()
 
         # Default behavior -> use Scipy's default solver (spsolve)
-        if self.settings['solver'] in ['spsolve', 'umfpack']:
-            self.settings['solver_family'] = 'scipy'
-            self.settings['solver_type'] = 'spsolve'
-            self.settings['solver_atol'] = def_set['solver_atol']
         if self.settings['solver'] == 'pyamg':
             self.settings['solver_family'] = 'pyamg'
         if self.settings['solver'] == 'petsc':
             self.settings['solver_family'] = 'petsc'
 
         # Set tolerance for iterative solvers
+        rtol = self.settings['solver_rtol']
         min_A = np.abs(A.data).min()
         min_b = np.abs(b).min() or 1e100
-        tol = min(min_A, min_b) * self.settings['solver_atol']
+        atol = min(min_A, min_b) * rtol
 
         # SciPy
         if self.settings['solver_family'] == 'scipy':
@@ -487,11 +486,9 @@ class GenericTransport(GenericAlgorithm):
                          'minres', 'gcrotmk', 'qmr']
             solver = getattr(sprs.linalg, self.settings['solver_type'])
             if self.settings['solver_type'] in iterative:
-                x, exit_code = solver(A=A, b=b, tol=tol,
+                x, exit_code = solver(A=A, b=b, atol=atol, tol=rtol,
                                       maxiter=self.settings['solver_maxiter'])
                 if exit_code > 0:
-                    if np.linalg.norm(A*x-b) < tol:
-                        return x
                     raise Exception('SciPy solver did not converge! ' +
                                     'Exit code: ' + str(exit_code))
             else:
@@ -520,7 +517,7 @@ class GenericTransport(GenericAlgorithm):
             B = np.ones((self.A.shape[0], 1))
             mc = min(10, int(A.shape[0]//4))
             ml = pyamg.smoothed_aggregation_solver(A, B, max_coarse=mc)
-            x = ml.solve(b=b, tol=tol)
+            x = ml.solve(b=b, tol=atol)
             return x
 
     def results(self):
