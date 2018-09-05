@@ -32,7 +32,7 @@ def_set = {'phase': None,
            }
 
 
-@docstr.get_sectionsf('GenericTransport.class', sections=['Parameters'])
+@docstr.get_sectionsf('GenericTransport.class', sections=['Parameters', 'Notes'])
 class GenericTransport(GenericAlgorithm):
     r"""
     This class implements steady-state linear transport calculations
@@ -107,14 +107,12 @@ class GenericTransport(GenericAlgorithm):
     |                       | in the ``settings``                             |
     +-----------------------+-------------------------------------------------+
     | ``_get_domain_area``  | Attempts to estimate the area of the inlet pores|
-
     |                       | if not specified by user                        |
     +-----------------------+-------------------------------------------------+
     | ``_get_domain_length``| Attempts to estimate the length between the     |
     |                       | inlet and outlet faces if not specified by the  |
     |                       | user                                            |
     +-----------------------+-------------------------------------------------+
-
 
     """
     def __init__(self, phase=None, settings={}, **kwargs):

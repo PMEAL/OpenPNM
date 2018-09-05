@@ -11,7 +11,7 @@ class FickianDiffusion(ReactiveTransport):
 
     Parameters
     ----------
-    %(ReactiveTransport.class.parameters)s
+    %(GenericTransport.class.parameters)s
 
     Notes
     -----
@@ -33,7 +33,12 @@ class FickianDiffusion(ReactiveTransport):
     (``calc_effective_diffusivity``). The length and area of the domain should
     be supplied, but if they are not an attempt is made to calculate them.
 
+    ----
+
+    %(GenericTransport.class.notes)s
+
     """
+
     def __init__(self, settings={}, phase=None, **kwargs):
         def_set = {'phase': None,
                    'quantity': 'pore.concentration',

@@ -6,26 +6,32 @@ logger = logging.getLogger(__name__)
 docstr = Docorator()
 
 
+@docstr.get_sectionsf('TransientReactiveTransport.class',
+                      sections=['Notes'])
 class TransientReactiveTransport(ReactiveTransport):
     r"""
     A subclass of ReactiveTransport for transient/steady-state simulations
 
+    It supports 3 time discretization schemes: 'steady' to perform a
+    steady-state simulation, 'implicit' (fast, 1st order accurate) and
+    'cranknicolson' (slow, 2nd order accurate) both for transient simulations.
+
     Parameters
     ----------
-    network : OpenPNM Network object
-        The Network with which this algorithm is associated.
-
-    project : OpenPNM Project object
-        Either a Network or a Project must be specified.
+    %(GenericTransport.class.parameters)s
 
     Notes
     -----
+    In addition to the methods included on the parent classes, this class
+    also adds the following new method(s) for dealing with transient
+    conditions:
 
-    This subclass performs steady and transient simulations of transport
-    phenomena with reactions when source terms are added. It supports 3 time
-    discretization schemes; 'steady' to perform a steady-state simulation, and
-    'implicit' (fast, 1st order accurate) and 'cranknicolson' (slow, 2nd order
-    accurate) both for transient simulations.
+    +---------------------+---------------------------------------------------+
+    | Methods             | Description                                       |
+    +=====================+===================================================+
+    | ``set_IC``          | Applies initial conditions to the network         |
+    +---------------------+---------------------------------------------------+
+
     """
 
     def __init__(self, settings={}, phase=None, **kwargs):

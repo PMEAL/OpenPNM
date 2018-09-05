@@ -4,9 +4,20 @@ logger = logging.getLogger(__name__)
 docstr = Docorator()
 
 
+@docstr.dedent
 class TransientFickianDiffusion(TransientReactiveTransport, FickianDiffusion):
     r"""
     A subclass of GenericTransport to simulate diffusion.
+
+    Parameters
+    ----------
+    %(GenericTransport.class.parameters)s
+
+    Notes
+    -----
+    %(GenericTransport.class.notes)s
+
+    %(TransientReactiveTransport.class.notes)s
 
     """
 
