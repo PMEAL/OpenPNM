@@ -43,6 +43,7 @@ class AdvectionDiffusionTest:
 
     def test_upwind_advection_diffusion_diffusion(self):
         self.ad.setup(s_scheme='upwind')
+        self.ad.run()
         x = [0., 0., 0.,
              0.86486, 0.86486, 0.86486,
              1.51351, 1.51351, 1.51351,
