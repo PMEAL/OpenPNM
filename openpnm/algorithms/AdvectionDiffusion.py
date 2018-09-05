@@ -71,19 +71,29 @@ class AdvectionDiffusion(ReactiveTransport):
         Qij = -gh*np.diff(P[conns], axis=1).squeeze()
         Qij = np.append(Qij, -Qij)
 
+        Peij = Qij/gd
+        Peij[(Peij < 1e-10) & (Peij >= 0)] = 1e-10
+        Peij[(Peij > -1e-10) & (Peij <= 0)] = -1e-10
+        Qij = Peij*gd
+
         if force:
             self._pure_A = None
         if self._pure_A is None:
-            if (s_dis == 'upwind'):
+            if s_dis == 'upwind':
                 w = gd + np.maximum(0, -Qij)
                 A = network.create_adjacency_matrix(weights=w)
-            elif (s_dis == 'hybrid'):
+            elif s_dis == 'hybrid':
                 w = np.maximum(0, np.maximum(-Qij, gd-Qij/2))
                 A = network.create_adjacency_matrix(weights=w)
-            elif (s_dis == 'powerlaw'):
-                Peij = np.absolute(Qij/gd)
-                w = gd*np.maximum(0, (1-0.1*Peij)**5) + np.maximum(0, -Qij)
+            elif s_dis == 'powerlaw':
+                w = gd * np.maximum(0, (1 - 0.1*np.abs(Peij))**5) + \
+                    np.maximum(0, -Qij)
                 A = network.create_adjacency_matrix(weights=w)
+            elif s_dis == 'exponential':
+                w = -Qij / (1 - np.exp(Peij))
+                A = network.create_adjacency_matrix(weights=w)
+            else:
+                raise Exception('Unrecognized discretization scheme: ' + s_dis)
             A = laplacian(A)
             self._pure_A = A
         self.A = self._pure_A.copy()
@@ -117,9 +127,11 @@ class AdvectionDiffusion(ReactiveTransport):
         self['pore.bc_outflow'][pores] = Qp[pores]
 
     def _apply_BCs(self):
+        # Apply Dirichlet and rate BCs
         ReactiveTransport._apply_BCs(self)
         if 'pore.bc_outflow' not in self.keys():
             return
+        # Apply outflow BC
         diag = self.A.diagonal()
         ind = np.isfinite(self['pore.bc_outflow'])
         diag[ind] += self['pore.bc_outflow'][ind]
