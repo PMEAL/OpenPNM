@@ -105,9 +105,6 @@ class TransientReactiveTransport(ReactiveTransport):
             order accurate) and 'cranknicolson' (slow, 2nd order accurate) both
             for transient simulations. The default value is 'implicit'.
 
-        Notes
-        -----
-        pass
         """
         if phase:
             self.settings['phase'] = phase.name

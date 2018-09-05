@@ -35,3 +35,32 @@ class TransientFickianDiffusion(TransientReactiveTransport, FickianDiffusion):
         self.settings.update(settings)
         if phase is not None:
             self.settings['phase'] = phase.name
+
+    @docstr.dedent
+    def setup(self, **kwargs):
+        r"""
+        Parameters
+        ----------
+        %(ReactiveTransport.setup.parameters)s
+
+        ----
+
+        The following settings are used to control the details of the transient
+        simulation:
+
+        %(TransientReactiveTransport.setup.other_parameters)s
+
+        ----
+
+        The following settings are used by the source term iterations:
+
+        %(ReactiveTransport.setup.other_parameters)s
+
+        %(ReactiveTransport.setup.notes)s
+
+        ----
+
+        The following settings are used to control the behavior of the solver:
+
+        %(GenericTransport.setup.other_parameters)s
+        """

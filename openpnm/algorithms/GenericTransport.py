@@ -171,11 +171,11 @@ class GenericTransport(GenericAlgorithm):
             This is used by the PETSc solver to specify which preconditioner
             to use.  The default is ``jacobi``.
         solver_atol : scalar
-            Used to control the accuracy to which the iterative solver aims.
+            Used to control the absolute tolerance of the iterative solver.
             The default is 1e-6.
         solver_rtol : scalar
-            Used by PETSc as an additional tolerance control.  The default is
-            1e-6.
+            Used to set the relative tolerance of the iterative solver.  The
+            default is 1e-6.
         solver_maxiter : scalar
             Limits the number of iterations to attempt before quiting when
             aiming for the specified tolerance. The default is 5000.

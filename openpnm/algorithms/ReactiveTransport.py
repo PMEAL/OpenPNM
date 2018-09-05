@@ -61,8 +61,9 @@ class ReactiveTransport(GenericTransport):
         Other Parameters
         ----------------
         r_tolerance : scalar
-            Tolerance to achieve. The solver returns a solution when 'residual'
-            falls below 'r_tolerance'. The default value is 0.001.
+            Tolerance to achieve when iterating non-linear source terms. The
+            solver returns a solution when 'residual' falls below
+            'r_tolerance'. The default value is 1e-3.
         max_iter : scalar
             The maximum number of iterations the solver can perform to find
             a solution. The default value is 5000.
