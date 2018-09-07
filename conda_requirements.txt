@@ -1,6 +1,5 @@
 numpy
 scipy
-pyamg
 matplotlib
 scikit-image
 pandas
