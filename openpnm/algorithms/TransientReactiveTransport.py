@@ -226,9 +226,9 @@ class TransientReactiveTransport(ReactiveTransport):
         # If solver used in steady mode, no need to add ICs
         if (self.settings['t_scheme'] == 'steady'):
             self[self.settings['quantity']] = 0.0
-        # If ICs are not defined, show an error
+        # If ICs are not defined, assume zero
         if self[self.settings['quantity']] is None:
-            logger.error('Initial conditions not defined')
+            self.set_IC(0)
         # Save A matrix of the steady sys of eqs (WITHOUT BCs applied)
         self._A_steady = (self.A).copy()
         # Initialize A and b with BCs applied
