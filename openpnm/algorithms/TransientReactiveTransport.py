@@ -1,5 +1,6 @@
 import numpy as np
 import scipy.sparse as sprs
+from decimal import Decimal as dc
 from openpnm.algorithms import ReactiveTransport
 from openpnm.utils import logging
 logger = logging.getLogger(__name__)
@@ -227,7 +228,9 @@ class TransientReactiveTransport(ReactiveTransport):
         if (self.settings['t_scheme'] == 'steady'):
             self[self.settings['quantity']] = 0.0
         # If ICs are not defined, assume zero
-        if self[self.settings['quantity']] is None:
+        try:
+            self[self.settings['quantity']]
+        except KeyError:
             self.set_IC(0)
         # Save A matrix of the steady sys of eqs (WITHOUT BCs applied)
         self._A_steady = (self.A).copy()
@@ -289,24 +292,25 @@ class TransientReactiveTransport(ReactiveTransport):
 
         else:  # Do time iterations
             # Export the initial field (t=t_initial)
-            vals = self[self.settings['quantity']]
-            self[self.settings['quantity']+'_initial'] = vals
+            n = -dc(str(round(t, 12))).as_tuple().exponent
+            t_str = str(int(round(t, 12)*10**n))+'E-'+str(n)
+            quant_init = self[self.settings['quantity']]
+            self[self.settings['quantity']+'.'+t_str] = quant_init
             for time in np.arange(t+dt, tf+dt, dt):
                 if (res_t >= tol):  # Check if the steady state is reached
                     logger.info('    Current time step: '+str(time)+' s')
                     x_old = self[self.settings['quantity']]
-
                     self._t_run_reactive(x=x_old)
                     x_new = self[self.settings['quantity']]
-
                     # Compute the residual
                     res_t = np.sum(np.absolute(x_old**2 - x_new**2))
                     logger.info('        Residual: '+str(res_t))
                     # Output transient solutions. Round time to ensure every
                     # value in outputs is exported.
                     if round(time, 12) in outputs:
-                        ind = np.where(outputs == round(time, 12))[0][0]
-                        self[self.settings['quantity']+'_'+str(ind)] = x_new
+                        n = -dc(str(round(time, 12))).as_tuple().exponent
+                        t_str = str(int(round(time, 12)*10**n))+'E-'+str(n)
+                        self[self.settings['quantity']+'.'+t_str] = x_new
                         logger.info('        Exporting time step: ' +
                                     str(time)+' s')
                     # Update A and b and apply BCs
@@ -317,7 +321,10 @@ class TransientReactiveTransport(ReactiveTransport):
                     self._b_t = (self._b).copy()
 
                 else:  # Stop time iterations if residual < t_tolerance
-                    self[self.settings['quantity'] + '_steady'] = x_new
+                    # Output steady state solution
+                    n = -dc(str(round(time, 12))).as_tuple().exponent
+                    t_str = str(int(round(time, 12)*10**n))+'E-'+str(n)
+                    self[self.settings['quantity']+'.'+t_str] = x_new
                     logger.info('        Exporting time step: '+str(time)+' s')
                     break
             if (round(time, 12) == tf):
