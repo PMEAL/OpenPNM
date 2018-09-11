@@ -34,8 +34,10 @@ class TransientReactiveTransport(ReactiveTransport):
                    't_final': 10,
                    't_step': 0.1,
                    't_output': 1e+08,
+                   'output_times': [],
                    't_tolerance': 1e-06,
                    'r_tolerance': 1e-04,
+                   't_precision': 12,
                    't_scheme': 'implicit',
                    'gui': {'setup':        {'phase': None,
                                             'quantity': '',
@@ -44,7 +46,9 @@ class TransientReactiveTransport(ReactiveTransport):
                                             't_final': None,
                                             't_step': None,
                                             't_output': None,
+                                            'output_times': None,
                                             't_tolerance': None,
+                                            't_precision': None,
                                             't_scheme': ''},
                            'set_IC':       {'values': None},
                            'set_rate_BC':  {'pores': None,
@@ -64,7 +68,8 @@ class TransientReactiveTransport(ReactiveTransport):
 
     def setup(self, phase=None, quantity='', conductance='',
               t_initial=None, t_final=None, t_step=None, t_output=None,
-              t_tolerance=None, t_scheme='', **kwargs):
+              output_times=None, t_tolerance=None, t_precision=None,
+              t_scheme='', **kwargs):
         r"""
         This method takes several arguments that are essential to running the
         algorithm and adds them to the settings
@@ -100,6 +105,10 @@ class TransientReactiveTransport(ReactiveTransport):
             If 't_output' is not a multiple of 't_step', 't_output' will be
             approximated.
 
+        output_times : list
+            List of output times. The values in the list must be multiples of
+            the time step 't_step'.
+
         t_tolerance : scalar
             Transient solver tolerance. The simulation stops (before reaching
             't_final') when the residual falls below 't_tolerance'. The
@@ -110,6 +119,9 @@ class TransientReactiveTransport(ReactiveTransport):
             Tolerance to achieve within each time step. The solver passes to
             next time step when 'residual' falls below 'r_tolerance'. The
             default value is 1e-04.
+
+        t_precision : integer
+            The time precision (number of decimal places).
 
         t_scheme : string
             The time discretization scheme. Three options available: 'steady'
@@ -137,8 +149,12 @@ class TransientReactiveTransport(ReactiveTransport):
             self.settings['t_step'] = t_step
         if t_output:
             self.settings['t_output'] = t_output
+        if output_times:
+            self.settings['output_times'] = output_times
         if t_tolerance:
             self.settings['t_tolerance'] = t_tolerance
+        if t_precision:
+            self.settings['t_precision'] = t_precision
         if t_scheme:
             self.settings['t_scheme'] = t_scheme
         self.settings.update(kwargs)
@@ -273,16 +289,24 @@ class TransientReactiveTransport(ReactiveTransport):
         tf = self.settings['t_final']
         dt = self.settings['t_step']
         to = self.settings['t_output']
+        to_list = self.settings['output_times']
         tol = self.settings['t_tolerance']
+        t_pre = self.settings['t_precision']
         s = self.settings['t_scheme']
         res_t = 1e+06  # Initialize the residual
 
-        # Make sure 'tf' and 'to' are multiples of 'dt'
-        tf = tf + (dt-(tf % dt))*((tf % dt) != 0)
-        to = to + (dt-(to % dt))*((to % dt) != 0)
-        self.settings['t_final'] = tf
-        self.settings['t_output'] = to
-        outputs = np.append(np.arange(t+to, tf, to), tf)
+        if to_list == []:
+            # Make sure 'tf' and 'to' are multiples of 'dt'
+            tf = tf + (dt-(tf % dt))*((tf % dt) != 0)
+            to = to + (dt-(to % dt))*((to % dt) != 0)
+            self.settings['t_final'] = tf
+            self.settings['t_output'] = to
+            out = np.arange(t+to, tf, to)
+        else:
+            out = np.array(to_list)
+        out = np.append(out, tf)
+        out = np.unique(out)
+        out = np.around(out, decimals=t_pre)
 
         if (s == 'steady'):  # If solver in steady mode, do one iteration
             logger.info('    Running in steady mode')
@@ -292,8 +316,9 @@ class TransientReactiveTransport(ReactiveTransport):
 
         else:  # Do time iterations
             # Export the initial field (t=t_initial)
-            n = -dc(str(round(t, 12))).as_tuple().exponent
-            t_str = str(int(round(t, 12)*10**n))+'E-'+str(n)
+            n = int(-dc(str(round(t, t_pre))).as_tuple().exponent *
+                    (round(t, t_pre) != int(t)))
+            t_str = (str(int(round(t, t_pre)*10**n))+('e-'+str(n))*(n != 0))
             quant_init = self[self.settings['quantity']]
             self[self.settings['quantity']+'.'+t_str] = quant_init
             for time in np.arange(t+dt, tf+dt, dt):
@@ -307,9 +332,11 @@ class TransientReactiveTransport(ReactiveTransport):
                     logger.info('        Residual: '+str(res_t))
                     # Output transient solutions. Round time to ensure every
                     # value in outputs is exported.
-                    if round(time, 12) in outputs:
-                        n = -dc(str(round(time, 12))).as_tuple().exponent
-                        t_str = str(int(round(time, 12)*10**n))+'E-'+str(n)
+                    if round(time, t_pre) in out:
+                        n = int(-dc(str(round(time, t_pre))).as_tuple().exponent *
+                                (round(time, t_pre) != int(time)))
+                        t_str = (str(int(round(time, t_pre)*10**n)) +
+                                 ('e-'+str(n))*(n != 0))
                         self[self.settings['quantity']+'.'+t_str] = x_new
                         logger.info('        Exporting time step: ' +
                                     str(time)+' s')
@@ -322,12 +349,14 @@ class TransientReactiveTransport(ReactiveTransport):
 
                 else:  # Stop time iterations if residual < t_tolerance
                     # Output steady state solution
-                    n = -dc(str(round(time, 12))).as_tuple().exponent
-                    t_str = str(int(round(time, 12)*10**n))+'E-'+str(n)
+                    n = int(-dc(str(round(time, t_pre))).as_tuple().exponent *
+                            (round(time, t_pre) != int(time)))
+                    t_str = (str(int(round(time, t_pre)*10**n)) +
+                             ('e-'+str(n))*(n != 0))
                     self[self.settings['quantity']+'.'+t_str] = x_new
                     logger.info('        Exporting time step: '+str(time)+' s')
                     break
-            if (round(time, 12) == tf):
+            if (round(time, t_pre) == tf):
                 logger.info('    Maximum time step reached: '+str(time)+' s')
             else:
                 logger.info('    Transient solver converged after: ' +
