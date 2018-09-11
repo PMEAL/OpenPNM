@@ -309,8 +309,8 @@ class ModelsMixin():
                         except KeyError:
                             missing_deps.append(key)
 
-                logger.warning(prop + ' was not run since the following ' +
-                               'properties are missing: ' + str(missing_deps))
+                logger.error(prop + ' was not run since the following ' +
+                             'properties are missing: ' + str(missing_deps))
                 self.models[prop]['regen_mode'] = 'deferred'
 
     def remove_model(self, propname=None, mode=['model', 'data']):
