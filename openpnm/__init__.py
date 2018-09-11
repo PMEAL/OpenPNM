@@ -53,7 +53,7 @@ It consists of the following submodules:
 """
 import os
 from pathlib import Path
-from git import Repo, InvalidGitRepositoryError
+from git import Repo
 
 __version__ = '2.0.1'
 
@@ -62,7 +62,9 @@ try:
     repo = Repo(str(path))
     if repo.active_branch.name != 'master':
         commit_id = repo.active_branch.commit.hexsha[:6]
-        __version__ = __version__ + '-' + str(commit_id)
+        __commit__ = ''+str(commit_id)
+    else:
+        __commit__ = None
 except:
     pass
 
