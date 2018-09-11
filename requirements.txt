@@ -1,5 +1,6 @@
 numpy
 scipy
+pyamg
 matplotlib
 scikit-image
 pandas
@@ -11,3 +12,5 @@ porespy
 transforms3d
 flatdict
 scikit-umfpack
+gitpython
+pyamg

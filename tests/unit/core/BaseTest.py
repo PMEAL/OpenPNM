@@ -773,6 +773,14 @@ class BaseTest:
         with pytest.raises(KeyError):
             self.geo['pore.blah']
 
+    def test_get_string(self):
+        a = self.net.get('pore.coords')
+        assert a.shape == (self.net.Np, 3)
+
+    def test_get_list_of_strings(self):
+        a = self.net.get(['pore.coords', 'throat.conns'])
+        assert len(a) == 2
+
 
 if __name__ == '__main__':
 
