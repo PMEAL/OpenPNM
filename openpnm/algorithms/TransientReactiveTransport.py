@@ -34,7 +34,6 @@ class TransientReactiveTransport(ReactiveTransport):
                    't_final': 10,
                    't_step': 0.1,
                    't_output': 1e+08,
-                   'output_times': [],
                    't_tolerance': 1e-06,
                    'r_tolerance': 1e-04,
                    't_precision': 12,
@@ -46,7 +45,6 @@ class TransientReactiveTransport(ReactiveTransport):
                                             't_final': None,
                                             't_step': None,
                                             't_output': None,
-                                            'output_times': None,
                                             't_tolerance': None,
                                             't_precision': None,
                                             't_scheme': ''},
@@ -68,8 +66,7 @@ class TransientReactiveTransport(ReactiveTransport):
 
     def setup(self, phase=None, quantity='', conductance='',
               t_initial=None, t_final=None, t_step=None, t_output=None,
-              output_times=None, t_tolerance=None, t_precision=None,
-              t_scheme='', **kwargs):
+              t_tolerance=None, t_precision=None, t_scheme='', **kwargs):
         r"""
         This method takes several arguments that are essential to running the
         algorithm and adds them to the settings
@@ -98,12 +95,14 @@ class TransientReactiveTransport(ReactiveTransport):
         t_step : scalar, between 't_initial' and 't_final'
             The simulation's time step. The default value is 0.1.
 
-        t_output : scalar
-            Output interval to store transient solutions. The default value
-            is 1e+08. Initial and steady-state (if reached) fields are always
-            stored. If 't_output' > 't_final', no transient data is stored.
-            If 't_output' is not a multiple of 't_step', 't_output' will be
-            approximated.
+        t_output : scalar or list of scalars
+            When 't_output' is a scalar, it is considered as an output interval
+            to store transient solutions. The default value is 1e+08. Initial
+            and steady-state (if reached) fields are always stored. If
+            't_output' > 't_final', no transient data is stored. If 't_output'
+            is not a multiple of 't_step', 't_output' will be approximated.
+            When 't_output' is a list, transient solutions corresponding to
+            this list will be stored.
 
         output_times : list
             List of output times. The values in the list must be multiples of
@@ -149,8 +148,6 @@ class TransientReactiveTransport(ReactiveTransport):
             self.settings['t_step'] = t_step
         if t_output:
             self.settings['t_output'] = t_output
-        if output_times:
-            self.settings['output_times'] = output_times
         if t_tolerance:
             self.settings['t_tolerance'] = t_tolerance
         if t_precision:
@@ -289,13 +286,12 @@ class TransientReactiveTransport(ReactiveTransport):
         tf = self.settings['t_final']
         dt = self.settings['t_step']
         to = self.settings['t_output']
-        to_list = self.settings['output_times']
         tol = self.settings['t_tolerance']
         t_pre = self.settings['t_precision']
         s = self.settings['t_scheme']
         res_t = 1e+06  # Initialize the residual
 
-        if to_list == []:
+        if not isinstance(to, list):
             # Make sure 'tf' and 'to' are multiples of 'dt'
             tf = tf + (dt-(tf % dt))*((tf % dt) != 0)
             to = to + (dt-(to % dt))*((to % dt) != 0)
@@ -303,7 +299,7 @@ class TransientReactiveTransport(ReactiveTransport):
             self.settings['t_output'] = to
             out = np.arange(t+to, tf, to)
         else:
-            out = np.array(to_list)
+            out = np.array(to)
         out = np.append(out, tf)
         out = np.unique(out)
         out = np.around(out, decimals=t_pre)
@@ -320,7 +316,7 @@ class TransientReactiveTransport(ReactiveTransport):
                     (round(t, t_pre) != int(t)))
             t_str = (str(int(round(t, t_pre)*10**n))+('e-'+str(n))*(n != 0))
             quant_init = self[self.settings['quantity']]
-            self[self.settings['quantity']+'.'+t_str] = quant_init
+            self[self.settings['quantity']+'.t.'+t_str] = quant_init
             for time in np.arange(t+dt, tf+dt, dt):
                 if (res_t >= tol):  # Check if the steady state is reached
                     logger.info('    Current time step: '+str(time)+' s')
@@ -337,7 +333,7 @@ class TransientReactiveTransport(ReactiveTransport):
                                 (round(time, t_pre) != int(time)))
                         t_str = (str(int(round(time, t_pre)*10**n)) +
                                  ('e-'+str(n))*(n != 0))
-                        self[self.settings['quantity']+'.'+t_str] = x_new
+                        self[self.settings['quantity']+'.t.'+t_str] = x_new
                         logger.info('        Exporting time step: ' +
                                     str(time)+' s')
                     # Update A and b and apply BCs
@@ -353,7 +349,7 @@ class TransientReactiveTransport(ReactiveTransport):
                             (round(time, t_pre) != int(time)))
                     t_str = (str(int(round(time, t_pre)*10**n)) +
                              ('e-'+str(n))*(n != 0))
-                    self[self.settings['quantity']+'.'+t_str] = x_new
+                    self[self.settings['quantity']+'.t.'+t_str] = x_new
                     logger.info('        Exporting time step: '+str(time)+' s')
                     break
             if (round(time, t_pre) == tf):
