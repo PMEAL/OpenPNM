@@ -1,7 +1,6 @@
 import openpnm as op
 import numpy as np
-import pytest
-from numpy.testing import assert_approx_equal
+from numpy.testing import assert_allclose
 from openpnm import topotools
 
 
@@ -21,7 +20,7 @@ class TopotoolsTest:
         topotools.reduce_coordination(network=net, z=6)
         a = np.mean(net.num_neighbors(pores=net.Ps, flatten=False))
         b = 6.0
-        assert_approx_equal(a, b)
+        assert_allclose(a, b)
         h = net.check_network_health()
         assert h.health
 
@@ -120,6 +119,20 @@ class TopotoolsTest:
         assert np.sum(net1['pore.test4'][27:]) == 270
         assert 'pore.test1' not in net2
         assert 'pore.test2' not in net2
+
+    def test_merge_pores(self):
+        testnet = op.network.Cubic(shape=[10, 10, 10])
+        xyz_old = testnet['pore.coords'].copy()
+        to_merge = [[0, 1], [998, 999]]
+        topotools.merge_pores(testnet, to_merge)
+        xyz = testnet['pore.coords']
+        xyz1 = xyz[-2]
+        xyz2 = xyz[-1]
+        xyz1_desired = xyz_old[0:2].mean(axis=0)
+        xyz2_desired = xyz_old[998::].mean(axis=0)
+        assert testnet.Np == 998
+        assert_allclose(xyz1, xyz1_desired)
+        assert_allclose(xyz2, xyz2_desired)
 
     def test_ispercolating(self):
         net = op.network.Cubic(shape=[10, 10, 10], connectivity=26)
