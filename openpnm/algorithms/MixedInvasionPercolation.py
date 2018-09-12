@@ -83,12 +83,12 @@ class MixedInvasionPercolation(GenericAlgorithm):
         pore_entry_pressure : string
             The dictionary key on the Phase object where the pore entry
             pressure values are stored.  The default is
-            'pore.capillary_pressure'.
+            'pore.entry_pressure'.
 
         throat_entry_pressure : string
             The dictionary key on the Phase object where the throat entry
             pressure values are stored.  The default is
-            'throat.capillary_pressure'.
+            'throat.entry_pressure'.
 
         snap_off : string
             The dictionary key on the Phase object where the throat snap-off
@@ -117,6 +117,10 @@ class MixedInvasionPercolation(GenericAlgorithm):
             phase = self.project.find_phase(self)
         self['throat.entry_pressure'] = \
             phase[self.settings['throat_entry_pressure']]
+        if len(np.shape(self['throat.entry_pressure'])) > 1:
+            self._bidirectional = True
+        else:
+            self._bidirectional = False
         if pore_entry_pressure:
             self.settings['pore_entry_pressure'] = pore_entry_pressure
             phase = self.project.find_phase(self)
@@ -159,7 +163,7 @@ class MixedInvasionPercolation(GenericAlgorithm):
             for prop in ['occupancy']:
                 try:
                     del self[elem+'.'+prop]
-                except:
+                except KeyError:
                     pass
 
         # Masks for tracking pores and throats at the interface
@@ -245,12 +249,20 @@ class MixedInvasionPercolation(GenericAlgorithm):
         Ts = net.find_neighbor_throats(pores=pore)
         # Remove already invaded throats from Ts
         Ts = Ts[self['throat.invasion_sequence'][Ts] <= 0]
+        tcp = self['throat.entry_pressure']
         if len(Ts) > 0:
             self._interface_Ts[Ts] = True
             for T in Ts:
                 data = []
                 # Pc
-                data.append(self['throat.entry_pressure'][T])
+                if self._bidirectional:
+                    # Get index of pore being invaded next and apply correct
+                    # entry pressure
+                    pmap = net['throat.conns'][T] != pore
+                    pind = list(pmap).index(True)
+                    data.append(tcp[T][pind])
+                else:
+                    data.append(tcp[T])
                 # Element Index
                 data.append(T)
                 # Element Type (Pore of Throat)

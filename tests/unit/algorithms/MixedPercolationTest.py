@@ -426,15 +426,17 @@ class MixedPercolationTest:
 
     def test_coop_pore_filling(self):
         pn = op.network.Cubic(shape=[3, 3, 3], spacing=2.5e-5)
-        geo = op.geometry.StickAndBall(network=pn,
-                                       pores=pn.pores(),
-                                       throats=pn.throats())
+        geo = op.geometry.GenericGeometry(network=pn,
+                                          pores=pn.pores(),
+                                          throats=pn.throats())
+        geo['throat.diameter'] = 1.5e-5
+        geo['pore.diameter'] = 2e-5
         geo.add_model(propname='throat.centroid',
                       model=op.models.geometry.throat_centroid.pore_coords)
         geo.add_model(propname='throat.normal',
                       model=op.models.geometry.throat_vector.pore_to_pore)
         water = op.phases.Water(network=pn)
-        water['pore.contact_angle'] = 40
+        water['pore.contact_angle'] = 60
         phys = op.physics.Standard(network=pn, phase=water, geometry=geo)
         r_tor = 5e-6
         phys.add_model(propname='throat.entry_pressure',
@@ -455,6 +457,42 @@ class MixedPercolationTest:
         ip.set_inlets(pores=pn.pores('bottom'))
         ip.run()
         assert np.any(~np.isnan(ip.tt_Pc.data[0]))
+
+    def test_bidirectional_entry_pressure(self):
+        pn = op.network.Cubic(shape=[3, 3, 3], spacing=2.5e-5)
+        geo = op.geometry.GenericGeometry(network=pn,
+                                          pores=pn.pores(),
+                                          throats=pn.throats())
+        geo['throat.diameter'] = 2.0e-5
+        geo['pore.diameter'] = (np.random.random(geo.Np)+0.5)*1e-5
+        geo['pore.volume'] = (4/3)*np.pi*(geo['pore.diameter']/2)**3
+        geo['throat.volume'] = 0.0
+        geo.add_model(propname='throat.centroid',
+                      model=op.models.geometry.throat_centroid.pore_coords)
+        geo.add_model(propname='throat.normal',
+                      model=op.models.geometry.throat_vector.pore_to_pore)
+        water = op.phases.Water(network=pn)
+        water['pore.contact_angle'] = 100
+        phys = op.physics.Standard(network=pn, phase=water, geometry=geo)
+        r_tor = 5e-6
+        pmod = op.models.physics.capillary_pressure.purcell_bidirectional
+        phys.add_model(propname='throat.entry_pressure',
+                       model=pmod,
+                       r_toroid=r_tor)
+        phys.add_model(propname='throat.max_pressure',
+                       model=op.models.physics.meniscus.toroidal,
+                       r_toroid=r_tor,
+                       mode='max')
+        phys['pore.entry_pressure'] = 0.0
+        ip = op.algorithms.MixedInvasionPercolation(network=pn)
+        ip.setup(phase=water)
+        ip.set_inlets(pores=pn.pores('bottom'))
+        ip.run()
+        alg_data = ip.get_intrusion_data()
+        # Max pressure is all the same but bi-directional touch pressure isn't
+        # So there will be different invasion points. Using max results in a
+        # Single invasion point
+        assert np.any(alg_data.S_pore < 1.0)
 
 
 if __name__ == '__main__':
