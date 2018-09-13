@@ -1650,7 +1650,10 @@ def merge_pores(network, pores, labels=['merged']):
 
     Notes
     -----
-    The selection of pores should be chosen carefully, preferrable so that
+    (1) The method also works if a list of lists is passed, in which case
+    it consecutively merges the given selections of pores.
+
+    (2) The selection of pores should be chosen carefully, preferrable so that
     they all form a continuous cluster.  For instance, it is recommended
     to use the ``find_nearby_pores`` method to find all pores within a
     certain distance of a given pore, and these can then be merged without
@@ -1670,15 +1673,24 @@ def merge_pores(network, pores, labels=['merged']):
     32
 
     """
-    Pn = network.find_neighbor_pores(pores=pores,
-                                     mode='union',
-                                     flatten=True,
-                                     include_input=False)
-    xyz = sp.mean(network['pore.coords'][pores], axis=0)
-    extend(network, pore_coords=xyz, labels=labels)
-    Pnew = network.Ps[-1]
-    connect_pores(network, pores1=Pnew, pores2=Pn, labels=labels)
-    trim(network=network, pores=pores)
+    # Assert that `pores` is list of lists
+    try:
+        len(pores[0])
+    except TypeError:
+        pores = [pores]
+    N = len(pores)
+    NBs, XYZs = [], []
+    for Ps in pores:
+        NBs.append(network.find_neighbor_pores(pores=Ps,
+                                               mode='union',
+                                               flatten=True,
+                                               include_input=False))
+        XYZs.append(network['pore.coords'][Ps].mean(axis=0))
+    extend(network, pore_coords=XYZs, labels=labels)
+    Pnew = network.Ps[-N::]
+    for P, NB in zip(Pnew, NBs):
+        connect_pores(network, pores1=P, pores2=NB, labels=labels)
+    trim(network=network, pores=sp.concatenate(pores))
 
 
 def _template_sphere_disc(dim, outer_radius, inner_radius):
@@ -1835,7 +1847,6 @@ def plot_connections(network, throats=None, fig=None, **kwargs):
 
     """
     import matplotlib.pyplot as plt
-    from mpl_toolkits.mplot3d import Axes3D
 
     if throats is None:
         Ts = network.Ts
@@ -1933,7 +1944,6 @@ def plot_coordinates(network, pores=None, fig=None, **kwargs):
 
     """
     import matplotlib.pyplot as plt
-    from mpl_toolkits.mplot3d import Axes3D
 
     if pores is None:
         Ps = network.Ps
@@ -2010,7 +2020,7 @@ def plot_networkx(network, plot_throats=True, labels=None, colors=None,
     '''
     import networkx as nx
     x, y, z = network['pore.coords'].T
-    x, y = [j for j in [x, y, z] if len(sp.unique(j)) > 1]
+    x, y = [j for j in [x, y, z] if not sp.allclose(j, j.mean())]
 
     G = nx.Graph()
     pos = {network.Ps[i]: [x[i], y[i]] for i in range(network.Np)}

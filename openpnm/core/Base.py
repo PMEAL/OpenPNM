@@ -394,6 +394,62 @@ class Base(dict):
             temp = [i for i in temp if i.split('.')[0] in element]
         return temp
 
+    def get(self, keys, default=None):
+        r"""
+        This subclassed method can be used to obtain a dictionary containing
+        subset of data on the object
+
+        Parameters
+        ----------
+        keys : string or list of strings
+            The item or items to retrieve.
+
+        default : any object
+            The value to return in the event that the requested key(s) is not
+            found.  The default is ``None``.
+
+        Returns
+        -------
+        If a single string is given in ``keys``, this method behaves exactly
+        as the ``dict's`` native ``get`` method and returns just the item
+        requested (or the ``default`` if not found).  If, however, a list of
+        strings is received, then a dictionary containing each of the
+        requested items is returned.
+
+        Notes
+        -----
+        This is useful for creating Pandas Dataframes of a specific subset of
+        data.  Note that a Dataframe can be initialized with a ``dict``, but
+        all columns must be the same length.  (e.g. ``df = pd.Dataframe(d)``)
+
+        Examples
+        --------
+        >>> import openpnm as op
+        >>> pn = op.network.Cubic(shape=[5, 5, 5])
+        >>> pore_props = pn.props(element='pore')
+        >>> subset = pn.get(keys=pore_props)
+        >>> print(len(subset))  # Only pore.coords, so gives dict with 1 array
+        1
+        >>> subset = pn.get(['pore.top', 'pore.bottom'])
+        >>> print(len(subset))  # Returns a dict with the 2 requested array
+        2
+
+        It behaves exactly as normal with a dict key string is supplied:
+
+        >>> array = pn.get('pore.coords')
+        >>> print(array.shape)  # Returns requested array
+        (125, 3)
+
+        """
+        # If a list of several keys is passed, then create a subdict
+        if isinstance(keys, list):
+            ret = {}
+            for k in keys:
+                ret[k] = super().get(k, default)
+        else:  # Otherwise return numpy array
+            ret = super().get(keys, default)
+        return ret
+
     # -------------------------------------------------------------------------
     """Data Query Methods"""
     # -------------------------------------------------------------------------

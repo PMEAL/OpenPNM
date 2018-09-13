@@ -61,7 +61,9 @@ setup(
         'porespy',
         'transforms3d',
         'flatdict',
-        'scikit-umfpack'],
+        'scikit-umfpack',
+        'gitpython',
+        'pyamg'],
 
     author='OpenPNM Team',
     author_email='jgostick@uwaterloo.ca',

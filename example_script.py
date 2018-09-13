@@ -36,7 +36,7 @@ phys_air.add_model(propname='pore.2nd_order_rxn', model=mod,
                    prefactor='pore.A', exponent='pore.n',
                    regen_mode='deferred')
 rxn = op.algorithms.FickianDiffusion(network=pn)
-rxn.setup(phase=air)
+rxn.setup(phase=air, solver='spsolve')
 Ps = pn.find_nearby_pores(pores=50, r=5e-4, flatten=True)
 rxn.set_source(propname='pore.2nd_order_rxn', pores=Ps)
 rxn.set_value_BC(pores=pn.pores('top'), values=1)
