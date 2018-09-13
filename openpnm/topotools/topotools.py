@@ -1442,7 +1442,7 @@ def connect_pores(network, pores1, pores2, labels=[], add_conns=True):
     try:
         len(pores1[0])
         len(pores2[0])
-    except TypeError:
+    except (TypeError, IndexError):
         pores1 = [pores1]
         pores2 = [pores2]
     if len(pores1) != len(pores2):
