@@ -1412,7 +1412,10 @@ def connect_pores(network, pores1, pores2, labels=[], add_conns=True):
         0 --> 5     2 --> 7     3 --> 7
         1 --> 5     2 --> 9     3 --> 9
 
-    (2) It creates the connections in a format which is acceptable by
+    (2) If you want to use the batch functionality, make sure that each element
+    within ``pores1`` and ``pores2`` are of type list or ndarray.
+
+    (3) It creates the connections in a format which is acceptable by
     the default OpenPNM connection ('throat.conns') and either adds them to
     the network or returns them.
 
