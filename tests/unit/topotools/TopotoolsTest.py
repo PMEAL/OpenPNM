@@ -134,6 +134,24 @@ class TopotoolsTest:
         assert_allclose(xyz1, xyz1_desired)
         assert_allclose(xyz2, xyz2_desired)
 
+    def test_connect_pores(self):
+        testnet = op.network.Cubic(shape=[10, 10, 10])
+        Nt_old= testnet.Nt
+        ps1 = [[0, 1], [23, 65]]
+        ps2 = [[55], [982, 555]]
+        topotools.connect_pores(testnet, pores1=ps1, pores2=ps2)
+        am = testnet.create_adjacency_matrix(weights=np.ones(testnet.Nt,
+                                                             dtype=int),
+                                             fmt='csr')
+        conns = testnet['throat.conns']
+        assert len(conns) == Nt_old + 6
+        assert am[0, 55] == 1
+        assert am[1, 55] == 1
+        assert am[23, 982] == 1
+        assert am[23, 555] == 1
+        assert am[65, 982] == 1
+        assert am[65, 555] == 1
+
     def test_ispercolating(self):
         net = op.network.Cubic(shape=[10, 10, 10], connectivity=26)
         tmask = net['throat.all']
