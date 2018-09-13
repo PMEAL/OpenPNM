@@ -1426,11 +1426,23 @@ def connect_pores(network, pores1, pores2, labels=[], add_conns=True):
            [32, 68]])
 
     '''
-    size1 = sp.size(pores1)
-    size2 = sp.size(pores2)
-    array1 = sp.repeat(pores1, size2)
-    array2 = sp.tile(pores2, size1)
-    conns = sp.vstack([array1, array2]).T
+    # Assert that `pores1` and `pores2` are list of lists
+    try:
+        len(pores1[0])
+        len(pores2[0])
+    except TypeError:
+        pores1 = [pores1]
+        pores2 = [pores2]
+    if len(pores1) != len(pores2):
+        raise Exception('pores1 and pores2 should be of the same length.')
+
+    arr1, arr2 = [], []
+    for ps1, ps2 in zip(pores1, pores2):
+        size1 = sp.size(ps1)
+        size2 = sp.size(ps2)
+        arr1.append(sp.repeat(ps1, size2))
+        arr2.append(sp.tile(ps2, size1))
+    conns = sp.vstack([sp.concatenate(arr1), sp.concatenate(arr2)]).T
     if add_conns:
         extend(network=network, throat_conns=conns, labels=labels)
     else:
