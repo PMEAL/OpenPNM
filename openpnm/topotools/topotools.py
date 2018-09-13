@@ -1689,7 +1689,7 @@ def merge_pores(network, pores, labels=['merged']):
     extend(network, pore_coords=XYZs, labels=labels)
     Pnew = network.Ps[-N::]
     for P, NB in zip(Pnew, NBs):
-        connect_pores(network, pores1=P, pores2=NB, labels=labels)
+        connect_pores(network, pores2=P, pores1=NB, labels=labels)
     trim(network=network, pores=sp.concatenate(pores))
 
 
