@@ -36,11 +36,13 @@ class PETScSparseLinearSolver(Base):
             1D RHS vector
         """
         # Set some default settings
-        self.settings.update({'solver': 'cg',
-                              'preconditioner': 'jacobi',
-                              'atol': 1e-06,
-                              'rtol': 1e-06,
-                              'maxiter': 1000})
+        def_set = {'type': 'cg',
+                   'preconditioner': 'jacobi',
+                   'atol': 1e-06,
+                   'rtol': 1e-06,
+                   'maxiter': 1000}
+        self.settings.update(def_set)
+        self.settings.update(settings)
         self.A = A
         self.b = b
 
@@ -125,8 +127,15 @@ class PETScSparseLinearSolver(Base):
 
         cholesky_direct_solvers = ['mumps', 'cholmod']
 
-        solver = self.settings['solver']
+        solver = self.settings['type']
         preconditioner = self.settings['preconditioner']
+
+        if solver not in (iterative_solvers +
+                          lu_direct_solvers +
+                          cholesky_direct_solvers):
+            solver = 'cg'
+            print('Warning: ' + self.settings['type'] +
+                  ' not availabe, ' + solver + ' used instead.')
 
         if preconditioner not in preconditioners:
             preconditioner = 'jacobi'
