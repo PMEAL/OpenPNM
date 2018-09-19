@@ -534,6 +534,16 @@ class GenericTransport(GenericAlgorithm):
         d = {quantity: self[quantity]}
         return d
 
+    def results_transient(self):
+        r"""
+        Fetches the calculated quantity from the algorithm and returns it as
+        an array.
+        """
+        quantity = self.settings['quantity']
+        q = [k for k in list(self.keys()) if quantity in k]
+        d = {k: self[k] for k in q}
+        return d
+
     def rate(self, pores=[], throats=[], mode='group'):
         r"""
         Calculates the net rate of material moving into a given set of pores or
