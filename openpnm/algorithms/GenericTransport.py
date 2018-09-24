@@ -5,6 +5,7 @@ import scipy.sparse as sprs
 import scipy.sparse.csgraph as spgr
 from scipy.spatial import ConvexHull
 from scipy.spatial import cKDTree
+from decimal import Decimal as dc
 from openpnm.topotools import iscoplanar
 from openpnm.algorithms import GenericAlgorithm
 from openpnm.utils import logging
@@ -525,13 +526,55 @@ class GenericTransport(GenericAlgorithm):
             x = ml.solve(b=b, tol=atol)
             return x
 
-    def results(self):
+    def results(self, times='all', t_precision=12, **kwargs):
         r"""
         Fetches the calculated quantity from the algorithm and returns it as
         an array.
+
+        Parameters
+        ----------
+        times : scalar or list
+            Time steps to be returned. The default value is 'all' which results
+            in returning all time steps. If a scalar is given, only the
+            corresponding time step is returned. If a range is given
+            (e.g., 'range(0, 1, 1e-3)'), time steps in this range are returned.
+
+        t_precision : integer
+            The time precision (number of decimal places). Default value is 12.
+
+        Notes
+        -----
+        The keyword steps is interpreted in the same way as times.
         """
+        if 'steps' in kwargs.keys():
+            times = kwargs['steps']
+        t_pre = t_precision
         quantity = self.settings['quantity']
-        d = {quantity: self[quantity]}
+        q = [k for k in list(self.keys()) if quantity in k]
+        if times == 'all':
+            t = q
+        elif type(times) in [float, int]:
+            n = int(-dc(str(round(times, t_pre))).as_tuple().exponent *
+                    (round(times, t_pre) != int(times)))
+            t_str = (str(int(round(times, t_pre)*10**n)) +
+                     ('e-'+str(n))*(n != 0))
+            t = [k for k in q if t_str == k.split('@')[-1]]
+        elif 'range' in times:
+            t = times.replace(' ', '')
+            t = t[6:-1]
+            t = t.split(',')
+            out = np.arange(float(t[0]), float(t[1]), float(t[2]))
+            out = np.append(out, float(t[1]))
+            out = np.unique(out)
+            out = np.around(out, decimals=t_pre)
+            t = []
+            for i in out:
+                n = int(-dc(str(round(i, t_pre))).as_tuple().exponent *
+                        (round(i, t_pre) != int(i)))
+                j = (str(int(round(i, t_pre)*10**n))+('e-'+str(n))*(n != 0))
+                t_str = [k for k in q if j == k.split('@')[-1]]
+                t += (t_str)
+        d = {k: self[k] for k in t}
         return d
 
     def rate(self, pores=[], throats=[], mode='group'):
