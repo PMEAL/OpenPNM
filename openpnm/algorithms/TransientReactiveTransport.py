@@ -316,7 +316,7 @@ class TransientReactiveTransport(ReactiveTransport):
                     (round(t, t_pre) != int(t)))
             t_str = (str(int(round(t, t_pre)*10**n))+('e-'+str(n))*(n != 0))
             quant_init = self[self.settings['quantity']]
-            self[self.settings['quantity']+'.t.'+t_str] = quant_init
+            self[self.settings['quantity']+'@'+t_str] = quant_init
             for time in np.arange(t+dt, tf+dt, dt):
                 if (res_t >= tol):  # Check if the steady state is reached
                     logger.info('    Current time step: '+str(time)+' s')
@@ -333,7 +333,7 @@ class TransientReactiveTransport(ReactiveTransport):
                                 (round(time, t_pre) != int(time)))
                         t_str = (str(int(round(time, t_pre)*10**n)) +
                                  ('e-'+str(n))*(n != 0))
-                        self[self.settings['quantity']+'.t.'+t_str] = x_new
+                        self[self.settings['quantity']+'@'+t_str] = x_new
                         logger.info('        Exporting time step: ' +
                                     str(time)+' s')
                     # Update A and b and apply BCs
@@ -349,7 +349,7 @@ class TransientReactiveTransport(ReactiveTransport):
                             (round(time, t_pre) != int(time)))
                     t_str = (str(int(round(time, t_pre)*10**n)) +
                              ('e-'+str(n))*(n != 0))
-                    self[self.settings['quantity']+'.t.'+t_str] = x_new
+                    self[self.settings['quantity']+'@'+t_str] = x_new
                     logger.info('        Exporting time step: '+str(time)+' s')
                     break
             if (round(time, t_pre) == tf):
