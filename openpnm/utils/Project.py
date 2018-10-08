@@ -485,10 +485,12 @@ class Project(list):
         ----------
 
         """
-        with open(filename, 'rb') as f:
+        p = Path(filename)
+        with open(p, 'rb') as f:
             d = pickle.load(f)
-        for item in d.keys():
-            self.extend(d[item])
+        obj = self._new_object(objtype=p.suffix.strip('.'),
+                               name=p.name.split('.')[0])
+        obj.update(d)
 
     def save_project(self, filename=''):
         r"""
