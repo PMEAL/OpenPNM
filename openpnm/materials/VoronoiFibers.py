@@ -65,6 +65,13 @@ class VoronoiFibers(Project):
         appropriately set the resolution based on the fiber_radius and the
         shape of the domain so as to remain within memory constraints.
 
+    linear_scale : array_like (len 3)
+        A scale factor applied after the pore coordinates are determined by the
+        other shape and size parameters. This is useful for applying anisotropy
+        to the fibers and aligning them in a particular direction.
+        By default, if None is specified then no scaling is applied.
+        e.g. [1, 1, 0.5] will squash the domain be half in the z-direction.
+
     References
     ----------
     This approach to modeling fibrous materials was first presented by
@@ -91,7 +98,8 @@ class VoronoiFibers(Project):
     """
 
     def __init__(self, num_points=None, points=None, shape=[1, 1, 1],
-                 fiber_rad=None, resolution=1e-2, name=None, **kwargs):
+                 fiber_rad=None, resolution=1e-2, name=None,
+                 linear_scale=None, **kwargs):
         super().__init__(name=name)
         shape = np.array(shape)
         if (len(shape) != 3) or np.any(shape == 0):
@@ -105,6 +113,13 @@ class VoronoiFibers(Project):
                                   shape=shape,
                                   name=self.name+'_net',
                                   **kwargs)
+        if linear_scale is not None:
+            if len(linear_scale) != 3:
+                logger.exception(msg='linear_scale must have length 3 ' +
+                                 'to scale each axis')
+            else:
+                ls = np.asarray(linear_scale)
+                net['pore.coords'] *= ls
         net.fiber_rad = fiber_rad
         net.resolution = resolution
         del_geom = DelaunayGeometry(project=self,
@@ -112,6 +127,7 @@ class VoronoiFibers(Project):
                                     pores=net.pores('delaunay'),
                                     throats=net.throats('delaunay'),
                                     name=self.name+'_del')
+
         VoronoiGeometry(project=self,
                         network=net,
                         pores=net.pores('voronoi'),
