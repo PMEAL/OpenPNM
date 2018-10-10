@@ -49,7 +49,7 @@ setup(
         'scipy==1.1',
         'matplotlib==2',
         'scikit-image==0.14',
-        'scikit-umfpack==3.1',
+        'scikit-umfpack==0.3.1',
         'pyamg==4',
         'networkx==2',
         'h5py==2.8',
