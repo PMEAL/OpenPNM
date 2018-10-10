@@ -6,10 +6,6 @@ try:
 except ImportError:
     from distutils.core import setup
 
-# Check Python version
-if sys.version_info < (3, 6):
-    raise Exception('openpnm requires Python 3.6 or greater to run')
-
 sys.path.append(os.getcwd())
 
 main_ = {}
