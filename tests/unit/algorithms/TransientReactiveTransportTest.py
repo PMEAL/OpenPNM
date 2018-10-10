@@ -37,7 +37,7 @@ class TransientImplicitReactiveTransportTest:
                   conductance='throat.diffusive_conductance',
                   t_initial=0, t_final=1000, t_step=0.1, t_output=100,
                   t_tolerance=1e-07, t_scheme='implicit')
-        alg.settings.update({'r_tolerance': 1e-06})
+        alg.settings.update({'rxn_tolerance': 1e-06})
         alg.set_IC(0)
         alg.set_value_BC(pores=self.net.pores('left'), values=2)
         alg.set_source(propname='pore.reaction', pores=self.net.pores('right'))
@@ -53,7 +53,7 @@ class TransientImplicitReactiveTransportTest:
                                                        phase=self.phase,
                                                        settings=self.settings)
         alg.settings.update({'t_scheme': 'cranknicolson', 't_step': 0.1,
-                             't_tolerance': 1e-07, 'r_tolerance': 1e-06})
+                             't_tolerance': 1e-07, 'rxn_tolerance': 1e-06})
         alg.set_IC(0)
         alg.set_value_BC(pores=self.net.pores('left'), values=2)
         alg.set_source(propname='pore.reaction', pores=self.net.pores('right'))
@@ -68,14 +68,14 @@ class TransientImplicitReactiveTransportTest:
         alg = op.algorithms.TransientReactiveTransport(network=self.net,
                                                        phase=self.phase,
                                                        settings=self.settings)
-        alg.settings.update({'t_scheme': 'steady', 'r_tolerance': 1e-03})
+        alg.settings.update({'t_scheme': 'steady', 'rxn_tolerance': 1e-06})
         alg.set_IC(0)
         alg.set_value_BC(pores=self.net.pores('left'), values=2)
         alg.set_source(propname='pore.reaction', pores=self.net.pores('right'))
         alg.run()
-        x = [2, 1.00158, 0.00317,
-             2, 1.00158, 0.00317,
-             2, 1.00158, 0.00317]
+        x = [2, 1.00158, 0.00316,
+             2, 1.00158, 0.00316,
+             2, 1.00158, 0.00316]
         y = sp.around(alg[alg.settings['quantity']], decimals=5)
         assert sp.all(x == y)
 

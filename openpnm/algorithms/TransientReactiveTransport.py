@@ -35,7 +35,7 @@ class TransientReactiveTransport(ReactiveTransport):
                    't_step': 0.1,
                    't_output': 1e+08,
                    't_tolerance': 1e-06,
-                   'rxn_tolerance': 1e-04,
+                   'rxn_tolerance': 1e-05,
                    't_precision': 12,
                    't_scheme': 'implicit',
                    'gui': {'setup':        {'phase': None,
@@ -117,7 +117,7 @@ class TransientReactiveTransport(ReactiveTransport):
         rxn_tolerance : scalar
             Tolerance to achieve within each time step. The solver passes to
             next time step when 'residual' falls below 'rxn_tolerance'. The
-            default value is 1e-04.
+            default value is 1e-05.
 
         t_precision : integer
             The time precision (number of decimal places).

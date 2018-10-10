@@ -26,7 +26,7 @@ class ReactiveTransport(GenericTransport):
     def __init__(self, settings={}, phase=None, **kwargs):
         def_set = {'phase': None,
                    'sources': [],
-                   'rxn_tolerance': 0.001,
+                   'rxn_tolerance': 1e-05,
                    'max_iter': 5000,
                    'relaxation_source': 1,
                    'relaxation_quantity': 1,
@@ -75,7 +75,7 @@ class ReactiveTransport(GenericTransport):
 
         rxn_tolerance : scalar
             Tolerance to achieve. The solver returns a solution when 'residual'
-            falls below 'rxn_tolerance'. The default value is 0.001.
+            falls below 'rxn_tolerance'. The default value is 1e-05.
 
         max_iter : scalar
             The maximum number of iterations the solver can perform to find
