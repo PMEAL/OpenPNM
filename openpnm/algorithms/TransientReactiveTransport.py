@@ -35,7 +35,7 @@ class TransientReactiveTransport(ReactiveTransport):
                    't_step': 0.1,
                    't_output': 1e+08,
                    't_tolerance': 1e-06,
-                   'r_tolerance': 1e-04,
+                   'rxn_tolerance': 1e-04,
                    't_precision': 12,
                    't_scheme': 'implicit',
                    'gui': {'setup':        {'phase': None,
@@ -114,9 +114,9 @@ class TransientReactiveTransport(ReactiveTransport):
             default value is 1e-06. The 'residual' measures the variation from
             one time-step to another in the value of the 'quantity' solved for.
 
-        r_tolerance : scalar
+        rxn_tolerance : scalar
             Tolerance to achieve within each time step. The solver passes to
-            next time step when 'residual' falls below 'r_tolerance'. The
+            next time step when 'residual' falls below 'rxn_tolerance'. The
             default value is 1e-04.
 
         t_precision : integer
@@ -363,7 +363,7 @@ class TransientReactiveTransport(ReactiveTransport):
         Repeatedly updates transient 'A', 'b', and the solution guess within
         each time step according to the applied source term then calls '_solve'
         to solve the resulting system of linear equations. Stops when the
-        residual falls below 'r_tolerance'.
+        residual falls below 'rxn_tolerance'.
 
         Parameters
         ----------
@@ -385,20 +385,24 @@ class TransientReactiveTransport(ReactiveTransport):
         self[self.settings['quantity']] = x
         relax = self.settings['relaxation_quantity']
         res = 1e+06
+        min_A = np.abs(self.A.data).min()
+        min_b = np.abs(self.b).min() or 1e100
+        ref = min(min_A, min_b)  # Reference for the residual's normalization
         for itr in range(int(self.settings['max_iter'])):
-            if res >= self.settings['r_tolerance']:
-                logger.info('Tolerance not met: ' + str(res))
-                self[self.settings['quantity']] = x
-                self._A = (self._A_t).copy()
-                self._b = (self._b_t).copy()
-                self._apply_sources()
+            logger.info('Tolerance not met: ' + str(res))
+            self[self.settings['quantity']] = x
+            self._A = (self._A_t).copy()
+            self._b = (self._b_t).copy()
+            self._apply_sources()
+            # Compute the normalized residual
+            res = np.linalg.norm(self.b-self.A*x)/ref
+            if res >= self.settings['rxn_tolerance']:
                 x_new = self._solve()
                 # Relaxation
                 x_new = relax*x_new + (1-relax)*self[self.settings['quantity']]
                 self[self.settings['quantity']] = x_new
-                res = np.sum(np.absolute(x**2 - x_new**2))
                 x = x_new
-            if (res < self.settings['r_tolerance'] or
+            if (res < self.settings['rxn_tolerance'] or
                     self.settings['sources'] == []):
                 logger.info('Solution converged: ' + str(res))
                 break
