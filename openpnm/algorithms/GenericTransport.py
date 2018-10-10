@@ -519,10 +519,8 @@ class GenericTransport(GenericAlgorithm):
 
         # PyAMG
         if self.settings['solver_family'] == 'pyamg':
-            B = np.ones((self.A.shape[0], 1))
-            mc = min(10, int(A.shape[0]//4))
-            ml = pyamg.smoothed_aggregation_solver(A, B, max_coarse=mc)
-            x = ml.solve(b=b, tol=atol)
+            ml = pyamg.ruge_stuben_solver(A)
+            x = ml.solve(b=b)
             return x
 
     def results(self):
