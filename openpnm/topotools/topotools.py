@@ -854,12 +854,15 @@ def trim(network, pores=[], throats=[]):
 #        temp = sp.in1d(network['throat.conns'].flatten(), pores)
 #        temp = sp.reshape(temp, (network.Nt, 2))
 #        Ts = sp.any(temp, axis=1)
+#        Ts = network.Ts[Ts]
+#        tic()
         Ts = network.find_neighbor_throats(pores=~Pkeep, mode='union')
+#        toc()
         if len(Ts) > 0:
             Tkeep[Ts] = False
     if sp.size(throats) > 0:
         Tkeep[throats] = False
-        # The folling IF catches the special case of deleting ALL throats
+        # The following IF catches the special case of deleting ALL throats
         # It removes all throat props, adds 'all', and skips rest of function
         if not sp.any(Tkeep):
             logger.info('Removing ALL throats from network')
@@ -1697,6 +1700,7 @@ def merge_pores(network, pores, labels=['merged']):
     32
 
     """
+    from openpnm.utils.misc import tic, toc
     # Assert that `pores` is list of lists
     try:
         len(pores[0])
@@ -1704,17 +1708,40 @@ def merge_pores(network, pores, labels=['merged']):
         pores = [pores]
     N = len(pores)
     NBs, XYZs = [], []
+    tic()
     for Ps in pores:
         NBs.append(network.find_neighbor_pores(pores=Ps,
                                                mode='union',
                                                flatten=True,
                                                include_input=False))
         XYZs.append(network['pore.coords'][Ps].mean(axis=0))
+    dt1 = toc(quiet=True)
+    tic()
     extend(network, pore_coords=XYZs, labels=labels)
+    dt2 = toc(quiet=True)
     Pnew = network.Ps[-N::]
-    for P, NB in zip(Pnew, NBs):
-        connect_pores(network, pores2=P, pores1=NB, labels=labels)
+    tic()
+    # Possible throats between new pores
+    ps1, ps2 = [], []
+    for i, NB in enumerate(NBs):
+        for j in range(i+1, len(NBs)):
+            if not set(NB).isdisjoint(pores[j]):
+                ps1.append([network.Ps[-N+i]])
+                ps2.append([network.Ps[-N+j]])
+    connect_pores(network, pores1=ps1, pores2=ps2, labels=labels)
+    dt5 = toc(quiet=True)
+    tic()
+    connect_pores(network, pores2=sp.split(Pnew, N), pores1=NBs, labels=labels)
+    dt3 = toc(quiet=True)
+    tic()
     trim(network=network, pores=sp.concatenate(pores))
+    dt4 = toc(quiet=True)
+    dtt = dt1 + dt2 + dt3 + dt4
+    print(f'find_nb: {dt1/dtt*100:2.0f} % ; {dt1:4.4f} s')
+    print(f'extend1: {dt2/dtt*100:2.0f} % ; {dt2:4.4f} s')
+    print(f'connect: {dt3/dtt*100:2.0f} % ; {dt3:4.4f} s')
+    print(f'adj_mat: {dt4/dtt*100:2.0f} % ; {dt4:4.4f} s')
+#    print(f'crossfi: {dt5/dtt*100:2.0f} % ; {dt5:4.4f} s')
 
 
 def _template_sphere_disc(dim, outer_radius, inner_radius):
@@ -1871,6 +1898,7 @@ def plot_connections(network, throats=None, fig=None, **kwargs):
 
     """
     import matplotlib.pyplot as plt
+    from mpl_toolkits.mplot3d import Axes3D
 
     if throats is None:
         Ts = network.Ts
@@ -1968,6 +1996,7 @@ def plot_coordinates(network, pores=None, fig=None, **kwargs):
 
     """
     import matplotlib.pyplot as plt
+    from mpl_toolkits.mplot3d import Axes3D
 
     if pores is None:
         Ps = network.Ps
