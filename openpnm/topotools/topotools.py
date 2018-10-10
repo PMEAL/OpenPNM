@@ -1744,6 +1744,26 @@ def merge_pores(network, pores, labels=['merged']):
 #    print(f'crossfi: {dt5/dtt*100:2.0f} % ; {dt5:4.4f} s')
 
 
+def merge_pores2(network, pores, labels=['merged']):
+    # Assert that `pores` is list of lists
+    try:
+        len(pores[0])
+    except TypeError:
+        pores = [pores]
+    N = len(pores)
+    NBs, XYZs = [], []
+    for Ps in pores:
+        NBs.append(network.find_neighbor_pores(pores=Ps,
+                                               mode='union',
+                                               flatten=True,
+                                               include_input=False))
+        XYZs.append(network['pore.coords'][Ps].mean(axis=0))
+    extend(network, pore_coords=XYZs, labels=labels)
+    Pnew = network.Ps[-N::]
+    connect_pores(network, pores2=sp.split(Pnew, N), pores1=NBs)
+    trim(network=network, pores=sp.concatenate(pores))
+
+
 def _template_sphere_disc(dim, outer_radius, inner_radius):
     r"""
     This private method generates an image array of a sphere/shell-disc/ring.
