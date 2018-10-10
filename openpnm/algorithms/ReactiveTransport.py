@@ -324,6 +324,7 @@ class ReactiveTransport(GenericTransport):
                 x = x_new
             if (res < self.settings['rxn_tolerance'] or
                     self.settings['sources'] == []):
+                x_new = x
                 logger.info('Solution converged: ' + str(res))
                 break
         return x_new

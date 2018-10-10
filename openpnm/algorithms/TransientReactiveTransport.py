@@ -385,8 +385,8 @@ class TransientReactiveTransport(ReactiveTransport):
         self[self.settings['quantity']] = x
         relax = self.settings['relaxation_quantity']
         res = 1e+06
-        min_A = np.abs(self.A.data).min()
-        min_b = np.abs(self.b).min() or 1e100
+        min_A = np.abs(self._A_t.data).min()
+        min_b = np.abs(self._b_t).min() or 1e100
         ref = min(min_A, min_b)  # Reference for the residual's normalization
         for itr in range(int(self.settings['max_iter'])):
             logger.info('Tolerance not met: ' + str(res))
@@ -404,6 +404,7 @@ class TransientReactiveTransport(ReactiveTransport):
                 x = x_new
             if (res < self.settings['rxn_tolerance'] or
                     self.settings['sources'] == []):
+                x_new = x
                 logger.info('Solution converged: ' + str(res))
                 break
         return x_new
