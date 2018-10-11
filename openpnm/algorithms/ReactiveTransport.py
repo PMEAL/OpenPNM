@@ -308,7 +308,6 @@ class ReactiveTransport(GenericTransport):
         min_b = np.abs(self.b).min() or 1e100
         ref = min(min_A, min_b)  # Reference for the residual's normalization
         for itr in range(int(self.settings['max_iter'])):
-            logger.info('Tolerance not met: ' + str(res))
             self[self.settings['quantity']] = x
             self._build_A(force=True)
             self._build_b(force=True)
@@ -317,6 +316,7 @@ class ReactiveTransport(GenericTransport):
             # Compute the normalized residual
             res = np.linalg.norm(self.b-self.A*x)/ref
             if res >= self.settings['rxn_tolerance']:
+                logger.info('Tolerance not met: ' + str(res))
                 x_new = self._solve()
                 # Relaxation
                 x_new = relax*x_new + (1-relax)*self[self.settings['quantity']]
