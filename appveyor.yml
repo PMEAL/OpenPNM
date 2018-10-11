@@ -15,7 +15,7 @@ install:
   - conda config --set always_yes yes --set changeps1 no
   - conda update -q conda
   - conda info -a
-  - "conda create -q -n test-environment python=%PYTHON_VERSION% numpy scipy"
+  - "conda create -q -n test-environment python=%PYTHON_VERSION% numpy==1.14"
   - conda install --file conda_requirements.txt
   - activate test-environment
   - pip install -r test_requirements.txt
