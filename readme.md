@@ -1,6 +1,7 @@
 [![](https://badge.fury.io/py/openpnm.svg)](https://pypi.python.org/pypi/openpnm)  [![](https://travis-ci.org/PMEAL/OpenPNM.svg?branch=master)](https://travis-ci.org/PMEAL/OpenPNM)
 [![](https://codecov.io/gh/PMEAL/OpenPNM/branch/master/graph/badge.svg)](https://codecov.io/gh/PMEAL/OpenPNM)
 [![](https://img.shields.io/badge/ReadTheDocs-GO-blue.svg)](http://openpnm.readthedocs.io/en/master/)
+[![](https://ci.appveyor.com/api/projects/status/7lmjmjbq09p8l5dn/branch/master?svg=true&passingText=windows%20-%20OK)](https://ci.appveyor.com/api/projects/status/openpnm/)
 
 # Overview of OpenPNM
 

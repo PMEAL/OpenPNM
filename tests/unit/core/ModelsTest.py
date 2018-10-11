@@ -108,7 +108,7 @@ class ModelsTest:
         geo.clear()
         with LogCapture() as log:
             geo.regenerate_models(propnames=['pore.diameter'])
-        assert "['pore.max_size', 'pore.seed']" in log.actual()[0][2]
+        assert "'pore.max_size'" in log.actual()[0][2]
 
     def test_regenerate_models_on_phase_with_deep(self):
         pn = op.network.Cubic(shape=[5, 5, 5])
