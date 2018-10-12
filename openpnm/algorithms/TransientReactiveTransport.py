@@ -384,7 +384,6 @@ class TransientReactiveTransport(ReactiveTransport):
             x = np.zeros(shape=[self.Np, ], dtype=float)
         self[self.settings['quantity']] = x
         relax = self.settings['relaxation_quantity']
-        res = 1e+06
         min_A = np.abs(self._A_t.data).min()
         min_b = np.abs(self._b_t).min() or 1e100
         ref = min(min_A, min_b)  # Reference for the residual's normalization
