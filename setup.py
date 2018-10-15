@@ -45,11 +45,11 @@ setup(
         'openpnm.materials',
     ],
     install_requires=[
-        'numpy==1.14',
+        'numpy==1.15',
         'scipy==1.1',
         'matplotlib==2',
         'scikit-image==0.14',
-        'scikit-umfpack==0.3.1',
+        'scikit-umfpack==0.3.2',
         'pyamg==4',
         'networkx==2',
         'h5py==2.8',
