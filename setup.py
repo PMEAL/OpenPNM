@@ -48,7 +48,6 @@ setup(
         'numpy==1.15',
         'scipy==1.1',
         'scikit-image==0.14',
-        'scikit-umfpack==0.3.2',
         'networkx==2',
         'h5py==2.8',
         'sympy',
