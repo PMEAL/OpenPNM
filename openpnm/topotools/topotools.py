@@ -1444,12 +1444,16 @@ def connect_pores(network, pores1, pores2, labels=[], add_conns=True):
     # Assert that `pores1` and `pores2` are list of lists
     try:
         len(pores1[0])
-        len(pores2[0])
     except (TypeError, IndexError):
         pores1 = [pores1]
+    try:
+        len(pores2[0])
+    except (TypeError, IndexError):
         pores2 = [pores2]
+
     if len(pores1) != len(pores2):
-        raise Exception('pores1 and pores2 should be of the same length.')
+        raise Exception('Running in batch mode! pores1 and pores2 must be' + \
+                        ' of the same length.')
 
     arr1, arr2 = [], []
     for ps1, ps2 in zip(pores1, pores2):
