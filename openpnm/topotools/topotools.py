@@ -1704,67 +1704,43 @@ def merge_pores(network, pores, labels=['merged']):
     32
 
     """
-    from openpnm.utils.misc import tic, toc
     # Assert that `pores` is list of lists
     try:
         len(pores[0])
-    except TypeError:
+    except (TypeError, IndexError):
         pores = [pores]
+        
     N = len(pores)
     NBs, XYZs = [], []
-    tic()
+    
     for Ps in pores:
         NBs.append(network.find_neighbor_pores(pores=Ps,
                                                mode='union',
                                                flatten=True,
                                                include_input=False))
         XYZs.append(network['pore.coords'][Ps].mean(axis=0))
-    dt1 = toc(quiet=True)
-    tic()
+    
     extend(network, pore_coords=XYZs, labels=labels)
-    dt2 = toc(quiet=True)
     Pnew = network.Ps[-N::]
-    tic()
-    # Possible throats between new pores
-    ps1, ps2 = [], []
-    for i, NB in enumerate(NBs):
-        for j in range(i+1, len(NBs)):
-            if not set(NB).isdisjoint(pores[j]):
-                ps1.append([network.Ps[-N+i]])
-                ps2.append([network.Ps[-N+j]])
+    
+    # Possible throats between new pores: This only happens when running in
+    # batch mode, i.e. multiple groups of pores are to be merged. In case
+    # some of these groups share elements, possible throats between the 
+    # intersecting elements is not captured and must be added manually.
+    pores_set = [set(items) for items in pores]
+    NBs_set = [set(items) for items in NBs]
+    ps1, ps2 = [], []    
+    from itertools import combinations
+    for i, j in combinations(range(N), 2):
+        if not NBs_set[i].isdisjoint(pores_set[j]):
+            ps1.append([network.Ps[-N+i]])
+            ps2.append([network.Ps[-N+j]])
+    
+    # Add (possible) connections between the new pores
     connect_pores(network, pores1=ps1, pores2=ps2, labels=labels)
-    dt5 = toc(quiet=True)
-    tic()
+    # Add connections between the new pores and the rest of the network
     connect_pores(network, pores2=sp.split(Pnew, N), pores1=NBs, labels=labels)
-    dt3 = toc(quiet=True)
-    tic()
-    trim(network=network, pores=sp.concatenate(pores))
-    dt4 = toc(quiet=True)
-    dtt = dt1 + dt2 + dt3 + dt4
-    print(f'find_nb: {dt1/dtt*100:2.0f} % ; {dt1:4.4f} s')
-    print(f'extend1: {dt2/dtt*100:2.0f} % ; {dt2:4.4f} s')
-    print(f'connect: {dt3/dtt*100:2.0f} % ; {dt3:4.4f} s')
-    print(f'adj_mat: {dt4/dtt*100:2.0f} % ; {dt4:4.4f} s')
-#    print(f'crossfi: {dt5/dtt*100:2.0f} % ; {dt5:4.4f} s')
-
-
-def merge_pores2(network, pores, labels=['merged']):
-    # Assert that `pores` is list of lists
-    try:
-        len(pores[0])
-    except TypeError:
-        pores = [pores]
-    N = len(pores)
-    NBs, XYZs = [], []
-    for Ps in pores:
-        NBs.append(network.find_neighbor_pores(pores=Ps,
-                                               mode='union',
-                                               flatten=True,
-                                               include_input=False))
-        XYZs.append(network['pore.coords'][Ps].mean(axis=0))
-    extend(network, pore_coords=XYZs, labels=labels)
-    Pnew = network.Ps[-N::]
-    connect_pores(network, pores2=sp.split(Pnew, N), pores1=NBs)
+    # Trim merged pores from the network
     trim(network=network, pores=sp.concatenate(pores))
 
 
