@@ -1,4 +1,4 @@
-import pyamg
+#import pyamg
 import importlib
 import numpy as np
 import scipy.sparse as sprs
@@ -520,6 +520,10 @@ class GenericTransport(GenericAlgorithm):
 
         # PyAMG
         if self.settings['solver_family'] == 'pyamg':
+            if importlib.util.find_spec('pyamg'):
+                import pyamg
+            else:
+                raise Exception('pyamg is not installed.')
             B = np.ones((self.A.shape[0], 1))
             mc = min(10, int(A.shape[0]//4))
             ml = pyamg.smoothed_aggregation_solver(A, B, max_coarse=mc)
