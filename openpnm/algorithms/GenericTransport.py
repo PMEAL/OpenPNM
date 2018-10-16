@@ -521,7 +521,7 @@ class GenericTransport(GenericAlgorithm):
         # PyAMG
         if self.settings['solver_family'] == 'pyamg':
             ml = pyamg.ruge_stuben_solver(A)
-            x = ml.solve(b=b)
+            x = ml.solve(b=b, tol=1e-6)
             return x
 
     def results(self, times='all', t_precision=12, **kwargs):
