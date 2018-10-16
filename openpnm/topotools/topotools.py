@@ -1385,7 +1385,7 @@ def connect_pores(network, pores1, pores2, labels=[], add_conns=True):
     Returns the possible connections between two group of pores, and optionally
     makes the connections.
 
-    See (1) under ``Notes`` for advanced usage.
+    See ``Notes`` for advanced usage.
 
     Parameters
     ----------
