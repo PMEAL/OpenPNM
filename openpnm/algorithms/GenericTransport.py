@@ -486,8 +486,9 @@ class GenericTransport(GenericAlgorithm):
 
         # SciPy
         if self.settings['solver_family'] == 'scipy':
-            A.indices = A.indices.astype(np.int64)
-            A.indptr = A.indptr.astype(np.int64)
+            if importlib.util.find_spec('scikit-umfpack'):
+                A.indices = A.indices.astype(np.int64)
+                A.indptr = A.indptr.astype(np.int64)
             iterative = ['bicg', 'bicgstab', 'cg', 'cgs', 'gmres', 'lgmres',
                          'minres', 'gcrotmk', 'qmr']
             solver = getattr(sprs.linalg, self.settings['solver_type'])
