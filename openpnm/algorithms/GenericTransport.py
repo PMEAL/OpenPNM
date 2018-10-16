@@ -1,4 +1,3 @@
-#import pyamg
 import importlib
 import numpy as np
 import scipy.sparse as sprs
