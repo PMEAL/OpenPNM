@@ -55,7 +55,7 @@ import os
 from pathlib import Path
 from git import Repo
 
-__version__ = '2.1.0'
+__version__ = '2.0.2'
 
 try:
     path = Path(os.path.realpath(__file__), '../../').resolve()
