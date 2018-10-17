@@ -552,7 +552,9 @@ class GenericNetwork(Base, ModelsMixin):
 
         include_input : bool
             If ``False`` (default) then the input pores are not included in
-            the returned list(s).
+            the returned list(s). Note that since pores are not neighbors of
+            themselves, the neighbors of pore N will not include N, even if
+            this flag is ``True``.
 
         mode : string
             Specifies logic to filter the resulting list.  Options are:

@@ -1,4 +1,3 @@
-import pyamg
 import importlib
 import numpy as np
 import scipy.sparse as sprs
@@ -486,8 +485,9 @@ class GenericTransport(GenericAlgorithm):
 
         # SciPy
         if self.settings['solver_family'] == 'scipy':
-            A.indices = A.indices.astype(np.int64)
-            A.indptr = A.indptr.astype(np.int64)
+            if importlib.util.find_spec('scikit-umfpack'):
+                A.indices = A.indices.astype(np.int64)
+                A.indptr = A.indptr.astype(np.int64)
             iterative = ['bicg', 'bicgstab', 'cg', 'cgs', 'gmres', 'lgmres',
                          'minres', 'gcrotmk', 'qmr']
             solver = getattr(sprs.linalg, self.settings['solver_type'])
@@ -520,6 +520,10 @@ class GenericTransport(GenericAlgorithm):
 
         # PyAMG
         if self.settings['solver_family'] == 'pyamg':
+            if importlib.util.find_spec('pyamg'):
+                import pyamg
+            else:
+                raise Exception('pyamg is not installed.')
             ml = pyamg.ruge_stuben_solver(A)
             x = ml.solve(b=b, tol=1e-6)
             return x
