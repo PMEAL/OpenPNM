@@ -2,6 +2,8 @@
 
 import sys
 import pytest
+import numpy
+numpy.warnings.filterwarnings('ignore')
 
 args = ['-v']
 
