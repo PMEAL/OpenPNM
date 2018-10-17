@@ -524,10 +524,8 @@ class GenericTransport(GenericAlgorithm):
                 import pyamg
             else:
                 raise Exception('pyamg is not installed.')
-            B = np.ones((self.A.shape[0], 1))
-            mc = min(10, int(A.shape[0]//4))
-            ml = pyamg.smoothed_aggregation_solver(A, B, max_coarse=mc)
-            x = ml.solve(b=b, tol=atol)
+            ml = pyamg.ruge_stuben_solver(A)
+            x = ml.solve(b=b, tol=1e-6)
             return x
 
     def results(self, times='all', t_precision=12, **kwargs):
