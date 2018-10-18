@@ -141,11 +141,11 @@ class Cubic(GenericNetwork):
             heads.extend(H.flat)
         pairs = np.vstack([tails, heads]).T
 
-        self['pore.coords'] = points
-        self['throat.conns'] = pairs
-
         super().__init__(Np=points.shape[0], Nt=pairs.shape[0], name=name,
                          project=project)
+
+        self['pore.coords'] = points
+        self['throat.conns'] = pairs
         # Label faces
         x, y, z = self['pore.coords'].T
         labels = ['front', 'back', 'left', 'right', 'bottom', 'top']
