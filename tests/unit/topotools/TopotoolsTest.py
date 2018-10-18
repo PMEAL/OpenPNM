@@ -37,6 +37,19 @@ class TopotoolsTest:
         assert net.num_pores('top') == 9
         assert net.num_pores('bottom') == 9
 
+    def test_label_faces_tol(self):
+        net = op.network.Cubic(shape=[3, 3, 3], spacing=1, connectivity=6)
+        net.clear(mode='labels')
+        net['pore.coords'] += np.array([5, 5, 5])
+        topotools.label_faces(network=net, tol=0.2)
+        assert net.num_pores('surface') == 26
+        assert net.num_pores('left') == 9
+        assert net.num_pores('right') == 9
+        assert net.num_pores('front') == 9
+        assert net.num_pores('back') == 9
+        assert net.num_pores('top') == 9
+        assert net.num_pores('bottom') == 9
+
     def test_find_surface_pores(self):
         from skimage.morphology import ball
         net = op.network.CubicTemplate(template=ball(3), spacing=1)
