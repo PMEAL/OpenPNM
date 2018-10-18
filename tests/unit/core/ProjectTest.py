@@ -354,24 +354,23 @@ class ProjectTest:
 
     def test_export_data(self):
         fname = 'export_data_tests'
-        self.proj.export_data(network=self.net, phases=self.phase1,
-                              filename=fname, filetype='vtp')
+        self.proj.export_data(phases=self.phase1, filename=fname,
+                              filetype='vtp')
         os.remove(fname+'.vtp')
-        self.proj.export_data(network=self.net, phases=self.phase1,
-                              filename=fname+'.vtp')
+        self.proj.export_data(phases=self.phase1, filename=fname+'.vtp')
         os.remove(fname+'.vtp')
-        self.proj.export_data(network=self.net, phases=self.phase1,
-                              filename=fname, filetype='csv')
+        self.proj.export_data(phases=self.phase1, filename=fname,
+                              filetype='csv')
         os.remove(fname+'.csv')
-#        self.proj.export_data(network=self.net, phases=self.phase1,
-#                              filename=fname, filetype='xmf')
-#        os.remove(fname+'.xmf')
-#        os.remove(fname+'.hdf')
-        self.proj.export_data(network=self.net, phases=self.phase1,
-                              filename=fname, filetype='hdf')
+        self.proj.export_data(phases=self.phase1, filename=fname,
+                              filetype='xmf')
+        os.remove(fname+'.xmf')
         os.remove(fname+'.hdf')
-        self.proj.export_data(network=self.net, phases=self.phase1,
-                              filename=fname, filetype='mat')
+        self.proj.export_data(phases=self.phase1, filename=fname,
+                              filetype='hdf')
+        os.remove(fname+'.hdf')
+        self.proj.export_data(phases=self.phase1, filename=fname,
+                              filetype='mat')
         os.remove(fname+'.mat')
 
 
