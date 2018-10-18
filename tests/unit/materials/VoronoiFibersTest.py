@@ -89,13 +89,13 @@ class VoronoiTest:
                                          resolution=0.1,
                                          shape=[2, 2, 2],
                                          name='test3',
-                                         linear_scale=[1, 1, 0.5])
+                                         linear_scale=[1, 1, 2])
         net = prj.network
         del_geom = prj.geometries()['test3_del']
         B1 = net.pores(['top', 'delaunay'], mode='xnor')
         B2 = net.pores(['bottom', 'delaunay'], mode='xnor')
-        assert del_geom.vertex_dimension(B1, B2, 'volume') == 4.0
-        assert del_geom.vertex_dimension(B1, B2, 'length') == 1.0
+        assert del_geom.vertex_dimension(B1, B2, 'volume') == 8.0
+        assert del_geom.vertex_dimension(B1, B2, 'length') == 2.0
 
     def test_linear_scale_wrong_shape(self):
         prj = op.materials.VoronoiFibers(num_points=50,
