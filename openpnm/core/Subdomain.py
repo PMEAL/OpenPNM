@@ -51,15 +51,6 @@ class Subdomain(Base):
             vals = boss[key][inds]
         return vals
 
-    def __setitem__(self, key, value):
-        if self.project:
-            # Find boss object (either phase or network)
-            boss = self.project.find_full_domain(self)
-            temp = '.'.join(key.split('.')[0:2])
-            if temp in set(boss.keys()).difference({'pore.all', 'throat.all'}):
-                raise Exception(temp + ' already exists on ' + boss.name)
-        super().__setitem__(key, value)
-
     def add_locations(self, pores=[], throats=[]):
         r"""
         Adds associations between an object and its boss object at the

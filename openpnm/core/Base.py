@@ -178,7 +178,6 @@ class Base(dict):
 
         # If adding a new key, make sure it has no conflicts
         if key not in self.keys():
-            print('checking if ' + key + ' is on ' + self.name)
             if self.project:
                 keys = self.project.find_full_domain(self).keys(mode='all',
                                                                 deep=True)
@@ -191,13 +190,13 @@ class Base(dict):
                 for item in keys:
                     if '.'.join(key.split('.')[:2]) == item:
                         raise Exception(item + ' is already in use, cannot ' +
-                                        'make a subdict')
+                                        'make a subdict named ' + key)
             # Ensure 'pore.foo.bar' does'nt exist before making 'pore.foo'
             else:
                 for item in keys:
                     if key == '.'.join(item.split('.')[:2]):
                         raise Exception(key + ' is already in use as a ' +
-                                        'subdict')
+                                        'subdict named ' + item)
 
         value = sp.array(value, ndmin=1)  # Convert value to an ndarray
 
