@@ -183,8 +183,9 @@ class Base(dict):
                                                                 deep=True)
             else:
                 keys = self.keys()
-            if (key in keys) and (key not in self.keys()):
-                raise Exception(key + ' is already in use on associated object')
+#            if (key in keys) and (key not in self.keys()):
+#                raise Exception(key + ' is already in use on associated object')
+            keys = self.keys()
             # Ensure 'pore.foo' does not exist before creating 'pore.foo.bar'
             if len(key.split('.')) > 2:
                 for item in keys:
@@ -342,7 +343,7 @@ class Base(dict):
                 if item.split('.')[1] not in self.project.names:
                     del self[item]
 
-    def keys(self, element=None, mode=None, deep=True):
+    def keys(self, element=None, mode=None, deep=False):
         r"""
         This subclass works exactly like ``keys`` when no arguments are passed,
         but optionally accepts an ``element`` and/or a ``mode``, which filters
