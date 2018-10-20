@@ -854,12 +854,15 @@ def trim(network, pores=[], throats=[]):
 #        temp = sp.in1d(network['throat.conns'].flatten(), pores)
 #        temp = sp.reshape(temp, (network.Nt, 2))
 #        Ts = sp.any(temp, axis=1)
+#        Ts = network.Ts[Ts]
+#        tic()
         Ts = network.find_neighbor_throats(pores=~Pkeep, mode='union')
+#        toc()
         if len(Ts) > 0:
             Tkeep[Ts] = False
     if sp.size(throats) > 0:
         Tkeep[throats] = False
-        # The folling IF catches the special case of deleting ALL throats
+        # The following IF catches the special case of deleting ALL throats
         # It removes all throat props, adds 'all', and skips rest of function
         if not sp.any(Tkeep):
             logger.info('Removing ALL throats from network')
@@ -1382,6 +1385,8 @@ def connect_pores(network, pores1, pores2, labels=[], add_conns=True):
     Returns the possible connections between two group of pores, and optionally
     makes the connections.
 
+    See ``Notes`` for advanced usage.
+
     Parameters
     ----------
     network : OpenPNM Network Object
@@ -1403,7 +1408,17 @@ def connect_pores(network, pores1, pores2, labels=[], add_conns=True):
 
     Notes
     -----
-    It creates the connections in a format which is acceptable by
+    (1) The method also works if ``pores1`` and ``pores2`` are list of lists,
+    in which case it consecutively connects corresponding members of the two
+    lists in a 1-to-1 fashion. Example: pores1 = [[0, 1], [2, 3]] and
+    pores2 = [[5], [7, 9]] leads to creation of the following connections:
+        0 --> 5     2 --> 7     3 --> 7
+        1 --> 5     2 --> 9     3 --> 9
+
+    (2) If you want to use the batch functionality, make sure that each element
+    within ``pores1`` and ``pores2`` are of type list or ndarray.
+
+    (3) It creates the connections in a format which is acceptable by
     the default OpenPNM connection ('throat.conns') and either adds them to
     the network or returns them.
 
@@ -1426,11 +1441,27 @@ def connect_pores(network, pores1, pores2, labels=[], add_conns=True):
            [32, 68]])
 
     '''
-    size1 = sp.size(pores1)
-    size2 = sp.size(pores2)
-    array1 = sp.repeat(pores1, size2)
-    array2 = sp.tile(pores2, size1)
-    conns = sp.vstack([array1, array2]).T
+    # Assert that `pores1` and `pores2` are list of lists
+    try:
+        len(pores1[0])
+    except (TypeError, IndexError):
+        pores1 = [pores1]
+    try:
+        len(pores2[0])
+    except (TypeError, IndexError):
+        pores2 = [pores2]
+
+    if len(pores1) != len(pores2):
+        raise Exception('Running in batch mode! pores1 and pores2 must be' + \
+                        ' of the same length.')
+
+    arr1, arr2 = [], []
+    for ps1, ps2 in zip(pores1, pores2):
+        size1 = sp.size(ps1)
+        size2 = sp.size(ps2)
+        arr1.append(sp.repeat(ps1, size2))
+        arr2.append(sp.tile(ps2, size1))
+    conns = sp.vstack([sp.concatenate(arr1), sp.concatenate(arr2)]).T
     if add_conns:
         extend(network=network, throat_conns=conns, labels=labels)
     else:
@@ -1650,7 +1681,10 @@ def merge_pores(network, pores, labels=['merged']):
 
     Notes
     -----
-    The selection of pores should be chosen carefully, preferrable so that
+    (1) The method also works if a list of lists is passed, in which case
+    it consecutively merges the given selections of pores.
+
+    (2) The selection of pores should be chosen carefully, preferrable so that
     they all form a continuous cluster.  For instance, it is recommended
     to use the ``find_nearby_pores`` method to find all pores within a
     certain distance of a given pore, and these can then be merged without
@@ -1670,15 +1704,44 @@ def merge_pores(network, pores, labels=['merged']):
     32
 
     """
-    Pn = network.find_neighbor_pores(pores=pores,
-                                     mode='union',
-                                     flatten=True,
-                                     include_input=False)
-    xyz = sp.mean(network['pore.coords'][pores], axis=0)
-    extend(network, pore_coords=xyz, labels=labels)
-    Pnew = network.Ps[-1]
-    connect_pores(network, pores1=Pnew, pores2=Pn, labels=labels)
-    trim(network=network, pores=pores)
+    # Assert that `pores` is list of lists
+    try:
+        len(pores[0])
+    except (TypeError, IndexError):
+        pores = [pores]
+        
+    N = len(pores)
+    NBs, XYZs = [], []
+    
+    for Ps in pores:
+        NBs.append(network.find_neighbor_pores(pores=Ps,
+                                               mode='union',
+                                               flatten=True,
+                                               include_input=False))
+        XYZs.append(network['pore.coords'][Ps].mean(axis=0))
+    
+    extend(network, pore_coords=XYZs, labels=labels)
+    Pnew = network.Ps[-N::]
+    
+    # Possible throats between new pores: This only happens when running in
+    # batch mode, i.e. multiple groups of pores are to be merged. In case
+    # some of these groups share elements, possible throats between the 
+    # intersecting elements is not captured and must be added manually.
+    pores_set = [set(items) for items in pores]
+    NBs_set = [set(items) for items in NBs]
+    ps1, ps2 = [], []    
+    from itertools import combinations
+    for i, j in combinations(range(N), 2):
+        if not NBs_set[i].isdisjoint(pores_set[j]):
+            ps1.append([network.Ps[-N+i]])
+            ps2.append([network.Ps[-N+j]])
+    
+    # Add (possible) connections between the new pores
+    connect_pores(network, pores1=ps1, pores2=ps2, labels=labels)
+    # Add connections between the new pores and the rest of the network
+    connect_pores(network, pores2=sp.split(Pnew, N), pores1=NBs, labels=labels)
+    # Trim merged pores from the network
+    trim(network=network, pores=sp.concatenate(pores))
 
 
 def _template_sphere_disc(dim, outer_radius, inner_radius):
@@ -2010,7 +2073,7 @@ def plot_networkx(network, plot_throats=True, labels=None, colors=None,
     '''
     import networkx as nx
     x, y, z = network['pore.coords'].T
-    x, y = [j for j in [x, y, z] if len(sp.unique(j)) > 1]
+    x, y = [j for j in [x, y, z] if not sp.allclose(j, j.mean())]
 
     G = nx.Graph()
     pos = {network.Ps[i]: [x[i], y[i]] for i in range(network.Np)}
