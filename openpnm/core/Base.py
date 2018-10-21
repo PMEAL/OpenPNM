@@ -172,30 +172,35 @@ class Base(dict):
         'throat.***'.  Also, any scalars are cast into full length vectors.
 
         """
-        # If value is a dictionary, then break it up into constituent arrays
+        # Check 1: If value is a dictionary, break it into constituent arrays
         if hasattr(value, 'keys'):
             for item in value.keys():
                 prop = item.replace('pore.', '').replace('throat.', '')
                 self.__setitem__(key+'.'+prop, value[item])
             return
 
-        # If adding a new key, make sure it has no conflicts
-        if key not in self.keys():
-            if self.project:
-                keys = self.project.find_full_domain(self).keys(mode='all',
-                                                                deep=True)
-            else:
-                keys = self.keys()
-#            if (key in keys) and (key not in self.keys()):
-#                raise Exception(key + ' is already in use on associated object')
+        # Check 2: If adding a new key, make sure it has no conflicts
+        if self.project:
+            proj = self.project
+            keys = proj.find_full_domain(self).keys(mode='all', deep=True)
+        else:
             keys = self.keys()
+        # Given list of all keys on parent and subdomain objects...
+        if key in keys:
+            parent_keys = proj.find_full_domain(self).keys(mode='all', deep=False)
+            subdomain_keys = set(keys).difference(parent_keys)
+            if (key in parent_keys) and (key not in subdomain_keys):
+                pass
+            if (key in subdomain_keys) and (key not in parent_keys):
+                pass
+        else:
             # Ensure 'pore.foo' does not exist before creating 'pore.foo.bar'
             if len(key.split('.')) > 2:
                 for item in keys:
                     if '.'.join(key.split('.')[:2]) == item:
                         raise Exception(item + ' is already in use, cannot ' +
                                         'make a subdict named ' + key)
-            # Ensure 'pore.foo.bar' does'nt exist before making 'pore.foo'
+            # Ensure 'pore.foo.bar' does not exist before making 'pore.foo'
             else:
                 for item in keys:
                     if key == '.'.join(item.split('.')[:2]):
@@ -204,7 +209,7 @@ class Base(dict):
 
         value = sp.array(value, ndmin=1)  # Convert value to an ndarray
 
-        # Enforce correct dict naming
+        # Check 3: Enforce correct dict naming
         element = key.split('.')[0]
         element = self._parse_element(element, single=True)
 

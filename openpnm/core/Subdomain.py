@@ -51,6 +51,37 @@ class Subdomain(Base):
             vals = boss[key][inds]
         return vals
 
+    def __setitem__(self, key, value):
+        if self.project and not hasattr(value, 'keys'):
+            proj = self.project
+            boss = proj.find_full_domain(self)
+            keys = boss.keys(mode='all', deep=False)
+            keys = list(set(keys).difference({'pore.all', 'throat.all'}))
+            # Check for duplicate key on parent
+            if key in keys:
+                raise Exception('Cannot create ' + key + ' on ' + self.name +
+                                ' since it already exists on ' + boss.name)
+            # Check for duplicate subdict on parent
+            temp = '.'.join(key.split('.')[0:2])
+            temp_keys = ['.'.join(i.split('.')[0:2]) for i in keys]
+            if temp in temp_keys:
+                hit = [i for i in keys if i.startswith(temp)][0]
+                raise Exception('Cannot create ' + key + ' on ' + self.name +
+                                ' when ' + hit + ' already exists on ' +
+                                boss.name)
+            # Check for duplicate subdict on sibling
+            keys = boss.keys(mode='all', deep=True)
+            keys = list(set(keys).difference(set(boss.keys())))
+            temp_keys = [i for i in keys if len(i.split('.')) > 2]
+            temp_keys = ['.'.join(i.split('.')[0:2]) for i in temp_keys]
+            temp = '.'.join(key.split('.')[:2])
+            if (key in temp_keys) or ((key.count('.') > 1) and (temp in keys)):
+                hit = [i for i in keys if i.startswith(temp)][0]
+                raise Exception('Cannot create ' + key + ' on ' + self.name +
+                                ' when ' + hit + ' already exists on another' +
+                                ' subdomain object')
+        super().__setitem__(key, value)
+
     def add_locations(self, pores=[], throats=[]):
         r"""
         Adds associations between an object and its boss object at the
