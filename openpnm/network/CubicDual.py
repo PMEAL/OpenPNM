@@ -104,21 +104,19 @@ class CubicDual(GenericNetwork):
         net['throat.surface'] = False
         for face in faces:
             # Remove face label from secondary network since it's internal now
-            Ps = net.pores(labels=[face, label_2], mode='intersection')
+            Ps = net.pores(labels=[face, label_2], mode='xnor')
             net['pore.'+face][Ps] = False
             Ps = net.pores(labels=[face+'_boundary'])
             net['pore.'+face][Ps] = True
             Ps = net.pores(face)
             net['pore.surface'][Ps] = True
-            Ts = net.find_neighbor_throats(pores=Ps, mode='intersection')
+            Ts = net.find_neighbor_throats(pores=Ps, mode='xnor')
             net['throat.surface'][Ts] = True
             net['throat.'+face] = net.tomask(throats=Ts)
         [net.pop(item) for item in net.labels() if 'boundary' in item]
         # Label non-surface pores and throats as internal
-        net['pore.internal'] = ~net['pore.surface']
-        Ts = net.find_neighbor_throats(pores=net['pore.internal'])
-        net['throat.internal'] = False
-        net['throat.internal'][Ts] = True
+        net['pore.internal'] = True
+        net['throat.internal'] = True
         # Transfer all dictionary items from 'net' to 'self'
         [self.update({item: net[item]}) for item in net]
         ws.close_project(net.project)

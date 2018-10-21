@@ -39,9 +39,8 @@ class VoronoiTest:
                              'throat.conduit_lengths.pore2',
                              'throat.conduit_lengths.throat',
                              'throat.diameter',
-                             'throat.equivalent_area.pore1',
-                             'throat.equivalent_area.pore2',
-                             'throat.equivalent_area.throat',
+                             'throat.endpoints.head',
+                             'throat.endpoints.tail',
                              'throat.incenter',
                              'throat.indiameter',
                              'throat.length',
@@ -73,8 +72,8 @@ class VoronoiTest:
                                          name='test2')
         net = prj.network
         del_geom = prj.geometries()['test2_del']
-        B1 = net.pores(['left', 'delaunay'], mode='intersection')
-        B2 = net.pores(['right', 'delaunay'], mode='intersection')
+        B1 = net.pores(['left', 'delaunay'], mode='xnor')
+        B2 = net.pores(['right', 'delaunay'], mode='xnor')
         assert del_geom.vertex_dimension(B1, B2, 'volume') == 6.0
         assert del_geom.vertex_dimension(B1, B2, 'area') == 3.0
         assert del_geom.vertex_dimension(B1, B2, 'length') == 2.0

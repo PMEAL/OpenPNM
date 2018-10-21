@@ -102,9 +102,9 @@ We must assign models to each of our Physics.  The ``hg`` phase will be used to 
     >>> phys_h2o.add_model(propname='throat.hydraulic_conductance',
     ...                    model=model,
     ...                    pore_viscosity='pore.viscosity',
-    ...                    pore_diameter='pore.diameter',
-    ...                    throat_diameter='throat.diameter',
-    ...                    throat_conduit_lengths='throat.conduit_lengths')
+    ...                    pore_area='pore.area',
+    ...                    throat_area='throat.area',
+    ...                    conduit_lengths='throat.conduit_lengths')
 
 --------------------------------------------------------------------------------
 Performing Some Simulations

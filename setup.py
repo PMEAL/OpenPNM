@@ -6,10 +6,6 @@ try:
 except ImportError:
     from distutils.core import setup
 
-# Check Python version
-if sys.version_info < (3, 6):
-    raise Exception('openpnm requires Python 3.6 or greater to run')
-
 sys.path.append(os.getcwd())
 
 main_ = {}
@@ -24,7 +20,7 @@ setup(
     description = 'A framework for conducting pore network modeling simulations of multiphase transport in porous materials',
     version=main_['__version__'],
     classifiers=[
-        'Development Status :: 4 - Beta',
+        'Development Status :: 5 - Production/Stable',
         'License :: OSI Approved :: MIT License',
         'Programming Language :: Python',
         'Topic :: Scientific/Engineering',
@@ -49,20 +45,20 @@ setup(
         'openpnm.materials',
     ],
     install_requires=[
-        'numpy',
-        'scipy',
-        'matplotlib',
-        'scikit-image',
-        'pandas',
+        'numpy>=1.15',
+        'scipy>=1.1',
+        'scikit-image>=0.14',
+        'networkx>=2',
+        'h5py>=2.8',
         'sympy',
+        'matplotlib',
+        'pandas',
         'numba',
-        'networkx',
-        'h5py',
         'porespy',
         'transforms3d',
         'flatdict',
-        'scikit-umfpack'],
-
+        'gitpython',
+        ],
     author='OpenPNM Team',
     author_email='jgostick@uwaterloo.ca',
     download_url='https://github.com/pmeal/OpenPNM/',

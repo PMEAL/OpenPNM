@@ -11,10 +11,12 @@ class FourierConduction(ReactiveTransport):
     network.
 
     """
-    def __init__(self, settings={}, **kwargs):
-        def_set = {'quantity': 'pore.temperature',
+    def __init__(self, settings={}, phase=None, **kwargs):
+        def_set = {'phase': None,
+                   'quantity': 'pore.temperature',
                    'conductance': 'throat.thermal_conductance',
-                   'gui': {'setup':        {'quantity': '',
+                   'gui': {'setup':        {'phase': None,
+                                            'quantity': '',
                                             'conductance': ''},
                            'set_rate_BC':  {'pores': None,
                                             'values': None},
@@ -27,6 +29,8 @@ class FourierConduction(ReactiveTransport):
         super().__init__(**kwargs)
         self.settings.update(def_set)
         self.settings.update(settings)
+        if phase is not None:
+            self.setup(phase=phase)
 
     def setup(self, phase=None, quantity='', conductance='', **kwargs):
         r"""

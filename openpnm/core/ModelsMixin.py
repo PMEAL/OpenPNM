@@ -2,7 +2,7 @@ import inspect
 import networkx as nx
 from openpnm.utils import PrintableDict, logging, Workspace
 ws = Workspace()
-logger = logging.getLogger()
+logger = logging.getLogger(__name__)
 
 
 class ModelsDict(PrintableDict):
@@ -208,8 +208,8 @@ class ModelsMixin():
         kwargs.update({'model': model, 'regen_mode': regen_mode})
         # Insepct model to extract arguments and default values
         if model.__defaults__:
-            vals = list(inspect.getargspec(model).defaults)
-            keys = inspect.getargspec(model).args[-len(vals):]
+            vals = list(inspect.getfullargspec(model).defaults)
+            keys = inspect.getfullargspec(model).args[-len(vals):]
             for k, v in zip(keys, vals):  # Put defaults into kwargs
                 if k not in kwargs:  # Skip if argument was given in kwargs
                     kwargs.update({k: v})
@@ -299,18 +299,9 @@ class ModelsMixin():
         else:
             try:
                 self[prop] = model(target=self, **kwargs)
-            except KeyError:
-                # Find names of missing dependencies and print nice warning
-                missing_deps = []
-                for key in kwargs.values():
-                    if type(key) == str and key.split('.')[0] in ['pore', 'throat']:
-                        try:
-                            self[key]
-                        except KeyError:
-                            missing_deps.append(key)
-
-                logger.warning(prop + ' was not run since the following ' +
-                               'properties are missing: ' + str(missing_deps))
+            except KeyError as e:
+                logger.error(prop + ' was not run since the following ' +
+                             'property is missing: ' + e.__str__())
                 self.models[prop]['regen_mode'] = 'deferred'
 
     def remove_model(self, propname=None, mode=['model', 'data']):

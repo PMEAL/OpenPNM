@@ -19,19 +19,16 @@ class ThermalConductanceTest:
         self.geo['throat.area'] = 1
 
     def test_thermal_conductance(self):
-        self.geo['throat.conduit_lengths.pore1'] = 0.2
+        self.geo['throat.conduit_lengths.pore1'] = 0.25
         self.geo['throat.conduit_lengths.throat'] = 0.6
-        self.geo['throat.conduit_lengths.pore2'] = 0.2
-        self.geo['throat.equivalent_area.pore1'] = 0.2
-        self.geo['throat.equivalent_area.throat'] = 0.2
-        self.geo['throat.equivalent_area.pore2'] = 0.2
+        self.geo['throat.conduit_lengths.pore2'] = 0.15
         self.phase['pore.thermal_conductivity'] = 1
         mod = op.models.physics.thermal_conductance.series_resistors
         self.phys.add_model(propname='throat.thermal_conductance',
-                            pore_thermal_conductivity='pore.thermal_conductivity',
                             model=mod)
         self.phys.regenerate_models()
-        assert_approx_equal(self.phys['throat.thermal_conductance'].mean(), 0.2)
+        actual = self.phys['throat.thermal_conductance'].mean()
+        assert_approx_equal(actual, desired=1.0)
 
 
 if __name__ == '__main__':

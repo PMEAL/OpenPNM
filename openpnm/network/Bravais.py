@@ -130,11 +130,11 @@ class Bravais(GenericNetwork):
             self['throat.corner_to_body'] = False
             self['throat.corner_to_body'][Ts] = True
             Ts = self.find_neighbor_throats(pores=self.pores('corner_sites'),
-                                            mode='intersection')
+                                            mode='xnor')
             self['throat.corner_to_corner'] = False
             self['throat.corner_to_corner'][Ts] = True
             Ts = self.find_neighbor_throats(pores=self.pores('body_sites'),
-                                            mode='intersection')
+                                            mode='xnor')
             self['throat.body_to_body'] = False
             self['throat.body_to_body'][Ts] = True
 
@@ -170,7 +170,7 @@ class Bravais(GenericNetwork):
             self['pore.face_sites'] = Ps
             self['pore.corner_sites'] = ~Ps
             Ts = self.find_neighbor_throats(pores=self.pores('corner_sites'),
-                                            mode='intersection')
+                                            mode='xnor')
             self['throat.corner_to_corner'] = False
             self['throat.corner_to_corner'][Ts] = True
             Ts = self.find_neighbor_throats(pores=self.pores('face_sites'))

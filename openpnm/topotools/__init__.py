@@ -23,6 +23,7 @@ from .topotools import find_connected_sites
 from .topotools import find_connecting_bonds
 from .topotools import find_pore_to_pore_distance
 from .topotools import find_clusters
+from .topotools import find_complement
 from .topotools import generate_base_points
 from .topotools import iscoplanar
 from .topotools import isoutside

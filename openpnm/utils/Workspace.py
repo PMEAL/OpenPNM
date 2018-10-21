@@ -5,12 +5,13 @@ import warnings
 import numpy as np
 from pathlib import Path
 from openpnm.utils import SettingsDict, logging
-logger = logging.getLogger()
+logger = logging.getLogger(__name__)
 
 
 class SettingsDict(SettingsDict):
     def __setitem__(self, key, value):
         if key == 'loglevel':
+            logger = logging.getLogger()
             logger.setLevel(value)
         super().__setitem__(key, value)
 
