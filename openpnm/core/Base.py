@@ -182,30 +182,28 @@ class Base(dict):
         # Check 2: If adding a new key, make sure it has no conflicts
         if self.project:
             proj = self.project
-            keys = proj.find_full_domain(self).keys(mode='all', deep=True)
+            boss = proj.find_full_domain(self)
+            keys = boss.keys(mode='all', deep=True)
         else:
+            boss = None
             keys = self.keys()
-        # Given list of all keys on parent and subdomain objects...
-        if key in keys:
-            parent_keys = proj.find_full_domain(self).keys(mode='all', deep=False)
-            subdomain_keys = set(keys).difference(parent_keys)
-            if (key in parent_keys) and (key not in subdomain_keys):
-                pass
-            if (key in subdomain_keys) and (key not in parent_keys):
-                pass
-        else:
-            # Ensure 'pore.foo' does not exist before creating 'pore.foo.bar'
-            if len(key.split('.')) > 2:
-                for item in keys:
-                    if '.'.join(key.split('.')[:2]) == item:
-                        raise Exception(item + ' is already in use, cannot ' +
-                                        'make a subdict named ' + key)
-            # Ensure 'pore.foo.bar' does not exist before making 'pore.foo'
-            else:
-                for item in keys:
-                    if key == '.'.join(item.split('.')[:2]):
-                        raise Exception(key + ' is already in use as a ' +
-                                        'subdict named ' + item)
+        # Prevent 'pore.foo.bar' when 'pore.foo' present
+        long_keys = [i for i in keys if i.count('.') > 1]
+        key_root = '.'.join(key.split('.')[:2])
+        if (key.count('.') > 1) and (key_root in keys):
+            raise Exception('Cannot create ' + key + ' when ' +
+                            key_root + ' is already defined')
+        # Prevent 'pore.foo' when 'pore.foo.bar' is present
+        if (key.count('.') == 1) and any([i.startswith(key) for i in long_keys]):
+            hit = [i for i in keys if i.startswith(key)][0]
+            raise Exception('Cannot create ' + key + ' when ' +
+                            hit + ' is already defined')
+        # Prevent writing pore.foo on boss when present on subdomain
+        if boss:
+            if boss is self:
+                if (key in keys) and (key not in self.keys()):
+                    raise Exception('Cannot create ' + key + ' when it is' +
+                                    ' already defined on a subdomain')
 
         value = sp.array(value, ndmin=1)  # Convert value to an ndarray
 

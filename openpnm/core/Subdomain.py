@@ -52,24 +52,17 @@ class Subdomain(Base):
         return vals
 
     def __setitem__(self, key, value):
+        # If value is a dict, skip all this.  The super class will parse
+        # the dict individually, at which point the below is called.
         if self.project and not hasattr(value, 'keys'):
             proj = self.project
             boss = proj.find_full_domain(self)
             keys = boss.keys(mode='all', deep=True)
-            key_root = '.'.join(key.split('.')[:2])
-            if (key.count('.') > 1) and (key_root in keys):
-                raise Exception('Cannot create ' + key + ' when ' +
-                                key_root + ' is already defined')
-            long_keys = [i for i in keys if i.count('.') > 1]
-            if (key.count('.') == 1) and any([i.startswith(key) for i in long_keys]):
-                hit = [i for i in keys if i.startswith(key)][0]
-                raise Exception('Cannot create ' + key + ' when ' +
-                                hit + ' is already defined')
+            # Prevent 'pore.foo' on subdomain when already present on boss
             if key in set(boss.keys()).difference(set(self.keys())):
                 hit = [i for i in keys if i.startswith(key)][0]
                 raise Exception('Cannot create ' + key + ' when ' +
-                                hit + ' is already defined on ' + boss.name)
-
+                                hit + ' is already defined')
         super().__setitem__(key, value)
 
     def add_locations(self, pores=[], throats=[]):
