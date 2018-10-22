@@ -24,6 +24,8 @@ class JSONGraphFormat(GenericIO):
     -----
     The JGF standard must contain data formatted according to
     http://jsongraphformat.info and enforced by JSON schema validation.
+
+    Users must transfer any phase data to the network manually if they wish to keep it.
     """
 
     @classmethod
