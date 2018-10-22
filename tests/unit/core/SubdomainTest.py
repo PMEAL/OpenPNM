@@ -126,7 +126,6 @@ class SubdomainTest:
             pn['pore.bee.bop'] = 1
 
 
-
 if __name__ == '__main__':
 
     t = SubdomainTest()
