@@ -95,14 +95,14 @@ class TransientReactiveTransport(ReactiveTransport):
         t_step : scalar, between 't_initial' and 't_final'
             The simulation's time step. The default value is 0.1.
 
-        t_output : scalar or list of scalars
+        t_output : scalar, ND-array, or list
             When 't_output' is a scalar, it is considered as an output interval
-            to store transient solutions. The default value is 1e+08. Initial
-            and steady-state (if reached) fields are always stored. If
+            to store transient solutions. The default value is 1e+08. Initial,
+            final and steady-state (if reached) fields are always stored. If
             't_output' > 't_final', no transient data is stored. If 't_output'
             is not a multiple of 't_step', 't_output' will be approximated.
-            When 't_output' is a list, transient solutions corresponding to
-            this list will be stored.
+            When 't_output' is a list or ND-array, transient solutions
+            corresponding to this list or array will be stored.
 
         output_times : list
             List of output times. The values in the list must be multiples of
@@ -146,7 +146,7 @@ class TransientReactiveTransport(ReactiveTransport):
             self.settings['t_final'] = t_final
         if t_step:
             self.settings['t_step'] = t_step
-        if t_output:
+        if t_output is not None:
             self.settings['t_output'] = t_output
         if t_tolerance:
             self.settings['t_tolerance'] = t_tolerance
@@ -291,14 +291,14 @@ class TransientReactiveTransport(ReactiveTransport):
         s = self.settings['t_scheme']
         res_t = 1e+06  # Initialize the residual
 
-        if not isinstance(to, list):
+        if type(to) in [float, int]:
             # Make sure 'tf' and 'to' are multiples of 'dt'
             tf = tf + (dt-(tf % dt))*((tf % dt) != 0)
             to = to + (dt-(to % dt))*((to % dt) != 0)
             self.settings['t_final'] = tf
             self.settings['t_output'] = to
             out = np.arange(t+to, tf, to)
-        else:
+        elif type(to) in [np.ndarray, list]:
             out = np.array(to)
         out = np.append(out, tf)
         out = np.unique(out)
@@ -312,9 +312,7 @@ class TransientReactiveTransport(ReactiveTransport):
 
         else:  # Do time iterations
             # Export the initial field (t=t_initial)
-            n = int(-dc(str(round(t, t_pre))).as_tuple().exponent *
-                    (round(t, t_pre) != int(t)))
-            t_str = (str(int(round(t, t_pre)*10**n))+('e-'+str(n))*(n != 0))
+            t_str = self._nbr_to_str(t)
             quant_init = self[self.settings['quantity']]
             self[self.settings['quantity']+'@'+t_str] = quant_init
             for time in np.arange(t+dt, tf+dt, dt):
@@ -329,10 +327,7 @@ class TransientReactiveTransport(ReactiveTransport):
                     # Output transient solutions. Round time to ensure every
                     # value in outputs is exported.
                     if round(time, t_pre) in out:
-                        n = int(-dc(str(round(time, t_pre))).as_tuple().exponent *
-                                (round(time, t_pre) != int(time)))
-                        t_str = (str(int(round(time, t_pre)*10**n)) +
-                                 ('e-'+str(n))*(n != 0))
+                        t_str = self._nbr_to_str(time)
                         self[self.settings['quantity']+'@'+t_str] = x_new
                         logger.info('        Exporting time step: ' +
                                     str(time)+' s')
@@ -345,10 +340,7 @@ class TransientReactiveTransport(ReactiveTransport):
 
                 else:  # Stop time iterations if residual < t_tolerance
                     # Output steady state solution
-                    n = int(-dc(str(round(time, t_pre))).as_tuple().exponent *
-                            (round(time, t_pre) != int(time)))
-                    t_str = (str(int(round(time, t_pre)*10**n)) +
-                             ('e-'+str(n))*(n != 0))
+                    t_str = self._nbr_to_str(time)
                     self[self.settings['quantity']+'@'+t_str] = x_new
                     logger.info('        Exporting time step: '+str(time)+' s')
                     break
@@ -384,8 +376,12 @@ class TransientReactiveTransport(ReactiveTransport):
             x = np.zeros(shape=[self.Np, ], dtype=float)
         self[self.settings['quantity']] = x
         relax = self.settings['relaxation_quantity']
-        min_A = np.abs(self._A_t.data).min()
-        min_b = np.abs(self._b_t).min() or 1e100
+        # Get the absolute values of non zero elements of A and b
+        min_A = np.abs(self.A.data)
+        min_b = np.abs(self.b[np.nonzero(self.b)])
+        # min of A & b after getting rid of the possible non conducting throats
+        min_A = min_A[min_A != min_A.min()].min()
+        min_b = min_b[min_b != min_b.min()].min()
         ref = min(min_A, min_b)  # Reference for the residual's normalization
         for itr in range(int(self.settings['max_iter'])):
             self[self.settings['quantity']] = x
@@ -408,18 +404,18 @@ class TransientReactiveTransport(ReactiveTransport):
                 break
         return x_new
 
-    def results(self, times='all', **kwargs):
+    def results(self, times=None, **kwargs):
         r"""
         Fetches the calculated quantity from the algorithm and returns it as
         an array.
 
         Parameters
         ----------
-        times : scalar or list
-            Time steps to be returned. The default value is 'all' which results
-            in returning all time steps. If a scalar is given, only the
-            corresponding time step is returned. If a range is given
-            (e.g., 'range(0, 1, 1e-3)'), time steps in this range are returned.
+        times : scalar, ND-array, or list
+            Time steps to be returned. The default value is None which results
+            in returning all time steps. If times is a scalar, only the
+            corresponding time step is returned. If times is an ND-array or a
+            list, time steps in the provided array or list are returned.
 
         t_precision : integer
             The time precision (number of decimal places). Default value is 12.
@@ -433,28 +429,44 @@ class TransientReactiveTransport(ReactiveTransport):
         t_pre = self.settings['t_precision']
         quantity = self.settings['quantity']
         q = [k for k in list(self.keys()) if quantity in k]
-        if times == 'all':
+        if times is None:
             t = q
-        elif type(times) in [float, int]:
-            n = int(-dc(str(round(times, t_pre))).as_tuple().exponent *
-                    (round(times, t_pre) != int(times)))
-            t_str = (str(int(round(times, t_pre)*10**n)) +
-                     ('e-'+str(n))*(n != 0))
-            t = [k for k in q if t_str == k.split('@')[-1]]
-        elif 'range' in times:
-            t = times.replace(' ', '')
-            t = t[6:-1]
-            t = t.split(',')
-            out = np.arange(float(t[0]), float(t[1]), float(t[2]))
-            out = np.append(out, float(t[1]))
+        elif type(times) in [np.ndarray, list, float, int]:
+            out = np.array(times)
             out = np.unique(out)
             out = np.around(out, decimals=t_pre)
             t = []
             for i in out:
-                n = int(-dc(str(round(i, t_pre))).as_tuple().exponent *
-                        (round(i, t_pre) != int(i)))
-                j = (str(int(round(i, t_pre)*10**n))+('e-'+str(n))*(n != 0))
+                j = self._nbr_to_str(i)
                 t_str = [k for k in q if j == k.split('@')[-1]]
                 t += (t_str)
+            # Times stored by the transient algorithm
+            strd_t = [float(st.split('@')[1]) for st in q if '@' in st]
+            strd_t = np.array(strd_t)
+            # Times requested but non stored by the algorithm
+            missing_t = np.setdiff1d(np.around(out, decimals=t_pre),
+                                     np.around(strd_t, decimals=t_pre))
+            if missing_t.size != 0:
+                logger.warning('Time(s) '+str(missing_t)+' not stored.')
         d = {k: self[k] for k in t}
         return d
+
+    def _nbr_to_str(self, nbr, t_pre=None):
+        r"""
+        Converts a scalar into a string in scientific (exponential) notation
+        without the decimal point.
+
+        Parameters
+        ----------
+        nbr : scalar
+            The number to be converted into a scalar.
+
+        t_precision : integer
+            The time precision (number of decimal places). Default value is 12.
+        """
+        if t_pre is None:
+            t_pre = self.settings['t_precision']
+        n = int(-dc(str(round(nbr, t_pre))).as_tuple().exponent *
+                (round(nbr, t_pre) != int(nbr)))
+        nbr_str = (str(int(round(nbr, t_pre)*10**n)) + ('e-'+str(n))*(n != 0))
+        return nbr_str

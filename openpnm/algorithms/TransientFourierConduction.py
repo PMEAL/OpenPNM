@@ -51,7 +51,7 @@ class TransientFourierConduction(TransientReactiveTransport,
             self.settings['t_final'] = t_final
         if t_step:
             self.settings['t_step'] = t_step
-        if t_output:
+        if t_output is not None:
             self.settings['t_output'] = t_output
         if t_tolerance:
             self.settings['t_tolerance'] = t_tolerance

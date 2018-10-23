@@ -480,8 +480,12 @@ class GenericTransport(GenericAlgorithm):
 
         # Set tolerance for iterative solvers
         rtol = self.settings['solver_rtol']
-        min_A = np.abs(A.data).min()
-        min_b = np.abs(b).min() or 1e100
+        # Get the absolute values of non zero elements of A and b
+        min_A = np.abs(self.A.data)
+        min_b = np.abs(self.b[np.nonzero(self.b)])
+        # min of A & b after getting rid of the possible non conducting throats
+        min_A = min_A[min_A != min_A.min()].min()
+        min_b = min_b[min_b != min_b.min()].min()
         atol = min(min_A, min_b) * rtol
 
         # SciPy
