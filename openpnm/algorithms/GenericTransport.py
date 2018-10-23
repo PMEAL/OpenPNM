@@ -483,8 +483,14 @@ class GenericTransport(GenericAlgorithm):
         min_A = np.abs(self.A.data)
         min_b = np.abs(self.b[np.nonzero(self.b)])
         # min of A & b after getting rid of the possible non conducting throats
-        min_A = min_A[min_A != min_A.min()].min()
-        min_b = min_b[min_b != min_b.min()].min()
+        if min_A.size != 0:
+            min_A = min_A[min_A != min_A.min()].min()
+        else:
+            min_A = 0
+        if min_b.size != 0:
+            min_b = min_b[min_b != min_b.min()].min()
+        else:
+            min_b = 0
         atol = min(min_A, min_b) * rtol
 
         # SciPy
