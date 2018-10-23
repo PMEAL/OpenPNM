@@ -35,8 +35,8 @@ class TransientImplicitReactiveTransportTest:
                                                        settings=self.settings)
         alg.setup(quantity='pore.concentration',
                   conductance='throat.diffusive_conductance',
-                  t_initial=0, t_final=1000, t_step=0.1, t_output=100,
-                  t_tolerance=1e-07, t_scheme='implicit')
+                  t_initial=1, t_final=1000, t_step=0.1, t_output=100,
+                  t_tolerance=1e-07, t_precision=14, t_scheme='implicit')
         alg.settings.update({'rxn_tolerance': 1e-06})
         alg.set_IC(0)
         alg.set_value_BC(pores=self.net.pores('left'), values=2)
@@ -52,9 +52,9 @@ class TransientImplicitReactiveTransportTest:
         alg = op.algorithms.TransientReactiveTransport(network=self.net,
                                                        phase=self.phase,
                                                        settings=self.settings)
+        alg.setup(t_initial=1, t_final=11, t_precision=14)
         alg.settings.update({'t_scheme': 'cranknicolson', 't_step': 0.1,
                              't_tolerance': 1e-07, 'rxn_tolerance': 1e-06})
-        alg.set_IC(0)
         alg.set_value_BC(pores=self.net.pores('left'), values=2)
         alg.set_source(propname='pore.reaction', pores=self.net.pores('right'))
         alg.run()
@@ -63,6 +63,48 @@ class TransientImplicitReactiveTransportTest:
               2., 1.02351, 0.04428])
         y = sp.around(alg[alg.settings['quantity']], decimals=5)
         assert sp.all(x == y)
+
+    def test_transient_reactive_transport_output(self):
+        alg = op.algorithms.TransientReactiveTransport(network=self.net,
+                                                       phase=self.phase,
+                                                       settings=self.settings)
+        alg.setup(t_initial=2, t_final=12, t_precision=10)
+        alg.settings.update({'t_scheme': 'cranknicolson', 't_step': 0.1,
+                             't_tolerance': 1e-07, 'rxn_tolerance': 1e-06,
+                             't_output': sp.arange(4, 7, 1)})
+        alg.set_value_BC(pores=self.net.pores('left'), values=2)
+        alg.set_source(propname='pore.reaction', pores=self.net.pores('right'))
+        alg.run()
+        times = ['pore.concentration@2', 'pore.concentration@4',
+                 'pore.concentration@5', 'pore.concentration@6',
+                 'pore.concentration@12']
+        assert (set(times).issubset(set(alg.keys())))
+
+    def test_transient_reactive_transport_results(self):
+        alg = op.algorithms.TransientReactiveTransport(network=self.net,
+                                                       phase=self.phase,
+                                                       settings=self.settings)
+        alg.setup(t_initial=2, t_final=12, t_precision=10)
+        alg.settings.update({'t_scheme': 'cranknicolson', 't_step': 0.1,
+                             't_tolerance': 1e-07, 'rxn_tolerance': 1e-06,
+                             't_output': sp.arange(2, 13, 1)})
+        alg.set_value_BC(pores=self.net.pores('left'), values=2)
+        alg.set_source(propname='pore.reaction', pores=self.net.pores('right'))
+        alg.run()
+        times_1 = ['pore.concentration@5', 'pore.concentration@11']
+        results_times_1 = alg.results(times=[5, 11]).keys()
+        times_2 = ['pore.concentration@7']
+        results_times_2 = alg.results(times=7).keys()
+        times_3 = ['pore.concentration@2', 'pore.concentration@3',
+                   'pore.concentration@4', 'pore.concentration@5',
+                   'pore.concentration@6', 'pore.concentration@7',
+                   'pore.concentration@8', 'pore.concentration@9',
+                   'pore.concentration@10', 'pore.concentration@11',
+                   'pore.concentration@12']
+        results_times_3 = alg.results(steps=None).keys()
+        assert (set(times_1).issubset(set(results_times_1)) and
+                set(times_2).issubset(set(results_times_2)) and
+                set(times_3).issubset(set(results_times_3)))
 
     def test_transient_steady_mode_reactive_transport(self):
         alg = op.algorithms.TransientReactiveTransport(network=self.net,
