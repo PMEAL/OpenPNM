@@ -600,6 +600,14 @@ class BaseTest:
         # self.geo['pore.all'][0] = False
         # assert sp.sum(self.geo['pore.all']) == array_sum
 
+    def test_setitem_subdict_conflicts(self):
+        self.geo['pore.foo'] = 1
+        with pytest.raises(Exception):
+            self.geo['pore.foo.bar'] = 1
+        self.geo['throat.foo.bar'] = 1
+        with pytest.raises(Exception):
+            self.geo['throat.foo'] = 1
+
     def test_object_name_name_conflict(self):
         with pytest.raises(Exception):
             self.geo.name = self.net.name
