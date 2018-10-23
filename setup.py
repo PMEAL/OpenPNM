@@ -58,6 +58,7 @@ setup(
         'transforms3d',
         'flatdict',
         'gitpython',
+        'jsonschema'
         ],
     author='OpenPNM Team',
     author_email='jgostick@uwaterloo.ca',
