@@ -1,5 +1,6 @@
 from openpnm.core import Base, ModelsMixin
 from openpnm.utils import PrintableDict, Workspace, logging
+import openpnm.models as mods
 logger = logging.getLogger(__name__)
 ws = Workspace()
 from numpy import ones
@@ -77,24 +78,25 @@ class GenericPhase(Base, ModelsMixin):
         self['pore.temperature'] = 298.0
         self['pore.pressure'] = 101325.0
 
-    def __setitem__(self, key, value):
-        if self.project:
-            for item in self.project.find_physics(phase=self):
-                exclude = {'pore.all', 'throat.all'}
-                if key in set(item.keys()).difference(exclude):
-                    raise Exception(key+' already exists on '+item.name)
-        super().__setitem__(key, value)
-
     def __getitem__(self, key):
-        element = key.split('.')[0]
+        element, prop = key.split('.', 1)
         # Deal with special keys first
-        if key.split('.')[-1] == '_id':
+        if prop == '_id':
             net = self.project.network
             return net[element+'._id']
-        if key.split('.')[-1] == self.name:
+        if prop == self.name:
             return self[element+'.all']
         # Now get values if present, or regenerate them
         vals = self.get(key)
         if vals is None:
-            vals = self.interleave_data(key)
+            if element == 'throat' and 'pore.'+prop in self.keys():
+                vals = self.interpolate_data(propname='pore.'+prop)
+                logger.info(key + ', not found, interpolating from ' +
+                            'pore.' + prop)
+            elif element == 'pore' and 'throat.'+prop in self.keys():
+                vals = self.interpolate_data(propname='throat.'+prop)
+                logger.info(key + ', not found, interpolating from ' +
+                            'throat.' + prop)
+            else:
+                vals = self.interleave_data(key)
         return vals

@@ -254,6 +254,21 @@ class ProjectTest:
         b = proj.physics().values()
         assert sp.all([item in b for item in a])
 
+    def test_find_full_domain_geometry(self):
+        proj = self.proj
+        geo1 = proj.geometries()['geo_01']
+        assert proj.find_full_domain(geo1)._isa() == 'network'
+
+    def test_find_full_domain_physics(self):
+        proj = self.proj
+        phys1 = proj.physics()['phys_01']
+        assert proj.find_full_domain(phys1)._isa() == 'phase'
+
+    def test_find_full_domain_phase(self):
+        proj = self.proj
+        phase1 = proj.phases()['phase_01']
+        assert proj.find_full_domain(phase1)._isa() == 'phase'
+
     def test_clear(self):
         proj = self.ws.copy_project(self.net.project)
         assert len(proj) == 9
@@ -339,24 +354,23 @@ class ProjectTest:
 
     def test_export_data(self):
         fname = 'export_data_tests'
-        self.proj.export_data(network=self.net, phases=self.phase1,
-                              filename=fname, filetype='vtp')
+        self.proj.export_data(phases=self.phase1, filename=fname,
+                              filetype='vtp')
         os.remove(fname+'.vtp')
-        self.proj.export_data(network=self.net, phases=self.phase1,
-                              filename=fname+'.vtp')
+        self.proj.export_data(phases=self.phase1, filename=fname+'.vtp')
         os.remove(fname+'.vtp')
-        self.proj.export_data(network=self.net, phases=self.phase1,
-                              filename=fname, filetype='csv')
+        self.proj.export_data(phases=self.phase1, filename=fname,
+                              filetype='csv')
         os.remove(fname+'.csv')
-#        self.proj.export_data(network=self.net, phases=self.phase1,
-#                              filename=fname, filetype='xmf')
-#        os.remove(fname+'.xmf')
-#        os.remove(fname+'.hdf')
-        self.proj.export_data(network=self.net, phases=self.phase1,
-                              filename=fname, filetype='hdf')
+        self.proj.export_data(phases=self.phase1, filename=fname,
+                              filetype='xmf')
+        os.remove(fname+'.xmf')
         os.remove(fname+'.hdf')
-        self.proj.export_data(network=self.net, phases=self.phase1,
-                              filename=fname, filetype='mat')
+        self.proj.export_data(phases=self.phase1, filename=fname,
+                              filetype='hdf')
+        os.remove(fname+'.hdf')
+        self.proj.export_data(phases=self.phase1, filename=fname,
+                              filetype='mat')
         os.remove(fname+'.mat')
 
 

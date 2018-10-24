@@ -1,7 +1,7 @@
 from openpnm.core import Base
 from openpnm.utils import logging
 import numpy as np
-logger = logging.getLogger()
+logger = logging.getLogger(__name__)
 
 
 class GenericAlgorithm(Base):
@@ -47,7 +47,13 @@ class GenericAlgorithm(Base):
             project = network.project
         super().__init__(project=project, **kwargs)
 
-        if project.network is not None:
+        # Deal with network or project arguments
+        if network is not None:
+            if project is not None:
+                assert network is project.network
+            else:
+                project = network.project
+        if project:
             self['pore.all'] = np.ones((project.network.Np, ), dtype=bool)
             self['throat.all'] = np.ones((project.network.Nt, ), dtype=bool)
 

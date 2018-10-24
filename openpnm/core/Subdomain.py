@@ -42,10 +42,7 @@ class Subdomain(Base):
     def __getitem__(self, key):
         element = key.split('.')[0]
         # Find boss object (either phase or network)
-        if self._isa('physics'):
-            boss = self.project.find_phase(self)
-        else:
-            boss = self.project.network
+        boss = self.project.find_full_domain(self)
         # Get values if present, or regenerate them
         vals = self.get(key)
         # If still not found, check with boss object
@@ -55,14 +52,17 @@ class Subdomain(Base):
         return vals
 
     def __setitem__(self, key, value):
-        if self.project:
-            # Find boss object (either phase or network)
-            if self._isa('phase'):
-                boss = self.project.find_phase(self)
-            else:
-                boss = self.project.network
-            if key in set(boss.keys()).difference({'pore.all', 'throat.all'}):
-                raise Exception(key + ' already exists on ' + boss.name)
+        # If value is a dict, skip all this.  The super class will parse
+        # the dict individually, at which point the below is called.
+        if self.project and not hasattr(value, 'keys'):
+            proj = self.project
+            boss = proj.find_full_domain(self)
+            keys = boss.keys(mode='all', deep=True)
+            # Prevent 'pore.foo' on subdomain when already present on boss
+            if key in set(boss.keys()).difference(set(self.keys())):
+                hit = [i for i in keys if i.startswith(key)][0]
+                raise Exception('Cannot create ' + key + ' when ' +
+                                hit + ' is already defined')
         super().__setitem__(key, value)
 
     def add_locations(self, pores=[], throats=[]):
@@ -82,7 +82,7 @@ class Subdomain(Base):
         assigned, while for *Geometry* objects the boss is the *Network*.
 
         """
-        boss = self._get_boss()
+        boss = self.project.find_full_domain(self)
         pores = boss._parse_indices(pores)
         throats = boss._parse_indices(throats)
         if len(pores) > 0:
@@ -111,7 +111,7 @@ class Subdomain(Base):
         assigned, while for *Geometry* objects the boss is the *Network*.
 
         """
-        boss = self._get_boss()
+        boss = self.project.find_full_domain(self)
         pores = boss._parse_indices(pores)
         throats = boss._parse_indices(throats)
         if complete:
@@ -130,7 +130,7 @@ class Subdomain(Base):
         ``remove_locations`` as needed.
 
         """
-        boss = self._get_boss()
+        boss = self.project.find_full_domain(self)
         element = self._parse_element(element=element, single=True)
 
         # Make sure label array exists in boss
@@ -168,20 +168,3 @@ class Subdomain(Base):
                     del boss[element+'.'+self.name]
                 else:
                     boss[element+'.'+self.name] = False
-
-    def _get_boss(self):
-        r"""
-        Find boss object of the current Subdomain object.
-
-        Returns
-        -------
-        If the current object is a Geometry, then returns the Network, if it
-        is a Physics then returns the Phase it was assigned to during
-        instantiation.
-
-        """
-        if self._isa('physics'):
-            boss = self.project.find_phase(self)
-        if self._isa('geometry'):
-            boss = self.project.network
-        return boss

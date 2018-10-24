@@ -56,14 +56,8 @@ class CapillaryPressureTest:
                             surface_tension='pore.surface_tension',
                             contact_angle='pore.contact_angle',
                             diameter='pore.diameter')
-        self.phys.add_model(propname='throat.capillary_pressure',
-                            model=f,
-                            r_toroid=0.1,
-                            surface_tension='pore.surface_tension',
-                            contact_angle='pore.contact_angle',
-                            diameter='throat.diameter')
         self.phys.regenerate_models()
-        a = 0.26206427646507374
+        a = 0.2648436086476371
         assert_approx_equal(self.water['pore.capillary_pressure'][0], a)
         self.phys.remove_model('pore.capillary_pressure')
 
@@ -72,13 +66,40 @@ class CapillaryPressureTest:
         self.phys.add_model(propname='throat.capillary_pressure',
                             model=f,
                             r_toroid=0.1,
-                            surface_tension='throat.surface_tension',
-                            contact_angle='throat.contact_angle',
+                            surface_tension='pore.surface_tension',
+                            contact_angle='pore.contact_angle',
                             diameter='throat.diameter')
         self.phys.regenerate_models()
-        a = 0.26206427646507374
+        a = 0.2648436086476371
         assert_approx_equal(self.water['throat.capillary_pressure'][0], a)
         self.phys.remove_model('throat.capillary_pressure')
+
+    def test_purcell_bidirectional(self):
+        f = op.models.physics.capillary_pressure.purcell_bidirectional
+        self.geo['pore.touch'] = (sp.random.random(self.geo.Np)+0.5)*0.1
+        self.phys.add_model(propname='throat.bidirectional',
+                            model=f,
+                            r_toroid=0.1,
+                            surface_tension='pore.surface_tension',
+                            contact_angle='pore.contact_angle',
+                            pore_diameter='pore.touch')
+        diff = (self.phys['throat.bidirectional'][:, 0] -
+                self.phys['throat.bidirectional'][:, 1])
+        assert sp.any(diff != 0)
+
+    def test_sinusoidal_bidirectional(self):
+        f = op.models.physics.capillary_pressure.sinusoidal_bidirectional
+        self.geo['pore.touch'] = (sp.random.random(self.geo.Np)+0.5)*0.1
+        self.geo['throat.length'] = 1.0
+        self.geo['throat.amplitude'] = 0.25
+        self.phys.add_model(propname='throat.bidirectional',
+                            model=f,
+                            surface_tension='pore.surface_tension',
+                            contact_angle='pore.contact_angle',
+                            pore_diameter='pore.touch')
+        diff = (self.phys['throat.bidirectional'][:, 0] -
+                self.phys['throat.bidirectional'][:, 1])
+        assert sp.any(diff != 0)
 
     def test_ransohoff_snapoff_verts(self):
         ws = op.Workspace()

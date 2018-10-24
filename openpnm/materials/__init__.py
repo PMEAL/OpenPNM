@@ -19,31 +19,10 @@ The table below gives a list of available Material generators:
 +---------------------+-------------------------------------------------------+
 | Material Name       | Description                                           |
 +=====================+=======================================================+
-| CubicBerea          | A traditional Berea Sandstone on a Cubic lattice      |
-+---------------------+-------------------------------------------------------+
 | VoronoiFibers       | Resembles a fibrous paper or mat with straight        |
 |                     | intersecting fibers.                                  |
 +---------------------+-------------------------------------------------------+
 
-Examples
---------
-
->>> import openpnm as op
->>> proj = op.materials.BereaCubic(shape=[5, 5, 5])
-
-The Materials classes create a Project instance, so the Network and Geometry
-objects must be retrieved explicitly:
-
->>> net = proj.network
->>> print(net.props())
-――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-1     : pore.coords
-2     : throat.conns
-――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
->>> print(proj.geometries().keys())
-dict_keys(['geo_01'])
->>> geo = proj.geometries()['geo_01']
-
 """
+
 from .VoronoiFibers import VoronoiFibers
-from .BereaCubic import BereaCubic

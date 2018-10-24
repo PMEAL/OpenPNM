@@ -1,18 +1,7 @@
 from openpnm.algorithms import OrdinaryPercolation
 from openpnm.utils import logging
 import numpy as np
-logger = logging.getLogger()
-
-default_settings = {'pore_volume': 'pore.volume',
-                    'throat_volume': 'throat.volume',
-                    'mode': 'bond',
-                    'access_limited': True,
-                    'quantity': 'pressure',
-                    'throat_entry_pressure': 'throat.entry_pressure',
-                    'pore_volume': 'pore.volume',
-                    'throat_volume': 'throat.volume',
-                    'late_pore_filling': '',
-                    'late_throat_filling': ''}
+logger = logging.getLogger(__name__)
 
 
 class Porosimetry(OrdinaryPercolation):
@@ -45,13 +34,42 @@ class Porosimetry(OrdinaryPercolation):
 
     """
 
-    def __init__(self, settings={}, **kwargs):
+    def __init__(self, settings={}, phase=None, **kwargs):
+        def_set = {'phase': None,
+                   'pore_volume': 'pore.volume',
+                   'throat_volume': 'throat.volume',
+                   'mode': 'bond',
+                   'access_limited': True,
+                   'quantity': 'pressure',
+                   'throat_entry_pressure': 'throat.entry_pressure',
+                   'pore_volume': 'pore.volume',
+                   'throat_volume': 'throat.volume',
+                   'late_pore_filling': '',
+                   'late_throat_filling': '',
+                   'gui': {'setup': {'phase': None,
+                                     'quantity': '',
+                                     'throat_entry_pressure': '',
+                                     'pore_volume': '',
+                                     'throat_volume': '',
+                                     'late_pore_filling': '',
+                                     'late_throat_filling': ''},
+                           'set_inlets':   {'pores': None,
+                                            'overwrite': False},
+                           'set_outlets':  {'pores': None,
+                                            'overwrite': False},
+                           'set_residual': {'pores': None,
+                                            'throats': None,
+                                            'overwrite': False}
+                           }
+                   }
         super().__init__(**kwargs)
-        self.settings.update(default_settings)
+        self.settings.update(def_set)
         # Apply user settings, if any
         self.settings.update(settings)
         # Use the reset method to initialize all arrays
         self.reset()
+        if phase is not None:
+            self.setup(phase=phase)
 
     def setup(self,
               phase=None,

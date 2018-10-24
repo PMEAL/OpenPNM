@@ -16,7 +16,7 @@ if (importlib.util.find_spec('petsc4py') is not None):
     petsc4py.init(sys.argv)
 
 
-class PetscSparseLinearSolver(Base):
+class PETScSparseLinearSolver(Base):
     r"""
     Solve the sparse linear system Ax = b using petsc solvers. Parallel
     computing is supported and matrix partitioning over the available cores is
@@ -36,11 +36,13 @@ class PetscSparseLinearSolver(Base):
             1D RHS vector
         """
         # Set some default settings
-        self.settings.update({'solver': 'cg',
-                              'preconditioner': 'jacobi',
-                              'atol': 1e-06,
-                              'rtol': 1e-06,
-                              'max_it': 1000})
+        def_set = {'type': 'cg',
+                   'preconditioner': 'jacobi',
+                   'atol': 1e-06,
+                   'rtol': 1e-06,
+                   'maxiter': 1000}
+        self.settings.update(def_set)
+        self.settings.update(settings)
         self.A = A
         self.b = b
 
@@ -125,13 +127,20 @@ class PetscSparseLinearSolver(Base):
 
         cholesky_direct_solvers = ['mumps', 'cholmod']
 
-        solver = self.settings['solver']
+        solver = self.settings['type']
         preconditioner = self.settings['preconditioner']
+
+        if solver not in (iterative_solvers +
+                          lu_direct_solvers +
+                          cholesky_direct_solvers):
+            solver = 'cg'
+            print('Warning: ' + self.settings['type'] +
+                  ' not availabe, ' + solver + ' used instead.')
 
         if preconditioner not in preconditioners:
             preconditioner = 'jacobi'
             print('Warning: ' + self.settings['preconditioner'] +
-                  ' not availabe ' + preconditioner + 'used instead.')
+                  ' not availabe, ' + preconditioner + ' used instead.')
 
         if solver in lu_direct_solvers:
             self.ksp = PETSc.KSP()
@@ -154,7 +163,7 @@ class PetscSparseLinearSolver(Base):
             self.ksp.setType(solver)
 
         self.ksp.setTolerances(self.settings['atol'], self.settings['rtol'],
-                               self.settings['max_it'])
+                               self.settings['maxiter'])
 
     def _initialize_b_x(self):
         r"""

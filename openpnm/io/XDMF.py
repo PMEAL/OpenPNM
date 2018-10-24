@@ -2,6 +2,8 @@ import h5py
 import xml.etree.cElementTree as ET
 from flatdict import FlatDict
 from openpnm.io import Dict, GenericIO
+from openpnm.utils import logging
+logger = logging.getLogger(__name__)
 
 
 class XDMF(GenericIO):
@@ -43,7 +45,12 @@ class XDMF(GenericIO):
 
         if filename == '':
             filename = project.name
-        f = h5py.File(filename+".hdf", "w")
+        path = cls._parse_filename(filename=filename, ext='xmf')
+        # Path is a pathlib object, so slice it up as needed
+        fname_xdf = path.name
+        fname_hdf = path.stem+".hdf"
+        path = path.parent
+        f = h5py.File(path.joinpath(fname_hdf), "w")
 
         d = Dict.to_dict(network, phases=phases, interleave=True,
                          flatten=False, categorize_by=['element', 'data'])
@@ -51,7 +58,11 @@ class XDMF(GenericIO):
         # Make HDF5 file with all datasets, and no groups
         D = FlatDict(d, delimiter='/')
         for item in D.keys():
-            if 'U' in str(D[item][0].dtype):
+            if D[item].dtype == 'O':
+                logger.warning(item + ' has dtype object,' +
+                               ' will not write to file')
+                del D[item]
+            elif 'U' in str(D[item][0].dtype):
                 pass
             else:
                 f.create_dataset(name='/'+item, shape=D[item].shape,
@@ -68,7 +79,7 @@ class XDMF(GenericIO):
         # geometry coordinates
         row, col = f["coordinates"].shape
         dims = ' '.join((str(row), str(col)))
-        hdf_loc = f.filename + ":coordinates"
+        hdf_loc = fname_hdf + ":coordinates"
         geo_data = create_data_item(value=hdf_loc, Dimensions=dims,
                                     Format='HDF', DataType="Float")
         geo = create_geometry(GeometryType="XYZ")
@@ -77,7 +88,7 @@ class XDMF(GenericIO):
         # topolgy connections
         row, col = f["connections"].shape  # col first then row
         dims = ' '.join((str(row), str(col)))
-        hdf_loc = f.filename + ":connections"
+        hdf_loc = fname_hdf + ":connections"
         topo_data = create_data_item(value=hdf_loc, Dimensions=dims,
                                      Format="HDF", NumberType="Int")
         topo = create_topology(TopologyType="Polyline",
@@ -91,7 +102,7 @@ class XDMF(GenericIO):
                 attr_type = 'Scalar'
                 shape = f[item].shape
                 dims = ''.join([str(i) + ' ' for i in list(shape)[::-1]])
-                hdf_loc = f.filename + ":" + item
+                hdf_loc = fname_hdf + ":" + item
                 attr = create_data_item(value=hdf_loc,
                                         Dimensions=dims,
                                         Format='HDF',
@@ -112,7 +123,7 @@ class XDMF(GenericIO):
         domain.append(grid)
         root.append(domain)
 
-        with open(filename+'.xmf', 'w') as file:
+        with open(path.joinpath(fname_xdf), 'w') as file:
             file.write(cls._header)
             file.write(ET.tostring(root).decode("utf-8"))
 

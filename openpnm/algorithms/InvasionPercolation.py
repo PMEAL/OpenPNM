@@ -80,12 +80,25 @@ class InvasionPercolation(GenericAlgorithm):
         ``plt.imshow(sp.reshape(water['pore.occupancy'], newshape=S[S > 1]))``
 
     """
-
-    def __init__(self, **kwargs):
+    def __init__(self, settings={}, phase=None, **kwargs):
+        def_set = {'phase': None,
+                   'pore_volume': 'pore.volume',
+                   'throat_volume': 'throat.volume',
+                   'entry_pressure': 'throat.entry_pressure',
+                   'gui': {'setup':          {'phase': None,
+                                              'entry_pressure': '',
+                                              'pore_volume': '',
+                                              'throat_volume': ''},
+                           'set_inlets':     {'pores': None,
+                                              'overwrite': False},
+                           'apply_trapping': {'outlets': None}
+                           }
+                   }
         super().__init__(**kwargs)
-        self.settings.update({'pore_volume': 'pore.volume',
-                              'throat_volume': 'throat.volume',
-                              'entry_pressure': 'throat.entry_pressure'})
+        self.settings.update(def_set)
+        self.settings.update(settings)
+        if phase is not None:
+            self.setup(phase=phase)
 
     def setup(self, phase, entry_pressure='', pore_volume='', throat_volume=''):
         r"""
@@ -317,7 +330,8 @@ class InvasionPercolation(GenericAlgorithm):
         # For all the steps after the inlets are set up to break-through
         # Reverse the sequence and assess the neighbors cluster state
         stopped_clusters = np.zeros(net.Np, dtype=bool)
-        all_neighbors = net.find_neighbor_pores(net.pores(), flatten=False)
+        all_neighbors = net.find_neighbor_pores(net.pores(), flatten=False,
+                                                include_input=True)
         for un_seq, pore in inv_seq:
             if pore not in outlets and un_seq > 0:  # Skip inlets and outlets
                 nc = clusters[all_neighbors[pore]]  # Neighboring clusters

@@ -36,8 +36,6 @@ class BereaCubic(Project):
     Examples
     --------
 
-    >>> import openpnm as op
-    >>> proj = op.materials.BereaCubic(shape=[8, 9, 10])
     """
 
     def __init__(self, shape, name=None, **kwargs):
@@ -57,7 +55,7 @@ class BereaCubic(Project):
         geom.add_model(propname='pore.volume',
                        model=gm.pore_volume.sphere)
         geom.add_model(propname='throat.length',
-                       model=gm.throat_length.straight)
+                       model=gm.throat_length.piecewise)
         geom.add_model(propname='throat.diameter',
                        model=gm.throat_size.from_neighbor_pores,
                        pore_prop='pore.diameter', mode='min')

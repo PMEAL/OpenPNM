@@ -8,13 +8,6 @@ from openpnm.topotools import remove_isolated_clusters, ispercolating
 from openpnm.utils import logging
 logger = logging.getLogger(__name__)
 
-default_settings = {'access_limited': True,
-                    'mode': 'bond',
-                    'pore_entry_threshold': 'pore.entry_pressure',
-                    'throat_entry_threshold': 'throat.entry_pressure',
-                    'pore_volume': '',
-                    'throat_volume': ''}
-
 
 class OrdinaryPercolation(GenericAlgorithm):
     r"""
@@ -76,13 +69,38 @@ class OrdinaryPercolation(GenericAlgorithm):
 
     """
 
-    def __init__(self, settings={}, **kwargs):
+    def __init__(self, settings={}, phase=None, **kwargs):
+        def_set = {'phase': None,
+                   'access_limited': True,
+                   'mode': 'bond',
+                   'pore_entry_threshold': 'pore.entry_pressure',
+                   'throat_entry_threshold': 'throat.entry_pressure',
+                   'pore_volume': '',
+                   'throat_volume': '',
+                   'gui': {'setup':        {'phase': None,
+                                            'access_limited': None,
+                                            'mode': '',
+                                            'throat_entry_pressure': '',
+                                            'pore_entry_pressure': '',
+                                            'pore_volume': '',
+                                            'throat_volume': ''},
+                           'set_inlets':   {'pores': None,
+                                            'overwrite': False},
+                           'set_outlets':  {'pores': None,
+                                            'overwrite': False},
+                           'set_residual': {'pores': None,
+                                            'throats': None,
+                                            'overwrite': False}
+                           }
+                   }
         super().__init__(**kwargs)
-        self.settings.update(default_settings)
+        self.settings.update(def_set)
         # Use the reset method to initialize all arrays
         self.reset()
         # Apply user settings, if any
         self.settings.update(settings)
+        if phase is not None:
+            self.setup(phase=phase)
 
     def setup(self,
               phase=None,

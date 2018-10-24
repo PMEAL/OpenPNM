@@ -6,11 +6,11 @@ import porespy as ps
 from scipy.sparse import csgraph
 from openpnm.utils import PrintableDict, logging, Workspace
 ws = Workspace()
-logger = logging.getLogger()
+logger = logging.getLogger(__name__)
 
 
-def find_neighbor_sites(sites, am, flatten=True, exclude_input=True,
-                        logic='union'):
+def find_neighbor_sites(sites, am, flatten=True, include_input=False,
+                        logic='or'):
     r"""
     Given a symmetric adjacency matrix, finds all sites that are connected
     to the input sites.
@@ -22,39 +22,94 @@ def find_neighbor_sites(sites, am, flatten=True, exclude_input=True,
         sites *i* and *j* are connected, the matrix contains non-zero values
         at locations (i, j) and (j, i).
 
-    flatten : boolean (default is ``True``)
-        Indicates whether the returned result is a compressed array of all
+    flatten : boolean
+        If ``True`` (default) the returned result is a compressed array of all
         neighbors, or a list of lists with each sub-list containing the
-        neighbors for each input site.
+        neighbors for each input site.  Note that an *unflattened* list might
+        be slow to generate since it is a Python ``list`` rather than a Numpy
+        array.
 
-    exclude_input : boolean (default is ``True``)
-        If ``flatten`` is ``True``, then this flag will remove the input sites
-        from the result, otherwise it's ignored.
+    include_input : boolean
+        If ``False`` (default) the input sites will be removed from the result.
 
     logic : string
-        Specifies logic to apply to a flattened list.  Options are:
+        Specifies logic to filter the resulting list.  Options are:
 
-        **'union'** : (default) All neighbors of the input sites
+        **'or'** : (default) All neighbors of the input sites.  This is also
+        known as the 'union' in set theory or 'any' in boolean logic.  Both
+        keywords are accepted and treated as 'or'.
 
-        **'intersection'** : Only neighbors shared by all input sites
+        **'xor'** : Only neighbors of one and only one input site.  This is
+        useful for finding the sites that are not shared by any of the input
+        sites.  'exclusive_or' is also accepted.
 
-        **'exclusive_or'** : Only neighbors not shared by any input sites
+        **'xnor'** : Neighbors that are shared by two or more input sites. This
+        is equivalent to finding all neighbors with 'or', minus those found
+        with 'xor', and is useful for finding neighbors that the inputs have
+        in common.  'nxor' is also accepted.
+
+        **'and'** : Only neighbors shared by all input sites.  This is also
+        known as 'intersection' in set theory and (somtimes) as 'all' in
+        boolean logic.  Both keywords are accepted and treated as 'and'.
+
+    Returns
+    -------
+    An array containing the neighboring sites filtered by the given logic.  If
+    ``flatten`` is ``False`` then the result is a list of lists containing the
+    neighbors of each input site.
+
+    See Also
+    --------
+    find_complement
+
+    Notes
+    -----
+    The ``logic`` options are applied to neighboring sites only, thus it is not
+    possible to obtain sites that are part of the global set but not neighbors.
+    This is because (a) the list global sites might be very large, and (b) it
+    is not possible to return a list of neighbors for each input site if global
+    sites are considered.
 
     """
     if am.format != 'lil':
         am = am.tolil(copy=False)
-    neighbors = [am.rows[i] for i in sp.array(sites, ndmin=1)]
+    n_sites = am.shape[0]
+    rows = [am.rows[i] for i in sp.array(sites, ndmin=1)]
+    if len(rows) == 0:
+        return []
+    neighbors = sp.hstack(rows).astype(sp.int64)  # Flatten list to apply logic
+    if logic in ['or', 'union', 'any']:
+        neighbors = sp.unique(neighbors)
+    elif logic in ['xor', 'exclusive_or']:
+        neighbors = sp.unique(sp.where(sp.bincount(neighbors) == 1)[0])
+    elif logic in ['xnor', 'nxor']:
+        neighbors = sp.unique(sp.where(sp.bincount(neighbors) > 1)[0])
+    elif logic in ['and', 'all', 'intersection']:
+        neighbors = set(neighbors)
+        [neighbors.intersection_update(i) for i in rows]
+        neighbors = sp.array(list(neighbors), dtype=sp.int64, ndmin=1)
+    else:
+        raise Exception('Specified logic is not implemented')
+    # Deal with removing inputs or not
+    mask = sp.zeros(shape=n_sites, dtype=bool)
+    mask[neighbors] = True
+    if not include_input:
+        mask[sites] = False
+    # Finally flatten or not
     if flatten:
-        neighbors.append(sites)
-        neighbors = sp.hstack(neighbors)
-        neighbors = apply_logic(neighbors=neighbors, logic=logic)
-        if exclude_input:
-            neighbors = neighbors[sp.in1d(neighbors, sites, invert=True,
-                                          assume_unique=True)]
+        neighbors = sp.where(mask)[0]
+    else:
+        if (neighbors.size > 0):
+            for i in range(len(rows)):
+                vals = sp.array(rows[i], dtype=sp.int64)
+                rows[i] = vals[mask[vals]]
+            neighbors = rows
+        else:
+            neighbors = [sp.array([], dtype=int) for i in range(len(sites))]
     return neighbors
 
 
-def find_neighbor_bonds(sites, im, flatten=True, logic='union'):
+def find_neighbor_bonds(sites, im, flatten=True, logic='or'):
     r"""
     Given an incidence matrix, finds all sites that are connected to the
     input sites.
@@ -63,35 +118,87 @@ def find_neighbor_bonds(sites, im, flatten=True, logic='union'):
     ----------
     im : scipy.sparse matrix
         The incidence matrix of the network.  Must be shaped as (N-sites,
-        N-bonds), with non-zeros indicating which bonds are connected.
+        N-bonds), with non-zeros indicating which sites are connected.
 
     flatten : boolean (default is ``True``)
         Indicates whether the returned result is a compressed array of all
         neighbors, or a list of lists with each sub-list containing the
-        neighbors for each input site.
+        neighbors for each input site.  Note that an *unflattened* list might
+        be slow to generate since it is a Python ``list`` rather than a Numpy
+        array.
 
     logic : string
-        Specifies logic to apply to a flattened list.  Options are:
+        Specifies logic to filter the resulting list.  Options are:
 
-        **'union'** : (default) All neighbors of the input sites
+        **'or'** : (default) All neighbors of the input sites.  This is also
+        known as the 'union' in set theory or 'any' in boolean logic.  Both
+        keywords are accepted and treated as 'or'.
 
-        **'intersection'** : Only neighbors shared by all input sites
+        **'xor'** : Only neighbors of one and only one input site.  This is
+        useful for finding the sites that are not shared by any of the input
+        sites.  'exclusive_or' is also accepted'.
 
-        **'exclusive_or'** : Only neighbors not shared by any input sites
+        **'xnor'** : Neighbors that are shared by two or more input sites. This
+        is equivalent to finding all neighbors with 'or', minus those found
+        with 'xor', and is useful for finding neighbors that the inputs have
+        in common.  'nxor' is also accepted.
+
+        **'and'** : Only neighbors shared by all input sites.  This is also
+        known as 'intersection' in set theory and (somtimes) as 'all' in
+        boolean logic.  Both keywords are accepted and treated as 'and'.
+
+    Returns
+    -------
+    An array containing the neighboring bonds filtered by the given logic.  If
+    ``flatten`` is ``False`` then the result is a list of lists containing the
+    neighbors of each given input site.
+
+    See Also
+    --------
+    find_complement
+
+    Notes
+    -----
+    The ``logic`` options are applied to neighboring bonds only, thus it is not
+    possible to obtain bonds that are part of the global set but not neighbors.
+    This is because (a) the list of global bonds might be very large, and
+    (b) it is not possible to return a list of neighbors for each input site
+    if global sites are considered.
 
     """
-    if im.shape[0] > im.shape[1]:
-        logger.warning('Warning: Received matrix has more sites than bonds!')
     if im.format != 'lil':
         im = im.tolil(copy=False)
-    neighbors = [im.rows[i] for i in sp.array(sites, ndmin=1)]
-    if flatten:
-        neighbors = sp.concatenate(neighbors)
-        neighbors = apply_logic(neighbors=neighbors, logic=logic)
+    rows = [im.rows[i] for i in sp.array(sites, ndmin=1, dtype=sp.int64)]
+    if len(rows) == 0:
+        return []
+    neighbors = sp.hstack(rows).astype(sp.int64)
+    n_bonds = int(im.nnz/2)
+    if logic in ['or', 'union', 'any']:
+        neighbors = sp.unique(neighbors)
+    elif logic in ['xor', 'exclusive_or']:
+        neighbors = sp.unique(sp.where(sp.bincount(neighbors) == 1)[0])
+    elif logic in ['xnor', 'shared']:
+        neighbors = sp.unique(sp.where(sp.bincount(neighbors) > 1)[0])
+    elif logic in ['and', 'all', 'intersection']:
+        neighbors = set(neighbors)
+        [neighbors.intersection_update(i) for i in rows]
+        neighbors = sp.array(list(neighbors), dtype=int, ndmin=1)
+    else:
+        raise Exception('Specified logic is not implemented')
+    if (flatten is False):
+        if (neighbors.size > 0):
+            mask = sp.zeros(shape=n_bonds, dtype=bool)
+            mask[neighbors] = True
+            for i in range(len(rows)):
+                vals = sp.array(rows[i], dtype=sp.int64)
+                rows[i] = vals[mask[vals]]
+            neighbors = rows
+        else:
+            neighbors = [sp.array([], dtype=sp.int64) for i in range(len(sites))]
     return neighbors
 
 
-def find_connected_sites(bonds, am, flatten=True, logic='union'):
+def find_connected_sites(bonds, am, flatten=True, logic='or'):
     r"""
     Given an adjacency matrix, finds which sites are connected to the input
     bonds.
@@ -106,26 +213,79 @@ def find_connected_sites(bonds, am, flatten=True, logic='union'):
     flatten : boolean (default is ``True``)
         Indicates whether the returned result is a compressed array of all
         neighbors, or a list of lists with each sub-list containing the
-        neighbors for each input site.
+        neighbors for each input site.  Note that an *unflattened* list might
+        be slow to generate since it is a Python ``list`` rather than a Numpy
+        array.
 
     logic : string
-        Specifies logic to apply to a flattened list.  Options are:
+        Specifies logic to filter the resulting list.  Options are:
 
-        **'union'** : (default) All neighbors of the input sites
+        **'or'** : (default) All neighbors of the input bonds.  This is also
+        known as the 'union' in set theory or (sometimes) 'any' in boolean
+        logic.  Both keywords are accepted and treated as 'or'.
 
-        **'intersection'** : Only neighbors shared by all input sites
+        **'xor'** : Only neighbors of one and only one input bond.  This is
+        useful for finding the sites that are not shared by any of the input
+        bonds.  'exclusive_or' is also accepted.
 
-        **'exclusive_or'** : Only neighbors not shared by any input sites
+        **'xnor'** : Neighbors that are shared by two or more input bonds. This
+        is equivalent to finding all neighbors with 'or', minus those found
+        with 'xor', and is useful for finding neighbors that the inputs have
+        in common.  'nxor' is also accepted.
+
+        **'and'** : Only neighbors shared by all input bonds.  This is also
+        known as 'intersection' in set theory and (somtimes) as 'all' in
+        boolean logic.  Both keywords are accepted and treated as 'and'.
+
+    Returns
+    -------
+    An array containing the connected sites, filtered by the given logic.  If
+    ``flatten`` is ``False`` then the result is a list of lists containing the
+    neighbors of each given input bond.  In this latter case, sites that
+    have been removed by the given logic are indicated by ``nans``, thus the
+    array is of type ``float`` and is not suitable for indexing.
+
+    See Also
+    --------
+    find_complement
+
     """
     if am.format != 'coo':
-        am = am.tocoo(copy=False)
+        raise Exception('Adjacency matrix must be in COO format')
     bonds = sp.array(bonds, ndmin=1)
-    if flatten:
-        neighbors = sp.hstack((am.row[bonds], am.col[bonds]))
-        neighbors = apply_logic(neighbors=neighbors, logic=logic)
+    if len(bonds) == 0:
+        return []
+    neighbors = sp.hstack((am.row[bonds], am.col[bonds])).astype(sp.int64)
+    if neighbors.size:
+        n_sites = sp.amax(neighbors)
+    if logic in ['or', 'union', 'any']:
+        neighbors = sp.unique(neighbors)
+    elif logic in ['xor', 'exclusive_or']:
+        neighbors = sp.unique(sp.where(sp.bincount(neighbors) == 1)[0])
+    elif logic in ['xnor']:
+        neighbors = sp.unique(sp.where(sp.bincount(neighbors) > 1)[0])
+    elif logic in ['and', 'all', 'intersection']:
+        temp = sp.vstack((am.row[bonds], am.col[bonds])).T.tolist()
+        temp = [set(pair) for pair in temp]
+        neighbors = temp[0]
+        [neighbors.intersection_update(pair) for pair in temp[1:]]
+        neighbors = sp.array(list(neighbors), dtype=sp.int64, ndmin=1)
     else:
-        neighbors = sp.vstack((am.row[bonds], am.col[bonds])).T
-        neighbors = sp.array(neighbors, dtype=int)
+        raise Exception('Specified logic is not implemented')
+    if flatten is False:
+        if neighbors.size:
+            mask = sp.zeros(shape=n_sites+1, dtype=bool)
+            mask[neighbors] = True
+            temp = sp.hstack((am.row[bonds], am.col[bonds])).astype(sp.int64)
+            temp[~mask[temp]] = -1
+            inds = sp.where(temp == -1)[0]
+            if len(inds):
+                temp = temp.astype(float)
+                temp[inds] = sp.nan
+            temp = sp.reshape(a=temp, newshape=[len(bonds), 2], order='F')
+            neighbors = temp
+        else:
+            neighbors = [sp.array([], dtype=sp.int64) for i in range(len(bonds))]
     return neighbors
 
 
@@ -145,7 +305,7 @@ def find_connecting_bonds(sites, am):
 
     Returns
     -------
-    Returns a list the same length as P1 (and P2) with the each element
+    Returns a list the same length as P1 (and P2) with each element
     containing the throat number that connects the corresponding pores,
     or `None`` if pores are not connected.
 
@@ -159,73 +319,116 @@ def find_connecting_bonds(sites, am):
     if am.format != 'dok':
         am = am.todok(copy=False)
     sites = sp.array(sites, ndmin=2)
+    if sites.size == 0:
+        return []
     z = tuple(zip(sites[:, 0], sites[:, 1]))
     neighbors = [am.get(z[i], None) for i in range(len(z))]
     return neighbors
 
 
-def apply_logic(neighbors, logic):
-    if neighbors.ndim > 1:
-        neighbors = sp.hstack(neighbors)
-    if neighbors.dtype == float:
-        neighbors = neighbors.astype(int)
-    if logic == 'union':
-        neighbors = sp.unique(neighbors)
-    elif logic == 'exclusive_or':
-        # neighbors that occur only once are NOT shared with other sites
-        neighbors = sp.unique(sp.where(sp.bincount(neighbors) == 1)[0])
-    elif logic == 'intersection':
-        # neighbors that occur more than once ARE shared with other sites
-        neighbors = sp.unique(sp.where(sp.bincount(neighbors) > 1)[0])
+def find_complement(am, sites=None, bonds=None, asmask=False):
+    r"""
+    Finds the complementary sites (or bonds) to a given set of inputs
+
+    Parameters
+    ----------
+    am : scipy.sparse matrix
+        The adjacency matrix of the network.
+
+    sites : array_like (optional)
+        The set of sites for which the complement is sought
+
+    bonds : array_like (optional)
+        The set of bonds for which the complement is sought
+
+    asmask : boolean
+        If set to ``True`` the result is returned as a boolean mask of the
+        correct length with ``True`` values indicate the complements.  The
+        default is ``False`` which returns a list of indices instead.
+
+    Returns
+    -------
+    An array containing indices of the sites (or bonds) that are not part of
+    the input list.
+
+    Notes
+    -----
+    Either ``sites`` or ``bonds`` must be specified
+
+    """
+    if (sites is not None) and (bonds is None):
+        inds = sp.unique(sites)
+        N = am.shape[0]
+    elif (bonds is not None) and (sites is None):
+        inds = sp.unique(bonds)
+        N = int(am.nnz/2)
+    elif (bonds is not None) and (sites is not None):
+        raise Exception('Only one of sites or bonds can be specified')
     else:
-        raise Exception('Unsupported logic type: '+logic)
-    return neighbors.astype(int)
+        raise Exception('Either sites or bonds must be specified')
+    mask = sp.ones(shape=N, dtype=bool)
+    mask[inds] = False
+    if asmask:
+        return mask
+    else:
+        return sp.arange(N)[mask]
 
 
 def istriu(am):
+    r"""
+    Returns ``True`` is the sparse adjacency matrix is upper triangular
+    """
     if am.shape[0] != am.shape[1]:
-        print('Matrix is not square, triangularity is not relevant')
+        print('Matrix is not square, triangularity is irrelevant')
         return False
     if am.format != 'coo':
         am = am.tocoo(copy=False)
-    return sp.all(am.row < am.col)
+    return sp.all(am.row <= am.col)
 
 
 def istril(am):
+    r"""
+    Returns ``True`` is the sparse adjacency matrix is lower triangular
+    """
     if am.shape[0] != am.shape[1]:
-        print('Matrix is not square, triangularity is not relevant')
+        print('Matrix is not square, triangularity is irrelevant')
         return False
     if am.format != 'coo':
         am = am.tocoo(copy=False)
-    return sp.all(am.row > am.col)
+    return sp.all(am.row >= am.col)
 
 
 def istriangular(am):
+    r"""
+    Returns ``True`` is the sparse adjacency matrix is either upper or lower
+    triangular
+    """
     if am.format != 'coo':
         am = am.tocoo(copy=False)
     return istril(am) or istriu(am)
 
 
 def issymmetric(am):
+    r"""
+    A method to check if a square matrix is symmetric
+    Returns ``True`` if the sparse adjacency matrix is symmetric
+    """
     if am.shape[0] != am.shape[1]:
-        logger.warning('Matrix is not square, symmetrical is not relevant')
+        logger.warning('Matrix is not square, symmetrical is irrelevant')
         return False
     if am.format != 'coo':
         am = am.tocoo(copy=False)
     if istril(am) or istriu(am):
         return False
-    inds_up = am.row < am.col
-    inds_lo = am.row > am.col
-    # Check if locations of non-zeros are symmetrically distributed
-    if inds_up.size != inds_lo.size:
-        return False
-    # Then check if values are also symmetric
-    data_up = am.data[inds_up]
-    data_lo = am.data[inds_lo]
-    return sp.allclose(data_up, data_lo)
+    # Compare am with its transpose, element wise
+    sym = ((am != am.T).size) == 0
+    return sym
 
 
 def am_to_im(am):
+    r"""
+    Convert an adjacency matrix into an incidence matrix
+    """
     if am.shape[0] != am.shape[1]:
         raise Exception('Adjacency matrices must be square')
     if am.format != 'coo':
@@ -243,6 +446,9 @@ def am_to_im(am):
 
 
 def im_to_am(im):
+    r"""
+    Convert an incidence matrix into an adjacency matrix
+    """
     if im.shape[0] == im.shape[1]:
         print('Warning: Received matrix is square which is unlikely')
     if im.shape[0] > im.shape[1]:
@@ -648,12 +854,15 @@ def trim(network, pores=[], throats=[]):
 #        temp = sp.in1d(network['throat.conns'].flatten(), pores)
 #        temp = sp.reshape(temp, (network.Nt, 2))
 #        Ts = sp.any(temp, axis=1)
+#        Ts = network.Ts[Ts]
+#        tic()
         Ts = network.find_neighbor_throats(pores=~Pkeep, mode='union')
+#        toc()
         if len(Ts) > 0:
             Tkeep[Ts] = False
     if sp.size(throats) > 0:
         Tkeep[throats] = False
-        # The folling IF catches the special case of deleting ALL throats
+        # The following IF catches the special case of deleting ALL throats
         # It removes all throat props, adds 'all', and skips rest of function
         if not sp.any(Tkeep):
             logger.info('Removing ALL throats from network')
@@ -776,6 +985,10 @@ def extend(network, pore_coords=[], throat_conns=[], labels=[]):
                     network['throat.'+label] = False
                 network['throat.'+label][Ts] = True
 
+    # Clear adjacency and incidence matrices which will be out of date now
+    network._am.clear()
+    network._im.clear()
+
 
 def reduce_coordination(network, z):
     r"""
@@ -793,12 +1006,12 @@ def reduce_coordination(network, z):
     network['throat.mst'][Ts] = True
 
     # Trim throats not on the spanning tree to acheive desired coordination
-    Ts = sp.random.permutation(network.throats('mst', mode='complement'))
+    Ts = sp.random.permutation(network.throats('mst', mode='nor'))
     Ts = Ts[:int(network.Nt - network.Np*(z/2))]
     trim(network=network, throats=Ts)
 
 
-def label_faces(network, tol=0.1):
+def label_faces(network, tol=0.0, label='surface'):
     r"""
     Finds pores on the surface of the network and labels them according to
     whether they are on the *top*, *bottom*, etc.  This function assumes the
@@ -808,9 +1021,21 @@ def label_faces(network, tol=0.1):
     ----------
     network : OpenPNM Network object
         The network to apply the labels
+
+    tol : scalar
+        The tolerance for defining what counts as a surface pore, which is
+        specifically meant for random networks.  All pores with ``tol`` of
+        the maximum or minimum along each axis are counts as pores.  The
+        default is 0.
+
+    label : string
+        An identifying label to isolate the pores on the faces of the network.
+        default is 'surface'.
+
     """
-    find_surface_pores(network)
-    Psurf = network['pore.surface']
+    if label not in network.labels():
+        find_surface_pores(network, label=label)
+    Psurf = network['pore.'+label]
     crds = network['pore.coords']
     xmin, xmax = sp.amin(crds[:, 0]), sp.amax(crds[:, 0])
     xspan = xmax - xmin
@@ -818,12 +1043,12 @@ def label_faces(network, tol=0.1):
     yspan = ymax - ymin
     zmin, zmax = sp.amin(crds[:, 2]), sp.amax(crds[:, 2])
     zspan = zmax - zmin
-    network['pore.back'] = (crds[:, 0] > (1-tol)*xmax) * Psurf
-    network['pore.right'] = (crds[:, 1] > (1-tol)*ymax) * Psurf
-    network['pore.top'] = (crds[:, 2] > (1-tol)*zmax) * Psurf
-    network['pore.front'] = (crds[:, 0] < (xmin + tol*xspan)) * Psurf
-    network['pore.left'] = (crds[:, 1] < (xmin + tol*yspan)) * Psurf
-    network['pore.bottom'] = (crds[:, 2] < (xmin + tol*zspan)) * Psurf
+    network['pore.back'] = (crds[:, 0] >= (1-tol)*xmax) * Psurf
+    network['pore.right'] = (crds[:, 1] >= (1-tol)*ymax) * Psurf
+    network['pore.top'] = (crds[:, 2] >= (1-tol)*zmax) * Psurf
+    network['pore.front'] = (crds[:, 0] <= (xmin + tol*xspan)) * Psurf
+    network['pore.left'] = (crds[:, 1] <= (ymin + tol*yspan)) * Psurf
+    network['pore.bottom'] = (crds[:, 2] <= (zmin + tol*zspan)) * Psurf
 
 
 def find_surface_pores(network, markers=None, label='surface'):
@@ -839,7 +1064,7 @@ def find_surface_pores(network, markers=None, label='surface'):
         The network for which the surface pores are to be found
 
     markers: array_like
-        3 x N array of the marker coordiantes to use in the triangulation.  The
+        3 x N array of the marker coordinates to use in the triangulation.  The
         labeling is performed in one step, so all points are added, and then
         any pores connected to at least one marker is given the provided label.
         By default, this function will automatically generate 6 points outside
@@ -953,7 +1178,7 @@ def clone_pores(network, pores, labels=['clone'], mode='parents'):
         tclone = sp.vstack((parents, clones)).T
         extend(network=network, pore_coords=pclone, throat_conns=tclone)
     if mode == 'siblings':
-        ts = network.find_neighbor_throats(pores=pores, mode='intersection')
+        ts = network.find_neighbor_throats(pores=pores, mode='xnor')
         tclone = network['throat.conns'][ts] + network.num_pores()
         extend(network=network, pore_coords=pclone, throat_conns=tclone)
     if mode == 'isolated':
@@ -963,7 +1188,7 @@ def clone_pores(network, pores, labels=['clone'], mode='parents'):
         network['pore.'+item][network.pores('all') >= Np] = True
         network['throat.'+item][network.throats('all') >= Nt] = True
 
-    # Any existing adjacency and incidence matrices will be invalid
+    # Clear adjacency and incidence matrices which will be out of date now
     network._am.clear()
     network._im.clear()
 
@@ -1037,6 +1262,10 @@ def merge_networks(network, donor=[]):
                     # Then append donor values to network
                     s = sp.shape(donor[key])[0]
                     network[key][-s:] = donor[key]
+
+    # Clear adjacency and incidence matrices which will be out of date now
+    network._am.clear()
+    network._im.clear()
 
 
 def stitch(network, donor, P_network, P_donor, method='nearest',
@@ -1156,6 +1385,8 @@ def connect_pores(network, pores1, pores2, labels=[], add_conns=True):
     Returns the possible connections between two group of pores, and optionally
     makes the connections.
 
+    See ``Notes`` for advanced usage.
+
     Parameters
     ----------
     network : OpenPNM Network Object
@@ -1177,7 +1408,17 @@ def connect_pores(network, pores1, pores2, labels=[], add_conns=True):
 
     Notes
     -----
-    It creates the connections in a format which is acceptable by
+    (1) The method also works if ``pores1`` and ``pores2`` are list of lists,
+    in which case it consecutively connects corresponding members of the two
+    lists in a 1-to-1 fashion. Example: pores1 = [[0, 1], [2, 3]] and
+    pores2 = [[5], [7, 9]] leads to creation of the following connections:
+        0 --> 5     2 --> 7     3 --> 7
+        1 --> 5     2 --> 9     3 --> 9
+
+    (2) If you want to use the batch functionality, make sure that each element
+    within ``pores1`` and ``pores2`` are of type list or ndarray.
+
+    (3) It creates the connections in a format which is acceptable by
     the default OpenPNM connection ('throat.conns') and either adds them to
     the network or returns them.
 
@@ -1200,11 +1441,27 @@ def connect_pores(network, pores1, pores2, labels=[], add_conns=True):
            [32, 68]])
 
     '''
-    size1 = sp.size(pores1)
-    size2 = sp.size(pores2)
-    array1 = sp.repeat(pores1, size2)
-    array2 = sp.tile(pores2, size1)
-    conns = sp.vstack([array1, array2]).T
+    # Assert that `pores1` and `pores2` are list of lists
+    try:
+        len(pores1[0])
+    except (TypeError, IndexError):
+        pores1 = [pores1]
+    try:
+        len(pores2[0])
+    except (TypeError, IndexError):
+        pores2 = [pores2]
+
+    if len(pores1) != len(pores2):
+        raise Exception('Running in batch mode! pores1 and pores2 must be' + \
+                        ' of the same length.')
+
+    arr1, arr2 = [], []
+    for ps1, ps2 in zip(pores1, pores2):
+        size1 = sp.size(ps1)
+        size2 = sp.size(ps2)
+        arr1.append(sp.repeat(ps1, size2))
+        arr2.append(sp.tile(ps2, size1))
+    conns = sp.vstack([sp.concatenate(arr1), sp.concatenate(arr2)]).T
     if add_conns:
         extend(network=network, throat_conns=conns, labels=labels)
     else:
@@ -1364,11 +1621,11 @@ def subdivide(network, pores, shape, labels=[]):
             if neighbor in Pn_old_net:
                 coplanar_labels = network.labels(pores=nearest_neighbor)
                 new_neighbors = network.pores(coplanar_labels,
-                                              mode='intersection')
+                                              mode='xnor')
                 # This might happen to the edge of the small network
                 if sp.size(new_neighbors) == 0:
                     labels = network.labels(pores=nearest_neighbor,
-                                            mode='intersection')
+                                            mode='xnor')
                     common_label = [l for l in labels if 'surface_' in l]
                     new_neighbors = network.pores(common_label)
             elif neighbor in Pn_new_net:
@@ -1381,7 +1638,7 @@ def subdivide(network, pores, shape, labels=[]):
             network['pore.surface_' + l] = False
         new_net['pore.coords'] = sp.copy(old_coords)
 
-    network._label_surfaces()
+    label_faces(network=network)
     for l in main_labels:
         del network['pore.surface_'+l]
     trim(network=network, pores=pores)
@@ -1424,7 +1681,10 @@ def merge_pores(network, pores, labels=['merged']):
 
     Notes
     -----
-    The selection of pores should be chosen carefully, preferrable so that
+    (1) The method also works if a list of lists is passed, in which case
+    it consecutively merges the given selections of pores.
+
+    (2) The selection of pores should be chosen carefully, preferrable so that
     they all form a continuous cluster.  For instance, it is recommended
     to use the ``find_nearby_pores`` method to find all pores within a
     certain distance of a given pore, and these can then be merged without
@@ -1444,15 +1704,44 @@ def merge_pores(network, pores, labels=['merged']):
     32
 
     """
-    Pn = network.find_neighbor_pores(pores=pores,
-                                     mode='union',
-                                     flatten=True,
-                                     excl_self=True)
-    xyz = sp.mean(network['pore.coords'][pores], axis=0)
-    extend(network, pore_coords=xyz, labels=labels)
-    Pnew = network.Ps[-1]
-    connect_pores(network, pores1=Pnew, pores2=Pn, labels=labels)
-    trim(network=network, pores=pores)
+    # Assert that `pores` is list of lists
+    try:
+        len(pores[0])
+    except (TypeError, IndexError):
+        pores = [pores]
+        
+    N = len(pores)
+    NBs, XYZs = [], []
+    
+    for Ps in pores:
+        NBs.append(network.find_neighbor_pores(pores=Ps,
+                                               mode='union',
+                                               flatten=True,
+                                               include_input=False))
+        XYZs.append(network['pore.coords'][Ps].mean(axis=0))
+    
+    extend(network, pore_coords=XYZs, labels=labels)
+    Pnew = network.Ps[-N::]
+    
+    # Possible throats between new pores: This only happens when running in
+    # batch mode, i.e. multiple groups of pores are to be merged. In case
+    # some of these groups share elements, possible throats between the 
+    # intersecting elements is not captured and must be added manually.
+    pores_set = [set(items) for items in pores]
+    NBs_set = [set(items) for items in NBs]
+    ps1, ps2 = [], []    
+    from itertools import combinations
+    for i, j in combinations(range(N), 2):
+        if not NBs_set[i].isdisjoint(pores_set[j]):
+            ps1.append([network.Ps[-N+i]])
+            ps2.append([network.Ps[-N+j]])
+    
+    # Add (possible) connections between the new pores
+    connect_pores(network, pores1=ps1, pores2=ps2, labels=labels)
+    # Add connections between the new pores and the rest of the network
+    connect_pores(network, pores2=sp.split(Pnew, N), pores1=NBs, labels=labels)
+    # Trim merged pores from the network
+    trim(network=network, pores=sp.concatenate(pores))
 
 
 def _template_sphere_disc(dim, outer_radius, inner_radius):
@@ -1599,7 +1888,7 @@ def plot_connections(network, throats=None, fig=None, **kwargs):
     >>> import openpnm as op
     >>> pn = op.network.Cubic(shape=[10, 10, 3])
     >>> pn.add_boundary_pores()
-    >>> Ts = pn.throats('*boundary', mode='complement')
+    >>> Ts = pn.throats('*boundary', mode='nor')
     >>> # Create figure showing boundary throats
     >>> fig = op.topotools.plot_connections(network=pn, throats=Ts)
     >>> Ts = pn.throats('*boundary')
@@ -1784,7 +2073,7 @@ def plot_networkx(network, plot_throats=True, labels=None, colors=None,
     '''
     import networkx as nx
     x, y, z = network['pore.coords'].T
-    x, y = [j for j in [x, y, z] if len(sp.unique(j)) > 1]
+    x, y = [j for j in [x, y, z] if not sp.allclose(j, j.mean())]
 
     G = nx.Graph()
     pos = {network.Ps[i]: [x[i], y[i]] for i in range(network.Np)}
@@ -2194,13 +2483,18 @@ def add_boundary_pores(network, pores, offset, apply_label='boundary'):
     clone_pores(network=network, pores=Ps)
     newPs = network.pores('pore.clone')
     del network['pore.clone']
+    newTs = network.throats('clone')
+    del network['throat.clone']
     # Offset the cloned pores
     network['pore.coords'][newPs] += offset
     # Apply labels to boundary pores (trim leading 'pores' if present)
     label = apply_label.split('.')[-1]
-    label = 'pore.' + label
-    network[label] = False
-    network[label][newPs] = True
+    plabel = 'pore.' + label
+    tlabel = 'throat.' + label
+    network[plabel] = False
+    network[plabel][newPs] = True
+    network[tlabel] = False
+    network[tlabel][newTs] = True
 
 
 def find_path(network, pore_pairs, weights=None):
@@ -2263,7 +2557,7 @@ def find_path(network, pore_pairs, weights=None):
         ans.append(Ps[row][0])
         ans.reverse()
         pores.append(sp.array(ans, dtype=int))
-        Ts = network.find_neighbor_throats(pores=ans, mode='intersection')
+        Ts = network.find_neighbor_throats(pores=ans, mode='xnor')
         throats.append(sp.array(Ts, dtype=int))
     pdict = PrintableDict
     dict_ = pdict(**{'pores': pores, 'throats': throats})

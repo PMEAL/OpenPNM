@@ -3,7 +3,7 @@ import scipy as sp
 import pytest
 
 
-class TransientDispersionTest:
+class TransientOhmicConductionTest:
 
     def setup_class(self):
         sp.random.seed(0)
@@ -16,29 +16,25 @@ class TransientDispersionTest:
         self.phys = op.physics.GenericPhysics(network=self.net,
                                               phase=self.phase,
                                               geometry=self.geo)
-        self.phys['throat.diffusive_conductance'] = 1e-15
-        self.phys['throat.hydraulic_conductance'] = 1e-15
+        self.phys['throat.electrical_conductance'] = 1e-15
         self.geo['pore.volume'] = 1e-27
 
-    def test_transient_dispersion(self):
-        sf = op.algorithms.StokesFlow(network=self.net, phase=self.phase)
-        sf.set_value_BC(pores=self.net.pores('back'), values=1)
-        sf.set_value_BC(pores=self.net.pores('front'), values=0)
-        sf.run()
-        self.phase[sf.settings['quantity']] = sf[sf.settings['quantity']]
-
-        ad = op.algorithms.TransientDispersion(network=self.net, phase=self.phase)
-        ad.settings.update({'t_scheme': 'steady'})
-        ad.set_IC(0)
-        ad.set_value_BC(pores=self.net.pores('back'), values=2)
-        ad.set_value_BC(pores=self.net.pores('front'), values=0)
-        ad.run()
-
+    def test_transient_fickian_diffusion(self):
+        alg = op.algorithms.TransientOhmicConduction(network=self.net,
+                                                     phase=self.phase)
+        alg.setup(quantity='pore.voltage',
+                  conductance='throat.electrical_conductance',
+                  t_initial=0, t_final=1000, t_step=1, t_output=100,
+                  t_tolerance=1e-08, t_scheme='implicit')
+        alg.set_IC(0)
+        alg.set_value_BC(pores=self.net.pores('back'), values=1)
+        alg.set_value_BC(pores=self.net.pores('front'), values=0)
+        alg.run()
         x = [0., 0., 0.,
-             0.89688, 0.89688, 0.89688,
-             1.53953, 1.53953, 1.53953,
-             2., 2., 2.]
-        y = sp.around(ad[ad.settings['quantity']], decimals=5)
+             0.33333, 0.33333, 0.33333,
+             0.66667, 0.66667, 0.66667,
+             1., 1., 1.]
+        y = sp.around(alg[alg.settings['quantity']], decimals=5)
         assert sp.all(x == y)
 
     def teardown_class(self):
@@ -48,7 +44,7 @@ class TransientDispersionTest:
 
 if __name__ == '__main__':
 
-    t = TransientDispersionTest()
+    t = TransientOhmicConductionTest()
     t.setup_class()
     for item in t.__dir__():
         if item.startswith('test'):

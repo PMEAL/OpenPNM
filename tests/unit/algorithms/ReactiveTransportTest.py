@@ -28,12 +28,15 @@ class GenericTransportTest:
     def test_one_value_one_source(self):
         rt = op.algorithms.ReactiveTransport(network=self.net,
                                              phase=self.phase)
+        rt.setup(r_tolerance=0.001, max_iter=5000,
+                 relaxation_source=1, relaxation_quantity=1)
         rt.settings.update({'conductance': 'throat.diffusive_conductance',
                             'quantity': 'pore.concentration'})
         rt.set_source(pores=self.net.pores('bottom'), propname='pore.reaction')
         rt.set_value_BC(pores=self.net.pores('top'), values=1.0)
         rt.run()
-        x = [0.0011, 0.1260, 0.2508, 0.3757, 0.5006, 0.6254, 0.7503, 0.8751, 1.0]
+        x = [0.0011, 0.1260, 0.2508, 0.3757,
+             0.5006, 0.6254, 0.7503, 0.8751, 1.0]
         y = sp.unique(sp.around(rt['pore.concentration'], decimals=4))
         assert sp.all(x == y)
 

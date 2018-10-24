@@ -19,18 +19,18 @@ class ModelsTest:
 
     def test_models_dict_print(self):
         s = self.geo.models.__str__().split('\n')
-        assert len(s) == 68
+        assert len(s) == 67
         assert s.count('―'*78) == 15
 
     def test_regenerate_models(self):
         a = len(self.geo.props())
-        assert a == 17
+        assert a == 16
         self.geo.clear(mode='props')
         a = len(self.geo.props())
         assert a == 0
         self.geo.regenerate_models()
         a = len(self.geo.props())
-        assert a == 17
+        assert a == 16
 
     def test_dependency_list(self):
         prj = self.net.project
@@ -108,9 +108,7 @@ class ModelsTest:
         geo.clear()
         with LogCapture() as log:
             geo.regenerate_models(propnames=['pore.diameter'])
-        log.check(('root', 'WARNING', "pore.diameter was not run since the " +
-                   "following properties are missing: ['pore.max_size', " +
-                   "'pore.seed']"))
+        assert "'pore.max_size'" in log.actual()[0][2]
 
     def test_regenerate_models_on_phase_with_deep(self):
         pn = op.network.Cubic(shape=[5, 5, 5])
@@ -132,12 +130,12 @@ class ModelsTest:
         phys = op.physics.Standard(network=pn, phase=phase, geometry=geo)
         phase.clear(mode='model_data')
         phys.clear()
-        assert len(phase) == 12  # Only pore and throat.all remain
+        assert len(phase) == 13
         phys.regenerate_models(propnames=None, deep=False)
-        assert len(phase) == 12  # Still only pore and throat.all
-        assert len(phys) == 3  # Only one property was regenerated
+        assert len(phase) == 13
+        assert len(phys) == 10
         phys.regenerate_models(propnames=None, deep=True)
-        assert len(phase) == 12  # Phase models are not regenerated
+        assert len(phase) == 13
 
     def test_regenerate_models_on_network_with_deep(self):
         pn = op.network.Cubic(shape=[5, 5, 5])

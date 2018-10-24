@@ -1,7 +1,6 @@
 from xml.etree import ElementTree as ET
 from flatdict import FlatDict
 import numpy as np
-from openpnm.network import GenericNetwork
 from openpnm.io import GenericIO, Dict
 from openpnm.utils import logging, Workspace
 logger = logging.getLogger(__name__)
@@ -98,19 +97,24 @@ class VTK(GenericIO):
         cell_data_node = piece_node.find('CellData')
         for key in key_list:
             array = am[key]
-            if array.dtype == np.bool:
-                array = array.astype(int)
-            if np.any(np.isnan(array)):
-                if fill_nans is None:
-                    logger.warning(key + ' has nans, will not write to file')
-                    continue
-                else:
-                    array[np.isnan(array)] = fill_nans
-            element = VTK._array_to_element(key, array)
-            if (array.size == num_points) and element:
-                point_data_node.append(element)
-            elif (array.size == num_throats) and element:
-                cell_data_node.append(element)
+            if array.dtype == 'O':
+                logger.warning(key + ' has dtype object,' +
+                               ' will not write to file')
+            else:
+                if array.dtype == np.bool:
+                    array = array.astype(int)
+                if np.any(np.isnan(array)):
+                    if fill_nans is None:
+                        logger.warning(key + ' has nans,' +
+                                       ' will not write to file')
+                        continue
+                    else:
+                        array[np.isnan(array)] = fill_nans
+                element = VTK._array_to_element(key, array)
+                if (array.size == num_points):
+                    point_data_node.append(element)
+                elif (array.size == num_throats):
+                    cell_data_node.append(element)
 
         if filename == '':
             filename = project.name

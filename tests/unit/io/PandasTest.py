@@ -18,7 +18,7 @@ class PandasTest:
         self.geo_1['pore.boo'] = 1
         self.geo_1['throat.boo'] = 1
         Ps = [4, 5, 6, 7]
-        Ts = self.net.find_neighbor_throats(pores=Ps, mode='intersection')
+        Ts = self.net.find_neighbor_throats(pores=Ps, mode='xnor')
         self.geo_2 = op.geometry.GenericGeometry(network=self.net,
                                                  pores=Ps, throats=Ts)
         self.geo_2['pore.boo'] = 1
@@ -62,13 +62,13 @@ class PandasTest:
     def test_to_dataframe_not_joined(self):
         df = Pandas.to_dataframe(network=self.net, phases=[self.phase_1],
                                  join=False)
-        assert len(df.pore.keys()) == 21
-        assert len(df.throat.keys()) == 12
+        assert len(df.pore.keys()) == 22
+        assert len(df.throat.keys()) == 13
 
     def test_to_dataframe_joined(self):
         df = Pandas.to_dataframe(network=self.net, phases=[self.phase_1],
                                  join=True)
-        assert len(df.keys()) == 33
+        assert len(df.keys()) == 35
 
     def test_save(self):
         with pytest.raises(NotImplementedError):
