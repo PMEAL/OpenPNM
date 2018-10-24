@@ -377,7 +377,7 @@ class TransientReactiveTransport(ReactiveTransport):
         self[self.settings['quantity']] = x
         relax = self.settings['relaxation_quantity']
         # Reference for residual's normalization
-        ref = np.sum(np.absolute(self.A.diagonal())) or 1
+        ref = np.sum(np.absolute(self._A_t.diagonal())) or 1
         for itr in range(int(self.settings['max_iter'])):
             self[self.settings['quantity']] = x
             self._A = (self._A_t).copy()
