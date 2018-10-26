@@ -18,10 +18,12 @@ class PoissonNernstPlanck(ReactiveTransport):
                    'solvent': {'permittivity': None},
                    'electrolytes': {'electrolyteA': {'algorithm': None,
                                                      'valence': None,
-                                                     'diffusion_coef': None},
+                                                     'diffusion_coef': None,
+                                                     'molar_weight': None},
                                     'electrolyteB': {'algorithm': None,
                                                      'valence': None,
-                                                     'diffusion_coef': None}},
+                                                     'diffusion_coef': None,
+                                                     'molar_weight': None}},
                    'pnp_tolerance': 1e-06}
         super().__init__(**kwargs)
         self.settings.update(def_set)
@@ -81,9 +83,11 @@ class PoissonNernstPlanck(ReactiveTransport):
         epsilon = self.settings['solvent']['permittivity']
         zA = self.settings['electrolytes']['electrolyteA']['valence']
         zB = self.settings['electrolytes']['electrolyteB']['valence']
+        MA = self.settings['electrolytes']['electrolyteA']['molar_weight']
+        MB = self.settings['electrolytes']['electrolyteB']['molar_weight']
         cA = eA_alg[eA_alg.settings['quantity']]
         cB = eB_alg[eB_alg.settings['quantity']]
-        p_alg.b = (-F/epsilon) * (zA*cA + zB*cB)
+        p_alg.b = (-F/epsilon) * ((zA/MA)*cA + (zB/MB)*cB)
 
     def run(self):
         p_alg = self.settings['poisson_alg']
