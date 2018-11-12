@@ -90,4 +90,5 @@ that change can be cascaded to all dependent properties ('pore.diameter').
 """
 from .GenericGeometry import GenericGeometry
 from .StickAndBall import StickAndBall
+from .StickAndBall import StickAndBall2D
 from .Boundary import Boundary
