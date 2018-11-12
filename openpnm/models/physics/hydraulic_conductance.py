@@ -60,3 +60,45 @@ def hagen_poiseuille(target,
                                throat_diffusivity=throat_viscosity,
                                conduit_lengths=conduit_lengths,
                                conduit_shape_factors=conduit_shape_factors)
+
+
+def hagen_poiseuille_2D(target,
+                        pore_diameter='pore.diameter',
+                        throat_diameter='throat.diameter',
+                        pore_viscosity='pore.viscosity',
+                        throat_viscosity='throat.viscosity',
+                        conduit_lengths='throat.conduit_lengths',
+                        conduit_shape_factors='throat.flow_shape_factors'):
+    r"""
+    Returns hydraulic conductance for a 2D pore-throat-pore assembly (conduit).
+
+    """
+    network = target.project.network
+    throats = network.map_throats(throats=target.Ts, origin=target)
+    phase = target.project.find_phase(target)
+    cn = network['throat.conns'][throats]
+    # Getting pore/throat diameters
+    D1 = network[pore_diameter][cn[:, 0]]
+    Dt = network[throat_diameter][throats]
+    D2 = network[pore_diameter][cn[:, 1]]
+    # Getting conduit lengths
+    L1 = network[conduit_lengths + '.pore1'][throats]
+    Lt = network[conduit_lengths + '.throat'][throats]
+    L2 = network[conduit_lengths + '.pore2'][throats]
+    # Getting shape factors
+    try:
+        SF1 = phase[conduit_shape_factors+'.pore1'][throats]
+        SFt = phase[conduit_shape_factors+'.throat'][throats]
+        SF2 = phase[conduit_shape_factors+'.pore2'][throats]
+    except KeyError:
+        SF1 = SF2 = SFt = 1.0
+    # Getting viscosity values
+    mut = phase[throat_viscosity][throats]
+    mu1 = phase[pore_viscosity][cn[:, 0]]
+    mu2 = phase[pore_viscosity][cn[:, 1]]
+    # Find g for half of pore 1, throat, and half of pore 2
+    g1 = D1**3 / (12*mu1*L1)
+    g2 = D2**3 / (12*mu2*L2)
+    gt = Dt**3 / (12*mut*Lt)
+
+    return (1/gt/SFt + 1/g1/SF1 + 1/g2/SF2)**(-1)
