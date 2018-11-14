@@ -31,7 +31,7 @@ def purcell(target,
     target['throat.scale_b'] = r_toroid
     output = general_toroidal(target=target,
                               mode=mode,
-                              profile_equation='eliptical',
+                              profile_equation='elliptical',
                               target_Pc=target_Pc,
                               num_points=num_points,
                               throat_diameter=throat_diameter,
@@ -94,7 +94,7 @@ def sinusoidal(target,
 
 
 def general_toroidal(target,
-                     profile_equation='eliptical',
+                     profile_equation='elliptical',
                      mode='max',
                      target_Pc=None,
                      num_points=1e3,
@@ -114,8 +114,8 @@ def general_toroidal(target,
         controls the length of the calculated array, and also provides
         access to other necessary thermofluid properties.
 
-    profile_equation : string (Default is 'eliptical')
-        options eliptical, sinusoidal.
+    profile_equation : string (Default is 'elliptical')
+        options elliptical, sinusoidal.
 
     mode : string (Default is 'max')
         Determines what information to send back. Options are:
