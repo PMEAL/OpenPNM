@@ -174,7 +174,7 @@ def general_toroidal(target,
     fb = target[throat_scale_b]
     # Governing equations
     x, a, b, rt, sigma, theta = syp.symbols('x, a, b, rt, sigma, theta')
-    if profile_equation == 'eliptical':
+    if profile_equation == 'elliptical':
         y = syp.sqrt(1 - (x/a)**2)*b
     elif profile_equation == 'sinusoidal':
         y = (syp.cos(syp.pi*x/(2*a)))*b

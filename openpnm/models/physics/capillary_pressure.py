@@ -326,7 +326,7 @@ def purcell_bidirectional(target, r_toroid,
         network['throat.temp_diameter'] = network[pore_diameter][conns[:, p]]
         key = 'throat.touch_pore_'+str(p)
         target.add_model(propname=key,
-                         model=pm.meniscus.toroidal,
+                         model=pm.meniscus.purcell,
                          mode='touch',
                          r_toroid=r_toroid,
                          num_points=num_points,
