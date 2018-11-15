@@ -437,7 +437,7 @@ class MixedPercolationTest:
                       model=op.models.geometry.throat_vector.pore_to_pore)
         water = op.phases.Water(network=pn)
         water['pore.contact_angle'] = 60
-        phys = op.physics.Standard(network=pn, phase=water, geometry=geo)
+        phys = op.physics.GenericPhysics(network=pn, phase=water, geometry=geo)
         r_tor = 5e-6
         phys.add_model(propname='throat.entry_pressure',
                        model=op.models.physics.meniscus.purcell,
@@ -473,7 +473,7 @@ class MixedPercolationTest:
                       model=op.models.geometry.throat_vector.pore_to_pore)
         water = op.phases.Water(network=pn)
         water['pore.contact_angle'] = 100
-        phys = op.physics.Standard(network=pn, phase=water, geometry=geo)
+        phys = op.physics.GenericPhysics(network=pn, phase=water, geometry=geo)
         r_tor = 5e-6
         pmod = op.models.physics.capillary_pressure.purcell_bidirectional
         phys.add_model(propname='throat.entry_pressure',

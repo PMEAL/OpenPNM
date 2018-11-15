@@ -202,7 +202,12 @@ def general_toroidal(target,
     c2x = syp.lambdify((x, a, b, rt, sigma, theta), d, 'numpy')
     cap_angle = syp.lambdify((x, a, b, rt, sigma, theta), gamma, 'numpy')
     # All relative positions along throat
-    pos = np.arange(-0.999, 0.999, 1/num_points)
+#    pos = np.arange(-0.999, 0.999, 1/num_points)
+    hp = int(num_points/2)
+    log_pos = np.logspace(-4, -1, hp+1)[:-1]
+    lin_pos = np.arange(0.1, 1.0, 1/hp)
+    half_pos = np.concatenate((log_pos, lin_pos))
+    pos = np.concatenate((-half_pos[::-1], half_pos))
     # Now find the positions of the menisci along each throat axis
     Y, X = np.meshgrid(throatRad, pos)
     X *= fa
