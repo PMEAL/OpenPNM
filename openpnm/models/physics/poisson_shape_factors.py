@@ -1,5 +1,6 @@
 from scipy import pi as _pi
 from scipy import arctanh as _atanh
+from scipy import sqrt as _sqrt
 import scipy as _sp
 import numpy as _np
 
@@ -166,6 +167,88 @@ def conical_frustum_and_stick(target, pore_area='pore.area',
     # Handle the rest (non-zero-length conduits)
     F1[m1] = (4*L1/(D1*Dt*_pi))[m1]
     F2[m2] = (4*L2/(D2*Dt*_pi))[m2]
+    Ft[mt] = (Lt/At)[mt]
+    # Calculate conduit shape factors
+    SF1[m1] = (L1 / (A1*F1))[m1]
+    SF2[m2] = (L2 / (A2*F2))[m2]
+    SFt[mt] = (Lt / (At*Ft))[mt]
+    _np.warnings.filterwarnings('default', category=RuntimeWarning)
+    return {'pore1': SF1, 'throat': SFt, 'pore2': SF2}
+
+
+def ball_and_stick_2D(target, pore_area='pore.area',
+                      throat_area='throat.area',
+                      pore_diameter='pore.diameter',
+                      throat_diameter='throat.diameter',
+                      conduit_lengths='throat.conduit_lengths'):
+    r"""
+    Calculate conduit shape factors for throat conductance associated with
+    diffusion-like physics (ex. thermal/diffusive/electrical conductance),
+    assuming pores and throats are circles (balls) and rectangles (sticks).
+
+    Parameters
+    ----------
+    target : OpenPNM Object
+        The object which this model is associated with. This controls the
+        length of the calculated array, and also provides access to other
+        necessary properties.
+
+    pore_area : string
+        Dictionary key of the pore area values
+
+    throat_area : string
+        Dictionary key of the throat area values
+
+    pore_diameter : string
+        Dictionary key of the pore diameter values
+
+    throat_diameter : string
+        Dictionary key of the throat diameter values
+
+    conduit_lengths : string
+        Dictionary key of the conduit lengths' values
+
+    Returns
+    -------
+    SF : dictionary
+        Dictionary containing conduit shape factors to be used in conductance
+        models associated with diffusion-like physics. Shape factors are
+        accessible via the keys: 'pore1', 'pore2' and 'throat'.
+
+    Notes
+    -----
+    (1) This model accounts for the variable cross-section area in circles.
+
+    (2) WARNING: This model could break if `conduit_lengths` does not
+    correspond to an actual ball and stick! Example: pore length is greater
+    than pore radius --> :(
+
+    """
+    _np.warnings.filterwarnings('ignore', category=RuntimeWarning)
+    network = target.project.network
+    throats = network.map_throats(throats=target.Ts, origin=target)
+    cn = network['throat.conns'][throats]
+    # Get pore diameter
+    D1 = network[pore_diameter][cn[:, 0]]
+    D2 = network[pore_diameter][cn[:, 1]]
+    # Get conduit lengths
+    L1 = network[conduit_lengths + '.pore1'][throats]
+    L2 = network[conduit_lengths + '.pore2'][throats]
+    Lt = network[conduit_lengths + '.throat'][throats]
+    # Get pore/throat baseline areas (the one used in generic conductance)
+    A1 = network[pore_area][cn[:, 0]]
+    A2 = network[pore_area][cn[:, 1]]
+    At = network[throat_area][throats]
+    # Preallocating F, SF
+    # F is INTEGRAL(1/A) dx , x : 0 --> L
+    F1, F2, Ft = _sp.zeros((3, len(Lt)))
+    SF1, SF2, SFt = _sp.ones((3, len(Lt)))
+    # Setting SF to 1 when Li = 0 (ex. boundary pores)
+    # INFO: This is needed since area could also be zero, which confuses NumPy
+    m1, m2, mt = [Li != 0 for Li in [L1, L2, Lt]]
+    SF1[~m1] = SF2[~m2] = SFt[~mt] = 1
+    F1[m1] = (0.5 * _atanh(2*L1/_sqrt(D1**2 - 4*L1**2)))[m1]
+    F2[m2] = (0.5 * _atanh(2*L2/_sqrt(D2**2 - 4*L2**2)))[m2]
     Ft[mt] = (Lt/At)[mt]
     # Calculate conduit shape factors
     SF1[m1] = (L1 / (A1*F1))[m1]
