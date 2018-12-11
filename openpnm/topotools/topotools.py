@@ -1045,10 +1045,11 @@ def label_faces(network, tol=0.0, label='surface'):
     zspan = zmax - zmin
     network['pore.back'] = (crds[:, 0] >= (xmax - tol*xspan)) * Psurf
     network['pore.right'] = (crds[:, 1] >= (ymax - tol*yspan)) * Psurf
-    network['pore.top'] = (crds[:, 2] >= (zmax - tol*zspan)) * Psurf
-    network['pore.front'] = (crds[:, 0] <= (xmin + tol*xspan)) * Psurf
     network['pore.left'] = (crds[:, 1] <= (ymin + tol*yspan)) * Psurf
     network['pore.bottom'] = (crds[:, 2] <= (zmin + tol*zspan)) * Psurf
+    if sum(dimensionality(network)) == 3:
+        network['pore.top'] = (crds[:, 2] >= (zmax - tol*zspan)) * Psurf
+        network['pore.front'] = (crds[:, 0] <= (xmin + tol*xspan)) * Psurf
 
 
 def find_surface_pores(network, markers=None, label='surface'):
@@ -1104,20 +1105,19 @@ def find_surface_pores(network, markers=None, label='surface'):
 
     """
     import scipy.spatial as sptl
+    dims = dimensionality(network)
+    coords = network['pore.coords'][:, dims]
     if markers is None:
-        (xmax, ymax, zmax) = sp.amax(network['pore.coords'], axis=0)
-        (xmin, ymin, zmin) = sp.amin(network['pore.coords'], axis=0)
-        xave = (xmin+xmax)/2
-        yave = (ymin+ymax)/2
-        zave = (zmin+zmax)/2
-        markers = [[xmax + xave, yave, zave],
-                   [xmin - xave, yave, zave],
-                   [xave, ymax + yave, zave],
-                   [xave, ymin - yave, zave],
-                   [xave, yave, zmax + zave],
-                   [xave, yave, zmin - zave]]
-    markers = sp.atleast_2d(markers)
-    tri = sptl.Delaunay(network['pore.coords'], incremental=True)
+        n = sp.sum(dims)
+        cmin = sp.amin(coords, axis=0)
+        coords_temp = coords - cmin
+        cmax = sp.amax(coords_temp, axis=0)*sp.eye(n)
+        cave = sp.mean(coords_temp, axis=0)*sp.ones((n, n))
+        markers = sp.vstack((-cave*sp.eye(n) + (1-sp.eye(n))*cave, cmax+cave))
+        markers += cmin
+    else:
+        markers = sp.atleast_2d(markers)
+    tri = sptl.Delaunay(coords, incremental=True)
     tri.add_points(markers)
     (indices, indptr) = tri.vertex_neighbor_vertices
     for k in range(network.Np, tri.npoints):
