@@ -1129,8 +1129,30 @@ def find_surface_pores(network, markers=None, label='surface'):
         network['pore.'+label][neighbors] = True
 
 
+def dimensionality(network):
+    r"""
+    Checks the dimensionality of the network
+
+    Parameters
+    ----------
+    network : OpenPNM Network object
+        The network whose dimensionality is to be checked
+
+    Returns
+    -------
+    Returns an 3-by-1 array containing ``True`` for each axis that contains
+    multiple values, indicating that the pores are spatially distributed
+    in that direction.
+    """
+    v = [True, True, True]
+    for i in [0, 1, 2]:
+        v[i] = not sp.allclose(network['pore.coords'][:, i],
+                               network['pore.coords'][1, i])
+    return v
+
+
 def clone_pores(network, pores, labels=['clone'], mode='parents'):
-    r'''
+    r"""
     Clones the specified pores and adds them to the network
 
     Parameters
@@ -1151,7 +1173,7 @@ def clone_pores(network, pores, labels=['clone'], mode='parents'):
         - 'siblings': Clones are only connected to each other in the same
                       manner as parents were connected
         - 'isolated': No connections between parents or siblings
-    '''
+    """
     if len(network.project.geometries()) > 0:
         logger.warning('Network has active Geometries, new pores must be \
                         assigned a Geometry')
@@ -1709,33 +1731,33 @@ def merge_pores(network, pores, labels=['merged']):
         len(pores[0])
     except (TypeError, IndexError):
         pores = [pores]
-        
+
     N = len(pores)
     NBs, XYZs = [], []
-    
+
     for Ps in pores:
         NBs.append(network.find_neighbor_pores(pores=Ps,
                                                mode='union',
                                                flatten=True,
                                                include_input=False))
         XYZs.append(network['pore.coords'][Ps].mean(axis=0))
-    
+
     extend(network, pore_coords=XYZs, labels=labels)
     Pnew = network.Ps[-N::]
-    
+
     # Possible throats between new pores: This only happens when running in
     # batch mode, i.e. multiple groups of pores are to be merged. In case
-    # some of these groups share elements, possible throats between the 
+    # some of these groups share elements, possible throats between the
     # intersecting elements is not captured and must be added manually.
     pores_set = [set(items) for items in pores]
     NBs_set = [set(items) for items in NBs]
-    ps1, ps2 = [], []    
+    ps1, ps2 = [], []
     from itertools import combinations
     for i, j in combinations(range(N), 2):
         if not NBs_set[i].isdisjoint(pores_set[j]):
             ps1.append([network.Ps[-N+i]])
             ps2.append([network.Ps[-N+j]])
-    
+
     # Add (possible) connections between the new pores
     connect_pores(network, pores1=ps1, pores2=ps2, labels=labels)
     # Add connections between the new pores and the rest of the network
