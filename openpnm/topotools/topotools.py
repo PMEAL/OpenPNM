@@ -1813,7 +1813,7 @@ def _template_sphere_disc(dim, outer_radius, inner_radius):
     return img
 
 
-def template_sphere_shell(outer_radius, inner_radius=0):
+def template_sphere_shell(outer_radius, inner_radius=0, dim=3):
     r"""
     This method generates an image array of a sphere-shell. It is useful for
     passing to Cubic networks as a ``template`` to make spherical shaped
@@ -1828,13 +1828,17 @@ def template_sphere_shell(outer_radius, inner_radius=0):
         Number of nodes in the inner radius of the shell.  a value of 0 will
         result in a solid sphere.
 
+    dim : scalar
+        Controls the number of dimensions of the result.  3 returns a sphere,
+        while 2 returns a disk.
+
     Returns
     -------
     A Numpy array containing 1's to demarcate the sphere-shell, and 0's
     elsewhere.
 
     """
-    img = _template_sphere_disc(dim=3, outer_radius=outer_radius,
+    img = _template_sphere_disc(dim=dim, outer_radius=outer_radius,
                                 inner_radius=inner_radius)
     return img
 
