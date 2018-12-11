@@ -1043,13 +1043,16 @@ def label_faces(network, tol=0.0, label='surface'):
     yspan = ymax - ymin
     zmin, zmax = sp.amin(crds[:, 2]), sp.amax(crds[:, 2])
     zspan = zmax - zmin
-    network['pore.back'] = (crds[:, 0] >= (xmax - tol*xspan)) * Psurf
-    network['pore.right'] = (crds[:, 1] >= (ymax - tol*yspan)) * Psurf
-    network['pore.left'] = (crds[:, 1] <= (ymin + tol*yspan)) * Psurf
-    network['pore.bottom'] = (crds[:, 2] <= (zmin + tol*zspan)) * Psurf
-    if sum(dimensionality(network)) == 3:
-        network['pore.top'] = (crds[:, 2] >= (zmax - tol*zspan)) * Psurf
+    dims = dimensionality(network)
+    if dims[0]:
         network['pore.front'] = (crds[:, 0] <= (xmin + tol*xspan)) * Psurf
+        network['pore.back'] = (crds[:, 0] >= (xmax - tol*xspan)) * Psurf
+    if dims[1]:
+        network['pore.left'] = (crds[:, 1] <= (ymin + tol*yspan)) * Psurf
+        network['pore.right'] = (crds[:, 1] >= (ymax - tol*yspan)) * Psurf
+    if dims[2]:
+        network['pore.top'] = (crds[:, 2] >= (zmax - tol*zspan)) * Psurf
+        network['pore.bottom'] = (crds[:, 2] <= (zmin + tol*zspan)) * Psurf
 
 
 def find_surface_pores(network, markers=None, label='surface'):
