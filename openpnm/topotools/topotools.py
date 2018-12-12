@@ -1115,16 +1115,17 @@ def find_surface_pores(network, markers=None, label='surface'):
         coords -= sp.amin(coords, axis=0)
         coords /= sp.amax(coords, axis=0)
         coords -= 0.5
+        npts = max((network.Np/10, 100))
         if sum(dims) == 2:
             r = 0.75
-            theta = sp.linspace(0, 2*sp.pi, 250, dtype=float)
+            theta = sp.linspace(0, 2*sp.pi, npts, dtype=float)
             x = r*sp.cos(theta)
             y = r*sp.sin(theta)
             markers = sp.vstack((x, y)).T
         if sum(dims) == 3:
             r = 1.00
-            indices = sp.arange(0, 1000, dtype=float) + 0.5
-            phi = sp.arccos(1 - 2*indices/1000)
+            indices = sp.arange(0, npts, dtype=float) + 0.5
+            phi = sp.arccos(1 - 2*indices/npts)
             theta = sp.pi * (1 + 5**0.5) * indices
             x = r*sp.cos(theta) * sp.sin(phi)
             y = r*sp.sin(theta) * sp.sin(phi)
@@ -1133,8 +1134,8 @@ def find_surface_pores(network, markers=None, label='surface'):
     else:
         coords = network['pore.coords']
         markers = sp.atleast_2d(markers)
-    tri = sptl.Delaunay(coords, incremental=True)
-    tri.add_points(markers)
+    pts = sp.vstack((coords, markers))
+    tri = sptl.Delaunay(pts, incremental=False)
     (indices, indptr) = tri.vertex_neighbor_vertices
     for k in range(network.Np, tri.npoints):
         neighbors = indptr[indices[k]:indices[k+1]]
