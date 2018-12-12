@@ -1104,21 +1104,34 @@ def find_surface_pores(network, markers=None, label='surface'):
     98
 
     This function is mostly useful for unique networks such as spheres, random
-    topology, or networks that have been subdivied.
+    topology, or networks that have been subdivided.
 
     """
     import scipy.spatial as sptl
-    dims = dimensionality(network)
-    coords = network['pore.coords'][:, dims]
     if markers is None:
-        n = sp.sum(dims)
-        cmin = sp.amin(coords, axis=0)
-        coords_temp = coords - cmin
-        cmax = sp.amax(coords_temp, axis=0)*sp.eye(n)
-        cave = sp.mean(coords_temp, axis=0)*sp.ones((n, n))
-        markers = sp.vstack((-cave*sp.eye(n) + (1-sp.eye(n))*cave, cmax+cave))
-        markers += cmin
+        dims = dimensionality(network)
+        coords = network['pore.coords'][:, dims]
+        # normalize coords to a 1 unit cube centered on origin
+        coords -= sp.amin(coords, axis=0)
+        coords /= sp.amax(coords, axis=0)
+        coords -= 0.5
+        if sum(dims) == 2:
+            r = 0.75
+            theta = sp.linspace(0, 2*sp.pi, 250, dtype=float)
+            x = r*sp.cos(theta)
+            y = r*sp.sin(theta)
+            markers = sp.vstack((x, y)).T
+        if sum(dims) == 3:
+            r = 1.00
+            indices = sp.arange(0, 1000, dtype=float) + 0.5
+            phi = sp.arccos(1 - 2*indices/1000)
+            theta = sp.pi * (1 + 5**0.5) * indices
+            x = r*sp.cos(theta) * sp.sin(phi)
+            y = r*sp.sin(theta) * sp.sin(phi)
+            z = r*sp.cos(phi)
+            markers = sp.vstack((x, y, z)).T
     else:
+        coords = network['pore.coords']
         markers = sp.atleast_2d(markers)
     tri = sptl.Delaunay(coords, incremental=True)
     tri.add_points(markers)
@@ -1495,7 +1508,7 @@ def connect_pores(network, pores1, pores2, labels=[], add_conns=True):
 
 def find_pore_to_pore_distance(network, pores1=None, pores2=None):
     r'''
-    Find the distance between all pores on set one to each pore in set 2
+    Find the distance between all pores on set 1 to each pore in set 2
 
     Parameters
     ----------
@@ -1514,6 +1527,13 @@ def find_pore_to_pore_distance(network, pores1=None, pores2=None):
     A distance matrix with ``len(pores1)`` rows and ``len(pores2)`` columns.
     The distance between pore *i* in ``pores1`` and *j* in ``pores2`` is
     located at *(i, j)* and *(j, i)* in the distance matrix.
+
+    Notes
+    -----
+    This function computes and returns a distance matrix, which is a dense
+    matrix of size Np_1 by Np_2, so can get large.  For distances between
+    larger sets a KD-tree approach would be better, which is available in
+    ``scipy.spatial``.
 
     '''
     from scipy.spatial.distance import cdist
