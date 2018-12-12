@@ -1153,12 +1153,14 @@ class Base(dict):
             else:
                 temp_arr[inds] = dummy_val[atype[0]]
         # Check if any arrays have units, if so then apply them to result
-        units = [a.units for a in arrs if hasattr(a, 'units')]
-        if len(units) > 0:
-            if len(set(units)) == 1:
-                temp_arr *= units[0]
-            else:
-                raise Exception('Units on the interleaved array are not equal')
+        if any([hasattr(a, 'units') for a in arrs]):
+            [a.convert_to_mks() for a in arrs if hasattr(a, 'units')]
+            units = [a.units.__str__() for a in arrs if hasattr(a, 'units')]
+            if len(units) > 0:
+                if len(set(units)) == 1:
+                    temp_arr *= arrs[0].units
+                else:
+                    raise Exception('Units on the interleaved array are not equal')
         return temp_arr
 
     def interpolate_data(self, propname):
