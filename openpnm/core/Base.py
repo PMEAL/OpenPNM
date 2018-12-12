@@ -1158,7 +1158,7 @@ class Base(dict):
             units = [a.units.__str__() for a in arrs if hasattr(a, 'units')]
             if len(units) > 0:
                 if len(set(units)) == 1:
-                    temp_arr *= arrs[0].units
+                        temp_arr *= sp.array([1])*getattr(unyt, units[0])
                 else:
                     raise Exception('Units on the interleaved array are not equal')
         return temp_arr
