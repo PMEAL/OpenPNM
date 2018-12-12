@@ -13,22 +13,26 @@ from openpnm import topotools
 
 class Cubic(GenericNetwork):
     r"""
-    This class generates a cubic network of the specified size and shape.
+    Simple cubic lattice with connectivity from 6 to 26
+
+    Though simple, the Cubic network offers many advantages such as easy
+    visualization and accurate determination of domain area and length in
+    transport calculations.
 
     Parameters
     ----------
-    name : string
-        A unique name for the network.  If none is given a random name will
-        be assigned
+    shape : array_like
+        The [Nx, Ny, Nz] size of the network in terms of the number of pores in
+        each direction
 
-    shape : tuple of ints
-        The (i,j,k) size and shape of the network.
+    spacing : array_like, optional
+        The spacing between pore centers in each direction. If not given, then
+        [1, 1, 1] is assumed.
 
-    connectivity : int
+    connectivity : int, optional
         The number of connections to neighboring pores.  Connections are made
         symmetrically to any combination of face, edge, or corners neighbors.
-
-        Options are:
+        The default is 6 to create a simple cubic structure, but options are:
 
         - 6: Faces only
         - 8: Corners only
@@ -38,13 +42,48 @@ class Cubic(GenericNetwork):
         - 20: Edges and Corners
         - 26: Faces, Edges and Corners
 
+        For a more random distribution of connectivity, use a high
+        ``connectivity`` (i.e. 26) and then delete a fraction of the throats
+        using ``openpnm.topotools.reduce_coordination``.
+
+    name : string
+        An optional name for the object to help identify it.  If not given,
+        one will be generated.
+
+    project : OpenPNM Project object, optional
+        Each OpenPNM object must be part of a *Project*.  If none is supplied
+        then one will be created and this Network will be automatically
+        assigned to it.  To create a *Project* use ``openpnm.Project()``.
+
+    Attributes
+    ----------
+    spacing : int or array
+        The distance between pore centers.  This value becomes meaningless
+        if the topology is manipulated at all (i.e. by adding boundary pores)
+        since there is not unique or consistent value.  In such cases an
+        exception is thrown.
+
+    shape : array
+        The shape of the network.  Like ``spacing`` this values is meaningless
+        if the topology is manipulated, so an Exception is thrown.
+
     Examples
     --------
     >>> import openpnm as op
-    >>> pn = op.network.Cubic(shape=[3,4,5])
+    >>> pn = op.network.Cubic(shape=[5, 5, 5], spacing=[1, 1, 1])
     >>> pn.Np
-    60
+    125
 
+    And it can be plotted for quick visualization using:
+
+    >>> fig = op.topotools.plot_connections(network=pn)
+    >>> fig = op.topotools.plot_coordinates(network=pn, c='r', s=75, fig=fig)
+
+    .. image:: /../docs/static/images/cubic_network.png
+        :align: center
+
+    For larger networks and more control over presentation use `Paraview
+    <http://www.paraview.org>`_.
     """
     def __init__(self, shape, spacing=[1, 1, 1], connectivity=6, name=None,
                  project=None):
@@ -54,11 +93,13 @@ class Cubic(GenericNetwork):
         # Store original network shape
         self._shape = sp.shape(arr)
         # Store network spacing
+        spacing = sp.array(spacing)
+        if spacing.size == 2:
+            spacing = sp.concatenate((spacing, [1]))
         self._spacing = sp.ones(3)*sp.array(spacing, ndmin=1)
 
         points = np.array([i for i, v in np.ndenumerate(arr)], dtype=float)
         points += 0.5
-        points *= spacing
 
         I = np.arange(arr.size).reshape(arr.shape)
 
@@ -103,22 +144,14 @@ class Cubic(GenericNetwork):
             heads.extend(H.flat)
         pairs = np.vstack([tails, heads]).T
 
-        self['pore.coords'] = points
-        self['throat.conns'] = pairs
-
         super().__init__(Np=points.shape[0], Nt=pairs.shape[0], name=name,
                          project=project)
-        self['pore.internal'] = True
-        self['throat.internal'] = True
-        self._label_surfaces()
 
-    def _label_surfaces(self):
-        r'''
-        It applies the default surface labels for a cubic network
-        '''
+        self['pore.coords'] = points
+        self['throat.conns'] = pairs
+        # Label faces
         x, y, z = self['pore.coords'].T
-        labels = ['internal', 'front', 'back', 'left', 'right', 'bottom',
-                  'top']
+        labels = ['front', 'back', 'left', 'right', 'bottom', 'top']
         for label in labels:
             if 'pore.'+label not in self.keys():
                 self['pore.'+label] = False
@@ -128,30 +161,48 @@ class Cubic(GenericNetwork):
         self['pore.right'][y >= y.max()] = True
         self['pore.bottom'][z <= z.min()] = True
         self['pore.top'][z >= z.max()] = True
+        # Label surface pores
+        self['pore.surface'] = False
+        Ps = self.pores(labels)
+        self['pore.surface'][Ps] = True
+        self['throat.surface'] = False
+        Ts = self.find_neighbor_throats(pores=Ps, mode='xnor')
+        self['throat.surface'][Ts] = True
+        self['pore.internal'] = True
+        self['throat.internal'] = True
+        # Scale network to requested spacing
+        self['pore.coords'] *= spacing
 
     def add_boundary_pores(self, labels=['top', 'bottom', 'front', 'back',
-                                         'left', 'right']):
+                                         'left', 'right'], spacing=None):
         r"""
-        Add pores to the faces of the network for use as boundary pores.  Pores
-        are offset from the faces by 1/2 a lattice spacing such that they lie
-        directly on the boundaries.
+        Add pores to the faces of the network for use as boundary pores.
+
+        Pores are offset from the faces by 1/2 a lattice spacing such that
+        they lie directly on the boundaries.
 
         Parameters
         ----------
-        labels : list of strings
-            Controls which faces the boundary pores are added to.  Options
-            include 'top', 'bottom', 'left', 'right', 'front', and 'back'.
+        labels : string or list of strings
+            The labels indicating the pores defining each face where boundary
+            pores are to be added (e.g. 'left' or ['left', 'right'])
 
-        Notes
-        -----
-        This method uses ``clone_pores`` to clone the surface pores (labeled
-        'left', 'right', etc), then shifts them to the periphery of the domain,
-        and gives them the label 'right_boundary', 'left_boundary', etc.
+        spacing : scalar or array_like
+            The spacing of the network (e.g. [1, 1, 1]).  This should be given
+            since it can be quite difficult to infer from the network, for
+            instance if boundary pores have already added to other faces.
+
         """
         if type(labels) == str:
             labels = [labels]
         x, y, z = self['pore.coords'].T
-        Lcx, Lcy, Lcz = self._spacing
+        if spacing is None:
+            spacing = self._spacing
+        else:
+            spacing = sp.array(spacing)
+            if spacing.size == 1:
+                spacing = sp.ones(3)*spacing
+        Lcx, Lcy, Lcz = spacing
 
         offset = {}
         offset['front'] = offset['left'] = offset['bottom'] = [0, 0, 0]
@@ -176,18 +227,27 @@ class Cubic(GenericNetwork):
 
     def _get_spacing(self):
         # Find Network spacing
-        P1 = self['throat.conns'][:, 0]
-        P2 = self['throat.conns'][:, 1]
-        C1 = self['pore.coords'][P1]
-        C2 = self['pore.coords'][P2]
-        E = np.sqrt(np.sum((C1-C2)**2, axis=1))  # Euclidean distance
-        if np.allclose(E, E[0]):
-            spacing = E[0]
-        else:
-            raise Exception('A unique value of spacing could not be inferred')
-        return spacing
+        P12 = self['throat.conns']
+        C12 = self['pore.coords'][P12]
+        V = np.abs(np.squeeze(np.diff(C12, axis=1)))
+        if np.any(np.sum(V == 0, axis=1) != 2):
+            raise Exception('A unique value of spacing could not be found')
+        spacing = [None, None, None]
+        for axis in [0, 1, 2]:
+            temp = np.unique(np.around(V[:, axis], decimals=10))
+            if np.size(temp) > 2:
+                raise Exception('A unique value of spacing could not be found')
+            else:
+                spacing[axis] = temp[1]
+        return sp.array(spacing)
 
     spacing = property(fget=_get_spacing)
+
+    def _get_shape(self):
+        L = np.ptp(self['pore.coords'], axis=0)
+        return L/self.spacing + 1
+
+    shape = property(fget=_get_shape)
 
     def to_array(self, values):
         r"""
@@ -204,6 +264,7 @@ class Cubic(GenericNetwork):
         This method can break on networks that have had boundaries added.  It
         will usually work IF the given values came only from 'internal'
         pores.
+
         """
         if sp.shape(values)[0] > self.num_pores('internal'):
             raise Exception('The array shape does not match the network')
@@ -217,13 +278,16 @@ class Cubic(GenericNetwork):
         r"""
         Apply data to the network based on a rectangular array filled with
         values.  Each array location corresponds to a pore in the network.
+
         Parameters
         ----------
         array : array_like
             The rectangular array containing the values to be added to the
             network. This array must be the same shape as the original network.
+
         propname : string
             The name of the pore property being added.
+
         """
         array = sp.atleast_3d(array)
         if sp.shape(array) != self._shape:

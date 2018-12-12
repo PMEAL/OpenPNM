@@ -1,6 +1,6 @@
 import scipy as sp
 import networkx as nx
-from openpnm.core import logging
+from openpnm.utils import logging
 from openpnm.io import GenericIO
 from openpnm.network import GenericNetwork
 logger = logging.getLogger(__name__)
@@ -8,8 +8,12 @@ logger = logging.getLogger(__name__)
 
 class NetworkX(GenericIO):
     r"""
-    This class is meant specifcally for exchanging data with NetworkX, which
-    is a common tool for dealing with network structures.
+    NetworkX is a common tool for dealing with network structures
+
+    This class actually handles dealing with live NetworkX objects rather than
+    saved files. NetworkX has a number of export formats, so converting
+    OpenPNM data to a NetworkX object, then using NetworkX to exprt might be
+    an option for file formats not supported by OpenPNM yet.
 
     Notes
     -----

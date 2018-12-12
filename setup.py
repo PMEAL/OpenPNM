@@ -6,10 +6,6 @@ try:
 except ImportError:
     from distutils.core import setup
 
-# Check Python version
-if sys.version_info < (3, 4):
-    raise Exception('openpnm requires Python 3.4 or greater to run')
-
 sys.path.append(os.getcwd())
 
 main_ = {}
@@ -20,8 +16,8 @@ with open(ver_path) as f:
             exec(line, main_)
 
 setup(
-    name='OpenPNM',
-    description = 'A framework for conducting pore network modeling simulations of multiphase transport in porous materials.',
+    name='openpnm',
+    description = 'A framework for conducting pore network modeling simulations of multiphase transport in porous materials',
     version=main_['__version__'],
     classifiers=[
         'Development Status :: 5 - Production/Stable',
@@ -38,21 +34,32 @@ setup(
         'openpnm.phases',
         'openpnm.physics',
         'openpnm.utils',
+        'openpnm.io',
         'openpnm.models',
+        'openpnm.models.misc',
+        'openpnm.models.geometry',
+        'openpnm.models.phases',
+        'openpnm.models.physics',
         'openpnm.algorithms',
-        'openpnm.topotools'
+        'openpnm.topotools',
+        'openpnm.materials',
     ],
     install_requires=[
-        'numpy',
-        'scipy',
+        'numpy>=1.15',
+        'scipy>=1.1',
+        'scikit-image>=0.14',
+        'networkx>=2',
+        'h5py>=2.8',
+        'sympy',
         'matplotlib',
-        'scikit-image',
-        'transforms3d',
         'pandas',
+        'numba',
+        'porespy',
+        'transforms3d',
         'flatdict',
-        'h5py',
-        'unyt'],
-
+        'gitpython',
+        'jsonschema'
+        ],
     author='OpenPNM Team',
     author_email='jgostick@uwaterloo.ca',
     download_url='https://github.com/pmeal/OpenPNM/',

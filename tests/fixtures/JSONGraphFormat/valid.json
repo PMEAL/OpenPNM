@@ -1,0 +1,43 @@
+{
+  "graph": {
+    "metadata": {
+      "number_of_nodes": 2,
+      "number_of_links": 1
+    },
+    "nodes": [
+      {
+        "id": "0",
+        "metadata": {
+          "node_squared_radius": 9,
+          "node_coordinates": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          }
+        }
+      },
+      {
+        "id": "1",
+        "metadata": {
+          "node_squared_radius": 4,
+          "node_coordinates": {
+            "x": 1,
+            "y": 1,
+            "z": 1
+          }
+        }
+      }
+    ],
+    "edges": [
+      {
+        "id": "0",
+        "source": "0",
+        "target": "1",
+        "metadata": {
+          "link_length": 1.73205080757,
+          "link_squared_radius": 5.169298742047715
+        }
+      }
+    ]
+  }
+}

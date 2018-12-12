@@ -1,11 +1,14 @@
-import scipy as _sp
-from openpnm.core import logging as _logging
+import numpy as _np
+from scipy import sqrt as _sqrt
+from openpnm.utils import logging as _logging
 _logger = _logging.getLogger(__name__)
 
 
-def straight(target, pore_diameter='pore.diameter', L_negative=1e-9):
+def ctc(target, pore_diameter='pore.diameter'):
     r"""
-    Calculate throat length
+    Calculate throat length assuming point-like pores, i.e. center-to-center
+    distance between pores. Also, this models assumes that pores and throat
+    centroids are colinear.
 
     Parameters
     ----------
@@ -14,26 +17,127 @@ def straight(target, pore_diameter='pore.diameter', L_negative=1e-9):
         length of the calculated array, and also provides access to other
         necessary properties.
 
-    L_negative : float
-        The default throat length to use when negative lengths are found.  The
-        default is 1 nm.  To accept negative throat lengths, set this value to
-        ``None``.
+    pore_diameter : string
+        Dictionary key of the pore diameter values
+
     """
+    _np.warnings.filterwarnings('ignore', category=RuntimeWarning)
+
     network = target.project.network
-    # Initialize throat_property['length']
-    throats = network.throats(target.name)
-    pore1 = network['throat.conns'][:, 0]
-    pore2 = network['throat.conns'][:, 1]
-    C1 = network['pore.coords'][pore1]
-    C2 = network['pore.coords'][pore2]
-    E = _sp.sqrt(_sp.sum((C1-C2)**2, axis=1))  # Euclidean distance
-    D1 = network[pore_diameter][pore1]
-    D2 = network[pore_diameter][pore2]
-    value = E-(D1+D2)/2.
-    value = value[throats]
-    if _sp.any(value < 0) and L_negative is not None:
-        _logger.warn('Negative throat lengths are calculated. Arbitrary ' +
-                     'positive length assigned: ' + str(L_negative))
-        Ts = _sp.where(value < 0)[0]
-        value[Ts] = L_negative
+    throats = network.map_throats(throats=target.Ts, origin=target)
+    cn = network['throat.conns'][throats]
+    C1 = network['pore.coords'][cn[:, 0]]
+    C2 = network['pore.coords'][cn[:, 1]]
+    value = _sqrt(((C1 - C2)**2).sum(axis=1))
+
+    _np.warnings.filterwarnings('default', category=RuntimeWarning)
+
     return value
+
+
+def piecewise(target, throat_endpoints='throat.endpoints',
+              throat_centroid='throat.centroid'):
+    r"""
+    Calculate throat length from end points and optionally a centroid
+
+    Parameters
+    ----------
+    target : OpenPNM Object
+        The object which this model is associated with. This controls the
+        length of the calculated array, and also provides access to other
+        necessary properties.
+
+    throat_endpoints : string
+        Dictionary key of the throat endpoint values.
+
+    throat_centroid : string
+        Dictionary key of the throat centroid values, optional.
+
+    Returns
+    -------
+    Lt : ndarray
+        Array containing throat lengths for the given geometry.
+
+    Notes
+    -----
+    (1) By default, the model assumes that the centroids of pores and the
+    connecting throat in each conduit are colinear.
+
+    (2) If `throat_centroid` is passed, the model accounts for the extra
+    length. This could be useful for Voronoi or extracted networks.
+
+    """
+    _np.warnings.filterwarnings('ignore', category=RuntimeWarning)
+    network = target.project.network
+    throats = network.map_throats(throats=target.Ts, origin=target)
+    # Get throat endpoints
+    EP1 = network[throat_endpoints + '.head'][throats]
+    EP2 = network[throat_endpoints + '.tail'][throats]
+    # Calculate throat length
+    Lt = _sqrt(((EP1 - EP2)**2).sum(axis=1))
+    # Handle the case where pores & throat centroids are not colinear
+    try:
+        Ct = network[throat_centroid][throats]
+        Lt = _sqrt(((Ct - EP1)**2).sum(axis=1)) + \
+            _sqrt(((Ct - EP2)**2).sum(axis=1))
+    except KeyError:
+        pass
+
+    _np.warnings.filterwarnings('default', category=RuntimeWarning)
+
+    return Lt
+
+
+def conduit_lengths(target, throat_endpoints='throat.endpoints',
+                    throat_length='throat.length'):
+    r"""
+    Calculate conduit lengths. A conduit is defined as half pore + throat
+    + half pore.
+
+    Parameters
+    ----------
+    target : OpenPNM Object
+        The object which this model is associated with. This controls the
+        length of the calculated array, and also provides access to other
+        necessary properties.
+
+    throat_endpoints : string
+        Dictionary key of the throat endpoint values.
+
+    throat_diameter : string
+        Dictionary key of the throat length values.
+
+    throat_length : string (optional)
+        Dictionary key of the throat length values.  If not given then the
+        direct distance bewteen the two throat end points is used.
+
+    Returns
+    -------
+    Dictionary containing conduit lengths, which can be accessed via the dict
+    keys 'pore1', 'pore2', and 'throat'.
+
+    """
+    _np.warnings.filterwarnings('ignore', category=RuntimeWarning)
+
+    network = target.project.network
+    throats = network.map_throats(throats=target.Ts, origin=target)
+    cn = network['throat.conns'][throats]
+    # Get pore coordinates
+    C1 = network['pore.coords'][cn[:, 0]]
+    C2 = network['pore.coords'][cn[:, 1]]
+    # Get throat endpoints and length
+    EP1 = network[throat_endpoints + '.head'][throats]
+    EP2 = network[throat_endpoints + '.tail'][throats]
+    try:
+        # Look up throat length if given
+        Lt = network[throat_length][throats]
+    except KeyError:
+        # Calculate throat length otherwise
+        Lt = _sqrt(((EP1 - EP2)**2).sum(axis=1))
+    # Calculate conduit lengths
+    L1 = _sqrt(((C1 - EP1)**2).sum(axis=1))
+    L2 = _sqrt(((C2 - EP2)**2).sum(axis=1))
+
+    _np.warnings.filterwarnings('default', category=RuntimeWarning)
+
+    return {'pore1': L1, 'throat': Lt, 'pore2': L2}

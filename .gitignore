@@ -1,2 +1,4 @@
 *.pyc
 .spyproject/
+.pytest_cache/
+.vscode/

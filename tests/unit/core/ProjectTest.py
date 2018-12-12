@@ -8,7 +8,7 @@ import os
 class ProjectTest:
 
     def setup_class(self):
-        self.ws = op.core.Workspace()
+        self.ws = op.Workspace()
         self.ws.clear()
         self.proj = self.ws.new_project()
         self.net = op.network.Cubic(shape=[2, 2, 2], project=self.proj)
@@ -65,7 +65,7 @@ class ProjectTest:
             "――――――――――――――――――――――――――――――――――――――――――――――――"
         assert print(self.proj.grid) == print(s)
 
-    def test_purge_geom(self):
+    def test_purge_geom_shallow(self):
         proj = self.ws.copy_project(self.net.project)
         net = proj.network
         geo1 = proj.geometries()['geo_01']
@@ -83,7 +83,24 @@ class ProjectTest:
         assert 'throat.' + geo2.name in net.keys()
         self.ws.close_project(proj)
 
-    def test_purge_phys(self):
+    def test_purge_geom_deep(self):
+        proj = self.ws.copy_project(self.net.project)
+        geo1 = proj.geometries()['geo_01']
+        geo2 = proj.geometries()['geo_02']
+        phys11 = proj.physics()['phys_01']
+        phys12 = proj.physics()['phys_02']
+        phys21 = proj.physics()['phys_03']
+        phys22 = proj.physics()['phys_04']
+        proj.purge_object(geo1, deep=True)
+        assert geo1 not in proj
+        assert geo2 in proj
+        assert phys11 not in proj
+        assert phys12 in proj
+        assert phys21 not in proj
+        assert phys22 in proj
+        self.ws.close_project(proj)
+
+    def test_purge_phys_shallow(self):
         proj = self.ws.copy_project(self.net.project)
         phase = proj.phases()['phase_01']
         phys1 = proj.physics()['phys_01']
@@ -97,15 +114,32 @@ class ProjectTest:
         assert 'throat.' + phys1.name not in phase.keys()
         self.ws.close_project(proj)
 
-    def test_purge_phase(self):
+    def test_purge_phase_shallow(self):
         proj = self.ws.copy_project(self.net.project)
         phase = proj.phases()['phase_01']
         phys1 = proj.physics()['phys_01']
         phys2 = proj.physics()['phys_02']
         proj.purge_object(phase)
-        assert phys1 not in proj
-        assert phys2 not in proj
         assert phase not in proj
+        assert phys1 in proj
+        assert phys2 in proj
+        self.ws.close_project(proj)
+
+    def test_purge_phase_deep(self):
+        proj = self.ws.copy_project(self.net.project)
+        phase1 = proj.phases()['phase_01']
+        phase2 = proj.phases()['phase_02']
+        phys11 = proj.physics()['phys_01']
+        phys12 = proj.physics()['phys_02']
+        phys21 = proj.physics()['phys_03']
+        phys22 = proj.physics()['phys_04']
+        proj.purge_object(phase1, deep=True)
+        assert phase1 not in proj
+        assert phase2 in proj
+        assert phys11 not in proj
+        assert phys12 not in proj
+        assert phys21 in proj
+        assert phys22 in proj
         self.ws.close_project(proj)
 
     def test_purge_network(self):
@@ -220,13 +254,59 @@ class ProjectTest:
         b = proj.physics().values()
         assert sp.all([item in b for item in a])
 
+    def test_find_full_domain_geometry(self):
+        proj = self.proj
+        geo1 = proj.geometries()['geo_01']
+        assert proj.find_full_domain(geo1)._isa() == 'network'
+
+    def test_find_full_domain_physics(self):
+        proj = self.proj
+        phys1 = proj.physics()['phys_01']
+        assert proj.find_full_domain(phys1)._isa() == 'phase'
+
+    def test_find_full_domain_phase(self):
+        proj = self.proj
+        phase1 = proj.phases()['phase_01']
+        assert proj.find_full_domain(phase1)._isa() == 'phase'
+
     def test_clear(self):
         proj = self.ws.copy_project(self.net.project)
         assert len(proj) == 9
         proj.clear(objtype=['phase'])
-        assert len(proj) == 3
+        assert len(proj) == 7
         proj.clear()
         assert len(proj) == 0
+
+    def test_pop(self):
+        proj = self.ws.copy_project(self.net.project)
+        geo1 = proj.geometries()['geo_01']
+        geo2 = proj.pop(1)
+        assert geo1 is geo2
+        assert geo1 not in proj
+
+    def test_insert(self):
+        proj = self.ws.copy_project(self.net.project)
+        geo1 = proj.geometries()['geo_01']
+        geo2 = proj.pop(1)
+        assert geo1 is geo2
+        assert geo1 not in proj
+        proj.insert(1, geo2)
+
+    def test_copy(self):
+        proj = self.ws.copy_project(self.net.project)
+        proj.network.name = 'foo22'
+        proj2 = proj.copy()
+        assert proj.name != proj2.name
+        assert proj2.network.name == 'foo22'
+        assert proj is not proj2
+        assert len(proj) == len(proj2)
+        assert proj.names == proj2.names
+
+    def test_remove(self):
+        proj = self.ws.copy_project(self.net.project)
+        geo1 = proj.geometries()['geo_01']
+        proj.remove(geo1)
+        assert geo1 not in proj
 
     def test_getitem(self):
         a = self.proj[0]
@@ -266,32 +346,31 @@ class ProjectTest:
     def test_dump_and_fetch_data(self):
         proj = self.ws.copy_project(self.proj)
         proj._dump_data()
-        # Ensure all properties are gone
-        assert ~sp.any([len(item.props()) for item in proj])
+        # Ensure only pore.coords and throat.conns are found
+        assert sum([len(item.props()) for item in proj]) == 2
         proj._fetch_data()
         assert sp.any([len(item.props()) for item in proj])
         os.remove(proj.name+'.hdf5')
 
     def test_export_data(self):
         fname = 'export_data_tests'
-        self.proj.export_data(network=self.net, phases=self.phase1,
-                              filename=fname, filetype='vtp')
+        self.proj.export_data(phases=self.phase1, filename=fname,
+                              filetype='vtp')
         os.remove(fname+'.vtp')
-        self.proj.export_data(network=self.net, phases=self.phase1,
-                              filename=fname+'.vtp')
+        self.proj.export_data(phases=self.phase1, filename=fname+'.vtp')
         os.remove(fname+'.vtp')
-        self.proj.export_data(network=self.net, phases=self.phase1,
-                              filename=fname, filetype='csv')
+        self.proj.export_data(phases=self.phase1, filename=fname,
+                              filetype='csv')
         os.remove(fname+'.csv')
-#        self.proj.export_data(network=self.net, phases=self.phase1,
-#                              filename=fname, filetype='xmf')
-#        os.remove(fname+'.xmf')
-#        os.remove(fname+'.hdf')
-        self.proj.export_data(network=self.net, phases=self.phase1,
-                              filename=fname, filetype='hdf')
+        self.proj.export_data(phases=self.phase1, filename=fname,
+                              filetype='xmf')
+        os.remove(fname+'.xmf')
         os.remove(fname+'.hdf')
-        self.proj.export_data(network=self.net, phases=self.phase1,
-                              filename=fname, filetype='mat')
+        self.proj.export_data(phases=self.phase1, filename=fname,
+                              filetype='hdf')
+        os.remove(fname+'.hdf')
+        self.proj.export_data(phases=self.phase1, filename=fname,
+                              filetype='mat')
         os.remove(fname+'.mat')
 
 

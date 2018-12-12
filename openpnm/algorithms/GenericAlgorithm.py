@@ -1,25 +1,42 @@
-# -*- coding: utf-8 -*-
-"""
-===============================================================================
-module __GenericAlgorithm__: Base class to build custom algorithms
-===============================================================================
-
-"""
-from openpnm.core import Base, logging
-logger = logging.getLogger()
+from openpnm.core import Base
+from openpnm.utils import logging
 import numpy as np
+logger = logging.getLogger(__name__)
 
 
 class GenericAlgorithm(Base):
     r"""
+    Generic class to define the foundation of Algorithms.
 
     Parameters
     ----------
-    network : OpenPNM Network Object
+    network : OpenPNM Network object
         The network object to which this algorithm will apply.
 
     name : string, optional
         Name of the algorithm
+
+    project : OpenPNM Project object
+        Either a Network or a Project must be supplied
+
+    Notes
+    -----
+    This class defines the following methods, which all raise a
+    ``NotImplementedError`` and must be defined by the various subclasses:
+
+    +---------------------+---------------------------------------------------+
+    | Methods             | Description                                       |
+    +=====================+===================================================+
+    | ``results``         | Generates an array or arrays of data produced by  |
+    |                     | the algorithm to be returned to the Phase         |
+    +---------------------+---------------------------------------------------+
+    | ``setup``           | Collects values to be placed in ``settings``. The |
+    |                     | main benefit is defining default values and       |
+    |                     | providing documentation on each settings          |
+    +---------------------+---------------------------------------------------+
+    | ``reset``           | Removes generated data, specified values, and     |
+    |                     | any other information lingering on an Algorithm   |
+    +---------------------+---------------------------------------------------+
 
     """
 
@@ -30,11 +47,27 @@ class GenericAlgorithm(Base):
             project = network.project
         super().__init__(project=project, **kwargs)
 
-        if project.network is not None:
+        # Deal with network or project arguments
+        if network is not None:
+            if project is not None:
+                assert network is project.network
+            else:
+                project = network.project
+        if project:
             self['pore.all'] = np.ones((project.network.Np, ), dtype=bool)
             self['throat.all'] = np.ones((project.network.Nt, ), dtype=bool)
 
     def results(self):
+        r"""
+        """
+        raise NotImplementedError("This method must be subclassed")
+
+    def reset(self):
+        r"""
+        """
+        raise NotImplementedError("This method must be subclassed")
+
+    def setup(self):
         r"""
         """
         raise NotImplementedError("This method must be subclassed")

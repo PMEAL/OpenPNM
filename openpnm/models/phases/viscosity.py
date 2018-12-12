@@ -1,19 +1,10 @@
-# -*- coding: utf-8 -*-
-r"""
-===============================================================================
-Submodule -- viscosity
-===============================================================================
-
-Models for predicting phase viscosity
-
-"""
 import scipy as sp
 
 
 def water(target, temperature='pore.temperature', salinity='pore.salinity'):
     r"""
     Calculates viscosity of pure water or seawater at atmospheric pressure
-    using Eq. (22) given by Sharqawy et. al [1]_. Values at temperature higher
+    using Eq. (22) given by Sharqawy et. al [1]. Values at temperature higher
     than the normal boiling temperature are calculated at the saturation
     pressure.
 
@@ -78,7 +69,7 @@ def water(target, temperature='pore.temperature', salinity='pore.salinity'):
 
 def reynolds(target, u0, b, temperature='pore.temperature'):
     r"""
-    Uses exponential model by Reynolds [1]_ for the temperature dependance of
+    Uses exponential model by Reynolds [1] for the temperature dependance of
     shear viscosity
 
     Parameters
@@ -108,7 +99,7 @@ def chung(target, temperature='pore.temperature',
           critical_temperature='pore.critical_temperature',
           critical_volume='pore.critical_volume'):
     r"""
-    Uses Chung et al. [2]_ model to estimate viscosity for gases at low
+    Uses Chung et al. [1] model to estimate viscosity for gases at low
     pressure (much less than the critical pressure) at conditions of interest.
 
     Parameters
@@ -130,7 +121,7 @@ def chung(target, temperature='pore.temperature',
     critical_volume : string
         The dictionary key containing the critical volume values (m3/kmol)
 
-    [2] Chung, T.H., Lee, L.L., and Starling, K.E., Applications of Kinetic Gas
+    [1] Chung, T.H., Lee, L.L., and Starling, K.E., Applications of Kinetic Gas
         Theories and Multiparameter Correlation for Prediction of Dilute Gas
         Viscosity and Thermal Conductivity”, Ind. Eng. Chem. Fundam.23:8, 1984.
 

@@ -1,4 +1,4 @@
-from openpnm.core import logging as _logging
+from openpnm.utils import logging as _logging
 from openpnm.models import misc as _misc
 import numpy as _np
 _logger = _logging.getLogger(__name__)
@@ -20,17 +20,33 @@ def normal(target, scale, loc, seeds='pore.seed'):
 normal.__doc__ = _misc.normal.__doc__
 
 
-def generic(target, func, seeds='pore.seed'):
-    return _misc.generic(target=target, func=func, seeds=seeds)
+def random(target, seed=None, num_range=[0, 1]):
+    return _misc.random(target=target, element='pore', seed=seed,
+                        num_range=num_range)
 
 
-generic.__doc__ = _misc.generic.__doc__
+normal.__doc__ = _misc.normal.__doc__
 
 
-def largest_sphere(target, fixed_diameter='pore.fixed_diameter', iters=10):
+def generic_distribution(target, func, seeds='pore.seed'):
+    return _misc.generic_distribution(target=target, func=func, seeds=seeds)
+
+
+generic_distribution.__doc__ = _misc.generic_distribution.__doc__
+
+
+def largest_sphere(target, fixed_diameter='pore.fixed_diameter', iters=5):
     r"""
     Finds the maximum diameter pore that can be placed in each location without
     overlapping any neighbors.
+
+    This method iteratively expands pores by increasing their diameter to
+    encompass half of the distance to the nearest neighbor.  If the neighbor
+    is not growing because it's already touching a different neighbor, then
+    the given pore will never quite touch this neighbor.  Increating the value
+    of ``iters`` will get it closer, but it's case of
+    [Zeno's paradox](https://en.wikipedia.org/wiki/Zeno%27s_paradoxes) with
+    each step cutting the remaining distance in half
 
     Parameters
     ----------
@@ -41,7 +57,8 @@ def largest_sphere(target, fixed_diameter='pore.fixed_diameter', iters=10):
 
     fixed_diameter : string
         The dictionary key containing the pore diameter values already
-        assigned to network, if any.
+        assigned to network, if any.  If not provided a starting value is
+        assumed as half-way to the nearest neighbor.
 
     iters : integer
         The number of iterations to perform when searching for maximum
@@ -62,25 +79,31 @@ def largest_sphere(target, fixed_diameter='pore.fixed_diameter', iters=10):
 
     """
     network = target.project.network
+    P12 = network['throat.conns']
+    C1 = network['pore.coords'][network['throat.conns'][:, 0]]
+    C2 = network['pore.coords'][network['throat.conns'][:, 1]]
+    L = _np.sqrt(_np.sum((C1 - C2)**2, axis=1))
     try:
         # Fetch any existing pore diameters on the network
         D = network[fixed_diameter]
         # Set any unassigned values (nans) to 0
         D[_np.isnan(D)] = 0
     except KeyError:
-        D = _np.zeros([network.Np, ], dtype=float)
-    Ps = network.pores(target.name)
-    C1 = network['pore.coords'][network['throat.conns'][:, 0]]
-    C2 = network['pore.coords'][network['throat.conns'][:, 1]]
-    L = _np.sqrt(_np.sum((C1 - C2)**2, axis=1))
+        _logger.info('Pore sizes not present, calculating starting values ' +
+                     'as half-way to the nearest neighbor')
+        D = _np.inf*_np.ones([network.Np, ], dtype=float)
+        _np.minimum.at(D, P12[:, 0], L)
+        _np.minimum.at(D, P12[:, 1], L)
     while iters >= 0:
         iters -= 1
-        Lt = L - _np.sum(D[network['throat.conns']], axis=1)/2
-        am = network.create_adjacency_matrix(weights=Lt, fmt='lil')
-        D[Ps] = D[Ps] + _np.array([_np.amin(row) for row in am.data])[Ps]*0.95
+        Lt = L - _np.sum(D[P12], axis=1)/2
+        Dadd = _np.ones_like(D)*_np.inf
+        _np.minimum.at(Dadd, P12[:, 0], Lt)
+        _np.minimum.at(Dadd, P12[:, 1], Lt)
+        D += Dadd
     if _np.any(D < 0):
-        _logger.warning('Negative pore diameters found!  Neighboring pores' +
-                        ' are larger than the pore spacing.')
+        _logger.info('Negative pore diameters found!  Neighboring pores are ' +
+                     'larger than the pore spacing.')
     return D[network.pores(target.name)]
 
 

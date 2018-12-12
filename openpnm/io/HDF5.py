@@ -1,15 +1,15 @@
 import h5py
-from openpnm.core import logging, Project
-from openpnm.io import Dict
+from flatdict import FlatDict
+from openpnm.io import Dict, GenericIO
 from openpnm.network import GenericNetwork
-from openpnm.utils import FlatDict
-from openpnm.io import GenericIO
+from openpnm.utils import logging, Project
 logger = logging.getLogger(__name__)
 
 
 class HDF5(GenericIO):
     r"""
-
+    The HDF5 (Hierarchical Data Format) file is good for high-peformance, long
+    term data storage
     """
 
     @classmethod
@@ -81,7 +81,11 @@ class HDF5(GenericIO):
         for item in d.keys():
             tempname = '_'.join(item.split('.'))
             arr = d[item]
-            if 'U' in str(arr[0].dtype):
+            if d[item].dtype == 'O':
+                logger.warning(item + ' has dtype object,' +
+                               ' will not write to file')
+                del d[item]
+            elif 'U' in str(arr[0].dtype):
                 pass
             else:
                 f.create_dataset(name='/'+tempname, shape=arr.shape,

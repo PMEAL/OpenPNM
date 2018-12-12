@@ -1,12 +1,22 @@
 import inspect
 import networkx as nx
-from openpnm.core import Workspace, logging
-from openpnm.utils.misc import PrintableDict
+from openpnm.utils import PrintableDict, logging, Workspace
 ws = Workspace()
-logger = logging.getLogger()
+logger = logging.getLogger(__name__)
 
 
 class ModelsDict(PrintableDict):
+    r"""
+    This subclassed dictionary is assigned to the ``models`` attribute of
+    all objects that inherit from the ``ModelsMixin`` class.  Each dictionary
+    entry corresponds to an entry in the target object's dictionary, and
+    contains the models and associated parameters for generating the model.
+
+    The main features of this subclass are three methods the help resolve the
+    order in which models should be called: ``dependency_list``,
+    ``dependency_graph``, and ``dependency_map``.
+
+    """
 
     def dependency_list(self):
         r'''
@@ -102,6 +112,67 @@ class ModelsDict(PrintableDict):
 
 
 class ModelsMixin():
+    r"""
+    This class is meant to be combined by the Base class in multiple
+    inheritence.  This approach is used since Network and Algorithm do not
+    need to have any ``models`` attribute, while Phase, Geometry, and Physics
+    do.  By using a mixin class, all objects can inherit from Base while
+    the model functionality can be added only where needed.
+
+    Notes
+    -----
+    The following table gives a brief overview of the methods that are added
+    to the object by this mixin.  In addition to these methods, a ``models``
+    attribute is also added, which is a dictionary that contains all of the
+    models and their parameters.
+
+    +----------------------+--------------------------------------------------+
+    | Method or Attribute  | Functionality                                    |
+    +======================+==================================================+
+    | ``add_model``        | Add a given model and parameters to the object   |
+    +----------------------+--------------------------------------------------+
+    | ``regenerate_model`` | Runs the model(s) to recalculate data            |
+    +----------------------+--------------------------------------------------+
+    | ``remove_model``     | Removes specified model as well as it's data     |
+    +----------------------+--------------------------------------------------+
+
+    Examples
+    --------
+    >>> import openpnm as op
+
+    Create a Demo class using Base and ModelsMixin:
+
+    >>> class Demo(op.core.Base, op.core.ModelsMixin):
+    ...     pass
+    >>> temp = Demo(Np=3, Nt=2)
+
+    The new class has the normal Base methods:
+
+    >>> print(temp.num_pores())
+    3
+
+    But also has those needed for working with models.  For instance, a simple
+    model can be added as follows:
+
+    >>> temp.add_model(propname='pore.test',
+    ...                model=op.models.misc.constant,
+    ...                value=2)
+    >>> print(temp['pore.test'])
+    [2 2 2]
+
+    All the models and their respective parameters are stored in the ``models``
+    attribute:
+
+    >>> print(temp.models)
+    ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+    #   Property Name             Parameter                 Value
+    ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+    1   pore.test                 model:                    constant
+                                  value:                    2
+                                  regeneration mode:        normal
+    ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+
+    """
 
     def add_model(self, propname, model, regen_mode='normal', **kwargs):
         r"""
@@ -137,8 +208,8 @@ class ModelsMixin():
         kwargs.update({'model': model, 'regen_mode': regen_mode})
         # Insepct model to extract arguments and default values
         if model.__defaults__:
-            vals = list(inspect.getargspec(model).defaults)
-            keys = inspect.getargspec(model).args[-len(vals):]
+            vals = list(inspect.getfullargspec(model).defaults)
+            keys = inspect.getfullargspec(model).args[-len(vals):]
             for k, v in zip(keys, vals):  # Put defaults into kwargs
                 if k not in kwargs:  # Skip if argument was given in kwargs
                     kwargs.update({k: v})
@@ -147,7 +218,7 @@ class ModelsMixin():
         if regen_mode not in ['deferred']:
             self._regen(propname)
 
-    def regenerate_models(self, propnames=None, exclude=[]):
+    def regenerate_models(self, propnames=None, exclude=[], deep=False):
         r"""
         Re-runs the specified model or models.
 
@@ -163,41 +234,57 @@ class ModelsMixin():
             to exclude specific models.  It may be more convenient to supply
             as list of 2 models to exclude than to specify 8 models to include.
 
+        deep : boolean
+            Specifies whether or not to regenerate models on all associated
+            objects.  For instance, if ``True``, then all Physics models will
+            be regenerated when method is called on the corresponding Phase.
+            The default is ``False``.  The method does not work in reverse,
+            so regenerating models on a Physics will not update a Phase.
+
         """
+        # If empty list of propnames was given, do nothing and return
+        if type(propnames) is list and len(propnames) == 0:
+            return
         if type(propnames) is str:  # Convert string to list if necessary
             propnames = [propnames]
-
         if propnames is None:  # If no props given, then regenerate them all
             propnames = self.models.dependency_list()
             # If some props are to be excluded, remove them from list
             if len(exclude) > 0:
                 propnames = [i for i in propnames if i not in exclude]
-
-        # Check if any propnames are not on self, deal with separately
-        self_models = self.models.dependency_list()
-        foreign_models = set(propnames).difference(set(self_models))
-        if len(foreign_models):
-            # If foreign model is found on another object, regenerate it
-            for item in foreign_models:
-                if self._isa('phase'):
-                    for phys in self.project.find_physics(phase=self):
-                        phys.regenerate_models(propnames)
-                if self._isa('network'):
-                    for geom in self.geometries().values():
-                        geom.regenerate_models(propnames)
-            # Remove any foreign models from given list, and proceed
-            propnames = set(propnames).difference(foreign_models)
-
         # Re-order given propnames according to dependency tree
+        self_models = self.models.dependency_list()
         propnames = [i for i in self_models if i in propnames]
 
-        # Scan through list of propnames and regenerate each one
-        for item in propnames:
-            self._regen(item)
+        if deep:
+            other_models = None  # Will trigger regen of ALL models
+        else:
+            # Make list of given propnames that are not in self
+            other_models = list(set(propnames).difference(set(self_models)))
+        # The following has some redundant lines, but is easier to understand
+        if self._isa('phase'):
+            # Start be regenerating models on self
+            for item in propnames:
+                self._regen(item)
+            # Then regen models on associated objects, if any in other_models
+            for phys in self.project.find_physics(phase=self):
+                phys.regenerate_models(propnames=other_models, deep=False)
+        elif self._isa('network'):  # Repeat for other object types
+            for item in propnames:
+                self._regen(item)
+            for geom in self.project.geometries().values():
+                geom.regenerate_models(propnames=other_models, deep=False)
+        else:
+            for item in propnames:
+                self._regen(item)
 
     def _regen(self, prop):
         # Create a temporary dict of all model arguments
-        kwargs = self.models[prop].copy()
+        try:
+            kwargs = self.models[prop].copy()
+        except KeyError:
+            logger.info(prop+' not found, will retry if deep is True')
+            return
         # Pop model and regen_mode from temporary dict
         model = kwargs.pop('model')
         regen_mode = kwargs.pop('regen_mode', None)
@@ -212,8 +299,9 @@ class ModelsMixin():
         else:
             try:
                 self[prop] = model(target=self, **kwargs)
-            except KeyError:
-                logger.warning(prop+' was not run due to missing dependencies')
+            except KeyError as e:
+                logger.error(prop + ' was not run since the following ' +
+                             'property is missing: ' + e.__str__())
                 self.models[prop]['regen_mode'] = 'deferred'
 
     def remove_model(self, propname=None, mode=['model', 'data']):

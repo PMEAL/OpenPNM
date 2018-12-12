@@ -9,7 +9,7 @@ class ExtrasTest:
         ws = op.Workspace()
 
     def teardown_class(self):
-        ws = op.core.Workspace()
+        ws = op.Workspace()
         ws.clear()
 
     def test_initialize_GenericNetwork_without_args(self):
@@ -53,6 +53,22 @@ class ExtrasTest:
         assert obj.Np == 0
         assert obj.Nt == 0
         assert len(obj.project) == 1
+
+    def test_init_Standard_physics_without_args(self):
+        obj = op.physics.Standard(settings={'freeze_models': True})
+        assert len(obj.models) > 0
+
+    def test_init_geometris_without_args(self):
+        obj = op.geometry.StickAndBall(settings={'freeze_models': True})
+        assert len(obj.models) > 0
+
+    def test_init_phases_without_args(self):
+        obj = op.phases.Water(settings={'freeze_models': True})
+        assert len(obj.models) > 0
+        obj = op.phases.Air(settings={'freeze_models': True})
+        assert len(obj.models) > 0
+        obj = op.phases.Mercury(settings={'freeze_models': True})
+        assert len(obj.models) > 0
 
 
 if __name__ == '__main__':

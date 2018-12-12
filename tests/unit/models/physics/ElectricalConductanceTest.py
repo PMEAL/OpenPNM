@@ -8,24 +8,24 @@ class ElectricalConductanceTest:
         self.geo = op.geometry.GenericGeometry(network=self.net,
                                                pores=self.net.Ps,
                                                throats=self.net.Ts)
+        self.geo['pore.area'] = 1
+        self.geo['throat.area'] = 1
         self.phase = op.phases.GenericPhase(network=self.net)
+        self.phase['pore.electrical_conductivity'] = 1
         self.phys = op.physics.GenericPhysics(network=self.net,
                                               phase=self.phase,
                                               geometry=self.geo)
 
     def test_electrical_conductance(self):
-        self.phase['pore.conductivity'] = 1
-        self.geo['pore.area'] = 1
-        self.geo['pore.diameter'] = 1
-        self.geo['throat.area'] = 1
-        self.geo['throat.length'] = 0.0001
-        f = op.models.physics.electrical_conductance.series_resistors
+        self.geo['throat.conduit_lengths.pore1'] = 0.15
+        self.geo['throat.conduit_lengths.throat'] = 0.6
+        self.geo['throat.conduit_lengths.pore2'] = 0.25
+        mod = op.models.physics.electrical_conductance.series_resistors
         self.phys.add_model(propname='throat.electrical_conductance',
-                            pore_conductivity='pore.conductivity',
-                            model=f)
+                            model=mod)
         self.phys.regenerate_models()
-        a = 0.99990001
-        assert_approx_equal(self.phys['throat.electrical_conductance'].mean(), a)
+        actual = self.phys['throat.electrical_conductance'].mean()
+        assert_approx_equal(actual, desired=1.0)
 
 
 if __name__ == '__main__':

@@ -1,32 +1,28 @@
-"""
-===============================================================================
-DelaunayVoronoiDual: Generate a random network with complementary Delaunay and
-Voronoi networks, including connectings between them
-===============================================================================
-
-"""
-from openpnm import topotools
 import scipy as sp
 import scipy.spatial as sptl
+import scipy.sparse as sprs
+from skimage.filters import rank_order
 from openpnm.network import GenericNetwork
-from openpnm.core import logging
+from openpnm import topotools
+from openpnm.utils import logging
 logger = logging.getLogger(__name__)
 
 
 class DelaunayVoronoiDual(GenericNetwork):
     r"""
-    A dual network based on complementary Voronoi and Delaunay networks.  A
-    Delaunay tessellation or triangulation is performed on randomly distributed
-    base points, then the corresponding Voronoi diagram is generated.  Finally,
-    each Delaunay nodes is connected to it's neighboring Voronoi vertices to
-    create interaction between the two networks.
+    Combined and interconnected Voronoi and Delaunay tessellations
+
+    A Delaunay tessellation is performed on a set of base points then the
+    corresponding Voronoi diagram is generated.  Finally, each Delaunay node
+    is connected to it's neighboring Voronoi vertices to create interaction
+    between the two networks.
 
     All pores and throats are labelled according to their network (i.e.
     'pore.delaunay'), so they can be each assigned to a different Geometry.
 
     The dual-nature of this network is meant for modeling transport in the void
     and solid space simultaneously by treating one network (i.e. Delaunay) as
-    voids and the other (i.e. Voronoi) as solid.  Interation such as heat
+    voids and the other (i.e. Voronoi) as solid.  Interaction such as heat
     transfer between the solid and void can be accomplished via the
     interconnections between the Delaunay and Voronoi nodes.
 
@@ -45,138 +41,97 @@ class DelaunayVoronoiDual(GenericNetwork):
         can be trimmed.
 
     shape : array_like
-        The size and shape of the domain using for generating and trimming
-        excess points. The argument is treated as follows:
+        The size and shape of the domain used for generating and trimming
+        excess points. The coordinates are treated as the outer corner of a
+        rectangle [x, y, z] whose opposite corner lies at [0, 0, 0].
 
-        **sphere** : If a scalar or single element list is received, it's
-        treated as the radius [r] of a sphere centered on [0, 0, 0].
+        By default, a domain size of [1, 1, 1] is used.  To create a 2D network
+        set the Z-dimension to 0.
 
-        **cylinder** : If a two-element list is received it's treated as
-        the radius and height of a cylinder [r, z] whose central axis
-        starts at [0, 0, 0] and extends in the positive z-direction.
+    name : string
+        An optional name for the object to help identify it.  If not given,
+        one will be generated.
 
-        **rectangle** : If a three element list is received, it's treated
-        as the outer corner of rectangle [x, y, z] whose opposite corner
-        lies at [0, 0, 0].
-
-        By default, a domain size of [1, 1, 1] is used.
-
-    trim_domain : Boolean
-        If true (default) all nodes outside the given ``shape`` are
-        removed, along with all their throats.  Setting this argument to False
-        will skip this removal if an alternative manual trimming is preferred.
+    project : OpenPNM Project object, optional
+        Each OpenPNM object must be part of a *Project*.  If none is supplied
+        then one will be created and this Network will be automatically
+        assigned to it.  To create a *Project* use ``openpnm.Project()``.
 
     Examples
     --------
     Points will be automatically generated if none are given:
 
     >>> import openpnm as op
-    >>> net = op.network.DelaunayVoronoiDual(num_points=50)
+    >>> net = op.network.DelaunayVoronoiDual(num_points=50, shape=[1, 1, 0])
 
-    The resulting network can be quickly visualized with
-    ``op.topotools.plot_connections(net)``.  This plotting function also
-    supports showing limited sets of throats for more clear inspection such as
-    ``op.topotools.plot_connections(net, throats=net.throats('surface'))``.
-    See its documentation for details.
-
-    The default shape is a unit cube, but it's also possible to generate
-    cylinders and spheres by specifying the domain size as [r, z] or [r],
-    respectively:
-
-    >>> sph = op.network.DelaunayVoronoiDual(num_points=50, shape=[1])
-    >>> cyl = op.network.DelaunayVoronoiDual(num_points=50, shape=[1, 1])
-
-    More control over the distribution of base points can be achieved by
-    calling ``topotools.generate_base_points`` directly:
-
-    >>> pts = op.topotools.generate_base_points(num_points=50,
-    ...                                         domain_size=[1, 5])
-    >>> pts -= [0, 0, 1]  # Shift points in the negative z-direction
-    >>> cyl = op.network.DelaunayVoronoiDual(points=pts, shape=[1, 3])
-
-    All points lying below the z=0 plane and above the z=3 plane are trimmed,
-    which gives the network *rough* ends since the points near the plane of
-    reflection are all trimmed.
+    The resulting network can be quickly visualized using
+    ``opnepnm.topotools.plot_connections``.
 
     """
 
-    def __init__(self, num_points=None, points=None, shape=[1, 1, 1],
-                 trim_domain=True, **kwargs):
+    def __init__(self, shape=[1, 1, 1], num_points=None, **kwargs):
+        points = kwargs.pop('points', None)
+        points = self._parse_points(shape=shape,
+                                    num_points=num_points,
+                                    points=points)
 
-        if points is None:
-            if num_points is None:
-                raise Exception('Must specify either "points" or "num_points"')
-            points = topotools.generate_base_points(num_points=num_points,
-                                                    domain_size=shape)
-        elif len(shape) == 3:
-            points = topotools.reflect_base_points(points, shape)
-
-        # Deal with points that are only 2D...they break Delaunay
+        # Deal with points that are only 2D...they break tessellations
         if points.shape[1] == 3 and len(sp.unique(points[:, 2])) == 1:
             points = points[:, :2]
 
         # Perform tessellation
-        tri = sptl.Delaunay(points=points)
         vor = sptl.Voronoi(points=points)
-
-        self._tri = tri
         self._vor = vor
 
         # Combine points
-        pts_vor = vor.vertices
-        pts_all = sp.vstack((points, pts_vor))
-        Npts = sp.size(points, 0)
-        Nvor = sp.size(pts_vor, 0)
-        Nall = Nvor + Npts
+        pts_all = sp.vstack((vor.points, vor.vertices))
+        Nall = sp.shape(pts_all)[0]
 
-        # Create adjacency matrix in lil format for quick matrix construction
-        am = sp.sparse.lil_matrix((Nall, Nall))
+        # Create adjacency matrix in lil format for quick construction
+        am = sprs.lil_matrix((Nall, Nall))
         for ridge in vor.ridge_dict.keys():
             # Make Delaunay-to-Delauny connections
             [am.rows[i].extend([ridge[0], ridge[1]]) for i in ridge]
-            row = vor.ridge_dict[ridge]
-            if -1 not in row:
-                # Index Voronoi vertex numbers by Npts
-                row = [i + Npts for i in row]
-                # Make Voronoi-to-Delaunay connections
-                [am.rows[i].extend(row) for i in ridge]
-                # Make Voronoi-to-Voronoi connections
-                row.append(row[0])
-                [am.rows[row[i]].append(row[i+1]) for i in range(len(row)-1)]
-                # Ensure connections are made symmetrically
-                [am.rows[row[i+1]].append(row[i]) for i in range(len(row)-1)]
-        # Finalize adjacency matrix by assigning data values to each location
+            # Get voronoi vertices for current ridge
+            row = vor.ridge_dict[ridge].copy()
+            # Index Voronoi vertex numbers by number of delaunay points
+            row = [i + vor.npoints for i in row if i > -1]
+            # Make Voronoi-to-Delaunay connections
+            [am.rows[i].extend(row) for i in ridge]
+            # Make Voronoi-to-Voronoi connections
+            row.append(row[0])
+            [am.rows[row[i]].append(row[i+1]) for i in range(len(row)-1)]
+
+        # Finalize adjacency matrix by assigning data values
         am.data = am.rows  # Values don't matter, only shape, so use 'rows'
-        # Retrieve upper triangle and convert to csr to remove duplicates
-        am = sp.sparse.triu(A=am, k=1, format='csr')
-        # Convert to COO format for OpenPNM compatibility
+        # Convert to COO format for direct acces to row and col
         am = am.tocoo()
-        # Translate adjacency matrix and points to OpenPNM format
-        coords = pts_all
+        # Extract rows and cols
         conns = sp.vstack((am.row, am.col)).T
-        Np = sp.size(coords, axis=0)
-        Nt = sp.size(conns, axis=0)
-        super().__init__(Np=Np, Nt=Nt, **kwargs)
-        self.update({'pore.all': sp.ones((Np, ), dtype=bool)})
-        self.update({'throat.all': sp.ones((Nt, ), dtype=bool)})
-        self['throat.conns'] = conns
-        if coords.shape[1] == 2:  # Make points 3D if necessary
+
+        # Convert to sanitized adjacency matrix
+        am = topotools.conns_to_am(conns)
+        # Finally, retrieve conns back from am
+        conns = sp.vstack((am.row, am.col)).T
+
+        # Translate adjacency matrix and points to OpenPNM format
+        coords = sp.around(pts_all, decimals=10)
+        if coords.shape[1] == 2:  # Make points back into 3D if necessary
             coords = sp.vstack((coords.T, sp.zeros((coords.shape[0], )))).T
-        self['pore.coords'] = coords
-        self['pore.coords'] = sp.around(coords, decimals=10)
+        super().__init__(conns=conns, coords=coords, **kwargs)
 
         # Label all pores and throats by type
         self['pore.delaunay'] = False
-        self['pore.delaunay'][0:Npts] = True
+        self['pore.delaunay'][0:vor.npoints] = True
         self['pore.voronoi'] = False
-        self['pore.voronoi'][Npts:] = True
+        self['pore.voronoi'][vor.npoints:] = True
         # Label throats between Delaunay pores
         self['throat.delaunay'] = False
-        Ts = sp.all(self['throat.conns'] < Npts, axis=1)
+        Ts = sp.all(self['throat.conns'] < vor.npoints, axis=1)
         self['throat.delaunay'][Ts] = True
         # Label throats between Voronoi pores
         self['throat.voronoi'] = False
-        Ts = sp.all(self['throat.conns'] >= Npts, axis=1)
+        Ts = sp.all(self['throat.conns'] >= vor.npoints, axis=1)
         self['throat.voronoi'][Ts] = True
         # Label throats connecting a Delaunay and a Voronoi pore
         self['throat.interconnect'] = False
@@ -184,121 +139,86 @@ class DelaunayVoronoiDual(GenericNetwork):
         self['throat.interconnect'][Ts] = True
 
         # Trim all pores that lie outside of the specified domain
-        if trim_domain:
-            self._trim_domain(domain_size=shape)
+        self._trim_external_pores(shape=shape)
+        self._label_faces()
 
-    def _trim_domain(self, domain_size=None):
-        r"""
-        Trims pores that lie outside the specified domain.
+    @property
+    def tri(self):
+        if not hasattr(self, '_tri'):
+            points = self._vor.points
+            self._tri = sptl.Delaunay(points=points)
+        return self._tri
 
-        Parameters
-        ----------
-        domain_size : array_like
-            The size and shape of the domain beyond which points should be
-            trimmed. The argument is treated as follows:
+    @property
+    def vor(self):
+        return self._vor
 
-            **sphere** : If a scalar or single element list is received, it's
-            treated as the radius [r] of a sphere centered on [0, 0, 0].
-
-            **cylinder** : If a two-element list is received it's treated as
-            the radius and height of a cylinder [r, z] whose central axis
-            starts at [0, 0, 0] and extends in the positive z-direction.
-
-            **rectangle** : If a three element list is received, it's treated
-            as the outer corner of rectangle [x, y, z] whose opposite corner
-            lies at [0, 0, 0].
-
-        Notes
-        -----
-        This function assumes that some Delaunay nodes exist outside the
-        given ``domain_size``.  These points can either be the result of
-        reflecting the base points or simply creating points beyond the
-        domain.  Without these extra points the Voronoi network would contain
-        points at inf.
-        """
-        # Label external pores for trimming below
+    def _trim_external_pores(self, shape):
+        r'''
+        '''
+        # Find all pores within the domain
+        Ps = topotools.isoutside(coords=self['pore.coords'], shape=shape)
         self['pore.external'] = False
-        if len(domain_size) == 1:  # Spherical
-            # Trim external Delaunay pores
-            r = sp.sqrt(sp.sum(self['pore.coords']**2, axis=1))
-            Ps = (r > domain_size)*self['pore.delaunay']
-            self['pore.external'][Ps] = True
-            # Trim external Voronoi pores
-            Ps = ~self['pore.external']*self['pore.delaunay']
-            Ps = self.find_neighbor_pores(pores=Ps)
-            Ps = ~self.tomask(pores=Ps)*self['pore.voronoi']
-            self['pore.external'][Ps] = True
-        elif len(domain_size) == 2:  # Cylindrical
-            # Trim external Delaunay pores outside radius
-            r = sp.sqrt(sp.sum(self['pore.coords'][:, [0, 1]]**2, axis=1))
-            Ps = (r > domain_size[0])*self['pore.delaunay']
-            self['pore.external'][Ps] = True
-            # Trim external Delaunay pores above and below cylinder
-            Ps1 = self['pore.coords'][:, 2] > domain_size[1]
-            Ps2 = self['pore.coords'][:, 2] < 0
-            Ps = self['pore.delaunay']*(Ps1 + Ps2)
-            self['pore.external'][Ps] = True
-            # Trim external Voronoi pores
-            Ps = ~self['pore.external']*self['pore.delaunay']
-            Ps = self.find_neighbor_pores(pores=Ps)
-            Ps = ~self.tomask(pores=Ps)*self['pore.voronoi']
-            self['pore.external'][Ps] = True
-        elif len(domain_size) == 3:  # Rectilinear
-            # Trim external Delaunay pores
-            Ps1 = sp.any(self['pore.coords'] > domain_size, axis=1)
-            Ps2 = sp.any(self['pore.coords'] < [0, 0, 0], axis=1)
-            Ps = self['pore.delaunay']*(Ps1 + Ps2)
-            self['pore.external'][Ps] = True
-            # Trim external Voronoi pores
-            Ps = ~self['pore.external']*self['pore.delaunay']
-            Ps = self.find_neighbor_pores(pores=Ps)
-            Ps = ~self.tomask(pores=Ps)*self['pore.voronoi']
-            self['pore.external'][Ps] = True
+        self['pore.external'][Ps] = True
 
-        # Begin process of removing, adjusting, and labeling pores
-        self['pore.surface'] = False
-        self['throat.surface'] = False
+        # Find which internal pores are delaunay
+        Ps = (~self['pore.external'])*self['pore.delaunay']
 
-        # Label Delaunay pores on the surface
-        Ps = self.pores('external', mode='not')
-        Ps = self.find_neighbor_pores(pores=Ps)
-        Ps = self['pore.delaunay']*self.tomask(pores=Ps)
-        self['pore.surface'][Ps] = True
-        self['pore.external'][Ps] = False  # So they aren't deleted below
+        # Find all pores connected to an internal delaunay pore
+        Ps = self.find_neighbor_pores(pores=Ps, include_input=True)
 
-        # Label Voronoi pores on surface
-        Ps = self.pores('external')
-        Ps = self.find_neighbor_pores(pores=Ps)
+        # Mark them all as keepers
+        self['pore.keep'] = False
+        self['pore.keep'][Ps] = True
+
+        # Trim all bad pores
+        topotools.trim(network=self, pores=~self['pore.keep'])
+
+        # Now label boundary pores
+        self['pore.boundary'] = False
+        self['pore.boundary'] = self['pore.delaunay']*self['pore.external']
+
+        # Label Voronoi pores on boundary
+        Ps = self.find_neighbor_pores(pores=self.pores('boundary'))
         Ps = self['pore.voronoi']*self.tomask(pores=Ps)
-        self['pore.surface'][Ps] = True
+        self['pore.boundary'][Ps] = True
 
-        # Label Voronoi and interconnect throats on surface
-        Ps = self.pores('surface')
-        Ts = self.find_neighbor_throats(pores=Ps, mode='intersection')
-        self['throat.surface'][Ts] = True
+        # Label Voronoi and interconnect throats on boundary
+        self['throat.boundary'] = False
+        Ps = self.pores('boundary')
+        Ts = self.find_neighbor_throats(pores=Ps, mode='xnor')
+        self['throat.boundary'][Ts] = True
 
-        # Trim external pores
-        Ps = self.pores('external')
-        topotools.trim(network=self, pores=Ps)
-
-        # Trim throats between Delaunay surface pores
-        Ps = self.pores(labels=['surface', 'delaunay'], mode='intersection')
-        Ts = self.find_neighbor_throats(pores=Ps, mode='intersection')
+        # Trim throats between Delaunay boundary pores
+        Ps = self.pores(labels=['boundary', 'delaunay'], mode='xnor')
+        Ts = self.find_neighbor_throats(pores=Ps, mode='xnor')
         topotools.trim(network=self, throats=Ts)
 
-        # Move Delaunay surface pores to centroid of Voronoi facet
-        Ps = self.pores(labels=['surface', 'delaunay'], mode='intersection')
+        # Move Delaunay boundary pores to centroid of Voronoi facet
+        Ps = self.pores(labels=['boundary', 'delaunay'], mode='xnor')
         for P in Ps:
             Ns = self.find_neighbor_pores(pores=P)
             Ns = Ps = self['pore.voronoi']*self.tomask(pores=Ns)
             coords = sp.mean(self['pore.coords'][Ns], axis=0)
             self['pore.coords'][P] = coords
 
-        self['pore.internal'] = ~self['pore.surface']
-        self['throat.internal'] = ~self['throat.surface']
+        self['pore.internal'] = ~self['pore.boundary']
+        Ps = self.pores('internal')
+        Ts = self.find_neighbor_throats(pores=Ps, mode='xnor')
+        self['throat.internal'] = False
+        self['throat.internal'][Ts] = True
 
+        # Label surface pores and throats between boundary and internal
+        Ts = self.throats(['boundary', 'internal'], mode='not')
+        self['throat.surface'] = False
+        self['throat.surface'][Ts] = True
+        surf_pores = self['throat.conns'][Ts].flatten()
+        surf_pores = sp.unique(surf_pores[~self['pore.boundary'][surf_pores]])
+        self['pore.surface'] = False
+        self['pore.surface'][surf_pores] = True
         # Clean-up
         del self['pore.external']
+        del self['pore.keep']
 
     def find_throat_facets(self, throats=None):
         r"""
@@ -357,3 +277,67 @@ class DelaunayVoronoiDual(GenericNetwork):
             Ps = am.rows[p]
             temp.append(Ps)
         return sp.array(temp, dtype=object)
+
+    def _parse_points(self, shape, points, num_points):
+        # Deal with input arguments
+        if points is None:
+            if num_points is None:
+                raise Exception('Must specify either "points" or "num_points"')
+            points = topotools.generate_base_points(num_points=num_points,
+                                                    domain_size=shape,
+                                                    reflect=True)
+        else:
+            # Should we check to ensure that points are reflected?
+            points = sp.array(points)
+
+        # Deal with points that are only 2D...they break Delaunay
+        if points.shape[1] == 3 and len(sp.unique(points[:, 2])) == 1:
+            points = points[:, :2]
+
+        return points
+
+    def _label_faces(self):
+        r'''
+        Label the pores sitting on the faces of the domain in accordance with
+        the conventions used for cubic etc.
+        '''
+        coords = sp.around(self['pore.coords'], decimals=10)
+        min_labels = ['front', 'left', 'bottom']
+        max_labels = ['back', 'right', 'top']
+        min_coords = sp.amin(coords, axis=0)
+        max_coords = sp.amax(coords, axis=0)
+        for ax in range(3):
+            self['pore.' + min_labels[ax]] = coords[:, ax] == min_coords[ax]
+            self['pore.' + max_labels[ax]] = coords[:, ax] == max_coords[ax]
+
+    def add_boundary_pores(self, labels=['top', 'bottom', 'front', 'back',
+                                         'left', 'right'], offset=None):
+        r"""
+        Add boundary pores to the specified faces of the network
+
+        Pores are offset from the faces of the domain.
+
+        Parameters
+        ----------
+        labels : string or list of strings
+            The labels indicating the pores defining each face where boundary
+            pores are to be added (e.g. 'left' or ['left', 'right'])
+
+        offset : scalar or array_like
+            The spacing of the network (e.g. [1, 1, 1]).  This must be given
+            since it can be quite difficult to infer from the network,
+            for instance if boundary pores have already added to other faces.
+
+        """
+        offset = sp.array(offset)
+        if offset.size == 1:
+            offset = sp.ones(3)*offset
+        for item in labels:
+            Ps = self.pores(item)
+            coords = sp.absolute(self['pore.coords'][Ps])
+            axis = sp.count_nonzero(sp.diff(coords, axis=0), axis=0) == 0
+            ax_off = sp.array(axis, dtype=int)*offset
+            if sp.amin(coords) == sp.amin(coords[:, sp.where(axis)[0]]):
+                ax_off = -1*ax_off
+            topotools.add_boundary_pores(network=self, pores=Ps, offset=ax_off,
+                                         apply_label=item + '_boundary')

@@ -2,7 +2,7 @@ import os as os
 import scipy as sp
 import pandas as pd
 from openpnm.topotools import trim
-from openpnm.core import logging
+from openpnm.utils import logging
 from openpnm.io import GenericIO
 from openpnm.network import GenericNetwork
 from pathlib import Path
@@ -11,11 +11,12 @@ logger = logging.getLogger(__name__)
 
 class Statoil(GenericIO):
     r"""
-    This class is for loading data stored in the 'Statoil' file format.  More
-    specifically, this file format is used by the network extraction code of
-    Blunt's group at Imperial College London, so this class can be used to load
-    and work with those network.  Numerous datasets are available for download
-    from the group's `website <http://tinyurl.com/zurko4q>`_.
+    The StatOil format is used by the Maximal Ball network extraction code of
+    the Imperial College London group
+
+    This class can be used to load and work with those networks.  Numerous
+    datasets are available for download from the group's
+    `website <http://tinyurl.com/zurko4q>`_.
 
     The so-called 'Statoil' format consists of 4 different files in a single
     folder.  The data is stored in columns with each corresponding to a
@@ -50,6 +51,7 @@ class Statoil(GenericIO):
 
         # ---------------------------------------------------------------------
         # Parse the link1 file
+        path = Path(path)
         filename = Path(path.resolve(), prefix+'_link1.dat')
         with open(filename, mode='r') as f:
             link1 = pd.read_table(filepath_or_buffer=f,

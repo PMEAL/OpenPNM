@@ -1,68 +1,80 @@
 import openpnm as op
-import scipy as sp
-import pytest
+from numpy.testing import assert_allclose
 
 
 class SubclassedTransportTest:
 
     def setup_class(self):
         self.net = op.network.Cubic(shape=[9, 9, 9])
-        self.geo = op.geometry.StickAndBall(network=self.net,
-                                            pores=self.net.Ps,
-                                            throats=self.net.Ts)
-        self.phase = op.phases.Air(network=self.net)
+        self.geo = op.geometry.GenericGeometry(network=self.net,
+                                               pores=self.net.Ps,
+                                               throats=self.net.Ts)
+        self.phase = op.phases.GenericPhase(network=self.net)
         self.phys = op.physics.GenericPhysics(network=self.net,
                                               phase=self.phase,
                                               geometry=self.geo)
+        self.phase['pore.viscosity'] = 1e-3
 
     def test_fickian_diffusion(self):
         alg = op.algorithms.FickianDiffusion(network=self.net,
                                              phase=self.phase)
         self.phys['throat.diffusive_conductance'] = 1
-        alg.set_value_BC(pores=self.net.pores('top'), values=1)
-        alg.set_value_BC(pores=self.net.pores('bottom'), values=0)
+        Pin = self.net.pores('top')
+        Pout = self.net.pores('bottom')
+        alg.set_value_BC(pores=Pin, values=1)
+        alg.set_value_BC(pores=Pout, values=0)
         alg.run()
-        alg.domain_area = 81
-        alg.domain_length = 9
-        Deff = alg.calc_eff_diffusivity()
-        assert sp.around(Deff, decimals=10) == 0.0275097564
+        Deff = alg.calc_effective_diffusivity()
+        Deff = alg.calc_effective_diffusivity(domain_area=81, domain_length=9)
+        Deff = alg.calc_effective_diffusivity(domain_area=81, domain_length=9,
+                                              inlets=Pin, outlets=Pout)
+        assert_allclose(Deff, 7.282894736)
 
     def test_stokes_flow(self):
         alg = op.algorithms.StokesFlow(network=self.net, phase=self.phase)
         self.phys['throat.hydraulic_conductance'] = 1
-        alg.set_value_BC(pores=self.net.pores('top'), values=101325)
-        alg.set_value_BC(pores=self.net.pores('bottom'), values=0)
+        Pin = self.net.pores('top')
+        Pout = self.net.pores('bottom')
+        alg.set_value_BC(pores=Pin, values=101325)
+        alg.set_value_BC(pores=Pout, values=0)
         alg.run()
-        alg.domain_area = 81
-        alg.domain_length = 9
-        Keff = alg.calc_eff_permeability()
-        assert sp.around(Keff, decimals=10) == 2.075e-05
+        Keff = alg.calc_effective_permeability()
+        Keff = alg.calc_effective_permeability(domain_area=81, domain_length=9)
+        Keff = alg.calc_effective_permeability(domain_area=81, domain_length=9,
+                                               inlets=Pin, outlets=Pout)
+        assert_allclose(Keff, 0.0072828947)
 
     def test_forurier_conduction(self):
         alg = op.algorithms.FourierConduction(network=self.net,
                                               phase=self.phase)
         self.phys['throat.thermal_conductance'] = 1
-        alg.set_value_BC(pores=self.net.pores('top'), values=101325)
-        alg.set_value_BC(pores=self.net.pores('bottom'), values=0)
+        Pin = self.net.pores('top')
+        Pout = self.net.pores('bottom')
+        alg.set_value_BC(pores=Pin, values=101325)
+        alg.set_value_BC(pores=Pout, values=0)
         alg.run()
-        alg.domain_area = 81
-        alg.domain_length = 9
         Keff = alg.calc_effective_conductivity()
-        assert sp.around(Keff, decimals=10) == 1.125
+        Keff = alg.calc_effective_conductivity(domain_area=81, domain_length=9)
+        Keff = alg.calc_effective_conductivity(domain_area=81, domain_length=9,
+                                               inlets=Pin, outlets=Pout)
+        assert_allclose(Keff, 7.282894736)
 
     def test_ohmic_conduction(self):
         alg = op.algorithms.OhmicConduction(network=self.net, phase=self.phase)
         self.phys['throat.electrical_conductance'] = 1
-        alg.set_value_BC(pores=self.net.pores('top'), values=101325)
-        alg.set_value_BC(pores=self.net.pores('bottom'), values=0)
+        Pin = self.net.pores('top')
+        Pout = self.net.pores('bottom')
+        alg.set_value_BC(pores=Pin, values=101325)
+        alg.set_value_BC(pores=Pout, values=0)
         alg.run()
-        alg.domain_area = 81
-        alg.domain_length = 9
         Keff = alg.calc_effective_conductivity()
-        assert sp.around(Keff, decimals=10) == 1.125
+        Keff = alg.calc_effective_conductivity(domain_area=81, domain_length=9)
+        Keff = alg.calc_effective_conductivity(domain_area=81, domain_length=9,
+                                               inlets=Pin, outlets=Pout)
+        assert_allclose(Keff, 7.282894736)
 
     def teardown_class(self):
-        ws = op.core.Workspace()
+        ws = op.Workspace()
         ws.clear()
 
 

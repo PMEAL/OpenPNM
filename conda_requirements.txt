@@ -1,8 +1,10 @@
 numpy
 scipy
 matplotlib
-pandas
 scikit-image
+pandas
 sympy
-testfixtures
+numba
 networkx
+h5py
+jsonschema

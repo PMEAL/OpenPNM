@@ -1,15 +1,14 @@
-import scipy as sp
 import scipy.io as spio
-from openpnm.core import logging, Workspace
+from flatdict import FlatDict
 from openpnm.io import GenericIO, Dict
-from openpnm.utils import FlatDict, sanitize_dict
+from openpnm.utils import sanitize_dict, logging, Workspace
 logger = logging.getLogger(__name__)
 ws = Workspace()
 
 
 class MAT(GenericIO):
     r"""
-    Class for reading and writing OpenPNM data to a Matlab 'mat' file
+    MAT files are a format used by Matlab
 
     Notes
     -----

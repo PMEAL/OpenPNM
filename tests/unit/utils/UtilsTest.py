@@ -12,7 +12,7 @@ class UtilsTest:
                                             throats=self.net.Ts)
 
     def teardown_class(self):
-        ws = op.core.Workspace()
+        ws = op.Workspace()
         ws.clear()
 
     def test_tic_toc(self):
@@ -39,7 +39,8 @@ class UtilsTest:
         assert len(s) == 5
 
     def test_printable_dict(self):
-        D = op.utils.PrintableDict({'item1': 1, 'item2': 2, 'item3': sp.array([1, 2])})
+        D = op.utils.PrintableDict(**{'item1': 1, 'item2': 2,
+                                      'item3': sp.array([1, 2])})
         s = D.__str__().split('\n')
         assert len(s) == 7
         r = D.__repr__()

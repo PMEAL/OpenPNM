@@ -1,5 +1,0 @@
-{
-  "openpnm/core/Base.py::openpnm.core.Base.Base._interleave_data": true,
-  "openpnm/core/Base.py::openpnm.core.Base.Base.interpolate_data": true,
-  "readme.rst::readme.rst": true
-}

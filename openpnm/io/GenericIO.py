@@ -2,8 +2,7 @@ import scipy as sp
 import numpy as np
 import openpnm as op
 from pathlib import Path
-from openpnm.core import logging
-from openpnm.utils import flat_list
+from openpnm.utils import flat_list, logging
 logger = logging.getLogger(__name__)
 
 
@@ -62,16 +61,15 @@ class GenericIO():
         return network
 
     @classmethod
-    def _parse_filename(cls, filename, path='', ext=''):
-        p = Path(path)
+    def _parse_filename(cls, filename, ext=''):
+        p = Path(filename)
         p = p.resolve()
-        p = p.joinpath(filename)
+        if ext == '':
+            ext = p.suffix
         # If extension not part of filename
-        if p.suffix == '':
-            try:
-                p = p.with_suffix(ext)
-            except ValueError:
-                p = p.with_suffix('.'+ext)
+        ext = '.'+(ext.strip('.'))
+        if p.suffix != ext:
+            p = p.with_suffix(ext)
         return p
 
     @classmethod

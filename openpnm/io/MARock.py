@@ -1,6 +1,7 @@
 import os as os
 import scipy as sp
-from openpnm.core import logging, Project
+from pathlib import Path
+from openpnm.utils import logging, Project
 from openpnm.network import GenericNetwork
 from openpnm.io import GenericIO
 from openpnm.topotools import trim
@@ -10,9 +11,11 @@ logger = logging.getLogger(__name__)
 class MARock(GenericIO):
     r"""
     3DMA-Rock is a network extraction algorithm developed by Brent Lindquist
-    and his group [1].  It uses Medial Axis thinning to find the skeleton of
-    the pore space, then extracts geometrical features such as pore volume and
-    throat cross-sectional area.
+    and his group
+
+    It uses Medial Axis thinning to find the skeleton of the pore space, then
+    extracts geometrical features such as pore volume and throat
+    cross-sectional area.
 
     [1] Lindquist, W. Brent, S. M. Lee, W. Oh, A. B. Venkatarangan, H. Shin,
     and M. Prodanovic. "3DMA-Rock: A software package for automated analysis
@@ -52,6 +55,7 @@ class MARock(GenericIO):
         """
 
         net = {}
+        path = Path(path)
         path = path.resolve()
         for file in os.listdir(path):
             if file.endswith(".np2th"):

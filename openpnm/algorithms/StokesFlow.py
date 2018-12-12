@@ -1,6 +1,6 @@
 import scipy as sp
 from openpnm.algorithms import ReactiveTransport
-from openpnm.core import logging
+from openpnm.utils import logging
 logger = logging.getLogger(__name__)
 
 
@@ -13,11 +13,26 @@ class StokesFlow(ReactiveTransport):
 
     """
 
-    def __init__(self, settings={}, **kwargs):
+    def __init__(self, settings={}, phase=None, **kwargs):
+        def_set = {'phase': None,
+                   'quantity': 'pore.pressure',
+                   'conductance': 'throat.hydraulic_conductance',
+                   'gui': {'setup':        {'phase': None,
+                                            'quantity': '',
+                                            'conductance': ''},
+                           'set_rate_BC':  {'pores': None,
+                                            'values': None},
+                           'set_value_BC': {'pores': None,
+                                            'values': None},
+                           'set_source':   {'pores': None,
+                                            'propname': ''}
+                           }
+                   }
         super().__init__(**kwargs)
-        self.settings.update({'quantity': 'pore.pressure',
-                              'conductance': 'throat.hydraulic_conductance'})
+        self.settings.update(def_set)
         self.settings.update(settings)
+        if phase is not None:
+            self.setup(phase=phase)
 
     def setup(self, phase=None, quantity='', conductance='', **kwargs):
         r"""
@@ -56,12 +71,43 @@ class StokesFlow(ReactiveTransport):
             self.settings['conductance'] = conductance
         super().setup(**kwargs)
 
-    def calc_eff_permeability(self):
+    def calc_effective_permeability(self, inlets=None, outlets=None,
+                                    domain_area=None, domain_length=None):
         r"""
         This calculates the effective permeability in this linear transport
         algorithm.
+
+        Parameters
+        ----------
+        inlets : array_like
+            The pores where the inlet pressure boundary conditions were
+            applied.  If not given an attempt is made to infer them from the
+            algorithm.
+
+        outlets : array_like
+            The pores where the outlet pressure boundary conditions were
+            applied.  If not given an attempt is made to infer them from the
+            algorithm.
+
+        domain_area : scalar, optional
+            The area of the inlet (and outlet) boundary faces.  If not given
+            then an attempt is made to estimate it, but it is usually
+            underestimated.
+
+        domain_length : scalar, optional
+            The length of the domain between the inlet and outlet boundary
+            faces.  If not given then an attempt is made to estimate it, but it
+            is usually underestimated.
+
+        Notes
+        -----
+        The area and length of the domain are found using the bounding box
+        around the inlet and outlet pores which do not necessarily lie on the
+        edge of the domain, resulting in underestimation of sizes.
         """
         phase = self.project.phases()[self.settings['phase']]
-        d_normal = self._calc_eff_prop()
-        self._eff_property = d_normal * sp.mean(phase['pore.viscosity'])
-        return self._eff_property
+        d_normal = self._calc_eff_prop(inlets=inlets, outlets=outlets,
+                                       domain_area=domain_area,
+                                       domain_length=domain_length)
+        K = d_normal * sp.mean(phase['pore.viscosity'])
+        return K
