@@ -785,6 +785,7 @@ class BaseTest:
         self.geo.pop('pore.blah', None)
         with pytest.raises(KeyError):
             self.geo['pore.blah']
+
     def test_interleave_data_with_unyts_on_all(self):
         import unyt
         pn = op.network.Cubic(shape=[10, 1, 1])
@@ -797,6 +798,7 @@ class BaseTest:
     def test_get_string(self):
         a = self.net.get('pore.coords')
         assert a.shape == (self.net.Np, 3)
+
     def test_interleave_data_with_unyts_on_only_one(self):
         import unyt
         pn = op.network.Cubic(shape=[10, 1, 1])
@@ -809,7 +811,6 @@ class BaseTest:
     def test_get_list_of_strings(self):
         a = self.net.get(['pore.coords', 'throat.conns'])
         assert len(a) == 2
-
 
     def test_interpolate_date_with_unyts(self):
         import unyt

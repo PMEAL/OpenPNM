@@ -207,7 +207,7 @@ class Base(dict):
                     raise Exception('Cannot create ' + key + ' when it is' +
                                     ' already defined on a subdomain')
 
-        value = sp.array(value, ndmin=1)  # Convert value to an ndarray
+        # This check allows subclassed numpy arrays through, eg. with units
         if not isinstance(value, sp.ndarray):
             value = sp.array(value, ndmin=1)  # Convert value to an ndarray
 
