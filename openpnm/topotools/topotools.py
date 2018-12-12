@@ -1103,9 +1103,6 @@ def find_surface_pores(network, markers=None, label='surface'):
     >>> net.num_pores(['top','bottom', 'left', 'right', 'front','back'])
     98
 
-    This function is mostly useful for unique networks such as spheres, random
-    topology, or networks that have been subdivided.
-
     """
     import scipy.spatial as sptl
     if markers is None:
@@ -1116,6 +1113,9 @@ def find_surface_pores(network, markers=None, label='surface'):
         coords /= sp.amax(coords, axis=0)
         coords -= 0.5
         npts = max((network.Np/10, 100))
+        if sum(dims) == 1:
+            network['pore.'+label] = True
+            return
         if sum(dims) == 2:
             r = 0.75
             theta = sp.linspace(0, 2*sp.pi, npts, dtype=float)
