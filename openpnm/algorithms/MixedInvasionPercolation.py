@@ -196,6 +196,11 @@ class MixedInvasionPercolation(GenericAlgorithm):
             logger.error("Either 'inlets' or 'clusters' must be passed to" +
                          " setup method")
         self.queue = []
+        if (self.settings['cooperative_pore_filling'] and
+           hasattr(self, 'tt_Pc')):
+            check_coop = True
+        else:
+            check_coop = False
         for i, cluster in enumerate(clusters):
             self.queue.append([])
             # Perform initial analysis on input pores
@@ -205,8 +210,12 @@ class MixedInvasionPercolation(GenericAlgorithm):
             if np.size(cluster) > 1:
                 for elem_id in cluster:
                     self._add_ts2q(elem_id, self.queue[i])
+                    if check_coop:
+                        self._check_coop(elem_id, self.queue[i])
             elif np.size(cluster) == 1:
                 self._add_ts2q(cluster, self.queue[i])
+                if check_coop:
+                    self._check_coop(elem_id, self.queue[i])
             else:
                 logger.warning("Some inlet clusters have no pores")
         if self.settings['snap_off']:
@@ -988,7 +997,7 @@ class MixedInvasionPercolation(GenericAlgorithm):
         for key in self.tt_Pc.keys():
             self.tt_Pc[key] = np.nan
         pairs = np.asarray([list(key) for key in adj_mat.keys()])
-        pores = np.asarray([adj_mat[key] for key in adj_mat.keys()])
+        pores = np.asarray([adj_mat[key] for key in adj_mat.keys()]) - 1
         angles = _throat_pair_angle(pairs[:, 0], pairs[:, 1], pores, net)
         for Pc in inv_points:
             if Pc == 0.0:
@@ -1010,7 +1019,10 @@ class MixedInvasionPercolation(GenericAlgorithm):
             if np.any(mask):
                 for [i] in np.argwhere(mask):
                     self.tt_Pc[tuple(pairs[i])] = Pc
-        print('Coop filling setup complete in', time.time()-start, 'seconds')
+        # Change to lil for single throat lookups
+        self.tt_Pc = self.tt_Pc.tolil()
+        logger.info("Coop filling finished in " +
+                    str(np.around(time.time()-start, 2)) + " s")
 
     def setup_coop_filling(self, inv_points=None):
         r"""
