@@ -15,6 +15,8 @@ from collections import namedtuple
 import logging
 import matplotlib.pyplot as plt
 from scipy.sparse import coo_matrix
+from transforms3d._gohlketransforms import angle_between_vectors
+import porespy as ps
 logger = logging.getLogger(__name__)
 
 
@@ -942,6 +944,73 @@ class MixedInvasionPercolation(GenericAlgorithm):
                         men_cen*sign)).T
         coords = t_cen + c3*t_norm
         return coords
+
+    def setup_coop_filling_b(self, adj_mat=None,
+                             regions=None, inv_points=None):
+        r"""
+        Evaluate the cooperative pore filling condition that the combined
+        filling angle in next neighbor throats cannot exceed the geometric
+        angle between their throat planes.
+        """
+        def _perpendicular_vector(v, v_ref=None):
+            if v_ref is None:
+                np.array([1.0, 0.0, 0.0])
+            return np.cross(v, v_ref)
+
+        def _throat_pair_angle(t1, t2, pore, network):
+            conn1 = network['throat.conns'][t1]
+            conn2 = network['throat.conns'][t2]
+            lookup = np.vstack((pore, pore)).T
+            p1 = conn1[conn1 != lookup]
+            p2 = conn2[conn2 != lookup]
+            v1 = network['pore.coords'][pore] - network['pore.coords'][p1]
+            v2 = network['pore.coords'][pore] - network['pore.coords'][p2]
+            v_ref = _perpendicular_vector(v1, v2)
+            v1_perp = _perpendicular_vector(v1, v_ref)
+            v2_perp = _perpendicular_vector(v2, v_ref)
+            return angle_between_vectors(v1_perp, v2_perp, axis=1)
+
+        net = self.project.network
+        phase = self.project.find_phase(self)
+        all_phys = self.project.find_physics(phase=phase)
+        if inv_points is None:
+            inv_points = np.arange(0, 1.01, .01)*self._max_pressure()
+
+        start = time.time()
+        cpf = self.settings['cooperative_pore_filling']
+        tfill_angle = cpf + '.alpha'
+        if adj_mat is None and regions is not None:
+            adj_mat = ps.filters.adjacency_triplets(regions, network=net,
+                                                    include_diagonals=True)
+        elif adj_mat is None and regions is None:
+            logger.error('Either adj_mat or regions must be supplied')
+        self.tt_Pc = adj_mat.copy().astype(float)
+        for key in self.tt_Pc.keys():
+            self.tt_Pc[key] = np.nan
+        pairs = np.asarray([list(key) for key in adj_mat.keys()])
+        pores = np.asarray([adj_mat[key] for key in adj_mat.keys()])
+        angles = _throat_pair_angle(pairs[:, 0], pairs[:, 1], pores, net)
+        for Pc in inv_points:
+            if Pc == 0.0:
+                Pc = 1e-6
+            # regenerate model with new target Pc
+            for phys in all_phys:
+                phys.models[cpf]['target_Pc'] = Pc
+                phys.regenerate_models(propnames=cpf)
+
+            # check whether the filling angle is ok at this Pc
+            check_alpha_T1 = ~sp.isnan(phase[tfill_angle][pairs[:, 0]])
+            check_alpha_T2 = ~sp.isnan(phase[tfill_angle][pairs[:, 1]])
+            check_alpha = check_alpha_T1*check_alpha_T2
+            # check whether this throat pair already has a coop value
+            check_nans = sp.isnan(np.asarray(list(self.tt_Pc.values())))
+            fill_angle_sum = np.sum(phase[tfill_angle][pairs], axis=1)
+            coalescence = fill_angle_sum >= angles
+            mask = check_alpha*check_nans*coalescence
+            if np.any(mask):
+                for [i] in np.argwhere(mask):
+                    self.tt_Pc[tuple(pairs[i])] = Pc
+        print('Coop filling setup complete in', time.time()-start, 'seconds')
 
     def setup_coop_filling(self, inv_points=None):
         r"""
