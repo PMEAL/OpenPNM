@@ -14,9 +14,10 @@ import time
 from collections import namedtuple
 import logging
 import matplotlib.pyplot as plt
-from scipy.sparse import coo_matrix
+from scipy.sparse import coo_matrix, dok_matrix
 from transforms3d._gohlketransforms import angle_between_vectors
 import porespy as ps
+from tqdm import tqdm
 logger = logging.getLogger(__name__)
 
 
@@ -954,6 +955,217 @@ class MixedInvasionPercolation(GenericAlgorithm):
         coords = t_cen + c3*t_norm
         return coords
 
+    def _transform_point_normal(self, point, normal):
+        r'''
+        Transforms point normal plane definition to parametric form
+        Ax + By +Cz + D = 0
+        '''
+        return [a for a in zip(normal[:, 0],
+                               normal[:, 1],
+                               normal[:, 2],
+                               -self._my_dot(point, normal))]
+
+    def _plane_intersect(self, a, b):
+        """
+        a, b   4-tuples/lists
+               Ax + By +Cz + D = 0
+               A, B, C, D in order
+        output: 2 points on line of intersection, np.arrays, shape (3,)
+        https://bit.ly/2LkBEyc
+        """
+        a_vec, b_vec = np.array(a[:3]), np.array(b[:3])
+        aXb_vec = np.cross(a_vec, b_vec)
+        A = np.array([a_vec, b_vec, aXb_vec])
+        d = np.array([-a[3], -b[3], 0.]).reshape(3, 1)
+        if np.linalg.det(A) == 0:
+            return None, None
+        else:
+            p_inter = np.linalg.solve(A, d).T
+            return p_inter[0], (p_inter + aXb_vec)[0]
+
+    def _t(self, p, q, r):
+        r'''
+        Equation of line passing through points p and q parameterized by t
+        https://bit.ly/2EpQ6DD
+        '''
+        x = p-q
+        return np.dot(r-q, x)/np.dot(x, x)
+
+    def _distance(self, p, q, r):
+        r'''
+        Shortest distance between line passing through p and q and point r
+        https://bit.ly/2EpQ6DD
+        '''
+        return np.linalg.norm(self._t(p, q, r)*(p-q)+q-r)
+
+    def _pair_permutations(self, n):
+        perms = []
+        for i in range(n):
+            for j in range(n-(i+1)):
+                perms.append([i, j+i+1])
+        return perms
+
+    def _perpendicular_vector(self, v, v_ref=None):
+        if v_ref is None:
+            np.array([1.0, 0.0, 0.0])
+        return np.cross(v, v_ref)
+
+    def _throat_pair_angle(self, t1, t2, pore, network):
+        conn1 = network['throat.conns'][t1]
+        conn2 = network['throat.conns'][t2]
+        lookup = np.vstack((pore, pore)).T
+        p1 = conn1[conn1 != lookup]
+        p2 = conn2[conn2 != lookup]
+        v1 = network['pore.coords'][pore] - network['pore.coords'][p1]
+        v2 = network['pore.coords'][pore] - network['pore.coords'][p2]
+        v_ref = self._perpendicular_vector(v1, v2)
+        v1_perp = self._perpendicular_vector(v1, v_ref)
+        v2_perp = self._perpendicular_vector(v2, v_ref)
+        return angle_between_vectors(v1_perp, v2_perp, axis=1)
+
+    def setup_coop_filling_c(self, inv_points=None):
+        r"""
+        This coop filling model iterates through the invasion pressures set by
+        the inv_points variable and calls the meniscus model whose dictionary
+        key must be given in the algorithm's setup.
+        The meniscus model supplies the position of the meniscus inside each
+        throat as if there were a meniscus in every throat for a given pressure
+        The contact line of the meniscus traces a circle around the inner
+        surface of the throat which is assumed to be toroidal.
+        The contact circle lies on a plane that is defined by the throat's
+        normal vector which runs along the axis of symmetry of the torus.
+        For every pore, every connecting throat is compared with each of it's
+        neighboring throats connected to the same pore. If the planes intersect
+        then the meniscus contact circles may eventually touch if they can
+        advance enough. For highly wetting fluid the contact point may be
+        advanced well into the throat whilst still being at negative capillary
+        pressure.
+        """
+        start = time.time()
+        net = self.project.network
+        phase = self.project.find_phase(self)
+        all_phys = self.project.find_physics(phase=phase)
+        if inv_points is None:
+            inv_points = np.arange(0, 1.01, .01)*self._max_pressure()
+        # Pore centroids
+        try:
+            p_centroids = net['pore.centroid']
+        except KeyError:
+            p_centroids = net['pore.coords']
+        # Throat centroids
+        try:
+            t_centroids = net['throat.centroid']
+        except KeyError:
+            t_centroids = np.mean(net['pore.coords'][net['throat.conns']],
+                                  axis=1)
+        # Throat normal vector
+        try:
+            t_norms = net['throat.normal']
+        except KeyError:
+            t_norms = (net['pore.coords'][net['throat.conns'][:, 1]] -
+                       net['pore.coords'][net['throat.conns'][:, 0]])
+        cpf = self.settings['cooperative_pore_filling']
+        model = all_phys[0].models[cpf]
+        # Throat Diameter and fiber radius
+        try:
+            t_rad = net[model['throat_diameter']]/2 + model['r_toroid']
+        except KeyError:
+            t_rad = net['throat.diameter']/2
+        # Equations of throat planes at the center of each throat
+        planes = self._transform_point_normal(t_centroids, t_norms)
+        Nt = net.Nt
+        adj_mat = dok_matrix((Nt, Nt), dtype=int)
+        # Run through and build the throat-throat pair adjacency matrix
+        # If planes of throats intersect then meniscii in throats may also
+        # Intersect at a given pressure.
+        for pore in net.Ps:
+            ts = net.find_neighbor_throats(pores=pore)
+            perms = self._pair_permutations(len(ts))
+            for perm in perms:
+                ta, tb = ts[perm]
+                p, q = self._plane_intersect(planes[ta], planes[tb])
+                if p is not None:
+                        d1 = self._distance(p, q, t_centroids[ta])
+                        d2 = self._distance(p, q, t_centroids[tb])
+                        if (t_rad[ta] >= d1) and (t_rad[tb] >= d2):
+                            adj_mat[ta, tb] = pore+1
+        # Meniscus Filling Angle
+        tfill_angle = cpf + '.alpha'
+        # Radius of throat at position x along throat axis
+        tmen_rx = cpf + '.rx'
+        # Position x relative to throat center
+        tmen_pos = cpf + '.pos'
+        # Capillary pressure adjacency maxtrix
+        pairs = np.asarray([list(key) for key in adj_mat.keys()])
+        pores = np.asarray([adj_mat[key] for key in adj_mat.keys()]) - 1
+        self.tt_Pc = adj_mat.copy().astype(float).tocsr()
+        # Initialize the pressure matrix with nans
+        # This is used to check for the first intersection pressure and
+        # Prevent overwriting
+#        for key in self.tt_Pc.keys():
+#            self.tt_Pc[key] = np.nan
+        self.tt_Pc[pairs[:, 0], pairs[:, 1]] = np.nan
+        angles = self._throat_pair_angle(pairs[:, 0], pairs[:, 1], pores, net)
+        T1 = pairs[:, 0]
+        T2 = pairs[:, 1]
+        hits = []
+        for Pc in tqdm(inv_points, 'Coop Filling Setup'):
+            # Don't use zero as can get strange numbers in menisci data
+            if Pc == 0.0:
+                Pc = 1e-6
+            # regenerate model with new target Pc
+            for phys in all_phys:
+                phys.models[cpf]['target_Pc'] = Pc
+                phys.regenerate_models(propnames=cpf)
+            # Work out meniscii coord for each direction along the throat
+            men_cen_dist = phase[tmen_pos]
+            men_rx = phase[tmen_rx]
+            # Convert the mensici positions into real coords
+            # They are calcuated relative to throat center along throat axis
+            men_cen_T1 = self._apply_cen_to_throats(p_centroids[pores],
+                                                    t_centroids[T1],
+                                                    t_norms[T1],
+                                                    men_cen_dist[T1])
+            # Get new equations of planes using new center position
+            planes_T1 = self._transform_point_normal(men_cen_T1, t_norms[T1])
+            men_cen_T2 = self._apply_cen_to_throats(p_centroids[pores],
+                                                    t_centroids[T2],
+                                                    t_norms[T2],
+                                                    men_cen_dist[T2])
+            planes_T2 = self._transform_point_normal(men_cen_T2, t_norms[T2])
+            # check whether this throat pair already has a coop value
+#            mask = sp.isnan(np.asarray(list(self.tt_Pc.values())))
+            # check whether this throat pair already has a coop value
+            check_nans = np.asarray(sp.isnan(self.tt_Pc[T1, T2]).tolist()[0])
+            fill_angle_sum = np.sum(phase[tfill_angle][pairs], axis=1)
+            coalescence = fill_angle_sum >= angles
+            mask = check_nans*coalescence
+            if np.any(mask):
+                self.tt_Pc[T1[mask], T2[mask]] = Pc
+                hits.append(Pc)
+#                # Loop through throat pairs that can have not yet coop filled
+#                for [i] in np.argwhere(mask):
+#                    t1, t2 = pairs[i]
+#                    # Points on line of throat plane intersection using the
+#                    # updated equations
+#                    p, q = self._plane_intersect(planes_T1[i], planes_T2[i])
+#                    if p is not None:
+#                        # Distances from the menisci contact line centers to
+#                        # The throat plane intersection
+#                        d1 = self._distance(p, q, men_cen_T1[i])
+#                        d2 = self._distance(p, q, men_cen_T2[i])
+#                        if (men_rx[t1] >= d1) and (men_rx[t2] >= d2):
+#                            # The menisci contact radii is greater than the
+#                            # distance to intersection - coalescence!!!
+#                            self.tt_Pc[tuple(pairs[i])] = Pc
+#                            hits.append(Pc)
+#                            print(coalescence[i])
+        # Change to lil for single throat lookups
+        self.tt_Pc = self.tt_Pc.tolil()
+        print("Coop filling finished in " +
+                    str(np.around(time.time()-start, 2)) + " s")
+        print('Coop Hits', np.unique(np.asarray(hits)))
+
     def setup_coop_filling_b(self, adj_mat=None,
                              regions=None, inv_points=None):
         r"""
@@ -961,24 +1173,6 @@ class MixedInvasionPercolation(GenericAlgorithm):
         filling angle in next neighbor throats cannot exceed the geometric
         angle between their throat planes.
         """
-        def _perpendicular_vector(v, v_ref=None):
-            if v_ref is None:
-                np.array([1.0, 0.0, 0.0])
-            return np.cross(v, v_ref)
-
-        def _throat_pair_angle(t1, t2, pore, network):
-            conn1 = network['throat.conns'][t1]
-            conn2 = network['throat.conns'][t2]
-            lookup = np.vstack((pore, pore)).T
-            p1 = conn1[conn1 != lookup]
-            p2 = conn2[conn2 != lookup]
-            v1 = network['pore.coords'][pore] - network['pore.coords'][p1]
-            v2 = network['pore.coords'][pore] - network['pore.coords'][p2]
-            v_ref = _perpendicular_vector(v1, v2)
-            v1_perp = _perpendicular_vector(v1, v_ref)
-            v2_perp = _perpendicular_vector(v2, v_ref)
-            return angle_between_vectors(v1_perp, v2_perp, axis=1)
-
         net = self.project.network
         phase = self.project.find_phase(self)
         all_phys = self.project.find_physics(phase=phase)
@@ -998,7 +1192,7 @@ class MixedInvasionPercolation(GenericAlgorithm):
             self.tt_Pc[key] = np.nan
         pairs = np.asarray([list(key) for key in adj_mat.keys()])
         pores = np.asarray([adj_mat[key] for key in adj_mat.keys()]) - 1
-        angles = _throat_pair_angle(pairs[:, 0], pairs[:, 1], pores, net)
+        angles = self._throat_pair_angle(pairs[:, 0], pairs[:, 1], pores, net)
         for Pc in inv_points:
             if Pc == 0.0:
                 Pc = 1e-6
