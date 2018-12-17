@@ -1,0 +1,25 @@
+import openpnm as op
+ws = op.Workspace()
+proj = ws.new_project()
+
+pn = op.network.Cubic(shape=[10, 10, 10], spacing=1e-4, project=proj)
+geo = op.geometry.StickAndBall(network=pn, pores=pn.Ps, throats=pn.Ts)
+air = op.phases.Air(network=pn, name='air')
+water = op.phases.Water(network=pn, name='h2o')
+hg = op.phases.Mercury(network=pn, name='hg')
+phys_air = op.physics.Standard(network=pn, phase=air, geometry=geo)
+phys_water = op.physics.Standard(network=pn, phase=water, geometry=geo)
+phys_hg = op.physics.Standard(network=pn, phase=hg, geometry=geo)
+
+ip = op.algorithms.InvasionPercolation(network=pn)
+ip.setup(phase=water)
+ip.set_inlets(pn.pores('bottom'))
+ip.run()
+water.update(ip)
+
+relperm = op.algorithms.RelativePermeability(network=pn)
+relperm.setup(phase=water)
+relperm.set_inlets(pn.pores('left'))
+relperm.set_outlets(pn.pores('right'))
+KvsS = relperm.run()
+print(KvsS)
