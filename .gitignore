@@ -2,3 +2,5 @@
 .spyproject/
 .pytest_cache/
 .vscode/
+
+docs/_build/
