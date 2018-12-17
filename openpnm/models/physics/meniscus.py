@@ -242,8 +242,8 @@ def general_toroidal(target,
     elif target_Pc is None:
         logger.exception(msg='Please supply a target capillary pressure' +
                          ' when mode is "men"')
-    if np.abs(target_Pc) < 1.0:
-        target_Pc = 1.0
+    if np.abs(target_Pc) < 1.0e-6:
+        target_Pc = 1.0e-6
     # Find the position in-between the minima and maxima corresponding to
     # the target pressure
     inds = np.indices(np.shape(t_Pc))
