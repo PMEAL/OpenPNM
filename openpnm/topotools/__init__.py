@@ -14,6 +14,7 @@ from .topotools import add_boundary_pores
 from .topotools import bond_percolation
 from .topotools import clone_pores
 from .topotools import connect_pores
+from .topotools import dimensionality
 from .topotools import extend
 from .topotools import find_path
 from .topotools import find_surface_pores
