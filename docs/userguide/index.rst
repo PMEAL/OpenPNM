@@ -12,5 +12,6 @@
     topology.rst
     workspace_and_project.rst
     models.rst
+    visualize_in_paraview.rst
     customizing.rst
     algorithms/index.rst
