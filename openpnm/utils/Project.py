@@ -486,10 +486,12 @@ class Project(list):
         ----------
 
         """
-        with open(filename, 'rb') as f:
+        p = Path(filename)
+        with open(p, 'rb') as f:
             d = pickle.load(f)
-        for item in d.keys():
-            self.extend(d[item])
+        obj = self._new_object(objtype=p.suffix.strip('.'),
+                               name=p.name.split('.')[0])
+        obj.update(d)
 
     def save_project(self, filename=''):
         r"""
@@ -527,17 +529,13 @@ class Project(list):
         """
         raise NotImplementedError('Use the io module to import data')
 
-    def export_data(self, network=None, phases=[], filename=None,
-                    filetype='vtp'):
+    def export_data(self, phases=[], filename=None, filetype='vtp'):
         r"""
         Export the pore and throat data from the given object(s) into the
         specified file and format.
 
         Parameters
         ----------
-        network: OpenPNM Network Object
-            The network containing the data to be stored
-
         phases : list of OpenPNM Phase Objects
             The data on each supplied phase will be added to file
 
@@ -577,7 +575,8 @@ class Project(list):
         about the format refer to ``openpnm.io``.
 
         """
-        project = network.project
+        project = self
+        network = self.network
         if filename is None:
             filename = project.name + '_' + time.strftime('%Y%b%d_%H%M%p')
         # Infer filetype from extension on file name...if given

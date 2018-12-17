@@ -1,6 +1,5 @@
 import openpnm as op
 ws = op.Workspace()
-ws.settings['loglevel'] = 40
 proj = ws.new_project()
 
 pn = op.network.Cubic(shape=[10, 10, 10], spacing=1e-4, project=proj)

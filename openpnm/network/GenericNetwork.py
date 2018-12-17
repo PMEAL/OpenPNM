@@ -138,11 +138,6 @@ class GenericNetwork(Base, ModelsMixin):
                     logger.warning('Converting throat.conns to be upper ' +
                                    'triangular')
                     value = sp.sort(value, axis=1)
-        if self.project:
-            for item in self.project.geometries().values():
-                exclude = {'pore.all', 'throat.all'}
-                if key in set(item.keys()).difference(exclude):
-                    raise Exception(key+' already exists on '+item.name)
         super().__setitem__(key, value)
 
     def __getitem__(self, key):
@@ -552,7 +547,9 @@ class GenericNetwork(Base, ModelsMixin):
 
         include_input : bool
             If ``False`` (default) then the input pores are not included in
-            the returned list(s).
+            the returned list(s). Note that since pores are not neighbors of
+            themselves, the neighbors of pore N will not include N, even if
+            this flag is ``True``.
 
         mode : string
             Specifies logic to filter the resulting list.  Options are:
