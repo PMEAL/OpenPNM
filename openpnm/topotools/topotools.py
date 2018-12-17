@@ -1030,10 +1030,12 @@ def label_faces(network, tol=0.0, label='surface'):
 
     label : string
         An identifying label to isolate the pores on the faces of the network.
-        default is 'surface'.
+        The default is 'surface'.  Surface pores can be found using
+        ``find_surface_pores``.
 
     """
-    if label not in network.labels():
+    label = label.split('.', 1)[-1]
+    if 'pore.'+label not in network.labels():
         find_surface_pores(network, label=label)
     Psurf = network['pore.'+label]
     crds = network['pore.coords']
