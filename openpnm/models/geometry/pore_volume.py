@@ -1,3 +1,10 @@
+r"""
+
+.. autofunction:: openpnm.models.geometry.pore_volume.sphere
+.. autofunction:: openpnm.models.geometry.pore_volume.cube
+
+"""
+
 from numpy import pi as _pi
 
 

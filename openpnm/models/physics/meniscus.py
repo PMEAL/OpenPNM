@@ -1,3 +1,11 @@
+r"""
+
+.. autofunction:: openpnm.models.physics.meniscus.sinusoidal
+.. autofunction:: openpnm.models.physics.meniscus.purcell
+.. autofunction:: openpnm.models.physics.meniscus.general_toroidal
+
+"""
+
 import numpy as np
 import logging
 import sympy as syp

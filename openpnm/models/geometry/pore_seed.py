@@ -1,3 +1,10 @@
+r"""
+
+.. autofunction:: openpnm.models.geometry.pore_seed.random
+.. autofunction:: openpnm.models.geometry.pore_seed.spatially_correlated
+
+"""
+
 import scipy as _sp
 from openpnm.models import misc as _misc
 from openpnm.utils import logging as _logging

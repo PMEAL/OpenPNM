@@ -1,7 +1,6 @@
 r"""
-===============================================================================
-Submodule -- throat_vector
-===============================================================================
+
+.. autofunction:: openpnm.models.geometry.throat_vector.pore_to_pore
 
 """
 from transforms3d import _gohlketransforms as tr
@@ -13,7 +12,7 @@ def pore_to_pore(target):
 
     Parameters
     ----------
-    geometry : OpenPNM Geometry object
+    target: OpenPNM object
         The object containing the geometrical properties of the throats
 
     Notes

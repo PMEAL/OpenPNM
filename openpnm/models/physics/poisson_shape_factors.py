@@ -1,3 +1,11 @@
+r"""
+
+.. autofunction:: openpnm.models.physics.poisson_shape_factors.ball_and_stick
+.. autofunction:: openpnm.models.physics.poisson_shape_factors.conical_frustum_and_stick
+
+"""
+
+
 from scipy import pi as _pi
 from scipy import arctanh as _atanh
 import scipy as _sp

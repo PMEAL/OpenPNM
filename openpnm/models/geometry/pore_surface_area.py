@@ -1,3 +1,9 @@
+r"""
+
+.. autofunction:: openpnm.models.geometry.pore_surface_area.sphere
+.. autofunction:: openpnm.models.geometry.pore_surface_area.cube
+
+"""
 import numpy as _np
 
 
