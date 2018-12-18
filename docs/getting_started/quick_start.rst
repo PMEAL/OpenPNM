@@ -149,7 +149,7 @@ The above code solves for the pressure in each pore and stores the result as ``p
 
     >>> perm.domain_area = (10*0.0001)**2
     >>> perm.domain_length = (10*0.0001)
-    >>> # K = perm.calc_eff_permeability()
+    >>> K = perm.calc_effective_permeability()
 
 .. note::
 
