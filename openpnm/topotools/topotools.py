@@ -1412,6 +1412,9 @@ def connect_pores(network, pores1, pores2, labels=[], add_conns=True):
     in which case it consecutively connects corresponding members of the two
     lists in a 1-to-1 fashion. Example: pores1 = [[0, 1], [2, 3]] and
     pores2 = [[5], [7, 9]] leads to creation of the following connections:
+
+    ::
+
         0 --> 5     2 --> 7     3 --> 7
         1 --> 5     2 --> 9     3 --> 9
 
@@ -1419,7 +1422,7 @@ def connect_pores(network, pores1, pores2, labels=[], add_conns=True):
     within ``pores1`` and ``pores2`` are of type list or ndarray.
 
     (3) It creates the connections in a format which is acceptable by
-    the default OpenPNM connection ('throat.conns') and either adds them to
+    the default OpenPNM connections ('throat.conns') and either adds them to
     the network or returns them.
 
     Examples
@@ -1709,33 +1712,33 @@ def merge_pores(network, pores, labels=['merged']):
         len(pores[0])
     except (TypeError, IndexError):
         pores = [pores]
-        
+
     N = len(pores)
     NBs, XYZs = [], []
-    
+
     for Ps in pores:
         NBs.append(network.find_neighbor_pores(pores=Ps,
                                                mode='union',
                                                flatten=True,
                                                include_input=False))
         XYZs.append(network['pore.coords'][Ps].mean(axis=0))
-    
+
     extend(network, pore_coords=XYZs, labels=labels)
     Pnew = network.Ps[-N::]
-    
+
     # Possible throats between new pores: This only happens when running in
     # batch mode, i.e. multiple groups of pores are to be merged. In case
-    # some of these groups share elements, possible throats between the 
+    # some of these groups share elements, possible throats between the
     # intersecting elements is not captured and must be added manually.
     pores_set = [set(items) for items in pores]
     NBs_set = [set(items) for items in NBs]
-    ps1, ps2 = [], []    
+    ps1, ps2 = [], []
     from itertools import combinations
     for i, j in combinations(range(N), 2):
         if not NBs_set[i].isdisjoint(pores_set[j]):
             ps1.append([network.Ps[-N+i]])
             ps2.append([network.Ps[-N+j]])
-    
+
     # Add (possible) connections between the new pores
     connect_pores(network, pores1=ps1, pores2=ps2, labels=labels)
     # Add connections between the new pores and the rest of the network
