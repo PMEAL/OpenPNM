@@ -1,9 +1,9 @@
-.. _generic_algorithm_api:
+.. _fickian_diffusion_api:
 
 --------------------------------------------------------------------------------
-GenericAlgorithm
+FickianDiffusion
 --------------------------------------------------------------------------------
 
-.. autoclass:: openpnm.algorithms.GenericAlgorithm
+.. autoclass:: openpnm.algorithms.FickianDiffusion
    :members:
    :show-inheritance:
