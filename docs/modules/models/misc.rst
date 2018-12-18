@@ -18,7 +18,7 @@ Detailed Model Documentation
 --------------------------------------------------------------------------------
 
 ................................................................................
-Simple Calculations
+Basic Math and Calculations
 ................................................................................
 
 .. automodule:: openpnm.models.misc.basic_math
@@ -26,7 +26,7 @@ Simple Calculations
 ----
 
 ................................................................................
-Generic Equations
+Simple Equations
 ................................................................................
 
 .. automodule:: openpnm.models.misc.simple_equations
