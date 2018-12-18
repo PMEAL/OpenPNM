@@ -45,7 +45,7 @@ Statistical Distributions
 
 .. autofunction:: weibull
 .. autofunction:: normal
-.. autofunction:: generic
+.. autofunction:: generic_distribution
 
 ----
 
