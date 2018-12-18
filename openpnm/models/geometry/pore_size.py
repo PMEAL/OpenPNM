@@ -1,4 +1,9 @@
 r"""
+The pore-size models in this sub-module are used to apply desired pore-size
+distributions to a pore network.  Most of the models accept pore seeds, and
+then look-up pore-sizes from cumuative distribtions functions.  There is also
+a model for finding the largest possible sphere that can be placed on each
+site.
 
 .. autofunction:: openpnm.models.geometry.pore_size.weibull
 .. autofunction:: openpnm.models.geometry.pore_size.normal
