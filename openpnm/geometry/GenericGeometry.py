@@ -93,7 +93,7 @@ class GenericGeometry(Subdomain, ModelsMixin):
             if (pores.size == 0) and (throats.size == 0):
                 pores = network.Ps
                 throats = network.Ts
-            self.add_locations(pores=pores, throats=throats)
+            self._add_locations(pores=pores, throats=throats)
 
     @property
     def network(self):

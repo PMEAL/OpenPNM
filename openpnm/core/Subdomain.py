@@ -15,23 +15,14 @@ class Subdomain(Base):
     +---------------------+---------------------------------------------------+
     | Methods             | Description                                       |
     +=====================+===================================================+
-    | ``add_locations``   | Specified which pores and throats the object      |
+    | ``_add_locations``  | Specified which pores and throats the object      |
     |                     | should be assigned to                             |
     +---------------------+---------------------------------------------------+
-    | ``drop_locations``  | Removes the object from the specified pores and   |
+    | ``_drop_locations`` | Removes the object from the specified pores and   |
     |                     | throats                                           |
     +---------------------+---------------------------------------------------+
-    | ``_get_boss``       | Geomtry and Physics objects are subservient to    |
-    |                     | Network and Phase objects, respectively, so this  |
-    |                     | method returns a handle to the appropriate *boss* |
+    | ``_set_locations``  | The actual general method called by the above    |
     +---------------------+---------------------------------------------------+
-
-    Also listed above is a hidden method that might be useful.  The act of
-    assign a Subdomain object to a subset of pores or throats basically amounts
-    to creating a list in the *boss* object with the Subdomain's name, like
-    ``'pore.geo_1'``, with True values where ``geo_1`` applies and False
-    elsewhere.  Changing the locations of objects is just a matter of changing
-    the locations of the True's and False's.
 
     The Project object has two methods, ``check_geometry_health`` and
     ``check_physics_health`` that look to make sure all locations are assigned
@@ -65,7 +56,7 @@ class Subdomain(Base):
                                 hit + ' is already defined')
         super().__setitem__(key, value)
 
-    def add_locations(self, pores=[], throats=[]):
+    def _add_locations(self, pores=[], throats=[]):
         r"""
         Adds associations between an object and its boss object at the
         given pore and/or throat locations.
@@ -90,7 +81,7 @@ class Subdomain(Base):
         if len(throats) > 0:
             self._set_locations(element='throat', indices=throats, mode='add')
 
-    def drop_locations(self, pores=[], throats=[], complete=False):
+    def _drop_locations(self, pores=[], throats=[]):
         r"""
         Removes association between an objectx and its boss object at the
         given pore and/or throat locations.
@@ -101,10 +92,6 @@ class Subdomain(Base):
             The pore and/or throat locations from which the association should
             be removed.  These indices refer to the full domain.
 
-        complete : boolean (default is ``False``)
-            If ``True`` then *all* pore and throat associations are removed
-            along with any trace that the objects were associated.
-
         Notes
         -----
         For *Physics* objects, the boss is the *Phase* with which it was
@@ -114,17 +101,12 @@ class Subdomain(Base):
         boss = self.project.find_full_domain(self)
         pores = boss._parse_indices(pores)
         throats = boss._parse_indices(throats)
-        if complete:
-            pores = boss.pores(self.name)
-            throats = boss.throats(self.name)
         if len(pores) > 0:
-            self._set_locations(element='pore', indices=pores, mode='drop',
-                                complete=complete)
+            self._set_locations(element='pore', indices=pores, mode='drop')
         if len(throats) > 0:
-            self._set_locations(element='throat', indices=throats, mode='drop',
-                                complete=complete)
+            self._set_locations(element='throat', indices=throats, mode='drop')
 
-    def _set_locations(self, element, indices, mode, complete=False):
+    def _set_locations(self, element, indices, mode):
         r"""
         This private method is called by ``set_locations`` and
         ``remove_locations`` as needed.
@@ -164,7 +146,4 @@ class Subdomain(Base):
         # Remove label from boss if ALL locations are removed
         if mode == 'drop':
             if ~np.any(boss[element+'.'+self.name]):
-                if complete:
-                    del boss[element+'.'+self.name]
-                else:
-                    boss[element+'.'+self.name] = False
+                boss[element+'.'+self.name] = False
