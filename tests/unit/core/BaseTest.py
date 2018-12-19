@@ -600,14 +600,6 @@ class BaseTest:
         # self.geo['pore.all'][0] = False
         # assert sp.sum(self.geo['pore.all']) == array_sum
 
-    def test_setitem_subdict_conflicts(self):
-        self.geo['pore.foo'] = 1
-        with pytest.raises(Exception):
-            self.geo['pore.foo.bar'] = 1
-        self.geo['throat.foo.bar'] = 1
-        with pytest.raises(Exception):
-            self.geo['throat.foo'] = 1
-
     def test_object_name_name_conflict(self):
         with pytest.raises(Exception):
             self.geo.name = self.net.name
@@ -770,11 +762,6 @@ class BaseTest:
         geom['pore.blah'] = True
         assert sp.sum(net['pore.blah']) == geom.Np
 
-    def test_getitem_with_no_matches(self):
-        self.geo.pop('pore.blah', None)
-        with pytest.raises(KeyError):
-            self.geo['pore.blah']
-
     def test_interpolate_data(self):
         a = self.geo.interpolate_data(propname='throat.diameter')
         assert a.size == self.geo.Np
@@ -786,46 +773,13 @@ class BaseTest:
         with pytest.raises(KeyError):
             self.geo['pore.blah']
 
-    def test_interleave_data_with_unyts_on_all(self):
-        import unyt
-        pn = op.network.Cubic(shape=[10, 1, 1])
-        geo1 = op.geometry.GenericGeometry(network=pn, pores=[0, 1, 2, 3, 4])
-        geo2 = op.geometry.GenericGeometry(network=pn, pores=[5, 6, 7, 8, 9])
-        geo1['pore.test'] = sp.rand(geo1.Np, ) * unyt.m
-        geo2['pore.test'] = sp.rand(geo2.Np, ) * unyt.m
-        assert hasattr(pn['pore.test'], 'units')
-
     def test_get_string(self):
         a = self.net.get('pore.coords')
         assert a.shape == (self.net.Np, 3)
 
-    def test_interleave_data_with_unyts_on_only_one(self):
-        import unyt
-        pn = op.network.Cubic(shape=[10, 1, 1])
-        geo1 = op.geometry.GenericGeometry(network=pn, pores=[0, 1, 2, 3, 4])
-        geo2 = op.geometry.GenericGeometry(network=pn, pores=[5, 6, 7, 8, 9])
-        geo1['pore.test'] = sp.rand(geo1.Np, )
-        geo2['pore.test'] = sp.rand(geo2.Np, ) * unyt.m
-        assert hasattr(pn['pore.test'], 'units')
-
     def test_get_list_of_strings(self):
         a = self.net.get(['pore.coords', 'throat.conns'])
         assert len(a) == 2
-
-    def test_interpolate_date_with_unyts(self):
-        import unyt
-        pn = op.network.Cubic(shape=[10, 1, 1])
-        geo = op.geometry.GenericGeometry(network=pn, pores=pn.Ps)
-        geo['pore.test'] = sp.rand(geo.Np, ) * unyt.m
-        a = geo.interpolate_data('pore.test')
-        assert hasattr(a, 'units')
-
-    def test_interpolate_date_with_unyts_but_none_assigned(self):
-        pn = op.network.Cubic(shape=[10, 1, 1])
-        geo = op.geometry.GenericGeometry(network=pn, pores=pn.Ps)
-        geo['pore.test'] = sp.rand(geo.Np, )
-        b = geo.interpolate_data('pore.test')
-        assert not hasattr(b, 'units')
 
 
 if __name__ == '__main__':

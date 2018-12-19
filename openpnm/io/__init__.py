@@ -40,9 +40,6 @@ parameters.
 +----------+------------------------------------------------------------------+
 | MAT      | MAT files are a format used by Matlab                            |
 +----------+------------------------------------------------------------------+
-| JGF      | The JSON Graph Format is a schema specification of how to write  |
-|          | a graph object into JSON format                                  |
-+----------+------------------------------------------------------------------+
 | iMorph   | iMorph is a graphical interface program that provides some image |
 |          | analysis tools for porous media                                  |
 +----------+------------------------------------------------------------------+
@@ -68,4 +65,3 @@ from .Statoil import Statoil
 from .Pandas import Pandas
 from .HDF5 import HDF5
 from .XDMF import XDMF
-from .JSONGraphFormat import JSONGraphFormat

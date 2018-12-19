@@ -7,4 +7,3 @@ sympy
 numba
 networkx
 h5py
-jsonschema

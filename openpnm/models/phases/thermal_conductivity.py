@@ -1,11 +1,3 @@
-r"""
-
-.. autofunction:: openpnm.models.phases.thermal_conductivity.water
-.. autofunction:: openpnm.models.phases.thermal_conductivity.chung
-.. autofunction:: openpnm.models.phases.thermal_conductivity.sato
-
-"""
-
 import scipy as sp
 
 

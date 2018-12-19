@@ -1,8 +1,3 @@
-r"""
-
-.. autofunction:: openpnm.models.phases.electrical_conductivity.percolating_continua
-
-"""
 import scipy as _sp
 
 

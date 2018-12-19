@@ -21,3 +21,4 @@ Links to Detailed Class Documentation
    :maxdepth: 3
 
    voronoi_fibers.rst
+   cubic_berea.rst

@@ -1,9 +1,3 @@
-r"""
-
-.. autofunction:: openpnm.models.physics.diffusive_conductance.ordinary_diffusion
-
-"""
-
 from .misc import generic_conductance
 
 

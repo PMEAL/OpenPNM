@@ -1,10 +1,3 @@
-r"""
-
-.. autofunction:: openpnm.models.geometry.throat_length.piecewise
-.. autofunction:: openpnm.models.geometry.throat_length.ctc
-.. autofunction:: openpnm.models.geometry.throat_length.conduit_lengths
-
-"""
 import numpy as _np
 from scipy import sqrt as _sqrt
 from openpnm.utils import logging as _logging

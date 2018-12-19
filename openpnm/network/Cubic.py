@@ -93,9 +93,6 @@ class Cubic(GenericNetwork):
         # Store original network shape
         self._shape = sp.shape(arr)
         # Store network spacing
-        spacing = sp.array(spacing)
-        if spacing.size == 2:
-            spacing = sp.concatenate((spacing, [1]))
         self._spacing = sp.ones(3)*sp.array(spacing, ndmin=1)
 
         points = np.array([i for i, v in np.ndenumerate(arr)], dtype=float)
@@ -144,11 +141,11 @@ class Cubic(GenericNetwork):
             heads.extend(H.flat)
         pairs = np.vstack([tails, heads]).T
 
-        super().__init__(Np=points.shape[0], Nt=pairs.shape[0], name=name,
-                         project=project)
-
         self['pore.coords'] = points
         self['throat.conns'] = pairs
+
+        super().__init__(Np=points.shape[0], Nt=pairs.shape[0], name=name,
+                         project=project)
         # Label faces
         x, y, z = self['pore.coords'].T
         labels = ['front', 'back', 'left', 'right', 'bottom', 'top']

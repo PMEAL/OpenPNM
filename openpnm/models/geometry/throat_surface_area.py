@@ -1,10 +1,3 @@
-r"""
-
-.. autofunction:: openpnm.models.geometry.throat_surface_area.cylinder
-.. autofunction:: openpnm.models.geometry.throat_surface_area.cuboid
-.. autofunction:: openpnm.models.geometry.throat_surface_area.extrusion
-
-"""
 import scipy as _sp
 
 

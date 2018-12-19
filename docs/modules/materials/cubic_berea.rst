@@ -1,9 +1,8 @@
-.. _advection_diffusion_api:
+.. _berea_cubic_api:
 
 --------------------------------------------------------------------------------
-AdvectionDiffusion
+BereaCubic
 --------------------------------------------------------------------------------
 
-.. autoclass:: openpnm.algorithms.AdvectionDiffusion
+.. autoclass:: openpnm.materials.BereaCubic
    :members:
-   :show-inheritance:

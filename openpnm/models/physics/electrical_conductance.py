@@ -1,9 +1,3 @@
-r"""
-
-.. autofunction:: openpnm.models.physics.electrical_conductance.series_resistors
-
-"""
-
 from .misc import generic_conductance
 
 

@@ -11,5 +11,3 @@ Contents:
     installation.rst
     quick_start.rst
     examples.rst
-    visualize_in_paraview.rst
-    migrating_to_V2.rst

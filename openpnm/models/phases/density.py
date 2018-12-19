@@ -1,12 +1,3 @@
-r"""
-
-.. autofunction:: openpnm.models.phases.density.water
-.. autofunction:: openpnm.models.phases.density.standard
-.. autofunction:: openpnm.models.phases.density.ideal_gas
-
-"""
-
-
 def standard(target, mol_weight='pore.molecular_weight',
              molar_density='pore.molar_density'):
     r"""

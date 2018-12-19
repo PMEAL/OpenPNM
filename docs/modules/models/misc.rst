@@ -17,19 +17,25 @@ Overview of Submodule
 Detailed Model Documentation
 --------------------------------------------------------------------------------
 
+.. currentmodule:: openpnm.models.misc
+
 ................................................................................
-Basic Math and Calculations
+Simple Calculations
 ................................................................................
 
-.. automodule:: openpnm.models.misc.basic_math
+.. autofunction:: constant
+.. autofunction:: product
+.. autofunction:: scaled
+.. autofunction:: random
 
 ----
 
 ................................................................................
-Simple Equations
+Generic Equations
 ................................................................................
 
-.. automodule:: openpnm.models.misc.simple_equations
+.. autofunction:: linear
+.. autofunction:: polynomial
 
 ----
 
@@ -37,7 +43,9 @@ Simple Equations
 Statistical Distributions
 ................................................................................
 
-.. automodule:: openpnm.models.misc.statistical_distributions
+.. autofunction:: weibull
+.. autofunction:: normal
+.. autofunction:: generic
 
 ----
 
@@ -45,4 +53,5 @@ Statistical Distributions
 Neighbor Lookups
 ................................................................................
 
-.. automodule:: openpnm.models.misc.neighbor_lookups
+.. autofunction:: from_neighbor_throats
+.. autofunction:: from_neighbor_pores

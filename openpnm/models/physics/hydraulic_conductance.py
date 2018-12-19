@@ -1,9 +1,3 @@
-r"""
-
-.. autofunction:: openpnm.models.physics.hydraulic_conductance.hagen_poiseuille
-
-"""
-
 from .misc import generic_conductance
 
 

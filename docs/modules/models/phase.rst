@@ -21,7 +21,9 @@ Detailed Model Documentation
 Density
 ................................................................................
 
-.. automodule:: openpnm.models.phases.density
+.. autofunction:: openpnm.models.phases.density.water
+.. autofunction:: openpnm.models.phases.density.standard
+.. autofunction:: openpnm.models.phases.density.ideal_gas
 
 ----
 
@@ -29,7 +31,10 @@ Density
 Diffusivity
 ................................................................................
 
-.. automodule:: openpnm.models.phases.diffusivity
+.. autofunction:: openpnm.models.phases.diffusivity.fuller
+.. autofunction:: openpnm.models.phases.diffusivity.fuller_scaling
+.. autofunction:: openpnm.models.phases.diffusivity.tyn_calus
+.. autofunction:: openpnm.models.phases.diffusivity.tyn_calus_scaling
 
 ----
 
@@ -37,7 +42,7 @@ Diffusivity
 Electrical Conductivity
 ................................................................................
 
-.. automodule:: openpnm.models.phases.electrical_conductivity
+.. autofunction:: openpnm.models.phases.electrical_conductivity.percolating_continua
 
 ----
 
@@ -45,7 +50,9 @@ Electrical Conductivity
 Molar Density
 ................................................................................
 
-.. automodule:: openpnm.models.phases.molar_density
+.. autofunction:: openpnm.models.phases.molar_density.standard
+.. autofunction:: openpnm.models.phases.molar_density.ideal_gas
+.. autofunction:: openpnm.models.phases.molar_density.vanderwaals
 
 ----
 
@@ -53,7 +60,10 @@ Molar Density
 Surface Tension
 ................................................................................
 
-.. automodule:: openpnm.models.phases.surface_tension
+.. autofunction:: openpnm.models.phases.surface_tension.water
+.. autofunction:: openpnm.models.phases.surface_tension.eotvos
+.. autofunction:: openpnm.models.phases.surface_tension.guggenheim_katayama
+.. autofunction:: openpnm.models.phases.surface_tension.brock_bird_scaling
 
 ----
 
@@ -61,7 +71,9 @@ Surface Tension
 Thermal Conductivity
 ................................................................................
 
-.. automodule:: openpnm.models.phases.thermal_conductivity
+.. autofunction:: openpnm.models.phases.thermal_conductivity.water
+.. autofunction:: openpnm.models.phases.thermal_conductivity.chung
+.. autofunction:: openpnm.models.phases.thermal_conductivity.sato
 
 ----
 
@@ -69,7 +81,8 @@ Thermal Conductivity
 Vapor Pressure
 ................................................................................
 
-.. automodule:: openpnm.models.phases.vapor_pressure
+.. autofunction:: openpnm.models.phases.vapor_pressure.water
+.. autofunction:: openpnm.models.phases.vapor_pressure.antoine
 
 ----
 
@@ -77,4 +90,6 @@ Vapor Pressure
 Viscosity
 ................................................................................
 
-.. automodule:: openpnm.models.phases.viscosity
+.. autofunction:: openpnm.models.phases.viscosity.water
+.. autofunction:: openpnm.models.phases.viscosity.reynolds
+.. autofunction:: openpnm.models.phases.viscosity.chung
