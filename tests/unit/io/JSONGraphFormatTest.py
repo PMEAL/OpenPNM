@@ -143,10 +143,8 @@ class JSONGraphFormatTest:
         filename = Path(path.resolve(), 'invalid.json')
 
         # Ensure an exception was thrown
-        with pytest.raises(Exception) as e_info:
+        with pytest.raises(Exception):
             op.io.JSONGraphFormat.load(filename)
-        expected_error = f'Error - {filename} is not in the JSON Graph Format.'
-        assert expected_error in str(e_info.value)
 
     def test_load_success(self):
         # Load JSON file and ensure project integrity

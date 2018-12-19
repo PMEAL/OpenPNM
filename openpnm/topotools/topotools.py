@@ -1453,6 +1453,9 @@ def connect_pores(network, pores1, pores2, labels=[], add_conns=True):
     in which case it consecutively connects corresponding members of the two
     lists in a 1-to-1 fashion. Example: pores1 = [[0, 1], [2, 3]] and
     pores2 = [[5], [7, 9]] leads to creation of the following connections:
+
+    ::
+
         0 --> 5     2 --> 7     3 --> 7
         1 --> 5     2 --> 9     3 --> 9
 
@@ -1460,7 +1463,7 @@ def connect_pores(network, pores1, pores2, labels=[], add_conns=True):
     within ``pores1`` and ``pores2`` are of type list or ndarray.
 
     (3) It creates the connections in a format which is acceptable by
-    the default OpenPNM connection ('throat.conns') and either adds them to
+    the default OpenPNM connections ('throat.conns') and either adds them to
     the network or returns them.
 
     Examples

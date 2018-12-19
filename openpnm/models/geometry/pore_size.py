@@ -1,3 +1,19 @@
+r"""
+The pore-size models in this sub-module are used to apply desired pore-size
+distributions to a pore network.  Most of the models accept pore seeds, and
+then look-up pore-sizes from cumuative distribtions functions.  There is also
+a model for finding the largest possible sphere that can be placed on each
+site.
+
+.. autofunction:: openpnm.models.geometry.pore_size.weibull
+.. autofunction:: openpnm.models.geometry.pore_size.normal
+.. autofunction:: openpnm.models.geometry.pore_size.random
+.. autofunction:: openpnm.models.geometry.pore_size.generic_distribution
+.. autofunction:: openpnm.models.geometry.pore_size.largest_sphere
+.. autofunction:: openpnm.models.geometry.pore_size.equivalent_diameter
+
+"""
+
 from openpnm.utils import logging as _logging
 from openpnm.models import misc as _misc
 import numpy as _np
@@ -25,7 +41,7 @@ def random(target, seed=None, num_range=[0, 1]):
                         num_range=num_range)
 
 
-normal.__doc__ = _misc.normal.__doc__
+random.__doc__ = _misc.random.__doc__
 
 
 def generic_distribution(target, func, seeds='pore.seed'):
