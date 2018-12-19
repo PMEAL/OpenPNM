@@ -78,14 +78,6 @@ class GenericPhase(Base, ModelsMixin):
         self['pore.temperature'] = 298.0
         self['pore.pressure'] = 101325.0
 
-    def __setitem__(self, key, value):
-        if self.project:
-            for item in self.project.find_physics(phase=self):
-                exclude = {'pore.all', 'throat.all'}
-                if key in set(item.keys()).difference(exclude):
-                    raise Exception(key+' already exists on '+item.name)
-        super().__setitem__(key, value)
-
     def __getitem__(self, key):
         element, prop = key.split('.', 1)
         # Deal with special keys first

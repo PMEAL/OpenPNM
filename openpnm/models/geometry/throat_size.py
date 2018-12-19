@@ -1,3 +1,13 @@
+r"""
+
+.. autofunction:: openpnm.models.geometry.throat_size.weibull
+.. autofunction:: openpnm.models.geometry.throat_size.normal
+.. autofunction:: openpnm.models.geometry.throat_size.random
+.. autofunction:: openpnm.models.geometry.throat_size.generic_distribution
+.. autofunction:: openpnm.models.geometry.throat_size.from_neighbor_pores
+.. autofunction:: openpnm.models.geometry.throat_size.equivalent_diameter
+
+"""
 from openpnm.models import misc as _misc
 import numpy as _np
 
@@ -22,6 +32,14 @@ def generic_distribution(target, func, seeds='throat.seed'):
 
 
 generic_distribution.__doc__ = _misc.generic_distribution.__doc__
+
+
+def random(target, seed=None, num_range=[0, 1]):
+    return _misc.random(target=target, element='throat', seed=seed,
+                        num_range=num_range)
+
+
+random.__doc__ = _misc.random.__doc__
 
 
 def from_neighbor_pores(target, pore_prop='pore.diameter', mode='min'):

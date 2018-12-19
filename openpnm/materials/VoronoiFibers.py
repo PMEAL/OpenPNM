@@ -65,6 +65,14 @@ class VoronoiFibers(Project):
         appropriately set the resolution based on the fiber_radius and the
         shape of the domain so as to remain within memory constraints.
 
+    linear_scale : array_like (len 3)
+        This is applied to the domain size before placing the points and then
+        reversed afterwards and has the effect of introducing anisotropy into
+        an otherwise uniformly distributed point distribution. By default no
+        scaling is applied. Applying [1, 1, 2] will stretch the domain by a
+        factor of 2 in the z-direction and this will have the affect of
+        aligning fibers in the x and y directions once scaling is reversed.
+
     References
     ----------
     This approach to modeling fibrous materials was first presented by
@@ -91,9 +99,20 @@ class VoronoiFibers(Project):
     """
 
     def __init__(self, num_points=None, points=None, shape=[1, 1, 1],
-                 fiber_rad=None, resolution=1e-2, name=None, **kwargs):
+                 fiber_rad=None, resolution=1e-2, name=None,
+                 linear_scale=None, **kwargs):
         super().__init__(name=name)
         shape = np.array(shape)
+        scale_applied = False
+        if linear_scale is not None:
+            if len(linear_scale) != 3:
+                logger.exception(msg='linear_scale must have length 3 ' +
+                                 'to scale each axis')
+            else:
+                ls = np.asarray(linear_scale)
+                shape *= ls
+                scale_applied = True
+#                net['pore.coords'] *= ls
         if (len(shape) != 3) or np.any(shape == 0):
             raise Exception('Only 3D, rectangular shapes are supported')
         if fiber_rad is None:
@@ -105,6 +124,8 @@ class VoronoiFibers(Project):
                                   shape=shape,
                                   name=self.name+'_net',
                                   **kwargs)
+        if scale_applied:
+            net['pore.coords'] /= ls
         net.fiber_rad = fiber_rad
         net.resolution = resolution
         del_geom = DelaunayGeometry(project=self,
@@ -112,6 +133,7 @@ class VoronoiFibers(Project):
                                     pores=net.pores('delaunay'),
                                     throats=net.throats('delaunay'),
                                     name=self.name+'_del')
+
         VoronoiGeometry(project=self,
                         network=net,
                         pores=net.pores('voronoi'),

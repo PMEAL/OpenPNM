@@ -1,8 +1,10 @@
+import unyt
 from collections import namedtuple
 import matplotlib.pyplot as plt
 from openpnm.utils import Workspace, logging
 from openpnm.utils.misc import PrintableList, SettingsDict, HealthDict
 import scipy as sp
+import warnings
 logger = logging.getLogger(__name__)
 ws = Workspace()
 
@@ -172,16 +174,44 @@ class Base(dict):
         'throat.***'.  Also, any scalars are cast into full length vectors.
 
         """
-        # If value is a dictionary, then break it up into constituent arrays
+        # Check 1: If value is a dictionary, break it into constituent arrays
         if hasattr(value, 'keys'):
             for item in value.keys():
                 prop = item.replace('pore.', '').replace('throat.', '')
                 self.__setitem__(key+'.'+prop, value[item])
             return
 
-        value = sp.array(value, ndmin=1)  # Convert value to an ndarray
+        # Check 2: If adding a new key, make sure it has no conflicts
+        if self.project:
+            proj = self.project
+            boss = proj.find_full_domain(self)
+            keys = boss.keys(mode='all', deep=True)
+        else:
+            boss = None
+            keys = self.keys()
+        # Prevent 'pore.foo.bar' when 'pore.foo' present
+        long_keys = [i for i in keys if i.count('.') > 1]
+        key_root = '.'.join(key.split('.')[:2])
+        if (key.count('.') > 1) and (key_root in keys):
+            raise Exception('Cannot create ' + key + ' when ' +
+                            key_root + ' is already defined')
+        # Prevent 'pore.foo' when 'pore.foo.bar' is present
+        if (key.count('.') == 1) and any([i.startswith(key) for i in long_keys]):
+            hit = [i for i in keys if i.startswith(key)][0]
+            raise Exception('Cannot create ' + key + ' when ' +
+                            hit + ' is already defined')
+        # Prevent writing pore.foo on boss when present on subdomain
+        if boss:
+            if boss is self:
+                if (key in keys) and (key not in self.keys()):
+                    raise Exception('Cannot create ' + key + ' when it is' +
+                                    ' already defined on a subdomain')
 
-        # Enforce correct dict naming
+        # This check allows subclassed numpy arrays through, eg. with units
+        if not isinstance(value, sp.ndarray):
+            value = sp.array(value, ndmin=1)  # Convert value to an ndarray
+
+        # Check 3: Enforce correct dict naming
         element = key.split('.')[0]
         element = self._parse_element(element, single=True)
 
@@ -197,7 +227,7 @@ class Base(dict):
                 if sp.shape(self[key]) == (0, ):
                     super(Base, self).__setitem__(key, value)
                 else:
-                    logger.warning(key+' is already defined.')
+                    warnings.warn(key+' is already defined.')
             else:
                 super(Base, self).__setitem__(key, value)
             return
@@ -324,7 +354,7 @@ class Base(dict):
                 if item.split('.')[1] not in self.project.names:
                     del self[item]
 
-    def keys(self, element=None, mode=None):
+    def keys(self, element=None, mode=None, deep=False):
         r"""
         This subclass works exactly like ``keys`` when no arguments are passed,
         but optionally accepts an ``element`` and/or a ``mode``, which filters
@@ -340,11 +370,8 @@ class Base(dict):
             keys to only 'pore' or 'throat' keys.  If neither is given, then
             both are assumed.
 
-        mode : string (optional, default is 'skip')
+        mode : string (optional)
             Controls which keys are returned.  Options are:
-
-            **``None``** : This mode (default) bypasses this subclassed method
-            and just returns the normal KeysView object.
 
             **'labels'** : Limits the returned list of keys to only 'labels'
             (boolean arrays)
@@ -354,6 +381,13 @@ class Base(dict):
 
             **'all'** : Returns both 'labels' and 'props'.  This is equivalent
             to sending a list of both 'labels' and 'props'.
+
+            If no mode is specified then the normal KeysView object is
+            returned.
+
+        deep : Boolean
+            If set to ``True`` then the keys on all associated subdomain
+            objects are returned as well.
 
         See Also
         --------
@@ -392,6 +426,15 @@ class Base(dict):
             temp.extend([i for i in keys if self.get(i).dtype == bool])
         if element:
             temp = [i for i in temp if i.split('.')[0] in element]
+
+        if deep:
+            if self._isa('phase'):
+                for item in self.project.find_physics(phase=self):
+                    temp += item.keys(element=element, mode=mode, deep=False)
+            if self._isa('network'):
+                for item in self.project.geometries().values():
+                    temp += item.keys(element=element, mode=mode, deep=False)
+
         return temp
 
     def get(self, keys, default=None):
@@ -475,9 +518,9 @@ class Base(dict):
             **'constants'** : returns data values that were *not* generated by
             a model, but manaully created.
 
-        deep : boolean
-            If ``True`` this will also return the data on any associated
-            subdomain objects
+        deep : Boolean
+            If set to ``True`` then the props on all associated subdomain
+            objects are returned as well.
 
         Returns
         -------
@@ -1109,6 +1152,15 @@ class Base(dict):
                 temp_arr[inds] = vals
             else:
                 temp_arr[inds] = dummy_val[atype[0]]
+        # Check if any arrays have units, if so then apply them to result
+        if any([hasattr(a, 'units') for a in arrs]):
+            [a.convert_to_mks() for a in arrs if hasattr(a, 'units')]
+            units = [a.units.__str__() for a in arrs if hasattr(a, 'units')]
+            if len(units) > 0:
+                if len(set(units)) == 1:
+                        temp_arr *= sp.array([1])*getattr(unyt, units[0])
+                else:
+                    raise Exception('Units on the interleaved array are not equal')
         return temp_arr
 
     def interpolate_data(self, propname):
@@ -1173,6 +1225,8 @@ class Base(dict):
             data[Ps] = self[propname]
             Ps12 = net['throat.conns'][Ts]
             values = sp.mean(data[Ps12], axis=1)
+        if hasattr(self[propname], 'units'):
+            values *= self[propname].units
         return values
 
     def filter_by_label(self, pores=[], throats=[], labels=None, mode='or'):
