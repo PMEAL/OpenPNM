@@ -245,6 +245,20 @@ class Base(dict):
             else:
                 raise Exception('Cannot write array, wrong length: '+key)
 
+    def __getitem__(self, key):
+        try:
+            print('trying')
+            return super().__getitem__(key)
+        except KeyError:
+            print('erroring')
+            # See if key is a subdict
+            keys = self.keys(mode='all', deep=True)
+            L = [k for k in keys if k.startswith(key)]
+            if len(L):
+                return {k: self.__getitem__(k) for k in L}
+            else:
+                raise KeyError(key)
+
     def _set_name(self, name, validate=True):
         if not hasattr(self, '_name'):
             self._name = None

@@ -44,19 +44,14 @@ class Subdomain(Base):
         # Find boss object (either phase or network)
         boss = self.project.find_full_domain(self)
         # Get values if present
-        try:
-            vals = super().__getitem__(key)
-        except KeyError:
-            try:  # Invoke interleave data
-                inds = boss._get_indices(element=element, labels=self.name)
-                vals = boss[key][inds]
-            except KeyError:  # Fetch subdicts if possible
-                keys = boss.keys(mode='all', deep=True)
-                L = [k for k in keys if k.startswith(key)]
-                if len(L):
-                    vals = {k: self[k] for k in L}
-                else:
-                    raise KeyError(key)
+        vals = self.get(key)
+        if vals is None:
+            inds = boss._get_indices(element=element, labels=self.name)
+            vals = boss[key]
+            if isinstance(vals, dict):
+                vals = {k: v[inds] for k, v in vals.items()}
+            else:
+                vals[inds]
         return vals
 
     def __setitem__(self, key, value):
