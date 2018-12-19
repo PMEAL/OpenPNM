@@ -48,10 +48,11 @@ class GenericPhysics(Subdomain, ModelsMixin):
         super().__init__(project=project, **kwargs)
 
         network = self.project.network
-        if phase is not None:
-            phase['pore.'+self.name] = False
-            phase['throat.'+self.name] = False
-        if geometry is not None:
-            Ps = network.pores(geometry.name)
-            Ts = network.throats(geometry.name)
-            self._add_locations(pores=Ps, throats=Ts)
+        if network:
+            if phase is not None:
+                phase['pore.'+self.name] = False
+                phase['throat.'+self.name] = False
+            if geometry is not None:
+                Ps = network.pores(geometry.name)
+                Ts = network.throats(geometry.name)
+                self._add_locations(pores=Ps, throats=Ts)
