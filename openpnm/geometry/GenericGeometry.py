@@ -86,8 +86,13 @@ class GenericGeometry(Subdomain, ModelsMixin):
 
         network = self.project.network
         if network:
+            pores = self._parse_indices(pores)
+            throats = self._parse_indices(throats)
             network['pore.'+self.name] = False
             network['throat.'+self.name] = False
+            if (pores.size == 0) and (throats.size == 0):
+                pores = network.Ps
+                throats = network.Ts
             self.add_locations(pores=pores, throats=throats)
 
     @property
