@@ -289,8 +289,8 @@ class GenericTransport(GenericAlgorithm):
 
         values = np.array(bcvalues)
         if values.size > 1 and values.size != pores.size:
-            raise Exception('The number of boundary values must match the ' +
-                            'number of locations')
+            raise Exception('The number of boundary values must match the '
+                            + 'number of locations')
 
         # Store boundary values
         if ('pore.bc_'+bctype not in self.keys()) or (mode == 'overwrite'):
@@ -391,7 +391,7 @@ class GenericTransport(GenericAlgorithm):
             ind = np.isfinite(self['pore.bc_rate'])
             self.b[ind] = self['pore.bc_rate'][ind]
         if 'pore.bc_value' in self.keys():
-            f = np.abs(self.A.data).mean()
+            f = np.abs(self.A.diagonal()).mean()
             # Update b (impose bc values)
             ind = np.isfinite(self['pore.bc_value'])
             self.b[ind] = self['pore.bc_value'][ind] * f
@@ -495,8 +495,8 @@ class GenericTransport(GenericAlgorithm):
                 x, exit_code = solver(A=A, b=b, atol=atol, tol=rtol,
                                       maxiter=self.settings['solver_maxiter'])
                 if exit_code > 0:
-                    raise Exception('SciPy solver did not converge! ' +
-                                    'Exit code: ' + str(exit_code))
+                    raise Exception('SciPy solver did not converge! '
+                                    + 'Exit code: ' + str(exit_code))
             else:
                 x = solver(A=A, b=b)
             return x
@@ -525,7 +525,7 @@ class GenericTransport(GenericAlgorithm):
             else:
                 raise Exception('pyamg is not installed.')
             ml = pyamg.ruge_stuben_solver(A)
-            x = ml.solve(b=b, tol=1e-6)
+            x = ml.solve(b=b, tol=1e-10)
             return x
 
     def results(self, times='all', t_precision=12, **kwargs):
@@ -556,10 +556,10 @@ class GenericTransport(GenericAlgorithm):
         if times == 'all':
             t = q
         elif type(times) in [float, int]:
-            n = int(-dc(str(round(times, t_pre))).as_tuple().exponent *
-                    (round(times, t_pre) != int(times)))
-            t_str = (str(int(round(times, t_pre)*10**n)) +
-                     ('e-'+str(n))*(n != 0))
+            n = int(-dc(str(round(times, t_pre))).as_tuple().exponent
+                    * (round(times, t_pre) != int(times)))
+            t_str = (str(int(round(times, t_pre)*10**n))
+                     + ('e-'+str(n))*(n != 0))
             t = [k for k in q if t_str == k.split('@')[-1]]
         elif 'range' in times:
             t = times.replace(' ', '')
@@ -571,8 +571,8 @@ class GenericTransport(GenericAlgorithm):
             out = np.around(out, decimals=t_pre)
             t = []
             for i in out:
-                n = int(-dc(str(round(i, t_pre))).as_tuple().exponent *
-                        (round(i, t_pre) != int(i)))
+                n = int(-dc(str(round(i, t_pre))).as_tuple().exponent
+                        * (round(i, t_pre) != int(i)))
                 j = (str(int(round(i, t_pre)*10**n))+('e-'+str(n))*(n != 0))
                 t_str = [k for k in q if j == k.split('@')[-1]]
                 t += (t_str)
@@ -671,8 +671,8 @@ class GenericTransport(GenericAlgorithm):
 
         """
         if self.settings['quantity'] not in self.keys():
-            raise Exception('The algorithm has not been run yet. Cannot ' +
-                            'calculate effective property.')
+            raise Exception('The algorithm has not been run yet. Cannot '
+                            + 'calculate effective property.')
 
         Ps = np.isfinite(self['pore.bc_value'])
         BCs = np.unique(self['pore.bc_value'][Ps])
@@ -722,12 +722,12 @@ class GenericTransport(GenericAlgorithm):
             logger.error('Detected outlet pores are not coplanar')
         Nin = np.ptp(inlets, axis=0) > 0
         if Nin.all():
-            logger.warning('Detected inlets are not oriented along a ' +
-                           'principle axis')
+            logger.warning('Detected inlets are not oriented along a '
+                           + 'principle axis')
         Nout = np.ptp(outlets, axis=0) > 0
         if Nout.all():
-            logger.warning('Detected outlets are not oriented along a ' +
-                           'principle axis')
+            logger.warning('Detected outlets are not oriented along a '
+                           + 'principle axis')
         hull_in = ConvexHull(points=inlets[:, Nin])
         hull_out = ConvexHull(points=outlets[:, Nout])
         if hull_in.volume != hull_out.volume:
@@ -736,8 +736,8 @@ class GenericTransport(GenericAlgorithm):
         return area
 
     def _get_domain_length(self, inlets=None, outlets=None):
-        logger.warning('Attempting to estimate domain length... ' +
-                       'could be low if boundary pores were not added')
+        logger.warning('Attempting to estimate domain length... '
+                       + 'could be low if boundary pores were not added')
         network = self.project.network
         if inlets is None:
             inlets = self._get_inlets()
