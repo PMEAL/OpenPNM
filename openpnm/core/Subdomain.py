@@ -47,11 +47,10 @@ class Subdomain(Base):
         vals = self.get(key)
         if vals is None:
             inds = boss._get_indices(element=element, labels=self.name)
-            vals = boss[key]
-            if isinstance(vals, dict):
-                vals = {k: v[inds] for k, v in vals.items()}
-            else:
-                vals[inds]
+            try:  # Will invoke interleave data if necessary
+                vals = boss[key][inds]
+            except KeyError:
+                vals = super().__getitem__(key)
         return vals
 
     def __setitem__(self, key, value):

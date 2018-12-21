@@ -247,15 +247,15 @@ class Base(dict):
 
     def __getitem__(self, key):
         try:
-            print('trying')
             return super().__getitem__(key)
         except KeyError:
-            print('erroring')
             # See if key is a subdict
             keys = self.keys(mode='all', deep=True)
             L = [k for k in keys if k.startswith(key)]
             if len(L):
-                return {k: self.__getitem__(k) for k in L}
+                vals = {k: self.__getitem__(k) for k in L}
+                vals = FlatDict(vals, delimiter='.')
+                return vals
             else:
                 raise KeyError(key)
 
