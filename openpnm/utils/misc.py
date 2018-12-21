@@ -220,7 +220,7 @@ def toc(quiet=False):
     if '_startTime_for_tictoc' in globals():
         t = _time.time() - _startTime_for_tictoc
         if quiet is False:
-            print('Elapsed time in seconds: ', t)
+            print(f'Elapsed time in seconds: {t:0.2f}')
         else:
             return t
     else:
@@ -392,9 +392,10 @@ def conduit_lengths(network, throats=None, mode='pore'):
         try:
             fractions = pdia[Ps[:, 0]]/(pdia[Ps[:, 0]] + pdia[Ps[:, 1]])
             # Don't allow zero lengths
-#            fractions[fractions == 0.0] = 0.5
-#            fractions[fractions == 1.0] = 0.5
-        except:
+            # fractions[fractions == 0.0] = 0.5
+            # fractions[fractions == 1.0] = 0.5
+        # TODO: specify exception?
+        except Exception:
             fractions = 0.5
         plen1 = lengths*fractions
         plen2 = lengths*(1-fractions)
