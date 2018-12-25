@@ -46,8 +46,6 @@ class CubicDualTest:
         assert net.num_pores('right') == 9
         assert net.num_pores('front') == 9
         assert net.num_pores('back') == 9
-        assert net.num_pores('top') == 41
-        assert net.num_pores('bottom') == 41
         assert net.num_throats('interconnect') == 96
 
     def test_generation_2D_XZ(self):
@@ -55,8 +53,6 @@ class CubicDualTest:
                                    label_2='secondary')
         assert net.Np == 57
         assert net.Nt == 176
-        assert net.num_pores('left') == 41
-        assert net.num_pores('right') == 41
         assert net.num_pores('front') == 9
         assert net.num_pores('back') == 9
         assert net.num_pores('top') == 9
@@ -70,8 +66,6 @@ class CubicDualTest:
         assert net.Nt == 176
         assert net.num_pores('left') == 9
         assert net.num_pores('right') == 9
-        assert net.num_pores('front') == 41
-        assert net.num_pores('back') == 41
         assert net.num_pores('top') == 9
         assert net.num_pores('bottom') == 9
         assert net.num_throats('interconnect') == 96
@@ -85,8 +79,6 @@ class CubicDualTest:
         assert net.num_pores('right') == 9
         assert net.num_pores('front') == 9
         assert net.num_pores('back') == 9
-        assert net.num_pores('top') == 41
-        assert net.num_pores('bottom') == 41
         assert net.num_throats('interconnect') == 96
 
 

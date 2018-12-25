@@ -1,3 +1,11 @@
+r"""
+
+.. autofunction:: openpnm.models.phases.viscosity.water
+.. autofunction:: openpnm.models.phases.viscosity.reynolds
+.. autofunction:: openpnm.models.phases.viscosity.chung
+
+"""
+
 import scipy as sp
 
 

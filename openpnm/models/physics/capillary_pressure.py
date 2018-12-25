@@ -1,3 +1,13 @@
+r"""
+
+.. autofunction:: openpnm.models.physics.capillary_pressure.washburn
+.. autofunction:: openpnm.models.physics.capillary_pressure.purcell
+.. autofunction:: openpnm.models.physics.capillary_pressure.purcell_bidirectional
+.. autofunction:: openpnm.models.physics.capillary_pressure.ransohoff_snap_off
+.. autofunction:: openpnm.models.physics.capillary_pressure.sinusoidal_bidirectional
+
+"""
+
 import scipy as _sp
 import sympy as syp
 import numpy as np

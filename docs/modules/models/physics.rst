@@ -21,8 +21,7 @@ Detailed Model Documentation
 Capillary Pressure
 ................................................................................
 
-.. autofunction:: openpnm.models.physics.capillary_pressure.washburn
-.. autofunction:: openpnm.models.physics.capillary_pressure.purcell
+.. automodule:: openpnm.models.physics.capillary_pressure
 
 ----
 
@@ -30,7 +29,7 @@ Capillary Pressure
 Diffusive Conductance
 ................................................................................
 
-.. autofunction:: openpnm.models.physics.diffusive_conductance.ordinary_diffusion
+.. automodule:: openpnm.models.physics.diffusive_conductance
 
 ----
 
@@ -38,7 +37,7 @@ Diffusive Conductance
 Electrical Conductance
 ................................................................................
 
-.. autofunction:: openpnm.models.physics.electrical_conductance.series_resistors
+.. automodule:: openpnm.models.physics.electrical_conductance
 
 ----
 
@@ -46,7 +45,7 @@ Electrical Conductance
 Hydraulic Conductance
 ................................................................................
 
-.. autofunction:: openpnm.models.physics.hydraulic_conductance.hagen_poiseuille
+.. automodule:: openpnm.models.physics.hydraulic_conductance
 
 ----
 
@@ -54,7 +53,7 @@ Hydraulic Conductance
 Thermal Conductance
 ................................................................................
 
-.. autofunction:: openpnm.models.physics.thermal_conductance.series_resistors
+.. automodule:: openpnm.models.physics.thermal_conductance
 
 ----
 
@@ -62,5 +61,28 @@ Thermal Conductance
 Multiphase
 ................................................................................
 
-.. autofunction:: openpnm.models.physics.multiphase.conduit_conductance
-.. autofunction:: openpnm.models.physics.multiphase.late_filling
+.. automodule:: openpnm.models.physics.multiphase
+
+---
+
+................................................................................
+Poisson Shape Factors
+................................................................................
+
+.. automodule:: openpnm.models.physics.poisson_shape_factors
+
+---
+
+................................................................................
+Flow Shape Factors
+................................................................................
+
+.. automodule:: openpnm.models.physics.flow_shape_factors
+
+---
+
+................................................................................
+Source Terms
+................................................................................
+
+.. automodule:: openpnm.models.physics.generic_source_term

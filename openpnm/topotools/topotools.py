@@ -1030,10 +1030,12 @@ def label_faces(network, tol=0.0, label='surface'):
 
     label : string
         An identifying label to isolate the pores on the faces of the network.
-        default is 'surface'.
+        The default is 'surface'.  Surface pores can be found using
+        ``find_surface_pores``.
 
     """
-    if label not in network.labels():
+    label = label.split('.', 1)[-1]
+    if 'pore.'+label not in network.labels():
         find_surface_pores(network, label=label)
     Psurf = network['pore.'+label]
     crds = network['pore.coords']
@@ -1043,12 +1045,16 @@ def label_faces(network, tol=0.0, label='surface'):
     yspan = ymax - ymin
     zmin, zmax = sp.amin(crds[:, 2]), sp.amax(crds[:, 2])
     zspan = zmax - zmin
-    network['pore.back'] = (crds[:, 0] >= (xmax - tol*xspan)) * Psurf
-    network['pore.right'] = (crds[:, 1] >= (ymax - tol*yspan)) * Psurf
-    network['pore.top'] = (crds[:, 2] >= (zmax - tol*zspan)) * Psurf
-    network['pore.front'] = (crds[:, 0] <= (xmin + tol*xspan)) * Psurf
-    network['pore.left'] = (crds[:, 1] <= (ymin + tol*yspan)) * Psurf
-    network['pore.bottom'] = (crds[:, 2] <= (zmin + tol*zspan)) * Psurf
+    dims = dimensionality(network)
+    if dims[0]:
+        network['pore.front'] = (crds[:, 0] <= (xmin + tol*xspan)) * Psurf
+        network['pore.back'] = (crds[:, 0] >= (xmax - tol*xspan)) * Psurf
+    if dims[1]:
+        network['pore.left'] = (crds[:, 1] <= (ymin + tol*yspan)) * Psurf
+        network['pore.right'] = (crds[:, 1] >= (ymax - tol*yspan)) * Psurf
+    if dims[2]:
+        network['pore.top'] = (crds[:, 2] >= (zmax - tol*zspan)) * Psurf
+        network['pore.bottom'] = (crds[:, 2] <= (zmin + tol*zspan)) * Psurf
 
 
 def find_surface_pores(network, markers=None, label='surface'):
@@ -1099,26 +1105,39 @@ def find_surface_pores(network, markers=None, label='surface'):
     >>> net.num_pores(['top','bottom', 'left', 'right', 'front','back'])
     98
 
-    This function is mostly useful for unique networks such as spheres, random
-    topology, or networks that have been subdivied.
-
     """
     import scipy.spatial as sptl
     if markers is None:
-        (xmax, ymax, zmax) = sp.amax(network['pore.coords'], axis=0)
-        (xmin, ymin, zmin) = sp.amin(network['pore.coords'], axis=0)
-        xave = (xmin+xmax)/2
-        yave = (ymin+ymax)/2
-        zave = (zmin+zmax)/2
-        markers = [[xmax + xave, yave, zave],
-                   [xmin - xave, yave, zave],
-                   [xave, ymax + yave, zave],
-                   [xave, ymin - yave, zave],
-                   [xave, yave, zmax + zave],
-                   [xave, yave, zmin - zave]]
-    markers = sp.atleast_2d(markers)
-    tri = sptl.Delaunay(network['pore.coords'], incremental=True)
-    tri.add_points(markers)
+        dims = dimensionality(network)
+        coords = network['pore.coords'][:, dims]
+        # normalize coords to a 1 unit cube centered on origin
+        coords -= sp.amin(coords, axis=0)
+        coords /= sp.amax(coords, axis=0)
+        coords -= 0.5
+        npts = max((network.Np/10, 100))
+        if sum(dims) == 1:
+            network['pore.'+label] = True
+            return
+        if sum(dims) == 2:
+            r = 0.75
+            theta = sp.linspace(0, 2*sp.pi, npts, dtype=float)
+            x = r*sp.cos(theta)
+            y = r*sp.sin(theta)
+            markers = sp.vstack((x, y)).T
+        if sum(dims) == 3:
+            r = 1.00
+            indices = sp.arange(0, npts, dtype=float) + 0.5
+            phi = sp.arccos(1 - 2*indices/npts)
+            theta = sp.pi * (1 + 5**0.5) * indices
+            x = r*sp.cos(theta) * sp.sin(phi)
+            y = r*sp.sin(theta) * sp.sin(phi)
+            z = r*sp.cos(phi)
+            markers = sp.vstack((x, y, z)).T
+    else:
+        coords = network['pore.coords']
+        markers = sp.atleast_2d(markers)
+    pts = sp.vstack((coords, markers))
+    tri = sptl.Delaunay(pts, incremental=False)
     (indices, indptr) = tri.vertex_neighbor_vertices
     for k in range(network.Np, tri.npoints):
         neighbors = indptr[indices[k]:indices[k+1]]
@@ -1129,8 +1148,30 @@ def find_surface_pores(network, markers=None, label='surface'):
         network['pore.'+label][neighbors] = True
 
 
+def dimensionality(network):
+    r"""
+    Checks the dimensionality of the network
+
+    Parameters
+    ----------
+    network : OpenPNM Network object
+        The network whose dimensionality is to be checked
+
+    Returns
+    -------
+    Returns an 3-by-1 array containing ``True`` for each axis that contains
+    multiple values, indicating that the pores are spatially distributed
+    in that direction.
+    """
+    v = [True, True, True]
+    for i in [0, 1, 2]:
+        v[i] = not sp.allclose(network['pore.coords'][:, i],
+                               network['pore.coords'][1, i])
+    return v
+
+
 def clone_pores(network, pores, labels=['clone'], mode='parents'):
-    r'''
+    r"""
     Clones the specified pores and adds them to the network
 
     Parameters
@@ -1151,7 +1192,7 @@ def clone_pores(network, pores, labels=['clone'], mode='parents'):
         - 'siblings': Clones are only connected to each other in the same
                       manner as parents were connected
         - 'isolated': No connections between parents or siblings
-    '''
+    """
     if len(network.project.geometries()) > 0:
         logger.warning('Network has active Geometries, new pores must be \
                         assigned a Geometry')
@@ -1412,6 +1453,9 @@ def connect_pores(network, pores1, pores2, labels=[], add_conns=True):
     in which case it consecutively connects corresponding members of the two
     lists in a 1-to-1 fashion. Example: pores1 = [[0, 1], [2, 3]] and
     pores2 = [[5], [7, 9]] leads to creation of the following connections:
+
+    ::
+
         0 --> 5     2 --> 7     3 --> 7
         1 --> 5     2 --> 9     3 --> 9
 
@@ -1419,7 +1463,7 @@ def connect_pores(network, pores1, pores2, labels=[], add_conns=True):
     within ``pores1`` and ``pores2`` are of type list or ndarray.
 
     (3) It creates the connections in a format which is acceptable by
-    the default OpenPNM connection ('throat.conns') and either adds them to
+    the default OpenPNM connections ('throat.conns') and either adds them to
     the network or returns them.
 
     Examples
@@ -1470,7 +1514,7 @@ def connect_pores(network, pores1, pores2, labels=[], add_conns=True):
 
 def find_pore_to_pore_distance(network, pores1=None, pores2=None):
     r'''
-    Find the distance between all pores on set one to each pore in set 2
+    Find the distance between all pores on set 1 to each pore in set 2
 
     Parameters
     ----------
@@ -1489,6 +1533,13 @@ def find_pore_to_pore_distance(network, pores1=None, pores2=None):
     A distance matrix with ``len(pores1)`` rows and ``len(pores2)`` columns.
     The distance between pore *i* in ``pores1`` and *j* in ``pores2`` is
     located at *(i, j)* and *(j, i)* in the distance matrix.
+
+    Notes
+    -----
+    This function computes and returns a distance matrix, which is a dense
+    matrix of size Np_1 by Np_2, so can get large.  For distances between
+    larger sets a KD-tree approach would be better, which is available in
+    ``scipy.spatial``.
 
     '''
     from scipy.spatial.distance import cdist
@@ -1709,33 +1760,33 @@ def merge_pores(network, pores, labels=['merged']):
         len(pores[0])
     except (TypeError, IndexError):
         pores = [pores]
-        
+
     N = len(pores)
     NBs, XYZs = [], []
-    
+
     for Ps in pores:
         NBs.append(network.find_neighbor_pores(pores=Ps,
                                                mode='union',
                                                flatten=True,
                                                include_input=False))
         XYZs.append(network['pore.coords'][Ps].mean(axis=0))
-    
+
     extend(network, pore_coords=XYZs, labels=labels)
     Pnew = network.Ps[-N::]
-    
+
     # Possible throats between new pores: This only happens when running in
     # batch mode, i.e. multiple groups of pores are to be merged. In case
-    # some of these groups share elements, possible throats between the 
+    # some of these groups share elements, possible throats between the
     # intersecting elements is not captured and must be added manually.
     pores_set = [set(items) for items in pores]
     NBs_set = [set(items) for items in NBs]
-    ps1, ps2 = [], []    
+    ps1, ps2 = [], []
     from itertools import combinations
     for i, j in combinations(range(N), 2):
         if not NBs_set[i].isdisjoint(pores_set[j]):
             ps1.append([network.Ps[-N+i]])
             ps2.append([network.Ps[-N+j]])
-    
+
     # Add (possible) connections between the new pores
     connect_pores(network, pores1=ps1, pores2=ps2, labels=labels)
     # Add connections between the new pores and the rest of the network
@@ -1788,7 +1839,7 @@ def _template_sphere_disc(dim, outer_radius, inner_radius):
     return img
 
 
-def template_sphere_shell(outer_radius, inner_radius=0):
+def template_sphere_shell(outer_radius, inner_radius=0, dim=3):
     r"""
     This method generates an image array of a sphere-shell. It is useful for
     passing to Cubic networks as a ``template`` to make spherical shaped
@@ -1803,13 +1854,17 @@ def template_sphere_shell(outer_radius, inner_radius=0):
         Number of nodes in the inner radius of the shell.  a value of 0 will
         result in a solid sphere.
 
+    dim : scalar
+        Controls the number of dimensions of the result.  3 returns a sphere,
+        while 2 returns a disk.
+
     Returns
     -------
     A Numpy array containing 1's to demarcate the sphere-shell, and 0's
     elsewhere.
 
     """
-    img = _template_sphere_disc(dim=3, outer_radius=outer_radius,
+    img = _template_sphere_disc(dim=dim, outer_radius=outer_radius,
                                 inner_radius=inner_radius)
     return img
 
