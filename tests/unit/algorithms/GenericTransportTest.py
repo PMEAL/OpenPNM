@@ -80,6 +80,14 @@ class GenericTransportTest:
         y = sp.unique(sp.around(alg['pore.mole_fraction'], decimals=3))
         assert sp.all(x == y)
 
+    def test_set_boundary_condition_wrapper(self):
+        alg = op.algorithms.GenericTransport(network=self.net)
+        alg.set_boundary_conditions(pores=self.net.pores('top'),
+                                    bctype='rate', values=1)
+        assert sum(~sp.isnan(alg['pore.bc_rate'])) == self.net.num_pores('top')
+        alg.set_boundary_conditions(mode='remove')
+        assert sum(~sp.isnan(alg['pore.bc_rate'])) == 0
+
     def teardown_class(self):
         ws = op.Workspace()
         ws.clear()
