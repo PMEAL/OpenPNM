@@ -243,10 +243,10 @@ class Cubic(GenericNetwork):
         for ax in [0, 1, 2]:
             if dims[ax]:
                 temp = np.unique(np.around(V[:, ax], decimals=10))
-                if np.size(temp) > 2:
+                if np.size(temp) > 1:
                     raise Exception('A unique value of spacing could not be found')
                 else:
-                    spacing[ax] = temp[1]
+                    spacing[ax] = temp[0]
         return sp.array(spacing)
 
     spacing = property(fget=_get_spacing)
