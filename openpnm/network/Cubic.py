@@ -246,7 +246,7 @@ class Cubic(GenericNetwork):
         if sum(dirs) > sum(dims):
             raise Exception('Spacing is undefined when throats point in ' +
                             'more directions than network has dimensions')
-        mag = sp.around(mag.squeeze(), decimals=15)
+        mag = sp.around(mag.squeeze(), decimals=10)
         for ax in [0, 1, 2]:
             if dims[ax]:
                 inds = sp.where(vec[:, ax] == vec[:, ax].max())[0]
