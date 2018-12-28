@@ -95,7 +95,7 @@ class Cubic(GenericNetwork):
         # Store original network shape
         self._shape = sp.shape(arr)
         # Store network spacing
-        spacing = sp.array(spacing)
+        spacing = sp.around(spacing, decimals=15)
         if spacing.size == 2:
             spacing = sp.concatenate((spacing, [1]))
         self._spacing = sp.ones(3)*sp.array(spacing, ndmin=1)
