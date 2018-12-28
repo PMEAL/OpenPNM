@@ -228,21 +228,29 @@ class Cubic(GenericNetwork):
                 coords = coords*scale[label] + offset[label]
                 self['pore.coords'][ind] = coords
             except KeyError:
-                logger.warning('No pores labelled ' + label +
-                               ', skipping boundary addition')
+                logger.warning('No pores labelled ' + label + ' were found, ' +
+                               'skipping boundary addition')
 
     def _get_spacing(self):
         # Find Network spacing
         P12 = self['throat.conns']
         C12 = self['pore.coords'][P12]
-        V = np.abs(np.squeeze(np.diff(C12, axis=1)))
-        if np.any(np.sum(V == 0, axis=1) != 2):
-            raise Exception('A unique value of spacing could not be found')
+        mag = np.sqrt(np.sum(np.diff(C12, axis=1)**2, axis=2))
+        vec = sp.squeeze(np.diff(C12, axis=1))/mag
         spacing = [0, 0, 0]
         dims = topotools.dimensionality(self)
+        # Ensure vectors point in n-dims unique directions
+        dirs = [False, False, False]
+        for ax in [0, 1, 2]:
+            dirs[ax] = sum(sp.unique(vec[:, ax]) > 0)
+        if sum(dirs) > sum(dims):
+            raise Exception('Spacing is undefined when throats point in ' +
+                            'more directions than network has dimensions')
+        mag = mag.squeeze()
         for ax in [0, 1, 2]:
             if dims[ax]:
-                temp = np.unique(np.around(V[:, ax], decimals=10))
+                inds = sp.where(vec[:, ax] == vec[:, ax].max())[0]
+                temp = sp.unique(mag[inds])
                 if np.size(temp) > 1:
                     raise Exception('A unique value of spacing could not be found')
                 else:
