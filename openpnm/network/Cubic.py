@@ -197,12 +197,12 @@ class Cubic(GenericNetwork):
             labels = [labels]
         x, y, z = self['pore.coords'].T
         if spacing is None:
-            spacing = self._spacing
+            spacing = self._get_spacing
         else:
             spacing = sp.array(spacing)
             if spacing.size == 1:
                 spacing = sp.ones(3)*spacing
-        Lcx, Lcy, Lcz = spacing
+        (Lcx, Lcy, Lcz) = spacing
 
         offset = {}
         offset['front'] = offset['left'] = offset['bottom'] = [0, 0, 0]
@@ -216,14 +216,17 @@ class Cubic(GenericNetwork):
         scale['bottom'] = scale['top'] = [1, 1, 0]
 
         for label in labels:
-            Ps = self.pores(label)
-            topotools.clone_pores(network=self, pores=Ps,
-                                  labels=label+'_boundary')
-            # Translate cloned pores
-            ind = self.pores(label+'_boundary')
-            coords = self['pore.coords'][ind]
-            coords = coords*scale[label] + offset[label]
-            self['pore.coords'][ind] = coords
+            try:
+                Ps = self.pores(label)
+                topotools.clone_pores(network=self, pores=Ps,
+                                      labels=label+'_boundary')
+                # Translate cloned pores
+                ind = self.pores(label+'_boundary')
+                coords = self['pore.coords'][ind]
+                coords = coords*scale[label] + offset[label]
+                self['pore.coords'][ind] = coords
+            except KeyError:
+                logger.warning('No pores labelled' + label + ', cannot add boundaries')
 
     def _get_spacing(self):
         # Find Network spacing
@@ -232,20 +235,26 @@ class Cubic(GenericNetwork):
         V = np.abs(np.squeeze(np.diff(C12, axis=1)))
         if np.any(np.sum(V == 0, axis=1) != 2):
             raise Exception('A unique value of spacing could not be found')
-        spacing = [None, None, None]
-        for axis in [0, 1, 2]:
-            temp = np.unique(np.around(V[:, axis], decimals=10))
-            if np.size(temp) > 2:
-                raise Exception('A unique value of spacing could not be found')
-            else:
-                spacing[axis] = temp[1]
+        spacing = [0, 0, 0]
+        dims = topotools.dimensionality(self)
+        for ax in [0, 1, 2]:
+            if dims[ax]:
+                temp = np.unique(np.around(V[:, ax], decimals=10))
+                if np.size(temp) > 2:
+                    raise Exception('A unique value of spacing could not be found')
+                else:
+                    spacing[ax] = temp[1]
         return sp.array(spacing)
 
     spacing = property(fget=_get_spacing)
 
     def _get_shape(self):
         L = np.ptp(self['pore.coords'], axis=0)
-        return L/self.spacing + 1
+        mask = L.astype(bool)
+        S = self.spacing
+        shape = sp.array([1, 1, 1], int)
+        shape[mask] = L[mask]/S[mask] + 1
+        return shape
 
     shape = property(fget=_get_shape)
 
