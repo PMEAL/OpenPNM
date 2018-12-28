@@ -168,11 +168,11 @@ class Cubic(GenericNetwork):
         hits = sp.zeros_like(self.Ps, dtype=bool)
         dims = topotools.dimensionality(self)
         mn = sp.amin(self['pore.coords'], axis=0)
-        mx = sp.amax(self['pore.coords'], axis=1)
+        mx = sp.amax(self['pore.coords'], axis=0)
         for ax in [0, 1, 2]:
             if dims[ax]:
-                hits += sp.any(self['pore.coords'][:, ax] <= mn[ax])
-                hits += sp.any(self['pore.coords'][:, ax] >= mx[ax])
+                hits += self['pore.coords'][:, ax] <= mn[ax]
+                hits += self['pore.coords'][:, ax] >= mx[ax]
         self['pore.surface'] = hits
 
     def add_boundary_pores(self, labels=['top', 'bottom', 'front', 'back',
