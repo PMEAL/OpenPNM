@@ -9,6 +9,8 @@ import numpy as np
 import scipy as sp
 from openpnm.network import GenericNetwork
 from openpnm import topotools
+from openpnm.utils import logging
+logger = logging.getLogger(__name__)
 
 
 class Cubic(GenericNetwork):
@@ -197,12 +199,12 @@ class Cubic(GenericNetwork):
             labels = [labels]
         x, y, z = self['pore.coords'].T
         if spacing is None:
-            spacing = self._get_spacing
+            spacing = self._get_spacing()
         else:
             spacing = sp.array(spacing)
             if spacing.size == 1:
                 spacing = sp.ones(3)*spacing
-        (Lcx, Lcy, Lcz) = spacing
+        Lcx, Lcy, Lcz = spacing
 
         offset = {}
         offset['front'] = offset['left'] = offset['bottom'] = [0, 0, 0]
@@ -226,7 +228,8 @@ class Cubic(GenericNetwork):
                 coords = coords*scale[label] + offset[label]
                 self['pore.coords'][ind] = coords
             except KeyError:
-                logger.warning('No pores labelled' + label + ', cannot add boundaries')
+                logger.warning('No pores labelled ' + label +
+                               ', skipping boundary addition')
 
     def _get_spacing(self):
         # Find Network spacing
