@@ -1,5 +1,6 @@
 import openpnm as op
 import scipy as sp
+import pytest
 
 
 class CubicTest:
@@ -98,6 +99,18 @@ class CubicTest:
                       [0, 0, 1]])
         net['pore.coords'] = (S@net['pore.coords'].T).T
         assert sp.allclose(net.spacing, [1.0, 2*(2**0.5), 3.0])
+
+    def test_spacing_on_joggled_network(self):
+        net = op.network.Cubic(shape=[3, 4, 5])
+        net['pore.coords'] += sp.rand(net.Np, 3)
+        with pytest.raises(Exception):
+            net.spacing
+
+    def test_spacing_on_network_with_boundary_pores(self):
+        net = op.network.Cubic(shape=[3, 4, 5])
+        net.add_boundary_pores()
+        with pytest.raises(Exception):
+            net.spacing
 
 
 if __name__ == '__main__':
