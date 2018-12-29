@@ -156,10 +156,10 @@ class Cubic(GenericNetwork):
         self._label_surface_pores()
         topotools.label_faces(network=self)
         Ps = self.pores('surface')
-#        Ts = self.find_neighbor_throats(pores=Ps, mode='xnor')
-#        self['throat.surface'] = False
-#        self['throat.surface'][Ts] = True
-        # Scale network to requested spacing
+        Ts = self.find_neighbor_throats(pores=Ps, mode='xnor')
+        self['throat.surface'] = False
+        self['throat.surface'][Ts] = True
+         Scale network to requested spacing
         self['pore.coords'] *= spacing
 
     def _label_surface_pores(self):
