@@ -156,9 +156,9 @@ class Cubic(GenericNetwork):
         self._label_surface_pores()
         topotools.label_faces(network=self)
         Ps = self.pores('surface')
-        Ts = self.find_neighbor_throats(pores=Ps, mode='xnor')
-        self['throat.surface'] = False
-        self['throat.surface'][Ts] = True
+#        Ts = self.find_neighbor_throats(pores=Ps, mode='xnor')
+#        self['throat.surface'] = False
+#        self['throat.surface'][Ts] = True
         # Scale network to requested spacing
         self['pore.coords'] *= spacing
 
@@ -236,14 +236,13 @@ class Cubic(GenericNetwork):
         P12 = self['throat.conns']
         C12 = self['pore.coords'][P12]
         mag = np.sqrt(np.sum(np.diff(C12, axis=1)**2, axis=2))
-        vec = sp.squeeze(np.diff(C12, axis=1))/mag
+        vec = sp.around(sp.squeeze(np.diff(C12, axis=1))/mag,
+                        decimals=10)
         spacing = [0, 0, 0]
         dims = topotools.dimensionality(self)
         # Ensure vectors point in n-dims unique directions
-        dirs = [False, False, False]
-        for ax in [0, 1, 2]:
-            dirs[ax] = sum(sp.unique(vec[:, ax]) > 0)
-        if sum(dirs) > sum(dims):
+        c = {tuple(row): 1 for row in vec}
+        if len(c.keys()) > sum(dims):
             raise Exception('Spacing is undefined when throats point in ' +
                             'more directions than network has dimensions')
         mag = sp.around(mag.squeeze(), decimals=10)
