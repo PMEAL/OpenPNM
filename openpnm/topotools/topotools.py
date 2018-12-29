@@ -807,6 +807,84 @@ def bond_percolation(ij, occupied_bonds):
     return tup(s_labels, b_labels)
 
 
+def rotate_coords(network, a=0, b=0, c=0):
+    r"""
+    Rotates coordinates a given amount about each axis
+
+    Parameters
+    ----------
+    network : OpenPNM Network object
+        The network whose pore coordinates should be transformed
+    a : scalar
+        The amount in degrees to rotate about the x-axis
+    b : scalar
+        The amount in degrees to rotate about the y-axis
+    c : scalar
+        The amount in degrees to rotate about the z-axis
+    """
+    if a:
+        Rx = sp.array([[1, 0, 0],
+                       [0, sp.cos(sp.deg2rad(a)), -sp.sin(sp.deg2rad(a))],
+                       [0, sp.sin(sp.deg2rad(a)), sp.cos(sp.deg2rad(a))]])
+        network['pore.coords'] = sp.tensordot(network['pore.coords'],
+                                              Rx, axes=(1, 1))
+    if b:
+        Ry = sp.array([[sp.cos(sp.deg2rad(b)), 0, -sp.sin(sp.deg2rad(b))],
+                       [0, 1, 0],
+                       [sp.sin(sp.deg2rad(b)), 0, sp.cos(sp.deg2rad(b))]])
+        network['pore.coords'] = sp.tensordot(network['pore.coords'],
+                                              Ry, axes=(1, 1))
+    if c:
+        Rz = sp.array([[sp.cos(sp.deg2rad(c)), -sp.sin(sp.deg2rad(c)), 0],
+                       [sp.sin(sp.deg2rad(c)), sp.cos(sp.deg2rad(c)), 0],
+                       [0, 0, 1]])
+        network['pore.coords'] = sp.tensordot(network['pore.coords'],
+                                              Rz, axes=(1, 1))
+
+
+def shear_coords(network, a=0, b=0, c=0):
+    r"""
+    Shears the coordinates a given amount about along axis
+
+    Parameters
+    ----------
+    network : OpenPNM Network object
+        The network whose pore coordinates should be transformed
+    a : scalar
+        The factor by which to shear along the x-axis
+    b : scalar
+        The factor by which to shear along the y-axis
+    c : scalar
+        The factor by which to shear along the z-axis
+
+    Notes
+    -----
+    The values of ``a``, ``b``, and ``c`` are essentially the inverse of the
+    slope to be formed by the neighboring layers of sheared pores.  A value of
+    0 means no shear, and neighboring points are stacked directly on top of
+    each other; a value of 1 means they form a 45 degree diagonal, and so on.
+
+    More specifically, for shear along the x-axis: x\* = x + ay.  This means
+    the new x coordinate is the old x plus some linear factor ay.
+
+    """
+    if a:
+        Sx = sp.array([[1, a, 0],
+                       [0, 1, 0],
+                       [0, 0, 1]])
+        network['pore.coords'] = (Sx@network['pore.coords'].T).T
+    if b:
+        Sy = sp.array([[1, 0, 0],
+                       [b, 1, 0],
+                       [0, 0, 1]])
+        network['pore.coords'] = (Sy@network['pore.coords'].T).T
+    if c:
+        Sz = sp.array([[1, 0, 0],
+                       [0, 1, 0],
+                       [c, 0, 1]])
+        network['pore.coords'] = (Sz@network['pore.coords'].T).T
+
+
 def trim(network, pores=[], throats=[]):
     '''
     Remove pores or throats from the network.

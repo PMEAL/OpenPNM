@@ -159,7 +159,7 @@ class Cubic(GenericNetwork):
         Ts = self.find_neighbor_throats(pores=Ps, mode='xnor')
         self['throat.surface'] = False
         self['throat.surface'][Ts] = True
-         Scale network to requested spacing
+        # Scale network to requested spacing
         self['pore.coords'] *= spacing
 
     def _label_surface_pores(self):
