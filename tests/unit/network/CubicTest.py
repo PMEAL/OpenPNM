@@ -25,8 +25,29 @@ class CubicTest:
         net = op.network.Cubic(shape=[3, 4, 5], spacing=[1, 2, 3])
         assert sp.all(net.spacing == [1.0, 2.0, 3.0])
 
+    def test_shape_1D(self):
+        net = op.network.Cubic(shape=[5, 1, 1])
+        assert sp.all(net.shape == [5, 1, 1])
+        net = op.network.Cubic(shape=[1, 1, 5])
+        assert sp.all(net.shape == [1, 1, 5])
+        net = op.network.Cubic(shape=[1, 5, 1])
+        assert sp.all(net.shape == [1, 5, 1])
+
     def test_shape_2D(self):
-        pass
+        net = op.network.Cubic(shape=[5, 5, 1])
+        assert sp.all(net.shape == [5, 5, 1])
+        net = op.network.Cubic(shape=[5, 1, 5])
+        assert sp.all(net.shape == [5, 1, 5])
+        net = op.network.Cubic(shape=[1, 5, 5])
+        assert sp.all(net.shape == [1, 5, 5])
+
+    def test_shape_3D(self):
+        net = op.network.Cubic(shape=[5, 5, 5])
+        assert sp.all(net.shape == [5, 5, 5])
+        net = op.network.Cubic(shape=[3, 4, 5])
+        assert sp.all(net.shape == [3, 4, 5])
+        net = op.network.Cubic(shape=[1, 5, 1])
+        assert sp.all(net.shape == [1, 5, 1])
 
     def test_spacing_3D_rotated(self):
         net = op.network.Cubic(shape=[5, 5, 5], spacing=[1, 1, 1])
