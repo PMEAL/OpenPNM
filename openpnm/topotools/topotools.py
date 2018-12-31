@@ -109,16 +109,22 @@ def find_neighbor_sites(sites, am, flatten=True, include_input=False,
     return neighbors
 
 
-def find_neighbor_bonds(sites, im, flatten=True, logic='or'):
+def find_neighbor_bonds(sites, im=None, am=None, flatten=True, logic='or'):
     r"""
     Given an incidence matrix, finds all sites that are connected to the
     input sites.
+
+    This function accepts either an incidence or adjacency matrix.
 
     Parameters
     ----------
     im : scipy.sparse matrix
         The incidence matrix of the network.  Must be shaped as (N-sites,
         N-bonds), with non-zeros indicating which sites are connected.
+
+    am : scipy.sparse matrix (optional)
+        The adjacency matrix of the network. Either ``am`` or ``im`` must be
+        given.
 
     flatten : boolean (default is ``True``)
         Indicates whether the returned result is a compressed array of all
@@ -166,36 +172,62 @@ def find_neighbor_bonds(sites, im, flatten=True, logic='or'):
     if global sites are considered.
 
     """
-    if im.format != 'lil':
-        im = im.tolil(copy=False)
-    rows = [im.rows[i] for i in sp.array(sites, ndmin=1, dtype=sp.int64)]
-    if len(rows) == 0:
-        return []
-    neighbors = sp.hstack(rows).astype(sp.int64)
-    n_bonds = int(im.nnz/2)
-    if logic in ['or', 'union', 'any']:
-        neighbors = sp.unique(neighbors)
-    elif logic in ['xor', 'exclusive_or']:
-        neighbors = sp.unique(sp.where(sp.bincount(neighbors) == 1)[0])
-    elif logic in ['xnor', 'shared']:
-        neighbors = sp.unique(sp.where(sp.bincount(neighbors) > 1)[0])
-    elif logic in ['and', 'all', 'intersection']:
-        neighbors = set(neighbors)
-        [neighbors.intersection_update(i) for i in rows]
-        neighbors = sp.array(list(neighbors), dtype=int, ndmin=1)
-    else:
-        raise Exception('Specified logic is not implemented')
-    if (flatten is False):
-        if (neighbors.size > 0):
-            mask = sp.zeros(shape=n_bonds, dtype=bool)
-            mask[neighbors] = True
-            for i in range(len(rows)):
-                vals = sp.array(rows[i], dtype=sp.int64)
-                rows[i] = vals[mask[vals]]
-            neighbors = rows
+    if im is not None:
+        if im.format != 'lil':
+            im = im.tolil(copy=False)
+        rows = [im.rows[i] for i in sp.array(sites, ndmin=1, dtype=sp.int64)]
+        if len(rows) == 0:
+            return []
+        neighbors = sp.hstack(rows).astype(sp.int64)
+        n_bonds = int(im.nnz/2)
+        if logic in ['or', 'union', 'any']:
+            neighbors = sp.unique(neighbors)
+        elif logic in ['xor', 'exclusive_or']:
+            neighbors = sp.unique(sp.where(sp.bincount(neighbors) == 1)[0])
+        elif logic in ['xnor', 'shared']:
+            neighbors = sp.unique(sp.where(sp.bincount(neighbors) > 1)[0])
+        elif logic in ['and', 'all', 'intersection']:
+            neighbors = set(neighbors)
+            [neighbors.intersection_update(i) for i in rows]
+            neighbors = sp.array(list(neighbors), dtype=int, ndmin=1)
         else:
-            neighbors = [sp.array([], dtype=sp.int64) for i in range(len(sites))]
-    return neighbors
+            raise Exception('Specified logic is not implemented')
+        if (flatten is False):
+            if (neighbors.size > 0):
+                mask = sp.zeros(shape=n_bonds, dtype=bool)
+                mask[neighbors] = True
+                for i in range(len(rows)):
+                    vals = sp.array(rows[i], dtype=sp.int64)
+                    rows[i] = vals[mask[vals]]
+                neighbors = rows
+            else:
+                neighbors = [sp.array([], dtype=sp.int64) for i in range(len(sites))]
+        return neighbors
+    elif am is not None:
+        if am.format != 'coo':
+            am = am.tocoo(copy=False)
+        if not istriu(am):
+            am = sp.sparse.triu(am, k=1)
+        if flatten is False:
+            raise Exception('flatten cannot be used with an adjacency matrix')
+        Ps = sp.zeros(max(am.row.max(), am.col.max())+1, dtype=bool)
+        Ps[sites] = True
+        conns = sp.vstack((am.row, am.col)).T
+        if logic in ['or', 'union', 'any']:
+            neighbors = sp.any(Ps[conns], axis=1)
+        elif logic in ['xor', 'exclusive_or']:
+            neighbors = sp.sum(Ps[conns], axis=1) == 1
+        elif logic in ['xnor', 'shared']:
+            neighbors = sp.all(Ps[conns], axis=1)
+        elif logic in ['and', 'all', 'intersection']:
+            raise Exception('Specified logic is not implemented')
+        else:
+            raise Exception('Specified logic is not implemented')
+        neighbors = sp.where(neighbors)[0]
+        return neighbors
+    else:
+        raise Exception('Either the incidence or the adjacency matrix must ' +
+                        'must be specified')
 
 
 def find_connected_sites(bonds, am, flatten=True, logic='or'):
