@@ -842,6 +842,117 @@ def bond_percolation(ij, occupied_bonds):
     return tup(s_labels, b_labels)
 
 
+def rotate_coords(network, a=0, b=0, c=0, R=None):
+    r"""
+    Rotates coordinates a given amount about each axis
+
+    Parameters
+    ----------
+    network : OpenPNM Network object
+        The network whose pore coordinates should be transformed
+    a : scalar
+        The amount in degrees to rotate about the x-axis
+    b : scalar
+        The amount in degrees to rotate about the y-axis
+    c : scalar
+        The amount in degrees to rotate about the z-axis
+    R : array_like
+        Rotation matrix.  Must be a 3-by-3 matrix since pore coordinates are
+        always in 3D.  If this is given then the other individual arguments
+        are ignored.
+
+    See Also
+    --------
+    rotate_coords
+
+    Notes
+    -----
+    It is possible to rotate about anyof the three axes by specifying ``a``,
+    ``b``, and/or ``c``.  In this case each rotation is applied in sequence.
+
+    """
+    if R is None:
+        if a:
+            R = sp.array([[1, 0, 0],
+                          [0, sp.cos(sp.deg2rad(a)), -sp.sin(sp.deg2rad(a))],
+                          [0, sp.sin(sp.deg2rad(a)), sp.cos(sp.deg2rad(a))]])
+            network['pore.coords'] = sp.tensordot(network['pore.coords'], R,
+                                                  axes=(1, 1))
+        if b:
+            R = sp.array([[sp.cos(sp.deg2rad(b)), 0, -sp.sin(sp.deg2rad(b))],
+                          [0, 1, 0],
+                          [sp.sin(sp.deg2rad(b)), 0, sp.cos(sp.deg2rad(b))]])
+            network['pore.coords'] = sp.tensordot(network['pore.coords'], R,
+                                                  axes=(1, 1))
+        if c:
+            R = sp.array([[sp.cos(sp.deg2rad(c)), -sp.sin(sp.deg2rad(c)), 0],
+                          [sp.sin(sp.deg2rad(c)), sp.cos(sp.deg2rad(c)), 0],
+                          [0, 0, 1]])
+            network['pore.coords'] = sp.tensordot(network['pore.coords'], R,
+                                                  axes=(1, 1))
+    else:
+        network['pore.coords'] = sp.tensordot(network['pore.coords'], R,
+                                              axes=(1, 1))
+
+
+def shear_coords(network, ay=0, az=0, bx=0, bz=0, cx=0, cy=0, S=None):
+    r"""
+    Shears the coordinates a given amount about along axis
+
+    Parameters
+    ----------
+    network : OpenPNM Network object
+        The network whose pore coordinates should be transformed
+    ay : scalar
+        The factor by which to shear along the x-axis as a function of y
+    az : scalar
+        The factor by which to shear along the x-axis as a function of z
+    bx : scalar
+        The factor by which to shear along the y-axis as a function of x
+    bz : scalar
+        The factor by which to shear along the y-axis as a function of z
+    cx : scalar
+        The factor by which to shear along the z-axis  as a function of x
+    cy : scalar
+        The factor by which to shear along the z-axis as a function of y
+    S : array_like
+        The shear matrix.  Must be a 3-by-3 matrix since pore coordinates are
+        always in 3D.  If this is given then the other individual arguments
+        are ingnored.
+
+    See Also
+    --------
+    rotate_coords
+
+    Notes
+    -----
+    The shear along the i *th* -axis is given as i\* = i + aj.  This means
+    the new i coordinate is the old one plus some linear factor *a* in the
+    j *th* direction.
+
+    The values of ``a``, ``b``, and ``c`` are essentially the inverse of the
+    slope to be formed by the neighboring layers of sheared pores.  A value of
+    0 means no shear, and neighboring points are stacked directly on top of
+    each other; a value of 1 means they form a 45 degree diagonal, and so on.
+
+    If ``S`` is given, then is should be of the form:
+
+    ::
+
+        S = [[1 , ay, az],
+             [bx, 1 , bz],
+             [cx, cy, 1 ]]
+
+        where any of the off-diagonal components can be 0
+
+    """
+    if S is None:
+        S = sp.array([[1, ay, az],
+                      [bx, 1, bz],
+                      [cx, cy, 1]])
+    network['pore.coords'] = (S@network['pore.coords'].T).T
+
+
 def trim(network, pores=[], throats=[]):
     '''
     Remove pores or throats from the network.
