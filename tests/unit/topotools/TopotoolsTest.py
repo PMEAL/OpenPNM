@@ -56,7 +56,7 @@ class TopotoolsTest:
         net.clear(mode='labels')
         assert net.labels() == ['pore.all', 'throat.all']
         topotools.find_surface_pores(network=net)
-        assert net.num_pores('surface') == 42
+        assert net.num_pores('surface') == 66
 
     def test_find_pore_to_pore_distance(self):
         net = op.network.Cubic(shape=[3, 3, 3], connectivity=6)

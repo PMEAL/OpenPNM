@@ -1,3 +1,9 @@
+r"""
+
+.. autofunction:: openpnm.models.physics.thermal_conductance.series_resistors
+
+"""
+
 from .misc import generic_conductance
 
 

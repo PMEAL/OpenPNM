@@ -21,11 +21,11 @@ class MeniscusTest:
         r_tor = 1e-6
         self.geo['throat.touch_length'] = 2e-6
         phys.add_model(propname='throat.tor_max',
-                       model=pm.meniscus.toroidal,
+                       model=pm.meniscus.purcell,
                        mode='max',
                        r_toroid=r_tor)
         phys.add_model(propname='throat.tor_touch',
-                       model=pm.meniscus.toroidal,
+                       model=pm.meniscus.purcell,
                        mode='touch',
                        r_toroid=r_tor)
         assert sp.any(phys['throat.tor_touch'] < phys['throat.tor_max'])
@@ -69,17 +69,37 @@ class MeniscusTest:
                        model=pm.capillary_pressure.purcell,
                        r_toroid=r_tor)
         phys.add_model(propname='throat.tor_pressure',
-                       model=pm.meniscus.toroidal,
+                       model=pm.meniscus.purcell,
                        mode='max',
                        r_toroid=r_tor,
                        num_points=1000)
         phys.add_model(propname='throat.tor_meniscus',
-                       model=pm.meniscus.toroidal,
+                       model=pm.meniscus.purcell,
                        mode='men',
                        r_toroid=r_tor,
                        target_Pc=5000)
         a = sp.around(phys['throat.purcell_pressure'], 10)
         b = sp.around(phys['throat.tor_pressure'], 10)
+        assert sp.allclose(a, b)
+        h = phys.check_data_health()
+        for check in h.values():
+            if len(check) > 0:
+                assert 1 == 2
+
+    def test_general_toroidal(self):
+        phys = self.phys
+        r_tor = 1e-6
+        phys.add_model(propname='throat.purcell_pressure',
+                       model=pm.capillary_pressure.purcell,
+                       r_toroid=r_tor)
+        phys['throat.scale_a'] = r_tor
+        phys['throat.scale_b'] = r_tor
+        phys.add_model(propname='throat.general_pressure',
+                       model=pm.meniscus.general_toroidal,
+                       mode='max',
+                       num_points=1000)
+        a = sp.around(phys['throat.purcell_pressure'], 10)
+        b = sp.around(phys['throat.general_pressure'], 10)
         assert sp.allclose(a, b)
         h = phys.check_data_health()
         for check in h.values():

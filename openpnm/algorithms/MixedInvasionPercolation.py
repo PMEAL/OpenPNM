@@ -557,7 +557,6 @@ class MixedInvasionPercolation(GenericAlgorithm):
         partial : boolean
             Indicating whether partially filled network
 
-
         Notes
         -----
         It is applied as a post-process and runs the percolation algorithm in
