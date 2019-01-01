@@ -120,11 +120,14 @@ def find_neighbor_bonds(sites, im=None, am=None, flatten=True, logic='or'):
     ----------
     im : scipy.sparse matrix
         The incidence matrix of the network.  Must be shaped as (N-sites,
-        N-bonds), with non-zeros indicating which sites are connected.
+        N-bonds), with non-zeros indicating which sites are connected. Either
+        ``am`` or ``im`` must be given.  Passing in ``im`` is slower, but more
+        powerful as it allows for an unflattened list of neighbors.
 
     am : scipy.sparse matrix (optional)
         The adjacency matrix of the network. Either ``am`` or ``im`` must be
-        given.
+        given.  Passing in ``am`` is faster, but does not allow for an
+        unflattened list.
 
     flatten : boolean (default is ``True``)
         Indicates whether the returned result is a compressed array of all
