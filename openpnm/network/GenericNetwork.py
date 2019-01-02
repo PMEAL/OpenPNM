@@ -190,6 +190,10 @@ class GenericNetwork(Base, ModelsMixin):
 
         To obtain a matrix with weights other than ones at each non-zero
         location use ``create_adjacency_matrix``.
+
+        To obtain the non-directed graph, with only upper-triangular entries,
+        use ``sp.sparse.triu(am, k=1)``.
+
         """
         # Retrieve existing matrix if available
         if fmt in self._am.keys():
@@ -235,7 +239,7 @@ class GenericNetwork(Base, ModelsMixin):
         if fmt in self._im.keys():
             im = self._im[fmt]
         elif self._im.keys():
-            im = self._am[list(self._im.keys())[0]]
+            im = self._im[list(self._im.keys())[0]]
             tofmt = getattr(im, 'to'+fmt)
             im = tofmt()
             self._im[fmt] = im
@@ -687,11 +691,16 @@ class GenericNetwork(Base, ModelsMixin):
         pores = self._parse_indices(pores)
         if sp.size(pores) == 0:
             return sp.array([], ndmin=1, dtype=int)
-        if 'lil' not in self._im.keys():
-            self.get_incidence_matrix(fmt='lil')
-        neighbors = topotools.find_neighbor_bonds(sites=pores, logic=mode,
-                                                  im=self._im['lil'],
-                                                  flatten=flatten)
+        if flatten is False:
+            if 'lil' not in self._im.keys():
+                self.get_incidence_matrix(fmt='lil')
+            neighbors = topotools.find_neighbor_bonds(sites=pores, logic=mode,
+                                                      im=self._im['lil'],
+                                                      flatten=flatten)
+        else:
+            am = self.create_adjacency_matrix(fmt='coo', triu=True)
+            neighbors = topotools.find_neighbor_bonds(sites=pores, logic=mode,
+                                                      am=am, flatten=True)
         return neighbors
 
     def _find_neighbors(self, pores, element, **kwargs):
