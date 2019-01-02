@@ -89,6 +89,8 @@ class GenericGeometry(Subdomain, ModelsMixin):
             network['pore.'+self.name] = False
             network['throat.'+self.name] = False
             if (pores is None) and (throats is None):
+                logger.info('No pores and throats given, assigning ' +
+                            self.name + ' to entire domain')
                 pores = network.Ps
                 throats = network.Ts
             self._add_locations(pores=pores, throats=throats)
