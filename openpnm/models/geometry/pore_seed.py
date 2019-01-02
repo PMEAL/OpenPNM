@@ -1,3 +1,14 @@
+r"""
+
+Pore seed models are use to calculate random numbers for each pore, which can
+subsequently be used in statistical distributions to calculate actual pore
+sizes.
+
+.. autofunction:: openpnm.models.geometry.pore_seed.random
+.. autofunction:: openpnm.models.geometry.pore_seed.spatially_correlated
+
+"""
+
 import scipy as _sp
 from openpnm.models import misc as _misc
 from openpnm.utils import logging as _logging
@@ -35,8 +46,10 @@ def spatially_correlated(target, weights=None, strel=None):
         and extent of correlations.  The following would achieve a basic
         correlation in the z-direction:
 
-        strel = sp.array([[[0, 0, 0], [0, 0, 0], [0, 0, 0]], \
-                          [[0, 0, 0], [1, 1, 1], [0, 0, 0]], \
+    ::
+
+        strel = sp.array([[[0, 0, 0], [0, 0, 0], [0, 0, 0]],
+                          [[0, 0, 0], [1, 1, 1], [0, 0, 0]],
                           [[0, 0, 0], [0, 0, 0], [0, 0, 0]]])
 
     Notes

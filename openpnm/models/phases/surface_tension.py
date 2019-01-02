@@ -1,3 +1,12 @@
+r"""
+
+.. autofunction:: openpnm.models.phases.surface_tension.water
+.. autofunction:: openpnm.models.phases.surface_tension.eotvos
+.. autofunction:: openpnm.models.phases.surface_tension.guggenheim_katayama
+.. autofunction:: openpnm.models.phases.surface_tension.brock_bird_scaling
+
+"""
+
 import scipy as sp
 
 

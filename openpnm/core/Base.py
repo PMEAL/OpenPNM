@@ -1,8 +1,10 @@
+import unyt
 from collections import namedtuple
 import matplotlib.pyplot as plt
 from openpnm.utils import Workspace, logging
 from openpnm.utils.misc import PrintableList, SettingsDict, HealthDict
 import scipy as sp
+import warnings
 logger = logging.getLogger(__name__)
 ws = Workspace()
 
@@ -205,7 +207,9 @@ class Base(dict):
                     raise Exception('Cannot create ' + key + ' when it is' +
                                     ' already defined on a subdomain')
 
-        value = sp.array(value, ndmin=1)  # Convert value to an ndarray
+        # This check allows subclassed numpy arrays through, eg. with units
+        if not isinstance(value, sp.ndarray):
+            value = sp.array(value, ndmin=1)  # Convert value to an ndarray
 
         # Check 3: Enforce correct dict naming
         element = key.split('.')[0]
@@ -223,7 +227,7 @@ class Base(dict):
                 if sp.shape(self[key]) == (0, ):
                     super(Base, self).__setitem__(key, value)
                 else:
-                    logger.warning(key+' is already defined.')
+                    warnings.warn(key+' is already defined.')
             else:
                 super(Base, self).__setitem__(key, value)
             return
@@ -1148,6 +1152,15 @@ class Base(dict):
                 temp_arr[inds] = vals
             else:
                 temp_arr[inds] = dummy_val[atype[0]]
+        # Check if any arrays have units, if so then apply them to result
+        if any([hasattr(a, 'units') for a in arrs]):
+            [a.convert_to_mks() for a in arrs if hasattr(a, 'units')]
+            units = [a.units.__str__() for a in arrs if hasattr(a, 'units')]
+            if len(units) > 0:
+                if len(set(units)) == 1:
+                        temp_arr *= sp.array([1])*getattr(unyt, units[0])
+                else:
+                    raise Exception('Units on the interleaved array are not equal')
         return temp_arr
 
     def interpolate_data(self, propname):
@@ -1212,6 +1225,8 @@ class Base(dict):
             data[Ps] = self[propname]
             Ps12 = net['throat.conns'][Ts]
             values = sp.mean(data[Ps12], axis=1)
+        if hasattr(self[propname], 'units'):
+            values *= self[propname].units
         return values
 
     def filter_by_label(self, pores=[], throats=[], labels=None, mode='or'):

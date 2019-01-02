@@ -25,7 +25,8 @@ class JSONGraphFormat(GenericIO):
     The JGF standard must contain data formatted according to
     http://jsongraphformat.info and enforced by JSON schema validation.
 
-    Users must transfer any phase data to the network manually if they wish to keep it.
+    Users must transfer any phase data to the network manually if they wish to
+    keep it.
     """
 
     @classmethod
@@ -141,7 +142,7 @@ class JSONGraphFormat(GenericIO):
         with open(filename, 'r') as file:
             json_file = json.load(file)
             if not self.__validate_json__(json_file):
-                raise Exception(f'Error - {filename} is not in the JSON Graph Format.')
+                raise Exception('FIle is not in the JSON Graph Format')
 
         # Extract graph metadata from JSON
         number_of_nodes = json_file['graph']['metadata']['number_of_nodes']
