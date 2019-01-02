@@ -429,8 +429,6 @@ class OrdinaryPercolation(GenericAlgorithm):
         if Pc is None:
             # Infer list of applied capillary pressures
             points = np.unique(self['throat.invasion_pressure'])
-            # Add a low pressure point to the list to improve graph
-            points = np.concatenate(([0], points))
             if points[-1] == np.inf:  # Remove infinity from points if present
                 points = points[:-1]
         else:
@@ -439,6 +437,9 @@ class OrdinaryPercolation(GenericAlgorithm):
         Pvol = net[self.settings['pore_volume']]
         Tvol = net[self.settings['throat_volume']]
         Total_vol = np.sum(Pvol) + np.sum(Tvol)
+        if sp.sum(Pvol[self['pore.inlets']]) > 0.0:
+            logger.warning('Inlets have non-zero volume, percolation curve ' +
+                           'will not start at 0')
         # Find cumulative filled volume at each applied capillary pressure
         Vnwp_t = []
         Vnwp_p = []
