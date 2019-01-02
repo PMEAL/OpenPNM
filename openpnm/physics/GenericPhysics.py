@@ -56,8 +56,16 @@ class GenericPhysics(Subdomain, ModelsMixin):
                 phase['pore.'+self.name] = False
                 phase['throat.'+self.name] = False
             if geometry is None:
-                logger.info('No Geometry given, assigning ' + self.name +
-                            ' to all pores and throats')
+                geoms = self.project.geometries().values()
+                if len(geoms) == 0:
+                    pass
+                elif len(geoms) == 1:
+                    logger.info('No Geometry given, assigning ' + self.name +
+                                ' to all pores and throats')
+                else:
+                    raise Exception('Multiple Geometry objects are defined; ' +
+                                    'must specify which one ' + self.name +
+                                    ' should be associated with')
                 Ps = network.Ps
                 Ts = network.Ts
             else:
