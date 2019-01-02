@@ -27,7 +27,7 @@ The resulting network can be quickly visualized using ``plot_coordinates`` and
     :width: 800px
     :align: center
 
-The ``network`` module has a number of network types to chose from, and they can be found on the :ref:`network_index` page.
+The ``network`` module has a number of network types to chose from, and they can be found on the :ref:`network_index` page. You can also import networks from various outside sources, include networks that have been extracted from tomographic images using our `PoreSpy Package <http:\\porespy.com>`_.
 
 --------------------------------------------------------------------------------
 Adding Geometrical Properties
@@ -47,13 +47,13 @@ In this case the `StickAndBall` class was used, which has preset pore-scale mode
 
     (1) The Network (``pn``) was passed to the Geometry class as an argument, so that ``geo`` knows which network it's associated with.
 
-    (2) the Geometry was assigned to specified pores (``Ps``) and throats (``Ts``), in this case it was 'all' of them but it's possible to use several different Geometry objects for different subsets of the domain.  This explained in more detail here XXX.
+    (2) the Geometry was assigned to specified pores (``Ps``) and throats (``Ts``), in this case it was 'all' of them but it's possible to use several different Geometry objects for different subsets of the domain.
 
 --------------------------------------------------------------------------------
 Creating Phases
 --------------------------------------------------------------------------------
 
-Phases must created to calculate the thermophysical properties of the fluids (and solids) used in the simulations:
+Phases must be created to calculate the thermophysical properties of the fluids (and solids) used in the simulations:
 
 .. code-block:: python
 
@@ -145,11 +145,17 @@ Similarly for the permeability calculation:
     >>> perm.set_value_BC(pores=pn.pores('right'), values=0)
     >>> # perm.run()
 
-The above code solves for the pressure in each pore and stores the result as ``perm['pore.pressure']``.  To find the permeability of the network, there is a ``calc_eff_permeability`` method on the StokeFlow class:
+The above code solves for the pressure in each pore and stores the result as ``perm['pore.pressure']``.  To find the permeability of the network, there is a ``calc_eff_permeability`` method on the StokeFlow class.  Start by telling the algorithm the area and length of the domain (unfortunately there is no sure way to get these accurately, though values will be guesstimated if not provided)
 
     >>> perm.domain_area = (10*0.0001)**2
     >>> perm.domain_length = (10*0.0001)
-    >>> # K = perm.calc_eff_permeability()
+
+Finally to run the algorithm and calculate network permeability use:
+
+.. code-block:: python
+
+    perm.run()
+    K = perm.calc_effective_permeability()
 
 .. note::
 

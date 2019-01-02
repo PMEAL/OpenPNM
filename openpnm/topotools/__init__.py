@@ -14,6 +14,7 @@ from .topotools import add_boundary_pores
 from .topotools import bond_percolation
 from .topotools import clone_pores
 from .topotools import connect_pores
+from .topotools import dimensionality
 from .topotools import extend
 from .topotools import find_path
 from .topotools import find_surface_pores
@@ -41,6 +42,8 @@ from .topotools import plot_networkx
 from .topotools import reduce_coordination
 from .topotools import reflect_base_points
 from .topotools import remove_isolated_clusters
+from .topotools import rotate_coords
+from .topotools import shear_coords
 from .topotools import site_percolation
 from .topotools import stitch
 from .topotools import subdivide

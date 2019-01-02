@@ -21,11 +21,7 @@ Detailed Model Documentation
 Pore Size
 ................................................................................
 
-.. autofunction:: openpnm.models.geometry.pore_size.weibull
-.. autofunction:: openpnm.models.geometry.pore_size.normal
-.. autofunction:: openpnm.models.geometry.pore_size.generic
-.. autofunction:: openpnm.models.geometry.pore_size.largest_sphere
-.. autofunction:: openpnm.models.geometry.pore_size.equivalent_diameter
+.. automodule:: openpnm.models.geometry.pore_size
 
 ----
 
@@ -33,8 +29,7 @@ Pore Size
 Pore Volume
 ................................................................................
 
-.. autofunction:: openpnm.models.geometry.pore_volume.sphere
-.. autofunction:: openpnm.models.geometry.pore_volume.cube
+.. automodule:: openpnm.models.geometry.pore_volume
 
 ----
 
@@ -42,8 +37,7 @@ Pore Volume
 Pore Seed
 ................................................................................
 
-.. autofunction:: openpnm.models.geometry.pore_seed.random
-.. autofunction:: openpnm.models.geometry.pore_seed.spatially_correlated
+.. automodule:: openpnm.models.geometry.pore_seed
 
 ----
 
@@ -51,8 +45,7 @@ Pore Seed
 Pore Surface Area
 ................................................................................
 
-.. autofunction:: openpnm.models.geometry.pore_surface_area.sphere
-.. autofunction:: openpnm.models.geometry.pore_surface_area.cube
+.. automodule:: openpnm.models.geometry.pore_surface_area
 
 ----
 
@@ -60,8 +53,7 @@ Pore Surface Area
 Throat Area
 ................................................................................
 
-.. autofunction:: openpnm.models.geometry.throat_area.cylinder
-.. autofunction:: openpnm.models.geometry.throat_area.cuboid
+.. automodule:: openpnm.models.geometry.throat_area
 
 ----
 
@@ -69,11 +61,7 @@ Throat Area
 Throat Size
 ................................................................................
 
-.. autofunction:: openpnm.models.geometry.throat_size.weibull
-.. autofunction:: openpnm.models.geometry.throat_size.normal
-.. autofunction:: openpnm.models.geometry.throat_size.generic
-.. autofunction:: openpnm.models.geometry.throat_size.from_neighbor_pores
-.. autofunction:: openpnm.models.geometry.throat_size.equivalent_diameter
+.. automodule:: openpnm.models.geometry.throat_size
 
 ----
 
@@ -81,7 +69,7 @@ Throat Size
 Throat Length
 ................................................................................
 
-.. autofunction:: openpnm.models.geometry.throat_length.piecewise
+.. automodule:: openpnm.models.geometry.throat_length
 
 ----
 
@@ -89,8 +77,7 @@ Throat Length
 Throat Perimeter
 ................................................................................
 
-.. autofunction:: openpnm.models.geometry.throat_perimeter.cylinder
-.. autofunction:: openpnm.models.geometry.throat_perimeter.cuboid
+.. automodule:: openpnm.models.geometry.throat_perimeter
 
 ----
 
@@ -98,9 +85,15 @@ Throat Perimeter
 Throat Surface Area
 ................................................................................
 
-.. autofunction:: openpnm.models.geometry.throat_surface_area.cylinder
-.. autofunction:: openpnm.models.geometry.throat_surface_area.cuboid
-.. autofunction:: openpnm.models.geometry.throat_surface_area.extrusion
+.. automodule:: openpnm.models.geometry.throat_surface_area
+
+----
+
+................................................................................
+Throat Vector
+................................................................................
+
+.. automodule:: openpnm.models.geometry.throat_vector
 
 ----
 
@@ -108,9 +101,7 @@ Throat Surface Area
 Throat Volume
 ................................................................................
 
-.. autofunction:: openpnm.models.geometry.throat_volume.cylinder
-.. autofunction:: openpnm.models.geometry.throat_volume.cuboid
-.. autofunction:: openpnm.models.geometry.throat_volume.extrusion
+.. automodule:: openpnm.models.geometry.throat_volume
 
 ----
 
@@ -118,6 +109,4 @@ Throat Volume
 Throat Shape Factor
 ................................................................................
 
-.. autofunction:: openpnm.models.geometry.throat_shape_factor.compactness
-.. autofunction:: openpnm.models.geometry.throat_shape_factor.mason_morrow
-.. autofunction:: openpnm.models.geometry.throat_shape_factor.jenkins_rao
+.. automodule:: openpnm.models.geometry.throat_shape_factor

@@ -261,20 +261,23 @@ class InvasionPercolation(GenericAlgorithm):
         reverse assessing the occupancy of pore neighbors. Consider the
         following scenario when running standard IP without trapping,
         3 situations can happen after each invasion step:
-            The number of defending clusters stays the same and clusters can
+
+            * The number of defending clusters stays the same and clusters can
             shrink
-            A cluster of size one is suppressed
-            A cluster is split into multiple clusters
+            * A cluster of size one is suppressed
+            * A cluster is split into multiple clusters
+
         In reverse the following opposite situations can happen:
-            The number of defending clusters stays the same and clusters can
+
+            * The number of defending clusters stays the same and clusters can
             grow
-            A cluster of size one is created
-            Mutliple clusters merge into one cluster
-        With trapping the reversed rules are adjusted so that:
-            Only clusters that do not connect to a sink can grow and merge.
-            At the point that a neighbor connected to a sink is touched the
-            trapped cluster stops growing as this is the point of trapping in
-            forward invasion time.
+            * A cluster of size one is created
+            * Mutliple clusters merge into one cluster
+
+        With trapping the reversed rules are adjusted so that only clusters
+        that do not connect to a sink can grow and merge. At the point that a
+        neighbor connected to a sink is touched the trapped cluster stops
+        growing as this is the point of trapping in forward invasion time.
 
         Logger info displays the invasion sequence and pore index and a message
         with condition number based on the modified trapping rules and the
