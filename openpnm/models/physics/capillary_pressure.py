@@ -1,3 +1,13 @@
+r"""
+
+.. autofunction:: openpnm.models.physics.capillary_pressure.washburn
+.. autofunction:: openpnm.models.physics.capillary_pressure.purcell
+.. autofunction:: openpnm.models.physics.capillary_pressure.purcell_bidirectional
+.. autofunction:: openpnm.models.physics.capillary_pressure.ransohoff_snap_off
+.. autofunction:: openpnm.models.physics.capillary_pressure.sinusoidal_bidirectional
+
+"""
+
 import scipy as _sp
 import sympy as syp
 import numpy as np
@@ -276,8 +286,9 @@ def ransohoff_snap_off(target,
     return value
 
 
-def purcell_bidirectional(target, r_toroid,
-                          num_points=1e2,
+def purcell_bidirectional(target,
+                          r_toroid=5e-6,
+                          num_points=1e3,
                           surface_tension='pore.surface_tension',
                           contact_angle='pore.contact_angle',
                           throat_diameter='throat.diameter',
@@ -326,7 +337,7 @@ def purcell_bidirectional(target, r_toroid,
         network['throat.temp_diameter'] = network[pore_diameter][conns[:, p]]
         key = 'throat.touch_pore_'+str(p)
         target.add_model(propname=key,
-                         model=pm.meniscus.toroidal,
+                         model=pm.meniscus.purcell,
                          mode='touch',
                          r_toroid=r_toroid,
                          num_points=num_points,
@@ -341,12 +352,11 @@ def purcell_bidirectional(target, r_toroid,
 
 
 def sinusoidal_bidirectional(target,
-                             num_points=1e2,
+                             r_toroid=5e-6,
+                             num_points=1e3,
                              surface_tension='pore.surface_tension',
                              contact_angle='pore.contact_angle',
                              throat_diameter='throat.diameter',
-                             throat_amplitude='throat.amplitude',
-                             throat_length='throat.length',
                              pore_diameter='pore.diameter'):
     r"""
     Computes the throat capillary entry pressure assuming the throat has a
@@ -364,6 +374,9 @@ def sinusoidal_bidirectional(target,
         controls the length of the calculated array, and also provides
         access to other necessary thermofluid properties
 
+    r_toroid : float or array_like
+        The radius of the toroid surrounding the pore
+
     num_points : float (Default 100)
         The number of divisions to make along the profile length to assess the
         meniscus properties in order to find the touch length.
@@ -379,13 +392,6 @@ def sinusoidal_bidirectional(target,
     throat_diameter : dict key (string)
         The dictionary key containing the throat diameter values to be used.
 
-    throat_amplitude : dict key (string)
-        The dictionary key containing the amplitude of variation in the throat
-        diameter about the mean.
-
-    throat_length : dict key (string)
-        The dictionary key containing the throat length values to be used.
-
     pore_diameter : dict key (string)
         The dictionary key containing the pore diameter values to be used.
     Notes
@@ -399,12 +405,11 @@ def sinusoidal_bidirectional(target,
         target.add_model(propname=key,
                          model=pm.meniscus.sinusoidal,
                          mode='touch',
+                         r_toroid=r_toroid,
                          num_points=num_points,
                          surface_tension=surface_tension,
                          contact_angle=contact_angle,
                          throat_diameter=throat_diameter,
-                         throat_amplitude=throat_amplitude,
-                         throat_length=throat_length,
                          touch_length='throat.temp_diameter')
         values[p] = target[key]
         target.remove_model(key)

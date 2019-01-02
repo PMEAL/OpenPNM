@@ -107,7 +107,7 @@ For example, let's create a custom Phase object for an oil with temperature depe
 
   class Oil(GenericPhase):
       def __init__(self, **kwargs):
-          super().__init__(**kwargs)
+          super().__init__(**kwargs)  # This is a python thing, and calls the init of the parent class
 
     		  self.add_model(propname='pore.viscosity',
              						 model=op.models.misc.polynomial,
@@ -129,11 +129,13 @@ Creating Customized Networks
 
 Unlike Geometry, Phase and Physics objects, a Network object requires more than a collection models.  In fact, Networks typically have no models.  Creating a custom Network type is all about defining the locations of the pores, and the connections between the throats.  Consider the following basic graph:
 
-4 ----- 3
-| \   / |
-5 - 0   |
-|     \ |
-2 - 6 - 1
+::
+
+    4 ----- 3
+    | \   / |
+    5 - 0   |
+    |     \ |
+    2 - 6 - 1
 
 Implementing this as a 'custom' Network can be done as by noting that the pore coordinates are:
 
@@ -178,9 +180,9 @@ To create an actual Network subclass, you can add the following to your ``'my_ne
 
 
   class MyNetwork(GenericNetwork):
-    def __init__(self, **kwargs):
-        # Place pore locations and throat connecting generation code here
-        super().__init__(conns=conns, coords=coords, **kwargs)
+      def __init__(self, **kwargs):
+          # Place pore locations and throat connecting generation code here
+          super().__init__(conns=conns, coords=coords, **kwargs)
 
 
 --------------------------------------------------------------------------------

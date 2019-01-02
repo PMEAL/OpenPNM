@@ -1,3 +1,10 @@
+r"""
+
+.. autofunction:: openpnm.models.physics.multiphase.conduit_conductance
+.. autofunction:: openpnm.models.physics.multiphase.late_filling
+
+"""
+
 import scipy as sp
 
 
