@@ -72,13 +72,15 @@ class AdvectionDiffusionTest:
         assert_allclose(actual=y, desired=x)
 
     def test_outflow_BC(self):
-        for scheme in ['upwind', 'hybrid', 'powerlaw']:
+        for scheme in ['upwind', 'hybrid', 'powerlaw', 'exponential']:
             ad = op.algorithms.AdvectionDiffusion(network=self.net,
                                                   phase=self.phase)
             ad.setup(quantity='pore.concentration',
                      diffusive_conductance='throat.diffusive_conductance',
                      hydraulic_conductance='throat.hydraulic_conductance',
-                     pressure='pore.pressure')
+                     pressure='pore.pressure',
+                     s_scheme=scheme)
+
             ad.set_value_BC(pores=self.net.pores('back'), values=2)
             ad.set_outflow_BC(pores=self.net.pores('front'))
             ad.run()
