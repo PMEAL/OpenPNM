@@ -4,6 +4,7 @@ import scipy.sparse as sprs
 import warnings
 import porespy as ps
 from scipy.sparse import csgraph
+from scipy.spatial import ConvexHull
 from openpnm.utils import PrintableDict, logging, Workspace
 ws = Workspace()
 logger = logging.getLogger(__name__)
@@ -229,8 +230,8 @@ def find_neighbor_bonds(sites, im=None, am=None, flatten=True, logic='or'):
         neighbors = sp.where(neighbors)[0]
         return neighbors
     else:
-        raise Exception('Either the incidence or the adjacency matrix must ' +
-                        'must be specified')
+        raise Exception('Either the incidence or the adjacency matrix must '
+                        + 'must be specified')
 
 
 def find_connected_sites(bonds, am, flatten=True, logic='or'):
@@ -1083,8 +1084,8 @@ def extend(network, pore_coords=[], throat_conns=[], labels=[]):
 
     '''
     if len(network.project.phases()) > 0:
-        raise Exception('Project has active Phases, copy network to a new ' +
-                        'project and try again')
+        raise Exception('Project has active Phases, copy network to a new '
+                        + 'project and try again')
 
     Np_old = network.num_pores()
     Nt_old = network.num_throats()
@@ -1413,8 +1414,8 @@ def merge_networks(network, donor=[]):
         network['pore.coords'] = sp.vstack((network['pore.coords'],
                                             donor['pore.coords']))
         network['throat.conns'] = sp.vstack((network['throat.conns'],
-                                             donor['throat.conns'] +
-                                             network.Np))
+                                             donor['throat.conns']
+                                             + network.Np))
         p_all = sp.ones((sp.shape(network['pore.coords'])[0],), dtype=bool)
         t_all = sp.ones((sp.shape(network['throat.conns'])[0],), dtype=bool)
         network.update({'pore.all': p_all})
@@ -1536,8 +1537,7 @@ def stitch(network, donor, P_network, P_donor, method='nearest',
     extend(network=network, pore_coords=donor['pore.coords'])
 
     # Enter donor's throats into the Network
-    extend(network=network, throat_conns=donor['throat.conns'] +
-           N_init['pore'])
+    extend(network=network, throat_conns=donor['throat.conns'] + N_init['pore'])
 
     # Trim throats that are longer then given len_max
     C1 = network['pore.coords'][conns[:, 0]]
@@ -1551,8 +1551,8 @@ def stitch(network, donor, P_network, P_donor, method='nearest',
             label_suffix = '_'+label_suffix
         for label in donor.labels():
             element = label.split('.')[0]
-            locations = sp.where(network._get_indices(element) >=
-                                 N_init[element])[0]
+            locations = sp.where(network._get_indices(element)
+                                 >= N_init[element])[0]
             if label + label_suffix not in network.keys():
                 network[label + label_suffix] = False
             network[label+label_suffix][locations] = donor[label]
@@ -1642,7 +1642,7 @@ def connect_pores(network, pores1, pores2, labels=[], add_conns=True):
         pores2 = [pores2]
 
     if len(pores1) != len(pores2):
-        raise Exception('Running in batch mode! pores1 and pores2 must be' + \
+        raise Exception('Running in batch mode! pores1 and pores2 must be' +
                         ' of the same length.')
 
     arr1, arr2 = [], []
@@ -1911,11 +1911,11 @@ def merge_pores(network, pores, labels=['merged']):
     NBs, XYZs = [], []
 
     for Ps in pores:
-        NBs.append(network.find_neighbor_pores(pores=Ps,
-                                               mode='union',
-                                               flatten=True,
-                                               include_input=False))
-        XYZs.append(network['pore.coords'][Ps].mean(axis=0))
+        temp = network.find_neighbor_pores(pores=Ps, mode='union', flatten=True,
+                                           include_input=False)
+        NBs.append(temp)
+        points = sp.concatenate((temp, Ps))
+        XYZs.append(hull_centroid(network["pore.coords"][points]))
 
     extend(network, pore_coords=XYZs, labels=labels)
     Pnew = network.Ps[-N::]
@@ -1939,6 +1939,28 @@ def merge_pores(network, pores, labels=['merged']):
     connect_pores(network, pores2=sp.split(Pnew, N), pores1=NBs, labels=labels)
     # Trim merged pores from the network
     trim(network=network, pores=sp.concatenate(pores))
+
+
+def hull_centroid(points):
+    r"""
+    Computes centroid of the convex hull enclosing the given coordinates.
+
+    Parameters
+    ----------
+    points : Np by 3 ndarray
+        Coordinates (xyz)
+
+    Returns
+    -------
+    A 3 by 1 Numpy array containing coordinates of the centroid.
+
+    """
+    dim = [sp.unique(points[:, i]).size != 1 for i in range(3)]
+    hull = ConvexHull(points[:, dim])
+    centroid = points.mean(axis=0)
+    centroid[dim] = hull.points[hull.vertices].mean(axis=0)
+
+    return centroid
 
 
 def _template_sphere_disc(dim, outer_radius, inner_radius):
@@ -2525,16 +2547,16 @@ def reflect_base_points(base_pts, domain_size):
         Nx, Ny, Nz = domain_size
         # Reflect base points about all 6 faces
         orig_pts = base_pts
-        base_pts = sp.vstack((base_pts, [-1, 1, 1]*orig_pts +
-                                        [2.0*Nx, 0, 0]))
-        base_pts = sp.vstack((base_pts, [-1, 1, 1]*orig_pts))
-        base_pts = sp.vstack((base_pts, [1, -1, 1]*orig_pts +
-                                        [0, 2.0*Ny, 0]))
-        base_pts = sp.vstack((base_pts, [1, -1, 1]*orig_pts))
+        base_pts = sp.vstack((base_pts,
+                              [-1, 1, 1] * orig_pts + [2.0 * Nx, 0, 0]))
+        base_pts = sp.vstack((base_pts, [-1, 1, 1] * orig_pts))
+        base_pts = sp.vstack((base_pts,
+                              [1, -1, 1] * orig_pts + [0, 2.0 * Ny, 0]))
+        base_pts = sp.vstack((base_pts, [1, -1, 1] * orig_pts))
         if domain_size[2] != 0:
-            base_pts = sp.vstack((base_pts, [1, 1, -1]*orig_pts +
-                                            [0, 0, 2.0*Nz]))
-            base_pts = sp.vstack((base_pts, [1, 1, -1]*orig_pts))
+            base_pts = sp.vstack((base_pts,
+                                  [1, 1, -1] * orig_pts + [0, 0, 2.0 * Nz]))
+            base_pts = sp.vstack((base_pts, [1, 1, -1] * orig_pts))
     return base_pts
 
 
