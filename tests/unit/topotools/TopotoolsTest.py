@@ -133,6 +133,26 @@ class TopotoolsTest:
         assert 'pore.test1' not in net2
         assert 'pore.test2' not in net2
 
+    def test_subdivide_3D(self):
+        net = op.network.Cubic(shape=[3, 3, 3])
+        assert net.Np == 27
+        assert net.Nt == 54
+        op.topotools.subdivide(net, pores=13, shape=[5, 5, 5], labels="blah")
+        assert net.pores("blah").size == 125
+        assert net.throats("blah").size == 300 + 25 * 6
+        assert net.Np == 27 - 1 + 125
+        assert net.Nt == 54 - 6 + 300 + 25 * 6
+
+    def test_subdivide_2D(self):
+        net = op.network.Cubic(shape=[1, 3, 3])
+        assert net.Np == 9
+        assert net.Nt == 12
+        op.topotools.subdivide(net, pores=4, shape=[1, 5, 5], labels="blah")
+        assert net.pores("blah").size == 25
+        assert net.throats("blah").size == 40 + 5 * 4
+        assert net.Np == 9 - 1 + 25
+        assert net.Nt == 12 - 4 + 40 + 5 * 4
+
     def test_merge_pores(self):
         testnet = op.network.Cubic(shape=[10, 10, 10])
         to_merge = [[0, 1], [998, 999]]
