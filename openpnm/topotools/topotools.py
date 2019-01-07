@@ -1818,11 +1818,11 @@ def subdivide(network, pores, shape, labels=[]):
             if neighbor in Pn_old_net:
                 coplanar_labels = network.labels(pores=nearest_neighbor)
                 new_neighbors = network.pores(coplanar_labels,
-                                              mode='xnor')
+                                              mode='and')
                 # This might happen to the edge of the small network
                 if sp.size(new_neighbors) == 0:
                     labels = network.labels(pores=nearest_neighbor,
-                                            mode='xnor')
+                                            mode='and')
                     common_label = [l for l in labels if 'surface_' in l]
                     new_neighbors = network.pores(common_label)
             elif neighbor in Pn_new_net:
