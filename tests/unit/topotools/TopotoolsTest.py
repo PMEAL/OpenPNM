@@ -135,17 +135,40 @@ class TopotoolsTest:
 
     def test_merge_pores(self):
         testnet = op.network.Cubic(shape=[10, 10, 10])
-        xyz_old = testnet['pore.coords'].copy()
         to_merge = [[0, 1], [998, 999]]
         topotools.merge_pores(testnet, to_merge)
-        xyz = testnet['pore.coords']
-        xyz1 = xyz[-2]
-        xyz2 = xyz[-1]
-        xyz1_desired = xyz_old[0:2].mean(axis=0)
-        xyz2_desired = xyz_old[998::].mean(axis=0)
         assert testnet.Np == 998
-        assert_allclose(xyz1, xyz1_desired)
-        assert_allclose(xyz2, xyz2_desired)
+
+    def test_merge_pores_coords(self):
+        r"""
+        Coordinates of merged pores should be centroid of the enclosing convex
+        hull.
+
+        This test verifies that if one subdivides a pore and then merge it
+        with a bunch of other pores, the coordinates of the new pore should be
+        exactly the same as when one merges the same pores without subdiving.
+
+        """
+        # Subdivide first, then merge
+        testnet = op.network.Cubic(shape=[1, 10, 10])
+        testnet["pore.to_merge"] = False
+        testnet["pore.to_merge"][[14, 15, 16, 24, 25, 26, 34, 35, 36]] = True
+        topotools.subdivide(testnet, pores=15, shape=[1, 10, 10],
+                            labels="subdivided")
+        topotools.merge_pores(testnet, labels="new_pore",
+                              pores=testnet.pores(["subdivided", "to_merge"]))
+        xyz_w_subdivide = testnet['pore.coords'][testnet.pores("new_pore")]
+
+        # No subdivide, only merge
+        testnet = op.network.Cubic(shape=[1, 10, 10])
+        testnet["pore.to_merge"] = False
+        testnet["pore.to_merge"][[14, 15, 16, 24, 25, 26, 34, 35, 36]] = True
+        topotools.merge_pores(testnet, labels="new_pore",
+                              pores=testnet.pores("to_merge"))
+        xyz_wo_subdivide = testnet['pore.coords'][testnet.pores("new_pore")]
+
+        # Compare the two coords
+        assert_allclose(xyz_w_subdivide, xyz_wo_subdivide)
 
     def test_connect_pores(self):
         testnet = op.network.Cubic(shape=[10, 10, 10])
