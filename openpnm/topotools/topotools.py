@@ -1911,11 +1911,11 @@ def merge_pores(network, pores, labels=['merged']):
     NBs, XYZs = [], []
 
     for Ps in pores:
-        NBs.append(network.find_neighbor_pores(pores=Ps,
-                                               mode='union',
-                                               flatten=True,
-                                               include_input=False))
-        XYZs.append(network['pore.coords'][Ps].mean(axis=0))
+        temp = network.find_neighbor_pores(pores=Ps, mode='union', flatten=True,
+                                           include_input=False)
+        NBs.append(temp)
+        points = sp.concatenate((temp, Ps))
+        XYZs.append(hull_centroid(network["pore.coords"][points]))
 
     extend(network, pore_coords=XYZs, labels=labels)
     Pnew = network.Ps[-N::]
