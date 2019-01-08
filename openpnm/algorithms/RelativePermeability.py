@@ -13,7 +13,6 @@ default_settings = {'pore_inv_seq': 'pore.invasion_sequence',
                     'gh': 'throat.hydraulic_conductance',
                     'mode': 'strict',
                     }
-
 class RelativePermeability(GenericAlgorithm):
     r"""
     Parameters
@@ -94,11 +93,31 @@ class RelativePermeability(GenericAlgorithm):
         """
         self['pore.outlets'] = False
         self['pore.outlets'][pores] = True
+        
+    def update_phase_and_phys(self,results):
+        self.settings['inv_phase']['pore.occupancy'] = results['pore.occupancy']
+        self.settings['def_phase']['pore.occupancy'] = 1-results['pore.occupancy']
+        self.settings['inv_phase']['throat.occupancy'] = results['throat.occupancy']
+        self.settings['def_phase']['throat.occupancy'] = 1-results['throat.occupancy']
+        #adding multiphase conductances
+        mode=self.settings['mode']
+        self.settings['def_phase'].add_model(model=op.models.physics.multiphase.conduit_conductance,
+                       propname='throat.conduit_hydraulic_conductance',
+                       throat_conductance='throat.hydraulic_conductance',
+                       mode=mode)
+        self.settings['inv_phase'].add_model(model=op.models.physics.multiphase.conduit_conductance,
+                         propname='throat.conduit_hydraulic_conductance',
+                         throat_conductance='throat.hydraulic_conductance',
+                         mode=mode)
+    def top_b(lx,ly,lz):
+        da = lx*ly
+        dl = lz
+        res_2=[da,dl]
+    return res_2
 
     def run(self, inlets=None, outlets=None):
         r"""
         """
-
         if inlets is not None:
             self.set_inlets(pores=inlets)
         if outlets is not None:
@@ -106,28 +125,61 @@ class RelativePermeability(GenericAlgorithm):
         # Retrieve phase and network
         network = self.project.network
         phase = self.project.phases(self.settings['phase'])
-        sf = StokesFlow(network=network)
-        sf.setup(phase=phase,
-                 quantity='pore.pressure',
-                 conductance=self.settings['gh'])
-        sf.set_value_BC(pores=self['pore.inlets'], values=1)
-        sf.set_value_BC(pores=self['pore.outlets'], values=0)
-        phase['pore.occupancy'] = 0
-        phase['throat.occupancy'] = 0
-        phase.add_model(propname='throat.multiphase_hydraulic_conductance',
-                        model=models.physics.multiphase.conduit_conductance,
-                        throat_conductance=self.settings['gh'],
-                        throat_occupancy='throat.occupancy',
-                        pore_occupancy='pore.occupancy',
-                        mode=self.settings['mode'],
-                        )
-        max_inv = np.amax(phase['pore.invasion_sequence'])
-        invs = np.linspace(0, max_inv, self.settings['points'])
-        results = []
-        for s in invs:
-            phase['pore.occupancy'] = 1.0*(phase[self.settings['pore_inv_seq']] <= s)
-            phase['throat.occupancy'] = 1.0*(phase[self.settings['throat_inv_seq']] <= s)
-            phase.regenerate_models(deep=True)
-            sf.run()
-            results.append([[s, sf.rate(pores=self['pore.inlets'])]])
+        #first calc single phase absolute permeability (assumming in 1 direction only)
+        bounds = [ ['top', 'bottom']]
+        [amax, bmax, cmax] = np.max(network['pore.coords'], axis=0)
+        [amin, bmin, cmin] = np.min(network['pore.coords'], axis=0)
+        lx = amax-amin
+        ly = bmax-bmin
+        lz = cmax-cmin
+        options = {0 : top_b(lx,ly,lz)}
+        ##apply single phase flow
+        for bound_increment in range(len(bounds)):
+        # Run Single phase algs effective properties
+        #bound_increment=0
+        BC1_pores = pn.pores(labels=bounds[bound_increment][0])
+        BC2_pores = pn.pores(labels=bounds[bound_increment][1])
+        [da,dl]=options[bound_increment]
+        #Kw
+        Stokes_alg_single_phase_water = op.algorithms.StokesFlow(network=pn, phase=water)
+        Stokes_alg_single_phase_water.setup(conductance='throat.hydraulic_conductance')
+        Stokes_alg_single_phase_water._set_BC(pores=BC1_pores, bctype='value', bcvalues=100000)
+        Stokes_alg_single_phase_water._set_BC(pores=BC2_pores, bctype='value', bcvalues=1000)
+        Stokes_alg_single_phase_water.run()
+        single_perms_water[bound_increment] = Stokes_alg_single_phase_water.calc_effective_permeability(domain_area=da, domain_length=dl,inlets=BC1_pores, outlets=BC2_pores)
+        ratew1=Stokes_alg_single_phase_water.rate(pores=pn['pore.top'])
+        proj.purge_object(obj=Stokes_alg_single_phase_water)
+        #Ko
+        Stokes_alg_single_phase_oil = op.algorithms.StokesFlow(network=pn, phase=oil)
+        Stokes_alg_single_phase_oil.setup(conductance='throat.hydraulic_conductance')
+        Stokes_alg_single_phase_oil._set_BC(pores=BC1_pores, bctype='value', bcvalues=10000)
+        Stokes_alg_single_phase_oil._set_BC(pores=BC2_pores, bctype='value', bcvalues=1000)
+        Stokes_alg_single_phase_oil.run()
+        single_perms_oil[bound_increment] = Stokes_alg_single_phase_oil.calc_effective_permeability(domain_area=da, domain_length=dl,inlets=BC1_pores, outlets=BC2_pores)
+        proj.purge_object(obj=Stokes_alg_single_phase_oil)
+        
+#        sf = StokesFlow(network=network)
+#        sf.setup(phase=phase,
+#                 quantity='pore.pressure',
+#                 conductance=self.settings['gh'])
+#        sf.set_value_BC(pores=self['pore.inlets'], values=1)
+#        sf.set_value_BC(pores=self['pore.outlets'], values=0)
+#        phase['pore.occupancy'] = 0
+#        phase['throat.occupancy'] = 0
+#        phase.add_model(propname='throat.multiphase_hydraulic_conductance',
+#                        model=models.physics.multiphase.conduit_conductance,
+#                        throat_conductance=self.settings['gh'],
+#                        throat_occupancy='throat.occupancy',
+#                        pore_occupancy='pore.occupancy',
+#                        mode=self.settings['mode'],
+#                        )
+#        max_inv = np.amax(phase['pore.invasion_sequence'])
+#        invs = np.linspace(0, max_inv, self.settings['points'])
+#        results = []
+#        for s in invs:
+#            phase['pore.occupancy'] = 1.0*(phase[self.settings['pore_inv_seq']] <= s)
+#            phase['throat.occupancy'] = 1.0*(phase[self.settings['throat_inv_seq']] <= s)
+#            phase.regenerate_models(deep=True)
+#            sf.run()
+#            results.append([[s, sf.rate(pores=self['pore.inlets'])]])
         return results
