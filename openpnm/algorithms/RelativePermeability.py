@@ -2,6 +2,7 @@ from openpnm.algorithms import GenericAlgorithm, StokesFlow
 from openpnm.utils import logging
 from openpnm import models
 import numpy as np
+import openpnm as op
 logger = logging.getLogger(__name__)
 
 
@@ -12,11 +13,8 @@ default_settings = {'pore_inv_seq': 'pore.invasion_sequence',
                     'mode': 'strict',
                     }
 
-
 class RelativePermeability(GenericAlgorithm):
     r"""
-
-
     Parameters
     ----------
 
@@ -32,20 +30,47 @@ class RelativePermeability(GenericAlgorithm):
         # Apply any settings received during initialization
         self.settings.update(settings)
         super().__init__(**kwargs)
-
-    def setup(self, phase=None, points=None,
+    def setup(self, inv_phase=None, def_phase=None,points=None,
               pore_inv_seq=None,
               throat_inv_seq=None):
         r"""
         """
-        if phase:
-            self.settings['phase'] = phase.name
+        if inv_phase:
+            self.settings['inv_phase'] = inv_phase
+        if def_phase:
+            self.settings['def_phase'] = def_phase
         if points:
             self.settings['points'] = points
         if pore_inv_seq:
             self.settings['pore_inv_seq'] = pore_inv_seq
+        else:
+                res=self.IP(self)
+                self.settings['pore_inv_seq'] =res[0]
         if throat_inv_seq:
             self.settings['thorat_inv_seq'] = throat_inv_seq
+    def IP(self,):
+        inv=op.algorithms.InvasionPercolation(phase=self.settings['inv_phase']),network=
+        self.project.network,project=self.project)
+        inv.setup(phase=oil,entry_pressure='throat.entry_pressure',pore_volume='pore.volume', throat_volume='throat.volume')
+        inlets = pn.pores(['top'])
+        used_inlets = [inlets[x] for x in range(0, len(inlets), 2)]
+        outlets = pn.pores(['bottom'])
+        used_outlets = [outlets[x] for x in range(0, len(outlets), 2)]
+        inv.set_inlets(pores=used_inlets)
+        inv.run()
+        Snwparr =  []
+        Pcarr =  []
+        Sarr=np.linspace(0,1,num=60)
+        for Snw in Sarr:
+            res1=inv.results(Snwp=Snw)
+            occ_ts=res1['throat.occupancy']
+            if np.any(occ_ts):
+                max_pthroat=np.max(phys_oil['throat.entry_pressure'][occ_ts])
+                Pcarr.append(max_pthroat)
+                Snwparr.append(Snw)
+        self.settings['pore_inv_seq'] = pore_inv_seq
+        self.settings['thorat_inv_seq'] = throat_inv_seq
+        
 
     def set_inlets(self, pores):
         r"""
