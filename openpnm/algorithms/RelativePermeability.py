@@ -30,6 +30,7 @@ class RelativePermeability(GenericAlgorithm):
         # Apply any settings received during initialization
         self.settings.update(settings)
         super().__init__(**kwargs)
+        
     def setup(self, inv_phase=None, def_phase=None,points=None,
               pore_inv_seq=None,
               throat_inv_seq=None):
@@ -44,18 +45,18 @@ class RelativePermeability(GenericAlgorithm):
         if pore_inv_seq:
             self.settings['pore_inv_seq'] = pore_inv_seq
         else:
-                res=self.IP(self)
-                self.settings['pore_inv_seq'] =res[0]
+            self.IP(self)
         if throat_inv_seq:
             self.settings['thorat_inv_seq'] = throat_inv_seq
+        else:
+            self.IP(self)
     def IP(self,):
         inv=op.algorithms.InvasionPercolation(phase=self.project.phases(self.settings['inv_phase']),network=
         self.project.network,project=self.project)
-        inv.setup(phase=oil,entry_pressure='throat.entry_pressure',pore_volume='pore.volume', throat_volume='throat.volume')
-        inlets = pn.pores(['top'])
+        inv.setup(phase=self.project.phases(self.settings['inv_phase']),
+                  entry_pressure='throat.entry_pressure',pore_volume='pore.volume', throat_volume='throat.volume')
+        inlets = self.project.network.pores(['top'])
         used_inlets = [inlets[x] for x in range(0, len(inlets), 2)]
-        outlets = pn.pores(['bottom'])
-        used_outlets = [outlets[x] for x in range(0, len(outlets), 2)]
         inv.set_inlets(pores=used_inlets)
         inv.run()
         Snwparr =  []
@@ -65,12 +66,11 @@ class RelativePermeability(GenericAlgorithm):
             res1=inv.results(Snwp=Snw)
             occ_ts=res1['throat.occupancy']
             if np.any(occ_ts):
-                max_pthroat=np.max(phys_oil['throat.entry_pressure'][occ_ts])
+                max_pthroat=np.max(self.project.phases(self.settings['inv_phase'])['throat.entry_pressure'][occ_ts])
                 Pcarr.append(max_pthroat)
                 Snwparr.append(Snw)
-        self.settings['pore_inv_seq'] = pore_inv_seq
-        self.settings['thorat_inv_seq'] = throat_inv_seq
-        
+        self.settings['pore_inv_seq'] = inv['pore.invasion_sequence']
+        self.settings['thorat_inv_seq'] = inv['throat.invasion_sequence']
 
     def set_inlets(self, pores):
         r"""
