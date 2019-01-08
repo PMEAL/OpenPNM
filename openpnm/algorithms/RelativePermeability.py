@@ -36,9 +36,9 @@ class RelativePermeability(GenericAlgorithm):
         r"""
         """
         if inv_phase:
-            self.settings['inv_phase'] = inv_phase
+            self.settings['inv_phase'] = inv_phase.name
         if def_phase:
-            self.settings['def_phase'] = def_phase
+            self.settings['def_phase'] = def_phase.name
         if points:
             self.settings['points'] = points
         if pore_inv_seq:
@@ -49,7 +49,7 @@ class RelativePermeability(GenericAlgorithm):
         if throat_inv_seq:
             self.settings['thorat_inv_seq'] = throat_inv_seq
     def IP(self,):
-        inv=op.algorithms.InvasionPercolation(phase=self.settings['inv_phase']),network=
+        inv=op.algorithms.InvasionPercolation(phase=self.project.phases(self.settings['inv_phase']),network=
         self.project.network,project=self.project)
         inv.setup(phase=oil,entry_pressure='throat.entry_pressure',pore_volume='pore.volume', throat_volume='throat.volume')
         inlets = pn.pores(['top'])
@@ -87,6 +87,7 @@ class RelativePermeability(GenericAlgorithm):
     def run(self, inlets=None, outlets=None):
         r"""
         """
+
         if inlets is not None:
             self.set_inlets(pores=inlets)
         if outlets is not None:
