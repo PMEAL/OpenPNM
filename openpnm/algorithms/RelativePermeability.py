@@ -50,7 +50,7 @@ class RelativePermeability(GenericAlgorithm):
             self.settings['thorat_inv_seq'] = throat_inv_seq
         else:
             self.IP(self)
-    def IP(self,):
+    def IP(self):
         network = self.project.network
         phase = self.project.phases(self.settings['inv_phase'])
         inv=op.algorithms.InvasionPercolation(phase=phase,network=network,project=self.project)
@@ -80,7 +80,8 @@ class RelativePermeability(GenericAlgorithm):
         plt.plot(x, y)
         plt.xlabel('Invading Phase Saturation')
         plt.ylabel('Capillary Pressure')
-        plt.grid(True)  
+        plt.grid(True)
+        sat=np.array(Snwparr[:])
 
     def set_inlets(self, pores):
         r"""
@@ -139,7 +140,6 @@ class RelativePermeability(GenericAlgorithm):
         options = {0 : self.top_b(lx,ly,lz)}
         K_def=1
         K_inv=1
-        
         ##apply single phase flow
         for bound_increment in range(len(bounds)):
         # Run Single phase algs effective properties
@@ -152,7 +152,7 @@ class RelativePermeability(GenericAlgorithm):
             St_def._set_BC(pores=self['pore.outlets'], bctype='value', bcvalues=0)
             St_def.run()
             K_def[bound_increment] = St_def.calc_effective_permeability(domain_area=da, domain_length=dl,inlets=self['pore.inlets'], outlets=self['pore.outlets'])
-            #proj.purge_object(obj=Stokes_alg_single_phase_water)
+            #proj.purge_object(obj=St_def)
             #Ko
             St_inv = op.algorithms.StokesFlow(network=network, phase=self.project.phases(self.settings['inv_phase']))
             St_inv.setup(conductance='throat.hydraulic_conductance')
@@ -160,8 +160,33 @@ class RelativePermeability(GenericAlgorithm):
             St_inv._set_BC(pores=self['pore.outlets'], bctype='value', bcvalues=0)
             St_inv.run()
             K_inv[bound_increment] = St_inv.calc_effective_permeability(domain_area=da, domain_length=dl,inlets=self['pore.inlets'], outlets=self['pore.outlets'])
-            #proj.purge_object(obj=Stokes_alg_single_phase_oil)
-        
+            #proj.purge_object(obj=St_inv)
+        #apply two phase effective perm calculation        
+        for Sp in sat:
+            self.update_phase_and_phys(self.IP.results(Snwp=Sp))
+            print('sat is equal to', Sp)
+            for bound_increment in range(len(bounds)):
+                 #water
+                 St_def_tp = op.algorithms.StokesFlow(network=network, phase=self.project.phases(self.settings['def_phase']))
+                 St_def_tp.setup(conductance='throat.conduit_hydraulic_conductance')
+                 St_def_tp.set_value_BC(pores=self['pore.inlets'], bctype='value', bcvalues=1)
+                 St_def_tp.set_value_BC(pores=self['pore.outlets'], bctype='value', bcvalues=0)
+                 #oil
+                 St_inv_tp = op.algorithms.StokesFlow(network=network, phase=self.project.phases(self.settings['inv_phase']))
+                 St_inv_tp.setup(conductance='throat.conduit_hydraulic_conductance')
+                 St_inv_tp.set_value_BC(pores=self['pore.inlets'], bctype='value', bcvalues=1)
+                 St_inv_tp.set_value_BC(pores=self['pore.outlets'], bctype='value', bcvalues=0)
+                 # Run Multiphase algs
+                 St_def_tp.run()
+                 St_inv_tp.run()
+                 K_def_tp = St_def_tp.calc_effective_permeability(domain_area=da, domain_length=dl)
+                 K_inv_tp = St_inv_tp.calc_effective_permeability(domain_area=da, domain_length=dl)
+                 krel_def =K_def_tp/K_def[bound_increment]
+                 krel_inv= K_inv_tp /K_inv[bound_increment]
+                 K_rel_def[str(bound_increment)].append(krel_def)
+                 K_rel_inv[str(bound_increment)].append(krel_inv)
+                 proj.purge_object(obj=St_def_tp)
+                 proj.purge_object(obj=St_inv_tp)
 #        sf = StokesFlow(network=network)
 #        sf.setup(phase=phase,
 #                 quantity='pore.pressure',
