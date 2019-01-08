@@ -3,6 +3,7 @@ from openpnm.utils import logging
 from openpnm import models
 import numpy as np
 import openpnm as op
+import matplotlib.pyplot as plt
 logger = logging.getLogger(__name__)
 
 
@@ -71,6 +72,15 @@ class RelativePermeability(GenericAlgorithm):
                 Snwparr.append(Snw)
         self.settings['pore_inv_seq'] = inv['pore.invasion_sequence']
         self.settings['thorat_inv_seq'] = inv['throat.invasion_sequence']
+        plt.figure(1)
+        y=np.array(Pcarr[:])
+        x=1.0-np.array(Snwparr[:])
+        plt.xticks(np.arange(x.min(), x.max(), 0.05))
+        plt.yticks(np.arange(y.min(), y.max(),0.1))
+        plt.plot(x, y)
+        plt.xlabel('Invading Phase Saturation')
+        plt.ylabel('Capillary Pressure')
+        plt.grid(True)  
 
     def set_inlets(self, pores):
         r"""
