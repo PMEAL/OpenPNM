@@ -52,11 +52,12 @@ class RelativePermeability(GenericAlgorithm):
         else:
             self.IP(self)
     def IP(self,):
-        inv=op.algorithms.InvasionPercolation(phase=self.project.phases(self.settings['inv_phase']),network=
-        self.project.network,project=self.project)
-        inv.setup(phase=self.project.phases(self.settings['inv_phase']),
+        network = self.project.network
+        phase = self.project.phases(self.settings['inv_phase'])
+        inv=op.algorithms.InvasionPercolation(phase=phase,network=network,project=self.project)
+        inv.setup(phase=phase,
                   entry_pressure='throat.entry_pressure',pore_volume='pore.volume', throat_volume='throat.volume')
-        inlets = self.project.network.pores(['top'])
+        inlets = network.pores(['top'])
         used_inlets = [inlets[x] for x in range(0, len(inlets), 2)]
         inv.set_inlets(pores=used_inlets)
         inv.run()
@@ -67,7 +68,7 @@ class RelativePermeability(GenericAlgorithm):
             res1=inv.results(Snwp=Snw)
             occ_ts=res1['throat.occupancy']
             if np.any(occ_ts):
-                max_pthroat=np.max(self.project.phases(self.settings['inv_phase'])['throat.entry_pressure'][occ_ts])
+                max_pthroat=np.max(phase['throat.entry_pressure'][occ_ts])
                 Pcarr.append(max_pthroat)
                 Snwparr.append(Snw)
         self.settings['pore_inv_seq'] = inv['pore.invasion_sequence']
