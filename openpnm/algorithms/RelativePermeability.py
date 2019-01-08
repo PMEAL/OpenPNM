@@ -113,50 +113,54 @@ class RelativePermeability(GenericAlgorithm):
         da = lx*ly
         dl = lz
         res_2=[da,dl]
-    return res_2
+        return res_2
 
     def run(self, inlets=None, outlets=None):
         r"""
         """
-        if inlets is not None:
-            self.set_inlets(pores=inlets)
-        if outlets is not None:
-            self.set_outlets(pores=outlets)
         # Retrieve phase and network
         network = self.project.network
-        phase = self.project.phases(self.settings['phase'])
-        #first calc single phase absolute permeability (assumming in 1 direction only)
+        
         bounds = [ ['top', 'bottom']]
+        if inlets is not None:
+            self.set_inlets(pores=inlets)
+        else:
+            self.set_inlets(pores=network.pores(labels=bounds[0][0]))
+        if outlets is not None:
+            self.set_outlets(pores=outlets)
+        else:
+            self.set_outlets(pores=network.pores(labels=bounds[0][1]))
+        #first calc single phase absolute permeability (assumming in 1 direction only)
         [amax, bmax, cmax] = np.max(network['pore.coords'], axis=0)
         [amin, bmin, cmin] = np.min(network['pore.coords'], axis=0)
         lx = amax-amin
         ly = bmax-bmin
         lz = cmax-cmin
-        options = {0 : top_b(lx,ly,lz)}
+        options = {0 : self.top_b(lx,ly,lz)}
+        K_def=1
+        K_inv=1
+        
         ##apply single phase flow
         for bound_increment in range(len(bounds)):
         # Run Single phase algs effective properties
         #bound_increment=0
-        BC1_pores = pn.pores(labels=bounds[bound_increment][0])
-        BC2_pores = pn.pores(labels=bounds[bound_increment][1])
-        [da,dl]=options[bound_increment]
-        #Kw
-        Stokes_alg_single_phase_water = op.algorithms.StokesFlow(network=pn, phase=water)
-        Stokes_alg_single_phase_water.setup(conductance='throat.hydraulic_conductance')
-        Stokes_alg_single_phase_water._set_BC(pores=BC1_pores, bctype='value', bcvalues=100000)
-        Stokes_alg_single_phase_water._set_BC(pores=BC2_pores, bctype='value', bcvalues=1000)
-        Stokes_alg_single_phase_water.run()
-        single_perms_water[bound_increment] = Stokes_alg_single_phase_water.calc_effective_permeability(domain_area=da, domain_length=dl,inlets=BC1_pores, outlets=BC2_pores)
-        ratew1=Stokes_alg_single_phase_water.rate(pores=pn['pore.top'])
-        proj.purge_object(obj=Stokes_alg_single_phase_water)
-        #Ko
-        Stokes_alg_single_phase_oil = op.algorithms.StokesFlow(network=pn, phase=oil)
-        Stokes_alg_single_phase_oil.setup(conductance='throat.hydraulic_conductance')
-        Stokes_alg_single_phase_oil._set_BC(pores=BC1_pores, bctype='value', bcvalues=10000)
-        Stokes_alg_single_phase_oil._set_BC(pores=BC2_pores, bctype='value', bcvalues=1000)
-        Stokes_alg_single_phase_oil.run()
-        single_perms_oil[bound_increment] = Stokes_alg_single_phase_oil.calc_effective_permeability(domain_area=da, domain_length=dl,inlets=BC1_pores, outlets=BC2_pores)
-        proj.purge_object(obj=Stokes_alg_single_phase_oil)
+            [da,dl]=options[bound_increment]
+            #Kw
+            St_def = op.algorithms.StokesFlow(network=network, phase=self.project.phases(self.settings['def_phase']))
+            St_def.setup(conductance='throat.hydraulic_conductance')
+            St_def._set_BC(pores=self['pore.inlets'], bctype='value', bcvalues=1)
+            St_def._set_BC(pores=self['pore.outlets'], bctype='value', bcvalues=0)
+            St_def.run()
+            K_def[bound_increment] = St_def.calc_effective_permeability(domain_area=da, domain_length=dl,inlets=self['pore.inlets'], outlets=self['pore.outlets'])
+            #proj.purge_object(obj=Stokes_alg_single_phase_water)
+            #Ko
+            St_inv = op.algorithms.StokesFlow(network=network, phase=self.project.phases(self.settings['inv_phase']))
+            St_inv.setup(conductance='throat.hydraulic_conductance')
+            St_inv._set_BC(pores=self['pore.inlets'], bctype='value', bcvalues=1)
+            St_inv._set_BC(pores=self['pore.outlets'], bctype='value', bcvalues=0)
+            St_inv.run()
+            K_inv[bound_increment] = St_inv.calc_effective_permeability(domain_area=da, domain_length=dl,inlets=self['pore.inlets'], outlets=self['pore.outlets'])
+            #proj.purge_object(obj=Stokes_alg_single_phase_oil)
         
 #        sf = StokesFlow(network=network)
 #        sf.setup(phase=phase,
