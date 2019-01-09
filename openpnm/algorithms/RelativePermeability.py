@@ -12,7 +12,6 @@ default_settings = {'pore_inv_seq': 'pore.invasion_sequence',
                     'gh': 'throat.hydraulic_conductance',
                     'mode': 'strict',
                     'sat' : '',
-                    
                     }
 class RelativePermeability(GenericAlgorithm):
     r"""
@@ -110,15 +109,15 @@ class RelativePermeability(GenericAlgorithm):
                          propname='throat.conduit_hydraulic_conductance',
                          throat_conductance='throat.hydraulic_conductance',
                          mode=mode)
-    def top_b(lx,ly,lz):
+    def top_b(self,lx,ly,lz):
         da = lx*ly
         dl = lz
         res_2=[da,dl]
         return res_2
-
     def run(self, inlets=None, outlets=None):
         r"""
         """
+        
         Results = {'k_inv' : [], 'k_def' : [], 'K_rel_inv' : [], 'K_rel_def' : [],}
         # Retrieve phase and network
         K_rel_def = {'0': []}
