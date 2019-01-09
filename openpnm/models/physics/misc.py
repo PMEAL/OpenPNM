@@ -66,6 +66,22 @@ def generic_conductance(target, transport_type, pore_diffusivity,
     L1 = network[conduit_lengths + '.pore1'][throats]
     Lt = network[conduit_lengths + '.throat'][throats]
     L2 = network[conduit_lengths + '.pore2'][throats]
+    # Preallocating g
+    g1, g2, gt = _sp.zeros((3, len(Lt)))
+    # Setting g to inf when Li = 0 (ex. boundary pores)
+    # INFO: This is needed since area could also be zero, which confuses NumPy
+    m1, m2, mt = [Li != 0 for Li in [L1, L2, Lt]]
+    g1[~m1] = g2[~m2] = gt[~mt] = _sp.inf
+    # If ionic conductance, compute conductance and return it
+    if transport_type == 'ionic':
+        F = 96485.3329
+        epsilon0 = 8.854187817e-12
+        epsilonr = phase['pore.permittivity.solvent'][0]
+        C = (-(epsilon0*epsilonr)/F)
+        g1[m1] = (A1)[m1] * L1[m1]
+        g2[m2] = (A2)[m2] * L2[m2]
+        gt[mt] = (At)[mt] * Lt[mt]
+        return C/((g1+g2+gt)/(L1+L2+Lt))
     # Getting shape factors
     try:
         SF1 = phase[conduit_shape_factors+'.pore1'][throats]
@@ -84,12 +100,6 @@ def generic_conductance(target, transport_type, pore_diffusivity,
     except KeyError:
         D1 = phase.interpolate_data(propname=throat_diffusivity)[cn[:, 0]]
         D2 = phase.interpolate_data(propname=throat_diffusivity)[cn[:, 1]]
-    # Preallocating g
-    g1, g2, gt = _sp.zeros((3, len(Lt)))
-    # Setting g to inf when Li = 0 (ex. boundary pores)
-    # INFO: This is needed since area could also be zero, which confuses NumPy
-    m1, m2, mt = [Li != 0 for Li in [L1, L2, Lt]]
-    g1[~m1] = g2[~m2] = gt[~mt] = _sp.inf
     # Find g for half of pore 1, throat, and half of pore 2
     if transport_type == 'flow':
         g1[m1] = A1[m1]**2 / (8*pi*D1*L1)[m1]
@@ -122,6 +132,7 @@ def generic_conductance(target, transport_type, pore_diffusivity,
         gt[mt] = Dt[mt]*(1+(Pet**2)/192)*At[mt] / Lt[mt]
     else:
         raise Exception('Unknown keyword for "transport_type", can only be' +
-                        ' "flow" or "diffusion"')
+                        ' "flow", "diffusion", "taylor_aris_diffusion"' +
+                        ' or "ionic"')
     # Apply shape factors and calculate the final conductance
     return (1/gt/SFt + 1/g1/SF1 + 1/g2/SF2)**(-1)
