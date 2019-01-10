@@ -12,6 +12,7 @@ default_settings = {'pore_inv_seq': 'pore.invasion_sequence',
                     'gh': 'throat.hydraulic_conductance',
                     'mode': 'strict',
                     'sat' : '',
+                    'inv_results': '',
                     }
 class RelativePermeability(GenericAlgorithm):
     r"""
@@ -26,10 +27,11 @@ class RelativePermeability(GenericAlgorithm):
     """
     def __init__(self, settings={}, **kwargs):
         # Apply default settings
+        super().__init__(**kwargs)
         self.settings.update(default_settings)
         # Apply any settings received during initialization
         self.settings.update(settings)
-        super().__init__(**kwargs)
+        
         
     def setup(self, inv_phase=None, def_phase=None,points=None,
               pore_inv_seq=None,
@@ -45,11 +47,11 @@ class RelativePermeability(GenericAlgorithm):
         if pore_inv_seq:
             self.settings['pore_inv_seq'] = pore_inv_seq
         else:
-            self.IP(self)
+            self.IP()
         if throat_inv_seq:
             self.settings['thorat_inv_seq'] = throat_inv_seq
         else:
-            self.IP(self)
+            self.IP()
     def IP(self):
         network = self.project.network
         phase = self.project.phases(self.settings['inv_phase'])
@@ -81,6 +83,10 @@ class RelativePermeability(GenericAlgorithm):
         plt.ylabel('Capillary Pressure')
         plt.grid(True)
         self.settings['sat']=np.array(Snwparr[:])
+        data = {'pore.occupancy': '', 'throat.occupancy': ''}
+        for Sp in self.settings['sat']:
+           inv.results(self,Sp)
+        self.settings['inv_results']=res
 
     def set_inlets(self, pores):
         r"""
@@ -139,8 +145,8 @@ class RelativePermeability(GenericAlgorithm):
         ly = bmax-bmin
         lz = cmax-cmin
         options = {0 : self.top_b(lx,ly,lz)}
-        K_def=[]
-        K_inv=[]
+        #K_def=1
+        #K_inv=[]
         ##apply single phase flow
         for bound_increment in range(len(bounds)):
         # Run Single phase algs effective properties
@@ -152,7 +158,7 @@ class RelativePermeability(GenericAlgorithm):
             St_def._set_BC(pores=self['pore.inlets'], bctype='value', bcvalues=1)
             St_def._set_BC(pores=self['pore.outlets'], bctype='value', bcvalues=0)
             St_def.run()
-            K_def[bound_increment] = St_def.calc_effective_permeability(domain_area=da, domain_length=dl,inlets=self['pore.inlets'], outlets=self['pore.outlets'])
+            K_def = St_def.calc_effective_permeability(domain_area=da, domain_length=dl,inlets=self['pore.inlets'], outlets=self['pore.outlets'])
             #proj.purge_object(obj=St_def)
             #Ko
             St_inv = StokesFlow(network=network, phase=self.project.phases(self.settings['inv_phase']))
@@ -160,11 +166,11 @@ class RelativePermeability(GenericAlgorithm):
             St_inv._set_BC(pores=self['pore.inlets'], bctype='value', bcvalues=1)
             St_inv._set_BC(pores=self['pore.outlets'], bctype='value', bcvalues=0)
             St_inv.run()
-            K_inv[bound_increment] = St_inv.calc_effective_permeability(domain_area=da, domain_length=dl,inlets=self['pore.inlets'], outlets=self['pore.outlets'])
+            K_inv = St_inv.calc_effective_permeability(domain_area=da, domain_length=dl,inlets=self['pore.inlets'], outlets=self['pore.outlets'])
             self.project.purge_object(obj=St_inv)
         #apply two phase effective perm calculation        
         for Sp in self.settings['sat']:
-            self.update_phase_and_phys(self.IP.results(Snwp=Sp))
+            self.update_phase_and_phys()
             print('sat is equal to', Sp)
             for bound_increment in range(len(bounds)):
                  #water
@@ -182,8 +188,8 @@ class RelativePermeability(GenericAlgorithm):
                  St_inv_tp.run()
                  K_def_tp = St_def_tp.calc_effective_permeability(domain_area=da, domain_length=dl)
                  K_inv_tp = St_inv_tp.calc_effective_permeability(domain_area=da, domain_length=dl)
-                 krel_def =K_def_tp/K_def[bound_increment]
-                 krel_inv= K_inv_tp /K_inv[bound_increment]
+                 krel_def =K_def_tp/K_def
+                 krel_inv= K_inv_tp /K_inv
                  K_rel_def[str(bound_increment)].append(krel_def)
                  K_rel_inv[str(bound_increment)].append(krel_inv)
                  self.project.purge_object(obj=St_def_tp)
@@ -191,8 +197,7 @@ class RelativePermeability(GenericAlgorithm):
         Results['k_inv']=K_inv
         Results['k_def']= K_def
         Results['K_rel_inv']= krel_inv
-        Results['K_rel_def']=krel_def
-        
+        Results['K_rel_def']=krel_def        
 #        sf = StokesFlow(network=network)
 #        sf.setup(phase=phase,
 #                 quantity='pore.pressure',
