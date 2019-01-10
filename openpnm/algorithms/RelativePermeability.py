@@ -238,29 +238,5 @@ class RelativePermeability(GenericAlgorithm):
         Results['k_inv']=K_inv
         Results['k_def']= K_def
         Results['K_rel_inv']= K_rel_inv
-        Results['K_rel_def']=K_rel_def 
-#        sf = StokesFlow(network=network)
-#        sf.setup(phase=phase,
-#                 quantity='pore.pressure',
-#                 conductance=self.settings['gh'])
-#        sf.set_value_BC(pores=self['pore.inlets'], values=1)
-#        sf.set_value_BC(pores=self['pore.outlets'], values=0)
-#        phase['pore.occupancy'] = 0
-#        phase['throat.occupancy'] = 0
-#        phase.add_model(propname='throat.multiphase_hydraulic_conductance',
-#                        model=models.physics.multiphase.conduit_conductance,
-#                        throat_conductance=self.settings['gh'],
-#                        throat_occupancy='throat.occupancy',
-#                        pore_occupancy='pore.occupancy',
-#                        mode=self.settings['mode'],
-#                        )
-#        max_inv = np.amax(phase['pore.invasion_sequence'])
-#        invs = np.linspace(0, max_inv, self.settings['points'])
-#        results = []
-#        for s in invs:
-#            phase['pore.occupancy'] = 1.0*(phase[self.settings['pore_inv_seq']] <= s)
-#            phase['throat.occupancy'] = 1.0*(phase[self.settings['throat_inv_seq']] <= s)
-#            phase.regenerate_models(deep=True)
-#            sf.run()
-#            results.append([[s, sf.rate(pores=self['pore.inlets'])]])
+        Results['K_rel_def']=K_rel_def
         return Results
