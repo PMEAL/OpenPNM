@@ -4,14 +4,13 @@ Created on Wed Jan  9 14:59:50 2019
 
 @author: work
 """
-
 #sample code for relperm
-import scipy as sp
+
 import openpnm as op
-import numpy as np
-import matplotlib.pyplot as plt
+
+
 from openpnm import topotools as tt
-pn = op.network.Cubic(shape=[10, 10, 10], spacing=0.00006)
+pn = op.network.Cubic(shape=[3, 3, 3], spacing=0.00006)
 proj = pn.project
 Psb = pn.pores(['top','bottom'])
 Tsb = pn.find_neighbor_throats(pores=Psb)
@@ -44,7 +43,5 @@ phys_water.add_model(propname='throat.hydraulic_conductance',
 phys_water.add_model(propname='throat.entry_pressure',
                               model=op.models.physics.capillary_pressure.washburn)
 relcalc=op.algorithms.RelativePermeability(network=pn)
-relcalc.setup(inv_phase=oil, def_phase=water,points=10,
-              pore_inv_seq=None,
-              throat_inv_seq=None)
-results=relcalc.run()
+relcalc.setup(inv_phase=oil, def_phase=water,points=10)
+results=relcalc.IP()
