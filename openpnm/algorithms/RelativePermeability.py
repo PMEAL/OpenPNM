@@ -132,16 +132,14 @@ class RelativePermeability(GenericAlgorithm):
         def_p['throat.occupancy'] = 1-results['throat.occupancy']
         # adding multiphase conductances
         mode=self.settings['mode']
-        self.project.phases(self.settings['def_phase']).add_model(
-                            model=models.physics.multiphase.conduit_conductance,
-                            propname='throat.conduit_hydraulic_conductance',
-                            throat_conductance='throat.hydraulic_conductance',
-                                                mode=mode)
-        self.project.phases(self.settings['inv_phase']).add_model(
-                            model=models.physics.multiphase.conduit_conductance,
-                            propname='throat.conduit_hydraulic_conductance',
-                            throat_conductance='throat.hydraulic_conductance',
-                                                mode=mode)
+        def_p.add_model(model=models.physics.multiphase.conduit_conductance,
+                        propname='throat.conduit_hydraulic_conductance',
+                        throat_conductance='throat.hydraulic_conductance',
+                        mode=mode)
+        inv_p.add_model(model=models.physics.multiphase.conduit_conductance,
+                        propname='throat.conduit_hydraulic_conductance',
+                        throat_conductance='throat.hydraulic_conductance',
+                        mode=mode)
 
     def top_b(self, lx, ly, lz):
         da = lx*ly
@@ -193,7 +191,8 @@ class RelativePermeability(GenericAlgorithm):
                                                        outlets=self['pore.outlets'])
             # proj.purge_object(obj=St_def)
             # Ko
-            St_inv = StokesFlow(network=network, phase=self.project.phases(self.settings['inv_phase']))
+            St_inv = StokesFlow(network=network,
+                                phase=self.project.phases(self.settings['inv_phase']))
             St_inv.setup(conductance=self.settings['gh'])
             St_inv._set_BC(pores=self['pore.inlets'], bctype='value', bcvalues=1)
             St_inv._set_BC(pores=self['pore.outlets'], bctype='value', bcvalues=0)
@@ -208,16 +207,18 @@ class RelativePermeability(GenericAlgorithm):
             cn=cn+1
             self.update_phase_and_phys(self.settings['inv_results'][cn])
             print('sat is equal to', Sp)
+            inv_p=self.project.phases(self.settings['inv_phase'])
+            def_p=self.project.phases(self.settings['def_phase'])
             for bound_increment in range(len(bounds)):
                 # water
                 St_def_tp= StokesFlow(network=network,
-                                      phase=self.project.phases(self.settings['def_phase']))
+                                      phase=def_p)
                 St_def_tp.setup(conductance='throat.conduit_hydraulic_conductance')
                 St_def_tp.set_value_BC(pores=self['pore.inlets'], values=1)
                 St_def_tp.set_value_BC(pores=self['pore.outlets'], values=0)
                 # oil
                 St_inv_tp = StokesFlow(network=network,
-                                       phase=self.project.phases(self.settings['inv_phase']))
+                                       phase=inv_p)
                 St_inv_tp.setup(conductance='throat.conduit_hydraulic_conductance')
                 St_inv_tp.set_value_BC(pores=self['pore.inlets'], values=1)
                 St_inv_tp.set_value_BC(pores=self['pore.outlets'], values=0)
@@ -237,7 +238,7 @@ class RelativePermeability(GenericAlgorithm):
         Results['k_inv']=K_inv
         Results['k_def']= K_def
         Results['K_rel_inv']= K_rel_inv
-        Results['K_rel_def']=K_rel_def     
+        Results['K_rel_def']=K_rel_def 
 #        sf = StokesFlow(network=network)
 #        sf.setup(phase=phase,
 #                 quantity='pore.pressure',
