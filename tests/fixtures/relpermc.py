@@ -44,4 +44,4 @@ phys_water.add_model(propname='throat.entry_pressure',
                               model=op.models.physics.capillary_pressure.washburn)
 relcalc=op.algorithms.RelativePermeability(network=pn)
 relcalc.setup(inv_phase=oil, def_phase=water,points=10)
-results=relcalc.IP()
+results=relcalc.run()
