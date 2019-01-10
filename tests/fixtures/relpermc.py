@@ -15,7 +15,7 @@ proj = pn.project
 Psb = pn.pores(['top', 'bottom'])
 Tsb = pn.find_neighbor_throats(pores=Psb)
 Ps=pn.pores(['top', 'bottom'], mode='not')
-Ts = pn.find_neighbor_throats(pores=pn.pores(['top','bottom'],
+Ts = pn.find_neighbor_throats(pores=pn.pores(['top', 'bottom'],
                                              mode='not'), mode='xnor')
 a = pn.check_network_health()
 tt.trim(network=pn, pores=a['trim_pores'])

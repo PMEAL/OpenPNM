@@ -30,32 +30,32 @@ class RelativePermeability(GenericAlgorithm):
         self.settings.update(default_settings)
         # Apply any settings received during initialization
         self.settings.update(settings)
-    
+
     def setup(self, inv_phase=None, def_phase=None, points=None,
               pore_inv_seq=None,
               throat_inv_seq=None):
         r"""
          Set up the required parameters for the algorithm
-         
+
         Parameters
         ----------
         inv_phase: OpenPNM Phase object
             The phase to be injected into the Network.  The Phase must have the
             capillary entry pressure values for the system.
-            
+
         def_phase: OpenPNM Phase object
             The phase which will be withdrawn from the Network during the
             injection of invading phase.
-            
+
         points : Scalar, integer
             Number of saturation points for which the relative permeabilities
             are calculated.
-            
+
         pore_inv_seq : boolean array
-            An array of the pores where invaded pores are assigned as True. If 
+            An array of the pores where invaded pores are assigned as True. If
             the data is not provided by user, the setup will call IP method
             in order to get the results by implementing Invasion Percolation.
-            
+
         throat_inv_seq: boolean array
             An array of the throats where invaded throats are assigned as True.
             If the data is not provided by user, the setup will call IP method
@@ -75,6 +75,7 @@ class RelativePermeability(GenericAlgorithm):
             self.settings['thorat_inv_seq'] = throat_inv_seq
         else:
             self.IP()
+
     def IP(self):
         network = self.project.network
         phase = self.project.phases(self.settings['inv_phase'])
@@ -109,7 +110,7 @@ class RelativePermeability(GenericAlgorithm):
         for Sp in self.settings['sat']:
             self.settings['inv_results'].append(inv.results(Sp))
         # return self.settings['inv_results']
-        
+
     def set_inlets(self, pores):
         r"""
         """
@@ -121,7 +122,7 @@ class RelativePermeability(GenericAlgorithm):
         """
         self['pore.outlets'] = False
         self['pore.outlets'][pores] = True
-        
+
     def update_phase_and_phys(self, results):
         inv_p=self.project.phases(self.settings['inv_phase'])
         def_p=self.project.phases(self.settings['def_phase'])
@@ -132,26 +133,26 @@ class RelativePermeability(GenericAlgorithm):
         # adding multiphase conductances
         mode=self.settings['mode']
         self.project.phases(self.settings['def_phase']).add_model(
-                model=models.physics.multiphase.conduit_conductance,
-                propname='throat.conduit_hydraulic_conductance',
-                throat_conductance='throat.hydraulic_conductance',
-                mode=mode)
+                            model=models.physics.multiphase.conduit_conductance,
+                            propname='throat.conduit_hydraulic_conductance',
+                            throat_conductance='throat.hydraulic_conductance',
+                                                mode=mode)
         self.project.phases(self.settings['inv_phase']).add_model(
-                model=models.physics.multiphase.conduit_conductance,
-                propname='throat.conduit_hydraulic_conductance',
-                throat_conductance='throat.hydraulic_conductance',
-                mode=mode)
-        
+                            model=models.physics.multiphase.conduit_conductance,
+                            propname='throat.conduit_hydraulic_conductance',
+                            throat_conductance='throat.hydraulic_conductance',
+                                                mode=mode)
+
     def top_b(self, lx, ly, lz):
         da = lx*ly
         dl = lz
         res_2=[da, dl]
         return res_2
-    
+
     def run(self, inlets=None, outlets=None):
         r"""
         """
-        Results = {'k_inv': [], 'k_def': [], 'K_rel_inv': [], 'K_rel_def': [],}
+        Results = {'k_inv': [], 'k_def': [], 'K_rel_inv': [], 'K_rel_def': []}
         # Retrieve phase and network
         K_rel_def = {'0': []}
         K_rel_inv= {'0': []}
@@ -178,7 +179,7 @@ class RelativePermeability(GenericAlgorithm):
         for bound_increment in range(len(bounds)):
             # Run Single phase algs effective properties
             # bound_increment=0
-            [da,dl]=options[bound_increment]
+            [da, dl]=options[bound_increment]
             # Kw
             St_def = StokesFlow(network=network,
                                 phase=self.project.phases(self.settings['def_phase']))
@@ -187,7 +188,8 @@ class RelativePermeability(GenericAlgorithm):
             St_def._set_BC(pores=self['pore.outlets'], bctype='value', bcvalues=0)
             St_def.run()
             K_def = St_def.calc_effective_permeability(domain_area=da,
-                                                       domain_length=dl,inlets=self['pore.inlets'],
+                                                       domain_length=dl,
+                                                       inlets=self['pore.inlets'],
                                                        outlets=self['pore.outlets'])
             # proj.purge_object(obj=St_def)
             # Ko
@@ -196,7 +198,9 @@ class RelativePermeability(GenericAlgorithm):
             St_inv._set_BC(pores=self['pore.inlets'], bctype='value', bcvalues=1)
             St_inv._set_BC(pores=self['pore.outlets'], bctype='value', bcvalues=0)
             St_inv.run()
-            K_inv = St_inv.calc_effective_permeability(domain_area=da, domain_length=dl,inlets=self['pore.inlets'], outlets=self['pore.outlets'])
+            K_inv = St_inv.calc_effective_permeability(domain_area=da, domain_length=dl,
+                                                       inlets=self['pore.inlets'],
+                                                       outlets=self['pore.outlets'])
             self.project.purge_object(obj=St_inv)
         # apply two phase effective perm calculation
         cn=-1
