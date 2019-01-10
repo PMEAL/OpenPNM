@@ -73,7 +73,7 @@ class RelativePermeability(GenericAlgorithm):
                 Snwparr.append(Snw)
         self.settings['pore_inv_seq'] = inv['pore.invasion_sequence']
         self.settings['thorat_inv_seq'] = inv['throat.invasion_sequence']
-#        plt.figure(1)
+        plt.figure(1)
 #        y=np.array(Pcarr[:])
 #        x=1.0-np.array(Snwparr[:])
 #        plt.xticks(np.arange(x.min(), x.max(), 0.05))
@@ -178,13 +178,13 @@ class RelativePermeability(GenericAlgorithm):
                  #water
                  St_def_tp = StokesFlow(network=network, phase=self.project.phases(self.settings['def_phase']))
                  St_def_tp.setup(conductance='throat.conduit_hydraulic_conductance')
-                 St_def_tp.set_value_BC(pores=self['pore.inlets'], bctype='value', bcvalues=1)
-                 St_def_tp.set_value_BC(pores=self['pore.outlets'], bctype='value', bcvalues=0)
+                 St_def_tp.set_value_BC(pores=self['pore.inlets'], values=1)
+                 St_def_tp.set_value_BC(pores=self['pore.outlets'], values=0)
                  #oil
                  St_inv_tp = StokesFlow(network=network, phase=self.project.phases(self.settings['inv_phase']))
                  St_inv_tp.setup(conductance='throat.conduit_hydraulic_conductance')
-                 St_inv_tp.set_value_BC(pores=self['pore.inlets'], bctype='value', bcvalues=1)
-                 St_inv_tp.set_value_BC(pores=self['pore.outlets'], bctype='value', bcvalues=0)
+                 St_inv_tp.set_value_BC(pores=self['pore.inlets'], values=1)
+                 St_inv_tp.set_value_BC(pores=self['pore.outlets'], values=0)
                  # Run Multiphase algs
                  St_def_tp.run()
                  St_inv_tp.run()
@@ -198,8 +198,8 @@ class RelativePermeability(GenericAlgorithm):
                  self.project.purge_object(obj=St_inv_tp)
         Results['k_inv']=K_inv
         Results['k_def']= K_def
-        Results['K_rel_inv']= krel_inv
-        Results['K_rel_def']=krel_def        
+        Results['K_rel_inv']= K_rel_inv
+        Results['K_rel_def']=K_rel_def        
 #        sf = StokesFlow(network=network)
 #        sf.setup(phase=phase,
 #                 quantity='pore.pressure',
