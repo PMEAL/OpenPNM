@@ -83,7 +83,6 @@ class RelativePermeability(GenericAlgorithm):
 #        plt.ylabel('Capillary Pressure')
 #        plt.grid(True)
         self.settings['sat']=np.array(Snwparr[:])
-       # data = {'pore.occupancy': '', 'throat.occupancy': ''}
         for Sp in self.settings['sat']:
            self.settings['inv_results'].append(inv.results(Sp))
         #return self.settings['inv_results']
