@@ -16,14 +16,11 @@ default_settings = {'pore_inv_seq': 'pore.invasion_sequence',
                     }
 class RelativePermeability(GenericAlgorithm):
     r"""
-    Parameters
-    ----------
-
-
-    Notes
-    -----
-
-
+    A subclass of Generic Algorithm to calculate relative permeabilities of
+    fluids in a drainage process. The main roles of this subclass are to
+    implement Invasion Percolation if no invasion sequence is given as an
+    argument and to implement a method for calculating the relative
+    permeabilities of the fluids.
     """
     def __init__(self, settings={}, **kwargs):
         # Apply default settings
@@ -32,11 +29,31 @@ class RelativePermeability(GenericAlgorithm):
         # Apply any settings received during initialization
         self.settings.update(settings)
         
-        
     def setup(self, inv_phase=None, def_phase=None,points=None,
               pore_inv_seq=None,
               throat_inv_seq=None):
         r"""
+         Set up the required parameters for the algorithm
+
+        Parameters
+        ----------
+        inv_phase: OpenPNM Phase object
+            The phase to be injected into the Network.  The Phase must have the
+            capillary entry pressure values for the system.
+
+        def_phase: OpenPNM Phase object
+            The phase which will be withdrawn from the Network during the
+            injection of invading phase.
+
+        points : Scalar, integer
+            Number of saturation points for which the relative permeabilities
+            are calculated.
+
+        pore_inv_seq : boolean array
+            An array of the pores where invaded pores are assigned as True.
+            
+        throat_inv_seq: boolean array
+            An array of the throats where invaded throats are assigned as True.
         """
         if inv_phase:
             self.settings['inv_phase'] = inv_phase.name
