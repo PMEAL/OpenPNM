@@ -11,8 +11,8 @@ default_settings = {'pore_inv_seq': 'pore.invasion_sequence',
                     'points': 20,
                     'gh': 'throat.hydraulic_conductance',
                     'mode': 'strict',
-                    'sat' : '',
-                    'inv_results': '',
+                    'sat' : [],
+                    'inv_results': [],
                     }
 class RelativePermeability(GenericAlgorithm):
     r"""
@@ -73,20 +73,20 @@ class RelativePermeability(GenericAlgorithm):
                 Snwparr.append(Snw)
         self.settings['pore_inv_seq'] = inv['pore.invasion_sequence']
         self.settings['thorat_inv_seq'] = inv['throat.invasion_sequence']
-        plt.figure(1)
-        y=np.array(Pcarr[:])
-        x=1.0-np.array(Snwparr[:])
-        plt.xticks(np.arange(x.min(), x.max(), 0.05))
-        plt.yticks(np.arange(y.min(), y.max(),0.1))
-        plt.plot(x, y)
-        plt.xlabel('Invading Phase Saturation')
-        plt.ylabel('Capillary Pressure')
-        plt.grid(True)
+#        plt.figure(1)
+#        y=np.array(Pcarr[:])
+#        x=1.0-np.array(Snwparr[:])
+#        plt.xticks(np.arange(x.min(), x.max(), 0.05))
+#        plt.yticks(np.arange(y.min(), y.max(),0.1))
+#        plt.plot(x, y)
+#        plt.xlabel('Invading Phase Saturation')
+#        plt.ylabel('Capillary Pressure')
+#        plt.grid(True)
         self.settings['sat']=np.array(Snwparr[:])
-        data = {'pore.occupancy': '', 'throat.occupancy': ''}
+       # data = {'pore.occupancy': '', 'throat.occupancy': ''}
         for Sp in self.settings['sat']:
-           inv.results(self,Sp)
-        self.settings['inv_results']=res
+           self.settings['inv_results'].append(inv.results(Sp))
+        #return self.settings['inv_results']
 
     def set_inlets(self, pores):
         r"""
@@ -168,9 +168,11 @@ class RelativePermeability(GenericAlgorithm):
             St_inv.run()
             K_inv = St_inv.calc_effective_permeability(domain_area=da, domain_length=dl,inlets=self['pore.inlets'], outlets=self['pore.outlets'])
             self.project.purge_object(obj=St_inv)
-        #apply two phase effective perm calculation        
+        #apply two phase effective perm calculation  
+        cn=-1
         for Sp in self.settings['sat']:
-            self.update_phase_and_phys()
+            cn=cn+1
+            self.update_phase_and_phys(self.settings['inv_results'][cn])
             print('sat is equal to', Sp)
             for bound_increment in range(len(bounds)):
                  #water
