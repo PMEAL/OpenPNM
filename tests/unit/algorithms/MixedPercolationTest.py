@@ -437,14 +437,14 @@ class MixedPercolationTest:
                       model=op.models.geometry.throat_vector.pore_to_pore)
         water = op.phases.Water(network=pn)
         water['pore.contact_angle'] = 60
-        phys = op.physics.Standard(network=pn, phase=water, geometry=geo)
+        phys = op.physics.GenericPhysics(network=pn, phase=water, geometry=geo)
         r_tor = 5e-6
         phys.add_model(propname='throat.entry_pressure',
-                       model=op.models.physics.meniscus.toroidal,
+                       model=op.models.physics.meniscus.purcell,
                        r_toroid=r_tor,
                        mode='max')
         phys.add_model(propname='throat.meniscus',
-                       model=op.models.physics.meniscus.toroidal,
+                       model=op.models.physics.meniscus.purcell,
                        mode='men',
                        r_toroid=r_tor,
                        target_Pc=5000)
@@ -473,14 +473,14 @@ class MixedPercolationTest:
                       model=op.models.geometry.throat_vector.pore_to_pore)
         water = op.phases.Water(network=pn)
         water['pore.contact_angle'] = 100
-        phys = op.physics.Standard(network=pn, phase=water, geometry=geo)
+        phys = op.physics.GenericPhysics(network=pn, phase=water, geometry=geo)
         r_tor = 5e-6
         pmod = op.models.physics.capillary_pressure.purcell_bidirectional
         phys.add_model(propname='throat.entry_pressure',
                        model=pmod,
                        r_toroid=r_tor)
         phys.add_model(propname='throat.max_pressure',
-                       model=op.models.physics.meniscus.toroidal,
+                       model=op.models.physics.meniscus.purcell,
                        r_toroid=r_tor,
                        mode='max')
         phys['pore.entry_pressure'] = 0.0

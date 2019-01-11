@@ -538,6 +538,10 @@ class DelaunayGeometry(GenericGeometry):
             verts = np.asarray(unique_list(np.around(verts, 6)))
             verts /= self.network.resolution
             self.inhull(verts, pore)
+        # Catch the voxels that escaped the hulls
+        max_h = ndimage.maximum_filter(self._hull_image, size=2)
+        mask = self._hull_image == -1
+        self._hull_image[mask] = max_h[mask]
         self._process_pore_voxels()
 
     def _process_pore_voxels(self):

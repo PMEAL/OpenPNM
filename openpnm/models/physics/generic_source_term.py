@@ -1,3 +1,16 @@
+r"""
+
+.. autofunction:: openpnm.models.physics.generic_source_term.standard_kinetics
+.. autofunction:: openpnm.models.physics.generic_source_term.linear
+.. autofunction:: openpnm.models.physics.generic_source_term.power_law
+.. autofunction:: openpnm.models.physics.generic_source_term.exponential
+.. autofunction:: openpnm.models.physics.generic_source_term.natural_exponential
+.. autofunction:: openpnm.models.physics.generic_source_term.logarithm
+.. autofunction:: openpnm.models.physics.generic_source_term.natural_logarithm
+.. autofunction:: openpnm.models.physics.generic_source_term.general_symbolic
+
+"""
+
 import scipy as _sp
 import sympy as _syp
 

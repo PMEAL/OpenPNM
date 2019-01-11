@@ -1,6 +1,8 @@
 import scipy as sp
 from openpnm.network import Cubic
 from openpnm import topotools
+from openpnm.utils import logging
+logger = logging.getLogger(__name__)
 
 
 class CubicTemplate(Cubic):
@@ -63,7 +65,10 @@ class CubicTemplate(Cubic):
     def __init__(self, template, spacing=[1, 1, 1], **kwargs):
 
         template = sp.atleast_3d(template)
-        super().__init__(shape=template.shape, **kwargs)
+        if 'shape' in kwargs:
+            del kwargs['shape']
+            logger.warning('shape argument ignored, inferred from template')
+        super().__init__(shape=template.shape, spacing=spacing, **kwargs)
 
         coords = sp.unravel_index(range(template.size), template.shape)
         self['pore.template_coords'] = sp.vstack(coords).T
@@ -71,3 +76,8 @@ class CubicTemplate(Cubic):
         self['pore.drop'] = template.flatten() == 0
         topotools.trim(network=self, pores=self.pores('drop'))
         del self['pore.drop']
+        # remove labels pertaining to surface pores, then redo post-trim
+        self.clear(mode='labels')
+        self['pore.internal'] = True
+        self['throat.internal'] = True
+        topotools.find_surface_pores(self)

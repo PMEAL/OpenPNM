@@ -91,9 +91,9 @@ class CapillaryPressureTest:
         f = op.models.physics.capillary_pressure.sinusoidal_bidirectional
         self.geo['pore.touch'] = (sp.random.random(self.geo.Np)+0.5)*0.1
         self.geo['throat.length'] = 1.0
-        self.geo['throat.amplitude'] = 0.25
         self.phys.add_model(propname='throat.bidirectional',
                             model=f,
+                            r_toroid=0.25,
                             surface_tension='pore.surface_tension',
                             contact_angle='pore.contact_angle',
                             pore_diameter='pore.touch')
