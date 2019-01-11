@@ -2,7 +2,7 @@ from openpnm.algorithms import GenericAlgorithm, StokesFlow, InvasionPercolation
 from openpnm.utils import logging
 from openpnm import models
 import numpy as np
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 logger = logging.getLogger(__name__)
 
 
@@ -65,16 +65,26 @@ class RelativePermeability(GenericAlgorithm):
             If the data is not provided by user, the setup will call IP method
             in order to get the results by implementing Invasion Percolation.
         """
+        network = self.project.network
         if inlets:
             self.settings['inlets']=self.set_inlets(inlets)
         else:
-            pores=[['top'], ['front'], ['left']]
+            pores=[]
+            inlets = [network.pores(['top']), network.pores(['front']),
+                      network.pores(['left'])]
+            for inlet_num in range(len(inlets)):
+                used_inlets = [inlets[x] for x in range(0, len(inlets), 2)]
+                pores.append[used_inlets]
             self.settings['inlets']=self.set_inlets(pores)
+            pores=[]
+            outlets = [network.pores(['bottom']), network.pores(['back']),
+                      network.pores(['right'])]
+            for outlet_num in range(len(outlets)):
+                used_outlets = [outlets[x] for x in range(0, len(outlets), 2)]
+                pores.append[used_outlets]
+            self.settings['outlets']=self.set_outlets(pores)
         if outlets:
             self.settings['outlets']=self.set_outlets(outlets)
-        else:
-            pores=[['bottom'], ['back'], ['right']]
-            self.settings['outlets']=self.set_outlets(pores)
         if inv_phase:
             self.settings['inv_phase'] = inv_phase.name
         if def_phase:
