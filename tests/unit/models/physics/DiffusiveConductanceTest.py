@@ -39,10 +39,10 @@ class DiffusiveConductanceTest:
         self.phys.add_model(propname='throat.ta_diffusive_conductance',
                             model=mod)
         self.phys.regenerate_models()
-        actual = sp.array(
-                [self.phys['throat.ta_diffusive_conductance'].mean(),
-                 self.phys['throat.ta_diffusive_conductance'].max(),
-                 self.phys['throat.ta_diffusive_conductance'].min()])
+        actual = sp.array([
+                self.phys['throat.ta_diffusive_conductance'].mean(),
+                self.phys['throat.ta_diffusive_conductance'].max(),
+                self.phys['throat.ta_diffusive_conductance'].min()])
         desired = sp.array([1.03744, 1.10782, 1.00017])
         actual = sp.around(actual, decimals=5)
         assert_allclose(actual, desired)
