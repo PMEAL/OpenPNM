@@ -88,12 +88,12 @@ class RelativePermeability(GenericAlgorithm):
                 inv_seq=self.IP()
                 self.settings['pore_inv_seq'].append[inv_seq[0]]
                 self.settings['thorat_inv_seq'].append[inv_seq[1]]
-# the following lines are ignored assumming that once we have
-# the pore_inv_seq we also have throat_inv_seq as long as
-# both of them are produced as a result of running IP.
+                # the following lines are ignored assumming that once we have
+                # the pore_inv_seq we also have throat_inv_seq as long as
+                # both of them are produced as a result of running IP.
         if throat_inv_seq:
             self.settings['thorat_inv_seq'] = throat_inv_seq
-#        else:
+#       else:
 #            self.IP()
 
     def IP(self):
@@ -115,7 +115,7 @@ class RelativePermeability(GenericAlgorithm):
                 max_pthroat=np.max(phase['throat.entry_pressure'][occ_ts])
                 Pcarr.append(max_pthroat)
                 Snwparr.append(Snw)
-        plt.figure(1)
+#        plt.figure(1)
 #        y=np.array(Pcarr[:])
 #        x=1.0-np.array(Snwparr[:])
 #        plt.xticks(np.arange(x.min(), x.max(), 0.05))
