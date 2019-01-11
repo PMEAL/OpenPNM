@@ -81,13 +81,13 @@ def taylor_aris_diffusion(
     r"""
     """
     return generic_conductance(
-            target=target,
-            transport_type='taylor_aris_diffusion',
-            pore_area=pore_area,
-            throat_area=throat_area,
-            pore_diffusivity=pore_diffusivity,
-            throat_diffusivity=throat_diffusivity,
-            conduit_lengths=conduit_lengths,
-            conduit_shape_factors=conduit_shape_factors,
-            pore_pressure=pore_pressure,
-            throat_hydraulic_conductance=throat_hydraulic_conductance)
+        target=target,
+        transport_type='taylor_aris_diffusion',
+        pore_area=pore_area,
+        throat_area=throat_area,
+        pore_diffusivity=pore_diffusivity,
+        throat_diffusivity=throat_diffusivity,
+        conduit_lengths=conduit_lengths,
+        conduit_shape_factors=conduit_shape_factors,
+        pore_pressure=pore_pressure,
+        throat_hydraulic_conductance=throat_hydraulic_conductance)
