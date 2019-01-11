@@ -85,13 +85,14 @@ class RelativePermeability(GenericAlgorithm):
             self.settings['pore_inv_seq'] = pore_inv_seq
         else:
             for inlet_num in range(len(pores)):
-                self.IP()
-                self.settings['pore_inv_seq']
+                inv_seq=self.IP()
+                self.settings['pore_inv_seq'].append[inv_seq[0]]
+                self.settings['thorat_inv_seq'].append[inv_seq[1]]
 # the following lines are ignored assumming that once we have
 # the pore_inv_seq we also have throat_inv_seq as long as
 # both of them are produced as a result of running IP.
-#        if throat_inv_seq:
-#            self.settings['thorat_inv_seq'] = throat_inv_seq
+        if throat_inv_seq:
+            self.settings['thorat_inv_seq'] = throat_inv_seq
 #        else:
 #            self.IP()
 
@@ -114,8 +115,6 @@ class RelativePermeability(GenericAlgorithm):
                 max_pthroat=np.max(phase['throat.entry_pressure'][occ_ts])
                 Pcarr.append(max_pthroat)
                 Snwparr.append(Snw)
-        self.settings['pore_inv_seq'] = inv['pore.invasion_sequence']
-        self.settings['thorat_inv_seq'] = inv['throat.invasion_sequence']
         plt.figure(1)
 #        y=np.array(Pcarr[:])
 #        x=1.0-np.array(Snwparr[:])
@@ -128,7 +127,8 @@ class RelativePermeability(GenericAlgorithm):
         self.settings['sat']=np.array(Snwparr[:])
         for Sp in self.settings['sat']:
             self.settings['inv_results'].append(inv.results(Sp))
-        # return self.settings['inv_results']
+        inv_seq=[inv['pore.invasion_sequence'], inv['throat.invasion_sequence']]
+        return inv_seq
 
     def set_inlets(self, pores):
         r"""
