@@ -4,7 +4,7 @@ import scipy as _sp
 
 def generic_conductance(target, transport_type, pore_diffusivity,
                         throat_diffusivity, pore_area, throat_area,
-                        conduit_lengths, conduit_shape_factors):
+                        conduit_lengths, conduit_shape_factors, **kwargs):
     r"""
     Calculate the generic conductance (could be mass, thermal, electrical,
     or hydraylic) of conduits in the network, where a conduit is
@@ -99,8 +99,30 @@ def generic_conductance(target, transport_type, pore_diffusivity,
         g1[m1] = (D1*A1)[m1] / L1[m1]
         g2[m2] = (D2*A2)[m2] / L2[m2]
         gt[mt] = (Dt*At)[mt] / Lt[mt]
+    elif transport_type == 'taylor_aris_diffusion':
+        for k, v in kwargs.items():
+            if k == 'pore_pressure':
+                pore_pressure = v
+            elif k == 'throat_hydraulic_conductance':
+                throat_hydraulic_conductance = v
+        P = phase[pore_pressure]
+        gh = phase[throat_hydraulic_conductance]
+        Qt = -gh*_sp.diff(P[cn], axis=1).squeeze()
+
+        u1 = Qt[m1]/A1[m1]
+        u2 = Qt[m2]/A2[m2]
+        ut = Qt[mt]/At[mt]
+
+        Pe1 = u1 * ((4*A1[m1]/_sp.pi)**0.5) / D1[m1]
+        Pe2 = u2 * ((4*A2[m2]/_sp.pi)**0.5) / D2[m2]
+        Pet = ut * ((4*At[mt]/_sp.pi)**0.5) / Dt[mt]
+
+        g1[m1] = D1[m1]*(1+(Pe1**2)/192)*A1[m1] / L1[m1]
+        g2[m2] = D2[m2]*(1+(Pe2**2)/192)*A2[m2] / L2[m2]
+        gt[mt] = Dt[mt]*(1+(Pet**2)/192)*At[mt] / Lt[mt]
     else:
         raise Exception('Unknown keyword for "transport_type", can only be' +
-                        ' "flow" or "diffusion"')
+                        ' "flow", "diffusion", "taylor_aris_diffusion"' +
+                        ' or "ionic"')
     # Apply shape factors and calculate the final conductance
     return (1/gt/SFt + 1/g1/SF1 + 1/g2/SF2)**(-1)
