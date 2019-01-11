@@ -42,11 +42,11 @@ class PoissonNernstPlanck(ReactiveTransport):
         if self.settings['pressure_field'] is not None:
             self.settings['pressure_field'].setup(quantity='pore.pressure')
             self.settings['pressure_field'].setup(
-                    conductance='throat.hydraulic_conductance.solvent')
+                conductance='throat.hydraulic_conductance.solvent')
         if self.settings['potential_field'] is not None:
             self.settings['potential_field'].setup(quantity='pore.potential')
             self.settings['potential_field'].setup(
-                    conductance='throat.electrical_conductance.solvent')
+                conductance='throat.electrical_conductance.solvent')
         if self.settings['electrolytes'] is not None:
             for e in self.settings['electrolytes']:
                 e.setup(quantity='pore.concentration.'+e.name)
