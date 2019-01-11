@@ -13,6 +13,8 @@ default_settings = {'pore_inv_seq': 'pore.invasion_sequence',
                     'mode': 'strict',
                     'sat': [],
                     'inv_results': [],
+                    'inlets': [],
+                    'outlets': [],
                     }
 
 
@@ -33,7 +35,9 @@ class RelativePermeability(GenericAlgorithm):
 
     def setup(self, inv_phase=None, def_phase=None, points=None,
               pore_inv_seq=None,
-              throat_inv_seq=None):
+              throat_inv_seq=None,
+              inlets=None,
+              outlets=None):
         r"""
          Set up the required parameters for the algorithm
 
@@ -61,13 +65,23 @@ class RelativePermeability(GenericAlgorithm):
             If the data is not provided by user, the setup will call IP method
             in order to get the results by implementing Invasion Percolation.
         """
+        if inlets:
+            self.settings['inlets']=self.set_inlets(inlets)
+        else:
+            pores=[['top'], ['front'], ['left']]
+            self.settings['inlets']=self.set_inlets(pores)
+        if outlets:
+            self.settings['outlets']=self.set_outlets(outlets)
+        else:
+            pores=[['bottom'], ['back'], ['right']]
+            self.settings['outlets']=self.set_outlets(pores)
         if inv_phase:
             self.settings['inv_phase'] = inv_phase.name
         if def_phase:
             self.settings['def_phase'] = def_phase.name
         if points:
             self.settings['points'] = points
-        if pore_inv_seq:
+
             self.settings['pore_inv_seq'] = pore_inv_seq
         else:
             self.IP()
@@ -114,14 +128,18 @@ class RelativePermeability(GenericAlgorithm):
     def set_inlets(self, pores):
         r"""
         """
-        self['pore.inlets'] = False
-        self['pore.inlets'][pores] = True
+        for inlet_num in range(len(pores)):
+            self['pore.inlets'] = False
+            self['pore.inlets'][pores[inlet_num]] = True
+            self.settings['inlets'][inlet_num]=self['pore.inlets']
 
     def set_outlets(self, pores):
         r"""
         """
-        self['pore.outlets'] = False
-        self['pore.outlets'][pores] = True
+        for outlet_num in range(len(pores)):
+            self['pore.outlets'] = False
+            self['pore.outlets'][pores[outlet_num]] = True
+            self.settimgs['outlets'][outlet_num]=self['pore.outlets']
 
     def update_phase_and_phys(self, results):
         inv_p=self.project.phases(self.settings['inv_phase'])
