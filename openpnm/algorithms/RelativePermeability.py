@@ -6,8 +6,8 @@ import matplotlib.pyplot as plt
 logger = logging.getLogger(__name__)
 
 
-default_settings = {'pore_inv_seq': 'pore.invasion_sequence',
-                    'throat_inv_seq': 'throat.invasion_sequence',
+default_settings = {'pore_inv_seq': [],
+                    'throat_inv_seq': [],
                     'points': 20,
                     'gh': 'throat.hydraulic_conductance',
                     'mode': 'strict',
@@ -81,14 +81,19 @@ class RelativePermeability(GenericAlgorithm):
             self.settings['def_phase'] = def_phase.name
         if points:
             self.settings['points'] = points
-
+        if pore_inv_seq:
             self.settings['pore_inv_seq'] = pore_inv_seq
         else:
-            self.IP()
-        if throat_inv_seq:
-            self.settings['thorat_inv_seq'] = throat_inv_seq
-        else:
-            self.IP()
+            for inlet_num in range(len(pores)):
+                self.IP()
+                self.settings['pore_inv_seq']
+# the following lines are ignored assumming that once we have
+# the pore_inv_seq we also have throat_inv_seq as long as
+# both of them are produced as a result of running IP.
+#        if throat_inv_seq:
+#            self.settings['thorat_inv_seq'] = throat_inv_seq
+#        else:
+#            self.IP()
 
     def IP(self):
         network = self.project.network
