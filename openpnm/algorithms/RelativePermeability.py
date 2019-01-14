@@ -55,15 +55,21 @@ class RelativePermeability(GenericAlgorithm):
             Number of saturation points for which the relative permeabilities
             are calculated.
 
-        pore_inv_seq : boolean array
-            An array of the pores where invaded pores are assigned as True. If
+        pore_inv_seq : list of boolean array
+            Arrays of the pores where invaded pores are assigned as True. If
             the data is not provided by user, the setup will call IP method
             in order to get the results by implementing Invasion Percolation.
 
-        throat_inv_seq: boolean array
-            An array of the throats where invaded throats are assigned as True.
+        throat_inv_seq: list of boolean array
+            Arrays of the throats where invaded throats are assigned as True.
             If the data is not provided by user, the setup will call IP method
             in order to get the results by implementing Invasion Percolation.
+        inlets: list of inlets (list of pores)
+            A list of lists, in which each element is a list of pores as an
+            inlet defined for each simulation.
+        outlets: list of inlets (list of pores)
+            A list of list,l in which each element is a list of pores as an
+            outlet defined for each simulation.
         """
         network = self.project.network
         if inlets:
@@ -95,7 +101,9 @@ class RelativePermeability(GenericAlgorithm):
             self.settings['pore_inv_seq'] = pore_inv_seq
         else:
             for inlet_num in range(len(pores)):
-                inv_seq=self.IP()
+                inv_seq=self.IP(inlets=self.settings['inlets'][inlet_num],
+                                outlets=self.settings['outlets'][inlet_num];
+                                sim_num=inlet_num)
                 self.settings['pore_inv_seq'].append[inv_seq[0]]
                 self.settings['thorat_inv_seq'].append[inv_seq[1]]
                 # the following lines are ignored assumming that once we have
@@ -106,14 +114,12 @@ class RelativePermeability(GenericAlgorithm):
 #       else:
 #            self.IP()
 
-    def IP(self):
+    def IP(self, inlets=None, outlets=None, sim_num=1):
         network = self.project.network
         phase = self.project.phases(self.settings['inv_phase'])
         inv=InvasionPercolation(phase=phase, network=network, project=self.project)
         inv.setup(phase=phase, pore_volume='pore.volume', throat_volume='throat.volume')
-        inlets = network.pores(['top'])
-        used_inlets = [inlets[x] for x in range(0, len(inlets), 2)]
-        inv.set_inlets(pores=used_inlets)
+        inv.set_inlets(pores=inlets)
         inv.run()
         Snwparr =  []
         Pcarr =  []
@@ -136,7 +142,7 @@ class RelativePermeability(GenericAlgorithm):
 #        plt.grid(True)
         self.settings['sat']=np.array(Snwparr[:])
         for Sp in self.settings['sat']:
-            self.settings['inv_results'].append(inv.results(Sp))
+            self.settings['inv_results'][sim_num].append(inv.results(Sp))
         inv_seq=[inv['pore.invasion_sequence'], inv['throat.invasion_sequence']]
         return inv_seq
 
