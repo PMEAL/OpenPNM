@@ -181,7 +181,7 @@ class RelativePermeability(GenericAlgorithm):
         for outlet_num in range(len(pores)):
             self['pore.outlets'] = False
             self['pore.outlets'][pores[outlet_num]] = True
-            self.settimgs['outlets'].append(self['pore.outlets'])
+            self.settings['outlets'].append(self['pore.outlets'])
 
     def update_phase_and_phys(self, results):
         inv_p=self.project.phases(self.settings['inv_phase'])
