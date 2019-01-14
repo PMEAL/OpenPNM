@@ -186,7 +186,7 @@ class RelativePermeability(GenericAlgorithm):
     def update_phase_and_phys(self, results):
         inv_p=self.project.phases(self.settings['inv_phase'])
         def_p=self.project.phases(self.settings['def_phase'])
-        inv_p['pore.occupancy'] = results['pore.occupancy'] #################################### check
+        inv_p['pore.occupancy'] = results['pore.occupancy']
         def_p['pore.occupancy'] = 1-results['pore.occupancy']
         inv_p['throat.occupancy'] = results['throat.occupancy']
         def_p['throat.occupancy'] = 1-results['throat.occupancy']
