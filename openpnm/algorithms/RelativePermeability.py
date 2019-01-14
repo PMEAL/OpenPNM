@@ -82,14 +82,14 @@ class RelativePermeability(GenericAlgorithm):
             inlets = [network.pores(['top']), network.pores(['front']),
                       network.pores(['left'])]
             for inlet_num in range(len(inlets)):
-                used_inlets = [inlets[x] for x in range(0, len(inlets[inlet_num]), 2)]
+                used_inlets = [inlets[inlet_num][x] for x in range(0, len(inlets[inlet_num]), 2)]
                 pores.append[used_inlets]
             self.settings['inlets']=self.set_inlets(pores)
             pores=[]
             outlets = [network.pores(['bottom']), network.pores(['back']),
                       network.pores(['right'])]
             for outlet_num in range(len(outlets)):
-                used_outlets = [outlets[x] for x in range(0, len(outlets[outlet_num]), 2)]
+                used_outlets = [outlets[inlet_num][x] for x in range(0, len(outlets[outlet_num]), 2)]
                 pores.append[used_outlets]
             self.settings['outlets']=self.set_outlets(pores)
         if outlets:
