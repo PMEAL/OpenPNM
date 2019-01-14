@@ -268,41 +268,51 @@ class RelativePermeability(GenericAlgorithm):
             if self.settings['user_inlets']==False:
                 K_inv = St_inv.calc_effective_permeability(domain_area=da[bound_num],
                                                            domain_length=dl[bound_num],
-                                                           inlets=inlets[bound_num],
-                                                           outlets=outlets[bound_num])
+                                                      inlets=inlets[bound_num],
+                                                           outlets=outlets[bound_num])     
             else:
                 K_inv = St_inv.calc_effective_permeability(inlets=inlets[bound_num],
                                                            outlets=outlets[bound_num])
             Results['k_inv'].append(K_inv)
             self.project.purge_object(obj=St_inv)
         # apply two phase effective perm calculation
+        for bound_num in range(len(self.settings['inlets'])):
         cn=-1
         for Sp in self.settings['sat']:
             cn=cn+1
-            self.update_phase_and_phys(self.settings['inv_results'][cn])
-            print('sat is equal to', Sp)
+            self.update_phase_and_phys(self.settings['inv_results'][bound_num][cn])
+            # print('sat is equal to', Sp)
             inv_p=self.project.phases(self.settings['inv_phase'])
             def_p=self.project.phases(self.settings['def_phase'])
-            for bound_increment in range(len(bounds)):
                 # water
                 St_def_tp= StokesFlow(network=network,
                                       phase=def_p)
                 St_def_tp.setup(conductance='throat.conduit_hydraulic_conductance')
-                St_def_tp.set_value_BC(pores=self['pore.inlets'], values=1)
-                St_def_tp.set_value_BC(pores=self['pore.outlets'], values=0)
+                St_def_tp.set_value_BC(pores=inlets[bound_num], values=1)
+                St_def_tp.set_value_BC(pores=outlets[bound_num], values=0)
                 # oil
                 St_inv_tp = StokesFlow(network=network,
                                        phase=inv_p)
                 St_inv_tp.setup(conductance='throat.conduit_hydraulic_conductance')
-                St_inv_tp.set_value_BC(pores=self['pore.inlets'], values=1)
-                St_inv_tp.set_value_BC(pores=self['pore.outlets'], values=0)
+                St_inv_tp.set_value_BC(pores=inlets[bound_num], values=1)
+                St_inv_tp.set_value_BC(pores=outlets[bound_num], values=0)
                 # Run Multiphase algs
                 St_def_tp.run()
                 St_inv_tp.run()
-                K_def_tp = St_def_tp.calc_effective_permeability(domain_area=da,
-                                                                 domain_length=dl)
-                K_inv_tp = St_inv_tp.calc_effective_permeability(domain_area=da,
-                                                                 domain_length=dl)
+                if self.settings['user_inlets']==False:
+                K_def_tp = St_def_tp.calc_effective_permeability(domain_area=da[bound_num],
+                                                                 domain_length=dl[bound_num],
+                                                                 inlets=inlets[bound_num],
+                                                                 outlets=outlets[bound_num])
+                K_inv_tp = St_inv_tp.calc_effective_permeability(domain_area=da[bound_num],
+                                                                 domain_length=dl[bound_num],
+                                                                 inlets=inlets[bound_num],
+                                                                 outlets=outlets[bound_num])
+                else:
+                    K_def_tp = St_def_tp.calc_effective_permeability(inlets=inlets[bound_num],
+                                                                 outlets=outlets[bound_num])
+                    K_inv_tp = St_inv_tp.calc_effective_permeability(inlets=inlets[bound_num],
+                                                                 outlets=outlets[bound_num])
                 krel_def =K_def_tp/K_def
                 krel_inv= K_inv_tp /K_inv
                 K_rel_def[str(bound_increment)].append(krel_def)
