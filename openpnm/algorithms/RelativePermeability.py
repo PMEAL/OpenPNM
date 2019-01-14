@@ -89,6 +89,14 @@ class RelativePermeability(GenericAlgorithm):
                 used_outlets = [outlets[x] for x in range(0, len(outlets[outlet_num]), 2)]
                 pores.append[used_outlets]
             self.settings['outlets']=self.set_outlets(pores)
+            # first calc single phase absolute permeability (assumming in 1 direction only)
+            [amax, bmax, cmax] = np.max(network['pore.coords'], axis=0)
+            [amin, bmin, cmin] = np.min(network['pore.coords'], axis=0)
+            lx = amax-amin
+            ly = bmax-bmin
+            lz = cmax-cmin
+            options = {0 : self.top_b(lx,ly,lz), 1 : self.left_r(lx,ly,lz), 2 : self.front_b(lx,ly,lz)}
+            [da, dl]=options[bound_num]
         if outlets:
             self.settings['outlets']=self.set_outlets(outlets)
         if inv_phase:
@@ -213,20 +221,11 @@ class RelativePermeability(GenericAlgorithm):
             K_rel_def[i]=[]
             K_rel_inv[i]=[]
         network = self.project.network
-        # first calc single phase absolute permeability (assumming in 1 direction only)
-        [amax, bmax, cmax] = np.max(network['pore.coords'], axis=0)
-        [amin, bmin, cmin] = np.min(network['pore.coords'], axis=0)
-        lx = amax-amin
-        ly = bmax-bmin
-        lz = cmax-cmin
-        options = {0 : self.top_b(lx,ly,lz), 1 : self.left_r(lx,ly,lz), 2 : self.front_b(lx,ly,lz)}
         # K_def=1
         # K_inv=[]
         # # apply single phase flow
         for bound_num in range(len(self.settings['inlets'])):
             # Run Single phase algs effective properties
-            # bound_increment=0
-            [da, dl]=options[bound_num]
             # Kw
             St_def = StokesFlow(network=network,
                                 phase=self.project.phases(self.settings['def_phase']))
