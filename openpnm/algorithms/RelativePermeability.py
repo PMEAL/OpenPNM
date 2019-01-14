@@ -236,30 +236,44 @@ class RelativePermeability(GenericAlgorithm):
         # K_def=1
         # K_inv=[]
         # # apply single phase flow
+        inlets=self.settings['inlets']
+        outlets=self.settings['outlets']
         for bound_num in range(len(self.settings['inlets'])):
             # Run Single phase algs effective properties
             # Kw
             St_def = StokesFlow(network=network,
                                 phase=self.project.phases(self.settings['def_phase']))
             St_def.setup(conductance=self.settings['gh'])
-            St_def._set_BC(pores=self['pore.inlets'], bctype='value', bcvalues=1)
-            St_def._set_BC(pores=self['pore.outlets'], bctype='value', bcvalues=0)
+            St_def._set_BC(pores=inlets[bound_num], bctype='value', bcvalues=1)
+            St_def._set_BC(pores=outlets[bound_num], bctype='value', bcvalues=0)
             St_def.run()
-            K_def = St_def.calc_effective_permeability(domain_area=da,
-                                                       domain_length=dl,
-                                                       inlets=self['pore.inlets'],
-                                                       outlets=self['pore.outlets'])
+            if self.settings['user_inlets']==False:
+                [da,dl]=self.domain_l_a()
+                K_def = St_def.calc_effective_permeability(domain_area=da[bound_num],
+                                                           domain_length=dl[bound_num],
+                                                           inlets=inlets[bound_num],
+                                                           outlets=outlets[bound_num])
+            else:
+                K_def = St_def.calc_effective_permeability(inlets=inlets[bound_num],
+                                                           outlets=outlets[bound_num])
             # proj.purge_object(obj=St_def)
             # Ko
+            Results['k_def'].append(K_def)
             St_inv = StokesFlow(network=network,
                                 phase=self.project.phases(self.settings['inv_phase']))
             St_inv.setup(conductance=self.settings['gh'])
-            St_inv._set_BC(pores=self['pore.inlets'], bctype='value', bcvalues=1)
-            St_inv._set_BC(pores=self['pore.outlets'], bctype='value', bcvalues=0)
+            St_inv._set_BC(pores=inlets[bound_num], bctype='value', bcvalues=1)
+            St_inv._set_BC(pores=outlets[bound_num], bctype='value', bcvalues=0)
             St_inv.run()
-            K_inv = St_inv.calc_effective_permeability(domain_area=da, domain_length=dl,
-                                                       inlets=self['pore.inlets'],
-                                                       outlets=self['pore.outlets'])
+            if self.settings['user_inlets']==False:
+                K_inv = St_inv.calc_effective_permeability(domain_area=da[bound_num],
+                                                           domain_length=dl[bound_num],
+                                                           inlets=inlets[bound_num],
+                                                           outlets=outlets[bound_num])
+            else:
+                K_inv = St_inv.calc_effective_permeability(inlets=inlets[bound_num],
+                                                           outlets=outlets[bound_num])
+            Results['k_inv'].append(K_inv)
             self.project.purge_object(obj=St_inv)
         # apply two phase effective perm calculation
         cn=-1
