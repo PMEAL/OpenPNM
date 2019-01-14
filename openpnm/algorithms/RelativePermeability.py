@@ -224,7 +224,6 @@ class RelativePermeability(GenericAlgorithm):
     def run(self):
         r"""
         """
-        bounds=[]
         Results = {'k_inv': [], 'k_def': [], 'K_rel_inv': [], 'K_rel_def': []}
         # Retrieve phase and network
         K_rel_def=[]
@@ -277,13 +276,13 @@ class RelativePermeability(GenericAlgorithm):
             self.project.purge_object(obj=St_inv)
         # apply two phase effective perm calculation
         for bound_num in range(len(self.settings['inlets'])):
-        cn=-1
-        for Sp in self.settings['sat']:
-            cn=cn+1
-            self.update_phase_and_phys(self.settings['inv_results'][bound_num][cn])
-            # print('sat is equal to', Sp)
-            inv_p=self.project.phases(self.settings['inv_phase'])
-            def_p=self.project.phases(self.settings['def_phase'])
+            cn=-1
+            for Sp in self.settings['sat']:
+                cn=cn+1
+                self.update_phase_and_phys(self.settings['inv_results'][bound_num][cn])
+                # print('sat is equal to', Sp)
+                inv_p=self.project.phases(self.settings['inv_phase'])
+                def_p=self.project.phases(self.settings['def_phase'])
                 # water
                 St_def_tp= StokesFlow(network=network,
                                       phase=def_p)
@@ -300,11 +299,11 @@ class RelativePermeability(GenericAlgorithm):
                 St_def_tp.run()
                 St_inv_tp.run()
                 if self.settings['user_inlets']==False:
-                K_def_tp = St_def_tp.calc_effective_permeability(domain_area=da[bound_num],
+                    K_def_tp = St_def_tp.calc_effective_permeability(domain_area=da[bound_num],
                                                                  domain_length=dl[bound_num],
                                                                  inlets=inlets[bound_num],
                                                                  outlets=outlets[bound_num])
-                K_inv_tp = St_inv_tp.calc_effective_permeability(domain_area=da[bound_num],
+                    K_inv_tp = St_inv_tp.calc_effective_permeability(domain_area=da[bound_num],
                                                                  domain_length=dl[bound_num],
                                                                  inlets=inlets[bound_num],
                                                                  outlets=outlets[bound_num])
@@ -313,14 +312,12 @@ class RelativePermeability(GenericAlgorithm):
                                                                  outlets=outlets[bound_num])
                     K_inv_tp = St_inv_tp.calc_effective_permeability(inlets=inlets[bound_num],
                                                                  outlets=outlets[bound_num])
-                krel_def =K_def_tp/K_def
-                krel_inv= K_inv_tp /K_inv
-                K_rel_def[str(bound_increment)].append(krel_def)
-                K_rel_inv[str(bound_increment)].append(krel_inv)
+                krel_def =K_def_tp/Results['k_def'][bound_num]
+                krel_inv= K_inv_tp /Results['k_inv'][bound_num]
+                K_rel_def[bound_num].append(krel_def)
+                K_rel_inv[bound_num].append(krel_inv)
                 self.project.purge_object(obj=St_def_tp)
                 self.project.purge_object(obj=St_inv_tp)
-        Results['k_inv']=K_inv
-        Results['k_def']= K_def
-        Results['K_rel_inv']= K_rel_inv
-        Results['K_rel_def']=K_rel_def
+            Results['K_rel_inv']=K_rel_inv
+            Results['K_rel_def']=K_rel_def
         return Results
