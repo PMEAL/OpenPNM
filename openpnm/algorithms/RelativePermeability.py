@@ -173,7 +173,7 @@ class RelativePermeability(GenericAlgorithm):
         for inlet_num in range(len(pores)):
             self['pore.inlets'] = False
             self['pore.inlets'][pores[inlet_num]] = True
-            self.settings['inlets'].appen(self['pore.inlets'])
+            self.settings['inlets'].append(self['pore.inlets'])
 
     def set_outlets(self, pores):
         r"""
