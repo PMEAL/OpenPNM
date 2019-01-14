@@ -92,7 +92,6 @@ class RelativePermeability(GenericAlgorithm):
                 used_outlets = [outlets[x] for x in range(0, len(outlets[outlet_num]), 2)]
                 pores.append[used_outlets]
             self.settings['outlets']=self.set_outlets(pores)
-            #######################calc domain l and a
         if outlets:
             self.settings['outlets']=self.set_outlets(outlets)
         if inv_phase:
@@ -126,17 +125,7 @@ class RelativePermeability(GenericAlgorithm):
         inv.set_inlets(pores=inlets)
         inv.run()
         Snwparr =  []
-        Pcarr =  []
-        Sarr=np.linspace(0, 1, num=self.settings['points'])
-        for Snw in Sarr:
-            res1=inv.results(Snwp=Snw)
-            occ_ts=res1['throat.occupancy']
-            if np.any(occ_ts):
-                max_pthroat=np.max(phase['throat.entry_pressure'][occ_ts])
-                Pcarr.append(max_pthroat)
-                Snwparr.append(Snw)
-#        plt.figure(1)
-#        y=np.array(Pcarr[:])
+        Pcar=np.array(Pcarr[:])
 #        x=1.0-np.array(Snwparr[:])
 #        plt.xticks(np.arange(x.min(), x.max(), 0.05))
 #        plt.yticks(np.arange(y.min(), y.max(),0.1))
@@ -151,7 +140,7 @@ class RelativePermeability(GenericAlgorithm):
         # assumming the last array is corresponding to the Capillary pressure
         # we did not include saturations in the results
         # saturations can be taken from self.settings['sat']
-        self.settings['inv_results'][sim_num].append(Pcarr)
+        self.settings['inv_results'][sim_num].append(Pcar)
         return inv_seq
     
     def domain_l_a(self):
@@ -280,6 +269,8 @@ class RelativePermeability(GenericAlgorithm):
             for Sp in self.settings['sat']:
                 cn=cn+1
                 self.update_phase_and_phys(self.settings['inv_results'][bound_num][cn])
+                # note that for each inlet the last element of invresults is a
+                # list of Pcapillary in case they might be needed for plotting,...
                 # print('sat is equal to', Sp)
                 inv_p=self.project.phases(self.settings['inv_phase'])
                 def_p=self.project.phases(self.settings['def_phase'])
