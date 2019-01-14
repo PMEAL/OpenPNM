@@ -15,6 +15,7 @@ default_settings = {'pore_inv_seq': [],
                     'inv_results': [],
                     'inlets': [],
                     'outlets': [],
+                    'user_inlets': [],
                     }
 
 
@@ -73,8 +74,10 @@ class RelativePermeability(GenericAlgorithm):
         """
         network = self.project.network
         if inlets:
+            self.settings['user_inlets']=True
             self.settings['inlets']=self.set_inlets(inlets)
         else:
+            self.settings['user_inlets']=False
             pores=[]
             inlets = [network.pores(['top']), network.pores(['front']),
                       network.pores(['left'])]
@@ -89,14 +92,7 @@ class RelativePermeability(GenericAlgorithm):
                 used_outlets = [outlets[x] for x in range(0, len(outlets[outlet_num]), 2)]
                 pores.append[used_outlets]
             self.settings['outlets']=self.set_outlets(pores)
-            # first calc single phase absolute permeability (assumming in 1 direction only)
-            [amax, bmax, cmax] = np.max(network['pore.coords'], axis=0)
-            [amin, bmin, cmin] = np.min(network['pore.coords'], axis=0)
-            lx = amax-amin
-            ly = bmax-bmin
-            lz = cmax-cmin
-            options = {0 : self.top_b(lx,ly,lz), 1 : self.left_r(lx,ly,lz), 2 : self.front_b(lx,ly,lz)}
-            [da, dl]=options[bound_num]
+            #######################calc domain l and a
         if outlets:
             self.settings['outlets']=self.set_outlets(outlets)
         if inv_phase:
@@ -157,6 +153,22 @@ class RelativePermeability(GenericAlgorithm):
         # saturations can be taken from self.settings['sat']
         self.settings['inv_results'][sim_num].append(Pcarr)
         return inv_seq
+    
+    def domain_l_a(self):
+        # for now we end up with defining default domain length and area
+        if self.settings['user_inlets'] =='False':
+            da=[]
+            dl=[]
+            network = self.project.network
+            [amax, bmax, cmax] = np.max(network['pore.coords'], axis=0)
+            [amin, bmin, cmin] = np.min(network['pore.coords'], axis=0)
+            lx = amax-amin
+            ly = bmax-bmin
+            lz = cmax-cmin
+            options = {0 : self.top_b(lx,ly,lz), 1 : self.left_r(lx,ly,lz), 2 : self.front_b(lx,ly,lz)}
+            for i in range(len(options)):
+                [da[i], dl[i]]=options[i]
+        return [da,dl]
 
     def set_inlets(self, pores):
         r"""
