@@ -79,14 +79,14 @@ class RelativePermeability(GenericAlgorithm):
             inlets = [network.pores(['top']), network.pores(['front']),
                       network.pores(['left'])]
             for inlet_num in range(len(inlets)):
-                used_inlets = [inlets[x] for x in range(0, len(inlets), 2)]
+                used_inlets = [inlets[x] for x in range(0, len(inlets[inlet_num]), 2)]
                 pores.append[used_inlets]
             self.settings['inlets']=self.set_inlets(pores)
             pores=[]
             outlets = [network.pores(['bottom']), network.pores(['back']),
                       network.pores(['right'])]
             for outlet_num in range(len(outlets)):
-                used_outlets = [outlets[x] for x in range(0, len(outlets), 2)]
+                used_outlets = [outlets[x] for x in range(0, len(outlets[outlet_num]), 2)]
                 pores.append[used_outlets]
             self.settings['outlets']=self.set_outlets(pores)
         if outlets:
@@ -102,10 +102,10 @@ class RelativePermeability(GenericAlgorithm):
         else:
             for inlet_num in range(len(pores)):
                 inv_seq=self.IP(inlets=self.settings['inlets'][inlet_num],
-                                outlets=self.settings['outlets'][inlet_num];
+                                outlets=self.settings['outlets'][inlet_num],
                                 sim_num=inlet_num)
-                self.settings['pore_inv_seq'].append[inv_seq[0]]
-                self.settings['thorat_inv_seq'].append[inv_seq[1]]
+                self.settings['pore_inv_seq'].append[inv_seq[inlet_num][0]]
+                self.settings['thorat_inv_seq'].append[inv_seq[inlet_num][1]]
                 # the following lines are ignored assumming that once we have
                 # the pore_inv_seq we also have throat_inv_seq as long as
                 # both of them are produced as a result of running IP.
@@ -144,6 +144,10 @@ class RelativePermeability(GenericAlgorithm):
         for Sp in self.settings['sat']:
             self.settings['inv_results'][sim_num].append(inv.results(Sp))
         inv_seq=[inv['pore.invasion_sequence'], inv['throat.invasion_sequence']]
+        # assumming the last array is corresponding to the Capillary pressure
+        # we did not include saturations in the results
+        # saturations can be taken from self.settings['sat']
+        self.settings['inv_results'][sim_num].append(Pcarr)
         return inv_seq
 
     def set_inlets(self, pores):
@@ -152,7 +156,7 @@ class RelativePermeability(GenericAlgorithm):
         for inlet_num in range(len(pores)):
             self['pore.inlets'] = False
             self['pore.inlets'][pores[inlet_num]] = True
-            self.settings['inlets'][inlet_num]=self['pore.inlets']
+            self.settings['inlets'][inlet_num]=self['pore.inlets'][pores[inlet_num]]
 
     def set_outlets(self, pores):
         r"""
@@ -160,12 +164,12 @@ class RelativePermeability(GenericAlgorithm):
         for outlet_num in range(len(pores)):
             self['pore.outlets'] = False
             self['pore.outlets'][pores[outlet_num]] = True
-            self.settimgs['outlets'][outlet_num]=self['pore.outlets']
+            self.settimgs['outlets'][outlet_num]=self['pore.outlets'][pores[outlet_num]]
 
     def update_phase_and_phys(self, results):
         inv_p=self.project.phases(self.settings['inv_phase'])
         def_p=self.project.phases(self.settings['def_phase'])
-        inv_p['pore.occupancy'] = results['pore.occupancy']
+        inv_p['pore.occupancy'] = results['pore.occupancy'] #################################### check
         def_p['pore.occupancy'] = 1-results['pore.occupancy']
         inv_p['throat.occupancy'] = results['throat.occupancy']
         def_p['throat.occupancy'] = 1-results['throat.occupancy']
@@ -185,31 +189,34 @@ class RelativePermeability(GenericAlgorithm):
         dl = lz
         res_2=[da, dl]
         return res_2
+    def left_r(lx,ly,lz):
+        da = lx*lz
+        dl = ly
+        res_2=[da,dl]
+        return res_2
 
-    def run(self, inlets=None, outlets=None):
+    def front_b(lx,ly,lz):
+        da = ly*lz
+        dl = lx
+        res_2=[da,dl]
+        return res_2
+
+    def run(self):
         r"""
         """
+        bounds=[]
         Results = {'k_inv': [], 'k_def': [], 'K_rel_inv': [], 'K_rel_def': []}
         # Retrieve phase and network
-        K_rel_def = {'0': []}
-        K_rel_inv= {'0': []}
+        K_rel_def = {'0': [], '1': [], '2': []}
+        K_rel_inv= {'0': [], '1': [], '2': []}
         network = self.project.network
-        bounds = [['top', 'bottom']]
-        if inlets is not None:
-            self.set_inlets(pores=inlets)
-        else:
-            self.set_inlets(pores=network.pores(labels=bounds[0][0]))
-        if outlets is not None:
-            self.set_outlets(pores=outlets)
-        else:
-            self.set_outlets(pores=network.pores(labels=bounds[0][1]))
         # first calc single phase absolute permeability (assumming in 1 direction only)
         [amax, bmax, cmax] = np.max(network['pore.coords'], axis=0)
         [amin, bmin, cmin] = np.min(network['pore.coords'], axis=0)
         lx = amax-amin
         ly = bmax-bmin
         lz = cmax-cmin
-        options = {0: self.top_b(lx, ly, lz)}
+        options = {0 : self.top_b(lx,ly,lz),1 : self.left_r(lx,ly,lz),2 : self.front_b(lx,ly,lz)}
         # K_def=1
         # K_inv=[]
         # # apply single phase flow
