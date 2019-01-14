@@ -107,8 +107,8 @@ class RelativePermeability(GenericAlgorithm):
                 inv_seq=self.IP(inlets=self.settings['inlets'][inlet_num],
                                 outlets=self.settings['outlets'][inlet_num],
                                 sim_num=inlet_num)
-                self.settings['pore_inv_seq'].append[inv_seq[inlet_num][0]]
-                self.settings['thorat_inv_seq'].append[inv_seq[inlet_num][1]]
+                self.settings['pore_inv_seq'].append(inv_seq[inlet_num][0])
+                self.settings['thorat_inv_seq'].append(inv_seq[inlet_num][1])
                 # the following lines are ignored assumming that once we have
                 # the pore_inv_seq we also have throat_inv_seq as long as
                 # both of them are produced as a result of running IP.
@@ -165,7 +165,7 @@ class RelativePermeability(GenericAlgorithm):
         for inlet_num in range(len(pores)):
             self['pore.inlets'] = False
             self['pore.inlets'][pores[inlet_num]] = True
-            self.settings['inlets'][inlet_num]=self['pore.inlets'][pores[inlet_num]]
+            self.settings['inlets'][inlet_num]=self['pore.inlets']
 
     def set_outlets(self, pores):
         r"""
@@ -173,7 +173,7 @@ class RelativePermeability(GenericAlgorithm):
         for outlet_num in range(len(pores)):
             self['pore.outlets'] = False
             self['pore.outlets'][pores[outlet_num]] = True
-            self.settimgs['outlets'][outlet_num]=self['pore.outlets'][pores[outlet_num]]
+            self.settimgs['outlets'][outlet_num]=self['pore.outlets']
 
     def update_phase_and_phys(self, results):
         inv_p=self.project.phases(self.settings['inv_phase'])
