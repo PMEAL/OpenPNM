@@ -126,6 +126,10 @@ class RelativePermeability(GenericAlgorithm):
             self.settings['throat_occ']=throat_occ
             self.settings['pore_inv_seq']=pore_inv
             self.settings['thorat_inv_seq']=throat_inv
+#            print('1',self.settings['pore_occ'])
+#            print('2',self.settings['throat_occ'])
+#            print('3',self.settings['pore_inv_seq'])
+#            print('4',self.settings['thorat_inv_seq'])
                 # the following lines are ignored assumming that once we have
                 # the pore_inv_seq we also have throat_inv_seq as long as
                 # both of them are produced as a result of running IP.
@@ -222,13 +226,13 @@ class RelativePermeability(GenericAlgorithm):
             pores_out.append(self['pore.outlets'])
         return pores_out
 
-    def update_phase_and_phys(self, sim_num):
+    def update_phase_and_phys(self, sim_num, sat_num):
         inv_p=self.project.phases(self.settings['inv_phase'])
         def_p=self.project.phases(self.settings['def_phase'])
-        inv_p['pore.occupancy'] = self.settings['pore.occ'][sim_num]
-        def_p['pore.occupancy'] = 1-self.settings['pore_occ'][sim_num]
-        inv_p['throat.occupancy'] = self.settings['throat.occ'][sim_num]
-        def_p['throat.occupancy'] = 1-self.settings['throat.occ'][sim_num]
+        inv_p['pore.occupancy'] = self.settings['pore_occ'][sim_num][sat_num]
+        def_p['pore.occupancy'] = 1-self.settings['pore_occ'][sim_num][sat_num]
+        inv_p['throat.occupancy'] = self.settings['throat_occ'][sim_num][sat_num]
+        def_p['throat.occupancy'] = 1-self.settings['throat_occ'][sim_num][sat_num]
         # adding multiphase conductances
         mode=self.settings['mode']
         def_p.add_model(model=models.physics.multiphase.conduit_conductance,
@@ -315,7 +319,7 @@ class RelativePermeability(GenericAlgorithm):
             cn=-1
             for Sp in self.settings['sat']:
                 cn=cn+1
-                self.update_phase_and_phys(self.settings['inv_results'][bound_num][cn])
+                self.update_phase_and_phys(sim_num=bound_num, sat_num=cn)
                 # here it is done for each saturation
                 # make sure to handle it in the main function
                 # note that for each inlet the last element of invresults is a
