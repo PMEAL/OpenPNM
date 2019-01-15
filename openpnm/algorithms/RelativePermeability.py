@@ -83,21 +83,20 @@ class RelativePermeability(GenericAlgorithm):
             self.settings['user_inlets']=False
             pores=[]
             inlets_def = [network.pores(['top']), network.pores(['front']),
-                      network.pores(['left'])]
+                          network.pores(['left'])]
             for inlet_num in range(len(inlets_def)):
-                used_inlets = [inlets_def[inlet_num][x] for x in range(0, len(inlets_def[inlet_num]), 2)]
+                il=len(inlets_def[inlet_num])
+                used_inlets = [inlets_def[inlet_num][x] for x in range(0, il, 2)]
                 pores.append(used_inlets)
             self.settings['inlets']=self.set_inlets(pores)
             pores=[]
             outlets_def = [network.pores(['bottom']), network.pores(['back']),
-                      network.pores(['right'])]
-            print('fff',outlets_def)
+                           network.pores(['right'])]
             for outlet_num in range(len(outlets_def)):
-                used_outlets = [outlets_def[inlet_num][x] for x in range(0, len(outlets_def[outlet_num]), 2)]
+                ol=len(outlets_def[outlet_num])
+                used_outlets = [outlets_def[inlet_num][x] for x in range(0, ol, 2)]
                 pores.append(used_outlets)
-            print('kkkk',pores)
-            self.settings['outlets']=self.set_outlets(pores) # should be changed with output of outlet calc because we need pore itself (object) not just the indice
-            print('outtt',self.settings['outlets'])
+            self.settings['outlets']=self.set_outlets(pores)   # should be changed with output of outlet calc because we need pore itself (object) not just the indice
         if outlets:
             self.settings['outlets']=self.set_outlets(outlets)
         if inv_phase:
@@ -108,8 +107,7 @@ class RelativePermeability(GenericAlgorithm):
             self.settings['points'] = points
         if pore_inv_seq:
             self.settings['pore_inv_seq'] = pore_inv_seq
-        else: ### will be uncommented later on
-            print('outletss',self.settings['outlets'])
+        else:   # ## will be uncommented later on
             ins=self.settings['inlets']
             pore_inv=[]
             throat_inv=[]
@@ -130,9 +128,9 @@ class RelativePermeability(GenericAlgorithm):
 #            print('2',self.settings['throat_occ'])
 #            print('3',self.settings['pore_inv_seq'])
 #            print('4',self.settings['thorat_inv_seq'])
-                # the following lines are ignored assumming that once we have
-                # the pore_inv_seq we also have throat_inv_seq as long as
-                # both of them are produced as a result of running IP.
+# the following lines are ignored assumming that once we have
+# the pore_inv_seq we also have throat_inv_seq as long as
+# both of them are produced as a result of running IP.
 #        if throat_inv_seq:
 #            self.settings['thorat_inv_seq'] = throat_inv_seq
 #       else:
@@ -147,7 +145,7 @@ class RelativePermeability(GenericAlgorithm):
         inv.run()
         Snwparr =  []
         Pcarr =  []
-        Sarr=np.linspace(0,1,num=self.settings['points'])
+        Sarr=np.linspace(0, 1, num=self.settings['points'])
         for Snw in Sarr:
             res1=inv.results(Snwp=Snw)
             occ_ts=res1['throat.occupancy']
@@ -189,7 +187,6 @@ class RelativePermeability(GenericAlgorithm):
     def domain_l_a(self):
         # for now we end up with defining default domain length and area
         if self.settings['user_inlets'] is not True:
-            print('user sets',self.settings['user_inlets'])
             da=[]
             dl=[]
             network = self.project.network
@@ -198,13 +195,12 @@ class RelativePermeability(GenericAlgorithm):
             lx = amax-amin
             ly = bmax-bmin
             lz = cmax-cmin
-            options = {0 : self.top_b(lx, ly, lz), 1 : self.left_r(lx, ly, lz), 2 : self.front_b(lx, ly, lz)}
+            options = {0: self.top_b(lx, ly, lz), 1: self.left_r(lx, ly, lz), 2: self.front_b(lx, ly, lz)}
             for i in range(len(options)):
                 [Da, Dl]=options[i]
                 da.append(Da)
                 dl.append(Dl)
-        print('da is:',da,'dl is:', dl)
-        return [da,dl]
+        return [da, dl]
 
     def set_inlets(self, pores):
         r"""
