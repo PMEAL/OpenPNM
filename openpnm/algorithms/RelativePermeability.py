@@ -188,7 +188,9 @@ class RelativePermeability(GenericAlgorithm):
             lz = cmax-cmin
             options = {0 : self.top_b(lx, ly, lz), 1 : self.left_r(lx, ly, lz), 2 : self.front_b(lx, ly, lz)}
             for i in range(len(options)):
-                [da[i], dl[i]]=options[i]
+                [Da, Dl]=options[i]
+                da.append(Da)
+                dl.append(Dl)
         print('da is:',da,'dl is:', dl)
         return [da,dl]
 
@@ -235,13 +237,13 @@ class RelativePermeability(GenericAlgorithm):
         dl = lz
         res_2=[da, dl]
         return res_2
-    def left_r(lx, ly, lz):
+    def left_r(self, lx, ly, lz):
         da = lx*lz
         dl = ly
         res_2=[da,dl]
         return res_2
 
-    def front_b(lx, ly, lz):
+    def front_b(self, lx, ly, lz):
         da = ly*lz
         dl = lx
         res_2=[da,dl]
