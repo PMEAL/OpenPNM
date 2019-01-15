@@ -304,7 +304,7 @@ class RelativePermeability(GenericAlgorithm):
             if self.settings['user_inlets']==False:
                 K_inv = St_inv.calc_effective_permeability(domain_area=da[bound_num],
                                                            domain_length=dl[bound_num],
-                                                      inlets=inlets[bound_num],
+                                                           inlets=inlets[bound_num],
                                                            outlets=outlets[bound_num])     
             else:
                 K_inv = St_inv.calc_effective_permeability(inlets=inlets[bound_num],
