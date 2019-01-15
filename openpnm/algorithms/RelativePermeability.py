@@ -96,7 +96,9 @@ class RelativePermeability(GenericAlgorithm):
                 ol=len(outlets_def[outlet_num])
                 used_outlets = [outlets_def[inlet_num][x] for x in range(0, ol, 2)]
                 pores.append(used_outlets)
-            self.settings['outlets']=self.set_outlets(pores)   # should be changed with output of outlet calc because we need pore itself (object) not just the indice
+            self.settings['outlets']=self.set_outlets(pores)   # should
+            # be changed with output of outlet calc because we need pore
+            # itself (object) not just the indice
         if outlets:
             self.settings['outlets']=self.set_outlets(outlets)
         if inv_phase:
@@ -183,7 +185,7 @@ class RelativePermeability(GenericAlgorithm):
         results['pore_occ']=p_occ
         results['throat_occ']=t_occ
         return results
-    
+
     def domain_l_a(self):
         # for now we end up with defining default domain length and area
         if self.settings['user_inlets'] is not True:
@@ -195,7 +197,9 @@ class RelativePermeability(GenericAlgorithm):
             lx = amax-amin
             ly = bmax-bmin
             lz = cmax-cmin
-            options = {0: self.top_b(lx, ly, lz), 1: self.left_r(lx, ly, lz), 2: self.front_b(lx, ly, lz)}
+            options = {0: self.top_b(lx, ly, lz),
+                       1: self.left_r(lx, ly, lz),
+                       2: self.front_b(lx, ly, lz)}
             for i in range(len(options)):
                 [Da, Dl]=options[i]
                 da.append(Da)
@@ -245,16 +249,17 @@ class RelativePermeability(GenericAlgorithm):
         dl = lz
         res_2=[da, dl]
         return res_2
+
     def left_r(self, lx, ly, lz):
         da = lx*lz
         dl = ly
-        res_2=[da,dl]
+        res_2=[da, dl]
         return res_2
 
     def front_b(self, lx, ly, lz):
         da = ly*lz
         dl = lx
-        res_2=[da,dl]
+        res_2=[da, dl]
         return res_2
 
     def run(self):
@@ -262,8 +267,8 @@ class RelativePermeability(GenericAlgorithm):
         """
         Results = {'sat': [], 'k_inv': [], 'k_def': [], 'K_rel_inv': [], 'K_rel_def': []}
         # Retrieve phase and network
-        K_rel_def=[]
-        K_rel_inv=[]
+#        K_rel_def=[]   #                       ###############################
+#        K_rel_inv=[]
 #        for i in range(len(self.settings['inlets'])):
 #            K_rel_def[i]=[]
 #            K_rel_inv[i]=[]
@@ -282,8 +287,8 @@ class RelativePermeability(GenericAlgorithm):
             St_def._set_BC(pores=inlets[bound_num], bctype='value', bcvalues=1)
             St_def._set_BC(pores=outlets[bound_num], bctype='value', bcvalues=0)
             St_def.run()
-            if self.settings['user_inlets']==False:
-                [da,dl]=self.domain_l_a()
+            if not (self.settings['user_inlets']==True):
+                [da, dl]=self.domain_l_a()
                 K_def = St_def.calc_effective_permeability(domain_area=da[bound_num],
                                                            domain_length=dl[bound_num],
                                                            inlets=inlets[bound_num],
@@ -300,11 +305,11 @@ class RelativePermeability(GenericAlgorithm):
             St_inv._set_BC(pores=inlets[bound_num], bctype='value', bcvalues=1)
             St_inv._set_BC(pores=outlets[bound_num], bctype='value', bcvalues=0)
             St_inv.run()
-            if self.settings['user_inlets']==False:
+            if not (self.settings['user_inlets']==True):
                 K_inv = St_inv.calc_effective_permeability(domain_area=da[bound_num],
                                                            domain_length=dl[bound_num],
                                                            inlets=inlets[bound_num],
-                                                           outlets=outlets[bound_num])     
+                                                           outlets=outlets[bound_num])   
             else:
                 K_inv = St_inv.calc_effective_permeability(inlets=inlets[bound_num],
                                                            outlets=outlets[bound_num])
