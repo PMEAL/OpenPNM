@@ -16,6 +16,9 @@ default_settings = {'pore_inv_seq': [],
                     'inlets': [],
                     'outlets': [],
                     'user_inlets': [],
+                    'Pcap': [],
+                    'pore_occ': [],
+                    'throat_occ': [],
                     }
 
 
@@ -108,13 +111,21 @@ class RelativePermeability(GenericAlgorithm):
         else: ### will be uncommented later on
             print('outletss',self.settings['outlets'])
             ins=self.settings['inlets']
-            outs=self.settings['outlets']
+            pore_inv=[]
+            throat_inv=[]
+            pore_occ=[]
+            throat_occ=[]
             for inlet_num in range(len(ins)):
-                inv_seq=self.IP(inlets=ins[inlet_num],
-                                outlets=outs[inlet_num],
+                results=self.IP(inlets=ins[inlet_num],
                                 sim_num=inlet_num)
-                self.settings['pore_inv_seq'].append(inv_seq[inlet_num][0])
-                self.settings['thorat_inv_seq'].append(inv_seq[inlet_num][1])
+                pore_inv.append(results['pore_inv'])
+                throat_inv.append(results['throat_inv'])
+                pore_occ.append(results['pore_occ'])
+                throat_occ.append(results['throat_occ'])
+            self.settings['pore_occ']=pore_occ
+            self.settings['throat_occ']=throat_occ
+            self.settings['pore_inv_seq']=pore_inv
+            self.settings['thorat_inv_seq']=throat_inv
                 # the following lines are ignored assumming that once we have
                 # the pore_inv_seq we also have throat_inv_seq as long as
                 # both of them are produced as a result of running IP.
@@ -123,7 +134,7 @@ class RelativePermeability(GenericAlgorithm):
 #       else:
 #            self.IP()
 
-    def IP(self, inlets=None, outlets=None, sim_num=1):
+    def IP(self, inlets=None, sim_num=1):
         network = self.project.network
         phase = self.project.phases(self.settings['inv_phase'])
         inv=InvasionPercolation(phase=phase, network=network, project=self.project)
@@ -199,13 +210,13 @@ class RelativePermeability(GenericAlgorithm):
             pores_out.append(self['pore.outlets'])
         return pores_out
 
-    def update_phase_and_phys(self, results):
+    def update_phase_and_phys(self, sim_num):
         inv_p=self.project.phases(self.settings['inv_phase'])
         def_p=self.project.phases(self.settings['def_phase'])
-        inv_p['pore.occupancy'] = results['pore.occupancy']
-        def_p['pore.occupancy'] = 1-results['pore.occupancy']
-        inv_p['throat.occupancy'] = results['throat.occupancy']
-        def_p['throat.occupancy'] = 1-results['throat.occupancy']
+        inv_p['pore.occupancy'] = self.settings['pore.occ'][sim_num]
+        def_p['pore.occupancy'] = 1-self.settings['pore_occ'][sim_num]
+        inv_p['throat.occupancy'] = self.settings['throat.occ'][sim_num]
+        def_p['throat.occupancy'] = 1-self.settings['throat.occ'][sim_num]
         # adding multiphase conductances
         mode=self.settings['mode']
         def_p.add_model(model=models.physics.multiphase.conduit_conductance,
