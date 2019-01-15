@@ -176,7 +176,8 @@ class RelativePermeability(GenericAlgorithm):
     
     def domain_l_a(self):
         # for now we end up with defining default domain length and area
-        if self.settings['user_inlets'] =='False':
+        if self.settings['user_inlets'] is not True:
+            print('user sets',self.settings['user_inlets'])
             da=[]
             dl=[]
             network = self.project.network
@@ -185,9 +186,10 @@ class RelativePermeability(GenericAlgorithm):
             lx = amax-amin
             ly = bmax-bmin
             lz = cmax-cmin
-            options = {0 : self.top_b(lx,ly,lz), 1 : self.left_r(lx,ly,lz), 2 : self.front_b(lx,ly,lz)}
+            options = {0 : self.top_b(lx, ly, lz), 1 : self.left_r(lx, ly, lz), 2 : self.front_b(lx, ly, lz)}
             for i in range(len(options)):
                 [da[i], dl[i]]=options[i]
+        print('da is:',da,'dl is:', dl)
         return [da,dl]
 
     def set_inlets(self, pores):
@@ -233,13 +235,13 @@ class RelativePermeability(GenericAlgorithm):
         dl = lz
         res_2=[da, dl]
         return res_2
-    def left_r(lx,ly,lz):
+    def left_r(lx, ly, lz):
         da = lx*lz
         dl = ly
         res_2=[da,dl]
         return res_2
 
-    def front_b(lx,ly,lz):
+    def front_b(lx, ly, lz):
         da = ly*lz
         dl = lx
         res_2=[da,dl]
@@ -252,16 +254,16 @@ class RelativePermeability(GenericAlgorithm):
         # Retrieve phase and network
         K_rel_def=[]
         K_rel_inv=[]
-        for i in range(len(self.settings['inlets'])):
-            K_rel_def[i]=[]
-            K_rel_inv[i]=[]
+#        for i in range(len(self.settings['inlets'])):
+#            K_rel_def[i]=[]
+#            K_rel_inv[i]=[]
         network = self.project.network
         # K_def=1
         # K_inv=[]
         # # apply single phase flow
         inlets=self.settings['inlets']
         outlets=self.settings['outlets']
-        for bound_num in range(len(self.settings['inlets'])):
+        for bound_num in range(len(inlets)):
             # Run Single phase algs effective properties
             # Kw
             St_def = StokesFlow(network=network,
@@ -299,11 +301,13 @@ class RelativePermeability(GenericAlgorithm):
             Results['k_inv'].append(K_inv)
             self.project.purge_object(obj=St_inv)
         # apply two phase effective perm calculation
-        for bound_num in range(len(self.settings['inlets'])):
+        for bound_num in range(len(inlets)):
             cn=-1
             for Sp in self.settings['sat']:
                 cn=cn+1
                 self.update_phase_and_phys(self.settings['inv_results'][bound_num][cn])
+                # here it is done for each saturation
+                # make sure to handle it in the main function
                 # note that for each inlet the last element of invresults is a
                 # list of Pcapillary in case they might be needed for plotting,...
                 # print('sat is equal to', Sp)
