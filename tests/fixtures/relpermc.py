@@ -23,10 +23,10 @@ geom = op.geometry.StickAndBall(network=pn, pores=pn['pore.all'],
 oil = op.phases.GenericPhase(network=pn)
 water = op.phases.Water(network=pn)
 oil['pore.viscosity']=0.547
-oil['throat.contact_angle'] =10
+oil['throat.contact_angle'] =110
 oil['throat.surface_tension'] = 0.072
 oil['pore.surface_tension']=0.072
-oil['pore.contact_angle']=10
+oil['pore.contact_angle']=110
 phys_water= op.physics.GenericPhysics(network=pn, phase=water, geometry=geom)
 phys_oil = op.physics.GenericPhysics(network=pn, phase=oil, geometry=geom)
 

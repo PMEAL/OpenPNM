@@ -229,6 +229,7 @@ class RelativePermeability(GenericAlgorithm):
     def update_phase_and_phys(self, sim_num, sat_num):
         inv_p=self.project.phases(self.settings['inv_phase'])
         def_p=self.project.phases(self.settings['def_phase'])
+        print(self.settings['pore_occ'],'fff',sim_num,'hghghg',sat_num)
         inv_p['pore.occupancy'] = self.settings['pore_occ'][sim_num][sat_num]
         def_p['pore.occupancy'] = 1-self.settings['pore_occ'][sim_num][sat_num]
         inv_p['throat.occupancy'] = self.settings['throat_occ'][sim_num][sat_num]
@@ -344,7 +345,7 @@ class RelativePermeability(GenericAlgorithm):
                 # Run Multiphase algs
                 St_def_tp.run()
                 St_inv_tp.run()
-                if self.settings['user_inlets']==False:
+                if self.settings['user_inlets'] is not True:
                     K_def_tp = St_def_tp.calc_effective_permeability(domain_area=da[bound_num],
                                                                  domain_length=dl[bound_num],
                                                                  inlets=inlets[bound_num],
