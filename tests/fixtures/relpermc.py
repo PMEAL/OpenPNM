@@ -44,9 +44,11 @@ phys_water.add_model(propname='throat.hydraulic_conductance',
 phys_water.add_model(propname='throat.entry_pressure',
                               model=op.models.physics.capillary_pressure.washburn)
 relcalc=op.algorithms.RelativePermeability(network=pn)
+
 relcalc.setup(inv_phase=oil, def_phase=water, points=10)
 results=relcalc.run()
-Results = {'k_inv': [], 'k_def': [], 'K_rel_inv': [], 'K_rel_def': []}
+#aa=relcalc['pore_occ']
+# Results = {'k_inv': [], 'k_def': [], 'K_rel_inv': [], 'K_rel_def': []}
 x=results['sat']
 plt.figure(1)
 for i in range(len(results['k_inv'])):
