@@ -174,7 +174,7 @@ class RelativePermeability(GenericAlgorithm):
         for inlet_num in range(len(pores)):
             self['pore.inlets'] = False
             self['pore.inlets'][pores[inlet_num]] = True
-            pores_in[inlet_num]=self['pore.inlets']
+            pores_in.append(self['pore.inlets'])
         self.settings['inlets']=pores_in
 
     def set_outlets(self, pores):
@@ -184,7 +184,7 @@ class RelativePermeability(GenericAlgorithm):
         for outlet_num in range(len(pores)):
             self['pore.outlets'] = False
             self['pore.outlets'][pores[outlet_num]] = True
-            pores_out[outlet_num]=self['pore.outlets']
+            pores_out.append(self['pore.outlets'])
         self.settings['outlets']=pores_out
 
     def update_phase_and_phys(self, results):
