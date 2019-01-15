@@ -159,19 +159,27 @@ class RelativePermeability(GenericAlgorithm):
 #        plt.ylabel('Capillary Pressure')
 #        plt.grid(True)
         self.settings['sat']=np.array(Snwparr[:])
-        inv_res=[]
+        p_occ=[]
+        t_occ=[]
         for Sp in self.settings['sat']:
-            inv_res.append(inv.results(Sp)) # gives pore and throat occupancy at Sp
+            # inv_res.append(inv.results(Sp)) # gives pore and throat occupancy at Sp
+            res=inv.results(Sp)
+            p_occ.append(res['pore.occupancy'])
+            t_occ.append(res['throat.occupancy'])
         inv_seq=[inv['pore.invasion_sequence'], inv['throat.invasion_sequence']]
         results = {'pore_inv': [], 'throat_inv': [], 'pore_occ': [], 'throat_occ': []}
+        # 'pore_inv' states invasion sequence in pores in an IP run
+        # 'throat_inv' states invasion sequence in throats in an IP run
+        # 'pore_occ' states pore occupancies for each saturation
+        # 'throat_occ' states throat occupancy for each saturation
         # assumming the last array is corresponding to the Capillary pressure
         # we did not include saturations in the results
         # saturations can be taken from self.settings['sat']
         # ## self.settings['inv_results'][sim_num].append(Pcarr)
         results['pore_inv']=inv_seq[0]
         results['throat_inv']=inv_seq[1]
-        results['pore_occ']=[inv_res[x] for x in range(0, len(self.settings['sat']), 2)]
-        results['throat_occ']=[inv_res[x] for x in range(1, len(self.settings['sat']), 2)]
+        results['pore_occ']=p_occ
+        results['throat_occ']=t_occ
         return results
     
     def domain_l_a(self):
