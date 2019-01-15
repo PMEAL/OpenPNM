@@ -79,19 +79,22 @@ class RelativePermeability(GenericAlgorithm):
         else:
             self.settings['user_inlets']=False
             pores=[]
-            inlets = [network.pores(['top']), network.pores(['front']),
+            inlets_def = [network.pores(['top']), network.pores(['front']),
                       network.pores(['left'])]
-            for inlet_num in range(len(inlets)):
-                used_inlets = [inlets[inlet_num][x] for x in range(0, len(inlets[inlet_num]), 2)]
+            for inlet_num in range(len(inlets_def)):
+                used_inlets = [inlets_def[inlet_num][x] for x in range(0, len(inlets_def[inlet_num]), 2)]
                 pores.append(used_inlets)
             self.settings['inlets']=self.set_inlets(pores)
             pores=[]
-            outlets = [network.pores(['bottom']), network.pores(['back']),
+            outlets_def = [network.pores(['bottom']), network.pores(['back']),
                       network.pores(['right'])]
-            for outlet_num in range(len(outlets)):
-                used_outlets = [outlets[inlet_num][x] for x in range(0, len(outlets[outlet_num]), 2)]
+            print('fff',outlets_def)
+            for outlet_num in range(len(outlets_def)):
+                used_outlets = [outlets_def[inlet_num][x] for x in range(0, len(outlets_def[outlet_num]), 2)]
                 pores.append(used_outlets)
-            self.settings['outlets']=self.set_outlets(pores)
+            print('kkkk',pores)
+            self.settings['outlets']=self.set_outlets(pores) # should be changed with output of outlet calc because we need pore itself (object) not just the indice
+            print('outtt',self.settings['outlets'])
         if outlets:
             self.settings['outlets']=self.set_outlets(outlets)
         if inv_phase:
@@ -102,18 +105,21 @@ class RelativePermeability(GenericAlgorithm):
             self.settings['points'] = points
         if pore_inv_seq:
             self.settings['pore_inv_seq'] = pore_inv_seq
-        else:
-            for inlet_num in range(len(pores)):
-                inv_seq=self.IP(inlets=self.settings['inlets'][inlet_num],
-                                outlets=self.settings['outlets'][inlet_num],
-                                sim_num=inlet_num)
-                self.settings['pore_inv_seq'].append(inv_seq[inlet_num][0])
-                self.settings['thorat_inv_seq'].append(inv_seq[inlet_num][1])
-                # the following lines are ignored assumming that once we have
-                # the pore_inv_seq we also have throat_inv_seq as long as
-                # both of them are produced as a result of running IP.
-        if throat_inv_seq:
-            self.settings['thorat_inv_seq'] = throat_inv_seq
+#        else:
+#            print('outletss',self.settings['outlets'])
+#            ins=self.settings['inlets']
+#            outs=self.settings['outlets']
+#            for inlet_num in range(len(pores)):
+#                inv_seq=self.IP(inlets=ins[inlet_num],
+#                                outlets=outs[inlet_num],
+#                                sim_num=inlet_num)
+#                self.settings['pore_inv_seq'].append(inv_seq[inlet_num][0])
+#                self.settings['thorat_inv_seq'].append(inv_seq[inlet_num][1])
+#                # the following lines are ignored assumming that once we have
+#                # the pore_inv_seq we also have throat_inv_seq as long as
+#                # both of them are produced as a result of running IP.
+#        if throat_inv_seq:
+#            self.settings['thorat_inv_seq'] = throat_inv_seq
 #       else:
 #            self.IP()
 
@@ -175,7 +181,7 @@ class RelativePermeability(GenericAlgorithm):
             self['pore.inlets'] = False
             self['pore.inlets'][pores[inlet_num]] = True
             pores_in.append(self['pore.inlets'])
-        self.settings['inlets']=pores_in
+        return pores_in
 
     def set_outlets(self, pores):
         r"""
@@ -185,7 +191,7 @@ class RelativePermeability(GenericAlgorithm):
             self['pore.outlets'] = False
             self['pore.outlets'][pores[outlet_num]] = True
             pores_out.append(self['pore.outlets'])
-        self.settings['outlets']=pores_out
+        return pores_out
 
     def update_phase_and_phys(self, results):
         inv_p=self.project.phases(self.settings['inv_phase'])
