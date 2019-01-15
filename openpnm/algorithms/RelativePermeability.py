@@ -264,7 +264,7 @@ class RelativePermeability(GenericAlgorithm):
     def run(self):
         r"""
         """
-        Results = {'k_inv': [], 'k_def': [], 'K_rel_inv': [], 'K_rel_def': []}
+        Results = {'sat': [], 'k_inv': [], 'k_def': [], 'K_rel_inv': [], 'K_rel_def': []}
         # Retrieve phase and network
         K_rel_def=[]
         K_rel_inv=[]
@@ -316,6 +316,8 @@ class RelativePermeability(GenericAlgorithm):
             self.project.purge_object(obj=St_inv)
         # apply two phase effective perm calculation
         for bound_num in range(len(inlets)):
+            K_rel_def.append([])
+            K_rel_inv.append([])
             cn=-1
             for Sp in self.settings['sat']:
                 cn=cn+1
@@ -364,4 +366,5 @@ class RelativePermeability(GenericAlgorithm):
                 self.project.purge_object(obj=St_inv_tp)
             Results['K_rel_inv']=K_rel_inv
             Results['K_rel_def']=K_rel_def
+            Results['sat']=self.settings['sat']
         return Results

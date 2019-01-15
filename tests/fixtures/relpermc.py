@@ -7,8 +7,7 @@ Created on Wed Jan  9 14:59:50 2019
 # sample code for relperm
 
 import openpnm as op
-
-
+import matplotlib.pyplot as plt
 from openpnm import topotools as tt
 pn = op.network.Cubic(shape=[3, 3, 3], spacing=0.00006)
 proj = pn.project
@@ -47,3 +46,17 @@ phys_water.add_model(propname='throat.entry_pressure',
 relcalc=op.algorithms.RelativePermeability(network=pn)
 relcalc.setup(inv_phase=oil, def_phase=water, points=10)
 results=relcalc.run()
+Results = {'k_inv': [], 'k_def': [], 'K_rel_inv': [], 'K_rel_def': []}
+x=results['sat']
+plt.figure(1)
+for i in range(len(results['k_inv'])):
+    y1=results['K_rel_inv'][i]
+    y2=results['K_rel_def'][i]
+    plt.plot(x,y1)
+    plt.plot(x,y2)
+#        x=1.0-np.array(Snwparr[:])
+#        plt.xticks(np.arange(x.min(), x.max(), 0.05))
+#        plt.yticks(np.arange(y.min(), y.max(),0.1))
+#        plt.plot(x, y)
+#        plt.xlabel('Invading Phase Saturation')
+#        plt.ylabel('relative permeability')
