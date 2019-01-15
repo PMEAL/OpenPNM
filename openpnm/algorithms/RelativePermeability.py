@@ -105,19 +105,19 @@ class RelativePermeability(GenericAlgorithm):
             self.settings['points'] = points
         if pore_inv_seq:
             self.settings['pore_inv_seq'] = pore_inv_seq
-#        else:
-#            print('outletss',self.settings['outlets'])
-#            ins=self.settings['inlets']
-#            outs=self.settings['outlets']
-#            for inlet_num in range(len(pores)):
-#                inv_seq=self.IP(inlets=ins[inlet_num],
-#                                outlets=outs[inlet_num],
-#                                sim_num=inlet_num)
-#                self.settings['pore_inv_seq'].append(inv_seq[inlet_num][0])
-#                self.settings['thorat_inv_seq'].append(inv_seq[inlet_num][1])
-#                # the following lines are ignored assumming that once we have
-#                # the pore_inv_seq we also have throat_inv_seq as long as
-#                # both of them are produced as a result of running IP.
+        else: ### will be uncommented later on
+            print('outletss',self.settings['outlets'])
+            ins=self.settings['inlets']
+            outs=self.settings['outlets']
+            for inlet_num in range(len(ins)):
+                inv_seq=self.IP(inlets=ins[inlet_num],
+                                outlets=outs[inlet_num],
+                                sim_num=inlet_num)
+                self.settings['pore_inv_seq'].append(inv_seq[inlet_num][0])
+                self.settings['thorat_inv_seq'].append(inv_seq[inlet_num][1])
+                # the following lines are ignored assumming that once we have
+                # the pore_inv_seq we also have throat_inv_seq as long as
+                # both of them are produced as a result of running IP.
 #        if throat_inv_seq:
 #            self.settings['thorat_inv_seq'] = throat_inv_seq
 #       else:
@@ -148,14 +148,20 @@ class RelativePermeability(GenericAlgorithm):
 #        plt.ylabel('Capillary Pressure')
 #        plt.grid(True)
         self.settings['sat']=np.array(Snwparr[:])
+        inv_res=[]
         for Sp in self.settings['sat']:
-            self.settings['inv_results'][sim_num].append(inv.results(Sp))
+            inv_res.append(inv.results(Sp)) # gives pore and throat occupancy at Sp
         inv_seq=[inv['pore.invasion_sequence'], inv['throat.invasion_sequence']]
+        results = {'pore_inv': [], 'throat_inv': [], 'pore_occ': [], 'throat_occ': []}
         # assumming the last array is corresponding to the Capillary pressure
         # we did not include saturations in the results
         # saturations can be taken from self.settings['sat']
-        self.settings['inv_results'][sim_num].append(Pcarr)
-        return inv_seq
+        # ## self.settings['inv_results'][sim_num].append(Pcarr)
+        results['pore_inv']=inv_seq[0]
+        results['throat_inv']=inv_seq[1]
+        results['pore_occ']=[inv_res[x] for x in range(0, len(self.settings['sat']), 2)]
+        results['throat_occ']=[inv_res[x] for x in range(1, len(self.settings['sat']), 2)]
+        return results
     
     def domain_l_a(self):
         # for now we end up with defining default domain length and area
