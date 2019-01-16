@@ -243,6 +243,7 @@ class RelativePermeability(GenericAlgorithm):
         inv_p=self.project.phases(self.settings['inv_phase'])
         def_p=self.project.phases(self.settings['def_phase'])
         inv_p['pore.occupancy'] = self.settings['pore_occ'][sim_num][sat_num]
+        print('self pore occ', self.settings['pore_occ'][sim_num][sat_num])
         def_p['pore.occupancy'] = 1-self.settings['pore_occ'][sim_num][sat_num]
         inv_p['throat.occupancy'] = self.settings['throat_occ'][sim_num][sat_num]
         def_p['throat.occupancy'] = 1-self.settings['throat_occ'][sim_num][sat_num]
@@ -298,7 +299,7 @@ class RelativePermeability(GenericAlgorithm):
             # Kw
             St_def = StokesFlow(network=network,
                                 phase=self.project.phases(self.settings['def_phase']))
-            St_def.setup(conductance=self.settings['gh'])
+            St_def.setup(conductance='throat.hydraulic_conductance')
             St_def._set_BC(pores=network.pores(labels='top'), bctype='value', bcvalues=1)
             St_def._set_BC(pores=network.pores(labels='bottom'), bctype='value', bcvalues=0)
             St_def.run()
@@ -316,7 +317,7 @@ class RelativePermeability(GenericAlgorithm):
             Results['k_def'].append(K_def)
             St_inv = StokesFlow(network=network,
                                 phase=self.project.phases(self.settings['inv_phase']))
-            St_inv.setup(conductance=self.settings['gh'])
+            St_inv.setup(conductance='throat.hydraulic_conductance')
             St_inv._set_BC(pores=network.pores(labels='top'), bctype='value', bcvalues=1)
             St_inv._set_BC(pores=network.pores(labels='bottom'), bctype='value', bcvalues=0)
             St_inv.run()
@@ -338,6 +339,7 @@ class RelativePermeability(GenericAlgorithm):
             for Sp in self.settings['sat'][bound_num]:
                 cn=cn+1
                 self.update_phase_and_phys(sim_num=bound_num, sat_num=cn)
+                print('boundnum is:',bound_num, 'sat num is',cn)
                 # here it is done for each saturation
                 # make sure to handle it in the main function
                 # note that for each inlet the last element of invresults is a
