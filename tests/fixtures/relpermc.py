@@ -51,7 +51,7 @@ results=relcalc.run()
 # Results = {'k_inv': [], 'k_def': [], 'K_rel_inv': [], 'K_rel_def': []}
 x=results['sat']
 plt.figure(1)
- for i in range(len(results['k_inv'])):
+for i in range(len(results['k_inv'])):
     y1=results['K_rel_inv'][i]
     y2=results['K_rel_def'][i]
     plt.plot(x,y1)
