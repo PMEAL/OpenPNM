@@ -19,9 +19,7 @@ from .TransientFickianDiffusion import TransientFickianDiffusion
 from .AdvectionDiffusion import AdvectionDiffusion
 from .TransientAdvectionDiffusion import TransientAdvectionDiffusion
 from .FourierConduction import FourierConduction
-from .TransientFourierConduction import TransientFourierConduction
 from .OhmicConduction import OhmicConduction
-from .TransientOhmicConduction import TransientOhmicConduction
 from .OrdinaryPercolation import OrdinaryPercolation
 from .InvasionPercolation import InvasionPercolation
 from .MixedInvasionPercolation import MixedInvasionPercolation
