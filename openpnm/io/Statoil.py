@@ -84,6 +84,8 @@ class Statoil(GenericIO):
         # Add link2 props to net
         net['throat.length'] = sp.array(link2['throat.length'])
         net['throat.volume'] = sp.array(link2['throat.volume'])
+        net['throat.pore1_length'] = sp.array(link2['throat.pore1_length'])
+        net['throat.pore2_length'] = sp.array(link2['throat.pore2_length'])
         net['throat.clay_volume'] = sp.array(link2['throat.clay_volume'])
         # ---------------------------------------------------------------------
         # Parse the node1 file
