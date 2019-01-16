@@ -353,9 +353,9 @@ class RelativePermeability(GenericAlgorithm):
                                       outlets=outlets[bound_num])
                     def_ef=St_inv_tp.calc_effective_permeability
                     K_inv_tp = def_ef(domain_area=da[bound_num],
-                                     domain_length=dl[bound_num],
-                                     inlets=inlets[bound_num],
-                                     outlets=outlets[bound_num])
+                                      domain_length=dl[bound_num],
+                                      inlets=inlets[bound_num],
+                                      outlets=outlets[bound_num])
                 else:
                     def_ef= St_def_tp.calc_effective_permeability
                     K_def_tp = def_ef(inlets=inlets[bound_num],

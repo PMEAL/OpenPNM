@@ -54,8 +54,8 @@ plt.figure(1)
 for i in range(len(results['k_inv'])):
     y1=results['K_rel_inv'][i]
     y2=results['K_rel_def'][i]
-    plt.plot(x,y1)
-    plt.plot(x,y2)
+    plt.plot(x, y1)
+    plt.plot(x, y2)
 #        x=1.0-np.array(Snwparr[:])
 #        plt.xticks(np.arange(x.min(), x.max(), 0.05))
 #        plt.yticks(np.arange(y.min(), y.max(),0.1))
