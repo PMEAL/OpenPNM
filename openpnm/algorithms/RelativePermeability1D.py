@@ -189,7 +189,7 @@ class RelativePermeability1D(GenericAlgorithm):
                                                        domain_length=dl,
                                                        inlets=self['pore.inlets'],
                                                        outlets=self['pore.outlets'])
-            # proj.purge_object(obj=St_def)
+            self.project.purge_object(obj=St_def)
             # Ko
             St_inv = StokesFlow(network=network,
                                 phase=self.project.phases(self.settings['inv_phase']))

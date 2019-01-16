@@ -10,7 +10,7 @@ import openpnm as op
 
 
 from openpnm import topotools as tt
-pn = op.network.Cubic(shape=[3, 3, 3], spacing=0.00006)
+pn = op.network.Cubic(shape=[5, 5, 5], spacing=0.00006)
 proj = pn.project
 Psb = pn.pores(['top', 'bottom'])
 Tsb = pn.find_neighbor_throats(pores=Psb)
@@ -44,6 +44,6 @@ phys_water.add_model(propname='throat.hydraulic_conductance',
                               model=mod)
 phys_water.add_model(propname='throat.entry_pressure',
                               model=op.models.physics.capillary_pressure.washburn)
-relcalc=op.algorithms.RelativePermeability(network=pn)
+relcalc=op.algorithms.RelativePermeability1D(network=pn)
 relcalc.setup(inv_phase=oil, def_phase=water, points=10)
 results=relcalc.run()
