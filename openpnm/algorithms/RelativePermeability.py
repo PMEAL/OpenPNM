@@ -287,7 +287,7 @@ class RelativePermeability(GenericAlgorithm):
             St_def._set_BC(pores=inlets[bound_num], bctype='value', bcvalues=1)
             St_def._set_BC(pores=outlets[bound_num], bctype='value', bcvalues=0)
             St_def.run()
-            if not (self.settings['user_inlets']==True):
+            if self.settings['user_inlets'] is not True:
                 [da, dl]=self.domain_l_a()
                 K_def = St_def.calc_effective_permeability(domain_area=da[bound_num],
                                                            domain_length=dl[bound_num],
@@ -305,11 +305,11 @@ class RelativePermeability(GenericAlgorithm):
             St_inv._set_BC(pores=inlets[bound_num], bctype='value', bcvalues=1)
             St_inv._set_BC(pores=outlets[bound_num], bctype='value', bcvalues=0)
             St_inv.run()
-            if not (self.settings['user_inlets']==True):
+            if self.settings['user_inlets'] is not True:
                 K_inv = St_inv.calc_effective_permeability(domain_area=da[bound_num],
                                                            domain_length=dl[bound_num],
                                                            inlets=inlets[bound_num],
-                                                           outlets=outlets[bound_num])   
+                                                           outlets=outlets[bound_num])
             else:
                 K_inv = St_inv.calc_effective_permeability(inlets=inlets[bound_num],
                                                            outlets=outlets[bound_num])
@@ -346,19 +346,23 @@ class RelativePermeability(GenericAlgorithm):
 #                St_def_tp.run()
 #                St_inv_tp.run()
 #                if self.settings['user_inlets'] is not True:
-#                    K_def_tp = St_def_tp.calc_effective_permeability(domain_area=da[bound_num],
-#                                                                 domain_length=dl[bound_num],
-#                                                                 inlets=inlets[bound_num],
-#                                                                 outlets=outlets[bound_num])
-#                    K_inv_tp = St_inv_tp.calc_effective_permeability(domain_area=da[bound_num],
-#                                                                 domain_length=dl[bound_num],
-#                                                                 inlets=inlets[bound_num],
-#                                                                 outlets=outlets[bound_num])
+#                    inv_ef=St_def_tp.calc_effective_permeability
+#                    K_def_tp = inv_ef(domain_area=da[bound_num],
+#                                      domain_length=dl[bound_num],
+#                                      inlets=inlets[bound_num],
+#                                      outlets=outlets[bound_num])
+#                   def_ef=St_inv_tp.calc_effective_permeability
+#                    K_inv_tp = def_ef(domain_area=da[bound_num],
+#                                     domain_length=dl[bound_num],
+#                                     inlets=inlets[bound_num],
+#                                     outlets=outlets[bound_num])
 #                else:
-#                    K_def_tp = St_def_tp.calc_effective_permeability(inlets=inlets[bound_num],
-#                                                                 outlets=outlets[bound_num])
-#                    K_inv_tp = St_inv_tp.calc_effective_permeability(inlets=inlets[bound_num],
-#                                                                 outlets=outlets[bound_num])
+#                   def_ef= St_def_tp.calc_effective_permeability
+#                    K_def_tp = def_ef(inlets=inlets[bound_num],
+#                                      outlets=outlets[bound_num])
+#                   inv_ef=St_inv_tp.calc_effective_permeability
+#                    K_inv_tp = inv_ef(inlets=inlets[bound_num],
+#                                      outlets=outlets[bound_num])
 #                krel_def =K_def_tp/Results['k_def'][bound_num]
 #                krel_inv= K_inv_tp /Results['k_inv'][bound_num]
 #                K_rel_def[bound_num].append(krel_def)

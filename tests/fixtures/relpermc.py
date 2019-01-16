@@ -47,11 +47,11 @@ relcalc=op.algorithms.RelativePermeability(network=pn)
 
 relcalc.setup(inv_phase=oil, def_phase=water, points=10)
 results=relcalc.run()
-#aa=relcalc['pore_occ']
+# aa=relcalc['pore_occ']
 # Results = {'k_inv': [], 'k_def': [], 'K_rel_inv': [], 'K_rel_def': []}
 x=results['sat']
 plt.figure(1)
-#for i in range(len(results['k_inv'])):
+# for i in range(len(results['k_inv'])):
 #    y1=results['K_rel_inv'][i]
 #    y2=results['K_rel_def'][i]
 #    plt.plot(x,y1)
