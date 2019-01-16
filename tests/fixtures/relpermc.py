@@ -51,11 +51,11 @@ results=relcalc.run()
 # Results = {'k_inv': [], 'k_def': [], 'K_rel_inv': [], 'K_rel_def': []}
 x=results['sat']
 plt.figure(1)
-# for i in range(len(results['k_inv'])):
-#    y1=results['K_rel_inv'][i]
-#    y2=results['K_rel_def'][i]
-#    plt.plot(x,y1)
-#    plt.plot(x,y2)
+ for i in range(len(results['k_inv'])):
+    y1=results['K_rel_inv'][i]
+    y2=results['K_rel_def'][i]
+    plt.plot(x,y1)
+    plt.plot(x,y2)
 #        x=1.0-np.array(Snwparr[:])
 #        plt.xticks(np.arange(x.min(), x.max(), 0.05))
 #        plt.yticks(np.arange(y.min(), y.max(),0.1))
