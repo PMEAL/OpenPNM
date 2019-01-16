@@ -267,7 +267,7 @@ class RelativePermeability(GenericAlgorithm):
         """
         Results = {'sat': [], 'k_inv': [], 'k_def': [], 'K_rel_inv': [], 'K_rel_def': []}
         # Retrieve phase and network
-        K_rel_def=[]   #                       ###############################
+        K_rel_def=[]
         K_rel_inv=[]
 #        for i in range(len(self.settings['inlets'])):
 #            K_rel_def[i]=[]
