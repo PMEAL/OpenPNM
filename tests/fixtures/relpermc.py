@@ -9,7 +9,7 @@ Created on Wed Jan  9 14:59:50 2019
 import openpnm as op
 import matplotlib.pyplot as plt
 from openpnm import topotools as tt
-pn = op.network.Cubic(shape=[3, 3, 3], spacing=0.00006)
+pn = op.network.Cubic(shape=[20, 20, 20], spacing=0.00006)
 proj = pn.project
 Psb = pn.pores(['top', 'bottom'])
 Tsb = pn.find_neighbor_throats(pores=Psb)
@@ -23,10 +23,10 @@ geom = op.geometry.StickAndBall(network=pn, pores=pn['pore.all'],
 oil = op.phases.GenericPhase(network=pn)
 water = op.phases.Water(network=pn)
 oil['pore.viscosity']=0.547
-oil['throat.contact_angle'] =110
+oil['throat.contact_angle'] =100
 oil['throat.surface_tension'] = 0.072
 oil['pore.surface_tension']=0.072
-oil['pore.contact_angle']=110
+oil['pore.contact_angle']=100
 phys_water= op.physics.GenericPhysics(network=pn, phase=water, geometry=geom)
 phys_oil = op.physics.GenericPhysics(network=pn, phase=oil, geometry=geom)
 

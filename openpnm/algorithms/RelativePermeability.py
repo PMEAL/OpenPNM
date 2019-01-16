@@ -101,6 +101,8 @@ class RelativePermeability(GenericAlgorithm):
             self.settings['outlets']=self.set_outlets(pores)   # should
             # be changed with output of outlet calc because we need pore
             # itself (object) not just the indice
+            # print('inlets are',self.settings['inlets'])
+            # print('outlets are',self.settings['outlets'])
         if outlets:
             self.settings['outlets']=self.set_outlets(outlets)
         if inv_phase:
@@ -117,6 +119,7 @@ class RelativePermeability(GenericAlgorithm):
             throat_inv=[]
             pore_occ=[]
             throat_occ=[]
+            sat=[]
             for inlet_num in range(len(ins)):
                 results=self.IP(inlets=ins[inlet_num],
                                 sim_num=inlet_num)
@@ -124,14 +127,17 @@ class RelativePermeability(GenericAlgorithm):
                 throat_inv.append(results['throat_inv'])
                 pore_occ.append(results['pore_occ'])
                 throat_occ.append(results['throat_occ'])
+                sat.append(results['sat'])
             self.settings['pore_occ']=pore_occ
             self.settings['throat_occ']=throat_occ
             self.settings['pore_inv_seq']=pore_inv
             self.settings['thorat_inv_seq']=throat_inv
-#            print('1',self.settings['pore_occ'])
-#            print('2',self.settings['throat_occ'])
-#            print('3',self.settings['pore_inv_seq'])
-#            print('4',self.settings['thorat_inv_seq'])
+            self.settings['sat']=sat
+            print('1',self.settings['pore_occ'])
+            print('2',self.settings['throat_occ'])
+            print('3',self.settings['pore_inv_seq'])
+            print('4',self.settings['thorat_inv_seq'])
+            print('5',self.settings['sat'])
 # the following lines are ignored assumming that once we have
 # the pore_inv_seq we also have throat_inv_seq as long as
 # both of them are produced as a result of running IP.
@@ -152,6 +158,7 @@ class RelativePermeability(GenericAlgorithm):
         Sarr=np.linspace(0, 1, num=self.settings['points'])
         for Snw in Sarr:
             res1=inv.results(Snwp=Snw)
+            print('sw is  :', Snw, 'result is', res1 )
             occ_ts=res1['throat.occupancy']
             if np.any(occ_ts):
                 max_pthroat=np.max(phase['throat.entry_pressure'][occ_ts])
@@ -164,16 +171,17 @@ class RelativePermeability(GenericAlgorithm):
 #        plt.xlabel('Invading Phase Saturation')
 #        plt.ylabel('Capillary Pressure')
 #        plt.grid(True)
-        self.settings['sat']=np.array(Snwparr[:])
+        sat=np.array(Snwparr[:])
+        print('sat is', sat)
         p_occ=[]
         t_occ=[]
-        for Sp in self.settings['sat']:
+        for Sp in sat:
             # inv_res.append(inv.results(Sp)) # gives pore and throat occupancy at Sp
             res=inv.results(Sp)
             p_occ.append(res['pore.occupancy'])
             t_occ.append(res['throat.occupancy'])
         inv_seq=[inv['pore.invasion_sequence'], inv['throat.invasion_sequence']]
-        results = {'pore_inv': [], 'throat_inv': [], 'pore_occ': [], 'throat_occ': []}
+        results = {'pore_inv': [], 'throat_inv': [], 'pore_occ': [], 'throat_occ': [], 'sat': []}
         # 'pore_inv' states invasion sequence in pores in an IP run
         # 'throat_inv' states invasion sequence in throats in an IP run
         # 'pore_occ' states pore occupancies for each saturation
@@ -186,6 +194,7 @@ class RelativePermeability(GenericAlgorithm):
         results['throat_inv']=inv_seq[1]
         results['pore_occ']=p_occ
         results['throat_occ']=t_occ
+        results['sat']=sat
         return results
 
     def domain_l_a(self):
@@ -216,6 +225,7 @@ class RelativePermeability(GenericAlgorithm):
             self['pore.inlets'] = False
             self['pore.inlets'][pores[inlet_num]] = True
             pores_in.append(self['pore.inlets'])
+        print('inlets are',pores_in)
         return pores_in
 
     def set_outlets(self, pores):
@@ -226,6 +236,7 @@ class RelativePermeability(GenericAlgorithm):
             self['pore.outlets'] = False
             self['pore.outlets'][pores[outlet_num]] = True
             pores_out.append(self['pore.outlets'])
+        print('outlets are', pores_out)
         return pores_out
 
     def update_phase_and_phys(self, sim_num, sat_num):
@@ -245,6 +256,8 @@ class RelativePermeability(GenericAlgorithm):
                         propname='throat.conduit_hydraulic_conductance',
                         throat_conductance='throat.hydraulic_conductance',
                         mode=mode)
+        # print('inv',self.project.phases(self.settings['inv_phase']).models)
+        # print('def',self.project.phases(self.settings['def_phase']).models)
 
     def top_b(self, lx, ly, lz):
         da = lx*ly
@@ -286,11 +299,11 @@ class RelativePermeability(GenericAlgorithm):
             St_def = StokesFlow(network=network,
                                 phase=self.project.phases(self.settings['def_phase']))
             St_def.setup(conductance=self.settings['gh'])
-            St_def._set_BC(pores=inlets[bound_num], bctype='value', bcvalues=1)
-            St_def._set_BC(pores=outlets[bound_num], bctype='value', bcvalues=0)
+            St_def._set_BC(pores=network.pores[inlets[bound_num]], bctype='value', bcvalues=1)
+            St_def._set_BC(pores=network.pores[outlets[bound_num]], bctype='value', bcvalues=0)
             St_def.run()
+            [da, dl]=self.domain_l_a()
             if self.settings['user_inlets'] is not True:
-                [da, dl]=self.domain_l_a()
                 K_def = St_def.calc_effective_permeability(domain_area=da[bound_num],
                                                            domain_length=dl[bound_num],
                                                            inlets=inlets[bound_num],
@@ -298,14 +311,14 @@ class RelativePermeability(GenericAlgorithm):
             else:
                 K_def = St_def.calc_effective_permeability(inlets=inlets[bound_num],
                                                            outlets=outlets[bound_num])
-            # proj.purge_object(obj=St_def)
+            self.project.purge_object(obj=St_def)
             # Ko
             Results['k_def'].append(K_def)
             St_inv = StokesFlow(network=network,
                                 phase=self.project.phases(self.settings['inv_phase']))
             St_inv.setup(conductance=self.settings['gh'])
-            St_inv._set_BC(pores=inlets[bound_num], bctype='value', bcvalues=1)
-            St_inv._set_BC(pores=outlets[bound_num], bctype='value', bcvalues=0)
+            St_inv._set_BC(pores=network.pores[inlets[bound_num]], bctype='value', bcvalues=1)
+            St_inv._set_BC(pores=network.pores[outlets[bound_num]], bctype='value', bcvalues=0)
             St_inv.run()
             if self.settings['user_inlets'] is not True:
                 K_inv = St_inv.calc_effective_permeability(domain_area=da[bound_num],
@@ -322,7 +335,7 @@ class RelativePermeability(GenericAlgorithm):
             K_rel_def.append([])
             K_rel_inv.append([])
             cn=-1
-            for Sp in self.settings['sat']:
+            for Sp in self.settings['sat'][bound_num]:
                 cn=cn+1
                 self.update_phase_and_phys(sim_num=bound_num, sat_num=cn)
                 # here it is done for each saturation
@@ -332,32 +345,36 @@ class RelativePermeability(GenericAlgorithm):
                 # print('sat is equal to', Sp)
                 inv_p=self.project.phases(self.settings['inv_phase'])
                 def_p=self.project.phases(self.settings['def_phase'])
+                print('invp',inv_p['pore.occupancy'])
+                print('defp',def_p['pore.occupancy'])
                 # water
                 St_def_tp= StokesFlow(network=network,
                                       phase=def_p)
                 St_def_tp.setup(conductance='throat.conduit_hydraulic_conductance')
-                St_def_tp.set_value_BC(pores=inlets[bound_num], values=1)
-                St_def_tp.set_value_BC(pores=outlets[bound_num], values=0)
+                St_def_tp.set_value_BC(pores=network.pores[inlets[bound_num]], bctype='value', bcvalues=1)
+                St_def_tp.set_value_BC(pores=network.pores[outlets[bound_num]], bctype='value', bcvalues=0)
                 # oil
                 St_inv_tp = StokesFlow(network=network,
                                        phase=inv_p)
                 St_inv_tp.setup(conductance='throat.conduit_hydraulic_conductance')
-                St_inv_tp.set_value_BC(pores=inlets[bound_num], values=1)
-                St_inv_tp.set_value_BC(pores=outlets[bound_num], values=0)
+                St_inv_tp.set_value_BC(pores=network.pores[inlets[bound_num]], bctype='value', bcvalues=1)
+                St_inv_tp.set_value_BC(pores=network.pores[outlets[bound_num]], bctype='value', bcvalues=0)
                 # Run Multiphase algs
-                St_def_tp.run()
                 St_inv_tp.run()
+                St_def_tp.run()
                 if self.settings['user_inlets'] is not True:
-                    inv_ef=St_def_tp.calc_effective_permeability
-                    K_def_tp = inv_ef(domain_area=da[bound_num],
+                    def_ef=St_def_tp.calc_effective_permeability
+                    K_def_tp = def_ef(domain_area=da[bound_num],
                                       domain_length=dl[bound_num],
                                       inlets=inlets[bound_num],
                                       outlets=outlets[bound_num])
-                    def_ef=St_inv_tp.calc_effective_permeability
-                    K_inv_tp = def_ef(domain_area=da[bound_num],
+                    inv_ef=St_inv_tp.calc_effective_permeability
+                    K_inv_tp = inv_ef(domain_area=da[bound_num],
                                       domain_length=dl[bound_num],
                                       inlets=inlets[bound_num],
                                       outlets=outlets[bound_num])
+                    print('keffinv',K_inv_tp)
+                    print('keffdef',K_def_tp)
                 else:
                     def_ef= St_def_tp.calc_effective_permeability
                     K_def_tp = def_ef(inlets=inlets[bound_num],
