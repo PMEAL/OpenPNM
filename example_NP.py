@@ -64,7 +64,7 @@ eB.set_value_BC(pores=net.pores('front'), values=100)
 eB.settings['rxn_tolerance'] = 1e-12
 eB.settings['relaxation_quantity'] = 1
 
-pnp = op.algorithms.PoissonNernstPlanck(network=net)
+pnp = op.algorithms.NernstPlanck(network=net)
 pnp.setup(phase=sw, pressure_field=sf, potential_field=p, electrolytes=[eA, eB])
 pnp.settings['s_scheme'] = 'upwind'
 pnp.settings['max_iter'] = 20

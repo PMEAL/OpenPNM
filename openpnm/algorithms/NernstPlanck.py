@@ -5,14 +5,15 @@ from openpnm.utils import logging
 logger = logging.getLogger(__name__)
 
 
-class PoissonNernstPlanck(ReactiveTransport):
+class NernstPlanck(ReactiveTransport):
     r"""
     A subclass of GenericTransport to solve the Poisson Nernst-Planck equations
     """
     def __init__(self, settings={}, phase=None, **kwargs):
         def_set = {'phase': None,
                    'hydraulic_conductance':
-                   'throat.hydraulic_conductance.solvent',
+                       'throat.hydraulic_conductance.solvent',
+                   'charge_conservation': 'electroneutrality',
                    's_scheme': 'powerlaw',
                    'tolerance': 1e-4,
                    'max_iter': 10}
@@ -23,12 +24,24 @@ class PoissonNernstPlanck(ReactiveTransport):
             self.setup(phase=phase)
         self._setup_quantities_conductances()
 
-    def setup(self, phase=None, electrolytes=None, pressure_field=None,
+    def setup(self, phase=None, hydraulic_conductance=None,
+              charge_conservation=None, s_scheme=None, tolerance=None,
+              max_iter=None, electrolytes=None, pressure_field=None,
               potential_field=None, **kwargs):
         r"""
         """
         if phase:
             self.settings['phase'] = phase.name
+        if hydraulic_conductance:
+            self.settings['hydraulic_conductance'] = hydraulic_conductance
+        if charge_conservation:
+            self.settings['charge_conservation'] = charge_conservation
+        if s_scheme:
+            self.settings['s_scheme'] = s_scheme
+        if tolerance:
+            self.settings['tolerance'] = tolerance
+        if max_iter:
+            self.settings['max_iter'] = max_iter
         if electrolytes:
             self.settings['electrolytes'] = electrolytes
         if pressure_field:
@@ -126,19 +139,27 @@ class PoissonNernstPlanck(ReactiveTransport):
         p_alg = self.settings['potential_field']
         e_alg = self.settings['electrolytes']
 
-        Sum = 0
-        for e in e_alg:
-            Sum += phase['pore.valence.'+e.name] * e[e.settings['quantity']]
-        F = 96485.3329
-        epsilon0 = 8.854187817e-12
-        epsilonr = phase['pore.permittivity.solvent'][0]
-        C = (-F/(epsilon0*epsilonr))
-        Sum = C*Sum
-        p_alg._b = Sum.astype('float64')
-        # TODO: Only valid for Dirichlet BCs (rate BC needs /f)
-        f = np.abs(p_alg._b).max() or 1
-        p_alg._A = p_alg._A/f
-        p_alg._b = p_alg._b/f
+        if self.settings['charge_conservation'] == 'poisson':
+            rhs = np.zeros(shape=(self.Np, ), dtype=float)
+            F = 96485.3329
+            epsilon0 = 8.854187817e-12
+            epsilonr = phase['pore.permittivity.solvent'][0]
+            C = (-F/(epsilon0*epsilonr))
+            for e in e_alg:
+                rhs += phase['pore.valence.'+e.name] * e[e.settings['quantity']]
+            rhs = C*rhs
+        elif self.settings['charge_conservation'] == 'electroneutrality':
+            rhs = np.zeros(shape=(self.Np, ), dtype=float)
+        else:
+            raise Exception('Unknown keyword for "charge_conservation", can ' +
+                            'only be "electroneutrality" or "poisson"')
+        p_alg._b = rhs
+
+        if self.settings['charge_conservation'] == 'poisson':
+            # TODO: Only valid for Dirichlet BCs (rate BC needs /f)
+            f = np.abs(p_alg._b).max() or 1
+            p_alg._A = p_alg._A/f
+            p_alg._b = p_alg._b/f
 
     def run(self):
         p_alg = self.settings['potential_field']
