@@ -21,12 +21,17 @@ tt.trim(network=pn, pores=a['trim_pores'])
 geom = op.geometry.StickAndBall(network=pn, pores=pn['pore.all'],
                                 throats=pn['throat.all'])
 oil = op.phases.GenericPhase(network=pn)
-water = op.phases.Water(network=pn)
+water = op.phases.GenericPhase(network=pn)
 oil['pore.viscosity']=0.547
-oil['throat.contact_angle'] =100
+oil['throat.contact_angle'] =180
 oil['throat.surface_tension'] = 0.072
 oil['pore.surface_tension']=0.072
-oil['pore.contact_angle']=100
+oil['pore.contact_angle']=180
+water['throat.contact_angle'] = 0
+water['pore.contact_angle'] = 0
+water['throat.surface_tension'] = 0.0483
+water['pore.surface_tension'] = 0.0483
+water['pore.viscosity']=0.4554
 phys_water= op.physics.GenericPhysics(network=pn, phase=water, geometry=geom)
 phys_oil = op.physics.GenericPhysics(network=pn, phase=oil, geometry=geom)
 
@@ -35,10 +40,6 @@ phys_oil.add_model(propname='throat.hydraulic_conductance',
                               model=mod)
 phys_oil.add_model(propname='throat.entry_pressure',
                               model=op.models.physics.capillary_pressure.washburn)
-# phys_water['pore.entry_pressure'] = -100000
-# phys_oil['pore.entry_pressure'] = -1000000
-# phys_oil.add_model(propname='pore.entry_pressure',
-#                              model=op.models.physics.capillary_pressure.washburn)
 phys_water.add_model(propname='throat.hydraulic_conductance',
                               model=mod)
 phys_water.add_model(propname='throat.entry_pressure',

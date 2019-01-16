@@ -299,8 +299,8 @@ class RelativePermeability(GenericAlgorithm):
             St_def = StokesFlow(network=network,
                                 phase=self.project.phases(self.settings['def_phase']))
             St_def.setup(conductance=self.settings['gh'])
-            St_def._set_BC(pores=network.pores[inlets[bound_num]], bctype='value', bcvalues=1)
-            St_def._set_BC(pores=network.pores[outlets[bound_num]], bctype='value', bcvalues=0)
+            St_def._set_BC(pores=network.pores(labels='top'), bctype='value', bcvalues=1)
+            St_def._set_BC(pores=network.pores(labels='bottom'), bctype='value', bcvalues=0)
             St_def.run()
             [da, dl]=self.domain_l_a()
             if self.settings['user_inlets'] is not True:
@@ -317,8 +317,8 @@ class RelativePermeability(GenericAlgorithm):
             St_inv = StokesFlow(network=network,
                                 phase=self.project.phases(self.settings['inv_phase']))
             St_inv.setup(conductance=self.settings['gh'])
-            St_inv._set_BC(pores=network.pores[inlets[bound_num]], bctype='value', bcvalues=1)
-            St_inv._set_BC(pores=network.pores[outlets[bound_num]], bctype='value', bcvalues=0)
+            St_inv._set_BC(pores=network.pores(labels='top'), bctype='value', bcvalues=1)
+            St_inv._set_BC(pores=network.pores(labels='bottom'), bctype='value', bcvalues=0)
             St_inv.run()
             if self.settings['user_inlets'] is not True:
                 K_inv = St_inv.calc_effective_permeability(domain_area=da[bound_num],
@@ -351,14 +351,14 @@ class RelativePermeability(GenericAlgorithm):
                 St_def_tp= StokesFlow(network=network,
                                       phase=def_p)
                 St_def_tp.setup(conductance='throat.conduit_hydraulic_conductance')
-                St_def_tp.set_value_BC(pores=network.pores[inlets[bound_num]], bctype='value', bcvalues=1)
-                St_def_tp.set_value_BC(pores=network.pores[outlets[bound_num]], bctype='value', bcvalues=0)
+                St_def_tp.set_value_BC(pores=network.pores(labels='top'), values=1)
+                St_def_tp.set_value_BC(pores=network.pores(labels='bottom'), values=0)
                 # oil
                 St_inv_tp = StokesFlow(network=network,
                                        phase=inv_p)
                 St_inv_tp.setup(conductance='throat.conduit_hydraulic_conductance')
-                St_inv_tp.set_value_BC(pores=network.pores[inlets[bound_num]], bctype='value', bcvalues=1)
-                St_inv_tp.set_value_BC(pores=network.pores[outlets[bound_num]], bctype='value', bcvalues=0)
+                St_inv_tp.set_value_BC(pores=network.pores(labels='top'), values=1)
+                St_inv_tp.set_value_BC(pores=network.pores(labels='bottom'), values=0)
                 # Run Multiphase algs
                 St_inv_tp.run()
                 St_def_tp.run()
