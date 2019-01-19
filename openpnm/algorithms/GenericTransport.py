@@ -717,9 +717,9 @@ class GenericTransport(GenericAlgorithm):
         inlets = network['pore.coords'][inlets]
         outlets = network['pore.coords'][outlets]
         if not iscoplanar(inlets):
-            logger.error('Detected inlet pores are not coplanar')
+            logger.error('Detected inlet pores are not planar')
         if not iscoplanar(outlets):
-            logger.error('Detected outlet pores are not coplanar')
+            logger.error('Detected outlet pores are not planar')
         Nin = np.ptp(inlets, axis=0) > 0
         if Nin.all():
             logger.warning('Detected inlets are not oriented along a ' +
@@ -728,12 +728,20 @@ class GenericTransport(GenericAlgorithm):
         if Nout.all():
             logger.warning('Detected outlets are not oriented along a ' +
                            'principle axis')
-        hull_in = ConvexHull(points=inlets[:, Nin])
-        hull_out = ConvexHull(points=outlets[:, Nout])
-        if hull_in.volume != hull_out.volume:
+
+        extents_in = np.amax(inlets, axis=0) - np.amin(inlets, axis=0)
+        extents_out = np.amax(outlets, axis=0) - np.amin(outlets, axis=0)
+        if extents_in.min() / extents_in.max() > 0.1:
+            logger.warning('Bounding box around inlets has dimensions of: '
+                           + str(extents_in))
+        if extents_out.min() / extents_out.max() > 0.1:
+            logger.warning('Bounding box around outlets has dimensions of: '
+                           + str(extents_out))
+        area_in = np.prod(np.sort(extents_in)[1:])
+        area_out = np.prod(np.sort(extents_out)[1:])
+        if area_in != area_out:
             logger.error('Inlet and outlet faces are different area')
-        area = hull_in.volume  # In 2D volume=area, area=perimeter
-        return area
+        return max((area_in, area_out))
 
     def _get_domain_length(self, inlets=None, outlets=None):
         logger.warning('Attempting to estimate domain length... ' +
