@@ -732,11 +732,11 @@ class GenericTransport(GenericAlgorithm):
         extents_in = np.amax(inlets, axis=0) - np.amin(inlets, axis=0)
         extents_out = np.amax(outlets, axis=0) - np.amin(outlets, axis=0)
         if extents_in.min() / extents_in.max() > 0.1:
-            logger.warning('Bounding box around inlets has dimensions of: '
-                           + str(extents_in))
+            logger.warning('Bounding box around inlets has dimensions of: ' +
+                           str(extents_in))
         if extents_out.min() / extents_out.max() > 0.1:
-            logger.warning('Bounding box around outlets has dimensions of: '
-                           + str(extents_out))
+            logger.warning('Bounding box around outlets has dimensions of: ' +
+                           str(extents_out))
         area_in = np.prod(np.sort(extents_in)[1:])
         area_out = np.prod(np.sort(extents_out)[1:])
         if area_in != area_out:
