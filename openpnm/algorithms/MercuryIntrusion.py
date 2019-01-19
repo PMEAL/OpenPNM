@@ -1,3 +1,4 @@
+import numpy as np
 from openpnm.utils import logging
 from openpnm.phases import Mercury
 from openpnm.physics import GenericPhysics
@@ -41,3 +42,34 @@ class MercuryIntrusion(Porosimetry):
         self.set_inlets(pores=network.pores('surface'))
         logger.info('Running MIP simulation')
         self.run()
+
+    def _set_snwp_data(self, data):
+        self._snwp_data = np.array(data)
+
+    def _get_snwp_data(self):
+        if hasattr(self, '_snwp_data'):
+            return self._snwp_data
+        else:
+            logger.error('Pc data has not been provided')
+
+    snwp_data = property(fget=_get_snwp_data, fset=_set_snwp_data)
+
+    def _set_pc_data(self, data):
+        self._pc_data = np.array(data)
+
+    def _get_pc_data(self):
+        if hasattr(self, '_pc_data'):
+            return self._pc_data
+        else:
+            logger.error('Pc data has not been provided')
+
+    pc_data = property(fget=_get_pc_data, fset=_set_pc_data)
+
+    def plot_intrusion_curve(self, fig=None):
+        fig = super().plot_intrusion_curve(fig=fig)
+        ax = fig.gca()
+        x = self.pc_data
+        y = self.snwp_data
+        if (x is not None) and (y is not None):
+            ax.plot(x, y, 'r*-')
+        return fig
