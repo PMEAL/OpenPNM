@@ -2935,14 +2935,25 @@ def iscoplanar(coords):
         return True
 
     # Perform rigorous check using vector algebra
+    # Grab first basis vector from list of coords
     n1 = sp.array((Px[1] - Px[0], Py[1] - Py[0], Pz[1] - Pz[0])).T
-    n2 = sp.array((Px[2] - Px[1], Py[2] - Py[1], Pz[2] - Pz[1])).T
-    n = sp.cross(n1, n2)
+    n = sp.array([0.0, 0.0, 0.0])
+    i = 1
+    while n.sum() == 0:
+        if i >= (sp.size(Px) - 1):
+            logger.warning('No valid basis vectors found')
+            return False
+        # Chose a secon basis vector
+        n2 = sp.array((Px[i+1] - Px[i], Py[i+1] - Py[i], Pz[i+1] - Pz[i])).T
+        # Find their cross product
+        n = sp.cross(n1, n2)
+        i += 1
+    # Create vectors between all other pairs of points
     r = sp.array((Px[1:-1] - Px[0], Py[1:-1] - Py[0], Pz[1:-1] - Pz[0]))
-
+    # Ensure they all lie on the same plane
     n_dot = sp.dot(n, r)
 
-    if sp.sum(n_dot) == 0:
+    if sp.sum(sp.absolute(n_dot)) == 0:
         return True
     else:
         return False
