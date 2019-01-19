@@ -2,6 +2,7 @@ numpy
 scipy
 matplotlib
 scikit-image
+scikit-learn
 pandas
 sympy
 numba
