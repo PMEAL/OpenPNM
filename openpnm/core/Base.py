@@ -299,6 +299,14 @@ class Base(dict):
 
     project = property(fget=_get_project)
 
+    @property
+    def network(self):
+        r"""
+        A shortcut to get a handle to the associated network
+        There can only be one so this works
+        """
+        return self.project.network
+
     def clear(self, element=None, mode='all'):
         r"""
         A subclassed version of the standard dict's clear method.  This can be

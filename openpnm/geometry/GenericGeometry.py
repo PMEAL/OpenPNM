@@ -89,11 +89,3 @@ class GenericGeometry(Subdomain, ModelsMixin):
             network['pore.'+self.name] = False
             network['throat.'+self.name] = False
             self.add_locations(pores=pores, throats=throats)
-
-    @property
-    def network(self):
-        r"""
-        A shortcut to get a handle to the associated network
-        There can only be one so this works
-        """
-        return self.project.network
