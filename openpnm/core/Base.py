@@ -246,18 +246,26 @@ class Base(dict):
                 raise Exception('Cannot write array, wrong length: '+key)
 
     def __getitem__(self, key):
-        try:
-            return super().__getitem__(key)
-        except KeyError:
-            # See if key is a subdict
+        element, prop = key.split('.', 1)
+        if key in self.keys():
+            # Get values if present on self
+            vals = self.get(key)
+        elif key in self.keys(mode='all', deep=True):
+            # Interleave values from geom if found there
+            vals = self.interleave_data(key)
+        elif any([k.startswith(key) for k in self.keys()]):
+            # Create a subdict of values present on self
+            vals = {}
+            keys = self.keys()
+            vals.update({k: self.get(k) for k in keys if k.startswith(key)})
+        elif any([k.startswith(key) for k in self.keys(mode='all', deep=True)]):
+            # Create a subdict of values in subdomains by interleaving
+            vals = {}
             keys = self.keys(mode='all', deep=True)
-            L = [k for k in keys if k.startswith(key)]
-            if len(L):
-                vals = {k: self.__getitem__(k) for k in L}
-                vals = FlatDict(vals, delimiter='.')
-                return vals
-            else:
-                raise KeyError(key)
+            vals.update({k: self.interleave_data(k) for k in keys if k.startswith(key)})
+        else:
+            raise KeyError(key)
+        return vals
 
     def _set_name(self, name, validate=True):
         if not hasattr(self, '_name'):

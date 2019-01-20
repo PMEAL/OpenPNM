@@ -43,14 +43,40 @@ class Subdomain(Base):
         element = key.split('.')[0]
         # Find boss object (either phase or network)
         boss = self.project.find_full_domain(self)
-        # Get values if present
+
+#        if key in self.keys():
+#            # Get values if present on self
+#            vals = self.get(key)
+##        elif any([k.startswith(key) for k in self.keys()]):
+##            # Create a subdict of values present on self
+##            vals = {}
+##            keys = self.keys()
+##            vals.update({k: self.get(k) for k in keys if k.startswith(key)})
+#        elif key in boss.keys(mode='all', deep=True):
+#            # Interleave values from other subdomains
+#            inds = boss._get_indices(element=element, labels=self.name)
+#            vals = boss.interleave_data(key)[inds]
+##        elif any([k.startswith(key) for k in self.keys(mode='all', deep=True)]):
+##            # Create a subdict of values on self if found
+##            vals = {}
+##            keys = self.keys(mode='all', deep=True)
+##            vals.update({k: self.interleave_data(k) for k in keys if k.startswith(key)})
+#        else:
+#            raise KeyError(key)
+
         vals = self.get(key)
         if vals is None:
             inds = boss._get_indices(element=element, labels=self.name)
             try:  # Will invoke interleave data if necessary
-                vals = boss[key][inds]
+                vals = boss[key]
+                if type(vals) is dict:
+                    for item in vals:
+                        vals[item] = vals[item][inds]
+                else:
+                    vals = vals[inds]
             except KeyError:
                 vals = super().__getitem__(key)
+
         return vals
 
     def __setitem__(self, key, value):
