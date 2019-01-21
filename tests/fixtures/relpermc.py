@@ -25,7 +25,6 @@ water['pore.surface_tension'] = 0.0483
 water['pore.viscosity']=0.4554
 phys_water= op.physics.GenericPhysics(network=pn, phase=water, geometry=geom)
 phys_oil = op.physics.GenericPhysics(network=pn, phase=oil, geometry=geom)
-
 mod = op.models.physics.hydraulic_conductance.hagen_poiseuille
 phys_oil.add_model(propname='throat.hydraulic_conductance',
                               model=mod)
@@ -37,12 +36,13 @@ phys_water.add_model(propname='throat.entry_pressure',
                               model=op.models.physics.capillary_pressure.washburn)
 inv=op.algorithms.InvasionPercolation(phase=oil,network=pn)
 inv.setup(phase=oil,entry_pressure='throat.entry_pressure',pore_volume='pore.volume', throat_volume='throat.volume')
-inlets = [pn.pores(['top']), pn.pores(['front']),
-              pn.pores(['left'])]
-outlets = [pn.pores(['bottom']), pn.pores(['back']),
-              pn.pores(['right'])]
+inlets = [pn.pores(['top']), pn.pores(['top']),
+              pn.pores(['top'])]
+outlets = [pn.pores(['bottom']), pn.pores(['bottom']),
+              pn.pores(['bottom'])]
 num=15
 plt.figure(1)
+final={'sat': [], 'K_inv': [], 'K_def': []}
 for i in range(len(inlets)):
     inv.set_inlets(pores=inlets[i])
     inv.run()
@@ -71,9 +71,6 @@ for i in range(len(inlets)):
               pore_occ=pore_occ,
               throat_occ=throat_occ)
     results=relcalc.run()
-    x=results['sat']
-    y1=results['K_rel_inv']
-    y2=results['K_rel_def']
-    plt.plot(x, y1)
-    plt.plot(x, y2)
-
+    final['sat'].append(results['sat'])
+    final['K_inv'].append(results['K_rel_inv'])
+    final['K_def'].append(results['K_rel_def'])
