@@ -82,10 +82,14 @@ class Statoil(GenericIO):
                          'throat.length', 'throat.volume',
                          'throat.clay_volume']
         # Add link2 props to net
-        net['throat.length'] = sp.array(link2['throat.length'])
+        cl_t = sp.array(link2['throat.length'])
+        net['throat.length'] = cl_t
+        net['throat.conduit_lengths.throat'] = cl_t
         net['throat.volume'] = sp.array(link2['throat.volume'])
-        net['throat.pore1_length'] = sp.array(link2['throat.pore1_length'])
-        net['throat.pore2_length'] = sp.array(link2['throat.pore2_length'])
+        cl_p1 = sp.array(link2['throat.pore1_length'])
+        net['throat.conduit_lengths.pore1'] = cl_p1
+        cl_p2 = sp.array(link2['throat.pore2_length'])
+        net['throat.conduit_lengths.pore2'] = cl_p2
         net['throat.clay_volume'] = sp.array(link2['throat.clay_volume'])
         # ---------------------------------------------------------------------
         # Parse the node1 file
@@ -121,6 +125,10 @@ class Statoil(GenericIO):
         net['pore.radius'] = sp.array(node2['pore.radius'])
         net['pore.shape_factor'] = sp.array(node2['pore.shape_factor'])
         net['pore.clay_volume'] = sp.array(node2['pore.clay_volume'])
+        net['throat.area'] = ((net['throat.radius']**2) /
+                              (4.0*net['throat.shape_factor']))
+        net['pore.area'] = ((net['pore.radius']**2) /
+                            (4.0*net['pore.shape_factor']))
 
         if network is None:
             network = GenericNetwork()
