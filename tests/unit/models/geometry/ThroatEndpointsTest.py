@@ -350,7 +350,7 @@ class ThroatEndpointsTest:
                                               domain_length=length)
             conds.append(D[0])
             nets.append(net)
-        assert np.all(np.around(np.asarray(conds), 12) == D_ab)
+        assert np.allclose(np.asarray(conds), D_ab)
 
 
 if __name__ == '__main__':
