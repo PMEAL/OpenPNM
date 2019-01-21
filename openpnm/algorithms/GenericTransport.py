@@ -206,9 +206,9 @@ class GenericTransport(GenericAlgorithm):
             The pore indices where the condition should be applied
 
         values : scalar or array_like
-            The value to of the boundary condition.  If a scalar is supplied
-            it is assigne to all locations, and if a vector is applied it
-            corresponds directy to the locations given in ``pores``.
+            The value to apply in each pore.  If a scalar is supplied
+            it is assigne to all locations, and if a vector is applied is
+            must be the same size as the indices given in ``pores``.
 
         Notes
         -----
@@ -232,9 +232,9 @@ class GenericTransport(GenericAlgorithm):
             The pore indices where the condition should be applied
 
         values : scalar or array_like
-            The value to of the boundary condition.  If a scalar is supplied
+            The values of rate to apply in each pore.  If a scalar is supplied
             it is assigned to all locations, and if a vector is applied it
-            corresponds directy to the locations given in ``pores``.
+            must be the same size as the indices given in ``pores``.
 
         Notes
         -----
@@ -242,45 +242,6 @@ class GenericTransport(GenericAlgorithm):
         ``settings``, e.g. ``alg.settings['quentity'] = 'pore.pressure'``.
         """
         self._set_BC(pores=pores, bctype='rate', bcvalues=values, mode='merge')
-
-    def set_boundary_conditions(self, pores=None, bctype=None, values=None,
-                                mode='merge'):
-        r"""
-        Add or remove boundary conditions at specified locations
-
-        Parameters
-        ----------
-        pores : array_like
-            The pore indices where the condition should be applied
-        values : int or array_like
-            The value to of the boundary condition.  If a scalar is supplied
-            it is assigned to all locations, and if a vector is applied it
-            corresponds directy to the locations given in ``pores``.
-        bctype : string
-            Specifies the type of boundary condition to apply. The types can
-            be one one of the following:
-
-            - *'value'* : Specify the value of the quantity in each location
-            - *'rate'* : Specify the flow rate into each location
-
-        mode : string
-            Controls how the conditions are applied.  Options are:
-
-            - *'merge'*: (Default) Adds supplied boundary conditions to already
-            existing conditions
-
-            - *'overwrite'*: Deletes all boundary conditions on object then,
-            adds the given ones
-
-            - *'remove'*: Removes all boundary conditions from the specified
-            locations
-
-        """
-        if mode == 'remove':
-            self.remove_BC(pores=pores)
-        else:
-            self._set_BC(pores=pores, bctype=bctype, bcvalues=values,
-                         mode=mode)
 
     def _set_BC(self, pores, bctype, bcvalues=None, mode='merge'):
         r"""
