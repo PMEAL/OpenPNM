@@ -216,7 +216,7 @@ def find_neighbor_bonds(sites, im=None, am=None, flatten=True, logic='or'):
             raise Exception('flatten cannot be used with an adjacency matrix')
         Ps = sp.zeros(max(am.row.max(),
                           am.col.max(),
-                          sites.max())+1, dtype=bool)
+                          max(sites))+1, dtype=bool)
         Ps[sites] = True
         conns = sp.vstack((am.row, am.col)).T
         if logic in ['or', 'union', 'any']:
