@@ -5,7 +5,7 @@ import scipy.sparse.csgraph as spgr
 from scipy.spatial import ConvexHull
 from scipy.spatial import cKDTree
 from decimal import Decimal as dc
-from openpnm.topotools import iscoplanar
+from openpnm.topotools import BoundingBox, iscoplanar
 from openpnm.algorithms import GenericAlgorithm
 from openpnm.utils import logging
 logger = logging.getLogger(__name__)
@@ -710,56 +710,47 @@ class GenericTransport(GenericAlgorithm):
         # Abort if network is not 3D
         if np.sum(np.ptp(network['pore.coords'], axis=0) == 0) > 0:
             raise Exception('The network is not 3D, specify area manually')
+        bb = BoundingBox(network['pore.coords'])
         if inlets is None:
             inlets = self._get_inlets()
         if outlets is None:
             outlets = self._get_outlets()
         inlets = network['pore.coords'][inlets]
         outlets = network['pore.coords'][outlets]
-        if not iscoplanar(inlets):
-            logger.error('Detected inlet pores are not planar')
-        if not iscoplanar(outlets):
-            logger.error('Detected outlet pores are not planar')
-        Nin = np.ptp(inlets, axis=0) > 0
-        if Nin.all():
-            logger.warning('Detected inlets are not oriented along a ' +
-                           'principle axis')
-        Nout = np.ptp(outlets, axis=0) > 0
-        if Nout.all():
-            logger.warning('Detected outlets are not oriented along a ' +
-                           'principle axis')
-
-        extents_in = np.amax(inlets, axis=0) - np.amin(inlets, axis=0)
-        extents_out = np.amax(outlets, axis=0) - np.amin(outlets, axis=0)
-        if extents_in.min() / extents_in.max() > 0.1:
-            logger.warning('Bounding box around inlets has dimensions of: ' +
-                           str(extents_in))
-        if extents_out.min() / extents_out.max() > 0.1:
-            logger.warning('Bounding box around outlets has dimensions of: ' +
-                           str(extents_out))
-        area_in = np.prod(np.sort(extents_in)[1:])
-        area_out = np.prod(np.sort(extents_out)[1:])
-        if area_in != area_out:
-            logger.error('Inlet and outlet faces are different area')
-        return max((area_in, area_out))
+        # Find inlet and outlet face
+        face_in = self._get_face(inlets, bb)
+        face_out = self._get_face(outlets, bb)
+        Ain = bb.__getattribute__('area_of_'+face_in)
+        Aout = bb.__getattribute__('area_of_'+face_out)
+        if Ain != Aout:
+            logger.warning('Inlet and outlet areas are not equal')
+        return max([Ain, Aout])
 
     def _get_domain_length(self, inlets=None, outlets=None):
         logger.warning('Attempting to estimate domain length... ' +
                        'could be low if boundary pores were not added')
         network = self.project.network
+        bb = BoundingBox(network['pore.coords'])
         if inlets is None:
             inlets = self._get_inlets()
         if outlets is None:
             outlets = self._get_outlets()
         inlets = network['pore.coords'][inlets]
         outlets = network['pore.coords'][outlets]
-        if not iscoplanar(inlets):
-            logger.error('Detected inlet pores are not coplanar')
-        if not iscoplanar(outlets):
-            logger.error('Detected inlet pores are not coplanar')
-        tree = cKDTree(data=inlets)
-        Ls = np.unique(np.around(tree.query(x=outlets)[0], decimals=5))
-        if np.size(Ls) != 1:
-            logger.error('A unique value of length could not be found')
-        length = Ls[0]
-        return length
+        # Find inlet and outlet face
+        face_in = self._get_face(inlets, bb)
+        face_out = self._get_face(outlets, bb)
+        try:
+            L = bb.__getattribute__('length_'+face_in+'_to_'+face_out)
+        except AttributeError:
+            L = bb.__getattribute__('length_'+face_out+'_to_'+face_in)
+        return L
+
+    def _get_face(self, points, bb):
+        # Find inlet and outlet face
+        faces = ['left', 'right', 'top', 'bottom', 'front', 'back']
+        in_ = []
+        for f in faces:
+            in_.append(bb.__getattribute__('dist_to_'+f)(points).sum())
+        i = np.where(in_ == min(in_))[0][0]
+        return faces[i]
