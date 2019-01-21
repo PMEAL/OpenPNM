@@ -66,3 +66,28 @@ def ordinary_diffusion(target,
                                throat_diffusivity=throat_diffusivity,
                                conduit_lengths=conduit_lengths,
                                conduit_shape_factors=conduit_shape_factors)
+
+
+def taylor_aris_diffusion(
+        target,
+        pore_area='pore.area',
+        throat_area='throat.area',
+        pore_diffusivity='pore.diffusivity',
+        pore_pressure='pore.pressure',
+        throat_hydraulic_conductance='throat.hydraulic_conductance',
+        throat_diffusivity='throat.diffusivity',
+        conduit_lengths='throat.conduit_lengths',
+        conduit_shape_factors='throat.poisson_shape_factors'):
+    r"""
+    """
+    return generic_conductance(
+        target=target,
+        transport_type='taylor_aris_diffusion',
+        pore_area=pore_area,
+        throat_area=throat_area,
+        pore_diffusivity=pore_diffusivity,
+        throat_diffusivity=throat_diffusivity,
+        conduit_lengths=conduit_lengths,
+        conduit_shape_factors=conduit_shape_factors,
+        pore_pressure=pore_pressure,
+        throat_hydraulic_conductance=throat_hydraulic_conductance)

@@ -12,32 +12,34 @@ class GraphToolsTest:
 
         The Network:
 
-        3 ― 4 ― 5
-        | \ |
-        0 ― 1 ― 2
+        ::
 
-        The Adjacency Matrix:    The Enumreated Adjacency Matrix:
+            3 ― 4 ― 5
+            | \ |
+            0 ― 1 ― 2
 
-          | 0  1  2  3  4  5       | 0  1  2  3  4  5
-        ――|――――――――――――――――――    ――|――――――――――――――――――
-        0 | -  1     1           0 | -  0     1
-        1 | 1  -  1  1  1        1 | 0  -  3  2  5
-        2 |    1  -              2 |    3  -
-        3 | 1  1     -  1        3 | 1  2     -  4
-        4 |    1     1  -  1     4 |    5     4  -  6
-        5 |             1  -     5 |             6  -
+            The Adjacency Matrix:    The Enumreated Adjacency Matrix:
 
-        The Incidence Matrix:    The Enumerated Incidence Matrix
+              | 0  1  2  3  4  5       | 0  1  2  3  4  5
+            ――|――――――――――――――――――    ――|――――――――――――――――――
+            0 | -  1     1           0 | -  0     1
+            1 | 1  -  1  1  1        1 | 0  -  3  2  5
+            2 |    1  -              2 |    3  -
+            3 | 1  1     -  1        3 | 1  2     -  4
+            4 |    1     1  -  1     4 |    5     4  -  6
+            5 |             1  -     5 |             6  -
 
-          | 0  1  2  3  4  5       | 0  1  2  3  4  5
-        ――|――――――――――――――――――    ――|――――――――――――――――――
-        0 | 1  1                 0 | 1  0
-        1 | 1        1           1 | 3        0
-        2 |    1     1           2 |    3     1
-        3 |    1  1              3 |    2  1
-        4 |          1  1        4 |          4  3
-        5 |    1        1        5 |    4        1
-        6 |             1  1     6 |             5  4
+            The Incidence Matrix:    The Enumerated Incidence Matrix
+
+              | 0  1  2  3  4  5       | 0  1  2  3  4  5
+            ――|――――――――――――――――――    ――|――――――――――――――――――
+            0 | 1  1                 0 | 1  0
+            1 | 1        1           1 | 3        0
+            2 |    1     1           2 |    3     1
+            3 |    1  1              3 |    2  1
+            4 |          1  1        4 |          4  3
+            5 |    1        1        5 |    4        1
+            6 |             1  1     6 |             5  4
 
         """
         self.ws = op.Workspace()
@@ -221,6 +223,34 @@ class GraphToolsTest:
             topotools.find_neighbor_bonds(sites=[0], im=im, logic='nor')
         with pytest.raises(Exception):
             topotools.find_neighbor_bonds(sites=[0], im=im, logic='nand')
+
+    def test_find_neighbor_bonds_with_am_and_logic(self):
+        am = self.net.get_adjacency_matrix(fmt='coo')
+        im = self.net.get_incidence_matrix(fmt='coo')
+        Ts1 = topotools.find_neighbor_bonds(sites=[1], am=am,
+                                            flatten=True, logic='or')
+        Ts2 = topotools.find_neighbor_bonds(sites=[1], im=im,
+                                            flatten=True, logic='or')
+        assert np.all(Ts1 == Ts2)
+        Ts1 = topotools.find_neighbor_bonds(sites=[1], am=am,
+                                            flatten=True, logic='xor')
+        Ts2 = topotools.find_neighbor_bonds(sites=[1], im=im,
+                                            flatten=True, logic='xor')
+        assert np.all(Ts1 == Ts2)
+        Ts1 = topotools.find_neighbor_bonds(sites=[1], am=am,
+                                            flatten=True, logic='xnor')
+        Ts2 = topotools.find_neighbor_bonds(sites=[1], im=im,
+                                            flatten=True, logic='xnor')
+        assert np.all(Ts1 == Ts2)
+
+    def test_find_neighbor_bonds_with_am_exceptions(self):
+        am = self.net.get_adjacency_matrix(fmt='coo')
+        with pytest.raises(Exception):
+            topotools.find_neighbor_bonds(sites=[1], am=am, flatten=True,
+                                          logic='intersection')
+        with pytest.raises(Exception):
+            topotools.find_neighbor_bonds(sites=[1], am=am, flatten=False,
+                                          logic='or')
 
     def test_find_neighbor_sites(self):
         am = self.net.create_adjacency_matrix(fmt='lil')
