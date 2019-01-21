@@ -9,7 +9,7 @@ network topology.
 
 
 """
-
+from .__BoundingBox__ import BoundingBox
 from .topotools import add_boundary_pores
 from .topotools import bond_percolation
 from .topotools import clone_pores
