@@ -34,12 +34,18 @@ phys_water.add_model(propname='throat.hydraulic_conductance',
                               model=mod)
 phys_water.add_model(propname='throat.entry_pressure',
                               model=op.models.physics.capillary_pressure.washburn)
-inv=op.algorithms.InvasionPercolation(phase=oil,network=pn)
-inv.setup(phase=oil,entry_pressure='throat.entry_pressure',pore_volume='pore.volume', throat_volume='throat.volume')
-inlets = [pn.pores(['top']), pn.pores(['top']),
+Hinlets = [pn.pores(['top']), pn.pores(['top']),
               pn.pores(['top'])]
+inlets=[]
 outlets = [pn.pores(['bottom']), pn.pores(['bottom']),
               pn.pores(['bottom'])]
+inv=op.algorithms.InvasionPercolation(phase=oil,network=pn)
+inv.setup(phase=oil,entry_pressure='throat.entry_pressure',pore_volume='pore.volume', throat_volume='throat.volume')
+pore_inv_seq=[]
+throat_inv_seq=[]
+
+for i in range(len(Hinlets)):
+    inlets.append([Hinlets[i][x] for x in range(0, len(Hinlets[i]), 2)])
 num=15
 plt.figure(1)
 final={'sat': [], 'K_inv': [], 'K_def': []}
