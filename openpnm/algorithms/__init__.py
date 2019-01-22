@@ -17,6 +17,7 @@ from .StokesFlow import StokesFlow
 from .FickianDiffusion import FickianDiffusion
 from .TransientFickianDiffusion import TransientFickianDiffusion
 from .AdvectionDiffusion import AdvectionDiffusion
+from .Dispersion import Dispersion
 from .TransientAdvectionDiffusion import TransientAdvectionDiffusion
 from .FourierConduction import FourierConduction
 from .OhmicConduction import OhmicConduction

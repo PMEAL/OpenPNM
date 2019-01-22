@@ -120,9 +120,46 @@ def generic_conductance(target, transport_type, pore_diffusivity,
         g1[m1] = D1[m1]*(1+(Pe1**2)/192)*A1[m1] / L1[m1]
         g2[m2] = D2[m2]*(1+(Pe2**2)/192)*A2[m2] / L2[m2]
         gt[mt] = Dt[mt]*(1+(Pet**2)/192)*At[mt] / Lt[mt]
+    elif transport_type == 'dispersion':
+        for k, v in kwargs.items():
+            if k == 'pore_pressure':
+                pore_pressure = v
+            elif k == 'throat_hydraulic_conductance':
+                throat_hydraulic_conductance = v
+            elif k == 'throat_diffusive_conductance':
+                throat_diffusive_conductance = v
+            elif k == 's_scheme':
+                s_scheme = v
+
+        P = phase[pore_pressure]
+        gh = phase[throat_hydraulic_conductance]
+        gd = phase[throat_diffusive_conductance]
+        gd = _sp.tile(gd, 2)
+
+        Qij = -gh*_sp.diff(P[cn], axis=1).squeeze()
+        Qij = _sp.append(Qij, -Qij)
+
+        Peij = Qij/gd
+        Peij[(Peij < 1e-10) & (Peij >= 0)] = 1e-10
+        Peij[(Peij > -1e-10) & (Peij <= 0)] = -1e-10
+        Qij = Peij*gd
+
+        if s_scheme == 'upwind':
+            w = gd + _sp.maximum(0, -Qij)
+        elif s_scheme == 'hybrid':
+            w = _sp.maximum(0, _sp.maximum(-Qij, gd-Qij/2))
+        elif s_scheme == 'powerlaw':
+            w = gd * _sp.maximum(0, (1 - 0.1*_sp.absolute(Peij))**5) + \
+                _sp.maximum(0, -Qij)
+        elif s_scheme == 'exponential':
+            w = -Qij / (1 - _sp.exp(Peij))
+        else:
+            raise Exception('Unrecognized discretization scheme: ' + s_scheme)
+        w = _sp.reshape(w, (network.Nt, 2), order='F')
+        return w
     else:
         raise Exception('Unknown keyword for "transport_type", can only be' +
-                        ' "flow", "diffusion", "taylor_aris_diffusion"' +
-                        ' or "ionic"')
+                        ' "flow", "diffusion", "taylor_aris_diffusion",' +
+                        ' "dispersion" or "ionic"')
     # Apply shape factors and calculate the final conductance
     return (1/gt/SFt + 1/g1/SF1 + 1/g2/SF2)**(-1)
