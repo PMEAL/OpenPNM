@@ -247,22 +247,26 @@ class Base(dict):
 
     def __getitem__(self, key):
         element, prop = key.split('.', 1)
+        try:
+            prop, sub = prop.split('.', 1)
+        except ValueError:
+            pass
         if key in self.keys():
             # Get values if present on self
             vals = self.get(key)
         elif key in self.keys(mode='all', deep=True):
             # Interleave values from geom if found there
             vals = self.interleave_data(key)
-        elif any([k.startswith(key) for k in self.keys()]):
+        elif any([k.startswith(element+'.'+prop+'.') for k in self.keys()]):
             # Create a subdict of values present on self
             vals = {}
             keys = self.keys()
-            vals.update({k: self.get(k) for k in keys if k.startswith(key)})
-        elif any([k.startswith(key) for k in self.keys(mode='all', deep=True)]):
+            vals.update({k: self.get(k) for k in keys if k.startswith(element+'.'+prop+'.')})
+        elif any([k.startswith(element+'.'+prop+'.') for k in self.keys(mode='all', deep=True)]):
             # Create a subdict of values in subdomains by interleaving
             vals = {}
             keys = self.keys(mode='all', deep=True)
-            vals.update({k: self.interleave_data(k) for k in keys if k.startswith(key)})
+            vals.update({k: self.interleave_data(k) for k in keys if k.startswith(element+'.'+prop+'.')})
         else:
             raise KeyError(key)
         return vals

@@ -949,6 +949,15 @@ class BaseTest:
         assert sp.all(~sp.isnan(d['pore.foo.bar']))
         assert sp.all(~sp.isnan(d['pore.foo.baz']))
 
+    def test_subdict_lookup_errors(self):
+        pn = op.network.Cubic(shape=[5, 5, 5])
+        pn['pore.foo.bar'] = 1
+        pn['pore.foo.baz'] = 2
+        with pytest.raises(KeyError):
+            pn['pore.foo.b']
+        with pytest.raises(KeyError):
+            pn['pore.fo']
+
 
 if __name__ == '__main__':
 
