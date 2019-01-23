@@ -68,7 +68,7 @@ class GenericGeometry(Subdomain, ModelsMixin):
 
     """
 
-    def __init__(self, network=None, project=None, pores=[], throats=[],
+    def __init__(self, network=None, project=None, pores=None, throats=None,
                  settings={}, **kwargs):
         # Define some default settings
         self.settings.update({'prefix': 'geo'})
@@ -88,4 +88,9 @@ class GenericGeometry(Subdomain, ModelsMixin):
         if network:
             network['pore.'+self.name] = False
             network['throat.'+self.name] = False
-            self.add_locations(pores=pores, throats=throats)
+            if (pores is None) and (throats is None):
+                logger.info('No pores and throats given, assigning ' +
+                            self.name + ' to entire domain')
+                pores = network.Ps
+                throats = network.Ts
+            self._add_locations(pores=pores, throats=throats)

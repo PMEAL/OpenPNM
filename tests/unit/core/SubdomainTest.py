@@ -37,26 +37,26 @@ class SubdomainTest:
     def test_drop_locations_from_geom_successively_with_single_geometry(self):
         assert self.geo.Np == 27
         assert self.geo.Nt == 54
-        self.geo.drop_locations(pores=[0, 1, 2], throats=[0, 1, 2])
+        self.geo._drop_locations(pores=[0, 1, 2], throats=[0, 1, 2])
         assert self.geo.Np == 24
         assert self.geo.Nt == 51
-        self.geo.drop_locations(pores=[3, 4], throats=[3, 4])
+        self.geo._drop_locations(pores=[3, 4], throats=[3, 4])
         assert self.geo.Np == 22
         assert self.geo.Nt == 49
-        self.geo.add_locations(pores=[0, 1, 2, 3, 4], throats=[0, 1, 2, 3, 4])
+        self.geo._add_locations(pores=[0, 1, 2, 3, 4], throats=[0, 1, 2, 3, 4])
         assert self.geo.Np == 27
         assert self.geo.Nt == 54
 
     def test_drop_locations_from_physics_successively_with_two_physics(self):
         assert self.phys1.Np == 27
         assert self.phys1.Nt == 54
-        self.phys1.drop_locations(pores=[0, 1], throats=[0, 1])
+        self.phys1._drop_locations(pores=[0, 1], throats=[0, 1])
         assert self.phys1.Np == 25
         assert self.phys1.Nt == 52
-        self.phys1.drop_locations(pores=[3, 4], throats=[3, 4])
+        self.phys1._drop_locations(pores=[3, 4], throats=[3, 4])
         assert self.phys1.Np == 23
         assert self.phys1.Nt == 50
-        self.phys1.add_locations(pores=[0, 1, 3, 4], throats=[0, 1, 3, 4])
+        self.phys1._add_locations(pores=[0, 1, 3, 4], throats=[0, 1, 3, 4])
         assert self.phys1.Np == 27
         assert self.phys1.Nt == 54
 
@@ -65,14 +65,14 @@ class SubdomainTest:
         assert self.phys1.Nt == 54
         assert 'pore.'+self.phys1.name in self.phase1.keys()
         assert 'throat.'+self.phys1.name in self.phase1.keys()
-        self.phys1.drop_locations(pores=self.net.Ps)
+        self.phys1._drop_locations(pores=self.net.Ps)
         assert 'pore.'+self.phys1.name in self.phase1.keys()
         assert self.phase1.num_pores(self.phys1.name) == 0
         assert 'throat.'+self.phys1.name in self.phase1.keys()
-        self.phys1.drop_locations(throats=self.net.Ts)
+        self.phys1._drop_locations(throats=self.net.Ts)
         assert 'throat.'+self.phys1.name in self.phase1.keys()
         assert self.phase1.num_throats(self.phys1.name) == 0
-        self.phys1.add_locations(pores=self.net.Ps, throats=self.net.Ts)
+        self.phys1._add_locations(pores=self.net.Ps, throats=self.net.Ts)
 
     def test_writting_subdict_names_across_subdomains(self):
         ws = op.Workspace()
