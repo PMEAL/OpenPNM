@@ -34,12 +34,19 @@ class Subdomain(Base):
         element = key.split('.')[0]
         # Find boss object (either phase or network)
         boss = self.project.find_full_domain(self)
-        # Get values if present, or regenerate them
+        # Try to get vals directly first
         vals = self.get(key)
-        # If still not found, check with boss object
-        if vals is None:
+        if vals is None:  # Otherwise invoke search
             inds = boss._get_indices(element=element, labels=self.name)
-            vals = boss[key][inds]
+            try:  # Will invoke interleave data if necessary
+                vals = boss[key]  # Will return nested dict if present
+                if type(vals) is dict:  # Index into each array in nested dict
+                    for item in vals:
+                        vals[item] = vals[item][inds]
+                else:  # Otherwise index into single array
+                    vals = vals[inds]
+            except KeyError:
+                vals = super().__getitem__(key)
         return vals
 
     def __setitem__(self, key, value):

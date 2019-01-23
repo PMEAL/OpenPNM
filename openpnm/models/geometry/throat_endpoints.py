@@ -34,7 +34,7 @@ def cubic_pores(target, pore_diameter='pore.diameter'):
     throats = network.map_throats(throats=target.Ts, origin=target)
     xyz = network['pore.coords']
     cn = network['throat.conns'][throats]
-    L = _ctc(target=target, pore_diameter=pore_diameter)
+    L = _ctc(target=target, pore_diameter=pore_diameter) + 1e-15
     D1 = network[pore_diameter][cn[:, 0]]
     D2 = network[pore_diameter][cn[:, 1]]
     unit_vec = (xyz[cn[:, 1]] - xyz[cn[:, 0]]) / L[:, None]
@@ -93,7 +93,7 @@ def spherical_pores(target, pore_diameter='pore.diameter',
     throats = network.map_throats(throats=target.Ts, origin=target)
     xyz = network['pore.coords']
     cn = network['throat.conns'][throats]
-    L = _ctc(target=target, pore_diameter=pore_diameter)
+    L = _ctc(target=target, pore_diameter=pore_diameter) + 1e-15
     Dt = network[throat_diameter][throats]
     D1 = network[pore_diameter][cn[:, 0]]
     D2 = network[pore_diameter][cn[:, 1]]
@@ -109,8 +109,8 @@ def spherical_pores(target, pore_diameter='pore.diameter',
     # Handle non-colinear pores and throat centroids
     try:
         TC = network[throat_centroid][throats]
-        LP1T = _sp.linalg.norm(TC - xyz[cn[:, 0]], axis=1)
-        LP2T = _sp.linalg.norm(TC - xyz[cn[:, 1]], axis=1)
+        LP1T = _sp.linalg.norm(TC - xyz[cn[:, 0]], axis=1) + 1e-15
+        LP2T = _sp.linalg.norm(TC - xyz[cn[:, 1]], axis=1) + 1e-15
         unit_vec_P1T = (TC - xyz[cn[:, 0]]) / LP1T[:, None]
         unit_vec_P2T = (TC - xyz[cn[:, 1]]) / LP2T[:, None]
     except KeyError:

@@ -72,19 +72,46 @@ class AdvectionDiffusionTest:
         assert_allclose(actual=y, desired=x)
 
     def test_outflow_BC(self):
-        for scheme in ['upwind', 'hybrid', 'powerlaw']:
+        for scheme in ['upwind', 'hybrid', 'powerlaw', 'exponential']:
             ad = op.algorithms.AdvectionDiffusion(network=self.net,
                                                   phase=self.phase)
             ad.setup(quantity='pore.concentration',
                      diffusive_conductance='throat.diffusive_conductance',
                      hydraulic_conductance='throat.hydraulic_conductance',
-                     pressure='pore.pressure')
+                     pressure='pore.pressure',
+                     s_scheme=scheme)
+
             ad.set_value_BC(pores=self.net.pores('back'), values=2)
             ad.set_outflow_BC(pores=self.net.pores('front'))
             ad.run()
 
             y = ad[ad.settings['quantity']].mean()
             assert_allclose(actual=y, desired=2.0)
+
+    def test_rate(self):
+        for scheme in ['upwind', 'hybrid', 'powerlaw', 'exponential']:
+            ad = op.algorithms.AdvectionDiffusion(network=self.net,
+                                                  phase=self.phase)
+            ad.setup(quantity='pore.concentration',
+                     diffusive_conductance='throat.diffusive_conductance',
+                     hydraulic_conductance='throat.hydraulic_conductance',
+                     pressure='pore.pressure',
+                     s_scheme=scheme)
+
+            ad.set_value_BC(pores=self.net.pores('back'), values=2)
+            ad.set_value_BC(pores=self.net.pores('front'), values=0)
+            ad.run()
+
+            mdot_inlet = ad.rate(pores=self.net.pores("back"))[0]
+            mdot_outlet = ad.rate(pores=self.net.pores("front"))[0]
+            temp = sp.random.choice(self.net.pores(["back", "front"],
+                                                    mode="not"),
+                                    size=3, replace=False)
+            mdot_internal = ad.rate(pores=temp)[0]
+            # Ensure no mass is generated within the network
+            assert_allclose(mdot_inlet - mdot_internal, mdot_inlet)
+            # Ensure mass is not conserved
+            assert_allclose(mdot_inlet, -mdot_outlet)
 
     def teardown_class(self):
         ws = op.Workspace()

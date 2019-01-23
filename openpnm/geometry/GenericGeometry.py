@@ -94,11 +94,3 @@ class GenericGeometry(Subdomain, ModelsMixin):
                 pores = network.Ps
                 throats = network.Ts
             self._add_locations(pores=pores, throats=throats)
-
-    @property
-    def network(self):
-        r"""
-        A shortcut to get a handle to the associated network
-        There can only be one so this works
-        """
-        return self.project.network
