@@ -262,7 +262,8 @@ class Base(dict):
             # Create a subdict of values in subdomains by interleaving
             vals = {}
             keys = self.keys(mode='all', deep=True)
-            vals.update({k: self.interleave_data(k) for k in keys if k.startswith(key + '.')})
+            vals.update({k: self.interleave_data(k) for k in keys
+                         if k.startswith(key + '.')})
         else:
             raise KeyError(key)
         return vals
