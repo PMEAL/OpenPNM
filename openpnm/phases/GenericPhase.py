@@ -86,17 +86,5 @@ class GenericPhase(Base, ModelsMixin):
             return net[element+'._id']
         if prop == self.name:
             return self[element+'.all']
-        # Now get values if present, or regenerate them
-        vals = self.get(key)
-        if vals is None:
-            if element == 'throat' and 'pore.'+prop in self.keys():
-                vals = self.interpolate_data(propname='pore.'+prop)
-                logger.info(key + ', not found, interpolating from ' +
-                            'pore.' + prop)
-            elif element == 'pore' and 'throat.'+prop in self.keys():
-                vals = self.interpolate_data(propname='throat.'+prop)
-                logger.info(key + ', not found, interpolating from ' +
-                            'throat.' + prop)
-            else:
-                vals = self.interleave_data(key)
+        vals = super().__getitem__(key)
         return vals
