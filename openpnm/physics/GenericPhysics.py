@@ -50,25 +50,15 @@ class GenericPhysics(Subdomain, ModelsMixin):
         network = self.project.network
         if network:
             if phase is None:
-                raise Exception('All Physics objects must be associated ' +
-                                'with a Phase')
+                logger.warning('No Phase provided, ' + self.name +
+                               ' will not be associated with a phase')
             else:
                 phase['pore.'+self.name] = False
                 phase['throat.'+self.name] = False
             if geometry is None:
-                geoms = self.project.geometries().values()
-                if len(geoms) == 0:
-                    pass
-                elif len(geoms) == 1:
-                    logger.info('No Geometry given, assigning ' + self.name +
-                                ' to all pores and throats')
-                else:
-                    raise Exception('Multiple Geometry objects are defined; ' +
-                                    'must specify which one ' + self.name +
-                                    ' should be associated with')
-                Ps = network.Ps
-                Ts = network.Ts
+                logger.warning('No Geometry provided, ' + self.name +
+                               'will not be associated with any locations')
             else:
                 Ps = network.pores(geometry.name)
                 Ts = network.throats(geometry.name)
-            self._add_locations(pores=Ps, throats=Ts)
+                self._add_locations(pores=Ps, throats=Ts)
