@@ -2,6 +2,7 @@ from openpnm.algorithms import GenericAlgorithm, StokesFlow, InvasionPercolation
 from openpnm.utils import logging
 from openpnm import models
 import numpy as np
+import openpnm
 # import matplotlib.pyplot as plt
 logger = logging.getLogger(__name__)
 
@@ -19,6 +20,7 @@ default_settings = {'pore_inv_seq': [],
                     'Pcap': [],
                     'pore_occ': [],
                     'throat_occ': [],
+                    'auto': [],
                     }
 
 
@@ -44,7 +46,8 @@ class RelativePermeability(GenericAlgorithm):
               inlets=None,
               outlets=None,
               pore_occ=None,
-              throat_occ=None):
+              throat_occ=None,
+              auto=None):
         r"""
          Set up the required parameters for the algorithm
 
@@ -78,48 +81,66 @@ class RelativePermeability(GenericAlgorithm):
             A list of list,l in which each element is a list of pores as an
             outlet defined for each simulation.
         """
+        self.settings['auto']=auto
         network = self.project.network
-        if inlets.any():
+        if inlets:
             self.settings['user_inlets']=True
             # self.settings['inlets']=self.set_inlets(inlets)
             self.settings['inlets']=inlets
             print('1line', self.settings['inlets'])
         else:
             print('not specified')
-#            self.settings['user_inlets']=False
-#            pores=[]
-#            # inlets_def = [network.pores(['top']), network.pores(['front']),
-#            #              network.pores(['left'])]
-#            inlets_def = [network.pores(['left'])]
-#            for inlet_num in range(len(inlets_def)):
-#                il=len(inlets_def[inlet_num])
-#                used_inlets = [inlets_def[inlet_num][x] for x in range(0, il, 2)]
-#                pores.append(used_inlets)
-#            self.settings['inlets']=self.set_inlets(pores)
-#            pores=[]
-#            # outlets_def = [network.pores(['bottom']), network.pores(['back']),
-#            #               network.pores(['right'])]
-#            outlets_def = [network.pores(['bottom'])]
-#            for outlet_num in range(len(outlets_def)):
-#                ol=len(outlets_def[outlet_num])
-#                used_outlets = [outlets_def[inlet_num][x] for x in range(0, ol, 2)]
-#                pores.append(used_outlets)
-#            self.settings['outlets']=self.set_outlets(pores)   # should
-#            # be changed with output of outlet calc because we need pore
-#            # itself (object) not just the indice
-#            # print('inlets are',self.settings['inlets'])
-#            # print('outlets are',self.settings['outlets'])
-        if outlets.any():
-            # self.settings['outlets']=self.set_outlets(outlets)
-            self.settings['outlets']= outlets
-            print('1line', self.settings['outlets'])
+            self.settings['user_inlets']=False
+            Hinlets = [network.pores(['top']), network.pores(['top']),
+                          network.pores(['top'])]
+            inlets=[]
+            for i in range(len(Hinlets)):
+                inlets.append([Hinlets[i][x] for x in range(0, len(Hinlets[i]), 2)])
+            self.settings['inlets']=self.set_inlets(inlets)
+            outlets = [network.pores(['bottom']), network.pores(['bottom']),
+                           network.pores(['bottom'])]
+            self.settings['outlets']=self.set_outlets(outlets)   # should
+            # be changed with output of outlet calc because we need pore
+            # itself (object) not just the indice
+            # print('inlets are',self.settings['inlets'])
+            # print('outlets are',self.settings['outlets'])
+#        if outlets.any():
+#            # self.settings['outlets']=self.set_outlets(outlets)
+#            self.settings['outlets']= outlets
+#            print('1line', self.settings['outlets'])
         if inv_phase:
             self.settings['inv_phase'] = inv_phase.name
-        if def_phase:
-            self.settings['def_phase'] = def_phase.name
+        else:
+            oil = openpnm.phases.GenericPhase(network=network)
+            water = openpnm.phases.GenericPhase(network=network)
+            oil['pore.viscosity']=0.547
+            oil['throat.contact_angle'] =110
+            oil['throat.surface_tension'] = 0.072
+            oil['pore.surface_tension']=0.072
+            oil['pore.contact_angle']=110
+            water['throat.contact_angle'] = 70
+            water['pore.contact_angle'] = 70
+            water['throat.surface_tension'] = 0.0483
+            water['pore.surface_tension'] = 0.0483
+            water['pore.viscosity']=0.4554
+#            phys_water= openpnm.physics.GenericPhysics(network=network, phase=water, geometry=self.project.geometry)
+#            phys_oil = openpnm.physics.GenericPhysics(network=network, phase=oil, geometry=self.project.geometry)
+            mod = openpnm.models.physics.hydraulic_conductance.hagen_poiseuille
+            oil.add_model(propname='throat.hydraulic_conductance',
+                              model=mod)
+            oil.add_model(propname='throat.entry_pressure',
+                              model=openpnm.models.physics.capillary_pressure.washburn)
+            water.add_model(propname='throat.hydraulic_conductance',
+                              model=mod)
+            water.add_model(propname='throat.entry_pressure',
+                              model=openpnm.models.physics.capillary_pressure.washburn)
+            self.settings['inv_phase']= oil.name
+            self.settings['def_phase']= water.name
         if points:
             self.settings['points'] = points
-        if pore_inv_seq.any():
+        else:
+            self.settings['points']= 15
+        if pore_inv_seq:
             self.settings['sat']=sats
             self.settings['pore_inv_seq'] = pore_inv_seq
             self.settings['throat_inv_seq'] = throat_inv_seq
@@ -129,7 +150,92 @@ class RelativePermeability(GenericAlgorithm):
             print('1lineis', self.settings['throat_inv_seq'])
             print('1lineis', self.settings['pore_occ'])
             print('1lineis', self.settings['throat_occ'])
-        else:   # ## will be uncommented later on
+        elif self.settings['user_inlets'] is not True:   # ## will be uncommented later on
+            inv=InvasionPercolation(phase=self.project.phases(self.settings['inv_phase']),network=network)
+            inv.setup(phase=self.project.phases(self.settings['inv_phase']),
+                      entry_pressure='throat.entry_pressure',
+                      pore_volume='pore.volume',
+                      throat_volume='throat.volume')
+            pore_inv_seq=[]
+            throat_inv_seq=[]
+            sat = {'0': [],'1': [],'2': []}
+            perm_water = {'0': [],'1': [],'2': []}
+            perm_oil = {'0': [],'1': [],'2': []}
+            pore_occ = {'0': [],'1': [],'2': []}
+            throat_occ = {'0': [],'1': [],'2': []}
+            single_perms_water = [None,None,None]
+            single_perms_oil = [None,None,None]
+            [Da,Dl]=self.domain_l_a()
+            for i in range(len(self.settings['inlets'])):
+                inv.set_inlets(pores=self.settings['inlets'][i])
+                inv.run()
+                pore_inv_seq=inv['pore.invasion_sequence']
+                throat_inv_seq=inv['throat.invasion_sequence']
+                Snwparr =  []
+                Pcarr =  []
+                Sarr=np.linspace(0,1,num=15)
+                for Snw in Sarr:
+                    res1=inv.results(Snwp=Snw)
+                    occ_ts=res1['throat.occupancy']
+                    if np.any(occ_ts):
+                        max_pthroat=np.max(oil['throat.entry_pressure'][occ_ts])
+                        Pcarr.append(max_pthroat)
+                        Snwparr.append(Snw)
+                sat[str(i)].append(Snwparr)
+                c=-1
+                for Sp in Snwparr:
+                    c=c+1
+                    res=inv.results(Sp)
+                    pore_occ[str(i)].append(res['pore.occupancy'])
+                    throat_occ[str(i)].append(res['throat.occupancy'])
+            for i in range(len(self.settings['inlets'])):
+                BC1_pores = Hinlets[i]
+                BC2_pores = outlets[i]
+                #self.autorun()
+                [da,dl]=[Da[i],Dl[i]]
+                Stokes_alg_single_phase_water = StokesFlow(network=network, phase=water)
+                Stokes_alg_single_phase_water.setup(conductance='throat.hydraulic_conductance')
+                Stokes_alg_single_phase_water._set_BC(pores=BC1_pores, bctype='value', bcvalues=100000)
+                Stokes_alg_single_phase_water._set_BC(pores=BC2_pores, bctype='value', bcvalues=1000)
+                Stokes_alg_single_phase_water.run()
+                single_perms_water[i] = Stokes_alg_single_phase_water.calc_effective_permeability(domain_area=da, domain_length=dl,inlets=BC1_pores, outlets=BC2_pores)
+                self.project.purge_object(obj=Stokes_alg_single_phase_water)
+                Stokes_alg_single_phase_oil = StokesFlow(network=network, phase=oil)
+                Stokes_alg_single_phase_oil.setup(conductance='throat.hydraulic_conductance')
+                Stokes_alg_single_phase_oil._set_BC(pores=BC1_pores, bctype='value', bcvalues=10000)
+                Stokes_alg_single_phase_oil._set_BC(pores=BC2_pores, bctype='value', bcvalues=1000)
+                Stokes_alg_single_phase_oil.run()
+                single_perms_oil[i] = Stokes_alg_single_phase_oil.calc_effective_permeability(domain_area=da, domain_length=dl,inlets=BC1_pores, outlets=BC2_pores)
+                self.project.purge_object(obj=Stokes_alg_single_phase_oil)
+                c=-1
+                for Sp in range(len(sat[str(i)])):
+                    c=c+1
+                    self.update_phase_and_phys(c, i, pore_occ, throat_occ)
+                    print('sat is equal to', Sp)
+                    Stokes_alg_multi_phase_water = StokesFlow(network=network,phase=water)
+                    Stokes_alg_multi_phase_water.setup(conductance='throat.conduit_hydraulic_conductance')
+                    Stokes_alg_multi_phase_water.set_value_BC(values=100000, pores=BC1_pores)
+                    Stokes_alg_multi_phase_water.set_value_BC(values=1000, pores=BC2_pores)
+                    #oil
+                    Stokes_alg_multi_phase_oil = StokesFlow(network=network,phase=oil)
+                    Stokes_alg_multi_phase_oil.setup(conductance='throat.conduit_hydraulic_conductance')
+                    Stokes_alg_multi_phase_oil.set_value_BC(values=100000, pores=BC1_pores)
+                    Stokes_alg_multi_phase_oil.set_value_BC(values=1000, pores=BC2_pores)
+                    # Run Multiphase algs
+                    Stokes_alg_multi_phase_water.run()
+                    Stokes_alg_multi_phase_oil.run()
+                    effective_permeability_water_multi = Stokes_alg_multi_phase_water.calc_effective_permeability(domain_area=da, domain_length=dl)
+                    effective_permeability_oil_multi = Stokes_alg_multi_phase_oil.calc_effective_permeability(domain_area=da, domain_length=dl)
+                    relative_eff_perm_water = effective_permeability_water_multi/single_perms_water[i]
+                    relative_eff_perm_oil = effective_permeability_oil_multi/single_perms_oil[i]
+                    perm_water[str(i)].append(relative_eff_perm_water)
+                    perm_oil[str(i)].append(relative_eff_perm_oil)
+                    self.project.purge_object(obj=Stokes_alg_multi_phase_water)
+                    self.project.purge_object(obj=Stokes_alg_multi_phase_oil)
+                
+                
+            
+        else:
             print('not specified')
 #            ins=self.settings['inlets']
 #            pore_inv=[]
@@ -162,7 +268,7 @@ class RelativePermeability(GenericAlgorithm):
 #            self.settings['thorat_inv_seq'] = throat_inv_seq
 #       else:
 #            self.IP()
-
+        
     def IP(self, inlets=None, sim_num=1):
         network = self.project.network
         phase = self.project.phases(self.settings['inv_phase'])
@@ -258,13 +364,13 @@ class RelativePermeability(GenericAlgorithm):
         self['pore.outlets']= False
         return pores_out
 
-    def update_phase_and_phys(self, sat_num):
+    def update_phase_and_phys(self, satnum, invnum, pore_occ, throat_occ):
         # inv_p=self.project.phases(self.settings['inv_phase'])
         # def_p=self.project.phases(self.settings['def_phase'])
-        self.project.phases(self.settings['inv_phase'])['pore.occupancy'] = self.settings['pore_occ'][sat_num]
-        self.project.phases(self.settings['def_phase'])['pore.occupancy'] = 1-self.settings['pore_occ'][sat_num]
-        self.project.phases(self.settings['inv_phase'])['throat.occupancy'] = self.settings['throat_occ'][sat_num]
-        self.project.phases(self.settings['def_phase'])['throat.occupancy'] = 1-self.settings['throat_occ'][sat_num]
+        self.project.phases(self.settings['inv_phase'])['pore.occupancy'] = pore_occ[str(invnum)][satnum]
+        self.project.phases(self.settings['def_phase'])['pore.occupancy'] = 1-pore_occ[str(invnum)][satnum]
+        self.project.phases(self.settings['inv_phase'])['throat.occupancy'] = throat_occ[str(invnum)][satnum]
+        self.project.phases(self.settings['def_phase'])['throat.occupancy'] = 1-throat_occ[str(invnum)][satnum]
         mode=self.settings['mode']
         self.project.phases(self.settings['def_phase']).add_model(model=models.physics.multiphase.conduit_conductance,
                         propname='throat.conduit_hydraulic_conductance',
@@ -309,7 +415,6 @@ class RelativePermeability(GenericAlgorithm):
         outlets=self.settings['outlets']
         print('ins are', inlets)
         print('outs are', outlets)
-        bound_num=0
         St_def = StokesFlow(network=network,
                             phase=self.project.phases(self.settings['def_phase']))
         St_def.setup(conductance='throat.hydraulic_conductance')
