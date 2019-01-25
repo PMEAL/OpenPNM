@@ -374,15 +374,13 @@ def ignore_warnings(warning=RuntimeWarning):
 
     Examples
     --------
-    @ignore_warning(RuntimeWarning)
-    def myfun(x):
-        return 1/x
+    >>> from openpnm.utils.misc import ignore_warnings
+    >>> @ignore_warnings()
+    ... def myfun(x):
+    ...     return 1/x
 
+    >>> import numpy as np
     >>> x = np.arange(5)
-    >>> 1/x
-    __main__:1: RuntimeWarning: divide by zero encountered in true_divide
-    array([       inf, 1.        , 0.5       , 0.33333333, 0.25      ])
-
     >>> myfun(x)
     array([       inf, 1.        , 0.5       , 0.33333333, 0.25      ])
 
