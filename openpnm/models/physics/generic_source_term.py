@@ -15,6 +15,26 @@ import scipy as _sp
 import sympy as _syp
 
 
+def charge_conservation(target, phase, p_alg, e_alg, assumption):
+    if assumption == 'poisson':
+        rhs = _sp.zeros(shape=(p_alg.Np, ), dtype=float)
+        F = 96485.3329
+        epsilon0 = 8.854187817e-12
+        epsilonr = phase['pore.permittivity'][0]
+        C = (-F/(epsilon0*epsilonr))
+        for e in e_alg:
+            rhs += phase['pore.valence.'+e.name] * e[e.settings['quantity']]
+        rhs = C*rhs
+    elif assumption == 'electroneutrality':
+        rhs = _sp.zeros(shape=(p_alg.Np, ), dtype=float)
+    else:
+        raise Exception('Unknown keyword for "charge_conservation", can ' +
+                        'only be "electroneutrality" or "poisson"')
+    S1 = _sp.zeros(shape=(p_alg.Np, ), dtype=float)
+    values = {'S1': S1, 'S2': rhs, 'rate': rhs}
+    return values
+
+
 def standard_kinetics(target, quantity, prefactor, exponent):
     r"""
 
