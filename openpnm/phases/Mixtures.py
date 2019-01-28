@@ -27,7 +27,6 @@ class SalineWater(GenericPhase):
         self['throat.valence.Na'] = 1
         self['throat.valence.Cl'] = -1
 
-
         self.add_model(propname='pore.density',
                        model=mods.phases.density.water)
         self.add_model(propname='pore.molar_density',
