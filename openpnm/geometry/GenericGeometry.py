@@ -68,7 +68,7 @@ class GenericGeometry(Subdomain, ModelsMixin):
 
     """
 
-    def __init__(self, network=None, project=None, pores=[], throats=[],
+    def __init__(self, network=None, project=None, pores=None, throats=None,
                  settings={}, **kwargs):
         # Define some default settings
         self.settings.update({'prefix': 'geo'})
@@ -88,12 +88,9 @@ class GenericGeometry(Subdomain, ModelsMixin):
         if network:
             network['pore.'+self.name] = False
             network['throat.'+self.name] = False
-            self.add_locations(pores=pores, throats=throats)
-
-    @property
-    def network(self):
-        r"""
-        A shortcut to get a handle to the associated network
-        There can only be one so this works
-        """
-        return self.project.network
+            if (pores is None) and (throats is None):
+                logger.info('No pores and throats given, assigning ' +
+                            self.name + ' to entire domain')
+                pores = network.Ps
+                throats = network.Ts
+            self._add_locations(pores=pores, throats=throats)

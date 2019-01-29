@@ -1,3 +1,9 @@
+r"""
+
+.. autofunction:: openpnm.models.geometry.throat_perimeter.cylinder
+.. autofunction:: openpnm.models.geometry.throat_perimeter.cuboid
+
+"""
 import scipy as _sp
 
 

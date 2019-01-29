@@ -1,3 +1,11 @@
+r"""
+These models calculate pore volumes depending on the specified shape
+
+.. autofunction:: openpnm.models.geometry.pore_volume.sphere
+.. autofunction:: openpnm.models.geometry.pore_volume.cube
+
+"""
+
 from numpy import pi as _pi
 
 
