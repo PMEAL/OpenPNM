@@ -1,4 +1,3 @@
-from decimal import Decimal
 import scipy as sp
 from openpnm.utils import logging
 from openpnm.io import GenericIO
@@ -58,7 +57,7 @@ class PerGeos(GenericIO):
             if shapemap[item] == '':
                 data = sp.atleast_2d(data).T
             if typemap[item] == 'float':
-                formatter = {'float_kind':lambda x: "%.15E" % x}
+                formatter = {'float_kind': lambda x: "%.15E" % x}
             else:
                 formatter = None
             if data.dtype == 'bool':
@@ -66,9 +65,12 @@ class PerGeos(GenericIO):
             d = sp.array2string(data, formatter=formatter)
             s.append(d.replace('[', '').replace(']', '').replace('\n ', '\n'))
 
-        with open(filename, 'w') as f:
+        # Write to file
+        if filename == '':
+            filename = project.name
+        fname = cls._parse_filename(filename=filename, ext='am')
+        with open(fname, 'w') as f:
             f.write(''.join(s))
-
 
     @classmethod
     def load(cls, filename, network=None):
