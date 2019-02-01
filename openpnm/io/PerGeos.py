@@ -23,7 +23,13 @@ class PerGeos(GenericIO):
         s.append("define VERTEX " + str(network.Np) + '\n')
         s.append("define EDGE " + str(network.Nt) + '\n')
         s.append("define POINT " + str(2*network.Nt) + '\n\n')
-        s.append("Parameters {\n\tContentType \"HxPoreNetworkModel\"\n}\n\n")
+        s.append("Parameters {\n")
+        s.append("\tContentType \"HxPoreNetworkModel\"\n\n")
+        s.append("\t\tOpenPNMInfo {\n")
+        s.append("\t\t\tNumPores " + "\"" + str(network.Np) + "\"" + "\n")
+        s.append("\t\t\tNumThroats " + "\""  + str(network.Nt) + "\"" + "\n")
+        s.append("\t\t}\n\n")
+        s.append("}\n\n")
 
         types = {'b': 'int', 'i': 'int', 'f': 'float'}
         typemap = {}
@@ -53,7 +59,7 @@ class PerGeos(GenericIO):
         # Add POINT data
         s.append("POINT { float[3] EdgePointCoordinates } @" + str(i))
 
-        s.append("# Data section follows")
+        s.append("\n\n# Data section follows")
         for item in network.keys():
             data = network[item]
             s.append('\n\n@' + propmap[item] + '\n')
@@ -70,7 +76,8 @@ class PerGeos(GenericIO):
         # Add POINT data
         s.append('\n\n@' + str(i) + '\n')
         formatter = {'float_kind': lambda x: "%.15E" % x}
-        d = sp.array2string(network['pore.coords'], formatter=formatter)
+        data = network['pore.coords'][network['throat.conns'][:, [1, 0]].flatten()]
+        d = sp.array2string(data, formatter=formatter)
         s.append(d.replace('[', '').replace(']', '').replace('\n ', '\n'))
 
         # Write to file
