@@ -43,6 +43,8 @@ parameters.
 | JGF      | The JSON Graph Format is a schema specification of how to write  |
 |          | a graph object into JSON format                                  |
 +----------+------------------------------------------------------------------+
+| PerGeos  | The PerGeos format is used by the commercial software Avizo      |
++----------+------------------------------------------------------------------+
 | iMorph   | iMorph is a graphical interface program that provides some image |
 |          | analysis tools for porous media                                  |
 +----------+------------------------------------------------------------------+
@@ -65,6 +67,7 @@ from .MAT import MAT
 from .iMorph import iMorph
 from .MARock import MARock
 from .Statoil import Statoil
+from .PerGeos import PerGeos
 from .Pandas import Pandas
 from .HDF5 import HDF5
 from .XDMF import XDMF
