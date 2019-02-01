@@ -18,6 +18,7 @@ class PerGeos(GenericIO):
         project, network, phases = cls._parse_args(network=network,
                                                    phases=phases)
 
+        network = network[0]
         s = ["# Avizo 3D ASCII 3.0\n\n"]
         s.append("define VERTEX " + str(network.Np) + '\n')
         s.append("define EDGE " + str(network.Nt) + '\n')
