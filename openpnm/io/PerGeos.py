@@ -22,7 +22,7 @@ class PerGeos(GenericIO):
         s = ["# Avizo 3D ASCII 3.0\n\n"]
         s.append("define VERTEX " + str(network.Np) + '\n')
         s.append("define EDGE " + str(network.Nt) + '\n')
-        s.append("define VERTEX " + str(2*network.Nt) + '\n')
+        s.append("define POINT " + str(2*network.Nt) + '\n\n')
         s.append("Parameters {\n\tContentType \"HxPoreNetworkModel\"\n}\n\n")
 
         types = {'b': 'int', 'i': 'int', 'f': 'float'}
@@ -48,8 +48,10 @@ class PerGeos(GenericIO):
             temp = element[1] + " { " + typemap[item] + shapemap[item] + " " +\
                    namemap[item] + " } @" + str(i) + '\n'
             s.append(temp)
-            i += 1
             propmap[item] = str(i)
+            i += 1
+        # Add POINT data
+        s.append("POINT { float[3] EdgePointCoordinates } @" + str(i))
 
         s.append("# Data section follows")
         for item in network.keys():
@@ -65,6 +67,11 @@ class PerGeos(GenericIO):
                 data = data.astype(int)
             d = sp.array2string(data, formatter=formatter)
             s.append(d.replace('[', '').replace(']', '').replace('\n ', '\n'))
+        # Add POINT data
+        s.append('\n\n@' + str(i) + '\n')
+        formatter = {'float_kind': lambda x: "%.15E" % x}
+        d = sp.array2string(network['pore.coords'], formatter=formatter)
+        s.append(d.replace('[', '').replace(']', '').replace('\n ', '\n'))
 
         # Write to file
         if filename == '':
