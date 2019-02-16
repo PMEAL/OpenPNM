@@ -23,10 +23,10 @@ class PerGeos(GenericIO):
                                                    phases=phases)
 
         # Ensure network has PerGeos' expected properties
+        network = network[0]
         if 'pore.EqRadius' not in network.props():
             network['pore.EqRadius'] = network['pore.diameter']/2
 
-        network = network[0]
         s = ["# Avizo 3D ASCII 3.0\n\n"]
         s.append("define VERTEX " + str(network.Np) + '\n')
         s.append("define EDGE " + str(network.Nt) + '\n')
@@ -55,8 +55,8 @@ class PerGeos(GenericIO):
             n = item.replace(element[0] + '.', '').replace('.', '_').split('_')
             n = ''.join([i[0].upper()+i[1:] for i in n if len(i)])
             namemap[item] = n
-            temp = element[1] + " { " + typemap[item] + shapemap[item] + " "
-            + namemap[item] + " } @" + str(i) + '\n'
+            temp = element[1] + " { " + typemap[item] + shapemap[item] + " "\
+                   + namemap[item] + " } @" + str(i) + '\n'
 
             if temp.find('EdgeConnectivity') == -1:
                 # replaces openpnm tags with the mandatory am file's tags
@@ -109,7 +109,7 @@ class PerGeos(GenericIO):
         # Add NumEdgePoints
         if NumEdgePoints:
             s.append('\n\n' + tempat)
-            s.append(['2' + '\n']*network.Nt)
+            s.append(''.join(['2' + '\n']*network.Nt))
 
         # Write to file
         if filename == '':
