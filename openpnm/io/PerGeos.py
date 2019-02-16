@@ -1,20 +1,24 @@
+import numpy
 import scipy as sp
 from openpnm.utils import logging
 from openpnm.io import GenericIO
 from openpnm.network import GenericNetwork
+import numpy as np
+
 logger = logging.getLogger(__name__)
 
 
 class PerGeos(GenericIO):
     r"""
-
     """
 
     @classmethod
     def save(cls, network=None, phases=[], filename=''):
         r"""
-
         """
+        # avoid printing truncated array
+        np.set_printoptions(threshold=np.inf)
+
         project, network, phases = cls._parse_args(network=network,
                                                    phases=phases)
 
@@ -23,13 +27,7 @@ class PerGeos(GenericIO):
         s.append("define VERTEX " + str(network.Np) + '\n')
         s.append("define EDGE " + str(network.Nt) + '\n')
         s.append("define POINT " + str(2*network.Nt) + '\n\n')
-        s.append("Parameters {\n")
-        s.append("\tContentType \"HxPoreNetworkModel\"\n\n")
-        s.append("\t\tOpenPNMInfo {\n")
-        s.append("\t\t\tNumPores " + "\"" + str(network.Np) + "\"" + "\n")
-        s.append("\t\t\tNumThroats " + "\""  + str(network.Nt) + "\"" + "\n")
-        s.append("\t\t}\n\n")
-        s.append("}\n\n")
+        s.append("Parameters {\n\tContentType \"HxPoreNetworkModel\"\n}\n\n")
 
         types = {'b': 'int', 'i': 'int', 'f': 'float'}
         typemap = {}
@@ -37,6 +35,8 @@ class PerGeos(GenericIO):
         shapemap = {}
         propmap = {}
         i = 1
+
+        NumEdgePoints = 1
         for item in network.keys():
             typemap[item] = types[str(network[item].dtype)[0]]
             ncols = int(network[item].size/network[item].shape[0])
@@ -53,32 +53,62 @@ class PerGeos(GenericIO):
             namemap[item] = n
             temp = element[1] + " { " + typemap[item] + shapemap[item] + " " +\
                    namemap[item] + " } @" + str(i) + '\n'
-            s.append(temp)
+
+            if temp.find('EdgeConnectivity') == -1:
+                # replaces openpnm tags with the mandatory am file's tags
+                if "Conns" in temp:
+                    temp = temp.replace("Conns", "EdgeConnectivity")
+                elif "Coords" in temp:
+                    temp = temp.replace("Coords", "VertexCoordinates")
+                s.append(temp)
             propmap[item] = str(i)
+            if "NumEdgePoints" in temp:
+                NumEdgePoints = 0
             i += 1
+
+        if NumEdgePoints:
+            temp = "EDGE { int NumEdgePoints" + " } @" + str(i) + '\n'
+            s.append(temp)
+            tempat = "@" + str(i) + '\n'
+            i += 1
+
         # Add POINT data
         s.append("POINT { float[3] EdgePointCoordinates } @" + str(i))
-
         s.append("\n\n# Data section follows")
         for item in network.keys():
             data = network[item]
-            s.append('\n\n@' + propmap[item] + '\n')
-            if shapemap[item] == '':
-                data = sp.atleast_2d(data).T
-            if typemap[item] == 'float':
-                formatter = {'float_kind': lambda x: "%.15E" % x}
-            else:
-                formatter = None
-            if data.dtype == 'bool':
-                data = data.astype(int)
-            d = sp.array2string(data, formatter=formatter)
-            s.append(d.replace('[', '').replace(']', '').replace('\n ', '\n'))
+            if item != 'throat.EdgeConnectivity':
+                s.append('\n\n@' + propmap[item] + '\n')
+                if shapemap[item] == '':
+                    data = sp.atleast_2d(data).T
+                if typemap[item] == 'float':
+                    formatter = {'float_kind': lambda x: "%.15E" % x}
+                else:
+                    formatter = None
+                if data.dtype == 'bool':
+                    data = data.astype(int)
+                d = sp.array2string(data, formatter=formatter)
+                s.append(d.replace('[', '').replace(']', '').replace('\n ', '\n'))
+
         # Add POINT data
         s.append('\n\n@' + str(i) + '\n')
         formatter = {'float_kind': lambda x: "%.15E" % x}
-        data = network['pore.coords'][network['throat.conns'][:, [1, 0]].flatten()]
-        d = sp.array2string(data, formatter=formatter)
-        s.append(d.replace('[', '').replace(']', '').replace('\n ', '\n'))
+
+        for l in network['throat.conns']:
+            t=l[0]
+            d = sp.array2string(network['pore.coords'][t], formatter=formatter)
+            s.append(d.replace('[', '').replace(']', '').replace('\n ', '\n'))
+            s.append('\n')
+            t=l[1]
+            d = sp.array2string(network['pore.coords'][t], formatter=formatter)
+            s.append(d.replace('[', '').replace(']', '').replace('\n ', '\n'))
+            s.append('\n')
+
+        #Add NumEdgePoints
+        if NumEdgePoints:
+            s.append('\n\n' + tempat)
+            for k in range(0, network.Nt):
+                s.append('2'+ '\n')
 
         # Write to file
         if filename == '':
@@ -90,8 +120,6 @@ class PerGeos(GenericIO):
     @classmethod
     def load(cls, filename, network=None):
         r"""
-
-
         """
         net = {}
 
