@@ -22,6 +22,10 @@ class PerGeos(GenericIO):
         project, network, phases = cls._parse_args(network=network,
                                                    phases=phases)
 
+        # Ensure network has PerGeos' expected properties
+        if 'pore.EqRadius' not in network.props():
+            network['pore.EqRadius'] = network['pore.diameter']/2
+
         network = network[0]
         s = ["# Avizo 3D ASCII 3.0\n\n"]
         s.append("define VERTEX " + str(network.Np) + '\n')
@@ -51,8 +55,8 @@ class PerGeos(GenericIO):
             n = item.replace(element[0] + '.', '').replace('.', '_').split('_')
             n = ''.join([i[0].upper()+i[1:] for i in n if len(i)])
             namemap[item] = n
-            temp = element[1] + " { " + typemap[item] + shapemap[item] + " " +\
-                   namemap[item] + " } @" + str(i) + '\n'
+            temp = element[1] + " { " + typemap[item] + shapemap[item] + " "
+            + namemap[item] + " } @" + str(i) + '\n'
 
             if temp.find('EdgeConnectivity') == -1:
                 # replaces openpnm tags with the mandatory am file's tags
@@ -94,21 +98,18 @@ class PerGeos(GenericIO):
         s.append('\n\n@' + str(i) + '\n')
         formatter = {'float_kind': lambda x: "%.15E" % x}
 
-        for l in network['throat.conns']:
-            t=l[0]
-            d = sp.array2string(network['pore.coords'][t], formatter=formatter)
-            s.append(d.replace('[', '').replace(']', '').replace('\n ', '\n'))
-            s.append('\n')
-            t=l[1]
-            d = sp.array2string(network['pore.coords'][t], formatter=formatter)
-            s.append(d.replace('[', '').replace(']', '').replace('\n ', '\n'))
-            s.append('\n')
+        conns = network['throat.conns']
+        d = sp.array2string(network['pore.coords'][conns], formatter=formatter)
+        for r in (('[', ''), (']', ''), ('\n\n', '\n'), ('\n  ', '\n'),
+                  ('\n ', '\n')):
+            d = d.replace(*r)
+        d += '\n'
+        s.append(d)
 
-        #Add NumEdgePoints
+        # Add NumEdgePoints
         if NumEdgePoints:
             s.append('\n\n' + tempat)
-            for k in range(0, network.Nt):
-                s.append('2'+ '\n')
+            s.append(['2' + '\n']*network.Nt)
 
         # Write to file
         if filename == '':
