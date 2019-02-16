@@ -25,7 +25,10 @@ class PerGeos(GenericIO):
         # Ensure network has PerGeos' expected properties
         network = network[0]
         if 'pore.EqRadius' not in network.props():
-            network['pore.EqRadius'] = network['pore.diameter']/2
+            try:
+                network['pore.EqRadius'] = network['pore.diameter']/2
+            except KeyError:
+                network['pore.EqRadius'] = np.ones([network.Np, ])
 
         # Add phase properties to network, if any
         for phase in phases:
@@ -180,11 +183,12 @@ class PerGeos(GenericIO):
 
             s = f.read().split('@')
             for key in propmap.keys():
-                data = s[key].split('\n')[1:]
-                data = ' '.join(data)
-                arr = sp.fromstring(data, dtype=typemap[key], sep=' ')
-                arr = sp.reshape(arr, newshape=shapemap[key])
-                net[propmap[key]] = arr
+                if key in s:
+                    data = s[key].split('\n')[1:]
+                    data = ' '.join(data)
+                    arr = sp.fromstring(data, dtype=typemap[key], sep=' ')
+                    arr = sp.reshape(arr, newshape=shapemap[key])
+                    net[propmap[key]] = arr
             # End file parsing
 
         net['pore.coords'] = net['pore.VertexCoordinates']
