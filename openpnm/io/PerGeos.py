@@ -27,6 +27,13 @@ class PerGeos(GenericIO):
         if 'pore.EqRadius' not in network.props():
             network['pore.EqRadius'] = network['pore.diameter']/2
 
+        # Add phase properties to network, if any
+        for phase in phases:
+            for item in phase.keys(mode='props', deep=True):
+                temp = item.split('.', 1)
+                new_name = temp[0] + '.' + phase.name + '.' + temp[1]
+                network[new_name] = phase[item]
+
         s = ["# Avizo 3D ASCII 3.0\n\n"]
         s.append("define VERTEX " + str(network.Np) + '\n')
         s.append("define EDGE " + str(network.Nt) + '\n')
