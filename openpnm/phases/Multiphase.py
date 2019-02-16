@@ -10,7 +10,7 @@ def_sets = {'pore_occupancy': 'pore.occupancy',
             }
 
 
-class Multiphase(GenericPhase):
+class MultiPhase(GenericPhase):
     r"""
     Creates Phase object that represents a multiphase system consisting of
     a given list of OpenPNM Phase objects.
