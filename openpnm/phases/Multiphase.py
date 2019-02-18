@@ -1,6 +1,6 @@
 from openpnm.phases import GenericPhase as GenericPhase
 import openpnm.models.phases as _models
-import numpy as _np
+import numpy as np
 from openpnm.utils import logging
 logger = logging.getLogger(__name__)
 
@@ -44,38 +44,18 @@ class MultiPhase(GenericPhase):
         self.settings.update(def_sets)
         self.settings.update(settings)
 
-        # Initialize occupancy 'dummy' arrays to show up in props
-        self.update({self.settings['pore_occupancy']:
-                     _np.nan*_np.ones([self.Np, ])})
-        self.update({self.settings['throat_occupancy']:
-                     _np.nan*_np.ones([self.Nt, ])})
+        self['pore.occupancy.all'] = np.zeros(self.Np, dtype=float)
+        self['throat.occupancy.all'] = np.zeros(self.Nt, dtype=float)
 
         # Add any supplied phases to the phases list
         for phase in phases:
             self.add_phase(phase)
 
-    def __getitem__(self, key):
-        # If occupancy is requested, build it from component phases
-        if key in [self.settings['pore_occupancy'],
-                   self.settings['throat_occupancy']]:
-            element = key.split('.')[0]
-            vals = _np.zeros_like(self._get_indices(element=element),
-                                  dtype=float)
-            for phase in self.phases:
-                vals = vals + phase[key].astype(float)
-            return vals
-        # Otherwise just retrieve requested array
-        vals = super().__getitem__(key)
-        return vals
-
-    def __setitem__(self, key, value):
-        # Prevent attempts to write to occupancy arrays
-        if key in [self.settings['pore_occupancy'],
-                   self.settings['throat_occupancy']]:
-            raise Exception("Cannot set occupancy on MultiPhase, it must be " +
-                            "set on component phases")
-        # Let all others through
-        super().__setitem__(key, value)
+#    def __setitem__(self, key, value):
+#        element, prop = key.split('.', 1)
+#        if prop.startswith('occupancy'):
+#            self._update_occupancy()
+#        super().__setitem__(key, value)
 
     def add_phase(self, phase):
         r"""
@@ -84,7 +64,7 @@ class MultiPhase(GenericPhase):
         Parameters
         ----------
         phase : OpenPNM Phase object
-            The phase to add to the list
+            The phase to add
         """
         if phase not in self.project:
             raise Exception(f"{phase.name} doesn't belong to this project")
@@ -92,10 +72,29 @@ class MultiPhase(GenericPhase):
             logger.warning(phase.name + ' already present')
         else:
             self.settings['phases'].append(phase.name)
-        if self.settings['pore_occupancy'] not in phase.keys():
-            phase[self.settings['pore_occupancy']] = 0.0
-        if self.settings['throat_occupancy'] not in phase.keys():
-            phase[self.settings['throat_occupancy']] = 0.0
+        if phase.name not in self['pore.occupancy'].keys():
+            self['pore.occupancy' + '.' + phase.name] = 0.0
+        if phase.name not in self['throat.occupancy'].keys():
+            self['throat.occupancy' + '.' + phase.name] = 0.0
+        self._update_occupancy()
+
+    def __getitem__(self, key):
+        try:
+            vals = super().__getitem__(key)
+        except KeyError:
+            vals = self.interleave_data(key)
+        return vals
+
+    def _update_occupancy(self):
+        # Update occupancy.all
+        self['pore.occupancy.all'] = 0.0
+        dict_ = list(self['pore.occupancy'].values())
+        if len(dict_) > 1:
+            self['pore.occupancy.all'] = np.sum(dict_, axis=0)
+        self['throat.occupancy.all'] = 0.0
+        dict_ = list(self['throat.occupancy'].values())
+        if len(dict_) > 1:
+            self['throat.occupancy.all'] = np.sum(dict_, axis=0)
 
     def _get_phases(self):
         phases = [self.project[item] for item in self.settings['phases']]
@@ -131,9 +130,11 @@ class MultiPhase(GenericPhase):
 
         """
         element = prop.split('.')[0]
-        vals = _np.zeros([self._count(element=element)], dtype=float)
+        if np.any(self[element + '.occupancy.all'] != 1.0):
+            raise Exception('Occupancy does not add to unity in all pores')
+        vals = np.zeros([self._count(element=element)], dtype=float)
         for phase in self.phases:
-            vals += phase[prop]*phase[self.settings[element + '_occupancy']]
+            vals += phase[prop]*self[element + '.occupancy.' + phase.name]
         return vals
 
     # Models of constituent phases must update before those of Multiphase
@@ -161,10 +162,15 @@ class MultiPhase(GenericPhase):
             The phase whose occupancy is being specified
 
         pores : array_like
-            The pore indices where occupancy is being set
+            The pore indices where occupancy is being set. If a scalar is
+            provided in ``values`` then it is applied everywhere.  If an
+            array is provided it must be the same length as ``pores``.
 
         throats : array_like
-            The thraot indices where occupancy is being set
+            The thraot indices where occupancy is being set. If a scalar is
+            provided in ``values`` then it is applied everywhere.  If an
+            array is provided it must be the same length as ``throats``.
+
 
         values : array_like
             The occupancy to apply to the given pores and/or throats.  Note
@@ -179,13 +185,13 @@ class MultiPhase(GenericPhase):
         identical to setting ``phase['pore.occupancy'][pores] = values``.
 
         """
-        values = _np.array(values)
-        pores = _np.array(pores)
-        throats = _np.array(throats)
+        values = np.array(values)
+        pores = np.array(pores)
+        throats = np.array(throats)
         # Ensure phase is part of multiphase
         if phase.name not in self.settings['phases']:
-            raise Exception('Provided Phase is not part of this MultiPhase')
-        if pores.size > 0:
-            phase[self.settings['pore_occupancy']][pores] = values
-        if throats.size > 0:
-            phase[self.settings['pore_occupancy']][throats] = values
+            logger.warning('Adding ' + phase.name + ' to MulitPhase')
+            self.add_phase(phase)
+        self['pore.occupancy.' + phase.name][pores] = values
+        self['throat.occupancy.' + phase.name][pores] = values
+        self._update_occupancy()
