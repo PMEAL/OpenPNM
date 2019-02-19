@@ -88,14 +88,14 @@ class RelativePermeability(GenericAlgorithm):
             
             # define inlet/outlets
             self.settings['user_inlets']=False
-            Hinlets = [network.pores(['top']), network.pores(['top']),
-                          network.pores(['top'])]
+            Hinlets = [network.pores(['top']), network.pores(['left']),
+                          network.pores(['front'])]
             inlets=[]
             for i in range(len(Hinlets)):
                 inlets.append([Hinlets[i][x] for x in range(0, len(Hinlets[i]), 2)])
             self.settings['inlets']=self.set_inlets(inlets)
-            Houtlets = [network.pores(['bottom']), network.pores(['bottom']),
-                           network.pores(['bottom'])]
+            Houtlets = [network.pores(['bottom']), network.pores(['right']),
+                           network.pores(['back'])]
             outlets=[]
             for i in range(len(Houtlets)):
                 outlets.append([Houtlets[i][x] for x in range(0, len(Houtlets[i]), 2)])
@@ -116,7 +116,7 @@ class RelativePermeability(GenericAlgorithm):
                       throat_volume='throat.volume')
             pore_inv_seq={'0': [],'1': [],'2': []} # each element is a vector
             throat_inv_seq= {'0': [],'1': [],'2': []} # each element is a vector
-            sat = {'0': [],'1': [],'2': []} # each element is a vector, which is an approved saturation sequence for IP
+            self.settings['sat'] = {'0': [],'1': [],'2': []} # each element is a vector, which is an approved saturation sequence for IP
             pore_occ = {'0': [],'1': [],'2': []} # each element(dimension) is a matrix
             throat_occ = {'0': [],'1': [],'2': []} # each element(dimension) is a matrix
             for i in range(len(self.settings['inlets'])): # for each dimension
@@ -134,15 +134,16 @@ class RelativePermeability(GenericAlgorithm):
                         max_pthroat=np.max(self.settings['auto_inv']['throat.entry_pressure'][occ_ts])
                         Pcarr.append(max_pthroat)
                         Snwparr.append(Snw)
-                sat[str(i)].append(Snwparr)
+                self.settings['sat'][str(i)].append(Snwparr)
                 c=-1
                 for Sp in Snwparr:
                     c=c+1
                     res=inv.results(Sp)
                     pore_occ[str(i)].append(res['pore.occupancy'])
                     throat_occ[str(i)].append(res['throat.occupancy'])
+            self.settings['pore_occ']=pore_occ
+            self.settings['throat_occ']=throat_occ
 
-            
             # find Kx,Ky,Kz
             single_perms_water = [None,None,None] # each element is a scalar
             single_perms_oil = [None,None,None] # each element is a scalar
@@ -169,9 +170,56 @@ class RelativePermeability(GenericAlgorithm):
             # find Krx,Kry,Krz
             perm_water = {'0': [],'1': [],'2': []} # each element is a vector
             perm_oil = {'0': [],'1': [],'2': []} # each element is a vector
+            for i in range(len(self.settings['sat'])):
+                S_vec=self.settings['sat'][str(i)]
+                [da,dl]=[Da[i],Dl[i]]
+                c=-1
+                for Sn in S_vec:
+                    c=c+1
+                    self.update_phase_and_phys(self.settings['pore_occ'][str(i)][c], self.settings['throat_occ'][str(i)][c])
+                    print('sat is equal to', Sp)
+                    Stokes_alg_multi_phase_water = StokesFlow(network=network,phase=self.settings['auto_def'])
+                    Stokes_alg_multi_phase_water.setup(conductance='throat.conduit_hydraulic_conductance')
+                    Stokes_alg_multi_phase_water.set_value_BC(values=self.settings['BC_1'][i], pores=self.settings['BP_1'][i])
+                    Stokes_alg_multi_phase_water.set_value_BC(values=self.settings['BC_2'][i], pores=self.settings['BP_2'][i])
+                    #oil
+                    Stokes_alg_multi_phase_oil = StokesFlow(network=network,phase=self.settings['auto_inv'])
+                    Stokes_alg_multi_phase_oil.setup(conductance='throat.conduit_hydraulic_conductance')
+                    Stokes_alg_multi_phase_oil.set_value_BC(values=self.settings['BC_1'][i], pores=self.settings['BP_1'][i])
+                    Stokes_alg_multi_phase_oil.set_value_BC(values=self.settings['BC_2'][i], pores=self.settings['BP_2'][i])
+                    # Run Multiphase algs
+                    Stokes_alg_multi_phase_water.run()
+                    Stokes_alg_multi_phase_oil.run()
+                    effective_permeability_water_multi = Stokes_alg_multi_phase_water.calc_effective_permeability(domain_area=da, domain_length=dl)
+                    effective_permeability_oil_multi = Stokes_alg_multi_phase_oil.calc_effective_permeability(domain_area=da, domain_length=dl)
+                    relative_eff_perm_water = effective_permeability_water_multi/single_perms_water[i]
+                    relative_eff_perm_oil = effective_permeability_oil_multi/single_perms_oil[i]
+                    perm_water[str(i)].append(relative_eff_perm_water)
+                    perm_oil[str(i)].append(relative_eff_perm_oil)
+                    self.project.purge_object(obj=Stokes_alg_multi_phase_water)
+                    self.project.purge_object(obj=Stokes_alg_multi_phase_oil)
+                print('krw is', perm_water[str(i)])
+                print('kro is', perm_oil[str(i)])
             
             
-            
+    def update_phase_and_phys(self, pore_occ, throat_occ):
+        # inv_p=self.project.phases(self.settings['inv_phase'])
+        # def_p=self.project.phases(self.settings['def_phase'])
+        if self.settings['auto'] is not False:
+            self.settings['auto_inv']['pore.occupancy'] = pore_occ
+            self.settings['auto_def']['pore.occupancy'] = 1-pore_occ
+            self.settings['auto_inv']['throat.occupancy'] = throat_occ
+            self.settings['auto_def']['throat.occupancy'] = 1-throat_occ
+            mode=self.settings['mode']
+            self.settings['auto_def'].add_model(model=models.physics.multiphase.conduit_conductance,
+                        propname='throat.conduit_hydraulic_conductance',
+                        throat_conductance='throat.hydraulic_conductance',
+                        mode=mode)
+            self.settings['auto_inv'].add_model(model=models.physics.multiphase.conduit_conductance,
+                        propname='throat.conduit_hydraulic_conductance',
+                        throat_conductance='throat.hydraulic_conductance',
+                        mode=mode)
+
     def domain_l_a(self):
         # for now we end up with defining default domain length and area
         if self.settings['user_inlets'] is not True:
