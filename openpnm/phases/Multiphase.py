@@ -48,7 +48,7 @@ class MultiPhase(GenericPhase):
 
         # Add any supplied phases to the phases list
         for phase in phases:
-            self.add_phase(phase)
+            self.settings['phases'].append(phase.name)
 
     def __getitem__(self, key):
         try:
@@ -77,6 +77,10 @@ class MultiPhase(GenericPhase):
     def interleave_data(self, prop):
         r"""
         Gathers property values from component phases to build a single array
+
+        If the requested ``prop`` is not on this MultiPhase, then a search is
+        conducted on all associated physics objects, and values from each
+        are assembled into a single array.
 
         Parameters
         ----------
@@ -141,22 +145,15 @@ class MultiPhase(GenericPhase):
         """
         if phase not in self.project:
             raise Exception(f"{phase.name} doesn't belong to this project")
-        if phase in self.phases:
-            logger.warning(phase.name + ' already present')
         else:
-            self.settings['phases'].append(phase.name)
-        Pvals = self._parse_indices(Pvals)
+            if phase.name not in self.settings['phases']:
+                self.settings['phases'].append(phase.name)
         if np.any(Pvals > 1.0) or np.any(Pvals < 0.0):
             logger.warning('Received Pvals contain volume fractions outside ' +
                            'the range of 0 to 1')
-        Tvals = self._parse_indices(Tvals)
         if np.any(Tvals > 1.0) or np.any(Tvals < 0.0):
             logger.warning('Received Tvals contain volume fractions outside ' +
                            'the range of 0 to 1')
-        # Ensure phase is part of multiphase
-        if phase.name not in self.settings['phases']:
-            logger.warning('Adding ' + phase.name + ' to MultiPhase')
-            self.add_phase(phase)
         self['pore.occupancy.' + phase.name] = Pvals
         self['throat.occupancy.' + phase.name] = Tvals
         self._update_occupancy()
