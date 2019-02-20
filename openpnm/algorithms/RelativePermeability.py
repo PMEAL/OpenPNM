@@ -128,6 +128,7 @@ class RelativePermeability(GenericAlgorithm):
                 Pcarr =  []
                 Sarr=np.linspace(0,1,num=20)
                 for Snw in Sarr:
+                    print('Snw is', Snw)
                     res1=inv.results(Snwp=Snw)
                     occ_ts=res1['throat.occupancy']
                     if np.any(occ_ts):
@@ -170,14 +171,13 @@ class RelativePermeability(GenericAlgorithm):
             # find Krx,Kry,Krz
             perm_water = {'0': [],'1': [],'2': []} # each element is a vector
             perm_oil = {'0': [],'1': [],'2': []} # each element is a vector
+            # print(self.settings['sat'])
             for i in range(len(self.settings['sat'])):
                 S_vec=self.settings['sat'][str(i)]
                 [da,dl]=[Da[i],Dl[i]]
-                c=-1
-                for Sn in S_vec:
-                    c=c+1
-                    self.update_phase_and_phys(self.settings['pore_occ'][str(i)][c], self.settings['throat_occ'][str(i)][c])
-                    print('sat is equal to', Sp)
+                for j in range(len(S_vec[0])):
+                    self.update_phase_and_phys(self.settings['pore_occ'][str(i)][j], self.settings['throat_occ'][str(i)][j])
+                    print('sat is equal to', S_vec[0][j])
                     Stokes_alg_multi_phase_water = StokesFlow(network=network,phase=self.settings['auto_def'])
                     Stokes_alg_multi_phase_water.setup(conductance='throat.conduit_hydraulic_conductance')
                     Stokes_alg_multi_phase_water.set_value_BC(values=self.settings['BC_1'][i], pores=self.settings['BP_1'][i])
