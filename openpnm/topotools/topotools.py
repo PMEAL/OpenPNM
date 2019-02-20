@@ -2332,6 +2332,57 @@ def plot_vpython(network,
                  Pcolor=None,
                  Tcolor=None,
                  cmap='jet', **kwargs):
+    r"""
+    Quickly visualize a network in 3D using VPython
+
+    Parameters
+    ----------
+    network : OpenPNM Network Object
+        The network to visualize
+    Psize : string (default = 'pore.diameter')
+        The dictionary key pointing to the pore property by which sphere
+        diameters should be scaled
+    Tsize : string (default = 'throat.diameter')
+        The dictionary key pointing to the throat property by which cylinder
+        diameters should be scaled
+    Pcolor : string
+        The dictionary key pointing to the pore property which will control
+        the sphere colors.  The default is None, which results in a bright
+        red for all pores.
+    Tcolor : string
+        The dictionary key pointing to the throat property which will control
+        the cylinder colors.  The default is None, which results in a unform
+        pale blue for all throats.
+    cmap : string or Matplotlib colormap object (default is 'jet')
+        The color map to use when converting pore and throat properties to
+        RGB colors.  Can either be a string indicating which color map to
+        fetch from matplotlib.cmap, or an actual cmap object.
+    kwargs : dict
+        Any additional kwargs that are received are passed to the VPython
+        ``canvas`` object.  Default options are:
+
+        *'height' = 500*
+
+        *'width' = 800*
+
+        *'background' = [0, 0, 0]* (white)
+
+    Returns
+    -------
+    canvas : VPython Canvas object
+        The canvas object containing the generated scene
+
+    Notes
+    -----
+    **Important**
+
+    a) This does not work in Spyder.  It should only be called from a Jupyter
+    Notebook.
+
+    b) This is only meant for relatively small networks.  For proper
+    visualization use Paraview.
+
+    """
 
     try:
         from vpython import canvas, vec, sphere, cylinder
