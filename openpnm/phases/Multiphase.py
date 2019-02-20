@@ -27,11 +27,45 @@ class MultiPhase(GenericPhase):
 
     Examples
     --------
+    >>> import scipy as sp
     >>> import openpnm as op
     >>> pn = op.network.Cubic(shape=[5, 5, 5])
-    >>> air = op.phases.Air(network=pn)
-    >>> water = op.phases.Water(network=pn)
-    >>> multiphase = op.phases.Multiphase(network=pn, phases=[air, water])
+    >>> air = op.phases.Air(network=pn, name='air')  # Create two pure phases
+    >>> water = op.phases.Water(network=pn, name='water')
+    >>> m = op.phases.MultiPhase(network=pn, phases=[air, water], name='multi')
+    >>> Ps = pn['pore.coords'][:, 0] < 3  # Pick some pores to be air filled
+    >>> Ts = pn.find_neighbor_throats(pores=Ps)  # Find neighboring throats
+    >>> Ts = pn.tomask(throats=Ts)  # Convert throat indices to mask
+    >>> m.set_occupancy(phase=air, Pvals=Ps, Tvals=Ts)  # Assign occupancies
+    >>> m.set_occupancy(phase=water, Pvals=~Ps, Tvals=~Ts)
+    >>> print(m)
+    ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+    openpnm.phases.Multiphase : multi
+    ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+    #     Properties                                    Valid Values
+    ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+    1     pore.occupancy.all                              125 / 125
+    2     throat.occupancy.all                            300 / 300
+    ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+    #     Labels                                        Assigned Locations
+    ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+    1     pore.all                                      125
+    2     pore.occupancy.air                            75
+    3     pore.occupancy.water                          50
+    4     throat.all                                    300
+    5     throat.occupancy.air                          195
+    6     throat.occupancy.water                        105
+    ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+
+    Air and water have uniform viscosity values throughout, so the peak-to-peak
+    distances is 0, while the mixture phase has the viscosity of air in some
+    locations and water in others, hence a heterogenous viscosity array:
+    >>> sp.ptp(water['pore.viscosity']) == 0
+    True
+    >>> sp.ptp(air['pore.viscosity']) == 0
+    True
+    >>> sp.ptp(m['pore.viscosity']) == 0
+    False
 
     """
     def __init__(self, phases=[], settings={}, **kwargs):
