@@ -2373,7 +2373,7 @@ def plot_vpython(network,
     -------
     canvas : VPython Canvas object
         The canvas object containing the generated scene. The object has
-        several useful methods, including
+        several useful methods.
 
     Notes
     -----
