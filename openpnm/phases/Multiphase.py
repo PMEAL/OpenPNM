@@ -177,6 +177,8 @@ class MultiPhase(GenericPhase):
             the network.  If a scalar is received it is applied to all throats.
 
         """
+        Pvals = np.array(Pvals, ndmin=1)
+        Tvals = np.array(Tvals, ndmin=1)
         if phase not in self.project:
             raise Exception(f"{phase.name} doesn't belong to this project")
         else:
@@ -188,6 +190,8 @@ class MultiPhase(GenericPhase):
         if np.any(Tvals > 1.0) or np.any(Tvals < 0.0):
             logger.warning('Received Tvals contain volume fractions outside ' +
                            'the range of 0 to 1')
-        self['pore.occupancy.' + phase.name] = Pvals
-        self['throat.occupancy.' + phase.name] = Tvals
+        if Pvals.size:
+            self['pore.occupancy.' + phase.name] = Pvals
+        if Tvals.size:
+            self['throat.occupancy.' + phase.name] = Tvals
         self._update_occupancy()
