@@ -54,19 +54,19 @@ It consists of the following submodules:
 
 __version__ = '2.0.3'
 
-try:
-    import os
-    from pathlib import Path
-    from git import Repo
-    path = Path(os.path.realpath(__file__), '../../').resolve()
-    repo = Repo(str(path))
-    if repo.active_branch.name != 'master':
-        commit_id = repo.active_branch.commit.hexsha[:6]
-        __commit__ = ''+str(commit_id)
-    else:
-        __commit__ = None
-except:
-    pass
+#try:
+#    import os
+#    from pathlib import Path
+#    from git import Repo
+#    path = Path(os.path.realpath(__file__), '../../').resolve()
+#    repo = Repo(str(path))
+#    if repo.active_branch.name != 'master':
+#        commit_id = repo.active_branch.commit.hexsha[:6]
+#        __commit__ = ''+str(commit_id)
+#    else:
+#        __commit__ = None
+#except:
+#    pass
 
 from . import utils
 from .utils import Workspace, Project
