@@ -39,6 +39,7 @@ from .topotools import merge_pores
 from .topotools import plot_connections
 from .topotools import plot_coordinates
 from .topotools import plot_networkx
+from .topotools import plot_vpython
 from .topotools import reduce_coordination
 from .topotools import reflect_base_points
 from .topotools import remove_isolated_clusters
