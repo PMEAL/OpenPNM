@@ -4,7 +4,7 @@ from numpy.testing import assert_approx_equal
 import openpnm.models.physics as pm
 
 
-class MultiPhaseTest:
+class MultiPhaseModelsTest:
     def setup_class(self):
         self.net = op.network.Cubic(shape=[3, 3, 3])
         Ps = self.net.Ps
@@ -72,7 +72,7 @@ class MultiPhaseTest:
 
 if __name__ == '__main__':
 
-    t = MultiPhaseTest()
+    t = MultiPhaseModelsTest()
     self = t
     t.setup_class()
     for item in t.__dir__():
