@@ -2361,16 +2361,19 @@ def plot_vpython(network,
         Any additional kwargs that are received are passed to the VPython
         ``canvas`` object.  Default options are:
 
-        *'height' = 500*
+        *'height' = 500* - Height of canvas
 
-        *'width' = 800*
+        *'width' = 800* - Width of canvas
 
-        *'background' = [0, 0, 0]* (white)
+        *'background' = [0, 0, 0]* - Sets the background color of canvas
+
+        *'ambient' = [0.2, 0.2, 0.3]* - Sets the brightness of lighting
 
     Returns
     -------
     canvas : VPython Canvas object
-        The canvas object containing the generated scene
+        The canvas object containing the generated scene. The object has
+        several useful methods, including
 
     Notes
     -----
