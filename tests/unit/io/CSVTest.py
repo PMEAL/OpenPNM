@@ -78,6 +78,7 @@ class CSVTest:
         assert proj.network.name == self.net.name
         assert list(proj.phases().values())[0].name == self.phase_1.name
 
+
 if __name__ == '__main__':
     # All the tests in this file can be run with 'playing' this file
     t = CSVTest()
