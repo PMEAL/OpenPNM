@@ -8,7 +8,6 @@ The ``algorithms`` module contains classes for conducting transport simulations
 on pore networks.
 
 """
-
 from .GenericAlgorithm import GenericAlgorithm
 from .GenericTransport import GenericTransport
 from .ReactiveTransport import ReactiveTransport
@@ -24,4 +23,4 @@ from .OrdinaryPercolation import OrdinaryPercolation
 from .InvasionPercolation import InvasionPercolation
 from .MixedInvasionPercolation import MixedInvasionPercolation
 from .Porosimetry import Porosimetry
-from .MercuryIntrusion import MercuryIntrusion
+from . import metrics
