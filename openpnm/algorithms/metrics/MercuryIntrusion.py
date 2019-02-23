@@ -2,13 +2,13 @@ import numpy as np
 from openpnm.utils import logging
 from openpnm.phases import Mercury
 from openpnm.physics import GenericPhysics
-from openpnm.algorithms import Porosimetry
+from openpnm.algorithms import Porosimetry, GenericAlgorithm
 from openpnm import models
 from openpnm import topotools
 logger = logging.getLogger(__name__)
 
 
-class MercuryIntrusion(Porosimetry):
+class MercuryIntrusion(GenericAlgorithm):
     r"""
     A ready-made Mercury Intrusion Porosimetry algorithm
 
@@ -25,23 +25,25 @@ class MercuryIntrusion(Porosimetry):
     can be obtained with `get_intrusion_data`.
     """
 
-    def __init__(self, network=None, project=None, settings={}, **kwargs):
+    def __init__(self, network=None, project=None, settings={}, name=None,
+                 **kwargs):
         if project is None:
             project = network.project
         hg = Mercury(network=network)
-        kwargs['phase'] = hg
-        super().__init__(project=project, **kwargs)
+        super().__init__(network=network, project=project, **kwargs)
+        op = Porosimetry(project=project, phase=hg)
+        self.settings['mip'] = op.name
         mod = models.physics.capillary_pressure.washburn
         for geom in project.geometries().values():
             phys = GenericPhysics(network=network, phase=hg, geometry=geom)
             phys.add_model(propname='throat.entry_pressure', model=mod)
         if not project.geometries():
             hg.add_model(propname='throat.entry_pressure', model=mod)
-        self.setup(phase=hg)
         topotools.find_surface_pores(network=network)
-        self.set_inlets(pores=network.pores('surface'))
+        op.set_inlets(pores=network.pores('surface'))
         logger.info('Running MIP simulation')
-        self.run()
+        op.run()
+        self.update(op)
 
     def _set_snwp_data(self, data):
         self._snwp_data = np.array(data)
@@ -66,7 +68,9 @@ class MercuryIntrusion(Porosimetry):
     pc_data = property(fget=_get_pc_data, fset=_set_pc_data)
 
     def plot_intrusion_curve(self, fig=None):
-        fig = super().plot_intrusion_curve(fig=fig)
+        proj = self.project
+        op = proj[self.settings['mip']]
+        fig = op.plot_intrusion_curve(fig=fig)
         ax = fig.gca()
         x = self.pc_data
         y = self.snwp_data
