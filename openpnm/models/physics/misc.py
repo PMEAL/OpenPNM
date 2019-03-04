@@ -95,6 +95,75 @@ def generic_conductance(target, transport_type, pore_diffusivity,
         g1[m1] = A1[m1]**2 / (8*pi*D1*L1)[m1]
         g2[m2] = A2[m2]**2 / (8*pi*D2*L2)[m2]
         gt[mt] = At[mt]**2 / (8*pi*Dt*Lt)[mt]
+    elif transport_type == 'flow_power_law':
+        for k, v in kwargs.items():
+            if k == 'pore_consistency':
+                pore_consistency = v
+            elif k == 'throat_consistency':
+                throat_consistency = v
+            elif k == 'pore_flow_index':
+                pore_flow_index = v
+            elif k == 'throat_flow_index':
+                throat_flow_index = v
+            elif k == 'pore_pressure':
+                pore_pressure = v
+
+        # Check if pressure field exists
+        try:
+            phase[pore_pressure]
+        except KeyError:
+            phase[pore_pressure] = 0
+        P = phase[pore_pressure]
+        dP = _sp.absolute(_sp.diff(P[cn], axis=1).squeeze())
+
+        # Interpolate pore phase property values to throats
+        try:
+            Ct = phase[throat_consistency][throats]
+        except KeyError:
+            Ct = phase.interpolate_data(propname=pore_consistency)[throats]
+        try:
+            nt = phase[throat_flow_index][throats]
+        except KeyError:
+            nt = phase.interpolate_data(propname=pore_flow_index)[throats]
+        # Interpolate pore phase property values to pores
+        try:
+            C1 = phase[pore_consistency][cn[:, 0]]
+            C2 = phase[pore_consistency][cn[:, 1]]
+        except KeyError:
+            C1 = phase.interpolate_data(propname=throat_consistency)[cn[:, 0]]
+            C2 = phase.interpolate_data(propname=throat_consistency)[cn[:, 1]]
+        try:
+            n1 = phase[pore_flow_index][cn[:, 0]]
+            n2 = phase[pore_flow_index][cn[:, 1]]
+        except KeyError:
+            n1 = phase.interpolate_data(propname=throat_flow_index)[cn[:, 0]]
+            n2 = phase.interpolate_data(propname=throat_flow_index)[cn[:, 1]]
+
+        mu1 = ((1/(C1**(1/n1)))[m1] * (4*n1/(3*n1+1))[m1] *
+               (2*L1/((A1/pi)**0.5))**(1-1/n1)[m1] * (dP)**(1/n1-1)[m1])
+
+        g1[m1] = (A1**2/(8*pi*L1))[m1]
+        g1[dP == 0] = 1e-10
+
+        mu2 = ((1/(C2**(1/n2)))[m2] * (4*n2/(3*n2+1))[m2] *
+               (2*L2/((A2/pi)**0.5))**(1-1/n2)[m2] * (dP)**(1/n2-1)[m2])
+
+        g2[m2] = (A2**2/(8*pi*L2))[m2]
+        g2[dP == 0] = 1e-10
+
+        mut = ((1/(Ct**(1/nt)))[mt] * (4*nt/(3*nt+1))[mt] *
+               (2*Lt/((At/pi)**0.5))**(1-1/nt)[mt] * (dP)**(1/nt-1)[mt])
+
+        gt[mt] = (At**2/(8*pi*Lt))[mt]
+        gt[dP == 0] = 1e-10
+
+        gh = (1/(gt*mut)/SFt + 1/(g1*mu1)/SF1 + 1/(g2*mu2)/SF2)**(-1)
+        mu_eff = ((1/gt/SFt + 1/g1/SF1 + 1/g2/SF2)**(-1))/gh
+
+        phase['throat.viscosity_eff'] = mu_eff
+
+        return gh
+
     elif transport_type == 'diffusion':
         g1[m1] = (D1*A1)[m1] / L1[m1]
         g2[m2] = (D2*A2)[m2] / L2[m2]

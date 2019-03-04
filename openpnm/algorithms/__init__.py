@@ -14,6 +14,7 @@ from .GenericTransport import GenericTransport
 from .ReactiveTransport import ReactiveTransport
 from .TransientReactiveTransport import TransientReactiveTransport
 from .StokesFlow import StokesFlow
+from .NonNewtonianStokesFlow import NonNewtonianStokesFlow
 from .FickianDiffusion import FickianDiffusion
 from .TransientFickianDiffusion import TransientFickianDiffusion
 from .AdvectionDiffusion import AdvectionDiffusion
