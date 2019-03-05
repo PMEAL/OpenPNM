@@ -113,13 +113,13 @@ def _generic_conductance(target, transport_type, pore_area, throat_area,
         SF2 = phase[conduit_shape_factors+'.pore2'][throats]
     except KeyError:
         SF1 = SF2 = SFt = 1.0
-    # Poisson
-    if transport_type == 'poisson':
+    # Poisson or Laplace
+    if transport_type in ['poisson', 'laplace']:
         g1[m1] = (A1)[m1] * L1[m1]
         g2[m2] = (A2)[m2] * L2[m2]
         gt[mt] = (At)[mt] * Lt[mt]
-    # Laplace or electroneutrality
-    elif transport_type in ['laplace', 'electroneutrality']:
+    # Electroneutrality
+    elif transport_type == 'electroneutrality':
         F = 96485.3329
         R = 8.3145
         # Getting pores volumes

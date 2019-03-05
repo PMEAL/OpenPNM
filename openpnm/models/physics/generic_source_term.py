@@ -35,7 +35,7 @@ def charge_conservation(target, phase, p_alg, e_alg, assumption):
             g = phase['throat.diffusive_conductance.'+e.name]
             am = network.create_adjacency_matrix(weights=g, fmt='coo')
             A = _spgr.laplacian(am)
-            rhs += F * phase['pore.valence.'+e.name] * A * c
+            rhs += - F * phase['pore.valence.'+e.name] * A * c
     elif assumption not in ['poisson', 'laplace', 'electroneutrality']:
         raise Exception('Unknown keyword for "charge_conservation", can ' +
                         'only be "poisson", "laplace" or "electroneutrality"')
