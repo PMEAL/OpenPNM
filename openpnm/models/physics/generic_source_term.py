@@ -12,24 +12,33 @@ r"""
 """
 
 import scipy as _sp
+import scipy.sparse.csgraph as _spgr
 import sympy as _syp
 
 
 def charge_conservation(target, phase, p_alg, e_alg, assumption):
+    F = 96485.3329
+    rhs = _sp.zeros(shape=(p_alg.Np, ), dtype=float)
     if assumption == 'poisson':
-        rhs = _sp.zeros(shape=(p_alg.Np, ), dtype=float)
-        F = 96485.3329
         epsilon0 = 8.854187817e-12
         epsilonr = phase['pore.permittivity'][0]
-        C = (-F/(epsilon0*epsilonr))
         for e in e_alg:
-            rhs += phase['pore.valence.'+e.name] * e[e.settings['quantity']]
-        rhs = C*rhs
+            rhs += (-F * phase['pore.valence.'+e.name] *
+                    e[e.settings['quantity']] / (epsilon0*epsilonr))
     elif assumption == 'electroneutrality':
-        rhs = _sp.zeros(shape=(p_alg.Np, ), dtype=float)
-    else:
+        for e in e_alg:
+            try:
+                c = e[e.settings['quantity']]
+            except KeyError:
+                c = _sp.zeros(shape=(e.Np, ), dtype=float)
+            network = e.project.network
+            g = phase['throat.diffusive_conductance.'+e.name]
+            am = network.create_adjacency_matrix(weights=g, fmt='coo')
+            A = _spgr.laplacian(am)
+            rhs += F * phase['pore.valence.'+e.name] * A * c
+    elif assumption not in ['poisson', 'laplace', 'electroneutrality']:
         raise Exception('Unknown keyword for "charge_conservation", can ' +
-                        'only be "electroneutrality" or "poisson"')
+                        'only be "poisson", "laplace" or "electroneutrality"')
     S1 = _sp.zeros(shape=(p_alg.Np, ), dtype=float)
     values = {'S1': S1, 'S2': rhs, 'rate': rhs}
     return values
