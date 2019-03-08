@@ -196,8 +196,9 @@ class GenericTransport(GenericAlgorithm):
 
     def set_value_BC(self, pores, values):
         r"""
-        Apply constant value boundary conditons to the specified pore
-        locations. These are sometimes referred to as Dirichlet conditions.
+        Apply constant value boundary conditons to the specified locations.
+
+        These are sometimes referred to as Dirichlet conditions.
 
         Parameters
         ----------
@@ -205,9 +206,9 @@ class GenericTransport(GenericAlgorithm):
             The pore indices where the condition should be applied
 
         values : scalar or array_like
-            The value to of the boundary condition.  If a scalar is supplied
-            it is assigne to all locations, and if a vector is applied it
-            corresponds directy to the locations given in ``pores``.
+            The value to apply in each pore.  If a scalar is supplied
+            it is assigne to all locations, and if a vector is applied is
+            must be the same size as the indices given in ``pores``.
 
         Notes
         -----
@@ -219,8 +220,9 @@ class GenericTransport(GenericAlgorithm):
 
     def set_rate_BC(self, pores, values):
         r"""
-        Apply constant rate boundary conditons to the specified pore
-        locations. This is similar to a Neumann boundary condition, but is
+        Apply constant rate boundary conditons to the specified locations.
+
+        This is similar to a Neumann boundary condition, but is
         slightly different since it's the conductance multiplied by the
         gradient, while Neumann conditions specify just the gradient.
 
@@ -230,9 +232,9 @@ class GenericTransport(GenericAlgorithm):
             The pore indices where the condition should be applied
 
         values : scalar or array_like
-            The value to of the boundary condition.  If a scalar is supplied
-            it is assigne to all locations, and if a vector is applied it
-            corresponds directy to the locations given in ``pores``.
+            The values of rate to apply in each pore.  If a scalar is supplied
+            it is assigned to all locations, and if a vector is applied it
+            must be the same size as the indices given in ``pores``.
 
         Notes
         -----
@@ -243,7 +245,8 @@ class GenericTransport(GenericAlgorithm):
 
     def _set_BC(self, pores, bctype, bcvalues=None, mode='merge'):
         r"""
-        Apply boundary conditions to specified pores
+        This private method is called by public facing BC methods, to apply
+        boundary conditions to specified pores
 
         Parameters
         ----------
@@ -254,8 +257,8 @@ class GenericTransport(GenericAlgorithm):
             Specifies the type or the name of boundary condition to apply. The
             types can be one one of the following:
 
-            - *'value'* : Specify the value of the quantity in each location
-            - *'rate'* : Specify the flow rate into each location
+            - ``'value'``: Specify the value of the quantity in each location
+            - ``'rate'``: Specify the flow rate into each location
 
         bcvalues : int or array_like
             The boundary value to apply, such as concentration or rate.  If
@@ -264,13 +267,12 @@ class GenericTransport(GenericAlgorithm):
             array of the same length as ``pores``.
 
         mode : string, optional
-            Controls how the conditions are applied.  Options are:
+            Controls how the boundary conditions are applied.  Options are:
 
-            *'merge'*: (Default) Adds supplied boundary conditions to already
-            existing conditions.
-
-            *'overwrite'*: Deletes all boundary condition on object then add
-            the given ones
+            - ``'merge'``: (Default) Adds supplied boundary conditions to
+            already existing conditions.
+            - ``'overwrite'``: Deletes all boundary condition on object then
+            adds the given ones
 
         Notes
         -----
@@ -297,22 +299,34 @@ class GenericTransport(GenericAlgorithm):
             self['pore.bc_'+bctype] = np.nan
         self['pore.bc_'+bctype][pores] = values
 
-    def remove_BC(self, pores=None):
+    def remove_BC(self, pores=None, bctype='all'):
         r"""
-        Removes all boundary conditions from the specified pores
+        Removes boundary conditions from the specified pores
 
         Parameters
         ----------
-        pores : array_like
+        pores : array_like, optional
             The pores from which boundary conditions are to be removed.  If no
             pores are specified, then BCs are removed from all pores. No error
             is thrown if the provided pores do not have any BCs assigned.
+
+        bctype : string, or list of strings
+            Specifies which type of boundary condition to remove.  Options are:
+
+            -*'all'*: (default) Removes all boundary conditions
+            -*'value'*: Removes only value conditions
+            -*'rate'*: Removes only rate conditions
+
         """
+        if isinstance(bctype, str):
+            bctype = [bctype]
+        if 'all' in bctype:
+            bctype = ['value', 'rate']
         if pores is None:
             pores = self.Ps
-        if 'pore.bc_value' in self.keys():
+        if ('pore.bc_value' in self.keys()) and ('value' in bctype):
             self['pore.bc_value'][pores] = np.nan
-        if 'pore.bc_rate' in self.keys():
+        if ('pore.bc_rate' in self.keys()) and ('rate' in bctype):
             self['pore.bc_rate'][pores] = np.nan
 
     def _build_A(self, force=False):

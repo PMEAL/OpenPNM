@@ -1,4 +1,6 @@
 import inspect
+import warnings
+import functools
 import scipy as _sp
 import time as _time
 from collections import OrderedDict
@@ -173,6 +175,7 @@ class HealthDict(PrintableDict):
     looks into the dict values, and considers empty lists as healthy and all
     else as unhealthy.  If one or more entries is 'unhealthy' the health method
     returns False.
+
     """
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -230,6 +233,7 @@ def toc(quiet=False):
 def unique_list(input_list):
     r"""
     For a given list (of points) remove any duplicates
+
     """
     output_list = []
     if len(input_list) > 0:
@@ -269,6 +273,7 @@ def sanitize_dict(input_dict):
     Given a nested dictionary, ensures that all nested dicts are normal
     Python dicts.  This is necessary for pickling, or just converting
     an 'auto-vivifying' dict to something that acts normal.
+
     """
     plain_dict = dict()
     for key in input_dict.keys():
@@ -323,6 +328,7 @@ def models_to_table(obj, params=True):
         Indicates whether or not to include a list of parameter
         values in the table.  Set to False for just a list of models, and
         True for a more verbose table with all parameter values.
+
     """
     if not hasattr(obj, 'models'):
         raise Exception('Received object does not have any models')
@@ -356,12 +362,52 @@ def models_to_table(obj, params=True):
     return '\n'.join(lines)
 
 
+def ignore_warnings(warning=RuntimeWarning):
+    r"""
+    Decorator for catching warnings. Useful in pore-scale models where nans
+    are inevitable, and numpy gets annoying by throwing lots of RuntimeWarnings.
+
+    Parameters
+    ----------
+    warning : Python Warning object
+        Python warning type that you want to temporarily ignore
+
+    Examples
+    --------
+    >>> from openpnm.utils.misc import ignore_warnings
+    >>> @ignore_warnings()
+    ... def myfun(x):
+    ...     return 1/x
+
+    >>> import numpy as np
+    >>> x = np.arange(5)
+    >>> myfun(x)
+    array([       inf, 1.        , 0.5       , 0.33333333, 0.25      ])
+
+    """
+    def _ignore_warning(function):
+        @functools.wraps(function)
+        def __ignore_warning(*args, **kwargs):
+            with warnings.catch_warnings(record=True):
+                # Catch all warnings of this type
+                warnings.simplefilter('always', warning)
+                # Execute the function
+                result = function(*args, **kwargs)
+            return result
+        return __ignore_warning
+    return _ignore_warning
+
+
 def conduit_lengths(network, throats=None, mode='pore'):
     r"""
     Return the respective lengths of the conduit components defined by the throat
-    conns P1 T P2
+    conns P1 - T - P2
+
+    Notes
+    -----
     mode = 'pore' - uses pore coordinates
     mode = 'centroid' uses pore and throat centroids
+
     """
     if throats is None:
         throats = network.throats()
@@ -394,8 +440,7 @@ def conduit_lengths(network, throats=None, mode='pore'):
             # Don't allow zero lengths
             # fractions[fractions == 0.0] = 0.5
             # fractions[fractions == 1.0] = 0.5
-        # TODO: specify exception?
-        except Exception:
+        except:
             fractions = 0.5
         plen1 = lengths*fractions
         plen2 = lengths*(1-fractions)
