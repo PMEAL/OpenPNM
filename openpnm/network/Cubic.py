@@ -11,6 +11,7 @@ from openpnm.network import GenericNetwork
 from openpnm import topotools
 from openpnm.utils import logging
 logger = logging.getLogger(__name__)
+from openpnm.utils.misc import tic, toc
 
 
 class Cubic(GenericNetwork):
@@ -100,8 +101,10 @@ class Cubic(GenericNetwork):
             spacing = sp.concatenate((spacing, [1]))
         self._spacing = sp.ones(3)*sp.array(spacing, ndmin=1)
 
-        points = np.array([i for i, v in np.ndenumerate(arr)], dtype=float)
-        points += 0.5
+        points = np.vstack(np.meshgrid(np.arange(shape[0]),
+                                       np.arange(shape[1]),
+                                       np.arange(shape[2]))).reshape(3,-1).T
+        points = points.astype(float) + 0.5
 
         I = np.arange(arr.size).reshape(arr.shape)
 
@@ -141,9 +144,11 @@ class Cubic(GenericNetwork):
 
         I = np.arange(arr.size).reshape(arr.shape)
         tails, heads = [], []
+        # tic()
         for T, H in joints:
             tails.extend(T.flat)
             heads.extend(H.flat)
+        # toc()
         pairs = np.vstack([tails, heads]).T
 
         super().__init__(Np=points.shape[0], Nt=pairs.shape[0], name=name,
