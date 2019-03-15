@@ -100,8 +100,10 @@ class Cubic(GenericNetwork):
             spacing = sp.concatenate((spacing, [1]))
         self._spacing = sp.ones(3)*sp.array(spacing, ndmin=1)
 
-        points = np.array([i for i, v in np.ndenumerate(arr)], dtype=float)
-        points += 0.5
+        z = np.tile(np.arange(shape[2]), shape[0]*shape[1])
+        y = np.tile(np.repeat(np.arange(shape[1]), shape[2]), shape[0])
+        x = np.repeat(np.arange(shape[0]), shape[1]*shape[2])
+        points = (np.vstack([x, y, z]).T).astype(float) + 0.5
 
         I = np.arange(arr.size).reshape(arr.shape)
 
