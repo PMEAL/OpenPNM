@@ -141,7 +141,6 @@ class Cubic(GenericNetwork):
             raise Exception('Invalid connectivity receieved. Must be 6, 8, '
                             '12, 14, 18, 20 or 26')
 
-        I = np.arange(arr.size).reshape(arr.shape)
         tails, heads = [], []
         for T, H in joints:
             tails.extend(T.flat)
