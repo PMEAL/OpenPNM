@@ -141,11 +141,10 @@ class Cubic(GenericNetwork):
             raise Exception('Invalid connectivity receieved. Must be 6, 8, '
                             '12, 14, 18, 20 or 26')
 
-        I = np.arange(arr.size).reshape(arr.shape)
-        tails, heads = [], []
+        tails, heads = np.array([], dtype=int), np.array([], dtype=int)
         for T, H in joints:
-            tails.extend(T.flat)
-            heads.extend(H.flat)
+            tails = np.concatenate((tails, T.flatten()))
+            heads = np.concatenate((heads, H.flatten()))
         pairs = np.vstack([tails, heads]).T
 
         super().__init__(Np=points.shape[0], Nt=pairs.shape[0], name=name,
