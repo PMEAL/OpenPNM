@@ -163,14 +163,14 @@ def generic_conductance(target, transport_type, pore_diffusivity,
         Qij = _sp.append(Qij, -Qij)
 
         # Migration
-        grad_V = -_sp.diff(V[cn], axis=1).squeeze() / L
+        grad_V = _sp.diff(V[cn], axis=1).squeeze() / L
         mig = ((z*F*D*S)/(R*T)) * grad_V
         mig = _sp.append(mig, -mig)
 
         # Advection-migration
         adv_mig = Qij-mig
 
-        # Peclet number (advection is corrected by migration)
+        # Peclet number (includes advection and migration)
         Peij_adv_mig = adv_mig/gd
         Peij_adv_mig[(Peij_adv_mig < 1e-10) & (Peij_adv_mig >= 0)] = 1e-10
         Peij_adv_mig[(Peij_adv_mig > -1e-10) & (Peij_adv_mig <= 0)] = -1e-10

@@ -85,19 +85,18 @@ class PoissonNernstPlanck(ReactiveTransport):
             convergence = max(i for i in res.values()) < tol
             if not convergence:
                 # Poisson eq
-                p_alg._update_physics()
                 phys[0].regenerate_models()
                 phi_old = p_alg[p_alg.settings['quantity']].copy()
                 p_alg._run_reactive(x=phi_old)
                 phi_new = p_alg[p_alg.settings['quantity']].copy()
                 # Residual
                 res['potential'] = np.sum(np.absolute(phi_old**2 - phi_new**2))
+                # Update phase and physics
                 phase.update(p_alg.results())
+                phys[0].regenerate_models()
 
                 # Electrolytes
                 for e in e_alg:
-                    e._update_physics()
-                    phys[0].regenerate_models()
                     c_old = e[e.settings['quantity']].copy()
                     e._run_reactive(x=c_old)
                     c_new = e[e.settings['quantity']].copy()
