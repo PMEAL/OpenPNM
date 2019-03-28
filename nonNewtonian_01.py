@@ -17,7 +17,7 @@ geo = op.geometry.StickAndBall(network=net,
 # phase
 phase = op.phases.Water(network=net)
 phase['pore.consistency'] = 0.0005
-phase['pore.flow_index'] = 0.8
+phase['pore.flow_index'] = 1.1
 
 # physics
 phys = op.physics.GenericPhysics(network=net,

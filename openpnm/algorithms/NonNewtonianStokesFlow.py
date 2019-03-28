@@ -91,6 +91,7 @@ class NonNewtonianStokesFlow(ReactiveTransport):
         # Iterate until solution converges
         for itr in range(int(self.settings['max_iter'])):
             logger.info('Iter: ' + str(itr) + ', Res: ' + str(res))
+            print('Iter: ' + str(itr) + ', Res: ' + str(res))
             convergence = res < tol
             if not convergence:
                 self._update_physics()

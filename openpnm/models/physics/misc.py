@@ -114,7 +114,6 @@ def generic_conductance(target, transport_type, pore_diffusivity,
         except KeyError:
             phase[pore_pressure] = 0
         P = phase[pore_pressure]
-        dP = _sp.absolute(_sp.diff(P[cn], axis=1).squeeze())
 
         # Interpolate pore phase property values to throats
         try:
@@ -125,7 +124,7 @@ def generic_conductance(target, transport_type, pore_diffusivity,
             nt = phase[throat_flow_index][throats]
         except KeyError:
             nt = phase.interpolate_data(propname=pore_flow_index)[throats]
-        # Interpolate pore phase property values to pores
+        # Interpolate throat phase property values to pores
         try:
             C1 = phase[pore_consistency][cn[:, 0]]
             C2 = phase[pore_consistency][cn[:, 1]]
@@ -138,31 +137,39 @@ def generic_conductance(target, transport_type, pore_diffusivity,
         except KeyError:
             n1 = phase.interpolate_data(propname=throat_flow_index)[cn[:, 0]]
             n2 = phase.interpolate_data(propname=throat_flow_index)[cn[:, 1]]
+        # Interpolate pore pressure values to throats
+        Pt = phase.interpolate_data(propname=pore_pressure)[throats]
 
-        mu1 = ((1/(C1**(1/n1)))[m1] * (4*n1/(3*n1+1))[m1] *
-               (2*L1/((A1/pi)**0.5))**(1-1/n1)[m1] * (dP)**(1/n1-1)[m1])
+        # Pressure differences dP
+        dP1 = _sp.absolute(P[cn[:, 0]]-Pt)
+        dP2 = _sp.absolute(P[cn[:, 1]]-Pt)
+        dPt = _sp.absolute(_sp.diff(P[cn], axis=1).squeeze())
 
-        g1[m1] = (A1**2/(8*pi*L1))[m1]
-        g1[dP == 0] = 1e-10
+        # Apparent viscosities
+        mu1 = (dP1**(1-1/n1)[m1] * C1**(1/n1)[m1] / ((4*n1/(3*n1+1)) *
+               (2*L1/((A1/pi)**0.5))**(1-1/n1))[m1])
 
-        mu2 = ((1/(C2**(1/n2)))[m2] * (4*n2/(3*n2+1))[m2] *
-               (2*L2/((A2/pi)**0.5))**(1-1/n2)[m2] * (dP)**(1/n2-1)[m2])
+        mu2 = (dP2**(1-1/n2)[m2] * C2**(1/n2)[m2] / ((4*n2/(3*n2+1)) *
+               (2*L2/((A2/pi)**0.5))**(1-1/n2))[m2])
 
-        g2[m2] = (A2**2/(8*pi*L2))[m2]
-        g2[dP == 0] = 1e-10
+        mut = (dPt**(1-1/nt)[mt] * Ct**(1/nt)[mt] / ((4*nt/(3*nt+1)) *
+               (2*Lt/((At/pi)**0.5))**(1-1/nt))[mt])
 
-        mut = ((1/(Ct**(1/nt)))[mt] * (4*nt/(3*nt+1))[mt] *
-               (2*Lt/((At/pi)**0.5))**(1-1/nt)[mt] * (dP)**(1/nt-1)[mt])
+        # Bound the apparent viscosity
+        vis_min = 1e-08
+        vis_max = 1e+04
+        mu1[mu1 < vis_min] = vis_min
+        mu1[mu1 > vis_max] = vis_max
+        mu2[mu2 < vis_min] = vis_min
+        mu2[mu2 > vis_max] = vis_max
+        mut[mut < vis_min] = vis_min
+        mut[mut > vis_max] = vis_max
 
-        gt[mt] = (At**2/(8*pi*Lt))[mt]
-        gt[dP == 0] = 1e-10
+        phase['throat.viscosity_eff'] = mut
 
-        gh = (1/(gt*mut)/SFt + 1/(g1*mu1)/SF1 + 1/(g2*mu2)/SF2)**(-1)
-        mu_eff = ((1/gt/SFt + 1/g1/SF1 + 1/g2/SF2)**(-1))/gh
-
-        phase['throat.viscosity_eff'] = mu_eff
-
-        return gh
+        g1[m1] = A1[m1]**2 / ((8*pi*L1)[m1]*mu1)
+        g2[m2] = A2[m2]**2 / ((8*pi*L2)[m2]*mu2)
+        gt[mt] = At[mt]**2 / ((8*pi*Lt)[mt]*mut)
 
     elif transport_type == 'diffusion':
         g1[m1] = (D1*A1)[m1] / L1[m1]
