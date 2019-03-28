@@ -126,3 +126,102 @@ def generic_conductance(target, transport_type, pore_diffusivity,
                         ' or "ionic"')
     # Apply shape factors and calculate the final conductance
     return (1/gt/SFt + 1/g1/SF1 + 1/g2/SF2)**(-1)
+
+
+def conical_model(target,
+                  transport_type,
+                  pore_volume,
+                  pore_diameter,
+                  throat_area,
+                  throat_diffusivity):
+    r"""
+    Calculate the diffusive conductance of conduits in network, where a
+    conduit is ( 1/2 pore - full throat - 1/2 pore ) based on the areas
+
+    Parameters
+    ----------
+    network : OpenPNM Network Object
+
+    phase : OpenPNM Phase Object
+        The phase of interest
+
+    Notes
+    -----
+    (1) This function requires that all the necessary phase properties already
+    be calculated.
+
+    (2) This function calculates the specified property for the *entire*
+    network then extracts the values for the appropriate throats at the end.
+
+    """
+    network = target.project.network
+    throats = network.map_throats(throats=target.Ts, origin=target)
+    phase = target.project.find_phase(target)
+    cn = network['throat.conns'][throats]
+
+    # Get properties in every pore in the network
+    pv = network[pore_volume]
+    pdia = network[pore_diameter]
+    phv = 0.5 * pv
+
+    # Get the properties of every throat
+    tarea = network[throat_area]
+    tdia = _sp.sqrt(tarea)
+
+    # Interpolate pore phase property values to throats
+    DABt = phase[throat_diffusivity]
+
+    # get c-to-c length from pore center to throat center
+    t_coords = network['throat.centroid']
+    p_coords = network['pore.coords']
+    plen1 = _sp.sqrt(_sp.sum(((p_coords[cn[:, 0]] - t_coords)) ** 2, axis=1))
+    plen2 = _sp.sqrt(_sp.sum(((p_coords[cn[:, 1]] - t_coords)) ** 2, axis=1))
+
+    # Remove any non-positive lengths
+    plen1[plen1 <= 0] = 1e-12
+    plen2[plen2 <= 0] = 1e-12
+
+    # calculate constant terms
+    c1 = (tdia ** 2) - (3 * phv[cn[:, 0]] / plen1)
+    c2 = (tdia ** 2) - (3 * phv[cn[:, 1]] / plen2)
+
+    # Find discriminant
+    disc1 = tdia ** 2 - 4 * c1
+    disc2 = tdia ** 2 - 4 * c2
+
+    # Find new diameter
+    new_pdia1 = 0.5 * (- tdia + _sp.sqrt(disc1))
+    new_pdia2 = 0.5 * (- tdia + _sp.sqrt(disc2))
+
+    # get complex diameter values indices
+    ind1 = _sp.iscomplex(new_pdia1)
+    ind2 = _sp.iscomplex(new_pdia2)
+
+    # replace complex diameter with original diameter
+    new_pdia1[ind1 == True] = pdia[cn[:, 0]][ind1 == True]
+    new_pdia2[ind2 == True] = pdia[cn[:, 1]][ind2 == True]
+
+    # get -ve diameter values indices
+    ind3 = new_pdia1 < 0
+    ind4 = new_pdia2 < 0
+
+    # replace -ve diameter with original diameter
+    new_pdia1[ind3 == True] = pdia[cn[:, 0]][ind3 == True]
+    new_pdia2[ind4 == True] = pdia[cn[:, 1]][ind4 == True]
+
+    # Find g for half of pore 1
+    gp1 = DABt * (new_pdia1 * tdia) / (plen1)
+    gp1[_sp.isnan(gp1)] = _sp.inf
+    gp1[~(gp1 > 0)] = _sp.inf  # Set 0 conductance pores (boundaries) to inf
+
+    # Find g for half of pore 2
+    gp2 = DABt * (new_pdia2 * tdia) / (plen2)
+    gp2[_sp.isnan(gp2)] = _sp.inf
+    gp2[~(gp2 > 0)] = _sp.inf  # Set 0 conductance pores (boundaries) to inf
+
+    # Pore scale model
+    if transport_type == 'diffusion':
+        value = (1 / gp1 + 1 / gp2) ** (-1)
+        value = value.real
+        # print(value)
+    return value

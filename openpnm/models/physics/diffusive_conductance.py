@@ -4,7 +4,8 @@ r"""
 
 """
 
-from .misc import generic_conductance
+from .misc import generic_conductance, conical_model
+import scipy as _sp
 
 
 def ordinary_diffusion(target,
@@ -91,3 +92,54 @@ def taylor_aris_diffusion(
         conduit_shape_factors=conduit_shape_factors,
         pore_pressure=pore_pressure,
         throat_hydraulic_conductance=throat_hydraulic_conductance)
+
+
+def bulk_diffusion(target,
+                pore_volume='pore.volume',
+                pore_diameter='pore.diameter',
+                throat_area='throat.area',
+                throat_diffusivity='throat.diffusivity'):
+    r"""
+    Calculate the diffusive conductance of conduits in network, where a
+    conduit is ( 1/2 pore - full throat - 1/2 pore ). See the notes section.
+
+    Parameters
+    ----------
+    target : OpenPNM Object
+        The object which this model is associated with. This controls the
+        length of the calculated array, and also provides access to other
+        necessary properties.
+
+    throat_diffusivity : string
+        Dictionary key of the throat diffusivity values
+
+    pore_area : string
+        Dictionary key of the pore area values
+
+    throat_area : string
+        Dictionary key of the throat area values
+
+    Returns
+    -------
+    g : ndarray
+        Array containing diffusive conductance values for conduits in the
+        geometry attached to the given physics object.
+
+    Notes
+    -----
+    (1) This function requires that all the necessary phase properties already
+    be calculated.
+
+    (2) This function calculates the specified property for the *entire*
+    network then extracts the values for the appropriate throats at the end.
+
+    (3) This function assumes cylindrical throats with constant cross-section
+    area. Corrections for different shapes and variable cross-section area can
+    be imposed by passing the proper flow_shape_factor argument.
+
+    """
+    return conical_model(target=target, transport_type='diffusion',
+                         pore_volume=pore_volume,
+                         pore_diameter=pore_diameter,
+                         throat_area=throat_area,
+                         throat_diffusivity=throat_diffusivity)
