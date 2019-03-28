@@ -16,8 +16,8 @@ geo = op.geometry.StickAndBall(network=net,
 
 # phase
 phase = op.phases.Water(network=net)
-phase['pore.consistency'] = 0.0005
-phase['pore.flow_index'] = 1.1
+phase['pore.consistency'] = 0.00089319
+phase['pore.flow_index'] = 2
 
 # physics
 phys = op.physics.GenericPhysics(network=net,
@@ -31,7 +31,7 @@ phys.add_model(propname='throat.hydraulic_conductance',
 # algorithms: Newtonian Stokes flow
 sf = op.algorithms.StokesFlow(network=net, phase=phase)
 sf.set_value_BC(pores=net.pores('front'), values=1)
-sf.set_value_BC(pores=net.pores('back'), values=200)
+sf.set_value_BC(pores=net.pores('back'), values=2)
 sf.run()
 phase.update(sf.results())
 phase['pore.pressure_sf'] = phase['pore.pressure']
@@ -43,9 +43,17 @@ phys.add_model(propname='throat.nonNewtonian_hydraulic_conductance',
 # algorithms: Non Newtonian Stokes flow
 nnsf = op.algorithms.NonNewtonianStokesFlow(network=net, phase=phase)
 nnsf.set_value_BC(pores=net.pores('front'), values=1)
-nnsf.set_value_BC(pores=net.pores('back'), values=200)
+nnsf.set_value_BC(pores=net.pores('back'), values=2)
 nnsf.run()
 phase.update(nnsf.results())
+
+cn = net['throat.conns']
+gh_sf = phase['throat.hydraulic_conductance']
+gh = phase['throat.nonNewtonian_hydraulic_conductance']
+P_sf = phase['pore.pressure_sf']
+P = phase['pore.pressure']
+Qt_sf = np.abs(gh_sf*np.diff(P_sf[cn], axis=1).squeeze())
+Qt = np.abs(gh*np.diff(P[cn], axis=1).squeeze())
 
 # output results to a vtk file
 # proj.export_data(phases=[phase], filename='OUT', filetype='VTK')
