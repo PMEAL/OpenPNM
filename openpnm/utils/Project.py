@@ -195,7 +195,8 @@ class Project(list):
 
         Returns
         -------
-        A new Project object containing copies of all objects
+        proj : list
+            A new Project object containing copies of all objects
 
         """
         if name is None:
@@ -243,7 +244,7 @@ class Project(list):
 
         Returns
         -------
-        An OpenPNM Phase object.
+        phase : OpenPNM Phase object
 
         Raises
         ------
@@ -274,7 +275,7 @@ class Project(list):
 
         Returns
         -------
-        An OpenPNM Geometry object
+        geom : OpenPNM Geometry object
 
         Raises
         ------
@@ -307,12 +308,14 @@ class Project(list):
 
         Returns
         -------
-        A list containing the Physics object(s).  If only a ``geometry`` is
-        specified the the Physics for all Phases is returned.  If only a
-        ``phase`` is specified, then the Physics for all Geometries is
-        returned.  If both ``geometry`` and ``phase`` is specified then
-        the list only contains a single Physics.  If no Physics is found, the
-        the list will be empty.  See the Notes section for more information.
+        physics : list
+            A list containing the Physics object(s).  If only a ``geometry`` is
+            specified the the Physics for all Phases is returned.  If only a
+            ``phase`` is specified, then the Physics for all Geometries is
+            returned.  If both ``geometry`` and ``phase`` is specified then
+            the list only contains a single Physics.  If no Physics is found,
+            the the list will be empty.  See the Notes section for more
+            information.
 
         See Also
         --------
@@ -373,7 +376,7 @@ class Project(list):
 
         Returns
         -------
-        An OpenPNM object
+        obj : An OpenPNM object
 
         """
         if 'Subdomain' not in obj._mro():
@@ -483,6 +486,11 @@ class Project(list):
 
         Parameters
         ----------
+        filename : string or path object
+            The name of the file containing the saved object.  Can include
+            an absolute or relative path as well.  If only a filename is
+            given it will be saved in the current working directory.  The
+            object type is inferred from
 
         """
         p = Path(filename)
