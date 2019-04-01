@@ -465,20 +465,16 @@ class Project(list):
 
     def save_object(self, obj):
         r"""
-        Saves the given object to a file
+        Saves the given object or list of objects to a file
 
         Parameters
         ----------
-        obj : OpenPNM object
-            The file to be saved.  Depending on the object type, the file
+        obj : OpenPNM object or list of objects
+            The objects to be saved.  Depending on the object type, the file
             extension will be one of 'net', 'geo', 'phase', 'phys' or 'alg'.
         """
-        if not isinstance(obj, list):
-            obj = [obj]
-        for item in obj:
-            filename = item.name + '.' + item.settings['prefix']
-            with open(filename, 'wb') as f:
-                pickle.dump({item.name: item}, f)
+        from openpnm.io import OpenpnmIO
+        OpenpnmIO.save_objects(objs=obj)
 
     def load_object(self, filename):
         r"""
@@ -493,12 +489,8 @@ class Project(list):
             object type is inferred from
 
         """
-        p = Path(filename)
-        with open(p, 'rb') as f:
-            d = pickle.load(f)
-        obj = self._new_object(objtype=p.suffix.strip('.'),
-                               name=p.name.split('.')[0])
-        obj.update(d)
+        from openpnm.io import OpenpnmIO
+        OpenpnmIO.load_object(filename=filename, project=self)
 
     def save_project(self, filename=''):
         r"""
