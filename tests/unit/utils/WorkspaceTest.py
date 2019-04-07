@@ -77,12 +77,12 @@ class WorkspaceTest:
         a = sp.ones((10, ))
         pickle.dump(a, open('single_object.pnm', 'wb'))
         self.ws.clear()
-        with pytest.warns(UserWarning):
+        with pytest.raises(Exception):
             self.ws.load_project('single_object.pnm')
         b = {'test': a}
         pickle.dump(b, open('single_object.pnm', 'wb'))
         self.ws.clear()
-        with pytest.warns(UserWarning):
+        with pytest.raises(Exception):
             self.ws.load_project('single_object.pnm')
         os.remove('single_object.pnm')
 
@@ -92,8 +92,8 @@ class WorkspaceTest:
         pn = op.network.Cubic(shape=[3, 3, 3], project=proj)
         op.phases.Air(network=pn)
         self.ws.save_project(proj, filename='test.pnm')
-        with pytest.warns(UserWarning):
-            self.ws.load_project('test.pnm')
+        self.ws.load_project('test.pnm')
+        assert set(self.ws.keys()) == set(['test', 'sim_01'])
         os.remove('test.pnm')
 
     def test_save_and_load_workspace(self):
