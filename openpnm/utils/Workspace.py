@@ -211,7 +211,7 @@ class Workspace(dict):
 
         """
         from openpnm.io import OpenpnmIO
-        OpenpnmIO.save_project(filename=filename)
+        OpenpnmIO.load_project(filename=filename)
 
     def close_project(self, project):
         r"""
