@@ -1,6 +1,6 @@
 import pickle
 import time
-from openpnm.utils import Workspace
+from openpnm.utils import Workspace, Project
 from openpnm.utils import logging
 from openpnm.io import GenericIO
 logger = logging.getLogger(__name__)
@@ -31,7 +31,9 @@ class OpenpnmIO(GenericIO):
                 pickle.dump({item.name: item}, f)
 
     @classmethod
-    def load_object(cls, filename, project):
+    def load_object(cls, filename, project=None):
+        if project is None:
+            project = Project()
         p = cls._parse_filename(filename)
         with open(p, 'rb') as f:
             d = pickle.load(f)
