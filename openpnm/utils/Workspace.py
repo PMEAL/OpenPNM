@@ -123,7 +123,7 @@ class Workspace(dict):
         from openpnm.io import OpenpnmIO
         OpenpnmIO.save_workspace(filename)
 
-    def load_workspace(self, filename):
+    def load_workspace(self, filename, overwrite=False):
         r"""
         Loads a saved Workspace from 'pnm' file into the current Workspace.
         Any Projects present in the current Workspace will be deleted.
@@ -132,6 +132,12 @@ class Workspace(dict):
         ----------
         filename : string, optional
             The name of the file to open.  See Notes for more information.
+        overwrite : boolean
+            A flag to indicate if the current Workspace should be
+            overwritten when loading the new one.  The default is ``False``,
+            meaning the loaded file will be added to the existing data.  Note
+            that in this case Project names may clash, in which case the
+            newly loaded Projects are given new names.
 
         See Also
         --------
@@ -149,7 +155,7 @@ class Workspace(dict):
         """
         from openpnm.io import OpenpnmIO
         self.clear()
-        OpenpnmIO.load_workspace(filename)
+        OpenpnmIO.load_workspace(filename=filename, overwrite=overwrite)
 
     def save_project(self, project, filename=''):
         r"""
