@@ -194,7 +194,7 @@ class GenericTransport(GenericAlgorithm):
             self.settings['conductance'] = conductance
         self.settings.update(**kwargs)
 
-    def set_value_BC(self, pores, values):
+    def set_value_BC(self, pores, values, mode='merge'):
         r"""
         Apply constant value boundary conditons to the specified locations.
 
@@ -216,9 +216,9 @@ class GenericTransport(GenericAlgorithm):
         ``settings``, e.g. ``alg.settings['quentity'] = 'pore.pressure'``.
         """
         self._set_BC(pores=pores, bctype='value', bcvalues=values,
-                     mode='merge')
+                     mode=mode)
 
-    def set_rate_BC(self, pores, values):
+    def set_rate_BC(self, pores, values, mode='merge'):
         r"""
         Apply constant rate boundary conditons to the specified locations.
 
@@ -241,7 +241,7 @@ class GenericTransport(GenericAlgorithm):
         The definition of ``quantity`` is specified in the algorithm's
         ``settings``, e.g. ``alg.settings['quentity'] = 'pore.pressure'``.
         """
-        self._set_BC(pores=pores, bctype='rate', bcvalues=values, mode='merge')
+        self._set_BC(pores=pores, bctype='rate', bcvalues=values, mode=mode)
 
     def _set_BC(self, pores, bctype, bcvalues=None, mode='merge'):
         r"""

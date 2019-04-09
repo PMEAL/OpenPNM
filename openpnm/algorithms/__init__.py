@@ -24,3 +24,5 @@ from .OrdinaryPercolation import OrdinaryPercolation
 from .InvasionPercolation import InvasionPercolation
 from .MixedInvasionPercolation import MixedInvasionPercolation
 from .Porosimetry import Porosimetry
+from .NernstPlanck import NernstPlanck
+from .PoissonNernstPlanck import PoissonNernstPlanck

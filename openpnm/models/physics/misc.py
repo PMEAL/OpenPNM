@@ -66,6 +66,18 @@ def generic_conductance(target, transport_type, pore_diffusivity,
     L1 = network[conduit_lengths + '.pore1'][throats]
     Lt = network[conduit_lengths + '.throat'][throats]
     L2 = network[conduit_lengths + '.pore2'][throats]
+    # Preallocating g
+    g1, g2, gt = _sp.zeros((3, len(Lt)))
+    # Setting g to inf when Li = 0 (ex. boundary pores)
+    # INFO: This is needed since area could also be zero, which confuses NumPy
+    m1, m2, mt = [Li != 0 for Li in [L1, L2, Lt]]
+    g1[~m1] = g2[~m2] = gt[~mt] = _sp.inf
+    # If ionic conductance, compute conductance and return it
+    if transport_type == 'ionic':
+        g1[m1] = (A1)[m1] * L1[m1]
+        g2[m2] = (A2)[m2] * L2[m2]
+        gt[mt] = (At)[mt] * Lt[mt]
+        return 1/((g1+g2+gt)/(L1+L2+Lt))
     # Getting shape factors
     try:
         SF1 = phase[conduit_shape_factors+'.pore1'][throats]
@@ -84,12 +96,6 @@ def generic_conductance(target, transport_type, pore_diffusivity,
     except KeyError:
         D1 = phase.interpolate_data(propname=throat_diffusivity)[cn[:, 0]]
         D2 = phase.interpolate_data(propname=throat_diffusivity)[cn[:, 1]]
-    # Preallocating g
-    g1, g2, gt = _sp.zeros((3, len(Lt)))
-    # Setting g to inf when Li = 0 (ex. boundary pores)
-    # INFO: This is needed since area could also be zero, which confuses NumPy
-    m1, m2, mt = [Li != 0 for Li in [L1, L2, Lt]]
-    g1[~m1] = g2[~m2] = gt[~mt] = _sp.inf
     # Find g for half of pore 1, throat, and half of pore 2
     if transport_type == 'flow':
         g1[m1] = A1[m1]**2 / (8*pi*D1*L1)[m1]
@@ -120,9 +126,75 @@ def generic_conductance(target, transport_type, pore_diffusivity,
         g1[m1] = D1[m1]*(1+(Pe1**2)/192)*A1[m1] / L1[m1]
         g2[m2] = D2[m2]*(1+(Pe2**2)/192)*A2[m2] / L2[m2]
         gt[mt] = Dt[mt]*(1+(Pet**2)/192)*At[mt] / Lt[mt]
+
+    elif transport_type == 'ad_dif_mig':
+        for k, v in kwargs.items():
+            if k == 'pore_pressure':
+                pore_pressure = v
+            if k == 'pore_potential':
+                pore_potential = v
+            elif k == 'throat_hydraulic_conductance':
+                throat_hydraulic_conductance = v
+            elif k == 'throat_diffusive_conductance':
+                throat_diffusive_conductance = v
+            elif k == 'throat_valence':
+                throat_valence = v
+            elif k == 'throat_temperature':
+                throat_temperature = v
+            elif k == 's_scheme':
+                s_scheme = v
+
+        P = phase[pore_pressure]
+        V = phase[pore_potential]
+        gh = phase[throat_hydraulic_conductance]
+        gd = phase[throat_diffusive_conductance]
+        gd = _sp.tile(gd, 2)
+        z = phase[throat_valence]
+        T = phase[throat_temperature]
+        D = Dt
+        F = 96485.3329
+        R = 8.3145
+
+        S = (A1*L1+A2*L2+At*Lt)/(L1+L2+Lt)
+        L = L1 + Lt + L2
+
+        # Advection
+        Qij = -gh*_sp.diff(P[cn], axis=1).squeeze()
+        Qij = _sp.append(Qij, -Qij)
+
+        # Migration
+        grad_V = _sp.diff(V[cn], axis=1).squeeze() / L
+        mig = ((z*F*D*S)/(R*T)) * grad_V
+        mig = _sp.append(mig, -mig)
+
+        # Advection-migration
+        adv_mig = Qij-mig
+
+        # Peclet number (includes advection and migration)
+        Peij_adv_mig = adv_mig/gd
+        Peij_adv_mig[(Peij_adv_mig < 1e-10) & (Peij_adv_mig >= 0)] = 1e-10
+        Peij_adv_mig[(Peij_adv_mig > -1e-10) & (Peij_adv_mig <= 0)] = -1e-10
+
+        # Corrected advection-migration
+        adv_mig = Peij_adv_mig*gd
+
+        if s_scheme == 'upwind':
+            w = gd + _sp.maximum(0, -adv_mig)
+        elif s_scheme == 'hybrid':
+            w = _sp.maximum(0, _sp.maximum(-adv_mig, gd-adv_mig/2))
+        elif s_scheme == 'powerlaw':
+            w = (gd * _sp.maximum(0, (1 - 0.1*_sp.absolute(Peij_adv_mig))**5) +
+                 _sp.maximum(0, -adv_mig))
+        elif s_scheme == 'exponential':
+            w = -adv_mig / (1 - _sp.exp(Peij_adv_mig))
+        else:
+            raise Exception('Unrecognized discretization scheme: ' + s_scheme)
+        w = _sp.reshape(w, (network.Nt, 2), order='F')
+        return w
+
     else:
         raise Exception('Unknown keyword for "transport_type", can only be' +
-                        ' "flow", "diffusion", "taylor_aris_diffusion"' +
-                        ' or "ionic"')
+                        ' "flow", "diffusion", "taylor_aris_diffusion",' +
+                        ' "ad_dif_mig" or "ionic"')
     # Apply shape factors and calculate the final conductance
     return (1/gt/SFt + 1/g1/SF1 + 1/g2/SF2)**(-1)
