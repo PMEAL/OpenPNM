@@ -24,13 +24,12 @@ default_settings = {'pore_inv_seq': [],
                     'inv_phase': [],
                     'def_phase': [],
                     'auto_def': [],
-                    'autio_inv': [],
+                    'auto_inv': [],
                     'BP_1': [],
                     'BP_2': [],
                     'BC_1': [],
                     'BC_2': [],
                     }
-
 class RelativePermeability(GenericAlgorithm):
     r"""
     A subclass of Generic Algorithm to calculate relative permeabilities of
@@ -128,7 +127,7 @@ class RelativePermeability(GenericAlgorithm):
                 Pcarr =  []
                 Sarr=np.linspace(0,1,num=20)
                 for Snw in Sarr:
-                    print('Snw is', Snw)
+                    #print('Snw is', Snw)
                     res1=inv.results(Snwp=Snw)
                     occ_ts=res1['throat.occupancy']
                     if np.any(occ_ts):
@@ -144,7 +143,8 @@ class RelativePermeability(GenericAlgorithm):
                     throat_occ[str(i)].append(res['throat.occupancy'])
             self.settings['pore_occ']=pore_occ
             self.settings['throat_occ']=throat_occ
-
+            
+    def run(self,network):
             # find Kx,Ky,Kz
             single_perms_water = [None,None,None] # each element is a scalar
             single_perms_oil = [None,None,None] # each element is a scalar
@@ -159,14 +159,16 @@ class RelativePermeability(GenericAlgorithm):
                 Stokes_alg_single_phase_water._set_BC(pores=BC1_pores, bctype='value', bcvalues=self.settings['BC_1'][i])
                 Stokes_alg_single_phase_water._set_BC(pores=BC2_pores, bctype='value', bcvalues=self.settings['BC_2'][i])
                 Stokes_alg_single_phase_water.run()
-                single_perms_water[i] = Stokes_alg_single_phase_water.calc_effective_permeability(domain_area=da, domain_length=dl,inlets=BC1_pores, outlets=BC2_pores)
+#                single_perms_water[i] = Stokes_alg_single_phase_water.calc_effective_permeability(domain_area=da, domain_length=dl,inlets=BC1_pores, outlets=BC2_pores)
+                single_perms_water[i] = Stokes_alg_single_phase_water.calc_effective_permeability(inlets=BC1_pores, outlets=BC2_pores)
                 self.project.purge_object(obj=Stokes_alg_single_phase_water)
                 Stokes_alg_single_phase_oil = StokesFlow(network=network, phase=self.settings['auto_inv'])
                 Stokes_alg_single_phase_oil.setup(conductance='throat.hydraulic_conductance')
                 Stokes_alg_single_phase_oil._set_BC(pores=BC1_pores, bctype='value', bcvalues=self.settings['BC_1'][i])
                 Stokes_alg_single_phase_oil._set_BC(pores=BC2_pores, bctype='value', bcvalues=self.settings['BC_2'][i])
                 Stokes_alg_single_phase_oil.run()
-                single_perms_oil[i] = Stokes_alg_single_phase_oil.calc_effective_permeability(domain_area=da, domain_length=dl,inlets=BC1_pores, outlets=BC2_pores)
+                single_perms_oil[i] = Stokes_alg_single_phase_oil.calc_effective_permeability(inlets=BC1_pores, outlets=BC2_pores)
+#                single_perms_oil[i] = Stokes_alg_single_phase_oil.calc_effective_permeability(domain_area=da, domain_length=dl,inlets=BC1_pores, outlets=BC2_pores)
                 self.project.purge_object(obj=Stokes_alg_single_phase_oil)
             # find Krx,Kry,Krz
             perm_water = {'0': [],'1': [],'2': []} # each element is a vector
@@ -177,7 +179,7 @@ class RelativePermeability(GenericAlgorithm):
                 [da,dl]=[Da[i],Dl[i]]
                 for j in range(len(S_vec[0])):
                     self.update_phase_and_phys(self.settings['pore_occ'][str(i)][j], self.settings['throat_occ'][str(i)][j])
-                    print('sat is equal to', S_vec[0][j])
+                    #print('sat is equal to', S_vec[0][j])
                     Stokes_alg_multi_phase_water = StokesFlow(network=network,phase=self.settings['auto_def'])
                     Stokes_alg_multi_phase_water.setup(conductance='throat.conduit_hydraulic_conductance')
                     Stokes_alg_multi_phase_water.set_value_BC(values=self.settings['BC_1'][i], pores=self.settings['BP_1'][i])
@@ -190,17 +192,19 @@ class RelativePermeability(GenericAlgorithm):
                     # Run Multiphase algs
                     Stokes_alg_multi_phase_water.run()
                     Stokes_alg_multi_phase_oil.run()
-                    effective_permeability_water_multi = Stokes_alg_multi_phase_water.calc_effective_permeability(domain_area=da, domain_length=dl)
-                    effective_permeability_oil_multi = Stokes_alg_multi_phase_oil.calc_effective_permeability(domain_area=da, domain_length=dl)
+                    effective_permeability_water_multi = Stokes_alg_multi_phase_water.calc_effective_permeability(inlets=BC1_pores, outlets=BC2_pores)
+                    effective_permeability_oil_multi = Stokes_alg_multi_phase_oil.calc_effective_permeability(inlets=BC1_pores, outlets=BC2_pores)
+                    #effective_permeability_water_multi = Stokes_alg_multi_phase_water.calc_effective_permeability(domain_area=da, domain_length=dl)
+                    #effective_permeability_oil_multi = Stokes_alg_multi_phase_oil.calc_effective_permeability(domain_area=da, domain_length=dl)
                     relative_eff_perm_water = effective_permeability_water_multi/single_perms_water[i]
                     relative_eff_perm_oil = effective_permeability_oil_multi/single_perms_oil[i]
                     perm_water[str(i)].append(relative_eff_perm_water)
                     perm_oil[str(i)].append(relative_eff_perm_oil)
                     self.project.purge_object(obj=Stokes_alg_multi_phase_water)
                     self.project.purge_object(obj=Stokes_alg_multi_phase_oil)
-                print('krw is', perm_water[str(i)])
-                print('kro is', perm_oil[str(i)])
-            
+                    #print('krw is for direction',i, 'kr', perm_water[str(i)])
+#    def result(self,perm_water,perm_oil):
+            return [self.settings['sat'],perm_water, perm_oil]
             
     def update_phase_and_phys(self, pore_occ, throat_occ):
         # inv_p=self.project.phases(self.settings['inv_phase'])

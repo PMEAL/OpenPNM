@@ -83,3 +83,4 @@ geom = op.geometry.StickAndBall(network=pn, pores=pn['pore.all'],
 relcalc=op.algorithms.RelativePermeability(network=pn)
 relcalc.setup(auto=True)
 #relcalc.run()
+[a,b,c]=relcalc.run(pn)
