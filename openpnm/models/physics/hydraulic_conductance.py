@@ -66,3 +66,32 @@ def hagen_poiseuille(target,
                                throat_diffusivity=throat_viscosity,
                                conduit_lengths=conduit_lengths,
                                conduit_shape_factors=conduit_shape_factors)
+
+
+def hagen_poiseuille_power_law(
+        target,
+        pore_area='pore.area',
+        throat_area='throat.area',
+        pore_viscosity='pore.viscosity',
+        throat_viscosity='throat.viscosity',
+        conduit_lengths='throat.conduit_lengths',
+        conduit_shape_factors='throat.flow_shape_factors',
+        pore_consistency='pore.consistency',
+        throat_consistency='throat.consistency',
+        pore_flow_index='pore.flow_index',
+        throat_flow_index='throat.flow_index',
+        pore_pressure='pore.pressure'):
+    r"""
+    """
+    return generic_conductance(target=target, transport_type='flow_power_law',
+                               pore_area=pore_area,
+                               throat_area=throat_area,
+                               pore_diffusivity=pore_viscosity,
+                               throat_diffusivity=throat_viscosity,
+                               conduit_lengths=conduit_lengths,
+                               conduit_shape_factors=conduit_shape_factors,
+                               pore_consistency=pore_consistency,
+                               throat_consistency=throat_consistency,
+                               pore_flow_index=pore_flow_index,
+                               throat_flow_index=throat_flow_index,
+                               pore_pressure=pore_pressure)
