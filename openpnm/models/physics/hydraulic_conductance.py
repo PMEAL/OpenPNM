@@ -99,9 +99,16 @@ def hagen_poiseuille_2D(target,
     except KeyError:
         SF1 = SF2 = SFt = 1.0
     # Getting viscosity values
-    mut = phase[throat_viscosity][throats]
-    mu1 = phase[pore_viscosity][cn[:, 0]]
-    mu2 = phase[pore_viscosity][cn[:, 1]]
+    try:
+        mut = phase[throat_viscosity][throats]
+    except KeyError:
+        mut = phase.interpolate_data(propname=pore_viscosity)[throats]
+    try:
+        mu1 = phase[pore_viscosity][cn[:, 0]]
+        mu2 = phase[pore_viscosity][cn[:, 1]]
+    except KeyError:
+        mu1 = phase.interpolate_data(propname=throat_viscosity)[cn[:, 0]]
+        mu2 = phase.interpolate_data(propname=throat_viscosity)[cn[:, 1]]
     # Find g for half of pore 1, throat, and half of pore 2
     g1 = D1**3 / (12*mu1*L1)
     g2 = D2**3 / (12*mu2*L2)
