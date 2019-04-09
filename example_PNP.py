@@ -1,9 +1,9 @@
+"""
 import openpnm as op
 import numpy as np
 ws = op.Workspace()
 proj = ws.new_project()
 # ws.settings['loglevel'] = 20
-
 
 # network, geometry, phase
 np.random.seed(0)
@@ -116,3 +116,4 @@ sw.update(p.results())
 sw.update(eA.results())
 sw.update(eB.results())
 # op.io.VTK.save(network=net, phases=[sw], filename='OUTPUT_PNP')
+"""
