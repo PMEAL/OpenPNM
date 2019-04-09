@@ -1,3 +1,4 @@
+"""
 import openpnm as op
 import numpy as np
 ws = op.Workspace()
@@ -116,3 +117,4 @@ sw.update(p.results())
 sw.update(eA.results())
 sw.update(eB.results())
 # op.io.VTK.save(network=net, phases=[sw], filename='OUTPUT_PNP')
+"""
