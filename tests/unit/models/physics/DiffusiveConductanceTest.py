@@ -51,7 +51,7 @@ class DiffusiveConductanceTest:
         self.geo['pore.diameter'] = 1.0
         self.geo['throat.diameter'] = 1.0
         self.geo['throat.length'] = 1e-9
-        self.air = op.phases.air(network=self.net)
+        self.air = op.phases.Air(network=self.net)
         self.phys = op.physics.GenericPhysics(network=self.net,
                                               phase=self.air,
                                               geometry=self.geo)
