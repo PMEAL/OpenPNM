@@ -19,14 +19,14 @@ def pore_to_pore(target):
     -------
     unit_vec : NumPy ndarray, shape = (N, 3)
         Array containing pore-to-pore unit vectors
-        
+
     Notes
     -----
     There is an important impicit assumption here: the positive direction is
     taken as the direction from the pore with the lower index to the higher.
     This corresponds to the pores in the 1st and 2nd columns of the
     'throat.conns' array as stored on the etwork.
-    
+
     """
     network = target.project.network
     throats = network.throats(target.name)

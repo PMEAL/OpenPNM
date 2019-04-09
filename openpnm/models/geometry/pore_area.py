@@ -15,7 +15,7 @@ def sphere(target, pore_diameter='pore.diameter'):
     pore_diameter : string
         The dictionary key of the array on the Geometry object containing the
         pore diameter values necessary to find the area.
-        
+
     Returns
     -------
     value : NumPy ndarray
@@ -46,7 +46,7 @@ def cube(target, pore_diameter='pore.diameter'):
     -------
     value : NumPy ndarray
         Array containing pore area values.
-        
+
     """
     diams = target[pore_diameter]
     value = diams**2
