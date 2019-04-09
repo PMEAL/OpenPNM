@@ -47,6 +47,18 @@ class DiffusiveConductanceTest:
         actual = sp.around(actual, decimals=5)
         assert_allclose(actual, desired)
 
+    def test_classic_ordinary_diffusion(self):
+        self.geo['pore.diameter'] = 1.0
+        self.geo['throat.diameter'] = 1.0
+        self.geo['throat.length'] = 1e-9
+        self.air = op.phases.air(network=self.net)
+        self.phys = op.physics.GenericPhysics(network=self.net,
+                                              phase=self.air,
+                                              geometry=self.geo)
+        mod = op.models.physics.diffusive_conductance.classic_ordinary_diffusion
+        self.phys.add_model(propname='throat.conductance', model=mod)
+        assert sp.allclose(a=self.phys['throat.conductance'][0],
+                           b=0.00084552)
 
 if __name__ == '__main__':
 
