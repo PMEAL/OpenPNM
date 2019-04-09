@@ -21,6 +21,11 @@ def cylinder(target, throat_diameter='throat.diameter'):
     throat_diameter : string
         Dictionary key of the throat diameter values
 
+    Returns
+    -------
+    value : NumPy ndarray
+        Array containing throat cross-sectional area values.
+
     """
     diams = target[throat_diameter]
     value = _pi/4*(diams)**2
@@ -40,6 +45,11 @@ def cuboid(target, throat_diameter='throat.diameter'):
 
     throat_diameter : string
         Dictionary key of the throat diameter values
+
+    Returns
+    -------
+    value : NumPy ndarray
+        Array containing throat cross-sectional area values.
 
     """
     diams = target[throat_diameter]

@@ -83,6 +83,11 @@ def largest_sphere(target, fixed_diameter='pore.fixed_diameter', iters=5):
         the maximum number of iterations.  The default is 10, but 5 is usally
         enough.
 
+    Returns
+    -------
+    D : NumPy ndarray
+        Array containing pore diameter values.
+
     Notes
     -----
     This model looks into all pores in the network when finding the diameter.
@@ -142,6 +147,11 @@ def equivalent_diameter(target, pore_volume='pore.volume',
     pore_shape : string
         The shape of the pore body to assume when back-calculating from
         volume.  Options are 'sphere' (default) or 'cube'.
+
+    Returns
+    -------
+    D : NumPy ndarray
+        Array containing pore diameter values.
 
     """
     from scipy.special import cbrt

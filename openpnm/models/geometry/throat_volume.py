@@ -24,10 +24,16 @@ def cylinder(target, throat_length='throat.length',
         The dictionary keys containing the arrays with the throat diameter and
         length values.
 
+    Returns
+    -------
+    value : NumPy ndarray
+        Array containing throat volume values.
+
     Notes
     -----
     At present this models does NOT account for the volume reprsented by the
     intersection of the throat with a spherical pore body.
+    
     """
     leng = target[throat_length]
     diam = target[throat_diameter]
@@ -51,10 +57,16 @@ def cuboid(target, throat_length='throat.length',
         The dictionary keys containing the arrays with the throat diameter and
         length values.
 
+    Returns
+    -------
+    value : NumPy ndarray
+        Array containing throat volume values.
+        
     Notes
     -----
     At present this models does NOT account for the volume reprsented by the
     intersection of the throat with a spherical pore body.
+    
     """
     leng = target[throat_length]
     diam = target[throat_diameter]
@@ -79,11 +91,17 @@ def extrusion(target, throat_length='throat.length',
         The dictionary keys containing the arrays with the throat area and
         length values.
 
+    Returns
+    -------
+    value : NumPy ndarray
+        Array containing throat volume values.
+        
     Notes
     -----
     At present this models does NOT account for the volume reprsented by the
     intersection of the throat with a spherical pore body.
-        """
+    
+    """
     leng = target[throat_length]
     area = target[throat_area]
     value = leng*area

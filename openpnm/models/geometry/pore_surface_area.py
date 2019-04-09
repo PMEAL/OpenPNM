@@ -28,6 +28,11 @@ def sphere(target, pore_diameter='pore.diameter', throat_area='throat.area'):
         The dictioanry key to the throat area array.  Throat areas are needed
         since their insection with the pore are removed from the computation.
 
+    Returns
+    -------
+    value : NumPy ndarray
+        Array containing pore surface area values.
+
     """
     network = target.project.network
     R = target[pore_diameter]/2
@@ -56,6 +61,12 @@ def cube(target, pore_diameter='pore.diameter', throat_area='throat.area'):
     throat_area : string
         The dictioanry key to the throat area array.  Throat areas are needed
         since their insection with the pore are removed from the computation.
+
+    Returns
+    -------
+    value : NumPy ndarray
+        Array containing pore surface area values.
+
     """
     network = target.project.network
     D = target[pore_diameter]
