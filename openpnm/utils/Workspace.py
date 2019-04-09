@@ -120,19 +120,12 @@ class Workspace(dict):
         ``os.path`` in the Python standard library.
 
         """
-        if filename == '':
-            filename = 'workspace' + '_' + time.strftime('%Y%b%d_%H%M%p')
-        filename = self._parse_filename(filename=filename, ext='pnm')
-        d = {}
-        for sim in self.values():
-            d[sim.name] = sim
-        with open(filename, 'wb') as f:
-            pickle.dump(d, f)
+        from openpnm.io import OpenpnmIO
+        OpenpnmIO.save_workspace(filename)
 
     def load_workspace(self, filename):
         r"""
-        Loads all saved Projects in a 'pnm' file into the Workspace
-
+        Loads a saved Workspace from 'pnm' file into the current Workspace.
         Any Projects present in the current Workspace will be deleted.
 
         Parameters
@@ -154,8 +147,9 @@ class Workspace(dict):
         ``os.path`` in the Python standard library.
 
         """
+        from openpnm.io import OpenpnmIO
         self.clear()
-        self.load_project(filename=filename)
+        OpenpnmIO.load_workspace(filename)
 
     def save_project(self, project, filename=''):
         r"""
@@ -186,14 +180,8 @@ class Workspace(dict):
         ``os.path`` in the Python standard library.
 
         """
-        if filename == '':
-            filename = project.name
-        filename = self._parse_filename(filename=filename, ext='pnm')
-
-        # Save dictionary as pickle
-        d = {project.name: project}
-        with open(filename, 'wb') as f:
-            pickle.dump(d, f)
+        from openpnm.io import OpenpnmIO
+        OpenpnmIO.save_project(project=project, filename=filename)
 
     def load_project(self, filename, overwrite=False):
         r"""
@@ -222,45 +210,8 @@ class Workspace(dict):
         ``os.path`` in the Python standard library.
 
         """
-        filename = self._parse_filename(filename=filename, ext='pnm')
-        temp = {}  # Read file into temporary dict
-        with open(filename, 'rb') as f:
-            d = pickle.load(f)
-            # A normal pnm file is a dict of lists (projects)
-            if type(d) is dict:
-                for name in d.keys():
-                    # If dict item is a list, assume it's a valid project
-                    if isinstance(d[name], list):
-                        temp[name] = d[name]
-                    else:
-                        warnings.warn('File contents must be a dictionary, ' +
-                                      'of lists, or a single list')
-            else:
-                if isinstance(d, list):  # If pickle contains a single list
-                    temp[filename] = d
-                else:
-                    warnings.warn('File contents must be a dictionary, ' +
-                                  'of lists, or a single list')
-
-        # Now scan through temp dict to ensure valid types and names
-        conflicts = set(temp.keys()).intersection(set(self.keys()))
-        for name in list(temp.keys()):
-            if name in conflicts:
-                new_name = self._gen_name()
-                warnings.warn('A project named ' + name + ' already exists, ' +
-                              'renaming to ' + new_name)
-                self[new_name] = temp[name]
-            else:
-                self[name] = temp[name]
-
-    def _parse_filename(self, filename, ext='pnm'):
-        p = Path(filename)
-        p = p.resolve()
-        # If extension not part of filename
-        ext = ext.strip('.')
-        if p.suffix != ('.' + ext):
-            p = p.with_suffix(p.suffix + '.' + ext)
-        return p
+        from openpnm.io import OpenpnmIO
+        OpenpnmIO.load_project(filename=filename)
 
     def close_project(self, project):
         r"""
@@ -285,7 +236,8 @@ class Workspace(dict):
 
         Returns
         -------
-        A handle to the new Project
+        proj : list
+            A handle to the new Project
 
         """
         proj = project.copy(name)
@@ -303,12 +255,13 @@ class Workspace(dict):
 
         Returns
         -------
-        An empty project object, suitable for passing into a Network
-        generator
+        proj : list
+            An empty Project object, suitable for passing into a Network
+            generator
 
         """
-        sim = openpnm.utils.Project(name=name)
-        return sim
+        proj = openpnm.utils.Project(name=name)
+        return proj
 
     def _gen_name(self):
         r"""
