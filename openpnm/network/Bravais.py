@@ -181,7 +181,7 @@ class Bravais(GenericNetwork):
             raise NotImplementedError('hcp is not implemented yet')
 
         elif mode == 'sc':
-            net = Cubic(shape=shape, spacing=spacing)
+            net = Cubic(shape=shape, spacing=1)
             self.update(net)
             ws.close_project(net.project)
             self.clear(mode='labels')
