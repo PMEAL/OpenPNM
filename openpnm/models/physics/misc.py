@@ -239,7 +239,6 @@ def generic_conductance(target, transport_type, pore_diffusivity,
             raise Exception('Unrecognized discretization scheme: ' + s_scheme)
         w = _sp.reshape(w, (network.Nt, 2), order='F')
         return w
-
     elif transport_type == 'ad_dif_mig':
         for k, v in kwargs.items():
             if k == 'pore_pressure':
@@ -304,10 +303,9 @@ def generic_conductance(target, transport_type, pore_diffusivity,
             raise Exception('Unrecognized discretization scheme: ' + s_scheme)
         w = _sp.reshape(w, (network.Nt, 2), order='F')
         return w
-
     else:
         raise Exception('Unknown keyword for "transport_type", can only be' +
                         ' "flow", "diffusion", "taylor_aris_diffusion",' +
-                        ' "ad_dif_mig" or "ionic"')
+                        ' "dispersion", "ad_dif_mig" or "ionic"')
     # Apply shape factors and calculate the final conductance
     return (1/gt/SFt + 1/g1/SF1 + 1/g2/SF2)**(-1)
