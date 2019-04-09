@@ -84,13 +84,13 @@ eB.settings['rxn_tolerance'] = 1e-12
 
 ad_dif_mig_Na = op.models.physics.ad_dif_mig_conductance.ad_dif_mig
 phys.add_model(propname='throat.ad_dif_mig_conductance.Na',
-               model=ad_dif_mig_Na, electrolyte='Na',
+               model=ad_dif_mig_Na, ion='Na',
                s_scheme='exponential')
 
 ad_dif_mig_Cl = op.models.physics.ad_dif_mig_conductance.ad_dif_mig
 phys.add_model(propname='throat.ad_dif_mig_conductance.Cl',
                pore_pressure=sf.settings['quantity'],
-               model=ad_dif_mig_Cl, electrolyte='Cl',
+               model=ad_dif_mig_Cl, ion='Cl',
                s_scheme='exponential')
 
 pnp = op.algorithms.PoissonNernstPlanck(network=net, phase=sw)

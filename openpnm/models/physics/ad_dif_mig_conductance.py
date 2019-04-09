@@ -20,6 +20,7 @@ def ad_dif_mig(target,
                throat_hydraulic_conductance='throat.hydraulic_conductance',
                throat_diffusive_conductance='throat.diffusive_conductance',
                throat_valence='throat.valence',
+               pore_temperature='pore.temperature',
                throat_temperature='throat.temperature',
                ion='',
                s_scheme='powerlaw'):
@@ -68,6 +69,9 @@ def ad_dif_mig(target,
    throat_valence : string
        Dictionary key of the throat ionic species valence values
 
+   pore_temperature : string
+       Dictionary key of the pore temperature values
+
    throat_temperature : string
        Dictionary key of the throat temperature values
 
@@ -111,6 +115,7 @@ def ad_dif_mig(target,
         throat_diffusive_conductance=(throat_diffusive_conductance + '.' +
                                       ion),
         throat_valence=throat_valence+'.'+ion,
+        pore_temperature=pore_temperature,
         throat_temperature=throat_temperature,
         s_scheme=s_scheme)
 
@@ -216,10 +221,18 @@ def generic_conductance(target, transport_type, pore_area, throat_area,
                 throat_diffusive_conductance = v
             elif k == 'throat_valence':
                 throat_valence = v
+            elif k == 'pore_temperature':
+                pore_temperature = v
             elif k == 'throat_temperature':
                 throat_temperature = v
             elif k == 's_scheme':
                 s_scheme = v
+
+        # Interpolate pore phase property values to throats
+        try:
+            T = phase[throat_temperature][throats]
+        except KeyError:
+            T = phase.interpolate_data(propname=pore_temperature)[throats]
 
         P = phase[pore_pressure]
         V = phase[pore_potential]
@@ -227,7 +240,6 @@ def generic_conductance(target, transport_type, pore_area, throat_area,
         gd = phase[throat_diffusive_conductance]
         gd = _sp.tile(gd, 2)
         z = phase[throat_valence]
-        T = phase[throat_temperature]
         D = Dt
         F = 96485.3329
         R = 8.3145
