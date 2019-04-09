@@ -6,7 +6,6 @@ r"""
 """
 
 import numpy as np
-import scipy.stats as spts
 from openpnm.utils import logging
 logger = logging.getLogger(__name__)
 
