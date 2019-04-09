@@ -473,7 +473,7 @@ class OrdinaryPercolation(GenericAlgorithm):
         plt.grid(True)
         return fig
 
-    def results(self, Pc):
+    def results(self, Pc=None):
         r"""
         This method determines which pores and throats are filled with invading
         phase at the specified capillary pressure, and creates several arrays
@@ -504,9 +504,16 @@ class OrdinaryPercolation(GenericAlgorithm):
         or algorithms.
 
         """
-        Psatn = self['pore.invasion_pressure'] <= Pc
-        Tsatn = self['throat.invasion_pressure'] <= Pc
-        inv_phase = {}
-        inv_phase['pore.occupancy'] = sp.array(Psatn, dtype=float)
-        inv_phase['throat.occupancy'] = sp.array(Tsatn, dtype=float)
+        if Pc is not None:
+            Psatn = self['pore.invasion_pressure'] <= Pc
+            Tsatn = self['throat.invasion_pressure'] <= Pc
+            inv_phase = {}
+            inv_phase['pore.occupancy'] = sp.array(Psatn, dtype=float)
+            inv_phase['throat.occupancy'] = sp.array(Tsatn, dtype=float)
+        else:
+            inv_phase = {}
+            Ppressure = self['pore.invasion_pressure']
+            Tpressure = self['throat.invasion_pressure']
+            inv_phase['pore.invasion_pressure'] = Ppressure
+            inv_phase['throat.invasion_pressure'] = Tpressure
         return inv_phase
