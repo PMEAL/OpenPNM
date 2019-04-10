@@ -387,6 +387,21 @@ class Project(list):
                 # Phys
                 return self.find_phase(obj)
 
+    def find_empty_objects(self):
+        r"""
+        Finds objects in Project that are not assigned to any pores OR throats
+
+        Returns
+        -------
+        objs : list
+            A list of objects that have 0-length pores and throats
+        """
+        objs = []
+        for item in self:
+            if (item.Np == 0) and (item.Np == 0):
+                objs.append(item)
+        return objs
+
     def _validate_name(self, name):
         if name in self.names:
             raise Exception('An object already exists named '+name)
