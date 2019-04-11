@@ -97,6 +97,7 @@ class WorkspaceTest:
         os.remove('test.pnm')
 
     def test_save_and_load_workspace(self):
+        self.ws.clear()
         proj1 = self.ws.new_project('test_proj_1')
         proj2 = self.ws.new_project('test_proj_2')
         op.network.Cubic(shape=[3, 3, 3], project=proj1, name='net1')
@@ -105,7 +106,7 @@ class WorkspaceTest:
         self.ws.clear()
         assert 'test_proj_1' not in self.ws.keys()
         assert 'test_proj_2' not in self.ws.keys()
-        self.ws.load_workspace('workspace_test')
+        self.ws.load_workspace('workspace_test', overwrite=True)
         assert 'test_proj_1' in self.ws.keys()
         assert 'test_proj_2' in self.ws.keys()
         self.ws.clear()
