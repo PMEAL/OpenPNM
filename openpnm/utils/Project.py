@@ -474,7 +474,7 @@ class Project(list):
             extension will be one of 'net', 'geo', 'phase', 'phys' or 'alg'.
         """
         from openpnm.io import OpenpnmIO
-        OpenpnmIO.save_objects(objs=obj)
+        OpenpnmIO.save_object_to_file(objs=obj)
 
     def load_object(self, filename):
         r"""
@@ -490,7 +490,7 @@ class Project(list):
 
         """
         from openpnm.io import OpenpnmIO
-        OpenpnmIO.load_object(filename=filename, project=self)
+        OpenpnmIO.load_object_from_file(filename=filename, project=self)
 
     def save_project(self, filename=''):
         r"""
