@@ -34,11 +34,12 @@ def water(target, temperature='pore.temperature', salinity='pore.salinity'):
 
     Returns
     -------
-    sigma_sw, the surface tension of seawater in [N/m]
+    value : NumPy ndarray
+        Array containing surface tension of seawater in [N/m]
 
     Notes
     -----
-     T must be in K, and S in g of salt per kg of phase, or ppt (parts per
+    T must be in K, and S in g of salt per kg of phase, or ppt (parts per
         thousand)
     VALIDITY: 273 < T < 313 K; 0 < S < 40 g/kg;
     ACCURACY: 0.2 %
@@ -89,6 +90,10 @@ def eotvos(target, k, temperature='pore.temperature',
     molar_density : string
         The dictionary key containing the molar density values (K)
 
+    Returns
+    -------
+    value : NumPy ndarray
+        Array containing surface tension values [N/m]
 
     TODO: Needs description, and improve definition of k
 
@@ -128,6 +133,11 @@ def guggenheim_katayama(target, K2, n, temperature='pore.temperature',
     critical_pressure : string
         The dictionary key containing the critical pressure values (K)
 
+    Returns
+    -------
+    value : NumPy ndarray
+        Array containing surface tension values [N/m]
+
     """
     T = target[temperature]
     Pc = target[critical_pressure]
@@ -161,6 +171,12 @@ def brock_bird_scaling(target, sigma_o, To, temperature='pore.temperature',
 
     critical_temperature : string
         The dictionary key containing the critical temperature values (K)
+
+    Returns
+    -------
+    value : NumPy ndarray
+        Array containing surface tension values scaled to the temperature [N/m]
+
     """
     Tc = target[critical_temperature]
     Ti = target[temperature]

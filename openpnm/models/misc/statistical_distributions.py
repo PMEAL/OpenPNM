@@ -33,6 +33,11 @@ def random(target, element, seed=None, num_range=[0, 1]):
         A two element list indicating the low and high end of the returned
         numbers.
 
+    Returns
+    -------
+    values : NumPy ndarray
+        Array containing uniformly-distributed random numbers.
+
     """
     range_size = num_range[1] - num_range[0]
     range_min = num_range[0]
@@ -70,6 +75,11 @@ def weibull(target, seeds, shape, scale, loc):
     loc : float
         Applies an offset to the distribution such that the smallest values are
         above this number.
+
+    Returns
+    -------
+    values : NumPy ndarray
+        Array containing random numbers based on Weibull distribution.
 
     Examples
     --------
@@ -111,6 +121,11 @@ def normal(target, seeds, scale, loc):
     loc : float
         The mean of the Normal distribution
 
+    Returns
+    -------
+    values : NumPy ndarray
+        Array containing normally distributed random numbers.
+
     Examples
     --------
     The following code illustrates the inner workings of this function,
@@ -149,6 +164,11 @@ def generic_distribution(target, seeds, func):
     func : object
         An 'rv_frozen' object from the Scipy.stats library with all of the
         parameters pre-specified.
+
+    Returns
+    -------
+    values : NumPy ndarray
+        Array containing random numbers based on given ppf.
 
     Examples
     --------

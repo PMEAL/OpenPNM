@@ -33,7 +33,8 @@ def water(target, temperature='pore.temperature', salinity='pore.salinity'):
 
     Returns
     -------
-    The thermal conductivity of water/seawater in [W/m.K]
+    value : NumPy ndarray
+        Array containing thermal conductivity of water/seawater in [W/m.K]
 
     Notes
     -----
@@ -99,6 +100,11 @@ def chung(target, Cv='pore.heat_capacity',
     critical_temperatre: string
         The dictionary key containing the critical temperature values (K)
 
+    Returns
+    -------
+    value : NumPy ndarray
+        Array containing thermal conductivity values in [W/m.K]
+
     """
     Cv = target[Cv]
     acentric = target[acentric_factor]
@@ -144,6 +150,11 @@ def sato(target, mol_weight='pore.molecular_weight',
 
     critical_temperature : string
         The dictionary key containing the critical temperature values (K)
+
+    Returns
+    -------
+    value : NumPy ndarray
+        Array containing thermal conductivity values in [W/m.K]
 
     """
     T = target[temperature]

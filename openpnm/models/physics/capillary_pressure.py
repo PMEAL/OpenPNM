@@ -9,9 +9,7 @@ r"""
 """
 
 import scipy as _sp
-import sympy as syp
 import numpy as np
-import pandas as pd
 import logging
 from transforms3d import _gohlketransforms as tr
 from openpnm.models import physics as pm
@@ -76,6 +74,11 @@ def washburn(target, surface_tension='pore.surface_tension',
     diameter : string
         The dictionary key containing the throat diameter values to be used.
 
+    Returns
+    -------
+    value : NumPy ndarray
+        Array containing pore/throat capillary entry pressure values.
+
     Notes
     -----
     The Washburn equation is:
@@ -130,6 +133,11 @@ def purcell(target, r_toroid, surface_tension='pore.surface_tension',
 
     diameter : dict key (string)
         The dictionary key containing the throat diameter values to be used.
+
+    Returns
+    -------
+    value : NumPy ndarray
+        Array containing pore/throat capillary entry pressure values.
 
     Notes
     -----
@@ -214,6 +222,11 @@ def ransohoff_snap_off(target,
     throat_diameter : dict key (string)
         The dictionary key containing the throat diameter values to be used.
 
+    Returns
+    -------
+    value : NumPy ndarray
+        Array containing throat capillary snap-off pressure values.
+
     Notes
     -----
     This equation should be used to calculate the snap off capillary pressure
@@ -224,6 +237,7 @@ def ransohoff_snap_off(target,
     [1]: Ransohoff, T.C., Gauglitz, P.A. and Radke, C.J., 1987. Snap‐off of gas
     bubbles in smoothly constricted noncircular capillaries. AIChE Journal,
     33(5), pp.753-765.
+
     """
     phase = target.project.find_phase(target)
     geometry = target.project.find_geometry(target)
@@ -328,7 +342,12 @@ def purcell_bidirectional(target,
 
     pore_diameter : dict key (string)
         The dictionary key containing the pore diameter values to be used.
-    Notes
+
+    Returns
+    -------
+    value : NumPy ndarray
+        Array containing throat capillary entry pressure values.
+
     """
     network = target.project.network
     conns = network['throat.conns']
@@ -394,7 +413,12 @@ def sinusoidal_bidirectional(target,
 
     pore_diameter : dict key (string)
         The dictionary key containing the pore diameter values to be used.
-    Notes
+
+    Returns
+    -------
+    value : NumPy ndarray
+        Array containing throat capillary entry pressure values.
+
     """
     network = target.project.network
     conns = network['throat.conns']

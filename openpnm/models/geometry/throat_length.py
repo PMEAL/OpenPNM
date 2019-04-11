@@ -27,6 +27,11 @@ def ctc(target, pore_diameter='pore.diameter'):
     pore_diameter : string
         Dictionary key of the pore diameter values
 
+    Returns
+    -------
+    value : NumPy ndarray
+        Array containing throat length values.
+
     """
     _np.warnings.filterwarnings('ignore', category=RuntimeWarning)
 
