@@ -5,7 +5,6 @@ ws = op.Workspace()
 proj = ws.new_project()
 # ws.settings['loglevel'] = 20
 
-
 # network, geometry, phase
 np.random.seed(0)
 

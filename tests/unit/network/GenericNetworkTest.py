@@ -79,6 +79,13 @@ class GenericNetworkTest:
                                          include_input=True)
         assert sp.all(a == [0, 1, 2, 10, 11, 100, 101])
 
+    def test_find_neighbor_throats_on_pores_wo_throats(self):
+        net = op.network.Cubic(shape=[10, 10, 1])
+        ts = net.find_neighbor_throats(pores=net.Ps[-1])
+        op.topotools.trim(net, throats=ts)
+        ts2 = net.find_neighbor_throats(pores=99)
+        assert ts2.size == 0
+
     def test_find_neighbor_throats_empty(self):
         a = self.net.find_neighbor_throats(pores=[])
         assert sp.size(a) == 0
