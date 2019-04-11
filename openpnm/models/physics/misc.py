@@ -251,10 +251,18 @@ def generic_conductance(target, transport_type, pore_diffusivity,
                 throat_diffusive_conductance = v
             elif k == 'throat_valence':
                 throat_valence = v
+            elif k == 'pore_temperature':
+                pore_temperature = v
             elif k == 'throat_temperature':
                 throat_temperature = v
             elif k == 's_scheme':
                 s_scheme = v
+
+        # Interpolate pore phase property values to throats
+        try:
+            T = phase[throat_temperature][throats]
+        except KeyError:
+            T = phase.interpolate_data(propname=pore_temperature)[throats]
 
         P = phase[pore_pressure]
         V = phase[pore_potential]
@@ -262,7 +270,6 @@ def generic_conductance(target, transport_type, pore_diffusivity,
         gd = phase[throat_diffusive_conductance]
         gd = _sp.tile(gd, 2)
         z = phase[throat_valence]
-        T = phase[throat_temperature]
         D = Dt
         F = 96485.3329
         R = 8.3145

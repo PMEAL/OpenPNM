@@ -33,6 +33,11 @@ def percolating_continua(target, phi_crit, tau,
     tau : float
         The exponent of the percolation relationship
 
+    Returns
+    -------
+    sigma_eff : NumPy ndarray
+        Array containing effective electrical conductivity values.
+
     Notes
     -----
     This model uses the following standard percolation relationship:

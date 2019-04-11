@@ -70,6 +70,12 @@ def equivalent_diameter(target, throat_area='throat.area',
         The shape cross-sectional shape of the throat to assume when
         back-calculating from the area.  Options are 'circle' (default) or
         'square'.
+
+    Returns
+    -------
+    value : NumPy ndarray
+        Array containing throat equivalent diameter.
+
     """
     area = target[throat_area]
     if throat_shape.startswith('circ'):

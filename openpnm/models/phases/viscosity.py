@@ -19,23 +19,24 @@ def water(target, temperature='pore.temperature', salinity='pore.salinity'):
     Parameters
     ----------
     target : OpenPNM Object
-        The object for which these values are being calculated.  This
+        The object for which these values are being calculated. This
         controls the length of the calculated array, and also provides
         access to other necessary thermofluid properties.
 
     temperature : string
-        The dictionary key containing the temperature values.  Temperature must
-        be in Kelvin for this emperical equation to work.  Can be either a pore
+        The dictionary key containing the temperature values. Temperature must
+        be in Kelvin for this emperical equation to work. Can be either a pore
         or throat array.
 
     salinity : string
-        The dictionary key containing the salinity values.  Salinity must be
-        expressed in g of salt per kg of solution (ppt).  Can be either a
+        The dictionary key containing the salinity values. Salinity must be
+        expressed in g of salt per kg of solution (ppt). Can be either a
         pore or throat array, but must be consistent with ``temperature``.
 
     Returns
     -------
-    mu_sw, the viscosity of water/seawater in [kg/m.s]
+    value : NumPy ndarray
+        Array containing viscosity of water/seawater in [kg/m.s]
 
     Notes
     -----
@@ -95,6 +96,11 @@ def reynolds(target, u0, b, temperature='pore.temperature'):
         The dictionary key containing the temperature values (K).  Can be
         either a pore or throat array.
 
+    Returns
+    -------
+    value : NumPy ndarray
+        Array containing viscosity values based on Reynolds model.
+
     [1] Reynolds O. (1886). Phil Trans Royal Soc London, v. 177, p.157.
 
     """
@@ -129,6 +135,13 @@ def chung(target, temperature='pore.temperature',
     critical_volume : string
         The dictionary key containing the critical volume values (m3/kmol)
 
+    Returns
+    -------
+    value : NumPy ndarray
+        Array containing viscosity values based on Chung model [kg/m.s].
+
+    References
+    ----------
     [1] Chung, T.H., Lee, L.L., and Starling, K.E., Applications of Kinetic Gas
         Theories and Multiparameter Correlation for Prediction of Dilute Gas
         Viscosity and Thermal Conductivity”, Ind. Eng. Chem. Fundam.23:8, 1984.
