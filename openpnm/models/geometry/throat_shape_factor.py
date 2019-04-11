@@ -18,11 +18,30 @@ def compactness(target, throat_perimeter='throat.perimeter',
     resistance than those that are more elliptical. Count the number of
     vertices and apply the right correction.
 
+    Parameters
+    ----------
+    target : OpenPNM Object
+        The object which this model is associated with. This controls the
+        length of the calculated array, and also provides access to other
+        necessary properties.
+
+    throat_perimeter : string
+        The dictionary key of the array containing the throat perimeter values.
+
+    throat_area : string
+        The dictionary key of the array containing the throat area values.
+
+    Returns
+    -------
+    alpha : NumPy ndarray
+        Array containing throat compactness values.
+
     References
     ----------
     Mortensen N.A, Okkels F., and Bruus H. Reexamination of Hagen-Poiseuille
     flow: Shape dependence of the hydraulic resistance in microchannels.
     Physical Review E, v.71, pp.057301 (2005).
+
     """
     # Only apply to throats with an area
     ts = target.throats()[target[throat_area] > 0]
@@ -57,11 +76,30 @@ def mason_morrow(target, throat_perimeter='throat.perimeter',
     Mason and Morrow relate the capillary pressure to the shaped factor in a
     similar way to Mortensen but for triangles.
 
+    Parameters
+    ----------
+    target : OpenPNM Object
+        The object which this model is associated with. This controls the
+        length of the calculated array, and also provides access to other
+        necessary properties.
+
+    throat_perimeter : string
+        The dictionary key of the array containing the throat perimeter values.
+
+    throat_area : string
+        The dictionary key of the array containing the throat area values.
+
+    Returns
+    -------
+    value : NumPy ndarray
+        Array containing throat shape factor values.
+
     References
     ----------
     Mason, G. and Morrow, N.R.. Capillary behavior of a perfectly wetting
     liquid in irregular triangular tubes. Journal of Colloid and Interface
     Science, 141(1), pp.262-274 (1991).
+
     """
     # Only apply to throats with an area
     ts = target.throats()[target[throat_area] <= 0]
@@ -79,10 +117,32 @@ def jenkins_rao(target, throat_perimeter='throat.perimeter',
     Jenkins and Rao relate the capillary pressure in an eliptical throat to
     the aspect ratio
 
+    Parameters
+    ----------
+    target : OpenPNM Object
+        The object which this model is associated with. This controls the
+        length of the calculated array, and also provides access to other
+        necessary properties.
+
+    throat_perimeter : string
+        The dictionary key of the array containing the throat perimeter values.
+
+    throat_area : string
+        The dictionary key of the array containing the throat area values.
+
+    throat_diameter : string
+        The dictionary key of the array containing the throat diameter values.
+
+    Returns
+    -------
+    value : NumPy ndarray
+        Array containing throat capillary pressure values.
+
     References
     ----------
     Jenkins, R.G. and Rao, M.B., The effect of elliptical pores on
     mercury porosimetry results. Powder technology, 38(2), pp.177-180. (1984)
+
     """
     P = target[throat_perimeter]
     A = target[throat_area]
