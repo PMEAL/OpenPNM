@@ -21,7 +21,7 @@ class OpenpnmIO(GenericIO):
     """
 
     @classmethod
-    def save_objects_to_file(cls, objs):
+    def save_object_to_file(cls, objs):
         r"""
         Saves an OpenPNM object or list of objects to a file of set of files
 
