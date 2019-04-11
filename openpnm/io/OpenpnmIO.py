@@ -136,11 +136,13 @@ class OpenpnmIO(GenericIO):
         if filename == '':
             filename = 'workspace' + '_' + time.strftime('%Y%b%d_%H%M%p')
         filename = cls._parse_filename(filename=filename, ext='pnm')
+        # Create a normal dict to store objects to prevent name errors upon
+        # reopening
         d = {}
         for sim in ws.values():
             d[sim.name] = sim
         with open(filename, 'wb') as f:
-            pickle.dump(ws, f)
+            pickle.dump(d, f)
 
     @classmethod
     def load_workspace(cls, filename, overwrite=False):
@@ -165,6 +167,8 @@ class OpenpnmIO(GenericIO):
         """
         fname = cls._parse_filename(filename=filename, ext='pnm')
         temp = {}  # Read file into temporary dict
+        if overwrite:
+            ws.clear()
         with open(fname, 'rb') as f:
             d = pickle.load(f)
             # A normal pnm file is a dict of lists (projects)
@@ -176,8 +180,6 @@ class OpenpnmIO(GenericIO):
                     else:
                         raise Exception('File does not contain a valid ' +
                                         'OpenPNM Workspace')
-        if overwrite:
-            ws.clear()
         # Now scan through temp dict to ensure valid types and names
         conflicts = set(temp.keys()).intersection(set(ws.keys()))
         for name in list(temp.keys()):

@@ -68,8 +68,12 @@ class OpenpnmIOTest:
         ws.clear()
         pn = op.network.Cubic(shape=[3, 3, 3])
         op.io.OpenpnmIO.save_workspace(filename='test.pnm')
-        ws = op.io.OpenpnmIO.load(filename='test.pnm')
+        ws = op.io.OpenpnmIO.load_workspace(filename='test.pnm',
+                                            overwrite=True)
         assert len(ws.keys()) == 1
+        ws = op.io.OpenpnmIO.load_workspace(filename='test.pnm',
+                                            overwrite=False)
+        assert len(ws.keys()) == 2
         assert isinstance(ws, op.Workspace)
 
     def test_load_workspace_from_poorly_made_dict(self):
