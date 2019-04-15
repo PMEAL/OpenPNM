@@ -1709,16 +1709,16 @@ class Base(dict):
         return element + '.' + propname.split('.')[-1]
 
     def __str__(self):
-        horizonal_rule = '―' * 78
-        lines = [horizonal_rule]
+        horizontal_rule = '―' * 78
+        lines = [horizontal_rule]
         lines.append(self.__module__.replace('__', '') + ' : ' + self.name)
-        lines.append(horizonal_rule)
+        lines.append(horizontal_rule)
         lines.append("{0:<5s} {1:<45s} {2:<10s}".format('#',
                                                         'Properties',
                                                         'Valid Values'))
         fmt = "{0:<5d} {1:<45s} {2:>5d} / {3:<5d}"
-        lines.append(horizonal_rule)
-        props = list(set(self.keys()).difference(set(self.labels())))
+        lines.append(horizontal_rule)
+        props = self.props()
         props.sort()
         for i, item in enumerate(props):
             prop = item
@@ -1734,11 +1734,11 @@ class Base(dict):
                 defined = sp.shape(self[item])[0] \
                     - a.sum(axis=0, keepdims=(a.ndim-1) == 0)[0]
                 lines.append(fmt.format(i + 1, prop, defined, required))
-        lines.append(horizonal_rule)
+        lines.append(horizontal_rule)
         lines.append("{0:<5s} {1:<45s} {2:<10s}".format('#',
                                                         'Labels',
                                                         'Assigned Locations'))
-        lines.append(horizonal_rule)
+        lines.append(horizontal_rule)
         labels = self.labels()
         labels.sort()
         fmt = "{0:<5d} {1:<45s} {2:<10d}"
@@ -1748,7 +1748,7 @@ class Base(dict):
                 prop = prop[0:32] + '...'
             if '._' not in prop:
                 lines.append(fmt.format(i + 1, prop, sp.sum(self[item])))
-        lines.append(horizonal_rule)
+        lines.append(horizontal_rule)
         return '\n'.join(lines)
 
     def _mro(self):

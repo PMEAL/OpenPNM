@@ -1,6 +1,6 @@
-from openpnm.phases import GenericPhase as GenericPhase
-import openpnm.models.phases as _models
+# from collections import ChainMap  # Might use eventually
 import numpy as np
+from openpnm.phases import GenericPhase as GenericPhase
 from openpnm.utils import logging
 logger = logging.getLogger(__name__)
 
@@ -14,6 +14,9 @@ class GenericMixture(GenericPhase):
     ----------
     network : OpenPNM Network object
         The network to which this phase object will be attached.
+
+    components : list of OpenPNM Phase objects
+        A list of all components that constitute this mixture
 
     project : OpenPNM Project object, optional
         The Project with which this phase should be associted.  If a
@@ -60,8 +63,9 @@ class GenericMixture(GenericPhase):
 
     def __setitem__(self, key, value):
         prop = '.'.join(key.split('.')[:2])
-        invalid_keys = []
-        [invalid_keys.extend(item.keys()) for item in self.components.values()]
+        invalid_keys = set(self.props()).difference(set(self.keys()))
+        # invalid_keys = []
+        # [invalid_keys.extend(item.keys()) for item in self.components.values()]
         if prop in invalid_keys:
             raise Exception(prop + ' already assigned to a component object')
         super().__setitem__(key, value)
@@ -69,15 +73,19 @@ class GenericMixture(GenericPhase):
     def props(self, **kwargs):
         temp = []
         for item in self.components.values():
-            temp.extend([prop + '.' + item.name for prop in item.props(**kwargs)])
+            temp.extend([prop+'.'+item.name for prop in item.props(**kwargs)])
         temp.extend(super().props(**kwargs))
         temp.sort()
         return temp
 
     def __str__(self):
+        horizontal_rule = '―' * 78
         lines = super().__str__()
+        lines = '\n'.join((lines, 'Component Phases', horizontal_rule))
         for item in self.components.values():
-            lines = '\n'.join((lines, item.__str__()))
+            lines = '\n'.join((lines, item.__module__.replace('__', '') +
+                               ' : ' + item.name))
+        lines = '\n'.join((lines, horizontal_rule))
         return lines
 
     def _update_molfrac(self):
@@ -91,7 +99,7 @@ class GenericMixture(GenericPhase):
         if len(dict_) > 1:
             self['throat.mole_fraction.all'] = np.sum(dict_, axis=0)
 
-    def set_mole_fraction(self, component, Pvals=[]):
+    def set_mole_fraction(self, component, values=[]):
         r"""
         Specify occupancy of a phase in each pore and/or throat
 
@@ -100,7 +108,7 @@ class GenericMixture(GenericPhase):
         components : OpenPNM Phase object or name string
             The phase whose mole fraction is being specified
 
-        Pvals : array_like
+        values : array_like
             The mole fraction of ``component `` in each pore.  This array must
             be *Np*-long, with one value between 0 and 1 for each pore in the
             network.  If a scalar is received it is applied to all pores.
@@ -108,7 +116,7 @@ class GenericMixture(GenericPhase):
         """
         if type(component) == str:
             component = self.components[component]
-        Pvals = np.array(Pvals, ndmin=1)
+        Pvals = np.array(values, ndmin=1)
         if component not in self.project:
             raise Exception(f"{component.name} doesn't belong to this project")
         else:
@@ -161,7 +169,7 @@ class GenericMixture(GenericPhase):
         vals = np.zeros([self._count(element=element)], dtype=float)
         try:
             for comp in self.components.values():
-                vals += comp[prop]*self[element + '.mole_fraction.' + comp.name]
+                vals += comp[prop]*self[element+'.mole_fraction.'+comp.name]
         except KeyError:
             vals = super().interleave_data(prop)
         return vals
