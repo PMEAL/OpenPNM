@@ -52,6 +52,11 @@ def conduit_conductance(target, throat_conductance,
         The factor which becomes multiplied to the original conduit's
         conductance to severely limit transport, but not set it to zero.
 
+    Returns
+    -------
+    value : NumPy ndarray
+        Array containing conduit conductance values.
+
     """
     network = target.project.network
     phase = target.project.find_phase(target)

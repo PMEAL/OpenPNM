@@ -141,24 +141,23 @@ class GenericNetwork(Base, ModelsMixin):
         super().__setitem__(key, value)
 
     def __getitem__(self, key):
+        element, prop = key.split('.', 1)
         # Deal with special keys first
         if key.split('.')[-1] == self.name:
             element = key.split('.')[0]
             return self[element+'.all']
         if key.split('.')[-1] == '_id':
             self._gen_ids()
-        # Now get values if present, or regenerate them
-        vals = self.get(key)
-        if vals is None:  # Invoke interleave data
-            vals = self.interleave_data(key)
+            return self.get(element+'._id')
+        vals = super().__getitem__(key)
         return vals
 
     def _gen_ids(self):
-        IDs = super().get('pore._id', sp.array([], ndmin=1, dtype=sp.int64))
+        IDs = self.get('pore._id', sp.array([], ndmin=1, dtype=sp.int64))
         if len(IDs) < self.Np:
             temp = ws._gen_ids(size=self.Np - len(IDs))
             self['pore._id'] = sp.concatenate((IDs, temp))
-        IDs = super().get('throat._id', sp.array([], ndmin=1, dtype=sp.int64))
+        IDs = self.get('throat._id', sp.array([], ndmin=1, dtype=sp.int64))
         if len(IDs) < self.Nt:
             temp = ws._gen_ids(size=self.Nt - len(IDs))
             self['throat._id'] = sp.concatenate((IDs, temp))
