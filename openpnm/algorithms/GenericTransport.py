@@ -210,11 +210,22 @@ class GenericTransport(GenericAlgorithm):
             it is assigne to all locations, and if a vector is applied is
             must be the same size as the indices given in ``pores``.
 
+        mode : string, optional
+            Controls how the boundary conditions are applied.  Options are:
+
+            - ``'merge'``: (Default) Adds supplied boundary conditions to
+            already existing conditions
+
+            - ``'overwrite'``: Deletes all boundary condition on object then
+            adds the given ones
+
         Notes
         -----
         The definition of ``quantity`` is specified in the algorithm's
         ``settings``, e.g. ``alg.settings['quentity'] = 'pore.pressure'``.
         """
+        mode = self._parse_mode(mode, allowed=['merge', 'overwrite'],
+                                single=True)
         self._set_BC(pores=pores, bctype='value', bcvalues=values,
                      mode=mode)
 
@@ -236,11 +247,22 @@ class GenericTransport(GenericAlgorithm):
             it is assigned to all locations, and if a vector is applied it
             must be the same size as the indices given in ``pores``.
 
+        mode : string, optional
+            Controls how the boundary conditions are applied.  Options are:
+
+            - ``'merge'``: (Default) Adds supplied boundary conditions to
+            already existing conditions
+
+            - ``'overwrite'``: Deletes all boundary condition on object then
+            adds the given ones
+
         Notes
         -----
         The definition of ``quantity`` is specified in the algorithm's
         ``settings``, e.g. ``alg.settings['quentity'] = 'pore.pressure'``.
         """
+        mode = self._parse_mode(mode, allowed=['merge', 'overwrite'],
+                                single=True)
         self._set_BC(pores=pores, bctype='rate', bcvalues=values, mode=mode)
 
     def _set_BC(self, pores, bctype, bcvalues=None, mode='merge'):
@@ -258,6 +280,7 @@ class GenericTransport(GenericAlgorithm):
             types can be one one of the following:
 
             - ``'value'``: Specify the value of the quantity in each location
+
             - ``'rate'``: Specify the flow rate into each location
 
         bcvalues : int or array_like
@@ -270,7 +293,8 @@ class GenericTransport(GenericAlgorithm):
             Controls how the boundary conditions are applied.  Options are:
 
             - ``'merge'``: (Default) Adds supplied boundary conditions to
-            already existing conditions.
+            already existing conditions
+
             - ``'overwrite'``: Deletes all boundary condition on object then
             adds the given ones
 
@@ -285,7 +309,7 @@ class GenericTransport(GenericAlgorithm):
         # Hijack the parse_mode function to verify bctype argument
         bctype = self._parse_mode(bctype, allowed=['value', 'rate'],
                                   single=True)
-        mode = self._parse_mode(mode, allowed=['merge', 'overwrite', 'remove'],
+        mode = self._parse_mode(mode, allowed=['merge', 'overwrite'],
                                 single=True)
         pores = self._parse_indices(pores)
 
