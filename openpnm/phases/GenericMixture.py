@@ -58,6 +58,14 @@ class GenericMixture(GenericPhase):
                 vals = self.interleave_data(key)
         return vals
 
+    def __setitem__(self, key, value):
+        prop = '.'.join(key.split('.')[:2])
+        invalid_keys = []
+        [invalid_keys.extend(item.keys()) for item in self.components.values()]
+        if prop in invalid_keys:
+            raise Exception(prop + ' already assigned to a component object')
+        super().__setitem__(key, value)
+
     def props(self, **kwargs):
         temp = []
         for item in self.components.values():
