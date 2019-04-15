@@ -25,3 +25,4 @@ from .InvasionPercolation import InvasionPercolation
 from .MixedInvasionPercolation import MixedInvasionPercolation
 from .Porosimetry import Porosimetry
 from .RelativePermeability import RelativePermeability
+from .DirectionalRelativePermeability import DirectionalRelativePermeability

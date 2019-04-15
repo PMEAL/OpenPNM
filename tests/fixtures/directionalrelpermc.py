@@ -56,9 +56,9 @@ rp.setup(invading_phase=oil, defending_phase=water, pore_invasion_sequence=ip['p
          throat_invasion_sequence=ip['throat.invasion_sequence'])
 rp.set_inlets(pores=Finlets_init['x'])
 rp.set_outlets(pores=Foutlets_init['x'])
-rp.run()
-rp.plot_relperm_curve()
-rp.get_relperm_data
+rp.run(Snw_num=10,IP_pores=Finlets['x'])
+#rp.plot_relperm_curve()
+#rp.get_relperm_data
 
 
 #named_tuple_of_data = relcalc.get_krel_data()
