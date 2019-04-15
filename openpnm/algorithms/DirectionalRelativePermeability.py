@@ -21,7 +21,7 @@ default_settings = {
                     'flow_inlet': [],
                     'flow_outlet':[]
                     }
-class RelativePermeability(GenericAlgorithm):
+class DirectionalRelativePermeability(GenericAlgorithm):
     r"""
     A subclass of Generic Algorithm to calculate relative permeabilities of
     fluids in a drainage process. The main roles of this subclass are to
