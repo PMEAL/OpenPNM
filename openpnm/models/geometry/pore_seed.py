@@ -52,6 +52,11 @@ def spatially_correlated(target, weights=None, strel=None):
                           [[0, 0, 0], [1, 1, 1], [0, 0, 0]],
                           [[0, 0, 0], [0, 0, 0], [0, 0, 0]]])
 
+    Returns
+    -------
+    values : NumPy ndarray
+        Array containing pore seed values.
+
     Notes
     -----
     This approach uses image convolution to replace each pore seed in the

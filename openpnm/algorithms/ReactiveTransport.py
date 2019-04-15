@@ -282,7 +282,7 @@ class ReactiveTransport(GenericTransport):
         self[self.settings['quantity']] = x
 
     def _run_reactive(self, x):
-        """r
+        r"""
         Repeatedly updates 'A', 'b', and the solution guess within according
         to the applied source term then calls '_solve' to solve the resulting
         system of linear equations.

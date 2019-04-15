@@ -100,8 +100,10 @@ class Cubic(GenericNetwork):
             spacing = sp.concatenate((spacing, [1]))
         self._spacing = sp.ones(3)*sp.array(spacing, ndmin=1)
 
-        points = np.array([i for i, v in np.ndenumerate(arr)], dtype=float)
-        points += 0.5
+        z = np.tile(np.arange(shape[2]), shape[0]*shape[1])
+        y = np.tile(np.repeat(np.arange(shape[1]), shape[2]), shape[0])
+        x = np.repeat(np.arange(shape[0]), shape[1]*shape[2])
+        points = (np.vstack([x, y, z]).T).astype(float) + 0.5
 
         I = np.arange(arr.size).reshape(arr.shape)
 
@@ -139,11 +141,10 @@ class Cubic(GenericNetwork):
             raise Exception('Invalid connectivity receieved. Must be 6, 8, '
                             '12, 14, 18, 20 or 26')
 
-        I = np.arange(arr.size).reshape(arr.shape)
-        tails, heads = [], []
+        tails, heads = np.array([], dtype=int), np.array([], dtype=int)
         for T, H in joints:
-            tails.extend(T.flat)
-            heads.extend(H.flat)
+            tails = np.concatenate((tails, T.flatten()))
+            heads = np.concatenate((heads, H.flatten()))
         pairs = np.vstack([tails, heads]).T
 
         super().__init__(Np=points.shape[0], Nt=pairs.shape[0], name=name,

@@ -6,8 +6,6 @@ r"""
 
 """
 
-import numpy as np
-import scipy.stats as spts
 from openpnm.utils import logging
 logger = logging.getLogger(__name__)
 
@@ -26,10 +24,16 @@ def constant(target, value):
     value : scalar
         The numerical value to apply
 
+    Returns
+    -------
+    value : NumPy ndarray
+        Array containing constant values equal to ``value``.
+
     Notes
     -----
     This model is mostly useless and for testing purposes, but might be used
     to 'reset' an array back to a default value.
+
     """
     return value
 
@@ -51,11 +55,17 @@ def product(target, prop1, prop2, **kwargs):
     prop2 : string
         The name of the second argument
 
+    Returns
+    -------
+    value : NumPy ndarray
+        Array containing product values of ``target[prop1]``, ``target[prop2]``
+
     Notes
     -----
     Additional properties can be specified beyond just ``prop1`` and ``prop2``
     by including additional arguments in the function call (i.e. ``prop3 =
     'pore.foo'``).
+
     """
     value = target[prop1]*target[prop2]
     for item in kwargs.values():
@@ -80,6 +90,12 @@ def scaled(target, prop, factor):
 
     factor : scalar
         The factor by which the values should be scaled.
+
+    Returns
+    -------
+    value : NumPy ndarray
+        Array containing ``target[prop]`` values scaled by ``factor``.
+
     """
     value = target[prop]*factor
     return value

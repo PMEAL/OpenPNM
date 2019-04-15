@@ -42,6 +42,12 @@ class Dict(GenericIO):
         An OpenPNM Project containing the objects created to store the given
         data.
 
+        Notes
+        -----
+        The requirement of a *correctly formed* dictionary is rather strict,
+        and essentially means a dictionary produced by the ``to_dict`` method
+        of this class.
+
         """
         if project is None:
             project = ws.new_project()

@@ -168,31 +168,38 @@ class Porosimetry(OrdinaryPercolation):
 
     run.__doc__ = OrdinaryPercolation.run.__doc__
 
-    def results(self, Pc):
+    def results(self, Pc=None):
         r"""
         """
-        p_inv, t_inv = super().results(Pc).values()
-        phase = self.project.find_phase(self)
-        quantity = self.settings['quantity'].split('.')[-1]
-        lpf = np.array([1])
-        if self.settings['pore_partial_filling']:
-            # Set pressure on phase to current capillary pressure
-            phase['pore.'+quantity] = Pc
-            # Regenerate corresponding physics model
-            for phys in self.project.find_physics(phase=phase):
-                phys.regenerate_models(self.settings['pore_partial_filling'])
-            # Fetch partial filling fraction from phase object (0->1)
-            lpf = phase[self.settings['pore_partial_filling']]
-        # Calculate filled throat volumes
-        ltf = np.array([1])
-        if self.settings['throat_partial_filling']:
-            # Set pressure on phase to current capillary pressure
-            phase['throat.'+quantity] = Pc
-            # Regenerate corresponding physics model
-            for phys in self.project.find_physics(phase=phase):
-                phys.regenerate_models(self.settings['throat_partial_filling'])
-            # Fetch partial filling fraction from phase object (0->1)
-            ltf = phase[self.settings['throat_partial_filling']]
-        p_inv = p_inv*lpf
-        t_inv = t_inv*ltf
-        return {'pore.occupancy': p_inv, 'throat.occupancy': t_inv}
+        if Pc is None:
+            p_inv = self['pore.invasion_pressure']
+            t_inv = self['throat.invasion_pressure']
+            results = {'pore.invasion_pressure': p_inv,
+                       'throat.invasion_pressure': t_inv}
+        else:
+            p_inv, t_inv = super().results(Pc).values()
+            phase = self.project.find_phase(self)
+            quantity = self.settings['quantity'].split('.')[-1]
+            lpf = np.array([1])
+            if self.settings['pore_partial_filling']:
+                # Set pressure on phase to current capillary pressure
+                phase['pore.'+quantity] = Pc
+                # Regenerate corresponding physics model
+                for phys in self.project.find_physics(phase=phase):
+                    phys.regenerate_models(self.settings['pore_partial_filling'])
+                # Fetch partial filling fraction from phase object (0->1)
+                lpf = phase[self.settings['pore_partial_filling']]
+            # Calculate filled throat volumes
+            ltf = np.array([1])
+            if self.settings['throat_partial_filling']:
+                # Set pressure on phase to current capillary pressure
+                phase['throat.'+quantity] = Pc
+                # Regenerate corresponding physics model
+                for phys in self.project.find_physics(phase=phase):
+                    phys.regenerate_models(self.settings['throat_partial_filling'])
+                # Fetch partial filling fraction from phase object (0->1)
+                ltf = phase[self.settings['throat_partial_filling']]
+            p_inv = p_inv*lpf
+            t_inv = t_inv*ltf
+            results = {'pore.occupancy': p_inv, 'throat.occupancy': t_inv}
+        return results

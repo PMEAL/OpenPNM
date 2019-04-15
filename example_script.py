@@ -24,7 +24,7 @@ perm.set_value_BC(pores=pn.pores('right'), values=0)
 perm.set_value_BC(pores=pn.pores('left'), values=101325)
 perm.run()
 water.update(perm.results())
-# print(perm.calc_eff_permeability())
+# print(perm.calc_effective_permeability())
 
 # Add reaction term to phys_air
 mod = op.models.physics.generic_source_term.standard_kinetics

@@ -15,10 +15,15 @@ def standard(target, mol_weight='pore.molecular_weight',
     Parameters
     ----------
     mol_weight : string
-        The dictionary key containing the molecular weight values
+        The dictionary key containing the molecular weight values (kg/mol)
 
     molar_density : string
-        The dictionary key containing the molar density values
+        The dictionary key containing the molar density values (mol/m3)
+
+    Returns
+    -------
+    value : NumPy ndarray
+        Array containing density values (kg/m3)
 
     """
     MW = target[mol_weight]
@@ -47,6 +52,11 @@ def ideal_gas(target, pressure='pore.pressure', temperature='pore.temperature',
 
     mol_weight : string
         The dictionary key containing the molecular weight values (kg/mol)
+
+    Returns
+    -------
+    value : NumPy ndarray
+        Array containing density values in [kg/m3]
 
     """
 
@@ -83,7 +93,8 @@ def water(target, temperature='pore.temperature', salinity='pore.salinity'):
 
     Returns
     -------
-    The density of water/seawater in [kg/m3]
+    value : NumPy ndarray
+        The density of water/seawater in [kg/m3]
 
     Notes
     -----

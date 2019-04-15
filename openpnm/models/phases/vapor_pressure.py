@@ -29,6 +29,11 @@ def antoine(target, A, B, C, temperature='pore.temperature'):
         The dictionary key containing the phase temperature values in Kelvin
         [K].  Can be either pore or throat values.
 
+    Returns
+    -------
+    value : NumPy ndarray
+        Array containing vapor pressure values [Pa]
+
     [1] Antoine, C. (1888), Vapor Pressure: a new relationship between pressure
         and temperature, Comptes Rendus des Séances de l'Académie des Sciences
         (in French) 107: 681–684, 778–780, 836–837
@@ -59,7 +64,8 @@ def water(target, temperature='pore.temperature', salinity='pore.salinity'):
 
     Returns
     -------
-    The vapor pressure of water/seawater in [Pa]
+    value : NumPy ndarray
+        Array containing vapor pressure of water/seawater in [Pa]
 
     Notes
     -----

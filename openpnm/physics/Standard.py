@@ -43,15 +43,8 @@ class Standard(GenericPhysics):
             else:
                 project = network.project
 
-        super().__init__(project=project, **kwargs)
-
-        if phase is not None:
-            phase['pore.'+self.name] = False
-            phase['throat.'+self.name] = False
-        if geometry is not None:
-            Ps = network.pores(geometry.name)
-            Ts = network.throats(geometry.name)
-            self.add_locations(pores=Ps, throats=Ts)
+        super().__init__(project=project, phase=phase, geometry=geometry,
+                         **kwargs)
 
         self.add_model(propname='throat.flow_shape_factors',
                        model=mods.flow_shape_factors.ball_and_stick)
