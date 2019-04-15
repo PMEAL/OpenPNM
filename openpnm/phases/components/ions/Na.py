@@ -33,6 +33,6 @@ class Na(GenericPhase):
 
         self['pore.molecular_weight'] = 0.022990  # kg/mol
         self['pore.diffusivity'] = 1.33e-09  # m2/s
-        self['throat.diffusivity.Na'] = 1.33e-09  # m2/s
+        self['throat.diffusivity'] = 1.33e-09  # m2/s
         self['pore.valence'] = 1
         self['throat.valence'] = 1

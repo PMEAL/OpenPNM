@@ -58,6 +58,14 @@ class GenericMixture(GenericPhase):
                 vals = self.interleave_data(key)
         return vals
 
+    def props(self, **kwargs):
+        temp = []
+        for item in self.components.values():
+            temp.extend([prop + '.' + item.name for prop in item.props(**kwargs)])
+        temp.extend(super().props(**kwargs))
+        temp.sort()
+        return temp
+
     def __str__(self):
         lines = super().__str__()
         for item in self.components.values():
