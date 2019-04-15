@@ -28,16 +28,10 @@ class GenericMixture(GenericPhase):
 
     """
     def __init__(self, components=[], settings={}, **kwargs):
-        super().__init__(**kwargs)
         self.settings.update({'components': [],
                               })
+        super().__init__(**kwargs)
         self.settings.update(settings)
-
-        self['pore.mole_fraction.all'] = np.zeros(self.Np, dtype=float)
-        self['throat.mole_fraction.all'] = np.zeros(self.Nt, dtype=float)
-
-        self.pop('pore.temperature', None)
-        self.pop('pore.pressure', None)
 
         # Add any supplied phases to the phases list
         for comp in components:
@@ -45,11 +39,26 @@ class GenericMixture(GenericPhase):
             self['pore.mole_fraction.'+comp.name] = np.nan
             self['throat.mole_fraction.'+comp.name] = np.nan
 
+        self['pore.mole_fraction.all'] = np.zeros(self.Np, dtype=float)
+        self['throat.mole_fraction.all'] = np.zeros(self.Nt, dtype=float)
+
+        self.pop('pore.temperature', None)
+        self.pop('pore.pressure', None)
+
     def __getitem__(self, key):
         try:
             vals = super().__getitem__(key)
         except KeyError:
-            vals = self.interleave_data(key)
+            try:
+                # If key ends in component name, fetch it
+                if key.split('.')[-1] in self.settings['components']:
+                    comp = self.project[key.split('.')[-1]]
+                    vals = comp[key.rsplit('.', maxsplit=1)[0]]
+                    return vals
+                else:
+                    raise KeyError
+            except KeyError:
+                vals = self.interleave_data(key)
         return vals
 
     def _update_molfrac(self):
@@ -69,7 +78,7 @@ class GenericMixture(GenericPhase):
 
         Parameters
         ----------
-        components : OpenPNM Phase object
+        components : OpenPNM Phase object or name string
             The phase whose mole fraction is being specified
 
         Pvals : array_like
@@ -83,6 +92,8 @@ class GenericMixture(GenericPhase):
             the network.  If a scalar is received it is applied to all throats.
 
         """
+        if type(component) == str:
+            component = self.components[component]
         Pvals = np.array(Pvals, ndmin=1)
         Tvals = np.array(Tvals, ndmin=1)
         if component not in self.project:
@@ -103,10 +114,15 @@ class GenericMixture(GenericPhase):
         self._update_molfrac()
 
     def _get_comps(self):
-        comps = [self.project[item] for item in self.settings['components']]
+        comps = {item: self.project[item] for item in self.settings['components']}
         return comps
 
-    components = property(fget=_get_comps)
+    def _set_comps(self, components):
+        if not isinstance(components, list):
+            components = [components]
+        self.settings['components'] = [val.name for val in components]
+
+    components = property(fget=_get_comps, fset=_set_comps)
 
     def interleave_data(self, prop):
         r"""
@@ -130,13 +146,13 @@ class GenericMixture(GenericPhase):
         """
         element = prop.split('.')[0]
         if np.any(self[element + '.mole_fraction.all'] != 1.0):
-            self._update_occupancy()
+            self._update_molfrac()
             if np.any(self[element + '.mole_fraction.all'] != 1.0):
                 raise Exception('Mole fraction does not add to unity in all ' +
                                 element + 's')
         vals = np.zeros([self._count(element=element)], dtype=float)
         try:
-            for comp in self.components:
+            for comp in self.components.values():
                 vals += comp[prop]*self[element + '.mole_fraction.' + comp.name]
         except KeyError:
             vals = super().interleave_data(prop)
