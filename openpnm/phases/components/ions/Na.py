@@ -25,11 +25,14 @@ class Na(GenericPhase):
     --------
     >>> import openpnm as op
     >>> pn = op.network.Cubic(shape=[5, 5, 5])
-    >>> Na = op.phases.components.ions.NaIon(network=pn)
+    >>> Na = op.phases.components.ions.Na(network=pn)
 
     """
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-        self['pore.molecular_weight'] = 0.0291
-        self['pore.diffusivity'] = 0.1
+        self['pore.molecular_weight'] = 0.022990  # kg/mol
+        self['pore.diffusivity'] = 1.33e-09  # m2/s
+        self['throat.diffusivity.Na'] = 1.33e-09  # m2/s
+        self['pore.valence'] = 1
+        self['throat.valence'] = 1
