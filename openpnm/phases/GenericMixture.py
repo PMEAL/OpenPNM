@@ -25,7 +25,6 @@ class GenericMixture(GenericPhase):
         throughout the simulation.  The name must be unique to the project.
         If no name is given, one is generated.
 
-
     """
     def __init__(self, components=[], settings={}, **kwargs):
         self.settings.update({'components': [],
@@ -37,10 +36,8 @@ class GenericMixture(GenericPhase):
         for comp in components:
             self.settings['components'].append(comp.name)
             self['pore.mole_fraction.'+comp.name] = np.nan
-            self['throat.mole_fraction.'+comp.name] = np.nan
 
         self['pore.mole_fraction.all'] = np.zeros(self.Np, dtype=float)
-        self['throat.mole_fraction.all'] = np.zeros(self.Nt, dtype=float)
 
         self.pop('pore.temperature', None)
         self.pop('pore.pressure', None)
@@ -61,6 +58,12 @@ class GenericMixture(GenericPhase):
                 vals = self.interleave_data(key)
         return vals
 
+    def __str__(self):
+        lines = super().__str__()
+        for item in self.components.values():
+            lines = '\n'.join((lines, item.__str__()))
+        return lines
+
     def _update_molfrac(self):
         # Update concentration.all
         self['pore.mole_fraction.all'] = 0.0
@@ -72,7 +75,7 @@ class GenericMixture(GenericPhase):
         if len(dict_) > 1:
             self['throat.mole_fraction.all'] = np.sum(dict_, axis=0)
 
-    def set_mole_fraction(self, component, Pvals=[], Tvals=[]):
+    def set_mole_fraction(self, component, Pvals=[]):
         r"""
         Specify occupancy of a phase in each pore and/or throat
 
@@ -86,16 +89,10 @@ class GenericMixture(GenericPhase):
             be *Np*-long, with one value between 0 and 1 for each pore in the
             network.  If a scalar is received it is applied to all pores.
 
-        Tvals : array_like
-            The mole fraction of ``component`` in each throat.  This array must
-            be *Nt*-long, with one value between 0 and 1, for each throat in
-            the network.  If a scalar is received it is applied to all throats.
-
         """
         if type(component) == str:
             component = self.components[component]
         Pvals = np.array(Pvals, ndmin=1)
-        Tvals = np.array(Tvals, ndmin=1)
         if component not in self.project:
             raise Exception(f"{component.name} doesn't belong to this project")
         else:
@@ -104,13 +101,8 @@ class GenericMixture(GenericPhase):
         if np.any(Pvals > 1.0) or np.any(Pvals < 0.0):
             logger.warning('Received Pvals contain mole fractions outside ' +
                            'the range of 0 to 1')
-        if np.any(Tvals > 1.0) or np.any(Tvals < 0.0):
-            logger.warning('Received Tvals contain mole fractions outside ' +
-                           'the range of 0 to 1')
         if Pvals.size:
             self['pore.mole_fraction.' + component.name] = Pvals
-        if Tvals.size:
-            self['throat.mole_fraction.' + component.name] = Tvals
         self._update_molfrac()
 
     def _get_comps(self):
