@@ -54,9 +54,9 @@ ip.run()
 rp = op.algorithms.DirectionalRelativePermeability(network=pn)
 rp.setup(invading_phase=oil, defending_phase=water, pore_invasion_sequence=ip['pore.invasion_sequence'],
          throat_invasion_sequence=ip['throat.invasion_sequence'])
-rp.set_inlets(pores=Finlets_init['x'])
-rp.set_outlets(pores=Foutlets_init['x'])
-rp.run(Snw_num=10,IP_pores=Finlets['x'])
+rp.set_inlets(pores=Finlets_init['y'])
+rp.set_outlets(pores=Foutlets_init['y'])
+rp.run(Snw_num=10,IP_pores=Finlets['y'])
 #rp.plot_relperm_curve()
 #rp.get_relperm_data
 

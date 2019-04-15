@@ -171,6 +171,9 @@ class DirectionalRelativePermeability(GenericAlgorithm):
         start=max_seq//Snw_num
         stop=max_seq
         step=max_seq//Snw_num
+        self.settings['sat']=[]
+        self.settings['relperm_wp']=[]
+        self.settings['relperm_nwp']=[]
         for i in range(start,stop,step):
             pore_mask=self.settings['pore.invasion_sequence']<i
             throat_mask=self.settings['throat.invasion_sequence']<i
