@@ -8,9 +8,9 @@ logger = logging.getLogger(__name__)
 
 
 default_settings = {
-                    'inv_inlets':[],
-                    'flow_inlets':[],
-                    'flow_outlets':[],
+                    'inv_inlets':dict(),
+                    'flow_inlets':dict(),
+                    'flow_outlets':dict(),
                     'mode': 'strict',
                     'sat': dict(),
                     'relperm_wp': dict(),
@@ -39,19 +39,21 @@ class RelativePermeability(GenericAlgorithm):
                     flow_inlets={'x': 'left', 'y': 'front', 'z': 'top'},
                     flow_outlets={'x': 'right', 'y': 'back', 'z': 'bottom'},
                     ):
-        self.settings['BP_1'].update(flow_inlets)
-        self.settings['BP_2'].update(flow_outlets)
+        self.settings['BP_1']=flow_inlets
+        self.settings['BP_2']=flow_outlets
         self.settings['inv_inlets'] = inv_inlets
         self.settings['flow_inlets'] = flow_inlets
         self.settings['flow_outlets'] = flow_outlets
-        self._setup_ip_algs()
-        self.run()
+        #self._setup_ip_algs()
+        #self.run()
                
-    def run(self):
-        self._setup_ip_algs()
-        return {'ky': self.settings['relperm_wp']['y'], 'Saty': self.settings['sat']['y']}
-    def _setup_ip_algs(self):
+#    def run(self):
+#        self._setup_ip_algs()
+#        return {'ky': self.settings['relperm_wp']['y'], 'Saty': self.settings['sat']['y']}
+    #def _setup_ip_algs(self):
+    def setup_ip_algs(self):
         network = self.project.network
+        print('printing now',self.settings['inv_inlets'])
         oil = openpnm.phases.GenericPhase(network=network, name='oil')
         water = openpnm.phases.GenericPhase(network=network, name='water')
         oil['pore.viscosity']=0.547
@@ -102,29 +104,35 @@ class RelativePermeability(GenericAlgorithm):
                   pore_volume='pore.volume',
                   throat_volume='throat.volume')
         Sarr=np.linspace(0,1,num=20)
+
         for dim in self.settings['inv_inlets']:
+            relperm_wp=[]
+            relperm_nwp=[]
             Stokes_alg_wp = StokesFlow(network=network, phase=self.settings['wp'])
-            # Stokes_alg_wp.set_value_BC(pores=network.pores(self.settings['BP_1'][dim]),pores=network.pores(self.settings['BP_2'][dim]))
+            Stokes_alg_wp.set_value_BC(pores=network.pores(self.settings['BP_1'][dim]),values=1)
+            Stokes_alg_wp.set_value_BC(pores=network.pores(self.settings['BP_2'][dim]),values=0)
             Stokes_alg_wp.run()
-            val=Stokes_alg_wp.calc_effective_permeability(inlets=Finlets[dim], outlets=Foutlets[dim])
+            val=Stokes_alg_wp.calc_effective_permeability(inlets=Finlets_init[dim], outlets=Foutlets_init[dim])
             self.settings['perm_wp'].update({dim:val})
             self.project.purge_object(obj=Stokes_alg_wp)
             Stokes_alg_nwp = StokesFlow(network=network, phase=self.settings['nwp'])
-            #Stokes_alg_nwp.set_value_BC(pores=network.pores(self.settings['BP_1'][dim]))
-            #Stokes_alg_nwp.set_value_BC(pores=network.pores(self.settings['BP_2'][dim]))
+            Stokes_alg_nwp.set_value_BC(pores=network.pores(self.settings['BP_1'][dim]),values=1)
+            Stokes_alg_nwp.set_value_BC(pores=network.pores(self.settings['BP_2'][dim]),values=0)
             Stokes_alg_nwp.run()
-            val=Stokes_alg_nwp.calc_effective_permeability(inlets=Finlets[dim], outlets=Foutlets[dim])
+            val=Stokes_alg_nwp.calc_effective_permeability(inlets=Finlets_init[dim], outlets=Foutlets_init[dim])
             self.settings['perm_nwp'].update({dim:val})
             self.project.purge_object(obj=Stokes_alg_nwp)
+            #print(self.settings['perm_wp'])
+            #print(self.settings['perm_wp'])
             inv.set_inlets(pores=Iinlets[dim])
             inv.run()
             Snwparr =  []
-            relperm_wp=[]
-            relperm_nwp=[]
             for Snw in Sarr:
                 res1=inv.results(Snwp=Snw)
+                #print(res1['pore.occupancy'])
                 occ_ts=res1['throat.occupancy']
                 if np.any(occ_ts):
+                    #print(Snw)
                     Snwparr.append(Snw)
                     self.settings['nwp']['pore.occupancy'] = res1['pore.occupancy']
                     self.settings['wp']['pore.occupancy'] = 1-res1['pore.occupancy']
@@ -141,21 +149,31 @@ class RelativePermeability(GenericAlgorithm):
                         throat_conductance='throat.hydraulic_conductance',
                         mode=mode)
                     Stokes_alg_mp_wp = StokesFlow(network=network,phase=self.settings['wp'])
-                    #Stokes_alg_mp_wp.set_value_BC(pores=network.pores(self.settings['BP_1'][dim]))
-                    #Stokes_alg_mp_wp.set_value_BC(pores=network.pores(self.settings['BP_2'][dim]))
+                    Stokes_alg_mp_wp.setup(conductance='throat.conduit_hydraulic_conductance')
+                    Stokes_alg_mp_wp.set_value_BC(pores=network.pores(self.settings['BP_1'][dim]),values=1)
+                    Stokes_alg_mp_wp.set_value_BC(pores=network.pores(self.settings['BP_2'][dim]),values=0)
                     Stokes_alg_mp_nwp = StokesFlow(network=network,phase=self.settings['nwp'])
-                    #Stokes_alg_mp_nwp.set_value_BC(pores=network.pores(self.settings['BP_1'][dim]))
-                    #Stokes_alg_mp_nwp.set_value_BC(pores=network.pores(self.settings['BP_2'][dim]))
+                    Stokes_alg_mp_nwp.set_value_BC(pores=network.pores(self.settings['BP_1'][dim]),values=1)
+                    Stokes_alg_mp_nwp.set_value_BC(pores=network.pores(self.settings['BP_2'][dim]),values=0)
+                    Stokes_alg_mp_nwp.setup(conductance='throat.conduit_hydraulic_conductance')
                     Stokes_alg_mp_wp.run()
                     Stokes_alg_mp_nwp.run()
-                    Keff_mp_wp = Stokes_alg_mp_wp.calc_effective_permeability(inlets=Finlets[dim], outlets=Foutlets[dim])
-                    Keff_mp_nwp = Stokes_alg_mp_nwp.calc_effective_permeability(inlets=Finlets[dim], outlets=Foutlets[dim])
+                    Keff_mp_wp = Stokes_alg_mp_wp.calc_effective_permeability(inlets=Finlets_init[dim], outlets=Foutlets_init[dim])
+                    Keff_mp_nwp = Stokes_alg_mp_nwp.calc_effective_permeability(inlets=Finlets_init[dim], outlets=Foutlets_init[dim])
                     relperm_wp.append(Keff_mp_wp/self.settings['perm_wp'][dim])
                     relperm_nwp.append(Keff_mp_nwp/self.settings['perm_nwp'][dim])
                     self.project.purge_object(obj=Stokes_alg_mp_wp)
                     self.project.purge_object(obj=Stokes_alg_mp_nwp)
+                    #print(Keff_mp_wp)
+                    #print(Keff_mp_nwp)
                 self.settings['relperm_wp'].update({dim:relperm_wp})
                 self.settings['relperm_nwp'].update({dim:relperm_nwp})
                 self.settings['sat'].update({dim:Snwparr})
+            print('relperm_wp',self.settings['relperm_wp'][dim])
+            print('relperm_nwp',self.settings['relperm_nwp'][dim])
+            #print('sat',self.settings['sat'][dim])
+            
+            
+                
     
 

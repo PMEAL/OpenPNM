@@ -12,8 +12,8 @@ pn = op.network.Cubic(shape=[20, 20, 20], spacing=0.00006)
 geom = op.geometry.StickAndBall(network=pn, pores=pn['pore.all'],
                                 throats=pn['throat.all'])
 relcalc=op.algorithms.RelativePermeability(network=pn)
-
-relcalc.run()
+relcalc.setup()
+relcalc.setup_ip_algs()
 #named_tuple_of_data = relcalc.get_krel_data()
 #fig = relcalc.plot_krel_curves()
 #named_tuple_of_fitted_exponents = relcalc.fit_krel_curves()
