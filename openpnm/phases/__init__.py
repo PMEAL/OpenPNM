@@ -82,3 +82,5 @@ from .Water import Water
 from .Mercury import Mercury
 from .Multiphase import MultiPhase
 from .Mixtures import SalineWater
+from .GenericMixture import GenericMixture
+#from . import ions
