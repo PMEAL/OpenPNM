@@ -3,6 +3,7 @@ import scipy.ndimage as spim
 import scipy.sparse as sprs
 import warnings
 import porespy as ps
+import matplotlib.pyplot as plt
 from scipy.sparse import csgraph
 from scipy.spatial import ConvexHull
 from openpnm.utils import PrintableDict, logging, Workspace
@@ -214,9 +215,7 @@ def find_neighbor_bonds(sites, im=None, am=None, flatten=True, logic='or'):
             am = sp.sparse.triu(am, k=1)
         if flatten is False:
             raise Exception('flatten cannot be used with an adjacency matrix')
-        Ps = sp.zeros(max(am.row.max(),
-                          am.col.max(),
-                          max(sites))+1, dtype=bool)
+        Ps = sp.zeros(am.shape[0], dtype=bool)
         Ps[sites] = True
         conns = sp.vstack((am.row, am.col)).T
         if logic in ['or', 'union', 'any']:
@@ -2123,17 +2122,11 @@ def plot_connections(network, throats=None, fig=None, **kwargs):
 
     """
     import matplotlib.pyplot as plt
-    from mpl_toolkits.mplot3d import Axes3D
 
-    if throats is None:
-        Ts = network.Ts
-    else:
-        Ts = network._parse_indices(indices=throats)
+    Ts = network.Ts if throats is None else network._parse_indices(throats)
 
-    if len(sp.unique(network['pore.coords'][:, 2])) == 1:
-        ThreeD = False
-    else:
-        ThreeD = True
+    temp = [sp.unique(network["pore.coords"][:, i]).size for i in range(3)]
+    ThreeD = False if 1 in temp else True
 
     if fig is None:
         fig = plt.figure()
@@ -2151,9 +2144,8 @@ def plot_connections(network, throats=None, fig=None, **kwargs):
 
     # Collect coordinates and scale axes to fit
     Ps = sp.unique(network['throat.conns'][Ts])
-    X = network['pore.coords'][Ps, 0]
-    Y = network['pore.coords'][Ps, 1]
-    Z = network['pore.coords'][Ps, 2]
+    X, Y, Z = network['pore.coords'][Ps].T
+
     _scale_3d_axes(ax=ax, X=X, Y=Y, Z=Z)
 
     # Add sp.inf to the last element of pore.coords (i.e. -1)
@@ -2161,10 +2153,14 @@ def plot_connections(network, throats=None, fig=None, **kwargs):
     X = sp.hstack([network['pore.coords'][:, 0], inf])
     Y = sp.hstack([network['pore.coords'][:, 1], inf])
     Z = sp.hstack([network['pore.coords'][:, 2], inf])
+
     if ThreeD:
         ax.plot(xs=X[i], ys=Y[i], zs=Z[i], **kwargs)
     else:
+        dummy_dim = temp.index(1)
+        X, Y = [xi for j, xi in enumerate([X, Y, Z]) if j != dummy_dim]
         ax.plot(X[i], Y[i], **kwargs)
+        ax.autoscale()
 
     return fig
 
@@ -2221,17 +2217,11 @@ def plot_coordinates(network, pores=None, fig=None, **kwargs):
 
     """
     import matplotlib.pyplot as plt
-    from mpl_toolkits.mplot3d import Axes3D
 
-    if pores is None:
-        Ps = network.Ps
-    else:
-        Ps = network._parse_indices(indices=pores)
+    Ps = network.Ps if pores is None else network._parse_indices(pores)
 
-    if len(sp.unique(network['pore.coords'][:, 2])) == 1:
-        ThreeD = False
-    else:
-        ThreeD = True
+    temp = [sp.unique(network["pore.coords"][:, i]).size for i in range(3)]
+    ThreeD = False if 1 in temp else True
 
     if fig is None:
         fig = plt.figure()
@@ -2243,15 +2233,14 @@ def plot_coordinates(network, pores=None, fig=None, **kwargs):
         ax = fig.gca()
 
     # Collect specified coordinates
-    X = network['pore.coords'][Ps, 0]
-    Y = network['pore.coords'][Ps, 1]
-    Z = network['pore.coords'][Ps, 2]
-    if ThreeD:
-        _scale_3d_axes(ax=ax, X=X, Y=Y, Z=Z)
+    X, Y, Z = network['pore.coords'][Ps].T
 
     if ThreeD:
+        _scale_3d_axes(ax=ax, X=X, Y=Y, Z=Z)
         ax.scatter(xs=X, ys=Y, zs=Z, **kwargs)
     else:
+        dummy_dim = temp.index(1)
+        X, Y = [xi for j, xi in enumerate([X, Y, Z]) if j != dummy_dim]
         ax.scatter(X, Y, **kwargs)
 
     return fig
@@ -2325,6 +2314,122 @@ def plot_networkx(network, plot_throats=True, labels=None, colors=None,
         nx.draw_networkx_edges(G, pos=pos, edge_color='k', alpha=0.8,
                                edgelist=network['throat.conns'].tolist())
     return G
+
+
+def plot_vpython(network,
+                 Psize='pore.diameter',
+                 Tsize='throat.diameter',
+                 Pcolor=None,
+                 Tcolor=None,
+                 cmap='jet', **kwargs):
+    r"""
+    Quickly visualize a network in 3D using VPython
+
+    Parameters
+    ----------
+    network : OpenPNM Network Object
+        The network to visualize
+    Psize : string (default = 'pore.diameter')
+        The dictionary key pointing to the pore property by which sphere
+        diameters should be scaled
+    Tsize : string (default = 'throat.diameter')
+        The dictionary key pointing to the throat property by which cylinder
+        diameters should be scaled
+    Pcolor : string
+        The dictionary key pointing to the pore property which will control
+        the sphere colors.  The default is None, which results in a bright
+        red for all pores.
+    Tcolor : string
+        The dictionary key pointing to the throat property which will control
+        the cylinder colors.  The default is None, which results in a unform
+        pale blue for all throats.
+    cmap : string or Matplotlib colormap object (default is 'jet')
+        The color map to use when converting pore and throat properties to
+        RGB colors.  Can either be a string indicating which color map to
+        fetch from matplotlib.cmap, or an actual cmap object.
+    kwargs : dict
+        Any additional kwargs that are received are passed to the VPython
+        ``canvas`` object.  Default options are:
+
+        *'height' = 500* - Height of canvas
+
+        *'width' = 800* - Width of canvas
+
+        *'background' = [0, 0, 0]* - Sets the background color of canvas
+
+        *'ambient' = [0.2, 0.2, 0.3]* - Sets the brightness of lighting
+
+    Returns
+    -------
+    canvas : VPython Canvas object
+        The canvas object containing the generated scene. The object has
+        several useful methods.
+
+    Notes
+    -----
+    **Important**
+
+    a) This does not work in Spyder.  It should only be called from a Jupyter
+    Notebook.
+
+    b) This is only meant for relatively small networks.  For proper
+    visualization use Paraview.
+
+    """
+
+    try:
+        from vpython import canvas, vec, sphere, cylinder
+    except ModuleNotFoundError:
+        raise Exception('VPython must be installed to use this function')
+
+    if type(cmap) == str:
+        cmap = getattr(plt.cm, cmap)
+
+    if Pcolor is None:
+        Pcolor = [vec(230/255, 57/255, 0/255)]*network.Np
+    else:
+        a = cmap(network[Pcolor]/network[Pcolor].max())
+        Pcolor = [vec(row[0], row[1], row[2]) for row in a]
+
+    if Tcolor is None:
+        Tcolor = [vec(51/255, 153/255, 255/255)]*network.Nt
+    else:
+        a = cmap(network[Tcolor]/network[Tcolor].max())
+        Tcolor = [vec(row[0], row[1], row[2]) for row in a]
+
+    # Set default values for canvas properties
+    if 'background' not in kwargs.keys():
+        kwargs['background'] = vec(1.0, 1.0, 1.0)
+    if 'height' not in kwargs.keys():
+        kwargs['height'] = 500
+    if 'width' not in kwargs.keys():
+        kwargs['width'] = 800
+    # Parse any given values for canvas properties
+    for item in kwargs.keys():
+        try:
+            kwargs[item] = vec(*kwargs[item])
+        except TypeError:
+            pass
+    scene = canvas(title=network.name, **kwargs)
+
+    for p in network.Ps:
+        r = network[Psize][p]/2
+        xyz = network['pore.coords'][p]
+        c = Pcolor[p]
+        sphere(pos=vec(*xyz), radius=r, color=c,
+               shininess=.5)
+
+    for t in network.Ts:
+        head = network['throat.endpoints.head'][t]
+        tail = network['throat.endpoints.tail'][t]
+        v = tail - head
+        r = network[Tsize][t]
+        L = sp.sqrt(sp.sum((head-tail)**2))
+        c = Tcolor[t]
+        cylinder(pos=vec(*head), axis=vec(*v), opacity=1, size=vec(L, r, r),
+                 color=c)
+
+    return scene
 
 
 def generate_base_points(num_points, domain_size, density_map=None,
@@ -2820,14 +2925,25 @@ def iscoplanar(coords):
         return True
 
     # Perform rigorous check using vector algebra
+    # Grab first basis vector from list of coords
     n1 = sp.array((Px[1] - Px[0], Py[1] - Py[0], Pz[1] - Pz[0])).T
-    n2 = sp.array((Px[2] - Px[1], Py[2] - Py[1], Pz[2] - Pz[1])).T
-    n = sp.cross(n1, n2)
+    n = sp.array([0.0, 0.0, 0.0])
+    i = 1
+    while n.sum() == 0:
+        if i >= (sp.size(Px) - 1):
+            logger.warning('No valid basis vectors found')
+            return False
+        # Chose a secon basis vector
+        n2 = sp.array((Px[i+1] - Px[i], Py[i+1] - Py[i], Pz[i+1] - Pz[i])).T
+        # Find their cross product
+        n = sp.cross(n1, n2)
+        i += 1
+    # Create vectors between all other pairs of points
     r = sp.array((Px[1:-1] - Px[0], Py[1:-1] - Py[0], Pz[1:-1] - Pz[0]))
-
+    # Ensure they all lie on the same plane
     n_dot = sp.dot(n, r)
 
-    if sp.sum(n_dot) == 0:
+    if sp.sum(sp.absolute(n_dot)) == 0:
         return True
     else:
         return False

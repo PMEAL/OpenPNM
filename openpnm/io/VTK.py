@@ -3,6 +3,7 @@ from flatdict import FlatDict
 import numpy as np
 from openpnm.io import GenericIO, Dict
 from openpnm.utils import logging, Workspace
+from openpnm.network import GenericNetwork
 logger = logging.getLogger(__name__)
 ws = Workspace()
 
@@ -69,6 +70,10 @@ class VTK(GenericIO):
         project, network, phases = cls._parse_args(network=network,
                                                    phases=phases)
 
+        if filename == '':
+            filename = project.name
+        filename = cls._parse_filename(filename=filename, ext='vtp')
+
         am = Dict.to_dict(network=network, phases=phases, interleave=True,
                           categorize_by=['object', 'data'])
         am = FlatDict(am, delimiter=delim)
@@ -110,15 +115,19 @@ class VTK(GenericIO):
                         continue
                     else:
                         array[np.isnan(array)] = fill_nans
+                if '@' in key:
+                    new_net = GenericNetwork(coords=network['pore.coords'],
+                                             conns=network['throat.conns'])
+                    prop = key.split(delim)[-1]
+                    new_net[prop.split('@')[0]] = array
+                    file, ext = filename.name.split('.')
+                    fname_temp = file + '_' + key.split('@')[1] + '.' + ext
+                    cls.save(network=new_net, filename=fname_temp, delim=delim)
                 element = VTK._array_to_element(key, array)
                 if (array.size == num_points):
                     point_data_node.append(element)
                 elif (array.size == num_throats):
                     cell_data_node.append(element)
-
-        if filename == '':
-            filename = project.name
-        filename = cls._parse_filename(filename=filename, ext='vtp')
 
         tree = ET.ElementTree(root)
         tree.write(filename)

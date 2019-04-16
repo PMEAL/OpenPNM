@@ -34,6 +34,11 @@ def generic_function(target, prop, func, **kwargs):
     kwargs : keyward arguments
         All arguments required by the specific Numpy function
 
+    Returns
+    -------
+    result : NumPy ndarray
+        Array containing func(target[prop], **kwargs).
+
     Examples
     --------
     The following example shows how to use a Numpy function, but any function
@@ -74,6 +79,11 @@ def linear(target, m, b, prop):
         The dictionary key containing the independent variable or phase
         property to be used in the correlation.
 
+    Returns
+    -------
+    value : NumPy ndarray
+        Array containing ``m * target[prop] + b``.
+
     """
     x = target[prop]
     value = m*x + b
@@ -99,6 +109,12 @@ def polynomial(target, a, prop, **kwargs):
     prop : string
         The dictionary key containing the independent variable or phase
         property to be used in the polynomial.
+
+    Returns
+    -------
+    value : NumPy ndarray
+        Array containing ``Pn(target[prop])``, where ``Pn`` is nth order
+        polynomial with coefficients stored in ``a``.
 
     """
     x = target[prop]

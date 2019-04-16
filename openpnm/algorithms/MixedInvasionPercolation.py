@@ -421,43 +421,50 @@ class MixedInvasionPercolation(GenericAlgorithm):
             Capillary Pressure at which phase configuration was reached
 
         """
-
-        phase = self.project.find_phase(self)
-        net = self.project.network
-        inv_p = self['pore.invasion_pressure'].copy()
-        inv_t = self['throat.invasion_pressure'].copy()
-        # Handle trapped pores and throats by moving their pressure up to be
-        # ignored
-        if np.sum(self['pore.invasion_sequence'] == -1) > 0:
-            inv_p[self['pore.invasion_sequence'] == -1] = Pc + 1
-        if np.sum(self['throat.invasion_sequence'] == -1) > 0:
-            inv_t[self['throat.invasion_sequence'] == -1] = Pc + 1
-        p_inv = inv_p <= Pc
-        t_inv = inv_t <= Pc
-
-        if self.settings['late_pore_filling']:
-            # Set pressure on phase to current capillary pressure
-            phase['pore.pressure'] = Pc
-            # Regenerate corresponding physics model
-            for phys in self.project.find_physics(phase=phase):
-                phys.regenerate_models(self.settings['late_pore_filling'])
-            # Fetch partial filling fraction from phase object (0->1)
-            frac = phase[self.settings['late_pore_filling']]
-            p_vol = net['pore.volume']*frac
+        if Pc is None:
+            results = {'pore.invasion_sequence':
+                       self['pore.invasion_sequence'],
+                       'throat.invasion_sequence':
+                       self['throat.invasion_sequence']}
         else:
-            p_vol = net['pore.volume']
-        if self.settings['late_throat_filling']:
-            # Set pressure on phase to current capillary pressure
-            phase['throat.pressure'] = Pc
-            # Regenerate corresponding physics model
-            for phys in self.project.find_physics(phase=phase):
-                phys.regenerate_models(self.settings['late_throat_filling'])
-            # Fetch partial filling fraction from phase object (0->1)
-            frac = phase[self.settings['late_throat_filling']]
-            t_vol = net['throat.volume']*frac
-        else:
-            t_vol = net['throat.volume']
-        return {'pore.occupancy': p_inv*p_vol, 'throat.occupancy': t_inv*t_vol}
+            phase = self.project.find_phase(self)
+            net = self.project.network
+            inv_p = self['pore.invasion_pressure'].copy()
+            inv_t = self['throat.invasion_pressure'].copy()
+            # Handle trapped pores and throats by moving their pressure up
+            # to be ignored
+            if np.sum(self['pore.invasion_sequence'] == -1) > 0:
+                inv_p[self['pore.invasion_sequence'] == -1] = Pc + 1
+            if np.sum(self['throat.invasion_sequence'] == -1) > 0:
+                inv_t[self['throat.invasion_sequence'] == -1] = Pc + 1
+            p_inv = inv_p <= Pc
+            t_inv = inv_t <= Pc
+
+            if self.settings['late_pore_filling']:
+                # Set pressure on phase to current capillary pressure
+                phase['pore.pressure'] = Pc
+                # Regenerate corresponding physics model
+                for phys in self.project.find_physics(phase=phase):
+                    phys.regenerate_models(self.settings['late_pore_filling'])
+                # Fetch partial filling fraction from phase object (0->1)
+                frac = phase[self.settings['late_pore_filling']]
+                p_vol = net['pore.volume']*frac
+            else:
+                p_vol = net['pore.volume']
+            if self.settings['late_throat_filling']:
+                # Set pressure on phase to current capillary pressure
+                phase['throat.pressure'] = Pc
+                # Regenerate corresponding physics model
+                for phys in self.project.find_physics(phase=phase):
+                    phys.regenerate_models(self.settings['late_throat_filling'])
+                # Fetch partial filling fraction from phase object (0->1)
+                frac = phase[self.settings['late_throat_filling']]
+                t_vol = net['throat.volume']*frac
+            else:
+                t_vol = net['throat.volume']
+            results = {'pore.occupancy': p_inv*p_vol,
+                       'throat.occupancy': t_inv*t_vol}
+        return results
 
     def apply_flow(self, flowrate):
         r"""
