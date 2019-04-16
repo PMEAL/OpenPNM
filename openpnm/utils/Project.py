@@ -582,10 +582,14 @@ class Project(list):
         if filename is None:
             filename = project.name + '_' + time.strftime('%Y%b%d_%H%M%p')
         # Check if any of the phases has time series
-        for phase in phases:
-            transient = True in ['@' in k for k in phase.keys()]
-            if transient:
-                break
+        transient = False
+        if type(phases) == str:
+            transient = True in ['@' in k for k in phases.keys()]
+        elif type(phases) == list:
+            for phase in phases:
+                transient = True in ['@' in k for k in phase.keys()]
+                if transient:
+                    break
         # Infer filetype from extension on file name..., if given
         if '.' in filename:
             exts = ['vtk', 'vtp', 'vtu', 'csv', 'xmf', 'xdmf', 'hdf', 'hdf5',
