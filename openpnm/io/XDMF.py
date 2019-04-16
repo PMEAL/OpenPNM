@@ -43,13 +43,11 @@ class XDMF(GenericIO):
         project, network, phases = cls._parse_args(network=network,
                                                    phases=phases)
         network = network[0]
-
         if filename == '':
             filename = project.name
         path = cls._parse_filename(filename=filename, ext='xmf')
         # Path is a pathlib object, so slice it up as needed
         fname_xdf = path.name
-        path = path.parent
         d = Dict.to_dict(network, phases=phases, interleave=True,
                          flatten=False, categorize_by=['element', 'data'])
         D = FlatDict(d, delimiter='/')
@@ -58,7 +56,6 @@ class XDMF(GenericIO):
         for key in D.keys():
             if '@' in key:
                 t_steps.append(key.split('@')[1])
-
         t_grid = create_grid(Name="TimeSeries", GridType="Collection",
                              CollectionType="Temporal")
         # If steady-state, define '0' time step
@@ -70,8 +67,9 @@ class XDMF(GenericIO):
         # Iterate over time steps present
         for t in range(len(t_steps)):
             # Define the hdf file
-            fname_hdf = path.stem+t_steps[t]+".hdf"
-            f = h5py.File(path.joinpath(fname_hdf), "w")
+            fname_hdf = path.stem+'_'+t_steps[t]+".hdf"
+            path_p = path.parent
+            f = h5py.File(path_p.joinpath(fname_hdf), "w")
             # Add coordinate and connection information to top of HDF5 file
             f["coordinates"] = network["pore.coords"]
             f["connections"] = network["throat.conns"]
@@ -127,7 +125,8 @@ class XDMF(GenericIO):
                         elif ('@' not in item and t == 0):
                             hdf_loc = fname_hdf + ":" + item
                         elif ('@' not in item and t > 0):
-                            hdf_loc = path.stem+t_steps[0]+".hdf" + ":" + item
+                            hdf_loc = (path.stem+'_'+t_steps[0]+".hdf" +
+                                       ":" + item)
                         attr = create_data_item(value=hdf_loc,
                                                 Dimensions=dims,
                                                 Format='HDF',
@@ -151,7 +150,7 @@ class XDMF(GenericIO):
             f.close()
         domain.append(t_grid)
         root.append(domain)
-        with open(path.joinpath(fname_xdf), 'w') as file:
+        with open(path_p.joinpath(fname_xdf), 'w') as file:
             file.write(cls._header)
             file.write(ET.tostring(root).decode("utf-8"))
 
