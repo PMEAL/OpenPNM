@@ -105,10 +105,20 @@ def valvatne_blunt(target,
         Dictionary key of the throat geometric shape factor values
 
     pore_area : string
-        Dictionary key of the pore area values
+        Dictionary key of the pore area values. The pore area is calculated
+        using following formula:
+            pore_area = (pore_radius ** 2) / (4 * pore_shape_factor)
+        Where theoratical value of pore_shape_factor in circular tube is
+        calculated using following formula:
+            pore_shape_factor = pore_area / perimeter **2 = 1/4π
 
     throat_area : string
-        Dictionary key of the throat area values
+        Dictionary key of the throat area values. The throat area is calculated
+        using following formula:
+            throat_area = (throat_radius ** 2) / (4 * throat_shape_factor)
+        Where theoratical value of throat_shape_factor in circular tube is
+        calculated using following formula:
+            throat_shape_factor = throat_area / perimeter **2 = 1/4π
 
     conduit_lengths : string
         Dictionary key of the throat conduit lengths
