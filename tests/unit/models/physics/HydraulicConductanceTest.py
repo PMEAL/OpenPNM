@@ -51,8 +51,7 @@ class HydraulicConductanceTest:
         sf = np.sqrt(3)/36.0
         self.geo['pore.shape_factor'] = np.ones(self.geo.Np)*sf
         self.geo['throat.shape_factor'] = np.ones(self.geo.Nt)*sf
-        self.phys.add_model(propname='throat.valvatne_conductance',
-                            model=mod)
+        self.phys.add_model(propname='throat.valvatne_conductance', model=mod)
         actual = self.phys['throat.valvatne_conductance'].mean()
         assert_approx_equal(actual, desired=1030.9826)
 

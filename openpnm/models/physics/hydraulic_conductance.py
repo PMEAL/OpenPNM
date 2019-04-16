@@ -221,7 +221,7 @@ def valvatne_blunt(target,
 
     Returns
     -------
-    g : ndarray
+    g : ND-array
         Array containing hydraulic conductance values for conduits in the
         geometry attached to the given physics object.
 
@@ -379,7 +379,7 @@ def generic_conductance(target, transport_type, pore_area, throat_area,
 
     Returns
     -------
-    g : ndarray
+    g : ND-array
         Array containing conductance values for conduits in the geometry
         attached to the given physics object.
 
