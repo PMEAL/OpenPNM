@@ -207,11 +207,13 @@ class OrdinaryPercolation(GenericAlgorithm):
             then supplied locations are added to any already existing inlet
             locations.
 
-
         """
         Ps = self._parse_indices(pores)
         if np.sum(self['pore.outlets'][Ps]) > 0:
             raise Exception('Some inlets are already defined as outlets')
+        if np.sum(self.network['pore.volume'][Ps]) > 0:
+            logger.warn('Some inlet pores have non-zero volume, will result ' +
+                        'in non-zero initial saturation')
         if overwrite:
             self['pore.inlets'] = False
         self['pore.inlets'][Ps] = True
@@ -342,15 +344,27 @@ class OrdinaryPercolation(GenericAlgorithm):
         points: int or array_like
             An array containing the pressure points to apply.  If a scalar is
             given then an array will be generated with the given number of
-            points spaced between the lowest and highest values of throat
-            entry pressures using logarithmic spacing.  To specify low and
-            high pressure points use the ``start`` and ``stop`` arguments.
+            points spaced between the lowest and highest values of
+            throat entry pressures using logarithmic spacing.  To specify low
+            and high pressure points use the ``start`` and ``stop`` arguments.
 
         start : int
             The optional starting point to use when generating pressure points.
+            If not given the half the lowest capillary entry pressure in the
+            network is used.
 
         stop : int
             The optional stopping point to use when generating pressure points.
+            If not given, then twice the highest capillary entry pressure in
+            the network is used.
+
+        Note
+        ----
+        The inlet sites are set to invaded to start the simulation.  This means
+        that if 'internal' pores are used as inlets the capillary pressure
+        curve will begin at a non-zero invading phase saturation.  To avoid
+        this either set the inlet pore volumes to zero or add boundary pores
+        to the inlet face, and set their volumes to zero.
 
         """
         phase = self.project.find_phase(self)
