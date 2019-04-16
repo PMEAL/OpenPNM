@@ -164,6 +164,70 @@ def hagen_poiseuille_power_law(
                                pore_pressure=pore_pressure)
 
 
+def classic_hagen_poiseuille(target,
+                             pore_diameter='pore.diameter',
+                             pore_viscosity='pore.viscosity',
+                             throat_length='throat.length',
+                             throat_diameter='throat.diameter',
+                             shape_factor='throat.shape_factor',
+                             **kwargs):
+    r"""
+    Calculates the hydraulic conductivity of throat assuming cylindrical
+    geometry using the Hagen-Poiseuille model
+
+    Parameters
+    ----------
+    network : OpenPNM Network Object
+
+    phase : OpenPNM Phase Object
+
+    Notes
+    -----
+    This function calculates the specified property for the *entire* network
+    then extracts the values for the appropriate throats at the end.
+
+    """
+    network = target.project.network
+    throats = network.map_throats(throats=target.Ts, origin=target)
+    # Get Nt-by-2 list of pores connected to each throat
+    Ps = network['throat.conns']
+    # Get properties in every pore in the network
+    phase = target.project.find_phase(target)
+    mup = phase[pore_viscosity]
+    mut = phase.interpolate_data(propname=pore_viscosity)[throats]
+    pdia = network[pore_diameter]
+    # Get pore lengths
+    plen1 = (0.5*pdia[Ps[:, 0]])
+    plen2 = (0.5*pdia[Ps[:, 1]])
+    # Remove any non-positive lengths
+    plen1[plen1 <= 0] = 1e-12
+    plen2[plen2 <= 0] = 1e-12
+    # Find g for half of pore 1
+    gp1 = _sp.pi*(pdia[Ps[:, 0]])**4/(128*plen1*mut)
+    gp1[_sp.isnan(gp1)] = _sp.inf
+    gp1[~(gp1 > 0)] = _sp.inf  # Set 0 conductance pores (boundaries) to inf
+
+    # Find g for half of pore 2
+    gp2 = _sp.pi*(pdia[Ps[:, 1]])**4/(128*plen2*mut)
+    gp2[_sp.isnan(gp2)] = _sp.inf
+    gp2[~(gp2 > 0)] = _sp.inf  # Set 0 conductance pores (boundaries) to inf
+    # Find g for full throat
+    tdia = network[throat_diameter]
+    tlen = network[throat_length]
+    # Remove any non-positive lengths
+    tlen[tlen <= 0] = 1e-12
+    # Get shape factor
+    try:
+        sf = network[shape_factor]
+    except:
+        sf = _sp.ones(network.num_throats())
+    sf[_sp.isnan(sf)] = 1.0
+    gt = (1/sf)*_sp.pi*(tdia)**4/(128*tlen*mut)
+    gt[~(gt > 0)] = _sp.inf  # Set 0 conductance pores (boundaries) to inf
+    value = (1/gt + 1/gp1 + 1/gp2)**(-1)
+    return value
+
+
 def generic_conductance(target, transport_type, pore_area, throat_area,
                         pore_diffusivity, throat_diffusivity,
                         conduit_lengths, conduit_shape_factors, **kwargs):
