@@ -582,14 +582,7 @@ class Project(list):
         if filename is None:
             filename = project.name + '_' + time.strftime('%Y%b%d_%H%M%p')
         # Check if any of the phases has time series
-        transient = False
-        if type(phases) == str:
-            transient = True in ['@' in k for k in phases.keys()]
-        elif type(phases) == list:
-            for phase in phases:
-                transient = True in ['@' in k for k in phase.keys()]
-                if transient:
-                    break
+        transient = openpnm.io.GenericIO.is_transient(phases=phases)
         # Infer filetype from extension on file name..., if given
         if '.' in filename:
             exts = ['vtk', 'vtp', 'vtu', 'csv', 'xmf', 'xdmf', 'hdf', 'hdf5',
@@ -599,7 +592,7 @@ class Project(list):
         if transient:
             if filetype.lower() not in ['xmf', 'xdmf']:
                 logger.warning(filetype.lower() + ' filetype not supported ' +
-                               'for transient data, "xdmf" is used instead')
+                               'for transient data, xdmf is used instead')
             openpnm.io.XDMF.save(network=network, phases=phases,
                                  filename=filename)
         else:
