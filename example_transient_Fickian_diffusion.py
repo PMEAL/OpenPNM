@@ -3,6 +3,7 @@ import numpy as np
 
 # work space and project
 ws = op.Workspace()
+ws.settings["loglevel"] = 30
 proj = ws.new_project()
 
 # network
@@ -34,4 +35,4 @@ phase.update(fd.results())
 
 # output results to a vtk file
 phase.update(fd.results())
-proj.export_data(phases=[phase], filename='OUT', filetype='XDMF')
+proj.export_data(phases=[phase], filename='OUT', filetype='vtk')
