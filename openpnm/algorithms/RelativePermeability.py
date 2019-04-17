@@ -5,6 +5,7 @@ import numpy as np
 import openpnm
 import matplotlib.pyplot as plt
 from collections import namedtuple
+import csv
 
 # import matplotlib.pyplot as plt
 logger = logging.getLogger(__name__)
@@ -61,18 +62,7 @@ class RelativePermeability(GenericAlgorithm):
         
         
          
-    def plot_rel_perm(self,plot_vect=self.settings['input_vect'],fig=None):
-            if fig is None:
-                fig = plt.figure()
-            plt.ylabel('Relative Permeability')
-            plt.xlabel('Snwp')
-            plt.grid(True)
-            for dim in plot_vect:
-                plots=plt.plot(self.settings['sat'][dim],self.settings['relperm_wp'][dim])
-                plt.legend(plots, ['Kr_wp'+dim])
-                plots=plt.plot(self.settings['sat'][dim],self.settings['relperm_nwp'][dim])
-                plt.legend(plots, ['Kr_nwp'+dim])
-        return fig
+
 #    def run(self):
 #        self._setup_ip_algs()
 #        return {'ky': self.settings['relperm_wp']['y'], 'Saty': self.settings['sat']['y']}
@@ -196,14 +186,37 @@ class RelativePermeability(GenericAlgorithm):
                 self.settings['relperm_nwp'].update({self.settings['input_vect'][i]:relperm_nwp})
                 self.settings['sat'].update({self.settings['input_vect'][i]:Snwparr})
                 
+    def plot_rel_perm(self,plot_vect=self.settings['input_vect'],fig=None):
+            if fig is None:
+                fig = plt.figure()
+            plt.ylabel('Relative Permeability')
+            plt.xlabel('Snwp')
+            plt.grid(True)
+            for dim in plot_vect:
+                plots=plt.plot(self.settings['sat'][dim],self.settings['relperm_wp'][dim])
+                plt.legend(plots, ['Kr_wp'+dim])
+                plots=plt.plot(self.settings['sat'][dim],self.settings['relperm_nwp'][dim])
+                plt.legend(plots, ['Kr_nwp'+dim])
+       return fig            
                 
+                
+ 
+    def export_rel_perm_data(self):
+        dicts=dict()
+        for dim in self.settings['input_vect']:
+            dicts.update({'sat'+dim:self.settings['sat'][dim]})
+            dicts.update({'relperm_wp'+dim:self.settings['relperm_wp'][dim]})
+            dicts.update({'relperm_nwp'+dim:self.settings['relperm_nwp'][dim]}) #dictionary
+        file = open('result_rel_perm.csv', "w")
+        for key in dicts.keys():
+            row ="\n"+ str(key) + "," + str(dicts[key]) 
+            file.write(row)
 
             
-            
         
         
         
-#    def export_rel_perm_data():
+        
         
     
 
