@@ -44,6 +44,11 @@ class MAT(GenericIO):
         project, network, phases = cls._parse_args(network=network,
                                                    phases=phases)
         network = network[0]
+        # Check if any of the phases has time series
+        transient = GenericIO.is_transient(phases=phases)
+        if transient:
+            raise Exception('mat format does not support transient data, ' +
+                            'use xdmf instead')
         # Write to file
         if filename == '':
             filename = project.name

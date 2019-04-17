@@ -72,7 +72,11 @@ class CSV(GenericIO):
                                                    phases=phases)
         df = Pandas.to_dataframe(network=network, phases=phases,
                                  join=True, delim=delim)
-
+        # Check if any of the phases has time series
+        transient = GenericIO.is_transient(phases=phases)
+        if transient:
+            raise Exception('csv format does not support transient data, ' +
+                            'use xdmf instead')
         # Write to file
         if filename == '':
             filename = project.name
