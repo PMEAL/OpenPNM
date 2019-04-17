@@ -94,9 +94,16 @@ class DirectionalRelativePermeability(GenericAlgorithm):
             self.settings['wp']['pore.occupancy'] = 1-pore_mask
             self.settings['nwp']['throat.occupancy'] = throat_mask
             self.settings['wp']['throat.occupancy'] = 1-throat_mask
+            mode=self.settings['mode']
+            model=models.physics.multiphase.conduit_conductance
             propname='throat.conduit_hydraulic_conductance'
-            self.settings['wp'].regenerate_models(propname=propname)
-            self.settings['nwp'].regenerate_models(propname=propname)
+            throat_conductance='throat.hydraulic_conductance'
+            self.settings['wp'].add_model(model=model, propname=propname,
+                                         throat_conductance=throat_conductance,
+                                         mode=mode)
+            self.settings['nwp'].add_model(model=model, propname=propname,
+                                         throat_conductance=throat_conductance,
+                                         mode=mode)
             St_mp_wp = StokesFlow(network=network,phase=self.settings['wp'])
             St_mp_wp.setup(conductance='throat.conduit_hydraulic_conductance')
             St_mp_wp.set_value_BC(pores=self.settings['flow_inlet'], values=1)
