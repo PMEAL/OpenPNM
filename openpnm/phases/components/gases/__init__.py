@@ -1,1 +1,3 @@
-from . import N2, O2, H2, CO2
+from .N2 import N2
+from .O2 import O2
+from .CO2 import CO2

@@ -2,9 +2,9 @@ from openpnm.phases import GenericPhase
 import openpnm.models as mods
 
 
-class NaIon(GenericPhase):
+class O2(GenericPhase):
     r"""
-    Creates Phase object with preset models and values for Na ions
+    Creates Phase object with preset models and values for O2 gas
 
     Parameters
     ----------
@@ -25,11 +25,12 @@ class NaIon(GenericPhase):
     --------
     >>> import openpnm as op
     >>> pn = op.network.Cubic(shape=[5, 5, 5])
-    >>> Na = op.phases.components.ions.NaIon(network=pn)
 
     """
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        self.pop('pore.temperature', None)
+        self.pop('pore.pressure', None)
 
-        self['pore.molecular_weight'] = 0.0291
-        self['pore.diffusivity'] = 0.1
+        self['pore.molecular_weight'] = 0.032  # kg/mol
+        self['pore.molar_diffusion_volume'] = 16.6  # ??

@@ -42,9 +42,6 @@ class GenericMixture(GenericPhase):
 
         self['pore.mole_fraction.all'] = np.zeros(self.Np, dtype=float)
 
-        self.pop('pore.temperature', None)
-        self.pop('pore.pressure', None)
-
     def __getitem__(self, key):
         try:
             vals = super().__getitem__(key)
@@ -70,10 +67,11 @@ class GenericMixture(GenericPhase):
             raise Exception(prop + ' already assigned to a component object')
         super().__setitem__(key, value)
 
-    def props(self, **kwargs):
+    def props(self, incl_components=False, **kwargs):
         temp = []
-        for item in self.components.values():
-            temp.extend([prop+'.'+item.name for prop in item.props(**kwargs)])
+        if incl_components:
+            for item in self.components.values():
+                temp.extend([prop+'.'+item.name for prop in item.props(**kwargs)])
         temp.extend(super().props(**kwargs))
         temp.sort()
         return temp
@@ -161,11 +159,12 @@ class GenericMixture(GenericPhase):
 
         """
         element = prop.split('.')[0]
-        if np.any(self[element + '.mole_fraction.all'] != 1.0):
-            self._update_molfrac()
+        if element == 'pore':
             if np.any(self[element + '.mole_fraction.all'] != 1.0):
-                raise Exception('Mole fraction does not add to unity in all ' +
-                                element + 's')
+                self._update_molfrac()
+                if np.any(self[element + '.mole_fraction.all'] != 1.0):
+                    raise Exception('Mole fraction does not add to unity in all ' +
+                                    element + 's')
         vals = np.zeros([self._count(element=element)], dtype=float)
         try:
             for comp in self.components.values():

@@ -1,1 +1,1 @@
-from . import H2O
+from .H2O import H2O

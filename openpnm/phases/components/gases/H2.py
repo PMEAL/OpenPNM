@@ -2,7 +2,7 @@ from openpnm.phases import GenericPhase
 import openpnm.models as mods
 
 
-class NaIon(GenericPhase):
+class H2(GenericPhase):
     r"""
     Creates Phase object with preset models and values for Na ions
 
@@ -31,5 +31,4 @@ class NaIon(GenericPhase):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-        self['pore.molecular_weight'] = 0.0291
-        self['pore.diffusivity'] = 0.1
+        self['pore.molecular_weight'] = 0.002016  # kg/mol
