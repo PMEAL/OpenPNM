@@ -64,8 +64,8 @@ class VTK(GenericIO):
         # Check if any of the phases has time series
         transient = GenericIO.is_transient(phases=phases)
         if transient:
-            raise Exception('vtp format does not support transient data, ' +
-                            'use xdmf instead')
+            logger.warning('vtp format does not support transient data, ' +
+                           'use xdmf instead')
         if filename == '':
             filename = project.name
         filename = cls._parse_filename(filename=filename, ext='vtp')

@@ -67,11 +67,6 @@ class HDF5(GenericIO):
         """
         project, network, phases = cls._parse_args(network=network,
                                                    phases=phases)
-        # Check if any of the phases has time series
-        transient = GenericIO.is_transient(phases=phases)
-        if transient:
-            raise Exception('hdf format does not support transient data, ' +
-                            'use xdmf instead')
         if filename == '':
             filename = project.name
         filename = cls._parse_filename(filename, ext='hdf')
