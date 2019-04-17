@@ -13,7 +13,7 @@ geom = op.geometry.StickAndBall(network=pn, pores=pn['pore.all'],
                                 throats=pn['throat.all'])
 relcalc=op.algorithms.RelativePermeability(network=pn)
 relcalc.setup(input_vect=['xx','xy','xz'])
-relcalc.export_rel_perm_data()
+#relcalc.export_rel_perm_data()
 #relcalc.setup_ip_algs()
 #named_tuple_of_data = relcalc.get_krel_data()
 #fig = relcalc.plot_krel_curves()
