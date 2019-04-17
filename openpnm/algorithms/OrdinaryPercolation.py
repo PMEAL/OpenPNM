@@ -207,11 +207,13 @@ class OrdinaryPercolation(GenericAlgorithm):
             then supplied locations are added to any already existing inlet
             locations.
 
-
         """
         Ps = self._parse_indices(pores)
         if np.sum(self['pore.outlets'][Ps]) > 0:
             raise Exception('Some inlets are already defined as outlets')
+        if np.sum(self.network['pore.volume'][Ps]) > 0:
+            logger.warn('Some inlet pores have non-zero volume, will result ' +
+                        'in non-zero initial saturation')
         if overwrite:
             self['pore.inlets'] = False
         self['pore.inlets'][Ps] = True
@@ -342,15 +344,27 @@ class OrdinaryPercolation(GenericAlgorithm):
         points: int or array_like
             An array containing the pressure points to apply.  If a scalar is
             given then an array will be generated with the given number of
-            points spaced between the lowest and highest values of throat
-            entry pressures using logarithmic spacing.  To specify low and
-            high pressure points use the ``start`` and ``stop`` arguments.
+            points spaced between the lowest and highest values of
+            throat entry pressures using logarithmic spacing.  To specify low
+            and high pressure points use the ``start`` and ``stop`` arguments.
 
         start : int
             The optional starting point to use when generating pressure points.
+            If not given the half the lowest capillary entry pressure in the
+            network is used.
 
         stop : int
             The optional stopping point to use when generating pressure points.
+            If not given, then twice the highest capillary entry pressure in
+            the network is used.
+
+        Note
+        ----
+        The inlet sites are set to invaded to start the simulation.  This means
+        that if 'internal' pores are used as inlets the capillary pressure
+        curve will begin at a non-zero invading phase saturation.  To avoid
+        this either set the inlet pore volumes to zero or add boundary pores
+        to the inlet face, and set their volumes to zero.
 
         """
         phase = self.project.find_phase(self)
@@ -359,22 +373,23 @@ class OrdinaryPercolation(GenericAlgorithm):
             self['throat.entry_pressure'] = \
                 phase[self.settings['throat_entry_threshold']]
             if start is None:
-                start = sp.amin(self['throat.entry_pressure'])*0.95
+                start = sp.amin(self['throat.entry_pressure'])*0.5
             if stop is None:
-                stop = sp.amax(self['throat.entry_pressure'])*1.05
+                stop = sp.amax(self['throat.entry_pressure'])*2.0
 
         elif self.settings['mode'] == 'site':
             self['pore.entry_pressure'] = \
                 phase[self.settings['pore_entry_threshold']]
             if start is None:
-                start = sp.amin(self['pore.entry_pressure'])*0.95
+                start = sp.amin(self['pore.entry_pressure'])*0.5
             if stop is None:
-                stop = sp.amax(self['pore.entry_pressure'])*1.05
+                stop = sp.amax(self['pore.entry_pressure'])*2.0
         else:
             raise Exception('Percolation type has not been set')
         if type(points) is int:
             points = sp.logspace(start=sp.log10(max(1, start)),
                                  stop=sp.log10(stop), num=points)
+        self._points = points
 
         # Ensure pore inlets have been set IF access limitations is True
         if self.settings['access_limited']:
@@ -427,12 +442,7 @@ class OrdinaryPercolation(GenericAlgorithm):
         """
         net = self.project.network
         if Pc is None:
-            # Infer list of applied capillary pressures
-            points = np.unique(self['throat.invasion_pressure'])
-            # Add a low pressure point to the list to improve graph
-            points = np.concatenate(([0], points))
-            if points[-1] == np.inf:  # Remove infinity from points if present
-                points = points[:-1]
+            points = self._points
         else:
             points = np.array(Pc)
         # Get pore and throat volumes
@@ -473,7 +483,7 @@ class OrdinaryPercolation(GenericAlgorithm):
         plt.grid(True)
         return fig
 
-    def results(self, Pc):
+    def results(self, Pc=None):
         r"""
         This method determines which pores and throats are filled with invading
         phase at the specified capillary pressure, and creates several arrays
@@ -504,9 +514,16 @@ class OrdinaryPercolation(GenericAlgorithm):
         or algorithms.
 
         """
-        Psatn = self['pore.invasion_pressure'] <= Pc
-        Tsatn = self['throat.invasion_pressure'] <= Pc
-        inv_phase = {}
-        inv_phase['pore.occupancy'] = sp.array(Psatn, dtype=float)
-        inv_phase['throat.occupancy'] = sp.array(Tsatn, dtype=float)
+        if Pc is not None:
+            Psatn = self['pore.invasion_pressure'] <= Pc
+            Tsatn = self['throat.invasion_pressure'] <= Pc
+            inv_phase = {}
+            inv_phase['pore.occupancy'] = sp.array(Psatn, dtype=float)
+            inv_phase['throat.occupancy'] = sp.array(Tsatn, dtype=float)
+        else:
+            inv_phase = {}
+            Ppressure = self['pore.invasion_pressure']
+            Tpressure = self['throat.invasion_pressure']
+            inv_phase['pore.invasion_pressure'] = Ppressure
+            inv_phase['throat.invasion_pressure'] = Tpressure
         return inv_phase

@@ -77,12 +77,12 @@ class WorkspaceTest:
         a = sp.ones((10, ))
         pickle.dump(a, open('single_object.pnm', 'wb'))
         self.ws.clear()
-        with pytest.warns(UserWarning):
+        with pytest.raises(Exception):
             self.ws.load_project('single_object.pnm')
         b = {'test': a}
         pickle.dump(b, open('single_object.pnm', 'wb'))
         self.ws.clear()
-        with pytest.warns(UserWarning):
+        with pytest.raises(Exception):
             self.ws.load_project('single_object.pnm')
         os.remove('single_object.pnm')
 
@@ -92,11 +92,12 @@ class WorkspaceTest:
         pn = op.network.Cubic(shape=[3, 3, 3], project=proj)
         op.phases.Air(network=pn)
         self.ws.save_project(proj, filename='test.pnm')
-        with pytest.warns(UserWarning):
-            self.ws.load_project('test.pnm')
+        self.ws.load_project('test.pnm')
+        assert set(self.ws.keys()) == set(['test', 'sim_01'])
         os.remove('test.pnm')
 
     def test_save_and_load_workspace(self):
+        self.ws.clear()
         proj1 = self.ws.new_project('test_proj_1')
         proj2 = self.ws.new_project('test_proj_2')
         op.network.Cubic(shape=[3, 3, 3], project=proj1, name='net1')
@@ -105,7 +106,7 @@ class WorkspaceTest:
         self.ws.clear()
         assert 'test_proj_1' not in self.ws.keys()
         assert 'test_proj_2' not in self.ws.keys()
-        self.ws.load_workspace('workspace_test')
+        self.ws.load_workspace('workspace_test', overwrite=True)
         assert 'test_proj_1' in self.ws.keys()
         assert 'test_proj_2' in self.ws.keys()
         self.ws.clear()

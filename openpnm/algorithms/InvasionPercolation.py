@@ -206,7 +206,7 @@ class InvasionPercolation(GenericAlgorithm):
         self['throat.invasion_sequence'] = t_inv
         self['pore.invasion_sequence'] = p_inv
 
-    def results(self, Snwp):
+    def results(self, Snwp=None):
         r"""
         Returns the phase configuration at the specified non-wetting phase
         (invading phase) saturation.
@@ -228,30 +228,36 @@ class InvasionPercolation(GenericAlgorithm):
         **'throat.occupancy'** : Same as described above but for throats.
 
         """
-        net = self.project.network
-        P12 = net['throat.conns']
-        # Fetch void volume for pores and throats
-        Vp = net[self.settings['pore_volume']]
-        Vt = net[self.settings['throat_volume']]
-        # Fetch the order of filling
-        Np = self['pore.invasion_sequence']
-        Nt = self['throat.invasion_sequence']
-        # Create Nt-long mask of which pores were filled when throat was filled
-        Pinv = (Np[P12].T == Nt).T
-        # If a pore and throat filled together, find combined volume
-        Vinv = sp.vstack(((Pinv*Vp[P12]).T, Vt)).T
-        Vinv = sp.sum(Vinv, axis=1)
-        # Convert to cumulative volume filled as each throat is invaded
-        x = sp.argsort(Nt)  # Find order throats were invaded
-        Vinv_cum = np.cumsum(Vinv[x])
-        # Normalized cumulative volume filled into saturation
-        S = Vinv_cum/(Vp.sum() + Vt.sum())
-        # Find throat invasion step where Snwp was reached
-        try:
-            N = sp.where(S < Snwp)[0][-1]
-        except:
-            N = -np.inf
-        data = {'pore.occupancy': Np <= N, 'throat.occupancy': Nt <= N}
+        if Snwp is None:
+            Np = self['pore.invasion_sequence']
+            Nt = self['throat.invasion_sequence']
+            data = {'pore.invasion_sequence': Np,
+                    'throat.invasion_sequence': Nt}
+        else:
+            net = self.project.network
+            P12 = net['throat.conns']
+            # Fetch void volume for pores and throats
+            Vp = net[self.settings['pore_volume']]
+            Vt = net[self.settings['throat_volume']]
+            # Fetch the order of filling
+            Np = self['pore.invasion_sequence']
+            Nt = self['throat.invasion_sequence']
+            # Create Nt-long mask of which pores were filled when throat was filled
+            Pinv = (Np[P12].T == Nt).T
+            # If a pore and throat filled together, find combined volume
+            Vinv = sp.vstack(((Pinv*Vp[P12]).T, Vt)).T
+            Vinv = sp.sum(Vinv, axis=1)
+            # Convert to cumulative volume filled as each throat is invaded
+            x = sp.argsort(Nt)  # Find order throats were invaded
+            Vinv_cum = np.cumsum(Vinv[x])
+            # Normalized cumulative volume filled into saturation
+            S = Vinv_cum/(Vp.sum() + Vt.sum())
+            # Find throat invasion step where Snwp was reached
+            try:
+                N = sp.where(S < Snwp)[0][-1]
+            except:
+                N = -np.inf
+            data = {'pore.occupancy': Np <= N, 'throat.occupancy': Nt <= N}
         return data
 
     def apply_trapping(self, outlets):

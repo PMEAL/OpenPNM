@@ -23,6 +23,11 @@ def sphere(target, pore_diameter='pore.diameter'):
     pore_diameter : string
         The dictionary key of the pore diameter values
 
+    Returns
+    -------
+    value : NumPy ndarray
+        Array containing pore volume values.
+
     """
     diams = target[pore_diameter]
     value = _pi/6*diams**3
@@ -42,6 +47,11 @@ def cube(target, pore_diameter='pore.diameter'):
 
     pore_diameter : string
         The dictionary key of the pore diameter values
+
+    Returns
+    -------
+    value : NumPy ndarray
+        Array containing pore volume values.
 
     """
     diams = target[pore_diameter]

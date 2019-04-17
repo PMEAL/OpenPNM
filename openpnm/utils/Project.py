@@ -195,7 +195,8 @@ class Project(list):
 
         Returns
         -------
-        A new Project object containing copies of all objects
+        proj : list
+            A new Project object containing copies of all objects
 
         """
         if name is None:
@@ -243,7 +244,7 @@ class Project(list):
 
         Returns
         -------
-        An OpenPNM Phase object.
+        phase : OpenPNM Phase object
 
         Raises
         ------
@@ -274,7 +275,7 @@ class Project(list):
 
         Returns
         -------
-        An OpenPNM Geometry object
+        geom : OpenPNM Geometry object
 
         Raises
         ------
@@ -307,12 +308,14 @@ class Project(list):
 
         Returns
         -------
-        A list containing the Physics object(s).  If only a ``geometry`` is
-        specified the the Physics for all Phases is returned.  If only a
-        ``phase`` is specified, then the Physics for all Geometries is
-        returned.  If both ``geometry`` and ``phase`` is specified then
-        the list only contains a single Physics.  If no Physics is found, the
-        the list will be empty.  See the Notes section for more information.
+        physics : list
+            A list containing the Physics object(s).  If only a ``geometry`` is
+            specified the the Physics for all Phases is returned.  If only a
+            ``phase`` is specified, then the Physics for all Geometries is
+            returned.  If both ``geometry`` and ``phase`` is specified then
+            the list only contains a single Physics.  If no Physics is found,
+            the the list will be empty.  See the Notes section for more
+            information.
 
         See Also
         --------
@@ -373,7 +376,7 @@ class Project(list):
 
         Returns
         -------
-        An OpenPNM object
+        obj : An OpenPNM object
 
         """
         if 'Subdomain' not in obj._mro():
@@ -462,20 +465,16 @@ class Project(list):
 
     def save_object(self, obj):
         r"""
-        Saves the given object to a file
+        Saves the given object or list of objects to a file
 
         Parameters
         ----------
-        obj : OpenPNM object
-            The file to be saved.  Depending on the object type, the file
+        obj : OpenPNM object or list of objects
+            The objects to be saved.  Depending on the object type, the file
             extension will be one of 'net', 'geo', 'phase', 'phys' or 'alg'.
         """
-        if not isinstance(obj, list):
-            obj = [obj]
-        for item in obj:
-            filename = item.name + '.' + item.settings['prefix']
-            with open(filename, 'wb') as f:
-                pickle.dump({item.name: item}, f)
+        from openpnm.io import OpenpnmIO
+        OpenpnmIO.save_object_to_file(objs=obj)
 
     def load_object(self, filename):
         r"""
@@ -483,14 +482,15 @@ class Project(list):
 
         Parameters
         ----------
+        filename : string or path object
+            The name of the file containing the saved object.  Can include
+            an absolute or relative path as well.  If only a filename is
+            given it will be saved in the current working directory.  The
+            object type is inferred from
 
         """
-        p = Path(filename)
-        with open(p, 'rb') as f:
-            d = pickle.load(f)
-        obj = self._new_object(objtype=p.suffix.strip('.'),
-                               name=p.name.split('.')[0])
-        obj.update(d)
+        from openpnm.io import OpenpnmIO
+        OpenpnmIO.load_object_from_file(filename=filename, project=self)
 
     def save_project(self, filename=''):
         r"""

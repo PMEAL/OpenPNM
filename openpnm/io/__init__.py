@@ -24,6 +24,8 @@ parameters.
 +----------+------------------------------------------------------------------+
 | Pandas   | Combines all data arrays into a Pandas DataFrame object          |
 +----------+------------------------------------------------------------------+
+| OpenpnmIO| Reads and write the normal OpenPNM formats                       |
++----------+------------------------------------------------------------------+
 | CSV      | Reads and writes CSV (comma-separated-value files) containing    |
 |          | pore and throat data                                             |
 +----------+------------------------------------------------------------------+
@@ -59,6 +61,7 @@ no plans to implement writing such files.
 
 """
 from .GenericIO import GenericIO
+from .OpenpnmIO import OpenpnmIO
 from .Dict import Dict
 from .VTK import VTK
 from .CSV import CSV

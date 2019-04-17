@@ -27,6 +27,11 @@ def generic_function(target, prop, func, **kwargs):
     kwargs : keyward arguments
         All arguments required by the specific Numpy function
 
+    Returns
+    -------
+    result : NumPy ndarray
+        Array containing func(target[prop], **kwargs).
+
     Examples
     --------
     The following example shows how to use a Numpy function, but any function
@@ -63,10 +68,16 @@ def constant(target, value):
     value : scalar
         The numerical value to apply
 
+    Returns
+    -------
+    value : NumPy ndarray
+        Array containing constant values equal to ``value``.
+
     Notes
     -----
     This model is mostly useless and for testing purposes, but might be used
     to 'reset' an array back to a default value.
+
     """
     return value
 
@@ -88,11 +99,17 @@ def product(target, prop1, prop2, **kwargs):
     prop2 : string
         The name of the second argument
 
+    Returns
+    -------
+    value : NumPy ndarray
+        Array containing product values of ``target[prop1]``, ``target[prop2]``
+
     Notes
     -----
     Additional properties can be specified beyond just ``prop1`` and ``prop2``
     by including additional arguments in the function call (i.e. ``prop3 =
     'pore.foo'``).
+
     """
     value = target[prop1]*target[prop2]
     for item in kwargs.values():
@@ -119,6 +136,11 @@ def random(target, element, seed=None, num_range=[0, 1]):
     num_range : list
         A two element list indicating the low and high end of the returned
         numbers.
+
+    Returns
+    -------
+    value : NumPy ndarray
+        Array containing random values.
 
     """
     range_size = num_range[1] - num_range[0]
@@ -147,6 +169,12 @@ def scaled(target, prop, factor):
 
     factor : scalar
         The factor by which the values should be scaled.
+
+    Returns
+    -------
+    value : NumPy ndarray
+        Array containing ``target[prop]`` values scaled by ``factor``.
+
     """
     value = target[prop]*factor
     return value
@@ -169,6 +197,11 @@ def linear(target, m, b, prop):
     prop : string
         The dictionary key containing the independent variable or phase
         property to be used in the correlation.
+
+    Returns
+    -------
+    value : NumPy ndarray
+        Array containing `m * target[prop] + b`` values.
 
     """
     x = target[prop]
@@ -195,6 +228,12 @@ def polynomial(target, a, prop, **kwargs):
     prop : string
         The dictionary key containing the independent variable or phase
         property to be used in the polynomial.
+
+    Returns
+    -------
+    value : NumPy ndarray
+        Array containing ``Pn(target[prop])``, where ``Pn`` is nth order
+        polynomial with coefficients stored in ``a``.
 
     """
     x = target[prop]
@@ -231,6 +270,11 @@ def weibull(target, seeds, shape, scale, loc):
     loc : float
         Applies an offset to the distribution such that the smallest values are
         above this number.
+
+    Returns
+    -------
+    value : NumPy ndarray
+        Array containing random numbers based on Weibull distribution.
 
     Examples
     --------
@@ -272,6 +316,11 @@ def normal(target, seeds, scale, loc):
     loc : float
         The mean of the Normal distribution
 
+    Returns
+    -------
+    value : NumPy ndarray
+        Array containing normally-distributed random numbers.
+
     Examples
     --------
     The following code illustrates the inner workings of this function,
@@ -310,6 +359,11 @@ def generic_distribution(target, seeds, func):
     func : object
         An 'rv_frozen' object from the Scipy.stats library with all of the
         parameters pre-specified.
+
+    Returns
+    -------
+    value : NumPy ndarray
+        Array containing random numbers based on given ppf.
 
     Examples
     --------
@@ -359,6 +413,12 @@ def from_neighbor_throats(target, throat_prop='throat.seed', mode='min'):
     mode : string
         Controls how the pore property is calculated.  Options are 'min',
         'max' and 'mean'.
+
+    Returns
+    -------
+    value : NumPy ndarray
+        Array containing customized values based on those of adjacent throats.
+
     """
     prj = target.project
     network = prj.network
@@ -399,6 +459,11 @@ def from_neighbor_pores(target, pore_prop='pore.seed', mode='min'):
     mode : string
         Controls how the throat property is calculated.  Options are 'min',
         'max' and 'mean'.
+
+    Returns
+    -------
+    value : NumPy ndarray
+        Array containing customized values based on those of adjacent pores.
 
     """
     prj = target.project

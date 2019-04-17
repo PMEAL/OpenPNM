@@ -27,6 +27,11 @@ def cylinder(target, throat_diameter='throat.diameter',
     throat_length : string
         Dictionary key to the throat length array.  Default is 'throat.length'.
 
+    Returns
+    -------
+    value : NumPy ndarray
+        Array containing throat surface area values.
+
     """
     D = target[throat_diameter]
     L = target[throat_length]
@@ -52,6 +57,11 @@ def cuboid(target, throat_diameter='throat.diameter',
 
     throat_length : string
         Dictionary key to the throat length array.  Default is 'throat.length'.
+
+    Returns
+    -------
+    value : NumPy ndarray
+        Array containing throat surface area values.
 
     """
     D = target[throat_diameter]
@@ -79,6 +89,11 @@ def extrusion(target, throat_perimeter='throat.perimeter',
 
     throat_length : string
         Dictionary key to the throat length array.  Default is 'throat.length'.
+
+    Returns
+    -------
+    value : NumPy ndarray
+        Array containing throat surface area values.
 
     """
     P = target[throat_perimeter]

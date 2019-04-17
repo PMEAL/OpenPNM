@@ -25,8 +25,8 @@ class Subdomain(Base):
     +---------------------+---------------------------------------------------+
 
     The Project object has two methods, ``check_geometry_health`` and
-    ``check_physics_health`` that look to make sure all locations are assigned
-    to one and only one Geometry and/or Physics.
+    ``check_physics_health`` that look to make sure all locations are
+    assigned to one and only one Geometry and/or Physics.
 
     """
 

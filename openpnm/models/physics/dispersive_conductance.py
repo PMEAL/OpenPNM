@@ -1,23 +1,28 @@
 r"""
 
-.. autofunction:: openpnm.models.physics.electrical_conductance.series_resistors
-.. autofunction:: openpnm.models.physics.electrical_conductance.generic_conductance
+.. autofunction:: openpnm.models.physics.diffusive_conductance.dispersion
+.. autofunction:: openpnm.models.physics.diffusive_conductance.generic_conductance
 
 """
 
 import scipy as _sp
 
 
-def series_resistors(target,
-                     pore_area='pore.area',
-                     throat_area='throat.area',
-                     pore_conductivity='pore.electrical_conductivity',
-                     throat_conductivity='throat.electrical_conductivity',
-                     conduit_lengths='throat.conduit_lengths',
-                     conduit_shape_factors='throat.poisson_shape_factors'):
+def dispersion(target,
+               pore_area='pore.area',
+               throat_area='throat.area',
+               pore_diffusivity='pore.diffusivity',
+               throat_diffusivity='throat.diffusivity',
+               conduit_lengths='throat.conduit_lengths',
+               conduit_shape_factors='throat.poisson_shape_factors',
+               pore_pressure='pore.pressure',
+               throat_hydraulic_conductance='throat.hydraulic_conductance',
+               throat_diffusive_conductance='throat.diffusive_conductance',
+               s_scheme='powerlaw'):
     r"""
-    Calculate the electrical conductance of conduits in network, where a
-    conduit is ( 1/2 pore - full throat - 1/2 pore ). See the notes section.
+    Calculate the advective-diffusive conductance of conduits in network,
+    where a conduit is ( 1/2 pore - full throat - 1/2 pore ).
+    See the notes section.
 
     Parameters
     ----------
@@ -32,11 +37,11 @@ def series_resistors(target,
     throat_area : string
         Dictionary key of the throat area values
 
-    pore_conductivity : string
-        Dictionary key of the pore thermal conductivity values
+    pore_diffusivity : string
+        Dictionary key of the pore diffusivity values
 
-    throat_conductivity : string
-        Dictionary key of the throat thermal conductivity values
+    throat_diffusivity : string
+        Dictionary key of the throat diffusivity values
 
     conduit_lengths : string
         Dictionary key of the conduit length values
@@ -44,10 +49,22 @@ def series_resistors(target,
     conduit_shape_factors : string
         Dictionary key of the conduit DIFFUSION shape factor values
 
+    pore_pressure : string
+        Dictionary key of the pore pressure values
+
+   throat_hydraulic_conductance : string
+       Dictionary key of the throat hydraulic conductance values
+
+   throat_diffusive_conductance : string
+       Dictionary key of the throat diffusive conductance values
+
+   s_scheme : string
+       Name of the space discretization scheme to use
+
     Returns
     -------
     g : ndarray
-        Array containing electrical conductance values for conduits in the
+        Array containing dispersive conductance values for conduits in the
         geometry attached to the given physics object.
 
     Notes
@@ -63,13 +80,19 @@ def series_resistors(target,
     be imposed by passing the proper flow_shape_factor argument.
 
     """
-    return generic_conductance(target=target, transport_type='diffusion',
-                               pore_area=pore_area,
-                               throat_area=throat_area,
-                               pore_diffusivity=pore_conductivity,
-                               throat_diffusivity=throat_conductivity,
-                               conduit_lengths=conduit_lengths,
-                               conduit_shape_factors=conduit_shape_factors)
+    return generic_conductance(
+        target=target,
+        transport_type='dispersion',
+        pore_area=pore_area,
+        throat_area=throat_area,
+        pore_diffusivity=pore_diffusivity,
+        throat_diffusivity=throat_diffusivity,
+        conduit_lengths=conduit_lengths,
+        conduit_shape_factors=conduit_shape_factors,
+        pore_pressure=pore_pressure,
+        throat_hydraulic_conductance=throat_hydraulic_conductance,
+        throat_diffusive_conductance=throat_diffusive_conductance,
+        s_scheme=s_scheme)
 
 
 def generic_conductance(target, transport_type, pore_area, throat_area,
@@ -134,10 +157,6 @@ def generic_conductance(target, transport_type, pore_area, throat_area,
     throats = network.map_throats(throats=target.Ts, origin=target)
     phase = target.project.find_phase(target)
     cn = network['throat.conns'][throats]
-    # Getting equivalent areas
-    A1 = network[pore_area][cn[:, 0]]
-    At = network[throat_area][throats]
-    A2 = network[pore_area][cn[:, 1]]
     # Getting conduit lengths
     L1 = network[conduit_lengths + '.pore1'][throats]
     Lt = network[conduit_lengths + '.throat'][throats]
@@ -155,24 +174,46 @@ def generic_conductance(target, transport_type, pore_area, throat_area,
         SF2 = phase[conduit_shape_factors+'.pore2'][throats]
     except KeyError:
         SF1 = SF2 = SFt = 1.0
-    # Interpolate pore phase property values to throats
-    try:
-        Dt = phase[throat_diffusivity][throats]
-    except KeyError:
-        Dt = phase.interpolate_data(propname=pore_diffusivity)[throats]
-    try:
-        D1 = phase[pore_diffusivity][cn[:, 0]]
-        D2 = phase[pore_diffusivity][cn[:, 1]]
-    except KeyError:
-        D1 = phase.interpolate_data(propname=throat_diffusivity)[cn[:, 0]]
-        D2 = phase.interpolate_data(propname=throat_diffusivity)[cn[:, 1]]
     # Find g for half of pore 1, throat, and half of pore 2
-    if transport_type == 'diffusion':
-        g1[m1] = (D1*A1)[m1] / L1[m1]
-        g2[m2] = (D2*A2)[m2] / L2[m2]
-        gt[mt] = (Dt*At)[mt] / Lt[mt]
+    if transport_type == 'dispersion':
+        for k, v in kwargs.items():
+            if k == 'pore_pressure':
+                pore_pressure = v
+            elif k == 'throat_hydraulic_conductance':
+                throat_hydraulic_conductance = v
+            elif k == 'throat_diffusive_conductance':
+                throat_diffusive_conductance = v
+            elif k == 's_scheme':
+                s_scheme = v
+
+        P = phase[pore_pressure]
+        gh = phase[throat_hydraulic_conductance]
+        gd = phase[throat_diffusive_conductance]
+        gd = _sp.tile(gd, 2)
+
+        Qij = -gh*_sp.diff(P[cn], axis=1).squeeze()
+        Qij = _sp.append(Qij, -Qij)
+
+        Peij = Qij/gd
+        Peij[(Peij < 1e-10) & (Peij >= 0)] = 1e-10
+        Peij[(Peij > -1e-10) & (Peij <= 0)] = -1e-10
+        Qij = Peij*gd
+
+        if s_scheme == 'upwind':
+            w = gd + _sp.maximum(0, -Qij)
+        elif s_scheme == 'hybrid':
+            w = _sp.maximum(0, _sp.maximum(-Qij, gd-Qij/2))
+        elif s_scheme == 'powerlaw':
+            w = gd * _sp.maximum(0, (1 - 0.1*_sp.absolute(Peij))**5) + \
+                _sp.maximum(0, -Qij)
+        elif s_scheme == 'exponential':
+            w = -Qij / (1 - _sp.exp(Peij))
+        else:
+            raise Exception('Unrecognized discretization scheme: ' + s_scheme)
+        w = _sp.reshape(w, (network.Nt, 2), order='F')
+        return w
     else:
         raise Exception('Unknown keyword for "transport_type", can only be' +
-                        ' "diffusion"')
+                        ' "dispersion"')
     # Apply shape factors and calculate the final conductance
     return (1/gt/SFt + 1/g1/SF1 + 1/g2/SF2)**(-1)
