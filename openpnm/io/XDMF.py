@@ -106,7 +106,7 @@ class XDMF(GenericIO):
                     del D[item]
                 elif 'U' in str(D[item][0].dtype):
                     pass
-                elif ('@' and '@'+t_steps[t] in item):
+                elif ('@' in item and t_steps[t] == item.split('@')[1]):
                     f.create_dataset(name='/'+item.split('@')[0]+'@t',
                                      shape=D[item].shape,
                                      dtype=D[item].dtype,
@@ -121,7 +121,8 @@ class XDMF(GenericIO):
             # Add pore and throat properties
             for item in D.keys():
                 if item not in ['coordinates', 'connections']:
-                    if ('@' and '@'+t_steps[t] in item) or ('@' not in item):
+                    if (('@' in item and t_steps[t] == item.split('@')[1]) or
+                            ('@' not in item)):
                         attr_type = 'Scalar'
                         shape = D[item].shape
                         dims = (''.join([str(i) +
