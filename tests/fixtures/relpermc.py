@@ -13,3 +13,4 @@ geom = op.geometry.StickAndBall(network=pn, pores=pn['pore.all'],
                                 throats=pn['throat.all'])
 relcalc=op.algorithms.RelativePermeability(network=pn)
 relcalc.setup(input_vect=['xx'])
+relcalc.run()
