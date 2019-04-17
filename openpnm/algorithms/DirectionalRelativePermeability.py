@@ -45,13 +45,14 @@ class DirectionalRelativePermeability(GenericAlgorithm):
         self.settings['throat.invasion_sequence']=throat_invasion_sequence
         self.settings['throat_volume']='pore.volume'
         self.settings['pore_volume']='throat.volume'
+
     def set_inlets(self, pores):
         self.settings['flow_inlet'] = pores
 
     def set_outlets(self, pores):
         self.settings['flow_outlet'] = pores
-        
-    def run(self,Snw_num=None,IP_pores=None):
+
+    def run(self, Snw_num=None, IP_pores=None):
         network=self.project.network
         St_wp = StokesFlow(network=network, phase=self.settings['wp'])
         St_wp.set_value_BC(pores=(self.settings['flow_inlet']), values=1)
@@ -70,7 +71,7 @@ class DirectionalRelativePermeability(GenericAlgorithm):
         self.settings['perm_nwp']=val
         self.project.purge_object(obj=St_nwp)
         self.settings['IP_pores']=IP_pores
-        if Snw_num==None:
+        if Snw_num is None:
             Snw_num=10
         max_seq = np.max([np.max(self.settings['pore.invasion_sequence']),
                           np.max(self.settings['throat.invasion_sequence'])])
@@ -80,11 +81,12 @@ class DirectionalRelativePermeability(GenericAlgorithm):
         self.settings['sat']=[]
         self.settings['relperm_wp']=[]
         self.settings['relperm_nwp']=[]
-        for i in range(start,stop,step):
+        for i in range(start, stop, step):
             pore_mask=self.settings['pore.invasion_sequence']<i
             throat_mask=self.settings['throat.invasion_sequence']<i
-            sat1=(np.sum(network['pore.volume'][pore_mask])+
-                 np.sum(network['throat.volume'][throat_mask]))
+            sat_p=np.sum(network['pore.volume'][pore_mask])
+            sat_t=np.sum(network['throat.volume'][throat_mask])
+            sat1=sat_p+sat_t
             bulk=(np.sum(network['pore.volume']) + np.sum(network['throat.volume']))
             sat=sat1/bulk
             self.settings['sat'].append(sat)
@@ -92,16 +94,9 @@ class DirectionalRelativePermeability(GenericAlgorithm):
             self.settings['wp']['pore.occupancy'] = 1-pore_mask
             self.settings['nwp']['throat.occupancy'] = throat_mask
             self.settings['wp']['throat.occupancy'] = 1-throat_mask
-            mode=self.settings['mode']
-            model=models.physics.multiphase.conduit_conductance
-            self.settings['wp'].add_model(model=model,
-                    propname='throat.conduit_hydraulic_conductance',
-                    throat_conductance='throat.hydraulic_conductance',
-                    mode=mode)
-            self.settings['nwp'].add_model(model=model,
-                    propname='throat.conduit_hydraulic_conductance',
-                    throat_conductance='throat.hydraulic_conductance',
-                    mode=mode)
+            propname='throat.conduit_hydraulic_conductance'
+            self.settings['wp'].regenerate_models(propname=propname)
+            self.settings['nwp'].regenerate_models(propname=propname)
             St_mp_wp = StokesFlow(network=network,phase=self.settings['wp'])
             St_mp_wp.setup(conductance='throat.conduit_hydraulic_conductance')
             St_mp_wp.set_value_BC(pores=self.settings['flow_inlet'], values=1)
