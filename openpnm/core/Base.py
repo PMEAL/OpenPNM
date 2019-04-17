@@ -203,7 +203,7 @@ class Base(dict):
                             hit + ' is already defined')
         # Prevent writing pore.foo on boss when present on subdomain
         if boss:
-            if boss is self:
+            if boss is self and (key not in ['pore.all', 'throat.all']):
                 if (key in keys) and (key not in self.keys()):
                     raise Exception('Cannot create ' + key + ' when it is' +
                                     ' already defined on a subdomain')
@@ -258,7 +258,8 @@ class Base(dict):
             vals = {}
             keys = self.keys()
             vals.update({k: self.get(k) for k in keys if k.startswith(key + '.')})
-        elif any([k.startswith(key + '.') for k in self.keys(mode='all', deep=True)]):
+        elif any([k.startswith(key + '.') for k in self.keys(mode='all',
+                                                             deep=True)]):
             # Create a subdict of values in subdomains by interleaving
             vals = {}
             keys = self.keys(mode='all', deep=True)
@@ -1134,7 +1135,7 @@ class Base(dict):
             units = [a.units.__str__() for a in arrs if hasattr(a, 'units')]
             if len(units) > 0:
                 if len(set(units)) == 1:
-                        temp_arr *= sp.array([1])*getattr(unyt, units[0])
+                    temp_arr *= sp.array([1])*getattr(unyt, units[0])
                 else:
                     raise Exception('Units on the interleaved array are not equal')
         return temp_arr
@@ -1167,28 +1168,22 @@ class Base(dict):
         array([1.5, 2.5])
 
         """
-        mro = self._mro()
-        if 'GenericNetwork' in mro:
-            net = self
-            Ts = net.throats()
-            Ps = net.pores()
+        boss = self.project.find_full_domain(self)
+        net = self.project.network
+        if boss is self:
+            Ts = boss.throats()
+            Ps = boss.pores()
             label = 'all'
-        elif ('GenericPhase' in mro) or ('GenericAlgorithm' in mro):
-            net = self.project.network
-            Ts = net.throats()
-            Ps = net.pores()
-            label = 'all'
-        elif ('GenericGeometry' in mro) or ('GenericPhysics' in mro):
-            net = self.project.network
-            Ts = net.throats(self.name)
-            Ps = net.pores(self.name)
+        else:
+            Ts = boss.throats(self.name)
+            Ps = boss.pores(self.name)
             label = self.name
         if propname.startswith('throat'):
             # Upcast data to full network size
-            temp = sp.ones((net.Nt,))*sp.nan
+            temp = sp.ones((boss.Nt,))*sp.nan
             temp[Ts] = self[propname]
             data = temp
-            temp = sp.ones((net.Np,))*sp.nan
+            temp = sp.ones((boss.Np,))*sp.nan
             for pore in Ps:
                 neighborTs = net.find_neighbor_throats(pore)
                 neighborTs = net.filter_by_label(throats=neighborTs,

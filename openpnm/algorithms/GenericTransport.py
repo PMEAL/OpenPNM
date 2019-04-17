@@ -210,11 +210,22 @@ class GenericTransport(GenericAlgorithm):
             it is assigne to all locations, and if a vector is applied is
             must be the same size as the indices given in ``pores``.
 
+        mode : string, optional
+            Controls how the boundary conditions are applied.  Options are:
+
+            - ``'merge'``: (Default) Adds supplied boundary conditions to
+            already existing conditions
+
+            - ``'overwrite'``: Deletes all boundary condition on object then
+            adds the given ones
+
         Notes
         -----
         The definition of ``quantity`` is specified in the algorithm's
         ``settings``, e.g. ``alg.settings['quentity'] = 'pore.pressure'``.
         """
+        mode = self._parse_mode(mode, allowed=['merge', 'overwrite'],
+                                single=True)
         self._set_BC(pores=pores, bctype='value', bcvalues=values,
                      mode=mode)
 
@@ -236,11 +247,22 @@ class GenericTransport(GenericAlgorithm):
             it is assigned to all locations, and if a vector is applied it
             must be the same size as the indices given in ``pores``.
 
+        mode : string, optional
+            Controls how the boundary conditions are applied.  Options are:
+
+            - ``'merge'``: (Default) Adds supplied boundary conditions to
+            already existing conditions
+
+            - ``'overwrite'``: Deletes all boundary condition on object then
+            adds the given ones
+
         Notes
         -----
         The definition of ``quantity`` is specified in the algorithm's
         ``settings``, e.g. ``alg.settings['quentity'] = 'pore.pressure'``.
         """
+        mode = self._parse_mode(mode, allowed=['merge', 'overwrite'],
+                                single=True)
         self._set_BC(pores=pores, bctype='rate', bcvalues=values, mode=mode)
 
     def _set_BC(self, pores, bctype, bcvalues=None, mode='merge'):
@@ -258,6 +280,7 @@ class GenericTransport(GenericAlgorithm):
             types can be one one of the following:
 
             - ``'value'``: Specify the value of the quantity in each location
+
             - ``'rate'``: Specify the flow rate into each location
 
         bcvalues : int or array_like
@@ -270,7 +293,8 @@ class GenericTransport(GenericAlgorithm):
             Controls how the boundary conditions are applied.  Options are:
 
             - ``'merge'``: (Default) Adds supplied boundary conditions to
-            already existing conditions.
+            already existing conditions
+
             - ``'overwrite'``: Deletes all boundary condition on object then
             adds the given ones
 
@@ -285,7 +309,7 @@ class GenericTransport(GenericAlgorithm):
         # Hijack the parse_mode function to verify bctype argument
         bctype = self._parse_mode(bctype, allowed=['value', 'rate'],
                                   single=True)
-        mode = self._parse_mode(mode, allowed=['merge', 'overwrite', 'remove'],
+        mode = self._parse_mode(mode, allowed=['merge', 'overwrite'],
                                 single=True)
         pores = self._parse_indices(pores)
 
@@ -493,9 +517,9 @@ class GenericTransport(GenericAlgorithm):
 
         # Set tolerance for iterative solvers
         rtol = self.settings['solver_rtol']
-        min_A = np.abs(A.data).min()
-        min_b = np.abs(b).min() or 1e100
-        atol = min(min_A, min_b) * rtol
+        # Reference for residual's normalization
+        ref = np.sum(np.absolute(self.A.diagonal())) or 1
+        atol = ref * rtol
 
         # SciPy
         if self.settings['solver_family'] == 'scipy':
@@ -542,55 +566,13 @@ class GenericTransport(GenericAlgorithm):
             x = ml.solve(b=b, tol=1e-6)
             return x
 
-    def results(self, times='all', t_precision=12, **kwargs):
+    def results(self):
         r"""
         Fetches the calculated quantity from the algorithm and returns it as
         an array.
-
-        Parameters
-        ----------
-        times : scalar or list
-            Time steps to be returned. The default value is 'all' which results
-            in returning all time steps. If a scalar is given, only the
-            corresponding time step is returned. If a range is given
-            (e.g., 'range(0, 1, 1e-3)'), time steps in this range are returned.
-
-        t_precision : integer
-            The time precision (number of decimal places). Default value is 12.
-
-        Notes
-        -----
-        The keyword steps is interpreted in the same way as times.
         """
-        if 'steps' in kwargs.keys():
-            times = kwargs['steps']
-        t_pre = t_precision
         quantity = self.settings['quantity']
-        q = [k for k in list(self.keys()) if quantity in k]
-        if times == 'all':
-            t = q
-        elif type(times) in [float, int]:
-            n = int(-dc(str(round(times, t_pre))).as_tuple().exponent *
-                    (round(times, t_pre) != int(times)))
-            t_str = (str(int(round(times, t_pre)*10**n)) +
-                     ('e-'+str(n))*(n != 0))
-            t = [k for k in q if t_str == k.split('@')[-1]]
-        elif 'range' in times:
-            t = times.replace(' ', '')
-            t = t[6:-1]
-            t = t.split(',')
-            out = np.arange(float(t[0]), float(t[1]), float(t[2]))
-            out = np.append(out, float(t[1]))
-            out = np.unique(out)
-            out = np.around(out, decimals=t_pre)
-            t = []
-            for i in out:
-                n = int(-dc(str(round(i, t_pre))).as_tuple().exponent *
-                        (round(i, t_pre) != int(i)))
-                j = (str(int(round(i, t_pre)*10**n))+('e-'+str(n))*(n != 0))
-                t_str = [k for k in q if j == k.split('@')[-1]]
-                t += (t_str)
-        d = {k: self[k] for k in t}
+        d = {quantity: self[quantity]}
         return d
 
     def rate(self, pores=[], throats=[], mode='group'):

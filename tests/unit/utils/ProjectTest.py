@@ -365,7 +365,7 @@ class ProjectTest:
         self.proj.export_data(phases=self.phase1, filename=fname,
                               filetype='xmf')
         os.remove(fname+'.xmf')
-        os.remove(fname+'.hdf')
+        os.remove(fname+'_0.hdf')
         self.proj.export_data(phases=self.phase1, filename=fname,
                               filetype='hdf')
         os.remove(fname+'.hdf')

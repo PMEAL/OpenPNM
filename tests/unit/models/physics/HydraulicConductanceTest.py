@@ -1,5 +1,7 @@
 import openpnm as op
 from numpy.testing import assert_approx_equal
+import scipy as _sp
+import numpy as np
 
 
 class HydraulicConductanceTest:
@@ -29,6 +31,29 @@ class HydraulicConductanceTest:
                             model=mod)
         actual = self.phys['throat.hydraulic_conductance'].mean()
         assert_approx_equal(actual, desired=1421.0262776)
+
+    def test_classic_hagen_poiseuille(self):
+        self.geo['pore.diameter'] = 1.0
+        self.geo['throat.diameter'] = 1.0
+        self.geo['throat.length'] = 1.0e-9
+        self.air = op.phases.Air(network=self.net)
+        self.phys = op.physics.GenericPhysics(network=self.net,
+                                              phase=self.air,
+                                              geometry=self.geo)
+        mod = op.models.physics.hydraulic_conductance.classic_hagen_poiseuille
+        self.phys.add_model(propname='throat.conductance',
+                            model=mod)
+        assert _sp.allclose(a=self.phys['throat.conductance'][0],
+                            b=1330.68207684)
+
+    def test_valvatne_blunte(self):
+        mod = op.models.physics.hydraulic_conductance.valvatne_blunt
+        sf = np.sqrt(3)/36.0
+        self.geo['pore.shape_factor'] = np.ones(self.geo.Np)*sf
+        self.geo['throat.shape_factor'] = np.ones(self.geo.Nt)*sf
+        self.phys.add_model(propname='throat.valvatne_conductance', model=mod)
+        actual = self.phys['throat.valvatne_conductance'].mean()
+        assert_approx_equal(actual, desired=1030.9826)
 
 
 if __name__ == '__main__':
