@@ -94,16 +94,18 @@ class DirectionalRelativePermeability(GenericAlgorithm):
             self.settings['wp']['pore.occupancy'] = 1-pore_mask
             self.settings['nwp']['throat.occupancy'] = throat_mask
             self.settings['wp']['throat.occupancy'] = 1-throat_mask
-            mode=self.settings['mode']
+            #mode=self.settings['mode']
             #model=models.physics.multiphase.conduit_conductance
             #propname='throat.conduit_hydraulic_conductance'
             #throat_conductance='throat.hydraulic_conductance'
-            self.settings['wp'].add_model(model=models.physics.multiphase.conduit_conductance, propname='throat.conduit_hydraulic_conductance',
-                                             throat_conductance='throat.hydraulic_conductance',
-                                             mode=mode)
-            self.settings['nwp'].add_model(model=models.physics.multiphase.conduit_conductance, propname='throat.conduit_hydraulic_conductance',
-                                             throat_conductance='throat.hydraulic_conductance',
-                                             mode=mode)
+            self.settings['wp'].add_model(model=models.physics.multiphase.conduit_conductance,
+                                             propname='throat.conduit_hydraulic_conductance',
+                                             throat_conductance='throat.hydraulic_conductance')
+                                             #mode=mode)
+            self.settings['nwp'].add_model(model=models.physics.multiphase.conduit_conductance,
+                                             propname='throat.conduit_hydraulic_conductance',
+                                             throat_conductance='throat.hydraulic_conductance')
+                                             #mode=mode)
             St_mp_wp = StokesFlow(network=network, phase=self.settings['wp'])
             St_mp_wp.setup(conductance='throat.conduit_hydraulic_conductance')
             St_mp_wp.set_value_BC(pores=self.settings['flow_inlet'], values=1)
@@ -115,10 +117,13 @@ class DirectionalRelativePermeability(GenericAlgorithm):
             St_mp_wp.run()
             St_mp_nwp.run()
             Keff_mp_wp=St_mp_wp.calc_effective_permeability(inlets=self.settings['flow_inlet'],
-                                outlets=self.settings['flow_outlet'])
-            Keff_mp_nwp=St_mp_nwp.calc_effective_permeability()(inlets=self.settings['flow_inlet'],
-                                 outlets=self.settings['flow_outlet'])
+                                                            outlets=self.settings['flow_outlet'])
+            Keff_mp_nwp=St_mp_nwp.calc_effective_permeability(inlets=self.settings['flow_inlet'],
+                                                                 outlets=self.settings['flow_outlet'])
             self.settings['relperm_wp'].append(Keff_mp_wp/self.settings['perm_wp'])
             self.settings['relperm_nwp'].append(Keff_mp_nwp/self.settings['perm_nwp'])
             self.project.purge_object(obj=St_mp_wp)
             self.project.purge_object(obj=St_mp_nwp)
+        print('sat is',self.settings['sat'])
+        print('krw is',self.settings['relperm_wp'])
+        print('krnw is',self.settings['relperm_nwp'])
