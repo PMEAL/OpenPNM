@@ -146,31 +146,19 @@ class RelativePermeability(GenericAlgorithm):
                     self.settings['wp']['pore.occupancy'] = 1-res1['pore.occupancy']
                     self.settings['nwp']['throat.occupancy'] = res1['throat.occupancy']
                     self.settings['wp']['throat.occupancy'] = 1-res1['throat.occupancy']
-                    if len(Snwparr)==1:
-                        model_wp=models.physics.multiphase.conduit_conductance
-                        propname='throat.conduit_hydraulic_conductance',
-                        model_wp(target=self.settings['wp'],
-                             throat_conductance='throat.hydraulic_conductance')
-                        self.settings['wp'].add_model(model=model_wp,
-                                                        propname= propname,
-                                                        throat_conductance='throat.hydraulic_conductance')
-                        model_nwp=models.physics.multiphase.conduit_conductance
-                        propname='throat.conduit_hydraulic_conductance',
-                        model_nwp(target=self.settings['nwp'],
-                                  throat_conductance='throat.hydraulic_conductance')
-                        self.settings['nwp'].add_model(model=model_nwp,
-                                         propname= propname,
-                                         throat_conductance='throat.hydraulic_conductance')
-                    else:
-                        self.settings['wp'].regenerate_models()
-                        self.settings['nwp'].regenerate_models()
-                    St_mp_wp = StokesFlow(network=net,phase=self.settings['wp'])
+                    self.settings['wp'].add_model(model=models.physics.multiphase.conduit_conductance,
+                                             propname='throat.conduit_hydraulic_conductance',
+                                             throat_conductance='throat.hydraulic_conductance')
+                    self.settings['nwp'].add_model(model=models.physics.multiphase.conduit_conductance,
+                                             propname='throat.conduit_hydraulic_conductance',
+                                             throat_conductance='throat.hydraulic_conductance')
+                    St_mp_wp = StokesFlow(network=net, phase=self.settings['wp'])
                     St_mp_wp.setup(conductance='throat.conduit_hydraulic_conductance')
                     St_mp_wp.set_value_BC(pores=net.pores(self.settings['BP_1'][flow]),
                                           values=1)
                     St_mp_wp.set_value_BC(pores=net.pores(self.settings['BP_2'][flow]),
                                           values=0)
-                    St_mp_nwp = StokesFlow(network=net,phase=self.settings['nwp'])
+                    St_mp_nwp = StokesFlow(network=net, phase=self.settings['nwp'])
                     St_mp_nwp.set_value_BC(pores=net.pores(self.settings['BP_1'][flow]),
                                            values=1)
                     St_mp_nwp.set_value_BC(pores=net.pores(self.settings['BP_2'][flow]),
