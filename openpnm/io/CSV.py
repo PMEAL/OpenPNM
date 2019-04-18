@@ -72,7 +72,6 @@ class CSV(GenericIO):
                                                    phases=phases)
         df = Pandas.to_dataframe(network=network, phases=phases,
                                  join=True, delim=delim)
-
         # Write to file
         if filename == '':
             filename = project.name

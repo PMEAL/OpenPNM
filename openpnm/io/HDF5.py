@@ -67,7 +67,6 @@ class HDF5(GenericIO):
         """
         project, network, phases = cls._parse_args(network=network,
                                                    phases=phases)
-
         if filename == '':
             filename = project.name
         filename = cls._parse_filename(filename, ext='hdf')
