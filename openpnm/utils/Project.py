@@ -1,14 +1,10 @@
 import time
-import pickle
 import h5py
 import numpy as np
 import openpnm
 from copy import deepcopy
-from pathlib import Path
-from openpnm.utils import (SettingsDict, HealthDict, PrintableList, Workspace,
-                           logging)
+from openpnm.utils import SettingsDict, HealthDict, Workspace
 ws = Workspace()
-logger = logging.getLogger(__name__)
 
 
 class Project(list):
@@ -581,37 +577,28 @@ class Project(list):
         network = self.network
         if filename is None:
             filename = project.name + '_' + time.strftime('%Y%b%d_%H%M%p')
-        # Check if any of the phases has time series
-        transient = openpnm.io.GenericIO.is_transient(phases=phases)
-        # Infer filetype from extension on file name..., if given
+        # Infer filetype from extension on file name...if given
         if '.' in filename:
             exts = ['vtk', 'vtp', 'vtu', 'csv', 'xmf', 'xdmf', 'hdf', 'hdf5',
                     'h5', 'mat']
             if filename.split('.')[-1] in exts:
                 filename, filetype = filename.rsplit('.', 1)
-        if transient:
-            if filetype.lower() not in ['xmf', 'xdmf']:
-                logger.warning(filetype.lower() + ' filetype not supported ' +
-                               'for transient data, xdmf is used instead')
+        if filetype.lower() in ['vtk', 'vtp', 'vtu']:
+            openpnm.io.VTK.save(network=network, phases=phases,
+                                filename=filename)
+        if filetype.lower() == 'csv':
+            openpnm.io.CSV.save(network=network, phases=phases,
+                                filename=filename)
+        if filetype.lower() in ['xmf', 'xdmf']:
             openpnm.io.XDMF.save(network=network, phases=phases,
                                  filename=filename)
-        else:
-            if filetype.lower() in ['vtk', 'vtp', 'vtu']:
-                openpnm.io.VTK.save(network=network, phases=phases,
-                                    filename=filename)
-            if filetype.lower() == 'csv':
-                openpnm.io.CSV.save(network=network, phases=phases,
-                                    filename=filename)
-            if filetype.lower() in ['xmf', 'xdmf']:
-                openpnm.io.XDMF.save(network=network, phases=phases,
-                                     filename=filename)
-            if filetype.lower() in ['hdf5', 'hdf', 'h5']:
-                f = openpnm.io.HDF5.to_hdf5(network=network, phases=phases,
-                                            filename=filename)
-                f.close()
-            if filetype.lower() == 'mat':
-                openpnm.io.MAT.save(network=network, phases=phases,
-                                    filename=filename)
+        if filetype.lower() in ['hdf5', 'hdf', 'h5']:
+            f = openpnm.io.HDF5.to_hdf5(network=network, phases=phases,
+                                        filename=filename)
+            f.close()
+        if filetype.lower() == 'mat':
+            openpnm.io.MAT.save(network=network, phases=phases,
+                                filename=filename)
 
     def _dump_data(self, mode=['props']):
         r"""

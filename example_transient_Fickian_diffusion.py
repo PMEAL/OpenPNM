@@ -35,4 +35,4 @@ phase.update(fd.results())
 
 # output results to a vtk file
 phase.update(fd.results())
-proj.export_data(phases=[phase], filename='OUT', filetype='vtk')
+proj.export_data(phases=[phase], filename='OUT', filetype='xdmf')
