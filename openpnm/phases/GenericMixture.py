@@ -67,9 +67,9 @@ class GenericMixture(GenericPhase):
             raise Exception(prop + ' already assigned to a component object')
         super().__setitem__(key, value)
 
-    def props(self, incl_components=False, **kwargs):
+    def props(self, deep=True, **kwargs):
         temp = []
-        if incl_components:
+        if deep:
             for item in self.components.values():
                 temp.extend([prop+'.'+item.name for prop in item.props(**kwargs)])
         temp.extend(super().props(**kwargs))
@@ -86,7 +86,7 @@ class GenericMixture(GenericPhase):
         lines = '\n'.join((lines, horizontal_rule))
         return lines
 
-    def _update_molfrac(self):
+    def _update_total_molfrac(self):
         # Update concentration.all
         self['pore.mole_fraction.all'] = 0.0
         dict_ = list(self['pore.mole_fraction'].values())
@@ -97,9 +97,28 @@ class GenericMixture(GenericPhase):
         if len(dict_) > 1:
             self['throat.mole_fraction.all'] = np.sum(dict_, axis=0)
 
+    def update_mole_fractions(self, concentration,
+                              density='pore.molar_density'):
+        r"""
+        """
+        if type(concentration) == str:
+            concentration = [concentration]
+        for conc in concentration:
+            element, quantity, component = conc.split('.')
+            density = '.'.join((element, density.split('.')[-1]))
+            mf = self[conc]/self[density]
+            self[element+'.mole_fraction.'+component] = mf
+        given_comps = [conc.split('.')[2] for conc in concentration]
+        all_comps = self.settings['components']
+        if (len(all_comps) - len(given_comps)) == 1:
+            component = list(set(all_comps).difference(set(given_comps)))[0]
+            self[element+'.mole_fraction.'+component] = 1-mf
+        else:
+            logger.warning('mponent found, cannot determine')
+
     def set_mole_fraction(self, component, values=[]):
         r"""
-        Specify occupancy of a phase in each pore and/or throat
+        Specify mole fraction of each component in each pore
 
         Parameters
         ----------
@@ -125,7 +144,7 @@ class GenericMixture(GenericPhase):
                            'the range of 0 to 1')
         if Pvals.size:
             self['pore.mole_fraction.' + component.name] = Pvals
-        self._update_molfrac()
+        self._update_total_molfrac()
 
     def _get_comps(self):
         comps = {item: self.project[item] for item in self.settings['components']}

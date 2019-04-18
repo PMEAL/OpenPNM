@@ -13,11 +13,11 @@ def mole_weighted_average(target, prop):
     return vals
 
 
-def fuller(target,
-           molecular_weight='pore.molecular_weight',
-           molar_diffusion_volume='pore.molar_diffusion_volume',
-           temperature='pore.temperature',
-           pressure='pore.pressure'):
+def fuller_diffusivity(target,
+                       molecular_weight='pore.molecular_weight',
+                       molar_diffusion_volume='pore.molar_diffusion_volume',
+                       temperature='pore.temperature',
+                       pressure='pore.pressure'):
     r"""
 
     """

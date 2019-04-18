@@ -15,18 +15,23 @@ air.add_model(propname='pore.molar_mass',
               model=op.models.phases.mixtures.mole_weighted_average,
               prop='pore.molecular_weight')
 air.add_model(propname='pore.diffusivity',
-              model=op.models.phases.mixtures.fuller)
+              model=op.models.phases.mixtures.fuller_diffusivity)
 air.add_model(propname='pore.viscosity',
               model=op.models.misc.polynomial,
               prop='pore.temperature',
               a=[0.00000182082, 6.51815E-08, -3.48553E-11,
                  1.11409E-14])
+air.add_model(propname='pore.molar_density',
+              model=op.models.phases.density.ideal_gas)
+#air.add_model(propname='pore.mole_fraction)
 
 phys = op.physics.GenericPhysics(network=pn, phase=air, geometry=geo)
 phys.add_model(propname='throat.diffusive_conductance',
                model=op.models.physics.diffusive_conductance.ordinary_diffusion)
 
 fd = op.algorithms.FickianDiffusion(network=pn, phase=air)
+fd.setup(quantity='pore.concentration.pure_O2')
 fd.set_value_BC(pores=pn.pores('left'), values=1)
 fd.set_value_BC(pores=pn.pores('right'), values=0)
 fd.run()
+air.update(fd.results())
