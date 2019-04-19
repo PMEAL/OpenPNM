@@ -2,7 +2,7 @@ import openpnm as op
 ws = op.Workspace()
 proj = ws.new_project()
 
-pn = op.network.Cubic(shape=[10, 10, 10], spacing=1e-4, project=proj)
+pn = op.network.Cubic(shape=[30, 30, 10], spacing=1e-4, project=proj)
 geo = op.geometry.StickAndBall(network=pn, pores=pn.Ps, throats=pn.Ts)
 
 N2 = op.phases.components.gases.N2(network=pn, name='pure_N2')
@@ -45,7 +45,7 @@ sf.set_value_BC(pores=pn.pores('right'), values=100000)
 sf.run()
 air.update(sf.results())
 
-phys.regenerate_models()
+air.regenerate_models()
 
 fd = op.algorithms.FickianDiffusion(network=pn, phase=air)
 fd.setup(quantity='pore.concentration.pure_O2')
