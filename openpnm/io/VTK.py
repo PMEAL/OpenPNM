@@ -11,7 +11,6 @@ class VTK(GenericIO):
     r"""
     The Visualization Toolkit (VTK) format defined by Kitware and used by
     Paraview
-
     Because OpenPNM data is unstructured, the actual output format is VTP,
     not VTK.
     """
@@ -39,35 +38,37 @@ class VTK(GenericIO):
         r"""
         Save network and phase data to a single vtp file for visualizing in
         Paraview
-
         Parameters
         ----------
         network : OpenPNM Network Object
             The Network containing the data to be written
-
         phases : list, optional
             A list containing OpenPNM Phase object(s) containing data to be
             written
-
         filename : string, optional
             Filename to write data.  If no name is given the file is named
             after the network
-
         delim : string
             Specify which character is used to delimit the data names.  The
             default is ' | ' which creates a nice clean output in the Paraview
             pipeline viewer (e.g. net | property | pore | diameter)
-
         fill_nans : scalar
             The value to use to replace NaNs with.  The VTK file format does
             not work with NaNs, so they must be dealt with.  The default is
             `None` which means property arrays with NaNs are not written to the
             file.  Other useful options might be 0 or -1, but the user must
             be aware that these are not real values, only place holders.
-
         """
         project, network, phases = cls._parse_args(network=network,
                                                    phases=phases)
+        # Check if any of the phases has time series
+        transient = GenericIO.is_transient(phases=phases)
+        if transient:
+            logger.warning('vtp format does not support transient data, ' +
+                           'use xdmf instead')
+        if filename == '':
+            filename = project.name
+        filename = cls._parse_filename(filename=filename, ext='vtp')
 
         am = Dict.to_dict(network=network, phases=phases, interleave=True,
                           categorize_by=['object', 'data'])
@@ -116,10 +117,6 @@ class VTK(GenericIO):
                 elif (array.size == num_throats):
                     cell_data_node.append(element)
 
-        if filename == '':
-            filename = project.name
-        filename = cls._parse_filename(filename=filename, ext='vtp')
-
         tree = ET.ElementTree(root)
         tree.write(filename)
 
@@ -134,17 +131,14 @@ class VTK(GenericIO):
     def load(cls, filename, project=None, delim=' | '):
         r"""
         Read in pore and throat data from a saved VTK file.
-
         Parameters
         ----------
         filename : string (optional)
             The name of the file containing the data to import.  The formatting
             of this file is outlined below.
-
         project : OpenPNM Project object
             A GenericNetwork is created and added to the specified Project.
             If no Project is supplied then one will be created and returned.
-
         """
         net = {}
 

@@ -201,6 +201,7 @@ def straight_throat(target, throat_centroid='throat.centroid',
     EP : dictionary
         Coordinates of throat endpoints stored in Dict form. Can be accessed
         via the dict keys 'head' and 'tail'.
+
     """
     network = target.project.network
     throats = network.map_throats(throats=target.Ts, origin=target)

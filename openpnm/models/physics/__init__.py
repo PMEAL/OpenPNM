@@ -10,7 +10,6 @@ effects
 
 """
 
-from . import misc
 from . import capillary_pressure
 from . import diffusive_conductance
 from . import electrical_conductance

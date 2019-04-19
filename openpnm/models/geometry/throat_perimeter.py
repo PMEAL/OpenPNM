@@ -20,6 +20,12 @@ def cylinder(target, throat_diameter='throat.diameter'):
 
     throat_diameter : string
         The dictionary key of the array containing the throat diameter values
+
+    Returns
+    -------
+    value : NumPy ndarray
+        Array containing throat perimeter values.
+
     """
     return target[throat_diameter]*_sp.pi
 
@@ -36,6 +42,12 @@ def cuboid(target, throat_diameter='throat.diameter'):
         necessary properties.
 
     throat_diameter : string
-        The dictionary key of the array containing the throat diameter values
+        The dictionary key of the array containing the throat diameter values.
+
+    Returns
+    -------
+    value : NumPy ndarray
+        Array containing throat perimeter values.
+
     """
     return target[throat_diameter]*4

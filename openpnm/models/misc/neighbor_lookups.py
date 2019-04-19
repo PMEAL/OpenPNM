@@ -28,6 +28,12 @@ def from_neighbor_throats(target, throat_prop='throat.seed', mode='min'):
     mode : string
         Controls how the pore property is calculated.  Options are 'min',
         'max' and 'mean'.
+
+    Returns
+    -------
+    value : NumPy ndarray
+        Array containing customized values based on those of adjacent throats.
+
     """
     prj = target.project
     network = prj.network
@@ -68,6 +74,11 @@ def from_neighbor_pores(target, pore_prop='pore.seed', mode='min'):
     mode : string
         Controls how the throat property is calculated.  Options are 'min',
         'max' and 'mean'.
+
+    Returns
+    -------
+    value : NumPy ndarray
+        Array containing customized values based on those of adjacent pores.
 
     """
     prj = target.project
