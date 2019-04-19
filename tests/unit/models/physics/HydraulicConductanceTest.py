@@ -10,8 +10,8 @@ class HydraulicConductanceTest:
         self.geo = op.geometry.GenericGeometry(network=self.net,
                                                pores=self.net.Ps,
                                                throats=self.net.Ts)
-        # self.geo['pore.diameter'] = 1.0
-        # self.geo['throat.diameter'] = 0.5
+        self.geo['pore.diameter'] = 1.0
+        self.geo['throat.diameter'] = 0.5
         self.geo['pore.area'] = 1.0
         self.geo['throat.area'] = 0.5
         self.phase = op.phases.GenericPhase(network=self.net)
