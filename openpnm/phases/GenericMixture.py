@@ -38,7 +38,7 @@ class GenericMixture(GenericPhase):
         # Add any supplied phases to the phases list
         for comp in components:
             self.settings['components'].append(comp.name)
-            self['pore.mole_fraction.'+comp.name] = np.nan
+            self['pore.mole_fraction.'+comp.name] = 0.0
 
         self['pore.mole_fraction.all'] = np.zeros(self.Np, dtype=float)
 
@@ -67,7 +67,7 @@ class GenericMixture(GenericPhase):
             raise Exception(prop + ' already assigned to a component object')
         super().__setitem__(key, value)
 
-    def props(self, deep=True, **kwargs):
+    def props(self, deep=False, **kwargs):
         temp = []
         if deep:
             for item in self.components.values():
@@ -97,10 +97,14 @@ class GenericMixture(GenericPhase):
         if len(dict_) > 1:
             self['throat.mole_fraction.all'] = np.sum(dict_, axis=0)
 
-    def update_mole_fractions(self, concentration,
+    def update_mole_fractions(self, concentration=None,
                               density='pore.molar_density'):
         r"""
         """
+        if concentration is None:
+            concentration = ['pore.concentration.'+comp for comp
+                             in self.settings['components']
+                             if 'pore.concentration.'+comp in self.keys()]
         if type(concentration) == str:
             concentration = [concentration]
         for conc in concentration:
@@ -180,7 +184,7 @@ class GenericMixture(GenericPhase):
         element = prop.split('.')[0]
         if element == 'pore':
             if np.any(self[element + '.mole_fraction.all'] != 1.0):
-                self._update_molfrac()
+                self._update_total_molfrac()
                 if np.any(self[element + '.mole_fraction.all'] != 1.0):
                     raise Exception('Mole fraction does not add to unity in all ' +
                                     element + 's')

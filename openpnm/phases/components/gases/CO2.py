@@ -31,3 +31,4 @@ class CO2(GenericPhase):
         super().__init__(**kwargs)
 
         self['pore.molecular_weight'] = 0.04401  # kg/mol
+        self['pore.molar_diffusion_volume'] = 17.9  # Wrong

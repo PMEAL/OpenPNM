@@ -32,3 +32,4 @@ class H2(GenericPhase):
         super().__init__(**kwargs)
 
         self['pore.molecular_weight'] = 0.002016  # kg/mol
+        self['pore.molar_diffusion_volume'] = 17.9  # Wrong
