@@ -29,6 +29,17 @@ class DiffusiveConductanceTest:
         actual = self.phys['throat.o_diffusive_conductance'].mean()
         assert_approx_equal(actual, desired=1.0)
 
+    def test_ordinary_diffusion_with_zero_length_throats(self):
+        self.geo['throat.conduit_lengths.pore1'] = 0.15
+        self.geo['throat.conduit_lengths.throat'] = 0.0
+        self.geo['throat.conduit_lengths.pore2'] = 0.25
+        mod = op.models.physics.diffusive_conductance.ordinary_diffusion
+        self.phys.add_model(propname='throat.o_diffusive_conductance',
+                            model=mod)
+        self.phys.regenerate_models()
+        actual = self.phys['throat.o_diffusive_conductance'].mean()
+        assert_approx_equal(actual, desired=2.5)
+
     def test_taylor_aris_diffusion(self):
         self.geo['throat.conduit_lengths.pore1'] = 0.15
         self.geo['throat.conduit_lengths.throat'] = 0.6
@@ -59,6 +70,20 @@ class DiffusiveConductanceTest:
         self.phys.add_model(propname='throat.conductance', model=mod)
         assert sp.allclose(a=self.phys['throat.conductance'][0],
                            b=0.00084552)
+
+    def test_classic_ordinary_diffusion_with_zero_length_throats(self):
+        self.geo['pore.diameter'] = 1.0
+        self.geo['throat.diameter'] = 1.0
+        self.geo['throat.length'] = 0
+        self.air = op.phases.Air(network=self.net)
+        self.phys = op.physics.GenericPhysics(network=self.net,
+                                              phase=self.air,
+                                              geometry=self.geo)
+        mod = op.models.physics.diffusive_conductance.classic_ordinary_diffusion
+        self.phys.add_model(propname='throat.conductance', model=mod)
+        assert sp.allclose(a=self.phys['throat.conductance'][0],
+                           b=0.00084552)
+
 
 if __name__ == '__main__':
 
