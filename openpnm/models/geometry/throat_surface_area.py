@@ -33,10 +33,7 @@ def cylinder(target, throat_diameter='throat.diameter',
         Array containing throat surface area values.
 
     """
-    D = target[throat_diameter]
-    L = target[throat_length]
-    value = _sp.pi*D*L
-    return value
+    return _sp.pi * target[throat_diameter] * target[throat_length]
 
 
 def cuboid(target, throat_diameter='throat.diameter',
@@ -64,10 +61,7 @@ def cuboid(target, throat_diameter='throat.diameter',
         Array containing throat surface area values.
 
     """
-    D = target[throat_diameter]
-    L = target[throat_length]
-    value = 4*D*L
-    return value
+    return 4 * target[throat_diameter] * target[throat_length]
 
 
 def extrusion(target, throat_perimeter='throat.perimeter',
@@ -96,10 +90,7 @@ def extrusion(target, throat_perimeter='throat.perimeter',
         Array containing throat surface area values.
 
     """
-    P = target[throat_perimeter]
-    L = target[throat_length]
-    value = P*L
-    return value
+    return target[throat_perimeter] * target[throat_length]
 
 
 def rectangle(target, throat_length='throat.length'):

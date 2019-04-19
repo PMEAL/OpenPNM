@@ -306,7 +306,6 @@ def classic_hagen_poiseuille(target,
     Ps = network['throat.conns']
     # Get properties in every pore in the network
     phase = target.project.find_phase(target)
-    mup = phase[pore_viscosity]
     mut = phase.interpolate_data(propname=pore_viscosity)[throats]
     pdia = network[pore_diameter]
     # Get pore lengths
@@ -531,7 +530,51 @@ def hagen_poiseuille_2D(target,
                         conduit_lengths='throat.conduit_lengths',
                         conduit_shape_factors='throat.flow_shape_factors'):
     r"""
-    Returns hydraulic conductance for a 2D pore-throat-pore assembly (conduit).
+    Calculate the hydraulic conductance of conduits in a 2D network, where a
+    conduit is ( 1/2 pore - full throat - 1/2 pore ). See the notes section.
+
+    Parameters
+    ----------
+    target : OpenPNM Object
+        The object which this model is associated with. This controls the
+        length of the calculated array, and also provides access to other
+        necessary properties.
+
+    pore_area : string
+        Dictionary key of the pore area values
+
+    throat_area : string
+        Dictionary key of the throat area values
+
+    pore_viscosity : string
+        Dictionary key of the pore viscosity values
+
+    throat_viscosity : string
+        Dictionary key of the throat viscosity values
+
+    conduit_lengths : string
+        Dictionary key of the conduit length values
+
+    conduit_shape_factors : string
+        Dictionary key of the conduit flow shape factor values
+
+    Returns
+    -------
+    g : ndarray
+        Array containing hydraulic conductance values for conduits in the
+        geometry attached to the given physics object.
+
+    Notes
+    -----
+    (1) This function requires that all the necessary phase properties already
+    be calculated.
+
+    (2) This function calculates the specified property for the *entire*
+    network then extracts the values for the appropriate throats at the end.
+
+    (3) This function assumes rectangular (2D) throats. Corrections for
+    different shapes and variable cross-section area can be imposed by passing
+    the proper flow_shape_factor argument.
 
     """
     network = target.project.network

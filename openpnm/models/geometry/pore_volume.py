@@ -29,9 +29,7 @@ def sphere(target, pore_diameter='pore.diameter'):
         Array containing pore volume values.
 
     """
-    diams = target[pore_diameter]
-    value = _pi/6*diams**3
-    return value
+    return _pi/6*target[pore_diameter]**3
 
 
 def cube(target, pore_diameter='pore.diameter'):
@@ -54,9 +52,7 @@ def cube(target, pore_diameter='pore.diameter'):
         Array containing pore volume values.
 
     """
-    diams = target[pore_diameter]
-    value = diams**3
-    return value
+    return target[pore_diameter]**3
 
 
 def circle(target, pore_diameter='pore.diameter'):
