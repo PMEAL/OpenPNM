@@ -429,7 +429,7 @@ class GenericTransport(GenericAlgorithm):
             ind = np.isfinite(self['pore.bc_rate'])
             self.b[ind] = self['pore.bc_rate'][ind]
         if 'pore.bc_value' in self.keys():
-            f = np.abs(self.A.data).mean()
+            f = np.abs(self.A.diagonal()).mean()
             # Update b (impose bc values)
             ind = np.isfinite(self['pore.bc_value'])
             self.b[ind] = self['pore.bc_value'][ind] * f
