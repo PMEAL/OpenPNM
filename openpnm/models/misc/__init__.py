@@ -12,5 +12,5 @@ generating an array of random numbers.
 
 from .statistical_distributions import generic_distribution, normal, weibull, random
 from .simple_equations import linear, polynomial, generic_function
-from .basic_math import constant, product, scaled
+from .basic_math import constant, product, scaled, clip, normalize
 from .neighbor_lookups import from_neighbor_throats, from_neighbor_pores
