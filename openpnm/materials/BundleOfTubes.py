@@ -40,13 +40,12 @@ class BundleOfTubes(Project):
     name : string, optional
         The name to give the Project
 
-    Examples
-    --------
-
     """
 
-    def __init__(self, shape, spacing=[1.0, 1.0], length=1.0,
-                 psd_params={'distribution': 'norm', 'loc': 0.5, 'scale': 0.1},
+    def __init__(self, shape, spacing=1.0, length=1.0,
+                 psd_params={'distribution': 'norm',
+                             'loc': None,
+                             'scale': None},
                  name=None, **kwargs):
         super().__init__(name=name)
 
@@ -59,11 +58,8 @@ class BundleOfTubes(Project):
                             ' or list of 2 ints')
         if isinstance(spacing, float):
             spacing = sp.array([spacing, spacing, length])
-        elif len(spacing) == 2:
-            spacing = sp.concatenate((sp.array(spacing), [length]))
         else:
-            raise Exception('spacing not understood, must be float ' +
-                            'or list of 2 floats')
+            raise Exception('spacing not understood, must be float')
 
         net = Cubic(shape=shape, spacing=spacing, project=self, **kwargs)
         Ps_top = net.pores('top')
@@ -76,23 +72,37 @@ class BundleOfTubes(Project):
 
         geom.add_model(propname='throat.seed',
                        model=mods.geometry.throat_seed.random)
+        if psd_params['loc'] is None:
+            psd_params['loc'] = spacing[0]/2
+        if psd_params['scale'] is None:
+            psd_params['scale'] = spacing[0]/10
         if psd_params['distribution'] in ['norm', 'normal', 'gaussian']:
-            geom.add_model(propname='throat.diameter',
+            geom.add_model(propname='throat.size_distribution',
                            seeds='throat.seed',
                            model=mods.geometry.throat_size.normal,
                            loc=psd_params['loc'], scale=psd_params['scale'])
         elif psd_params['distribution'] in ['weibull']:
-            geom.add_model(propname='throat.diameter',
+            geom.add_model(propname='throat.size_distribution',
                            seeds='throat.seed',
                            model=mods.geometry.throat_size.weibull,
                            loc=psd_params['loc'], scale=psd_params['scale'])
         else:
             func = getattr(spst, psd_params['distribution'])
             psd = func.freeze(loc=psd_params['loc'], scale=psd_params['scale'])
-            geom.add_model(propname='throat.diameter',
+            geom.add_model(propname='throat.size_distribution',
                            seeds='throat.seed',
                            model=mods.geometry.throat_size.generic_distribution,
                            func=psd)
+        if sp.any(geom['throat.size_distribution'] < 0):
+            logger.warning('Given size distribution produced negative ' +
+                           'throat diameters...these will be set to 0')
+        geom.add_model(propname='throat.diameter',
+                       model=mods.misc.clip, prop='throat.size_distribution',
+                       xmin=1e-12, xmax=spacing[0])
+        if sp.any(geom['throat.diameter'] != geom['throat.size_distribution']):
+            logger.warning('Given size distribution produced throats ' +
+                           'larger than the spacing...tube diameters ' +
+                           'will be clipped')
         geom.add_model(propname='pore.diameter',
                        model=mods.geometry.pore_size.from_neighbor_throats,
                        throat_prop='throat.diameter', mode='max')
