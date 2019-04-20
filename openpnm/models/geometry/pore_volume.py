@@ -57,3 +57,29 @@ def cube(target, pore_diameter='pore.diameter'):
     diams = target[pore_diameter]
     value = diams**3
     return value
+
+
+def cylinder(target, pore_diameter='pore.diameter'):
+    r"""
+    Calculate pore volume from diameter assuming a cylindrical pore body
+    with a height equal to its diameter.
+
+    Parameters
+    ----------
+    target : OpenPNM Object
+        The object which this model is associated with. This controls
+        the length of the calculated array, and also provides access to other
+        necessary geometric properties.
+
+    pore_diameter : string
+        The dictionary key of the pore diameter values
+
+    Returns
+    -------
+    value : NumPy ndarray
+        Array containing pore volume values.
+
+    """
+    diams = target[pore_diameter]
+    value = _pi/4*diams**2*diams
+    return value
