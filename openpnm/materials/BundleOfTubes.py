@@ -7,6 +7,7 @@ from openpnm.topotools import trim
 import openpnm.models as mods
 logger = logging.getLogger(__name__)
 
+defsets = {'adjust_psd': 'clip'}
 
 class BundleOfTubes(Project):
     r"""
@@ -42,12 +43,19 @@ class BundleOfTubes(Project):
 
     """
 
-    def __init__(self, shape, spacing=1.0, length=1.0,
+    def __init__(self,
+                 shape,
+                 spacing=1.0,
+                 length=1.0,
                  psd_params={'distribution': 'norm',
                              'loc': None,
                              'scale': None},
-                 name=None, **kwargs):
+                 name=None,
+                 settings=None,
+                 **kwargs):
         super().__init__(name=name)
+        self.settings.update(defsets)
+        self.settings.update(settings)
 
         if isinstance(shape, int):
             shape = sp.array([shape, shape, 2])
@@ -85,7 +93,9 @@ class BundleOfTubes(Project):
             geom.add_model(propname='throat.size_distribution',
                            seeds='throat.seed',
                            model=mods.geometry.throat_size.weibull,
-                           loc=psd_params['loc'], scale=psd_params['scale'])
+                           loc=psd_params['loc'],
+                           scale=psd_params['scale'],
+                           shape=psd_params['shape'])
         else:
             func = getattr(spst, psd_params['distribution'])
             psd = func.freeze(loc=psd_params['loc'], scale=psd_params['scale'])
@@ -96,13 +106,24 @@ class BundleOfTubes(Project):
         if sp.any(geom['throat.size_distribution'] < 0):
             logger.warning('Given size distribution produced negative ' +
                            'throat diameters...these will be set to 0')
-        geom.add_model(propname='throat.diameter',
-                       model=mods.misc.clip, prop='throat.size_distribution',
-                       xmin=1e-12, xmax=spacing[0])
-        if sp.any(geom['throat.diameter'] != geom['throat.size_distribution']):
-            logger.warning('Given size distribution produced throats ' +
-                           'larger than the spacing...tube diameters ' +
-                           'will be clipped')
+        if self.settings['adjust_psd'] == 'clip':
+            geom.add_model(propname='throat.diameter',
+                           model=mods.misc.clip,
+                           prop='throat.size_distribution',
+                           xmin=1e-12, xmax=spacing[0])
+            if sp.any(geom['throat.diameter'] != geom['throat.size_distribution']):
+                logger.warning('Given size distribution produced throats ' +
+                               'larger than the spacing...tube diameters ' +
+                               'will be clipped between 0 and given spacing')
+        elif self.settings['adjust_psd'] == 'normalize':
+            geom.add_model(propname='throat.diameter',
+                           model=mods.misc.normalize,
+                           prop='throat.size_distribution',
+                           xmin=1e-12, xmax=spacing[0])
+            if sp.any(geom['throat.diameter'] != geom['throat.size_distribution']):
+                logger.warning('Given size distribution produced throats ' +
+                               'larger than the spacing...tube diameters ' +
+                               'will be normalized between 0 and given spacing')
         geom.add_model(propname='pore.diameter',
                        model=mods.geometry.pore_size.from_neighbor_throats,
                        throat_prop='throat.diameter', mode='max')
