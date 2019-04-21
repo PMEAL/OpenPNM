@@ -9,6 +9,7 @@ logger = logging.getLogger(__name__)
 
 defsets = {'adjust_psd': 'clip'}
 
+
 class BundleOfTubes(Project):
     r"""
     A basic 'bundle-of-tubes' model.
@@ -106,24 +107,33 @@ class BundleOfTubes(Project):
         if sp.any(geom['throat.size_distribution'] < 0):
             logger.warning('Given size distribution produced negative ' +
                            'throat diameters...these will be set to 0')
-        if self.settings['adjust_psd'] == 'clip':
+        if self.settings['adjust_psd'] is None:
+            geom.add_model(propname='throat.diameter',
+                           model=mods.misc.clip,
+                           prop='throat.size_distribution',
+                           xmin=1e-12, xmax=sp.inf)
+            if geom['throat.size_distribution'].max() > spacing[0]:
+                logger.warning('Given size distribution produced throats ' +
+                               'larger than the spacing.')
+        elif self.settings['adjust_psd'] == 'clip':
             geom.add_model(propname='throat.diameter',
                            model=mods.misc.clip,
                            prop='throat.size_distribution',
                            xmin=1e-12, xmax=spacing[0])
-            if sp.any(geom['throat.diameter'] != geom['throat.size_distribution']):
+            if geom['throat.size_distribution'].max() > spacing[0]:
                 logger.warning('Given size distribution produced throats ' +
                                'larger than the spacing...tube diameters ' +
                                'will be clipped between 0 and given spacing')
         elif self.settings['adjust_psd'] == 'normalize':
+            tmin = max(1e-12, geom['throat.size_distribution'].min())
             geom.add_model(propname='throat.diameter',
                            model=mods.misc.normalize,
                            prop='throat.size_distribution',
-                           xmin=1e-12, xmax=spacing[0])
-            if sp.any(geom['throat.diameter'] != geom['throat.size_distribution']):
+                           xmin=tmin, xmax=spacing[0])
+            if geom['throat.size_distribution'].max() > spacing[0]:
                 logger.warning('Given size distribution produced throats ' +
                                'larger than the spacing...tube diameters ' +
-                               'will be normalized between 0 and given spacing')
+                               'will be normalized to fit given spacing')
         geom.add_model(propname='pore.diameter',
                        model=mods.geometry.pore_size.from_neighbor_throats,
                        throat_prop='throat.diameter', mode='max')
