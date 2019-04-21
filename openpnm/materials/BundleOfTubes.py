@@ -52,7 +52,7 @@ class BundleOfTubes(Project):
                              'loc': None,
                              'scale': None},
                  name=None,
-                 settings=None,
+                 settings={},
                  **kwargs):
         super().__init__(name=name)
         self.settings.update(defsets)
@@ -65,7 +65,10 @@ class BundleOfTubes(Project):
         else:
             raise Exception('shape not understood, must be int ' +
                             ' or list of 2 ints')
-        if isinstance(spacing, float):
+
+        if isinstance(spacing, float) or isinstance(spacing, int):
+            spacing = float(spacing)
+            self.settings['spacing'] = spacing
             spacing = sp.array([spacing, spacing, length])
         else:
             raise Exception('spacing not understood, must be float')
@@ -98,8 +101,9 @@ class BundleOfTubes(Project):
                            scale=psd_params['scale'],
                            shape=psd_params['shape'])
         else:
-            func = getattr(spst, psd_params['distribution'])
-            psd = func.freeze(loc=psd_params['loc'], scale=psd_params['scale'])
+            temp = psd_params.copy()
+            func = getattr(spst, temp.pop('distribution'))
+            psd = func.freeze(**temp)
             geom.add_model(propname='throat.size_distribution',
                            seeds='throat.seed',
                            model=mods.geometry.throat_size.generic_distribution,
@@ -134,6 +138,9 @@ class BundleOfTubes(Project):
                 logger.warning('Given size distribution produced throats ' +
                                'larger than the spacing...tube diameters ' +
                                'will be normalized to fit given spacing')
+        else:
+            logger.warning('Settings not understood, ignoring')
+
         geom.add_model(propname='pore.diameter',
                        model=mods.geometry.pore_size.from_neighbor_throats,
                        throat_prop='throat.diameter', mode='max')
