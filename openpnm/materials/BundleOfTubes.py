@@ -108,17 +108,20 @@ class BundleOfTubes(Project):
                            seeds='throat.seed',
                            model=mods.geometry.throat_size.generic_distribution,
                            func=psd)
+
         if sp.any(geom['throat.size_distribution'] < 0):
             logger.warning('Given size distribution produced negative ' +
                            'throat diameters...these will be set to 0')
+        geom.add_model(propname='throat.diameter',
+                       model=mods.misc.clip,
+                       prop='throat.size_distribution',
+                       xmin=1e-12, xmax=sp.inf)
+
         if self.settings['adjust_psd'] is None:
-            geom.add_model(propname='throat.diameter',
-                           model=mods.misc.clip,
-                           prop='throat.size_distribution',
-                           xmin=1e-12, xmax=sp.inf)
             if geom['throat.size_distribution'].max() > spacing[0]:
                 logger.warning('Given size distribution produced throats ' +
                                'larger than the spacing.')
+
         elif self.settings['adjust_psd'] == 'clip':
             geom.add_model(propname='throat.diameter',
                            model=mods.misc.clip,
@@ -128,6 +131,7 @@ class BundleOfTubes(Project):
                 logger.warning('Given size distribution produced throats ' +
                                'larger than the spacing...tube diameters ' +
                                'will be clipped between 0 and given spacing')
+
         elif self.settings['adjust_psd'] == 'normalize':
             tmin = max(1e-12, geom['throat.size_distribution'].min())
             geom.add_model(propname='throat.diameter',

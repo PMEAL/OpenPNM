@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 class BundleOfTubesTest:
 
     def setup_class(self):
-        self.wrk = op.Workspace()
+        pass
 
     def test_instantiate_with_defaults(self):
         net, geo = BundleOfTubes(shape=[30, 30])
@@ -44,18 +44,18 @@ class BundleOfTubesTest:
                                  settings={'adjust_psd': 'clip'})
         assert geo['throat.size_distribution'].max() > geo['throat.diameter'].max()
 
-#        net, geo = BundleOfTubes(shape=30, spacing=0.001, length=0.01,
-#                                 psd_params={'distribution': 'norm',
-#                                             'loc': 0.02,
-#                                             'scale': 2},
-#                                 settings={'adjust_psd': 'clip'})
-#        assert geo['throat.size_distribution'].max() > geo['throat.diameter'].max()
+        net, geo = BundleOfTubes(shape=30, spacing=0.001, length=0.01,
+                                 psd_params={'distribution': 'norm',
+                                             'loc': 0.02,
+                                             'scale': 0.001},
+                                 settings={'adjust_psd': 'clip'})
+        assert geo['throat.size_distribution'].max() > geo['throat.diameter'].max()
 
         net, geo = BundleOfTubes(shape=30, spacing=1.0, length=0.01,
                                  psd_params={'distribution': 'normal',
-                                             'loc': 0.000002,
+                                             'loc': 0.02,
                                              'scale': 0.001},
-                                 settings={'adjust_psd': 'clip'})
+                                 settings={'adjust_psd': None})
         assert sp.all(geo['throat.size_distribution'] == geo['throat.diameter'])
 
 
