@@ -1,6 +1,5 @@
 import openpnm as op
 import scipy as sp
-import pytest
 
 
 class TransientAdvectionDiffusionTest:
@@ -19,6 +18,9 @@ class TransientAdvectionDiffusionTest:
         self.phys['throat.diffusive_conductance'] = 1e-15
         self.phys['throat.hydraulic_conductance'] = 1e-15
         self.geo['pore.volume'] = 1e-27
+        self.geo['throat.conduit_lengths.pore1'] = 0.1
+        self.geo['throat.conduit_lengths.throat'] = 0.6
+        self.geo['throat.conduit_lengths.pore2'] = 0.1
 
     def test_transient_advection_diffusion(self):
         sf = op.algorithms.StokesFlow(network=self.net, phase=self.phase)
@@ -29,14 +31,17 @@ class TransientAdvectionDiffusionTest:
         sf.run()
         self.phase[sf.settings['quantity']] = sf[sf.settings['quantity']]
 
+        mod = op.models.physics.ad_dif_conductance.ad_dif
+        self.phys.add_model(propname='throat.ad_dif_conductance', model=mod,
+                            s_scheme='powerlaw')
+        self.phys.regenerate_models()
+
         ad = op.algorithms.TransientAdvectionDiffusion(network=self.net,
                                                        phase=self.phase)
         ad.setup(quantity='pore.concentration',
-                 diffusive_conductance='throat.diffusive_conductance',
-                 hydraulic_conductance='throat.hydraulic_conductance',
-                 pressure='pore.pressure', t_initial=0, t_final=100,
-                 t_step=1, t_output=50, t_tolerance=1e-20,
-                 s_scheme='powerlaw', t_scheme='implicit')
+                 conductance='throat.ad_dif_conductance', t_initial=0,
+                 t_final=100, t_step=1, t_output=50, t_tolerance=1e-20,
+                 t_scheme='implicit')
         ad.set_IC(0)
         ad.set_value_BC(pores=self.net.pores('back'), values=2)
         ad.set_value_BC(pores=self.net.pores('front'), values=0)

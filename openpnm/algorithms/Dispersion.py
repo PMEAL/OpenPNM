@@ -6,7 +6,7 @@ logger = logging.getLogger(__name__)
 
 class Dispersion(ReactiveTransport):
     r"""
-    A subclass of GenericTransport to simulate advection diffusion
+    A subclass of GenericTransport to simulate dispersion
 
     """
 
@@ -14,6 +14,10 @@ class Dispersion(ReactiveTransport):
         def_set = {'phase': None,
                    'quantity': 'pore.concentration',
                    'conductance': 'throat.dispersive_conductance',
+                   'diffusive_conductance': 'throat.diffusive_conductance',
+                   'hydraulic_conductance': 'throat.hydraulic_conductance',
+                   'pressure': 'pore.pressure',
+                   's_scheme': 'exponential',
                    'gui': {'setup':        {'phase': None,
                                             'quantity': '',
                                             'conductance': ''},
@@ -31,7 +35,9 @@ class Dispersion(ReactiveTransport):
         if phase is not None:
             self.setup(phase=phase)
 
-    def setup(self, phase=None, quantity='', conductance='', **kwargs):
+    def setup(self, phase=None, quantity='', conductance='',
+              diffusive_conductance='', hydraulic_conductance='', pressure='',
+              s_scheme='', **kwargs):
         r"""
 
         """
@@ -41,6 +47,14 @@ class Dispersion(ReactiveTransport):
             self.settings['quantity'] = quantity
         if conductance:
             self.settings['conductance'] = conductance
+        if diffusive_conductance:
+            self.settings['diffusive_conductance'] = diffusive_conductance
+        if hydraulic_conductance:
+            self.settings['hydraulic_conductance'] = hydraulic_conductance
+        if pressure:
+            self.settings['pressure'] = pressure
+        if s_scheme:
+            self.settings['s_scheme'] = s_scheme
         super().setup(**kwargs)
 
     def set_outflow_BC(self, pores, mode='merge'):
@@ -132,7 +146,7 @@ class Dispersion(ReactiveTransport):
 
         Q12 = -gh * np.diff(P[C12], axis=1).squeeze()
         Pe12 = Q12 / gd
-        Pe12 = np.abs(Pe12).clip(min=1e-10) * np.sign(Pe12)
+        Pe12 = np.abs(Pe12).clip(min=1e-10) * np.sign(Pe12 + 1e-50)
         Q12 = Pe12 * gd
 
         X12 = X[C12]

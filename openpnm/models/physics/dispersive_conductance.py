@@ -1,7 +1,7 @@
 r"""
 
-.. autofunction:: openpnm.models.physics.diffusive_conductance.dispersion
-.. autofunction:: openpnm.models.physics.diffusive_conductance.generic_conductance
+.. autofunction:: openpnm.models.physics.dispersive_conductance.dispersion
+.. autofunction:: openpnm.models.physics.dispersive_conductance.generic_conductance
 
 """
 
@@ -20,9 +20,8 @@ def dispersion(target,
                throat_diffusive_conductance='throat.diffusive_conductance',
                s_scheme='powerlaw'):
     r"""
-    Calculate the advective-diffusive conductance of conduits in network,
-    where a conduit is ( 1/2 pore - full throat - 1/2 pore ).
-    See the notes section.
+    Calculate the dispersive conductance of conduits in network, where a
+    conduit is ( 1/2 pore - full throat - 1/2 pore ). See the notes section.
 
     Parameters
     ----------
@@ -175,7 +174,7 @@ def generic_conductance(target, transport_type, pore_area, throat_area,
     except KeyError:
         SF1 = SF2 = SFt = 1.0
     # Find g for half of pore 1, throat, and half of pore 2
-    if transport_type == 'dispersion':
+    if transport_type in ['dispersion', 'ad_dif']:
         for k, v in kwargs.items():
             if k == 'pore_pressure':
                 pore_pressure = v

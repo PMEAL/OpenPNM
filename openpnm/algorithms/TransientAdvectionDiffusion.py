@@ -7,7 +7,7 @@ class TransientAdvectionDiffusion(TransientReactiveTransport,
                                   AdvectionDiffusion):
     r"""
     A subclass of GenericTransport to perform steady and transient simulations
-    of pure diffusion and advection diffusion problems.
+    of pure diffusion and advection-diffusion problems.
 
     """
 
@@ -15,10 +15,7 @@ class TransientAdvectionDiffusion(TransientReactiveTransport,
         def_set = {'phase': None,
                    'gui': {'setup':        {'phase': None,
                                             'quantity': '',
-                                            'diffusive_conductance': '',
-                                            'hydraulic_conductance': '',
-                                            'pressure': '',
-                                            's_scheme': '',
+                                            'conductance': '',
                                             't_initial': None,
                                             't_final': None,
                                             't_step': None,
@@ -40,14 +37,16 @@ class TransientAdvectionDiffusion(TransientReactiveTransport,
         if phase is not None:
             self.setup(phase=phase)
 
-    def setup(self, phase=None, quantity='', diffusive_conductance='',
-              hydraulic_conductance='', pressure='', s_scheme='',
-              t_initial=None, t_final=None, t_step=None, t_output=None,
-              t_tolerance=None, t_scheme='', **kwargs):
+    def setup(self, phase=None, quantity='', conductance='',
+              diffusive_conductance='', hydraulic_conductance='', pressure='',
+              s_scheme='', t_initial=None, t_final=None, t_step=None,
+              t_output=None, t_tolerance=None, t_scheme='', **kwargs):
         if phase:
             self.settings['phase'] = phase.name
         if quantity:
             self.settings['quantity'] = quantity
+        if conductance:
+            self.settings['conductance'] = conductance
         if diffusive_conductance:
             self.settings['diffusive_conductance'] = diffusive_conductance
         if hydraulic_conductance:

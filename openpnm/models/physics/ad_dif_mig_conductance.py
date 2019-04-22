@@ -1,7 +1,7 @@
 r"""
 
-.. autofunction:: openpnm.models.physics.diffusive_conductance.ad_dif_mig
-.. autofunction:: openpnm.models.physics.diffusive_conductance.generic_conductance
+.. autofunction:: openpnm.models.physics.ad_dif_mig_conductance.ad_dif_mig
+.. autofunction:: openpnm.models.physics.ad_dif_mig_conductance.generic_conductance
 
 """
 
