@@ -1,9 +1,9 @@
 import os
 import subprocess
 import logging
-import porespy as ps
+import openpnm as op
 
-rootdir = os.path.split(os.path.split(ps.__file__)[0])[0]
+rootdir = os.path.split(os.path.split(op.__file__)[0])[0]
 examples_dir = os.path.join(rootdir, 'examples')
 simulations_dir = os.path.join(examples_dir, 'simulations')
 
