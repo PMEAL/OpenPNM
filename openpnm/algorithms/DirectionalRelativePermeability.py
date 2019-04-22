@@ -51,24 +51,63 @@ class DirectionalRelativePermeability(GenericAlgorithm):
     def set_outlets(self, pores):
         self.settings['flow_outlet'] = pores
 
-    def run(self, Snw_num=None, IP_pores=None):
+    def _regenerate_models(self):
+        self.settings['wp'].add_model(model=models.physics.multiphase.conduit_conductance,
+                                      propname='throat.conduit_hydraulic_conductance',
+                                      throat_conductance='throat.hydraulic_conductance')
+        self.settings['nwp'].add_model(model=models.physics.multiphase.conduit_conductance,
+                                       propname='throat.conduit_hydraulic_conductance',
+                                       throat_conductance='throat.hydraulic_conductance')
+
+    def abs_perm_calc(self,B_pores,in_outlet_pores):
         network=self.project.network
         St_wp = StokesFlow(network=network, phase=self.settings['wp'])
-        St_wp.set_value_BC(pores=(self.settings['flow_inlet']), values=1)
-        St_wp.set_value_BC(pores=(self.settings['flow_outlet']), values=0)
+        St_wp.set_value_BC(pores=B_pores[0], values=1)
+        St_wp.set_value_BC(pores=B_pores[1], values=0)
         St_wp.run()
-        val=St_wp.calc_effective_permeability(inlets=self.settings['flow_inlet'],
-                                              outlets=self.settings['flow_outlet'])
-        self.settings['perm_wp']=val
+        val=St_wp.calc_effective_permeability(inlets=in_outlet_pores[0],
+                                              outlets=in_outlet_pores[1])
+        Kwp=val
         self.project.purge_object(obj=St_wp)
         St_nwp = StokesFlow(network=network, phase=self.settings['nwp'])
-        St_nwp.set_value_BC(pores=self.settings['flow_inlet'], values=1)
-        St_nwp.set_value_BC(pores=self.settings['flow_outlet'], values=0)
+        St_nwp.set_value_BC(pores=B_pores[0], values=1)
+        St_nwp.set_value_BC(pores=B_pores[1], values=0)
         St_nwp.run()
-        val=St_nwp.calc_effective_permeability(inlets=self.settings['flow_inlet'],
-                                               outlets=self.settings['flow_outlet'])
-        self.settings['perm_nwp']=val
+        val=St_nwp.calc_effective_permeability(inlets=in_outlet_pores[0],
+                                               outlets=in_outlet_pores[1])
+        Knwp=val
         self.project.purge_object(obj=St_nwp)
+        return [Kwp,Knwp]
+    
+    def rel_perm_calc(self,B_pores,in_outlet_pores):
+        network=self.project.network
+        self.settings._regenerate_models()
+        St_mp_wp = StokesFlow(network=network, phase=self.settings['wp'])
+        St_mp_wp.setup(conductance='throat.conduit_hydraulic_conductance')
+        St_mp_wp.set_value_BC(pores=B_pores[0], values=1)
+        St_mp_wp.set_value_BC(pores=B_pores[1], values=0)
+        St_mp_nwp = StokesFlow(network=network, phase=self.settings['nwp'])
+        St_mp_nwp.set_value_BC(pores=B_pores[0], values=1)
+        St_mp_nwp.set_value_BC(pores=B_pores[1], values=0)
+        St_mp_nwp.setup(conductance='throat.conduit_hydraulic_conductance')
+        St_mp_wp.run()
+        St_mp_nwp.run()
+        Keff_mp_wp=St_mp_wp.calc_effective_permeability(inlets=in_outlet_pores[0],
+                                                        outlets=in_outlet_pores[1])
+        Keff_mp_nwp=St_mp_nwp.calc_effective_permeability(inlets=in_outlet_pores[0],                         
+                                                        outlets=in_outlet_pores[1])
+        self.project.purge_object(obj=St_mp_wp)
+        self.project.purge_object(obj=St_mp_nwp)
+        Krwp=(Keff_mp_wp/self.settings['perm_wp'])
+        Krnwp=(Keff_mp_nwp/self.settings['perm_nwp'])
+        return [Krwp,Krnwp]
+
+    def run(self, Snw_num=None, IP_pores=None):
+        network=self.project.network
+        [Kwp,Knwp]=self.abs_perm_calc(B_pores=[self.settings['flow_inlet'],self.settings['flow_outlet']],
+                            in_outlet_pores=[self.settings['flow_inlet'],self.settings['flow_outlet']])
+        self.settings['perm_wp']=Kwp
+        self.settings['perm_nwp']=Knwp
         self.settings['IP_pores']=IP_pores
         if Snw_num is None:
             Snw_num=10
@@ -93,37 +132,10 @@ class DirectionalRelativePermeability(GenericAlgorithm):
             self.settings['wp']['pore.occupancy'] = 1-pore_mask
             self.settings['nwp']['throat.occupancy'] = throat_mask
             self.settings['wp']['throat.occupancy'] = 1-throat_mask
-            self.settings['wp'].add_model(model=\
-                                          models.physics.multiphase.conduit_conductance,
-                                          propname=\
-                                          'throat.conduit_hydraulic_conductance',
-                                          throat_conductance=\
-                                          'throat.hydraulic_conductance')
-            self.settings['nwp'].add_model(model=models.physics.multiphase.conduit_conductance,
-                                            propname='throat.conduit_hydraulic_conductance',
-                                            throat_conductance='throat.hydraulic_conductance')
-            St_mp_wp = StokesFlow(network=network, phase=self.settings['wp'])
-            St_mp_wp.setup(conductance='throat.conduit_hydraulic_conductance')
-            St_mp_wp.set_value_BC(pores=self.settings['flow_inlet'], values=1)
-            St_mp_wp.set_value_BC(pores=self.settings['flow_outlet'], values=0)
-            St_mp_nwp = StokesFlow(network=network, phase=self.settings['nwp'])
-            St_mp_nwp.set_value_BC(pores=self.settings['flow_inlet'], values=1)
-            St_mp_nwp.set_value_BC(pores=self.settings['flow_outlet'], values=0)
-            St_mp_nwp.setup(conductance='throat.conduit_hydraulic_conductance')
-            St_mp_wp.run()
-            St_mp_nwp.run()
-            Keff_mp_wp=St_mp_wp.calc_effective_permeability(inlets=\
-                                                            self.settings['flow_inlet'],
-                                                            outlets=\
-                                                            self.settings['flow_outlet'])
-            Keff_mp_nwp=St_mp_nwp.calc_effective_permeability(inlets=\
-                                                              self.settings['flow_inlet'],
-                                                              outlets=\
-                                                              self.settings['flow_outlet'])
-            self.settings['relperm_wp'].append(Keff_mp_wp/self.settings['perm_wp'])
-            self.settings['relperm_nwp'].append(Keff_mp_nwp/self.settings['perm_nwp'])
-            self.project.purge_object(obj=St_mp_wp)
-            self.project.purge_object(obj=St_mp_nwp)
+            [Krwp,Krnwp]=self.rel_perm_calc(B_pores=[self.settings['flow_inlet'],self.settings['flow_outlet']],
+                            in_outlet_pores=[self.settings['flow_inlet'],self.settings['flow_outlet']])
+            self.settings['relperm_wp'].append(Krwp)
+            self.settings['relperm_nwp'].append(Krnwp)
         print('sat is',self.settings['sat'])
         print('krw is',self.settings['relperm_wp'])
         print('krnw is',self.settings['relperm_nwp'])

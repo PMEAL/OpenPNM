@@ -26,7 +26,7 @@ default_settings = {
                     'BP_2': dict()}
 
 
-class RelativePermeability(GenericAlgorithm):
+class RelativePermeability(GenericAlgorithm,DirectionalRelativePermeability):
     r"""
     A subclass of Generic Algorithm to calculate relative permeabilities of
     fluids in a drainage process. The main roles of this subclass are to
@@ -54,14 +54,6 @@ class RelativePermeability(GenericAlgorithm):
             self.settings['flow_inlets'].update({flow: (inlet_dict[flow])})
             self.settings['flow_outlets'].update({flow: (outlet_dict[flow])})
 
-
-    def _regenerate_models(self):
-        self.settings['wp'].add_model(model=models.physics.multiphase.conduit_conductance,
-                                      propname='throat.conduit_hydraulic_conductance',
-                                      throat_conductance='throat.hydraulic_conductance')
-        self.settings['nwp'].add_model(model=models.physics.multiphase.conduit_conductance,
-                                       propname='throat.conduit_hydraulic_conductance',
-                                       throat_conductance='throat.hydraulic_conductance')
 
     def run(self):
         net= self.project.network
@@ -154,7 +146,7 @@ class RelativePermeability(GenericAlgorithm):
                     self.settings['wp']['pore.occupancy'] = 1-res1['pore.occupancy']
                     self.settings['nwp']['throat.occupancy'] = res1['throat.occupancy']
                     self.settings['wp']['throat.occupancy'] = 1-res1['throat.occupancy']
-                    self._regenerate_models()
+                    super(DirectionalRelativePermeability, self)._regenerate_models()
                     St_mp_wp = StokesFlow(network=net, phase=self.settings['wp'])
                     St_mp_wp.setup(conductance='throat.conduit_hydraulic_conductance')
                     St_mp_wp.set_value_BC(pores=net.pores(self.settings['BP_1'][flow]),
