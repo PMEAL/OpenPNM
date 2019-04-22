@@ -11,6 +11,6 @@ import numpy as np
 pn = op.network.Cubic(shape=[20, 20, 20], spacing=0.00006)
 geom = op.geometry.StickAndBall(network=pn, pores=pn['pore.all'],
                                 throats=pn['throat.all'])
-relcalc=op.algorithms.RelativePermeability(network=pn)
+relcalc=op.algorithms.RelativePermeability()
 relcalc.setup(input_vect=['xx'])
 relcalc.run()

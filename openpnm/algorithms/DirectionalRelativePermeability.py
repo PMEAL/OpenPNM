@@ -1,9 +1,7 @@
-from openpnm.algorithms import GenericAlgorithm, StokesFlow, InvasionPercolation
+from openpnm.algorithms import GenericAlgorithm, StokesFlow
 from openpnm.utils import logging
 from openpnm import models
 import numpy as np
-import openpnm
-import scipy as sp
 logger = logging.getLogger(__name__)
 
 
@@ -92,18 +90,30 @@ class DirectionalRelativePermeability(GenericAlgorithm):
         St_mp_nwp.setup(conductance='throat.conduit_hydraulic_conductance')
         St_mp_wp.run()
         St_mp_nwp.run()
-        Keff_mp_wp=St_mp_wp.calc_effective_permeability(inlets=in_outlet_pores[0],
+        Kewp=St_mp_wp.calc_effective_permeability(inlets=in_outlet_pores[0],
                                                         outlets=in_outlet_pores[1])
-        Keff_mp_nwp=St_mp_nwp.calc_effective_permeability(inlets=in_outlet_pores[0],                         
+        Kenwp=St_mp_nwp.calc_effective_permeability(inlets=in_outlet_pores[0],                         
                                                         outlets=in_outlet_pores[1])
         self.project.purge_object(obj=St_mp_wp)
         self.project.purge_object(obj=St_mp_nwp)
-        Krwp=(Keff_mp_wp/self.settings['perm_wp'])
-        Krnwp=(Keff_mp_nwp/self.settings['perm_nwp'])
-        return [Krwp,Krnwp]
+        return [Kewp,Kenwp]
+    
+    def _sat_occ_update(self,i):
+        network=self.project.network
+        pore_mask=self.settings['pore.invasion_sequence']<i
+        throat_mask=self.settings['throat.invasion_sequence']<i
+        sat_p=np.sum(network['pore.volume'][pore_mask])
+        sat_t=np.sum(network['throat.volume'][throat_mask])
+        sat1=sat_p+sat_t
+        bulk=(np.sum(network['pore.volume']) + np.sum(network['throat.volume']))
+        sat=sat1/bulk
+        self.settings['nwp']['pore.occupancy'] = pore_mask
+        self.settings['wp']['pore.occupancy'] = 1-pore_mask
+        self.settings['nwp']['throat.occupancy'] = throat_mask
+        self.settings['wp']['throat.occupancy'] = 1-throat_mask
+        return sat
 
     def run(self, Snw_num=None, IP_pores=None):
-        network=self.project.network
         [Kwp,Knwp]=self.abs_perm_calc(B_pores=[self.settings['flow_inlet'],self.settings['flow_outlet']],
                             in_outlet_pores=[self.settings['flow_inlet'],self.settings['flow_outlet']])
         self.settings['perm_wp']=Kwp
@@ -120,20 +130,12 @@ class DirectionalRelativePermeability(GenericAlgorithm):
         self.settings['relperm_wp']=[]
         self.settings['relperm_nwp']=[]
         for i in range(start, stop, step):
-            pore_mask=self.settings['pore.invasion_sequence']<i
-            throat_mask=self.settings['throat.invasion_sequence']<i
-            sat_p=np.sum(network['pore.volume'][pore_mask])
-            sat_t=np.sum(network['throat.volume'][throat_mask])
-            sat1=sat_p+sat_t
-            bulk=(np.sum(network['pore.volume']) + np.sum(network['throat.volume']))
-            sat=sat1/bulk
+            sat=self._sat_occ_update(i)
             self.settings['sat'].append(sat)
-            self.settings['nwp']['pore.occupancy'] = pore_mask
-            self.settings['wp']['pore.occupancy'] = 1-pore_mask
-            self.settings['nwp']['throat.occupancy'] = throat_mask
-            self.settings['wp']['throat.occupancy'] = 1-throat_mask
-            [Krwp,Krnwp]=self.rel_perm_calc(B_pores=[self.settings['flow_inlet'],self.settings['flow_outlet']],
+            [Kewp,Kenwp]=self.rel_perm_calc(B_pores=[self.settings['flow_inlet'],self.settings['flow_outlet']],
                             in_outlet_pores=[self.settings['flow_inlet'],self.settings['flow_outlet']])
+            Krwp=Kewp/self.settings['perm_wp']
+            Krnwp=Kenwp/self.settings['perm_nwp']
             self.settings['relperm_wp'].append(Krwp)
             self.settings['relperm_nwp'].append(Krnwp)
         print('sat is',self.settings['sat'])

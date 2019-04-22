@@ -1,11 +1,12 @@
-from openpnm.algorithms import GenericAlgorithm, StokesFlow, InvasionPercolation
+from openpnm.algorithms import GenericAlgorithm, InvasionPercolation
+from openpnm.algorithms import DirectionalRelativePermeability
 from openpnm.utils import logging
-from openpnm import models
+# from openpnm import models
 import numpy as np
 import openpnm
-import matplotlib.pyplot as plt
-from collections import namedtuple
-import csv
+# import matplotlib.pyplot as plt
+# from collections import namedtuple
+# import csv
 # import matplotlib.pyplot as plt
 logger = logging.getLogger(__name__)
 
@@ -26,7 +27,7 @@ default_settings = {
                     'BP_2': dict()}
 
 
-class RelativePermeability(GenericAlgorithm,DirectionalRelativePermeability):
+class RelativePermeability(GenericAlgorithm, DirectionalRelativePermeability):
     r"""
     A subclass of Generic Algorithm to calculate relative permeabilities of
     fluids in a drainage process. The main roles of this subclass are to
@@ -55,7 +56,7 @@ class RelativePermeability(GenericAlgorithm,DirectionalRelativePermeability):
             self.settings['flow_outlets'].update({flow: (outlet_dict[flow])})
 
 
-    def run(self):
+    def run(self,Snw_num=None):
         net= self.project.network
         oil = openpnm.phases.GenericPhase(network=net, name='oil')
         water = openpnm.phases.GenericPhase(network=net, name='water')
@@ -108,27 +109,11 @@ class RelativePermeability(GenericAlgorithm,DirectionalRelativePermeability):
                   throat_volume='throat.volume')
         K_dir=set(self.settings['flow_inlets'].keys())
         for dim in K_dir:
-            Stokes_alg_wp = StokesFlow(network=net, phase=self.settings['wp'])
-            Stokes_alg_wp.set_value_BC(pores=net.pores(self.settings['BP_1'][dim]),
-                                       values=1)
-            Stokes_alg_wp.set_value_BC(pores=net.pores(self.settings['BP_2'][dim]),
-                                       values=0)
-            Stokes_alg_wp.run()
-            val=Stokes_alg_wp.calc_effective_permeability(inlets=Finlets_init[dim],
-                                                          outlets=Foutlets_init[dim])
-            self.settings['perm_wp'].update({dim:val})
-            self.project.purge_object(obj=Stokes_alg_wp)
-            Stokes_alg_nwp = StokesFlow(network=net, phase=self.settings['nwp'])
-            Stokes_alg_nwp.set_value_BC(pores=net.pores(self.settings['BP_1'][dim]),
-                                        values=1)
-            Stokes_alg_nwp.set_value_BC(pores=net.pores(self.settings['BP_2'][dim]),
-                                        values=0)
-            Stokes_alg_nwp.run()
-            val=Stokes_alg_nwp.calc_effective_permeability(inlets=Finlets_init[dim],
-                                                           outlets=Foutlets_init[dim])
-            self.settings['perm_nwp'].update({dim: val})
-            self.project.purge_object(obj=Stokes_alg_nwp)
-        Sarr=np.linspace(0, 1, num=10)
+            B_pores=[net.pores(self.settings['BP_1'][dim]),net.pores(self.settings['BP_2'][dim])]
+            in_outlet_pores=[Finlets_init[dim],Foutlets_init[dim]]
+            [Kw,Knw]=super(DirectionalRelativePermeability,self).abs_perm_calc(B_pores,in_outlet_pores)
+            self.settings['perm_wp'].update({dim:Kw})
+            self.settings['perm_nwp'].update({dim: Knw})
         for i in range(len(self.settings['input_vect'])):
             invasion=self.settings['input_vect'][i][0]
             flow=self.settings['input_vect'][i][1]
@@ -136,45 +121,25 @@ class RelativePermeability(GenericAlgorithm,DirectionalRelativePermeability):
             relperm_nwp=[]
             inv.set_inlets(pores=Iinlets[invasion])
             inv.run()
+            if Snw_num is None:
+                Snw_num=10
+            max_seq = np.max([np.max(self.settings['pore.invasion_sequence']),
+                          np.max(self.settings['throat.invasion_sequence'])])
+            start=max_seq//Snw_num
+            stop=max_seq
+            step=max_seq//Snw_num
             Snwparr = []
-            for Snw in Sarr:
-                res1=inv.results(Snwp=Snw)
-                occ_ts=res1['throat.occupancy']
-                if np.any(occ_ts):
-                    Snwparr.append(Snw)
-                    self.settings['nwp']['pore.occupancy'] = res1['pore.occupancy']
-                    self.settings['wp']['pore.occupancy'] = 1-res1['pore.occupancy']
-                    self.settings['nwp']['throat.occupancy'] = res1['throat.occupancy']
-                    self.settings['wp']['throat.occupancy'] = 1-res1['throat.occupancy']
-                    super(DirectionalRelativePermeability, self)._regenerate_models()
-                    St_mp_wp = StokesFlow(network=net, phase=self.settings['wp'])
-                    St_mp_wp.setup(conductance='throat.conduit_hydraulic_conductance')
-                    St_mp_wp.set_value_BC(pores=net.pores(self.settings['BP_1'][flow]),
-                                          values=1)
-                    St_mp_wp.set_value_BC(pores=net.pores(self.settings['BP_2'][flow]),
-                                          values=0)
-                    St_mp_nwp = StokesFlow(network=net, phase=self.settings['nwp'])
-                    St_mp_nwp.set_value_BC(pores=net.pores(self.settings['BP_1'][flow]),
-                                           values=1)
-                    St_mp_nwp.set_value_BC(pores=net.pores(self.settings['BP_2'][flow]),
-                                           values=0)
-                    St_mp_nwp.setup(conductance='throat.conduit_hydraulic_conductance')
-                    St_mp_wp.run()
-                    St_mp_nwp.run()
-                    Keff_mp_wp =St_mp_wp.calc_effective_permeability(inlets=\
-                                                                     Finlets_init[flow],
-                                                                     outlets=\
-                                                                     Foutlets_init[flow])
-                    Keff_mp_nwp =St_mp_nwp.calc_effective_permeability(inlets=\
-                                                                       Finlets_init[flow],
-                                                                       outlets=\
-                                                                       Foutlets_init[flow])
-                    relperm_wp.append(Keff_mp_wp/self.settings['perm_wp'][flow])
-                    relperm_nwp.append(Keff_mp_nwp/self.settings['perm_nwp'][flow])
-                    self.project.purge_object(obj=St_mp_wp)
-                    self.project.purge_object(obj=St_mp_nwp)
-                self.settings['relperm_wp'].update({self.settings['input_vect'][i]:\
+            B_pores=[net.pores(self.settings['BP_1'][flow]),net.pores(self.settings['BP_2'][flow])]
+            in_outlet_pores=[Finlets_init[flow],Foutlets_init[flow]]
+            for i in range(start, stop, step):
+                sat=self._sat_occ_update(i)
+                Snwparr.append(sat)
+                [Kewp,Kenwp]=super(DirectionalRelativePermeability,self).rel_perm_calc(B_pores,
+                                                                                        in_outlet_pores)
+                relperm_wp.append(Kewp/self.settings['perm_wp'][flow])
+                relperm_nwp.append(Kenwp/self.settings['perm_nwp'][flow])
+            self.settings['relperm_wp'].update({self.settings['input_vect'][i]:\
                                                    relperm_wp})
-                self.settings['relperm_nwp'].update({self.settings['input_vect'][i]:\
+            self.settings['relperm_nwp'].update({self.settings['input_vect'][i]:\
                                                     relperm_nwp})
-                self.settings['sat'].update({self.settings['input_vect'][i]: Snwparr})
+            self.settings['sat'].update({self.settings['input_vect'][i]: Snwparr})
