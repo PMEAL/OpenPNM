@@ -46,7 +46,12 @@ class HydraulicConductanceTest:
         assert _sp.allclose(a=self.phys['throat.conductance'][0],
                             b=1330.68207684)
 
-    def test_valvatne_blunte(self):
+    def test_valvatne_blunt(self):
+        self.phase = op.phases.GenericPhase(network=self.net)
+        self.phase['pore.viscosity'] = 1e-5
+        self.phys = op.physics.GenericPhysics(network=self.net,
+                                              phase=self.phase,
+                                              geometry=self.geo)
         mod = op.models.physics.hydraulic_conductance.valvatne_blunt
         sf = np.sqrt(3)/36.0
         self.geo['pore.shape_factor'] = np.ones(self.geo.Np)*sf
