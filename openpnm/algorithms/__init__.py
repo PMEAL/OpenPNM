@@ -8,7 +8,7 @@ The ``algorithms`` module contains classes for conducting transport simulations
 on pore networks.
 
 """
-
+from . import metrics
 from .GenericAlgorithm import GenericAlgorithm
 from .GenericTransport import GenericTransport
 from .ReactiveTransport import ReactiveTransport
