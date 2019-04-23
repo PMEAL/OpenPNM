@@ -38,10 +38,13 @@ class TransientAdvectionDiffusionTest:
 
         ad = op.algorithms.TransientAdvectionDiffusion(network=self.net,
                                                        phase=self.phase)
-        ad.setup(quantity='pore.concentration',
-                 conductance='throat.ad_dif_conductance', t_initial=0,
-                 t_final=100, t_step=1, t_output=50, t_tolerance=1e-20,
-                 t_scheme='implicit')
+        ad.setup(phase=self.phase, quantity='pore.concentration',
+                 conductance='throat.ad_dif_conductance',
+                 diffusive_conductance='throat.diffusive_conductance',
+                 hydraulic_conductance='throat.hydraulic_conductance',
+                 pressure='pore.pressure', t_initial=0, t_final=100, t_step=1,
+                 t_output=50, t_tolerance=1e-20, t_precision=12,
+                 s_scheme='implicit')
         ad.set_IC(0)
         ad.set_value_BC(pores=self.net.pores('back'), values=2)
         ad.set_value_BC(pores=self.net.pores('front'), values=0)

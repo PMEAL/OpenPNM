@@ -140,17 +140,17 @@ class TransientReactiveTransport(ReactiveTransport):
             self.settings['quantity'] = quantity
         if conductance:
             self.settings['conductance'] = conductance
-        if t_initial:
+        if t_initial is not None:
             self.settings['t_initial'] = t_initial
-        if t_final:
+        if t_final is not None:
             self.settings['t_final'] = t_final
-        if t_step:
+        if t_step is not None:
             self.settings['t_step'] = t_step
         if t_output is not None:
             self.settings['t_output'] = t_output
-        if t_tolerance:
+        if t_tolerance is not None:
             self.settings['t_tolerance'] = t_tolerance
-        if t_precision:
+        if t_precision is not None:
             self.settings['t_precision'] = t_precision
         if t_scheme:
             self.settings['t_scheme'] = t_scheme
