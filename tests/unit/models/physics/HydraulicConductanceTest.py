@@ -56,14 +56,19 @@ class HydraulicConductanceTest:
         assert _sp.allclose(a=self.phys['throat.conductance'][0],
                             b=1330.68207684)
 
-    # def test_valvatne_blunt(self):
-    #     mod = op.models.physics.hydraulic_conductance.valvatne_blunt
-    #     sf = np.sqrt(3)/36.0
-    #     self.geo['pore.shape_factor'] = np.ones(self.geo.Np)*sf
-    #     self.geo['throat.shape_factor'] = np.ones(self.geo.Nt)*sf
-    #     self.phys.add_model(propname='throat.valvatne_conductance', model=mod)
-    #     actual = self.phys['throat.valvatne_conductance'].mean()
-    #     assert_approx_equal(actual, desired=1030.9826)
+    def test_valvatne_blunt(self):
+        self.phase = op.phases.GenericPhase(network=self.net)
+        self.phase['pore.viscosity'] = 1e-5
+        self.phys = op.physics.GenericPhysics(network=self.net,
+                                              phase=self.phase,
+                                              geometry=self.geo)
+        mod = op.models.physics.hydraulic_conductance.valvatne_blunt
+        sf = np.sqrt(3)/36.0
+        self.geo['pore.shape_factor'] = np.ones(self.geo.Np)*sf
+        self.geo['throat.shape_factor'] = np.ones(self.geo.Nt)*sf
+        self.phys.add_model(propname='throat.valvatne_conductance', model=mod)
+        actual = self.phys['throat.valvatne_conductance'].mean()
+        assert_approx_equal(actual, desired=1030.9826)
 
 
 if __name__ == '__main__':
