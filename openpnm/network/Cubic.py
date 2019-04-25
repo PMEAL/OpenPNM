@@ -90,6 +90,10 @@ class Cubic(GenericNetwork):
     def __init__(self, shape, spacing=[1, 1, 1], connectivity=6, name=None,
                  project=None):
 
+        # Take care of 1D/2D networks
+        shape = sp.array(shape, ndmin=1)
+        shape = np.concatenate((shape, [1]*(3-shape.size))).astype(int)
+
         arr = np.atleast_3d(np.empty(shape))
 
         # Store original network shape
@@ -98,7 +102,7 @@ class Cubic(GenericNetwork):
         spacing = sp.float64(spacing)
         if spacing.size == 2:
             spacing = sp.concatenate((spacing, [1]))
-        self._spacing = sp.ones(3)*sp.array(spacing, ndmin=1)
+        self._spacing = sp.ones(3, dtype=float)*sp.array(spacing, ndmin=1)
 
         z = np.tile(np.arange(shape[2]), shape[0]*shape[1])
         y = np.tile(np.repeat(np.arange(shape[1]), shape[2]), shape[0])
