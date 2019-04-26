@@ -375,7 +375,7 @@ class GenericTransport(GenericAlgorithm):
             phase = self.project.phases()[self.settings['phase']]
             g = phase[self.settings['conductance']]
             am = network.create_adjacency_matrix(weights=g, fmt='coo')
-            self._pure_A = spgr.laplacian(am)
+            self._pure_A = spgr.laplacian(am).astype(float)
         self.A = self._pure_A.copy()
 
     def _build_b(self, force=False):
