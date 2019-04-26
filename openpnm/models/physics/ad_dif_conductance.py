@@ -1,33 +1,27 @@
 r"""
 
-.. autofunction:: openpnm.models.physics.ad_dif_mig_conductance.ad_dif_mig
-.. autofunction:: openpnm.models.physics.ad_dif_mig_conductance.generic_conductance
+.. autofunction:: openpnm.models.physics.ad_dif_conductance.ad_dif
+.. autofunction:: openpnm.models.physics.ad_dif_conductance.generic_conductance
 
 """
 
 import scipy as _sp
 
 
-def ad_dif_mig(target,
-               pore_area='pore.area',
-               throat_area='throat.area',
-               pore_diffusivity='pore.diffusivity',
-               throat_diffusivity='throat.diffusivity',
-               conduit_lengths='throat.conduit_lengths',
-               conduit_shape_factors='throat.poisson_shape_factors',
-               pore_pressure='pore.pressure',
-               pore_potential='pore.potential',
-               throat_hydraulic_conductance='throat.hydraulic_conductance',
-               throat_diffusive_conductance='throat.diffusive_conductance',
-               throat_valence='throat.valence',
-               pore_temperature='pore.temperature',
-               throat_temperature='throat.temperature',
-               ion='',
-               s_scheme='powerlaw'):
+def ad_dif(target,
+           pore_area='pore.area',
+           throat_area='throat.area',
+           pore_diffusivity='pore.diffusivity',
+           throat_diffusivity='throat.diffusivity',
+           conduit_lengths='throat.conduit_lengths',
+           conduit_shape_factors='throat.poisson_shape_factors',
+           pore_pressure='pore.pressure',
+           throat_hydraulic_conductance='throat.hydraulic_conductance',
+           throat_diffusive_conductance='throat.diffusive_conductance',
+           s_scheme='powerlaw'):
     r"""
-    Calculate the advective-diffusive-migrative conductance of conduits
-    in network, where a conduit is ( 1/2 pore - full throat - 1/2 pore ).
-    See the notes section.
+    Calculate the advective-diffusive conductance of conduits in network, where
+    a conduit is ( 1/2 pore - full throat - 1/2 pore ). See the notes section.
 
     Parameters
     ----------
@@ -57,26 +51,11 @@ def ad_dif_mig(target,
     pore_pressure : string
         Dictionary key of the pore pressure values
 
-    pore_potential : string
-        Dictionary key of the pore potential values
-
    throat_hydraulic_conductance : string
        Dictionary key of the throat hydraulic conductance values
 
    throat_diffusive_conductance : string
        Dictionary key of the throat diffusive conductance values
-
-   throat_valence : string
-       Dictionary key of the throat ionic species valence values
-
-   pore_temperature : string
-       Dictionary key of the pore temperature values
-
-   throat_temperature : string
-       Dictionary key of the throat temperature values
-
-   ion : string
-       Name of the ionic species
 
    s_scheme : string
        Name of the space discretization scheme to use
@@ -84,8 +63,8 @@ def ad_dif_mig(target,
     Returns
     -------
     g : ndarray
-        Array containing advective-diffusive-migrative conductance values for
-        conduits in the geometry attached to the given physics object.
+        Array containing advective-diffusive conductance values for conduits in
+        the geometry attached to the given physics object.
 
     Notes
     -----
@@ -102,21 +81,16 @@ def ad_dif_mig(target,
     """
     return generic_conductance(
         target=target,
-        transport_type='ad_dif_mig',
+        transport_type='ad_dif',
         pore_area=pore_area,
         throat_area=throat_area,
-        pore_diffusivity=pore_diffusivity+'.'+ion,
-        throat_diffusivity=throat_diffusivity+'.'+ion,
+        pore_diffusivity=pore_diffusivity,
+        throat_diffusivity=throat_diffusivity,
         conduit_lengths=conduit_lengths,
         conduit_shape_factors=conduit_shape_factors,
         pore_pressure=pore_pressure,
-        pore_potential=pore_potential,
         throat_hydraulic_conductance=throat_hydraulic_conductance,
-        throat_diffusive_conductance=(throat_diffusive_conductance + '.' +
-                                      ion),
-        throat_valence=throat_valence+'.'+ion,
-        pore_temperature=pore_temperature,
-        throat_temperature=throat_temperature,
+        throat_diffusive_conductance=throat_diffusive_conductance,
         s_scheme=s_scheme)
 
 
@@ -182,10 +156,6 @@ def generic_conductance(target, transport_type, pore_area, throat_area,
     throats = network.map_throats(throats=target.Ts, origin=target)
     phase = target.project.find_phase(target)
     cn = network['throat.conns'][throats]
-    # Getting equivalent areas
-    A1 = network[pore_area][cn[:, 0]]
-    At = network[throat_area][throats]
-    A2 = network[pore_area][cn[:, 1]]
     # Getting conduit lengths
     L1 = network[conduit_lengths + '.pore1'][throats]
     Lt = network[conduit_lengths + '.throat'][throats]
@@ -203,85 +173,46 @@ def generic_conductance(target, transport_type, pore_area, throat_area,
         SF2 = phase[conduit_shape_factors+'.pore2'][throats]
     except KeyError:
         SF1 = SF2 = SFt = 1.0
-    # Interpolate pore phase property values to throats
-    try:
-        Dt = phase[throat_diffusivity][throats]
-    except KeyError:
-        Dt = phase.interpolate_data(propname=pore_diffusivity)[throats]
     # Find g for half of pore 1, throat, and half of pore 2
-    if transport_type == 'ad_dif_mig':
+    if transport_type in ['dispersion', 'ad_dif']:
         for k, v in kwargs.items():
             if k == 'pore_pressure':
                 pore_pressure = v
-            if k == 'pore_potential':
-                pore_potential = v
             elif k == 'throat_hydraulic_conductance':
                 throat_hydraulic_conductance = v
             elif k == 'throat_diffusive_conductance':
                 throat_diffusive_conductance = v
-            elif k == 'throat_valence':
-                throat_valence = v
-            elif k == 'pore_temperature':
-                pore_temperature = v
-            elif k == 'throat_temperature':
-                throat_temperature = v
             elif k == 's_scheme':
                 s_scheme = v
 
-        # Interpolate pore phase property values to throats
-        try:
-            T = phase[throat_temperature][throats]
-        except KeyError:
-            T = phase.interpolate_data(propname=pore_temperature)[throats]
-
         P = phase[pore_pressure]
-        V = phase[pore_potential]
         gh = phase[throat_hydraulic_conductance]
         gd = phase[throat_diffusive_conductance]
         gd = _sp.tile(gd, 2)
-        z = phase[throat_valence]
-        D = Dt
-        F = 96485.3329
-        R = 8.3145
 
-        S = (A1*L1+A2*L2+At*Lt)/(L1+L2+Lt)
-        L = L1 + Lt + L2
-
-        # Advection
         Qij = -gh*_sp.diff(P[cn], axis=1).squeeze()
         Qij = _sp.append(Qij, -Qij)
 
-        # Migration
-        grad_V = _sp.diff(V[cn], axis=1).squeeze() / L
-        mig = ((z*F*D*S)/(R*T)) * grad_V
-        mig = _sp.append(mig, -mig)
-
-        # Advection-migration
-        adv_mig = Qij-mig
-
-        # Peclet number (includes advection and migration)
-        Peij_adv_mig = adv_mig/gd
-        Peij_adv_mig[(Peij_adv_mig < 1e-10) & (Peij_adv_mig >= 0)] = 1e-10
-        Peij_adv_mig[(Peij_adv_mig > -1e-10) & (Peij_adv_mig <= 0)] = -1e-10
-
-        # Corrected advection-migration
-        adv_mig = Peij_adv_mig*gd
+        Peij = Qij/gd
+        Peij[(Peij < 1e-10) & (Peij >= 0)] = 1e-10
+        Peij[(Peij > -1e-10) & (Peij <= 0)] = -1e-10
+        Qij = Peij*gd
 
         if s_scheme == 'upwind':
-            w = gd + _sp.maximum(0, -adv_mig)
+            w = gd + _sp.maximum(0, -Qij)
         elif s_scheme == 'hybrid':
-            w = _sp.maximum(0, _sp.maximum(-adv_mig, gd-adv_mig/2))
+            w = _sp.maximum(0, _sp.maximum(-Qij, gd-Qij/2))
         elif s_scheme == 'powerlaw':
-            w = (gd * _sp.maximum(0, (1 - 0.1*_sp.absolute(Peij_adv_mig))**5) +
-                 _sp.maximum(0, -adv_mig))
+            w = gd * _sp.maximum(0, (1 - 0.1*_sp.absolute(Peij))**5) + \
+                _sp.maximum(0, -Qij)
         elif s_scheme == 'exponential':
-            w = -adv_mig / (1 - _sp.exp(Peij_adv_mig))
+            w = -Qij / (1 - _sp.exp(Peij))
         else:
             raise Exception('Unrecognized discretization scheme: ' + s_scheme)
         w = _sp.reshape(w, (network.Nt, 2), order='F')
         return w
     else:
         raise Exception('Unknown keyword for "transport_type", can only be' +
-                        ' "ad_dif_mig"')
+                        ' "dispersion"')
     # Apply shape factors and calculate the final conductance
     return (1/gt/SFt + 1/g1/SF1 + 1/g2/SF2)**(-1)

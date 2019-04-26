@@ -322,8 +322,8 @@ def classic_ordinary_diffusion(target,
     plen1 = (0.5 * pdia[Ps[:, 0]])
     plen2 = (0.5 * pdia[Ps[:, 1]])
     # Remove any non-positive lengths
-    plen1[plen1 <= 0] = 1e-12
-    plen2[plen2 <= 0] = 1e-12
+    plen1[plen1 <= 1e-12] = 1e-12
+    plen2[plen2 <= 1e-12] = 1e-12
     # Find g for half of pore 1
     gp1 = ct * DABt * parea[Ps[:, 0]] / plen1
     gp1[_sp.isnan(gp1)] = _sp.inf

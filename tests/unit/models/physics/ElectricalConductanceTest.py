@@ -27,6 +27,17 @@ class ElectricalConductanceTest:
         actual = self.phys['throat.electrical_conductance'].mean()
         assert_approx_equal(actual, desired=1.0)
 
+    def test_electrical_conductance_with_zero_length_throats(self):
+        self.geo['throat.conduit_lengths.pore1'] = 0.15
+        self.geo['throat.conduit_lengths.throat'] = 0.0
+        self.geo['throat.conduit_lengths.pore2'] = 0.25
+        mod = op.models.physics.electrical_conductance.series_resistors
+        self.phys.add_model(propname='throat.electrical_conductance',
+                            model=mod)
+        self.phys.regenerate_models()
+        actual = self.phys['throat.electrical_conductance'].mean()
+        assert_approx_equal(actual, desired=2.5)
+
 
 if __name__ == '__main__':
 
