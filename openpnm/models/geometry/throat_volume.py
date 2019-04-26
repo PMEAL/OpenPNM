@@ -106,3 +106,27 @@ def extrusion(target, throat_length='throat.length',
     area = target[throat_area]
     value = leng*area
     return value
+
+
+def rectangle(target, throat_length='throat.length',
+              throat_diameter='throat.diameter'):
+    r"""
+    Calculate throat volume assuing a rectangular shape
+
+    Parameters
+    ----------
+    target : OpenPNM Object
+        The object which this model is associated with. This controls the
+        length of the calculated array, and also provides access to other
+        necessary properties.
+
+    throat_length and throat_diameter : strings
+        The dictionary keys containing the arrays with the throat diameter and
+        length values.
+
+    Notes
+    -----
+    At present this models does NOT account for the volume reprsented by the
+    intersection of the throat with a spherical pore body.
+    """
+    return target[throat_length] * target[throat_diameter]

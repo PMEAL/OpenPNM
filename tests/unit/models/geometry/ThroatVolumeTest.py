@@ -33,6 +33,13 @@ class ThroatVolumeTest:
         b = np.unique(self.geo['throat.volume'])
         assert_approx_equal(a, b)
 
+    def test_rectangle(self):
+        self.geo.add_model(propname='throat.volume',
+                           model=mods.rectangle)
+        a = np.array([0.1])
+        b = np.unique(self.geo['throat.volume'])
+        assert_approx_equal(a, b)
+
     def test_extrusion(self):
         self.geo.add_model(propname='throat.volume',
                            throat_area='throat.area',
