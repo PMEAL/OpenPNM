@@ -14,14 +14,22 @@ class PoreVolumeTest:
         self.phys = op.physics.GenericPhysics(network=self.net,
                                               phase=self.air,
                                               geometry=self.geo)
-        self.geo['pore.diameter'] = 1.0
+        self.geo['pore.diameter'] = 1.05
         self.geo['throat.area'] = 0.1
 
     def test_sphere(self):
         self.geo.add_model(propname='pore.volume',
                            model=mods.sphere,
                            regen_mode='normal')
-        a = np.array([0.52359878])
+        a = np.array([0.52359878*1.05**3])
+        b = np.unique(self.geo['pore.volume'])
+        assert_approx_equal(a, b)
+
+    def test_circle(self):
+        self.geo.add_model(propname='pore.volume',
+                           model=mods.circle,
+                           regen_mode='normal')
+        a = np.array([3.14159265/4*1.05**2])
         b = np.unique(self.geo['pore.volume'])
         assert_approx_equal(a, b)
 
@@ -29,7 +37,15 @@ class PoreVolumeTest:
         self.geo.add_model(propname='pore.volume',
                            model=mods.cube,
                            regen_mode='normal')
-        a = np.array([1.0])
+        a = np.array([1.0*1.05**3])
+        b = np.unique(self.geo['pore.volume'])
+        assert_approx_equal(a, b)
+
+    def test_square(self):
+        self.geo.add_model(propname='pore.volume',
+                           model=mods.square,
+                           regen_mode='normal')
+        a = np.array([1.0*1.05**2])
         b = np.unique(self.geo['pore.volume'])
         assert_approx_equal(a, b)
 

@@ -33,6 +33,22 @@ class PoreAreaTest:
         b = np.unique(self.geo['pore.area'])
         assert_approx_equal(a, b)
 
+    def test_circle(self):
+        self.geo.add_model(propname='pore.area',
+                           model=mods.circle,
+                           regen_mode='normal')
+        a = np.array([1.0])
+        b = np.unique(self.geo['pore.area'])
+        assert_approx_equal(a, b)
+
+    def test_square(self):
+        self.geo.add_model(propname='pore.area',
+                           model=mods.square,
+                           regen_mode='normal')
+        a = np.array([1.0])
+        b = np.unique(self.geo['pore.area'])
+        assert_approx_equal(a, b)
+
 
 if __name__ == '__main__':
 

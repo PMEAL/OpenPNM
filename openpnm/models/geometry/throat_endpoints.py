@@ -49,6 +49,37 @@ def cubic_pores(target, pore_diameter='pore.diameter'):
     return {'head': EP1, 'tail': EP2}
 
 
+def square_pores(target, pore_diameter='pore.diameter'):
+    r"""
+    Calculate coordinates of throat endpoints, assuming throats don't overlap
+    with their adjacent pores. This model could be applied to conduits such as
+    cuboids or cylinders in series in true 2D simulations.
+
+    Parameters
+    ----------
+    target : OpenPNM Object
+        The object which this model is associated with. This controls the
+        length of the calculated array, and also provides access to other
+        necessary properties.
+
+    pore_diameter : string
+        Dictionary key of the pore diameter values
+
+    Returns
+    -------
+    EP : dictionary
+        Coordinates of throat endpoints stored in Dict form. Can be accessed
+        via the dict keys 'head' and 'tail'.
+
+    Notes
+    -----
+    This model is only accurate for cubic networks without diagonal
+    connections.
+
+    """
+    return cubic_pores(target, pore_diameter=pore_diameter)
+
+
 def spherical_pores(target, pore_diameter='pore.diameter',
                     throat_diameter='throat.diameter',
                     throat_centroid='throat.centroid'):
@@ -168,7 +199,7 @@ def circular_pores(target, pore_diameter='pore.diameter',
     the model takes care of the rest.
 
     """
-    return spherical_pores(target=target, pore_diameter=pore_diameter,
+    return spherical_pores(target, pore_diameter=pore_diameter,
                            throat_diameter=throat_diameter)
 
 
