@@ -33,10 +33,7 @@ def cylinder(target, throat_diameter='throat.diameter',
         Array containing throat surface area values.
 
     """
-    D = target[throat_diameter]
-    L = target[throat_length]
-    value = _sp.pi*D*L
-    return value
+    return _sp.pi * target[throat_diameter] * target[throat_length]
 
 
 def cuboid(target, throat_diameter='throat.diameter',
@@ -64,10 +61,7 @@ def cuboid(target, throat_diameter='throat.diameter',
         Array containing throat surface area values.
 
     """
-    D = target[throat_diameter]
-    L = target[throat_length]
-    value = 4*D*L
-    return value
+    return 4 * target[throat_diameter] * target[throat_length]
 
 
 def extrusion(target, throat_perimeter='throat.perimeter',
@@ -96,7 +90,24 @@ def extrusion(target, throat_perimeter='throat.perimeter',
         Array containing throat surface area values.
 
     """
-    P = target[throat_perimeter]
-    L = target[throat_length]
-    value = P*L
-    return value
+    return target[throat_perimeter] * target[throat_length]
+
+
+def rectangle(target, throat_length='throat.length'):
+    r"""
+    Calculate surface area for a rectangular throat
+
+    Only suitable for true 2D simulations
+
+    Parameters
+    ----------
+    target : OpenPNM Object
+        The object which this model is associated with. This controls the
+        length of the calculated array, and also provides access to other
+        necessary properties.
+
+    throat_length : string
+        Dictionary key to the throat length array.  Default is 'throat.length'.
+
+    """
+    return 2 * target[throat_length]
