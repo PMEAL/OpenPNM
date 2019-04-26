@@ -312,8 +312,8 @@ def classic_hagen_poiseuille(target,
     plen1 = (0.5*pdia[Ps[:, 0]])
     plen2 = (0.5*pdia[Ps[:, 1]])
     # Remove any non-positive lengths
-    plen1[plen1 <= 0] = 1e-12
-    plen2[plen2 <= 0] = 1e-12
+    plen1[plen1 <= 1e-12] = 1e-12
+    plen2[plen2 <= 1e-12] = 1e-12
     # Find g for half of pore 1
     gp1 = _sp.pi*(pdia[Ps[:, 0]])**4/(128*plen1*mut)
     gp1[_sp.isnan(gp1)] = _sp.inf
@@ -356,7 +356,11 @@ def generic_conductance(target, transport_type, pore_area, throat_area,
         necessary properties.
 
     transport_type : string
-        Dictionary key of the transport type
+        The transport type.  Options are:
+
+        *'flow'* - For Newtonian fluids
+
+        *'power_law'* - For power-law fluids
 
     pore_area : string
         Dictionary key of the pore area values
@@ -517,7 +521,7 @@ def generic_conductance(target, transport_type, pore_area, throat_area,
         gt[mt] = At[mt]**2 / ((8*pi*Lt)[mt]*mut)
     else:
         raise Exception('Unknown keyword for "transport_type", can only be' +
-                        ' "flow" or "flow_powar_law"')
+                        ' "flow" or "flow_power_law"')
     # Apply shape factors and calculate the final conductance
     return (1/gt/SFt + 1/g1/SF1 + 1/g2/SF2)**(-1)
 

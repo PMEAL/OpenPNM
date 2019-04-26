@@ -209,7 +209,7 @@ def create_grid(Name, GridType, **attribs):
                            'GridType': GridType,
                            'Section': None})
     element.attrib.update(attribs)
-    if element.attrib['GridType'] is not 'Subset':
+    if element.attrib['GridType'] != 'Subset':
         if 'Section' in element.attrib.keys():
             del element.attrib['Section']
     return element
