@@ -223,7 +223,7 @@ def toc(quiet=False):
     if '_startTime_for_tictoc' in globals():
         t = _time.time() - _startTime_for_tictoc
         if quiet is False:
-            print('Elapsed time in seconds: ', t)
+            print(f'Elapsed time in seconds: {t:0.2f}')
         else:
             return t
     else:

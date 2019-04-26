@@ -13,7 +13,6 @@ class SubclassedTransportTest:
         self.phys = op.physics.GenericPhysics(network=self.net,
                                               phase=self.phase,
                                               geometry=self.geo)
-        self.phase['pore.viscosity'] = 1e-3
 
     def test_fickian_diffusion(self):
         alg = op.algorithms.FickianDiffusion(network=self.net,
@@ -24,11 +23,13 @@ class SubclassedTransportTest:
         alg.set_value_BC(pores=Pin, values=1)
         alg.set_value_BC(pores=Pout, values=0)
         alg.run()
-        Deff = alg.calc_effective_diffusivity()
-        Deff = alg.calc_effective_diffusivity(domain_area=81, domain_length=9)
-        Deff = alg.calc_effective_diffusivity(domain_area=81, domain_length=9,
-                                              inlets=Pin, outlets=Pout)
-        assert_allclose(Deff, 7.282894736)
+        rate_in = alg.rate(pores=Pin)[0]
+        rate_out = alg.rate(pores=Pout)[0]
+        rate_total = alg.rate(self.net.pores("surface"))[0]
+        assert_allclose(rate_in, 10.125)
+        assert_allclose(rate_in, -rate_out)
+        assert rate_in > 0
+        assert abs(rate_total) < rate_in * 1e-14
 
     def test_stokes_flow(self):
         alg = op.algorithms.StokesFlow(network=self.net, phase=self.phase)
@@ -38,11 +39,13 @@ class SubclassedTransportTest:
         alg.set_value_BC(pores=Pin, values=101325)
         alg.set_value_BC(pores=Pout, values=0)
         alg.run()
-        Keff = alg.calc_effective_permeability()
-        Keff = alg.calc_effective_permeability(domain_area=81, domain_length=9)
-        Keff = alg.calc_effective_permeability(domain_area=81, domain_length=9,
-                                               inlets=Pin, outlets=Pout)
-        assert_allclose(Keff, 0.0072828947)
+        rate_in = alg.rate(pores=Pin)[0]
+        rate_out = alg.rate(pores=Pout)[0]
+        rate_total = alg.rate(self.net.pores("surface"))[0]
+        assert_allclose(rate_in, 1025915.625)
+        assert_allclose(rate_in, -rate_out)
+        assert rate_in > 0
+        assert abs(rate_total) < rate_in * 1e-14
 
     def test_forurier_conduction(self):
         alg = op.algorithms.FourierConduction(network=self.net,
@@ -50,28 +53,32 @@ class SubclassedTransportTest:
         self.phys['throat.thermal_conductance'] = 1
         Pin = self.net.pores('top')
         Pout = self.net.pores('bottom')
-        alg.set_value_BC(pores=Pin, values=101325)
+        alg.set_value_BC(pores=Pin, values=273)
         alg.set_value_BC(pores=Pout, values=0)
         alg.run()
-        Keff = alg.calc_effective_conductivity()
-        Keff = alg.calc_effective_conductivity(domain_area=81, domain_length=9)
-        Keff = alg.calc_effective_conductivity(domain_area=81, domain_length=9,
-                                               inlets=Pin, outlets=Pout)
-        assert_allclose(Keff, 7.282894736)
+        rate_in = alg.rate(pores=Pin)[0]
+        rate_out = alg.rate(pores=Pout)[0]
+        rate_total = alg.rate(self.net.pores("surface"))[0]
+        assert_allclose(rate_in, 2764.125)
+        assert_allclose(rate_in, -rate_out)
+        assert rate_in > 0
+        assert abs(rate_total) < rate_in * 1e-14
 
     def test_ohmic_conduction(self):
         alg = op.algorithms.OhmicConduction(network=self.net, phase=self.phase)
         self.phys['throat.electrical_conductance'] = 1
         Pin = self.net.pores('top')
         Pout = self.net.pores('bottom')
-        alg.set_value_BC(pores=Pin, values=101325)
+        alg.set_value_BC(pores=Pin, values=1)
         alg.set_value_BC(pores=Pout, values=0)
         alg.run()
-        Keff = alg.calc_effective_conductivity()
-        Keff = alg.calc_effective_conductivity(domain_area=81, domain_length=9)
-        Keff = alg.calc_effective_conductivity(domain_area=81, domain_length=9,
-                                               inlets=Pin, outlets=Pout)
-        assert_allclose(Keff, 7.282894736)
+        rate_in = alg.rate(pores=Pin)[0]
+        rate_out = alg.rate(pores=Pout)[0]
+        rate_total = alg.rate(self.net.pores("surface"))[0]
+        assert_allclose(rate_in, 10.125)
+        assert_allclose(rate_in, -rate_out)
+        assert rate_in > 0
+        assert abs(rate_total) < rate_in * 1e-14
 
     def teardown_class(self):
         ws = op.Workspace()

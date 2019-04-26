@@ -10,6 +10,8 @@ class HydraulicConductanceTest:
         self.geo = op.geometry.GenericGeometry(network=self.net,
                                                pores=self.net.Ps,
                                                throats=self.net.Ts)
+        self.geo['pore.diameter'] = 1.0
+        self.geo['throat.diameter'] = 0.5
         self.geo['pore.area'] = 1.0
         self.geo['throat.area'] = 0.5
         self.phase = op.phases.GenericPhase(network=self.net)
@@ -27,10 +29,18 @@ class HydraulicConductanceTest:
         self.geo['throat.conduit_lengths.throat'] = 0.6
         self.geo['throat.conduit_lengths.pore2'] = 0.15
         mod = op.models.physics.hydraulic_conductance.hagen_poiseuille
-        self.phys.add_model(propname='throat.hydraulic_conductance',
-                            model=mod)
+        self.phys.add_model(propname='throat.hydraulic_conductance', model=mod)
         actual = self.phys['throat.hydraulic_conductance'].mean()
         assert_approx_equal(actual, desired=1421.0262776)
+
+    def test_hagen_poiseuille_2D(self):
+        self.geo['throat.conduit_lengths.pore1'] = 0.25
+        self.geo['throat.conduit_lengths.throat'] = 0.6
+        self.geo['throat.conduit_lengths.pore2'] = 0.15
+        mod = op.models.physics.hydraulic_conductance.hagen_poiseuille_2D
+        self.phys.add_model(propname='throat.hydraulic_conductance', model=mod)
+        actual = self.phys['throat.hydraulic_conductance'].mean()
+        assert_approx_equal(actual, desired=1602.564)
 
     def test_classic_hagen_poiseuille(self):
         self.geo['pore.diameter'] = 1.0
@@ -46,7 +56,12 @@ class HydraulicConductanceTest:
         assert _sp.allclose(a=self.phys['throat.conductance'][0],
                             b=1330.68207684)
 
-    def test_valvatne_blunte(self):
+    def test_valvatne_blunt(self):
+        self.phase = op.phases.GenericPhase(network=self.net)
+        self.phase['pore.viscosity'] = 1e-5
+        self.phys = op.physics.GenericPhysics(network=self.net,
+                                              phase=self.phase,
+                                              geometry=self.geo)
         mod = op.models.physics.hydraulic_conductance.valvatne_blunt
         sf = np.sqrt(3)/36.0
         self.geo['pore.shape_factor'] = np.ones(self.geo.Np)*sf
