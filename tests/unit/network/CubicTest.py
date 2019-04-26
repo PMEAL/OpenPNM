@@ -50,14 +50,18 @@ class CubicTest:
         net = op.network.Cubic(shape=[1, 5, 1])
         assert sp.all(net.shape == [1, 5, 1])
 
+    def test_shape_extremely_small_spacing(self):
+        net = op.network.Cubic(shape=[200, 200, 1], spacing=1e-9)
+        assert sp.allclose(net.shape, [200, 200, 1])
+
     def test_spacing_3D_rotated(self):
         net = op.network.Cubic(shape=[5, 5, 5], spacing=[1, 1, 1])
         theta = 0.1
         R = sp.array([[1, 0, 0],
                       [0, sp.cos(theta), -sp.sin(theta)],
-                      [0, sp.sin(theta), sp.cos(theta)]])
-        net['pore.coords'] = sp.tensordot(net['pore.coords'], R, axes=(1, 1))
-        assert sp.all(net.spacing == [1.0, 1.0, 1.0])
+                      [0, sp.sin(theta), sp.cos(theta)]], dtype=float)
+        net['pore.coords'] = net['pore.coords'] @ R.T
+        assert sp.allclose(net.spacing, [1, 1, 1])
 
     def test_spacing_3D_rotated_uneven(self):
         net = op.network.Cubic(shape=[3, 4, 5], spacing=[1, 2, 3])
@@ -66,7 +70,7 @@ class CubicTest:
                       [0, sp.cos(theta), -sp.sin(theta)],
                       [0, sp.sin(theta), sp.cos(theta)]])
         net['pore.coords'] = sp.tensordot(net['pore.coords'], R, axes=(1, 1))
-        assert sp.all(net.spacing == [1.0, 2.0, 3.0])
+        assert sp.allclose(net.spacing, [1, 2, 3])
 
     def test_spacing_2D_sheared(self):
         net = op.network.Cubic(shape=[5, 5, 1], spacing=1)
@@ -74,7 +78,7 @@ class CubicTest:
                       [0, 1, 0],
                       [0, 0, 1]])
         net['pore.coords'] = (S@net['pore.coords'].T).T
-        assert sp.allclose(net.spacing, [1.0, 2**0.5, 0.0])
+        assert sp.allclose(net.spacing, [1, 2**0.5, 0])
 
     def test_spacing_2D_sheared_uneven(self):
         net = op.network.Cubic(shape=[5, 5, 1], spacing=[1, 2])
@@ -98,7 +102,7 @@ class CubicTest:
                       [0, 1, 0],
                       [0, 0, 1]])
         net['pore.coords'] = (S@net['pore.coords'].T).T
-        assert sp.allclose(net.spacing, [1.0, 2*(2**0.5), 3.0])
+        assert sp.allclose(net.spacing, [1, 2*(2**0.5), 3])
 
     def test_spacing_on_joggled_network(self):
         net = op.network.Cubic(shape=[3, 4, 5])
