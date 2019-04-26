@@ -90,3 +90,16 @@ class GenericIO():
         else:
             project = network[0].project
         return (project, network, phases)
+
+    @classmethod
+    def is_transient(cls, phases):
+        # Check if any of the phases has time series
+        transient = False
+        if type(phases) == str:
+            transient = True in ['@' in k for k in phases.keys()]
+        elif type(phases) == list:
+            for phase in phases:
+                transient = True in ['@' in k for k in phase.keys()]
+                if transient:
+                    break
+        return (transient)

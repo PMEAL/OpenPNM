@@ -1,7 +1,7 @@
 import openpnm as op
 import openpnm.models.geometry.pore_surface_area as mods
 import numpy as np
-from numpy.testing import assert_array_almost_equal_nulp
+from numpy.testing import assert_allclose
 
 
 class PoreSurfaceAreaTest:
@@ -18,21 +18,36 @@ class PoreSurfaceAreaTest:
         self.geo['throat.area'] = 0.1
 
     def test_sphere(self):
-        self.geo.add_model(propname='pore.area',
+        self.geo.add_model(propname='pore.surface_area',
                            model=mods.sphere,
                            regen_mode='normal')
         a = np.array([2.54159265, 2.64159265, 2.74159265, 2.84159265])
-        b = np.unique(self.geo['pore.area'])
-        assert_array_almost_equal_nulp(a, b, nulp=1e7)
-        # nulp = 1e7 means 16-7 = 9 significant figures accurate.
+        b = np.unique(self.geo['pore.surface_area'])
+        assert_allclose(a, b)
+
+    def test_circle(self):
+        self.geo.add_model(propname='pore.surface_area',
+                           model=mods.circle,
+                           regen_mode='normal')
+        a = np.array([2.54159265, 2.64159265, 2.74159265, 2.84159265])
+        b = np.unique(self.geo['pore.surface_area'])
+        assert_allclose(a, b)
 
     def test_cube(self):
-        self.geo.add_model(propname='pore.area',
+        self.geo.add_model(propname='pore.surface_area',
                            model=mods.cube,
                            regen_mode='normal')
         a = np.array([5.4, 5.5, 5.6, 5.7])
-        b = np.unique(self.geo['pore.area'])
-        assert_array_almost_equal_nulp(a, b)
+        b = np.unique(self.geo['pore.surface_area'])
+        assert_allclose(a, b)
+
+    def test_square(self):
+        self.geo.add_model(propname='pore.surface_area',
+                           model=mods.square,
+                           regen_mode='normal')
+        a = np.array([3.4, 3.5, 3.6, 3.7])
+        b = np.unique(self.geo['pore.surface_area'])
+        assert_allclose(a, b)
 
 
 if __name__ == '__main__':
