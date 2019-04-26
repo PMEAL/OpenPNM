@@ -746,8 +746,8 @@ class GenericTransport(GenericAlgorithm):
         if not iscoplanar(outlets):
             logger.error('Detected inlet pores are not coplanar')
         tree = cKDTree(data=inlets)
-        Ls = np.unique(np.around(tree.query(x=outlets)[0], decimals=5))
-        if np.size(Ls) != 1:
+        Ls = np.unique(np.float64(tree.query(x=outlets)[0]))
+        if not np.allclose(Ls, Ls[0]):
             logger.error('A unique value of length could not be found')
         length = Ls[0]
         return length
