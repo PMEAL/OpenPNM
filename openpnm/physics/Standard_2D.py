@@ -5,9 +5,9 @@ logger = logging.getLogger(__name__)
 ws = Workspace()
 
 
-class Standard(GenericPhysics):
+class Standard_2D(GenericPhysics):
     r"""
-    Generic class to generate Physics objects
+    Generic class to generate Physics objects for true 2D simulations.
 
     Parameters
     ----------
@@ -47,11 +47,11 @@ class Standard(GenericPhysics):
                          **kwargs)
 
         self.add_model(propname='throat.flow_shape_factors',
-                       model=mods.flow_shape_factors.ball_and_stick)
+                       model=mods.flow_shape_factors.ball_and_stick_2D)
         self.add_model(propname='throat.hydraulic_conductance',
-                       model=mods.hydraulic_conductance.hagen_poiseuille)
+                       model=mods.hydraulic_conductance.hagen_poiseuille_2D)
         self.add_model(propname='throat.poisson_shape_factors',
-                       model=mods.poisson_shape_factors.ball_and_stick)
+                       model=mods.poisson_shape_factors.ball_and_stick_2D)
         self.add_model(propname='throat.diffusive_conductance',
                        model=mods.diffusive_conductance.ordinary_diffusion)
         self.add_model(propname='throat.entry_pressure',
