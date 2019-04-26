@@ -33,6 +33,10 @@ class CubicTest:
         assert sp.all(net.shape == [1, 1, 5])
         net = op.network.Cubic(shape=[1, 5, 1])
         assert sp.all(net.shape == [1, 5, 1])
+        net = op.network.Cubic(shape=5)
+        assert sp.all(net.shape == [5, 1, 1])
+        net = op.network.Cubic(shape=[5])
+        assert sp.all(net.shape == [5, 1, 1])
 
     def test_shape_2D(self):
         net = op.network.Cubic(shape=[5, 5, 1])
@@ -41,6 +45,8 @@ class CubicTest:
         assert sp.all(net.shape == [5, 1, 5])
         net = op.network.Cubic(shape=[1, 5, 5])
         assert sp.all(net.shape == [1, 5, 5])
+        net = op.network.Cubic(shape=[5, 2])
+        assert sp.all(net.shape == [5, 2, 1])
 
     def test_shape_3D(self):
         net = op.network.Cubic(shape=[5, 5, 5])
