@@ -50,6 +50,11 @@ class ExamplesTest():
         rc = self._notebook_run(nbook)
         assert rc
 
+    def test_transient_fickian_diffusion(self):
+        nbook = os.path.join(simulations_dir, 'Transient Fickian Diffusion.ipynb')
+        rc = self._notebook_run(nbook)
+        assert rc
+
     def test_relative_diffusion(self):
         nbook = os.path.join(simulations_dir, 'Relative Diffusivity.ipynb')
         rc = self._notebook_run(nbook)
