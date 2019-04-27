@@ -46,7 +46,8 @@ class IOVisTest():
         assert rc
 
     def test_Statoil_Import_and_Permeability_Calculation(self):
-        nbook = os.path.join(test_dir, 'Statoil Import and Permeability Calculation.ipynb')
+        fname = 'Statoil Import and Permeability Calculation.ipynb'
+        nbook = os.path.join(test_dir, fname)
         rc = self._notebook_run(nbook)
         assert rc
 
