@@ -1,4 +1,6 @@
 import openpnm as op
+import openpnm.models.geometry.throat_surface_area as tsa
+from numpy.testing import assert_allclose
 import scipy as sp
 
 
@@ -13,25 +15,24 @@ class ThroatSurfaceAreaTest:
         self.geo['throat.perimeter'] = sp.ones((self.geo.Nt, ))
 
     def test_cylinder(self):
-        f = op.models.geometry.throat_surface_area.cylinder
         self.geo.add_model(propname='throat.surface_area',
-                           model=f)
-        self.geo.regenerate_models()
-        assert sp.all(self.geo['throat.surface_area'] == sp.pi)
+                           model=tsa.cylinder, regen_mode="normal")
+        assert_allclose(self.geo['throat.surface_area'].mean(), sp.pi)
 
     def test_cuboid(self):
-        f = op.models.geometry.throat_surface_area.cuboid
         self.geo.add_model(propname='throat.surface_area',
-                           model=f,)
-        self.geo.regenerate_models()
-        assert sp.all(self.geo['throat.surface_area'] == 4)
+                           model=tsa.cuboid, regen_mode="normal")
+        assert_allclose(self.geo['throat.surface_area'].mean(), 4)
+
+    def test_rectangle(self):
+        self.geo.add_model(propname='throat.surface_area',
+                            model=tsa.rectangle, regen_mode="normal")
+        assert_allclose(self.geo['throat.surface_area'].mean(), 2)
 
     def test_extrusion(self):
-        f = op.models.geometry.throat_surface_area.extrusion
         self.geo.add_model(propname='throat.surface_area',
-                           model=f)
-        self.geo.regenerate_models()
-        assert sp.all(self.geo['throat.surface_area'] == 1)
+                           model=tsa.extrusion, regen_mode="normal")
+        assert_allclose(self.geo['throat.surface_area'].mean(), 1)
 
 
 if __name__ == '__main__':

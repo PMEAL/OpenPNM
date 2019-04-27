@@ -140,17 +140,17 @@ class TransientReactiveTransport(ReactiveTransport):
             self.settings['quantity'] = quantity
         if conductance:
             self.settings['conductance'] = conductance
-        if t_initial:
+        if t_initial is not None:
             self.settings['t_initial'] = t_initial
-        if t_final:
+        if t_final is not None:
             self.settings['t_final'] = t_final
-        if t_step:
+        if t_step is not None:
             self.settings['t_step'] = t_step
         if t_output is not None:
             self.settings['t_output'] = t_output
-        if t_tolerance:
+        if t_tolerance is not None:
             self.settings['t_tolerance'] = t_tolerance
-        if t_precision:
+        if t_precision is not None:
             self.settings['t_precision'] = t_precision
         if t_scheme:
             self.settings['t_scheme'] = t_scheme
@@ -406,11 +406,13 @@ class TransientReactiveTransport(ReactiveTransport):
 
         Parameters
         ----------
-        times : scalar, ND-array, or list
+        times : scalar, ND-array, list of scalars, None, or string
             Time steps to be returned. The default value is None which results
             in returning all time steps. If times is a scalar, only the
             corresponding time step is returned. If times is an ND-array or a
-            list, time steps in the provided array or list are returned.
+            list of scalars, time steps in the provided array or list are
+            returned. If times is 'final' or 'actual', the current value of the
+            quantity is returned.
 
         t_precision : integer
             The time precision (number of decimal places). Default value is 12.
@@ -426,6 +428,8 @@ class TransientReactiveTransport(ReactiveTransport):
         q = [k for k in list(self.keys()) if quantity in k]
         if times is None:
             t = q
+        elif times in ['final', 'actual']:
+            t = [quantity]
         elif type(times) in [np.ndarray, list, float, int]:
             out = np.array(times)
             out = np.unique(out)

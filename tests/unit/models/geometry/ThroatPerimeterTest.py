@@ -24,11 +24,19 @@ class ThroatPerimeterTest:
         b = np.unique(self.geo['throat.perimeter'])
         assert_approx_equal(a, b)
 
-    def test_cube(self):
+    def test_cuboid(self):
         self.geo.add_model(propname='throat.perimeter',
                            model=mods.cuboid,
                            regen_mode='normal')
         a = np.array([0.4])
+        b = np.unique(self.geo['throat.perimeter'])
+        assert_approx_equal(a, b)
+
+    def test_rectangle(self):
+        self.geo.add_model(propname='throat.perimeter',
+                           model=mods.rectangle,
+                           regen_mode='normal')
+        a = np.array([1.0])
         b = np.unique(self.geo['throat.perimeter'])
         assert_approx_equal(a, b)
 

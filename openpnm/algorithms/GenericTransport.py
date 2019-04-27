@@ -4,7 +4,6 @@ import scipy.sparse as sprs
 import scipy.sparse.csgraph as spgr
 from scipy.spatial import ConvexHull
 from scipy.spatial import cKDTree
-from decimal import Decimal as dc
 from openpnm.topotools import iscoplanar
 from openpnm.algorithms import GenericAlgorithm
 from openpnm.utils import logging
@@ -315,8 +314,8 @@ class GenericTransport(GenericAlgorithm):
 
         values = np.array(bcvalues)
         if values.size > 1 and values.size != pores.size:
-            raise Exception('The number of boundary values must match the ' +
-                            'number of locations')
+            raise Exception('The number of boundary values must match the '
+                            + 'number of locations')
 
         # Store boundary values
         if ('pore.bc_'+bctype not in self.keys()) or (mode == 'overwrite'):
@@ -375,7 +374,7 @@ class GenericTransport(GenericAlgorithm):
             phase = self.project.phases()[self.settings['phase']]
             g = phase[self.settings['conductance']]
             am = network.create_adjacency_matrix(weights=g, fmt='coo')
-            self._pure_A = spgr.laplacian(am)
+            self._pure_A = spgr.laplacian(am).astype(float)
         self.A = self._pure_A.copy()
 
     def _build_b(self, force=False):
@@ -429,7 +428,7 @@ class GenericTransport(GenericAlgorithm):
             ind = np.isfinite(self['pore.bc_rate'])
             self.b[ind] = self['pore.bc_rate'][ind]
         if 'pore.bc_value' in self.keys():
-            f = np.abs(self.A.data).mean()
+            f = np.abs(self.A.diagonal()).mean()
             # Update b (impose bc values)
             ind = np.isfinite(self['pore.bc_value'])
             self.b[ind] = self['pore.bc_value'][ind] * f
@@ -533,8 +532,8 @@ class GenericTransport(GenericAlgorithm):
                 x, exit_code = solver(A=A, b=b, atol=atol, tol=rtol,
                                       maxiter=self.settings['solver_maxiter'])
                 if exit_code > 0:
-                    raise Exception('SciPy solver did not converge! ' +
-                                    'Exit code: ' + str(exit_code))
+                    raise Exception('SciPy solver did not converge! '
+                                    + 'Exit code: ' + str(exit_code))
             else:
                 x = solver(A=A, b=b)
             return x
@@ -563,7 +562,7 @@ class GenericTransport(GenericAlgorithm):
             else:
                 raise Exception('pyamg is not installed.')
             ml = pyamg.ruge_stuben_solver(A)
-            x = ml.solve(b=b, tol=1e-6)
+            x = ml.solve(b=b, tol=1e-10)
             return x
 
     def results(self):
@@ -667,8 +666,8 @@ class GenericTransport(GenericAlgorithm):
 
         """
         if self.settings['quantity'] not in self.keys():
-            raise Exception('The algorithm has not been run yet. Cannot ' +
-                            'calculate effective property.')
+            raise Exception('The algorithm has not been run yet. Cannot '
+                            + 'calculate effective property.')
 
         Ps = np.isfinite(self['pore.bc_value'])
         BCs = np.unique(self['pore.bc_value'][Ps])
@@ -718,12 +717,12 @@ class GenericTransport(GenericAlgorithm):
             logger.error('Detected outlet pores are not coplanar')
         Nin = np.ptp(inlets, axis=0) > 0
         if Nin.all():
-            logger.warning('Detected inlets are not oriented along a ' +
-                           'principle axis')
+            logger.warning('Detected inlets are not oriented along a '
+                           + 'principle axis')
         Nout = np.ptp(outlets, axis=0) > 0
         if Nout.all():
-            logger.warning('Detected outlets are not oriented along a ' +
-                           'principle axis')
+            logger.warning('Detected outlets are not oriented along a '
+                           + 'principle axis')
         hull_in = ConvexHull(points=inlets[:, Nin])
         hull_out = ConvexHull(points=outlets[:, Nout])
         if hull_in.volume != hull_out.volume:
@@ -732,8 +731,8 @@ class GenericTransport(GenericAlgorithm):
         return area
 
     def _get_domain_length(self, inlets=None, outlets=None):
-        logger.warning('Attempting to estimate domain length... ' +
-                       'could be low if boundary pores were not added')
+        logger.warning('Attempting to estimate domain length... '
+                       + 'could be low if boundary pores were not added')
         network = self.project.network
         if inlets is None:
             inlets = self._get_inlets()
@@ -746,8 +745,8 @@ class GenericTransport(GenericAlgorithm):
         if not iscoplanar(outlets):
             logger.error('Detected inlet pores are not coplanar')
         tree = cKDTree(data=inlets)
-        Ls = np.unique(np.around(tree.query(x=outlets)[0], decimals=5))
-        if np.size(Ls) != 1:
+        Ls = np.unique(np.float64(tree.query(x=outlets)[0]))
+        if not np.allclose(Ls, Ls[0]):
             logger.error('A unique value of length could not be found')
         length = Ls[0]
         return length

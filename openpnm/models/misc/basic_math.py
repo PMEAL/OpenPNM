@@ -3,16 +3,63 @@ r"""
 .. autofunction:: openpnm.models.misc.basic_math.constant
 .. autofunction:: openpnm.models.misc.basic_math.product
 .. autofunction:: openpnm.models.misc.basic_math.scaled
+.. autofunction:: openpnm.models.misc.basic_math.clip
+.. autofunction:: openpnm.models.misc.basic_math.normalize
 
 """
-
+import numpy as np
 from openpnm.utils import logging
 logger = logging.getLogger(__name__)
 
 
+def normalize(target, prop, xmin=0, xmax=1):
+    r"""
+    Normalizes the given array between the supplied limits
+
+    Parameters
+    ----------
+    target : OpenPNM Object
+        The object which this model is associated with. This controls the
+        length of the calculated array, and also provides access to other
+        necessary properties.
+
+    xmin : float
+        Lower limit of the re-scaled data
+
+    xmax : float
+        Upper limit of the re-scaled data
+    """
+    vals = target[prop]
+    # Scale to 0 to 1
+    vals = (vals - vals.min())/(vals.max() - vals.min())
+    vals = vals*(xmax - xmin) + xmin
+    return vals
+
+
+def clip(target, prop, xmax, xmin=0):
+    r"""
+    Clips the given array within the supplied limits
+
+    Parameters
+    ----------
+    target : OpenPNM Object
+        The object which this model is associated with. This controls the
+        length of the calculated array, and also provides access to other
+        necessary properties.
+
+    xmin : float
+        Values below this limit will be replaced with ``xmin``.
+
+    xmax : float
+        Values above this limit will be replaced with ``xmax``.
+    """
+    vals = np.clip(target[prop], xmin, xmax)
+    return vals
+
+
 def constant(target, value):
     r"""
-    Places a constant value into the target object
+    Places the given constant value into the target object
 
     Parameters
     ----------

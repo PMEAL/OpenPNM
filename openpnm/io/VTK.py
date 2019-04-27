@@ -34,7 +34,8 @@ class VTK(GenericIO):
     '''.strip()
 
     @classmethod
-    def save(cls, network, phases=[], filename='', delim=' | ', fill_nans=None):
+    def save(cls, network, phases=[], filename='', delim=' | ',
+             fill_nans=None, fill_infs=None):
         r"""
         Save network and phase data to a single vtp file for visualizing in
         Paraview
@@ -58,10 +59,19 @@ class VTK(GenericIO):
             `None` which means property arrays with NaNs are not written to the
             file.  Other useful options might be 0 or -1, but the user must
             be aware that these are not real values, only place holders.
+        fill_infs : scalar
+            The value to use to replace infs with.  The default is ``None``
+            which means that property arrays containing ``None`` will *not*
+            be written to the file, and a warning will be issued.  A useful
+            value is
         """
         project, network, phases = cls._parse_args(network=network,
                                                    phases=phases)
-
+        # Check if any of the phases has time series
+        transient = GenericIO.is_transient(phases=phases)
+        if transient:
+            logger.warning('vtp format does not support transient data, ' +
+                           'use xdmf instead')
         if filename == '':
             filename = project.name
         filename = cls._parse_filename(filename=filename, ext='vtp')
@@ -107,6 +117,13 @@ class VTK(GenericIO):
                         continue
                     else:
                         array[np.isnan(array)] = fill_nans
+                if np.any(np.isinf(array)):
+                    if fill_infs is None:
+                        logger.warning(key + ' has infs,' +
+                                       ' will not write to file')
+                        continue
+                    else:
+                        array[np.isinf(array)] = fill_infs
                 element = VTK._array_to_element(key, array)
                 if (array.size == num_points):
                     point_data_node.append(element)

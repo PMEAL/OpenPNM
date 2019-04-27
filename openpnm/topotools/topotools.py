@@ -1311,11 +1311,9 @@ def dimensionality(network):
     multiple values, indicating that the pores are spatially distributed
     in that direction.
     """
-    v = [True, True, True]
-    for i in [0, 1, 2]:
-        v[i] = not sp.allclose(network['pore.coords'][:, i],
-                               network['pore.coords'][1, i])
-    return v
+    xyz = network["pore.coords"]
+    xyz_unique = [sp.unique(xyz[:, i]) for i in range(3)]
+    return [elem.size != 1 for elem in xyz_unique]
 
 
 def clone_pores(network, pores, labels=['clone'], mode='parents'):

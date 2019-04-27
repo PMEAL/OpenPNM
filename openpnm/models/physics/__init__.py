@@ -23,3 +23,4 @@ from . import poisson_shape_factors
 from . import meniscus
 from . import ionic_conductance
 from . import ad_dif_mig_conductance
+from . import ad_dif_conductance
