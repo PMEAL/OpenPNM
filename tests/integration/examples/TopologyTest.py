@@ -5,7 +5,7 @@ import openpnm as op
 
 rootdir = os.path.split(os.path.split(op.__file__)[0])[0]
 examples_dir = os.path.join(rootdir, 'examples')
-simulations_dir = os.path.join(examples_dir, 'topology')
+test_dir = os.path.join(examples_dir, 'topology')
 
 
 class TopoTest():
@@ -41,27 +41,27 @@ class TopoTest():
         return rc
 
     def test_Generate_Dual_Cubic_Lattice(self):
-        nbook = os.path.join(simulations_dir, 'Generate Dual Cubic Lattice.ipynb')
+        nbook = os.path.join(test_dir, 'Generate Dual Cubic Lattice.ipynb')
         rc = self._notebook_run(nbook)
         assert rc
 
     def test_Stitching_Networks_Together(self):
-        nbook = os.path.join(simulations_dir, 'Stitching Networks Together.ipynb')
+        nbook = os.path.join(test_dir, 'Stitching Networks Together.ipynb')
         rc = self._notebook_run(nbook)
         assert rc
 
     def test_Using_Queries_Level_1(self):
-        nbook = os.path.join(simulations_dir, 'Using Queries - Level 1.ipynb')
+        nbook = os.path.join(test_dir, 'Using Queries - Level 1.ipynb')
         rc = self._notebook_run(nbook)
         assert rc
 
     def test_Various_Cubic_Networks(self):
-        nbook = os.path.join(simulations_dir, 'Various Cubic Networks.ipynb')
+        nbook = os.path.join(test_dir, 'Various Cubic Networks.ipynb')
         rc = self._notebook_run(nbook)
         assert rc
 
     def test_Voronoi_Fibers(self):
-        nbook = os.path.join(simulations_dir, 'Voronoi Fibers.ipynb')
+        nbook = os.path.join(test_dir, 'Voronoi Fibers.ipynb')
         rc = self._notebook_run(nbook)
         assert rc
 

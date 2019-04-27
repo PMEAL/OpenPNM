@@ -5,7 +5,7 @@ import openpnm as op
 
 rootdir = os.path.split(os.path.split(op.__file__)[0])[0]
 examples_dir = os.path.join(rootdir, 'examples')
-simulations_dir = os.path.join(examples_dir, 'simulations')
+test_dir = os.path.join(examples_dir, 'simulations')
 
 
 class SimTest():
@@ -41,27 +41,27 @@ class SimTest():
         return rc
 
     def test_advection_diffusion(self):
-        nbook = os.path.join(simulations_dir, 'Advection-Diffusion.ipynb')
+        nbook = os.path.join(test_dir, 'Advection-Diffusion.ipynb')
         rc = self._notebook_run(nbook)
         assert rc
 
     def test_fickian_diffusion(self):
-        nbook = os.path.join(simulations_dir, 'Fickian Diffusion.ipynb')
+        nbook = os.path.join(test_dir, 'Fickian Diffusion.ipynb')
         rc = self._notebook_run(nbook)
         assert rc
 
     def test_transient_fickian_diffusion(self):
-        nbook = os.path.join(simulations_dir, 'Transient Fickian Diffusion.ipynb')
+        nbook = os.path.join(test_dir, 'Transient Fickian Diffusion.ipynb')
         rc = self._notebook_run(nbook)
         assert rc
 
     def test_relative_diffusion(self):
-        nbook = os.path.join(simulations_dir, 'Relative Diffusivity.ipynb')
+        nbook = os.path.join(test_dir, 'Relative Diffusivity.ipynb')
         rc = self._notebook_run(nbook)
         assert rc
 
     def test_rel_perm_2d(self):
-        nbook = os.path.join(simulations_dir, 'Relative Permeability in 2D.ipynb')
+        nbook = os.path.join(test_dir, 'Relative Permeability in 2D.ipynb')
         rc = self._notebook_run(nbook)
         assert rc
 

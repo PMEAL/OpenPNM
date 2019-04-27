@@ -5,7 +5,7 @@ import openpnm as op
 
 rootdir = os.path.split(os.path.split(op.__file__)[0])[0]
 examples_dir = os.path.join(rootdir, 'examples')
-simulations_dir = os.path.join(examples_dir, 'io_and_visualization')
+test_dir = os.path.join(examples_dir, 'io_and_visualization')
 
 
 class IOVisTest():
@@ -41,12 +41,12 @@ class IOVisTest():
         return rc
 
     def test_Quick_Plotting_in_OpenPNM(self):
-        nbook = os.path.join(simulations_dir, 'Quick Plotting in OpenPNM.ipynb')
+        nbook = os.path.join(test_dir, 'Quick Plotting in OpenPNM.ipynb')
         rc = self._notebook_run(nbook)
         assert rc
 
     def test_Statoil_Import_and_Permeability_Calculation(self):
-        nbook = os.path.join(simulations_dir, 'Statoil Import and Permeability Calculation.ipynb')
+        nbook = os.path.join(test_dir, 'Statoil Import and Permeability Calculation.ipynb')
         rc = self._notebook_run(nbook)
         assert rc
 
