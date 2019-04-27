@@ -10,52 +10,50 @@ class BundleOfTubesTest:
         pass
 
     def test_instantiate_with_defaults(self):
-        net, geo = BundleOfTubes(shape=[30, 30])
+        net, geo, phase = BundleOfTubes(shape=[30, 30])
         assert net.Np == 1800
         assert net.Nt == (net.Np/2)
 
     def test_instantiate_custom_shape_and_size(self):
-        net, geo = BundleOfTubes(shape=30, spacing=0.001, length=0.01,
-                                 psd_params={'distribution': 'weibull',
-                                             'scale': 0.0002,
-                                             'shape': 2,
-                                             'loc': 1e-12})
+        proj = BundleOfTubes(shape=30, spacing=0.001, length=0.01,
+                             psd_params={'distribution': 'weibull',
+                                         'scale': 0.0002,
+                                         'shape': 2,
+                                         'loc': 1e-12})
 
     def test_instantiate_custom_distribution(self):
-        net, geo = BundleOfTubes(shape=30, spacing=0.001, length=0.01,
-                                 psd_params={'distribution': 'lognorm',
-                                             'scale': 0.0002,
-                                             's': 2,
-                                             'loc': 1e-12})
+        proj = BundleOfTubes(shape=30, spacing=0.001, length=0.01,
+                             psd_params={'distribution': 'lognorm',
+                                         'scale': 0.0002,
+                                         's': 2,
+                                         'loc': 1e-12})
 
     def test_instantiate_with_exceptions(self):
         with pytest.raises(Exception):
-            net, geo = BundleOfTubes(shape=[30, 30, 30], spacing=0.001,
-                                     length=0.01)
+            proj = BundleOfTubes(shape=[30, 30, 30], spacing=0.001, length=0.01)
         with pytest.raises(Exception):
-            net, geo = BundleOfTubes(shape=30, spacing=[0.001, 0.001],
-                                     length=0.01)
+            proj = BundleOfTubes(shape=30, spacing=[0.001, 0.001], length=0.01)
 
     def test_instantiate_with_settings(self):
-        net, geo = BundleOfTubes(shape=30, spacing=0.001, length=0.01,
-                                 psd_params={'distribution': 'normal',
-                                             'loc': 0.02,
-                                             'scale': 2},
-                                 settings={'adjust_psd': 'clip'})
+        net, geo, phase = BundleOfTubes(shape=30, spacing=0.001, length=0.01,
+                                        psd_params={'distribution': 'normal',
+                                                    'loc': 0.02,
+                                                    'scale': 2},
+                                        settings={'adjust_psd': 'clip'})
         assert geo['throat.size_distribution'].max() > geo['throat.diameter'].max()
 
-        net, geo = BundleOfTubes(shape=30, spacing=0.001, length=0.01,
-                                 psd_params={'distribution': 'norm',
-                                             'loc': 0.02,
-                                             'scale': 0.001},
-                                 settings={'adjust_psd': 'clip'})
+        net, geo, phase = BundleOfTubes(shape=30, spacing=0.001, length=0.01,
+                                        psd_params={'distribution': 'norm',
+                                                    'loc': 0.02,
+                                                    'scale': 0.001},
+                                        settings={'adjust_psd': 'clip'})
         assert geo['throat.size_distribution'].max() > geo['throat.diameter'].max()
 
-        net, geo = BundleOfTubes(shape=30, spacing=1.0, length=0.01,
-                                 psd_params={'distribution': 'normal',
-                                             'loc': 0.02,
-                                             'scale': 0.001},
-                                 settings={'adjust_psd': None})
+        net, geo, phase = BundleOfTubes(shape=30, spacing=1.0, length=0.01,
+                                        psd_params={'distribution': 'normal',
+                                                    'loc': 0.02,
+                                                    'scale': 0.001},
+                                        settings={'adjust_psd': None})
         assert sp.all(geo['throat.size_distribution'] == geo['throat.diameter'])
 
 
