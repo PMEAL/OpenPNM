@@ -40,28 +40,23 @@ class ExamplesTest():
             os.remove(os.path.join(dirname, "temp_output.ipynb"))
         return rc
 
-    def test_advection_diffusion(self):
-        nbook = os.path.join(simulations_dir, 'Advection-Diffusion.ipynb')
+    def test_tutorial_01(self):
+        nbook = os.path.join(simulations_dir, '01 - Intro to OpenPNM - Basics.ipynb')
         rc = self._notebook_run(nbook)
         assert rc
 
-    def test_fickian_diffusion(self):
-        nbook = os.path.join(simulations_dir, 'Fickian Diffusion.ipynb')
+    def test_tutorial_02(self):
+        nbook = os.path.join(simulations_dir, '02 - Intro to OpenPNM - Intermediate.ipynb')
         rc = self._notebook_run(nbook)
         assert rc
 
-    def test_transient_fickian_diffusion(self):
-        nbook = os.path.join(simulations_dir, 'Transient Fickian Diffusion.ipynb')
+    def test_tutorial_03(self):
+        nbook = os.path.join(simulations_dir, '03 - Intro to OpenPNM - Advanced.ipynb')
         rc = self._notebook_run(nbook)
         assert rc
 
-    def test_relative_diffusion(self):
-        nbook = os.path.join(simulations_dir, 'Relative Diffusivity.ipynb')
-        rc = self._notebook_run(nbook)
-        assert rc
-
-    def test_rel_perm_2d(self):
-        nbook = os.path.join(simulations_dir, 'Relative Permeability in 2D.ipynb')
+    def test_tutorial_workspaces_and_projects(self):
+        nbook = os.path.join(simulations_dir, 'Using Workspace and Projects.ipynb')
         rc = self._notebook_run(nbook)
         assert rc
 
