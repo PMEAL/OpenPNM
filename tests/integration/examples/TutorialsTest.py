@@ -5,7 +5,7 @@ import openpnm as op
 
 rootdir = os.path.split(os.path.split(op.__file__)[0])[0]
 examples_dir = os.path.join(rootdir, 'examples')
-simulations_dir = os.path.join(examples_dir, 'simulations')
+simulations_dir = os.path.join(examples_dir, 'tutorials')
 
 
 class TutorialTest():
@@ -62,7 +62,7 @@ class TutorialTest():
 
 
 if __name__ == '__main__':
-    t = TutorialsTest()
+    t = TutorialTest()
     self = t
     t.setup_class()
     for item in t.__dir__():

@@ -5,7 +5,7 @@ import openpnm as op
 
 rootdir = os.path.split(os.path.split(op.__file__)[0])[0]
 examples_dir = os.path.join(rootdir, 'examples')
-simulations_dir = os.path.join(examples_dir, 'simulations')
+simulations_dir = os.path.join(examples_dir, 'topology')
 
 
 class TopoTest():
@@ -40,7 +40,7 @@ class TopoTest():
             os.remove(os.path.join(dirname, "temp_output.ipynb"))
         return rc
 
-    def test_Generate_Dual_Cubic_Kattice(self):
+    def test_Generate_Dual_Cubic_Lattice(self):
         nbook = os.path.join(simulations_dir, 'Generate Dual Cubic Lattice.ipynb')
         rc = self._notebook_run(nbook)
         assert rc
