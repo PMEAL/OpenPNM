@@ -3,6 +3,7 @@ import scipy.stats as spst
 from openpnm.utils import logging, Project
 from openpnm.network import Cubic
 from openpnm.geometry import GenericGeometry
+from openpnm.phases import GenericPhase
 from openpnm.topotools import trim
 import openpnm.models as mods
 logger = logging.getLogger(__name__)
@@ -163,3 +164,15 @@ class BundleOfTubes(Project):
                        model=mods.geometry.throat_volume.cylinder)
 
         geom.regenerate_models()
+
+        # Now create a generic phase with physics models on it
+        phase = GenericPhase(network=net)
+        m = mods.physics.hydraulic_conductance.classic_hagen_poiseuille
+        phase.add_model(propname='throat.hydraulic_conductance',
+                        model=m, regen_mode='deferred')
+        m = mods.physics.diffusive_conductance.classic_ordinary_diffusion
+        phase.add_model(propname='throat.diffusive_conductance',
+                        model=m, regen_mode='deferred')
+        m = mods.physics.diffusive_conductance.classic_ordinary_diffusion
+        phase.add_model(propname='throat.entry_pressure',
+                        model=m, regen_mode='deferred')
