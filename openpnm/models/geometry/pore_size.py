@@ -51,6 +51,15 @@ def generic_distribution(target, func, seeds='pore.seed'):
 generic_distribution.__doc__ = _misc.generic_distribution.__doc__
 
 
+def from_neighbor_throats(target, throat_prop, mode='max'):
+    return _misc.from_neighbor_throats(target=target,
+                                       throat_prop=throat_prop,
+                                       mode=mode)
+
+
+from_neighbor_throats.__doc__ = _misc.from_neighbor_throats.__doc__
+
+
 def largest_sphere(target, fixed_diameter='pore.fixed_diameter', iters=5):
     r"""
     Finds the maximum diameter pore that can be placed in each location without

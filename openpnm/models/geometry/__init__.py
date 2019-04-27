@@ -15,6 +15,7 @@ from . import pore_surface_area
 from . import pore_area
 from . import throat_endpoints
 from . import throat_area
+from . import throat_seed
 from . import throat_size
 from . import throat_length
 from . import throat_perimeter

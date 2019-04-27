@@ -34,7 +34,7 @@ def cubic_pores(target, pore_diameter='pore.diameter'):
     throats = network.map_throats(throats=target.Ts, origin=target)
     xyz = network['pore.coords']
     cn = network['throat.conns'][throats]
-    L = _ctc(target=target, pore_diameter=pore_diameter) + 1e-15
+    L = _ctc(target=target) + 1e-15
     D1 = network[pore_diameter][cn[:, 0]]
     D2 = network[pore_diameter][cn[:, 1]]
     unit_vec = (xyz[cn[:, 1]] - xyz[cn[:, 0]]) / L[:, None]
@@ -124,7 +124,7 @@ def spherical_pores(target, pore_diameter='pore.diameter',
     throats = network.map_throats(throats=target.Ts, origin=target)
     xyz = network['pore.coords']
     cn = network['throat.conns'][throats]
-    L = _ctc(target=target, pore_diameter=pore_diameter) + 1e-15
+    L = _ctc(target=target) + 1e-15
     Dt = network[throat_diameter][throats]
     D1 = network[pore_diameter][cn[:, 0]]
     D2 = network[pore_diameter][cn[:, 1]]
