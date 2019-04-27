@@ -8,7 +8,7 @@ examples_dir = os.path.join(rootdir, 'examples')
 simulations_dir = os.path.join(examples_dir, 'simulations')
 
 
-class TopoTest():
+class IOVisTest():
 
     def setup_class(self):
         pass
@@ -40,34 +40,19 @@ class TopoTest():
             os.remove(os.path.join(dirname, "temp_output.ipynb"))
         return rc
 
-    def test_Generate_Dual_Cubic_Kattice(self):
-        nbook = os.path.join(simulations_dir, 'Generate Dual Cubic Lattice.ipynb')
+    def test_Quick_Plotting_in_OpenPNM(self):
+        nbook = os.path.join(simulations_dir, 'Quick Plotting in OpenPNM.ipynb')
         rc = self._notebook_run(nbook)
         assert rc
 
-    def test_Stitching_Networks_Together(self):
-        nbook = os.path.join(simulations_dir, 'Stitching Networks Together.ipynb')
-        rc = self._notebook_run(nbook)
-        assert rc
-
-    def test_Using_Queries_Level_1(self):
-        nbook = os.path.join(simulations_dir, 'Using Queries - Level 1.ipynb')
-        rc = self._notebook_run(nbook)
-        assert rc
-
-    def test_Various_Cubic_Networks(self):
-        nbook = os.path.join(simulations_dir, 'Various Cubic Networks.ipynb')
-        rc = self._notebook_run(nbook)
-        assert rc
-
-    def test_Voronoi_Fibers(self):
-        nbook = os.path.join(simulations_dir, 'Voronoi Fibers.ipynb')
+    def test_Statoil_Import_and_Permeability_Calculation(self):
+        nbook = os.path.join(simulations_dir, 'Statoil Import and Permeability Calculation.ipynb')
         rc = self._notebook_run(nbook)
         assert rc
 
 
 if __name__ == '__main__':
-    t = TopoTest()
+    t = IOVisTest()
     self = t
     t.setup_class()
     for item in t.__dir__():

@@ -8,7 +8,7 @@ examples_dir = os.path.join(rootdir, 'examples')
 simulations_dir = os.path.join(examples_dir, 'simulations')
 
 
-class ExamplesTest():
+class SimTest():
 
     def setup_class(self):
         pass
@@ -67,7 +67,7 @@ class ExamplesTest():
 
 
 if __name__ == '__main__':
-    t = ExamplesTest()
+    t = SimTest()
     self = t
     t.setup_class()
     for item in t.__dir__():
