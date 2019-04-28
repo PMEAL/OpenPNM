@@ -24,6 +24,8 @@ parameters.
 +----------+------------------------------------------------------------------+
 | Pandas   | Combines all data arrays into a Pandas DataFrame object          |
 +----------+------------------------------------------------------------------+
+| OpenpnmIO| Reads and write the normal OpenPNM formats                       |
++----------+------------------------------------------------------------------+
 | CSV      | Reads and writes CSV (comma-separated-value files) containing    |
 |          | pore and throat data                                             |
 +----------+------------------------------------------------------------------+
@@ -43,6 +45,8 @@ parameters.
 | JGF      | The JSON Graph Format is a schema specification of how to write  |
 |          | a graph object into JSON format                                  |
 +----------+------------------------------------------------------------------+
+| PerGeos  | The PerGeos format is used by the commercial software Avizo      |
++----------+------------------------------------------------------------------+
 | iMorph   | iMorph is a graphical interface program that provides some image |
 |          | analysis tools for porous media                                  |
 +----------+------------------------------------------------------------------+
@@ -57,6 +61,7 @@ no plans to implement writing such files.
 
 """
 from .GenericIO import GenericIO
+from .OpenpnmIO import OpenpnmIO
 from .Dict import Dict
 from .VTK import VTK
 from .CSV import CSV
@@ -65,6 +70,7 @@ from .MAT import MAT
 from .iMorph import iMorph
 from .MARock import MARock
 from .Statoil import Statoil
+from .PerGeos import PerGeos
 from .Pandas import Pandas
 from .HDF5 import HDF5
 from .XDMF import XDMF

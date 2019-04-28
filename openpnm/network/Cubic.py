@@ -90,18 +90,24 @@ class Cubic(GenericNetwork):
     def __init__(self, shape, spacing=[1, 1, 1], connectivity=6, name=None,
                  project=None):
 
+        # Take care of 1D/2D networks
+        shape = sp.array(shape, ndmin=1)
+        shape = np.concatenate((shape, [1]*(3-shape.size))).astype(int)
+
         arr = np.atleast_3d(np.empty(shape))
 
         # Store original network shape
         self._shape = sp.shape(arr)
         # Store network spacing
-        spacing = sp.around(spacing, decimals=15)
+        spacing = sp.float64(spacing)
         if spacing.size == 2:
             spacing = sp.concatenate((spacing, [1]))
-        self._spacing = sp.ones(3)*sp.array(spacing, ndmin=1)
+        self._spacing = sp.ones(3, dtype=float)*sp.array(spacing, ndmin=1)
 
-        points = np.array([i for i, v in np.ndenumerate(arr)], dtype=float)
-        points += 0.5
+        z = np.tile(np.arange(shape[2]), shape[0]*shape[1])
+        y = np.tile(np.repeat(np.arange(shape[1]), shape[2]), shape[0])
+        x = np.repeat(np.arange(shape[0]), shape[1]*shape[2])
+        points = (np.vstack([x, y, z]).T).astype(float) + 0.5
 
         I = np.arange(arr.size).reshape(arr.shape)
 
@@ -139,11 +145,10 @@ class Cubic(GenericNetwork):
             raise Exception('Invalid connectivity receieved. Must be 6, 8, '
                             '12, 14, 18, 20 or 26')
 
-        I = np.arange(arr.size).reshape(arr.shape)
-        tails, heads = [], []
+        tails, heads = np.array([], dtype=int), np.array([], dtype=int)
         for T, H in joints:
-            tails.extend(T.flat)
-            heads.extend(H.flat)
+            tails = np.concatenate((tails, T.flatten()))
+            heads = np.concatenate((heads, H.flatten()))
         pairs = np.vstack([tails, heads]).T
 
         super().__init__(Np=points.shape[0], Nt=pairs.shape[0], name=name,
@@ -233,22 +238,21 @@ class Cubic(GenericNetwork):
         # Find Network spacing
         P12 = self['throat.conns']
         C12 = self['pore.coords'][P12]
-        mag = np.sqrt(np.sum(np.diff(C12, axis=1)**2, axis=2))
-        vec = sp.around(sp.squeeze(np.diff(C12, axis=1))/mag,
-                        decimals=10)
+        mag = np.linalg.norm(np.diff(C12, axis=1), axis=2)
+        unit_vec = sp.around(sp.squeeze(np.diff(C12, axis=1))/mag, decimals=14)
         spacing = [0, 0, 0]
         dims = topotools.dimensionality(self)
         # Ensure vectors point in n-dims unique directions
-        c = {tuple(row): 1 for row in vec}
+        c = {tuple(row): 1 for row in unit_vec}
         if len(c.keys()) > sum(dims):
             raise Exception('Spacing is undefined when throats point in ' +
                             'more directions than network has dimensions')
-        mag = sp.around(mag.squeeze(), decimals=10)
+        mag = sp.float64(mag.squeeze())
         for ax in [0, 1, 2]:
             if dims[ax]:
-                inds = sp.where(vec[:, ax] == vec[:, ax].max())[0]
+                inds = sp.where(unit_vec[:, ax] == unit_vec[:, ax].max())[0]
                 temp = sp.unique(mag[inds])
-                if np.size(temp) > 1:
+                if not sp.allclose(temp, temp[0]):
                     raise Exception('A unique value of spacing could not be found')
                 else:
                     spacing[ax] = temp[0]

@@ -4,7 +4,6 @@ import scipy.sparse as sprs
 import scipy.sparse.csgraph as spgr
 from scipy.spatial import ConvexHull
 from scipy.spatial import cKDTree
-from decimal import Decimal as dc
 from openpnm.topotools import iscoplanar
 from openpnm.algorithms import GenericAlgorithm
 from openpnm.utils import logging
@@ -194,7 +193,7 @@ class GenericTransport(GenericAlgorithm):
             self.settings['conductance'] = conductance
         self.settings.update(**kwargs)
 
-    def set_value_BC(self, pores, values):
+    def set_value_BC(self, pores, values, mode='merge'):
         r"""
         Apply constant value boundary conditons to the specified locations.
 
@@ -210,15 +209,26 @@ class GenericTransport(GenericAlgorithm):
             it is assigne to all locations, and if a vector is applied is
             must be the same size as the indices given in ``pores``.
 
+        mode : string, optional
+            Controls how the boundary conditions are applied.  Options are:
+
+            - ``'merge'``: (Default) Adds supplied boundary conditions to
+            already existing conditions
+
+            - ``'overwrite'``: Deletes all boundary condition on object then
+            adds the given ones
+
         Notes
         -----
         The definition of ``quantity`` is specified in the algorithm's
         ``settings``, e.g. ``alg.settings['quentity'] = 'pore.pressure'``.
         """
+        mode = self._parse_mode(mode, allowed=['merge', 'overwrite'],
+                                single=True)
         self._set_BC(pores=pores, bctype='value', bcvalues=values,
-                     mode='merge')
+                     mode=mode)
 
-    def set_rate_BC(self, pores, values):
+    def set_rate_BC(self, pores, values, mode='merge'):
         r"""
         Apply constant rate boundary conditons to the specified locations.
 
@@ -236,12 +246,23 @@ class GenericTransport(GenericAlgorithm):
             it is assigned to all locations, and if a vector is applied it
             must be the same size as the indices given in ``pores``.
 
+        mode : string, optional
+            Controls how the boundary conditions are applied.  Options are:
+
+            - ``'merge'``: (Default) Adds supplied boundary conditions to
+            already existing conditions
+
+            - ``'overwrite'``: Deletes all boundary condition on object then
+            adds the given ones
+
         Notes
         -----
         The definition of ``quantity`` is specified in the algorithm's
         ``settings``, e.g. ``alg.settings['quentity'] = 'pore.pressure'``.
         """
-        self._set_BC(pores=pores, bctype='rate', bcvalues=values, mode='merge')
+        mode = self._parse_mode(mode, allowed=['merge', 'overwrite'],
+                                single=True)
+        self._set_BC(pores=pores, bctype='rate', bcvalues=values, mode=mode)
 
     def _set_BC(self, pores, bctype, bcvalues=None, mode='merge'):
         r"""
@@ -258,6 +279,7 @@ class GenericTransport(GenericAlgorithm):
             types can be one one of the following:
 
             - ``'value'``: Specify the value of the quantity in each location
+
             - ``'rate'``: Specify the flow rate into each location
 
         bcvalues : int or array_like
@@ -270,7 +292,8 @@ class GenericTransport(GenericAlgorithm):
             Controls how the boundary conditions are applied.  Options are:
 
             - ``'merge'``: (Default) Adds supplied boundary conditions to
-            already existing conditions.
+            already existing conditions
+
             - ``'overwrite'``: Deletes all boundary condition on object then
             adds the given ones
 
@@ -285,14 +308,14 @@ class GenericTransport(GenericAlgorithm):
         # Hijack the parse_mode function to verify bctype argument
         bctype = self._parse_mode(bctype, allowed=['value', 'rate'],
                                   single=True)
-        mode = self._parse_mode(mode, allowed=['merge', 'overwrite', 'remove'],
+        mode = self._parse_mode(mode, allowed=['merge', 'overwrite'],
                                 single=True)
         pores = self._parse_indices(pores)
 
         values = np.array(bcvalues)
         if values.size > 1 and values.size != pores.size:
-            raise Exception('The number of boundary values must match the ' +
-                            'number of locations')
+            raise Exception('The number of boundary values must match the '
+                            + 'number of locations')
 
         # Store boundary values
         if ('pore.bc_'+bctype not in self.keys()) or (mode == 'overwrite'):
@@ -351,7 +374,7 @@ class GenericTransport(GenericAlgorithm):
             phase = self.project.phases()[self.settings['phase']]
             g = phase[self.settings['conductance']]
             am = network.create_adjacency_matrix(weights=g, fmt='coo')
-            self._pure_A = spgr.laplacian(am)
+            self._pure_A = spgr.laplacian(am).astype(float)
         self.A = self._pure_A.copy()
 
     def _build_b(self, force=False):
@@ -405,7 +428,7 @@ class GenericTransport(GenericAlgorithm):
             ind = np.isfinite(self['pore.bc_rate'])
             self.b[ind] = self['pore.bc_rate'][ind]
         if 'pore.bc_value' in self.keys():
-            f = np.abs(self.A.data).mean()
+            f = np.abs(self.A.diagonal()).mean()
             # Update b (impose bc values)
             ind = np.isfinite(self['pore.bc_value'])
             self.b[ind] = self['pore.bc_value'][ind] * f
@@ -493,9 +516,9 @@ class GenericTransport(GenericAlgorithm):
 
         # Set tolerance for iterative solvers
         rtol = self.settings['solver_rtol']
-        min_A = np.abs(A.data).min()
-        min_b = np.abs(b).min() or 1e100
-        atol = min(min_A, min_b) * rtol
+        # Reference for residual's normalization
+        ref = np.sum(np.absolute(self.A.diagonal())) or 1
+        atol = ref * rtol
 
         # SciPy
         if self.settings['solver_family'] == 'scipy':
@@ -509,8 +532,8 @@ class GenericTransport(GenericAlgorithm):
                 x, exit_code = solver(A=A, b=b, atol=atol, tol=rtol,
                                       maxiter=self.settings['solver_maxiter'])
                 if exit_code > 0:
-                    raise Exception('SciPy solver did not converge! ' +
-                                    'Exit code: ' + str(exit_code))
+                    raise Exception('SciPy solver did not converge! '
+                                    + 'Exit code: ' + str(exit_code))
             else:
                 x = solver(A=A, b=b)
             return x
@@ -539,58 +562,16 @@ class GenericTransport(GenericAlgorithm):
             else:
                 raise Exception('pyamg is not installed.')
             ml = pyamg.ruge_stuben_solver(A)
-            x = ml.solve(b=b, tol=1e-6)
+            x = ml.solve(b=b, tol=1e-10)
             return x
 
-    def results(self, times='all', t_precision=12, **kwargs):
+    def results(self):
         r"""
         Fetches the calculated quantity from the algorithm and returns it as
         an array.
-
-        Parameters
-        ----------
-        times : scalar or list
-            Time steps to be returned. The default value is 'all' which results
-            in returning all time steps. If a scalar is given, only the
-            corresponding time step is returned. If a range is given
-            (e.g., 'range(0, 1, 1e-3)'), time steps in this range are returned.
-
-        t_precision : integer
-            The time precision (number of decimal places). Default value is 12.
-
-        Notes
-        -----
-        The keyword steps is interpreted in the same way as times.
         """
-        if 'steps' in kwargs.keys():
-            times = kwargs['steps']
-        t_pre = t_precision
         quantity = self.settings['quantity']
-        q = [k for k in list(self.keys()) if quantity in k]
-        if times == 'all':
-            t = q
-        elif type(times) in [float, int]:
-            n = int(-dc(str(round(times, t_pre))).as_tuple().exponent *
-                    (round(times, t_pre) != int(times)))
-            t_str = (str(int(round(times, t_pre)*10**n)) +
-                     ('e-'+str(n))*(n != 0))
-            t = [k for k in q if t_str == k.split('@')[-1]]
-        elif 'range' in times:
-            t = times.replace(' ', '')
-            t = t[6:-1]
-            t = t.split(',')
-            out = np.arange(float(t[0]), float(t[1]), float(t[2]))
-            out = np.append(out, float(t[1]))
-            out = np.unique(out)
-            out = np.around(out, decimals=t_pre)
-            t = []
-            for i in out:
-                n = int(-dc(str(round(i, t_pre))).as_tuple().exponent *
-                        (round(i, t_pre) != int(i)))
-                j = (str(int(round(i, t_pre)*10**n))+('e-'+str(n))*(n != 0))
-                t_str = [k for k in q if j == k.split('@')[-1]]
-                t += (t_str)
-        d = {k: self[k] for k in t}
+        d = {quantity: self[quantity]}
         return d
 
     def rate(self, pores=[], throats=[], mode='group'):
@@ -685,8 +666,8 @@ class GenericTransport(GenericAlgorithm):
 
         """
         if self.settings['quantity'] not in self.keys():
-            raise Exception('The algorithm has not been run yet. Cannot ' +
-                            'calculate effective property.')
+            raise Exception('The algorithm has not been run yet. Cannot '
+                            + 'calculate effective property.')
 
         Ps = np.isfinite(self['pore.bc_value'])
         BCs = np.unique(self['pore.bc_value'][Ps])
@@ -736,12 +717,12 @@ class GenericTransport(GenericAlgorithm):
             logger.error('Detected outlet pores are not coplanar')
         Nin = np.ptp(inlets, axis=0) > 0
         if Nin.all():
-            logger.warning('Detected inlets are not oriented along a ' +
-                           'principle axis')
+            logger.warning('Detected inlets are not oriented along a '
+                           + 'principle axis')
         Nout = np.ptp(outlets, axis=0) > 0
         if Nout.all():
-            logger.warning('Detected outlets are not oriented along a ' +
-                           'principle axis')
+            logger.warning('Detected outlets are not oriented along a '
+                           + 'principle axis')
         hull_in = ConvexHull(points=inlets[:, Nin])
         hull_out = ConvexHull(points=outlets[:, Nout])
         if hull_in.volume != hull_out.volume:
@@ -750,8 +731,8 @@ class GenericTransport(GenericAlgorithm):
         return area
 
     def _get_domain_length(self, inlets=None, outlets=None):
-        logger.warning('Attempting to estimate domain length... ' +
-                       'could be low if boundary pores were not added')
+        logger.warning('Attempting to estimate domain length... '
+                       + 'could be low if boundary pores were not added')
         network = self.project.network
         if inlets is None:
             inlets = self._get_inlets()
@@ -764,8 +745,8 @@ class GenericTransport(GenericAlgorithm):
         if not iscoplanar(outlets):
             logger.error('Detected inlet pores are not coplanar')
         tree = cKDTree(data=inlets)
-        Ls = np.unique(np.around(tree.query(x=outlets)[0], decimals=5))
-        if np.size(Ls) != 1:
+        Ls = np.unique(np.float64(tree.query(x=outlets)[0]))
+        if not np.allclose(Ls, Ls[0]):
             logger.error('A unique value of length could not be found')
         length = Ls[0]
         return length

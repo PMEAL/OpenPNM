@@ -11,7 +11,6 @@ class VTK(GenericIO):
     r"""
     The Visualization Toolkit (VTK) format defined by Kitware and used by
     Paraview
-
     Because OpenPNM data is unstructured, the actual output format is VTP,
     not VTK.
     """
@@ -35,39 +34,47 @@ class VTK(GenericIO):
     '''.strip()
 
     @classmethod
-    def save(cls, network, phases=[], filename='', delim=' | ', fill_nans=None):
+    def save(cls, network, phases=[], filename='', delim=' | ',
+             fill_nans=None, fill_infs=None):
         r"""
         Save network and phase data to a single vtp file for visualizing in
         Paraview
-
         Parameters
         ----------
         network : OpenPNM Network Object
             The Network containing the data to be written
-
         phases : list, optional
             A list containing OpenPNM Phase object(s) containing data to be
             written
-
         filename : string, optional
             Filename to write data.  If no name is given the file is named
             after the network
-
         delim : string
             Specify which character is used to delimit the data names.  The
             default is ' | ' which creates a nice clean output in the Paraview
             pipeline viewer (e.g. net | property | pore | diameter)
-
         fill_nans : scalar
             The value to use to replace NaNs with.  The VTK file format does
             not work with NaNs, so they must be dealt with.  The default is
             `None` which means property arrays with NaNs are not written to the
             file.  Other useful options might be 0 or -1, but the user must
             be aware that these are not real values, only place holders.
-
+        fill_infs : scalar
+            The value to use to replace infs with.  The default is ``None``
+            which means that property arrays containing ``None`` will *not*
+            be written to the file, and a warning will be issued.  A useful
+            value is
         """
         project, network, phases = cls._parse_args(network=network,
                                                    phases=phases)
+        # Check if any of the phases has time series
+        transient = GenericIO.is_transient(phases=phases)
+        if transient:
+            logger.warning('vtp format does not support transient data, ' +
+                           'use xdmf instead')
+        if filename == '':
+            filename = project.name
+        filename = cls._parse_filename(filename=filename, ext='vtp')
 
         am = Dict.to_dict(network=network, phases=phases, interleave=True,
                           categorize_by=['object', 'data'])
@@ -110,15 +117,18 @@ class VTK(GenericIO):
                         continue
                     else:
                         array[np.isnan(array)] = fill_nans
+                if np.any(np.isinf(array)):
+                    if fill_infs is None:
+                        logger.warning(key + ' has infs,' +
+                                       ' will not write to file')
+                        continue
+                    else:
+                        array[np.isinf(array)] = fill_infs
                 element = VTK._array_to_element(key, array)
                 if (array.size == num_points):
                     point_data_node.append(element)
                 elif (array.size == num_throats):
                     cell_data_node.append(element)
-
-        if filename == '':
-            filename = project.name
-        filename = cls._parse_filename(filename=filename, ext='vtp')
 
         tree = ET.ElementTree(root)
         tree.write(filename)
@@ -134,17 +144,14 @@ class VTK(GenericIO):
     def load(cls, filename, project=None, delim=' | '):
         r"""
         Read in pore and throat data from a saved VTK file.
-
         Parameters
         ----------
         filename : string (optional)
             The name of the file containing the data to import.  The formatting
             of this file is outlined below.
-
         project : OpenPNM Project object
             A GenericNetwork is created and added to the specified Project.
             If no Project is supplied then one will be created and returned.
-
         """
         net = {}
 

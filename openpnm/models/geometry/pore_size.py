@@ -51,6 +51,15 @@ def generic_distribution(target, func, seeds='pore.seed'):
 generic_distribution.__doc__ = _misc.generic_distribution.__doc__
 
 
+def from_neighbor_throats(target, throat_prop, mode='max'):
+    return _misc.from_neighbor_throats(target=target,
+                                       throat_prop=throat_prop,
+                                       mode=mode)
+
+
+from_neighbor_throats.__doc__ = _misc.from_neighbor_throats.__doc__
+
+
 def largest_sphere(target, fixed_diameter='pore.fixed_diameter', iters=5):
     r"""
     Finds the maximum diameter pore that can be placed in each location without
@@ -82,6 +91,11 @@ def largest_sphere(target, fixed_diameter='pore.fixed_diameter', iters=5):
         their nearest neighbor, which is also growing, so this parameter limits
         the maximum number of iterations.  The default is 10, but 5 is usally
         enough.
+
+    Returns
+    -------
+    D : NumPy ndarray
+        Array containing pore diameter values.
 
     Notes
     -----
@@ -142,6 +156,11 @@ def equivalent_diameter(target, pore_volume='pore.volume',
     pore_shape : string
         The shape of the pore body to assume when back-calculating from
         volume.  Options are 'sphere' (default) or 'cube'.
+
+    Returns
+    -------
+    D : NumPy ndarray
+        Array containing pore diameter values.
 
     """
     from scipy.special import cbrt

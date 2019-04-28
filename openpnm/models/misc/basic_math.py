@@ -3,18 +3,63 @@ r"""
 .. autofunction:: openpnm.models.misc.basic_math.constant
 .. autofunction:: openpnm.models.misc.basic_math.product
 .. autofunction:: openpnm.models.misc.basic_math.scaled
+.. autofunction:: openpnm.models.misc.basic_math.clip
+.. autofunction:: openpnm.models.misc.basic_math.normalize
 
 """
-
 import numpy as np
-import scipy.stats as spts
 from openpnm.utils import logging
 logger = logging.getLogger(__name__)
 
 
+def normalize(target, prop, xmin=0, xmax=1):
+    r"""
+    Normalizes the given array between the supplied limits
+
+    Parameters
+    ----------
+    target : OpenPNM Object
+        The object which this model is associated with. This controls the
+        length of the calculated array, and also provides access to other
+        necessary properties.
+
+    xmin : float
+        Lower limit of the re-scaled data
+
+    xmax : float
+        Upper limit of the re-scaled data
+    """
+    vals = target[prop]
+    # Scale to 0 to 1
+    vals = (vals - vals.min())/(vals.max() - vals.min())
+    vals = vals*(xmax - xmin) + xmin
+    return vals
+
+
+def clip(target, prop, xmax, xmin=0):
+    r"""
+    Clips the given array within the supplied limits
+
+    Parameters
+    ----------
+    target : OpenPNM Object
+        The object which this model is associated with. This controls the
+        length of the calculated array, and also provides access to other
+        necessary properties.
+
+    xmin : float
+        Values below this limit will be replaced with ``xmin``.
+
+    xmax : float
+        Values above this limit will be replaced with ``xmax``.
+    """
+    vals = np.clip(target[prop], xmin, xmax)
+    return vals
+
+
 def constant(target, value):
     r"""
-    Places a constant value into the target object
+    Places the given constant value into the target object
 
     Parameters
     ----------
@@ -26,10 +71,16 @@ def constant(target, value):
     value : scalar
         The numerical value to apply
 
+    Returns
+    -------
+    value : NumPy ndarray
+        Array containing constant values equal to ``value``.
+
     Notes
     -----
     This model is mostly useless and for testing purposes, but might be used
     to 'reset' an array back to a default value.
+
     """
     return value
 
@@ -51,11 +102,17 @@ def product(target, prop1, prop2, **kwargs):
     prop2 : string
         The name of the second argument
 
+    Returns
+    -------
+    value : NumPy ndarray
+        Array containing product values of ``target[prop1]``, ``target[prop2]``
+
     Notes
     -----
     Additional properties can be specified beyond just ``prop1`` and ``prop2``
     by including additional arguments in the function call (i.e. ``prop3 =
     'pore.foo'``).
+
     """
     value = target[prop1]*target[prop2]
     for item in kwargs.values():
@@ -80,6 +137,12 @@ def scaled(target, prop, factor):
 
     factor : scalar
         The factor by which the values should be scaled.
+
+    Returns
+    -------
+    value : NumPy ndarray
+        Array containing ``target[prop]`` values scaled by ``factor``.
+
     """
     value = target[prop]*factor
     return value

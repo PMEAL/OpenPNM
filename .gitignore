@@ -1,6 +1,7 @@
 *.pyc
+.idea/
 .spyproject/
 .pytest_cache/
 .vscode/
-
+*.egg-info
 docs/_build/
