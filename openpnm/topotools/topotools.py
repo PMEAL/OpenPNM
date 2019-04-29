@@ -2,7 +2,6 @@ import scipy as sp
 import scipy.ndimage as spim
 import scipy.sparse as sprs
 import warnings
-import porespy as ps
 import matplotlib.pyplot as plt
 from scipy.sparse import csgraph
 from scipy.spatial import ConvexHull
@@ -705,7 +704,7 @@ def ispercolating(am, inlets, outlets, mode='site'):
         `'bond'`
 
     """
-    if am.format is not 'coo':
+    if am.format != 'coo':
         am = am.to_coo()
     ij = sp.vstack((am.col, am.row)).T
     if mode.startswith('site'):
@@ -794,7 +793,7 @@ def site_percolation(ij, occupied_sites):
     adj_mat.eliminate_zeros()
     clusters = csgraph.connected_components(csgraph=adj_mat, directed=False)[1]
     clusters[~occupied_sites] = -1
-    s_labels = ps.tools.make_contiguous(clusters + 1)
+    s_labels = sp.stats.rankdata(clusters + 1, method="dense") - 1
     if sp.any(~occupied_sites):
         s_labels -= 1
     b_labels = sp.amin(s_labels[ij], axis=1)
