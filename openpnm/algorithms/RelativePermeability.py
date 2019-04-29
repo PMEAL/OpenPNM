@@ -27,8 +27,7 @@ default_settings = {
                     'BP_1': dict(),
                     'BP_2': dict()}
 
-class RelativePermeability(GenericAlgorithm, DirectionalRelativePermeability):
-    __metaclass__=Base
+class RelativePermeability(DirectionalRelativePermeability):
     r"""
     A subclass of Generic Algorithm to calculate relative permeabilities of
     fluids in a drainage process. The main roles of this subclass are to
@@ -57,6 +56,9 @@ class RelativePermeability(GenericAlgorithm, DirectionalRelativePermeability):
             self.settings['flow_outlets'].update({flow: (outlet_dict[flow])})
 
 
+    def abs_perm_calc(self,B_pores,in_outlet_pores):
+        [Kw,Knw]=super(RelativePermeability,self).abs_perm_calc(B_pores,in_outlet_pores)
+        return [Kw,Knw]
     def run(self,Snw_num=None):
         net= self.project.network
         oil = openpnm.phases.GenericPhase(network=net, name='oil')
@@ -112,7 +114,7 @@ class RelativePermeability(GenericAlgorithm, DirectionalRelativePermeability):
         for dim in K_dir:
             B_pores=[net.pores(self.settings['BP_1'][dim]),net.pores(self.settings['BP_2'][dim])]
             in_outlet_pores=[Finlets_init[dim],Foutlets_init[dim]]
-            [Kw,Knw]=super(DirectionalRelativePermeability,self).abs_perm_calc(B_pores,in_outlet_pores)
+            [Kw,Knw]=self.abs_perm_calc(B_pores,in_outlet_pores)
             self.settings['perm_wp'].update({dim:Kw})
             self.settings['perm_nwp'].update({dim: Knw})
         for i in range(len(self.settings['input_vect'])):
@@ -130,15 +132,17 @@ class RelativePermeability(GenericAlgorithm, DirectionalRelativePermeability):
             stop=max_seq
             step=max_seq//Snw_num
             Snwparr = []
-            B_pores=[net.pores(self.settings['BP_1'][flow]),net.pores(self.settings['BP_2'][flow])]
-            in_outlet_pores=[Finlets_init[flow],Foutlets_init[flow]]
+            B_pores=[net.pores(self.settings['BP_1'][flow]), net.pores(self.settings['BP_2'][flow])]
+            in_outlet_pores=[Finlets_init[flow], Foutlets_init[flow]]
             for i in range(start, stop, step):
-                sat=self._sat_occ_update(i)
+                sat=super()._sat_occ_update(i)
                 Snwparr.append(sat)
-                [Kewp,Kenwp]=super(DirectionalRelativePermeability,self).rel_perm_calc(B_pores,
-                                                                                        in_outlet_pores)
+                [Kewp,Kenwp]=super().rel_perm_calc(B_pores, in_outlet_pores)
                 relperm_wp.append(Kewp/self.settings['perm_wp'][flow])
                 relperm_nwp.append(Kenwp/self.settings['perm_nwp'][flow])
+            print(relperm_wp)
+            print(relperm_nwp)
+            print(Snwparr)
             self.settings['relperm_wp'].update({self.settings['input_vect'][i]:\
                                                    relperm_wp})
             self.settings['relperm_nwp'].update({self.settings['input_vect'][i]:\
