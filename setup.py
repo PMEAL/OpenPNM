@@ -54,7 +54,6 @@ setup(
         'matplotlib',
         'pandas',
         'numba',
-        'porespy',
         'transforms3d',
         'flatdict',
         'gitpython',
