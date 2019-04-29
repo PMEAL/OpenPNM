@@ -5,3 +5,6 @@
 .vscode/
 *.egg-info
 docs/_build/
+
+build/
+dist/
