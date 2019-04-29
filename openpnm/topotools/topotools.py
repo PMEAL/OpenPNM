@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 from scipy.sparse import csgraph
 from scipy.spatial import ConvexHull
 from openpnm.utils import PrintableDict, logging, Workspace
+from mpl_toolkits.mplot3d import Axes3D
 ws = Workspace()
 logger = logging.getLogger(__name__)
 
@@ -2206,11 +2207,10 @@ def plot_coordinates(network, pores=None, fig=None, **kwargs):
     >>> pn.add_boundary_pores()
     >>> Ps = pn.pores('internal')
     >>> # Create figure showing internal pores
-    >>> fig = op.topotools.plot_coordinates(network=pn, pores=Ps, c='b')
+    >>> fig = op.topotools.plot_coordinates(pn, pores=Ps, c='b')
     >>> Ps = pn.pores('*boundary')
     >>> # Pass existing fig back into function to plot boundary pores
-    >>> fig = op.topotools.plot_coordinates(network=pn, pores=Ps, fig=fig,
-    ...                                         c='r')
+    >>> fig = op.topotools.plot_coordinates(pn, pores=Ps, fig=fig, c='r')
 
     """
     import matplotlib.pyplot as plt
