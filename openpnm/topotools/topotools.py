@@ -2,11 +2,11 @@ import scipy as sp
 import scipy.ndimage as spim
 import scipy.sparse as sprs
 import warnings
-import porespy as ps
 import matplotlib.pyplot as plt
 from scipy.sparse import csgraph
 from scipy.spatial import ConvexHull
 from openpnm.utils import PrintableDict, logging, Workspace
+from mpl_toolkits.mplot3d import Axes3D
 ws = Workspace()
 logger = logging.getLogger(__name__)
 
@@ -705,7 +705,7 @@ def ispercolating(am, inlets, outlets, mode='site'):
         `'bond'`
 
     """
-    if am.format is not 'coo':
+    if am.format != 'coo':
         am = am.to_coo()
     ij = sp.vstack((am.col, am.row)).T
     if mode.startswith('site'):
@@ -794,7 +794,7 @@ def site_percolation(ij, occupied_sites):
     adj_mat.eliminate_zeros()
     clusters = csgraph.connected_components(csgraph=adj_mat, directed=False)[1]
     clusters[~occupied_sites] = -1
-    s_labels = ps.tools.make_contiguous(clusters + 1)
+    s_labels = sp.stats.rankdata(clusters + 1, method="dense") - 1
     if sp.any(~occupied_sites):
         s_labels -= 1
     b_labels = sp.amin(s_labels[ij], axis=1)
@@ -2207,11 +2207,10 @@ def plot_coordinates(network, pores=None, fig=None, **kwargs):
     >>> pn.add_boundary_pores()
     >>> Ps = pn.pores('internal')
     >>> # Create figure showing internal pores
-    >>> fig = op.topotools.plot_coordinates(network=pn, pores=Ps, c='b')
+    >>> fig = op.topotools.plot_coordinates(pn, pores=Ps, c='b')
     >>> Ps = pn.pores('*boundary')
     >>> # Pass existing fig back into function to plot boundary pores
-    >>> fig = op.topotools.plot_coordinates(network=pn, pores=Ps, fig=fig,
-    ...                                         c='r')
+    >>> fig = op.topotools.plot_coordinates(pn, pores=Ps, fig=fig, c='r')
 
     """
     import matplotlib.pyplot as plt

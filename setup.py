@@ -57,7 +57,6 @@ setup(
         'matplotlib',
         'pandas',
         'numba',
-        'porespy',
         'transforms3d',
         'flatdict',
         'gitpython',
@@ -67,5 +66,10 @@ setup(
     author='OpenPNM Team',
     author_email='jgostick@uwaterloo.ca',
     download_url='https://github.com/pmeal/OpenPNM/',
-    url='http://openpnm.org'
+    url='http://openpnm.org',
+    project_urls={
+        'Documentation': 'https://openpnm.readthedocs.io/en/master/',
+        'Source': 'https://github.com/PMEAL/OpenPNM',
+        'Tracker': 'https://github.com/PMEAL/OpenPNM/issues',
+    },
 )
