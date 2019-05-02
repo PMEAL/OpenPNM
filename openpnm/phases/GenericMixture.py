@@ -1,7 +1,7 @@
 # from collections import ChainMap  # Might use eventually
 import numpy as np
 from openpnm.phases import GenericPhase as GenericPhase
-from openpnm.utils import logging
+from openpnm.utils import logging, HealthDict
 logger = logging.getLogger(__name__)
 
 
@@ -118,7 +118,7 @@ class GenericMixture(GenericPhase):
             component = list(set(all_comps).difference(set(given_comps)))[0]
             self[element+'.mole_fraction.'+component] = 1-mf
         else:
-            logger.warning('mponent found, cannot determine')
+            logger.warning('component found, cannot determine')
 
     def set_mole_fraction(self, component, values=[]):
         r"""
@@ -195,3 +195,30 @@ class GenericMixture(GenericPhase):
         except KeyError:
             vals = super().interleave_data(prop)
         return vals
+
+    def check_mixture_health(self):
+        r"""
+        Checks the "health" of the mixture
+
+        Calculates the mole fraction of all species in each pore and returns
+        an list of where values are too low or too high
+
+        Returns
+        -------
+        health : dict
+            A HealtDict object containing lists of locations where the mole
+            fractions are not unity.  One value indiates locations that are
+            too high, and another where they are too low.
+
+        """
+        h = HealthDict()
+        h['mole_fraction_too_low'] = []
+        h['mole_fraction_too_high'] = []
+        self._update_total_molfrac()
+        lo = np.where(self['pore.mole_fraction.all'] < 1.0)[0]
+        hi = np.where(self['pore.mole_fraction.all'] > 1.0)[0]
+        if len(lo) > 0:
+            h['mole_fraction_too_low'] = lo
+        if len(hi) > 0:
+            h['mole_fraction_too_high'] = hi
+        return h
