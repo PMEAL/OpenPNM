@@ -36,27 +36,40 @@ class MixtureTest:
         self.air['pore.concentration.'+self.CO2.name] = 0.0
         self.air['pore.concentration.'+self.H2.name] = 0.0
         self.air['pore.molar_density'] = 2.0
-        with pytest.raises(Exception):
-            self.air.update_mole_fractions()
-        with pytest.raises(KeyError):
-            self.air['pore.concentration.'+self.N2.name] == 1.5
         self.air.update_mole_fractions(molar_density='pore.molar_density')
         assert sp.all(self.air['pore.mole_fraction.all'] == 1.0)
 
     def test_update_mole_fraction_with_all_concentrations(self):
-        self.air['pore.concentration.'+self.O2.name] = 0.5
+        self.air['pore.concentration.'+self.O2.name] = 1.5
         self.air['pore.concentration.'+self.N2.name] = 0.5
         self.air['pore.concentration.'+self.CO2.name] = 0.0
         self.air['pore.concentration.'+self.H2.name] = 0.0
         self.air.update_mole_fractions()
         assert sp.all(self.air['pore.mole_fraction.all'] == 1.0)
-        with pytest.raises(Exception):
-            self.air.update_mole_fractions(molar_density='pore.molar_density')
+
+    def test_interleave_data(self):
+        r"""
+        """
+        self.air['pore.concentration.'+self.O2.name] = 1.0
+        self.air['pore.concentration.'+self.N2.name] = 0.0
+        self.air['pore.concentration.'+self.CO2.name] = 0.0
+        self.air['pore.concentration.'+self.H2.name] = 0.0
+        self.air.update_mole_fractions()
+        MW = self.air['pore.molecular_weight'][0]
+        assert MW == 0.032
+        self.air['pore.concentration.'+self.O2.name] = 1.0
+        self.air['pore.concentration.'+self.N2.name] = 0.5
+        self.air['pore.concentration.'+self.CO2.name] = 0.3
+        self.air['pore.concentration.'+self.H2.name] = 0.2
+        self.air.update_mole_fractions()
+        MW = self.air['pore.molecular_weight'][0]
+        assert MW == 0.0298031
 
     def test_check_health(self):
         self.air.set_mole_fraction(self.N2, 0.790)
         self.air.set_mole_fraction(self.O2, 0.209)
         self.air.set_mole_fraction(self.CO2, 0.001)
+        self.air.set_mole_fraction(self.H2, 0.000)
         h = self.air.check_mixture_health()
         assert h.health is True
         self.air.set_mole_fraction(self.CO2, 0.002)

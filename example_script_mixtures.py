@@ -8,13 +8,10 @@ geo = op.geometry.StickAndBall(network=pn, pores=pn.Ps, throats=pn.Ts)
 
 N2 = mixtures.species.gases.N2(network=pn, name='pure_N2')
 O2 = mixtures.species.gases.O2(network=pn, name='pure_O2')
-CO2 = mixtures.species.gases.CO2(network=pn, name='pure_CO2')
-H2 = mixtures.species.gases.H2(network=pn, name='pure_H2')
-air = mixtures.GenericMixture(network=pn, components=[N2, O2, H2, CO2],
+air = mixtures.GenericMixture(network=pn, components=[N2, O2],
                               name='air_mixture')
-air.set_mole_fraction(N2, 0.790)
-air.set_mole_fraction(O2, 0.209)
-air.set_mole_fraction(CO2, 0.001)
+air.set_mole_fraction(N2, 0.79)
+air.set_mole_fraction(O2, 0.21)
 air.add_model(propname='pore.molar_mass',
               model=op.models.phases.mixtures.mole_weighted_average,
               prop='pore.molecular_weight')
