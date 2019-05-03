@@ -87,7 +87,7 @@ class GenericMixture(GenericPhase):
         return lines
 
     def _update_total_molfrac(self):
-        # Update concentration.all
+        # Update mole_fraction.all
         self['pore.mole_fraction.all'] = 0.0
         dict_ = list(self['pore.mole_fraction'].values())
         if len(dict_) > 1:
@@ -103,13 +103,16 @@ class GenericMixture(GenericPhase):
 
         This method looks up the concentration of each species (using the
         optionally specified concentration dictionary key), and calculates
-        the mole fraction.
+        the mole fraction.  Optionally, it can use a molar density for the
+        mixture and N-1 concentrations to determine the Nth concentration and
+        all species mole fractions.
 
         Parameters
         ----------
         concentration : string, optional
             The dictionary key pointing to the desired concentration values.
-            The default is 'pore.concentration'.
+            The default is 'pore.concentration'.  Given this value, lookups
+            are performed for each species in the mixture.
         molar_density : string, optional
             The dictionary key pointing to the molar density of the mixture.
             If not given (default), all species must have a specified value of
@@ -126,11 +129,10 @@ class GenericMixture(GenericPhase):
         fraction arrays of each species directly.
         """
         if concentration is None:
-            concentration = ['pore.concentration.'+comp for comp
-                             in self.settings['components']
-                             if 'pore.concentration.'+comp in self.keys()]
-        if type(concentration) == str:
-            concentration = [concentration]
+            concentration = 'pore.concentration'
+        concentration = [concentration + '.' + comp for comp
+                         in self.settings['components']
+                         if concentration + '.' + comp in self.keys()]
         if molar_density is None:
             if len(concentration) < len(self.components):
                 raise Exception('Insufficient concentration values found on ' +
@@ -146,9 +148,9 @@ class GenericMixture(GenericPhase):
         else:
             n_spec = len(concentration) - len(self.components)
             if n_spec < -1:
-                raise Exception('Insufficient concentration values found' +
-                                'on component species, must specify ' +
-                                str(n_spec + 1) + ' additional values')
+                raise Exception('Insufficient concentration values found ' +
+                                'for component species, must specify ' +
+                                str(abs(n_spec + 1)) + ' additional values')
             elif n_spec == 0:
                 raise Exception('Concentration values found for all ' +
                                 'component species, cannot apply specified ' +
@@ -166,6 +168,7 @@ class GenericMixture(GenericPhase):
                 all_comps = self.settings['components']
                 component = list(set(all_comps).difference(set(given_comps)))[0]
                 self[element+'.mole_fraction.'+component] = 1 - mol_frac
+                # [self[element+'.concentration.'+component] = (1 - mol_frac)*density
 
     def set_mole_fraction(self, component, values=[]):
         r"""
