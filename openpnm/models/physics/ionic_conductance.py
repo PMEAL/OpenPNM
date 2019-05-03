@@ -473,6 +473,7 @@ def generic_conductance(target, transport_type, pore_area, throat_area,
     # Preallocating g_inv
     g_inv1, g_inv2, g_invt = _sp.zeros((3, len(Lt)))
     f1, f2, ft = [gi != 0 for gi in [g1, g2, gt]]
+    g_inv1[~f1] = g_inv2[~f2] = g_invt[~ft] = _sp.inf
     g_inv1[f1] = 1/g1[f1]
     g_inv2[f2] = 1/g2[f2]
     g_invt[ft] = 1/gt[ft]

@@ -1,9 +1,8 @@
-"""
 import openpnm as op
 import numpy as np
 ws = op.Workspace()
 proj = ws.new_project()
-# ws.settings['loglevel'] = 20
+
 
 # network, geometry, phase
 np.random.seed(0)
@@ -14,10 +13,6 @@ prs = (net['pore.back'] * net['pore.right'] + net['pore.back'] *
        net['pore.front'] * net['pore.left'])
 thrts = net['throat.surface']
 op.topotools.trim(network=net, pores=net.Ps[prs], throats=net.Ts[thrts])
-net['pore.coords'][:, 0] -= 0.00045
-net['pore.coords'][:, 1] -= 0.00045
-net['pore.coords'][:, 2] = 0
-# np.savetxt('coords.txt', net['pore.coords'])
 
 
 geo = op.geometry.StickAndBall(network=net, pores=net.Ps, throats=net.Ts)
@@ -28,8 +23,6 @@ geo.add_model(propname='throat.diameter', model=throat_d, value=1e-4)
 geo.regenerate_models()
 
 sw = op.phases.Mixtures.SalineWater(network=net)
-sw['pore.diffusivity.Na'] = sw['pore.diffusivity.Cl']
-sw['throat.diffusivity.Na'] = sw['throat.diffusivity.Cl']
 
 # physics
 phys = op.physics.GenericPhysics(network=net, phase=sw, geometry=geo)
@@ -67,17 +60,17 @@ sw.update(sf.results())
 p = op.algorithms.OhmicConduction(network=net, phase=sw)
 p.settings['conductance'] = 'throat.ionic_conductance'
 p.settings['quantity'] = 'pore.potential'
-p.set_value_BC(pores=net.pores('left'), values=0.05)
+p.set_value_BC(pores=net.pores('left'), values=0.01)
 p.set_value_BC(pores=net.pores('right'), values=0.00)
 p.settings['rxn_tolerance'] = 1e-12
-sw.update(p.results())
 
-eA = op.algorithms.NernstPlanck(network=net, phase=sw, electrolyte='Na')
+
+eA = op.algorithms.NernstPlanck(network=net, phase=sw, ion='Na')
 eA.set_value_BC(pores=net.pores('back'), values=100)
 eA.set_value_BC(pores=net.pores('front'), values=90)
 eA.settings['rxn_tolerance'] = 1e-12
 
-eB = op.algorithms.NernstPlanck(network=net, phase=sw, electrolyte='Cl')
+eB = op.algorithms.NernstPlanck(network=net, phase=sw, ion='Cl')
 eB.set_value_BC(pores=net.pores('back'), values=100)
 eB.set_value_BC(pores=net.pores('front'), values=90)
 eB.settings['rxn_tolerance'] = 1e-12
@@ -93,27 +86,14 @@ phys.add_model(propname='throat.ad_dif_mig_conductance.Cl',
                model=ad_dif_mig_Cl, ion='Cl',
                s_scheme='exponential')
 
-pnp = op.algorithms.PoissonNernstPlanck(network=net, phase=sw)
-pnp.setup(potential_field=p, electrolytes=[eA, eB])
-pnp.settings['max_iter'] = 400
+pnp = op.algorithms.ChargeConservationNernstPlanck(network=net, phase=sw)
+pnp.setup(potential_field=p, ions=[eA, eB])
+pnp.settings['max_iter'] = 10
 pnp.settings['tolerance'] = 1e-04
-# pnp.settings['charge_conservation'] = 'laplace'
-pnp.settings['charge_conservation'] = 'electroneutrality'
+pnp.settings['charge_conservation'] = 'laplace'
 pnp.run()
-
-# Comsol results
-# cNa_cmsl = np.genfromtxt('cNa_at_coords.txt', skip_header=9)
-# sw['pore.concentration.cmsl'] = cNa_cmsl[:, 3]
-
-# phi_cmsl = np.genfromtxt('phi_at_coords.txt', skip_header=9)
-# sw['pore.potential_cmsl'] = phi_cmsl[:, 3]
-
-# p_cmsl = np.genfromtxt('p_at_coords.txt', skip_header=9)
-# sw['pore.pressure_cmsl'] = p_cmsl[:, 3]
 
 sw.update(sf.results())
 sw.update(p.results())
 sw.update(eA.results())
 sw.update(eB.results())
-# op.io.VTK.save(network=net, phases=[sw], filename='OUTPUT_PNP')
-"""
