@@ -1,16 +1,18 @@
 import openpnm as op
+from openpnm.phases import mixtures
 ws = op.Workspace()
 proj = ws.new_project()
 
 pn = op.network.Cubic(shape=[30, 30, 10], spacing=1e-4, project=proj)
 geo = op.geometry.StickAndBall(network=pn, pores=pn.Ps, throats=pn.Ts)
 
-N2 = op.phases.components.gases.N2(network=pn, name='pure_N2')
-O2 = op.phases.components.gases.O2(network=pn, name='pure_O2')
-CO2 = op.phases.components.gases.CO2(network=pn, name='pure_CO2')
-H2 = op.phases.components.gases.H2(network=pn, name='pure_H2')
-air = op.phases.GenericMixture(network=pn, components=[N2, O2, H2, CO2],
-                               name='air_mixture')
+N2 = mixtures.species.gases.N2(network=pn, name='pure_N2')
+O2 = mixtures.species.gases.O2(network=pn, name='pure_O2')
+CO2 = mixtures.species.gases.CO2(network=pn, name='pure_CO2')
+H2 = mixtures.species.gases.H2(network=pn, name='pure_H2')
+air = mixtures.GenericMixture(network=pn,
+                              components=[N2, O2, H2, CO2],
+                              name='air_mixture')
 air.set_mole_fraction(N2, 0.790)
 air.set_mole_fraction(O2, 0.209)
 air.set_mole_fraction(CO2, 0.001)

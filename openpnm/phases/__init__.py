@@ -81,6 +81,5 @@ from .Air import Air
 from .Water import Water
 from .Mercury import Mercury
 from .Multiphase import MultiPhase
-from .GenericMixture import GenericMixture
-from . import components
-from .SalineWater import SalineWater
+#from . import species
+#from . import mixtures
