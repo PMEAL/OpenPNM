@@ -1,4 +1,5 @@
 import openpnm as op
+from openpnm.phases import mixtures
 import scipy as sp
 import pytest
 
@@ -9,16 +10,14 @@ class MixtureTest:
         ws.clear()
         self.net = op.network.Cubic(shape=[10, 10, 10])
         self.net = op.network.Cubic(shape=[10, 10, 10])
-        self.N2 = op.phases.species.gases.N2(network=self.net, name='pure_N2')
-        self.O2 = op.phases.species.gases.O2(network=self.net, name='pure_O2')
-        self.CO2 = op.phases.species.gases.CO2(network=self.net, name='pure_CO2')
-        self.H2 = op.phases.species.gases.H2(network=self.net, name='pure_H2')
-        self.air = op.phases.mixtures.GenericMixture(network=self.net,
-                                                     components=[self.N2,
-                                                                 self.O2,
-                                                                 self.H2,
-                                                                 self.CO2],
-                                                     name='air_mixture')
+        self.N2 = mixtures.species.gases.N2(network=self.net, name='pure_N2')
+        self.O2 = mixtures.species.gases.O2(network=self.net, name='pure_O2')
+        self.CO2 = mixtures.species.gases.CO2(network=self.net, name='pure_CO2')
+        self.H2 = mixtures.species.gases.H2(network=self.net, name='pure_H2')
+        self.air = mixtures.GenericMixture(network=self.net,
+                                           components=[self.N2, self.O2,
+                                                       self.H2, self.CO2],
+                                           name='air_mixture')
 
     def test_set_mole_fraction(self):
         self.air.set_mole_fraction(self.N2, 0.790)
