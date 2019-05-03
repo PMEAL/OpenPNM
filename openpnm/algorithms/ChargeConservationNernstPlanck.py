@@ -54,10 +54,10 @@ class ChargeConservationNernstPlanck(ReactiveTransport):
         except KeyError:
             try:
                 p_alg[p_alg.settings['quantity']] = (
-                        phase[p_alg.settings['quantity']])
+                    phase[p_alg.settings['quantity']])
             except KeyError:
                 p_alg[p_alg.settings['quantity']] = np.zeros(
-                        shape=[p_alg.Np, ], dtype=float)
+                    shape=[p_alg.Np, ], dtype=float)
         for e in e_alg:
             try:
                 e[e.settings['quantity']]
