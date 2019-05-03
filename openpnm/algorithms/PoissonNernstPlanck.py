@@ -80,8 +80,8 @@ class PoissonNernstPlanck(ReactiveTransport):
         # Iterate until solutions converge
         for itr in range(int(self.settings['max_iter'])):
             r = str([float(format(i, '.3g')) for i in res.values()])[1:-1]
-            logger.info('Iter: ' + str(itr) + ', Residuals: ' + r)
-            print('Iter: ' + str(itr) + ', Residuals: ' + r)
+            logger.info('Iter: ' + str(itr+1) + ', Residuals: ' + r)
+            print('Iter: ' + str(itr+1) + ', Residuals: ' + r)
             convergence = max(i for i in res.values()) < tol
             if not convergence:
                 # Poisson eq

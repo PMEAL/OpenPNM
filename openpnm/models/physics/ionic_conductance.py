@@ -13,8 +13,16 @@ import scipy as _sp
 def poisson(target,
             pore_area='pore.area',
             throat_area='throat.area',
+            pore_diffusivity='pore.diffusivity',
+            throat_diffusivity='throat.diffusivity',
             conduit_lengths='throat.conduit_lengths',
-            conduit_shape_factors='throat.poisson_shape_factors'):
+            conduit_shape_factors='throat.poisson_shape_factors',
+            pore_volume='pore.volume',
+            pore_temperature='pore.temperature',
+            throat_temperature='throat.temperature',
+            pore_valence='pore.valence',
+            throat_valence='throat.valence',
+            pore_concentration='pore.concentration'):
     r"""
     Calculate the ionic conductance of conduits in network (using the Poisson
     equation for charge conservation), where a conduit is
@@ -33,11 +41,35 @@ def poisson(target,
     throat_area : string
         Dictionary key of the throat area values
 
+    pore_diffusivity : string
+        Dictionary key of the pore diffusivity values
+
+    throat_diffusivity : string
+        Dictionary key of the throat diffusivity values
+
     conduit_lengths : string
         Dictionary key of the conduit length values
 
     conduit_shape_factors : string
         Dictionary key of the conduit DIFFUSION shape factor values
+
+    pore_volume : string
+        Dictionary key of the pore volume values
+
+    pore_temperature : string
+        Dictionary key of the pore temperature values
+
+    throat_temperature : string
+        Dictionary key of the throat temperature values
+
+    pore_valence : string
+       Dictionary key of the pore ionic species valence values
+
+    throat_valence : string
+       Dictionary key of the throat ionic species valence values
+
+    pore_concentration : string
+       Dictionary key of the pore ionic species concentration values
 
     Returns
     -------
@@ -62,10 +94,15 @@ def poisson(target,
                                transport_type='poisson',
                                pore_area=pore_area,
                                throat_area=throat_area,
-                               pore_diffusivity='',
-                               throat_diffusivity='',
+                               pore_diffusivity=pore_diffusivity,
+                               throat_diffusivity=throat_diffusivity,
                                conduit_lengths=conduit_lengths,
-                               pore_volume='',
+                               pore_volume=pore_volume,
+                               pore_temperature=pore_temperature,
+                               throat_temperature=throat_temperature,
+                               pore_valence=pore_valence,
+                               throat_valence=throat_valence,
+                               pore_concentration=pore_concentration,
                                conduit_shape_factors=conduit_shape_factors)
 
 
@@ -367,9 +404,9 @@ def generic_conductance(target, transport_type, pore_area, throat_area,
         SF1 = SF2 = SFt = 1.0
     # Poisson or Laplace
     if transport_type in ['poisson', 'laplace']:
-        g1[m1] = (A1)[m1] * L1[m1]
-        g2[m2] = (A2)[m2] * L2[m2]
-        gt[mt] = (At)[mt] * Lt[mt]
+        g1[m1] = (A1)[m1] / L1[m1]
+        g2[m2] = (A2)[m2] / L2[m2]
+        gt[mt] = (At)[mt] / Lt[mt]
     # Electroneutrality
     elif transport_type == 'electroneutrality':
         F = 96485.3329
@@ -402,7 +439,7 @@ def generic_conductance(target, transport_type, pore_area, throat_area,
                 c1 = _sp.zeros((network.Nt))[cn[:, 0]]
                 c2 = _sp.zeros((network.Nt))[cn[:, 1]]
             ct = (c1*Vol1 + c2*Vol2)/(Vol1 + Vol2)
-        # Interpolate pore phase property values to throats
+            # Interpolate pore phase property values to throats
             try:
                 Dt = phase[throat_diffusivity+i][throats]
                 Vt = phase[throat_valence+i][throats]
@@ -439,5 +476,7 @@ def generic_conductance(target, transport_type, pore_area, throat_area,
     g_inv1[f1] = 1/g1[f1]
     g_inv2[f2] = 1/g2[f2]
     g_invt[ft] = 1/gt[ft]
+    g = g_inv1/SF1 + g_inv2/SF2 + g_invt/SFt
+    g[g != 0] = g[g != 0]**(-1)
     # Apply shape factors and calculate the final conductance
-    return (g_inv1/SF1 + g_inv2/SF2 + g_invt/SFt)**(-1)
+    return g
