@@ -25,6 +25,11 @@ class MixtureTest:
         self.air.set_mole_fraction(self.CO2, 0.001)
         assert sp.all(self.air['pore.mole_fraction.all'] == 1.0)
 
+    def test_props(self):
+        a = self.air.props(deep=False)
+        b = self.air.props(deep=True)
+        assert len(b) > len(a)
+
     def test_check_health(self):
         self.air.set_mole_fraction(self.N2, 0.790)
         self.air.set_mole_fraction(self.O2, 0.209)
@@ -46,8 +51,10 @@ class MixtureTest:
 
     def test_getitem(self):
         d = self.air['pore.mole_fraction']
-        set_a = set(['pore.mole_fraction.pure_N2', 'pore.mole_fraction.pure_O2',
-                     'pore.mole_fraction.pure_H2', 'pore.mole_fraction.pure_CO2',
+        set_a = set(['pore.mole_fraction.pure_N2',
+                     'pore.mole_fraction.pure_O2',
+                     'pore.mole_fraction.pure_H2',
+                     'pore.mole_fraction.pure_CO2',
                      'pore.mole_fraction.all'])
         assert set_a.difference(set(d.keys())) == set()
 
