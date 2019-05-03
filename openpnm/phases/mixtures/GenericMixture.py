@@ -1,7 +1,7 @@
 # from collections import ChainMap  # Might use eventually
 import numpy as np
 from openpnm.phases import GenericPhase as GenericPhase
-from openpnm.utils import logging, HealthDict
+from openpnm.utils import logging, HealthDict, PrintableList
 logger = logging.getLogger(__name__)
 
 
@@ -68,7 +68,7 @@ class GenericMixture(GenericPhase):
         super().__setitem__(key, value)
 
     def props(self, deep=False, **kwargs):
-        temp = []
+        temp = PrintableList()
         if deep:
             for item in self.components.values():
                 temp.extend([prop+'.'+item.name for prop in item.props(**kwargs)])
@@ -97,9 +97,33 @@ class GenericMixture(GenericPhase):
         if len(dict_) > 1:
             self['throat.mole_fraction.all'] = np.sum(dict_, axis=0)
 
-    def update_mole_fractions(self, concentration=None,
-                              density='pore.molar_density'):
+    def update_mole_fractions(self, concentration=None, molar_density=None):
         r"""
+        Re-calculate mole fractions of each species in mixture
+
+        This method looks up the concentration of each species (using the
+        optionally specified concentration dictionary key), and calculates
+        the mole fraction.
+
+        Parameters
+        ----------
+        concentration : string, optional
+            The dictionary key pointing to the desired concentration values.
+            The default is 'pore.concentration'.
+        molar_density : string, optional
+            The dictionary key pointing to the molar density of the mixture.
+            If not given (default), all species must have a specified value of
+            concentration.  If given, then only N-1 species must have a
+            specified concentration value, where N is the total number of
+            species in the mixture.  This is useful for air, where the O2
+            concentration may be known, then the ideal gas law can be used
+            to find the ``molar_density``, then the N2 mole fraction can be
+            inferred.
+
+        Notes
+        -----
+        The method does not return any values.  Instead it updates the mole
+        fraction arrays of each species directly.
         """
         if concentration is None:
             concentration = ['pore.concentration.'+comp for comp
@@ -107,18 +131,41 @@ class GenericMixture(GenericPhase):
                              if 'pore.concentration.'+comp in self.keys()]
         if type(concentration) == str:
             concentration = [concentration]
-        for conc in concentration:
-            element, quantity, component = conc.split('.')
-            density = '.'.join((element, density.split('.')[-1]))
-            mf = self[conc]/self[density]
-            self[element+'.mole_fraction.'+component] = mf
-        given_comps = [conc.split('.')[2] for conc in concentration]
-        all_comps = self.settings['components']
-        if (len(all_comps) - len(given_comps)) == 1:
-            component = list(set(all_comps).difference(set(given_comps)))[0]
-            self[element+'.mole_fraction.'+component] = 1-mf
+        if molar_density is None:
+            if len(concentration) < len(self.components):
+                raise Exception('Insufficient concentration values found on ' +
+                                'component species, must specify molar_density')
+            # Find total number of moles per unit volume
+            density = 0.0
+            for conc in concentration:
+                density += self[conc]
+            # Normalize moles per unit volume for each species by the total
+            for conc in concentration:
+                element, quantity, component = conc.split('.')
+                self[element+'.mole_fraction.'+component] = self[conc]/density
         else:
-            logger.warning('component found, cannot determine')
+            n_spec = len(concentration) - len(self.components)
+            if n_spec < -1:
+                raise Exception('Insufficient concentration values found' +
+                                'on component species, must specify ' +
+                                str(n_spec + 1) + ' additional values')
+            elif n_spec == 0:
+                raise Exception('Concentration values found for all ' +
+                                'component species, cannot apply specified ' +
+                                'molar_density')
+            else:  # n_spec == -1, so correct number of DoF
+                # Find mole fraction of N-1 species
+                mol_frac = 0.0
+                density = self[molar_density]
+                for conc in concentration:
+                    element, quantity, component = conc.split('.')
+                    self[element+'.mole_fraction.'+component] = self[conc]/density
+                    mol_frac += self[element+'.mole_fraction.'+component]
+                # Find mole fraction of Nth species using molar_density
+                given_comps = [conc.split('.')[2] for conc in concentration]
+                all_comps = self.settings['components']
+                component = list(set(all_comps).difference(set(given_comps)))[0]
+                self[element+'.mole_fraction.'+component] = 1 - mol_frac
 
     def set_mole_fraction(self, component, values=[]):
         r"""
