@@ -1,7 +1,6 @@
 import numpy as np
-from openpnm.phases import Water
 from openpnm.phases.mixtures import GenericMixture, species
-from openpnm.models.phases.mixtures import mole_weighted_average
+from openpnm import models as mods
 from openpnm.utils import logging
 logger = logging.getLogger(__name__)
 
@@ -14,13 +13,32 @@ class SalineWater(GenericMixture):
             logger.warn('Ignoring received components')
         super().__init__(network=network, components=[], **kwargs)
 
-        C = species.ions.Cl(network=network, name='Cl')
-        N = species.ions.Na(network=network, name='Na')
-        W = Water(network=network, name='H2O')
-        self.settings['components'] = [C.name, N.name, W.name]
-        self.set_mole_fraction(component=W, values=1.0)
-        self.set_mole_fraction(component=N, values=0.0)
-        self.set_mole_fraction(component=C, values=0.0)
-        self.add_model(propname='pore.molar_mass',
-                       model=mole_weighted_average,
-                       prop='pore.molecular_weight')
+        Cl = species.ions.Cl(network=network, name='Cl')
+        Na = species.ions.Na(network=network, name='Na')
+        W = species.liquids.H2O(network=network, name='H2O')
+        self.settings['components'] = [Cl.name, Na.name, W.name]
+        self.set_concentration(component=W, values=998/0.018)
+        self.set_concentration(component=Na, values=0.0)
+        self.set_concentration(component=Cl, values=0.0)
+        self.add_model(propname='pore.salt_concentration',
+                       model=mods.misc.summation,
+                       props=['pore.concentration.Na',
+                              'pore.concentration.Cl'])
+        self.add_model(propname='pore.salt_molecular_weight',
+                       model=mods.misc.summation,
+                       props=['pore.molecular_weight.Na',
+                              'pore.molecular_weight.Cl'])
+        self.add_model(propname='pore._salinity',
+                       model=mods.misc.product,
+                       prop1='pore.salt_concentration',
+                       prop2='pore.salt_molecular_weight')
+        self.add_model(propname='pore.salinity',
+                       model=mods.misc.scaled,
+                       prop='pore._salinity',
+                       factor=1.0)
+        self.add_model(propname='pore.mass_density',
+                       model=mods.phases.density.water,
+                       salinity='pore.salinity')
+        self.add_model(propname='pore.viscosity',
+                       model=mods.phases.viscosity.water,
+                       salinity='pore.salinity')

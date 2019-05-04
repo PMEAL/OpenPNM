@@ -59,12 +59,10 @@ class GenericMixture(GenericPhase):
         return vals
 
     def __setitem__(self, key, value):
-        prop = '.'.join(key.split('.')[:2])
-        invalid_keys = set(self.props()).difference(set(self.keys()))
-        # invalid_keys = []
-        # [invalid_keys.extend(item.keys()) for item in self.components.values()]
-        if prop in invalid_keys:
-            raise Exception(prop + ' already assigned to a component object')
+        # Prevent writing 'element.property.component' on mixture
+        invalid_keys = set(self.props(deep=True)).difference(set(self.props()))
+        if key in invalid_keys:
+            raise Exception(key + ' already assigned to a component object')
         super().__setitem__(key, value)
 
     def props(self, deep=False, **kwargs):
@@ -96,6 +94,14 @@ class GenericMixture(GenericPhase):
         dict_ = list(self['throat.mole_fraction'].values())
         if len(dict_) > 1:
             self['throat.mole_fraction.all'] = np.sum(dict_, axis=0)
+
+    def update_concentrations(self, mole_fraction='pore.mole_fraction'):
+        r"""
+        """
+        density = self['pore.molar_density']
+        for item in self.components.values():
+            mf = self['pore.mole_fraction.'+item.name]
+            self['pore.concentration.'+item.name] = density*mf
 
     def update_mole_fractions(self, concentration='pore.concentration',
                               molar_density='pore.molar_density'):
@@ -156,6 +162,38 @@ class GenericMixture(GenericPhase):
                             'for component species, must specify ' +
                             str(abs(n_spec + 1)) + ' additional values')
 
+    def set_concentration(self, component, values=[]):
+        r"""
+        Specify mole fraction of each component in each pore
+
+        Parameters
+        ----------
+        components : OpenPNM Phase object or name string
+            The phase whose mole fraction is being specified
+
+        values : array_like
+            The concentration of the given ``component `` in each pore.  This
+            array must be *Np*-long, with one value for each pore in the
+            network.  If a scalar is received it is applied to all pores.
+
+        See Also
+        --------
+        set_mole_fraction
+
+        """
+        if type(component) == str:
+            component = self.components[component]
+        Pvals = np.array(values, ndmin=1)
+        if component not in self.project:
+            raise Exception(f"{component.name} doesn't belong to this project")
+        else:
+            if component.name not in self.settings['components']:
+                self.settings['components'].append(component.name)
+        if np.any(Pvals < 0.0):
+            logger.warning('Received values contain negative concentrations')
+        if Pvals.size:
+            self['pore.concentration.' + component.name] = Pvals
+
     def set_mole_fraction(self, component, values=[]):
         r"""
         Specify mole fraction of each component in each pore
@@ -166,9 +204,14 @@ class GenericMixture(GenericPhase):
             The phase whose mole fraction is being specified
 
         values : array_like
-            The mole fraction of ``component `` in each pore.  This array must
-            be *Np*-long, with one value between 0 and 1 for each pore in the
-            network.  If a scalar is received it is applied to all pores.
+            The mole fraction of the given ``component `` in each pore.  This
+            array must be *Np*-long, with one value between 0 and 1 for each
+            pore in the network.  If a scalar is received it is applied to
+            all pores.
+
+        See Also
+        --------
+        set_concentration
 
         """
         if type(component) == str:
@@ -180,7 +223,7 @@ class GenericMixture(GenericPhase):
             if component.name not in self.settings['components']:
                 self.settings['components'].append(component.name)
         if np.any(Pvals > 1.0) or np.any(Pvals < 0.0):
-            logger.warning('Received Pvals contain mole fractions outside ' +
+            logger.warning('Received values contain mole fractions outside ' +
                            'the range of 0 to 1')
         if Pvals.size:
             self['pore.mole_fraction.' + component.name] = Pvals

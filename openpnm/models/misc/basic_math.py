@@ -12,6 +12,27 @@ from openpnm.utils import logging
 logger = logging.getLogger(__name__)
 
 
+def summation(target, props=[]):
+    r"""
+    Sums the values in the given arrays
+
+    Parameters
+    ----------
+    target : OpenPNM Object
+        The object which this model is associated with. This controls the
+        length of the calculated array, and also provides access to other
+        necessary properties.
+
+    props : list of dictionary keys
+        The dictionary keys pointing the arrays whose elements should be summed
+
+    """
+    vals = np.zeros_like(target[props[0]])
+    for item in props:
+        vals += target[item]
+    return vals
+
+
 def normalize(target, prop, xmin=0, xmax=1):
     r"""
     Normalizes the given array between the supplied limits
