@@ -42,3 +42,4 @@ class SalineWater(GenericMixture):
         self.add_model(propname='pore.viscosity',
                        model=mods.phases.viscosity.water,
                        salinity='pore.salinity')
+        self.update_mole_fractions()

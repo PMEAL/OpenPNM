@@ -11,7 +11,7 @@ class NernstPlanck(ReactiveTransport):
                    'quantity': 'pore.concentration.'+electrolyte,
                    'conductance': 'throat.ad_dif_mig_conductance.'+electrolyte}
         super().__init__(**kwargs)
-        self.name = electrolyte
+#        self.name = electrolyte
         self.settings.update(def_set)
         self.settings.update(settings)
         if phase is not None:
