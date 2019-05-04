@@ -21,10 +21,10 @@ def standard(target, mol_weight='pore.molecular_weight',
         controls the length of the calculated array, and also provides
         access to other necessary thermofluid properties.
 
-    pore_MW : string
+    mol_weight : string
         The dictionary key containing the molecular weight in kg/mol
 
-    pore_temperature : string
+    density : string
         The dictionary key containing the density in kg/m3
 
     Returns
