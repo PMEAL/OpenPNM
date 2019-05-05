@@ -66,11 +66,12 @@ def mole_weighted_average(target, prop):
         An ND-array containing the mole fraction weighted average value of the
         specified property.
     """
+    comps = target.components.values()
     element = prop.split('.')[0]
     vals = np.zeros(target._count(element))
-    for item in target.components.keys():
-        frac = target[element + '.mole_fraction.' + item]
-        temp = target.project[item][prop]
+    for item in comps:
+        frac = target[element + '.mole_fraction.' + item.name]
+        temp = item[prop]
         vals += temp*frac
     return vals
 
