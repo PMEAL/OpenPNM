@@ -12,6 +12,28 @@ from openpnm.utils import logging
 logger = logging.getLogger(__name__)
 
 
+def fraction(target, numerator, denominator):
+    r"""
+    Calculates the ratio between two values
+
+    Parameters
+    ----------
+    target : OpenPNM Object
+        The object which this model is associated with. This controls the
+        length of the calculated array, and also provides access to other
+        necessary properties.
+
+    numerator : string
+        Dictionary key pointing the numerator values
+
+    denominator : string
+        Dictionary key pointing the denominator values
+    """
+    x = target[numerator]
+    y = target[denominator]
+    return x/y
+
+
 def summation(target, props=[]):
     r"""
     Sums the values in the given arrays
