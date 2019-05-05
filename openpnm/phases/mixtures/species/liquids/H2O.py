@@ -24,8 +24,9 @@ class H2O(GenericPhase):
     Examples
     --------
     >>> import openpnm as op
+    >>> import openpnm.phases.mixtures as mixtures
     >>> pn = op.network.Cubic(shape=[5, 5, 5])
-    >>> Na = op.phases.components.ions.NaIon(network=pn)
+    >>> H2O = mixtures.species.liquids.H2O(network=pn)
 
     """
     def __init__(self, **kwargs):
@@ -33,3 +34,4 @@ class H2O(GenericPhase):
 
         self['pore.molecular_weight'] = 0.0291
         self['pore.diffusivity'] = 0.1
+        self['pore.molar_diffusion_volume'] = 17.9  # Wrong

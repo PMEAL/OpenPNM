@@ -24,7 +24,9 @@ class CO2(GenericPhase):
     Examples
     --------
     >>> import openpnm as op
+    >>> import openpnm.phases.mixtures as mixtures
     >>> pn = op.network.Cubic(shape=[5, 5, 5])
+    >>> CO2 = mixtures.species.gases.CO2(network=pn)
 
     """
     def __init__(self, **kwargs):

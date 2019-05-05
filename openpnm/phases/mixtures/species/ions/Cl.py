@@ -24,8 +24,9 @@ class Cl(GenericPhase):
     Examples
     --------
     >>> import openpnm as op
+    >>> import openpnm.phases.mixtures as mixtures
     >>> pn = op.network.Cubic(shape=[5, 5, 5])
-    >>> Cl = op.phases.components.ions.Cl(network=pn)
+    >>> Cl = mixtures.species.ions.Cl(network=pn)
 
     """
     def __init__(self, **kwargs):

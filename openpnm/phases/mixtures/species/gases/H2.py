@@ -24,8 +24,9 @@ class H2(GenericPhase):
     Examples
     --------
     >>> import openpnm as op
+    >>> import openpnm.phases.mixtures as mixtures
     >>> pn = op.network.Cubic(shape=[5, 5, 5])
-    >>> Na = op.phases.components.ions.NaIon(network=pn)
+    >>> H2 = mixtures.species.gases.H2(network=pn)
 
     """
     def __init__(self, **kwargs):
