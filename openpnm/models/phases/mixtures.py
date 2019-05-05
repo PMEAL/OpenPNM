@@ -1,6 +1,55 @@
 import numpy as np
 
 
+def salinity(target, temperature='pore.temperature',
+             concentration='pore.concentration'):
+    r"""
+    Calculates the salinity in g salt per kg of solution from concentration
+
+    Parameter
+    ---------
+    target : OpenPNM Object
+        The object for which these values are being calculated.  This
+        controls the length of the calculated array, and also provides
+        access to other necessary thermofluid properties.
+
+    temperature : string
+        The dictionary key containing the temperature values in Kelvin.
+
+    concentration : string
+        The dictionary key containing the concentration values, in SI units of
+        mol/m3.
+
+    Returns
+    -------
+    salinity : ND-array
+        The salinity in g of solute per kg of solution.
+
+    Notes
+    -----
+    This model is useful for converting known concentration values (e.g.
+    calculated by a transport algorithm) into salinity values, which can then
+    be used for finding other physical properties of water which are available
+    as a function of salinity.
+
+    The salinity correlations are valid for salinity up to 160 g/kg, which
+    corresponds to a concentration of 0.05 mol/L (assuming NaCl is the only
+    solute)
+
+    """
+    C = target[concentration]
+    T = target[temperature]
+    a = 8.73220929e+00
+    b = 6.00389629e+01
+    c = -1.19083743e-01
+    d = -1.77796042e+00
+    e = 3.26987130e-04
+    f = -1.09636011e-01
+    g = -1.83933426e-07
+    S = a + b*C + c*T + d*C**2 + e*T**2 + f*C**3 + g*T**3
+    return S
+
+
 def mole_weighted_average(target, prop):
     r"""
     """

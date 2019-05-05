@@ -97,6 +97,15 @@ class GenericMixture(GenericPhase):
 
     def update_concentrations(self, mole_fraction='pore.mole_fraction'):
         r"""
+        Re-calculates the concentration of each species in the mixture based
+        on the current mole fractions.
+
+        This method looks up the mole fractions *and* the density of the
+        mixture, then finds the respective concentrations in $mol/m^{3}$.
+
+        Parameters
+        ----------
+
         """
         density = self['pore.molar_density']
         for item in self.components.values():
@@ -106,7 +115,8 @@ class GenericMixture(GenericPhase):
     def update_mole_fractions(self, concentration='pore.concentration',
                               molar_density='pore.molar_density'):
         r"""
-        Re-calculate mole fractions of each species in mixture
+        Re-calculates mole fraction of each species in mixture based on the
+        current concentrations.
 
         This method looks up the concentration of each species (using the
         optionally specified concentration dictionary key), and calculates
