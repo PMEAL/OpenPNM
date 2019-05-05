@@ -42,15 +42,15 @@ phys.add_model(propname='throat.ionic_conductance',
                model=current, regen_mode='normal')
 
 eA_dif = op.models.physics.diffusive_conductance.ordinary_diffusion
-phys.add_model(propname='throat.diffusive_conductance.Na',
-               pore_diffusivity='pore.diffusivity.Na',
-               throat_diffusivity='throat.diffusivity.Na',
+phys.add_model(propname='throat.diffusive_conductance.Na_'+sw.name,
+               pore_diffusivity='pore.diffusivity.Na_'+sw.name,
+               throat_diffusivity='throat.diffusivity.Na_'+sw.name,
                model=eA_dif, regen_mode='normal')
 
 eB_dif = op.models.physics.diffusive_conductance.ordinary_diffusion
-phys.add_model(propname='throat.diffusive_conductance.Cl',
-               pore_diffusivity='pore.diffusivity.Cl',
-               throat_diffusivity='throat.diffusivity.Cl',
+phys.add_model(propname='throat.diffusive_conductance.Cl_'+sw.name,
+               pore_diffusivity='pore.diffusivity.Cl_'+sw.name,
+               throat_diffusivity='throat.diffusivity.Cl_'+sw.name,
                model=eB_dif, regen_mode='normal')
 
 # algorithms
@@ -70,25 +70,25 @@ p.settings['rxn_tolerance'] = 1e-12
 p.run()
 sw.update(p.results())
 
-eA = op.algorithms.NernstPlanck(network=net, phase=sw, electrolyte='Na')
+eA = op.algorithms.NernstPlanck(network=net, phase=sw, electrolyte='Na_'+sw.name)
 eA.set_value_BC(pores=net.pores('back'), values=100)
 eA.set_value_BC(pores=net.pores('front'), values=90)
 eA.settings['rxn_tolerance'] = 1e-12
 
-eB = op.algorithms.NernstPlanck(network=net, phase=sw, electrolyte='Cl')
+eB = op.algorithms.NernstPlanck(network=net, phase=sw, electrolyte='Cl_'+sw.name)
 eB.set_value_BC(pores=net.pores('back'), values=100)
 eB.set_value_BC(pores=net.pores('front'), values=90)
 eB.settings['rxn_tolerance'] = 1e-12
 
 ad_dif_mig_Na = op.models.physics.ad_dif_mig_conductance.ad_dif_mig
-phys.add_model(propname='throat.ad_dif_mig_conductance.Na',
-               model=ad_dif_mig_Na, ion='Na',
+phys.add_model(propname='throat.ad_dif_mig_conductance.Na_'+sw.name,
+               model=ad_dif_mig_Na, ion='Na_'+sw.name,
                s_scheme='exponential')
 
 ad_dif_mig_Cl = op.models.physics.ad_dif_mig_conductance.ad_dif_mig
-phys.add_model(propname='throat.ad_dif_mig_conductance.Cl',
+phys.add_model(propname='throat.ad_dif_mig_conductance.Cl_'+sw.name,
                pore_pressure=sf.settings['quantity'],
-               model=ad_dif_mig_Cl, ion='Cl',
+               model=ad_dif_mig_Cl, ion='Cl_'+sw.name,
                s_scheme='exponential')
 
 pnp = op.algorithms.PoissonNernstPlanck(network=net, phase=sw)

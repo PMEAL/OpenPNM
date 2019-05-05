@@ -11,9 +11,9 @@ class HumidAir(GenericMixture):
     def __init__(self, network, **kwargs):
         super().__init__(network=network, components=[], **kwargs)
 
-        N2 = species.gases.N2(network=network, name='N2')
-        O2 = species.gases.O2(network=network, name='O2')
-        H2O = species.liquids.H2O(network=network, name='H2O')
+        N2 = species.gases.N2(network=network, name='N2_'+self.name)
+        O2 = species.gases.O2(network=network, name='O2_'+self.name)
+        H2O = species.liquids.H2O(network=network, name='H2O_'+self.name)
         self.settings['components'] = [O2.name, N2.name, H2O.name]
         self.set_mole_fraction(component=N2, values=0.791)
         self.set_mole_fraction(component=O2, values=0.209)

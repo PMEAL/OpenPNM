@@ -12,20 +12,20 @@ class SalineWater(GenericMixture):
             logger.warn('Ignoring received components')
         super().__init__(network=network, components=[], **kwargs)
 
-        Cl = species.ions.Cl(network=network, name='Cl')
-        Na = species.ions.Na(network=network, name='Na')
-        W = species.liquids.H2O(network=network, name='H2O')
+        Cl = species.ions.Cl(network=network, name='Cl_'+self.name)
+        Na = species.ions.Na(network=network, name='Na_'+self.name)
+        W = species.liquids.H2O(network=network, name='H2O_'+self.name)
         self.settings['components'] = [Cl.name, Na.name, W.name]
         self.set_concentration(component=W, values=998/0.018)
         self.set_concentration(component=Na, values=0.0)
         self.set_concentration(component=Cl, values=0.0)
         self.add_model(propname='pore.salt_concentration',
                        model=mods.misc.summation,
-                       props=['pore.concentration.Na',
-                              'pore.concentration.Cl'])
+                       props=['pore.concentration.Na_'+self.name,
+                              'pore.concentration.Cl_'+self.name])
         self.add_model(propname='pore.salinity',
                        model=mods.phases.mixtures.salinity,
-                       concentration='pore.concentration.Na')
+                       concentration='pore.concentration.Na_'+self.name)
         self.add_model(propname='pore.mass_density',
                        model=mods.phases.density.water,
                        salinity='pore.salinity')

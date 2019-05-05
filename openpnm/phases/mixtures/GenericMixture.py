@@ -32,7 +32,7 @@ class GenericMixture(GenericPhase):
     def __init__(self, components=[], settings={}, **kwargs):
         self.settings.update({'components': [],
                               })
-        super().__init__(**kwargs)
+        super().__init__(settings={'prefix': 'mix'}, **kwargs)
         self.settings.update(settings)
 
         # Add any supplied phases to the phases list
