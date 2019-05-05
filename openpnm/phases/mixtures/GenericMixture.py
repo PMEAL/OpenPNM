@@ -41,6 +41,8 @@ class GenericMixture(GenericPhase):
             self['pore.mole_fraction.'+comp.name] = 0.0
 
         self['pore.mole_fraction.all'] = np.zeros(self.Np, dtype=float)
+        logger.warning('Mixtures are a beta feature and functionality may ' +
+                       'change in future versions')
 
     def __getitem__(self, key):
         try:

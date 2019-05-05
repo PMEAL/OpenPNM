@@ -2,7 +2,7 @@ import openpnm as op
 from openpnm.phases import mixtures
 import numpy as np
 ws = op.Workspace()
-# ws.settings['loglevel'] = 20
+ws.settings['loglevel'] = 30
 
 # network, geometry, phase
 np.random.seed(0)

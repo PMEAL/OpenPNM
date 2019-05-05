@@ -33,5 +33,4 @@ class H2O(GenericPhase):
         super().__init__(**kwargs)
 
         self['pore.molecular_weight'] = 0.0291
-        self['pore.diffusivity'] = 0.1
         self['pore.molar_diffusion_volume'] = 17.9  # Wrong

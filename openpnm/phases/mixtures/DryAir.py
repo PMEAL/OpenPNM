@@ -1,6 +1,6 @@
-import numpy as np
 from openpnm.phases.mixtures import GenericMixture, species
 from openpnm.models.phases.mixtures import mole_weighted_average
+import openpnm.models as mods
 from openpnm.utils import logging
 logger = logging.getLogger(__name__)
 
@@ -16,6 +16,10 @@ class DryAir(GenericMixture):
         self.settings['components'] = [O2.name, N2.name]
         self.set_mole_fraction(component=N2, values=0.791)
         self.set_mole_fraction(component=O2, values=0.209)
+        self.add_model(propname='pore.diffusivity.N2',
+                       model=mods.phases.mixtures.fuller_diffusivity)
+        self.add_model(propname='pore.diffusivity.O2',
+                       model=mods.phases.mixtures.fuller_diffusivity)
         self.add_model(propname='pore.molar_mass',
                        model=mole_weighted_average,
                        prop='pore.molecular_weight')
