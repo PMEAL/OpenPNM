@@ -12,10 +12,8 @@ def salinity(target, temperature='pore.temperature',
         The object for which these values are being calculated.  This
         controls the length of the calculated array, and also provides
         access to other necessary thermofluid properties.
-
     temperature : string
         The dictionary key containing the temperature values in Kelvin.
-
     concentration : string
         The dictionary key containing the concentration values, in SI units of
         mol/m3.
@@ -52,6 +50,21 @@ def salinity(target, temperature='pore.temperature',
 
 def mole_weighted_average(target, prop):
     r"""
+
+    Parameters
+    ----------
+    target : OpenPNM Mixture Object
+        The object for which these values are being calculated.  This
+        controls the length of the calculated array, and also provides
+        access to other necessary thermofluid properties.
+    prop : string
+        The dictionary key to the property to be averaged.
+
+    Returns
+    -------
+    vals : ND-array
+        An ND-array containing the mole fraction weighted average value of the
+        specified property.
     """
     element = prop.split('.')[0]
     vals = np.zeros(target._count(element))
@@ -67,7 +80,34 @@ def fuller_diffusivity(target, molecular_weight='pore.molecular_weight',
                        temperature='pore.temperature',
                        pressure='pore.pressure'):
     r"""
+    Estimates the diffusion coeffient of both species in a binary gas
+    mixture using the Fuller correlation
 
+    Parameters
+    ----------
+    target : OpenPNM Mixture Object
+        The object for which these values are being calculated.  This
+        controls the length of the calculated array, and also provides
+        access to other necessary thermofluid properties.
+    molecular_weight : string
+        Dictionary key containing the molecular weight of each species.  The
+        default is 'pore.molecular_weight'
+    molar_diffusion_volume : string
+        Dictionary key containing the molar diffusion volume of each species.
+        This is used by the Fuller correlation.  The default is
+        'pore.molar_diffusion_volume'
+    temperature : string
+        Dictionary key contain the temperature of the mixture.  The default
+        is 'pore.temperature'
+    pressure : string
+        Dictionary key contain the pressure of the mixture.  The default
+        is 'pore.pressure'
+
+    Returns
+    -------
+    Dij : dict containing ND-arrys
+        The dict contains one array for each component, containing the
+        diffusion coefficient of that component at each location.
     """
     species_A, species_B = target.components.values()
     T = target[temperature]
@@ -82,8 +122,7 @@ def fuller_diffusivity(target, molecular_weight='pore.molecular_weight',
     return value
 
 
-def wilke_fuller_diffusivity(target, mole_fraction='pore.mole_fraction',
-                             molecular_weight='pore.molecular_weight',
+def wilke_fuller_diffusivity(target, molecular_weight='pore.molecular_weight',
                              molar_diffusion_volume='pore.molar_diffusion_volume',
                              temperature='pore.temperature',
                              pressure='pore.pressure'):
@@ -96,14 +135,10 @@ def wilke_fuller_diffusivity(target, mole_fraction='pore.mole_fraction',
 
     Parameters
     ----------
-    target : OpenPNM Object
+    target : OpenPNM Mixture Object
         The object for which these values are being calculated.  This
         controls the length of the calculated array, and also provides
         access to other necessary thermofluid properties.
-
-    mole_fraction : string
-        Dictionary key containing the mole fraction of each species.  The
-        default is 'pore.mole_fraction'
     molecular_weight : string
         Dictionary key containing the molecular weight of each species.  The
         default is 'pore.molecular_weight'
@@ -151,11 +186,11 @@ def wilke_fuller_diffusivity(target, mole_fraction='pore.mole_fraction',
     for i in range(len(comps)):
         denom = 0.0
         A = comps[i]
-        yA = target[mole_fraction + '.' + A.name]
+        yA = target['pore.mole_fraction.' + A.name]
         for j in range(len(comps)):
             if i != j:
                 B = comps[j]
-                yB = target[mole_fraction + '.' + B.name]
+                yB = target['pore.mole_fraction.' + B.name]
                 Dab = A['pore.D_in_' + B.name]
                 denom += yB/Dab
         values[A.name] = (1 - yA)/denom
@@ -164,4 +199,9 @@ def wilke_fuller_diffusivity(target, mole_fraction='pore.mole_fraction',
 
 
 class MixDict(dict):
+    r"""
+    This utility dict is used to create a temporary mixture object containing
+    only two components of mixture hhat has several.  This is necessary for
+    use of the fuller model for calculating binary diffusivities.
+    """
     pass
