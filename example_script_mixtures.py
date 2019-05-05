@@ -15,12 +15,8 @@ air.set_mole_fraction(O2, 0.21)
 air.add_model(propname='pore.molar_mass',
               model=op.models.phases.mixtures.mole_weighted_average,
               prop='pore.molecular_weight')
-# air.add_model(propname='pore.diffusivity.pure_O2',
-#               species_A=O2.name, species_B=N2.name,
-#               model=op.models.phases.mixtures.fuller_diffusivity)
-air.add_model(propname='pore.diffusivity',
-              model=op.models.phases.mixtures.wilke_fuller_diffusivity,
-              regen_mode='iterative')
+air.add_model(propname='pore.diffusivity.pure_O2',
+              model=op.models.phases.mixtures.fuller_diffusivity)
 air.add_model(propname='pore.viscosity',
               model=op.models.misc.polynomial,
               prop='pore.temperature',
