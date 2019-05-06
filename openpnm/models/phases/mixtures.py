@@ -116,7 +116,7 @@ def fuller_diffusivity(target, molecular_weight='pore.molecular_weight',
     MA = species_A[molecular_weight]
     MB = species_B[molecular_weight]
     vA = species_A[molar_diffusion_volume]
-    vB = species_A[molar_diffusion_volume]
+    vB = species_B[molar_diffusion_volume]
     MAB = 1e3*2*(1.0/MA + 1.0/MB)**(-1)
     P = P*1e-5
     value = 0.00143*T**1.75/(P*(MAB**0.5)*(vA**(1./3) + vB**(1./3))**2)*1e-4
@@ -167,42 +167,34 @@ def wilke_fuller_diffusivity(target, molecular_weight='pore.molecular_weight',
     `DOI: 10.1021/ie50483a022 <http://doi.org/10.1021/ie50483a022>`_
     """
     comps = list(target.components.values())
-    # Find diffusivity for each pair
-    for i in range(len(comps)):
-        for j in range(len(comps)):
-            if j > i:
-                A = comps[i]
-                B = comps[j]
-                temp = MixDict(target)
-                temp.components = {A.name: A, B.name: B}
-                D = fuller_diffusivity(target=temp,
-                                       molecular_weight=molecular_weight,
-                                       molar_diffusion_volume=molar_diffusion_volume,
-                                       temperature=temperature, pressure=pressure)
-                A['pore.D_in_' + B.name] = D
-                B['pore.D_in_' + A.name] = D
-
-    # Find the denominator
     values = {}
     for i in range(len(comps)):
-        denom = 0.0
         A = comps[i]
-        yA = target['pore.mole_fraction.' + A.name]
+        denom = 0.0
         for j in range(len(comps)):
             if i != j:
                 B = comps[j]
+                temp = MixDict(target=target, components=(A, B))
+                D = fuller_diffusivity(target=temp,
+                                       molecular_weight=molecular_weight,
+                                       molar_diffusion_volume=molar_diffusion_volume,
+                                       temperature=temperature,
+                                       pressure=pressure)
                 yB = target['pore.mole_fraction.' + B.name]
-                Dab = A['pore.D_in_' + B.name]
-                denom += yB/Dab
+                denom += yB/D
+        yA = target['pore.mole_fraction.' + A.name]
         values[A.name] = (1 - yA)/denom
-
     return values
 
 
 class MixDict(dict):
     r"""
     This utility dict is used to create a temporary mixture object containing
-    only two components of mixture hhat has several.  This is necessary for
+    only two components of a mixture that has several.  This is necessary for
     use of the fuller model for calculating binary diffusivities.
     """
-    pass
+    def __init__(self, target, components):
+        super().__init__(target)
+        self.components = {}
+        for item in components:
+            self.components.update({item.name: item})
