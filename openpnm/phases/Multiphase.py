@@ -57,6 +57,9 @@ class MultiPhase(GenericPhase):
                               })
         self.settings.update(settings)
 
+        logger.warning('Multiphases are a beta feature and functionality ' +
+                       'may change in future versions')
+
         self['pore.occupancy.all'] = np.zeros(self.Np, dtype=float)
         self['throat.occupancy.all'] = np.zeros(self.Nt, dtype=float)
 
@@ -86,7 +89,8 @@ class MultiPhase(GenericPhase):
             self['throat.occupancy.all'] = np.sum(dict_, axis=0)
 
     def _get_phases(self):
-        phases = [self.project[item] for item in self.settings['phases']]
+        phases = {self.project[item].name: self.project[item]
+                  for item in self.settings['phases']}
         return phases
 
     phases = property(fget=_get_phases)
@@ -119,7 +123,7 @@ class MultiPhase(GenericPhase):
                                 element + 's')
         vals = np.zeros([self._count(element=element)], dtype=float)
         try:
-            for phase in self.phases:
+            for phase in self.phases.values():
                 vals += phase[prop]*self[element + '.occupancy.' + phase.name]
         except KeyError:
             vals = super().interleave_data(prop)
