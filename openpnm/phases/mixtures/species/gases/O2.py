@@ -1,8 +1,8 @@
-from openpnm.phases import GenericPhase
+from openpnm.phases import mixtures
 import openpnm.models as mods
 
 
-class O2(GenericPhase):
+class O2(mixtures.GenericSpecies):
     r"""
     Creates Phase object with preset models and values for O2 gas
 

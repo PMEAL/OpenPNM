@@ -1,8 +1,8 @@
-from openpnm.phases import GenericPhase
+from openpnm.phases import mixtures
 import openpnm.models as mods
 
 
-class H2O(GenericPhase):
+class H2O(mixtures.GenericSpecies):
     r"""
     Creates Phase object with preset models and values for H2O ions
 
