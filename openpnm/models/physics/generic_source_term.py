@@ -1,5 +1,6 @@
 r"""
 
+.. autofunction:: openpnm.models.physics.generic_source_term.charge_conservation
 .. autofunction:: openpnm.models.physics.generic_source_term.standard_kinetics
 .. autofunction:: openpnm.models.physics.generic_source_term.linear
 .. autofunction:: openpnm.models.physics.generic_source_term.power_law
@@ -17,6 +18,44 @@ import sympy as _syp
 
 
 def charge_conservation(target, phase, p_alg, e_alg, assumption):
+    r"""
+    Applies the source term on the charge conservation equation when solving
+    for ions transport.
+
+    Parameters
+    ----------
+    phase : OpenPNM Phase object
+            The phase on which the charge conservation equation is applied.
+
+    p_alg : OpenPNM Algorithm object
+            The algorithm used to enforce charge conservation.
+
+    e_alg : list of OpenPNM algorithms
+            The list of algorithms used to solve for transport of different
+            ionic species of the mixture phase.
+
+    assumption : string
+            A string correponding to the assumption adopted to enforce charge
+            conservation.
+
+    Returns
+    -------
+    A dictionary containing the following three items:
+
+        **'rate'** - The value of the source term function for the given list
+                     of algortihms under the provided assumption.
+
+        **'S1'** - A placeholder (zero array).
+
+        **'S2'** - The value of the source term function for the given list of
+                   algortihms under the provided assumption (same as 'rate').
+
+    Notes
+    -----
+    Three assumptions are supported; "poisson", "electroneutrality" and
+    "laplace".
+
+    """
     F = 96485.3329
     rhs = _sp.zeros(shape=(p_alg.Np, ), dtype=float)
     if assumption == 'poisson':

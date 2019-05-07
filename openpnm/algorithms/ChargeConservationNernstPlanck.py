@@ -5,14 +5,15 @@ from openpnm.models.physics import generic_source_term as gst
 logger = logging.getLogger(__name__)
 
 
-class PoissonNernstPlanck(ReactiveTransport):
+class ChargeConservationNernstPlanck(ReactiveTransport):
     r"""
-    A subclass of GenericTransport to solve the Poisson Nernst-Planck equations
+    A subclass of GenericTransport to solve the charge conservation and
+    Nernst-Planck equations.
     """
     def __init__(self, settings={}, phase=None, **kwargs):
         def_set = {'phase': None,
                    'potential_field': None,
-                   'electrolytes': [],
+                   'ions': [],
                    'charge_conservation': 'electroneutrality',
                    'tolerance': 1e-4,
                    'max_iter': 10}
@@ -22,7 +23,7 @@ class PoissonNernstPlanck(ReactiveTransport):
         if phase is not None:
             self.setup(phase=phase)
 
-    def setup(self, phase=None, potential_field=None, electrolytes=[],
+    def setup(self, phase=None, potential_field=None, ions=[],
               charge_conservation=None, tolerance=None,
               max_iter=None, **kwargs):
         r"""
@@ -31,8 +32,8 @@ class PoissonNernstPlanck(ReactiveTransport):
             self.settings['phase'] = phase.name
         if potential_field:
             self.settings['potential_field'] = potential_field
-        if electrolytes:
-            self.settings['electrolytes'] = electrolytes
+        if ions:
+            self.settings['ions'] = ions
         if charge_conservation:
             self.settings['charge_conservation'] = charge_conservation
         if tolerance:
@@ -42,25 +43,32 @@ class PoissonNernstPlanck(ReactiveTransport):
         super().setup(**kwargs)
 
     def run(self):
-        # Phase, potential and electrolytes algorithms
+        # Phase, potential and ions algorithms
         phase = self.project.phases()[self.settings['phase']]
         p_alg = self.settings['potential_field']
-        e_alg = self.settings['electrolytes']
+        e_alg = self.settings['ions']
 
         # Define initial conditions (if not defined by the user)
         try:
             p_alg[p_alg.settings['quantity']]
         except KeyError:
-            p_alg[p_alg.settings['quantity']] = np.zeros(shape=[p_alg.Np, ],
-                                                         dtype=float)
+            try:
+                p_alg[p_alg.settings['quantity']] = (
+                    phase[p_alg.settings['quantity']])
+            except KeyError:
+                p_alg[p_alg.settings['quantity']] = np.zeros(
+                    shape=[p_alg.Np, ], dtype=float)
         for e in e_alg:
             try:
                 e[e.settings['quantity']]
             except KeyError:
-                e[e.settings['quantity']] = np.zeros(shape=[e.Np, ],
-                                                     dtype=float)
+                try:
+                    e[e.settings['quantity']] = phase[e.settings['quantity']]
+                except KeyError:
+                    e[e.settings['quantity']] = np.zeros(shape=[e.Np, ],
+                                                         dtype=float)
 
-        # Define source term for Poisson equation
+        # Source term for Poisson or charge conservation (electroneutrality) eq
         Ps = (p_alg['pore.all'] * np.isnan(p_alg['pore.bc_value']) *
               np.isnan(p_alg['pore.bc_rate']))
         mod = gst.charge_conservation
@@ -80,8 +88,7 @@ class PoissonNernstPlanck(ReactiveTransport):
         # Iterate until solutions converge
         for itr in range(int(self.settings['max_iter'])):
             r = str([float(format(i, '.3g')) for i in res.values()])[1:-1]
-            logger.info('Iter: ' + str(itr) + ', Residuals: ' + r)
-            print('Iter: ' + str(itr) + ', Residuals: ' + r)
+            logger.info('Iter: ' + str(itr+1) + ', Residuals: ' + r)
             convergence = max(i for i in res.values()) < tol
             if not convergence:
                 # Poisson eq
@@ -95,7 +102,7 @@ class PoissonNernstPlanck(ReactiveTransport):
                 phase.update(p_alg.results())
                 phys[0].regenerate_models()
 
-                # Electrolytes
+                # Ions
                 for e in e_alg:
                     c_old = e[e.settings['quantity']].copy()
                     e._run_reactive(x=c_old)
