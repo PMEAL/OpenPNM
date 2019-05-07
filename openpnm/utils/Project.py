@@ -863,6 +863,31 @@ class Project(list):
             else:
                 obj.regenerate_models()
 
+    def _grid2(self, astype='table'):
+        from terminaltables import AsciiTable, SingleTable
+        from pandas import DataFrame as df
+        geoms = self.geometries().keys()
+        phases = [p.name for p in self.phases().values() if not hasattr(p, 'mixture')]
+        grid = df(index=geoms, columns=phases)
+        for r in grid.index:
+            for c in grid.columns:
+                phys = self.find_physics(phase=self[c], geometry=self[r])
+                if phys is not None:
+                    grid.loc[r][c] = phys.name
+                else:
+                    grid.loc[r][c] = '---'
+        if astype == 'table':
+            g = [[self.network.name] + list(grid.keys())]
+            for row in list(grid.index):
+                g.append([row] + list(grid.loc[row]))
+            grid = SingleTable(g)
+        return grid
+
+    @property
+    def pgrid(self):
+        grid = self._grid2(astype='table')
+        print(grid.table)
+
 
 class Grid(dict):
 
