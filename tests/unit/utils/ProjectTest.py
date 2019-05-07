@@ -52,18 +52,18 @@ class ProjectTest:
         assert old_name not in self.ws.keys()
 
     def test_grid_printing(self):
-        d = self.proj.grid
-        assert d == {'geo_01': {'phase_01': 'phys_01', 'phase_02': 'phys_03'},
-                     'geo_02': {'phase_01': 'phys_02', 'phase_02': 'phys_04'}}
+        d = self.proj.get_grid(astype='dict')
+        assert d == {
+            'phase_01': {'geo_01': 'phys_01', 'geo_02': 'phys_02'},
+            'phase_02': {'geo_01': 'phys_03', 'geo_02': 'phys_04'}}
 
-        s = "――――――――――――――――――――――――――――――――――――――――――――――――\n" + \
-            "|     net_01   |    phase_01   |    phase_02   |\n" + \
-            "――――――――――――――――――――――――――――――――――――――――――――――――\n" + \
-            "|     geo_01   |    phys_01    |    phys_03    |\n" + \
-            "――――――――――――――――――――――――――――――――――――――――――――――――\n" + \
-            "|     geo_02   |    phys_02    |    phys_04    |\n" + \
-            "――――――――――――――――――――――――――――――――――――――――――――――――"
-        assert print(self.proj.grid) == print(s)
+        s = '┌Project: sim_01────────────┬──────────────┐\n' \
+            '│   net_01   │   phase_01   │   phase_02   │\n' \
+            '├────────────┼──────────────┼──────────────┤\n' \
+            '│   geo_01   │   phys_01    │   phys_03    │\n' \
+            '│   geo_02   │   phys_02    │   phys_04    │\n' \
+            '└────────────┴──────────────┴──────────────┘\n'
+        assert self.proj.grid == print(s)
 
     def test_purge_geom_shallow(self):
         proj = self.ws.copy_project(self.net.project)
