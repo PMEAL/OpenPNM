@@ -67,7 +67,6 @@ class Project(list):
         super().__init__(*args, **kwargs)
         # Register self with workspace
         ws[name] = self
-        self._grid = {}
         self.settings = SettingsDict()
         self.comments = 'Using OpenPNM ' + openpnm.__version__
 
@@ -725,23 +724,6 @@ class Project(list):
 
     comments = property(fget=_get_comments, fset=_set_comments)
 
-    def _get_grid(self):
-        grid = {}
-        row = {phase: '' for phase in self.phases().keys()}
-        for geo in self.geometries().values():
-            grid[geo.name] = row.copy()
-            for phase in self.phases().values():
-                phys = self.find_physics(phase=phase, geometry=geo)
-                if phys is None:
-                    phys = ''
-                else:
-                    phys = phys.name
-                grid[geo.name][phase.name] = phys
-        grid = ProjectGrid(self.network.name, grid)
-        return grid
-
-    grid = property(fget=_get_grid)
-
     def __str__(self):
         s = []
         hr = '―'*78
@@ -863,8 +845,7 @@ class Project(list):
             else:
                 obj.regenerate_models()
 
-    def _grid2(self, astype='table'):
-        from terminaltables import AsciiTable, SingleTable
+    def get_grid(self, astype='table'):
         from pandas import DataFrame as df
         geoms = self.geometries().keys()
         phases = [p.name for p in self.phases().values() if not hasattr(p, 'mixture')]
@@ -876,67 +857,24 @@ class Project(list):
                     grid.loc[r][c] = phys.name
                 else:
                     grid.loc[r][c] = '---'
-        if astype == 'table':
-            g = [[self.network.name] + list(grid.keys())]
+        if astype == 'pandas':
+            pass
+        elif astype == 'dict':
+            grid = grid.to_dict()
+        elif astype == 'table':
+            from terminaltables import SingleTable
+            headings = [self.network.name] + list(grid.keys())
+            g = [headings]
             for row in list(grid.index):
                 g.append([row] + list(grid.loc[row]))
             grid = SingleTable(g)
+            grid.title = 'Project: ' + self.name
+            grid.padding_left = 3
+            grid.padding_right = 3
+            grid.justify_columns = {col: 'center' for col in range(len(headings))}
         return grid
 
     @property
-    def pgrid(self):
-        grid = self._grid2(astype='table')
+    def grid(self):
+        grid = self.get_grid(astype='table')
         print(grid.table)
-
-
-class Grid(dict):
-
-    def __init__(self, name='', *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.name = name
-
-    def index(self):
-        return list(self.keys())
-
-    def header(self):
-        d = []
-        for item in self.keys():
-            d.extend([i for i in self[item].keys()])
-        return list(set(d))
-
-    def row(self, name):
-        return list(self[name].values())
-
-    def col(self, name):
-        col = []
-        for row in self.index():
-            col.append(self[row][name])
-        return col
-
-    def __str__(self):
-        s = []
-        hr = '―'*(16*(len(self.header())+1))
-        s.append(hr)
-        fmt = ["| {"+str(i)+":^13} " for i in range(len(self.header()))]
-        cols = [item for item in self.header()]
-        s.append('| {0:^13}'.format(self.name) +
-                 ''.join(fmt).format(*cols) + '|')
-        s.append(hr)
-        for row in self.index():
-            ind = '| {0:^13}'.format(row)
-            s.append(ind + ''.join(fmt).format(*list(self[row].values()))+'|')
-            s.append(hr)
-        return '\n'.join(s)
-
-
-class ProjectGrid(Grid):
-    r"""
-    This is a subclass of Grid, which adds the ability to lookup by geometries
-    and phases, as more specific versions of rows and cols
-    """
-
-    def geometries(self):
-        return self.index()
-
-    def phases(self):
-        return self.header()

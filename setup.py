@@ -58,7 +58,8 @@ setup(
         'flatdict',
         'gitpython',
         'jsonschema',
-        'unyt'
+        'unyt',
+        'terminaltables',
         ],
     author='OpenPNM Team',
     author_email='jgostick@uwaterloo.ca',
