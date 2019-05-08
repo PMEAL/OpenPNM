@@ -27,9 +27,8 @@ class DirectionalRelativePermeability(GenericAlgorithm):
     r"""
     A subclass of Generic Algorithm to calculate relative permeabilities of
     fluids in a drainage process. The main roles of this subclass are to
-    implement Invasion Percolation if no invasion sequence is given as an
-    argument and to implement a method for calculating the relative
-    permeabilities of the fluids.
+    get invasion sequence and implement a method for calculating the relative
+    permeabilities of the fluids flowing through a user-specified direction.
     """
     def __init__(self, settings={}, **kwargs):
         super().__init__(**kwargs)
