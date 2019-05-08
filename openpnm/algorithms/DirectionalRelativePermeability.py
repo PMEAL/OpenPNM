@@ -162,5 +162,4 @@ class DirectionalRelativePermeability(GenericAlgorithm):
         sp.set_ylabel('Kr')
         sp.set_title('Relative Permability Curves')
         sp.legend()
-        
         return f
