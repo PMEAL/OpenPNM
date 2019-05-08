@@ -81,7 +81,7 @@ class DirectionalRelativePermeability(GenericAlgorithm):
         Knwp=val
         self.project.purge_object(obj=St_nwp)
         return [Kwp, Knwp]
-    
+
     def rel_perm_calc(self, B_pores, in_outlet_pores):
         network=self.project.network
         self._regenerate_models()
@@ -97,12 +97,12 @@ class DirectionalRelativePermeability(GenericAlgorithm):
         St_mp_nwp.run()
         Kewp=St_mp_wp.calc_effective_permeability(inlets=in_outlet_pores[0],
                                                         outlets=in_outlet_pores[1])
-        Kenwp=St_mp_nwp.calc_effective_permeability(inlets=in_outlet_pores[0],                      
+        Kenwp=St_mp_nwp.calc_effective_permeability(inlets=in_outlet_pores[0],             
                                                         outlets=in_outlet_pores[1])
         self.project.purge_object(obj=St_mp_wp)
         self.project.purge_object(obj=St_mp_nwp)
         return [Kewp, Kenwp]
-    
+
     def _sat_occ_update(self, i):
         network=self.project.network
         pore_mask=self.settings['pore.invasion_sequence']<i
@@ -139,7 +139,7 @@ class DirectionalRelativePermeability(GenericAlgorithm):
         for i in range(start, stop, step):
             sat=self._sat_occ_update(i)
             self.settings['sat'].append(sat)
-            [Kewp,Kenwp]=self.rel_perm_calc(B_pores=[self.settings['flow_inlet'],
+            [Kewp, Kenwp]=self.rel_perm_calc(B_pores=[self.settings['flow_inlet'],
                                             self.settings['flow_outlet']],
                                             in_outlet_pores=[self.settings['flow_inlet'],
                                             self.settings['flow_outlet']])
