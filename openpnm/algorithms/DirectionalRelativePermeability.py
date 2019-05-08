@@ -97,8 +97,8 @@ class DirectionalRelativePermeability(GenericAlgorithm):
         St_mp_nwp.run()
         Kewp=St_mp_wp.calc_effective_permeability(inlets=in_outlet_pores[0],
                                                         outlets=in_outlet_pores[1])
-        Kenwp=St_mp_nwp.calc_effective_permeability(inlets=in_outlet_pores[0],             
-                                                        outlets=in_outlet_pores[1])
+        Kenwp=St_mp_nwp.calc_effective_permeability(inlets=in_outlet_pores[0],         
+                                                    outlets=in_outlet_pores[1])
         self.project.purge_object(obj=St_mp_wp)
         self.project.purge_object(obj=St_mp_nwp)
         return [Kewp, Kenwp]
@@ -140,9 +140,9 @@ class DirectionalRelativePermeability(GenericAlgorithm):
             sat=self._sat_occ_update(i)
             self.settings['sat'].append(sat)
             [Kewp, Kenwp]=self.rel_perm_calc(B_pores=[self.settings['flow_inlet'],
-                                            self.settings['flow_outlet']],
-                                            in_outlet_pores=[self.settings['flow_inlet'],
-                                            self.settings['flow_outlet']])
+                                             self.settings['flow_outlet']],
+                                             in_outlet_pores=[self.settings['flow_inlet'],
+                                             self.settings['flow_outlet']])
             Krwp=Kewp/self.settings['perm_wp']
             Krnwp=Kenwp/self.settings['perm_nwp']
             self.settings['relperm_wp'].append(Krwp)
