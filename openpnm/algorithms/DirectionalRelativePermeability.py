@@ -156,6 +156,11 @@ class DirectionalRelativePermeability(GenericAlgorithm):
     def plot_Kr_curve(self):
         f = plt.figure()
         sp = f.add_subplot(111)
-        sp.plot(self.settings['sat'], self.settings['relperm_wp'], 'o-')
-        sp.plot(self.settings['sat'], self.settings['relperm_nwp'], '*-')
+        sp.plot(self.settings['sat'], self.settings['relperm_wp'], 'o-', label="Krwp")
+        sp.plot(self.settings['sat'], self.settings['relperm_nwp'], '*-', label="Krnwp")
+        sp.set_xlabel('Snw')
+        sp.set_ylabel('Kr')
+        sp.set_title('Relative Permability Curves')
+        sp.legend()
+        
         return f
