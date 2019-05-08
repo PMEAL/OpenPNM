@@ -33,9 +33,10 @@ water.add_model(propname='throat.entry_pressure',
                 model=op.models.physics.capillary_pressure.washburn)
 Finlets_init = {'x': pn.pores('left')}
 Finlets=dict()
+ff=[]
 for key in Finlets_init.keys():
-    Finlets.update({key: ([Finlets_init[key][x] for x in \
-                           range(0, len(Finlets_init[key]), 2)])})
+    ff=([Finlets_init[key][x] for x in range(0, len(Finlets_init[key]), 2)])
+    Finlets.update({key: ff})
 Foutlets_init = {'x': pn.pores('right')}
 ip = op.algorithms.InvasionPercolation(network=pn, phase=oil)
 ip.set_inlets(pores=Finlets['x'])
