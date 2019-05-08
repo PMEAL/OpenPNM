@@ -53,10 +53,12 @@ class DirectionalRelativePermeability(GenericAlgorithm):
         self.settings['flow_outlet'] = pores
 
     def _regenerate_models(self):
-        self.settings['wp'].add_model(model=models.physics.multiphase.conduit_conductance,
+        modelwp=models.physics.multiphase.conduit_conductance
+        self.settings['wp'].add_model(model=modelwp,
                                       propname='throat.conduit_hydraulic_conductance',
                                       throat_conductance='throat.hydraulic_conductance')
-        self.settings['nwp'].add_model(model=models.physics.multiphase.conduit_conductance,
+        modelnwp=models.physics.multiphase.conduit_conductance
+        self.settings['nwp'].add_model(model=modelnwp,
                                        propname='throat.conduit_hydraulic_conductance',
                                        throat_conductance='throat.hydraulic_conductance')
 
@@ -117,8 +119,10 @@ class DirectionalRelativePermeability(GenericAlgorithm):
         return sat
 
     def run(self, Snw_num=None, IP_pores=None):
-        [Kwp, Knwp]=self.abs_perm_calc(B_pores=[self.settings['flow_inlet'], self.settings['flow_outlet']],
-                            in_outlet_pores=[self.settings['flow_inlet'], self.settings['flow_outlet']])
+        [Kwp, Knwp]=self.abs_perm_calc(B_pores=[self.settings['flow_inlet'],
+                                       self.settings['flow_outlet']],
+                                       in_outlet_pores=[self.settings['flow_inlet'],
+                                       self.settings['flow_outlet']])
         self.settings['perm_wp']=Kwp
         self.settings['perm_nwp']=Knwp
         self.settings['IP_pores']=IP_pores
@@ -135,8 +139,10 @@ class DirectionalRelativePermeability(GenericAlgorithm):
         for i in range(start, stop, step):
             sat=self._sat_occ_update(i)
             self.settings['sat'].append(sat)
-            [Kewp,Kenwp]=self.rel_perm_calc(B_pores=[self.settings['flow_inlet'], self.settings['flow_outlet']],
-                            in_outlet_pores=[self.settings['flow_inlet'], self.settings['flow_outlet']])
+            [Kewp,Kenwp]=self.rel_perm_calc(B_pores=[self.settings['flow_inlet'],
+                                            self.settings['flow_outlet']],
+                                            in_outlet_pores=[self.settings['flow_inlet'],
+                                            self.settings['flow_outlet']])
             Krwp=Kewp/self.settings['perm_wp']
             Krnwp=Kenwp/self.settings['perm_nwp']
             self.settings['relperm_wp'].append(Krwp)
