@@ -31,16 +31,12 @@ water.add_model(propname='throat.hydraulic_conductance',
                 model=mod)
 water.add_model(propname='throat.entry_pressure',
                 model=op.models.physics.capillary_pressure.washburn)
-Finlets_init = {'x': pn.pores('left'), 
-                'y': pn.pores('front'),
-                'z': pn.pores('top')}
+Finlets_init = {'x': pn.pores('left')}
 Finlets=dict()
 for key in Finlets_init.keys():
     Finlets.update({key: ([Finlets_init[key][x] for x in \
                            range(0, len(Finlets_init[key]), 2)])})
-Foutlets_init = {'x': pn.pores('right'), 
-                   'y': pn.pores('back'),
-                   'z': pn.pores('bottom')}
+Foutlets_init = {'x': pn.pores('right')}
 ip = op.algorithms.InvasionPercolation(network=pn, phase=oil)
 ip.set_inlets(pores=Finlets['x'])
 ip.run()
@@ -48,8 +44,8 @@ rp = op.algorithms.DirectionalRelativePermeability(network=pn)
 rp.setup(invading_phase=oil, defending_phase=water,
          pore_invasion_sequence=ip['pore.invasion_sequence'],
          throat_invasion_sequence=ip['throat.invasion_sequence'])
-rp.set_inlets(pores=Finlets_init['y'])
-rp.set_outlets(pores=Foutlets_init['y'])
-rp.run(Snw_num=50, IP_pores=Finlets['y'])
+rp.set_inlets(pores=Finlets_init['x'])
+rp.set_outlets(pores=Foutlets_init['x'])
+rp.run(Snw_num=50, IP_pores=Finlets['x'])
 results=rp.get_Kr_data()
 rp.plot_Kr_curve()

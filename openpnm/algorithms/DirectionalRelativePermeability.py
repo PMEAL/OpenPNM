@@ -19,7 +19,7 @@ default_settings = {'sat': [],
                     'flow_outlet': [],
                     'pore_volume': [],
                     'throat_volume': [],
-                    'results':{'sat':[], 'krw':[], 'krnw':[]}
+                    'results': {'sat': [], 'krw': [], 'krnw': []}
                     }
 
 
@@ -60,7 +60,7 @@ class DirectionalRelativePermeability(GenericAlgorithm):
                                        propname='throat.conduit_hydraulic_conductance',
                                        throat_conductance='throat.hydraulic_conductance')
 
-    def abs_perm_calc(self,B_pores,in_outlet_pores):
+    def abs_perm_calc(self, B_pores, in_outlet_pores):
         network=self.project.network
         St_wp = StokesFlow(network=network, phase=self.settings['wp'])
         St_wp.set_value_BC(pores=B_pores[0], values=1)
@@ -78,9 +78,9 @@ class DirectionalRelativePermeability(GenericAlgorithm):
                                                outlets=in_outlet_pores[1])
         Knwp=val
         self.project.purge_object(obj=St_nwp)
-        return [Kwp,Knwp]
+        return [Kwp, Knwp]
     
-    def rel_perm_calc(self,B_pores,in_outlet_pores):
+    def rel_perm_calc(self, B_pores, in_outlet_pores):
         network=self.project.network
         self._regenerate_models()
         St_mp_wp = StokesFlow(network=network, phase=self.settings['wp'])
@@ -95,13 +95,13 @@ class DirectionalRelativePermeability(GenericAlgorithm):
         St_mp_nwp.run()
         Kewp=St_mp_wp.calc_effective_permeability(inlets=in_outlet_pores[0],
                                                         outlets=in_outlet_pores[1])
-        Kenwp=St_mp_nwp.calc_effective_permeability(inlets=in_outlet_pores[0],                         
+        Kenwp=St_mp_nwp.calc_effective_permeability(inlets=in_outlet_pores[0],                      
                                                         outlets=in_outlet_pores[1])
         self.project.purge_object(obj=St_mp_wp)
         self.project.purge_object(obj=St_mp_nwp)
-        return [Kewp,Kenwp]
+        return [Kewp, Kenwp]
     
-    def _sat_occ_update(self,i):
+    def _sat_occ_update(self, i):
         network=self.project.network
         pore_mask=self.settings['pore.invasion_sequence']<i
         throat_mask=self.settings['throat.invasion_sequence']<i
@@ -117,8 +117,8 @@ class DirectionalRelativePermeability(GenericAlgorithm):
         return sat
 
     def run(self, Snw_num=None, IP_pores=None):
-        [Kwp,Knwp]=self.abs_perm_calc(B_pores=[self.settings['flow_inlet'],self.settings['flow_outlet']],
-                            in_outlet_pores=[self.settings['flow_inlet'],self.settings['flow_outlet']])
+        [Kwp, Knwp]=self.abs_perm_calc(B_pores=[self.settings['flow_inlet'], self.settings['flow_outlet']],
+                            in_outlet_pores=[self.settings['flow_inlet'], self.settings['flow_outlet']])
         self.settings['perm_wp']=Kwp
         self.settings['perm_nwp']=Knwp
         self.settings['IP_pores']=IP_pores
@@ -135,24 +135,22 @@ class DirectionalRelativePermeability(GenericAlgorithm):
         for i in range(start, stop, step):
             sat=self._sat_occ_update(i)
             self.settings['sat'].append(sat)
-            [Kewp,Kenwp]=self.rel_perm_calc(B_pores=[self.settings['flow_inlet'],self.settings['flow_outlet']],
-                            in_outlet_pores=[self.settings['flow_inlet'],self.settings['flow_outlet']])
+            [Kewp,Kenwp]=self.rel_perm_calc(B_pores=[self.settings['flow_inlet'], self.settings['flow_outlet']],
+                            in_outlet_pores=[self.settings['flow_inlet'], self.settings['flow_outlet']])
             Krwp=Kewp/self.settings['perm_wp']
             Krnwp=Kenwp/self.settings['perm_nwp']
             self.settings['relperm_wp'].append(Krwp)
             self.settings['relperm_nwp'].append(Krnwp)
-        
+
     def get_Kr_data(self):
         self.settings['results']['sat']=self.settings['sat']
         self.settings['results']['krw']=self.settings['relperm_wp']
         self.settings['results']['krnw']=self.settings['relperm_nwp']
         return self.settings['results']
-        
+
     def plot_Kr_curve(self):
         f = plt.figure()
         sp = f.add_subplot(111)
         sp.plot(self.settings['sat'], self.settings['relperm_wp'], 'o-')
         sp.plot(self.settings['sat'], self.settings['relperm_nwp'], '*-')
         return f
-        
-        
