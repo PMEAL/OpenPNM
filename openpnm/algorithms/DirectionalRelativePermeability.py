@@ -97,7 +97,7 @@ class DirectionalRelativePermeability(GenericAlgorithm):
         St_mp_nwp.run()
         Kewp=St_mp_wp.calc_effective_permeability(inlets=in_outlet_pores[0],
                                                         outlets=in_outlet_pores[1])
-        Kenwp=St_mp_nwp.calc_effective_permeability(inlets=in_outlet_pores[0],         
+        Kenwp=St_mp_nwp.calc_effective_permeability(inlets=in_outlet_pores[0],       
                                                     outlets=in_outlet_pores[1])
         self.project.purge_object(obj=St_mp_wp)
         self.project.purge_object(obj=St_mp_nwp)
