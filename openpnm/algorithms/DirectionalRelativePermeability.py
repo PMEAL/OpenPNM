@@ -66,7 +66,8 @@ class DirectionalRelativePermeability(GenericAlgorithm):
 
     def abs_perm_calc(self, B_pores, in_outlet_pores):
         network = self.project.network
-        St_wp = StokesFlow(network=network, phase=self.settings['wp'])
+        wp = self.project[self.settings['wp']]
+        St_wp = StokesFlow(network=network, phase=wp)
         St_wp.set_value_BC(pores=B_pores[0], values=1)
         St_wp.set_value_BC(pores=B_pores[1], values=0)
         St_wp.run()
@@ -88,15 +89,16 @@ class DirectionalRelativePermeability(GenericAlgorithm):
     def rel_perm_calc(self, B_pores, in_outlet_pores):
         network = self.project.network
         self._regenerate_models()
-        St_mp_wp = StokesFlow(network=network, phase=self.settings['wp'])
-        St_mp_wp.setup(conductance='throat.conduit_hydraulic_conductance')
+        wp = self.project[self.settings['wp']]
+        St_mp_wp = StokesFlow(network=network, phase=wp)
+        St_mp_wp.setup(conductance='throat.hydraulic_conductance')
         St_mp_wp.set_value_BC(pores=B_pores[0], values=1)
         St_mp_wp.set_value_BC(pores=B_pores[1], values=0)
         nwp = self.project[self.settings['nwp']]
         St_mp_nwp = StokesFlow(network=network, phase=nwp)
         St_mp_nwp.set_value_BC(pores=B_pores[0], values=1)
         St_mp_nwp.set_value_BC(pores=B_pores[1], values=0)
-        St_mp_nwp.setup(conductance='throat.conduit_hydraulic_conductance')
+        St_mp_nwp.setup(conductance='throat.hydraulic_conductance')
         St_mp_wp.run()
         St_mp_nwp.run()
         Kewp = St_mp_wp.calc_effective_permeability(inlets=in_outlet_pores[0],
@@ -117,10 +119,12 @@ class DirectionalRelativePermeability(GenericAlgorithm):
         bulk = (np.sum(network['pore.volume']) +
                 np.sum(network['throat.volume']))
         sat = sat1/bulk
-        self.settings['nwp']['pore.occupancy'] = pore_mask
-        self.settings['wp']['pore.occupancy'] = 1-pore_mask
-        self.settings['nwp']['throat.occupancy'] = throat_mask
-        self.settings['wp']['throat.occupancy'] = 1-throat_mask
+        nwp = self.project[self.settings['nwp']]
+        wp = self.project[self.settings['wp']]
+        nwp['pore.occupancy'] = pore_mask
+        wp['pore.occupancy'] = 1-pore_mask
+        nwp['throat.occupancy'] = throat_mask
+        wp['throat.occupancy'] = 1-throat_mask
         return sat
 
     def run(self, Snw_num=None, IP_pores=None):
