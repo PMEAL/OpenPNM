@@ -70,12 +70,12 @@ p.settings['rxn_tolerance'] = 1e-12
 p.run()
 sw.update(p.results())
 
-eA = op.algorithms.NernstPlanck(network=net, phase=sw, electrolyte=Na.name)
+eA = op.algorithms.NernstPlanck(network=net, phase=sw, ion=Na.name)
 eA.set_value_BC(pores=net.pores('back'), values=100)
 eA.set_value_BC(pores=net.pores('front'), values=90)
 eA.settings['rxn_tolerance'] = 1e-12
 
-eB = op.algorithms.NernstPlanck(network=net, phase=sw, electrolyte=Cl.name)
+eB = op.algorithms.NernstPlanck(network=net, phase=sw, ion=Cl.name)
 eB.set_value_BC(pores=net.pores('back'), values=100)
 eB.set_value_BC(pores=net.pores('front'), values=90)
 eB.settings['rxn_tolerance'] = 1e-12
