@@ -900,12 +900,14 @@ class Grid():
         for row in self.grid.table_data:
             if row[0].startswith(name):
                 return row
+        else:
+            raise ValueError(name + 'is not in list')
 
     def col(self, name):
         # Find column number
-        index = self.table_data[0].index(name)
+        index = self.grid.table_data[0].index(name)
         col = []
-        for row in self.grid.data_table:
+        for row in self.grid.table_data:
             col.append(row[index])
         return col
 

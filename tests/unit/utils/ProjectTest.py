@@ -65,6 +65,19 @@ class ProjectTest:
             '└────────────┴──────────────┴──────────────┘\n'
         assert print(self.proj.grid) == print(s)
 
+    def test_grid_access(self):
+        g = self.proj.grid
+        with pytest.raises(ValueError):
+            g.col(self.geo1.name)
+        r = g.row(self.geo1.name)
+        assert r == ['geo_01', 'phys_01', 'phys_03']
+        with pytest.raises(ValueError):
+            g.row(self.phase1.name)
+        c = g.col(self.phase1.name)
+        assert c == ['phase_01', 'phys_01', 'phys_02']
+        c = g.col(self.phase2.name)
+        assert c == ['phase_02', 'phys_03', 'phys_04']
+
     def test_purge_geom_shallow(self):
         proj = self.ws.copy_project(self.net.project)
         net = proj.network
