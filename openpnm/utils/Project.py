@@ -872,9 +872,56 @@ class Project(list):
             grid.padding_left = 3
             grid.padding_right = 3
             grid.justify_columns = {col: 'center' for col in range(len(headings))}
+        elif astype == 'grid':
+            grid = ProjectGrid()
         return grid
 
     @property
     def grid(self):
         grid = self.get_grid(astype='table')
-        print(grid.table)
+        obj = ProjectGrid(grid)
+        return obj
+
+
+class Grid():
+
+    def __init__(self, table):
+        self.grid = table
+
+    def index(self):
+        index = [row[0] for row in self.grid.table_data[1:]]
+        return index
+
+    def header(self):
+        columns = self.grid.table_data[0][1:]
+        return columns
+
+    def row(self, name):
+        for row in self.grid.table_data:
+            if row[0].startswith(name):
+                return row
+
+    def col(self, name):
+        # Find column number
+        index = self.table_data[0].index(name)
+        col = []
+        for row in self.grid.data_table:
+            col.append(row[index])
+        return col
+
+    def __str__(self):
+        s = self.grid.table.__str__()
+        return s
+
+
+class ProjectGrid(Grid):
+    r"""
+    This is a subclass of Grid, which adds the ability to lookup by geometries
+    and phases, as more specific versions of rows and cols
+    """
+
+    def geometries(self):
+        return self.index()
+
+    def phases(self):
+        return self.header()
