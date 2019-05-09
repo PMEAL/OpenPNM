@@ -233,9 +233,15 @@ def generic_conductance(target, transport_type, pore_area, throat_area,
             T = phase[throat_temperature][throats]
         except KeyError:
             T = phase.interpolate_data(propname=pore_temperature)[throats]
-
-        P = phase[pore_pressure]
-        V = phase[pore_potential]
+        # Check if pressure and potential values exist, otherwise, assign zeros
+        try:
+            P = phase[pore_pressure]
+        except KeyError:
+            P = _sp.zeros(shape=[phase.Np, ], dtype=float)
+        try:
+            V = phase[pore_potential]
+        except KeyError:
+            V = _sp.zeros(shape=[phase.Np, ], dtype=float)
         gh = phase[throat_hydraulic_conductance]
         gd = phase[throat_diffusive_conductance]
         gd = _sp.tile(gd, 2)
@@ -251,9 +257,9 @@ def generic_conductance(target, transport_type, pore_area, throat_area,
         # Migration
         gm1, gm2, gmt = _sp.zeros((3, len(Lt)))
         gm1[~m1] = gm2[~m2] = gmt[~mt] = _sp.inf
-        gm1 = ((z*F*D*A1)/(R*T))[m1] / L1[m1]
-        gm2 = ((z*F*D*A2)/(R*T))[m2] / L2[m2]
-        gmt = ((z*F*D*At)/(R*T))[mt] / Lt[mt]
+        gm1[m1] = ((z*F*D*A1)/(R*T))[m1] / L1[m1]
+        gm2[m2] = ((z*F*D*A2)/(R*T))[m2] / L2[m2]
+        gmt[mt] = ((z*F*D*At)/(R*T))[mt] / Lt[mt]
         gm = (1/gm1 + 1/gm2 + 1/gmt)**(-1)
         delta_V = _sp.diff(V[cn], axis=1).squeeze()
         mig = gm * delta_V

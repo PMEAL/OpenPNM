@@ -6,3 +6,4 @@ pytest-cache
 pytest-cov
 pytest-pep8
 testfixtures
+jupyter
