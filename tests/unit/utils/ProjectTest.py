@@ -78,6 +78,13 @@ class ProjectTest:
         c = g.col(self.phase2.name)
         assert c == ['phase_02', 'phys_03', 'phys_04']
 
+    def test_projectgrid_access(self):
+        g = self.proj.grid
+        geoms = g.geometries()
+        assert geoms == ['geo_01', 'geo_02']
+        phases = g.phases()
+        assert phases == ['phase_01', 'phase_02']
+
     def test_purge_geom_shallow(self):
         proj = self.ws.copy_project(self.net.project)
         net = proj.network
