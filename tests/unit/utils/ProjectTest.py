@@ -63,7 +63,7 @@ class ProjectTest:
             '│   geo_01   │   phys_01    │   phys_03    │\n' \
             '│   geo_02   │   phys_02    │   phys_04    │\n' \
             '└────────────┴──────────────┴──────────────┘\n'
-        assert self.proj.grid == print(s)
+        assert print(self.proj.grid) == print(s)
 
     def test_purge_geom_shallow(self):
         proj = self.ws.copy_project(self.net.project)
