@@ -52,7 +52,7 @@ It consists of the following submodules:
 
 """
 
-__version__ = '2.0.3-dev'
+__version__ = '2.1.0-beta'
 
 from . import utils
 from .utils import Workspace, Project
