@@ -183,8 +183,12 @@ class HealthDict(PrintableDict):
     def _get_health(self):
         health = True
         for item in list(self.keys()):
-            if self[item] != []:
-                health = False
+            try:
+                if len(self[item]) > 0:
+                    health = False
+            except TypeError:
+                if self[item]:
+                    health = False
         return health
 
     health = property(fget=_get_health)

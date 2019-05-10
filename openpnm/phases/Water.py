@@ -93,6 +93,7 @@ class Water(GenericPhase):
         self['pore.contact_angle'] = 110.0
         self['pore.electrical_conductivity'] = 1e-15
         self['pore.diffusivity'] = 1e-9
+
         self.add_model(propname='pore.density',
                        model=mods.phases.density.water)
         self.add_model(propname='pore.molar_density',

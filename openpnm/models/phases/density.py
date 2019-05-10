@@ -14,6 +14,11 @@ def standard(target, mol_weight='pore.molecular_weight',
 
     Parameters
     ----------
+    target : OpenPNM Object
+        The object for which these values are being calculated.  This
+        controls the length of the calculated array, and also provides
+        access to other necessary thermofluid properties.
+
     mol_weight : string
         The dictionary key containing the molecular weight values (kg/mol)
 
