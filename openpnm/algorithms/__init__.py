@@ -30,4 +30,3 @@ from .NernstPlanck import NernstPlanck
 from .ChargeConservationNernstPlanck import ChargeConservationNernstPlanck
 from .DirectionalRelativePermeability import DirectionalRelativePermeability
 from .RelativePermeability import RelativePermeability
-

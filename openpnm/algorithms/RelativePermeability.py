@@ -13,8 +13,7 @@ import openpnm
 logger = logging.getLogger(__name__)
 
 
-default_settings = {
-                    'inv_inlets': dict(),
+default_settings = {'inv_inlets': dict(),
                     'flow_inlets': dict(),
                     'flow_outlets': dict(),
                     'mode': 'strict',
@@ -30,6 +29,7 @@ default_settings = {
                     'pore.invasion_sequence': [],
                     'throat.invasion_sequence': [],
                     'input_vect': []}
+
 
 class RelativePermeability(DirectionalRelativePermeability):
     r"""
@@ -58,12 +58,12 @@ class RelativePermeability(DirectionalRelativePermeability):
             self.settings['inv_inlets'].update({inv: (inlet_dict[inv])})
             self.settings['flow_inlets'].update({flow: (inlet_dict[flow])})
             self.settings['flow_outlets'].update({flow: (outlet_dict[flow])})
-            
-            
+
     def abs_perm_calc(self, B_pores, in_outlet_pores):
-        [Kw, Knw]=super(RelativePermeability, self).abs_perm_calc(B_pores, in_outlet_pores)
+        [Kw, Knw]=super(RelativePermeability, self).abs_perm_calc(B_pores,
+                                                                  in_outlet_pores)
         return [Kw, Knw]
-    
+
     def run(self, Snw_num=None):
         net= self.project.network
         oil = openpnm.phases.GenericPhase(network=net, name='oil')
@@ -91,7 +91,7 @@ class RelativePermeability(DirectionalRelativePermeability):
         # define inlet/outlets
         Iinlets_init=dict()
         for dim in self.settings['inv_inlets']:
-            Iinlets_init.update({dim: net.pores(self.settings['inv_inlets'][dim])}) 
+            Iinlets_init.update({dim: net.pores(self.settings['inv_inlets'][dim])})
         Iinlets=dict()
         inl=[]
         for key in Iinlets_init.keys():
@@ -123,7 +123,7 @@ class RelativePermeability(DirectionalRelativePermeability):
             B_pores=[net.pores(self.settings['BP_1'][dim]),
                      net.pores(self.settings['BP_2'][dim])]
             in_outlet_pores=[Finlets_init[dim], Foutlets_init[dim]]
-            [Kw,Knw]=self.abs_perm_calc(B_pores, in_outlet_pores)
+            [Kw, Knw]=self.abs_perm_calc(B_pores, in_outlet_pores)
             self.settings['perm_wp'].update({dim: Kw})
             self.settings['perm_nwp'].update({dim: Knw})
         for i in range(len(self.settings['input_vect'])):
@@ -138,7 +138,7 @@ class RelativePermeability(DirectionalRelativePermeability):
             if Snw_num is None:
                 Snw_num=10
             max_seq = np.max([np.max(self.settings['pore.invasion_sequence']),
-                          np.max(self.settings['throat.invasion_sequence'])])
+                              np.max(self.settings['throat.invasion_sequence'])])
             start=max_seq//Snw_num
             stop=max_seq
             step=max_seq//Snw_num
@@ -149,13 +149,14 @@ class RelativePermeability(DirectionalRelativePermeability):
             for j in range(start, stop, step):
                 sat=super()._sat_occ_update(j)
                 Snwparr.append(sat)
-                [Kewp,Kenwp]=super().rel_perm_calc(B_pores, in_outlet_pores)
+                [Kewp, Kenwp]=super().rel_perm_calc(B_pores, in_outlet_pores)
                 relperm_wp.append(Kewp/self.settings['perm_wp'][flow])
                 relperm_nwp.append(Kenwp/self.settings['perm_nwp'][flow])
             key=self.settings['input_vect'][i]
             self.settings['relperm_wp'].update({key: relperm_wp})
             self.settings['relperm_nwp'].update({key: relperm_nwp})
             self.settings['sat'].update({key: Snwparr})
+
     def plot_Kr_curve(self):
         f = plt.figure()
         sp = f.add_subplot(111)
@@ -169,5 +170,3 @@ class RelativePermeability(DirectionalRelativePermeability):
         sp.set_title('Relative Permability Curves')
         sp.legend()
         return f
-        
-        
