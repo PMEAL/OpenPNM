@@ -1,5 +1,6 @@
 r"""
 
+.. autofunction:: openpnm.models.physics.generic_source_term.charge_conservation
 .. autofunction:: openpnm.models.physics.generic_source_term.standard_kinetics
 .. autofunction:: openpnm.models.physics.generic_source_term.linear
 .. autofunction:: openpnm.models.physics.generic_source_term.power_law
@@ -12,7 +13,76 @@ r"""
 """
 
 import scipy as _sp
+import scipy.sparse.csgraph as _spgr
 import sympy as _syp
+
+
+def charge_conservation(target, phase, p_alg, e_alg, assumption):
+    r"""
+    Applies the source term on the charge conservation equation when solving
+    for ions transport.
+
+    Parameters
+    ----------
+    phase : OpenPNM Phase object
+            The phase on which the charge conservation equation is applied.
+
+    p_alg : OpenPNM Algorithm object
+            The algorithm used to enforce charge conservation.
+
+    e_alg : list of OpenPNM algorithms
+            The list of algorithms used to solve for transport of different
+            ionic species of the mixture phase.
+
+    assumption : string
+            A string correponding to the assumption adopted to enforce charge
+            conservation.
+
+    Returns
+    -------
+    A dictionary containing the following three items:
+
+        **'rate'** - The value of the source term function for the given list
+                     of algortihms under the provided assumption.
+
+        **'S1'** - A placeholder (zero array).
+
+        **'S2'** - The value of the source term function for the given list of
+                   algortihms under the provided assumption (same as 'rate').
+
+    Notes
+    -----
+    Three assumptions are supported; "poisson", "electroneutrality" and
+    "laplace".
+
+    """
+    F = 96485.3329
+    rhs = _sp.zeros(shape=(p_alg.Np, ), dtype=float)
+    if assumption == 'poisson':
+        epsilon0 = 8.854187817e-12
+        epsilonr = phase['pore.permittivity'][0]
+        for e in e_alg:
+            rhs += (-F * phase['pore.valence.'+e.name] *
+                    e[e.settings['quantity']] / (epsilon0*epsilonr))
+    elif assumption == 'electroneutrality':
+        for e in e_alg:
+            try:
+                c = e[e.settings['quantity']]
+            except KeyError:
+                c = _sp.zeros(shape=(e.Np, ), dtype=float)
+            network = e.project.network
+            g = phase['throat.diffusive_conductance.'+e.name]
+            am = network.create_adjacency_matrix(weights=g, fmt='coo')
+            A = _spgr.laplacian(am)
+            rhs += - F * phase['pore.valence.'+e.name] * A * c
+    elif assumption == 'laplace':
+        pass  # rhs should remain 0
+    else:
+        raise Exception('Unknown keyword for "charge_conservation", can ' +
+                        'only be "poisson", "laplace" or "electroneutrality"')
+    S1 = _sp.zeros(shape=(p_alg.Np, ), dtype=float)
+    values = {'S1': S1, 'S2': rhs, 'rate': rhs}
+    return values
 
 
 def standard_kinetics(target, quantity, prefactor, exponent):

@@ -82,6 +82,27 @@ class ThroatEndpointsTest:
         assert_allclose(EP1, desired=EP1d)
         assert_allclose(EP2, desired=EP2d)
 
+    def test_square_pores(self):
+        self.geo['pore.diameter'] = 0.5
+        self.geo['throat.diameter'] = 0.25
+        self.geo.add_model(propname='throat.endpoints',
+                           model=mods.square_pores,
+                           regen_mode='normal')
+        # Throat 1->2
+        EP1 = self.geo['throat.endpoints.head'][0]
+        EP2 = self.geo['throat.endpoints.tail'][0]
+        EP1d = np.array([0, 0.25, 0]) + self.base
+        EP2d = np.array([0, 1 - 0.25, 0]) + self.base
+        assert_allclose(EP1, desired=EP1d)
+        assert_allclose(EP2, desired=EP2d)
+        # Throat 2->3
+        EP1 = self.geo['throat.endpoints.head'][1]
+        EP2 = self.geo['throat.endpoints.tail'][1]
+        EP1d = np.array([0, 1 + 0.25, 0]) + self.base
+        EP2d = np.array([0, 2 - 0.25, 0]) + self.base
+        assert_allclose(EP1, desired=EP1d)
+        assert_allclose(EP2, desired=EP2d)
+
     def test_spherical_pores_with_apparent_overlap(self):
         # Apparent overlap means pores are overlapping, but since throat
         # diameter is large enough, it encompasses the pores' intersection area
@@ -350,7 +371,7 @@ class ThroatEndpointsTest:
                                               domain_length=length)
             conds.append(D[0])
             nets.append(net)
-        assert np.all(np.around(np.asarray(conds), 12) == D_ab)
+        assert np.allclose(np.asarray(conds), D_ab)
 
 
 if __name__ == '__main__':

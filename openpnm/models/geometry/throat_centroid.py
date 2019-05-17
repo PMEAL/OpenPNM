@@ -9,7 +9,20 @@ import scipy as _sp
 
 def pore_coords(target):
     r"""
-    The average of the pore coords
+    Calculate throat centroid values by averaging adjacent pore coordinates.
+
+    Parameters
+    ----------
+    target : OpenPNM Object
+        The object which this model is associated with. This controls the
+        length of the calculated array, and also provides access to other
+        necessary properties.
+
+    Returns
+    -------
+    value : NumPy ndarray
+        Array containing throat centroid values.
+
     """
     network = target.project.network
     Ts = network.throats(target.name)

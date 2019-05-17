@@ -36,6 +36,7 @@ class SolversTest:
         solvers = ['bicg', 'bicgstab', 'cg', 'cgs', 'qmr', 'gcrotmk',
                    'gmres', 'lgmres']
         self.alg.settings['solver_family'] = 'scipy'
+        self.alg.settings['solver_rtol'] = 1e-08
         for solver in solvers:
             self.alg.settings['solver_type'] = solver
             self.alg.run()

@@ -21,11 +21,17 @@ def standard(target, mol_weight='pore.molecular_weight',
         controls the length of the calculated array, and also provides
         access to other necessary thermofluid properties.
 
-    pore_MW : string
+    mol_weight : string
         The dictionary key containing the molecular weight in kg/mol
 
-    pore_temperature : string
+    density : string
         The dictionary key containing the density in kg/m3
+
+    Returns
+    -------
+    value : NumPy ndarray
+        Array containing molar density values [mol/m3]
+
     """
     MW = target[mol_weight]
     rho = target[density]
@@ -53,7 +59,8 @@ def ideal_gas(target, pressure='pore.pressure',
 
     Returns
     -------
-    rho, the density in [mol/m3]
+    value : NumPy ndarray
+        Array containing molar density values [mol/m3]
 
     Notes
     -----
@@ -99,7 +106,8 @@ def vanderwaals(target, pressure='pore.pressure',
 
     Returns
     -------
-    rho, the density in [mol/m3]
+    value : NumPy ndarray
+        Array containing molar density values [mol/m3]
 
     """
 

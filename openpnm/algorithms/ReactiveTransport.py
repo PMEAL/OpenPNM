@@ -26,14 +26,14 @@ class ReactiveTransport(GenericTransport):
     def __init__(self, settings={}, phase=None, **kwargs):
         def_set = {'phase': None,
                    'sources': [],
-                   'r_tolerance': 0.001,
+                   'rxn_tolerance': 1e-05,
                    'max_iter': 5000,
                    'relaxation_source': 1,
                    'relaxation_quantity': 1,
                    'gui': {'setup':        {'phase': None,
                                             'quantity': '',
                                             'conductance': '',
-                                            'r_tolerance': None,
+                                            'rxn_tolerance': None,
                                             'max_iter': None,
                                             'relaxation_source': None,
                                             'relaxation_quantity': None},
@@ -51,8 +51,8 @@ class ReactiveTransport(GenericTransport):
         if phase is not None:
             self.setup(phase=phase)
 
-    def setup(self, phase=None, quantity='', conductance='', r_tolerance=None,
-              max_iter=None, relaxation_source=None,
+    def setup(self, phase=None, quantity='', conductance='',
+              rxn_tolerance=None, max_iter=None, relaxation_source=None,
               relaxation_quantity=None, **kwargs):
         r"""
         This method takes several arguments that are essential to running the
@@ -73,9 +73,9 @@ class ReactiveTransport(GenericTransport):
             are typically calculated by a model attached to a *Physics* object
             associated with the given *Phase*. Example; ``'throat.yyy'``.
 
-        r_tolerance : scalar
+        rxn_tolerance : scalar
             Tolerance to achieve. The solver returns a solution when 'residual'
-            falls below 'r_tolerance'. The default value is 0.001.
+            falls below 'rxn_tolerance'. The default value is 1e-05.
 
         max_iter : scalar
             The maximum number of iterations the solver can perform to find
@@ -109,8 +109,8 @@ class ReactiveTransport(GenericTransport):
             self.settings['quantity'] = quantity
         if conductance:
             self.settings['conductance'] = conductance
-        if r_tolerance:
-            self.settings['r_tolerance'] = r_tolerance
+        if rxn_tolerance:
+            self.settings['rxn_tolerance'] = rxn_tolerance
         if max_iter:
             self.settings['max_iter'] = max_iter
         if relaxation_source:
@@ -282,11 +282,11 @@ class ReactiveTransport(GenericTransport):
         self[self.settings['quantity']] = x
 
     def _run_reactive(self, x):
-        """r
+        r"""
         Repeatedly updates 'A', 'b', and the solution guess within according
         to the applied source term then calls '_solve' to solve the resulting
         system of linear equations.
-        Stops when the residual falls below 'r_tolerance' or when the maximum
+        Stops when the residual falls below 'rxn_tolerance' or when the maximum
         number of iterations is reached.
 
         Parameters
@@ -303,23 +303,26 @@ class ReactiveTransport(GenericTransport):
             x = np.zeros(shape=[self.Np, ], dtype=float)
         self[self.settings['quantity']] = x
         relax = self.settings['relaxation_quantity']
-        res = 1e+06  # Initialize the residual
+        # Reference for residual's normalization
+        ref = np.sum(np.absolute(self.A.diagonal())) or 1
         for itr in range(int(self.settings['max_iter'])):
-            if res >= self.settings['r_tolerance']:
+            self[self.settings['quantity']] = x
+            self._build_A(force=True)
+            self._build_b(force=True)
+            self._apply_BCs()
+            self._apply_sources()
+            # Compute the normalized residual
+            res = np.linalg.norm(self.b-self.A*x)/ref
+            if res >= self.settings['rxn_tolerance']:
                 logger.info('Tolerance not met: ' + str(res))
-                self[self.settings['quantity']] = x
-                self._build_A(force=True)
-                self._build_b(force=True)
-                self._apply_BCs()
-                self._apply_sources()
                 x_new = self._solve()
                 # Relaxation
                 x_new = relax*x_new + (1-relax)*self[self.settings['quantity']]
                 self[self.settings['quantity']] = x_new
-                res = np.sum(np.absolute(x**2 - x_new**2))
                 x = x_new
-            if (res < self.settings['r_tolerance'] or
+            if (res < self.settings['rxn_tolerance'] or
                     self.settings['sources'] == []):
+                x_new = x
                 logger.info('Solution converged: ' + str(res))
                 break
         return x_new

@@ -47,10 +47,43 @@ class GenericPhysics(Subdomain, ModelsMixin):
 
         super().__init__(project=project, **kwargs)
 
-        if phase is not None:
+        network = self.project.network
+        if network:
+            if phase is None:
+                logger.warning('No Phase provided, ' + self.name +
+                               ' will not be associated with a phase')
+            else:
+                self.set_phase(phase=phase)
+            if geometry is None:
+                logger.warning('No Geometry provided, ' + self.name +
+                               ' will not be associated with any locations')
+            else:
+                if (phase is None):
+                    logger.warning('Cannot associate with a geometry unless ' +
+                                   'a phase is also given')
+                else:
+                    self.set_geometry(geometry=geometry)
+
+    def set_phase(self, phase, mode='add'):
+        r"""
+        """
+        if phase not in self.project:
+            raise Exception(self.name + ' not in same project as given phase')
+        if mode == 'add':
             phase['pore.'+self.name] = False
             phase['throat.'+self.name] = False
-        if geometry is not None:
-            Ps = network.pores(geometry.name)
-            Ts = network.throats(geometry.name)
-            self.add_locations(pores=Ps, throats=Ts)
+        elif mode == 'remove':
+            phase.pop('pore.'+self.name, None)
+            phase.pop('throat.'+self.name, None)
+        else:
+            raise Exception('mode ' + mode + ' not understood')
+
+    def set_geometry(self, geometry):
+        r"""
+        """
+        if geometry not in self.project:
+            raise Exception(self.name + ' not in same project as given geometry')
+        network = self.network
+        Ps = network.pores(geometry.name)
+        Ts = network.throats(geometry.name)
+        self._add_locations(pores=Ps, throats=Ts)

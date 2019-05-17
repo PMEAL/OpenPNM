@@ -76,3 +76,8 @@ class CubicTemplate(Cubic):
         self['pore.drop'] = template.flatten() == 0
         topotools.trim(network=self, pores=self.pores('drop'))
         del self['pore.drop']
+        # remove labels pertaining to surface pores, then redo post-trim
+        self.clear(mode='labels')
+        self['pore.internal'] = True
+        self['throat.internal'] = True
+        topotools.find_surface_pores(self)

@@ -28,7 +28,7 @@ class GenericTransportTest:
     def test_one_value_one_source(self):
         rt = op.algorithms.ReactiveTransport(network=self.net,
                                              phase=self.phase)
-        rt.setup(r_tolerance=0.001, max_iter=5000,
+        rt.setup(rxn_tolerance=1e-05, max_iter=5000,
                  relaxation_source=1, relaxation_quantity=1)
         rt.settings.update({'conductance': 'throat.diffusive_conductance',
                             'quantity': 'pore.concentration'})

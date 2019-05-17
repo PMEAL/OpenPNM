@@ -1,11 +1,9 @@
 import time
-import pickle
 import h5py
 import numpy as np
 import openpnm
 from copy import deepcopy
-from pathlib import Path
-from openpnm.utils import SettingsDict, HealthDict, PrintableList, Workspace
+from openpnm.utils import SettingsDict, HealthDict, Workspace
 ws = Workspace()
 
 
@@ -69,7 +67,6 @@ class Project(list):
         super().__init__(*args, **kwargs)
         # Register self with workspace
         ws[name] = self
-        self._grid = {}
         self.settings = SettingsDict()
         self.comments = 'Using OpenPNM ' + openpnm.__version__
 
@@ -195,7 +192,8 @@ class Project(list):
 
         Returns
         -------
-        A new Project object containing copies of all objects
+        proj : list
+            A new Project object containing copies of all objects
 
         """
         if name is None:
@@ -243,7 +241,7 @@ class Project(list):
 
         Returns
         -------
-        An OpenPNM Phase object.
+        phase : OpenPNM Phase object
 
         Raises
         ------
@@ -274,7 +272,7 @@ class Project(list):
 
         Returns
         -------
-        An OpenPNM Geometry object
+        geom : OpenPNM Geometry object
 
         Raises
         ------
@@ -307,12 +305,14 @@ class Project(list):
 
         Returns
         -------
-        A list containing the Physics object(s).  If only a ``geometry`` is
-        specified the the Physics for all Phases is returned.  If only a
-        ``phase`` is specified, then the Physics for all Geometries is
-        returned.  If both ``geometry`` and ``phase`` is specified then
-        the list only contains a single Physics.  If no Physics is found, the
-        the list will be empty.  See the Notes section for more information.
+        physics : list
+            A list containing the Physics object(s).  If only a ``geometry`` is
+            specified the the Physics for all Phases is returned.  If only a
+            ``phase`` is specified, then the Physics for all Geometries is
+            returned.  If both ``geometry`` and ``phase`` is specified then
+            the list only contains a single Physics.  If no Physics is found,
+            the the list will be empty.  See the Notes section for more
+            information.
 
         See Also
         --------
@@ -373,7 +373,7 @@ class Project(list):
 
         Returns
         -------
-        An OpenPNM object
+        obj : An OpenPNM object
 
         """
         if 'Subdomain' not in obj._mro():
@@ -462,20 +462,16 @@ class Project(list):
 
     def save_object(self, obj):
         r"""
-        Saves the given object to a file
+        Saves the given object or list of objects to a file
 
         Parameters
         ----------
-        obj : OpenPNM object
-            The file to be saved.  Depending on the object type, the file
+        obj : OpenPNM object or list of objects
+            The objects to be saved.  Depending on the object type, the file
             extension will be one of 'net', 'geo', 'phase', 'phys' or 'alg'.
         """
-        if not isinstance(obj, list):
-            obj = [obj]
-        for item in obj:
-            filename = item.name + '.' + item.settings['prefix']
-            with open(filename, 'wb') as f:
-                pickle.dump({item.name: item}, f)
+        from openpnm.io import OpenpnmIO
+        OpenpnmIO.save_object_to_file(objs=obj)
 
     def load_object(self, filename):
         r"""
@@ -483,14 +479,15 @@ class Project(list):
 
         Parameters
         ----------
+        filename : string or path object
+            The name of the file containing the saved object.  Can include
+            an absolute or relative path as well.  If only a filename is
+            given it will be saved in the current working directory.  The
+            object type is inferred from
 
         """
-        p = Path(filename)
-        with open(p, 'rb') as f:
-            d = pickle.load(f)
-        obj = self._new_object(objtype=p.suffix.strip('.'),
-                               name=p.name.split('.')[0])
-        obj.update(d)
+        from openpnm.io import OpenpnmIO
+        OpenpnmIO.load_object_from_file(filename=filename, project=self)
 
     def save_project(self, filename=''):
         r"""
@@ -512,7 +509,8 @@ class Project(list):
         if objtype.startswith('net'):
             obj = openpnm.network.GenericNetwork(project=self, name=name)
         elif objtype.startswith('geo'):
-            obj = openpnm.geometry.GenericGeometry(project=self, name=name)
+            obj = openpnm.geometry.GenericGeometry(project=self, name=name,
+                                                   pores=[], throats=[])
         elif objtype.startswith('pha'):
             obj = openpnm.phases.GenericPhase(project=self, name=name)
         elif objtype.startswith('phy'):
@@ -726,23 +724,6 @@ class Project(list):
 
     comments = property(fget=_get_comments, fset=_set_comments)
 
-    def _get_grid(self):
-        grid = {}
-        row = {phase: '' for phase in self.phases().keys()}
-        for geo in self.geometries().values():
-            grid[geo.name] = row.copy()
-            for phase in self.phases().values():
-                phys = self.find_physics(phase=phase, geometry=geo)
-                if phys is None:
-                    phys = ''
-                else:
-                    phys = phys.name
-                grid[geo.name][phase.name] = phys
-        grid = ProjectGrid(self.network.name, grid)
-        return grid
-
-    grid = property(fget=_get_grid)
-
     def __str__(self):
         s = []
         hr = '―'*78
@@ -864,45 +845,75 @@ class Project(list):
             else:
                 obj.regenerate_models()
 
+    def get_grid(self, astype='table'):
+        from pandas import DataFrame as df
+        geoms = self.geometries().keys()
+        phases = [p.name for p in self.phases().values() if not hasattr(p, 'mixture')]
+        grid = df(index=geoms, columns=phases)
+        for r in grid.index:
+            for c in grid.columns:
+                phys = self.find_physics(phase=self[c], geometry=self[r])
+                if phys is not None:
+                    grid.loc[r][c] = phys.name
+                else:
+                    grid.loc[r][c] = '---'
+        if astype == 'pandas':
+            pass
+        elif astype == 'dict':
+            grid = grid.to_dict()
+        elif astype == 'table':
+            from terminaltables import SingleTable
+            headings = [self.network.name] + list(grid.keys())
+            g = [headings]
+            for row in list(grid.index):
+                g.append([row] + list(grid.loc[row]))
+            grid = SingleTable(g)
+            grid.title = 'Project: ' + self.name
+            grid.padding_left = 3
+            grid.padding_right = 3
+            grid.justify_columns = {col: 'center' for col in range(len(headings))}
+        elif astype == 'grid':
+            grid = ProjectGrid()
+        return grid
 
-class Grid(dict):
+    @property
+    def grid(self):
+        grid = self.get_grid(astype='table')
+        obj = ProjectGrid(grid)
+        return obj
 
-    def __init__(self, name='', *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.name = name
+
+class Grid():
+
+    def __init__(self, table):
+        self.grid = table
 
     def index(self):
-        return list(self.keys())
+        index = [row[0] for row in self.grid.table_data[1:]]
+        return index
 
     def header(self):
-        d = []
-        for item in self.keys():
-            d.extend([i for i in self[item].keys()])
-        return list(set(d))
+        columns = self.grid.table_data[0][1:]
+        return columns
 
     def row(self, name):
-        return list(self[name].values())
+        for row in self.grid.table_data:
+            if row[0].startswith(name):
+                return row
+        else:
+            raise ValueError(name + 'is not in list')
 
     def col(self, name):
+        # Find column number
+        index = self.grid.table_data[0].index(name)
         col = []
-        for row in self.index():
-            col.append(self[row][name])
+        for row in self.grid.table_data:
+            col.append(row[index])
         return col
 
     def __str__(self):
-        s = []
-        hr = '―'*(16*(len(self.header())+1))
-        s.append(hr)
-        fmt = ["| {"+str(i)+":^13} " for i in range(len(self.header()))]
-        cols = [item for item in self.header()]
-        s.append('| {0:^13}'.format(self.name) +
-                 ''.join(fmt).format(*cols) + '|')
-        s.append(hr)
-        for row in self.index():
-            ind = '| {0:^13}'.format(row)
-            s.append(ind + ''.join(fmt).format(*list(self[row].values()))+'|')
-            s.append(hr)
-        return '\n'.join(s)
+        s = self.grid.table.__str__()
+        return s
 
 
 class ProjectGrid(Grid):

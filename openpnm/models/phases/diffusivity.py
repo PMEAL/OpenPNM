@@ -7,8 +7,6 @@ r"""
 
 """
 
-import scipy as _sp
-
 
 def fuller(target, MA, MB, vA, vB, temperature='pore.temperature',
            pressure='pore.pressure'):
@@ -40,6 +38,12 @@ def fuller(target, MA, MB, vA, vB, temperature='pore.temperature',
 
     temperature : string
         The dictionary key containing the temperature values in Kelvin (K)
+
+    Returns
+    -------
+    value : NumPy ndarray
+        Array containing gas diffusion coefficient values [m2/s].
+
     """
 
     T = target[temperature]
@@ -75,6 +79,12 @@ def fuller_scaling(target, DABo, To, Po, temperature='pore.temperature',
 
     temperature : string
         The dictionary key containing the temperature values in Kelvin (K)
+
+    Returns
+    -------
+    value : NumPy ndarray
+        Array containing scaled gas diffusion coefficient values [m2/s].
+
     """
     Ti = target[temperature]
     Pi = target[pressure]
@@ -113,6 +123,11 @@ def tyn_calus(target, VA, VB, sigma_A, sigma_B, temperature='pore.temperature',
     temperature : string
         The dictionary key containing the temperature values in Kelvin (K)
 
+    Returns
+    -------
+    value : NumPy ndarray
+        Array containing liquid diffusion coefficient values [m2/s].
+
     """
     T = target[temperature]
     mu = target[viscosity]
@@ -146,6 +161,12 @@ def tyn_calus_scaling(target, DABo, To, mu_o, viscosity='pore.viscosity',
 
     temperature : string
         The dictionary key containing the temperature values in Kelvin (K)
+
+    Returns
+    -------
+    value : NumPy ndarray
+        Array containing scaled liquid diffusion coefficient values [m2/s].
+
     """
     Ti = target[temperature]
     mu_i = target[viscosity]
