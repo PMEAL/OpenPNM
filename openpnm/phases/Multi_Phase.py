@@ -69,6 +69,8 @@ class MultiPhase(GenericPhase):
         # Add any supplied phases to the phases list
         for phase in phases:
             self.settings['phases'].append(phase.name)
+        logger.warning('MultiPhases are a beta feature and functionality may' +
+                       ' change in future versions')
 
     def __getitem__(self, key):
         try:
