@@ -57,9 +57,6 @@ class MultiPhase(GenericPhase):
                               })
         self.settings.update(settings)
 
-        logger.warning('Multiphases are a beta feature and functionality ' +
-                       'may change in future versions')
-
         self['pore.occupancy.all'] = np.zeros(self.Np, dtype=float)
         self['throat.occupancy.all'] = np.zeros(self.Nt, dtype=float)
 
@@ -69,6 +66,7 @@ class MultiPhase(GenericPhase):
         # Add any supplied phases to the phases list
         for phase in phases:
             self.settings['phases'].append(phase.name)
+
         logger.warning('MultiPhases are a beta feature and functionality may' +
                        ' change in future versions')
 
