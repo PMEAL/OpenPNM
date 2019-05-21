@@ -1255,9 +1255,9 @@ def find_surface_pores(network, markers=None, label='surface'):
 
     """
     import scipy.spatial as sptl
+    dims = dimensionality(network)
+    coords = network['pore.coords'][:, dims]
     if markers is None:
-        dims = dimensionality(network)
-        coords = network['pore.coords'][:, dims]
         # normalize coords to a 1 unit cube centered on origin
         coords -= sp.amin(coords, axis=0)
         coords /= sp.amax(coords, axis=0)
@@ -1282,8 +1282,8 @@ def find_surface_pores(network, markers=None, label='surface'):
             z = r*sp.cos(phi)
             markers = sp.vstack((x, y, z)).T
     else:
-        coords = network['pore.coords']
-        markers = sp.atleast_2d(markers)
+        pass
+        # markers = sp.atleast_2d(markers)
     pts = sp.vstack((coords, markers))
     tri = sptl.Delaunay(pts, incremental=False)
     (indices, indptr) = tri.vertex_neighbor_vertices
