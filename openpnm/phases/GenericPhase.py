@@ -86,8 +86,15 @@ class GenericPhase(Base, ModelsMixin):
             return net[element+'._id']
         if prop == self.name:
             return self[element+'.all']
-        try:
-            vals = self.interpolate_data(propname=key)
-        except KeyError:
-            vals = super().__getitem__(key)
+        # An attempt at automatic interpolation if key not found
+        if key not in self.keys():
+            not_el = list(set(['pore', 'throat']).difference(set([element])))[0]
+            if (not_el + '.' + prop) in self.keys():
+                mod = {'pore': mods.misc.from_neighbor_throats,
+                       'throat': mods.misc.from_neighbor_pores}
+                self.add_model(propname=key,
+                               model=mod[element],
+                               prop=not_el + '.' + prop,
+                               mode='mean')
+        vals = super().__getitem__(key)
         return vals
