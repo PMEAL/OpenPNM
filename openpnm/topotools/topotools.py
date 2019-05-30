@@ -2770,7 +2770,8 @@ def _bond_percolation(network, tmask):
     return (p_clusters, t_clusters)
 
 
-def add_boundary_pores(network, pores, offset, apply_label='boundary'):
+def add_boundary_pores(network, pores, offset=None, move_to=None,
+                       apply_label='boundary'):
     r"""
     This method uses ``clone_pores`` to clone the input pores, then shifts
     them the specified amount and direction, then applies the given label.
@@ -2783,7 +2784,14 @@ def add_boundary_pores(network, pores, offset, apply_label='boundary'):
 
     offset : 3 x 1 array
         The distance in vector form which the cloned boundary pores should
-        be offset.
+        be offset.  Either this, or ``move_to`` must be specified.
+
+    move_to : 3 x 1 array
+        The location to move the boundary pores to.  A value of ``None``
+        indicates that no translation should be applied in that axis.  For
+        instance, ``[None, None, 0]`` indicates that the boundary pores should
+        moved along the z-axis to the specified location.  Either this or
+        ``offset`` must be specified.
 
     apply_label : string
         This label is applied to the boundary pores.  Default is
@@ -2813,8 +2821,14 @@ def add_boundary_pores(network, pores, offset, apply_label='boundary'):
     del network['pore.clone']
     newTs = network.throats('clone')
     del network['throat.clone']
-    # Offset the cloned pores
-    network['pore.coords'][newPs] += offset
+    if offset is not None:  # Offset the cloned pores
+        network['pore.coords'][newPs] += offset
+    if move_to is not None:  # Move the cloned pores
+        for i, d in enumerate(move_to):
+            if d is not None:
+                temp = network['pore.coords'][newPs]
+                temp[:, i] = d
+                network['pore.coords'][newPs] = temp
     # Apply labels to boundary pores (trim leading 'pores' if present)
     label = apply_label.split('.')[-1]
     plabel = 'pore.' + label
