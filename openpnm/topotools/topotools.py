@@ -989,8 +989,8 @@ def trim(network, pores=[], throats=[]):
     296
 
     '''
-    pores = sp.array(pores, ndmin=1)
-    throats = sp.array(throats, ndmin=1)
+    pores = network._parse_indices(pores)
+    throats = network._parse_indices(throats)
     Pkeep = sp.copy(network['pore.all'])
     Tkeep = sp.copy(network['throat.all'])
     if sp.size(pores) > 0:
