@@ -1347,6 +1347,7 @@ def clone_pores(network, pores, labels=['clone'], mode='parents'):
 
     if type(labels) == str:
         labels = [labels]
+    network._parse_indices(pores)
     Np = network.Np
     Nt = network.Nt
     # Clone pores
