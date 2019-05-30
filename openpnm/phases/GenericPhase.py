@@ -86,5 +86,8 @@ class GenericPhase(Base, ModelsMixin):
             return net[element+'._id']
         if prop == self.name:
             return self[element+'.all']
-        vals = super().__getitem__(key)
+        try:
+            vals = self.interpolate_data(propname=key)
+        except KeyError:
+            vals = super().__getitem__(key)
         return vals
