@@ -958,6 +958,61 @@ class BaseTest:
         with pytest.raises(KeyError):
             pn['pore.fo']
 
+    def test_set_label_add_to_pores(self):
+        pn = op.network.Cubic(shape=[5, 5, 5])
+        pn.set_label(label='tester', pores=[1, 2])
+        assert pn['pore.tester'].sum() == 2
+
+    def test_set_label_add_to_throats(self):
+        pn = op.network.Cubic(shape=[5, 5, 5])
+        pn.set_label(label='tester', throats=[1, 2])
+        assert pn['throat.tester'].sum() == 2
+
+    def test_set_label_overwrite_on_pores(self):
+        pn = op.network.Cubic(shape=[5, 5, 5])
+        pn.set_label(label='tester', pores=[1, 2])
+        pn.set_label(label='tester', pores=[2, 3, 4], mode='overwrite')
+        assert pn['pore.tester'].sum() == 3
+
+    def test_set_label_overwrite_on_throats(self):
+        pn = op.network.Cubic(shape=[5, 5, 5])
+        pn.set_label(label='tester', throats=[1, 2])
+        pn.set_label(label='tester', throats=[2, 3, 4], mode='overwrite')
+        assert pn['throats.tester'].sum() == 3
+
+    def test_set_label_remove_from_pores(self):
+        pn = op.network.Cubic(shape=[5, 5, 5])
+        pn.set_label(label='tester', pores=[1, 2])
+        assert pn['pore.tester'].sum() == 2
+        pn.set_label(label='tester', pores=[1, 2, 3], mode='remove')
+        assert pn['pore.tester'].sum() == 0
+
+    def test_set_label_remove_from_throats(self):
+        pn = op.network.Cubic(shape=[5, 5, 5])
+        pn.set_label(label='tester', throats=[1, 2])
+        assert pn['throat.tester'].sum() == 2
+        pn.set_label(label='tester', throats=[1, 2, 3], mode='remove')
+        assert pn['throat.tester'].sum() == 0
+
+    def test_set_label_purge_from_pores(self):
+        pn = op.network.Cubic(shape=[5, 5, 5])
+        pn.set_label(label='tester', pores=[1, 2])
+        assert pn['pore.tester'].sum() == 2
+        pn.set_label(label='tester', mode='purge')
+        assert 'pore.tester' not in pn.keys()
+
+    def test_set_label_purge_from_throats(self):
+        pn = op.network.Cubic(shape=[5, 5, 5])
+        pn.set_label(label='tester', throats=[1, 2])
+        assert pn['throat.tester'].sum() == 2
+        pn.set_label(label='tester', mode='purge')
+        assert 'throat.tester' not in pn.keys()
+
+    def test_set_label_purge_nonexistent_label(self):
+        pn = op.network.Cubic(shape=[5, 5, 5])
+        pn.set_label(label='tester', mode='purge')
+        # Should only issue warning
+
 
 if __name__ == '__main__':
 
