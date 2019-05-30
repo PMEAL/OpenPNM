@@ -978,7 +978,7 @@ class BaseTest:
         pn = op.network.Cubic(shape=[5, 5, 5])
         pn.set_label(label='tester', throats=[1, 2])
         pn.set_label(label='tester', throats=[2, 3, 4], mode='overwrite')
-        assert pn['throats.tester'].sum() == 3
+        assert pn['throat.tester'].sum() == 3
 
     def test_set_label_remove_from_pores(self):
         pn = op.network.Cubic(shape=[5, 5, 5])
