@@ -756,8 +756,8 @@ class Base(dict):
             ``True`` values indicating the pores that satisfy the query.
 
         target : OpenPNM Base object
-            If given, the return indices will be indexed relative the
-            ``target`` object.  This can be used to determine how indices
+            If given, the returned indices will be indexed relative to the
+            ``target`` object.  This can be used to determine how indices on
             one object map onto another object.
 
         Returns
@@ -845,8 +845,8 @@ class Base(dict):
             ``True`` values indicating the throats that satisfy the query.
 
         target : OpenPNM Base object
-            If given, the return indices will be indexed relative the
-            ``target`` object.  This can be used to determine how indices
+            If given, the returned indices will be indexed relative to the
+            ``target`` object.  This can be used to determine how indices on
             one object map onto another object.
 
         Returns
@@ -928,6 +928,7 @@ class Base(dict):
         See Also
         --------
         pores
+        map_throats
 
         """
         ids = origin['pore._id'][pores]
@@ -955,12 +956,13 @@ class Base(dict):
         Returns
         -------
         Throat indices on the calling object corresponding to the same throats
-        on the target object.  Can be an array or a tuple containing an array
-        and a mask, depending on the value of ``filtered``.
+        on the ``origin`` object.  Can be an array or a tuple containing an
+        array and a mask, depending on the value of ``filtered``.
 
         See Also
         --------
-        map_throats
+        throats
+        map_pores
 
         """
         ids = origin['throat._id'][throats]
