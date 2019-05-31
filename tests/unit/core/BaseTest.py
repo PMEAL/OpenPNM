@@ -111,6 +111,36 @@ class BaseTest:
         b = self.net.pores(labels=['top', 'front'], mode='or')
         assert sp.all(sp.where(a)[0] == b)
 
+    def test_pores_with_target(self):
+        net = op.network.Cubic(shape=[2, 2, 2])
+        geo1 = op.geometry.GenericGeometry(network=net,
+                                           pores=[1, 3, 5, 7],
+                                           throats=range(6))
+        geo2 = op.geometry.GenericGeometry(network=net,
+                                           pores=[0, 2, 4, 6],
+                                           throats=range(6, 12))
+        assert sp.all(net.pores('top', target=geo1) == [0, 1, 2, 3])
+        assert len(net.pores('top', target=geo2)) == 0
+        mapped = net.map_pores(pores=[0, 1, 2, 3], origin=geo1)
+        assert sp.all(mapped == net.pores('geo_01'))
+        mapped = net.map_pores(pores=[0, 1, 2, 3], origin=geo2)
+        assert sp.all(mapped == net.pores('geo_02'))
+
+    def test_throats_with_target(self):
+        net = op.network.Cubic(shape=[2, 2, 2])
+        geo1 = op.geometry.GenericGeometry(network=net,
+                                           pores=[1, 3, 5, 7],
+                                           throats=range(6))
+        geo2 = op.geometry.GenericGeometry(network=net,
+                                           pores=[0, 2, 4, 6],
+                                           throats=range(6, 12))
+        assert sp.all(net.throats('surface', target=geo1) == [0, 1, 2, 3, 4, 5])
+        assert sp.all(net.throats('surface', target=geo2) == [0, 1, 2, 3, 4, 5])
+        mapped = net.map_throats(throats=[0, 1, 2, 3, 4, 5], origin=geo1)
+        assert sp.all(mapped == net.throats('geo_01'))
+        mapped = net.map_throats(throats=[0, 1, 2, 3, 4, 5], origin=geo2)
+        assert sp.all(mapped == net.throats('geo_02'))
+
     def test_throats(self):
         a = self.net.throats()
         assert sp.all(a == sp.arange(0, self.net.Nt))
