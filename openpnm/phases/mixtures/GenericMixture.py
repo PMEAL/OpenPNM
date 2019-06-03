@@ -170,8 +170,9 @@ class GenericMixture(GenericPhase):
             self[element+'.mole_fraction.'+component] = 1 - mol_frac
             # [self[element+'.concentration.'+component] = (1 - mol_frac)*density
         else:
-            raise Exception('Insufficient mole fraction values found for ' +
-                            'component species')
+            raise Exception('Insufficient concentration values found for ' +
+                            'component species, cannot calculate mole ' +
+                            'fractions')
 
     def set_concentration(self, component, values=[]):
         r"""
