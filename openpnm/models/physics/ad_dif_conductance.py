@@ -13,7 +13,6 @@ def ad_dif(target,
            pore_diffusivity='pore.diffusivity',
            throat_diffusivity='throat.diffusivity',
            conduit_lengths='throat.conduit_lengths',
-           conduit_shape_factors='throat.poisson_shape_factors',
            pore_pressure='pore.pressure',
            throat_hydraulic_conductance='throat.hydraulic_conductance',
            throat_diffusive_conductance='throat.diffusive_conductance',
@@ -44,9 +43,6 @@ def ad_dif(target,
     conduit_lengths : string
         Dictionary key of the conduit length values
 
-    conduit_shape_factors : string
-        Dictionary key of the conduit DIFFUSION shape factor values
-
     pore_pressure : string
         Dictionary key of the pore pressure values
 
@@ -75,7 +71,8 @@ def ad_dif(target,
 
     (3) This function assumes cylindrical throats with constant cross-section
     area. Corrections for different shapes and variable cross-section area can
-    be imposed by passing the proper conduit_shape_factors argument.
+    be imposed by passing the proper conduit_shape_factors argument when
+    computig the diffusive and hydraulic conductances.
 
     (4) shape_factor depends on the physics of the problem, i.e. diffusion-like
     processes and fluid flow need different shape factors.
@@ -95,53 +92,30 @@ def ad_dif(target,
     # INFO: This is needed since area could also be zero, which confuses NumPy
     m1, m2, mt = [Li != 0 for Li in [L1, L2, Lt]]
     g1[~m1] = g2[~m2] = gt[~mt] = _sp.inf
-    # Getting shape factors
-    try:
-        SF1 = phase[conduit_shape_factors+'.pore1'][throats]
-        SFt = phase[conduit_shape_factors+'.throat'][throats]
-        SF2 = phase[conduit_shape_factors+'.pore2'][throats]
-    except KeyError:
-        SF1 = SF2 = SFt = 1.0
     # Find g for half of pore 1, throat, and half of pore 2
-    if transport_type in ['dispersion', 'ad_dif']:
-        for k, v in kwargs.items():
-            if k == 'pore_pressure':
-                pore_pressure = v
-            elif k == 'throat_hydraulic_conductance':
-                throat_hydraulic_conductance = v
-            elif k == 'throat_diffusive_conductance':
-                throat_diffusive_conductance = v
-            elif k == 's_scheme':
-                s_scheme = v
+    P = phase[pore_pressure]
+    gh = phase[throat_hydraulic_conductance]
+    gd = phase[throat_diffusive_conductance]
+    gd = _sp.tile(gd, 2)
 
-        P = phase[pore_pressure]
-        gh = phase[throat_hydraulic_conductance]
-        gd = phase[throat_diffusive_conductance]
-        gd = _sp.tile(gd, 2)
+    Qij = -gh*_sp.diff(P[cn], axis=1).squeeze()
+    Qij = _sp.append(Qij, -Qij)
 
-        Qij = -gh*_sp.diff(P[cn], axis=1).squeeze()
-        Qij = _sp.append(Qij, -Qij)
+    Peij = Qij/gd
+    Peij[(Peij < 1e-10) & (Peij >= 0)] = 1e-10
+    Peij[(Peij > -1e-10) & (Peij <= 0)] = -1e-10
+    Qij = Peij*gd
 
-        Peij = Qij/gd
-        Peij[(Peij < 1e-10) & (Peij >= 0)] = 1e-10
-        Peij[(Peij > -1e-10) & (Peij <= 0)] = -1e-10
-        Qij = Peij*gd
-
-        if s_scheme == 'upwind':
-            w = gd + _sp.maximum(0, -Qij)
-        elif s_scheme == 'hybrid':
-            w = _sp.maximum(0, _sp.maximum(-Qij, gd-Qij/2))
-        elif s_scheme == 'powerlaw':
-            w = gd * _sp.maximum(0, (1 - 0.1*_sp.absolute(Peij))**5) + \
-                _sp.maximum(0, -Qij)
-        elif s_scheme == 'exponential':
-            w = -Qij / (1 - _sp.exp(Peij))
-        else:
-            raise Exception('Unrecognized discretization scheme: ' + s_scheme)
-        w = _sp.reshape(w, (network.Nt, 2), order='F')
-        return w
+    if s_scheme == 'upwind':
+        w = gd + _sp.maximum(0, -Qij)
+    elif s_scheme == 'hybrid':
+        w = _sp.maximum(0, _sp.maximum(-Qij, gd-Qij/2))
+    elif s_scheme == 'powerlaw':
+        w = gd * _sp.maximum(0, (1 - 0.1*_sp.absolute(Peij))**5) + \
+            _sp.maximum(0, -Qij)
+    elif s_scheme == 'exponential':
+        w = -Qij / (1 - _sp.exp(Peij))
     else:
-        raise Exception('Unknown keyword for "transport_type", can only be' +
-                        ' "dispersion"')
-    # Apply shape factors and calculate the final conductance
-    return (1/gt/SFt + 1/g1/SF1 + 1/g2/SF2)**(-1)
+        raise Exception('Unrecognized discretization scheme: ' + s_scheme)
+    w = _sp.reshape(w, (network.Nt, 2), order='F')
+    return w
