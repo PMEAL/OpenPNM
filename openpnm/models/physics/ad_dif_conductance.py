@@ -1,7 +1,6 @@
 r"""
 
 .. autofunction:: openpnm.models.physics.ad_dif_conductance.ad_dif
-.. autofunction:: openpnm.models.physics.ad_dif_conductance.generic_conductance
 
 """
 
@@ -76,77 +75,7 @@ def ad_dif(target,
 
     (3) This function assumes cylindrical throats with constant cross-section
     area. Corrections for different shapes and variable cross-section area can
-    be imposed by passing the proper flow_shape_factor argument.
-
-    """
-    return generic_conductance(
-        target=target,
-        transport_type='ad_dif',
-        pore_area=pore_area,
-        throat_area=throat_area,
-        pore_diffusivity=pore_diffusivity,
-        throat_diffusivity=throat_diffusivity,
-        conduit_lengths=conduit_lengths,
-        conduit_shape_factors=conduit_shape_factors,
-        pore_pressure=pore_pressure,
-        throat_hydraulic_conductance=throat_hydraulic_conductance,
-        throat_diffusive_conductance=throat_diffusive_conductance,
-        s_scheme=s_scheme)
-
-
-def generic_conductance(target, transport_type, pore_area, throat_area,
-                        pore_diffusivity, throat_diffusivity,
-                        conduit_lengths, conduit_shape_factors, **kwargs):
-    r"""
-    Calculate the generic conductance (could be mass, thermal, electrical,
-    ionic, or hydraylic) of conduits in the network, where a conduit is
-    ( 1/2 pore - full throat - 1/2 pore ).
-
-    Parameters
-    ----------
-    target : OpenPNM Object
-        The object which this model is associated with. This controls the
-        length of the calculated array, and also provides access to other
-        necessary properties.
-
-    transport_type : string
-        Dictionary key of the transport type
-
-    pore_area : string
-        Dictionary key of the pore area values
-
-    throat_area : string
-        Dictionary key of the throat area values
-
-    pore_diffusivity : string
-        Dictionary key of the pore diffusivity values
-
-    throat_diffusivity : string
-        Dictionary key of the throat diffusivity values
-
-    conduit_lengths : string
-        Dictionary key of the conduit length values
-
-    conduit_shape_factors : string
-        Dictionary key of the conduit DIFFUSION shape factor values
-
-    Returns
-    -------
-    g : ndarray
-        Array containing conductance values for conduits in the geometry
-        attached to the given physics object.
-
-    Notes
-    -----
-    (1) This function requires that all the necessary phase properties already
-    be calculated.
-
-    (2) This function calculates the specified property for the *entire*
-    network then extracts the values for the appropriate throats at the end.
-
-    (3) This function assumes cylindrical throats with constant cross-section
-    area. Corrections for different shapes and variable cross-section area can
-    be imposed by passing the proper shape factor.
+    be imposed by passing the proper conduit_shape_factors argument.
 
     (4) shape_factor depends on the physics of the problem, i.e. diffusion-like
     processes and fluid flow need different shape factors.
