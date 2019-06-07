@@ -102,6 +102,12 @@ def ad_dif_mig(target,
     processes and fluid flow need different shape factors.
 
     """
+    # Add ion suffix to properties
+    pore_diffusivity = pore_diffusivity + '.' + ion
+    throat_diffusivity = throat_diffusivity + '.' + ion
+    throat_diffusive_conductance = throat_diffusive_conductance + '.' + ion
+    throat_valence = throat_valence + '.' + ion
+
     network = target.project.network
     throats = network.map_throats(throats=target.Ts, origin=target)
     phase = target.project.find_phase(target)
