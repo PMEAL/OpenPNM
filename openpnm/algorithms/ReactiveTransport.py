@@ -325,8 +325,10 @@ class ReactiveTransport(GenericTransport):
                 x_new = relax*x_new + (1-relax)*self[self.settings['quantity']]
                 self[self.settings['quantity']] = x_new
                 x = x_new
-            if (res < self.settings['rxn_tolerance']):
+            elif (res < self.settings['rxn_tolerance']):
                 x_new = x
                 logger.info('Solution converged: ' + str(res))
                 break
+            else:  # If res is nan or inf
+                return
         return x_new
