@@ -26,7 +26,7 @@ class ReactiveTransport(GenericTransport):
     def __init__(self, settings={}, phase=None, **kwargs):
         def_set = {'phase': None,
                    'sources': [],
-                   'rxn_tolerance': 1e-12,
+                   'rxn_tolerance': 1e-05,
                    'max_iter': 5000,
                    'relaxation_source': 1,
                    'relaxation_quantity': 1,
