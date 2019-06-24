@@ -330,5 +330,7 @@ class ReactiveTransport(GenericTransport):
                 logger.info('Solution converged: ' + str(res))
                 break
             else:  # If res is nan or inf
-                return
+                x_new = x
+                logger.info('Residual undefined: ' + str(res))
+                break
         return x_new
