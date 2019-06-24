@@ -1,4 +1,3 @@
-import numpy as np
 from openpnm.algorithms import ReactiveTransport
 from openpnm.utils import logging
 logger = logging.getLogger(__name__)
@@ -72,37 +71,3 @@ class NonNewtonianStokesFlow(ReactiveTransport):
         if conductance:
             self.settings['conductance'] = conductance
         super().setup(**kwargs)
-
-    def run(self):
-        phase = self.project.phases()[self.settings['phase']]
-        phys = self.project.find_physics(phase=phase)
-
-        # Define initial conditions (if not defined by the user)
-        try:
-            self[self.settings['quantity']]
-        except KeyError:
-            self[self.settings['quantity']] = np.zeros(shape=[self.Np, ],
-                                                       dtype=float)
-
-        # Define tolerance and initialize residuals
-        tol = self.settings['tolerance']
-        res = 1e+06
-
-        # Iterate until solution converges
-        for itr in range(int(self.settings['max_iter'])):
-            logger.info('Iter: ' + str(itr) + ', Res: ' + str(res))
-            print('Iter: ' + str(itr) + ', Res: ' + str(res))
-            convergence = res < tol
-            if not convergence:
-                self._update_physics()
-                phys[0].regenerate_models()
-                p_old = self[self.settings['quantity']].copy()
-                self._run_reactive(x=p_old)
-                p_new = self[self.settings['quantity']].copy()
-                # Residual
-                res = np.sum(np.absolute(p_old**2 - p_new**2))
-                phase.update(self.results())
-
-            if convergence:
-                logger.info('Solution converged: ' + str(res))
-                break
