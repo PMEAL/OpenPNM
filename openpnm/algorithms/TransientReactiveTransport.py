@@ -376,10 +376,13 @@ class TransientReactiveTransport(ReactiveTransport):
             x = np.zeros(shape=[self.Np, ], dtype=float)
         self[self.settings['quantity']] = x
         relax = self.settings['relaxation_quantity']
+        phase = self.project.phases()[self.settings['phase']]
         # Reference for residual's normalization
         ref = np.sum(np.absolute(self._A_t.diagonal())) or 1
         for itr in range(int(self.settings['max_iter'])):
             self[self.settings['quantity']] = x
+            phase.update(self.results())
+            self._update_physics()
             self._A = (self._A_t).copy()
             self._b = (self._b_t).copy()
             self._apply_sources()
@@ -392,10 +395,13 @@ class TransientReactiveTransport(ReactiveTransport):
                 x_new = relax*x_new + (1-relax)*self[self.settings['quantity']]
                 self[self.settings['quantity']] = x_new
                 x = x_new
-            if (res < self.settings['rxn_tolerance'] or
-                    self.settings['sources'] == []):
+            elif (res < self.settings['rxn_tolerance']):
                 x_new = x
                 logger.info('Solution converged: ' + str(res))
+                break
+            else:  # If res is nan or inf
+                x_new = x
+                logger.warning('Residual undefined: ' + str(res))
                 break
         return x_new
 
