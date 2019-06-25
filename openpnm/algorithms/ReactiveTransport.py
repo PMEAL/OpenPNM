@@ -331,6 +331,6 @@ class ReactiveTransport(GenericTransport):
                 break
             else:  # If res is nan or inf
                 x_new = x
-                logger.info('Residual undefined: ' + str(res))
+                logger.warning('Residual undefined: ' + str(res))
                 break
         return x_new
