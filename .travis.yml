@@ -10,10 +10,10 @@ python:
 
 cache: pip
 
+services:
+  - xvfb
+
 before_install:
-  # This let's plot be virtually displayed
-  - export DISPLAY=:99.0
-  - sh -e /etc/init.d/xvfb start
   - wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh;
   - bash miniconda.sh -b -p $HOME/miniconda
   - export PATH="$HOME/miniconda/bin:$PATH"
