@@ -217,8 +217,8 @@ class OrdinaryPercolation(GenericAlgorithm):
         if overwrite:
             self['pore.inlets'] = False
         self['pore.inlets'][Ps] = True
-        self['pore.invasion_pressure'][Ps] = 0
-        self['pore.invasion_sequence'][Ps] = 0
+        self['pore.invasion_pressure'][Ps] = sp.inf
+        self['pore.invasion_sequence'][Ps] = -1
 
     def set_outlets(self, pores=[], overwrite=False):
         r"""
