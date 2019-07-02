@@ -93,8 +93,8 @@ phys.add_model(propname='throat.ad_dif_mig_conductance.' + Cl.name,
 
 pnp = op.algorithms.ChargeConservationNernstPlanck(network=net, phase=sw)
 pnp.setup(potential_field=p, ions=[eA, eB])
-pnp.settings['max_iter'] = 10
-pnp.settings['tolerance'] = 1e-04
+pnp.settings['i_max_iter'] = 10
+pnp.settings['i_tolerance'] = 1e-04
 pnp.settings['charge_conservation'] = 'laplace'
 # Electroneutrality condition does not work with new Mixtures
 # pnp.settings['charge_conservation'] = 'electroneutrality'

@@ -15,8 +15,8 @@ class ChargeConservationNernstPlanck(ReactiveTransport):
                    'potential_field': None,
                    'ions': [],
                    'charge_conservation': 'electroneutrality',
-                   'tolerance': 1e-4,
-                   'max_iter': 10}
+                   'i_tolerance': 1e-4,
+                   'i_max_iter': 10}
         super().__init__(**kwargs)
         self.settings.update(def_set)
         self.settings.update(settings)
@@ -24,8 +24,8 @@ class ChargeConservationNernstPlanck(ReactiveTransport):
             self.setup(phase=phase)
 
     def setup(self, phase=None, potential_field=None, ions=[],
-              charge_conservation=None, tolerance=None,
-              max_iter=None, **kwargs):
+              charge_conservation=None, i_tolerance=None,
+              i_max_iter=None, **kwargs):
         r"""
         """
         if phase:
@@ -36,10 +36,10 @@ class ChargeConservationNernstPlanck(ReactiveTransport):
             self.settings['ions'] = ions
         if charge_conservation:
             self.settings['charge_conservation'] = charge_conservation
-        if tolerance:
-            self.settings['tolerance'] = tolerance
-        if max_iter:
-            self.settings['max_iter'] = max_iter
+        if i_tolerance:
+            self.settings['i_tolerance'] = i_tolerance
+        if i_max_iter:
+            self.settings['i_max_iter'] = i_max_iter
         super().setup(**kwargs)
 
     def run(self):
@@ -79,14 +79,14 @@ class ChargeConservationNernstPlanck(ReactiveTransport):
         p_alg.set_source(propname='pore.charge_conservation', pores=Ps)
 
         # Define tolerance and initialize residuals
-        tol = self.settings['tolerance']
+        tol = self.settings['i_tolerance']
         res = {}
         res['potential'] = 1e+06
         for e in e_alg:
             res[e.name] = 1e+06
 
         # Iterate until solutions converge
-        for itr in range(int(self.settings['max_iter'])):
+        for itr in range(int(self.settings['i_max_iter'])):
             r = str([float(format(i, '.3g')) for i in res.values()])[1:-1]
             logger.info('Iter: ' + str(itr+1) + ', Residuals: ' + r)
             convergence = max(i for i in res.values()) < tol
