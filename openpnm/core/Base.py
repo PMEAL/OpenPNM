@@ -666,6 +666,66 @@ class Base(dict):
                                       mode=mode)
         return labels
 
+    def set_label(self, label, pores=None, throats=None, mode='add'):
+        r"""
+        Creates or updates a label array
+
+        Parameters
+        ----------
+        label : string
+                The label to apply to the specified locations
+        pores : array_like
+            A list of pore indices or a boolean mask of where given label
+            should be added or removed (see ``mode``)
+        throats : array_like
+            A list of throat indices or a boolean mask of where given label
+            should be added or removed (see ``mode``)
+        mode : string
+            Controls how the labels are handled.  Options are:
+
+            *'add'* - Adds the given label to the specified locations while
+            keeping existing labels (default)
+
+            *'overwrite'* - Removes existing label from all locations before
+            adding the label in the specified locations
+
+            *'remove'* - Removes the  given label from the specified locations
+            leaving the remainder intact.
+
+            *'purge'* - Removes the specified label from the object
+
+        """
+        if mode == 'purge':
+            if label.split('.')[0] in ['pore', 'throat']:
+                if label in self.labels():
+                    del self[label]
+                else:
+                    logger.warning(label + ' is not a label, skpping')
+            else:
+                self.set_label(label='pore.'+label, mode='purge')
+                self.set_label(label='throat.'+label, mode='purge')
+        else:
+            if label.split('.')[0] in ['pore', 'throat']:
+                label = label.split('.', 1)[1]
+            if pores is not None:
+                pores = self._parse_indices(pores)
+                if (mode == 'overwrite') or ('pore.'+label not in self.labels()):
+                    self['pore.' + label] = False
+                if mode in ['remove']:
+                    self['pore.' + label][pores] = False
+                else:
+                    self['pore.' + label][pores] = True
+            if throats is not None:
+                throats = self._parse_indices(throats)
+                if (mode == 'overwrite') or ('throat.'+label not in self.labels()):
+                    self['throat.' + label] = False
+                if mode in ['remove']:
+                    self['throat.' + label][throats] = False
+                else:
+                    self['throat.' + label][throats] = True
+            if pores is None and throats is None:
+                del self
+
     def _get_indices(self, element, labels='all', mode='or'):
         r"""
         This is the actual method for getting indices, but should not be called
