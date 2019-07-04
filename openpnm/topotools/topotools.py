@@ -2282,11 +2282,11 @@ def plot_networkx(network, plot_throats=True, labels=None, colors=None,
     scale : float
         Scale factor for size of pores.
     '''
-    import networkx as nx
+    from networkx import Graph, draw_networkx_nodes, draw_networkx_edges
     x, y, z = network['pore.coords'].T
     x, y = [j for j in [x, y, z] if not sp.allclose(j, j.mean())]
 
-    G = nx.Graph()
+    G = Graph()
     pos = {network.Ps[i]: [x[i], y[i]] for i in range(network.Np)}
     if 'pore.diameter' in network.keys():
         node_size = scale * network['pore.diameter']
@@ -2304,12 +2304,12 @@ def plot_networkx(network, plot_throats=True, labels=None, colors=None,
         for label, color in zip(labels, colors):
             node_color[network.pores(label)] = color
 
-    nx.draw_networkx_nodes(G, pos=pos, nodelist=network.Ps.tolist(),
-                           node_color=node_color, edge_color='r',
-                           node_size=node_size)
+    draw_networkx_nodes(G, pos=pos, nodelist=network.Ps.tolist(),
+                        node_color=node_color, edge_color='r',
+                        node_size=node_size)
     if plot_throats:
-        nx.draw_networkx_edges(G, pos=pos, edge_color='k', alpha=0.8,
-                               edgelist=network['throat.conns'].tolist())
+        draw_networkx_edges(G, pos=pos, edge_color='k', alpha=0.8,
+                            edgelist=network['throat.conns'].tolist())
     return G
 
 
