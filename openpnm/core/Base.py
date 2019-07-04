@@ -779,7 +779,7 @@ class Base(dict):
         ind = ind.astype(dtype=int)
         return ind
 
-    def pores(self, labels='all', mode='or', asmask=False):
+    def pores(self, labels='all', mode='or', asmask=False, target=None):
         r"""
         Returns pore indicies where given labels exist, according to the logic
         specified by the ``mode`` argument.
@@ -815,6 +815,11 @@ class Base(dict):
             If ``True`` then a boolean array of length Np is returned with
             ``True`` values indicating the pores that satisfy the query.
 
+        target : OpenPNM Base object
+            If given, the returned indices will be indexed relative to the
+            ``target`` object.  This can be used to determine how indices on
+            one object map onto another object.
+
         Returns
         -------
         A Numpy array containing pore indices filtered by the logic specified
@@ -823,6 +828,7 @@ class Base(dict):
         See Also
         --------
         throats
+        map_pores
 
         Notes
         -----
@@ -845,8 +851,13 @@ class Base(dict):
         array([ 4,  9, 14, 19, 24])
         """
         ind = self._get_indices(element='pore', labels=labels, mode=mode)
+        if target is not None:
+            ind = target.map_pores(pores=ind, origin=self, filtered=True)
         if asmask:
-            ind = self.tomask(pores=ind)
+            if target is not None:
+                ind = target.tomask(pores=ind)
+            else:
+                ind = self.tomask(pores=ind)
         return ind
 
     @property
@@ -856,7 +867,7 @@ class Base(dict):
         """
         return sp.arange(0, self.Np)
 
-    def throats(self, labels='all', mode='or', asmask=False):
+    def throats(self, labels='all', mode='or', asmask=False, target=None):
         r"""
         Returns throat locations where given labels exist, according to the
         logic specified by the ``mode`` argument.
@@ -893,6 +904,11 @@ class Base(dict):
             If ``True`` then a boolean array of length Nt is returned with
             ``True`` values indicating the throats that satisfy the query.
 
+        target : OpenPNM Base object
+            If given, the returned indices will be indexed relative to the
+            ``target`` object.  This can be used to determine how indices on
+            one object map onto another object.
+
         Returns
         -------
         A Numpy array containing throat indices filtered by the logic specified
@@ -901,6 +917,7 @@ class Base(dict):
         See Also
         --------
         pores
+        map_throats
 
         Examples
         --------
@@ -912,8 +929,13 @@ class Base(dict):
 
         """
         ind = self._get_indices(element='throat', labels=labels, mode=mode)
+        if target is not None:
+            ind = target.map_throats(throats=ind, origin=self, filtered=True)
         if asmask:
-            ind = self.tomask(throats=ind)
+            if target is not None:
+                ind = target.tomask(throats=ind)
+            else:
+                ind = self.tomask(throats=ind)
         return ind
 
     @property
@@ -963,6 +985,11 @@ class Base(dict):
         on the ``origin`` object.  Can be an array or a tuple containing an
         array and a mask, depending on the value of ``filtered``.
 
+        See Also
+        --------
+        pores
+        map_throats
+
         """
         ids = origin['pore._id'][pores]
         return self._map(element='pore', ids=ids, filtered=filtered)
@@ -989,8 +1016,13 @@ class Base(dict):
         Returns
         -------
         Throat indices on the calling object corresponding to the same throats
-        on the target object.  Can be an array or a tuple containing an array
-        and a mask, depending on the value of ``filtered``.
+        on the ``origin`` object.  Can be an array or a tuple containing an
+        array and a mask, depending on the value of ``filtered``.
+
+        See Also
+        --------
+        throats
+        map_pores
 
         """
         ids = origin['throat._id'][throats]
