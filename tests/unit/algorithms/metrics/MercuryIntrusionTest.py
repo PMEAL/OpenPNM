@@ -13,8 +13,8 @@ class MercuryIntrusionTest:
 
     def test_run(self):
         mip = op.algorithms.metrics.MercuryIntrusion(network=self.net)
-        assert mip['pore.invasion_sequence'].max() > 20
-        assert mip['throat.invasion_sequence'].max() > 20
+        assert mip['pore.invasion_sequence'].max() > 2
+        assert mip['throat.invasion_sequence'].max() > 2
 
     def test_pcsnwp_data(self):
         mip = op.algorithms.metrics.MercuryIntrusion(network=self.net)
