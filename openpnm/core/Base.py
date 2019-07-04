@@ -203,7 +203,7 @@ class Base(dict):
                             hit + ' is already defined')
         # Prevent writing pore.foo on boss when present on subdomain
         if boss:
-            if boss is self and (key not in ['pore.all', 'throat.all']):
+            if boss is self:
                 if (key in keys) and (key not in self.keys()):
                     raise Exception('Cannot create ' + key + ' when it is' +
                                     ' already defined on a subdomain')

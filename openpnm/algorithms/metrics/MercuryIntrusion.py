@@ -2,7 +2,6 @@ import numpy as np
 from openpnm.utils import logging
 from openpnm.phases import Mercury
 from openpnm.physics import GenericPhysics
-from openpnm.geometry import GenericGeometry
 from openpnm.algorithms import Porosimetry, GenericAlgorithm
 from openpnm import models
 from openpnm import topotools
@@ -30,10 +29,8 @@ class MercuryIntrusion(GenericAlgorithm):
                  **kwargs):
         if project is None:
             project = network.project
-        super().__init__(network=network, project=project, **kwargs)
-        # Add pseudo-pore to network
-        self.add_psuedo_pores()
         hg = Mercury(network=network)
+        super().__init__(network=network, project=project, **kwargs)
         op = Porosimetry(project=project, phase=hg)
         self.settings['mip'] = op.name
         mod = models.physics.capillary_pressure.washburn
@@ -42,39 +39,11 @@ class MercuryIntrusion(GenericAlgorithm):
             phys.add_model(propname='throat.entry_pressure', model=mod)
         if not project.geometries():
             hg.add_model(propname='throat.entry_pressure', model=mod)
-
         topotools.find_surface_pores(network=network)
-        op.set_inlets(pores=network.pores('psuedo'))
+        op.set_inlets(pores=network.pores('surface'))
         logger.info('Running MIP simulation')
         op.run()
         self.update(op)
-        # Now remove psuedo pore from network
-        self.trim_psuedo_pores()
-
-    def add_psuedo_pores(self):
-        network = self.project.network
-        topotools.extend(network=network, pore_coords=[0, 0, 0],
-                         labels='psuedo')
-        topotools.connect_pores(network=network,
-                                pores1=network.pores('psuedo'),
-                                pores2=network.pores('surface'),
-                                labels='psuedo')
-        geo_psuedo = GenericGeometry(network=network, project=network.project,
-                                     pores=network.pores('psuedo'),
-                                     throats=network.throats('psuedo'))
-        geo_psuedo['pore.volume'] = 0.0
-        geo_psuedo['throat.volume'] = 0.0
-        geo_psuedo['pore.diameter'] = 0.0
-        mod = models.geometry.throat_size.from_neighbor_pores
-        geo_psuedo.add_model(propname='throat.diameter',
-                             model=mod,
-                             mode='mean')
-
-    def trim_psuedo_pores(self):
-        network = self.project.network
-        topotools.trim(network=network, pores=network.pores('psuedo'))
-        for item in network.project.find_empty_objects():
-            network.project.purge_object(item)
 
     def _set_snwp_data(self, data):
         self._snwp_data = np.array(data)
@@ -83,7 +52,7 @@ class MercuryIntrusion(GenericAlgorithm):
         if hasattr(self, '_snwp_data'):
             return self._snwp_data
         else:
-            logger.info('Pc data has not been provided')
+            logger.error('Pc data has not been provided')
 
     snwp_data = property(fget=_get_snwp_data, fset=_set_snwp_data)
 
@@ -94,7 +63,7 @@ class MercuryIntrusion(GenericAlgorithm):
         if hasattr(self, '_pc_data'):
             return self._pc_data
         else:
-            logger.info('Pc data has not been provided')
+            logger.error('Pc data has not been provided')
 
     pc_data = property(fget=_get_pc_data, fset=_set_pc_data)
 
