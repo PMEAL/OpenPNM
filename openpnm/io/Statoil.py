@@ -1,6 +1,6 @@
 import os as os
 import scipy as sp
-import pandas as pd
+from pandas import read_table, DataFrame
 from openpnm.topotools import trim
 from openpnm.utils import logging
 from openpnm.io import GenericIO
@@ -54,7 +54,7 @@ class Statoil(GenericIO):
         path = Path(path)
         filename = Path(path.resolve(), prefix+'_link1.dat')
         with open(filename, mode='r') as f:
-            link1 = pd.read_table(filepath_or_buffer=f,
+            link1 = read_table(filepath_or_buffer=f,
                                   header=None,
                                   skiprows=1,
                                   sep=' ',
@@ -72,7 +72,7 @@ class Statoil(GenericIO):
         # ---------------------------------------------------------------------
         filename = Path(path.resolve(), prefix+'_link2.dat')
         with open(filename, mode='r') as f:
-            link2 = pd.read_table(filepath_or_buffer=f,
+            link2 = read_table(filepath_or_buffer=f,
                                   header=None,
                                   sep=' ',
                                   skipinitialspace=True,
@@ -102,7 +102,7 @@ class Statoil(GenericIO):
                 row = f.readline()\
                        .replace('\t', ' ').replace('\n', ' ').split()
                 array[i, :] = row[0:6]
-        node1 = pd.DataFrame(array[:, [1, 2, 3, 4]])
+        node1 = DataFrame(array[:, [1, 2, 3, 4]])
         node1.columns = ['pore.x_coord', 'pore.y_coord', 'pore.z_coord',
                          'pore.coordination_number']
         # Add node1 props to net
@@ -113,7 +113,7 @@ class Statoil(GenericIO):
         # Parse the node1 file
         filename = Path(path.resolve(), prefix+'_node2.dat')
         with open(filename, mode='r') as f:
-            node2 = pd.read_table(filepath_or_buffer=f,
+            node2 = read_table(filepath_or_buffer=f,
                                   header=None,
                                   sep=' ',
                                   skipinitialspace=True,
