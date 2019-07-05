@@ -666,6 +666,66 @@ class Base(dict):
                                       mode=mode)
         return labels
 
+    def set_label(self, label, pores=None, throats=None, mode='add'):
+        r"""
+        Creates or updates a label array
+
+        Parameters
+        ----------
+        label : string
+                The label to apply to the specified locations
+        pores : array_like
+            A list of pore indices or a boolean mask of where given label
+            should be added or removed (see ``mode``)
+        throats : array_like
+            A list of throat indices or a boolean mask of where given label
+            should be added or removed (see ``mode``)
+        mode : string
+            Controls how the labels are handled.  Options are:
+
+            *'add'* - Adds the given label to the specified locations while
+            keeping existing labels (default)
+
+            *'overwrite'* - Removes existing label from all locations before
+            adding the label in the specified locations
+
+            *'remove'* - Removes the  given label from the specified locations
+            leaving the remainder intact.
+
+            *'purge'* - Removes the specified label from the object
+
+        """
+        if mode == 'purge':
+            if label.split('.')[0] in ['pore', 'throat']:
+                if label in self.labels():
+                    del self[label]
+                else:
+                    logger.warning(label + ' is not a label, skpping')
+            else:
+                self.set_label(label='pore.'+label, mode='purge')
+                self.set_label(label='throat.'+label, mode='purge')
+        else:
+            if label.split('.')[0] in ['pore', 'throat']:
+                label = label.split('.', 1)[1]
+            if pores is not None:
+                pores = self._parse_indices(pores)
+                if (mode == 'overwrite') or ('pore.'+label not in self.labels()):
+                    self['pore.' + label] = False
+                if mode in ['remove']:
+                    self['pore.' + label][pores] = False
+                else:
+                    self['pore.' + label][pores] = True
+            if throats is not None:
+                throats = self._parse_indices(throats)
+                if (mode == 'overwrite') or ('throat.'+label not in self.labels()):
+                    self['throat.' + label] = False
+                if mode in ['remove']:
+                    self['throat.' + label][throats] = False
+                else:
+                    self['throat.' + label][throats] = True
+            if pores is None and throats is None:
+                del self
+
     def _get_indices(self, element, labels='all', mode='or'):
         r"""
         This is the actual method for getting indices, but should not be called
@@ -719,7 +779,7 @@ class Base(dict):
         ind = ind.astype(dtype=int)
         return ind
 
-    def pores(self, labels='all', mode='or', asmask=False):
+    def pores(self, labels='all', mode='or', asmask=False, target=None):
         r"""
         Returns pore indicies where given labels exist, according to the logic
         specified by the ``mode`` argument.
@@ -755,6 +815,11 @@ class Base(dict):
             If ``True`` then a boolean array of length Np is returned with
             ``True`` values indicating the pores that satisfy the query.
 
+        target : OpenPNM Base object
+            If given, the returned indices will be indexed relative to the
+            ``target`` object.  This can be used to determine how indices on
+            one object map onto another object.
+
         Returns
         -------
         A Numpy array containing pore indices filtered by the logic specified
@@ -763,6 +828,7 @@ class Base(dict):
         See Also
         --------
         throats
+        map_pores
 
         Notes
         -----
@@ -785,8 +851,13 @@ class Base(dict):
         array([ 4,  9, 14, 19, 24])
         """
         ind = self._get_indices(element='pore', labels=labels, mode=mode)
+        if target is not None:
+            ind = target.map_pores(pores=ind, origin=self, filtered=True)
         if asmask:
-            ind = self.tomask(pores=ind)
+            if target is not None:
+                ind = target.tomask(pores=ind)
+            else:
+                ind = self.tomask(pores=ind)
         return ind
 
     @property
@@ -796,7 +867,7 @@ class Base(dict):
         """
         return sp.arange(0, self.Np)
 
-    def throats(self, labels='all', mode='or', asmask=False):
+    def throats(self, labels='all', mode='or', asmask=False, target=None):
         r"""
         Returns throat locations where given labels exist, according to the
         logic specified by the ``mode`` argument.
@@ -833,6 +904,11 @@ class Base(dict):
             If ``True`` then a boolean array of length Nt is returned with
             ``True`` values indicating the throats that satisfy the query.
 
+        target : OpenPNM Base object
+            If given, the returned indices will be indexed relative to the
+            ``target`` object.  This can be used to determine how indices on
+            one object map onto another object.
+
         Returns
         -------
         A Numpy array containing throat indices filtered by the logic specified
@@ -841,6 +917,7 @@ class Base(dict):
         See Also
         --------
         pores
+        map_throats
 
         Examples
         --------
@@ -852,8 +929,13 @@ class Base(dict):
 
         """
         ind = self._get_indices(element='throat', labels=labels, mode=mode)
+        if target is not None:
+            ind = target.map_throats(throats=ind, origin=self, filtered=True)
         if asmask:
-            ind = self.tomask(throats=ind)
+            if target is not None:
+                ind = target.tomask(throats=ind)
+            else:
+                ind = self.tomask(throats=ind)
         return ind
 
     @property
@@ -903,6 +985,11 @@ class Base(dict):
         on the ``origin`` object.  Can be an array or a tuple containing an
         array and a mask, depending on the value of ``filtered``.
 
+        See Also
+        --------
+        pores
+        map_throats
+
         """
         ids = origin['pore._id'][pores]
         return self._map(element='pore', ids=ids, filtered=filtered)
@@ -929,8 +1016,13 @@ class Base(dict):
         Returns
         -------
         Throat indices on the calling object corresponding to the same throats
-        on the target object.  Can be an array or a tuple containing an array
-        and a mask, depending on the value of ``filtered``.
+        on the ``origin`` object.  Can be an array or a tuple containing an
+        array and a mask, depending on the value of ``filtered``.
+
+        See Also
+        --------
+        throats
+        map_pores
 
         """
         ids = origin['throat._id'][throats]
