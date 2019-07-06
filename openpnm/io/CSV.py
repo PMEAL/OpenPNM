@@ -1,10 +1,9 @@
 import re
 import scipy as sp
-import pandas as pd
-from openpnm.network import GenericNetwork
+from pandas import read_table
 from openpnm.io import GenericIO, Dict
 from openpnm.io.Pandas import Pandas
-from openpnm.utils import NestedDict, logging, Workspace
+from openpnm.utils import logging, Workspace
 logger = logging.getLogger(__name__)
 ws = Workspace()
 
@@ -99,12 +98,12 @@ class CSV(GenericIO):
             project = ws.new_project()
 
         fname = cls._parse_filename(filename, ext='csv')
-        a = pd.read_table(filepath_or_buffer=fname,
-                          sep=',',
-                          skipinitialspace=True,
-                          index_col=False,
-                          true_values=['T', 't', 'True', 'true', 'TRUE'],
-                          false_values=['F', 'f', 'False', 'false', 'FALSE'])
+        a = read_table(filepath_or_buffer=fname,
+                       sep=',',
+                       skipinitialspace=True,
+                       index_col=False,
+                       true_values=['T', 't', 'True', 'true', 'TRUE'],
+                       false_values=['F', 'f', 'False', 'false', 'FALSE'])
 
         dct = {}
         # First parse through all the items and re-merge columns
