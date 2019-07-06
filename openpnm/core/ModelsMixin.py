@@ -112,6 +112,37 @@ class ModelsDict(PrintableDict):
         return '\n'.join(lines)
 
 
+class ModelWrapper(dict):
+    r"""
+    This class is used to hold individual models and provide some extra
+    functionality, such as pretty-printing.
+    """
+    @property
+    def propname(self):
+        for proj in ws.values():
+            for obj in proj:
+                if hasattr(obj, 'models'):
+                    for key, mod in obj.models.items():
+                        if mod is self:
+                            return key
+
+    def __str__(self):
+        horizontal_rule = '―' * 78
+        lines = [horizontal_rule]
+        strg = '{0:<25s} {2:<25s} {2}'
+        lines.append(strg.format('Property Name', 'Parameter', 'Value'))
+        lines.append(horizontal_rule)
+        temp = self.copy()
+        regen_mode = temp.pop('regen_mode', None)
+        model = str(temp.pop('model')).split(' ')[1]
+        lines.append(strg.format(self.propname, 'model:', model))
+        for param in temp.keys():
+            lines.append(strg.format('', param+':', temp[param]))
+        lines.append(strg.format('', 'regeneration mode:', regen_mode))
+        lines.append(horizontal_rule)
+        return '\n'.join(lines)
+
+
 class ModelsMixin():
     r"""
     This class is meant to be combined by the Base class in multiple
@@ -214,7 +245,7 @@ class ModelsMixin():
             for k, v in zip(keys, vals):  # Put defaults into kwargs
                 if k not in kwargs:  # Skip if argument was given in kwargs
                     kwargs.update({k: v})
-        self.models[propname] = kwargs  # Store all keyword argumnents in model
+        self.models[propname] = ModelWrapper(kwargs)  # Store all kwargs
         # Regenerate model values if necessary
         if regen_mode not in ['deferred']:
             self._regen(propname)
