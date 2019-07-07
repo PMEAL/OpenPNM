@@ -80,6 +80,7 @@ diameters):
 """
 
 from . import misc
+from . import topology
 from . import geometry
 from . import phases
 from . import physics
