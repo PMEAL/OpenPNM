@@ -1282,8 +1282,16 @@ def find_surface_pores(network, markers=None, label='surface'):
             z = r*sp.cos(phi)
             markers = sp.vstack((x, y, z)).T
     else:
-        pass
-        # markers = sp.atleast_2d(markers)
+        if sum(dims) == 1:
+            pass
+        if sum(dims) == 2:
+            markers = sp.atleast_2d(markers)
+            if markers.shape[1] != 2:
+                raise Exception('Network appears planar, so markers must be 2D')
+        if sum(dims) == 3:
+            markers = sp.atleast_2d(markers)
+            if markers.shape[1] != 3:
+                raise Exception('Markers must be 3D for this network')
     pts = sp.vstack((coords, markers))
     tri = sptl.Delaunay(pts, incremental=False)
     (indices, indptr) = tri.vertex_neighbor_vertices
