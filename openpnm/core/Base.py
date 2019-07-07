@@ -1594,8 +1594,12 @@ class Base(dict):
         for i in range(len(props)):
             plt.subplot(r, c, i+1)
             try:
-                plt.hist(self[props[i]], bins=bins, edgecolor='k',
-                         facecolor=color[sp.mod(i, 10)], **kwargs)
+                # Update kwargs with some default values
+                if 'edgecolor' not in kwargs.keys():
+                    kwargs.update({'edgecolor': 'k'})
+                if 'facecolor' not in kwargs:
+                    kwargs.update({'facecolor': color[sp.mod(i, 10)]})
+                plt.hist(self[props[i]], bins=bins, **kwargs)
             except KeyError:
                 pass
             plt.xlabel(props[i])
