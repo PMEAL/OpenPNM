@@ -247,7 +247,7 @@ class ModelsMixin():
                     kwargs.update({k: v})
         self.models[propname] = ModelWrapper(kwargs)  # Store all kwargs
         # Regenerate model values if necessary
-        if regen_mode not in ['deferred']:
+        if regen_mode not in ['deferred', 'explicit']:
             self._regen(propname)
 
     def regenerate_models(self, propnames=None, exclude=[], deep=False):
@@ -282,8 +282,9 @@ class ModelsMixin():
         if propnames is None:  # If no props given, then regenerate them all
             propnames = self.models.dependency_list()
             # If some props are to be excluded, remove them from list
-            if len(exclude) > 0:
-                propnames = [i for i in propnames if i not in exclude]
+            exclude.extend([k for k, v in self.models.items()
+                            if v['regen_mode'] == 'explicit'])
+            propnames = [i for i in propnames if i not in exclude]
         # Re-order given propnames according to dependency tree
         self_models = self.models.dependency_list()
         propnames = [i for i in self_models if i in propnames]

@@ -131,7 +131,7 @@ class GenericNetwork(Base, ModelsMixin):
         self._am = {}
         self.add_model(propname='pore.coordination_number',
                        model=tm.coordination_number,
-                       regen_mode='deferred')
+                       regen_mode='explicit')
 
     def __setitem__(self, key, value):
         if key == 'throat.conns':
