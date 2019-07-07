@@ -6,6 +6,7 @@ import scipy.sparse.csgraph as csg
 from openpnm.core import Base, ModelsMixin
 from openpnm import topotools
 from openpnm.utils import HealthDict, Workspace, logging
+import openpnm.models.topology as tm
 logger = logging.getLogger(__name__)
 ws = Workspace()
 
@@ -128,6 +129,9 @@ class GenericNetwork(Base, ModelsMixin):
         # Initialize adjacency and incidence matrix dictionaries
         self._im = {}
         self._am = {}
+        self.add_model(propname='pore.coordination_number',
+                       model=tm.coordination_number,
+                       regen_mode='deferred')
 
     def __setitem__(self, key, value):
         if key == 'throat.conns':
