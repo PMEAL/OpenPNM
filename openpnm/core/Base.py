@@ -265,7 +265,7 @@ class Base(dict):
             keys = self.keys(mode='all', deep=True)
             vals.update({k: self.interleave_data(k) for k in keys
                          if k.startswith(key + '.')})
-        elif key in self.models:
+        elif hasattr(self, 'models') and key in self.models:
             self.regenerate_models(key)
             vals = self.get(key)
         else:
