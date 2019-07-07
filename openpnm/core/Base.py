@@ -1588,11 +1588,13 @@ class Base(dict):
         else:
             r = int(sp.ceil(N**0.5))
             c = int(sp.floor(N**0.5))
-
         for i in range(len(props)):
             plt.subplot(r, c, i+1)
-            plt.hist(self[props[i]], bins=bins, edgecolor='k',
-                     facecolor=color[sp.mod(i, 10)], **kwargs)
+            try:
+                plt.hist(self[props[i]], bins=bins, edgecolor='k',
+                         facecolor=color[sp.mod(i, 10)], **kwargs)
+            except KeyError:
+                pass
             plt.xlabel(props[i])
         plt.rcParams['font.size'] = temp
 
