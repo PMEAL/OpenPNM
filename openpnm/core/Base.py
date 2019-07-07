@@ -1544,27 +1544,41 @@ class Base(dict):
         temp = sp.size(super(Base, self).__getitem__(element+'.all'))
         return temp
 
-    def show_hist(self, props=[], bins=20, **kwargs):
+    def show_hist(self,
+                  props=['pore.diameter', 'throat.diameter', 'throat.length'],
+                  bins=20, fontsize=22, **kwargs):
         r"""
         Show a quick plot of key property distributions.
 
         Parameters
         ----------
         props : string or list of strings
-            The pore and/or throat properties to be plotted as histograms
+            The pore and/or throat properties to be plotted as histograms.  By
+            default this function will show 'pore.diameter', 'throat.diameter',
+            and 'throat.length'.
 
         bins : int or array_like
             The number of bins to use when generating the histogram.  If an
             array is given they are used as the bin spacing instead.
+
+        fontsize : int
+            Sets the font size temporarily.  The default size of matplotlib is
+            10, which is too small for many screenn.  This function has a
+            default of 22, which does not overwrite the matplotlib setting.
+            Note that you can override matplotlib setting globally with
+            ``matplotlib.rcParams['font.size'] = 22``.
 
         Notes
         -----
         Other keyword arguments are passed to the ``matplotlib.pyplot.hist``
         function.
         """
+        temp = plt.rcParams['font.size']
+        plt.rcParams['font.size'] = fontsize
         if type(props) is str:
             props = [props]
         N = len(props)
+        color = plt.cm.tab10(range(10))
         if N == 1:
             r = 1
             c = 1
@@ -1577,7 +1591,10 @@ class Base(dict):
 
         for i in range(len(props)):
             plt.subplot(r, c, i+1)
-            plt.hist(self[props[i]], bins=bins, **kwargs)
+            plt.hist(self[props[i]], bins=bins, edgecolor='k',
+                     facecolor=color[sp.mod(i, 10)], **kwargs)
+            plt.xlabel(props[i])
+        plt.rcParams['font.size'] = temp
 
     def check_data_health(self, props=[], element=None):
         r"""
