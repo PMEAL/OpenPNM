@@ -3,7 +3,8 @@ import h5py
 import numpy as np
 import openpnm
 from copy import deepcopy
-from openpnm.utils import SettingsDict, HealthDict, Workspace
+from openpnm.utils import SettingsDict, HealthDict, Workspace, logging
+logger = logging.getLogger(__name__)
 ws = Workspace()
 
 
@@ -764,6 +765,9 @@ class Project(list):
             health['undefined_pores'] = np.where(Ptemp == 0)[0].tolist()
             health['overlapping_throats'] = np.where(Ttemp > 1)[0].tolist()
             health['undefined_throats'] = np.where(Ttemp == 0)[0].tolist()
+        else:
+            health['undefined_pores'] = self.network.Ps
+            health['undefined_throats'] = self.network.Ts
         return health
 
     def check_physics_health(self, phase):
