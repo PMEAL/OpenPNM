@@ -85,13 +85,13 @@ class ModelsDict(PrintableDict):
         """
         dtree = self.dependency_graph()
         fig = draw_spectral(dtree,
-                               with_labels=True,
-                               arrowsize=50,
-                               node_size=2000,
-                               edge_color='lightgrey',
-                               width=3.0,
-                               font_size=32,
-                               font_weight='bold')
+                            with_labels=True,
+                            arrowsize=50,
+                            node_size=2000,
+                            edge_color='lightgrey',
+                            width=3.0,
+                            font_size=32,
+                            font_weight='bold')
         return fig
 
     def __str__(self):

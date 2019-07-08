@@ -19,7 +19,7 @@ class ModelsTest:
 
     def test_models_dict_print(self):
         s = self.geo.models.__str__().split('\n')
-        assert len(s) == 67
+        assert len(s) == 68
         assert s.count('―'*78) == 15
 
     def test_regenerate_models(self):
@@ -128,14 +128,19 @@ class ModelsTest:
         geo = op.geometry.StickAndBall(network=pn, pores=pn.Ps, throats=pn.Ts)
         phase = op.phases.Water(network=pn)
         phys = op.physics.Standard(network=pn, phase=phase, geometry=geo)
+        len_phase = 23
         phase.clear(mode='model_data')
         phys.clear()
+        assert len(phys) == 2
         assert len(phase) == 13
         phys.regenerate_models(propnames=None, deep=False)
-        assert len(phase) == 13
         assert len(phys) == 10
-        phys.regenerate_models(propnames=None, deep=True)
+        # Note that 2 new models were added to the phase during interpolation
+        assert len(phase) < len_phase
+        phase.clear(mode='model_data')
         assert len(phase) == 13
+        phys.regenerate_models(propnames=None, deep=True)
+        assert len(phase) < len_phase
 
     def test_regenerate_models_on_network_with_deep(self):
         pn = op.network.Cubic(shape=[5, 5, 5])
