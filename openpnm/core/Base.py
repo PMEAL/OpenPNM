@@ -249,7 +249,7 @@ class Base(dict):
         element, prop = key.split('.', 1)
         if key in self.keys():
             # Get values if present on self
-            vals = self.get(key)
+            vals = super().__getitem__(key)
         elif key in self.keys(mode='all', deep=True):
             # Interleave values from geom if found there
             vals = self.interleave_data(key)
@@ -265,9 +265,12 @@ class Base(dict):
             keys = self.keys(mode='all', deep=True)
             vals.update({k: self.interleave_data(k) for k in keys
                          if k.startswith(key + '.')})
-        elif hasattr(self, 'models') and key in self.models:
-            self.regenerate_models(key)
-            vals = self.get(key)
+        # The following code, if activated, attempts to run models when
+        # missing data is requested from the dictionary.  The works fine,
+        # but breaks the general way openpnm behaviors.
+        # elif hasattr(self, 'models') and key in self.models:
+        #     self.regenerate_models(key)
+        #     vals = super().__getitem__(key)
         else:
             raise KeyError(key)
         return vals
