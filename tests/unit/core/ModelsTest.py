@@ -18,7 +18,10 @@ class ModelsTest:
         ws.clear()
 
     def test_models_dict_print(self):
-        s = self.geo.models.__str__().split('\n')
+        net = op.network.Cubic(shape=[3, 3, 3])
+        geo = op.geometry.StickAndBall(network=net, pores=net.Ps,
+                                       throats=net.Ts)
+        s = geo.models.__str__().split('\n')
         assert len(s) == 68
         assert s.count('―'*78) == 15
 
