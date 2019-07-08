@@ -1,9 +1,7 @@
 import openpnm as op
 import scipy as sp
-import pytest
-import py
-import os
-import networkx as nx
+from networkx import complete_graph, random_layout
+from networkx import set_node_attributes, set_edge_attributes
 
 
 class NetworkXTest:
@@ -30,14 +28,14 @@ class NetworkXTest:
         ws.clear()
 
     def test_from_networkx(self):
-        G = nx.complete_graph(10)
-        pos = nx.random_layout(G, dim=3)
+        G = complete_graph(10)
+        pos = random_layout(G, dim=3)
         val = {n: list(pos[n]) for n in pos}
-        nx.set_node_attributes(G, name='coords', values=val)
-        nx.set_node_attributes(G, name='area', values=1.123)
-        nx.set_node_attributes(G, name='diameter', values=1.123)
-        nx.set_edge_attributes(G, name='length', values=1.123)
-        nx.set_edge_attributes(G, name='perimeter', values=1.123)
+        set_node_attributes(G, name='coords', values=val)
+        set_node_attributes(G, name='area', values=1.123)
+        set_node_attributes(G, name='diameter', values=1.123)
+        set_edge_attributes(G, name='length', values=1.123)
+        set_edge_attributes(G, name='perimeter', values=1.123)
         project = op.io.NetworkX.from_networkx(G=G)
         assert len(project) == 1
         num_nodes = len(G.nodes())
