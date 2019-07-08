@@ -64,9 +64,9 @@ sw.update(sf.results())
 p = op.algorithms.TransientReactiveTransport(network=net, phase=sw)
 p.settings['conductance'] = 'throat.ionic_conductance'
 p.settings['quantity'] = 'pore.potential'
-p.set_value_BC(pores=net.pores('left'), values=0.00)  # 0.01
+p.set_value_BC(pores=net.pores('left'), values=0.01)  # 0.01
 p.set_value_BC(pores=net.pores('right'), values=0.00)
-p.settings['rxn_tolerance'] = 1e-12
+p.settings['t_step'] = 100
 
 eA = op.algorithms.TransientNernstPlanck(network=net, phase=sw, ion=Na.name)
 eA.set_value_BC(pores=net.pores('back'), values=100)
@@ -105,10 +105,10 @@ pnp.settings['t_final'] = 2000
 # pnp.settings['charge_conservation'] = 'electroneutrality'
 pnp.run()
 
-# sw.update(sf.results())
-# sw.update(p.results())
-# sw.update(eA.results())
-# sw.update(eB.results())
+sw.update(sf.results())
+sw.update(p.results())
+sw.update(eA.results())
+sw.update(eB.results())
 
 # output results to a vtk file
 # proj.export_data(phases=[sw], filename='OUT', filetype='xdmf')
