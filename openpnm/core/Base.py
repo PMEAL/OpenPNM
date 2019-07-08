@@ -1608,19 +1608,9 @@ class Base(dict):
             plt.xlabel(props[i])
         plt.rcParams['font.size'] = temp
 
-    def check_data_health(self, props=[], element=None):
+    def check_data_health(self):
         r"""
         Check the health of pore and throat data arrays.
-
-        Parameters
-        ----------
-        element : string, optional
-            Can be either 'pore' or 'throat', which will limit the checks to
-            only those data arrays.
-
-        props : list of pore (or throat) properties, optional
-            If given, will limit the health checks to only the specfied
-            properties.  Also useful for checking existance.
 
         Returns
         -------
@@ -1636,20 +1626,7 @@ class Base(dict):
         >>> h.health
         True
         """
-        health = HealthDict()
-        if props == []:
-            props = self.props(element)
-        else:
-            if type(props) == str:
-                props = [props]
-        for item in props:
-            health[item] = []
-            if self[item].dtype == 'O':
-                health[item] = 'No checks on object'
-            elif sp.sum(sp.isnan(self[item])) > 0:
-                health[item] = 'Has NaNs'
-            elif sp.shape(self[item])[0] != self._count(item.split('.')[0]):
-                health[item] = 'Wrong Length'
+        health = self.project.check_data_health(obj=self)
         return health
 
     def _parse_indices(self, indices):
