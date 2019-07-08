@@ -93,7 +93,8 @@ class TransientChargeConservationNernstPlanck(ChargeConservationNernstPlanck,
 
         # Save A matrix of the steady sys of eqs (WITHOUT BCs applied)
         for alg in algs:
-            alg._A_steady = (alg.A).copy()
+            alg._build_A(force=True)
+            alg._A_steady = (alg._A).copy()
         # Initialize A and b with BCs applied
         for e in e_alg:
             e._t_update_A()
@@ -243,6 +244,16 @@ class TransientChargeConservationNernstPlanck(ChargeConservationNernstPlanck,
                         for alg in algs:
                             alg[alg.settings['quantity']+'@'+t_str] = (
                                 t_new[alg.name])
+
+                    # Update A matrix of the steady sys of eqs (WITHOUT BCs)
+                    for alg in algs:
+                        # Update conductance first
+                        physics = alg.project.find_physics(phase=phase)
+                        for ph in physics:
+                            ph.regenerate_models()
+                        # Update A matrix
+                        alg._build_A(force=True)
+                        alg._A_steady = (alg._A).copy()
 
                     # Update A and b and apply BCs
                     for alg in algs:
