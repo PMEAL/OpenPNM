@@ -30,6 +30,22 @@ class ImportedTest:
         assert 'throat.endpoints' in geo.models.keys()
         assert 'throat.conduit_lengths' in geo.models.keys()
 
+    def test_with_added_pores(self):
+        net = op.network.Cubic(shape=[3, 3, 3])
+        net['pore.diameter'] = 2.0
+        net['throat.diameter'] = 1.0
+        geo = op.geometry.Imported(network=net)
+        op.topotools.extend(network=net,
+                            pore_coords=[[1, 1, 1]],
+                            throat_conns=[[0, 27]])
+        h = net.project.check_geometry_health()
+        assert h.health is False
+        geo2 = op.geometry.GenericGeometry(network=net, pores=27, throats=54)
+        h = net.project.check_geometry_health()
+        assert h.health is True
+        assert np.any(np.isnan(net['pore.diameter']))
+        assert np.any(np.isnan(net['throat.diameter']))
+
     def teardown_class(self):
         mgr = op.Workspace()
         mgr.clear()
