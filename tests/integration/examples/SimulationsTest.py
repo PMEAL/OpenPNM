@@ -65,6 +65,11 @@ class SimTest():
         rc = self._notebook_run(nbook)
         assert rc
 
+    def test_capillary_pressure_curve(self):
+        nbook = os.path.join(test_dir, 'Capillary Pressure Curves.ipynb')
+        rc = self._notebook_run(nbook)
+        assert rc
+
 
 if __name__ == '__main__':
     t = SimTest()

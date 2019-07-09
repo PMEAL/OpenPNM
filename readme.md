@@ -50,7 +50,7 @@ The drainage curve can be visualized with `MIP.plot_intrusion_curve()` giving so
 
 ![](https://i.imgur.com/1C2uXt9m.png)
 
-A collection of examples is available as a separate Github repository: [OpenPNM-Examples](https://www.github.com/PMEAL/OpenPNM-Examples)
+A collection of examples is available in the *examples* folder of this repository: [Examples](https://www.github.com/PMEAL/OpenPNM/tree/master/examples)
 
 ## Release Management and Versioning
 

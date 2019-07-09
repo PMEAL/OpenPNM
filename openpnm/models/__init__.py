@@ -26,10 +26,6 @@ is demonstrated below:
 ...              model=op.models.misc.random,
 ...              element='pore',
 ...              num_range=[0.1, 0.9])
->>> pn.add_model(propname='pore.diameter',
-...              model=op.models.geometry.pore_size.normal,
-...              seeds='pore.seed',
-...              loc=0.5, scale=0.1)
 
 Upon being added to the object the models are run.  The resulting data is
 placed into the object using the ``propname`` as a key.  Inspecting the
@@ -38,9 +34,8 @@ object reveals that these two data items are indeed present.
 >>> print(pn.props())
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 1     : pore.coords
-2     : pore.diameter
-3     : pore.seed
-4     : throat.conns
+2     : pore.seed
+3     : throat.conns
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 
 The actual models and their respective parameters are also stored on the
@@ -51,18 +46,20 @@ as the ``propnames``.  This can also be inspected:
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 #   Property Name             Parameter                 Value
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-1   pore.seed                 model:                    random
+1   pore.coordination_number  model:                    coordination_number
+                              regeneration mode:        explicit
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+2   pore.seed                 model:                    random
                               element:                  pore
                               num_range:                [0.1, 0.9]
                               seed:                     None
                               regeneration mode:        normal
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-2   pore.diameter             model:                    normal
-                              seeds:                    pore.seed
-                              loc:                      0.5
-                              scale:                    0.1
-                              regeneration mode:        normal
-――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+
+Note that the model 'pore.coordination_number' is added to all GenericNetworks
+upon instantiation, but not run.  This is why the model appears in the
+``models`` attribute but the data does not yet appear when the ``props`` method
+is called.
 
 Finally, any of the models parameters can be edited by reaching into the
 ``models`` dictionary as follows:
@@ -72,14 +69,14 @@ Finally, any of the models parameters can be edited by reaching into the
 The ``'pore.seed'`` values must be regenerated for this new parameter to take
 effect, and the ``'pore.diameter'`` model must also be regenerated to utilized
 the new seeds.  This is accomplished using ``regenerate_models`` which
-automatically ensures that models are called in the correct order (seeds before
-diameters):
+automatically ensures that models are called in the correct order.
 
 >>> pn.regenerate_models()
 
 """
 
 from . import misc
+from . import topology
 from . import geometry
 from . import phases
 from . import physics

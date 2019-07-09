@@ -212,6 +212,15 @@ class MiscTest:
             test[i] = net['pore.rand2'][pore] == T_max
         assert sp.all(test)
 
+    def test_invert(self):
+        net = op.network.Cubic(shape=[5, 5, 5])
+        net['pore.diameter'] = 2.0
+        net.add_model(propname='pore.entry_pressure',
+                      prop='pore.diameter',
+                      model=mods.basic_math.invert)
+        assert net['pore.entry_pressure'][0] == 0.5
+
+
 if __name__ == '__main__':
 
     t = MiscTest()
