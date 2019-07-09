@@ -1,5 +1,6 @@
 import inspect
-import networkx as nx
+from networkx import DiGraph, simple_cycles, draw_spectral
+from networkx.algorithms.dag import lexicographical_topological_sort
 from openpnm.utils import PrintableDict, logging, Workspace
 ws = Workspace()
 logger = logging.getLogger(__name__)
@@ -38,11 +39,11 @@ class ModelsDict(PrintableDict):
 
         '''
         dtree = self.dependency_graph()
-        cycles = list(nx.simple_cycles(dtree))
+        cycles = list(simple_cycles(dtree))
         if cycles:
             raise Exception('Cyclic dependency found: ' + ' -> '.join(
                             cycles[0] + [cycles[0][0]]))
-        d = nx.algorithms.dag.lexicographical_topological_sort(dtree, sorted)
+        d = lexicographical_topological_sort(dtree, sorted)
         return list(d)
 
     def dependency_graph(self):
@@ -64,7 +65,7 @@ class ModelsDict(PrintableDict):
                          font_weight='bold')
 
         """
-        dtree = nx.DiGraph()
+        dtree = DiGraph()
         for propname in self.keys():
             dtree.add_node(propname)
             for dependency in self[propname].values():
@@ -83,7 +84,7 @@ class ModelsDict(PrintableDict):
 
         """
         dtree = self.dependency_graph()
-        fig = nx.draw_spectral(dtree,
+        fig = draw_spectral(dtree,
                                with_labels=True,
                                arrowsize=50,
                                node_size=2000,

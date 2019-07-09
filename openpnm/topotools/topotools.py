@@ -1255,9 +1255,9 @@ def find_surface_pores(network, markers=None, label='surface'):
 
     """
     import scipy.spatial as sptl
+    dims = dimensionality(network)
+    coords = network['pore.coords'][:, dims]
     if markers is None:
-        dims = dimensionality(network)
-        coords = network['pore.coords'][:, dims]
         # normalize coords to a 1 unit cube centered on origin
         coords -= sp.amin(coords, axis=0)
         coords /= sp.amax(coords, axis=0)
@@ -1282,8 +1282,8 @@ def find_surface_pores(network, markers=None, label='surface'):
             z = r*sp.cos(phi)
             markers = sp.vstack((x, y, z)).T
     else:
-        coords = network['pore.coords']
-        markers = sp.atleast_2d(markers)
+        pass
+        # markers = sp.atleast_2d(markers)
     pts = sp.vstack((coords, markers))
     tri = sptl.Delaunay(pts, incremental=False)
     (indices, indptr) = tri.vertex_neighbor_vertices
@@ -2282,11 +2282,11 @@ def plot_networkx(network, plot_throats=True, labels=None, colors=None,
     scale : float
         Scale factor for size of pores.
     '''
-    import networkx as nx
+    from networkx import Graph, draw_networkx_nodes, draw_networkx_edges
     x, y, z = network['pore.coords'].T
     x, y = [j for j in [x, y, z] if not sp.allclose(j, j.mean())]
 
-    G = nx.Graph()
+    G = Graph()
     pos = {network.Ps[i]: [x[i], y[i]] for i in range(network.Np)}
     if 'pore.diameter' in network.keys():
         node_size = scale * network['pore.diameter']
@@ -2304,12 +2304,12 @@ def plot_networkx(network, plot_throats=True, labels=None, colors=None,
         for label, color in zip(labels, colors):
             node_color[network.pores(label)] = color
 
-    nx.draw_networkx_nodes(G, pos=pos, nodelist=network.Ps.tolist(),
-                           node_color=node_color, edge_color='r',
-                           node_size=node_size)
+    draw_networkx_nodes(G, pos=pos, nodelist=network.Ps.tolist(),
+                        node_color=node_color, edge_color='r',
+                        node_size=node_size)
     if plot_throats:
-        nx.draw_networkx_edges(G, pos=pos, edge_color='k', alpha=0.8,
-                               edgelist=network['throat.conns'].tolist())
+        draw_networkx_edges(G, pos=pos, edge_color='k', alpha=0.8,
+                            edgelist=network['throat.conns'].tolist())
     return G
 
 
