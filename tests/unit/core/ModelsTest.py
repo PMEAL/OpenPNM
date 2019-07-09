@@ -159,6 +159,14 @@ class ModelsTest:
         pn.regenerate_models(deep=True)
         assert len(geo.props()) == b
 
+    def test_regen_mode_default_value(self):
+        pn = op.network.Cubic(shape=[3, 3, 3], spacing=1e-4)
+        geo = op.geometry.StickAndBall(network=pn, pores=pn.Ps, throats=pn.Ts,
+                                       settings={'regen_mode': 'deferred'})
+        assert len(geo.props()) == 0
+        geo.regenerate_models()
+        assert len(geo.props()) == 16
+
 
 if __name__ == '__main__':
 
