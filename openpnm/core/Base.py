@@ -249,7 +249,7 @@ class Base(dict):
         element, prop = key.split('.', 1)
         if key in self.keys():
             # Get values if present on self
-            vals = self.get(key)
+            vals = super().__getitem__(key)
         elif key in self.keys(mode='all', deep=True):
             # Interleave values from geom if found there
             vals = self.interleave_data(key)
@@ -265,6 +265,12 @@ class Base(dict):
             keys = self.keys(mode='all', deep=True)
             vals.update({k: self.interleave_data(k) for k in keys
                          if k.startswith(key + '.')})
+        # The following code, if activated, attempts to run models when
+        # missing data is requested from the dictionary.  The works fine,
+        # but breaks the general way openpnm behaviors.
+        # elif hasattr(self, 'models') and key in self.models:
+        #     self.regenerate_models(key)
+        #     vals = super().__getitem__(key)
         else:
             raise KeyError(key)
         return vals
@@ -1544,27 +1550,41 @@ class Base(dict):
         temp = sp.size(super(Base, self).__getitem__(element+'.all'))
         return temp
 
-    def show_hist(self, props=[], bins=20, **kwargs):
+    def show_hist(self,
+                  props=['pore.diameter', 'throat.diameter', 'throat.length'],
+                  bins=20, fontsize=22, **kwargs):
         r"""
         Show a quick plot of key property distributions.
 
         Parameters
         ----------
         props : string or list of strings
-            The pore and/or throat properties to be plotted as histograms
+            The pore and/or throat properties to be plotted as histograms.  By
+            default this function will show 'pore.diameter', 'throat.diameter',
+            and 'throat.length'.
 
         bins : int or array_like
             The number of bins to use when generating the histogram.  If an
             array is given they are used as the bin spacing instead.
+
+        fontsize : int
+            Sets the font size temporarily.  The default size of matplotlib is
+            10, which is too small for many screenn.  This function has a
+            default of 22, which does not overwrite the matplotlib setting.
+            Note that you can override matplotlib setting globally with
+            ``matplotlib.rcParams['font.size'] = 22``.
 
         Notes
         -----
         Other keyword arguments are passed to the ``matplotlib.pyplot.hist``
         function.
         """
+        temp = plt.rcParams['font.size']
+        plt.rcParams['font.size'] = fontsize
         if type(props) is str:
             props = [props]
         N = len(props)
+        color = plt.cm.tab10(range(10))
         if N == 1:
             r = 1
             c = 1
@@ -1574,24 +1594,23 @@ class Base(dict):
         else:
             r = int(sp.ceil(N**0.5))
             c = int(sp.floor(N**0.5))
-
         for i in range(len(props)):
             plt.subplot(r, c, i+1)
-            plt.hist(self[props[i]], bins=bins, **kwargs)
+            try:
+                # Update kwargs with some default values
+                if 'edgecolor' not in kwargs.keys():
+                    kwargs.update({'edgecolor': 'k'})
+                if 'facecolor' not in kwargs:
+                    kwargs.update({'facecolor': color[sp.mod(i, 10)]})
+                plt.hist(self[props[i]], bins=bins, **kwargs)
+            except KeyError:
+                pass
+            plt.xlabel(props[i])
+        plt.rcParams['font.size'] = temp
 
-    def check_data_health(self, props=[], element=None):
+    def check_data_health(self):
         r"""
         Check the health of pore and throat data arrays.
-
-        Parameters
-        ----------
-        element : string, optional
-            Can be either 'pore' or 'throat', which will limit the checks to
-            only those data arrays.
-
-        props : list of pore (or throat) properties, optional
-            If given, will limit the health checks to only the specfied
-            properties.  Also useful for checking existance.
 
         Returns
         -------
@@ -1607,20 +1626,7 @@ class Base(dict):
         >>> h.health
         True
         """
-        health = HealthDict()
-        if props == []:
-            props = self.props(element)
-        else:
-            if type(props) == str:
-                props = [props]
-        for item in props:
-            health[item] = []
-            if self[item].dtype == 'O':
-                health[item] = 'No checks on object'
-            elif sp.sum(sp.isnan(self[item])) > 0:
-                health[item] = 'Has NaNs'
-            elif sp.shape(self[item])[0] != self._count(item.split('.')[0]):
-                health[item] = 'Wrong Length'
+        health = self.project.check_data_health(obj=self)
         return health
 
     def _parse_indices(self, indices):
