@@ -9,7 +9,15 @@ def_set = {'pore_volume': 'pore.volume',
 
 class Porosity(Base):
     r"""
-    This class implements steady-state linear transport calculations
+    This class provides functionality for calculating porosity of networks.
+
+    Porosity is an annoyingly trickly thing to calculate.  One issue is that
+    the bulk volume of the domain is not easily calculated.  This class has
+    methods for estimating this as well as options for specifying it instead.
+    Another challenge is dealing with overlapping elements, and not counting
+    their volume multiple times.  This class attempts to account for this
+    extra volume, but it's not trivial if the network topology is complex
+    since overlaps can difficult to detect and deal with.
 
     Parameters
     ----------
