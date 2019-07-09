@@ -7,15 +7,15 @@ class Imported(GenericGeometry):
     This geometry class extracts all numerical properites from the received
     network object and moves them to itself.
 
-    This class is mostly intended for use with networks imported from various
-    network extraction codes, where the geometry properties are included on
-    the network itself.  In these cases, an error occurs when adding other
+    This class is intended for use with networks imported from network
+    extraction codes, where the geometry properties are included on the
+    network itself.  In these cases, an error occurs when adding other
     geometries to the project, such as adding boundary pores or in more
-    elaborate scenarios such as stitching networks together.  The issue is
-    that OpenPNM prevent a property, such as 'pore.volume', from exiting on
-    both the network and also a geometry.  Thus it is necessary to move the
-    extracted network properties to this ``Imported`` class, then creating
-    new geometry objects for any added pores.
+    elaborate scenarios such as stitching networks together.  The issue
+    arises since OpenPNM prevents a property, such as 'pore.volume', from
+    existing on both the network and also a geometry.  Thus it is necessary
+    to move the extracted network properties to this ``Imported`` class,
+    then create new geometry objects for any added pores as needed.
 
     Parameters
     ----------
@@ -28,8 +28,8 @@ class Imported(GenericGeometry):
         excluded.  Note that labels are not transferred, only properties.
 
     project : OpenPNM Project object, optional
-        Can be supplied instead in addition to ``network`` but is inferred
-        from the network's project if not given.
+        Can be supplied in addition to ``network`` but is inferred from the
+        network's project if not given.
 
     name : string
         The name of the object, which is also used as the label where this
