@@ -61,14 +61,10 @@ sf.settings['rxn_tolerance'] = 1e-12
 sf.run()
 sw.update(sf.results())
 
-p = op.algorithms.OhmicConduction(network=net, phase=sw)
-p.settings['conductance'] = 'throat.ionic_conductance'
-p.settings['quantity'] = 'pore.potential'
+p = op.algorithms.ChargeConservation(network=net, phase=sw)
 p.set_value_BC(pores=net.pores('left'), values=0.01)
 p.set_value_BC(pores=net.pores('right'), values=0.00)
 p.settings['rxn_tolerance'] = 1e-12
-p.run()
-sw.update(p.results())
 
 eA = op.algorithms.NernstPlanck(network=net, phase=sw, ion=Na.name)
 eA.set_value_BC(pores=net.pores('back'), values=100)
@@ -91,7 +87,7 @@ phys.add_model(propname='throat.ad_dif_mig_conductance.' + Cl.name,
                model=ad_dif_mig_Cl, ion=Cl.name,
                s_scheme='exponential')
 
-pnp = op.algorithms.ChargeConservationNernstPlanck(network=net, phase=sw)
+pnp = op.algorithms.IonicTransport(network=net, phase=sw)
 pnp.setup(potential_field=p, ions=[eA, eB])
 pnp.settings['i_max_iter'] = 10
 pnp.settings['i_tolerance'] = 1e-04
