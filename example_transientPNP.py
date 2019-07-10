@@ -91,8 +91,7 @@ phys.add_model(propname='throat.ad_dif_mig_conductance.' + Cl.name,
                model=ad_dif_mig_Cl, ion=Cl.name,
                s_scheme='exponential')
 
-pnp = op.algorithms.TransientChargeConservationNernstPlanck(network=net,
-                                                            phase=sw)
+pnp = op.algorithms.TransientIonicTransport(network=net, phase=sw)
 pnp.setup(potential_field=p, ions=[eA, eB])
 pnp.settings['i_max_iter'] = 10
 pnp.settings['i_tolerance'] = 1e-04

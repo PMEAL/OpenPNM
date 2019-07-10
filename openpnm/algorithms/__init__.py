@@ -28,6 +28,5 @@ from .MixedInvasionPercolation import MixedInvasionPercolation
 from .Porosimetry import Porosimetry
 from .NernstPlanck import NernstPlanck
 from .TransientNernstPlanck import TransientNernstPlanck
-from .ChargeConservationNernstPlanck import ChargeConservationNernstPlanck
-from .TransientChargeConservationNernstPlanck import (
-    TransientChargeConservationNernstPlanck)
+from .IonicTransport import IonicTransport
+from .TransientIonicTransport import TransientIonicTransport

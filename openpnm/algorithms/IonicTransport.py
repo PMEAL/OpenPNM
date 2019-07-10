@@ -5,7 +5,7 @@ from openpnm.models.physics import generic_source_term as gst
 logger = logging.getLogger(__name__)
 
 
-class ChargeConservationNernstPlanck(ReactiveTransport):
+class IonicTransport(ReactiveTransport):
     r"""
     A subclass of GenericTransport to solve the charge conservation and
     Nernst-Planck equations.
