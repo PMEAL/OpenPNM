@@ -1,9 +1,9 @@
-from openpnm.algorithms import TransientReactiveTransport, NernstPlanck
+from openpnm.algorithms import TransientReactiveTransport
 from openpnm.utils import logging
 logger = logging.getLogger(__name__)
 
 
-class TransientNernstPlanck(TransientReactiveTransport, NernstPlanck):
+class TransientNernstPlanck(TransientReactiveTransport):
     r"""
     A subclass of GenericTransport to perform steady and transient simulations
     of pure diffusion, advection-diffusion and advection-diffusion with
@@ -15,6 +15,7 @@ class TransientNernstPlanck(TransientReactiveTransport, NernstPlanck):
         def_set = {'phase': None,
                    'quantity': 'pore.concentration.'+ion,
                    'conductance': 'throat.ad_dif_mig_conductance.'+ion,
+                   'ion': ion,
                    'gui': {'setup':        {'phase': None,
                                             'quantity': '',
                                             'conductance': '',
@@ -40,15 +41,17 @@ class TransientNernstPlanck(TransientReactiveTransport, NernstPlanck):
         if phase is not None:
             self.setup(phase=phase)
 
-    def setup(self, phase=None, quantity='', conductance='', t_initial=None,
-              t_final=None, t_step=None, t_output=None, t_tolerance=None,
-              t_precision=None, t_scheme='', **kwargs):
+    def setup(self, phase=None, quantity='', conductance='', ion='',
+              t_initial=None, t_final=None, t_step=None, t_output=None,
+              t_tolerance=None, t_precision=None, t_scheme='', **kwargs):
         if phase:
             self.settings['phase'] = phase.name
         if quantity:
             self.settings['quantity'] = quantity
         if conductance:
             self.settings['conductance'] = conductance
+        if ion:
+            self.settings['ion'] = ion
         if t_initial is not None:
             self.settings['t_initial'] = t_initial
         if t_final is not None:

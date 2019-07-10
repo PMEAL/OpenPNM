@@ -37,7 +37,7 @@ phys.add_model(propname='throat.hydraulic_conductance',
                throat_viscosity='throat.viscosity',
                model=flow, regen_mode='normal')
 
-current = op.models.physics.ionic_conductance.laplace
+current = op.models.physics.ionic_conductance.electroneutrality
 phys.add_model(propname='throat.ionic_conductance',
                model=current, regen_mode='normal')
 
@@ -93,13 +93,12 @@ pnp = op.algorithms.TransientIonicTransport(network=net, phase=sw)
 pnp.setup(potential_field=p, ions=[eA, eB])
 pnp.settings['i_max_iter'] = 10
 pnp.settings['i_tolerance'] = 1e-04
-pnp.settings['charge_conservation'] = 'laplace'
+pnp.settings['charge_conservation'] = 'electroneutrality'
 pnp.settings['t_output'] = 500
 pnp.settings['t_step'] = 100
 pnp.settings['t_final'] = 2000
 # pnp.settings['t_scheme'] = 'steady'
-# Electroneutrality condition does not work with new Mixtures
-# pnp.settings['charge_conservation'] = 'electroneutrality'
+
 pnp.run()
 
 sw.update(sf.results())

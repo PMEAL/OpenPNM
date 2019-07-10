@@ -71,10 +71,10 @@ def charge_conservation(target, phase, p_alg, e_alg, assumption):
             except KeyError:
                 c = _sp.zeros(shape=(e.Np, ), dtype=float)
             network = e.project.network
-            g = phase['throat.diffusive_conductance.'+e.name]
+            g = phase['throat.diffusive_conductance.'+e.settings['ion']]
             am = network.create_adjacency_matrix(weights=g, fmt='coo')
             A = _spgr.laplacian(am)
-            rhs += - F * phase['pore.valence.'+e.name] * A * c
+            rhs += - F * phase['pore.valence.'+e.settings['ion']] * A * c
     elif assumption == 'laplace':
         pass  # rhs should remain 0
     else:
