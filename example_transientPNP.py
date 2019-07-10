@@ -61,10 +61,8 @@ sf.settings['rxn_tolerance'] = 1e-12
 sf.run()
 sw.update(sf.results())
 
-p = op.algorithms.TransientReactiveTransport(network=net, phase=sw)
-p.settings['conductance'] = 'throat.ionic_conductance'
-p.settings['quantity'] = 'pore.potential'
-p.set_value_BC(pores=net.pores('left'), values=0.01)  # 0.01
+p = op.algorithms.TransientChargeConservation(network=net, phase=sw)
+p.set_value_BC(pores=net.pores('left'), values=0.01)
 p.set_value_BC(pores=net.pores('right'), values=0.00)
 p.settings['t_step'] = 100
 

@@ -29,5 +29,6 @@ from .Porosimetry import Porosimetry
 from .NernstPlanck import NernstPlanck
 from .TransientNernstPlanck import TransientNernstPlanck
 from .ChargeConservation import ChargeConservation
+from .TransientChargeConservation import TransientChargeConservation
 from .IonicTransport import IonicTransport
 from .TransientIonicTransport import TransientIonicTransport
