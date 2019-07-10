@@ -210,7 +210,6 @@ class TransientIonicTransport(IonicTransport, TransientReactiveTransport):
                                 i_old[p_alg.name]**2 - i_new[p_alg.name]**2))
                             # Update phase and physics
                             phase.update(p_alg.results())
-                            phys[0].regenerate_models()
 
                             # Ions
                             for e in e_alg:

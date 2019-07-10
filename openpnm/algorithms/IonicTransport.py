@@ -100,7 +100,6 @@ class IonicTransport(ReactiveTransport):
                 res['potential'] = np.sum(np.absolute(phi_old**2 - phi_new**2))
                 # Update phase and physics
                 phase.update(p_alg.results())
-                phys[0].regenerate_models()
 
                 # Ions
                 for e in e_alg:
