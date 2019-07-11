@@ -1,8 +1,6 @@
 import numpy as np
 from openpnm.algorithms import ReactiveTransport
-from openpnm.utils import logging
 from openpnm.models.physics import generic_source_term as gst
-logger = logging.getLogger(__name__)
 
 
 class IonicTransport(ReactiveTransport):
@@ -88,7 +86,7 @@ class IonicTransport(ReactiveTransport):
         # Iterate until solutions converge
         for itr in range(int(self.settings['i_max_iter'])):
             r = str([float(format(i, '.3g')) for i in res.values()])[1:-1]
-            logger.info('Iter: ' + str(itr+1) + ', Residuals: ' + r)
+            print('Iter: ' + str(itr+1) + ', Residuals: ' + r)
             convergence = max(i for i in res.values()) < tol
             if not convergence:
                 # Poisson eq
@@ -111,5 +109,5 @@ class IonicTransport(ReactiveTransport):
                     phase.update(e.results())
 
             if convergence:
-                logger.info('Solution converged: ' + str(res))
+                print('Solution converged: ' + str(res))
                 break

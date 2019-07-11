@@ -1,8 +1,6 @@
 import numpy as np
 from openpnm.algorithms import IonicTransport, TransientReactiveTransport
 from openpnm.models.physics import generic_source_term as gst
-from openpnm.utils import logging
-logger = logging.getLogger(__name__)
 
 
 class TransientIonicTransport(IonicTransport, TransientReactiveTransport):
