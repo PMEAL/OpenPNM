@@ -206,7 +206,7 @@ class ModelsMixin():
 
     """
 
-    def add_model(self, propname, model, regen_mode='normal', **kwargs):
+    def add_model(self, propname, model, regen_mode='', **kwargs):
         r"""
         Adds a new model to the models dictionary (``object.models``)
 
@@ -222,8 +222,8 @@ class ModelsMixin():
             Controls how/when the model is run (See Notes for more details).
             Options are:
 
-            *'normal'* : The model is run directly upon being assiged, and
-            also run every time ``regenerate_models`` is called.
+            *'normal'* : (default) The model is run directly upon being
+            assiged, and also run every time ``regenerate_models`` is called.
 
             *'constant'* : The model is run directly upon being assigned, but
             is not called again, thus making it's data act like a constant.
@@ -236,6 +236,12 @@ class ModelsMixin():
         """
         if propname in kwargs.values():  # Prevent infinite loops of look-ups
             raise Exception(propname+' can\'t be both dependency and propname')
+        # Look for default regen_mode in settings if present, else use 'normal'
+        if regen_mode == '':
+            if 'regen_mode' in self.settings.keys():
+                regen_mode = self.settings['regen_mode']
+            else:
+                regen_mode = 'normal'
         # Add model and regen_mode to kwargs dictionary
         kwargs.update({'model': model, 'regen_mode': regen_mode})
         # Insepct model to extract arguments and default values
