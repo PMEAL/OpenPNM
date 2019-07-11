@@ -72,7 +72,7 @@ class TransientIonicTransport(IonicTransport, TransientReactiveTransport):
         r"""
         """
         print('―'*80)
-        print('Running TransientChargeConservationNernstPlanck')
+        print('Running TransientIonicTransport')
         # Phase, potential and ions algorithms
         phase = self.project.phases()[self.settings['phase']]
         p_alg = self.settings['potential_field']
@@ -176,7 +176,8 @@ class TransientIonicTransport(IonicTransport, TransientReactiveTransport):
                 t_r = [float(format(i, '.3g')) for i in t_res.values()]
                 t_r = str(t_r)[1:-1]
                 print('\n'+'Current time step: '+str(time)+' s')
-                print('Time residuals: ' + t_r)
+                print('Algorithms: '+', '.join(t_res.keys()))
+                print('Time residuals: '+t_r)
                 t_convergence = max(i for i in t_res.values()) < t_tol
                 if not t_convergence:  # Check if the steady state is reached
                     for alg in algs:  # Save the current fields
@@ -195,7 +196,7 @@ class TransientIonicTransport(IonicTransport, TransientReactiveTransport):
                     for itr in range(int(self.settings['i_max_iter'])):
                         i_r = [float(format(i, '.3g')) for i in i_res.values()]
                         i_r = str(i_r)[1:-1]
-                        print('Iter: ' + str(itr+1) + ', Residuals: ' + i_r)
+                        print('Iter: ' + str(itr+1) + ', residuals: ' + i_r)
                         i_convergence = max(i for i in i_res.values()) < i_tol
                         if not i_convergence:
                             # Poisson eq
@@ -225,7 +226,7 @@ class TransientIonicTransport(IonicTransport, TransientReactiveTransport):
 
                         elif i_convergence:
                             print('Solution for time step: '+str(time) +
-                                  ' s converged. Residuals: '+str(i_res))
+                                  ' s converged')
                             break
 
                     for alg in algs:  # Save new fields & compute t residuals
@@ -237,7 +238,7 @@ class TransientIonicTransport(IonicTransport, TransientReactiveTransport):
                     # value in outputs is exported.
                     if round(time, t_pre) in out:
                         t_str = self._nbr_to_str(time)
-                        print('Exporting time step: '+str(time)+' s')
+                        print('\nExporting time step: '+str(time)+' s')
                         for alg in algs:
                             alg[alg.settings['quantity']+'@'+t_str] = (
                                 t_new[alg.name])
@@ -263,12 +264,12 @@ class TransientIonicTransport(IonicTransport, TransientReactiveTransport):
                 else:  # Stop time iterations if residual < t_tolerance
                     # Output steady state solution
                     t_str = self._nbr_to_str(time)
-                    print('Exporting time step: '+str(time)+' s')
+                    print('\nExporting time step: '+str(time)+' s')
                     for alg in algs:
                         alg[alg.settings['quantity']+'@'+t_str] = (
                             t_new[alg.name])
                     break
             if (round(time, t_pre) == tf):
-                print('Maximum time step reached: '+str(time)+' s')
+                print('\nMaximum time step reached: '+str(time)+' s')
             else:
-                print('Transient solver converged after: '+str(time)+' s')
+                print('\nTransient solver converged after: '+str(time)+' s')
