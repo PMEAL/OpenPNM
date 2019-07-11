@@ -56,13 +56,13 @@ def charge_conservation(target, phase, p_alg, e_alg, assumption):
     "laplace".
 
     """
-    F = 96485.3329
+    F = 96485.3321233100184
     rhs = _sp.zeros(shape=(p_alg.Np, ), dtype=float)
     if assumption == 'poisson':
         epsilon0 = 8.854187817e-12
         epsilonr = phase['pore.permittivity'][0]
         for e in e_alg:
-            rhs += (-F * phase['pore.valence.'+e.name] *
+            rhs += (F * phase['pore.valence.'+e.settings['ion']] *
                     e[e.settings['quantity']] / (epsilon0*epsilonr))
     elif assumption == 'electroneutrality':
         for e in e_alg:
