@@ -40,31 +40,28 @@ class IonicTransport(ReactiveTransport):
             self.settings['i_max_iter'] = i_max_iter
         super().setup(**kwargs)
 
-    def run(self):
+    def run(self, t=None):
+        r"""
+        """
+        print('―'*80)
+        print('Running IonicTransport')
         # Phase, potential and ions algorithms
         phase = self.project.phases()[self.settings['phase']]
         p_alg = self.settings['potential_field']
         e_alg = self.settings['ions']
-
+        algs = e_alg.copy()
+        algs.insert(0, p_alg)
         # Define initial conditions (if not defined by the user)
-        try:
-            p_alg[p_alg.settings['quantity']]
-        except KeyError:
+        for alg in algs:
             try:
-                p_alg[p_alg.settings['quantity']] = (
-                    phase[p_alg.settings['quantity']])
-            except KeyError:
-                p_alg[p_alg.settings['quantity']] = np.zeros(
-                    shape=[p_alg.Np, ], dtype=float)
-        for e in e_alg:
-            try:
-                e[e.settings['quantity']]
+                alg[alg.settings['quantity']]
             except KeyError:
                 try:
-                    e[e.settings['quantity']] = phase[e.settings['quantity']]
+                    alg[alg.settings['quantity']] = (
+                        phase[alg.settings['quantity']])
                 except KeyError:
-                    e[e.settings['quantity']] = np.zeros(shape=[e.Np, ],
-                                                         dtype=float)
+                    alg[alg.settings['quantity']] = np.zeros(
+                        shape=[alg.Np, ], dtype=float)
 
         # Source term for Poisson or charge conservation (electroneutrality) eq
         Ps = (p_alg['pore.all'] * np.isnan(p_alg['pore.bc_value']) *
@@ -76,38 +73,44 @@ class IonicTransport(ReactiveTransport):
                           assumption=self.settings['charge_conservation'])
         p_alg.set_source(propname='pore.charge_conservation', pores=Ps)
 
-        # Define tolerance and initialize residuals
-        tol = self.settings['i_tolerance']
-        res = {}
-        res['potential'] = 1e+06
-        for e in e_alg:
-            res[e.name] = 1e+06
+        # Initialize residuals & old/new fields for Gummel iterats
+        i_tol = self.settings['i_tolerance']
+        i_res = {}
+        i_old = {}
+        i_new = {}
+        for alg in algs:
+            i_res[alg.name] = 1e+06
+            i_old[alg.name] = None
+            i_new[alg.name] = None
 
-        # Iterate until solutions converge
+        # Iterate (Gummel) until solutions converge
         for itr in range(int(self.settings['i_max_iter'])):
-            r = str([float(format(i, '.3g')) for i in res.values()])[1:-1]
-            print('Iter: ' + str(itr+1) + ', Residuals: ' + r)
-            convergence = max(i for i in res.values()) < tol
-            if not convergence:
+            i_r = [float(format(i, '.3g')) for i in i_res.values()]
+            i_r = str(i_r)[1:-1]
+            print('Iter: ' + str(itr+1) + ', residuals: ' + i_r)
+            i_convergence = max(i for i in i_res.values()) < i_tol
+            if not i_convergence:
                 # Poisson eq
                 phys[0].regenerate_models()
-                phi_old = p_alg[p_alg.settings['quantity']].copy()
-                p_alg._run_reactive(x=phi_old)
-                phi_new = p_alg[p_alg.settings['quantity']].copy()
+                i_old[p_alg.name] = p_alg[p_alg.settings['quantity']].copy()
+                p_alg._run_reactive(x=i_old[p_alg.name])
+                i_new[p_alg.name] = p_alg[p_alg.settings['quantity']].copy()
                 # Residual
-                res['potential'] = np.sum(np.absolute(phi_old**2 - phi_new**2))
+                i_res[p_alg.name] = np.sum(np.absolute(
+                    i_old[p_alg.name]**2 - i_new[p_alg.name]**2))
                 # Update phase and physics
                 phase.update(p_alg.results())
 
                 # Ions
                 for e in e_alg:
-                    c_old = e[e.settings['quantity']].copy()
-                    e._run_reactive(x=c_old)
-                    c_new = e[e.settings['quantity']].copy()
+                    i_old[e.name] = (e[e.settings['quantity']].copy())
+                    e._run_reactive(x=i_old[e.name])
+                    i_new[e.name] = (e[e.settings['quantity']].copy())
                     # Residual
-                    res[e.name] = np.sum(np.absolute(c_old**2 - c_new**2))
+                    i_res[e.name] = np.sum(np.absolute(
+                        i_old[e.name]**2-i_new[e.name]**2))
                     phase.update(e.results())
 
-            if convergence:
-                print('Solution converged: ' + str(res))
+            if i_convergence:
+                print('Solution converged')
                 break
