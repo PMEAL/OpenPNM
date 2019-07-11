@@ -19,3 +19,4 @@ from . import vapor_pressure
 from . import viscosity
 from . import misc
 from . import mixtures
+from . import permittivity
