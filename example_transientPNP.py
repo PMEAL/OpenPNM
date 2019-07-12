@@ -65,6 +65,7 @@ p = op.algorithms.TransientChargeConservation(network=net, phase=sw)
 p.set_value_BC(pores=net.pores('left'), values=0.01)
 p.set_value_BC(pores=net.pores('right'), values=0.00)
 p.settings['t_step'] = 100
+p.settings['charge_conservation'] = 'electroneutrality'
 
 eA = op.algorithms.TransientNernstPlanck(network=net, phase=sw, ion=Na.name)
 eA.set_value_BC(pores=net.pores('back'), values=100)
@@ -93,7 +94,6 @@ pnp = op.algorithms.TransientIonicTransport(network=net, phase=sw)
 pnp.setup(potential_field=p, ions=[eA, eB])
 pnp.settings['i_max_iter'] = 10
 pnp.settings['i_tolerance'] = 1e-04
-pnp.settings['charge_conservation'] = 'electroneutrality'
 pnp.settings['t_output'] = 500
 pnp.settings['t_step'] = 100
 pnp.settings['t_final'] = 2000
