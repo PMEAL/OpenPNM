@@ -1,6 +1,5 @@
 import numpy as np
 from openpnm.algorithms import ReactiveTransport
-from openpnm.models.physics import generic_source_term as gst
 
 
 class IonicTransport(ReactiveTransport):
