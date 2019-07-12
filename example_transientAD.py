@@ -49,7 +49,6 @@ phys.add_model(propname='throat.diffusive_conductance', model=dif,
 
 ad_dif = op.models.physics.ad_dif_conductance.ad_dif
 phys.add_model(propname='throat.ad_dif_conductance',
-               throat_diffusivity='throat.diffusivity',
                model=ad_dif, regen_mode='normal')
 
 ad = op.algorithms.TransientAdvectionDiffusion(network=net, phase=water)
