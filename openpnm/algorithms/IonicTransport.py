@@ -87,7 +87,7 @@ class IonicTransport(ReactiveTransport):
         for itr in range(int(self.settings['i_max_iter'])):
             i_r = [float(format(i, '.3g')) for i in i_res.values()]
             i_r = str(i_r)[1:-1]
-            print('Iter: ' + str(itr+1) + ', residuals: ' + i_r)
+            print('Gummel iter: '+str(itr+1)+', residuals: '+i_r)
             i_convergence = max(i for i in i_res.values()) < i_tol
             if not i_convergence:
                 # Poisson eq
