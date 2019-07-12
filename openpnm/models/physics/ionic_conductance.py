@@ -7,6 +7,8 @@ r"""
 """
 
 import scipy as _sp
+from openpnm.utils import logging
+logger = logging.getLogger(__name__)
 
 
 def poisson(target,
@@ -359,6 +361,8 @@ def electroneutrality(target,
         T1 = phase.interpolate_data(propname=throat_temperature)[cn[:, 0]]
         T2 = phase.interpolate_data(propname=throat_temperature)[cn[:, 1]]
     # Iterate over all ions present in the solution
+    if ions == []:
+        logger.error('List of ions must be provided')
     for i in ions:
         i = '.'+i
         # Check if a concetration field is defined
