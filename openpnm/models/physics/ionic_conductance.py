@@ -244,7 +244,8 @@ def electroneutrality(target,
                       throat_temperature='throat.temperature',
                       pore_valence='pore.valence',
                       throat_valence='throat.valence',
-                      pore_concentration='pore.concentration'):
+                      pore_concentration='pore.concentration',
+                      ions=[]):
     r"""
     Calculate the ionic conductance of conduits in network (assuming
     electroneutrality for charge conservation), where a conduit is
@@ -357,12 +358,9 @@ def electroneutrality(target,
     except KeyError:
         T1 = phase.interpolate_data(propname=throat_temperature)[cn[:, 0]]
         T2 = phase.interpolate_data(propname=throat_temperature)[cn[:, 1]]
-    # Finding species present in the ionic solution
-    ions = []
-    for key in phase.keys():
-        if key[:len(pore_diffusivity)] == pore_diffusivity:
-            ions.append(key[len(pore_diffusivity):])
+    # Iterate over all ions present in the solution
     for i in ions:
+        i = '.'+i
         # Check if a concetration field is defined
         try:
             c1 = phase[pore_concentration+i][cn[:, 0]]

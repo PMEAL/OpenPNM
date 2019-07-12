@@ -38,7 +38,7 @@ phys.add_model(propname='throat.hydraulic_conductance',
                model=flow, regen_mode='normal')
 
 current = op.models.physics.ionic_conductance.electroneutrality
-phys.add_model(propname='throat.ionic_conductance',
+phys.add_model(propname='throat.ionic_conductance', ions=[Na.name, Cl.name],
                model=current, regen_mode='normal')
 
 eA_dif = op.models.physics.diffusive_conductance.ordinary_diffusion
