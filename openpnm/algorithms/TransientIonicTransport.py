@@ -104,6 +104,16 @@ class TransientIonicTransport(IonicTransport, TransientReactiveTransport):
         for alg in algs:
             alg._update_physics()
 
+        # Setup algorithms transient settings
+        for alg in algs:
+            alg.setup(t_initial=self.settings['t_initial'],
+                      t_final=self.settings['t_final'],
+                      t_step=self.settings['t_step'],
+                      t_output=self.settings['t_output'],
+                      t_tolerance=self.settings['t_tolerance'],
+                      t_precision=self.settings['t_precision'],
+                      t_scheme=self.settings['t_scheme'])
+
         self._run_transient(t=t)
 
     def _run_transient(self, t):
