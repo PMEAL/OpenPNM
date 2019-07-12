@@ -12,7 +12,6 @@ class IonicTransport(ReactiveTransport):
         def_set = {'phase': None,
                    'potential_field': None,
                    'ions': [],
-                   'charge_conservation': 'electroneutrality',
                    'i_tolerance': 1e-4,
                    'i_max_iter': 10}
         super().__init__(**kwargs)
@@ -22,8 +21,7 @@ class IonicTransport(ReactiveTransport):
             self.setup(phase=phase)
 
     def setup(self, phase=None, potential_field=None, ions=[],
-              charge_conservation=None, i_tolerance=None,
-              i_max_iter=None, **kwargs):
+              i_tolerance=None, i_max_iter=None, **kwargs):
         r"""
         """
         if phase:
@@ -32,8 +30,6 @@ class IonicTransport(ReactiveTransport):
             self.settings['potential_field'] = potential_field
         if ions:
             self.settings['ions'] = ions
-        if charge_conservation:
-            self.settings['charge_conservation'] = charge_conservation
         if i_tolerance:
             self.settings['i_tolerance'] = i_tolerance
         if i_max_iter:
@@ -64,14 +60,8 @@ class IonicTransport(ReactiveTransport):
                         shape=[alg.Np, ], dtype=float)
 
         # Source term for Poisson or charge conservation (electroneutrality) eq
-        Ps = (p_alg['pore.all'] * np.isnan(p_alg['pore.bc_value']) *
-              np.isnan(p_alg['pore.bc_rate']))
-        mod = gst.charge_conservation
         phys = p_alg.project.find_physics(phase=phase)
-        phys[0].add_model(propname='pore.charge_conservation', model=mod,
-                          phase=phase, p_alg=p_alg, e_alg=e_alg,
-                          assumption=self.settings['charge_conservation'])
-        p_alg.set_source(propname='pore.charge_conservation', pores=Ps)
+        p_alg._charge_conservation_eq_source_term(e_alg=e_alg)
 
         # Initialize residuals & old/new fields for Gummel iterats
         i_tol = self.settings['i_tolerance']

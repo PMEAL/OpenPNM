@@ -1,4 +1,6 @@
+import numpy as np
 from openpnm.algorithms import ReactiveTransport
+from openpnm.models.physics import generic_source_term as gst
 from openpnm.utils import logging
 logger = logging.getLogger(__name__)
 
@@ -24,9 +26,11 @@ class ChargeConservation(ReactiveTransport):
         def_set = {'phase': None,
                    'quantity': 'pore.potential',
                    'conductance': 'throat.ionic_conductance',
+                   'charge_conservation': 'electroneutrality',
                    'gui': {'setup':        {'phase': None,
                                             'quantity': '',
-                                            'conductance': ''},
+                                            'conductance': '',
+                                            'charge_conservation': ''},
                            'set_rate_BC':  {'pores': None,
                                             'values': None},
                            'set_value_BC': {'pores': None,
@@ -41,7 +45,8 @@ class ChargeConservation(ReactiveTransport):
         if phase is not None:
             self.setup(phase=phase)
 
-    def setup(self, phase=None, quantity='', conductance='', **kwargs):
+    def setup(self, phase=None, quantity='', conductance='',
+              charge_conservation=None, **kwargs):
         r"""
         This method takes several arguments that are essential to running the
         algorithm and adds them to the settings.
@@ -61,6 +66,11 @@ class ChargeConservation(ReactiveTransport):
             calculated by a model attached to a *Physics* object associated
             with the given *Phase*.
 
+        charge_conservation : string
+            The assumption adopted to enforce charge conservation when
+            performing ions transport simulations (default is
+            "electroneutrality").
+
         Notes
         -----
         Any additional arguments are added to the ``settings`` dictionary of
@@ -73,4 +83,18 @@ class ChargeConservation(ReactiveTransport):
             self.settings['quantity'] = quantity
         if conductance:
             self.settings['conductance'] = conductance
+        if charge_conservation:
+            self.settings['charge_conservation'] = charge_conservation
         super().setup(**kwargs)
+
+    def _charge_conservation_eq_source_term(self, e_alg):
+        # Source term for Poisson or charge conservation (electroneutrality) eq
+        phase = self.project.phases()[self.settings['phase']]
+        Ps = (self['pore.all'] * np.isnan(self['pore.bc_value']) *
+              np.isnan(self['pore.bc_rate']))
+        mod = gst.charge_conservation
+        phys = self.project.find_physics(phase=phase)
+        phys[0].add_model(propname='pore.charge_conservation', model=mod,
+                          phase=phase, p_alg=self, e_alg=e_alg,
+                          assumption=self.settings['charge_conservation'])
+        self.set_source(propname='pore.charge_conservation', pores=Ps)

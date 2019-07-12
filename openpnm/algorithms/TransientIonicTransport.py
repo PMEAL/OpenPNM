@@ -16,7 +16,6 @@ class TransientIonicTransport(IonicTransport, TransientReactiveTransport):
                    'gui': {'setup':        {'phase': None,
                                             'potential_field': None,
                                             'ions': [],
-                                            'charge_conservation': '',
                                             'i_tolerance': None,
                                             'i_max_iter': None,
                                             't_initial': None,
@@ -34,18 +33,15 @@ class TransientIonicTransport(IonicTransport, TransientReactiveTransport):
             self.setup(phase=phase)
 
     def setup(self, phase=None, potential_field=None, ions=[],
-              charge_conservation=None, i_tolerance=None,
-              i_max_iter=None, t_initial=None, t_final=None, t_step=None,
-              t_output=None, t_tolerance=None, t_precision=None, t_scheme='',
-              **kwargs):
+              i_tolerance=None, i_max_iter=None, t_initial=None, t_final=None,
+              t_step=None, t_output=None, t_tolerance=None, t_precision=None,
+              t_scheme='', **kwargs):
         if phase:
             self.settings['phase'] = phase.name
         if potential_field:
             self.settings['potential_field'] = potential_field
         if ions:
             self.settings['ions'] = ions
-        if charge_conservation:
-            self.settings['charge_conservation'] = charge_conservation
         if i_tolerance:
             self.settings['i_tolerance'] = i_tolerance
         if i_max_iter:
@@ -151,14 +147,8 @@ class TransientIonicTransport(IonicTransport, TransientReactiveTransport):
         out = np.around(out, decimals=t_pre)
 
         # Source term for Poisson or charge conservation (electroneutrality) eq
-        Ps = (p_alg['pore.all'] * np.isnan(p_alg['pore.bc_value']) *
-              np.isnan(p_alg['pore.bc_rate']))
-        mod = gst.charge_conservation
         phys = p_alg.project.find_physics(phase=phase)
-        phys[0].add_model(propname='pore.charge_conservation', model=mod,
-                          phase=phase, p_alg=p_alg, e_alg=e_alg,
-                          assumption=self.settings['charge_conservation'])
-        p_alg.set_source(propname='pore.charge_conservation', pores=Ps)
+        p_alg._charge_conservation_eq_source_term(e_alg=e_alg)
 
         if (s == 'steady'):  # If solver in steady mode, do one iteration
             print('Running in steady mode')
