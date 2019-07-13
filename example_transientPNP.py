@@ -38,7 +38,7 @@ phys.add_model(propname='throat.hydraulic_conductance',
                model=flow, regen_mode='normal')
 
 current = op.models.physics.ionic_conductance.electroneutrality
-phys.add_model(propname='throat.ionic_conductance',
+phys.add_model(propname='throat.ionic_conductance', ions=[Na.name, Cl.name],
                model=current, regen_mode='normal')
 
 eA_dif = op.models.physics.diffusive_conductance.ordinary_diffusion
@@ -64,19 +64,17 @@ sw.update(sf.results())
 p = op.algorithms.TransientChargeConservation(network=net, phase=sw)
 p.set_value_BC(pores=net.pores('left'), values=0.01)
 p.set_value_BC(pores=net.pores('right'), values=0.00)
-p.settings['t_step'] = 100
+p.settings['charge_conservation'] = 'electroneutrality'
 
 eA = op.algorithms.TransientNernstPlanck(network=net, phase=sw, ion=Na.name)
 eA.set_value_BC(pores=net.pores('back'), values=100)
 eA.set_value_BC(pores=net.pores('front'), values=90)
 eA.settings['rxn_tolerance'] = 1e-12
-eA.settings['t_step'] = 100
 
 eB = op.algorithms.TransientNernstPlanck(network=net, phase=sw, ion=Cl.name)
 eB.set_value_BC(pores=net.pores('back'), values=100)
 eB.set_value_BC(pores=net.pores('front'), values=90)
 eB.settings['rxn_tolerance'] = 1e-12
-eB.settings['t_step'] = 100
 
 ad_dif_mig_Na = op.models.physics.ad_dif_mig_conductance.ad_dif_mig
 phys.add_model(propname='throat.ad_dif_mig_conductance.' + Na.name,
@@ -93,7 +91,6 @@ pnp = op.algorithms.TransientIonicTransport(network=net, phase=sw)
 pnp.setup(potential_field=p, ions=[eA, eB])
 pnp.settings['i_max_iter'] = 10
 pnp.settings['i_tolerance'] = 1e-04
-pnp.settings['charge_conservation'] = 'electroneutrality'
 pnp.settings['t_output'] = 500
 pnp.settings['t_step'] = 100
 pnp.settings['t_final'] = 2000

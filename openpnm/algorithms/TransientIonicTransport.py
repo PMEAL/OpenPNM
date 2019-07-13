@@ -1,6 +1,5 @@
 import numpy as np
 from openpnm.algorithms import IonicTransport, TransientReactiveTransport
-from openpnm.models.physics import generic_source_term as gst
 
 
 class TransientIonicTransport(IonicTransport, TransientReactiveTransport):
@@ -16,7 +15,6 @@ class TransientIonicTransport(IonicTransport, TransientReactiveTransport):
                    'gui': {'setup':        {'phase': None,
                                             'potential_field': None,
                                             'ions': [],
-                                            'charge_conservation': '',
                                             'i_tolerance': None,
                                             'i_max_iter': None,
                                             't_initial': None,
@@ -34,18 +32,15 @@ class TransientIonicTransport(IonicTransport, TransientReactiveTransport):
             self.setup(phase=phase)
 
     def setup(self, phase=None, potential_field=None, ions=[],
-              charge_conservation=None, i_tolerance=None,
-              i_max_iter=None, t_initial=None, t_final=None, t_step=None,
-              t_output=None, t_tolerance=None, t_precision=None, t_scheme='',
-              **kwargs):
+              i_tolerance=None, i_max_iter=None, t_initial=None, t_final=None,
+              t_step=None, t_output=None, t_tolerance=None, t_precision=None,
+              t_scheme='', **kwargs):
         if phase:
             self.settings['phase'] = phase.name
         if potential_field:
             self.settings['potential_field'] = potential_field
         if ions:
             self.settings['ions'] = ions
-        if charge_conservation:
-            self.settings['charge_conservation'] = charge_conservation
         if i_tolerance:
             self.settings['i_tolerance'] = i_tolerance
         if i_max_iter:
@@ -109,6 +104,16 @@ class TransientIonicTransport(IonicTransport, TransientReactiveTransport):
         for alg in algs:
             alg._update_physics()
 
+        # Setup algorithms transient settings
+        for alg in algs:
+            alg.setup(t_initial=self.settings['t_initial'],
+                      t_final=self.settings['t_final'],
+                      t_step=self.settings['t_step'],
+                      t_output=self.settings['t_output'],
+                      t_tolerance=self.settings['t_tolerance'],
+                      t_precision=self.settings['t_precision'],
+                      t_scheme=self.settings['t_scheme'])
+
         self._run_transient(t=t)
 
     def _run_transient(self, t):
@@ -151,14 +156,8 @@ class TransientIonicTransport(IonicTransport, TransientReactiveTransport):
         out = np.around(out, decimals=t_pre)
 
         # Source term for Poisson or charge conservation (electroneutrality) eq
-        Ps = (p_alg['pore.all'] * np.isnan(p_alg['pore.bc_value']) *
-              np.isnan(p_alg['pore.bc_rate']))
-        mod = gst.charge_conservation
         phys = p_alg.project.find_physics(phase=phase)
-        phys[0].add_model(propname='pore.charge_conservation', model=mod,
-                          phase=phase, p_alg=p_alg, e_alg=e_alg,
-                          assumption=self.settings['charge_conservation'])
-        p_alg.set_source(propname='pore.charge_conservation', pores=Ps)
+        p_alg._charge_conservation_eq_source_term(e_alg=e_alg)
 
         if (s == 'steady'):  # If solver in steady mode, do one iteration
             print('Running in steady mode')
@@ -194,7 +193,7 @@ class TransientIonicTransport(IonicTransport, TransientReactiveTransport):
                     for itr in range(int(self.settings['i_max_iter'])):
                         i_r = [float(format(i, '.3g')) for i in i_res.values()]
                         i_r = str(i_r)[1:-1]
-                        print('Iter: ' + str(itr+1) + ', residuals: ' + i_r)
+                        print('Gummel iter: '+str(itr+1)+', residuals: '+i_r)
                         i_convergence = max(i for i in i_res.values()) < i_tol
                         if not i_convergence:
                             # Poisson eq
@@ -209,6 +208,7 @@ class TransientIonicTransport(IonicTransport, TransientReactiveTransport):
                                 i_old[p_alg.name]**2 - i_new[p_alg.name]**2))
                             # Update phase and physics
                             phase.update(p_alg.results())
+                            phys[0].regenerate_models()
 
                             # Ions
                             for e in e_alg:

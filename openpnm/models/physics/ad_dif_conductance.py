@@ -8,10 +8,6 @@ import scipy as _sp
 
 
 def ad_dif(target,
-           pore_area='pore.area',
-           throat_area='throat.area',
-           pore_diffusivity='pore.diffusivity',
-           throat_diffusivity='throat.diffusivity',
            conduit_lengths='throat.conduit_lengths',
            pore_pressure='pore.pressure',
            throat_hydraulic_conductance='throat.hydraulic_conductance',
@@ -27,18 +23,6 @@ def ad_dif(target,
         The object which this model is associated with. This controls the
         length of the calculated array, and also provides access to other
         necessary properties.
-
-    pore_area : string
-        Dictionary key of the pore area values
-
-    throat_area : string
-        Dictionary key of the throat area values
-
-    pore_diffusivity : string
-        Dictionary key of the pore diffusivity values
-
-    throat_diffusivity : string
-        Dictionary key of the throat diffusivity values
 
     conduit_lengths : string
         Dictionary key of the conduit length values

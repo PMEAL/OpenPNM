@@ -9,7 +9,7 @@ proj = ws.new_project()
 # network, geometry, phase
 np.random.seed(0)
 
-net = op.network.Cubic(shape=[8, 8, 1], spacing=9e-4)
+net = op.network.Cubic(shape=[8, 8, 1], spacing=9e-4, project=proj)
 prs = (net['pore.back'] * net['pore.right'] + net['pore.back'] *
        net['pore.left'] + net['pore.front'] * net['pore.right'] +
        net['pore.front'] * net['pore.left'])
@@ -38,7 +38,7 @@ phys.add_model(propname='throat.hydraulic_conductance',
                model=flow, regen_mode='normal')
 
 current = op.models.physics.ionic_conductance.electroneutrality
-phys.add_model(propname='throat.ionic_conductance',
+phys.add_model(propname='throat.ionic_conductance', ions=[Na.name, Cl.name],
                model=current, regen_mode='normal')
 
 eA_dif = op.models.physics.diffusive_conductance.ordinary_diffusion
@@ -65,6 +65,7 @@ p = op.algorithms.ChargeConservation(network=net, phase=sw)
 p.set_value_BC(pores=net.pores('left'), values=0.01)
 p.set_value_BC(pores=net.pores('right'), values=0.00)
 p.settings['rxn_tolerance'] = 1e-12
+p.settings['charge_conservation'] = 'electroneutrality'
 
 eA = op.algorithms.NernstPlanck(network=net, phase=sw, ion=Na.name)
 eA.set_value_BC(pores=net.pores('back'), values=100)
@@ -91,7 +92,6 @@ pnp = op.algorithms.IonicTransport(network=net, phase=sw)
 pnp.setup(potential_field=p, ions=[eA, eB])
 pnp.settings['i_max_iter'] = 10
 pnp.settings['i_tolerance'] = 1e-04
-pnp.settings['charge_conservation'] = 'electroneutrality'
 
 pnp.run()
 
@@ -99,3 +99,6 @@ sw.update(sf.results())
 sw.update(p.results())
 sw.update(eA.results())
 sw.update(eB.results())
+
+# output results to a vtk file
+# proj.export_data(phases=[sw], filename='OUT', filetype='xdmf')
