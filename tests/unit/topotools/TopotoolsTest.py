@@ -2,6 +2,7 @@ import openpnm as op
 import numpy as np
 from numpy.testing import assert_allclose
 from openpnm import topotools
+import pytest
 
 
 class TopotoolsTest:
@@ -50,13 +51,41 @@ class TopotoolsTest:
         assert net.num_pores('top') == 9
         assert net.num_pores('bottom') == 9
 
-    def test_find_surface_pores(self):
+    def test_find_surface_pores_default_markers(self):
         from skimage.morphology import ball
         net = op.network.CubicTemplate(template=ball(3), spacing=1)
         net.clear(mode='labels')
         assert net.labels() == ['pore.all', 'throat.all']
         topotools.find_surface_pores(network=net)
         assert net.num_pores('surface') == 66
+
+    def test_find_surface_pores_custom_markers_2d(self):
+        net = op.network.Cubic(shape=[4, 4, 1], spacing=1)
+        net.clear(mode='labels')
+        assert net.labels() == ['pore.all', 'throat.all']
+        markers = [[-1, 2], [2, -1], [2, 5], [5, 2]]
+        topotools.find_surface_pores(network=net, markers=markers)
+        assert net.num_pores('surface') == 12
+        markers = [[-1], [2], [2], [5]]
+        with pytest.raises(Exception):
+            topotools.find_surface_pores(network=net, markers=markers)
+        markers = [[-1, 2, 0], [2, -1, 0], [2, 5, 0], [5, 2, 0]]
+        with pytest.raises(Exception):
+            topotools.find_surface_pores(network=net, markers=markers)
+
+    def test_find_surface_pores_custom_markers_3d(self):
+        net = op.network.Cubic(shape=[4, 4, 4], spacing=1)
+        net.clear(mode='labels')
+        assert net.labels() == ['pore.all', 'throat.all']
+        markers = [[-1, 2, 2], [2, -1, 2], [2, 5, 2], [5, 2, 2]]
+        topotools.find_surface_pores(network=net, markers=markers)
+        assert net.num_pores('surface') == 48
+        markers = [[-1], [2], [2], [5]]
+        with pytest.raises(Exception):
+            topotools.find_surface_pores(network=net, markers=markers)
+        markers = [[-1, 2], [2, -1], [2, 5], [5, 2]]
+        with pytest.raises(Exception):
+            topotools.find_surface_pores(network=net, markers=markers)
 
     def test_find_pore_to_pore_distance(self):
         net = op.network.Cubic(shape=[3, 3, 3], connectivity=6)

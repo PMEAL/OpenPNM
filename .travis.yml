@@ -3,6 +3,8 @@ sudo: false
 os:
   - linux
 
+dist: xenial
+
 language: python
 
 python:
@@ -10,19 +12,16 @@ python:
 
 cache: pip
 
-before_install:
-  # This let's plot be virtually displayed
-  - export DISPLAY=:99.0
-  - sh -e /etc/init.d/xvfb start
+services:
+  - xvfb
 
-install:
+before_install:
   - wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh;
   - bash miniconda.sh -b -p $HOME/miniconda
   - export PATH="$HOME/miniconda/bin:$PATH"
-  - hash -r
   - conda config --set always_yes yes --set changeps1 no
-  - conda update -q conda
-  - conda info -a
+
+install:
   - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION
   - source activate test-environment
   - conda install --file conda_requirements.txt

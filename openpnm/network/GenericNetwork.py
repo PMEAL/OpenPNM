@@ -6,6 +6,7 @@ import scipy.sparse.csgraph as csg
 from openpnm.core import Base, ModelsMixin
 from openpnm import topotools
 from openpnm.utils import HealthDict, Workspace, logging
+import openpnm.models.topology as tm
 logger = logging.getLogger(__name__)
 ws = Workspace()
 
@@ -128,6 +129,9 @@ class GenericNetwork(Base, ModelsMixin):
         # Initialize adjacency and incidence matrix dictionaries
         self._im = {}
         self._am = {}
+        self.add_model(propname='pore.coordination_number',
+                       model=tm.coordination_number,
+                       regen_mode='explicit')
 
     def __setitem__(self, key, value):
         if key == 'throat.conns':
@@ -892,67 +896,6 @@ class GenericNetwork(Base, ModelsMixin):
         - This is just a 'check' and does not 'fix' the problems it finds
         """
 
-        health = HealthDict()
-        health['disconnected_clusters'] = []
-        health['isolated_pores'] = []
-        health['trim_pores'] = []
-        health['duplicate_throats'] = []
-        health['bidirectional_throats'] = []
-        health['headless_throats'] = []
-        health['looped_throats'] = []
-
-        # Check for headless throats
-        hits = sp.where(self['throat.conns'] > self.Np - 1)[0]
-        if sp.size(hits) > 0:
-            health['headless_throats'] = sp.unique(hits)
-            return health
-
-        # Check for throats that loop back onto the same pore
-        P12 = self['throat.conns']
-        hits = sp.where(P12[:, 0] == P12[:, 1])[0]
-        if sp.size(hits) > 0:
-            health['looped_throats'] = hits
-
-        # Check for individual isolated pores
-        Ps = self.num_neighbors(self.pores())
-        if sp.sum(Ps == 0) > 0:
-            health['isolated_pores'] = sp.where(Ps == 0)[0]
-
-        # Check for separated clusters of pores
-        temp = []
-        am = self.create_adjacency_matrix(fmt='coo', triu=True)
-        Cs = csg.connected_components(am, directed=False)[1]
-        if sp.unique(Cs).size > 1:
-            for i in sp.unique(Cs):
-                temp.append(sp.where(Cs == i)[0])
-            b = sp.array([len(item) for item in temp])
-            c = sp.argsort(b)[::-1]
-            for i in range(0, len(c)):
-                health['disconnected_clusters'].append(temp[c[i]])
-                if i > 0:
-                    health['trim_pores'].extend(temp[c[i]])
-
-        # Check for duplicate throats
-        am = self.create_adjacency_matrix(fmt='csr', triu=True).tocoo()
-        hits = sp.where(am.data > 1)[0]
-        if len(hits):
-            mergeTs = []
-            hits = sp.vstack((am.row[hits], am.col[hits])).T
-            ihits = hits[:, 0] + 1j*hits[:, 1]
-            conns = self['throat.conns']
-            iconns = conns[:, 0] + 1j*conns[:, 1]  # Convert to imaginary
-            for item in ihits:
-                mergeTs.append(sp.where(iconns == item)[0])
-            health['duplicate_throats'] = mergeTs
-
-        # Check for bidirectional throats
-        adjmat = self.create_adjacency_matrix(fmt='coo')
-        num_full = adjmat.sum()
-        temp = sprs.triu(adjmat, k=1)
-        num_upper = temp.sum()
-        if num_full > num_upper:
-            biTs = sp.where(self['throat.conns'][:, 0] >
-                            self['throat.conns'][:, 1])[0]
-            health['bidirectional_throats'] = biTs.tolist()
+        health = self.project.check_network_health()
 
         return health
