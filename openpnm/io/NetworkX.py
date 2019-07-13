@@ -1,5 +1,6 @@
 import scipy as sp
-import networkx as nx
+from networkx import Graph
+from networkx import is_directed, set_node_attributes, set_edge_attributes
 from openpnm.utils import logging
 from openpnm.io import GenericIO
 from openpnm.network import GenericNetwork
@@ -66,9 +67,9 @@ class NetworkX(GenericIO):
 
         # Ensure G is an undirected networkX graph with numerically numbered
         # nodes for which numbering starts at 0 and does not contain any gaps
-        if not isinstance(G, nx.Graph):
+        if not isinstance(G, Graph):
             raise ('Provided object is not a NetworkX graph.')
-        if nx.is_directed(G):
+        if is_directed(G):
             raise ('Provided graph is directed. Convert to undirected graph.')
         if not all(isinstance(n, int) for n in G.nodes()):
             raise ('Node numbering is not numeric. Convert to int.')
@@ -162,7 +163,7 @@ class NetworkX(GenericIO):
         if not isinstance(network, GenericNetwork):
             raise('Provided network is not an OpenPNM Network.')
 
-        G = nx.Graph()
+        G = Graph()
 
         # Extracting node list and connectivity matrix from Network
         nodes = map(int, network.Ps)
@@ -179,10 +180,10 @@ class NetworkX(GenericIO):
                     val = {i: list(network[prop][i]) for i in network.Ps}
                 else:
                     val = {i: network[prop][i] for i in network.Ps}
-                nx.set_node_attributes(G, name=prop[5:], values=val)
+                set_node_attributes(G, name=prop[5:], values=val)
             if 'throat.' in prop:
                 val = {tuple(conn): network[prop][i] for i, conn
                        in enumerate(conns)}
-                nx.set_edge_attributes(G, name=prop[7:], values=val)
+                set_edge_attributes(G, name=prop[7:], values=val)
 
         return G
