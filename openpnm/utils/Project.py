@@ -600,7 +600,6 @@ class Project(list):
             openpnm.io.MAT.save(network=network, phases=phases,
                                 filename=filename)
         if filetype == 'COMSOL':
-            print(len(network))
             openpnm.io.COMSOL.save(network=network, phases=phases,
                                    filename=filename)
 
