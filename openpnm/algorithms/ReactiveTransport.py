@@ -209,6 +209,8 @@ class ReactiveTransport(GenericTransport):
         """
         phase = self.project.phases()[self.settings['phase']]
         physics = self.project.find_physics(phase=phase)
+        for phys in physics:
+            phys.regenerate_models()
         for item in self.settings['sources']:
             # Regenerate models with new guess
             quantity = self.settings['quantity']
@@ -303,10 +305,13 @@ class ReactiveTransport(GenericTransport):
             x = np.zeros(shape=[self.Np, ], dtype=float)
         self[self.settings['quantity']] = x
         relax = self.settings['relaxation_quantity']
+        phase = self.project.phases()[self.settings['phase']]
         # Reference for residual's normalization
         ref = np.sum(np.absolute(self.A.diagonal())) or 1
         for itr in range(int(self.settings['max_iter'])):
             self[self.settings['quantity']] = x
+            phase.update(self.results())
+            self._update_physics()
             self._build_A(force=True)
             self._build_b(force=True)
             self._apply_BCs()
@@ -320,9 +325,12 @@ class ReactiveTransport(GenericTransport):
                 x_new = relax*x_new + (1-relax)*self[self.settings['quantity']]
                 self[self.settings['quantity']] = x_new
                 x = x_new
-            if (res < self.settings['rxn_tolerance'] or
-                    self.settings['sources'] == []):
+            elif (res < self.settings['rxn_tolerance']):
                 x_new = x
                 logger.info('Solution converged: ' + str(res))
+                break
+            else:  # If res is nan or inf
+                x_new = x
+                logger.warning('Residual undefined: ' + str(res))
                 break
         return x_new
