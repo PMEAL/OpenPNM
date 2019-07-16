@@ -75,3 +75,4 @@ from .Pandas import Pandas
 from .HDF5 import HDF5
 from .XDMF import XDMF
 from .JSONGraphFormat import JSONGraphFormat
+from .COMSOL import COMSOL
