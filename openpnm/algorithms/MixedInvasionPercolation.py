@@ -16,7 +16,6 @@ import logging
 import matplotlib.pyplot as plt
 from scipy.sparse import coo_matrix, dok_matrix
 from transforms3d._gohlketransforms import angle_between_vectors
-import porespy as ps
 from tqdm import tqdm
 logger = logging.getLogger(__name__)
 
