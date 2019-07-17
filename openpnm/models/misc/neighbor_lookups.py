@@ -10,7 +10,8 @@ from openpnm.utils import logging
 logger = logging.getLogger(__name__)
 
 
-def from_neighbor_throats(target, throat_prop='throat.seed', mode='min'):
+def from_neighbor_throats(target, prop=None, throat_prop='pore.seed',
+                          mode='min'):
     r"""
     Adopt a value from the values found in neighboring throats
 
@@ -21,9 +22,12 @@ def from_neighbor_throats(target, throat_prop='throat.seed', mode='min'):
         length of the calculated array, and also provides access to other
         necessary properties.
 
-    throat_prop : string
+    prop : string
         The dictionary key of the array containing the throat property to be
         used in the calculation.  The default is 'throat.seed'.
+
+    throat_prop : string
+        Same as ``prop``, but will be deprecated.
 
     mode : string
         Controls how the pore property is calculated.  Options are 'min',
@@ -39,6 +43,8 @@ def from_neighbor_throats(target, throat_prop='throat.seed', mode='min'):
     network = prj.network
     lookup = prj.find_full_domain(target)
     Ps = lookup.map_pores(target.pores(), target)
+    if prop is not None:
+        throat_prop = prop
     data = lookup[throat_prop]
     neighborTs = network.find_neighbor_throats(pores=Ps,
                                                flatten=False,
@@ -56,7 +62,7 @@ def from_neighbor_throats(target, throat_prop='throat.seed', mode='min'):
     return values
 
 
-def from_neighbor_pores(target, pore_prop='pore.seed', mode='min'):
+def from_neighbor_pores(target, prop=None, pore_prop='pore.seed', mode='min'):
     r"""
     Adopt a value based on the values in neighboring pores
 
@@ -67,9 +73,12 @@ def from_neighbor_pores(target, pore_prop='pore.seed', mode='min'):
         length of the calculated array, and also provides access to other
         necessary properties.
 
-    pore_prop : string
+    prop : string
         The dictionary key to the array containing the pore property to be
         used in the calculation.  Default is 'pore.seed'.
+
+    pore_prop : string
+        Same as ``prop`` but will be deprecated.
 
     mode : string
         Controls how the throat property is calculated.  Options are 'min',
@@ -86,6 +95,8 @@ def from_neighbor_pores(target, pore_prop='pore.seed', mode='min'):
     throats = network.map_throats(target.throats(), target)
     P12 = network.find_connected_pores(throats)
     lookup = prj.find_full_domain(target)
+    if prop is not None:
+        pore_prop = prop
     pvalues = lookup[pore_prop][P12]
     if mode == 'min':
         value = np.amin(pvalues, axis=1)

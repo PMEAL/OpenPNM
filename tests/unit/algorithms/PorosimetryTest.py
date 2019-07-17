@@ -48,7 +48,7 @@ class PorosimetryTest:
         mip.run()
         self.phys.regenerate_models()
         data_w_lpf = mip.get_intrusion_data()
-        assert sp.all(sp.array(data_w_lpf.Snwp) < sp.array(data_no_lpf.Snwp))
+        assert sp.all(sp.array(data_w_lpf.Snwp) <= sp.array(data_no_lpf.Snwp))
         # Now run with late throat filling
         self.phys['throat.pc_star'] = 2/self.net['throat.diameter']
         self.phys.add_model(propname='throat.partial_filling',
@@ -60,7 +60,7 @@ class PorosimetryTest:
         mip.set_partial_filling(propname='throat.partial_filling')
         mip.run()
         data_w_ltf = mip.get_intrusion_data()
-        assert sp.any(sp.array(data_w_ltf.Snwp) < sp.array(data_w_lpf.Snwp))
+        assert sp.any(sp.array(data_w_ltf.Snwp) <= sp.array(data_w_lpf.Snwp))
 
 
 if __name__ == '__main__':

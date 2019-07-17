@@ -34,7 +34,7 @@ class AdvectionDiffusionTest:
         self.ad.set_value_BC(pores=self.net.pores('back'), values=2)
         self.ad.set_value_BC(pores=self.net.pores('front'), values=0)
 
-    def test_powerlaw_advection_diffusion_diffusion(self):
+    def test_powerlaw_advection_diffusion(self):
         mod = op.models.physics.ad_dif_conductance.ad_dif
         self.phys.add_model(propname='throat.ad_dif_conductance_powerlaw',
                             model=mod, s_scheme='powerlaw')
@@ -49,7 +49,7 @@ class AdvectionDiffusionTest:
         y = sp.around(self.ad['pore.concentration'], decimals=5)
         assert_allclose(actual=y, desired=x)
 
-    def test_upwind_advection_diffusion_diffusion(self):
+    def test_upwind_advection_diffusion(self):
         mod = op.models.physics.ad_dif_conductance.ad_dif
         self.phys.add_model(propname='throat.ad_dif_conductance_upwind',
                             model=mod, s_scheme='upwind')
@@ -63,7 +63,7 @@ class AdvectionDiffusionTest:
         y = sp.around(self.ad['pore.concentration'], decimals=5)
         assert_allclose(actual=y, desired=x)
 
-    def test_hybrid_advection_diffusion_diffusion(self):
+    def test_hybrid_advection_diffusion(self):
         mod = op.models.physics.ad_dif_conductance.ad_dif
         self.phys.add_model(propname='throat.ad_dif_conductance_hybrid',
                             model=mod, s_scheme='hybrid')
@@ -78,7 +78,7 @@ class AdvectionDiffusionTest:
         y = sp.around(self.ad['pore.concentration'], decimals=5)
         assert_allclose(actual=y, desired=x)
 
-    def test_exponential_advection_diffusion_diffusion(self):
+    def test_exponential_advection_diffusion(self):
         mod = op.models.physics.ad_dif_conductance.ad_dif
         self.phys.add_model(propname='throat.ad_dif_conductance_exponential',
                             model=mod, s_scheme='exponential')

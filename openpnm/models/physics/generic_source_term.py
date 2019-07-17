@@ -1,5 +1,6 @@
 r"""
 
+.. autofunction:: openpnm.models.physics.generic_source_term.charge_conservation
 .. autofunction:: openpnm.models.physics.generic_source_term.standard_kinetics
 .. autofunction:: openpnm.models.physics.generic_source_term.linear
 .. autofunction:: openpnm.models.physics.generic_source_term.power_law
@@ -13,10 +14,49 @@ r"""
 
 import scipy as _sp
 import scipy.sparse.csgraph as _spgr
-import sympy as _syp
+from sympy import lambdify, symbols, log, ln, exp
+from sympy import postorder_traversal, srepr
 
 
 def charge_conservation(target, phase, p_alg, e_alg, assumption):
+    r"""
+    Applies the source term on the charge conservation equation when solving
+    for ions transport.
+
+    Parameters
+    ----------
+    phase : OpenPNM Phase object
+            The phase on which the charge conservation equation is applied.
+
+    p_alg : OpenPNM Algorithm object
+            The algorithm used to enforce charge conservation.
+
+    e_alg : list of OpenPNM algorithms
+            The list of algorithms used to solve for transport of different
+            ionic species of the mixture phase.
+
+    assumption : string
+            A string correponding to the assumption adopted to enforce charge
+            conservation.
+
+    Returns
+    -------
+    A dictionary containing the following three items:
+
+        **'rate'** - The value of the source term function for the given list
+                     of algortihms under the provided assumption.
+
+        **'S1'** - A placeholder (zero array).
+
+        **'S2'** - The value of the source term function for the given list of
+                   algortihms under the provided assumption (same as 'rate').
+
+    Notes
+    -----
+    Three assumptions are supported; "poisson", "electroneutrality" and
+    "laplace".
+
+    """
     F = 96485.3329
     rhs = _sp.zeros(shape=(p_alg.Np, ), dtype=float)
     if assumption == 'poisson':
@@ -369,9 +409,9 @@ def _build_func(eq, **args):
     eq_prime = eq.diff(args['x'])
     s1 = eq_prime
     s2 = eq - eq_prime*args['x']
-    EQ = _syp.lambdify(args.values(), expr=eq, modules='numpy')
-    S1 = _syp.lambdify(args.values(), expr=s1, modules='numpy')
-    S2 = _syp.lambdify(args.values(), expr=s2, modules='numpy')
+    EQ = lambdify(args.values(), expr=eq, modules='numpy')
+    S1 = lambdify(args.values(), expr=s1, modules='numpy')
+    S2 = lambdify(args.values(), expr=s2, modules='numpy')
     return EQ, S1, S2
 
 
@@ -414,7 +454,7 @@ def linear_sym(target, X, A1='', A2=''):
     B = _parse_args(target=target, key=A2, default=0.0)
     X = target[X]
     # Symbols used in symbolic function
-    a, b, x = _syp.symbols('a,b,x')
+    a, b, x = symbols('a,b,x')
     # Equation
     y = a*x + b
     # Callable functions
@@ -467,7 +507,7 @@ def power_law_sym(target, X, A1='', A2='', A3=''):
     C = _parse_args(target=target, key=A3, default=0.0)
     X = target[X]
     # Symbols used in symbolic function
-    a, b, c, x = _syp.symbols('a,b,c,x')
+    a, b, c, x = symbols('a,b,c,x')
     # Equation
     y = a*x**b + c
     # Callable functions
@@ -523,7 +563,7 @@ def exponential_sym(target, X, A1='', A2='', A3='', A4='', A5='', A6=''):
     F = _parse_args(target=target, key=A6, default=0.0)
     X = target[X]
     # Symbols used in symbolic function
-    a, b, c, d, e, f, x = _syp.symbols('a,b,c,d,e,f,x')
+    a, b, c, d, e, f, x = symbols('a,b,c,d,e,f,x')
     # Equation
     y = a*b**(c*x**d + e) + f
     # Callable functions
@@ -578,9 +618,9 @@ def natural_exponential_sym(target, X, A1='', A2='', A3='', A4='', A5=''):
     E = _parse_args(target=target, key=A5, default=0.0)
     X = target[X]
     # Symbols used in symbolic function
-    a, b, c, d, e, x = _syp.symbols('a,b,c,d,e,x')
+    a, b, c, d, e, x = symbols('a,b,c,d,e,x')
     # Equation
-    y = a*_syp.exp(b*x**c + d) + e
+    y = a*exp(b*x**c + d) + e
     # Callable functions
     r, s1, s2 = _build_func(eq=y, a=a, b=b, c=c, d=d, e=e, x=x)
     # Values
@@ -634,9 +674,9 @@ def logarithm_sym(target, X, A1='', A2='', A3='', A4='', A5='', A6=''):
     F = _parse_args(target=target, key=A6, default=0.0)
     X = target[X]
     # Symbols used in symbolic function
-    a, b, c, d, e, f, x = _syp.symbols('a,b,c,d,e,f,x')
+    a, b, c, d, e, f, x = symbols('a,b,c,d,e,f,x')
     # Equation
-    y = a*_syp.log((c*x**d + e), b) + f
+    y = a*log((c*x**d + e), b) + f
     # Callable functions
     r, s1, s2 = _build_func(eq=y, a=a, b=b, c=c, d=d, e=e, f=f, x=x)
     # Values
@@ -689,9 +729,9 @@ def natural_logarithm_sym(target, X, A1='', A2='', A3='', A4='', A5=''):
     E = _parse_args(target=target, key=A5, default=0.0)
     X = target[X]
     # Symbols used in symbolic function
-    a, b, c, d, e, x = _syp.symbols('a,b,c,d,e,x')
+    a, b, c, d, e, x = symbols('a,b,c,d,e,x')
     # Equation
-    y = a*_syp.ln(b*x**c + d) + e
+    y = a*ln(b*x**c + d) + e
     # Callable functions
     r, s1, s2 = _build_func(eq=y, a=a, b=b, c=c, d=d, e=e, x=x)
     # Values
@@ -724,14 +764,14 @@ def general_symbolic(target, eqn=None, arg_map=None):
     >>> import openpnm as op
     >>> from openpnm.models.physics import generic_source_term as gst
     >>> import scipy as sp
-    >>> import sympy as _syp
+    >>> import sympy
     >>> pn = op.network.Cubic(shape=[5, 5, 5], spacing=0.0001)
     >>> water = op.phases.Water(network=pn)
     >>> water['pore.a'] = 1
     >>> water['pore.b'] = 2
     >>> water['pore.c'] = 3
     >>> water['pore.x'] = sp.random.random(water.Np)
-    >>> a, b, c, x = _syp.symbols('a,b,c,x')
+    >>> a, b, c, x = sympy.symbols('a,b,c,x')
     >>> y = a*x**b + c
     >>> arg_map = {'a':'pore.a', 'b':'pore.b', 'c':'pore.c', 'x':'pore.x'}
     >>> water.add_model(propname='pore.general',
@@ -743,9 +783,9 @@ def general_symbolic(target, eqn=None, arg_map=None):
     >>> assert 'pore.general.S1' in water.props()
     '''
     # First make sure all the symbols have been allocated dict items
-    for arg in _syp.postorder_traversal(eqn):
-        if _syp.srepr(arg)[:6] == 'Symbol':
-            key = _syp.srepr(arg)[7:].strip('(').strip(')').strip("'")
+    for arg in postorder_traversal(eqn):
+        if srepr(arg)[:6] == 'Symbol':
+            key = srepr(arg)[7:].strip('(').strip(')').strip("'")
             if key not in arg_map.keys():
                 raise Exception('argument mapping incomplete, missing '+key)
     if 'x' not in arg_map.keys():
@@ -757,7 +797,7 @@ def general_symbolic(target, eqn=None, arg_map=None):
     for key in arg_map.keys():
         data[key] = target[arg_map[key]]
         # Callable functions
-        args[key] = _syp.symbols(key)
+        args[key] = symbols(key)
     r, s1, s2 = _build_func(eqn, **args)
     r_val = r(*data.values())
     s1_val = s1(*data.values())

@@ -2,11 +2,11 @@ import scipy as sp
 import scipy.ndimage as spim
 import scipy.sparse as sprs
 import warnings
-import porespy as ps
 import matplotlib.pyplot as plt
 from scipy.sparse import csgraph
 from scipy.spatial import ConvexHull
 from openpnm.utils import PrintableDict, logging, Workspace
+from mpl_toolkits.mplot3d import Axes3D
 ws = Workspace()
 logger = logging.getLogger(__name__)
 
@@ -705,7 +705,7 @@ def ispercolating(am, inlets, outlets, mode='site'):
         `'bond'`
 
     """
-    if am.format is not 'coo':
+    if am.format != 'coo':
         am = am.to_coo()
     ij = sp.vstack((am.col, am.row)).T
     if mode.startswith('site'):
@@ -794,7 +794,7 @@ def site_percolation(ij, occupied_sites):
     adj_mat.eliminate_zeros()
     clusters = csgraph.connected_components(csgraph=adj_mat, directed=False)[1]
     clusters[~occupied_sites] = -1
-    s_labels = ps.tools.make_contiguous(clusters + 1)
+    s_labels = sp.stats.rankdata(clusters + 1, method="dense") - 1
     if sp.any(~occupied_sites):
         s_labels -= 1
     b_labels = sp.amin(s_labels[ij], axis=1)
@@ -989,8 +989,8 @@ def trim(network, pores=[], throats=[]):
     296
 
     '''
-    pores = sp.array(pores, ndmin=1)
-    throats = sp.array(throats, ndmin=1)
+    pores = network._parse_indices(pores)
+    throats = network._parse_indices(throats)
     Pkeep = sp.copy(network['pore.all'])
     Tkeep = sp.copy(network['throat.all'])
     if sp.size(pores) > 0:
@@ -1255,9 +1255,9 @@ def find_surface_pores(network, markers=None, label='surface'):
 
     """
     import scipy.spatial as sptl
+    dims = dimensionality(network)
+    coords = network['pore.coords'][:, dims]
     if markers is None:
-        dims = dimensionality(network)
-        coords = network['pore.coords'][:, dims]
         # normalize coords to a 1 unit cube centered on origin
         coords -= sp.amin(coords, axis=0)
         coords /= sp.amax(coords, axis=0)
@@ -1282,8 +1282,16 @@ def find_surface_pores(network, markers=None, label='surface'):
             z = r*sp.cos(phi)
             markers = sp.vstack((x, y, z)).T
     else:
-        coords = network['pore.coords']
-        markers = sp.atleast_2d(markers)
+        if sum(dims) == 1:
+            pass
+        if sum(dims) == 2:
+            markers = sp.atleast_2d(markers)
+            if markers.shape[1] != 2:
+                raise Exception('Network appears planar, so markers must be 2D')
+        if sum(dims) == 3:
+            markers = sp.atleast_2d(markers)
+            if markers.shape[1] != 3:
+                raise Exception('Markers must be 3D for this network')
     pts = sp.vstack((coords, markers))
     tri = sptl.Delaunay(pts, incremental=False)
     (indices, indptr) = tri.vertex_neighbor_vertices
@@ -1347,6 +1355,7 @@ def clone_pores(network, pores, labels=['clone'], mode='parents'):
 
     if type(labels) == str:
         labels = [labels]
+    network._parse_indices(pores)
     Np = network.Np
     Nt = network.Nt
     # Clone pores
@@ -2207,11 +2216,10 @@ def plot_coordinates(network, pores=None, fig=None, **kwargs):
     >>> pn.add_boundary_pores()
     >>> Ps = pn.pores('internal')
     >>> # Create figure showing internal pores
-    >>> fig = op.topotools.plot_coordinates(network=pn, pores=Ps, c='b')
+    >>> fig = op.topotools.plot_coordinates(pn, pores=Ps, c='b')
     >>> Ps = pn.pores('*boundary')
     >>> # Pass existing fig back into function to plot boundary pores
-    >>> fig = op.topotools.plot_coordinates(network=pn, pores=Ps, fig=fig,
-    ...                                         c='r')
+    >>> fig = op.topotools.plot_coordinates(pn, pores=Ps, fig=fig, c='r')
 
     """
     import matplotlib.pyplot as plt
@@ -2283,11 +2291,11 @@ def plot_networkx(network, plot_throats=True, labels=None, colors=None,
     scale : float
         Scale factor for size of pores.
     '''
-    import networkx as nx
+    from networkx import Graph, draw_networkx_nodes, draw_networkx_edges
     x, y, z = network['pore.coords'].T
     x, y = [j for j in [x, y, z] if not sp.allclose(j, j.mean())]
 
-    G = nx.Graph()
+    G = Graph()
     pos = {network.Ps[i]: [x[i], y[i]] for i in range(network.Np)}
     if 'pore.diameter' in network.keys():
         node_size = scale * network['pore.diameter']
@@ -2305,12 +2313,12 @@ def plot_networkx(network, plot_throats=True, labels=None, colors=None,
         for label, color in zip(labels, colors):
             node_color[network.pores(label)] = color
 
-    nx.draw_networkx_nodes(G, pos=pos, nodelist=network.Ps.tolist(),
-                           node_color=node_color, edge_color='r',
-                           node_size=node_size)
+    draw_networkx_nodes(G, pos=pos, nodelist=network.Ps.tolist(),
+                        node_color=node_color, edge_color='r',
+                        node_size=node_size)
     if plot_throats:
-        nx.draw_networkx_edges(G, pos=pos, edge_color='k', alpha=0.8,
-                               edgelist=network['throat.conns'].tolist())
+        draw_networkx_edges(G, pos=pos, edge_color='k', alpha=0.8,
+                            edgelist=network['throat.conns'].tolist())
     return G
 
 
@@ -2770,7 +2778,8 @@ def _bond_percolation(network, tmask):
     return (p_clusters, t_clusters)
 
 
-def add_boundary_pores(network, pores, offset, apply_label='boundary'):
+def add_boundary_pores(network, pores, offset=None, move_to=None,
+                       apply_label='boundary'):
     r"""
     This method uses ``clone_pores`` to clone the input pores, then shifts
     them the specified amount and direction, then applies the given label.
@@ -2783,7 +2792,14 @@ def add_boundary_pores(network, pores, offset, apply_label='boundary'):
 
     offset : 3 x 1 array
         The distance in vector form which the cloned boundary pores should
-        be offset.
+        be offset.  Either this, or ``move_to`` must be specified.
+
+    move_to : 3 x 1 array
+        The location to move the boundary pores to.  A value of ``None``
+        indicates that no translation should be applied in that axis.  For
+        instance, ``[None, None, 0]`` indicates that the boundary pores should
+        moved along the z-axis to the specified location.  Either this or
+        ``offset`` must be specified.
 
     apply_label : string
         This label is applied to the boundary pores.  Default is
@@ -2813,8 +2829,14 @@ def add_boundary_pores(network, pores, offset, apply_label='boundary'):
     del network['pore.clone']
     newTs = network.throats('clone')
     del network['throat.clone']
-    # Offset the cloned pores
-    network['pore.coords'][newPs] += offset
+    if offset is not None:  # Offset the cloned pores
+        network['pore.coords'][newPs] += offset
+    if move_to is not None:  # Move the cloned pores
+        for i, d in enumerate(move_to):
+            if d is not None:
+                temp = network['pore.coords'][newPs]
+                temp[:, i] = d
+                network['pore.coords'][newPs] = temp
     # Apply labels to boundary pores (trim leading 'pores' if present)
     label = apply_label.split('.')[-1]
     plabel = 'pore.' + label

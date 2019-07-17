@@ -8,7 +8,10 @@ r"""
 
 import numpy as np
 import logging
-import sympy as syp
+from sympy import lambdify, symbols
+from sympy import atan as sym_atan
+from sympy import cos as sym_cos
+from sympy import sqrt as sym_sqrt
 from openpnm.models.physics.capillary_pressure import _get_key_props
 logger = logging.getLogger(__name__)
 
@@ -181,11 +184,11 @@ def general_toroidal(target,
     fa = target[throat_scale_a]
     fb = target[throat_scale_b]
     # Governing equations
-    x, a, b, rt, sigma, theta = syp.symbols('x, a, b, rt, sigma, theta')
+    x, a, b, rt, sigma, theta = symbols('x, a, b, rt, sigma, theta')
     if profile_equation == 'elliptical':
-        y = syp.sqrt(1 - (x/a)**2)*b
+        y = sym_sqrt(1 - (x/a)**2)*b
     elif profile_equation == 'sinusoidal':
-        y = (syp.cos(syp.pi*x/(2*a)))*b
+        y = (sym_cos(np.pi*x/(2*a)))*b
     else:
         logger.error('Profile equation is not valid')
     # Throat radius profile
@@ -193,22 +196,22 @@ def general_toroidal(target,
     # Derivative of profile
     rprime = r.diff(x)
     # Filling angle
-    alpha = syp.atan(rprime)
+    alpha = sym_atan(rprime)
     # Radius of curvature of meniscus
-    rm = r/syp.cos(alpha+theta)
+    rm = r/sym_cos(alpha+theta)
     # distance from center of curvature to meniscus contact point (Pythagoras)
-    d = syp.sqrt(rm**2 - r**2)
+    d = sym_sqrt(rm**2 - r**2)
     # angle between throat axis, meniscus center and meniscus contact point
-    gamma = syp.atan(r/d)
+    gamma = sym_atan(r/d)
     # Capillary Pressure
-    p = -2*sigma*syp.cos(alpha+theta)/r
+    p = -2*sigma*sym_cos(alpha+theta)/r
     # Callable functions
-    rx = syp.lambdify((x, a, b, rt), r, 'numpy')
-    fill_angle = syp.lambdify((x, a, b, rt), alpha, 'numpy')
-    Pc = syp.lambdify((x, a, b, rt, sigma, theta), p, 'numpy')
-    rad_curve = syp.lambdify((x, a, b, rt, sigma, theta), rm, 'numpy')
-    c2x = syp.lambdify((x, a, b, rt, sigma, theta), d, 'numpy')
-    cap_angle = syp.lambdify((x, a, b, rt, sigma, theta), gamma, 'numpy')
+    rx = lambdify((x, a, b, rt), r, 'numpy')
+    fill_angle = lambdify((x, a, b, rt), alpha, 'numpy')
+    Pc = lambdify((x, a, b, rt, sigma, theta), p, 'numpy')
+    rad_curve = lambdify((x, a, b, rt, sigma, theta), rm, 'numpy')
+    c2x = lambdify((x, a, b, rt, sigma, theta), d, 'numpy')
+    cap_angle = lambdify((x, a, b, rt, sigma, theta), gamma, 'numpy')
     # All relative positions along throat
 #    pos = np.arange(-0.999, 0.999, 1/num_points)
     hp = int(num_points/2)

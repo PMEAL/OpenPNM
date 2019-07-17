@@ -211,14 +211,11 @@ class OrdinaryPercolation(GenericAlgorithm):
         Ps = self._parse_indices(pores)
         if np.sum(self['pore.outlets'][Ps]) > 0:
             raise Exception('Some inlets are already defined as outlets')
-        if np.sum(self.network['pore.volume'][Ps]) > 0:
-            logger.warn('Some inlet pores have non-zero volume, will result ' +
-                        'in non-zero initial saturation')
         if overwrite:
             self['pore.inlets'] = False
         self['pore.inlets'][Ps] = True
-        self['pore.invasion_pressure'][Ps] = 0
-        self['pore.invasion_sequence'][Ps] = 0
+        self['pore.invasion_pressure'][Ps] = sp.inf
+        self['pore.invasion_sequence'][Ps] = -1
 
     def set_outlets(self, pores=[], overwrite=False):
         r"""

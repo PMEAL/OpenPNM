@@ -1,7 +1,8 @@
 import openpnm as op
 import numpy as np
 import openpnm.models.physics as pm
-import sympy as syp
+from sympy import symbols
+from sympy import ln as sym_ln
 import collections
 
 
@@ -269,9 +270,9 @@ class GenericSourceTermTest:
         assert r1 == rs
 
     def test_general_symbolic(self):
-        a, b, c, d, e, x = syp.symbols('a,b,c,d,e,x')
+        a, b, c, d, e, x = symbols('a,b,c,d,e,x')
         # natural log function
-        y =  a*syp.ln(b*x**c + d)+e
+        y =  a*sym_ln(b*x**c + d)+e
         phys = self.phys
         phys['pore.item1'] = 0.16e-14
         phys['pore.item2'] = 4

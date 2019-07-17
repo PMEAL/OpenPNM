@@ -249,7 +249,7 @@ class Base(dict):
         element, prop = key.split('.', 1)
         if key in self.keys():
             # Get values if present on self
-            vals = self.get(key)
+            vals = super().__getitem__(key)
         elif key in self.keys(mode='all', deep=True):
             # Interleave values from geom if found there
             vals = self.interleave_data(key)
@@ -265,6 +265,12 @@ class Base(dict):
             keys = self.keys(mode='all', deep=True)
             vals.update({k: self.interleave_data(k) for k in keys
                          if k.startswith(key + '.')})
+        # The following code, if activated, attempts to run models when
+        # missing data is requested from the dictionary.  The works fine,
+        # but breaks the general way openpnm behaviors.
+        # elif hasattr(self, 'models') and key in self.models:
+        #     self.regenerate_models(key)
+        #     vals = super().__getitem__(key)
         else:
             raise KeyError(key)
         return vals
@@ -666,6 +672,66 @@ class Base(dict):
                                       mode=mode)
         return labels
 
+    def set_label(self, label, pores=None, throats=None, mode='add'):
+        r"""
+        Creates or updates a label array
+
+        Parameters
+        ----------
+        label : string
+                The label to apply to the specified locations
+        pores : array_like
+            A list of pore indices or a boolean mask of where given label
+            should be added or removed (see ``mode``)
+        throats : array_like
+            A list of throat indices or a boolean mask of where given label
+            should be added or removed (see ``mode``)
+        mode : string
+            Controls how the labels are handled.  Options are:
+
+            *'add'* - Adds the given label to the specified locations while
+            keeping existing labels (default)
+
+            *'overwrite'* - Removes existing label from all locations before
+            adding the label in the specified locations
+
+            *'remove'* - Removes the  given label from the specified locations
+            leaving the remainder intact.
+
+            *'purge'* - Removes the specified label from the object
+
+        """
+        if mode == 'purge':
+            if label.split('.')[0] in ['pore', 'throat']:
+                if label in self.labels():
+                    del self[label]
+                else:
+                    logger.warning(label + ' is not a label, skpping')
+            else:
+                self.set_label(label='pore.'+label, mode='purge')
+                self.set_label(label='throat.'+label, mode='purge')
+        else:
+            if label.split('.')[0] in ['pore', 'throat']:
+                label = label.split('.', 1)[1]
+            if pores is not None:
+                pores = self._parse_indices(pores)
+                if (mode == 'overwrite') or ('pore.'+label not in self.labels()):
+                    self['pore.' + label] = False
+                if mode in ['remove']:
+                    self['pore.' + label][pores] = False
+                else:
+                    self['pore.' + label][pores] = True
+            if throats is not None:
+                throats = self._parse_indices(throats)
+                if (mode == 'overwrite') or ('throat.'+label not in self.labels()):
+                    self['throat.' + label] = False
+                if mode in ['remove']:
+                    self['throat.' + label][throats] = False
+                else:
+                    self['throat.' + label][throats] = True
+            if pores is None and throats is None:
+                del self
+
     def _get_indices(self, element, labels='all', mode='or'):
         r"""
         This is the actual method for getting indices, but should not be called
@@ -719,7 +785,7 @@ class Base(dict):
         ind = ind.astype(dtype=int)
         return ind
 
-    def pores(self, labels='all', mode='or', asmask=False):
+    def pores(self, labels='all', mode='or', asmask=False, target=None):
         r"""
         Returns pore indicies where given labels exist, according to the logic
         specified by the ``mode`` argument.
@@ -755,6 +821,11 @@ class Base(dict):
             If ``True`` then a boolean array of length Np is returned with
             ``True`` values indicating the pores that satisfy the query.
 
+        target : OpenPNM Base object
+            If given, the returned indices will be indexed relative to the
+            ``target`` object.  This can be used to determine how indices on
+            one object map onto another object.
+
         Returns
         -------
         A Numpy array containing pore indices filtered by the logic specified
@@ -763,6 +834,7 @@ class Base(dict):
         See Also
         --------
         throats
+        map_pores
 
         Notes
         -----
@@ -785,8 +857,13 @@ class Base(dict):
         array([ 4,  9, 14, 19, 24])
         """
         ind = self._get_indices(element='pore', labels=labels, mode=mode)
+        if target is not None:
+            ind = target.map_pores(pores=ind, origin=self, filtered=True)
         if asmask:
-            ind = self.tomask(pores=ind)
+            if target is not None:
+                ind = target.tomask(pores=ind)
+            else:
+                ind = self.tomask(pores=ind)
         return ind
 
     @property
@@ -796,7 +873,7 @@ class Base(dict):
         """
         return sp.arange(0, self.Np)
 
-    def throats(self, labels='all', mode='or', asmask=False):
+    def throats(self, labels='all', mode='or', asmask=False, target=None):
         r"""
         Returns throat locations where given labels exist, according to the
         logic specified by the ``mode`` argument.
@@ -833,6 +910,11 @@ class Base(dict):
             If ``True`` then a boolean array of length Nt is returned with
             ``True`` values indicating the throats that satisfy the query.
 
+        target : OpenPNM Base object
+            If given, the returned indices will be indexed relative to the
+            ``target`` object.  This can be used to determine how indices on
+            one object map onto another object.
+
         Returns
         -------
         A Numpy array containing throat indices filtered by the logic specified
@@ -841,6 +923,7 @@ class Base(dict):
         See Also
         --------
         pores
+        map_throats
 
         Examples
         --------
@@ -852,8 +935,13 @@ class Base(dict):
 
         """
         ind = self._get_indices(element='throat', labels=labels, mode=mode)
+        if target is not None:
+            ind = target.map_throats(throats=ind, origin=self, filtered=True)
         if asmask:
-            ind = self.tomask(throats=ind)
+            if target is not None:
+                ind = target.tomask(throats=ind)
+            else:
+                ind = self.tomask(throats=ind)
         return ind
 
     @property
@@ -903,6 +991,11 @@ class Base(dict):
         on the ``origin`` object.  Can be an array or a tuple containing an
         array and a mask, depending on the value of ``filtered``.
 
+        See Also
+        --------
+        pores
+        map_throats
+
         """
         ids = origin['pore._id'][pores]
         return self._map(element='pore', ids=ids, filtered=filtered)
@@ -929,8 +1022,13 @@ class Base(dict):
         Returns
         -------
         Throat indices on the calling object corresponding to the same throats
-        on the target object.  Can be an array or a tuple containing an array
-        and a mask, depending on the value of ``filtered``.
+        on the ``origin`` object.  Can be an array or a tuple containing an
+        array and a mask, depending on the value of ``filtered``.
+
+        See Also
+        --------
+        throats
+        map_pores
 
         """
         ids = origin['throat._id'][throats]
@@ -1452,27 +1550,41 @@ class Base(dict):
         temp = sp.size(super(Base, self).__getitem__(element+'.all'))
         return temp
 
-    def show_hist(self, props=[], bins=20, **kwargs):
+    def show_hist(self,
+                  props=['pore.diameter', 'throat.diameter', 'throat.length'],
+                  bins=20, fontsize=22, **kwargs):
         r"""
         Show a quick plot of key property distributions.
 
         Parameters
         ----------
         props : string or list of strings
-            The pore and/or throat properties to be plotted as histograms
+            The pore and/or throat properties to be plotted as histograms.  By
+            default this function will show 'pore.diameter', 'throat.diameter',
+            and 'throat.length'.
 
         bins : int or array_like
             The number of bins to use when generating the histogram.  If an
             array is given they are used as the bin spacing instead.
+
+        fontsize : int
+            Sets the font size temporarily.  The default size of matplotlib is
+            10, which is too small for many screenn.  This function has a
+            default of 22, which does not overwrite the matplotlib setting.
+            Note that you can override matplotlib setting globally with
+            ``matplotlib.rcParams['font.size'] = 22``.
 
         Notes
         -----
         Other keyword arguments are passed to the ``matplotlib.pyplot.hist``
         function.
         """
+        temp = plt.rcParams['font.size']
+        plt.rcParams['font.size'] = fontsize
         if type(props) is str:
             props = [props]
         N = len(props)
+        color = plt.cm.tab10(range(10))
         if N == 1:
             r = 1
             c = 1
@@ -1482,24 +1594,23 @@ class Base(dict):
         else:
             r = int(sp.ceil(N**0.5))
             c = int(sp.floor(N**0.5))
-
         for i in range(len(props)):
             plt.subplot(r, c, i+1)
-            plt.hist(self[props[i]], bins=bins, **kwargs)
+            try:
+                # Update kwargs with some default values
+                if 'edgecolor' not in kwargs.keys():
+                    kwargs.update({'edgecolor': 'k'})
+                if 'facecolor' not in kwargs:
+                    kwargs.update({'facecolor': color[sp.mod(i, 10)]})
+                plt.hist(self[props[i]], bins=bins, **kwargs)
+            except KeyError:
+                pass
+            plt.xlabel(props[i])
+        plt.rcParams['font.size'] = temp
 
-    def check_data_health(self, props=[], element=None):
+    def check_data_health(self):
         r"""
         Check the health of pore and throat data arrays.
-
-        Parameters
-        ----------
-        element : string, optional
-            Can be either 'pore' or 'throat', which will limit the checks to
-            only those data arrays.
-
-        props : list of pore (or throat) properties, optional
-            If given, will limit the health checks to only the specfied
-            properties.  Also useful for checking existance.
 
         Returns
         -------
@@ -1515,20 +1626,7 @@ class Base(dict):
         >>> h.health
         True
         """
-        health = HealthDict()
-        if props == []:
-            props = self.props(element)
-        else:
-            if type(props) == str:
-                props = [props]
-        for item in props:
-            health[item] = []
-            if self[item].dtype == 'O':
-                health[item] = 'No checks on object'
-            elif sp.sum(sp.isnan(self[item])) > 0:
-                health[item] = 'Has NaNs'
-            elif sp.shape(self[item])[0] != self._count(item.split('.')[0]):
-                health[item] = 'Wrong Length'
+        health = self.project.check_data_health(obj=self)
         return health
 
     def _parse_indices(self, indices):
@@ -1704,16 +1802,16 @@ class Base(dict):
         return element + '.' + propname.split('.')[-1]
 
     def __str__(self):
-        horizonal_rule = '―' * 78
-        lines = [horizonal_rule]
+        horizontal_rule = '―' * 78
+        lines = [horizontal_rule]
         lines.append(self.__module__.replace('__', '') + ' : ' + self.name)
-        lines.append(horizonal_rule)
+        lines.append(horizontal_rule)
         lines.append("{0:<5s} {1:<45s} {2:<10s}".format('#',
                                                         'Properties',
                                                         'Valid Values'))
         fmt = "{0:<5d} {1:<45s} {2:>5d} / {3:<5d}"
-        lines.append(horizonal_rule)
-        props = list(set(self.keys()).difference(set(self.labels())))
+        lines.append(horizontal_rule)
+        props = self.props()
         props.sort()
         for i, item in enumerate(props):
             prop = item
@@ -1729,11 +1827,11 @@ class Base(dict):
                 defined = sp.shape(self[item])[0] \
                     - a.sum(axis=0, keepdims=(a.ndim-1) == 0)[0]
                 lines.append(fmt.format(i + 1, prop, defined, required))
-        lines.append(horizonal_rule)
+        lines.append(horizontal_rule)
         lines.append("{0:<5s} {1:<45s} {2:<10s}".format('#',
                                                         'Labels',
                                                         'Assigned Locations'))
-        lines.append(horizonal_rule)
+        lines.append(horizontal_rule)
         labels = self.labels()
         labels.sort()
         fmt = "{0:<5d} {1:<45s} {2:<10d}"
@@ -1743,7 +1841,7 @@ class Base(dict):
                 prop = prop[0:32] + '...'
             if '._' not in prop:
                 lines.append(fmt.format(i + 1, prop, sp.sum(self[item])))
-        lines.append(horizonal_rule)
+        lines.append(horizontal_rule)
         return '\n'.join(lines)
 
     def _mro(self):

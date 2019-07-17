@@ -3,7 +3,8 @@ import h5py
 import numpy as np
 import openpnm
 from copy import deepcopy
-from openpnm.utils import SettingsDict, HealthDict, Workspace
+from openpnm.utils import SettingsDict, HealthDict, Workspace, logging
+logger = logging.getLogger(__name__)
 ws = Workspace()
 
 
@@ -67,7 +68,6 @@ class Project(list):
         super().__init__(*args, **kwargs)
         # Register self with workspace
         ws[name] = self
-        self._grid = {}
         self.settings = SettingsDict()
         self.comments = 'Using OpenPNM ' + openpnm.__version__
 
@@ -725,23 +725,6 @@ class Project(list):
 
     comments = property(fget=_get_comments, fset=_set_comments)
 
-    def _get_grid(self):
-        grid = {}
-        row = {phase: '' for phase in self.phases().keys()}
-        for geo in self.geometries().values():
-            grid[geo.name] = row.copy()
-            for phase in self.phases().values():
-                phys = self.find_physics(phase=phase, geometry=geo)
-                if phys is None:
-                    phys = ''
-                else:
-                    phys = phys.name
-                grid[geo.name][phase.name] = phys
-        grid = ProjectGrid(self.network.name, grid)
-        return grid
-
-    grid = property(fget=_get_grid)
-
     def __str__(self):
         s = []
         hr = '―'*78
@@ -782,6 +765,9 @@ class Project(list):
             health['undefined_pores'] = np.where(Ptemp == 0)[0].tolist()
             health['overlapping_throats'] = np.where(Ttemp > 1)[0].tolist()
             health['undefined_throats'] = np.where(Ttemp == 0)[0].tolist()
+        else:
+            health['undefined_pores'] = self.network.Ps
+            health['undefined_throats'] = self.network.Ts
         return health
 
     def check_physics_health(self, phase):
@@ -824,6 +810,132 @@ class Project(list):
             health['undefined_throats'] = np.where(Ttemp == 0)[0].tolist()
         return health
 
+    def check_data_health(self, obj):
+        r"""
+        Check the health of pore and throat data arrays.
+
+        Parameters
+        ----------
+        obj : OpenPNM object
+            A handle of the object to be checked
+
+        Returns
+        -------
+        health : dict
+            Returns a HealthDict object which a basic dictionary with an added
+            ``health`` attribute that is True is all entries in the dict are
+            deemed healthy (empty lists), or False otherwise.
+
+        """
+        health = HealthDict()
+        for item in obj.props():
+            health[item] = []
+            if obj[item].dtype == 'O':
+                health[item] = 'No checks on object'
+            elif np.sum(np.isnan(obj[item])) > 0:
+                health[item] = 'Has NaNs'
+            elif np.shape(obj[item])[0] != obj._count(item.split('.')[0]):
+                health[item] = 'Wrong Length'
+        return health
+
+    def check_network_health(self):
+        r"""
+        This method check the network topological health by checking for:
+
+            (1) Isolated pores
+            (2) Islands or isolated clusters of pores
+            (3) Duplicate throats
+            (4) Bidirectional throats (ie. symmetrical adjacency matrix)
+            (5) Headless throats
+
+        Returns
+        -------
+        health : dict
+            A dictionary containing the offending pores or throat numbers under
+            each named key.
+
+        Notes
+        -----
+        It also returns a list of which pores and throats should be trimmed
+        from the network to restore health.  This list is a suggestion only,
+        and is based on keeping the largest cluster and trimming the others.
+
+        Notes
+        -----
+        - Does not yet check for duplicate pores
+        - Does not yet suggest which throats to remove
+        - This is just a 'check' and does not 'fix' the problems it finds
+        """
+        import scipy.sparse.csgraph as csg
+        import scipy.sparse as sprs
+
+        health = HealthDict()
+        health['disconnected_clusters'] = []
+        health['isolated_pores'] = []
+        health['trim_pores'] = []
+        health['duplicate_throats'] = []
+        health['bidirectional_throats'] = []
+        health['headless_throats'] = []
+        health['looped_throats'] = []
+
+        net = self.network
+
+        # Check for headless throats
+        hits = np.where(net['throat.conns'] > net.Np - 1)[0]
+        if np.size(hits) > 0:
+            health['headless_throats'] = np.unique(hits)
+            return health
+
+        # Check for throats that loop back onto the same pore
+        P12 = net['throat.conns']
+        hits = np.where(P12[:, 0] == P12[:, 1])[0]
+        if np.size(hits) > 0:
+            health['looped_throats'] = hits
+
+        # Check for individual isolated pores
+        Ps = net.num_neighbors(net.pores())
+        if np.sum(Ps == 0) > 0:
+            health['isolated_pores'] = np.where(Ps == 0)[0]
+
+        # Check for separated clusters of pores
+        temp = []
+        am = net.create_adjacency_matrix(fmt='coo', triu=True)
+        Cs = csg.connected_components(am, directed=False)[1]
+        if np.unique(Cs).size > 1:
+            for i in np.unique(Cs):
+                temp.append(np.where(Cs == i)[0])
+            b = np.array([len(item) for item in temp])
+            c = np.argsort(b)[::-1]
+            for i in range(0, len(c)):
+                health['disconnected_clusters'].append(temp[c[i]])
+                if i > 0:
+                    health['trim_pores'].extend(temp[c[i]])
+
+        # Check for duplicate throats
+        am = net.create_adjacency_matrix(fmt='csr', triu=True).tocoo()
+        hits = np.where(am.data > 1)[0]
+        if len(hits):
+            mergeTs = []
+            hits = np.vstack((am.row[hits], am.col[hits])).T
+            ihits = hits[:, 0] + 1j*hits[:, 1]
+            conns = net['throat.conns']
+            iconns = conns[:, 0] + 1j*conns[:, 1]  # Convert to imaginary
+            for item in ihits:
+                mergeTs.append(np.where(iconns == item)[0])
+            health['duplicate_throats'] = mergeTs
+
+        # Check for bidirectional throats
+        adjmat = net.create_adjacency_matrix(fmt='coo')
+        num_full = adjmat.sum()
+        temp = sprs.triu(adjmat, k=1)
+        num_upper = temp.sum()
+        if num_full > num_upper:
+            biTs = np.where(net['throat.conns'][:, 0] >
+                            net['throat.conns'][:, 1])[0]
+            health['bidirectional_throats'] = biTs.tolist()
+
+        return health
+
     def _regenerate_models(self, objs=[], propnames=[]):
         r"""
         Can be used to regenerate models across all objects in the project.
@@ -863,45 +975,75 @@ class Project(list):
             else:
                 obj.regenerate_models()
 
+    def get_grid(self, astype='table'):
+        from pandas import DataFrame as df
+        geoms = self.geometries().keys()
+        phases = [p.name for p in self.phases().values() if not hasattr(p, 'mixture')]
+        grid = df(index=geoms, columns=phases)
+        for r in grid.index:
+            for c in grid.columns:
+                phys = self.find_physics(phase=self[c], geometry=self[r])
+                if phys is not None:
+                    grid.loc[r][c] = phys.name
+                else:
+                    grid.loc[r][c] = '---'
+        if astype == 'pandas':
+            pass
+        elif astype == 'dict':
+            grid = grid.to_dict()
+        elif astype == 'table':
+            from terminaltables import SingleTable
+            headings = [self.network.name] + list(grid.keys())
+            g = [headings]
+            for row in list(grid.index):
+                g.append([row] + list(grid.loc[row]))
+            grid = SingleTable(g)
+            grid.title = 'Project: ' + self.name
+            grid.padding_left = 3
+            grid.padding_right = 3
+            grid.justify_columns = {col: 'center' for col in range(len(headings))}
+        elif astype == 'grid':
+            grid = ProjectGrid()
+        return grid
 
-class Grid(dict):
+    @property
+    def grid(self):
+        grid = self.get_grid(astype='table')
+        obj = ProjectGrid(grid)
+        return obj
 
-    def __init__(self, name='', *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.name = name
+
+class Grid():
+
+    def __init__(self, table):
+        self.grid = table
 
     def index(self):
-        return list(self.keys())
+        index = [row[0] for row in self.grid.table_data[1:]]
+        return index
 
     def header(self):
-        d = []
-        for item in self.keys():
-            d.extend([i for i in self[item].keys()])
-        return list(set(d))
+        columns = self.grid.table_data[0][1:]
+        return columns
 
     def row(self, name):
-        return list(self[name].values())
+        for row in self.grid.table_data:
+            if row[0].startswith(name):
+                return row
+        else:
+            raise ValueError(name + 'is not in list')
 
     def col(self, name):
+        # Find column number
+        index = self.grid.table_data[0].index(name)
         col = []
-        for row in self.index():
-            col.append(self[row][name])
+        for row in self.grid.table_data:
+            col.append(row[index])
         return col
 
     def __str__(self):
-        s = []
-        hr = '―'*(16*(len(self.header())+1))
-        s.append(hr)
-        fmt = ["| {"+str(i)+":^13} " for i in range(len(self.header()))]
-        cols = [item for item in self.header()]
-        s.append('| {0:^13}'.format(self.name) +
-                 ''.join(fmt).format(*cols) + '|')
-        s.append(hr)
-        for row in self.index():
-            ind = '| {0:^13}'.format(row)
-            s.append(ind + ''.join(fmt).format(*list(self[row].values()))+'|')
-            s.append(hr)
-        return '\n'.join(s)
+        s = self.grid.table.__str__()
+        return s
 
 
 class ProjectGrid(Grid):
