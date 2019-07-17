@@ -1,7 +1,7 @@
 import scipy as sp
 from flatdict import FlatDict
 from collections import namedtuple
-import pandas as pd
+from pandas import DataFrame
 from openpnm.io import Dict, GenericIO
 from openpnm.utils import sanitize_dict, logging
 logger = logging.getLogger(__name__)
@@ -85,8 +85,8 @@ class Pandas(GenericIO):
                               for i in cols})
 
         # Convert sanitized dictionaries to DataFrames
-        pdata = pd.DataFrame(sanitize_dict(pdata))
-        tdata = pd.DataFrame(sanitize_dict(tdata))
+        pdata = DataFrame(sanitize_dict(pdata))
+        tdata = DataFrame(sanitize_dict(tdata))
 
         # Prepare DataFrames to be returned
         if join:

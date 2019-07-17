@@ -1,8 +1,7 @@
-import h5py
+from h5py import File as hdfFile
 from flatdict import FlatDict
 from openpnm.io import Dict, GenericIO
-from openpnm.network import GenericNetwork
-from openpnm.utils import logging, Project
+from openpnm.utils import logging
 logger = logging.getLogger(__name__)
 
 
@@ -76,7 +75,7 @@ class HDF5(GenericIO):
                            categorize_by=categorize_by)
         d = FlatDict(dct, delimiter='/')
 
-        f = h5py.File(filename, "w")
+        f = hdfFile(filename, "w")
         for item in d.keys():
             tempname = '_'.join(item.split('.'))
             arr = d[item]

@@ -93,4 +93,8 @@ class GenericGeometry(Subdomain, ModelsMixin):
                             self.name + ' to entire domain')
                 pores = network.Ps
                 throats = network.Ts
-            self._add_locations(pores=pores, throats=throats)
+            try:
+                self._add_locations(pores=pores, throats=throats)
+            except Exception as e:
+                network.project.purge_object(self)
+                logger.error(str(e) +  ', instantiation cancelled')
