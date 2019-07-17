@@ -16,7 +16,6 @@ import logging
 import matplotlib.pyplot as plt
 from scipy.sparse import coo_matrix, dok_matrix
 from transforms3d._gohlketransforms import angle_between_vectors
-from tqdm import tqdm
 logger = logging.getLogger(__name__)
 
 
@@ -1114,7 +1113,7 @@ class MixedInvasionPercolation(GenericAlgorithm):
         T1 = pairs[:, 0]
         T2 = pairs[:, 1]
         hits = []
-        for Pc in tqdm(inv_points, 'Coop Filling Setup'):
+        for Pc in inv_points:
             # Don't use zero as can get strange numbers in menisci data
             if Pc == 0.0:
                 Pc = 1e-6
