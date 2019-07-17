@@ -25,12 +25,18 @@ default_settings = {'sat': dict(),
                     'results': {'sat': [], 'krw': [], 'krnw': []}
                     }
 
-class RelPerm(GenericAlgorithm):
+class RelativePermeability(GenericAlgorithm):
     r"""
     A subclass of Generic Algorithm to calculate relative permeabilities of
     fluids in a drainage process. The main roles of this subclass are to
     get invasion sequence and implement a method for calculating the relative
-    permeabilities of the fluids flowing through a user-specified direction.
+    permeabilities of the fluids flowing in three directions.
+    
+    Notes
+    -----
+    The results can be plotted using `plot_Kr_curve`, and numerical data
+    can be obtained with `get_Kr_data`.
+        
     """
     def __init__(self, settings={}, **kwargs):
         super().__init__(**kwargs)
