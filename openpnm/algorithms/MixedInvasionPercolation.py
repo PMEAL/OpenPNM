@@ -1167,9 +1167,8 @@ class MixedInvasionPercolation(GenericAlgorithm):
         # Change to lil for single throat lookups
         self.tt_Pc = self.tt_Pc.tolil()
         print("Coop filling finished in " +
-                    str(np.around(time.time()-start, 2)) + " s")
+              str(np.around(time.time()-start, 2)) + " s")
         print('Coop Hits', np.unique(np.asarray(hits)))
-
 
     def setup_coop_filling(self, inv_points=None):
         r"""
