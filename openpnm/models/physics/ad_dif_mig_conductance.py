@@ -146,13 +146,22 @@ def ad_dif_mig(target,
     # Advection-migration
     adv_mig = Qij-mig
 
-    # Peclet number (includes advection and migration)
-    Peij_adv_mig = adv_mig/gd
+    # Peclet numbers
+    Peij_adv_mig = adv_mig/gd  # includes advection and migration
+    Peij_adv = Qij/gd  # includes advection only
+    Peij_mig = mig/gd  # includes migration only
+    # Filter values
     Peij_adv_mig[(Peij_adv_mig < 1e-10) & (Peij_adv_mig >= 0)] = 1e-10
     Peij_adv_mig[(Peij_adv_mig > -1e-10) & (Peij_adv_mig <= 0)] = -1e-10
+    Peij_adv[(Peij_adv < 1e-10) & (Peij_adv >= 0)] = 1e-10
+    Peij_adv[(Peij_adv > -1e-10) & (Peij_adv <= 0)] = -1e-10
+    Peij_mig[(Peij_mig < 1e-10) & (Peij_mig >= 0)] = 1e-10
+    Peij_mig[(Peij_mig > -1e-10) & (Peij_mig <= 0)] = -1e-10
 
     # Export Peclet values (half only since Peij_adv_mig = -Peji_adv_mig)
-    phase['throat.Peclet'] = _sp.absolute(Peij_adv_mig[0:len(Lt)])
+    phase['throat.peclet.ad_mig'] = _sp.absolute(Peij_adv_mig[0:len(Lt)])
+    phase['throat.peclet.ad'] = _sp.absolute(Peij_adv[0:len(Lt)])
+    phase['throat.peclet.mig'] = _sp.absolute(Peij_mig[0:len(Lt)])
 
     # Corrected advection-migration
     adv_mig = Peij_adv_mig*gd
