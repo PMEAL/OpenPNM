@@ -25,18 +25,19 @@ default_settings = {'sat': dict(),
                     'results': {'sat': [], 'krw': [], 'krnw': []}
                     }
 
+
 class RelativePermeability(GenericAlgorithm):
     r"""
     A subclass of Generic Algorithm to calculate relative permeabilities of
     fluids in a drainage process. The main roles of this subclass are to
     get invasion sequence and implement a method for calculating the relative
     permeabilities of the fluids flowing in three directions.
-    
+
     Notes
     -----
     The results can be plotted using `plot_Kr_curve`, and numerical data
     can be obtained with `get_Kr_data`.
-        
+
     """
     def __init__(self, settings={}, **kwargs):
         super().__init__(**kwargs)
@@ -50,14 +51,15 @@ class RelativePermeability(GenericAlgorithm):
         self.settings['throat_volume']='throat.volume'
         self.settings['pore_volume']='pore.volume'
         if (invasion_sequence=='invasion_sequence'):
-            self.settings['pore.invasion_sequence']=self.settings['nwp']['pore.invasion_sequence']
-            self.settings['throat.invasion_sequence']=self.settings['nwp']['throat.invasion_sequence']
+            self.settings['pore.invasion_sequence']=\
+            self.settings['nwp']['pore.invasion_sequence']
+            self.settings['throat.invasion_sequence']=\
+            self.settings['nwp']['throat.invasion_sequence']
         self.settings['BP_1']={'x': 'left', 'y': 'front', 'z': 'top'}
         self.settings['BP_2']={'x': 'right', 'y': 'back', 'z': 'bottom'}
         self.settings['flow_inlets']=self.settings['BP_1']
         self.settings['flow_outlets']=self.settings['BP_2']
-        #provide an else statement later
-        #provide statement for multiphase later
+
     def set_inlets(self, pores):
         self.settings['flow_inlet'] = pores
 
@@ -69,11 +71,13 @@ class RelativePermeability(GenericAlgorithm):
             modelwp=models.physics.multiphase.conduit_conductance
             self.settings['wp'].add_model(model=modelwp,
                                           propname='throat.conduit_hydraulic_conductance',
-                                          throat_conductance='throat.hydraulic_conductance')
+                                          throat_conductance=\
+                                          'throat.hydraulic_conductance')
         modelnwp=models.physics.multiphase.conduit_conductance
         self.settings['nwp'].add_model(model=modelnwp,
                                        propname='throat.conduit_hydraulic_conductance',
-                                       throat_conductance='throat.hydraulic_conductance')
+                                       throat_conductance=\
+                                       'throat.hydraulic_conductance')
 
     def abs_perm_calc(self, B_pores, in_outlet_pores):
         if self.settings['wp'] is not None:
