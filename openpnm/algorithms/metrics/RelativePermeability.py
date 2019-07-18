@@ -51,10 +51,11 @@ class RelativePermeability(GenericAlgorithm):
         self.settings['throat_volume']='throat.volume'
         self.settings['pore_volume']='pore.volume'
         if (invasion_sequence=='invasion_sequence'):
-            self.settings['pore.invasion_sequence']=\
-                self.settings['nwp']['pore.invasion_sequence']
-            self.settings['throat.invasion_sequence']=\
-                self.settings['nwp']['throat.invasion_sequence']
+            seq_p=self.settings['nwp']['pore.invasion_sequence']
+            self.settings['pore.invasion_sequence']=seq_p
+            seq_t=self.settings['nwp']['throat.invasion_sequence']
+            self.settings['throat.invasion_sequence']=seq_t
+                
         self.settings['BP_1']={'x': 'left', 'y': 'front', 'z': 'top'}
         self.settings['BP_2']={'x': 'right', 'y': 'back', 'z': 'bottom'}
         self.settings['flow_inlets']=self.settings['BP_1']
