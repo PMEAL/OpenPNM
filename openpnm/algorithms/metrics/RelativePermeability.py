@@ -80,8 +80,8 @@ class RelativePermeability(GenericAlgorithm):
                                        throat_conductance=prop_q)
 
     def abs_perm_calc(self, B_pores, in_outlet_pores):
+        network=self.project.network
         if self.settings['wp'] is not None:
-            network=self.project.network
             St_wp = StokesFlow(network=network, phase=self.settings['wp'])
             St_wp.set_value_BC(pores=B_pores[0], values=1)
             St_wp.set_value_BC(pores=B_pores[1], values=0)
