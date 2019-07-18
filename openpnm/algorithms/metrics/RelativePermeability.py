@@ -52,9 +52,9 @@ class RelativePermeability(GenericAlgorithm):
         self.settings['pore_volume']='pore.volume'
         if (invasion_sequence=='invasion_sequence'):
             self.settings['pore.invasion_sequence']=\
-            self.settings['nwp']['pore.invasion_sequence']
+                self.settings['nwp']['pore.invasion_sequence']
             self.settings['throat.invasion_sequence']=\
-            self.settings['nwp']['throat.invasion_sequence']
+                self.settings['nwp']['throat.invasion_sequence']
         self.settings['BP_1']={'x': 'left', 'y': 'front', 'z': 'top'}
         self.settings['BP_2']={'x': 'right', 'y': 'back', 'z': 'bottom'}
         self.settings['flow_inlets']=self.settings['BP_1']
@@ -67,17 +67,17 @@ class RelativePermeability(GenericAlgorithm):
         self.settings['flow_outlet'] = pores
 
     def _regenerate_models(self):
+        prop='throat.conduit_hydraulic_conductance'
+        prop_q='throat.hydraulic_conductance'
         if self.settings['wp'] is not None:
             modelwp=models.physics.multiphase.conduit_conductance
             self.settings['wp'].add_model(model=modelwp,
-                                          propname='throat.conduit_hydraulic_conductance',
-                                          throat_conductance=\
-                                          'throat.hydraulic_conductance')
+                                          propname=prop,
+                                          throat_conductance=prop_q)
         modelnwp=models.physics.multiphase.conduit_conductance
         self.settings['nwp'].add_model(model=modelnwp,
-                                       propname='throat.conduit_hydraulic_conductance',
-                                       throat_conductance=\
-                                       'throat.hydraulic_conductance')
+                                       propname=prop,
+                                       throat_conductance=prop_q)
 
     def abs_perm_calc(self, B_pores, in_outlet_pores):
         if self.settings['wp'] is not None:
@@ -196,7 +196,7 @@ class RelativePermeability(GenericAlgorithm):
             if self.settings['wp'] is not None:
                 self.settings['relperm_wp'].update({dirs: relperm_wp})
             self.settings['relperm_nwp'].update({dirs: relperm_nwp})
-            self.settings['sat'].update({dirs:Snwparr})
+            self.settings['sat'].update({dirs: Snwparr})
 
     def plot_Kr_curve(self):
         f = plt.figure()
@@ -218,6 +218,6 @@ class RelativePermeability(GenericAlgorithm):
         if self.settings['wp'] is not None:
             self.settings['results']['krw']=self.settings['relperm_wp']
         else:
-             self.settings['results']['krw']=None
+            self.settings['results']['krw']=None
         self.settings['results']['krnw']=self.settings['relperm_nwp']
         return self.settings['results']
