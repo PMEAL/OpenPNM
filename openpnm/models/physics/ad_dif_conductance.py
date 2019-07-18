@@ -88,6 +88,11 @@ def ad_dif(target,
     Peij = Qij/gd
     Peij[(Peij < 1e-10) & (Peij >= 0)] = 1e-10
     Peij[(Peij > -1e-10) & (Peij <= 0)] = -1e-10
+
+    # Export Peclet values (half only since Peij = -Peji)
+    phase['throat.peclet.ad'] = _sp.absolute(Peij[0:len(Lt)])
+
+    # Correct the flow rate
     Qij = Peij*gd
 
     if s_scheme == 'upwind':
