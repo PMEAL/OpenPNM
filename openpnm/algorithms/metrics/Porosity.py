@@ -51,7 +51,7 @@ class Porosity(Base):
 
     def porosity(self):
         Vvoid = self.get_pore_volume() + self.get_throat_volume() \
-                - self.find_intersection_volume()
+            - self.find_intersection_volume()
         phi = Vvoid/self.bulk_volume
         return phi
 
