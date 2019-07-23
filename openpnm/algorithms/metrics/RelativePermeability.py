@@ -7,22 +7,18 @@ import openpnm
 logger = logging.getLogger(__name__)
 
 
-default_settings = {'sat': dict(),
-                    'relperm_wp': dict(),
-                    'relperm_nwp': dict(),
-                    'perm_wp': dict(),
-                    'perm_nwp': dict(),
-                    'wp': [],
-                    'nwp': [],
-                    'pore.invasion_sequence': [],
-                    'throat.invasion_sequence': [],
-                    'flow_inlet': dict(),
-                    'flow_outlet': dict(),
-                    'pore_volume': [],
-                    'throat_volume': [],
-                    'BP_1': dict(),
-                    'BP_2': dict(),
-                    'results': {'sat': [], 'krw': [], 'krnw': []}
+default_settings = {'wp': None,
+                    'nwp': None,
+                    'conduit_hydraulic_conductance':
+                        'throat.conduit_hydraulic_conductance',
+                    'hydraulic_conductance':
+                        'throat.hydraulic_conductance',
+                    'pore.invasion_sequence': 'pore.invasion_sequence',
+                    'throat.invasion_sequence': 'throat.invasion_sequence',
+                    'flow_inlet': None,
+                    'flow_outlet': None,
+                    'pore_volume': '',
+                    'throat_volume': '',
                     }
 
 
@@ -43,43 +39,70 @@ class RelativePermeability(GenericAlgorithm):
         super().__init__(**kwargs)
         self.settings.update(default_settings)
         self.settings.update(settings)
+        self.Kr_values = {'sat': dict(),
+                          'relperm_wp': dict(),
+                          'relperm_nwp': dict(),
+                          'perm_wp': dict(),
+                          'perm_nwp': dict(),
+                          'results': {'sat': [], 'krw': [], 'krnw': []}}
 
     def setup(self, invading_phase=None, defending_phase=None,
               invasion_sequence=None, multiphase=None):
-        self.settings['nwp']=invading_phase
-        self.settings['wp']= defending_phase
-        self.settings['throat_volume']='throat.volume'
-        self.settings['pore_volume']='pore.volume'
-        if (invasion_sequence=='invasion_sequence'):
-            seq_p=self.settings['nwp']['pore.invasion_sequence']
-            self.settings['pore.invasion_sequence']=seq_p
-            seq_t=self.settings['nwp']['throat.invasion_sequence']
-            self.settings['throat.invasion_sequence']=seq_t
-        self.settings['BP_1']={'x': 'left', 'y': 'front', 'z': 'top'}
-        self.settings['BP_2']={'x': 'right', 'y': 'back', 'z': 'bottom'}
-        self.settings['flow_inlets']=self.settings['BP_1']
-        self.settings['flow_outlets']=self.settings['BP_2']
+        r"""
+        Assigns values to the algorithms ``settings``
 
-    def set_inlets(self, pores):
-        self.settings['flow_inlet'] = pores
+        Parameters
+        ----------
+        invading_phase : string
+            The invading or non-wetting phase
+        defending_phase : string, optional
+            If defending phase is specified, then it's permeability will
+            also be calculated, otherwise only the invading phase is
+            considered.
+        invasion_sequence : string (default is 'invasion_sequence')
+            The dictionary key on the invading phase object where the invasion
+            sequence is stored.  The default from both the IP and OP algorithms
+            is 'invasion_sequence', so this is the default here.
+        """
+        if invading_phase is not None:
+            self.settings['nwp'] = invading_phase.name
+        if defending_phase is not None:
+            self.settings['wp'] = defending_phase.name
 
-    def set_outlets(self, pores):
-        self.settings['flow_outlet'] = pores
+        self.settings['throat_volume'] = 'throat.volume'
+        self.settings['pore_volume'] = 'pore.volume'
+        if (invasion_sequence == 'invasion_sequence'):
+            nwp = self.project[self.settings['nwp']]
+            seq_p = nwp['pore.invasion_sequence']
+            self.settings['pore.invasion_sequence'] = seq_p
+            seq_t = nwp['throat.invasion_sequence']
+            self.settings['throat.invasion_sequence'] = seq_t
+        self.settings['flow_inlets'] = {'x': 'left',
+                                        'y': 'front',
+                                        'z': 'top'}
+        self.settings['flow_outlets'] = {'x': 'right',
+                                         'y': 'back',
+                                         'z': 'bottom'}
 
     def _regenerate_models(self):
-        prop='throat.conduit_hydraulic_conductance'
-        prop_q='throat.hydraulic_conductance'
-        if self.settings['wp'] is not None:
-            modelwp=models.physics.multiphase.conduit_conductance
-            self.settings['wp'].add_model(model=modelwp,
-                                          propname=prop,
-                                          throat_conductance=prop_q)
-        modelnwp=models.physics.multiphase.conduit_conductance
-        self.settings['nwp'].add_model(model=modelnwp,
-                                       propname=prop,
-                                       throat_conductance=prop_q)
+        prop = self.settings['conduit_hydraulic_conductance']
+        prop_q = self.settings['hydraulic_conductance']
+        try:
+            wp = self.project[self.settings['wp']]
+            modelwp = models.physics.multiphase.conduit_conductance
+            wp.add_model(model=modelwp, propname=prop,
+                         throat_conductance=prop_q)
+        except KeyError():
+            pass
+        nwp = self.project[self.settings['nwp']]
+        modelnwp = models.physics.multiphase.conduit_conductance
+        nwp.add_model(model=modelnwp, propname=prop,
+                      throat_conductance=prop_q)
 
-    def abs_perm_calc(self, B_pores, in_outlet_pores):
+    def _abs_perm_calc(self, B_pores, in_outlet_pores):
+        r"""
+        Explain what this function does.
+        """
         network=self.project.network
         if self.settings['wp'] is not None:
             St_wp = StokesFlow(network=network, phase=self.settings['wp'])
@@ -102,7 +125,7 @@ class RelativePermeability(GenericAlgorithm):
         self.project.purge_object(obj=St_nwp)
         return [Kwp, Knwp]
 
-    def rel_perm_calc(self, B_pores, in_outlet_pores):
+    def _eff_perm_calc(self, B_pores, in_outlet_pores):
         network=self.project.network
         self._regenerate_models()
         if self.settings['wp'] is not None:
@@ -144,6 +167,7 @@ class RelativePermeability(GenericAlgorithm):
 
     def run(self, Snw_num=None, IP_pores=None):
         net= self.project.network
+        # The following 1/2 of the inlet to ??? because, etc
         Foutlets_init=dict()
         for dim in self.settings['flow_outlets']:
             Foutlets_init.update({dim: net.pores(self.settings['flow_outlets'][dim])})
@@ -194,11 +218,11 @@ class RelativePermeability(GenericAlgorithm):
                     relperm_wp.append(Kewp/self.settings['perm_wp'][dirs])
                 relperm_nwp.append(Kenwp/self.settings['perm_nwp'][dirs])
             if self.settings['wp'] is not None:
-                self.settings['relperm_wp'].update({dirs: relperm_wp})
-            self.settings['relperm_nwp'].update({dirs: relperm_nwp})
-            self.settings['sat'].update({dirs: Snwparr})
+                self.Kr_value['relperm_wp'].update({dirs: relperm_wp})
+            self.Kr_values['relperm_nwp'].update({dirs: relperm_nwp})
+            self.Kr_values['sat'].update({dirs: Snwparr})
 
-    def plot_Kr_curve(self):
+    def plot_Kr_curves(self):
         f = plt.figure()
         sp = f.add_subplot(111)
         for inp in self.settings['flow_inlets']:
