@@ -27,3 +27,4 @@ The table below gives a list of available Material generators:
 
 from .VoronoiFibers import VoronoiFibers
 from .BundleOfTubes import BundleOfTubes
+from .BereaCubic import BereaCubic
