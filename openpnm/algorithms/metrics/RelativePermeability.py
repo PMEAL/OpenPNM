@@ -3,7 +3,6 @@ from openpnm.utils import logging
 from openpnm import models
 import numpy as np
 import matplotlib.pyplot as plt
-import openpnm
 logger = logging.getLogger(__name__)
 
 
@@ -17,8 +16,6 @@ default_settings = {'wp': None,
                     'throat.invasion_sequence': 'throat.invasion_sequence',
                     'flow_inlet': None,
                     'flow_outlet': None,
-                    'pore_volume': '',
-                    'throat_volume': '',
                     }
 
 
@@ -68,9 +65,6 @@ class RelativePermeability(GenericAlgorithm):
             self.settings['nwp'] = invading_phase.name
         if defending_phase is not None:
             self.settings['wp'] = defending_phase.name
-
-        self.settings['throat_volume'] = 'throat.volume'
-        self.settings['pore_volume'] = 'pore.volume'
         if (invasion_sequence == 'invasion_sequence'):
             nwp = self.project[self.settings['nwp']]
             seq_p = nwp['pore.invasion_sequence']
@@ -103,33 +97,37 @@ class RelativePermeability(GenericAlgorithm):
         r"""
         Explain what this function does.
         """
-        network=self.project.network
-        if self.settings['wp'] is not None:
-            St_wp = StokesFlow(network=network, phase=self.settings['wp'])
+        network = self.project.network
+        try:
+            wp = self.project[self.settings['wp']]
+            St_wp = StokesFlow(network=network, phase=wp)
             St_wp.set_value_BC(pores=B_pores[0], values=1)
             St_wp.set_value_BC(pores=B_pores[1], values=0)
             St_wp.run()
-            val=St_wp.calc_effective_permeability(inlets=in_outlet_pores[0],
-                                                  outlets=in_outlet_pores[1])
-            Kwp=val
+            val = St_wp.calc_effective_permeability(inlets=in_outlet_pores[0],
+                                                    outlets=in_outlet_pores[1])
+            Kwp = val
             self.project.purge_object(obj=St_wp)
-        else:
-            Kwp=None
-        St_nwp = StokesFlow(network=network, phase=self.settings['nwp'])
+        except KeyError():
+            Kwp = None
+            pass
+        nwp = self.project[self.settings['nwp']]
+        St_nwp = StokesFlow(network=network, phase=nwp)
         St_nwp.set_value_BC(pores=B_pores[0], values=1)
         St_nwp.set_value_BC(pores=B_pores[1], values=0)
         St_nwp.run()
-        val=St_nwp.calc_effective_permeability(inlets=in_outlet_pores[0],
+        val = St_nwp.calc_effective_permeability(inlets=in_outlet_pores[0],
                                                outlets=in_outlet_pores[1])
-        Knwp=val
+        Knwp = val
         self.project.purge_object(obj=St_nwp)
         return [Kwp, Knwp]
 
     def _eff_perm_calc(self, B_pores, in_outlet_pores):
         network=self.project.network
         self._regenerate_models()
-        if self.settings['wp'] is not None:
-            St_mp_wp = StokesFlow(network=network, phase=self.settings['wp'])
+        try:
+            wp = self.project[self.settings['wp']]
+            St_mp_wp = StokesFlow(network=network, phase=wp)
             St_mp_wp.setup(conductance='throat.conduit_hydraulic_conductance')
             St_mp_wp.set_value_BC(pores=B_pores[0], values=1)
             St_mp_wp.set_value_BC(pores=B_pores[1], values=0)
@@ -137,9 +135,11 @@ class RelativePermeability(GenericAlgorithm):
             Kewp=St_mp_wp.calc_effective_permeability(inlets=in_outlet_pores[0],
                                                         outlets=in_outlet_pores[1])
             self.project.purge_object(obj=St_mp_wp)
-        else:
-            Kewp=None
-        St_mp_nwp = StokesFlow(network=network, phase=self.settings['nwp'])
+        except KeyError():
+            Kewp = None
+            pass
+        nwp = self.project[self.settings['nwp']]
+        St_mp_nwp = StokesFlow(network=network, phase=nwp)
         St_mp_nwp.set_value_BC(pores=B_pores[0], values=1)
         St_mp_nwp.set_value_BC(pores=B_pores[1], values=0)
         St_mp_nwp.setup(conductance='throat.conduit_hydraulic_conductance')
@@ -158,11 +158,15 @@ class RelativePermeability(GenericAlgorithm):
         sat1=sat_p+sat_t
         bulk=(np.sum(network['pore.volume']) + np.sum(network['throat.volume']))
         sat=sat1/bulk
-        self.settings['nwp']['pore.occupancy'] = pore_mask
-        self.settings['nwp']['throat.occupancy'] = throat_mask
-        if self.settings['wp'] is not None:
-            self.settings['wp']['throat.occupancy'] = 1-throat_mask
-            self.settings['wp']['pore.occupancy'] = 1-pore_mask
+        nwp = self.project[self.settings['nwp']]
+        nwp['pore.occupancy'] = pore_mask
+        nwp['throat.occupancy'] = throat_mask
+        try:
+            wp = self.project[self.settings['wp']]
+            wp['throat.occupancy'] = 1-throat_mask
+            wp['pore.occupancy'] = 1-pore_mask
+        except KeyError():
+            pass
         return sat
 
     def run(self, Snw_num=None, IP_pores=None):
