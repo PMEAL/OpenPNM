@@ -28,7 +28,7 @@ class RelativePermeability(GenericAlgorithm):
 
     Notes
     -----
-    The results can be plotted using `plot_Kr_curve`, and numerical data
+    The results can be plotted using `plot_Kr_curves`, and numerical data
     can be obtained with `get_Kr_data`.
 
     """
@@ -44,7 +44,7 @@ class RelativePermeability(GenericAlgorithm):
                           'results': {'sat': [], 'krw': [], 'krnw': []}}
 
     def setup(self, invading_phase=None, defending_phase=None,
-              invasion_sequence=None, multiphase=None):
+              invasion_sequence=None):
         r"""
         Assigns values to the algorithms ``settings``
 
@@ -86,7 +86,7 @@ class RelativePermeability(GenericAlgorithm):
             modelwp = models.physics.multiphase.conduit_conductance
             wp.add_model(model=modelwp, propname=prop,
                          throat_conductance=prop_q)
-        except KeyError():
+        except :
             pass
         nwp = self.project[self.settings['nwp']]
         modelnwp = models.physics.multiphase.conduit_conductance
@@ -108,7 +108,7 @@ class RelativePermeability(GenericAlgorithm):
                                                     outlets=in_outlet_pores[1])
             Kwp = val
             self.project.purge_object(obj=St_wp)
-        except KeyError():
+        except:
             Kwp = None
             pass
         nwp = self.project[self.settings['nwp']]
@@ -135,7 +135,7 @@ class RelativePermeability(GenericAlgorithm):
             Kewp=St_mp_wp.calc_effective_permeability(inlets=in_outlet_pores[0],
                                                         outlets=in_outlet_pores[1])
             self.project.purge_object(obj=St_mp_wp)
-        except KeyError():
+        except :
             Kewp = None
             pass
         nwp = self.project[self.settings['nwp']]
@@ -165,7 +165,7 @@ class RelativePermeability(GenericAlgorithm):
             wp = self.project[self.settings['wp']]
             wp['throat.occupancy'] = 1-throat_mask
             wp['pore.occupancy'] = 1-pore_mask
-        except KeyError():
+        except :
             pass
         return sat
 
@@ -190,18 +190,23 @@ class RelativePermeability(GenericAlgorithm):
             Finlets.update({key: inl})
         K_dir=set(self.settings['flow_inlets'].keys())
         for dim in K_dir:
-            B_pores=[net.pores(self.settings['BP_1'][dim]),
-                     net.pores(self.settings['BP_2'][dim])]
+            B_pores=[net.pores(self.settings['flow_inlets'][dim]),
+                     net.pores(self.settings['flow_outlets'][dim])]
             in_outlet_pores=[Finlets_init[dim], Foutlets_init[dim]]
-            [Kw, Knw]=self.abs_perm_calc(B_pores, in_outlet_pores)
-            if self.settings['wp'] is not None:
-                self.settings['perm_wp'].update({dim: Kw})
-            self.settings['perm_nwp'].update({dim: Knw})
+            [Kw, Knw]=self._abs_perm_calc(B_pores, in_outlet_pores)
+            try:
+                wp = self.project[self.settings['wp']]
+                self.Kr_values['perm_wp'].update({dim: Kw})
+            except:
+                pass
+            self.Kr_values['perm_nwp'].update({dim: Knw})
         for dirs in self.settings['flow_inlets']:
-            if self.settings['wp'] is not None:
+            try:
+                wp = self.project[self.settings['wp']]
                 relperm_wp=[]
-            else:
+            except:
                 relperm_wp=None
+                pass
             relperm_nwp=[]
             if Snw_num is None:
                 Snw_num=10
@@ -211,16 +216,16 @@ class RelativePermeability(GenericAlgorithm):
             stop=max_seq
             step=max_seq//Snw_num
             Snwparr = []
-            B_pores=[net.pores(self.settings['BP_1'][dirs]),
-                     net.pores(self.settings['BP_2'][dirs])]
+            B_pores=[net.pores(self.settings['flow_inlets'][dirs]),
+                     net.pores(self.settings['flow_outlets'][dirs])]
             in_outlet_pores=[Finlets_init[dirs], Foutlets_init[dirs]]
             for j in range(start, stop, step):
                 sat=self._sat_occ_update(j)
                 Snwparr.append(sat)
-                [Kewp, Kenwp]=self.rel_perm_calc(B_pores, in_outlet_pores)
+                [Kewp, Kenwp]=self._eff_perm_calc(B_pores, in_outlet_pores)
                 if self.settings['wp'] is not None:
-                    relperm_wp.append(Kewp/self.settings['perm_wp'][dirs])
-                relperm_nwp.append(Kenwp/self.settings['perm_nwp'][dirs])
+                    relperm_wp.append(Kewp/self.Kr_values['perm_wp'][dirs])
+                relperm_nwp.append(Kenwp/self.Kr_values['perm_nwp'][dirs])
             if self.settings['wp'] is not None:
                 self.Kr_value['relperm_wp'].update({dirs: relperm_wp})
             self.Kr_values['relperm_nwp'].update({dirs: relperm_nwp})
@@ -231,9 +236,9 @@ class RelativePermeability(GenericAlgorithm):
         sp = f.add_subplot(111)
         for inp in self.settings['flow_inlets']:
             if self.settings['wp'] is not None:
-                sp.plot(self.settings['sat'][inp], self.settings['relperm_wp'][inp],
+                sp.plot(self.Kr_values['sat'][inp], self.Kr_values['relperm_wp'][inp],
                         'o-', label='Krwp'+inp)
-            sp.plot(self.settings['sat'][inp], self.settings['relperm_nwp'][inp],
+            sp.plot(self.Kr_values['sat'][inp], self.Kr_values['relperm_nwp'][inp],
                     '*-', label='Krnwp'+inp)
         sp.set_xlabel('Snw')
         sp.set_ylabel('Kr')
@@ -242,10 +247,10 @@ class RelativePermeability(GenericAlgorithm):
         return f
 
     def get_Kr_data(self):
-        self.settings['results']['sat']=self.settings['sat']
+        self.Kr_values['results']['sat']=self.Kr_values['sat']
         if self.settings['wp'] is not None:
-            self.settings['results']['krw']=self.settings['relperm_wp']
+            self.Kr_values['results']['krw']=self.Kr_values['relperm_wp']
         else:
-            self.settings['results']['krw']=None
-        self.settings['results']['krnw']=self.settings['relperm_nwp']
+            self.Kr_values['results']['krw']=None
+        self.Kr_values['results']['krnw']=self.Kr_values['relperm_nwp']
         return self.settings['results']
