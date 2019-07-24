@@ -190,7 +190,18 @@ class RelativePermeability(GenericAlgorithm):
         return [Kewp, Kenwp]
 
     def _sat_occ_update(self, i):
-        
+        r"""
+        Calculates the saturation of each phase using the invasion sequence from either
+        invasion percolation or ordinary percolation.
+        Parameters
+        ----------
+        i: scalar
+        The invasion_sequence limit for masking pores/throats that have already
+        been invaded within this limit range. The saturation is found by adding the
+        volume of pores and thorats that meet this sequence limit divided by the 
+        bulk volume.
+
+        """
         network=self.project.network
         pore_mask=self.settings['pore.invasion_sequence']<i
         throat_mask=self.settings['throat.invasion_sequence']<i
