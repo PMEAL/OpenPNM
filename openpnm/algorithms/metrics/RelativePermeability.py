@@ -221,30 +221,29 @@ class RelativePermeability(GenericAlgorithm):
             pass
         return sat
 
-    def run(self, Snw_num=None, IP_pores=None):
+    def run(self, Snw_num=10):
+        r"""
+        Calculates the saturation of each phase using the invasion sequence from either
+        invasion percolation or ordinary percolation.
+        
+        Parameters
+        ----------
+        Snw_num: Scalar
+        Number of saturation point to calculate the relative permseability values. If not given, the default
+        value is 10. Saturation points will be Snw_num (or 10 by default) equidistant points in range [0,1].
+        
+        Note: For three directions of flow the absolute permeability values will be calculated
+        using _abs_perm_calc.  
+        For each saturation point:
+            the saturation values are calculated by _sat_occ_update. This function also updates occupancies
+            of each phase in pores /throats. Effective permeabilities of each phase is then calculated.
+            Relative permeability is defined by devision of K_eff and K_abs.
+        """
         net= self.project.network
-        # The following 1/2 of the inlet to ??? because, etc
-        Foutlets_init=dict()
-        for dim in self.settings['flow_outlets']:
-            Foutlets_init.update({dim: net.pores(self.settings['flow_outlets'][dim])})
-        Foutlets=dict()
-        outl=[]
-        for key in Foutlets_init.keys():
-            outl=[Foutlets_init[key][x] for x in range(0, len(Foutlets_init[key]), 2)]
-            Foutlets.update({key: outl})
-        Finlets_init=dict()
-        for dim in self.settings['flow_inlets']:
-            Finlets_init.update({dim: net.pores(self.settings['flow_inlets'][dim])})
-        Finlets=dict()
-        inl=[]
-        for key in Finlets_init.keys():
-            inl=([Finlets_init[key][x] for x in range(0, len(Finlets_init[key]), 2)])
-            Finlets.update({key: inl})
         K_dir=set(self.settings['flow_inlets'].keys())
         for dim in K_dir:
             flow_pores=[net.pores(self.settings['flow_inlets'][dim]),
                      net.pores(self.settings['flow_outlets'][dim])]
-            in_outlet_pores=[Finlets_init[dim], Foutlets_init[dim]]
             [Kw, Knw]=self._abs_perm_calc(flow_pores)
             try:
                 wp = self.project[self.settings['wp']]
@@ -260,8 +259,6 @@ class RelativePermeability(GenericAlgorithm):
                 relperm_wp=None
                 pass
             relperm_nwp=[]
-            if Snw_num is None:
-                Snw_num=10
             max_seq = np.max([np.max(self.settings['pore.invasion_sequence']),
                               np.max(self.settings['throat.invasion_sequence'])])
             start=max_seq//Snw_num
@@ -270,7 +267,6 @@ class RelativePermeability(GenericAlgorithm):
             Snwparr = []
             flow_pores=[net.pores(self.settings['flow_inlets'][dirs]),
                      net.pores(self.settings['flow_outlets'][dirs])]
-            in_outlet_pores=[Finlets_init[dirs], Foutlets_init[dirs]]
             for j in range(start, stop, step):
                 sat=self._sat_occ_update(j)
                 Snwparr.append(sat)
