@@ -55,8 +55,20 @@ class GenericPhysics(Subdomain, ModelsMixin):
             else:
                 self.set_phase(phase=phase)
             if geometry is None:
-                logger.warning('No Geometry provided, ' + self.name +
-                               ' will not be associated with any locations')
+                g = list(self.project.geometries().values())
+                if len(g) == 0:
+                    logger.warning('No Geometry provided, ' + self.name +
+                                   ' will not be associated with any' +
+                                   ' locations')
+                if len(g) == 1:
+                    self.set_geometry(geometry=g[0])
+                    logger.info('No Geometry provided, ' + self.name +
+                                ' will be associated with the only available' +
+                                ' geometry')
+                if len(g) > 1:
+                    logger.warning('No Geometry provided, ' + self.name +
+                                   ' and more than one geometry is defined' +
+                                   ' so cannot be automatically assigned')
             else:
                 if (phase is None):
                     logger.warning('Cannot associate with a geometry unless ' +
