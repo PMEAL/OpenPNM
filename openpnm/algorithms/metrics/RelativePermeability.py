@@ -85,13 +85,11 @@ class RelativePermeability(GenericAlgorithm):
         """
         prop = self.settings['conduit_hydraulic_conductance']
         prop_q = self.settings['hydraulic_conductance']
-        try:
+        if self.settings['wp'] is not None:
             wp = self.project[self.settings['wp']]
             modelwp = models.physics.multiphase.conduit_conductance
             wp.add_model(model=modelwp, propname=prop,
                          throat_conductance=prop_q)
-        except:
-            pass
         nwp = self.project[self.settings['nwp']]
         modelnwp = models.physics.multiphase.conduit_conductance
         nwp.add_model(model=modelnwp, propname=prop,
@@ -153,7 +151,7 @@ class RelativePermeability(GenericAlgorithm):
         """
         network = self.project.network
         self._regenerate_models()
-        try:
+        if self.settings['wp'] is not None:
             wp = self.project[self.settings['wp']]
             St_mp_wp = StokesFlow(network=network, phase=wp)
             St_mp_wp.setup(conductance='throat.conduit_hydraulic_conductance')
@@ -163,7 +161,7 @@ class RelativePermeability(GenericAlgorithm):
             Kewp = St_mp_wp.calc_effective_permeability(inlets=flow_pores[0],
                                                         outlets=flow_pores[1])
             self.project.purge_object(obj=St_mp_wp)
-        except :
+        else:
             Kewp = None
             pass
         nwp = self.project[self.settings['nwp']]
@@ -173,7 +171,7 @@ class RelativePermeability(GenericAlgorithm):
         St_mp_nwp.setup(conductance='throat.conduit_hydraulic_conductance')
         St_mp_nwp.run()
         Kenwp = St_mp_nwp.calc_effective_permeability(inlets=flow_pores[0],
-                                                    outlets=flow_pores[1])
+                                                      outlets=flow_pores[1])
         self.project.purge_object(obj=St_mp_nwp)
         return [Kewp, Kenwp]
 
@@ -202,12 +200,10 @@ class RelativePermeability(GenericAlgorithm):
         nwp = self.project[self.settings['nwp']]
         nwp['pore.occupancy'] = pore_mask
         nwp['throat.occupancy'] = throat_mask
-        try:
+        if self.settings['wp'] is not None:
             wp = self.project[self.settings['wp']]
             wp['throat.occupancy'] = 1-throat_mask
             wp['pore.occupancy'] = 1-pore_mask
-        except:
-            pass
         return sat
 
     def run(self, Snw_num=10):
@@ -239,10 +235,9 @@ class RelativePermeability(GenericAlgorithm):
             K_abs = self._abs_perm_calc(flow_pores)
             self.Kr_values['perm_abs'].update({dim: K_abs})
         for dirs in self.settings['flow_inlets']:
-            try:
-                wp = self.project[self.settings['wp']]
+            if self.settings['wp'] is not None:
                 relperm_wp = []
-            except:
+            else:
                 relperm_wp = None
                 pass
             relperm_nwp = []
