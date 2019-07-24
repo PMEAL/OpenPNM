@@ -8,7 +8,7 @@ from openpnm import topotools
 logger = logging.getLogger(__name__)
 
 
-class MercuryIntrusion(GenericAlgorithm):
+class MercuryIntrusion(Porosimetry):
     r"""
     A ready-made Mercury Intrusion Porosimetry algorithm
 
@@ -18,21 +18,33 @@ class MercuryIntrusion(GenericAlgorithm):
     the Washburn capillary pressure model is added to each Physics object (
     or to the Mercury object if there are no Geometries defined).
 
-    Notes
-    -----
-    The simulation is automatically run with all faces treated as inlets.  The
-    results can be plotted using `plot_intrusion_data`, and numerical data
+    The results can be plotted using `plot_intrusion_data`, and numerical data
     can be obtained with `get_intrusion_data`.
+
+    Examples
+    --------
+    >>> import openpnm as op
+    >>> pn = op.network.Cubic(shape=[10, 10, 10], spacing=1e-5)
+    >>> geo = op.geometry.StickAndBall(network=pn)
+    >>> mip = op.algorithms.metrics.MercuryPorosimetry(network=pn)
+    >>> mip.run()
+
+    You can then plot the results using ```mip.plot_intrusion_curve()```.
+
+    It is also possible to add some experimental data to the algorithm which
+    will the be plotted along with the simulated data:
+
+    >>> mip.pc_data = [10000, 20000, 30000]
+    >>> mip.snwp_data = [0, 0.5, 0.9]
     """
 
     def __init__(self, network=None, project=None, settings={}, name=None,
                  **kwargs):
         if project is None:
             project = network.project
-        hg = Mercury(network=network)
         super().__init__(network=network, project=project, **kwargs)
-        op = Porosimetry(project=project, phase=hg)
-        self.settings['mip'] = op.name
+        hg = Mercury(network=network)
+        self.setup(phase=hg)
         mod = models.physics.capillary_pressure.washburn
         for geom in project.geometries().values():
             phys = GenericPhysics(network=network, phase=hg, geometry=geom)
@@ -40,10 +52,10 @@ class MercuryIntrusion(GenericAlgorithm):
         if not project.geometries():
             hg.add_model(propname='throat.entry_pressure', model=mod)
         topotools.find_surface_pores(network=network)
-        op.set_inlets(pores=network.pores('surface'))
-        logger.info('Running MIP simulation')
-        op.run()
-        self.update(op)
+        self.set_inlets(pores=network.pores('surface'))
+        del self['pore.outlets']
+        del self['pore.residual']
+        del self['throat.residual']
 
     def _set_snwp_data(self, data):
         self._snwp_data = np.array(data)
@@ -51,8 +63,6 @@ class MercuryIntrusion(GenericAlgorithm):
     def _get_snwp_data(self):
         if hasattr(self, '_snwp_data'):
             return self._snwp_data
-        else:
-            logger.error('Pc data has not been provided')
 
     snwp_data = property(fget=_get_snwp_data, fset=_set_snwp_data)
 
@@ -62,15 +72,11 @@ class MercuryIntrusion(GenericAlgorithm):
     def _get_pc_data(self):
         if hasattr(self, '_pc_data'):
             return self._pc_data
-        else:
-            logger.error('Pc data has not been provided')
 
     pc_data = property(fget=_get_pc_data, fset=_set_pc_data)
 
     def plot_intrusion_curve(self, fig=None):
-        proj = self.project
-        op = proj[self.settings['mip']]
-        fig = op.plot_intrusion_curve(fig=fig)
+        fig = super().plot_intrusion_curve(fig=fig)
         ax = fig.gca()
         x = self.pc_data
         y = self.snwp_data
