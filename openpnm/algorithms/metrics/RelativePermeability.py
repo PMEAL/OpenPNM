@@ -40,8 +40,7 @@ class RelativePermeability(GenericAlgorithm):
         self.Kr_values = {'sat': dict(),
                           'relperm_wp': dict(),
                           'relperm_nwp': dict(),
-                          'perm_wp': dict(),
-                          'perm_nwp': dict(),
+                          'perm_abs': dict(),
                           'results': {'sat': [], 'krw': [], 'krnw': []}}
 
     def setup(self, invading_phase=None, defending_phase=None,
@@ -114,19 +113,6 @@ class RelativePermeability(GenericAlgorithm):
         invadin phase in the direction that is defined by flow_pores.
         """
         network = self.project.network
-        try:
-            wp = self.project[self.settings['wp']]
-            St_wp = StokesFlow(network=network, phase=wp)
-            St_wp.set_value_BC(pores=flow_pores[0], values=1)
-            St_wp.set_value_BC(pores=flow_pores[1], values=0)
-            St_wp.run()
-            val = St_wp.calc_effective_permeability(inlets=flow_pores[0],
-                                                    outlets=flow_pores[1])
-            Kwp = val
-            self.project.purge_object(obj=St_wp)
-        except:
-            Kwp = None
-            pass
         nwp = self.project[self.settings['nwp']]
         St_nwp = StokesFlow(network=network, phase=nwp)
         St_nwp.set_value_BC(pores=flow_pores[0], values=1)
@@ -134,11 +120,9 @@ class RelativePermeability(GenericAlgorithm):
         St_nwp.run()
         val = St_nwp.calc_effective_permeability(inlets=flow_pores[0],
                                                outlets=flow_pores[1])
-        Knwp = val
+        K_abs = val
         self.project.purge_object(obj=St_nwp)
-        return [Kwp, Knwp]
-    #shouldn't it be just invading phase? it's the same, right?############################################
-    ######################################################################################################
+        return K_abs
 
     def _eff_perm_calc(self, flow_pores):
         r"""
@@ -244,13 +228,8 @@ class RelativePermeability(GenericAlgorithm):
         for dim in K_dir:
             flow_pores=[net.pores(self.settings['flow_inlets'][dim]),
                      net.pores(self.settings['flow_outlets'][dim])]
-            [Kw, Knw]=self._abs_perm_calc(flow_pores)
-            try:
-                wp = self.project[self.settings['wp']]
-                self.Kr_values['perm_wp'].update({dim: Kw})
-            except:
-                pass
-            self.Kr_values['perm_nwp'].update({dim: Knw})
+            K_abs=self._abs_perm_calc(flow_pores)
+            self.Kr_values['perm_abs'].update({dim: K_abs})
         for dirs in self.settings['flow_inlets']:
             try:
                 wp = self.project[self.settings['wp']]
@@ -272,8 +251,8 @@ class RelativePermeability(GenericAlgorithm):
                 Snwparr.append(sat)
                 [Kewp, Kenwp]=self._eff_perm_calc(flow_pores)
                 if self.settings['wp'] is not None:
-                    relperm_wp.append(Kewp/self.Kr_values['perm_wp'][dirs])
-                relperm_nwp.append(Kenwp/self.Kr_values['perm_nwp'][dirs])
+                    relperm_wp.append(Kewp/self.Kr_values['perm_abs'][dirs])
+                relperm_nwp.append(Kenwp/self.Kr_values['perm_abs'][dirs])
             if self.settings['wp'] is not None:
                 self.Kr_value['relperm_wp'].update({dirs: relperm_wp})
             self.Kr_values['relperm_nwp'].update({dirs: relperm_nwp})
