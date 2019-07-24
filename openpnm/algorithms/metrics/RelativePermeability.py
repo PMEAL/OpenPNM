@@ -30,7 +30,8 @@ class RelativePermeability(GenericAlgorithm):
     -----
     The results can be plotted using `plot_Kr_curves`, and numerical data
     can be obtained with `get_Kr_data`.
-
+    Properties related to the invading phase have subscript 'nwp', while those 
+    related to the defending phase (if there is any) are named by subscript 'wp'
     """
     def __init__(self, settings={}, **kwargs):
         super().__init__(**kwargs)
@@ -79,6 +80,9 @@ class RelativePermeability(GenericAlgorithm):
                                          'z': 'bottom'}
 
     def _regenerate_models(self):
+        r"""
+        Updates the multiphase physics model for each saturation
+        """
         prop = self.settings['conduit_hydraulic_conductance']
         prop_q = self.settings['hydraulic_conductance']
         try:
@@ -86,26 +90,38 @@ class RelativePermeability(GenericAlgorithm):
             modelwp = models.physics.multiphase.conduit_conductance
             wp.add_model(model=modelwp, propname=prop,
                          throat_conductance=prop_q)
-        except :
+        except:
             pass
         nwp = self.project[self.settings['nwp']]
         modelnwp = models.physics.multiphase.conduit_conductance
         nwp.add_model(model=modelnwp, propname=prop,
                       throat_conductance=prop_q)
 
-    def _abs_perm_calc(self, B_pores, in_outlet_pores):
+    def _abs_perm_calc(self, flow_pores):
         r"""
-        Explain what this function does.
+        Calculates absolute permeability of the medium using StokesFlow algorithm.
+        The direction of flow is defined by flow_pores. 
+        
+        Parameters
+        ----------
+        flow_pores: numpy array 
+        Boundary pores that will have constant value boundary condition to in
+        StokesFlow algorithm. First element is the inlet face (pores) for flow of 
+        invading phase through porous media. Second element is the outlet face (pores).
+        
+        Output: array [Kwp, Knwp]
+        The value of absolute permeability of defending (if there is any) and
+        invadin phase in the direction that is defined by flow_pores.
         """
         network = self.project.network
         try:
             wp = self.project[self.settings['wp']]
             St_wp = StokesFlow(network=network, phase=wp)
-            St_wp.set_value_BC(pores=B_pores[0], values=1)
-            St_wp.set_value_BC(pores=B_pores[1], values=0)
+            St_wp.set_value_BC(pores=flow_pores[0], values=1)
+            St_wp.set_value_BC(pores=flow_pores[1], values=0)
             St_wp.run()
-            val = St_wp.calc_effective_permeability(inlets=in_outlet_pores[0],
-                                                    outlets=in_outlet_pores[1])
+            val = St_wp.calc_effective_permeability(inlets=flow_pores[0],
+                                                    outlets=flow_pores[1])
             Kwp = val
             self.project.purge_object(obj=St_wp)
         except:
@@ -113,43 +129,62 @@ class RelativePermeability(GenericAlgorithm):
             pass
         nwp = self.project[self.settings['nwp']]
         St_nwp = StokesFlow(network=network, phase=nwp)
-        St_nwp.set_value_BC(pores=B_pores[0], values=1)
-        St_nwp.set_value_BC(pores=B_pores[1], values=0)
+        St_nwp.set_value_BC(pores=flow_pores[0], values=1)
+        St_nwp.set_value_BC(pores=flow_pores[1], values=0)
         St_nwp.run()
-        val = St_nwp.calc_effective_permeability(inlets=in_outlet_pores[0],
-                                               outlets=in_outlet_pores[1])
+        val = St_nwp.calc_effective_permeability(inlets=flow_pores[0],
+                                               outlets=flow_pores[1])
         Knwp = val
         self.project.purge_object(obj=St_nwp)
         return [Kwp, Knwp]
+    #shouldn't it be just invading phase? it's the same, right?############################################
+    ######################################################################################################
 
-    def _eff_perm_calc(self, B_pores, in_outlet_pores):
+    def _eff_perm_calc(self, flow_pores):
+        r"""
+        Calculates effective permeability of each phase using StokesFlow algorithm
+        with updated multiphase physics models to account for the multiphase flow.
+        The direction of flow is defined by flow_pores. 
+
+        Parameters
+        ----------
+        flow_pores: numpy array 
+        Boundary pores that will have constant value boundary condition to in
+        StokesFlow algorithm. First element is the inlet face (pores) for flow of 
+        invading phase through porous media. Second element is the outlet face (pores).
+        
+        Output: array [Kewp, Kenwp]
+        The value of effective permeability of defending (if there is any) and
+        invadin phase in the direction that is defined by flow_pores.
+        """
         network=self.project.network
         self._regenerate_models()
         try:
             wp = self.project[self.settings['wp']]
             St_mp_wp = StokesFlow(network=network, phase=wp)
             St_mp_wp.setup(conductance='throat.conduit_hydraulic_conductance')
-            St_mp_wp.set_value_BC(pores=B_pores[0], values=1)
-            St_mp_wp.set_value_BC(pores=B_pores[1], values=0)
+            St_mp_wp.set_value_BC(pores=flow_pores[0], values=1)
+            St_mp_wp.set_value_BC(pores=flow_pores[1], values=0)
             St_mp_wp.run()
-            Kewp=St_mp_wp.calc_effective_permeability(inlets=in_outlet_pores[0],
-                                                        outlets=in_outlet_pores[1])
+            Kewp=St_mp_wp.calc_effective_permeability(inlets=flow_pores[0],
+                                                        outlets=flow_pores[1])
             self.project.purge_object(obj=St_mp_wp)
         except :
             Kewp = None
             pass
         nwp = self.project[self.settings['nwp']]
         St_mp_nwp = StokesFlow(network=network, phase=nwp)
-        St_mp_nwp.set_value_BC(pores=B_pores[0], values=1)
-        St_mp_nwp.set_value_BC(pores=B_pores[1], values=0)
+        St_mp_nwp.set_value_BC(pores=flow_pores[0], values=1)
+        St_mp_nwp.set_value_BC(pores=flow_pores[1], values=0)
         St_mp_nwp.setup(conductance='throat.conduit_hydraulic_conductance')
         St_mp_nwp.run()
-        Kenwp=St_mp_nwp.calc_effective_permeability(inlets=in_outlet_pores[0],
-                                                    outlets=in_outlet_pores[1])
+        Kenwp=St_mp_nwp.calc_effective_permeability(inlets=flow_pores[0],
+                                                    outlets=flow_pores[1])
         self.project.purge_object(obj=St_mp_nwp)
         return [Kewp, Kenwp]
 
     def _sat_occ_update(self, i):
+        
         network=self.project.network
         pore_mask=self.settings['pore.invasion_sequence']<i
         throat_mask=self.settings['throat.invasion_sequence']<i
@@ -190,10 +225,10 @@ class RelativePermeability(GenericAlgorithm):
             Finlets.update({key: inl})
         K_dir=set(self.settings['flow_inlets'].keys())
         for dim in K_dir:
-            B_pores=[net.pores(self.settings['flow_inlets'][dim]),
+            flow_pores=[net.pores(self.settings['flow_inlets'][dim]),
                      net.pores(self.settings['flow_outlets'][dim])]
             in_outlet_pores=[Finlets_init[dim], Foutlets_init[dim]]
-            [Kw, Knw]=self._abs_perm_calc(B_pores, in_outlet_pores)
+            [Kw, Knw]=self._abs_perm_calc(flow_pores)
             try:
                 wp = self.project[self.settings['wp']]
                 self.Kr_values['perm_wp'].update({dim: Kw})
@@ -216,13 +251,13 @@ class RelativePermeability(GenericAlgorithm):
             stop=max_seq
             step=max_seq//Snw_num
             Snwparr = []
-            B_pores=[net.pores(self.settings['flow_inlets'][dirs]),
+            flow_pores=[net.pores(self.settings['flow_inlets'][dirs]),
                      net.pores(self.settings['flow_outlets'][dirs])]
             in_outlet_pores=[Finlets_init[dirs], Foutlets_init[dirs]]
             for j in range(start, stop, step):
                 sat=self._sat_occ_update(j)
                 Snwparr.append(sat)
-                [Kewp, Kenwp]=self._eff_perm_calc(B_pores, in_outlet_pores)
+                [Kewp, Kenwp]=self._eff_perm_calc(flow_pores)
                 if self.settings['wp'] is not None:
                     relperm_wp.append(Kewp/self.Kr_values['perm_wp'][dirs])
                 relperm_nwp.append(Kenwp/self.Kr_values['perm_nwp'][dirs])
