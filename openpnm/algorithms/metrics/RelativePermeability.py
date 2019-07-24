@@ -155,7 +155,13 @@ class RelativePermeability(GenericAlgorithm):
         
         Output: array [Kewp, Kenwp]
         The value of effective permeability of defending (if there is any) and
-        invadin phase in the direction that is defined by flow_pores.
+        invading phase in the direction that is defined by flow_pores.
+        
+        Note: To account for multiphase flow, multiphase physics model is added 
+        and updated in each saturation (saturation is related to
+        the presence of another phase). Here, the conduit_hydraulic conductance is
+        used as the conductance required by stokes flow algorithm.
+
         """
         network=self.project.network
         self._regenerate_models()
