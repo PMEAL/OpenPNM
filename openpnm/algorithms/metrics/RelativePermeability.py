@@ -206,7 +206,7 @@ class RelativePermeability(GenericAlgorithm):
             wp = self.project[self.settings['wp']]
             wp['throat.occupancy'] = 1-throat_mask
             wp['pore.occupancy'] = 1-pore_mask
-        except :
+        except KeyError():
             pass
         return sat
 
