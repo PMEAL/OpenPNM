@@ -132,14 +132,14 @@ def rectangle(target, throat_length='throat.length',
     return target[throat_length] * target[throat_diameter]
 
 
-def lens_volume(target, throat_diameter='throat.diameter',
-                pore_diameter='pore.diameter'):
+def lens(target, throat_diameter='throat.diameter',
+         pore_diameter='pore.diameter'):
     r"""
     Calculates the volume residing the hemispherical caps formed by the
     intersection between cylindrical throats and spherical pores.
 
-    This volume should be subtracted from throat volumes if the throat
-    endpoints model was used to find throat length.
+    This volume should be subtracted from throat volumes if the throat lengths
+    were found using throat end points.
 
     Parameters
     ----------
@@ -164,7 +164,7 @@ def lens_volume(target, throat_diameter='throat.diameter',
 
     See Also
     --------
-    pendular_ring_volume
+    pendular_ring
     """
     network = target.network
     conns = network['throat.conns']
@@ -178,15 +178,15 @@ def lens_volume(target, throat_diameter='throat.diameter',
     return _sp.sum(V, axis=1)
 
 
-def pendular_ring_volume(target, throat_diameter='throat.diameter',
-                         pore_diameter='pore.diameter'):
+def pendular_ring(target, throat_diameter='throat.diameter',
+                  pore_diameter='pore.diameter'):
     r"""
     Calculates the volume of the pendular rings residing between the end of
     a cylindrical throat and spherical pores that are in contact but not
     overlapping.
 
-    This volume should be added to the throat volume if it was found as the
-    center-to-center distance less the pore radii.
+    This volume should be added to the throat volume if the throat length was
+    found as the center-to-center distance less the pore radii.
 
     Parameters
     ----------
@@ -211,7 +211,7 @@ def pendular_ring_volume(target, throat_diameter='throat.diameter',
 
     See Also
     --------
-    lens_volume
+    lens
     """
     network = target.network
     conns = network['throat.conns']
