@@ -17,9 +17,7 @@ class BundleOfTubes(Project):
 
     An OpenPNM project object is returned that contain a network with a
     bundle-of-tubes topology, and geometry object with the necessary pore
-    size information, and a phase object with pre-defined pore-scale physics
-    models attached.  Note that this phase object does not have any actual
-    thermophysical properties which must be added by the user.
+    size information.
 
     Parameters
     ----------
@@ -170,15 +168,3 @@ class BundleOfTubes(Project):
                        model=mods.geometry.throat_volume.cylinder)
 
         geom.regenerate_models()
-
-        # Now create a generic phase with physics models on it
-        phase = GenericPhase(network=net)
-        m = mods.physics.hydraulic_conductance.classic_hagen_poiseuille
-        phase.add_model(propname='throat.hydraulic_conductance',
-                        model=m, regen_mode='deferred')
-        m = mods.physics.diffusive_conductance.classic_ordinary_diffusion
-        phase.add_model(propname='throat.diffusive_conductance',
-                        model=m, regen_mode='deferred')
-        m = mods.physics.diffusive_conductance.classic_ordinary_diffusion
-        phase.add_model(propname='throat.entry_pressure',
-                        model=m, regen_mode='deferred')
