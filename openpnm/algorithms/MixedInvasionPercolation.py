@@ -1051,11 +1051,6 @@ class MixedInvasionPercolation(GenericAlgorithm):
         all_phys = self.project.find_physics(phase=phase)
         if inv_points is None:
             inv_points = np.arange(0, 1.01, .01)*self._max_pressure()
-        # Pore centroids
-        try:
-            p_centroids = net['pore.centroid']
-        except KeyError:
-            p_centroids = net['pore.coords']
         # Throat centroids
         try:
             t_centroids = net['throat.centroid']
@@ -1095,10 +1090,6 @@ class MixedInvasionPercolation(GenericAlgorithm):
                             adj_mat[ta, tb] = pore+1
         # Meniscus Filling Angle
         tfill_angle = cpf + '.alpha'
-        # Radius of throat at position x along throat axis
-        tmen_rx = cpf + '.rx'
-        # Position x relative to throat center
-        tmen_pos = cpf + '.pos'
         # Capillary pressure adjacency maxtrix
         pairs = np.asarray([list(key) for key in adj_mat.keys()])
         pores = np.asarray([adj_mat[key] for key in adj_mat.keys()]) - 1
@@ -1106,8 +1097,6 @@ class MixedInvasionPercolation(GenericAlgorithm):
         # Initialize the pressure matrix with nans
         # This is used to check for the first intersection pressure and
         # Prevent overwriting
-#        for key in self.tt_Pc.keys():
-#            self.tt_Pc[key] = np.nan
         self.tt_Pc[pairs[:, 0], pairs[:, 1]] = np.nan
         angles = self._throat_pair_angle(pairs[:, 0], pairs[:, 1], pores, net)
         T1 = pairs[:, 0]
@@ -1121,24 +1110,6 @@ class MixedInvasionPercolation(GenericAlgorithm):
             for phys in all_phys:
                 phys.models[cpf]['target_Pc'] = Pc
                 phys.regenerate_models(propnames=cpf)
-            # Work out meniscii coord for each direction along the throat
-            men_cen_dist = phase[tmen_pos]
-            men_rx = phase[tmen_rx]
-            # Convert the mensici positions into real coords
-            # They are calcuated relative to throat center along throat axis
-            men_cen_T1 = self._apply_cen_to_throats(p_centroids[pores],
-                                                    t_centroids[T1],
-                                                    t_norms[T1],
-                                                    men_cen_dist[T1])
-            # Get new equations of planes using new center position
-            planes_T1 = self._transform_point_normal(men_cen_T1, t_norms[T1])
-            men_cen_T2 = self._apply_cen_to_throats(p_centroids[pores],
-                                                    t_centroids[T2],
-                                                    t_norms[T2],
-                                                    men_cen_dist[T2])
-            planes_T2 = self._transform_point_normal(men_cen_T2, t_norms[T2])
-            # check whether this throat pair already has a coop value
-#            mask = sp.isnan(np.asarray(list(self.tt_Pc.values())))
             # check whether this throat pair already has a coop value
             check_nans = np.asarray(sp.isnan(self.tt_Pc[T1, T2]).tolist()[0])
             fill_angle_sum = np.sum(phase[tfill_angle][pairs], axis=1)
@@ -1147,28 +1118,11 @@ class MixedInvasionPercolation(GenericAlgorithm):
             if np.any(mask):
                 self.tt_Pc[T1[mask], T2[mask]] = Pc
                 hits.append(Pc)
-#                # Loop through throat pairs that can have not yet coop filled
-#                for [i] in np.argwhere(mask):
-#                    t1, t2 = pairs[i]
-#                    # Points on line of throat plane intersection using the
-#                    # updated equations
-#                    p, q = self._plane_intersect(planes_T1[i], planes_T2[i])
-#                    if p is not None:
-#                        # Distances from the menisci contact line centers to
-#                        # The throat plane intersection
-#                        d1 = self._distance(p, q, men_cen_T1[i])
-#                        d2 = self._distance(p, q, men_cen_T2[i])
-#                        if (men_rx[t1] >= d1) and (men_rx[t2] >= d2):
-#                            # The menisci contact radii is greater than the
-#                            # distance to intersection - coalescence!!!
-#                            self.tt_Pc[tuple(pairs[i])] = Pc
-#                            hits.append(Pc)
-#                            print(coalescence[i])
         # Change to lil for single throat lookups
         self.tt_Pc = self.tt_Pc.tolil()
-        print("Coop filling finished in " +
-              str(np.around(time.time()-start, 2)) + " s")
-        print('Coop Hits', np.unique(np.asarray(hits)))
+        logger.info("Coop filling finished in " +
+                    str(np.around(time.time()-start, 2)) + " s")
+        logger.info('Coop Hits', np.unique(np.asarray(hits)))
 
     def setup_coop_filling(self, inv_points=None):
         r"""
