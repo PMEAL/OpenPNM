@@ -44,9 +44,11 @@ class Imported(GenericGeometry):
             if item not in exclude:
                 self[item] = network.pop(item)
 
+        # Add throat endpoints model if value not found
         if 'throat.endpoints' not in self.keys():
+            m = mods.geometry.throat_endpoints.spherical_pores
             self.add_model(propname='throat.endpoints',
-                           model=mods.geometry.throat_endpoints.spherical_pores,
+                           model=m,
                            pore_diameter='pore.diameter',
                            throat_diameter='throat.diameter')
 
@@ -55,7 +57,8 @@ class Imported(GenericGeometry):
                            model=mods.geometry.throat_length.piecewise,
                            throat_endpoints='throat.endpoints')
 
-        self.add_model(propname='throat.conduit_lengths',
-                       model=mods.geometry.throat_length.conduit_lengths,
-                       throat_endpoints='throat.endpoints',
-                       throat_length='throat.length')
+        if set(['throat.endpoints', 'throat.length']).issubset(self.keys()):
+            self.add_model(propname='throat.conduit_lengths',
+                           model=mods.geometry.throat_length.conduit_lengths,
+                           throat_endpoints='throat.endpoints',
+                           throat_length='throat.length')

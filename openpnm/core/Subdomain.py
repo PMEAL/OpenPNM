@@ -60,7 +60,7 @@ class Subdomain(Base):
             if key in set(boss.keys()).difference(set(self.keys())):
                 hit = [i for i in keys if i.startswith(key)][0]
                 raise Exception('Cannot create ' + key + ' when ' +
-                                hit + ' is already defined')
+                                hit + ' is already defined on the full domain')
         super().__setitem__(key, value)
 
     def _add_locations(self, pores=[], throats=[]):
