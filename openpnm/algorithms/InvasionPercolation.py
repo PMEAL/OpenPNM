@@ -1,6 +1,7 @@
 import heapq as hq
 import scipy as sp
 import numpy as np
+import matplotlib.pyplot as plt
 from openpnm.algorithms import GenericAlgorithm
 from openpnm.utils import logging
 logger = logging.getLogger(__name__)
@@ -180,6 +181,7 @@ class InvasionPercolation(GenericAlgorithm):
         t_order = self['throat.order']
         t_inv = self['throat.invasion_sequence']
         p_inv = self['pore.invasion_sequence']
+        p_pressure = np.zeros(len(p_inv))
 
         count = 0
         while (len(queue) > 0) and (count < n_steps):
@@ -198,6 +200,7 @@ class InvasionPercolation(GenericAlgorithm):
             Ps = Ps[p_inv[Ps] < 0]
             if len(Ps) > 0:
                 p_inv[Ps] = self._tcount
+                p_pressure[Ps] = self['throat.entry_pressure'][t_next]
                 Ts = self.project.network.find_neighbor_throats(pores=Ps)
                 Ts = Ts[t_inv[Ts] < 0]  # Remove invaded throats from Ts
                 [hq.heappush(queue, T) for T in t_order[Ts]]
@@ -205,6 +208,8 @@ class InvasionPercolation(GenericAlgorithm):
             self._tcount += 1
         self['throat.invasion_sequence'] = t_inv
         self['pore.invasion_sequence'] = p_inv
+        self['throat.invasion_pressure'] = self['throat.entry_pressure']
+        self['pore.invasion_pressure'] = p_pressure
 
     def results(self, Snwp=None):
         r"""
@@ -398,3 +403,48 @@ class InvasionPercolation(GenericAlgorithm):
         self['throat.trapped'][trapped_ts] = True
         self['pore.invasion_sequence'][self['pore.trapped']] = -1
         self['throat.invasion_sequence'][self['throat.trapped']] = -1
+
+    def plot_intrusion_curve(self, fig=None):
+        r"""
+        Plot the percolation curve as the invader volume or number fraction vs
+        the capillary capillary pressure.
+
+        """
+        if 'pore.invasion_pressure' not in self.props():
+            logger.error('Algorithm must be run first')
+            return None
+        
+        net = self.project.network
+        pvols = net[self.settings['pore_volume']]
+        tvols = net[self.settings['throat_volume']]
+        tot_vol = np.sum(pvols) + np.sum(tvols)
+        # Normalize
+        pvols /= tot_vol
+        tvols /= tot_vol
+        # Remove trapped volume
+        pvols[self['pore.invasion_sequence'] == -1] = 0.0
+        tvols[self['throat.invasion_sequence'] == -1] = 0.0
+        pseq = self['pore.invasion_sequence']
+        tseq = self['throat.invasion_sequence']
+        tPc = self['throat.invasion_pressure']
+        pPc = self['pore.invasion_pressure']
+        # Change the entry pressure for trapped pores and throats to be 0
+        pPc[self['pore.invasion_sequence'] == -1] = 0.0
+        tPc[self['throat.invasion_sequence'] == -1] = 0.0
+        vols = np.concatenate((pvols, tvols))
+        seqs = np.concatenate((pseq, tseq))
+        Pcs = np.concatenate((pPc, tPc))
+        data = np.rec.fromarrays([seqs, vols, Pcs], formats=['i', 'f', 'f'],
+                                 names=['seq', 'vol', 'Pc'])
+        data.sort(axis=0, order='seq')
+        sat = np.cumsum(data.vol)
+        if fig is None:
+            fig, ax = plt.subplots()
+        else:
+            ax = fig.gca()
+        ax.semilogx(data.Pc, sat,)
+        plt.ylabel('Invading Phase Saturation')
+        plt.xlabel('Capillary Pressure')
+        plt.grid(True)
+        return fig
+            
