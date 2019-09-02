@@ -312,7 +312,6 @@ class MixedInvasionPercolationCoop(MixedInvasionPercolation):
         '''
         self._setup_coop_filling_creep(inv_points)
         self._setup_coop_filling_bulge(inv_points)
-        
 
     def _setup_coop_filling_creep(self, inv_points=None):
         r"""
