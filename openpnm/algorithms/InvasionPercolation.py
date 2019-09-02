@@ -3,6 +3,7 @@ import scipy as sp
 import numpy as np
 import matplotlib.pyplot as plt
 from openpnm.algorithms import GenericAlgorithm
+from openpnm.topotools import find_clusters
 from openpnm.utils import logging
 logger = logging.getLogger(__name__)
 
@@ -321,7 +322,7 @@ class InvasionPercolation(GenericAlgorithm):
         invaded_ps = self['pore.invasion_sequence'] > -1
         if ~np.all(invaded_ps):
             # Put defending phase into clusters
-            clusters = net.find_clusters2(~invaded_ps)
+            clusters = find_clusters(network=net, mask=~invaded_ps)
             # Identify clusters that are connected to an outlet and set to -2
             # -1 is the invaded fluid
             # -2 is the defender fluid able to escape

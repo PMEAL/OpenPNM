@@ -9,7 +9,7 @@ import heapq as hq
 import scipy as sp
 import numpy as np
 from openpnm.algorithms import GenericAlgorithm
-from openpnm.topotools import site_percolation
+from openpnm.topotools import find_clusters, site_percolation
 from collections import namedtuple
 import logging
 import matplotlib.pyplot as plt
@@ -620,7 +620,7 @@ class MixedInvasionPercolation(GenericAlgorithm):
             # Set occupancy
             invaded_ps = self['pore.invasion_sequence'] > -1
             # Put defending phase into clusters
-            clusters = net.find_clusters2(~invaded_ps)
+            clusters = find_clusters(network=net, pmask=~invaded_ps)
             # Identify clusters that are connected to an outlet and set to -2
             # -1 is the invaded fluid
             # -2 is the defender fluid able to escape
