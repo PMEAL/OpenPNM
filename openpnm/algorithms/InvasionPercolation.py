@@ -413,7 +413,6 @@ class InvasionPercolation(GenericAlgorithm):
         if 'pore.invasion_pressure' not in self.props():
             logger.error('Algorithm must be run first')
             return None
-        
         net = self.project.network
         pvols = net[self.settings['pore_volume']]
         tvols = net[self.settings['throat_volume']]
@@ -447,4 +446,3 @@ class InvasionPercolation(GenericAlgorithm):
         plt.xlabel('Capillary Pressure')
         plt.grid(True)
         return fig
-            
