@@ -45,6 +45,10 @@ class TutorialTest():
         rc = self._notebook_run(nbook)
         assert rc
 
+    def test_ordinary_percolation(self):
+        nbook = os.path.join(test_dir, 'Ordinary_Percolation.ipynb')
+        rc = self._notebook_run(nbook)
+        assert rc
 
 if __name__ == '__main__':
     t = TutorialTest()
