@@ -91,9 +91,9 @@ pnp = op.algorithms.TransientIonicTransport(network=net, phase=sw)
 pnp.setup(potential_field=p, ions=[eA, eB])
 pnp.settings['i_max_iter'] = 10
 pnp.settings['i_tolerance'] = 1e-04
-pnp.settings['t_output'] = 500
+pnp.settings['t_output'] = 100
 pnp.settings['t_step'] = 100
-pnp.settings['t_final'] = 2000
+pnp.settings['t_final'] = 3000
 # pnp.settings['t_scheme'] = 'steady'
 
 pnp.run()
