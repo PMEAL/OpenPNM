@@ -80,6 +80,23 @@ class GenericTransportTest:
         y = sp.unique(sp.around(alg['pore.mole_fraction'], decimals=3))
         assert sp.all(x == y)
 
+    def test_continuity_BC(self):
+        alg = op.algorithms.GenericTransport(network=self.net,
+                                             phase=self.phase)
+        alg.settings['conductance'] = 'throat.diffusive_conductance'
+        alg.settings['quantity'] = 'pore.mole_fraction'
+        xyz = self.net["pore.coords"]
+        left_interface = (xyz[:,1] < 5) & (xyz[:,1] > 4)
+        right_interface = (xyz[:,1] < 6) & (xyz[:,1] > 5)
+        alg.set_continuity_BC(ps1=left_interface, ps2=right_interface, K12=2.0)
+        alg.set_value_BC(pores=self.net.pores('left'), values=1.0)
+        alg.set_value_BC(pores=self.net.pores('right'), values=0.0)
+        alg.run()
+        x = alg["pore.mole_fraction"]
+        x_LI = sp.unique(sp.around(x, decimals=3))
+        x_RI = sp.unique(sp.around(x, decimals=3))
+        assert sp.all(x_LI == x_RI)
+
     def teardown_class(self):
         ws = op.Workspace()
         ws.clear()

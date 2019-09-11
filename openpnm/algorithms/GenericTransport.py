@@ -193,6 +193,27 @@ class GenericTransport(GenericAlgorithm):
             self.settings['conductance'] = conductance
         self.settings.update(**kwargs)
 
+    def set_continuity_BC(self, ps1, ps2, K12=1.0, mode="merge"):
+        r"""
+        """
+        # Hijack the parse_mode function to verify bctype argument
+        ps1 = self._parse_indices(ps1)
+        ps2 = self._parse_indices(ps2)
+        K12 = np.array(K12)
+        if ps1.size != ps2.size:
+            if ps1.size != 1 and ps2.size != 1:
+                raise Exception("Inconsistent array length: ps1 and ps2")
+        if ps1.size < ps2.size:
+            ps1, ps2, K12 = ps2, ps1, 1/K12
+        if ps2.size == 1:
+            ps2 = ps2.repeat(ps1.size)
+
+        # Store partition coefficient (K12) values
+        if ('pore.bc_continuity' not in self.keys()) or (mode == 'overwrite'):
+            self['pore.bc_continuity'] = np.empty((self.Np, 2)) * np.nan
+        self['pore.bc_continuity'][ps1, 0] = ps2
+        self['pore.bc_continuity'][ps1, 1] = K12
+
     def set_value_BC(self, pores, values, mode='merge'):
         r"""
         Apply constant value boundary conditons to the specified locations.
@@ -423,6 +444,23 @@ class GenericTransport(GenericAlgorithm):
         Applies all the boundary conditions that have been specified, by
         adding values to the *A* and *b* matrices.
         """
+        if 'pore.bc_continuity' in self.keys():
+            f = np.abs(self.A.diagonal()).mean()
+            # BC Eqn: ps1 - K12*ps2 = 0
+            ps1 = np.isfinite(self['pore.bc_continuity'][:,0])
+            ps2 = self['pore.bc_continuity'][ps1,0].astype(int)
+            K12 = self['pore.bc_continuity'][ps1,1]
+            self.A = self.A.tolil()
+            # Enforce flux continuity, i.e. u' @ ps1 = g(ps2)
+            self.A[ps2,:] += self.A[ps1,:]
+            self.b[ps2] += self.b[ps1]
+            # Enforce variable continuity, i.e u @ ps1 = f(ps2)
+            self.A[ps1,:] = 0.0
+            self.A[ps1,ps2] = -f * K12
+            self.A[ps1,ps1] = f
+            self.b[ps1] = 0.0
+            self.A = self.A.tocoo()
+            self.A.eliminate_zeros()
         if 'pore.bc_rate' in self.keys():
             # Update b
             ind = np.isfinite(self['pore.bc_rate'])
