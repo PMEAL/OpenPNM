@@ -129,7 +129,7 @@ class RelativePermeability(GenericAlgorithm):
         Calculates effective permeability of each phase using StokesFlow
         algorithm with updated multiphase physics models to account for the
         multiphase flow.
-        The direction of flow is defined by flow_pores.
+        The direction of the flow is defined by flow_pores.
 
         Parameters
         ----------
