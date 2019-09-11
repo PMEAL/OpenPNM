@@ -159,9 +159,10 @@ def ad_dif_mig(target,
     Peij_mig[(Peij_mig > -1e-10) & (Peij_mig <= 0)] = -1e-10
 
     # Export Peclet values (half only since Peij_adv_mig = -Peji_adv_mig)
-    phase['throat.peclet.ad_mig'] = _sp.absolute(Peij_adv_mig[0:len(Lt)])
-    phase['throat.peclet.ad'] = _sp.absolute(Peij_adv[0:len(Lt)])
-    phase['throat.peclet.mig'] = _sp.absolute(Peij_mig[0:len(Lt)])
+    phase['throat.peclet.'+'ad_mig.'+ion] = _sp.absolute(
+                                                Peij_adv_mig[0:len(Lt)])
+    phase['throat.peclet.'+'ad.'+ion] = _sp.absolute(Peij_adv[0:len(Lt)])
+    phase['throat.peclet.'+'mig.'+ion] = _sp.absolute(Peij_mig[0:len(Lt)])
 
     # Corrected advection-migration
     adv_mig = Peij_adv_mig*gd
@@ -173,6 +174,9 @@ def ad_dif_mig(target,
     elif s_scheme == 'powerlaw':
         w = (gd * _sp.maximum(0, (1 - 0.1*_sp.absolute(Peij_adv_mig))**5) +
              _sp.maximum(0, -adv_mig))
+    elif s_scheme == 'powerlaw_upwind':
+        w = (gd * _sp.maximum(0, (1 - 0.1*_sp.absolute(Peij_adv))**5) +
+             _sp.maximum(0, -Qij)) + _sp.maximum(0, mig)
     elif s_scheme == 'exponential':
         w = -adv_mig / (1 - _sp.exp(Peij_adv_mig))
     else:
