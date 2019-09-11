@@ -134,7 +134,7 @@ class RelativePermeability(GenericAlgorithm):
         Parameters
         ----------
         flow_pores: numpy array
-        Boundary pores that will have constant value boundary condition to in
+        Boundary pores that will have constant value boundary condition in
         StokesFlow algorithm. First element is the inlet face (pores) for flow
         of invading phase through porous media. Second element is the outlet
         face (pores).
