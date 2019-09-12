@@ -89,11 +89,11 @@ class RelativePermeability(GenericAlgorithm):
             wp = self.project[self.settings['wp']]
             modelwp = models.physics.multiphase.conduit_conductance
             wp.add_model(model=modelwp, propname=prop,
-                         throat_conductance=prop_q)
+                         throat_conductance=prop_q, mode='loose')
         nwp = self.project[self.settings['nwp']]
         modelnwp = models.physics.multiphase.conduit_conductance
         nwp.add_model(model=modelnwp, propname=prop,
-                      throat_conductance=prop_q)
+                      throat_conductance=prop_q, mode='loose')
 
     def _abs_perm_calc(self, flow_pores):
         r"""
@@ -255,10 +255,12 @@ class RelativePermeability(GenericAlgorithm):
                 Snwparr.append(sat)
                 [Kewp, Kenwp] = self._eff_perm_calc(flow_pores)
                 if self.settings['wp'] is not None:
-                    relperm_wp.append(Kewp/self.Kr_values['perm_abs'][dirs])
+                    #relperm_wp.append(Kewp/self.Kr_values['perm_abs'][dirs])
+                    relperm_wp.append(Kewp)
                 relperm_nwp.append(Kenwp/self.Kr_values['perm_abs'][dirs])
+                #relperm_nwp.append(Kenwp)
             if self.settings['wp'] is not None:
-                self.Kr_value['relperm_wp'].update({dirs: relperm_wp})
+                self.Kr_values['relperm_wp'].update({dirs: relperm_wp})
             self.Kr_values['relperm_nwp'].update({dirs: relperm_nwp})
             self.Kr_values['sat'].update({dirs: Snwparr})
 
@@ -286,4 +288,4 @@ class RelativePermeability(GenericAlgorithm):
         else:
             self.Kr_values['results']['krw'] = None
         self.Kr_values['results']['krnw'] = self.Kr_values['relperm_nwp']
-        return self.settings['results']
+        return self.Kr_values
