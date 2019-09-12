@@ -86,8 +86,8 @@ class GenericTransportTest:
         alg.settings['conductance'] = 'throat.diffusive_conductance'
         alg.settings['quantity'] = 'pore.mole_fraction'
         xyz = self.net["pore.coords"]
-        left_interface = (xyz[:,1] < 5) & (xyz[:,1] > 4)
-        right_interface = (xyz[:,1] < 6) & (xyz[:,1] > 5)
+        left_interface = (xyz[:, 1] < 5) & (xyz[:, 1] > 4)
+        right_interface = (xyz[:, 1] < 6) & (xyz[:, 1] > 5)
         alg.set_continuity_BC(ps1=left_interface, ps2=right_interface, K12=2.0)
         alg.set_value_BC(pores=self.net.pores('left'), values=1.0)
         alg.set_value_BC(pores=self.net.pores('right'), values=0.0)

@@ -447,17 +447,18 @@ class GenericTransport(GenericAlgorithm):
         if 'pore.bc_continuity' in self.keys():
             f = np.abs(self.A.diagonal()).mean()
             # BC Eqn: ps1 - K12*ps2 = 0
-            ps1 = np.isfinite(self['pore.bc_continuity'][:,0])
-            ps2 = self['pore.bc_continuity'][ps1,0].astype(int)
-            K12 = self['pore.bc_continuity'][ps1,1]
+            ps1 = np.isfinite(self['pore.bc_continuity'][:, 0])
+            ps2 = self['pore.bc_continuity'][ps1, 0].astype(int)
+            K12 = self['pore.bc_continuity'][ps1, 1]
             self.A = self.A.tolil()
             # Enforce flux continuity, i.e. u' @ ps1 = g(ps2)
-            self.A[ps2,:] += self.A[ps1,:]
+            self.A[ps2, :] += self.A[ps1, :]
+            # TODO: Not sure if the next line is necessary (Amin)
             self.b[ps2] += self.b[ps1]
             # Enforce variable continuity, i.e u @ ps1 = f(ps2)
-            self.A[ps1,:] = 0.0
-            self.A[ps1,ps2] = -f * K12
-            self.A[ps1,ps1] = f
+            self.A[ps1, :] = 0.0
+            self.A[ps1, ps2] = -f * K12
+            self.A[ps1, ps1] = f
             self.b[ps1] = 0.0
             self.A = self.A.tocoo()
             self.A.eliminate_zeros()
