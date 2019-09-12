@@ -7,18 +7,8 @@ dist: xenial
 
 language: python
 
-env:
-  - TEST_SUITE=unit
-  - TEST_SUITE=integration
-
-matrix:
-  include:
-  - name: "Unit Test"
-    python: "3.6"
-    env: TEST_SUITE=unit
-  - name: "Integration Tests"
-    python: "3.6"
-    env: TEST_SUITE=integration
+python:
+  - "3.6"
 
 cache: pip
 
@@ -38,7 +28,8 @@ install:
   - pip install -r test_requirements.txt
   - python setup.py install
 
-script: python ./bin/test pep8 cov $TEST_SUITE
+script:
+  - python ./bin/test pep8 cov
 
 after_success:
   - codecov
