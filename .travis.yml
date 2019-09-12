@@ -7,8 +7,20 @@ dist: xenial
 
 language: python
 
-python:
-  - "3.6"
+env:
+  - TEST_SUITE=unit
+  - TEST_SUITE=integration
+
+matrix:
+  include:
+  - name: "3.6 Unit Test"
+    python: "3.6"
+    env: TEST_SUITE=unit
+  - name: "3.6 Integration Tests"
+    python: "3.6"
+    env: TEST_SUITE=integration
+
+script: python ./bin/test pep8 cov $TEST_SUITE
 
 cache: pip
 
@@ -27,9 +39,6 @@ install:
   - conda install --file conda_requirements.txt
   - pip install -r test_requirements.txt
   - python setup.py install
-
-script:
-  - python ./bin/test pep8 cov
 
 after_success:
   - codecov
