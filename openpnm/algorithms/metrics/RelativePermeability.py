@@ -206,7 +206,7 @@ class RelativePermeability(GenericAlgorithm):
             wp['pore.occupancy'] = 1-pore_mask
         return sat
 
-    def run(self, Snw_num=10):
+    def run(self, Snw_num=100):
         r"""
         Calculates the saturation of each phase using the invasion sequence
         from either invasion percolation or ordinary percolation.
@@ -255,8 +255,8 @@ class RelativePermeability(GenericAlgorithm):
                 Snwparr.append(sat)
                 [Kewp, Kenwp] = self._eff_perm_calc(flow_pores)
                 if self.settings['wp'] is not None:
-                    #relperm_wp.append(Kewp/self.Kr_values['perm_abs'][dirs])
-                    relperm_wp.append(Kewp)
+                    relperm_wp.append(Kewp/self.Kr_values['perm_abs'][dirs])
+                    #relperm_wp.append(Kewp)
                 relperm_nwp.append(Kenwp/self.Kr_values['perm_abs'][dirs])
                 #relperm_nwp.append(Kenwp)
             if self.settings['wp'] is not None:
