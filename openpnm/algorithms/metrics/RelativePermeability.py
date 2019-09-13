@@ -89,11 +89,11 @@ class RelativePermeability(GenericAlgorithm):
             wp = self.project[self.settings['wp']]
             modelwp = models.physics.multiphase.conduit_conductance
             wp.add_model(model=modelwp, propname=prop,
-                         throat_conductance=prop_q, mode='loose')
+                         throat_conductance=prop_q, mode='medium')
         nwp = self.project[self.settings['nwp']]
         modelnwp = models.physics.multiphase.conduit_conductance
         nwp.add_model(model=modelnwp, propname=prop,
-                      throat_conductance=prop_q, mode='loose')
+                      throat_conductance=prop_q, mode='medium')
 
     def _abs_perm_calc(self, flow_pores):
         r"""
