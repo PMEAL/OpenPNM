@@ -22,7 +22,7 @@ class ModelsTest:
         geo = op.geometry.StickAndBall(network=net, pores=net.Ps,
                                        throats=net.Ts)
         s = geo.models.__str__().split('\n')
-        assert len(s) == 68
+        assert len(s) == 69
         assert s.count('―'*78) == 15
 
     def test_regenerate_models(self):
