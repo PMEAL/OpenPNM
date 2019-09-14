@@ -187,8 +187,7 @@ class TransientReactiveTransport(ReactiveTransport):
             f1, f2 = 1, 0
         # Compute A (operations involve conversion to 'csr')
         A = ((f2/dt) * sprs.coo_matrix.multiply(
-            sprs.coo_matrix(np.reshape(Vi, (self.Np, 1)),
-                            shape=(self.Np, self.Np)),
+            sprs.coo_matrix(np.reshape(Vi, (self.Np, 1)), shape=(self.Np, 1)),
             sprs.identity(self.Np, format='coo')) + f1 * self._A_steady)
         # Convert A to 'coo' format to apply BCs
         A = sprs.coo_matrix(A)
