@@ -173,23 +173,23 @@ class MiscTest:
         net = op.network.Cubic(shape=[2, 2, 2])
         net['throat.values'] = 1.0
         net['throat.values'][0] = sp.nan
-        f = mods.from_neighbor_pores
-        with_nans = f(target=net, pore_prop='pore.values',
+        f = mods.from_neighbor_throats
+        with_nans = f(target=net, throat_prop='throat.values',
                       ignore_nans=False, mode='min')
         assert sp.any(sp.isnan(with_nans))
-        no_nans = f(target=net, pore_prop='pore.values',
+        no_nans = f(target=net, throat_prop='throat.values',
                     ignore_nans=True, mode='min')
         assert sp.all(~sp.isnan(no_nans))
-        with_nans = f(target=net, pore_prop='pore.values',
+        with_nans = f(target=net, throat_prop='throat.values',
                       ignore_nans=False, mode='max')
         assert sp.any(sp.isnan(with_nans))
-        no_nans = f(target=net, pore_prop='pore.values',
+        no_nans = f(target=net, throat_prop='throat.values',
                     ignore_nans=True, mode='max')
         assert sp.all(~sp.isnan(no_nans))
-        with_nans = f(target=net, pore_prop='pore.values',
+        with_nans = f(target=net, throat_prop='throat.values',
                       ignore_nans=False, mode='mean')
         assert sp.any(sp.isnan(with_nans))
-        no_nans = f(target=net, pore_prop='pore.values',
+        no_nans = f(target=net, throat_prop='throat.values',
                     ignore_nans=True, mode='mean')
         assert sp.all(~sp.isnan(no_nans))
 
