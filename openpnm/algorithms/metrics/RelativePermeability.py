@@ -25,7 +25,6 @@ class RelativePermeability(GenericAlgorithm):
     fluids in a drainage process. The main roles of this subclass are to
     get invasion sequence and implement a method for calculating the relative
     permeabilities of the fluids flowing in three directions.
-
     Notes
     -----
     The results can be plotted using `plot_Kr_curves`, and numerical data
@@ -33,6 +32,11 @@ class RelativePermeability(GenericAlgorithm):
     Properties related to the invading phase have subscript 'nwp', while those
     related to the defending phase (if there is any) are named by subscript
     'wp'.
+    As the relative permeability definition is the ratio of effective to
+    absolute permeability, domain length and area calculation will appear
+    in both nominator and denominator. Ignoring those variables, we only
+    use the flow rate of the phase of interest in single and multiphase
+    permeability calculation.
     """
     def __init__(self, settings={}, **kwargs):
         super().__init__(**kwargs)
@@ -41,7 +45,8 @@ class RelativePermeability(GenericAlgorithm):
         self.Kr_values = {'sat': dict(),
                           'relperm_wp': dict(),
                           'relperm_nwp': dict(),
-                          'perm_abs': dict(),
+                          'perm_abs_wp': dict(),
+                          'perm_abs_nwp': dict(),
                           'results': {'sat': [], 'krw': [], 'krnw': []}}
 
     def setup(self, invading_phase=None, defending_phase=None,
@@ -95,13 +100,18 @@ class RelativePermeability(GenericAlgorithm):
         nwp.add_model(model=modelnwp, propname=prop,
                       throat_conductance=prop_q, mode='medium')
 
-    def _abs_perm_calc(self, flow_pores):
+    def _abs_perm_calc(self, phase, flow_pores):
         r"""
         Calculates absolute permeability of the medium using StokesFlow
-        algorithm. The direction of flow is defined by flow_pores.
+        algorithm. The direction of flow is defined by flow_pores. This
+        permeability is normalized by variables in darcy's law other than
+        the rate.
 
         Parameters
         ----------
+        phase: phase object
+        The phase for which the flow rate is calculated.
+
         flow_pores: numpy array
         Boundary pores that will have constant value boundary condition to in
         StokesFlow algorithm. First element is the inlet face (pores) for flow
@@ -111,17 +121,19 @@ class RelativePermeability(GenericAlgorithm):
         Output: array [Kwp, Knwp]
         The value of absolute permeability of defending (if there is any) and
         invadin phase in the direction that is defined by flow_pores.
+
+        Note: Absolute permeability is not dependent to the phase, but here
+        we just need to calculate the rate instead of all variables that are
+        contributing to the darcy's law.
         """
         network = self.project.network
-        nwp = self.project[self.settings['nwp']]
-        St_nwp = StokesFlow(network=network, phase=nwp)
-        St_nwp.set_value_BC(pores=flow_pores[0], values=1)
-        St_nwp.set_value_BC(pores=flow_pores[1], values=0)
-        St_nwp.run()
-        val = St_nwp.calc_effective_permeability(inlets=flow_pores[0],
-                                                 outlets=flow_pores[1])
+        St_p = StokesFlow(network=network, phase=phase)
+        St_p.set_value_BC(pores=flow_pores[0], values=1)
+        St_p.set_value_BC(pores=flow_pores[1], values=0)
+        St_p.run()
+        val = np.sum(abs(St_p.rate(pores=flow_pores[1])))
         K_abs = val
-        self.project.purge_object(obj=St_nwp)
+        self.project.purge_object(obj=St_p)
         return K_abs
 
     def _eff_perm_calc(self, flow_pores):
@@ -130,6 +142,10 @@ class RelativePermeability(GenericAlgorithm):
         algorithm with updated multiphase physics models to account for the
         multiphase flow.
         The direction of the flow is defined by flow_pores.
+        All variables except for the rate in darcy's law will be the same in
+        relative permeability ratio. The effective rate represents the
+        effective permeability in the nominator of relative permeability
+        ratio.
 
         Parameters
         ----------
@@ -158,8 +174,7 @@ class RelativePermeability(GenericAlgorithm):
             St_mp_wp.set_value_BC(pores=flow_pores[0], values=1)
             St_mp_wp.set_value_BC(pores=flow_pores[1], values=0)
             St_mp_wp.run()
-            Kewp = St_mp_wp.calc_effective_permeability(inlets=flow_pores[0],
-                                                        outlets=flow_pores[1])
+            Kewp = np.sum(abs(St_mp_wp.rate(pores=flow_pores[1])))
             self.project.purge_object(obj=St_mp_wp)
         else:
             Kewp = None
@@ -170,8 +185,8 @@ class RelativePermeability(GenericAlgorithm):
         St_mp_nwp.set_value_BC(pores=flow_pores[1], values=0)
         St_mp_nwp.setup(conductance='throat.conduit_hydraulic_conductance')
         St_mp_nwp.run()
-        Kenwp = St_mp_nwp.calc_effective_permeability(inlets=flow_pores[0],
-                                                      outlets=flow_pores[1])
+        Kenwp = np.sum(abs(St_mp_nwp.rate(pores=flow_pores[1])))
+        Kenwp=Kenwp
         self.project.purge_object(obj=St_mp_nwp)
         return [Kewp, Kenwp]
 
@@ -232,8 +247,16 @@ class RelativePermeability(GenericAlgorithm):
         for dim in K_dir:
             flow_pores = [net.pores(self.settings['flow_inlets'][dim]),
                           net.pores(self.settings['flow_outlets'][dim])]
-            K_abs = self._abs_perm_calc(flow_pores)
-            self.Kr_values['perm_abs'].update({dim: K_abs})
+            if self.settings['wp'] is not None:
+                phase = self.project[self.settings['wp']]
+                K_abs = self._abs_perm_calc(phase, flow_pores)
+                self.Kr_values['perm_abs_wp'].update({dim: K_abs})
+                relperm_wp = []
+            else:
+                relperm_wp = None
+            phase = self.project[self.settings['nwp']]
+            K_abs = self._abs_perm_calc(phase, flow_pores)
+            self.Kr_values['perm_abs_nwp'].update({dim: K_abs})
         for dirs in self.settings['flow_inlets']:
             if self.settings['wp'] is not None:
                 relperm_wp = []
@@ -255,10 +278,8 @@ class RelativePermeability(GenericAlgorithm):
                 Snwparr.append(sat)
                 [Kewp, Kenwp] = self._eff_perm_calc(flow_pores)
                 if self.settings['wp'] is not None:
-                    relperm_wp.append(Kewp/self.Kr_values['perm_abs'][dirs])
-                    #relperm_wp.append(Kewp)
-                relperm_nwp.append(Kenwp/self.Kr_values['perm_abs'][dirs])
-                #relperm_nwp.append(Kenwp)
+                    relperm_wp.append(Kewp/self.Kr_values['perm_abs_wp'][dirs])
+                relperm_nwp.append(Kenwp/self.Kr_values['perm_abs_nwp'][dirs])
             if self.settings['wp'] is not None:
                 self.Kr_values['relperm_wp'].update({dirs: relperm_wp})
             self.Kr_values['relperm_nwp'].update({dirs: relperm_nwp})
