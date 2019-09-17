@@ -99,22 +99,23 @@ class FickianDiffusion(ReactiveTransport):
 
     def set_continuity_BC(self, ps1, ps2, K12=1.0, mode="merge"):
         r"""
-        Apply continuity boundary conditon to the specified locations.
+        Apply continuity boundary conditon between two phases.
 
         This boundary condition enforces c[ps1] = c[ps2] * K12
 
         Parameters
         ----------
         ps1 : array_like
-            The pore indices where the condition should be applied
+            The pore indices in phase 1 where the condition should be applied
 
         ps2 : array_like
-            The pore indices where the condition should be applied
-            
+            The pore indices in phase 2 where the condition should be applied
+
         K12 : scalar or array_like
-            The value to apply in each pore.  If a scalar is supplied
-            it is assigne to all locations, and if a vector is applied is
-            must be the same size as the indices given in ``pores``.
+            Partition coefficient; relates the concentrations at two phases.
+            If a scalar is supplied it is assigne to all locations, and if a
+            vector is supplied, it must be the same size as the indices given
+            in ``ps1`` and ``ps2``.
 
         mode : string, optional
             Controls how the boundary conditions are applied.  Options are:
@@ -124,7 +125,6 @@ class FickianDiffusion(ReactiveTransport):
 
             - ``'overwrite'``: Deletes all boundary condition on object then
             adds the given ones
-
         """
         # Hijack the parse_mode function to verify bctype argument
         ps1 = self._parse_indices(ps1)
