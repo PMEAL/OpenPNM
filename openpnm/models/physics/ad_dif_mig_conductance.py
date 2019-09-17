@@ -160,7 +160,7 @@ def ad_dif_mig(target,
 
     # Export Peclet values (half only since Peij_adv_mig = -Peji_adv_mig)
     phase['throat.peclet.'+'ad_mig.'+ion] = _sp.absolute(
-            Peij_adv_mig[0:len(Lt)])
+        Peij_adv_mig[0:len(Lt)])
     phase['throat.peclet.'+'ad.'+ion] = _sp.absolute(Peij_adv[0:len(Lt)])
     phase['throat.peclet.'+'mig.'+ion] = _sp.absolute(Peij_mig[0:len(Lt)])
 
