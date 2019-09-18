@@ -1,6 +1,7 @@
 r"""
 
 .. autofunction:: openpnm.models.physics.diffusive_conductance.ordinary_diffusion
+.. autofunction:: openpnm.models.physics.diffusive_conductance.mixed_diffusion
 .. autofunction:: openpnm.models.physics.diffusive_conductance.taylor_aris_diffusion
 
 """
@@ -111,7 +112,7 @@ def ordinary_diffusion(target,
     return (1/gt/SFt + 1/g1/SF1 + 1/g2/SF2)**(-1)
 
 
-def mixed_diffusivity(target,
+def mixed_diffusion(target,
                       pore_area='pore.area',
                       throat_area='throat.area',
                       pore_diameter='pore.diameter',
@@ -160,6 +161,9 @@ def mixed_diffusivity(target,
 
     Notes
     -----
+    (0) This function is ONLY suitable for dilute mixtures and NOT those with
+    concentrated species.
+
     (1) This function requires that all the necessary phase properties already
     be calculated.
 
