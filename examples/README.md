@@ -1,3 +1,7 @@
+```
+THIS REPO IS NO LONGER ACTIVELY MAINTAINED. WE HAVE MOVED ALL THE EXAMPLES ONTO THE [MAIN REPO](https://github.com/PMEAL/OpenPNM/tree/master/examples).  THE REASON FOR DOING THIS IS SO THAT THE EXAMPLES WILL ALL BE TESTED WITH EACH NEW VERSION OF THE CODE TO ENSURE THEY WORK. 
+```
+
 [![Travis](https://travis-ci.org/PMEAL/OpenPNM.svg?branch=master)](https://travis-ci.org/PMEAL/OpenPNM)
 
 # OpenPNM-Examples
