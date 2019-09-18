@@ -10,9 +10,9 @@ proj = ws.new_project()
 np.random.seed(0)
 
 net = op.network.Cubic(shape=[8, 8, 1], spacing=9e-4, project=proj)
-prs = (net['pore.back'] * net['pore.right'] + net['pore.back'] *
-       net['pore.left'] + net['pore.front'] * net['pore.right'] +
-       net['pore.front'] * net['pore.left'])
+prs = (net['pore.back'] * net['pore.right'] + net['pore.back']
+       * net['pore.left'] + net['pore.front'] * net['pore.right']
+       + net['pore.front'] * net['pore.left'])
 thrts = net['throat.surface']
 op.topotools.trim(network=net, pores=net.Ps[prs], throats=net.Ts[thrts])
 
@@ -61,18 +61,17 @@ sf.settings['rxn_tolerance'] = 1e-12
 sf.run()
 sw.update(sf.results())
 
-p = op.algorithms.ChargeConservation(network=net, phase=sw)
+p = op.algorithms.TransientChargeConservation(network=net, phase=sw)
 p.set_value_BC(pores=net.pores('left'), values=0.01)
 p.set_value_BC(pores=net.pores('right'), values=0.00)
-p.settings['rxn_tolerance'] = 1e-12
 p.settings['charge_conservation'] = 'electroneutrality'
 
-eA = op.algorithms.NernstPlanck(network=net, phase=sw, ion=Na.name)
+eA = op.algorithms.TransientNernstPlanck(network=net, phase=sw, ion=Na.name)
 eA.set_value_BC(pores=net.pores('back'), values=100)
 eA.set_value_BC(pores=net.pores('front'), values=90)
 eA.settings['rxn_tolerance'] = 1e-12
 
-eB = op.algorithms.NernstPlanck(network=net, phase=sw, ion=Cl.name)
+eB = op.algorithms.TransientNernstPlanck(network=net, phase=sw, ion=Cl.name)
 eB.set_value_BC(pores=net.pores('back'), values=100)
 eB.set_value_BC(pores=net.pores('front'), values=90)
 eB.settings['rxn_tolerance'] = 1e-12
@@ -88,10 +87,14 @@ phys.add_model(propname='throat.ad_dif_mig_conductance.' + Cl.name,
                model=ad_dif_mig_Cl, ion=Cl.name,
                s_scheme='exponential')
 
-pnp = op.algorithms.IonicTransport(network=net, phase=sw)
+pnp = op.algorithms.TransientIonicTransport(network=net, phase=sw)
 pnp.setup(potential_field=p, ions=[eA, eB])
 pnp.settings['i_max_iter'] = 10
 pnp.settings['i_tolerance'] = 1e-04
+pnp.settings['t_output'] = 500
+pnp.settings['t_step'] = 100
+pnp.settings['t_final'] = 2000
+# pnp.settings['t_scheme'] = 'steady'
 
 pnp.run()
 
