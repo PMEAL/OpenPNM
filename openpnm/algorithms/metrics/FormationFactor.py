@@ -12,23 +12,51 @@ ws = Workspace()
 
 class FormationFactor(GenericMetric):
     r"""
-    This class works by applying value boundary conditions across the
+    This class works by applying 'value' boundary conditions across the
     domain to find molar flow, then using Fick's law to back-calculate
-    the effective diffusivity of the domain.  The formation factor is defined
-    as:
+    the effective diffusivity of the domain.  The formation factor is
+    defined as:
 
     .. math::
 
-        F = \frac{D_{AB}}{D_{eff}} = \frac{\Delta C_{A} A \varepsilon}{N_{A} L \tau}
+        F = \frac{D_{AB}}{D_{eff}} > 1
 
+    where
 
+    .. math::
 
+        D_{eff} = \frac{n_{A} L }{\Delta C_{A} A }
+
+    and
+
+    .. math::
+
+        D_{eff} = D_{AB} \frac{\varepsilon}{\tau}
+
+    The formation factor is a convenient metric to compare diffusion in
+    different pore networks since it does not require knowledge of the network
+    porosity, unlike tortuosity. The porosity of a pore network is difficult
+    to determine, mainly because the bulk volume of a network is not
+    well known.
 
     Examples
     --------
     >>> import openpnm as op
     >>> pn = op.network.Cubic(shape=[10, 10, 10], spacing=1e-5)
     >>> geo = op.geometry.StickAndBall(network=pn)
+
+    Now find the formation factor of the network:
+
+    >>> F = op.algorithms.metrics.FormationFactor(network=pn)
+    >>> F.run()
+    >>> print(F.results)
+    ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+    Direction                           Formation Factor
+    ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+    x                                   ...
+    y                                   ...
+    z                                   ...
+    ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 
     """
 
@@ -91,7 +119,6 @@ class FormationFactor(GenericMetric):
             R = Diff.rate(pores=Pin)
             Deff = R*L/A  # Conc gradient and diffusivity were both unity
             self.results[bcs] = 1/Deff[0]
-        print(self.results)
 
     def set_inlets(self, direction, label):
         r"""
