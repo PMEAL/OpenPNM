@@ -749,7 +749,7 @@ class GenericTransport(GenericAlgorithm):
         return area
 
     def _get_domain_length(self, inlets=None, outlets=None):
-        logger.warning('Attempting to estimate domain length... '
+        logger.warning('Attempting to estimate domain length...'
                        + 'could be low if boundary pores were not added')
         network = self.project.network
         if inlets is None:
