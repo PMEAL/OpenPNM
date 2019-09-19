@@ -50,7 +50,7 @@ class RelativePermeability(GenericAlgorithm):
                           'results': {'sat': [], 'krw': [], 'krnw': []}}
 
     def setup(self, invading_phase=None, defending_phase=None,
-              invasion_sequence=None):
+              invasion_sequence=None, flow_inlets=None, flow_outlets=None):
         r"""
         Assigns values to the algorithms ``settings``
 
@@ -77,12 +77,16 @@ class RelativePermeability(GenericAlgorithm):
             self.settings['pore.invasion_sequence'] = seq_p
             seq_t = nwp['throat.invasion_sequence']
             self.settings['throat.invasion_sequence'] = seq_t
-        self.settings['flow_inlets'] = {'x': 'left',
-                                        'y': 'front',
-                                        'z': 'top'}
-        self.settings['flow_outlets'] = {'x': 'right',
-                                         'y': 'back',
-                                         'z': 'bottom'}
+            self.settings['flow_inlets'] = {'x': 'left',
+                                            'y': 'front',
+                                            'z': 'top'}
+            self.settings['flow_outlets'] = {'x': 'right',
+                                             'y': 'back',
+                                             'z': 'bottom'}
+        if flow_inlets is not None:
+            for keys in flow_inlets.keys():
+                self.settings['flow_inlets'][keys]=flow_inlets[keys]
+                self.settings['flow_outlets'][keys]=flow_outlets[keys]
 
     def _regenerate_models(self):
         r"""
