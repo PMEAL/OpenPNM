@@ -201,7 +201,7 @@ def mixed_diffusion(target,
     Dt = phase.interpolate_data(propname=pore_diffusivity)[throats]
     # Calculating Knudsen diffusivity
     d1, d2 = network[pore_diameter][cn].T
-    dt = network[throat_diameter]
+    dt = network[throat_diameter][throats]
     MW1, MW2 = phase[molecular_weight][cn].T
     MWt = phase.interpolate_data(propname=molecular_weight)[throats]
     T1, T2 = phase[pore_temperature][cn].T
