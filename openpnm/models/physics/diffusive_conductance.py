@@ -2,6 +2,7 @@ r"""
 
 .. autofunction:: openpnm.models.physics.diffusive_conductance.ordinary_diffusion
 .. autofunction:: openpnm.models.physics.diffusive_conductance.taylor_aris_diffusion
+.. autofunction:: openpnm.models.physics.diffusive_conductance.classic_ordinary_diffusion
 
 """
 
@@ -52,18 +53,14 @@ def ordinary_diffusion(target,
 
     Notes
     -----
-    (1) This function requires that all the necessary phase properties already
-    be calculated.
+    * This function assumes cylindrical throats with constant cross-section
+    area, and the pore area corresponds to the cross-sectional area at the
+    largest opening of the pore. Corrections for different shapes and variable
+    cross-section area can be imposed by passing the proper
+    ``conduit_shape_factors`` argument.
 
-    (2) This function calculates the specified property for the *entire*
-    network then extracts the values for the appropriate throats at the end.
-
-    (3) This function assumes cylindrical throats with constant cross-section
-    area. Corrections for different shapes and variable cross-section area can
-    be imposed by passing the proper conduit_shape_factors argument.
-
-    (4) shape_factor depends on the physics of the problem, i.e. diffusion-like
-    processes and fluid flow need different shape factors.
+    * ``conduit_shape_factor`` depends on the physics of the problem,
+    i.e. diffusion-like processes and fluid flow need different shape factors.
 
     """
     network = target.project.network
