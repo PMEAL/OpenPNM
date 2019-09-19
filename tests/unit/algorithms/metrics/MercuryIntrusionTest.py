@@ -13,11 +13,13 @@ class MercuryIntrusionTest:
 
     def test_run(self):
         mip = op.algorithms.metrics.MercuryIntrusion(network=self.net)
+        mip.run()
         assert mip['pore.invasion_sequence'].max() > 2
         assert mip['throat.invasion_sequence'].max() > 2
 
     def test_pcsnwp_data(self):
         mip = op.algorithms.metrics.MercuryIntrusion(network=self.net)
+        mip.run()
         mip.pc_data = [1e1, 1e3, 1e5, 1e6]
         mip.snwp_data = [0.0, 0.1, 0.5, 0.9]
         assert sp.all(mip.pc_data == [1e1, 1e3, 1e5, 1e6])
@@ -25,6 +27,7 @@ class MercuryIntrusionTest:
 
     def test_plot_data(self):
         mip = op.algorithms.metrics.MercuryIntrusion(network=self.net)
+        mip.run()
         mip.pc_data = [1e1, 1e3, 1e5, 1e6]
         mip.snwp_data = [0.0, 0.1, 0.5, 0.9]
         fig = mip.plot_intrusion_curve()
