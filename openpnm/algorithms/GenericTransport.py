@@ -423,6 +423,24 @@ class GenericTransport(GenericAlgorithm):
         Applies all the boundary conditions that have been specified, by
         adding values to the *A* and *b* matrices.
         """
+        if 'pore.bc_continuity' in self.keys():
+            f = np.abs(self.A.diagonal()).mean()
+            # BC Eqn: c[ps1] - K12 * c[ps2] = 0
+            ps1 = np.isfinite(self['pore.bc_continuity'][:, 0])
+            ps2 = self['pore.bc_continuity'][ps1, 0].astype(int)
+            K12 = self['pore.bc_continuity'][ps1, 1]
+            self.A = self.A.tolil()
+            # Enforce mass flux continuity, i.e. mdot @ ps1 = g(c @ ps2)
+            self.A[ps2, :] += self.A[ps1, :]
+            # TODO: Not sure if the next line is necessary (Amin)
+            self.b[ps2] += self.b[ps1]
+            # Enforce concentration continuity, i.e c @ ps1 = f(c @ ps2)
+            self.A[ps1, :] = 0.0
+            self.A[ps1, ps2] = -f * K12
+            self.A[ps1, ps1] = f
+            self.b[ps1] = 0.0
+            self.A = self.A.tocoo()
+            self.A.eliminate_zeros()
         if 'pore.bc_rate' in self.keys():
             # Update b
             ind = np.isfinite(self['pore.bc_rate'])
