@@ -85,8 +85,8 @@ class RelativePermeability(GenericAlgorithm):
                                              'z': 'bottom'}
         if flow_inlets is not None:
             for keys in flow_inlets.keys():
-                self.settings['flow_inlets'][keys]=flow_inlets[keys]
-                self.settings['flow_outlets'][keys]=flow_outlets[keys]
+                self.settings['flow_inlets'][keys] = flow_inlets[keys]
+                self.settings['flow_outlets'][keys] = flow_outlets[keys]
 
     def _regenerate_models(self):
         r"""
@@ -190,7 +190,7 @@ class RelativePermeability(GenericAlgorithm):
         St_mp_nwp.setup(conductance='throat.conduit_hydraulic_conductance')
         St_mp_nwp.run()
         Kenwp = np.sum(abs(St_mp_nwp.rate(pores=flow_pores[1])))
-        Kenwp=Kenwp
+        Kenwp = Kenwp
         self.project.purge_object(obj=St_mp_nwp)
         return [Kewp, Kenwp]
 
