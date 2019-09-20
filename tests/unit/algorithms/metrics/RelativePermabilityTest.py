@@ -79,7 +79,7 @@ class RelativePermeabilityTest:
                  flow_outlets=outlets)
         rp.run()
         results = rp.get_Kr_data()
-        assert results['relperm_wp']['x'] == results['relperm_wp']['y']
+        assert results['relperm_wp']['x'] == results['relperm_wp']['z']
 
 
 if __name__ == '__main__':
