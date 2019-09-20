@@ -34,7 +34,7 @@ class RelativePermeabilityTest:
                  invasion_sequence='invasion_sequence')
         rp.run()
         results = rp.get_Kr_data()
-        assert results['results']['krw']['x'][0] != []
+        assert results['relperm_wp'] == {}
 
     def test_overwriting_boundary_faces(self):
         inlets = {'x': 'left', 'y': 'left', 'z': 'left'}
@@ -47,9 +47,9 @@ class RelativePermeabilityTest:
                  flow_outlets=outlets)
         rp.run()
         results = rp.get_Kr_data()
-        val1 = results['results']['krw']['x'][5]
-        val2 = results['results']['krw']['y'][5]
-        assert val1 != val2
+        val1 = results['relperm_wp']['x']
+        val2 = results['relperm_wp']['y']
+        assert val1 == val2
 
     def test_lacking_boundary_faces(self):
         inlets = {'x': 'left'}
