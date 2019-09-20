@@ -16,10 +16,11 @@ class RelativePermeabilityTest:
                                      model=mod)
         self.wet_phase.add_model(propname='throat.hydraulic_conductance',
                                  model=mod)
+        mod = op.models.physics.capillary_pressure.washburn
         self.non_wet_phase.add_model(propname='throat.entry_pressure',
-                model=op.models.physics.capillary_pressure.washburn)
+                                     model=mod)
         self.wet_phase.add_model(propname='throat.entry_pressure',
-                model=op.models.physics.capillary_pressure.washburn)
+                                 model=mod)
         self.inlet_pores = self.net.pores('left')
         ip = op.algorithms.InvasionPercolation(network=self.net,
                                                phase=self.non_wet_phase)
