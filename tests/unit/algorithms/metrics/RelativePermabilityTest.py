@@ -52,8 +52,8 @@ class RelativePermeabilityTest:
         assert val1 == val2
 
     def test_lacking_boundary_faces(self):
-        inlets = {'x': 'left'}
-        outlets = {'x': 'right'}
+        inlets = {'x': 'top'}
+        outlets = {'x': 'bottom'}
         rp = op.algorithms.metrics.RelativePermeability(network=self.net)
         rp.setup(invading_phase=self.non_wet_phase,
                  defending_phase=self.wet_phase,
@@ -62,7 +62,24 @@ class RelativePermeabilityTest:
                  flow_outlets=outlets)
         rp.run()
         results = rp.get_Kr_data()
-        assert results['results']['krw']['y'] == []
+        assert results['relperm_wp']['x'] == results['relperm_wp']['z']
+
+    def test_user_defined_boundary_face(self):
+        pores_in = self.net.pores('top')
+        pores_out = self.net.pores('bottom')
+        self.net.set_label(pores=pores_in, label='pore_in')
+        self.net.set_label(pores=pores_out, label='pore_out')
+        inlets = {'x': 'pore_in'}
+        outlets = {'x': 'pore_out'}
+        rp = op.algorithms.metrics.RelativePermeability(network=self.net)
+        rp.setup(invading_phase=self.non_wet_phase,
+                 defending_phase=self.wet_phase,
+                 invasion_sequence='invasion_sequence',
+                 flow_inlets=inlets,
+                 flow_outlets=outlets)
+        rp.run()
+        results = rp.get_Kr_data()
+        assert results['relperm_wp']['x'] == results['relperm_wp']['y']
 
 
 if __name__ == '__main__':
