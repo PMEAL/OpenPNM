@@ -65,6 +65,11 @@ class TopoTest():
         rc = self._notebook_run(nbook)
         assert rc
 
+    def test_Topology_Extension(self):
+        nbook = os.path.join(test_dir, 'Topology Extension.ipynb')
+        print(nbook)
+        rc = self._notebook_run(nbook)
+        assert rc
 
 if __name__ == '__main__':
     t = TopoTest()
