@@ -1321,7 +1321,7 @@ def dimensionality(network):
     """
     xyz = network["pore.coords"]
     xyz_unique = [sp.unique(xyz[:, i]) for i in range(3)]
-    return [elem.size != 1 for elem in xyz_unique]
+    return sp.array([elem.size != 1 for elem in xyz_unique])
 
 
 def clone_pores(network, pores, labels=['clone'], mode='parents'):
@@ -1650,8 +1650,8 @@ def connect_pores(network, pores1, pores2, labels=[], add_conns=True):
         pores2 = [pores2]
 
     if len(pores1) != len(pores2):
-        raise Exception('Running in batch mode! pores1 and pores2 must be' +
-                        ' of the same length.')
+        raise Exception('Running in batch mode! pores1 and pores2 must be'
+                        + ' of the same length.')
 
     arr1, arr2 = [], []
     for ps1, ps2 in zip(pores1, pores2):
