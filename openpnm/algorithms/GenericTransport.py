@@ -423,8 +423,6 @@ class GenericTransport(GenericAlgorithm):
         Applies all the boundary conditions that have been specified, by
         adding values to the *A* and *b* matrices.
         """
-        from openpnm.utils.misc import tic, toc
-        tic()
         if 'pore.bc_continuity' in self.keys():
             f = np.abs(self.A.diagonal()).mean()
             # BC Eqn: c[ps1] - K12 * c[ps2] = 0
@@ -458,7 +456,6 @@ class GenericTransport(GenericAlgorithm):
             self.A.data = np.hstack((self.A.data, -f * K12))
             self.b[ps1] = 0.0
             self.A.eliminate_zeros()
-        toc()
         if 'pore.bc_rate' in self.keys():
             # Update b
             ind = np.isfinite(self['pore.bc_rate'])
