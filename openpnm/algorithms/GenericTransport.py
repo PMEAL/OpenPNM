@@ -423,24 +423,42 @@ class GenericTransport(GenericAlgorithm):
         Applies all the boundary conditions that have been specified, by
         adding values to the *A* and *b* matrices.
         """
+        from openpnm.utils.misc import tic, toc
+        tic()
         if 'pore.bc_continuity' in self.keys():
             f = np.abs(self.A.diagonal()).mean()
             # BC Eqn: c[ps1] - K12 * c[ps2] = 0
-            ps1 = np.isfinite(self['pore.bc_continuity'][:, 0])
+            ps1_mask = np.isfinite(self['pore.bc_continuity'][:, 0])
+            ps1 = self.toindices(ps1_mask)
             ps2 = self['pore.bc_continuity'][ps1, 0].astype(int)
             K12 = self['pore.bc_continuity'][ps1, 1]
-            self.A = self.A.tolil()
+            # Resolve Dirichlet and continuity BC conflict
+            ind_Dirichlet = self.toindices(np.isfinite(self['pore.bc_value']))
+            tmp = np.isin(ps1, ind_Dirichlet)
+            ps1[tmp], ps2[tmp], K12[tmp] = ps2[tmp], ps1[tmp], 1/K12[tmp]
             # Enforce mass flux continuity, i.e. mdot @ ps1 = g(c @ ps2)
-            self.A[ps2, :] += self.A[ps1, :]
-            # TODO: Not sure if the next line is necessary (Amin)
+            row, col = self.A.nonzero()
+            nnz_mask = np.in1d(row, ps1)
+            row_nnz = row[nnz_mask]
+            indsort = np.argsort(ps1)
+            index = np.searchsorted(ps1[indsort], row_nnz)
+            self.A.row = np.hstack((self.A.row, ps2[indsort[index]]))
+            self.A.col = np.hstack((self.A.col, col[nnz_mask]))
+            self.A.data = np.hstack((self.A.data, self.A.data[nnz_mask]))
+            # TODO: Not sure if the next line is necessary (@Amin)
             self.b[ps2] += self.b[ps1]
             # Enforce concentration continuity, i.e c @ ps1 = f(c @ ps2)
-            self.A[ps1, :] = 0.0
-            self.A[ps1, ps2] = -f * K12
-            self.A[ps1, ps1] = f
+            indrow = np.isin(self.A.row, ps1)
+            self.A.data[indrow] = 0         # Remove entries from ps1 rows
+            datadiag = self.A.diagonal()    # Add diagonal entries back into A
+            datadiag[ps1] = np.ones_like(ps1, dtype=np.float64) * f
+            self.A.setdiag(datadiag)
+            self.A.row = np.hstack((self.A.row, ps1))
+            self.A.col = np.hstack((self.A.col, ps2))
+            self.A.data = np.hstack((self.A.data, -f * K12))
             self.b[ps1] = 0.0
-            self.A = self.A.tocoo()
             self.A.eliminate_zeros()
+        toc()
         if 'pore.bc_rate' in self.keys():
             # Update b
             ind = np.isfinite(self['pore.bc_rate'])
