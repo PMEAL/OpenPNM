@@ -1454,7 +1454,10 @@ def merge_networks(network, donor=[]):
                     if donor[key].dtype == bool:
                         network[key] = False
                     else:
-                        network[key] = sp.nan
+                        data_shape = list(donor[key].shape)
+                        pore_prop = True if key.split(".")[0] == "pore" else False
+                        data_shape[0] = network.Np if pore_prop else network.Nt
+                        network[key] = sp.empty(data_shape) * sp.nan
                     # Then append donor values to network
                     s = sp.shape(donor[key])[0]
                     network[key][-s:] = donor[key]
