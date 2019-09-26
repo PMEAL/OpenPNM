@@ -13,7 +13,7 @@ class TransientIonicTransport(IonicTransport, TransientReactiveTransport):
     def __init__(self, settings={}, phase=None, **kwargs):
         def_set = {'phase': None,
                    'gui': {'setup':        {'phase': None,
-                                            'potential_field': None,
+                                            'potential_field': '',
                                             'ions': [],
                                             'i_tolerance': None,
                                             'i_max_iter': None,
@@ -31,10 +31,10 @@ class TransientIonicTransport(IonicTransport, TransientReactiveTransport):
         if phase is not None:
             self.setup(phase=phase)
 
-    def setup(self, phase=None, potential_field=None, ions=[],
-              i_tolerance=None, i_max_iter=None, t_initial=None, t_final=None,
-              t_step=None, t_output=None, t_tolerance=None, t_precision=None,
-              t_scheme='', **kwargs):
+    def setup(self, phase=None, potential_field='', ions=[], i_tolerance=None,
+              i_max_iter=None, t_initial=None, t_final=None, t_step=None,
+              t_output=None, t_tolerance=None, t_precision=None, t_scheme='',
+              **kwargs):
         if phase:
             self.settings['phase'] = phase.name
         if potential_field:
@@ -68,8 +68,9 @@ class TransientIonicTransport(IonicTransport, TransientReactiveTransport):
         print('Running TransientIonicTransport')
         # Phase, potential and ions algorithms
         phase = self.project.phases()[self.settings['phase']]
-        p_alg = self.settings['potential_field']
-        e_alg = self.settings['ions']
+        p_alg = self.project.algorithms()[self.settings['potential_field']]
+        e_alg = [self.project.algorithms()[self.settings['ions'][i]] for i in
+                 range(len(self.settings['ions']))]
         algs = e_alg.copy()
         algs.insert(0, p_alg)
         # Define initial conditions (if not defined by the user)
@@ -121,8 +122,9 @@ class TransientIonicTransport(IonicTransport, TransientReactiveTransport):
         """
         # Phase, potential and ions algorithms
         phase = self.project.phases()[self.settings['phase']]
-        p_alg = self.settings['potential_field']
-        e_alg = self.settings['ions']
+        p_alg = self.project.algorithms()[self.settings['potential_field']]
+        e_alg = [self.project.algorithms()[self.settings['ions'][i]] for i in
+                 range(len(self.settings['ions']))]
         algs = e_alg.copy()
         algs.insert(0, p_alg)
 
