@@ -45,6 +45,9 @@ parameters.
 | JGF      | The JSON Graph Format is a schema specification of how to write  |
 |          | a graph object into JSON format                                  |
 +----------+------------------------------------------------------------------+
+| STL      | The STL Format is a Standard Triangle (or Tessellation) Language |
+|          | supported by many CAD packages and used for 3D printing          |
++----------+------------------------------------------------------------------+
 | PerGeos  | The PerGeos format is used by the commercial software Avizo      |
 +----------+------------------------------------------------------------------+
 | iMorph   | iMorph is a graphical interface program that provides some image |
@@ -75,4 +78,5 @@ from .Pandas import Pandas
 from .HDF5 import HDF5
 from .XDMF import XDMF
 from .JSONGraphFormat import JSONGraphFormat
+from .STL import STL
 from .COMSOL import COMSOL

@@ -15,5 +15,8 @@ if 'cov' in sys.argv:
                  '--cov=openpnm',
                  '--cov-config=.coveragerc'])
 
+if 'ignore-examples' in sys.argv:
+    args.extend(['--ignore=tests/integration/examples/'])
+
 exit_code = pytest.main(args)
 exit(exit_code)

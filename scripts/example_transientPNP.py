@@ -10,9 +10,9 @@ proj = ws.new_project()
 np.random.seed(0)
 
 net = op.network.Cubic(shape=[8, 8, 1], spacing=9e-4, project=proj)
-prs = (net['pore.back'] * net['pore.right'] + net['pore.back'] *
-       net['pore.left'] + net['pore.front'] * net['pore.right'] +
-       net['pore.front'] * net['pore.left'])
+prs = (net['pore.back'] * net['pore.right'] + net['pore.back']
+       * net['pore.left'] + net['pore.front'] * net['pore.right']
+       + net['pore.front'] * net['pore.left'])
 thrts = net['throat.surface']
 op.topotools.trim(network=net, pores=net.Ps[prs], throats=net.Ts[thrts])
 

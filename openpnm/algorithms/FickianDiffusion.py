@@ -1,5 +1,6 @@
 from openpnm.algorithms import ReactiveTransport
 from openpnm.utils import logging
+import numpy as np
 logger = logging.getLogger(__name__)
 
 
@@ -95,6 +96,53 @@ class FickianDiffusion(ReactiveTransport):
         if conductance:
             self.settings['conductance'] = conductance
         super().setup(**kwargs)
+
+    def set_continuity_BC(self, ps1, ps2, K12=1.0, mode="merge"):
+        r"""
+        Apply continuity boundary conditon between two phases.
+
+        This boundary condition enforces c[ps1] = c[ps2] * K12
+
+        Parameters
+        ----------
+        ps1 : array_like
+            The pore indices in phase 1 where the condition should be applied
+
+        ps2 : array_like
+            The pore indices in phase 2 where the condition should be applied
+
+        K12 : scalar or array_like
+            Partition coefficient; relates the concentrations at two phases.
+            If a scalar is supplied it is assigne to all locations, and if a
+            vector is supplied, it must be the same size as the indices given
+            in ``ps1`` and ``ps2``.
+
+        mode : string, optional
+            Controls how the boundary conditions are applied.  Options are:
+
+            - ``'merge'``: (Default) Adds supplied boundary conditions to
+            already existing conditions
+
+            - ``'overwrite'``: Deletes all boundary condition on object then
+            adds the given ones
+        """
+        # Hijack the parse_mode function to verify bctype argument
+        ps1 = self._parse_indices(ps1)
+        ps2 = self._parse_indices(ps2)
+        K12 = np.array(K12)
+        if ps1.size != ps2.size:
+            if ps1.size != 1 and ps2.size != 1:
+                raise Exception("Inconsistent array length: ps1 and ps2")
+        if ps1.size < ps2.size:
+            ps1, ps2, K12 = ps2, ps1, 1/K12
+        if ps2.size == 1:
+            ps2 = ps2.repeat(ps1.size)
+
+        # Store partition coefficient (K12) values
+        if ('pore.bc_continuity' not in self.keys()) or (mode == 'overwrite'):
+            self['pore.bc_continuity'] = np.empty((self.Np, 2)) * np.nan
+        self['pore.bc_continuity'][ps1, 0] = ps2
+        self['pore.bc_continuity'][ps1, 1] = K12
 
     def calc_effective_diffusivity(self, inlets=None, outlets=None,
                                    domain_area=None, domain_length=None):
