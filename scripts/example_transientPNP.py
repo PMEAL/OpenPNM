@@ -88,12 +88,12 @@ phys.add_model(propname='throat.ad_dif_mig_conductance.' + Cl.name,
                s_scheme='exponential')
 
 pnp = op.algorithms.TransientIonicTransport(network=net, phase=sw)
-pnp.setup(potential_field=p, ions=[eA, eB])
+pnp.setup(potential_field=p.name, ions=[eA.name, eB.name])
 pnp.settings['i_max_iter'] = 10
 pnp.settings['i_tolerance'] = 1e-04
-pnp.settings['t_output'] = 500
+pnp.settings['t_output'] = 100
 pnp.settings['t_step'] = 100
-pnp.settings['t_final'] = 2000
+pnp.settings['t_final'] = 3000
 # pnp.settings['t_scheme'] = 'steady'
 
 pnp.run()

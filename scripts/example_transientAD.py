@@ -62,11 +62,9 @@ ad.settings['charge_conservation'] = 'laplace'
 ad.settings['t_output'] = 500
 ad.settings['t_step'] = 100
 ad.settings['t_final'] = 2000
-# Electroneutrality condition does not work with new Mixtures
-# pnp.settings['charge_conservation'] = 'electroneutrality'
 ad.run()
 
 water.update(ad.results())
 
-# output results to a vtk file
+# output results
 # proj.export_data(phases=[water], filename='OUT', filetype='xdmf')

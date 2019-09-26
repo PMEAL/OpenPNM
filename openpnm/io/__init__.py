@@ -79,3 +79,4 @@ from .HDF5 import HDF5
 from .XDMF import XDMF
 from .JSONGraphFormat import JSONGraphFormat
 from .STL import STL
+from .COMSOL import COMSOL
