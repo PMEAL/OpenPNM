@@ -10,3 +10,14 @@ build/
 dist/
 
 *\.ipynb_checkpoints/
+
+*.vtp
+*.pnm
+*.hdf
+*.xmf
+!tests/fixtures/*.vtp
+!tests/fixtures/*.pnm
+!tests/fixtures/*.hdf
+!tests/fixtures/*.xmf
+
+.DS_Store
