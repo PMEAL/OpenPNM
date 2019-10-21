@@ -453,14 +453,6 @@ def classic_hagen_poiseuille(target,
     return value
 
 
-        mu1 = (dP1**(1-1/n1)[m1] * C1**(1/n1)[m1] / ((4*n1/(3*n1+1)) *
-               (2*L1/((A1/pi)**0.5))**(1-1/n1))[m1])
-        mu2 = (dP2**(1-1/n2)[m2] * C2**(1/n2)[m2] / ((4*n2/(3*n2+1)) *
-               (2*L2/((A2/pi)**0.5))**(1-1/n2))[m2])
-        mut = (dPt**(1-1/nt)[mt] * Ct**(1/nt)[mt] / ((4*nt/(3*nt+1)) *
-               (2*Lt/((At/pi)**0.5))**(1-1/nt))[mt])
-        raise Exception('Unknown keyword for "transport_type", can only be' +
-                        ' "flow" or "flow_power_law"')
 def hagen_poiseuille_2D(target,
                         pore_diameter='pore.diameter',
                         throat_diameter='throat.diameter',
