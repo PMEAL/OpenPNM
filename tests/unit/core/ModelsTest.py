@@ -18,8 +18,11 @@ class ModelsTest:
         ws.clear()
 
     def test_models_dict_print(self):
-        s = self.geo.models.__str__().split('\n')
-        assert len(s) == 67
+        net = op.network.Cubic(shape=[3, 3, 3])
+        geo = op.geometry.StickAndBall(network=net, pores=net.Ps,
+                                       throats=net.Ts)
+        s = geo.models.__str__().split('\n')
+        assert len(s) == 69
         assert s.count('―'*78) == 15
 
     def test_regenerate_models(self):
@@ -128,14 +131,19 @@ class ModelsTest:
         geo = op.geometry.StickAndBall(network=pn, pores=pn.Ps, throats=pn.Ts)
         phase = op.phases.Water(network=pn)
         phys = op.physics.Standard(network=pn, phase=phase, geometry=geo)
+        len_phase = 23
         phase.clear(mode='model_data')
         phys.clear()
+        assert len(phys) == 2
         assert len(phase) == 13
         phys.regenerate_models(propnames=None, deep=False)
-        assert len(phase) == 13
         assert len(phys) == 10
-        phys.regenerate_models(propnames=None, deep=True)
+        # Note that 2 new models were added to the phase during interpolation
+        assert len(phase) < len_phase
+        phase.clear(mode='model_data')
         assert len(phase) == 13
+        phys.regenerate_models(propnames=None, deep=True)
+        assert len(phase) < len_phase
 
     def test_regenerate_models_on_network_with_deep(self):
         pn = op.network.Cubic(shape=[5, 5, 5])
@@ -150,6 +158,14 @@ class ModelsTest:
         assert len(geo.props()) == 0
         pn.regenerate_models(deep=True)
         assert len(geo.props()) == b
+
+    def test_regen_mode_default_value(self):
+        pn = op.network.Cubic(shape=[3, 3, 3], spacing=1e-4)
+        geo = op.geometry.StickAndBall(network=pn, pores=pn.Ps, throats=pn.Ts,
+                                       settings={'regen_mode': 'deferred'})
+        assert len(geo.props()) == 0
+        geo.regenerate_models()
+        assert len(geo.props()) == 16
 
 
 if __name__ == '__main__':

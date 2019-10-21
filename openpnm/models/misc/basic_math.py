@@ -12,6 +12,24 @@ from openpnm.utils import logging
 logger = logging.getLogger(__name__)
 
 
+def invert(target, prop):
+    r"""
+    Inverts the given array
+
+    Parameters
+    ----------
+    target : OpenPNM Object
+        The object which this model is associated with. This controls the
+        length of the calculated array, and also provides access to other
+        necessary properties.
+
+    prop : string
+        Dictionary key pointing the values to invert
+
+    """
+    return 1.0/target[prop]
+
+
 def fraction(target, numerator, denominator):
     r"""
     Calculates the ratio between two values

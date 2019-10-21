@@ -211,9 +211,6 @@ class OrdinaryPercolation(GenericAlgorithm):
         Ps = self._parse_indices(pores)
         if np.sum(self['pore.outlets'][Ps]) > 0:
             raise Exception('Some inlets are already defined as outlets')
-        if np.sum(self.network['pore.volume'][Ps]) > 0:
-            logger.warn('Some inlet pores have non-zero volume, will result ' +
-                        'in non-zero initial saturation')
         if overwrite:
             self['pore.inlets'] = False
         self['pore.inlets'][Ps] = True
@@ -449,6 +446,9 @@ class OrdinaryPercolation(GenericAlgorithm):
         Pvol = net[self.settings['pore_volume']]
         Tvol = net[self.settings['throat_volume']]
         Total_vol = np.sum(Pvol) + np.sum(Tvol)
+        if sp.sum(Pvol[self['pore.inlets']]) > 0.0:
+            logger.warning('Inlets have non-zero volume, percolation curve ' +
+                           'will not start at 0')
         # Find cumulative filled volume at each applied capillary pressure
         Vnwp_t = []
         Vnwp_p = []

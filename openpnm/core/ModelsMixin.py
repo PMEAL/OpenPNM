@@ -1,5 +1,6 @@
 import inspect
-import networkx as nx
+from networkx import DiGraph, simple_cycles, draw_spectral
+from networkx.algorithms.dag import lexicographical_topological_sort
 from openpnm.utils import PrintableDict, logging, Workspace
 ws = Workspace()
 logger = logging.getLogger(__name__)
@@ -38,11 +39,11 @@ class ModelsDict(PrintableDict):
 
         '''
         dtree = self.dependency_graph()
-        cycles = list(nx.simple_cycles(dtree))
+        cycles = list(simple_cycles(dtree))
         if cycles:
             raise Exception('Cyclic dependency found: ' + ' -> '.join(
                             cycles[0] + [cycles[0][0]]))
-        d = nx.algorithms.dag.lexicographical_topological_sort(dtree, sorted)
+        d = lexicographical_topological_sort(dtree, sorted)
         return list(d)
 
     def dependency_graph(self):
@@ -64,7 +65,7 @@ class ModelsDict(PrintableDict):
                          font_weight='bold')
 
         """
-        dtree = nx.DiGraph()
+        dtree = DiGraph()
         for propname in self.keys():
             dtree.add_node(propname)
             for dependency in self[propname].values():
@@ -83,14 +84,14 @@ class ModelsDict(PrintableDict):
 
         """
         dtree = self.dependency_graph()
-        fig = nx.draw_spectral(dtree,
-                               with_labels=True,
-                               arrowsize=50,
-                               node_size=2000,
-                               edge_color='lightgrey',
-                               width=3.0,
-                               font_size=32,
-                               font_weight='bold')
+        fig = draw_spectral(dtree,
+                            with_labels=True,
+                            arrowsize=50,
+                            node_size=2000,
+                            edge_color='lightgrey',
+                            width=3.0,
+                            font_size=32,
+                            font_weight='bold')
         return fig
 
     def __str__(self):
@@ -108,6 +109,37 @@ class ModelsDict(PrintableDict):
                 lines.append(strg.format('', '', param+':', temp[param]))
             lines.append(strg.format('', '', 'regeneration mode:', regen_mode))
             lines.append(horizontal_rule)
+        return '\n'.join(lines)
+
+
+class ModelWrapper(dict):
+    r"""
+    This class is used to hold individual models and provide some extra
+    functionality, such as pretty-printing.
+    """
+    @property
+    def propname(self):
+        for proj in ws.values():
+            for obj in proj:
+                if hasattr(obj, 'models'):
+                    for key, mod in obj.models.items():
+                        if mod is self:
+                            return key
+
+    def __str__(self):
+        horizontal_rule = '―' * 78
+        lines = [horizontal_rule]
+        strg = '{0:<25s} {2:<25s} {2}'
+        lines.append(strg.format('Property Name', 'Parameter', 'Value'))
+        lines.append(horizontal_rule)
+        temp = self.copy()
+        regen_mode = temp.pop('regen_mode', None)
+        model = str(temp.pop('model')).split(' ')[1]
+        lines.append(strg.format(self.propname, 'model:', model))
+        for param in temp.keys():
+            lines.append(strg.format('', param+':', temp[param]))
+        lines.append(strg.format('', 'regeneration mode:', regen_mode))
+        lines.append(horizontal_rule)
         return '\n'.join(lines)
 
 
@@ -174,7 +206,7 @@ class ModelsMixin():
 
     """
 
-    def add_model(self, propname, model, regen_mode='normal', **kwargs):
+    def add_model(self, propname, model, regen_mode='', **kwargs):
         r"""
         Adds a new model to the models dictionary (``object.models``)
 
@@ -190,8 +222,8 @@ class ModelsMixin():
             Controls how/when the model is run (See Notes for more details).
             Options are:
 
-            *'normal'* : The model is run directly upon being assiged, and
-            also run every time ``regenerate_models`` is called.
+            *'normal'* : (default) The model is run directly upon being
+            assiged, and also run every time ``regenerate_models`` is called.
 
             *'constant'* : The model is run directly upon being assigned, but
             is not called again, thus making it's data act like a constant.
@@ -204,6 +236,12 @@ class ModelsMixin():
         """
         if propname in kwargs.values():  # Prevent infinite loops of look-ups
             raise Exception(propname+' can\'t be both dependency and propname')
+        # Look for default regen_mode in settings if present, else use 'normal'
+        if regen_mode == '':
+            if 'regen_mode' in self.settings.keys():
+                regen_mode = self.settings['regen_mode']
+            else:
+                regen_mode = 'normal'
         # Add model and regen_mode to kwargs dictionary
         kwargs.update({'model': model, 'regen_mode': regen_mode})
         # Insepct model to extract arguments and default values
@@ -213,9 +251,9 @@ class ModelsMixin():
             for k, v in zip(keys, vals):  # Put defaults into kwargs
                 if k not in kwargs:  # Skip if argument was given in kwargs
                     kwargs.update({k: v})
-        self.models[propname] = kwargs  # Store all keyword argumnents in model
+        self.models[propname] = ModelWrapper(kwargs)  # Store all kwargs
         # Regenerate model values if necessary
-        if regen_mode not in ['deferred']:
+        if regen_mode not in ['deferred', 'explicit']:
             self._regen(propname)
 
     def regenerate_models(self, propnames=None, exclude=[], deep=False):
@@ -250,8 +288,9 @@ class ModelsMixin():
         if propnames is None:  # If no props given, then regenerate them all
             propnames = self.models.dependency_list()
             # If some props are to be excluded, remove them from list
-            if len(exclude) > 0:
-                propnames = [i for i in propnames if i not in exclude]
+            exclude.extend([k for k, v in self.models.items()
+                            if v['regen_mode'] == 'explicit'])
+            propnames = [i for i in propnames if i not in exclude]
         # Re-order given propnames according to dependency tree
         self_models = self.models.dependency_list()
         propnames = [i for i in self_models if i in propnames]
