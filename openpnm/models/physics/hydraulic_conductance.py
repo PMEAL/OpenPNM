@@ -1,13 +1,15 @@
 r"""
 
 .. autofunction:: openpnm.models.physics.hydraulic_conductance.hagen_poiseuille
+.. autofunction:: openpnm.models.physics.hydraulic_conductance.hagen_poiseuille_2D
 .. autofunction:: openpnm.models.physics.hydraulic_conductance.hagen_poiseuille_power_law
+.. autofunction:: openpnm.models.physics.hydraulic_conductance.hagen_poiseuille_slit
+.. autofunction:: openpnm.models.physics.hydraulic_conductance.valvatne_blunt
 .. autofunction:: openpnm.models.physics.hydraulic_conductance.generic_conductance
 
 """
 
 import scipy as _sp
-import numpy as np
 
 
 def hagen_poiseuille(target,
@@ -242,25 +244,25 @@ def valvatne_blunt(target,
         mu_t = target.interpolate_data(pore_viscosity)
     # Throat Portion
     Gt = network[throat_shape_factor]
-    tri = Gt <= np.sqrt(3)/36.0
+    tri = Gt <= _sp.sqrt(3)/36.0
     circ = Gt >= 0.07
     square = ~(tri | circ)
-    ntri = np.sum(tri)
-    nsquare = np.sum(square)
-    ncirc = np.sum(circ)
-    kt = np.ones_like(Gt)
+    ntri = _sp.sum(tri)
+    nsquare = _sp.sum(square)
+    ncirc = _sp.sum(circ)
+    kt = _sp.ones_like(Gt)
     kt[tri] = 3.0/5.0
     kt[square] = 0.5623
     kt[circ] = 0.5
     # Pore Portions
     Gp = network[pore_shape_factor]
-    tri = Gp <= np.sqrt(3)/36.0
+    tri = Gp <= _sp.sqrt(3)/36.0
     circ = Gp >= 0.07
     square = ~(tri | circ)
-    ntri += np.sum(tri)
-    nsquare += np.sum(square)
-    ncirc += np.sum(circ)
-    kp = np.ones_like(Gp)
+    ntri += _sp.sum(tri)
+    nsquare += _sp.sum(square)
+    ncirc += _sp.sum(circ)
+    kp = _sp.ones_like(Gp)
     kp[tri] = 3.0/5.0
     kp[square] = 0.5623
     kp[circ] = 0.5
@@ -271,9 +273,7 @@ def valvatne_blunt(target,
     lt = network[conduit_lengths + '.throat']
     l2 = network[conduit_lengths + '.pore2']
     # Resistors in Series
-    value = (l1/gp[conns[:, 0]] +
-             lt/gt +
-             l2/gp[conns[:, 1]])
+    value = (l1/gp[conns[:, 0]] + lt/gt + l2/gp[conns[:, 1]])
     return 1/value
 
 
@@ -495,14 +495,14 @@ def generic_conductance(target, transport_type, pore_area, throat_area,
         dPt = _sp.absolute(_sp.diff(P[cn], axis=1).squeeze())
 
         # Apparent viscosities
-        mu1 = (dP1**(1-1/n1)[m1] * C1**(1/n1)[m1] / ((4*n1/(3*n1+1)) *
-               (2*L1/((A1/pi)**0.5))**(1-1/n1))[m1])
+        mu1 = (dP1**(1-1/n1)[m1] * C1**(1/n1)[m1] / ((4*n1/(3*n1+1))
+               * (2*L1/((A1/pi)**0.5))**(1-1/n1))[m1])
 
-        mu2 = (dP2**(1-1/n2)[m2] * C2**(1/n2)[m2] / ((4*n2/(3*n2+1)) *
-               (2*L2/((A2/pi)**0.5))**(1-1/n2))[m2])
+        mu2 = (dP2**(1-1/n2)[m2] * C2**(1/n2)[m2] / ((4*n2/(3*n2+1))
+               * (2*L2/((A2/pi)**0.5))**(1-1/n2))[m2])
 
-        mut = (dPt**(1-1/nt)[mt] * Ct**(1/nt)[mt] / ((4*nt/(3*nt+1)) *
-               (2*Lt/((At/pi)**0.5))**(1-1/nt))[mt])
+        mut = (dPt**(1-1/nt)[mt] * Ct**(1/nt)[mt] / ((4*nt/(3*nt+1))
+               * (2*Lt/((At/pi)**0.5))**(1-1/nt))[mt])
 
         # Bound the apparent viscosity
         vis_min = 1e-08
@@ -520,8 +520,8 @@ def generic_conductance(target, transport_type, pore_area, throat_area,
         g2[m2] = A2[m2]**2 / ((8*pi*L2)[m2]*mu2)
         gt[mt] = At[mt]**2 / ((8*pi*Lt)[mt]*mut)
     else:
-        raise Exception('Unknown keyword for "transport_type", can only be' +
-                        ' "flow" or "flow_power_law"')
+        raise Exception('Unknown keyword for "transport_type", can only be'
+                        + ' "flow" or "flow_power_law"')
     # Apply shape factors and calculate the final conductance
     return (1/gt/SFt + 1/g1/SF1 + 1/g2/SF2)**(-1)
 
@@ -617,3 +617,71 @@ def hagen_poiseuille_2D(target,
     gt = Dt**3 / (12*mut*Lt)
 
     return (1/gt/SFt + 1/g1/SF1 + 1/g2/SF2)**(-1)
+
+
+def hagen_poiseuille_slit(target, throat_height='throat.height',
+                          throat_width='throat.width',
+                          throat_length='throat.length',
+                          throat_viscosity='throat.viscosity'):
+
+    # Generic func for algorithmically finding H, W, and L of pores & throats
+    def get_T_and_P_dims(network, throats,
+                         throat_height='throat.height',
+                         throat_width='throat.width',
+                         throat_length='throat.length',
+                         pore_height=None,
+                         pore_width=None,
+                         pore_length=None):
+        Ht = network[throat_height][throats]
+        Wt = network[throat_width][throats]
+        Lt = network[throat_length][throats]
+        conns = network['throat.conns']
+        Hp = network[pore_height][conns][Ts]
+        Wp = _sp.copy(Hp)
+        Lp = network[pore_length][conns][Ts]/2
+        return (Ht, Wt, Lt, Hp, Wp, Lp)
+
+    # Initialize the needed variables
+    project = target.project
+    net = project.network
+    conns = net['throat.conns']
+    phase = project.find_phase(target)
+    gh = _sp.zeros((net.Nt, 3), dtype=float)
+
+    # Start with x-directional throats
+    Ts = net.throats('dir_x')
+    Ht, Wt, Lt, Hp, Wp, Lp = get_T_and_P_dims(network=net, throats=Ts,
+                                              throat_height=throat_height,
+                                              throat_width=throat_width,
+                                              throat_length=throat_length,
+                                              pore_height='pore.size_z',
+                                              pore_length='pore.size_x')
+    ght = (Ht**3)*Wt/(4*phase[throat_viscosity][Ts]*Lt)
+    ghp1, ghp2 = ((Hp**3)*_sp.pi/(3*phase[throat_viscosity][conns][Ts]*Lp)).T
+    gh[Ts, :] = _sp.vstack((ghp1, ght, ghp2)).T
+
+    # y-directional throats
+    Ts = net.throats('dir_y')
+    Ht, Wt, Lt, Hp, Wp, Lp = get_T_and_P_dims(network=net, throats=Ts,
+                                              throat_height=throat_height,
+                                              throat_width=throat_width,
+                                              throat_length=throat_length,
+                                              pore_height='pore.size_z',
+                                              pore_length='pore.size_y')
+    ghp1, ghp2 = ((Hp**3)*_sp.pi/(3*phase[throat_viscosity][conns][Ts]*Lp)).T
+    gh[Ts, :] = _sp.vstack((ghp1, ght, ghp2)).T
+
+    # z-directional throats
+    Ts = net.throats('dir_z')
+    Ht, Wt, Lt, Hp, Wp, Lp = get_T_and_P_dims(network=net, throats=Ts,
+                                              throat_height=throat_height,
+                                              throat_width=throat_width,
+                                              throat_length=throat_length,
+                                              pore_height='pore.size_x',
+                                              pore_length='pore.size_z')
+    ghp1, ghp2 = ((Hp**3)*_sp.pi/(3*phase[throat_viscosity][conns][Ts]*Lp)).T
+    gh[Ts, :] = _sp.vstack((ghp1, ght, ghp2)).T
+
+    # Finally, calculate the gh_total for each conduit
+    ghtotal = 1/(_sp.sum(1/gh, axis=1))
+    return ghtotal[phase.throats(target.name)]
