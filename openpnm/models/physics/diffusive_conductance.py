@@ -334,7 +334,7 @@ def diffusive_conductance_slit(target,
     throat_diffusivity = phase['throat.diffusivity']
     gd = _sp.zeros((net.Nt, 3), dtype=float)
 
-# Start with x-directional throats
+    # Start with x-directional throats
     Ts = net.throats('dir_x')
     Ht, Wt, Lt, Hp, Wp, Lp = get_T_and_P_dims(network=net, throats=Ts,
                                               throat_height='throat.height',
@@ -346,7 +346,7 @@ def diffusive_conductance_slit(target,
     gdt = ((phase[throat_diffusivity][Ts]*Ht*Wt)/Lt)
     gdp1, gdp2 = ((phase[pore_diffusivity][conns][Ts]*Hp*Wp)/(Lp)).T
     gd[Ts, :] = _sp.vstack((gdp1, gdt, gdp2)).T
-# y-directional throats
+    # y-directional throats
     Ts = net.throats('dir_y')
     Ht, Wt, Lt, Hp, Wp, Lp = get_T_and_P_dims(network=net, throats=Ts,
                                               throat_height='throat.height',
@@ -358,7 +358,7 @@ def diffusive_conductance_slit(target,
     gdt = ((phase[throat_diffusivity][Ts]*Ht*Wt)/Lt)
     gdp1, gdp2 = ((phase[pore_diffusivity][conns][Ts]*Hp*Wp)/(Lp)).T
     gd[Ts, :] = _sp.vstack((gdp1, gdt, gdp2)).T
-# z-directional throats
+    # z-directional throats
     Ts = net.throats('dir_z')
     Ht, Wt, Lt, Hp, Wp, Lp = get_T_and_P_dims(network=net, throats=Ts,
                                               throat_height='throat.height',

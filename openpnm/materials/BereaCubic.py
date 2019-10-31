@@ -39,9 +39,8 @@ class BereaCubic(Project):
 
     """
 
-    def __init__(self, shape, name=None, **kwargs):
-        super().__init__(name=name)
-        Lc = 0.0001
+    def __init__(self, shape=[10, 10, 10], Lc=0.0001256, **kwargs):
+        super().__init__(**kwargs)
         pn = Cubic(shape=shape, spacing=Lc, connectivity=6, project=self)
         geom = GenericGeometry(network=pn, pores=pn.Ps, throats=pn.Ts)
         geom['pore.seed'] = sp.rand(pn.Np)
