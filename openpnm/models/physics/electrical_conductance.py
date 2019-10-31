@@ -110,13 +110,14 @@ def series_resistors(target,
 
 
 def slit(target, throat_height='throat.height',
-                          throat_width='throat.width',
-                          throat_length='throat.length',
-                          pore_height='pore.size_z',
-                          pore_width='pore.size_y',
-                          pore_length='pore.size_x',
-                          throat_electrical_conductivity=
-                          'throat.electrical_conductivity'):
+                 throat_width='throat.width',
+                 throat_length='throat.length',
+                 pore_height='pore.size_z',
+                 pore_width='pore.size_y',
+                 pore_length='pore.size_x',
+                 throat_electrical_conductivity=
+                 'throat.electrical_conductivity',
+                 pore_electrical_conductivity='pore.electrical_conductivity'):
     r"""
     Calculates the electrical conductances of a slit-shaped geometry.
 
@@ -153,8 +154,7 @@ def slit(target, throat_height='throat.height',
                                               pore_height='pore.size_z',
                                               pore_length='pore.size_x')
     gte = ((4.0*Ht.T*Wt)/(Lt))
-    gpe1, gpe2 = ((2*_sp.pi*(Hp*Wp)) /
-                  (1-_sp.log10(_sp.arcsin(Ht/Hp)))).T
+    gpe1, gpe2 = ((2*_sp.pi*(Hp*Wp))/(1-_sp.log10(_sp.arcsin(Ht/Hp)))).T
     ge[Ts, :] = _sp.vstack((gpe1, gte, gpe2)).T
     # y-directional throats
     Ts = net.throats('dir_y')
@@ -181,8 +181,7 @@ def slit(target, throat_height='throat.height',
                                               pore_length='pore.size_x')
     Ht = _sp.reshape(net[throat_height][Ts], (Ts.size, 1))
     gte = (4.0*Ht.T*Wt)/(Lt)
-    gpe1, gpe2 = ((2*_sp.pi*(Hp*Wp)) /
-                  (1-_sp.log10(_sp.arcsin(Ht/Hp)))).T
+    gpe1, gpe2 = ((2*_sp.pi*(Hp*Wp))/(1-_sp.log10(_sp.arcsin(Ht/Hp)))).T
     ge[Ts, :] = _sp.vstack((gpe1, gte, gpe2)).T
     getotal = 1/(_sp.sum(1/ge, axis=1))
     return getotal[phase.throats(target.name)]

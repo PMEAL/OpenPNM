@@ -9,11 +9,17 @@ proj = op.materials.BereaCubic(shape=[15, 15, 15])
 net = proj.network
 geo = proj[1]
 
+# Fetch network shape and spacing for use later
+Lx, Ly, Lz = net.spacing
+Nx, Ny, Nz = net.shape
+
 plt.hist(x=geo['throat.size']*1e6, bins=25,
          weights=geo['throat.volume']*(1e3)**3, edgecolor='k')
 plt.hist(x=geo['pore.size_z']*1e6, bins=25,
          weights=geo['pore.volume']*(1e3)**3, edgecolor='k')
 
+
+# %% Define phase objects
 hg = op.phases.Mercury(network=net)
 air = op.phases.Air(network=net)
 water = op.phases.Water(network=net)
@@ -47,8 +53,6 @@ alg.set_value_BC(values=101325, pores=BC2_pores)
 alg.run()
 Q = alg.rate(pores=net.pores('front'))
 
-Lx, Ly, Lz = net.spacing
-Nx, Ny, Nz = net.shape
 A = (Ly*Lz)*(Ny*Nz)
 L = Lx*Nx
 mu = sp.mean(water['throat.viscosity'])
@@ -66,8 +70,13 @@ e = Vt/Vb
 print("The porosity is:", e)
 
 # %%Calculating Formation Factor F
+try:
+    water['pore.electrical_conductivity']
+except KeyError:
+    pass
 mod = op.models.physics.electrical_conductance.slit
 phys_water.add_model(propname='throat.electrical_conductance', model=mod)
+phys_water['throat.electrical_conductance'] = Lx/4
 
 Om = op.algorithms.OhmicConduction(network=net, phase=water)
 BC1_pores = net.pores('pore.front')
