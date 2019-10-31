@@ -5,24 +5,7 @@ import openpnm.models as mods
 import matplotlib.pyplot as plt
 
 
-def Pc_slit(target,
-            throat_height='throat.height',
-            throat_width='throat.width',
-            contact_angle='throat.contact_angle',
-            surface_tension='throat.surface_tension'):
 
-    project = target.project
-    network = project.network
-    phase = project.find_phase(target)
-
-    Ht = network[throat_height]
-    Wt = network[throat_width]
-    rt = 1/Ht + 1/Wt
-    theta = phase[contact_angle]
-    sigma = phase[surface_tension]
-    Pc_slit = -sigma*sp.cos(sp.deg2rad(theta))*rt
-
-    return Pc_slit[phase.throats(target.name)]
 
 # def diffusive_conductance_slit(target,
 #                               throat_height='throat.height',
@@ -235,7 +218,8 @@ if __name__ == '__main__':
     phys_hg = op.physics.GenericPhysics(network=net, phase=hg,
                                         geometry=geo)
 
-    phys_hg.add_model(propname='throat.entry_pressure', model=Pc_slit)
+    mod = op.models.physics.capillary_pressure.washburn_slit
+    phys_hg.add_model(propname='throat.entry_pressure', model=mod)
 
     mip = op.algorithms.Porosimetry(network=net, name='air')
     mip.setup(phase=hg)

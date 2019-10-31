@@ -439,3 +439,34 @@ def sinusoidal_bidirectional(target,
         target.remove_model(key)
     del network['throat.temp_diameter']
     return np.vstack((values[0], values[1])).T
+
+
+def washburn_slit(target,
+                  throat_height='throat.height',
+                  throat_width='throat.width',
+                  contact_angle='throat.contact_angle',
+                  surface_tension='throat.surface_tension'):
+    r"""
+    Calculates entry pressure into a slit-shaped throat using the Washburn
+    equation
+
+    Parameters
+    ----------
+    target : OpenPNM Object
+        The object for which these values are being calculated.  This
+        controls the length of the calculated array, and also provides
+        access to other necessary thermofluid properties
+
+    """
+    project = target.project
+    network = project.network
+    phase = project.find_phase(target)
+
+    Ht = network[throat_height]
+    Wt = network[throat_width]
+    rt = 1/Ht + 1/Wt
+    theta = phase[contact_angle]
+    sigma = phase[surface_tension]
+    Pc_slit = -sigma*_sp.cos(_sp.deg2rad(theta))*rt
+
+    return Pc_slit[phase.throats(target.name)]
