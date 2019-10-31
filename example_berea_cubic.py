@@ -24,8 +24,7 @@ def Pc_slit(target,
 
     return Pc_slit[phase.throats(target.name)]
 
-
-#def diffusive_conductance_slit(target,
+# def diffusive_conductance_slit(target,
 #                               throat_height='throat.height',
 #                               throat_width='throat.width',
 #                               throat_length='throat.length',
@@ -89,7 +88,8 @@ def electric_conductance_slit(target, throat_height='throat.height',
                               pore_height='pore.size_z',
                               pore_width='pore.size_y',
                               pore_length='pore.size_x',
-                              throat_electrical_conductivity='throat.electrical_conductivity'):
+                              throat_electrical_conductivity
+                              ='throat.electrical_conductivity'):
 
     project = target.project
     net = project.network
@@ -102,50 +102,49 @@ def electric_conductance_slit(target, throat_height='throat.height',
         global Ts
         Ts = net.throats('dir_x')
         global Ht
-        Ht = sp.reshape(net[throat_height][Ts], (Ts.size,1))
+        Ht = sp.reshape(net[throat_height][Ts], (Ts.size, 1))
         Wt = net[throat_width][Ts]
         Lt = net[throat_length][Ts]
         Ta = (Ht.T*Wt)
         global gte
         gte = (4.0*Ta*(phase[throat_electrical_conductivity][Ts]))/(Lt)
         return (Ts, Ht, Wt, Lt, Ta, gte)
-    #throat_electrical_conductivity = np.full((15,15,15), 12.0,
-    #                                      dtype =int)
+
     # Start with x-directional throats
     Ts = net.throats('dir_x')
     getHtWt()
     Hp = net['pore.size_z'][conns][Ts]
-    #Lp = net['pore.size_x'][conns][Ts]/2
+    # Lp = net['pore.size_x'][conns][Ts]/2
     Wp = net['pore.size_y'][conns][Ts]
-    gpe1, gpe2 = ((2*np.pi*(Hp*Wp)*
-                   phase[throat_electrical_conductivity][conns][Ts])/
-                                    (1-np.log10(np.arcsin(Ht/Hp)))).T
+    gpe1, gpe2 = ((2*np.pi * (Hp*Wp) *
+                   phase[throat_electrical_conductivity][conns][Ts]) /
+                  (1-np.log10(np.arcsin(Ht/Hp)))).T
     ge[Ts, :] = sp.vstack((gpe1, gte, gpe2)).T
     # y-directional throats
     Ts = net.throats('dir_y')
     getHtWt()
     Hp = net['pore.size_z'][conns][Ts]
-    #Lp = net['pore.size_y'][conns][Ts]/2
+    # Lp = net['pore.size_y'][conns][Ts]/2
     Wp = net['pore.size_x'][conns][Ts]
-    gpe1, gpe2 = ((2*np.pi*(Hp*Wp)*
-                   phase[throat_electrical_conductivity][conns][Ts])/
-                                   (1-np.log10(np.arcsin(Ht/Hp)))).T
+    gpe1, gpe2 = ((2*np.pi*(Hp*Wp) *
+                   phase[throat_electrical_conductivity][conns][Ts]) /
+                  (1-np.log10(np.arcsin(Ht/Hp)))).T
     ge[Ts, :] = sp.vstack((gpe1, gte, gpe2)).T
     # z-directional throats
     Ts = net.throats('dir_z')
     getHtWt()
     Hp = net['pore.size_x'][conns][Ts]
-    #Lp = net['pore.size_z'][conns][Ts]/2
+    # Lp = net['pore.size_z'][conns][Ts]/2
     Wp = net['pore.size_y'][conns][Ts]
-    gpe1, gpe2 = ((2*np.pi*(Hp*Wp)*
-                  phase[throat_electrical_conductivity][conns][Ts])/
-                                    (1-np.log10(np.arcsin(Ht/Hp)))).T
+    gpe1, gpe2 = ((2*np.pi*(Hp*Wp) *
+                  phase[throat_electrical_conductivity][conns][Ts]) /
+                  (1-np.log10(np.arcsin(Ht/Hp)))).T
     ge[Ts, :] = sp.vstack((gpe1, gte, gpe2)).T
-    getotal =1/(sp.sum(1/ge, axis=1))
+    getotal = 1/(sp.sum(1/ge, axis=1))
     return getotal[phase.throats(target.name)]
 
 
-#def electric_conductance_slit(target, throat_height='throat.height',
+# def electric_conductance_slit(target, throat_height='throat.height',
 #                          throat_width='throat.width',
 #                          throat_length='throat.length',
 #                          pore_height='pore.size_z',
@@ -285,7 +284,7 @@ if __name__ == '__main__':
 
     # Calculating electric current flow I
     water = op.phases.Water(network=net)
-    #water['throat.viscosity'] = 0.001
+    # water['throat.viscosity'] = 0.001
 
     phys_water = op.physics.GenericPhysics(network=net, phase=water,
                                            geometry=geo)

@@ -1,8 +1,10 @@
 r"""
 
-.. autofunction:: openpnm.models.physics.diffusive_conductance.ordinary_diffusion
-.. autofunction:: openpnm.models.physics.diffusive_conductance.taylor_aris_diffusion
-.. autofunction:: openpnm.models.physics.diffusive_conductance.classic_ordinary_diffusion
+autofunction:: openpnm.models.physics.diffusive_conductance.ordinary_diffusion
+autofunction:: openpnm.models.physics.diffusive_conductance.
+taylor_aris_diffusion
+autofunction:: openpnm.models.physics.diffusive_conductance.
+classic_ordinary_diffusion
 
 """
 
@@ -309,64 +311,64 @@ def diffusive_conductance_slit(target,
                                pore_length='pore.size_x',
                                throat_diffusivity='throat.diffusivity',
                                pore_diffusivity='pore.diffusivity'):
-    def get_T_and_P_dims(network, throats, 
+
+    def get_T_and_P_dims(network,
+                         throats,
                          throat_height='throat.height',
-                          throat_width='throat.width',
-                          throat_length='throat.length', 
-                          pore_height=None,pore_width=None,
-                          pore_length=None):
-               
-        Ht =network[throat_height][throats]
-        Wt =network[throat_width][throats]
-        Lt =network[throat_length][throats]
+                         throat_width='throat.width',
+                         throat_length='throat.length',
+                         pore_height=None, pore_width=None,
+                         pore_length=None):
+        Ht = network[throat_height][throats]
+        Lt = network[throat_length][throats]
         conns = network['throat.conns']
         Hp = network[pore_height][conns][Ts]
         Wp = _sp.copy(Hp)
-        Lp=network[pore_length][conns][Ts]/2
+        Lp = network[pore_length][conns][Ts]/2
         return(Ht, Wt, Lt, Hp, Wp, Lp)
-        
-    project = target.project
-    net=project.network
-    conns=net['throat.conns']
-    phase=project.find_phase(target)
-    throat_diffusivity=phase['throat.diffusivity']
-    gd= _sp.zeros((net.Nt, 3), dtype=float)
 
-    # Start with x-directional throats
+    project = target.project
+    net = project.network
+    conns = net['throat.conns']
+    phase = project.find_phase(target)
+    throat_diffusivity = phase['throat.diffusivity']
+    gd = _sp.zeros((net.Nt, 3), dtype=float)
+
+# Start with x-directional throats
     Ts = net.throats('dir_x')
-    Ht, Wt, Lt, Hp, Wp,Lp = get_T_and_P_dims(network = net, throats=Ts,
-                                       throat_height='throat.height',
-                         throat_width='throat.width',
-                          throat_length='throat.length',
-                          pore_height='pore.size_z',
-                          pore_length='pore.size_x')
-    
+    Ht, Wt, Lt, Hp, Wp, Lp = get_T_and_P_dims(network=net, throats=Ts,
+                                              throat_height='throat.height',
+                                              throat_width='throat.width',
+                                              throat_length='throat.length',
+                                              pore_height='pore.size_z',
+                                              pore_length='pore.size_x')
+
     gdt = ((phase[throat_diffusivity][Ts]*Ht*Wt)/Lt)
     gdp1, gdp2 = ((phase[pore_diffusivity][conns][Ts]*Hp*Wp)/(Lp)).T
     gd[Ts, :] = _sp.vstack((gdp1, gdt, gdp2)).T
-    # y-directional throats
+# y-directional throats
     Ts = net.throats('dir_y')
-    Ht, Wt, Lt, Hp, Wp,Lp = get_T_and_P_dims(network = net, throats=Ts,
-                                       throat_height='throat.height',
-                         throat_width='throat.width',
-                          throat_length='throat.length',
-                          pore_height='pore.size_z',
-                          pore_length='pore.size_y')
-    
+    Ht, Wt, Lt, Hp, Wp, Lp = get_T_and_P_dims(network=net, throats=Ts,
+                                              throat_height='throat.height',
+                                              throat_width='throat.width',
+                                              throat_length='throat.length',
+                                              pore_height='pore.size_z',
+                                              pore_length='pore.size_y')
+
     gdt = ((phase[throat_diffusivity][Ts]*Ht*Wt)/Lt)
     gdp1, gdp2 = ((phase[pore_diffusivity][conns][Ts]*Hp*Wp)/(Lp)).T
     gd[Ts, :] = _sp.vstack((gdp1, gdt, gdp2)).T
-    # z-directional throats
+# z-directional throats
     Ts = net.throats('dir_z')
-    Ht, Wt, Lt, Hp, Wp,Lp = get_T_and_P_dims(network = net, throats=Ts,
-                                       throat_height='throat.height',
-                         throat_width='throat.width',
-                          throat_length='throat.length',
-                          pore_height='pore.size_x',
-                          pore_length='pore.size_z')
-    
+    Ht, Wt, Lt, Hp, Wp, Lp = get_T_and_P_dims(network=net, throats=Ts,
+                                              throat_height='throat.height',
+                                              throat_width='throat.width',
+                                              throat_length='throat.length',
+                                              pore_height='pore.size_x',
+                                              pore_length='pore.size_z')
+
     gdt = ((phase[throat_diffusivity][Ts]*Ht*Wt)/Lt)
     gdp1, gdp2 = ((phase[pore_diffusivity][conns][Ts]*Hp*Wp)/(Lp)).T
     gd[Ts, :] = _sp.vstack((gdp1, gdt, gdp2)).T
-    gdtotal=1/(_sp.sum(1/gd, axis=1))
+    gdtotal = 1/(_sp.sum(1/gd, axis=1))
     return gdtotal[phase.throats(target.name)]
