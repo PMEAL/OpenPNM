@@ -138,11 +138,11 @@ class ReactiveTransport(GenericTransport):
         raised.
         """
         locs = self.tomask(pores=pores)
-
-        if (not np.all(np.isnan(self['pore.bc_value'][locs]))) or \
-           (not np.all(np.isnan(self['pore.bc_rate'][locs]))):
-            raise Exception('Boundary conditions already present in given ' +
-                            'pores, cannot also assign source terms')
+        value_BC, = np.where(np.isfinite(self['pore.bc_value']))
+        rate_BC, = np.where(np.isfinite(self['pore.bc_rate']))
+        if np.intersect1d(locs, np.hstack((value_BC, rate_BC))).size:
+            raise Exception('Boundary conditions already present in given '
+                            + 'pores, cannot also assign source terms')
         self[propname] = locs
         self.settings['sources'].append(propname)
 
@@ -188,9 +188,9 @@ class ReactiveTransport(GenericTransport):
         # First check that given pores do not have source terms already set
         for item in self.settings['sources']:
             if np.any(self[item][pores]):
-                raise Exception('Source term already present in given ' +
-                                'pores, cannot also assign boundary ' +
-                                'conditions')
+                raise Exception('Source term already present in given '
+                                + 'pores, cannot also assign boundary '
+                                + 'conditions')
         # Then call parent class function if above check passes
         super()._set_BC(pores=pores, bctype=bctype, bcvalues=bcvalues,
                         mode=mode)
