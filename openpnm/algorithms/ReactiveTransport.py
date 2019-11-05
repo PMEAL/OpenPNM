@@ -30,6 +30,7 @@ class ReactiveTransport(GenericTransport):
                    'max_iter': 5000,
                    'relaxation_source': 1,
                    'relaxation_quantity': 1,
+                   'cache_A': False, 'cache_b': False,
                    'gui': {'setup':        {'phase': None,
                                             'quantity': '',
                                             'conductance': '',
@@ -288,6 +289,7 @@ class ReactiveTransport(GenericTransport):
         Repeatedly updates 'A', 'b', and the solution guess within according
         to the applied source term then calls '_solve' to solve the resulting
         system of linear equations.
+
         Stops when the residual falls below 'rxn_tolerance' or when the maximum
         number of iterations is reached.
 
@@ -306,14 +308,13 @@ class ReactiveTransport(GenericTransport):
         self[self.settings['quantity']] = x
         relax = self.settings['relaxation_quantity']
         phase = self.project.phases()[self.settings['phase']]
-        # Reference for residual's normalization
-        ref = np.sum(np.absolute(self.A.diagonal())) or 1
+        cache_A = self.settings['cache_A']
+        cache_b = self.settings['cache_b']
         for itr in range(int(self.settings['max_iter'])):
             self[self.settings['quantity']] = x
             phase.update(self.results())
-            self._update_physics()
-            self._build_A(force=True)
-            self._build_b(force=True)
+            self._build_A(force=not cache_A)
+            self._build_b(force=not cache_b)
             self._apply_BCs()
             self._apply_sources()
             # Compute the normalized residual
