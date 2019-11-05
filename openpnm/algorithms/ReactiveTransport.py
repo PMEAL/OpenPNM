@@ -240,7 +240,7 @@ class ReactiveTransport(GenericTransport):
         if self.settings['t_scheme'] == 'cranknicolson':
             f1 = 0.5
         else:
-            f1 = 1
+            f1 = 1.0
         phase = self.project.phases()[self.settings['phase']]
         relax = self.settings['relaxation_source']
         for item in self.settings['sources']:
