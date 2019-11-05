@@ -394,7 +394,7 @@ class GenericTransport(GenericAlgorithm):
         if force:
             self._pure_b = None
         if self._pure_b is None:
-            b = np.zeros(shape=(self.Np, ), dtype=float)  # Create vector of 0s
+            b = np.zeros(shape=self.Np, dtype=float)  # Create vector of 0s
             self._pure_b = b
         self.b = self._pure_b.copy()
 
@@ -593,7 +593,7 @@ class GenericTransport(GenericAlgorithm):
             if importlib.util.find_spec('pyamg'):
                 import pyamg
             else:
-                raise Exception('pyamg is not installed.')
+                raise Exception('PyAMG is not installed.')
             ml = pyamg.ruge_stuben_solver(A)
             x = ml.solve(b=b, tol=1e-10)
             return x
