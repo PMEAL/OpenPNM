@@ -1,4 +1,6 @@
 import numpy as np
+from numpy.linalg import norm
+from scipy.sparse.linalg import norm as spnorm
 from openpnm.algorithms import GenericTransport
 from openpnm.utils import logging
 logger = logging.getLogger(__name__)
@@ -303,35 +305,35 @@ class ReactiveTransport(GenericTransport):
         x_new : ND-array
             Solution array.
         """
-        if x is None:
-            x = np.zeros(shape=[self.Np, ], dtype=float)
-        self[self.settings['quantity']] = x
-        relax = self.settings['relaxation_quantity']
+        w = self.settings['relaxation_source']
+        quantity = self.settings['quantity']
+        rxn_tol = self.settings['rxn_tolerance']
         phase = self.project.phases()[self.settings['phase']]
         cache_A = self.settings['cache_A']
         cache_b = self.settings['cache_b']
-        for itr in range(int(self.settings['max_iter'])):
-            self[self.settings['quantity']] = x
+
+        for itr in range(self.settings['max_iter']):
+            # Update quantity on "phase"
             phase.update(self.results())
             self._build_A(force=not cache_A)
             self._build_b(force=not cache_b)
             self._apply_BCs()
             self._apply_sources()
-            # Compute the normalized residual
-            res = np.linalg.norm(self.b-self.A*x)/ref
-            if res >= self.settings['rxn_tolerance']:
+            # Compute residual and tolerance
+            res = norm(self.A*x - self.b)
+            res_tol = (spnorm(self.A) * norm(x) + norm(self.b)) * rxn_tol
+            if res >= res_tol:
                 logger.info('Tolerance not met: ' + str(res))
                 x_new = self._solve()
                 # Relaxation
-                x_new = relax*x_new + (1-relax)*self[self.settings['quantity']]
-                self[self.settings['quantity']] = x_new
+                x_new = w * x_new + (1-w) * self[quantity]
+                self[quantity] = x_new
                 x = x_new
-            elif (res < self.settings['rxn_tolerance']):
-                x_new = x
+            elif res < res_tol:
                 logger.info('Solution converged: ' + str(res))
                 break
             else:  # If res is nan or inf
-                x_new = x
                 logger.warning('Residual undefined: ' + str(res))
-                break
+                raise Exception("Solution diverged; undefined residual.")
+
         return x_new
