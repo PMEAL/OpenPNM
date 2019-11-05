@@ -141,9 +141,9 @@ class ReactiveTransport(GenericTransport):
         raised.
         """
         locs = self.tomask(pores=pores)
-        value_BC, = np.where(np.isfinite(self['pore.bc_value']))
-        rate_BC, = np.where(np.isfinite(self['pore.bc_rate']))
-        if np.intersect1d(locs, np.hstack((value_BC, rate_BC))).size:
+        # Check if any BC is already set in the same locations
+        locs_BC = np.isfinite(self['pore.bc_value']) + np.isfinite(self['pore.bc_rate'])
+        if (locs & locs_BC).any():
             raise Exception('Boundary conditions already present in given '
                             + 'pores, cannot also assign source terms')
         self[propname] = locs
