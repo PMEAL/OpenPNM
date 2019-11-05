@@ -146,6 +146,14 @@ class ReactiveTransport(GenericTransport):
         if (locs & locs_BC).any():
             raise Exception('Boundary conditions already present in given '
                             + 'pores, cannot also assign source terms')
+        # Check if any other source term is already set in the same locations
+        locs_source = np.zeros_like(locs, dtype=bool)
+        for item in self.settings['sources']:
+            locs_source += self[item]
+        if (locs & locs_source).any():
+            raise Exception('Source term already present in given pores, '
+                            + 'cannot have two source terms in same locations')
+        # Set source term
         self[propname] = locs
         self.settings['sources'].append(propname)
 
@@ -242,7 +250,7 @@ class ReactiveTransport(GenericTransport):
         else:
             f1 = 1.0
         phase = self.project.phases()[self.settings['phase']]
-        relax = self.settings['relaxation_source']
+        w = self.settings['relaxation_source']
         for item in self.settings['sources']:
             Ps = self.pores(item)
             # Add S1 to diagonal of A
@@ -250,13 +258,13 @@ class ReactiveTransport(GenericTransport):
             # copy, otherwise we have to regenerate A and b on each loop
             datadiag = self._A.diagonal().copy()
             # Source term relaxation
-            S1_old = phase[item+'.'+'S1'][Ps].copy()
-            S2_old = phase[item+'.'+'S2'][Ps].copy()
+            S1_old = phase[item + '.' + 'S1'][Ps].copy()
+            S2_old = phase[item + '.' + 'S2'][Ps].copy()
             self._update_physics()
-            S1 = phase[item+'.'+'S1'][Ps]
-            S2 = phase[item+'.'+'S2'][Ps]
-            S1 = relax*S1 + (1-relax)*S1_old
-            S2 = relax*S2 + (1-relax)*S2_old
+            S1 = phase[item + '.' + 'S1'][Ps]
+            S2 = phase[item + '.' + 'S2'][Ps]
+            S1 = w * S1 + (1-w) * S1_old
+            S2 = w * S2 + (1-w) * S2_old
             phase[item+'.'+'S1'][Ps] = S1
             phase[item+'.'+'S2'][Ps] = S2
             datadiag[Ps] = datadiag[Ps] - f1*S1
