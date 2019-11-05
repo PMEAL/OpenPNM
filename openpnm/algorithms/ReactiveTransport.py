@@ -212,13 +212,13 @@ class ReactiveTransport(GenericTransport):
         """
         phase = self.project.phases()[self.settings['phase']]
         physics = self.project.find_physics(phase=phase)
+        # Regenerate models with new guess
+        quantity = self.settings['quantity']
+        # Put quantity on phase so physics finds it when regenerating
+        phase[quantity] = self[quantity]
         for phys in physics:
             phys.regenerate_models()
         for item in self.settings['sources']:
-            # Regenerate models with new guess
-            quantity = self.settings['quantity']
-            # Put quantity on phase so physics finds it when regenerating
-            phase[quantity] = self[quantity]
             # Regenerate models, on either phase or physics
             phase.regenerate_models(propnames=item)
             for phys in physics:
@@ -276,15 +276,17 @@ class ReactiveTransport(GenericTransport):
             Initial guess of unknown variable
 
         """
+        quantity = self.settings['quantity']
         logger.info('Running ReactiveTransport')
-        # Create S1 & S1 for 1st Picard's iteration
+
+        # Create S1 & S1 for the 1st Picard iteration
         if x is None:
-            x = np.zeros(shape=[self.Np, ], dtype=float)
-        self[self.settings['quantity']] = x
+            x = np.zeros(shape=self.Np, dtype=float)
+        self[quantity] = x
         self._update_physics()
 
-        x = self._run_reactive(x=x)
-        self[self.settings['quantity']] = x
+        x = self._run_reactive(x)
+        self[quantity] = x
 
     def _run_reactive(self, x):
         r"""
