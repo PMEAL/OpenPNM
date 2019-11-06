@@ -248,26 +248,22 @@ class ReactiveTransport(GenericTransport):
             f1 = 1.0
         phase = self.project.phases()[self.settings['phase']]
         w = self.settings['relaxation_source']
+        # Store S1, S2 for relaxation, since they change after _update_physics
+        for item in self.settings['sources']:
+            phase[item + '.' + 'S1.old'] = phase[item + '.' + 'S1'].copy()
+            phase[item + '.' + 'S2.old'] = phase[item + '.' + 'S2'].copy()
+        self._update_physics()
         for item in self.settings['sources']:
             Ps = self.pores(item)
-            # Add S1 to diagonal of A
-            # TODO: We need this to NOT overwrite the A and b, but create
-            # copy, otherwise we have to regenerate A and b on each loop
-            datadiag = self._A.diagonal().copy()
             # Source term relaxation
-            S1_old = phase[item + '.' + 'S1'][Ps].copy()
-            S2_old = phase[item + '.' + 'S2'][Ps].copy()
-            self._update_physics()
-            S1 = phase[item + '.' + 'S1'][Ps]
-            S2 = phase[item + '.' + 'S2'][Ps]
-            S1 = w * S1 + (1-w) * S1_old
-            S2 = w * S2 + (1-w) * S2_old
-            phase[item+'.'+'S1'][Ps] = S1
-            phase[item+'.'+'S2'][Ps] = S2
+            X1, X2 = [phase[item + '.' + x + '.old'][Ps] for x in ['S1', 'S2']]
+            S1, S2 = [phase[item + '.' + x][Ps] for x in ['S1', 'S2']]
+            phase[item + '.' + 'S1'][Ps] = w * S1 + (1-w) * X1
+            phase[item + '.' + 'S2'][Ps] = w * S2 + (1-w) * X2
+            # Add S1 and S2 to A and b
+            datadiag = self._A.diagonal().copy()
             datadiag[Ps] = datadiag[Ps] - f1*S1
-            # Add S1 to A
             self._A.setdiag(datadiag)
-            # Add S2 to b
             self._b[Ps] = self._b[Ps] + f1*S2
 
     def run(self, x=None):
