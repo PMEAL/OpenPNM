@@ -461,12 +461,12 @@ class GenericTransport(GenericAlgorithm):
             ind = np.isfinite(self['pore.bc_rate'])
             self.b[ind] = self['pore.bc_rate'][ind]
         if 'pore.bc_value' in self.keys():
-            f = np.abs(self.A.diagonal()).mean()
+            f = self.A.diagonal().mean()
             # Update b (impose bc values)
             ind = np.isfinite(self['pore.bc_value'])
             self.b[ind] = self['pore.bc_value'][ind] * f
             # Update b (substract quantities from b to keep A symmetric)
-            x_BC = np.zeros(self.b.shape)
+            x_BC = np.zeros_like(self.b)
             x_BC[ind] = self['pore.bc_value'][ind]
             self.b[~ind] -= (self.A.tocsr() * x_BC)[~ind]
             # Update A
@@ -476,7 +476,7 @@ class GenericTransport(GenericAlgorithm):
             self.A.data[indrow] = 0  # Remove entries from A for all BC rows
             self.A.data[indcol] = 0  # Remove entries from A for all BC cols
             datadiag = self.A.diagonal()  # Add diagonal entries back into A
-            datadiag[P_bc] = np.ones_like(P_bc, dtype=np.float64) * f
+            datadiag[P_bc] = np.ones_like(P_bc, dtype=float) * f
             self.A.setdiag(datadiag)
             self.A.eliminate_zeros()  # Remove 0 entries
 
