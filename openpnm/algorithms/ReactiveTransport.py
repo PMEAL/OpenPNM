@@ -220,17 +220,14 @@ class ReactiveTransport(GenericTransport):
         """
         phase = self.project.phases()[self.settings['phase']]
         physics = self.project.find_physics(phase=phase)
-        # Regenerate models with new guess
         quantity = self.settings['quantity']
         # Put quantity on phase so physics finds it when regenerating
         phase[quantity] = self[quantity]
-        for phys in physics:
-            phys.regenerate_models()
+        # Regenerate models with new guess
+        for physic in physics:
+            physic.regenerate_models()
         for item in self.settings['sources']:
-            # Regenerate models, on either phase or physics
             phase.regenerate_models(propnames=item)
-            for phys in physics:
-                phys.regenerate_models(propnames=item)
 
     def _apply_sources(self):
         """r
@@ -291,8 +288,6 @@ class ReactiveTransport(GenericTransport):
         if x is None:
             x = np.zeros(shape=self.Np, dtype=float)
         self[quantity] = x
-        self._update_physics()
-
         x = self._run_reactive(x)
         self[quantity] = x
 
@@ -321,10 +316,12 @@ class ReactiveTransport(GenericTransport):
         phase = self.project.phases()[self.settings['phase']]
         cache_A = self.settings['cache_A']
         cache_b = self.settings['cache_b']
+        self._update_physics()
 
         for itr in range(self.settings['max_iter']):
             # Update quantity on "phase"
             phase.update(self.results())
+            # _update_physics is called in _apply_sources
             self._build_A(force=not cache_A)
             self._build_b(force=not cache_b)
             self._apply_BCs()
