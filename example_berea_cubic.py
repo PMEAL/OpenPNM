@@ -57,7 +57,7 @@ A = (Ly*Lz)*(Ny*Nz)
 L = Lx*Nx
 mu = sp.mean(water['throat.viscosity'])
 Kxx = Q*mu*L/(A*101325)
-print("The permeability coefficient is:", Kxx)
+print("The permeability coefficient is:", Kxx/1e-15, 'mD')
 
 # %%Calculating porosity
 Vp = geo['pore.volume'][net.Ps]
@@ -76,7 +76,6 @@ except KeyError:
     pass
 mod = op.models.physics.electrical_conductance.slit
 phys_water.add_model(propname='throat.electrical_conductance', model=mod)
-phys_water['throat.electrical_conductance'] = Lx/4
 
 Om = op.algorithms.OhmicConduction(network=net, phase=water)
 BC1_pores = net.pores('pore.front')

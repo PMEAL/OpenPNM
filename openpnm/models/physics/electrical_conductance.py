@@ -1,6 +1,6 @@
 r"""
 
-.. autofunction:: openpnm.models.physics.electrical_conductance.series_resistors
+.. autofunction::openpnm.models.physics.electrical_conductance.series_resistors
 
 """
 
@@ -110,14 +110,13 @@ def series_resistors(target,
 
 
 def slit(target, throat_height='throat.height',
-                 throat_width='throat.width',
-                 throat_length='throat.length',
-                 pore_height='pore.size_z',
-                 pore_width='pore.size_y',
-                 pore_length='pore.size_x',
-                 throat_electrical_conductivity=
-                 'throat.electrical_conductivity',
-                 pore_electrical_conductivity='pore.electrical_conductivity'):
+         throat_width='throat.width',
+         throat_length='throat.length',
+         pore_height='pore.size_z',
+         pore_width='pore.size_y',
+         pore_length='pore.size_x',
+         throat_electrical_conductivity='throat.electrical_conductivity',
+         pore_electrical_conductivity='pore.electrical_conductivity'):
     r"""
     Calculates the electrical conductances of a slit-shaped geometry.
 
@@ -153,8 +152,10 @@ def slit(target, throat_height='throat.height',
                                               throat_length='throat.length',
                                               pore_height='pore.size_z',
                                               pore_length='pore.size_x')
-    gte = ((4.0*Ht.T*Wt)/(Lt))
-    gpe1, gpe2 = ((2*_sp.pi*(Hp*Wp))/(1-_sp.log10(_sp.arcsin(Ht/Hp)))).T
+    gte = ((Ht.T*Wt)/(Lt))
+    # gpe1, gpe2 = ((2*_sp.pi*(Ht))/(1-_sp.log10(_sp.arcsin(Ht/Hp)))).T
+    # gpe1, gpe2 = ((4.0*Hp*Wp)/(Lp)).T
+    gpe1, gpe2 = (((Hp*Wp)/(Lp)).T + ((Ht*Wp)/(Lp)).T)/2
     ge[Ts, :] = _sp.vstack((gpe1, gte, gpe2)).T
     # y-directional throats
     Ts = net.throats('dir_y')
@@ -165,11 +166,13 @@ def slit(target, throat_height='throat.height',
                                               pore_height='pore.size_z',
                                               pore_length='pore.size_x')
     Ht = _sp.reshape(net[throat_height][Ts], (Ts.size, 1))
-    gte = (4.0*Ht.T*Wt)/(Lt)
+    gte = (Ht.T*Wt)/(Lt)
     Hp = net['pore.size_z'][conns][Ts]
     # Lp = net['pore.size_y'][conns][Ts]/2
     Wp = net['pore.size_x'][conns][Ts]
-    gpe1, gpe2 = ((2*_sp.pi*(Hp*Wp))/(1-_sp.log10(_sp.arcsin(Ht/Hp)))).T
+    # gpe1, gpe2 = ((2*_sp.pi*(Ht))/(1-_sp.log10(_sp.arcsin(Ht/Hp)))).T
+    # gpe1, gpe2 = ((4.0*Hp*Wp)/(Lp)).T
+    gpe1, gpe2 = (((Hp*Wp)/(Lp)).T + ((Ht*Wp)/(Lp)).T)/2
     ge[Ts, :] = _sp.vstack((gpe1, gte, gpe2)).T
     # z-directional throats
     Ts = net.throats('dir_z')
@@ -180,8 +183,10 @@ def slit(target, throat_height='throat.height',
                                               pore_height='pore.size_z',
                                               pore_length='pore.size_x')
     Ht = _sp.reshape(net[throat_height][Ts], (Ts.size, 1))
-    gte = (4.0*Ht.T*Wt)/(Lt)
-    gpe1, gpe2 = ((2*_sp.pi*(Hp*Wp))/(1-_sp.log10(_sp.arcsin(Ht/Hp)))).T
+    gte = (Ht.T*Wt)/(Lt)
+    # gpe1, gpe2 = ((2*_sp.pi*(Ht))/(1-_sp.log10(_sp.arcsin(Ht/Hp)))).T
+    # gpe1, gpe2 = ((4.0*Hp*Wp)/(Lp)).T
+    gpe1, gpe2 = (((Hp*Wp)/(Lp)).T + ((Ht*Wp)/(Lp)).T)/2
     ge[Ts, :] = _sp.vstack((gpe1, gte, gpe2)).T
     getotal = 1/(_sp.sum(1/ge, axis=1))
     return getotal[phase.throats(target.name)]

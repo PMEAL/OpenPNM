@@ -39,7 +39,7 @@ class BereaCubic(Project):
 
     """
 
-    def __init__(self, shape=[10, 10, 10], Lc=0.0001256, **kwargs):
+    def __init__(self, shape=[10, 10, 10], Lc=0.0001076, **kwargs):
         super().__init__(**kwargs)
         pn = Cubic(shape=shape, spacing=Lc, connectivity=6, project=self)
         geom = GenericGeometry(network=pn, pores=pn.Ps, throats=pn.Ts)
@@ -53,11 +53,11 @@ class BereaCubic(Project):
         # Berea 108 sample from table 5.
         geom.add_model(propname='pore.size_z',
                        model=mods.geometry.pore_size.weibull,
-                       shape=1.85, loc=4.081e-5, scale=0.00001,
+                       shape=1.75, loc=4.081e-5, scale=0.00001,
                        seeds='pore.seed')
         geom.add_model(propname='throat.size',
                        model=mods.geometry.throat_size.weibull,
-                       shape=0.9, loc=1.1e-6, scale=0.000006,
+                       shape=0.8, loc=1.1e-6, scale=0.0000075,
                        seeds='throat.seed')
 
         # All pores in this model are of square x-section
