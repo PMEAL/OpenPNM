@@ -68,6 +68,15 @@ class RelativePermeability(GenericAlgorithm):
             The dictionary key on the invading phase object where the invasion
             sequence is stored.  The default from both the IP and OP algorithms
             is 'invasion_sequence', so this is the default here.
+        flow_inlets :  dictionary , optional
+            A dictionary containing the direction of the flow and the label of
+            the pores as the inlet pores of that direction
+        flow_outlets : dictionary , optional
+            A dictionary containing the direction of the flow and the label of
+            the pores as the outlet pores of that direction
+        swnp_num : scalar
+           The number of saturation points (equidistant points), at which the
+           Kr values will be calculated.
         """
         self.settings['snwp_num'] = snwp_num
         network = self.project.network
@@ -154,9 +163,9 @@ class RelativePermeability(GenericAlgorithm):
         of invading phase through porous media. Second element is the outlet
         face (pores).
 
-        Output: array [Kwp, Knwp]
-        The value of absolute permeability of defending (if there is any) and
-        invadin phase in the direction that is defined by flow_pores.
+        Output: scalar K_abs
+        The value of absolute permeability of the invading phase in the
+        direction that is defined by flow_pores.
 
         Note: Absolute permeability is not dependent to the phase, but here
         we just need to calculate the rate instead of all variables that are
@@ -259,18 +268,17 @@ class RelativePermeability(GenericAlgorithm):
 
     def run(self):
         r"""
-        Calculates the saturation of each phase using the invasion sequence
-        from either invasion percolation or ordinary percolation.
-
-        Parameters
-        ----------
+        Calculates the saturation of each phase using the invasion sequence 
+        
+        Notes: 
         Snw_num: Scalar
         Number of saturation point to calculate the relative permseability
-        values. If not given, the default value is 10. Saturation points will
-        be Snw_num (or 10 by default) equidistant points in range [0,1].
+        values. If not given, the default value is 100. Saturation points will
+        be Snw_num (or 100 by default) equidistant points in range [0,1].
 
-        Note: For three directions of flow the absolute permeability values
+        For three directions of flow the absolute permeability values
         will be calculated using _abs_perm_calc.
+        
         For each saturation point:
             the saturation values are calculated by _sat_occ_update.
             This function also updates occupancies of each phase in
