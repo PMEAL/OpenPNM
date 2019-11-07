@@ -57,15 +57,22 @@ class ReactiveTransportTest:
         with pytest.raises(Exception):
             rt.set_value_BC(pores=self.net.pores('left'), values=1.0)
 
-    def test_source_over_source(self):
+    def test_multiple_source_terms_same_location(self):
         rt = op.algorithms.ReactiveTransport(network=self.net,
                                              phase=self.phase)
         rt.settings.update({'conductance': 'throat.diffusive_conductance',
                             'quantity': 'pore.concentration'})
+        std_kinetics = op.models.physics.generic_source_term.standard_kinetics
+        self.phys.add_model(propname='pore.another_reaction', model=std_kinetics,
+                            prefactor='pore.A', exponent='pore.k',
+                            quantity='pore.concentration',
+                            regen_mode='deferred')
         rt.set_source(pores=self.net.pores('left'), propname='pore.reaction')
-        with pytest.raises(Exception):
-            rt.set_source(pores=self.net.pores("left"),
-                          propname='pore.another_reaction')
+        rt.set_source(pores=self.net.pores('left'), propname='pore.another_reaction')
+        rt.set_value_BC(pores=self.net.pores('right'), values=1.0)
+        rt.run()
+        cavg = rt["pore.concentration"].mean()
+        assert_allclose(cavg, 0.61034780)
 
     def teardown_class(self):
         ws = op.Workspace()

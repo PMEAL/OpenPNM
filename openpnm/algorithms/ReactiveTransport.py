@@ -145,13 +145,6 @@ class ReactiveTransport(GenericTransport):
         if (locs & locs_BC).any():
             raise Exception('Boundary conditions already present in given '
                             + 'pores, cannot also assign source terms')
-        # Check if any other source term is already set in the same locations
-        locs_source = np.zeros_like(locs, dtype=bool)
-        for item in self.settings['sources']:
-            locs_source += self[item]
-        if (locs & locs_source).any():
-            raise Exception('Source term already present in given pores, '
-                            + 'cannot have two source terms in same locations')
         # Set source term
         self[propname] = locs
         self.settings['sources'].append(propname)
