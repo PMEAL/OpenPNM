@@ -19,6 +19,7 @@ def_set = {'phase': None,
            'solver_atol': 1e-6,
            'solver_rtol': 1e-6,
            'solver_maxiter': 5000,
+           'cache_A': True, 'cache_b': True,
            'gui': {'setup':        {'quantity': '',
                                     'conductance': ''},
                    'set_rate_BC':  {'pores': None,
@@ -352,22 +353,15 @@ class GenericTransport(GenericAlgorithm):
         if ('pore.bc_rate' in self.keys()) and ('rate' in bctype):
             self['pore.bc_rate'][pores] = np.nan
 
-    def _build_A(self, force=False):
+    def _build_A(self):
         r"""
         Builds the coefficient matrix based on conductances between pores.
         The conductance to use is specified in the algorithm's ``settings``
         under ``conductance``.  In subclasses (e.g. ``FickianDiffusion``)
         this is set by default, though it can be overwritten.
-
-        Parameters
-        ----------
-        force : Boolean (default is ``False``)
-            If set to ``True`` then the A matrix is built from new.  If
-            ``False`` (the default), a cached version of A is returned.  The
-            cached version is *clean* in the sense that no boundary conditions
-            or sources terms have been added to it.
         """
-        if force:
+        cache_A = self.settings['cache_A']
+        if not cache_A:
             self._pure_A = None
         if self._pure_A is None:
             network = self.project.network
@@ -377,7 +371,7 @@ class GenericTransport(GenericAlgorithm):
             self._pure_A = spgr.laplacian(am).astype(float)
         self.A = self._pure_A.copy()
 
-    def _build_b(self, force=False):
+    def _build_b(self):
         r"""
         Builds the RHS matrix, without applying any boundary conditions or
         source terms. This method is trivial an basically creates a column
@@ -391,7 +385,8 @@ class GenericTransport(GenericAlgorithm):
             cached version is *clean* in the sense that no boundary conditions
             or sources terms have been added to it.
         """
-        if force:
+        cache_b = self.settings['cache_b']
+        if not cache_b:
             self._pure_b = None
         if self._pure_b is None:
             b = np.zeros(shape=self.Np, dtype=float)  # Create vector of 0s

@@ -32,7 +32,6 @@ class ReactiveTransport(GenericTransport):
                    'max_iter': 5000,
                    'relaxation_source': 1,
                    'relaxation_quantity': 1,
-                   'cache_A': False, 'cache_b': False,
                    'gui': {'setup':        {'phase': None,
                                             'quantity': '',
                                             'conductance': '',
@@ -306,20 +305,18 @@ class ReactiveTransport(GenericTransport):
         x_new : ND-array
             Solution array.
         """
-        w = self.settings['relaxation_source']
+        w = self.settings['relaxation_quantity']
         quantity = self.settings['quantity']
         rxn_tol = self.settings['rxn_tolerance']
         phase = self.project.phases()[self.settings['phase']]
-        cache_A = self.settings['cache_A']
-        cache_b = self.settings['cache_b']
         self._update_physics()
 
         for itr in range(self.settings['max_iter']):
             # Update quantity on "phase"
             phase.update(self.results())
             # _update_physics is called in _apply_sources
-            self._build_A(force=not cache_A)
-            self._build_b(force=not cache_b)
+            self._build_A()
+            self._build_b()
             self._apply_BCs()
             self._apply_sources()
             # Compute residual and tolerance
