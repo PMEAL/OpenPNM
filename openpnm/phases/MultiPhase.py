@@ -53,8 +53,7 @@ class MultiPhase(GenericPhase):
     """
     def __init__(self, phases=[], settings={}, **kwargs):
         super().__init__(**kwargs)
-        self.settings.update({'phases': [],
-                              })
+        self.settings.update({'phases': []})
         self.settings.update(settings)
 
         self['pore.occupancy.all'] = np.zeros(self.Np, dtype=float)
@@ -78,15 +77,12 @@ class MultiPhase(GenericPhase):
         return vals
 
     def _update_occupancy(self):
-        # Update occupancy.all
-        self['pore.occupancy.all'] = 0.0
-        dict_ = list(self['pore.occupancy'].values())
-        if len(dict_) > 1:
-            self['pore.occupancy.all'] = np.sum(dict_, axis=0)
-        self['throat.occupancy.all'] = 0.0
-        dict_ = list(self['throat.occupancy'].values())
-        if len(dict_) > 1:
-            self['throat.occupancy.all'] = np.sum(dict_, axis=0)
+        # Update "occupancy.all" by summing up all occupancies
+        for elem in ["pore", "throat"]:
+            dict_ = self[f"{elem}.occupancy"]
+            dict_.pop(f"{elem}.occupancy.all")
+            self[f"{elem}.occupancy.all"] = np.sum(list(dict_.values()), axis=0)
+
 
     def _get_phases(self):
         phases = {self.project[item].name: self.project[item]
@@ -100,7 +96,7 @@ class MultiPhase(GenericPhase):
         Gathers property values from component phases to build a single array
 
         If the requested ``prop`` is not on this MultiPhase, then a search is
-        conducted on all associated physics objects, and values from each
+        conducted on all associated phase objects, and values from each
         are assembled into a single array.
 
         Parameters
@@ -115,18 +111,21 @@ class MultiPhase(GenericPhase):
             component phase and assembled based on the specified mixing rule
 
         """
-        element = prop.split('.')[0]
+        element, _ = prop.split('.')
+        vals = np.zeros([self._count(element=element)], dtype=float)
+        # Retrieve property from constituent phases (weight = occupancy)
+        try:
+            for phase in self.phases.values():
+                vals += phase[prop] * self[element + '.occupancy.' + phase.name]
+        # Otherwise - if not found - retrieve from super class
+        except KeyError:
+            vals = super().interleave_data(prop)
+
+        # Check for consistency of occypancy values (i.e. add up to 1)
         if np.any(self[element + '.occupancy.all'] != 1.0):
             self._update_occupancy()
             if np.any(self[element + '.occupancy.all'] != 1.0):
-                raise Exception('Occupancy does not add to unity in all ' +
-                                element + 's')
-        vals = np.zeros([self._count(element=element)], dtype=float)
-        try:
-            for phase in self.phases.values():
-                vals += phase[prop]*self[element + '.occupancy.' + phase.name]
-        except KeyError:
-            vals = super().interleave_data(prop)
+                raise Exception(f"Occupancy doesn't add to unity in all {element}s")
         return vals
 
     def regenerate_models(self, **kwargs):
