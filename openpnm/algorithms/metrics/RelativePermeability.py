@@ -16,6 +16,7 @@ default_settings = {'wp': None,
                     'throat.invasion_sequence': 'throat.invasion_sequence',
                     'flow_inlet': None,
                     'flow_outlet': None,
+                    'snwp_num': None,
                     }
 
 
@@ -50,7 +51,8 @@ class RelativePermeability(GenericAlgorithm):
                           'results': {'sat': [], 'krw': [], 'krnw': []}}
 
     def setup(self, invading_phase=None, defending_phase=None,
-              invasion_sequence=None, flow_inlets=None, flow_outlets=None):
+              invasion_sequence=None, flow_inlets=None, flow_outlets=None,
+              snwp_num=100):
         r"""
         Assigns values to the algorithms ``settings``
 
@@ -67,6 +69,7 @@ class RelativePermeability(GenericAlgorithm):
             sequence is stored.  The default from both the IP and OP algorithms
             is 'invasion_sequence', so this is the default here.
         """
+        self.settings['snwp_num'] = snwp_num
         network = self.project.network
         if invading_phase is not None:
             self.settings['nwp'] = invading_phase.name
@@ -254,7 +257,7 @@ class RelativePermeability(GenericAlgorithm):
             wp['pore.occupancy'] = 1-pore_mask
         return sat
 
-    def run(self, Snw_num=100):
+    def run(self):
         r"""
         Calculates the saturation of each phase using the invasion sequence
         from either invasion percolation or ordinary percolation.
@@ -275,6 +278,7 @@ class RelativePermeability(GenericAlgorithm):
             calculated. Relative permeability is defined by devision of
             K_eff and K_abs.
         """
+        Snw_num = self.settings['snwp_num']
         net = self.project.network
         K_dir = set(self.settings['flow_inlets'].keys())
         for dim in K_dir:
@@ -327,12 +331,12 @@ class RelativePermeability(GenericAlgorithm):
                         self.Kr_values['relperm_wp'][inp],
                         'o-', label='Krwp'+inp)
                 sp.plot(self.Kr_values['sat'][inp],
-                    self.Kr_values['relperm_nwp'][inp],
-                    '*-', label='Krnwp'+inp)
+                        self.Kr_values['relperm_nwp'][inp],
+                        '*-', label='Krnwp'+inp)
             else:
                 sp.plot(self.Kr_values['sat'][inp],
-                    self.Kr_values['relperm_nwp'][inp],
-                    '*-', label='Krnwp'+inp)
+                        self.Kr_values['relperm_nwp'][inp],
+                        '*-', label='Krnwp'+inp)
         sp.set_xlabel('Snw')
         sp.set_ylabel('Kr')
         sp.set_title('Relative Permability Curves')
