@@ -67,6 +67,7 @@ class RelativePermeability(GenericAlgorithm):
             sequence is stored.  The default from both the IP and OP algorithms
             is 'invasion_sequence', so this is the default here.
         """
+        network = self.project.network
         if invading_phase is not None:
             self.settings['nwp'] = invading_phase.name
         if defending_phase is not None:
@@ -77,12 +78,40 @@ class RelativePermeability(GenericAlgorithm):
             self.settings['pore.invasion_sequence'] = seq_p
             seq_t = nwp['throat.invasion_sequence']
             self.settings['throat.invasion_sequence'] = seq_t
-            self.settings['flow_inlets'] = {'x': 'left',
-                                            'y': 'front',
-                                            'z': 'top'}
-            self.settings['flow_outlets'] = {'x': 'right',
-                                             'y': 'back',
-                                             'z': 'bottom'}
+            dimension = 0
+            x, y, z = False, False, False
+            if 'pore.left' in network.keys():
+                dimension += 1
+                x = True
+            if 'pore.front' in network.keys():
+                dimension += 1
+                y = True
+            if 'pore.top' in network.keys():
+                dimension += 1
+                z = True
+            if dimension == 2:
+                if (x and y):
+                    self.settings['flow_inlets'] = {'x': 'left',
+                                                    'y': 'front'}
+                    self.settings['flow_outlets'] = {'x': 'right',
+                                                     'y': 'back'}
+                elif (y and z):
+                    self.settings['flow_inlets'] = {'y': 'front',
+                                                    'z': 'top'}
+                    self.settings['flow_outlets'] = {'y': 'back',
+                                                     'z': 'bottom'}
+                elif (x and z):
+                    self.settings['flow_inlets'] = {'x': 'left',
+                                                    'z': 'top'}
+                    self.settings['flow_outlets'] = {'x': 'right',
+                                                     'z': 'bottom'}
+            else:
+                self.settings['flow_inlets'] = {'x': 'left',
+                                                'y': 'front',
+                                                'z': 'top'}
+                self.settings['flow_outlets'] = {'x': 'right',
+                                                 'y': 'back',
+                                                 'z': 'bottom'}
         if flow_inlets is not None:
             for keys in flow_inlets.keys():
                 self.settings['flow_inlets'][keys] = flow_inlets[keys]
@@ -297,7 +326,11 @@ class RelativePermeability(GenericAlgorithm):
                 sp.plot(self.Kr_values['sat'][inp],
                         self.Kr_values['relperm_wp'][inp],
                         'o-', label='Krwp'+inp)
-            sp.plot(self.Kr_values['sat'][inp],
+                sp.plot(self.Kr_values['sat'][inp],
+                    self.Kr_values['relperm_nwp'][inp],
+                    '*-', label='Krnwp'+inp)
+            else:
+                sp.plot(self.Kr_values['sat'][inp],
                     self.Kr_values['relperm_nwp'][inp],
                     '*-', label='Krnwp'+inp)
         sp.set_xlabel('Snw')
