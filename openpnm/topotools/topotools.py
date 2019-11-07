@@ -1110,7 +1110,10 @@ def extend(network, pore_coords=[], throat_conns=[], labels=[]):
             N = network._count(element=item.split('.')[0])
             arr = network.pop(item)
             s = arr.shape
-            network[item] = sp.zeros(shape=(N, *s[1:]), dtype=arr.dtype)
+            if arr.dtype == bool:
+                network[item] = sp.zeros(shape=(N, *s[1:]), dtype=bool)
+            else:
+                network[item] = sp.ones(shape=(N, *s[1:]), dtype=float)*sp.nan
             # This is a temporary work-around until I learn to handle 2+ dims
             network[item][:arr.shape[0]] = arr
 

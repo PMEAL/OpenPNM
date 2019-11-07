@@ -46,6 +46,10 @@ class UtilsTest:
         r = D.__repr__()
         assert r == "{'item1': 1, 'item2': 2, 'item3': array([1, 2])}"
 
+    def test_settings_dict(self):
+        with pytest.raises(Exception):
+            self.geo.settings['test'] = self.net
+
 
 if __name__ == '__main__':
 
