@@ -350,4 +350,4 @@ class RelativePermeability(GenericAlgorithm):
         else:
             self.Kr_values['results']['krw'] = None
         self.Kr_values['results']['krnw'] = self.Kr_values['relperm_nwp']
-        return self.Kr_values
+        return self.Kr_values['results']
