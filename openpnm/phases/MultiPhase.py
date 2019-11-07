@@ -1,6 +1,6 @@
-from openpnm.phases import GenericPhase as GenericPhase
-import openpnm.models.phases as _models
 import numpy as np
+import openpnm.models.misc as misc
+from openpnm.phases import GenericPhase as GenericPhase
 from openpnm.utils import logging
 logger = logging.getLogger(__name__)
 
@@ -62,12 +62,20 @@ class MultiPhase(GenericPhase):
         self.pop('pore.temperature', None)
         self.pop('pore.pressure', None)
 
-        # Add any supplied phases to the phases list
+        # Add supplied phases to the phases list and initialize occupancy to 0
         for phase in phases:
             self.settings['phases'].append(phase.name)
+            self[f'pore.occupancy.{phase.name}'] = 0.0
 
-        logger.warning('MultiPhases are a beta feature and functionality may' +
-                       ' change in future versions')
+        # Interpolates throat occupancy based on those of adjacent pores
+        for phase in phases:
+            self.add_model(propname=f"throat.occupancy.{phase.name}",
+                           model=misc.from_neighbor_pores,
+                           prop=f"pore.occupancy.{phase.name}",
+                           mode="mean")
+
+        logger.warning('MultiPhases are a beta feature and functionality may '
+                       + 'change in future versions!')
 
     def __getitem__(self, key):
         try:
@@ -82,7 +90,6 @@ class MultiPhase(GenericPhase):
             dict_ = self[f"{elem}.occupancy"]
             dict_.pop(f"{elem}.occupancy.all")
             self[f"{elem}.occupancy.all"] = np.sum(list(dict_.values()), axis=0)
-
 
     def _get_phases(self):
         phases = {self.project[item].name: self.project[item]
