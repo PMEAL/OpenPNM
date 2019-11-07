@@ -306,7 +306,7 @@ class ReactiveTransport(GenericTransport):
         x_new : ND-array
             Solution array.
         """
-        w = self.settings['relaxation_source']
+        w = self.settings['relaxation_quantity']
         quantity = self.settings['quantity']
         rxn_tol = self.settings['rxn_tolerance']
         phase = self.project.phases()[self.settings['phase']]
@@ -334,6 +334,7 @@ class ReactiveTransport(GenericTransport):
                 x = x_new
             elif res < res_tol:
                 logger.info('Solution converged: ' + str(res))
+                x_new = x
                 break
             else:  # If res is nan or inf
                 logger.warning('Residual undefined: ' + str(res))
