@@ -29,10 +29,10 @@ from .Project import Project
 # NOTE: If the calling locations appears as 'root' it's because the logger
 # was not given a name in a file somewhere.  A good option is __name__.
 log_format = \
-'―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――\n\
-%(levelname)-s: %(message)s \n\
-SOURCE: %(name)s.%(funcName)s \n\
-TIME STAMP: %(asctime)s\
+'=' * 80 + '\n\
+%(levelname)-11s: %(message)s \n\
+SOURCE     : %(name)s.%(funcName)s \n\
+TIME STAMP : %(asctime)s\
 '
 logging.basicConfig(level=logging.WARNING, format=log_format)
 del log_format
