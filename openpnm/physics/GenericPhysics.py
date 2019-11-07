@@ -1,4 +1,6 @@
 from openpnm.core import Subdomain, ModelsMixin
+from openpnm.phases import GenericPhase
+from openpnm.geometry import GenericGeometry
 from openpnm.utils import Workspace, logging
 logger = logging.getLogger(__name__)
 ws = Workspace()
@@ -48,33 +50,32 @@ class GenericPhysics(Subdomain, ModelsMixin):
         super().__init__(project=project, **kwargs)
 
         network = self.project.network
-        if network:
-            if phase is None:
-                logger.warning('No Phase provided, ' + self.name +
-                               ' will not be associated with a phase')
-            else:
-                self.set_phase(phase=phase)
-            if geometry is None:
-                g = list(self.project.geometries().values())
-                if len(g) == 0:
-                    logger.warning('No Geometry provided, ' + self.name +
-                                   ' will not be associated with any' +
-                                   ' locations')
-                if len(g) == 1:
-                    self.set_geometry(geometry=g[0])
-                    logger.info('No Geometry provided, ' + self.name +
-                                ' will be associated with the only available' +
-                                ' geometry')
-                if len(g) > 1:
-                    logger.warning('No Geometry provided, ' + self.name +
-                                   ' and more than one geometry is defined' +
-                                   ' so cannot be automatically assigned')
-            else:
-                if (phase is None):
-                    logger.warning('Cannot associate with a geometry unless ' +
-                                   'a phase is also given')
-                else:
-                    self.set_geometry(geometry=geometry)
+        if phase is None:
+            logger.warning('No phase provided...a GenericPhase' +
+                           ' will be created')
+            phase = GenericPhase(network=network)
+        self.set_phase(phase=phase)
+
+        if geometry is None:
+            g = list(self.project.geometries().values())
+            if len(g) == 0:
+                logger.warning('No geometry provided...a GenericGeometry' +
+                               ' will be created')
+                geometry = GenericGeometry(network=network,
+                                           pores=network.Ps,
+                                           throats=network.Ts)
+                self.set_geometry(geometry=geometry)
+            elif len(g) == 1:
+                logger.info('No geometry provided... ' + self.name +
+                            ' will be associated with the only available' +
+                            ' geometry')
+                self.set_geometry(geometry=g[0])
+            elif len(g) > 1:
+                raise Exception('No geometry provided, but multiple ' +
+                                ' geometries exist on project.  Please ' +
+                                ' specify which one.')
+        else:
+            self.set_geometry(geometry=geometry)
 
     def set_phase(self, phase, mode='add'):
         r"""
@@ -94,7 +95,8 @@ class GenericPhysics(Subdomain, ModelsMixin):
         r"""
         """
         if geometry not in self.project:
-            raise Exception(self.name + ' not in same project as given geometry')
+            raise Exception(self.name + ' not in same project as ' +
+                            geometry.name)
         network = self.network
         Ps = network.pores(geometry.name)
         Ts = network.throats(geometry.name)
