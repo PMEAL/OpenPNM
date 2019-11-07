@@ -129,20 +129,19 @@ class MultiPhase(GenericPhase):
             vals = super().interleave_data(prop)
         return vals
 
-#    # Models of constituent phases must update before those of Multiphase
-#    def regenerate_models(self, **kwargs):
-#        r"""
-#        Regenerate models associated with the Multiphase object
-#
-#        This method works by first regenerating the models associated with the
-#        constituent phases, and then regenerating Multiphase models.
-#
-#        """
-#        # Regenerate all phases within mixture
-#        for phase in self.phases:
-#            phase.regenerate_models(**kwargs)
-#        # Regenerate mixture
-#        super().regenerate_models(self, **kwargs)
+    def regenerate_models(self, **kwargs):
+        r"""
+        Regenerate models associated with the Multiphase object
+
+        This method works by first regenerating the models associated with the
+        constituent phases, and then regenerating Multiphase models.
+
+        """
+        # Regenerate models associated with phases within MultiPhase object
+        for phase in self.phases.values():
+            phase.regenerate_models(**kwargs)
+        # Regenerate models specific to MultiPhase object
+        super().regenerate_models(**kwargs)
 
     def set_occupancy(self, phase, Pvals=[], Tvals=[], pores=[], throats=[]):
         r"""
