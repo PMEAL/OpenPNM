@@ -239,13 +239,13 @@ class ReactiveTransport(GenericTransport):
         under-relaxing the source term to improve numerical stability. Physics
         are also updated before applying source terms to ensure that source
         terms values are associated with the current value of 'quantity'.
+
+        Warnings
+        --------
         In the case of a transient simulation, the updates in 'A' and 'b'
-        also depend on the time scheme.
+        also depend on the time scheme. So, '_correct_apply_sources()' needs to
+        be run afterwards to correct the already applied relaxed source terms.
         """
-        if self.settings['t_scheme'] == 'cranknicolson':
-            f1 = 0.5
-        else:
-            f1 = 1.0
         phase = self.project.phases()[self.settings['phase']]
         w = self.settings['relaxation_source']
         # Store S1, S2 for relaxation, since they change after _update_physics
@@ -262,9 +262,9 @@ class ReactiveTransport(GenericTransport):
             phase[item + '.' + 'S2'][Ps] = w * S2 + (1-w) * X2
             # Add S1 and S2 to A and b
             datadiag = self._A.diagonal().copy()
-            datadiag[Ps] = datadiag[Ps] - f1*S1
+            datadiag[Ps] = datadiag[Ps] - S1
             self._A.setdiag(datadiag)
-            self._b[Ps] = self._b[Ps] + f1*S2
+            self._b[Ps] = self._b[Ps] + S2
 
     def run(self, x=None):
         r"""

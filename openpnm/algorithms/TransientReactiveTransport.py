@@ -386,6 +386,7 @@ class TransientReactiveTransport(ReactiveTransport):
             self._A = (self._A_t).copy()
             self._b = (self._b_t).copy()
             self._apply_sources()
+            self._correct_apply_sources()
             # Compute the normalized residual
             res = np.linalg.norm(self.b-self.A*x)/ref
             if res >= self.settings['rxn_tolerance']:
@@ -475,3 +476,27 @@ class TransientReactiveTransport(ReactiveTransport):
                 (round(nbr, t_pre) != int(nbr)))
         nbr_str = (str(int(round(nbr, t_pre)*10**n)) + ('e-'+str(n))*(n != 0))
         return nbr_str
+
+    def _correct_apply_sources(self):
+        """r
+        Update 'A' and 'b' correcting the already applied source terms to
+        specified pores
+
+        Notes
+        -----
+        Correction (built for transient simulations) depends on the time scheme
+        """
+        if self.settings['t_scheme'] == 'cranknicolson':
+            f1 = 0.5
+        else:
+            f1 = 1.0
+        phase = self.project.phases()[self.settings['phase']]
+        for item in self.settings['sources']:
+            Ps = self.pores(item)
+            # get already added relaxed source term
+            S1, S2 = [phase[item + '.' + x][Ps] for x in ['S1', 'S2']]
+            # correct S1 and S2 in A and b as a function of t_scheme
+            datadiag = self._A.diagonal().copy()
+            datadiag[Ps] = datadiag[Ps] + S1 - f1*S1
+            self._A.setdiag(datadiag)
+            self._b[Ps] = self._b[Ps] - S2 + f1*S2
