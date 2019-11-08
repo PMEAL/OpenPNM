@@ -441,14 +441,14 @@ def conduit_lengths(network, throats=None, mode='pore'):
         lengths[lengths < 0.0] = 2e-9
         # Calculate the fraction of that distance from the first pore
         try:
-            fractions = pdia[Ps[:, 0]]/(pdia[Ps[:, 0]] + pdia[Ps[:, 1]])
+            fractions = pdia[Ps[:, 0]] / (pdia[Ps[:, 0]] + pdia[Ps[:, 1]])
             # Don't allow zero lengths
             # fractions[fractions == 0.0] = 0.5
             # fractions[fractions == 1.0] = 0.5
         except:
             fractions = 0.5
-        plen1 = lengths*fractions
-        plen2 = lengths*(1-fractions)
+        plen1 = lengths * fractions
+        plen2 = lengths * (1-fractions)
 
     return _sp.vstack((plen1, Lt, plen2)).T[throats]
 
