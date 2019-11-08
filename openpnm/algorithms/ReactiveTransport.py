@@ -326,8 +326,12 @@ class ReactiveTransport(GenericTransport):
                 logger.info('Solution converged: ' + str(res))
                 x_new = x
                 break
-            else:  # If res is nan or inf
+            elif not np.isfinite(res):  # If res is nan or inf
                 logger.warning('Residual undefined: ' + str(res))
                 raise Exception("Solution diverged; undefined residual.")
+
+        # Check if the tolerance was met
+        if res >= res_tol:
+            raise Exception("Maximum iterations reached, solution not converged.")
 
         return x_new
