@@ -19,6 +19,7 @@ from .misc import flat_list
 from .misc import sanitize_dict
 from .misc import unique_list
 from .misc import tic, toc
+from .misc import is_symmetric
 from .Workspace import Workspace
 from .Project import Project
 
