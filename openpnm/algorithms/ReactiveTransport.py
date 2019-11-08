@@ -1,6 +1,5 @@
 import numpy as np
 from numpy.linalg import norm
-from scipy.sparse.linalg import norm as spnorm
 from openpnm.algorithms import GenericTransport
 from openpnm.utils import logging
 logger = logging.getLogger(__name__)
@@ -30,8 +29,8 @@ class ReactiveTransport(GenericTransport):
                    'sources': [],
                    'rxn_tolerance': 1e-8,
                    'max_iter': 5000,
-                   'relaxation_source': 1,
-                   'relaxation_quantity': 1,
+                   'relaxation_source': 1.0,
+                   'relaxation_quantity': 1.0,
                    'gui': {'setup':        {'phase': None,
                                             'quantity': '',
                                             'conductance': '',
