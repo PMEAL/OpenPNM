@@ -308,21 +308,19 @@ class ReactiveTransport(GenericTransport):
         w = self.settings['relaxation_quantity']
         quantity = self.settings['quantity']
         rxn_tol = self.settings['rxn_tolerance']
-        phase = self.project.phases()[self.settings['phase']]
-        self._update_physics()
 
         for itr in range(self.settings['max_iter']):
-            # Update quantity on "phase"
-            phase.update(self.results())
-            # _update_physics is called in _apply_sources
+            # Update iterative properties on phase and physics
+            self._update_iterative_props()
+            # Build A and b, apply BCs, sources and solve!
             self._build_A()
             self._build_b()
             self._apply_BCs()
             self._apply_sources()
             # Compute residual and tolerance
             res = norm(self.A*x - self.b)
-            res_tol = (spnorm(self.A) * norm(x) + norm(self.b)) * rxn_tol
-            if res >= res_tol:
+            res_tol = norm(self.b) * rxn_tol
+            if res > res_tol:
                 logger.info('Tolerance not met: ' + str(res))
                 x_new = self._solve()
                 # Relaxation
