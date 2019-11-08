@@ -19,6 +19,7 @@ def_set = {'phase': None,
            'solver_atol': 1e-6,
            'solver_rtol': 1e-6,
            'solver_maxiter': 5000,
+           'iterative_props': [],
            'cache_A': True, 'cache_b': True,
            'gui': {'setup':        {'quantity': '',
                                     'conductance': ''},
@@ -193,6 +194,14 @@ class GenericTransport(GenericAlgorithm):
         if conductance:
             self.settings['conductance'] = conductance
         self.settings.update(**kwargs)
+
+    def set_iterative_props(self, propnames):
+        r"""
+        """
+        if type(propnames) is str:  # Convert string to list if necessary
+            propnames = [propnames]
+        d = self.settings["iterative_props"]
+        self.settings["iterative_props"] = list(set(d) | set(propnames))
 
     def set_value_BC(self, pores, values, mode='merge'):
         r"""
@@ -395,7 +404,7 @@ class GenericTransport(GenericAlgorithm):
 
     def _get_A(self):
         if self._A is None:
-            self._build_A(force=True)
+            self._build_A()
         return self._A
 
     def _set_A(self, A):
@@ -405,7 +414,7 @@ class GenericTransport(GenericAlgorithm):
 
     def _get_b(self):
         if self._b is None:
-            self._build_b(force=True)
+            self._build_b()
         return self._b
 
     def _set_b(self, b):
