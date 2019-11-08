@@ -202,7 +202,7 @@ class ReactiveTransport(GenericTransport):
 
     _set_BC.__doc__ = GenericTransport._set_BC.__doc__
 
-    def _update_physics(self):
+    def _update_iterative_props(self):
         """r
         Update physics using the current value of 'quantity'
 
@@ -214,14 +214,13 @@ class ReactiveTransport(GenericTransport):
         """
         phase = self.project.phases()[self.settings['phase']]
         physics = self.project.find_physics(phase=phase)
-        quantity = self.settings['quantity']
         # Put quantity on phase so physics finds it when regenerating
-        phase[quantity] = self[quantity]
-        # Regenerate models with new guess
+        phase.update(self.results())
+        # Regenerate iterative props with new guess
+        iterative_props = self.settings["iterative_props"]
+        phase.regenerate_models(iterative_props)
         for physic in physics:
-            physic.regenerate_models()
-        for item in self.settings['sources']:
-            phase.regenerate_models(propnames=item)
+            physic.regenerate_models(iterative_props)
 
     def _apply_sources(self):
         """r
