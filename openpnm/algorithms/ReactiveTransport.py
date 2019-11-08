@@ -241,23 +241,29 @@ class ReactiveTransport(GenericTransport):
         """
         phase = self.project.phases()[self.settings['phase']]
         w = self.settings['relaxation_source']
-        # Store S1, S2 for relaxation, since they change after _update_physics
-        for item in self.settings['sources']:
-            phase[item + '.' + 'S1.old'] = phase[item + '.' + 'S1'].copy()
-            phase[item + '.' + 'S2.old'] = phase[item + '.' + 'S2'].copy()
-        self._update_physics()
+
         for item in self.settings['sources']:
             Ps = self.pores(item)
             # Source term relaxation
-            X1, X2 = [phase[item + '.' + x + '.old'][Ps] for x in ['S1', 'S2']]
             S1, S2 = [phase[item + '.' + x][Ps] for x in ['S1', 'S2']]
-            phase[item + '.' + 'S1'][Ps] = w * S1 + (1-w) * X1
-            phase[item + '.' + 'S2'][Ps] = w * S2 + (1-w) * X2
-            # Add S1 and S2 to A and b
+            # Get old values of S1 and S2
+            try:
+                X1, X2 = [phase[item + '.' + x + '.old'][Ps] for x in ['S1', 'S2']]
+            # S1.old and S2.old are not yet available in 1st iteration
+            except KeyError:
+                X1, X2 = S1.copy(), S2.copy()
+            S1 = phase[item + '.' + 'S1'][Ps] = w * S1 + (1-w) * X1
+            S2 = phase[item + '.' + 'S2'][Ps] = w * S2 + (1-w) * X2
+            # Add "relaxed" S1 and S2 to A and b
             datadiag = self._A.diagonal().copy()
             datadiag[Ps] = datadiag[Ps] - S1
             self._A.setdiag(datadiag)
             self._b[Ps] = self._b[Ps] + S2
+
+        # Replace old values of S1 and S2 by their current values
+        for item in self.settings['sources']:
+            phase[item + '.' + 'S1.old'] = phase[item + '.' + 'S1'].copy()
+            phase[item + '.' + 'S2.old'] = phase[item + '.' + 'S2'].copy()
 
     def run(self, x=None):
         r"""
