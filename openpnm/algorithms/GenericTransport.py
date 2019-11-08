@@ -1,5 +1,6 @@
 import importlib
 import numpy as np
+import openpnm as op
 import scipy.sparse as sprs
 import scipy.sparse.csgraph as spgr
 from scipy.spatial import ConvexHull
@@ -501,7 +502,7 @@ class GenericTransport(GenericAlgorithm):
         attribute.
 
         """
-        logger.info('―'*80)
+        logger.info('―' * 80)
         logger.info('Running GenericTransport')
         self._run_generic()
 
@@ -533,8 +534,7 @@ class GenericTransport(GenericAlgorithm):
         algorithm.
 
         """
-        # Fetch A and b from self if not given, and throw error if they've not
-        # been calculated
+        # Fetch A and b from self if not given, and throw error if not found
         if A is None:
             A = self.A
             if A is None:
@@ -556,6 +556,8 @@ class GenericTransport(GenericAlgorithm):
         # Reference for residual's normalization
         ref = np.sum(np.absolute(self.A.diagonal())) or 1
         atol = ref * rtol
+        # Check if A is symmetric
+        is_sym = op.utils.is_symmetric(self.A)
 
         # SciPy
         if self.settings['solver_family'] == 'scipy':
@@ -565,6 +567,10 @@ class GenericTransport(GenericAlgorithm):
             iterative = ['bicg', 'bicgstab', 'cg', 'cgs', 'gmres', 'lgmres',
                          'minres', 'gcrotmk', 'qmr']
             solver = getattr(sprs.linalg, self.settings['solver_type'])
+
+            if self.settings['solver_type'] == 'cg' and not is_sym:
+                raise Exception('Conjugate gradient (cg) solver cannot be used with '
+                                + 'non-symmetric matrices. Choose a different solver.')
             if self.settings['solver_type'] in iterative:
                 x, exit_code = solver(A=A, b=b, atol=atol, tol=rtol,
                                       maxiter=self.settings['solver_maxiter'])
