@@ -148,6 +148,8 @@ class ReactiveTransport(GenericTransport):
         # Set source term
         self[propname] = locs
         self.settings['sources'].append(propname)
+        # Add source term as an iterative prop
+        self.set_iterative_props(propname)
 
     def _set_BC(self, pores, bctype, bcvalues=None, mode='merge'):
         r"""
