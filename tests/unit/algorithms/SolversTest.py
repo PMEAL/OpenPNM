@@ -54,11 +54,11 @@ class SolversTest:
                 self.alg.run()
         self.alg.settings.update(solver_maxiter=100)
 
-#    def test_pyamg(self):
-#        self.alg.settings['solver_family'] = 'pyamg'
-#        self.alg.run()
-#        xmean = self.alg['pore.x'].mean()
-#        nt.assert_allclose(actual=xmean, desired=0.587595, rtol=1e-5)
+    # def test_pyamg(self):
+    #     self.alg.settings['solver_family'] = 'pyamg'
+    #     self.alg.run()
+    #     xmean = self.alg['pore.x'].mean()
+    #     nt.assert_allclose(actual=xmean, desired=0.587595, rtol=1e-5)
 
     def test_petsc(self):
         self.alg.settings['solver_family'] = 'petsc'
