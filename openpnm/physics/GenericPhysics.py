@@ -1,4 +1,5 @@
 from openpnm.core import Subdomain, ModelsMixin
+from openpnm.network import GenericNetwork
 from openpnm.phases import GenericPhase
 from openpnm.geometry import GenericGeometry
 from openpnm.utils import Workspace, logging
@@ -19,11 +20,21 @@ class GenericPhysics(Subdomain, ModelsMixin):
         The network to which this Physics should be attached
 
     phase : OpenPNM Phase object
-        The Phase object to which this Physics applies
+        The Phase object to which this Physics applies.  If nothing is supplied
+        then a new phase object is created and associated with this physics.
 
     geometry : OpenPNM Geometry object
         The Geometry object that defines the pores/throats where this Physics
-        should be applied.
+        should be applied.  If nothing is supplied, then there are three cases:
+
+        (1) If no geometries currently exist on the project, then an empty
+        ``GenericGeometry`` will be created and assocated with this physics
+
+        (2) If only one geometry is found on the project, then it will be
+        associated with this physics
+
+        (3) If more than one geometry is found then an Exception is raised
+        since it's not clear which geometry to associate with this physics
 
     name : str, optional
         A unique string name to identify the Physics object, typically same as
@@ -51,31 +62,39 @@ class GenericPhysics(Subdomain, ModelsMixin):
 
         network = self.project.network
         if phase is None:
-            logger.warning('No phase provided...a GenericPhase' +
-                           ' will be created')
+            logger.warning('No phase provided...a GenericPhase'
+                           + ' will be created')
             phase = GenericPhase(network=network)
         self.set_phase(phase=phase)
 
         if geometry is None:
             g = list(self.project.geometries().values())
             if len(g) == 0:
-                logger.warning('No geometry provided...a GenericGeometry' +
-                               ' will be created')
+                logger.warning('No geometry provided...a new GenericGeometry'
+                               + ' will be created')
                 geometry = GenericGeometry(network=network,
                                            pores=network.Ps,
                                            throats=network.Ts)
-                self.set_geometry(geometry=geometry)
             elif len(g) == 1:
-                logger.info('No geometry provided... ' + self.name +
-                            ' will be associated with the only available' +
-                            ' geometry')
-                self.set_geometry(geometry=g[0])
+                if len(self.project.find_physics(geometry=g[0])):
+                    raise Exception('No geometry provided, and the only'
+                                    + ' existing geometry is already assigned'
+                                    + ' to another physics')
+                logger.warning('No geometry provided... so ' + self.name
+                               + ' will be associated with the only available'
+                               + ' geometry')
+                geometry = g[0]
             elif len(g) > 1:
-                raise Exception('No geometry provided, but multiple ' +
-                                ' geometries exist on project.  Please ' +
-                                ' specify which one.')
-        else:
-            self.set_geometry(geometry=geometry)
+                raise Exception('No geometry provided, but multiple '
+                                + ' geometries exist on project.  Please '
+                                + ' specify which one.')
+        elif isinstance(geometry, GenericNetwork):
+            logger.warning('No geometry provided...a new GenericGeometry'
+                           + ' will be created')
+            geometry = GenericGeometry(network=network,
+                                       pores=network.Ps,
+                                       throats=network.Ts)
+        self.set_geometry(geometry=geometry)
 
     def set_phase(self, phase, mode='add'):
         r"""
@@ -83,11 +102,28 @@ class GenericPhysics(Subdomain, ModelsMixin):
         if phase not in self.project:
             raise Exception(self.name + ' not in same project as given phase')
         if mode == 'add':
-            phase['pore.'+self.name] = False
-            phase['throat.'+self.name] = False
+            ok = False
+            try:
+                self.project.find_phase(self)
+            except Exception:
+                ok = True
+            if ok:
+                phase['pore.'+self.name] = False
+                phase['throat.'+self.name] = False
+            else:
+                raise Exception('Physics is already associated with a phase'
+                                + ' , use mode \'swap\' to change phases')
         elif mode == 'remove':
+            current_phase = self.project.find_phase(self)
+            if current_phase is not phase:
+                raise Exception('Physics cannot be removed from a phase it'
+                                + ' is not already associated with')
             phase.pop('pore.'+self.name, None)
             phase.pop('throat.'+self.name, None)
+        elif mode == 'swap':
+            current_phase = self.project.find_phase(self)
+            self.set_phase(phase=current_phase, mode='remove')
+            self.set_phase(phase=phase, mode='add')
         else:
             raise Exception('mode ' + mode + ' not understood')
 
@@ -95,9 +131,9 @@ class GenericPhysics(Subdomain, ModelsMixin):
         r"""
         """
         if geometry not in self.project:
-            raise Exception(self.name + ' not in same project as ' +
-                            geometry.name)
+            raise Exception(self.name + ' not in same project as given geometry')
         network = self.network
         Ps = network.pores(geometry.name)
         Ts = network.throats(geometry.name)
+        self._drop_locations(pores=Ps, throats=Ts)
         self._add_locations(pores=Ps, throats=Ts)

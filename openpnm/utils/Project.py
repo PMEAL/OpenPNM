@@ -340,15 +340,13 @@ class Project(list):
             geoTs = net['throat.'+geometry.name]
             for phase in self.phases().values():
                 physics = self.find_physics(phase=phase)
-                temp = None
                 for phys in physics:
                     Ps = phase.map_pores(pores=phys.Ps, origin=phys)
                     physPs = phase.tomask(pores=Ps)
                     Ts = phase.map_throats(throats=phys.Ts, origin=phys)
                     physTs = phase.tomask(throats=Ts)
                     if np.all(geoPs == physPs) and np.all(geoTs == physTs):
-                        temp = phys
-                result.append(temp)
+                        result.append(phys)
             return result
         elif phase:
             names = set(self.physics().keys())
