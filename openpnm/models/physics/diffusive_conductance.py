@@ -516,3 +516,55 @@ def classic_ordinary_diffusion(target,
     gt[~(gt > 0)] = _sp.inf
     value = (1 / gt + 1 / gp1 + 1 / gp2) ** (-1)
     return value
+
+
+def multiphase_diffusion(target,
+                         pore_area='pore.area',
+                         throat_area='throat.area',
+                         pore_diffusivity='pore.diffusivity',
+                         partition_coef='throat.partition_coef',
+                         throat_diffusivity='throat.diffusivity',
+                         conduit_lengths='throat.conduit_lengths',
+                         conduit_shape_factors='throat.poisson_shape_factors'):
+    r"""
+    Similar to ordinary_diffusion, except it also accounts for Henry's law
+    partitioning.
+
+    Notes
+    -----
+    ``K12`` is the dimensionless Henry's partitioning
+    coefficient and is defined as ``K12 = c(g)/c(aq)``.
+
+    """
+    network = target.project.network
+    throats = network.map_throats(throats=target.Ts, origin=target)
+    phase = target.project.find_phase(target)
+    cn = network['throat.conns'][throats]
+    # Getting equivalent areas
+    A1 = network[pore_area][cn[:, 0]]
+    At = network[throat_area][throats]
+    A2 = network[pore_area][cn[:, 1]]
+    # Getting conduit lengths
+    L1 = network[conduit_lengths + '.pore1'][throats]
+    Lt = network[conduit_lengths + '.throat'][throats]
+    L2 = network[conduit_lengths + '.pore2'][throats]
+    # Getting shape factors
+    try:
+        SF1 = phase[conduit_shape_factors+'.pore1'][throats]
+        SFt = phase[conduit_shape_factors+'.throat'][throats]
+        SF2 = phase[conduit_shape_factors+'.pore2'][throats]
+    except KeyError:
+        SF1 = SF2 = SFt = 1.0
+    # Interpolate pore phase property values to throats
+    Dt = phase[throat_diffusivity][throats]
+    D1 = phase[pore_diffusivity][cn[:, 0]]
+    D2 = phase[pore_diffusivity][cn[:, 1]]
+    # Find g for half of pore 1, throat, and half of pore 2 + apply shape factors
+    g1 = (D1*A1) / L1 * SF1
+    g2 = (D2*A2) / L2 * SF2
+    gt = (Dt*At) / Lt * SFt
+    # Apply Henry's partitioning coefficient
+    K12 = phase[partition_coef][throats]
+    G12 = K12 * (1.0/g1 + 0.5/gt + K12*(1.0/g2 + 0.5/gt)) ** (-1)
+    G21 = 1.0/K12 * (1.0/g2 + 0.5/gt + 1.0/K12*(1.0/g1 + 0.5/gt)) ** (-1)
+    return _sp.vstack((G12, G21)).T
