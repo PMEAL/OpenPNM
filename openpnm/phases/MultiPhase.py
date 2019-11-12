@@ -63,16 +63,7 @@ class MultiPhase(GenericPhase):
         self.pop('pore.pressure', None)
 
         # Add supplied phases to the phases list and initialize occupancy to 0
-        for phase in phases:
-            self.settings['phases'].append(phase.name)
-            self[f'pore.occupancy.{phase.name}'] = 0.0
-
-        # Interpolates throat occupancy based on those of adjacent pores
-        for phase in phases:
-            self.add_model(propname=f"throat.occupancy.{phase.name}",
-                           model=misc.from_neighbor_pores,
-                           prop=f"pore.occupancy.{phase.name}",
-                           mode="mean")
+        self.add_phases(phases)
 
         logger.warning('MultiPhases are a beta feature and functionality may '
                        + 'change in future versions!')
@@ -97,6 +88,18 @@ class MultiPhase(GenericPhase):
         return phases
 
     phases = property(fget=_get_phases)
+
+    def add_phases(self, phases):
+        r"""
+        Add received phases to the MultiPhase object.
+        """
+        # Add supplied phases to the phases list and initialize occupancy to 0
+        phases = np.array(phases, ndmin=1)
+        for phase in phases:
+            if phase.name not in self.settings['phases']:
+                self.settings['phases'].append(phase.name)
+                self[f'pore.occupancy.{phase.name}'] = 0.0
+                self[f'throat.occupancy.{phase.name}'] = 0.0
 
     def interleave_data(self, prop):
         r"""
