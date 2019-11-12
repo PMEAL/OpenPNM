@@ -1,6 +1,6 @@
-from openpnm.phases import GenericPhase as GenericPhase
-import openpnm.models.phases as _models
 import numpy as np
+import openpnm.models.misc as misc
+from openpnm.phases import GenericPhase as GenericPhase
 from openpnm.utils import logging
 logger = logging.getLogger(__name__)
 
@@ -54,7 +54,7 @@ class MultiPhase(GenericPhase):
     def __init__(self, phases=[], settings={}, **kwargs):
         super().__init__(**kwargs)
         self.settings.update({'phases': [],
-                              })
+                              'throat_occupancy': 'manual'})
         self.settings.update(settings)
 
         self['pore.occupancy.all'] = np.zeros(self.Np, dtype=float)
@@ -63,12 +63,11 @@ class MultiPhase(GenericPhase):
         self.pop('pore.temperature', None)
         self.pop('pore.pressure', None)
 
-        # Add any supplied phases to the phases list
-        for phase in phases:
-            self.settings['phases'].append(phase.name)
+        # Add supplied phases to the phases list and initialize occupancy to 0
+        self.add_phases(phases)
 
-        logger.warning('MultiPhases are a beta feature and functionality may' +
-                       ' change in future versions')
+        logger.warning('MultiPhases are a beta feature and functionality may '
+                       + 'change in future versions!')
 
     def __getitem__(self, key):
         try:
@@ -78,15 +77,11 @@ class MultiPhase(GenericPhase):
         return vals
 
     def _update_occupancy(self):
-        # Update occupancy.all
-        self['pore.occupancy.all'] = 0.0
-        dict_ = list(self['pore.occupancy'].values())
-        if len(dict_) > 1:
-            self['pore.occupancy.all'] = np.sum(dict_, axis=0)
-        self['throat.occupancy.all'] = 0.0
-        dict_ = list(self['throat.occupancy'].values())
-        if len(dict_) > 1:
-            self['throat.occupancy.all'] = np.sum(dict_, axis=0)
+        # Update "occupancy.all" by summing up all occupancies
+        for elem in ["pore", "throat"]:
+            dict_ = self[f"{elem}.occupancy"]
+            dict_.pop(f"{elem}.occupancy.all")
+            self[f"{elem}.occupancy.all"] = np.sum(list(dict_.values()), axis=0)
 
     def _get_phases(self):
         phases = {self.project[item].name: self.project[item]
@@ -95,12 +90,24 @@ class MultiPhase(GenericPhase):
 
     phases = property(fget=_get_phases)
 
+    def add_phases(self, phases):
+        r"""
+        Add received phases to the MultiPhase object.
+        """
+        # Add supplied phases to the phases list and initialize occupancy to 0
+        phases = np.array(phases, ndmin=1)
+        for phase in phases:
+            if phase.name not in self.settings['phases']:
+                self.settings['phases'].append(phase.name)
+                self[f'pore.occupancy.{phase.name}'] = 0.0
+                self[f'throat.occupancy.{phase.name}'] = 0.0
+
     def interleave_data(self, prop):
         r"""
         Gathers property values from component phases to build a single array
 
         If the requested ``prop`` is not on this MultiPhase, then a search is
-        conducted on all associated physics objects, and values from each
+        conducted on all associated phase objects, and values from each
         are assembled into a single array.
 
         Parameters
@@ -116,35 +123,48 @@ class MultiPhase(GenericPhase):
 
         """
         element = prop.split('.')[0]
+        vals = np.zeros([self._count(element=element)], dtype=float)
+        # Retrieve property from constituent phases (weight = occupancy)
+        try:
+            for phase in self.phases.values():
+                vals += phase[prop] * self[element + '.occupancy.' + phase.name]
+        # Otherwise - if not found - retrieve from super class
+        except KeyError:
+            vals = super().interleave_data(prop)
+
+        # Check for consistency of occypancy values (i.e. add up to 1)
         if np.any(self[element + '.occupancy.all'] != 1.0):
             self._update_occupancy()
             if np.any(self[element + '.occupancy.all'] != 1.0):
-                raise Exception('Occupancy does not add to unity in all ' +
-                                element + 's')
-        vals = np.zeros([self._count(element=element)], dtype=float)
-        try:
-            for phase in self.phases.values():
-                vals += phase[prop]*self[element + '.occupancy.' + phase.name]
-        except KeyError:
-            vals = super().interleave_data(prop)
+                raise Exception(f"Occupancy doesn't add to unity in all {element}s")
         return vals
 
-#    # Models of constituent phases must update before those of Multiphase
-#    def regenerate_models(self, **kwargs):
-#        r"""
-#        Regenerate models associated with the Multiphase object
-#
-#        This method works by first regenerating the models associated with the
-#        constituent phases, and then regenerating Multiphase models.
-#
-#        """
-#        # Regenerate all phases within mixture
-#        for phase in self.phases:
-#            phase.regenerate_models(**kwargs)
-#        # Regenerate mixture
-#        super().regenerate_models(self, **kwargs)
+    def regenerate_models(self, **kwargs):
+        r"""
+        Regenerate models associated with the Multiphase object
 
-    def set_occupancy(self, phase, Pvals=[], Tvals=[]):
+        This method works by first regenerating the models associated with the
+        constituent phases, and then regenerating Multiphase models.
+
+        """
+        # Regenerate models associated with phases within MultiPhase object
+        for phase in self.phases.values():
+            phase.regenerate_models(**kwargs)
+        # Regenerate models specific to MultiPhase object
+        super().regenerate_models(**kwargs)
+
+    def set_automatic_throat_occupancy(self, mode="mean"):
+        r"""
+        Automatically interpolates throat occupancy based on adjacent pores.
+        """
+        self.settings['throat_occupancy'] = 'automatic'
+        for phase in self.phases.values():
+            self.add_model(propname=f"throat.occupancy.{phase.name}",
+                           model=misc.from_neighbor_pores,
+                           prop=f"pore.occupancy.{phase.name}",
+                           mode=mode)
+
+    def set_occupancy(self, phase, Pvals=[], Tvals=[], pores=[], throats=[]):
         r"""
         Specify occupancy of a phase in each pore and/or throat
 
@@ -153,32 +173,70 @@ class MultiPhase(GenericPhase):
         phase : OpenPNM Phase object
             The phase whose occupancy is being specified
 
-        Pvals : array_like
-            The volume fraction of ``phase`` in each pore.  This array must
-            be *Np*-long, with one value between 0 and 1, for each pore in the
-            network.  If a scalar is received it is applied to all pores.
+        Pvals : array_like, float
+            The volume fraction of ``phase`` in each pore. This array must be
+            *``Np``*-long, except when ``pores`` is also passed, where in that
+            case they must be of equal length, with one value between 0 and 1,
+            for each pore in the network. If a scalar is received it is applied
+            to all pores. If nothing is passed, ``Pvals=1.0`` is assumed.
 
-        Tvals : array_like
-            The volume fraction of ``phase`` in each throat.  This array must
-            be *Nt*-long, with one value between 0 and 1, for each throat in
-            the network.  If a scalar is received it is applied to all throats.
+        Tvals : array_like, float
+            The volume fraction of ``phase`` in each throat. This array must be
+            *``Nt``*-long, except when ``throats`` is also passed, where in that
+            case they must be of equal length, with one value between 0 and 1,
+            for each throat in the network. If a scalar is received it is applied
+            to all throats. If nothing is passed, ``Tvals=1.0`` is assumed.
+
+        pores : array_like, int
+            The location of pores for which the phase occupancy is to be set.
+
+        throats : array_like, int
+            The location of throats for which the phase occupancy is to be set.
 
         """
         Pvals = np.array(Pvals, ndmin=1)
         Tvals = np.array(Tvals, ndmin=1)
+        pores = np.array(pores, ndmin=1)
+        throats = np.array(throats, ndmin=1)
+
+        # Check for size consistency of the arguments
+        if Pvals.size and pores.size:
+            if Pvals.size != 1 and pores.size != 1:
+                if Pvals.size != pores.size:
+                    raise Exception("Pvals and pores must be the same size.")
+        if Tvals.size and throats.size:
+            if Tvals.size != 1 and throats.size != 1:
+                if Tvals.size != throats.size:
+                    raise Exception("Tvals and throats must be the same size.")
+
+        # Check if the passed phase is already part of MultiPhase object
         if phase not in self.project:
             raise Exception(f"{phase.name} doesn't belong to this project")
+        # Add the passed phase to MultiPhase object if not found
         else:
             if phase.name not in self.settings['phases']:
-                self.settings['phases'].append(phase.name)
+                self.add_phases(phase)
+
+        # Check for value consistency of the arguments
         if np.any(Pvals > 1.0) or np.any(Pvals < 0.0):
-            logger.warning('Received Pvals contain volume fractions outside ' +
-                           'the range of 0 to 1')
+            logger.warning('Received Pvals contain volume fractions outside '
+                           + 'the range of 0 to 1')
         if np.any(Tvals > 1.0) or np.any(Tvals < 0.0):
-            logger.warning('Received Tvals contain volume fractions outside ' +
-                           'the range of 0 to 1')
-        if Pvals.size:
-            self['pore.occupancy.' + phase.name] = Pvals
-        if Tvals.size:
-            self['throat.occupancy.' + phase.name] = Tvals
+            logger.warning('Received Tvals contain volume fractions outside '
+                           + 'the range of 0 to 1')
+
+        if Pvals.size and not pores.size:
+            pores = self.pores()
+        if Tvals.size and not throats.size:
+            throats = self.throats()
+
+        if pores.size:
+            Pvals = Pvals if Pvals.size else 1.0
+            self['pore.occupancy.' + phase.name][pores] = Pvals
+        if throats.size:
+            Tvals = Tvals if Tvals.size else 1.0
+            self['throat.occupancy.' + phase.name][throats] = Tvals
+
+        if self.settings["throat_occupancy"] == "automatic":
+            self.regenerate_models(propnames=f"throat.occupancy.{phase.name}")
         self._update_occupancy()
