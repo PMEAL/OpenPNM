@@ -174,9 +174,9 @@ To run the simulation using explicit steps:
   >>> alg._build_b()
   >>> alg._apply_BCs()
   >>> alg['pore.quantity'] = 0  # Make initial guess of quantity
-  >>> alg._update_physics()
+  >>> alg._update_iterative_props()
   >>> alg._apply_sources()
-  >>> x = alg._run_reactive(x=None)
+  >>> x = alg.run()
 
 It is not necessary to actually call the above methods, use ``run`` instead.
 
