@@ -1,4 +1,5 @@
 import numpy as np
+import openpnm as op
 import openpnm.models.misc as misc
 from openpnm.phases import GenericPhase as GenericPhase
 from openpnm.utils import logging
@@ -92,15 +93,30 @@ class MultiPhase(GenericPhase):
 
     def add_phases(self, phases):
         r"""
-        Add received phases to the MultiPhase object.
+        Add supplied phases to the MultiPhase object and initialize occupancy to 0.
         """
-        # Add supplied phases to the phases list and initialize occupancy to 0
         phases = np.array(phases, ndmin=1)
         for phase in phases:
             if phase.name not in self.settings['phases']:
                 self.settings['phases'].append(phase.name)
                 self[f'pore.occupancy.{phase.name}'] = 0.0
                 self[f'throat.occupancy.{phase.name}'] = 0.0
+
+    def set_binary_partition_coef(self, phase1, phase2, K12):
+        r"""
+        Set binary partition coefficient that defines the concentration ratio
+        of phase 1 to phase 2.
+        """
+        network = self.project.network
+        cn = network["throat.conns"]
+        occ_phase1 = self[f"pore.occupancy.{phase1.name}"][cn]
+        occ_phase2 = self[f"pore.occupancy.{phase2.name}"][cn]
+        temp = np.ones_like(network.throats(), dtype=float)
+        mask = (occ_phase1[:, 0] + occ_phase2[:, 1]) == 2.0
+        temp[mask] = K12
+        mask = (occ_phase2[:, 0] + occ_phase1[:, 1]) == 2.0
+        temp[mask] = 1.0/K12
+        self["throat.partition_coef"] = temp
 
     def interleave_data(self, prop):
         r"""
@@ -194,6 +210,8 @@ class MultiPhase(GenericPhase):
             The location of throats for which the phase occupancy is to be set.
 
         """
+        # TODO: pores/throats could also be masks
+
         Pvals = np.array(Pvals, ndmin=1)
         Tvals = np.array(Tvals, ndmin=1)
         pores = np.array(pores, ndmin=1)
