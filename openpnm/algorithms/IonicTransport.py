@@ -80,6 +80,16 @@ class IonicTransport(ReactiveTransport):
             print('Gummel iter: '+str(itr+1)+', residuals: '+i_r)
             i_convergence = max(i for i in i_res.values()) < i_tol
             if not i_convergence:
+                # Ions
+                for e in e_alg:
+                    i_old[e.name] = (e[e.settings['quantity']].copy())
+                    e._run_reactive(x=i_old[e.name])
+                    i_new[e.name] = (e[e.settings['quantity']].copy())
+                    # Residual
+                    i_res[e.name] = np.sum(np.absolute(
+                        i_old[e.name]**2-i_new[e.name]**2))
+                    phase.update(e.results())
+
                 # Poisson eq
                 phys[0].regenerate_models()
                 i_old[p_alg.name] = p_alg[p_alg.settings['quantity']].copy()
@@ -91,16 +101,6 @@ class IonicTransport(ReactiveTransport):
                 # Update phase and physics
                 phase.update(p_alg.results())
                 phys[0].regenerate_models()
-
-                # Ions
-                for e in e_alg:
-                    i_old[e.name] = (e[e.settings['quantity']].copy())
-                    e._run_reactive(x=i_old[e.name])
-                    i_new[e.name] = (e[e.settings['quantity']].copy())
-                    # Residual
-                    i_res[e.name] = np.sum(np.absolute(
-                        i_old[e.name]**2-i_new[e.name]**2))
-                    phase.update(e.results())
 
             if i_convergence:
                 print('Solution converged')
