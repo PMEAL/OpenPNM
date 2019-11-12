@@ -118,7 +118,7 @@ class MultiPhase(GenericPhase):
             component phase and assembled based on the specified mixing rule
 
         """
-        element, _ = prop.split('.')
+        element = prop.split('.')[0]
         vals = np.zeros([self._count(element=element)], dtype=float)
         # Retrieve property from constituent phases (weight = occupancy)
         try:
