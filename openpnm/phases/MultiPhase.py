@@ -53,7 +53,8 @@ class MultiPhase(GenericPhase):
     """
     def __init__(self, phases=[], settings={}, **kwargs):
         super().__init__(**kwargs)
-        self.settings.update({'phases': []})
+        self.settings.update({'phases': [],
+                              'throat_occupancy': 'manual'})
         self.settings.update(settings)
 
         self['pore.occupancy.all'] = np.zeros(self.Np, dtype=float)
@@ -152,6 +153,17 @@ class MultiPhase(GenericPhase):
         # Regenerate models specific to MultiPhase object
         super().regenerate_models(**kwargs)
 
+    def set_automatic_throat_occupancy(self, mode="mean"):
+        r"""
+        Automatically interpolates throat occupancy based on adjacent pores.
+        """
+        self.settings['throat_occupancy'] = 'automatic'
+        for phase in self.phases.values():
+            self.add_model(propname=f"throat.occupancy.{phase.name}",
+                           model=misc.from_neighbor_pores,
+                           prop=f"pore.occupancy.{phase.name}",
+                           mode=mode)
+
     def set_occupancy(self, phase, Pvals=[], Tvals=[], pores=[], throats=[]):
         r"""
         Specify occupancy of a phase in each pore and/or throat
@@ -184,16 +196,18 @@ class MultiPhase(GenericPhase):
         """
         Pvals = np.array(Pvals, ndmin=1)
         Tvals = np.array(Tvals, ndmin=1)
-        pores =np.array(pores, ndmin=1)
-        throats =np.array(throats, ndmin=1)
+        pores = np.array(pores, ndmin=1)
+        throats = np.array(throats, ndmin=1)
 
         # Check for size consistency of the arguments
         if Pvals.size and pores.size:
-            if Pvals.size != pores.size:
-                raise Exception("Pvals and pores must be the same size.")
+            if Pvals.size != 1 and pores.size != 1:
+                if Pvals.size != pores.size:
+                    raise Exception("Pvals and pores must be the same size.")
         if Tvals.size and throats.size:
-            if Tvals.size != throats.size:
-                raise Exception("Tvals and throats must be the same size.")
+            if Tvals.size != 1 and throats.size != 1:
+                if Tvals.size != throats.size:
+                    raise Exception("Tvals and throats must be the same size.")
 
         # Check if the passed phase is already part of MultiPhase object
         if phase not in self.project:
@@ -201,7 +215,7 @@ class MultiPhase(GenericPhase):
         # Add the passed phase to MultiPhase object if not found
         else:
             if phase.name not in self.settings['phases']:
-                self.settings['phases'].append(phase.name)
+                self.add_phases(phase)
 
         # Check for value consistency of the arguments
         if np.any(Pvals > 1.0) or np.any(Pvals < 0.0):
@@ -223,5 +237,6 @@ class MultiPhase(GenericPhase):
             Tvals = Tvals if Tvals.size else 1.0
             self['throat.occupancy.' + phase.name][throats] = Tvals
 
-        self.regenerate_models(propnames=f"throat.occupancy.{phase.name}")
+        if self.settings["throat_occupancy"] == "automatic":
+            self.regenerate_models(propnames=f"throat.occupancy.{phase.name}")
         self._update_occupancy()

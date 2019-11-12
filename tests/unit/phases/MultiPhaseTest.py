@@ -138,7 +138,7 @@ class MultiPhaseTest:
 
     def test_multiphase_invalid_occupancy(self):
         m = op.phases.MultiPhase(network=self.net)
-        # This is just a logger warning for now
+        # TODO: This is just a logger warning for now
         # with pytest.raises(Exception):
         #     m.set_occupancy(phase=self.water, Pvals=self.net.Ps)
         m.set_occupancy(phase=self.water, Pvals=self.net.Ps)
