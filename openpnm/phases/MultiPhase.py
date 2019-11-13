@@ -1,5 +1,4 @@
 import numpy as np
-import openpnm as op
 import openpnm.models.misc as misc
 from openpnm.phases import GenericPhase as GenericPhase
 from openpnm.utils import logging
