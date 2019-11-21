@@ -85,7 +85,7 @@ class TransientIonicTransport(IonicTransport, TransientReactiveTransport):
 
         # Save A matrix of the steady sys of eqs (WITHOUT BCs applied)
         for alg in algs:
-            alg._build_A(force=True)
+            alg._build_A()
             alg._A_steady = (alg._A).copy()
         # Initialize A and b with BCs applied
         for e in e_alg:
@@ -103,7 +103,7 @@ class TransientIonicTransport(IonicTransport, TransientReactiveTransport):
             t = self.settings['t_initial']
         # Create S1 & S1 for 1st Picard's iteration
         for alg in algs:
-            alg._update_physics()
+            alg._update_iterative_props()
 
         # Setup algorithms transient settings
         for alg in algs:
@@ -198,6 +198,18 @@ class TransientIonicTransport(IonicTransport, TransientReactiveTransport):
                         print('Gummel iter: '+str(itr+1)+', residuals: '+i_r)
                         i_convergence = max(i for i in i_res.values()) < i_tol
                         if not i_convergence:
+                            # Ions
+                            for e in e_alg:
+                                i_old[e.name] = (
+                                    e[e.settings['quantity']].copy())
+                                e._t_run_reactive(x=i_old[e.name])
+                                i_new[e.name] = (
+                                    e[e.settings['quantity']].copy())
+                                # Residual
+                                i_res[e.name] = np.sum(np.absolute(
+                                    i_old[e.name]**2 - i_new[e.name]**2))
+                                phase.update(e.results())
+
                             # Poisson eq
                             phys[0].regenerate_models()
                             i_old[p_alg.name] = (
@@ -212,33 +224,21 @@ class TransientIonicTransport(IonicTransport, TransientReactiveTransport):
                             phase.update(p_alg.results())
                             phys[0].regenerate_models()
 
-                            # Ions
-                            for e in e_alg:
-                                i_old[e.name] = (
-                                    e[e.settings['quantity']].copy())
-                                e._t_run_reactive(x=i_old[e.name])
-                                i_new[e.name] = (
-                                    e[e.settings['quantity']].copy())
-                                # Residual
-                                i_res[e.name] = np.sum(np.absolute(
-                                    i_old[e.name]**2 - i_new[e.name]**2))
-                                phase.update(e.results())
-
                         elif i_convergence:
-                            print('Solution for time step: '+str(time) +
-                                  ' s converged')
+                            print('Solution for time step: ' + str(time)
+                                  + ' s converged')
                             break
 
                     for alg in algs:  # Save new fields & compute t residuals
                         t_new[alg.name] = alg[alg.settings['quantity']].copy()
                         t_res[alg.name] = np.sum(
-                            np.absolute(t_old[alg.name]**2-t_new[alg.name]**2))
+                            np.absolute(t_old[alg.name]**2 - t_new[alg.name]**2))
 
                     # Output transient solutions. Round time to ensure every
                     # value in outputs is exported.
                     if round(time, t_pre) in out:
                         t_str = self._nbr_to_str(time)
-                        print('\nExporting time step: '+str(time)+' s')
+                        print('\nExporting time step: ' + str(time) + ' s')
                         for alg in algs:
                             alg[alg.settings['quantity']+'@'+t_str] = (
                                 t_new[alg.name])
@@ -250,7 +250,7 @@ class TransientIonicTransport(IonicTransport, TransientReactiveTransport):
                         for ph in physics:
                             ph.regenerate_models()
                         # Update A matrix
-                        alg._build_A(force=True)
+                        alg._build_A()
                         alg._A_steady = (alg._A).copy()
 
                     # Update A and b and apply BCs

@@ -80,6 +80,43 @@ class GenericTransportTest:
         y = sp.unique(sp.around(alg['pore.mole_fraction'], decimals=3))
         assert sp.all(x == y)
 
+    def test_set_iterative_props(self):
+        alg = op.algorithms.GenericTransport(network=self.net,
+                                              phase=self.phase)
+        assert len(alg.settings["iterative_props"]) == 0
+        alg.set_iterative_props(propnames="pore.pressure")
+        assert "pore.pressure" in alg.settings["iterative_props"]
+        # Ensure each prop is only added once
+        alg.set_iterative_props(propnames="pore.pressure")
+        assert len(alg.settings["iterative_props"]) == 1
+        alg.set_iterative_props(propnames=["pore.temperature", "pore.pressure"])
+        assert len(alg.settings["iterative_props"]) == 2
+        assert "pore.pressure" in alg.settings["iterative_props"]
+        assert "pore.temperature" in alg.settings["iterative_props"]
+
+    def test_cache_A(self):
+        alg = op.algorithms.GenericTransport(network=self.net,
+                                             phase=self.phase)
+        alg.settings['conductance'] = 'throat.diffusive_conductance'
+        alg.settings['quantity'] = 'pore.mole_fraction'
+        alg.set_rate_BC(pores=self.net.pores('bottom'), values=1)
+        alg.set_value_BC(pores=self.net.pores('top'), values=0)
+        alg.settings["cache_A"] = True
+        alg._build_A()
+        x = alg._A.mean()
+        self.phys["throat.diffusive_conductance"][1] = 50.0
+        alg._build_A()
+        y = alg._A.mean()
+        # When cache_A is True, A is not recomputed, hence x == y
+        assert x == y
+        alg.settings["cache_A"] = False
+        alg._build_A()
+        y = alg._A.mean()
+        # When cache_A is False, A must be recomputed, hence x!= y
+        assert x != y
+        # Revert back changes to objects
+        self.setup_class()
+
     def teardown_class(self):
         ws = op.Workspace()
         ws.clear()
