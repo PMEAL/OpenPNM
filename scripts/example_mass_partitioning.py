@@ -23,7 +23,7 @@ water["pore.diffusivity"] = air["pore.diffusivity"] * 0.2
 
 # Define MultiPhase object
 mphase = op.phases.MultiPhase(network=net, phases=[air, water])
-mphase.set_automatic_throat_occupancy()
+mphase._set_automatic_throat_occupancy()
 mphase.set_occupancy(phase=air, pores=[0, 1, 2, 3, 4])
 mphase.set_occupancy(phase=water, pores=[5, 6, 7, 8, 9])
 mphase.set_binary_partition_coef(phase1=water, phase2=air, K12=0.5)

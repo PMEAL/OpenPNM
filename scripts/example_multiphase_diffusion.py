@@ -35,7 +35,7 @@ ts_interface = net.find_neighbor_throats(pores=ps_water, mode="xor")
 
 # Define multiphase and set phase occupancy
 mphase = op.phases.MultiPhase(network=net, phases=[air, water], name="mphase")
-mphase.set_automatic_throat_occupancy()
+mphase._set_automatic_throat_occupancy()
 mphase.set_occupancy(air, pores=ps_air, throats=ts_air)
 mphase.set_occupancy(water, pores=ps_water, throats=ts_water)
 

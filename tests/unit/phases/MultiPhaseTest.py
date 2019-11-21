@@ -100,13 +100,13 @@ class MultiPhaseTest:
         P1, P2 = self.net["throat.conns"].T
         oc1, oc2 = [m["pore.occupancy.water"][x] for x in (P1, P2)]
         # Throats take average occupancy of adjacent pores
-        m.set_automatic_throat_occupancy(mode="mean")
+        m._set_automatic_throat_occupancy(mode="mean")
         assert_allclose(m["throat.occupancy.water"], (oc1+oc2)/2)
         # Throats take maximum occupancy of adjacent pores
-        m.set_automatic_throat_occupancy(mode="max")
+        m._set_automatic_throat_occupancy(mode="max")
         assert_allclose(m["throat.occupancy.water"], sp.maximum(oc1, oc2))
         # Throats take minimum occupancy of adjacent pores
-        m.set_automatic_throat_occupancy(mode="min")
+        m._set_automatic_throat_occupancy(mode="min")
         assert_allclose(m["throat.occupancy.water"], sp.minimum(oc1, oc2))
 
     def test_multiphase_occupancy_set_single_phase(self):

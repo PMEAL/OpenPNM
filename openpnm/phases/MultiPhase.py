@@ -168,7 +168,7 @@ class MultiPhase(GenericPhase):
         # Regenerate models specific to MultiPhase object
         super().regenerate_models(**kwargs)
 
-    def set_automatic_throat_occupancy(self, mode="mean"):
+    def _set_automatic_throat_occupancy(self, mode="mean"):
         r"""
         Automatically interpolates throat occupancy based on adjacent pores.
         """
