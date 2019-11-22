@@ -515,7 +515,6 @@ def multiphase_diffusion(target,
                          pore_area='pore.area',
                          throat_area='throat.area',
                          pore_diffusivity='pore.diffusivity',
-                         partition_coef='throat.partition_coef',
                          throat_diffusivity='throat.diffusivity',
                          conduit_lengths='throat.conduit_lengths',
                          conduit_shape_factors='throat.poisson_shape_factors'):
@@ -556,6 +555,8 @@ def multiphase_diffusion(target,
     g1 = (D1*A1) / L1 * SF1
     g2 = (D2*A2) / L2 * SF2
     gt = (Dt*At) / Lt * SFt
+    # Get partition coefficient dictionary key from phase settings
+    partition_coef = phase.settings["partition_coef"]
     # Apply Henry's partitioning coefficient
     K12 = phase[partition_coef][throats]
     G12 = K12 * (1.0/g1 + 0.5/gt + K12*(1.0/g2 + 0.5/gt)) ** (-1)
