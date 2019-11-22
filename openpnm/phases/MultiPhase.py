@@ -54,7 +54,8 @@ class MultiPhase(GenericPhase):
     def __init__(self, phases=[], settings={}, **kwargs):
         super().__init__(**kwargs)
         self.settings.update({'phases': [],
-                              'throat_occupancy': 'manual'})
+                              'throat_occupancy': 'manual',
+                              'partition_coef': 'throat.partition_coef.all'})
         self.settings.update(settings)
 
         self['pore.occupancy.all'] = np.zeros(self.Np, dtype=float)
@@ -62,6 +63,9 @@ class MultiPhase(GenericPhase):
 
         self.pop('pore.temperature', None)
         self.pop('pore.pressure', None)
+        # Initialize throat partition coefficient values to 1.0
+        partition_coef = self.settings['partition_coef']
+        self[partition_coef] = np.ones(self.Nt)
 
         # Add supplied phases to the phases list and initialize occupancy to 0
         self.add_phases(phases)
