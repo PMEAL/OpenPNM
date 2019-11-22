@@ -7,7 +7,7 @@ logger = logging.getLogger(__name__)
 
 
 def gaseous_species_in_water(target, chemical_formula,
-                             temperature="pore.temperature"):
+                             temperature="throat.temperature"):
     r"""
     Calculate Henry's law constant for gaseous species dissolved in water.
 
