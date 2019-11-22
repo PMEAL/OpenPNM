@@ -105,21 +105,46 @@ class MultiPhase(GenericPhase):
                 self[f'pore.occupancy.{phase.name}'] = 0.0
                 self[f'throat.occupancy.{phase.name}'] = 0.0
 
-    def set_binary_partition_coef(self, phase1, phase2, K12):
+    def set_binary_partition_coef(self, phases, model,
+                                  propname="throat.partition_coef", **kwargs):
         r"""
         Set binary partition coefficient that defines the concentration ratio
         of phase 1 to phase 2.
         """
+        # Raise error if phases is not exactly two-element long
+        if np.size(phases) != 2:
+            raise Exception("'phases' must contain exactly two elements!")
+        # Add interface model to the MultiPhase object
+        self._add_interface_prop(propname, phases, model, **kwargs)
+        # Get binary partition coefficient
+        interface_prop_key = propname + f".{phases[0].name}:{phases[1].name}"
+        K12 = self[interface_prop_key]
+        # Modify the global partition coefficient vector
         network = self.project.network
         cn = network["throat.conns"]
-        occ_phase1 = self[f"pore.occupancy.{phase1.name}"][cn]
-        occ_phase2 = self[f"pore.occupancy.{phase2.name}"][cn]
-        temp = np.ones_like(network.throats(), dtype=float)
+        occ_phase1 = self[f"pore.occupancy.{phases[0].name}"][cn]
+        occ_phase2 = self[f"pore.occupancy.{phases[1].name}"][cn]
+        partition_coef = self.settings["partition_coef"]
+        K_global = self[partition_coef]
         mask = (occ_phase1[:, 0] + occ_phase2[:, 1]) == 2.0
-        temp[mask] = K12
+        K_global[mask] = K12[mask]
         mask = (occ_phase2[:, 0] + occ_phase1[:, 1]) == 2.0
-        temp[mask] = 1.0/K12
-        self["throat.partition_coef"] = temp
+        K_global[mask] = 1.0 / K12[mask]
+
+    def _add_interface_prop(self, propname, phases, model, **kwargs):
+        r"""
+        Helper method used to add interface models to the MultiPhase object by
+        augmenting ``propname`` --> ``propname.phases[0].name:phases[1].name``
+        """
+        # Add "throat" keyword to the begining of propname if no identifier is found
+        if propname.split(".")[0] not in ["pore", "throat"]:
+            propname = f"throat.{propname}"
+        # Check propname is throat property
+        if not propname.startswith("throat"):
+            raise Exception("'propname' must be a throat property such as: "
+                            + "'throat.partition_coef'.")
+        propname += f".{phases[0].name}:{phases[1].name}"
+        self.add_model(propname, model, **kwargs)
 
     def interleave_data(self, prop):
         r"""
