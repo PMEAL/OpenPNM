@@ -26,7 +26,9 @@ mphase = op.phases.MultiPhase(network=net, phases=[air, water])
 mphase._set_automatic_throat_occupancy()
 mphase.set_occupancy(phase=air, pores=[0, 1, 2, 3, 4])
 mphase.set_occupancy(phase=water, pores=[5, 6, 7, 8, 9])
-mphase.set_binary_partition_coef(phase1=water, phase2=air, K12=0.5)
+const = op.models.misc.constant
+mphase.set_binary_partition_coef(propname="throat.partition_coef",
+                                 phases=[water, air], model=const, value=0.5)
 
 # Define physics object
 phys = op.physics.Standard(network=net, phase=mphase, geometry=geom)

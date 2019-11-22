@@ -43,11 +43,12 @@ mphase.set_occupancy(water, pores=ps_water, throats=ts_water)
 phys = op.physics.Standard(network=net, phase=mphase, geometry=geom)
 # Assign a partition coefficient (concentration ratio)
 K_water_air = 0.5   # c @ water / c @ air
-mphase.set_binary_partition_coef(phase1=water, phase2=air, K12=K_water_air)
+const = op.models.misc.constant
+mphase.set_binary_partition_coef(propname="throat.partition_coef",
+                                 phases=[water, air], model=const, value=K_water_air)
 # Replace the "default" ordinary_diffusion w/ multiphase_diffusion conductance model
 mdiff = op.models.physics.diffusive_conductance.multiphase_diffusion
-phys.add_model(propname="throat.diffusive_conductance", model=mdiff,
-               partition_coef="throat.partition_coef")
+phys.add_model(propname="throat.diffusive_conductance", model=mdiff)
 
 # Fickian diffusion
 fd = op.algorithms.FickianDiffusion(network=net, phase=mphase)
