@@ -26,13 +26,13 @@ class ThroatVolumeTest:
         net.add_model(propname='throat.lens_volume',
                       model=mod)
         Vlens = net['throat.lens_volume']
-        assert Vlens == 2*(0.006733852203712552)
+        assert np.isclose(Vlens, 2*0.006733852203712552)
         mod = op.models.geometry.throat_volume.pendular_ring
         net.add_model(propname='throat.ring_volume',
                       model=mod)
         Vcyl = 2*(0.01315292522620208)
         Vring = net['throat.ring_volume']
-        assert (Vcyl - Vring) == 2*(0.006733852203712552)
+        assert np.isclose(Vcyl - Vring, 2*0.006733852203712552)
 
     def test_cylinder(self):
         self.geo.add_model(propname='throat.volume',
