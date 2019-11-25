@@ -22,8 +22,8 @@ before_install:
 install:
   - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION
   - source activate test-environment
-  - conda install --file conda_requirements.txt
-  - pip install -r test_requirements.txt
+  - conda install --file requirements/conda_requirements.txt
+  - pip install -r requirements/test_requirements.txt
   - python setup.py install
 
 script:
