@@ -29,8 +29,8 @@ install:
 script:
   - python ./bin/test pep8 cov
 
-after_success:
-  - codecov
+# after_success:
+#   - codecov
 
 notifications:
   email: false
