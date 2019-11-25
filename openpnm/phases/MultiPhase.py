@@ -265,11 +265,11 @@ class MultiPhase(GenericPhase):
 
         # Check for value consistency of the arguments
         if np.any(Pvals > 1.0) or np.any(Pvals < 0.0):
-            logger.warning('Received Pvals contain volume fractions outside '
-                           + 'the range of 0 to 1')
+            logger.critical('Received Pvals contain volume fractions outside '
+                            + 'the range of 0 to 1')
         if np.any(Tvals > 1.0) or np.any(Tvals < 0.0):
-            logger.warning('Received Tvals contain volume fractions outside '
-                           + 'the range of 0 to 1')
+            logger.critical('Received Tvals contain volume fractions outside '
+                            + 'the range of 0 to 1')
 
         if Pvals.size and not pores.size:
             pores = self.pores()
