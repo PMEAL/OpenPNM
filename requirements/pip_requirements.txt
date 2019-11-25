@@ -1,0 +1,15 @@
+numpy
+scipy
+matplotlib
+scikit-image
+pandas
+sympy
+numba
+networkx
+h5py
+jsonschema
+terminaltables
+unyt
+gitpython
+flatdict
+transforms3d
