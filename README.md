@@ -6,6 +6,12 @@
 [![](https://github.com/PMEAL/OpenPNM/workflows/Windows/badge.svg)](https://github.com/PMEAL/OpenPNM/actions)
 [![](https://github.com/PMEAL/OpenPNM/workflows/Examples/badge.svg)](https://github.com/PMEAL/OpenPNM/actions)
 
+-----
+
+**Cite as:**
+> _Gostick, Jeff, Mahmoudreza Aghighi, James Hinebaugh, Tom Tranter, Michael A. Hoeh, Harold Day, Brennan Spellacy et al._ "**OpenPNM: a pore network modeling package.**" Computing in Science & Engineering 18, no. 4 (2016): 60-74.
+> [doi:10.1109/MCSE.2016.49](https://ieeexplore.ieee.org/document/7478437)
+
 # Overview of OpenPNM
 
 *OpenPNM* is an open source project aiming to provide porous media researchers with a comprehensive framework for performing pore network simulations on a wide range of materials.
