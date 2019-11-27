@@ -1653,8 +1653,8 @@ def connect_pores(network, pores1, pores2, labels=[], add_conns=True):
         pores2 = [pores2]
 
     if len(pores1) != len(pores2):
-        raise Exception('Running in batch mode! pores1 and pores2 must be' +
-                        ' of the same length.')
+        raise Exception('Running in batch mode! pores1 and pores2 must be'
+                        + ' of the same length.')
 
     arr1, arr2 = [], []
     for ps1, ps2 in zip(pores1, pores2):
@@ -2120,6 +2120,8 @@ def plot_connections(network, throats=None, fig=None, **kwargs):
     Examples
     --------
     >>> import openpnm as op
+    >>> import matplotlib as mpl
+    >>> mpl.use('Agg')
     >>> pn = op.network.Cubic(shape=[10, 10, 3])
     >>> pn.add_boundary_pores()
     >>> Ts = pn.throats('*boundary', mode='nor')
@@ -2215,6 +2217,8 @@ def plot_coordinates(network, pores=None, fig=None, **kwargs):
     Examples
     --------
     >>> import openpnm as op
+    >>> import matplotlib as mpl
+    >>> mpl.use('Agg')
     >>> pn = op.network.Cubic(shape=[10, 10, 3])
     >>> pn.add_boundary_pores()
     >>> Ps = pn.pores('internal')
