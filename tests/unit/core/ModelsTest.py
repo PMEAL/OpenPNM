@@ -23,7 +23,7 @@ class ModelsTest:
                                         throats=net.Ts)
         s = geo.models.__str__().split('\n')
         assert len(s) == 68
-        assert s.count('―'*78) == 15
+        assert s.count('―'*85) == 15
 
     def test_regenerate_models(self):
         a = len(self.geo.props())

@@ -43,18 +43,18 @@ object under the ``models`` attribute, which is dictionary with the same keys
 as the ``propnames``.  This can also be inspected:
 
 >>> print(pn.models)
-――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-#   Property Name             Parameter                 Value
-――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-1   pore.coordination_number  model:                    coordination_number
-                              regeneration mode:        explicit
-――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-2   pore.seed                 model:                    random
-                              element:                  pore
-                              num_range:                [0.1, 0.9]
-                              seed:                     None
-                              regeneration mode:        normal
-――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+#   Property Name                       Parameter                 Value
+―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+1   pore.coordination_number            model:                    coordination_number
+                                        regeneration mode:        explicit
+―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+2   pore.seed                           model:                    random
+                                        element:                  pore
+                                        num_range:                [0.1, 0.9]
+                                        seed:                     None
+                                        regeneration mode:        normal
+―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 
 Note that the model 'pore.coordination_number' is added to all GenericNetworks
 upon instantiation, but not run.  This is why the model appears in the

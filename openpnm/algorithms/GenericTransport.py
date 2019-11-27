@@ -328,10 +328,18 @@ class GenericTransport(GenericAlgorithm):
             raise Exception('The number of boundary values must match the '
                             + 'number of locations')
 
+        # Warn the user that another boundary condition already exists
+        value_BC_mask = np.isfinite(self["pore.bc_value"])
+        rate_BC_mask = np.isfinite(self["pore.bc_rate"])
+        BC_locs = self.Ps[rate_BC_mask + value_BC_mask]
+        if np.intersect1d(pores, BC_locs).size:
+            logger.critical('Another boundary condition was detected in some '
+                            + 'of the locations received')
+
         # Store boundary values
-        if ('pore.bc_'+bctype not in self.keys()) or (mode == 'overwrite'):
-            self['pore.bc_'+bctype] = np.nan
-        self['pore.bc_'+bctype][pores] = values
+        if ('pore.bc_' + bctype not in self.keys()) or (mode == 'overwrite'):
+            self['pore.bc_' + bctype] = np.nan
+        self['pore.bc_' + bctype][pores] = values
 
     def remove_BC(self, pores=None, bctype='all'):
         r"""
