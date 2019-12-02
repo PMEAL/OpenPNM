@@ -55,12 +55,17 @@ class TutorialTest():
         rc = self._notebook_run(nbook)
         assert rc
 
+    def test_meniscus_model_comparison(self):
+        nbook = os.path.join(test_dir, 'Meniscus_Model_Comparison.ipynb')
+        rc = self._notebook_run(nbook)
+        assert rc
+
 
 if __name__ == '__main__':
     t = TutorialTest()
     self = t
     t.setup_class()
     for item in t.__dir__():
-        if item.startswith('test_mixed'):
+        if item.startswith('test'):
             print('running test: '+item)
             t.__getattribute__(item)()
