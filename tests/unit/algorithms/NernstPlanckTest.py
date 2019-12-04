@@ -45,6 +45,7 @@ class NernstPlanckTest:
 
         self.adm = op.algorithms.NernstPlanck(network=self.net,
                                               phase=self.phase, ion='ionX')
+        self.adm.settings.update({"cache_A": False, "cache_b": False})
         self.adm.set_value_BC(pores=self.net.pores('back'), values=2)
         self.adm.set_value_BC(pores=self.net.pores('front'), values=0)
 

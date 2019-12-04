@@ -48,15 +48,15 @@ class GenericGeometry(Subdomain, ModelsMixin):
     Confirm that the object has one added model:
 
     >>> print(geom.models)
-    ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-    #   Property Name             Parameter                 Value
-    ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-    1   pore.size                 model:                    random
-                                  element:                  pore
-                                  num_range:                [0.01, 0.1]
-                                  seed:                     None
-                                  regeneration mode:        normal
-    ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+    ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+    #   Property Name                       Parameter                 Value
+    ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+    1   pore.size                           model:                    random
+                                            element:                  pore
+                                            num_range:                [0.01, 0.1]
+                                            seed:                     None
+                                            regeneration mode:        normal
+    ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 
     The results of the model can be seen using the ``show_hist`` function:
 
@@ -89,8 +89,8 @@ class GenericGeometry(Subdomain, ModelsMixin):
             network['pore.'+self.name] = False
             network['throat.'+self.name] = False
             if (pores is None) and (throats is None):
-                logger.info('No pores and throats given, assigning ' +
-                            self.name + ' to entire domain')
+                logger.info('No pores and throats given, assigning '
+                            + self.name + ' to entire domain')
                 pores = network.Ps
                 throats = network.Ts
             try:

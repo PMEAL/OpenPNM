@@ -1,4 +1,5 @@
 import numpy as np
+from numpy.linalg import norm
 from openpnm.algorithms import GenericTransport
 from openpnm.utils import logging
 logger = logging.getLogger(__name__)
@@ -26,10 +27,10 @@ class ReactiveTransport(GenericTransport):
     def __init__(self, settings={}, phase=None, **kwargs):
         def_set = {'phase': None,
                    'sources': [],
-                   'rxn_tolerance': 1e-05,
+                   'rxn_tolerance': 1e-8,
                    'max_iter': 5000,
-                   'relaxation_source': 1,
-                   'relaxation_quantity': 1,
+                   'relaxation_source': 1.0,
+                   'relaxation_quantity': 1.0,
                    'gui': {'setup':        {'phase': None,
                                             'quantity': '',
                                             'conductance': '',
@@ -138,13 +139,16 @@ class ReactiveTransport(GenericTransport):
         raised.
         """
         locs = self.tomask(pores=pores)
-
-        if (not np.all(np.isnan(self['pore.bc_value'][locs]))) or \
-           (not np.all(np.isnan(self['pore.bc_rate'][locs]))):
-            raise Exception('Boundary conditions already present in given ' +
-                            'pores, cannot also assign source terms')
+        # Check if any BC is already set in the same locations
+        locs_BC = np.isfinite(self['pore.bc_value']) + np.isfinite(self['pore.bc_rate'])
+        if (locs & locs_BC).any():
+            raise Exception('Boundary conditions already present in given '
+                            + 'pores, cannot also assign source terms')
+        # Set source term
         self[propname] = locs
         self.settings['sources'].append(propname)
+        # Add source term as an iterative prop
+        self.set_iterative_props(propname)
 
     def _set_BC(self, pores, bctype, bcvalues=None, mode='merge'):
         r"""
@@ -188,16 +192,16 @@ class ReactiveTransport(GenericTransport):
         # First check that given pores do not have source terms already set
         for item in self.settings['sources']:
             if np.any(self[item][pores]):
-                raise Exception('Source term already present in given ' +
-                                'pores, cannot also assign boundary ' +
-                                'conditions')
+                raise Exception('Source term already present in given '
+                                + 'pores, cannot also assign boundary '
+                                + 'conditions')
         # Then call parent class function if above check passes
         super()._set_BC(pores=pores, bctype=bctype, bcvalues=bcvalues,
                         mode=mode)
 
     _set_BC.__doc__ = GenericTransport._set_BC.__doc__
 
-    def _update_physics(self):
+    def _update_iterative_props(self):
         """r
         Update physics using the current value of 'quantity'
 
@@ -209,17 +213,13 @@ class ReactiveTransport(GenericTransport):
         """
         phase = self.project.phases()[self.settings['phase']]
         physics = self.project.find_physics(phase=phase)
-        for phys in physics:
-            phys.regenerate_models()
-        for item in self.settings['sources']:
-            # Regenerate models with new guess
-            quantity = self.settings['quantity']
-            # Put quantity on phase so physics finds it when regenerating
-            phase[quantity] = self[quantity]
-            # Regenerate models, on either phase or physics
-            phase.regenerate_models(propnames=item)
-            for phys in physics:
-                phys.regenerate_models(propnames=item)
+        # Put quantity on phase so physics finds it when regenerating
+        phase.update(self.results())
+        # Regenerate iterative props with new guess
+        iterative_props = self.settings["iterative_props"]
+        phase.regenerate_models(propnames=iterative_props)
+        for physic in physics:
+            physic.regenerate_models(iterative_props)
 
     def _apply_sources(self):
         """r
@@ -231,36 +231,38 @@ class ReactiveTransport(GenericTransport):
         under-relaxing the source term to improve numerical stability. Physics
         are also updated before applying source terms to ensure that source
         terms values are associated with the current value of 'quantity'.
+
+        Warnings
+        --------
         In the case of a transient simulation, the updates in 'A' and 'b'
-        also depend on the time scheme.
+        also depend on the time scheme. So, '_correct_apply_sources()' needs to
+        be run afterwards to correct the already applied relaxed source terms.
         """
-        if self.settings['t_scheme'] == 'cranknicolson':
-            f1 = 0.5
-        else:
-            f1 = 1
         phase = self.project.phases()[self.settings['phase']]
-        relax = self.settings['relaxation_source']
+        w = self.settings['relaxation_source']
+
         for item in self.settings['sources']:
             Ps = self.pores(item)
-            # Add S1 to diagonal of A
-            # TODO: We need this to NOT overwrite the A and b, but create
-            # copy, otherwise we have to regenerate A and b on each loop
-            datadiag = self._A.diagonal().copy()
             # Source term relaxation
-            S1_old = phase[item+'.'+'S1'][Ps].copy()
-            S2_old = phase[item+'.'+'S2'][Ps].copy()
-            self._update_physics()
-            S1 = phase[item+'.'+'S1'][Ps]
-            S2 = phase[item+'.'+'S2'][Ps]
-            S1 = relax*S1 + (1-relax)*S1_old
-            S2 = relax*S2 + (1-relax)*S2_old
-            phase[item+'.'+'S1'][Ps] = S1
-            phase[item+'.'+'S2'][Ps] = S2
-            datadiag[Ps] = datadiag[Ps] - f1*S1
-            # Add S1 to A
+            S1, S2 = [phase[item + '.' + x][Ps] for x in ['S1', 'S2']]
+            # Get old values of S1 and S2
+            try:
+                X1, X2 = [phase[item + '.' + x + '.old'][Ps] for x in ['S1', 'S2']]
+            # S1.old and S2.old are not yet available in 1st iteration
+            except KeyError:
+                X1, X2 = S1.copy(), S2.copy()
+            S1 = phase[item + '.' + 'S1'][Ps] = w * S1 + (1-w) * X1
+            S2 = phase[item + '.' + 'S2'][Ps] = w * S2 + (1-w) * X2
+            # Add "relaxed" S1 and S2 to A and b
+            datadiag = self._A.diagonal().copy()
+            datadiag[Ps] = datadiag[Ps] - S1
             self._A.setdiag(datadiag)
-            # Add S2 to b
-            self._b[Ps] = self._b[Ps] + f1*S2
+            self._b[Ps] = self._b[Ps] + S2
+
+        # Replace old values of S1 and S2 by their current values
+        for item in self.settings['sources']:
+            phase[item + '.' + 'S1.old'] = phase[item + '.' + 'S1'].copy()
+            phase[item + '.' + 'S2.old'] = phase[item + '.' + 'S2'].copy()
 
     def run(self, x=None):
         r"""
@@ -273,21 +275,22 @@ class ReactiveTransport(GenericTransport):
             Initial guess of unknown variable
 
         """
+        quantity = self.settings['quantity']
         logger.info('Running ReactiveTransport')
-        # Create S1 & S1 for 1st Picard's iteration
-        if x is None:
-            x = np.zeros(shape=[self.Np, ], dtype=float)
-        self[self.settings['quantity']] = x
-        self._update_physics()
 
-        x = self._run_reactive(x=x)
-        self[self.settings['quantity']] = x
+        # Create S1 & S1 for the 1st Picard iteration
+        if x is None:
+            x = np.zeros(shape=self.Np, dtype=float)
+        self[quantity] = x
+        x = self._run_reactive(x)
+        self[quantity] = x
 
     def _run_reactive(self, x):
         r"""
         Repeatedly updates 'A', 'b', and the solution guess within according
         to the applied source term then calls '_solve' to solve the resulting
         system of linear equations.
+
         Stops when the residual falls below 'rxn_tolerance' or when the maximum
         number of iterations is reached.
 
@@ -301,36 +304,38 @@ class ReactiveTransport(GenericTransport):
         x_new : ND-array
             Solution array.
         """
-        if x is None:
-            x = np.zeros(shape=[self.Np, ], dtype=float)
-        self[self.settings['quantity']] = x
-        relax = self.settings['relaxation_quantity']
-        phase = self.project.phases()[self.settings['phase']]
-        # Reference for residual's normalization
-        ref = np.sum(np.absolute(self.A.diagonal())) or 1
-        for itr in range(int(self.settings['max_iter'])):
-            self[self.settings['quantity']] = x
-            phase.update(self.results())
-            self._update_physics()
-            self._build_A(force=True)
-            self._build_b(force=True)
+        w = self.settings['relaxation_quantity']
+        quantity = self.settings['quantity']
+        rxn_tol = self.settings['rxn_tolerance']
+
+        for itr in range(self.settings['max_iter']):
+            # Update iterative properties on phase and physics
+            self._update_iterative_props()
+            # Build A and b, apply BCs, sources and solve!
+            self._build_A()
+            self._build_b()
             self._apply_BCs()
             self._apply_sources()
-            # Compute the normalized residual
-            res = np.linalg.norm(self.b-self.A*x)/ref
-            if res >= self.settings['rxn_tolerance']:
+            # Compute residual and tolerance
+            res = norm(self.A*x - self.b)
+            res_tol = norm(self.b) * rxn_tol
+            if res > res_tol:
                 logger.info('Tolerance not met: ' + str(res))
                 x_new = self._solve()
                 # Relaxation
-                x_new = relax*x_new + (1-relax)*self[self.settings['quantity']]
-                self[self.settings['quantity']] = x_new
+                x_new = w * x_new + (1-w) * self[quantity]
+                self[quantity] = x_new
                 x = x_new
-            elif (res < self.settings['rxn_tolerance']):
-                x_new = x
+            elif res < res_tol:
                 logger.info('Solution converged: ' + str(res))
-                break
-            else:  # If res is nan or inf
                 x_new = x
-                logger.warning('Residual undefined: ' + str(res))
                 break
+            elif not np.isfinite(res):  # If res is nan or inf
+                logger.warning('Residual undefined: ' + str(res))
+                raise Exception("Solution diverged; undefined residual.")
+
+        # Check if the tolerance was met
+        if res >= res_tol:
+            raise Exception("Maximum iterations reached, solution not converged.")
+
         return x_new
