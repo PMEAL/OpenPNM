@@ -1,6 +1,7 @@
 import heapq as hq
 import scipy as sp
 import numpy as np
+from numba import jit, njit
 from openpnm.algorithms import GenericAlgorithm
 from openpnm.utils import logging
 logger = logging.getLogger(__name__)
@@ -140,7 +141,6 @@ class InvasionPercolation(GenericAlgorithm):
         self['throat.order'][self['throat.sorted']] = sp.arange(0, self.Nt)
         self['throat.invasion_sequence'] = -1
         self['pore.invasion_sequence'] = -1
-        self._tcount = 0
 
     def set_inlets(self, pores=[], overwrite=False):
         r"""
@@ -172,37 +172,21 @@ class InvasionPercolation(GenericAlgorithm):
         if n_steps is None:
             n_steps = sp.inf
 
-        queue = self.queue
-        if len(queue) == 0:
+        if len(self.queue) == 0:
             logger.warn('queue is empty, this network is fully invaded')
             return
-        t_sorted = self['throat.sorted']
-        t_order = self['throat.order']
-        t_inv = self['throat.invasion_sequence']
-        p_inv = self['pore.invasion_sequence']
 
-        count = 0
-        while (len(queue) > 0) and (count < n_steps):
-            # Find throat at the top of the queue
-            t = hq.heappop(queue)
-            # Extract actual throat number
-            t_next = t_sorted[t]
-            t_inv[t_next] = self._tcount
-            # If throat is duplicated
-            while len(queue) > 0 and queue[0] == t:
-                # Note: Preventing duplicate entries below might save some time
-                t = hq.heappop(queue)
-            # Find pores connected to newly invaded throat
-            Ps = self.project.network['throat.conns'][t_next]
-            # Remove already invaded pores from Ps
-            Ps = Ps[p_inv[Ps] < 0]
-            if len(Ps) > 0:
-                p_inv[Ps] = self._tcount
-                Ts = self.project.network.find_neighbor_throats(pores=Ps)
-                Ts = Ts[t_inv[Ts] < 0]  # Remove invaded throats from Ts
-                [hq.heappush(queue, T) for T in t_order[Ts]]
-            count += 1
-            self._tcount += 1
+        neighbors = self.network.create_adjacency_matrix(fmt='lil')
+        print('running ip with jit')
+        t_inv, p_inv = _run(queue=self.queue,
+                            n_steps=100,
+                            t_sorted=self['throat.sorted'],
+                            t_order=self['throat.order'],
+                            t_inv=self['throat.invasion_sequence'],
+                            p_inv=self['pore.invasion_sequence'],
+                            conns=self.project.network['throat.conns'],
+                            neighbors=neighbors)
+
         self['throat.invasion_sequence'] = t_inv
         self['pore.invasion_sequence'] = p_inv
 
@@ -398,3 +382,40 @@ class InvasionPercolation(GenericAlgorithm):
         self['throat.trapped'][trapped_ts] = True
         self['pore.invasion_sequence'][self['pore.trapped']] = -1
         self['throat.invasion_sequence'][self['throat.trapped']] = -1
+
+
+@njit("(int64[:], int64)")
+def _run(queue, n_steps, t_sorted, t_order, t_inv, p_inv, conns, neighbors):
+    count = 0
+    while (len(queue) > 0) and (count < n_steps):
+        # Find throat at the top of the queue
+        t = hq.heappop(queue)
+        # Extract actual throat number
+        t_next = t_sorted[t]
+        t_inv[t_next] = count
+        # If throat is duplicated
+        while len(queue) > 0 and queue[0] == t:
+            # Note: Preventing duplicate entries below might save some time
+            t = hq.heappop(queue)
+        # Find pores connected to newly invaded throat
+        Ps = conns[t_next]
+        # Remove already invaded pores from Ps
+        Ps = Ps[p_inv[Ps] < 0]
+        if len(Ps) > 0:
+            p_inv[Ps] = count
+            Ts = sp.unique(sp.hstack(neighbors.rows[Ps]))
+            Ts = Ts[t_inv[Ts] < 0]  # Remove invaded throats from Ts
+            [hq.heappush(queue, T) for T in t_order[Ts]]
+        count += 1
+    return t_inv, p_inv
+
+
+if __name__ == '__main__':
+    import openpnm as op
+    pn = op.network.Cubic(shape=[10, 10, 10], spacing=1e-4)
+    geo = op.geometry.StickAndBall(network=pn, pores=pn.Ps, throats=pn.Ts)
+    water = op.phases.Water(network=pn, name='h2o')
+    phys_water = op.physics.Standard(network=pn, phase=water, geometry=geo)
+    ip = InvasionPercolation(network=pn, phase=water)
+    ip.set_inlets(pn.pores('left'))
+    ip.run()
