@@ -1,7 +1,8 @@
 import heapq as hq
 import scipy as sp
 import numpy as np
-from numba import jit, njit
+from numba import njit
+from numba.typed import List
 from openpnm.algorithms import GenericAlgorithm
 from openpnm.utils import logging
 logger = logging.getLogger(__name__)
@@ -176,10 +177,11 @@ class InvasionPercolation(GenericAlgorithm):
             logger.warn('queue is empty, this network is fully invaded')
             return
 
-        neighbors = self.network.create_adjacency_matrix(fmt='lil')
+        temp = self.network.create_adjacency_matrix(fmt='lil')
+        neighbors = List()
+        [neighbors.append(row) for row in temp.rows]
         print('running ip with jit')
         t_inv, p_inv = _run(queue=self.queue,
-                            n_steps=100,
                             t_sorted=self['throat.sorted'],
                             t_order=self['throat.order'],
                             t_inv=self['throat.invasion_sequence'],
@@ -384,8 +386,9 @@ class InvasionPercolation(GenericAlgorithm):
         self['throat.invasion_sequence'][self['throat.trapped']] = -1
 
 
-@njit("(int64[:], int64)")
-def _run(queue, n_steps, t_sorted, t_order, t_inv, p_inv, conns, neighbors):
+@njit()
+def _run(queue, t_sorted, t_order, t_inv, p_inv, conns, neighbors):
+    n_steps = 100
     count = 0
     while (len(queue) > 0) and (count < n_steps):
         # Find throat at the top of the queue
@@ -403,9 +406,17 @@ def _run(queue, n_steps, t_sorted, t_order, t_inv, p_inv, conns, neighbors):
         Ps = Ps[p_inv[Ps] < 0]
         if len(Ps) > 0:
             p_inv[Ps] = count
-            Ts = sp.unique(sp.hstack(neighbors.rows[Ps]))
-            Ts = Ts[t_inv[Ts] < 0]  # Remove invaded throats from Ts
-            [hq.heappush(queue, T) for T in t_order[Ts]]
+            Ts = List()
+            for i in Ps:
+                for j in neighbors[i]:
+                    if j not in Ts:
+                        Ts.append(j)
+            temp = List()
+            for i in Ts:
+                if t_inv[i] < 0:
+                    temp.append(Ts[t_inv[i]])
+            for i in temp:
+                hq.heappush(queue, t_order[i])
         count += 1
     return t_inv, p_inv
 
