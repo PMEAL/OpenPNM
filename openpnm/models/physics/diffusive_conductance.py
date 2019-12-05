@@ -209,17 +209,19 @@ def ordinary_diffusion_2D(target,
     return (1/gt/SFt + 1/g1/SF1 + 1/g2/SF2)**(-1)
 
 
-def mixed_diffusion(target,
-                      pore_area='pore.area',
-                      throat_area='throat.area',
-                      pore_diameter='pore.diameter',
-                      throat_diameter='throat.diameter',
-                      pore_diffusivity='pore.diffusivity',
-                      pore_temperature='pore.temperature',
-                      molecular_weight='pore.molecular_weight',
-                      throat_diffusivity='throat.diffusivity',
-                      conduit_lengths='throat.conduit_lengths',
-                      conduit_shape_factors='throat.poisson_shape_factors'):
+def mixed_diffusion(
+        target,
+        pore_area='pore.area',
+        throat_area='throat.area',
+        pore_diameter='pore.diameter',
+        throat_diameter='throat.diameter',
+        pore_diffusivity='pore.diffusivity',
+        pore_temperature='pore.temperature',
+        molecular_weight='pore.molecular_weight',
+        throat_diffusivity='throat.diffusivity',
+        conduit_lengths='throat.conduit_lengths',
+        conduit_shape_factors='throat.poisson_shape_factors'
+):
     r"""
     Calculate the diffusive conductance of conduits in network, where a
     conduit is ( 1/2 pore - full throat - 1/2 pore ), assuming Knudsen
@@ -524,8 +526,9 @@ def multiphase_diffusion(target,
 
     Notes
     -----
-    ``K12`` is the dimensionless Henry's partitioning
-    coefficient and is defined as ``K12 = c(g)/c(aq)``.
+    This method assumes that phase["partition_coef"] contains information on
+    binary phase partitioning. See ``MultiPhase`` class documentation for more
+    information.
 
     """
     network = target.project.network
