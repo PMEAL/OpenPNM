@@ -195,6 +195,7 @@ class MultiPhaseTest:
 
     def test_multiphase_invalid_occupancy(self):
         m = op.phases.MultiPhase(network=self.net, phases=[self.water, self.air])
+        # The next line ideally should throw an Exception, but warning for now
         m.set_occupancy(phase=self.water, Pvals=1.5, Tvals=2.5)
 
 
