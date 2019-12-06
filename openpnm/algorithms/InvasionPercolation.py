@@ -2,10 +2,12 @@ import heapq as hq
 import scipy as sp
 import numpy as np
 from numba import njit
-from numba.typed import List
+from numba.errors import NumbaPendingDeprecationWarning
 from openpnm.algorithms import GenericAlgorithm
 from openpnm.utils import logging
+import warnings
 logger = logging.getLogger(__name__)
+warnings.simplefilter('ignore', category=NumbaPendingDeprecationWarning)
 
 
 class InvasionPercolation(GenericAlgorithm):
