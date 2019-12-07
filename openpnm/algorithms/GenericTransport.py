@@ -196,6 +196,29 @@ class GenericTransport(GenericAlgorithm):
             self.settings['conductance'] = conductance
         self.settings.update(**kwargs)
 
+    def reset(self, bcs=True, results=True, phase=False):
+        r"""
+        Resets the algorithm to enable re-use to avoid instantiating a new one.
+
+        Parameters
+        ----------
+        bcs : boolean
+            If ``True`` (default) all previous boundary conditions are removed.
+        results : boolean
+            If ``True`` (default) all previously calculated values pertaining
+            to results of the algorithm are removed.
+        phase : boolean
+            Removes the specified phase from the settings. The default is
+            ``False``.
+        """
+        if bcs:
+            self['pore.bc_value'] = np.nan
+            self['pore.bc_rate'] = np.nan
+        if results:
+            self.pop(self.settings['quantity'], None)
+        if phase:
+            self.settings['phase'] = None
+
     def set_iterative_props(self, propnames):
         r"""
         """
