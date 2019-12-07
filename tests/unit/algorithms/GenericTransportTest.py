@@ -117,6 +117,27 @@ class GenericTransportTest:
         # Revert back changes to objects
         self.setup_class()
 
+    def test_reset(self):
+        alg = op.algorithms.GenericTransport(network=self.net,
+                                             phase=self.phase)
+        alg.settings['conductance'] = 'throat.diffusive_conductance'
+        alg.settings['quantity'] = 'pore.mole_fraction'
+        alg.set_rate_BC(pores=self.net.pores('bottom'), values=1)
+        alg.set_value_BC(pores=self.net.pores('top'), values=0)
+        alg.run()
+        assert ~sp.all(sp.isnan(alg['pore.bc_value']))
+        assert ~sp.all(sp.isnan(alg['pore.bc_rate']))
+        assert 'pore.mole_fraction' in alg.keys()
+        alg.reset(bcs=True, results=False)
+        assert sp.all(sp.isnan(alg['pore.bc_value']))
+        assert sp.all(sp.isnan(alg['pore.bc_rate']))
+        assert 'pore.mole_fraction' in alg.keys()
+        alg.reset(bcs=True, results=True)
+        assert 'pore.mole_fraction' not in alg.keys()
+        alg.set_rate_BC(pores=self.net.pores('bottom'), values=1)
+        alg.set_value_BC(pores=self.net.pores('top'), values=0)
+        alg.run()
+
     def teardown_class(self):
         ws = op.Workspace()
         ws.clear()
