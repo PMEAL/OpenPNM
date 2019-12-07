@@ -414,8 +414,8 @@ class Project(list):
 
         Parameters
         ----------
-        obj : OpenPNM Object
-            The object to purge
+        obj : OpenPNM Object or list of objects
+            The object(s) to purge
 
         deep : boolean
             A flag that indicates whether to remove associated objects.
@@ -437,6 +437,10 @@ class Project(list):
         a Phase is like removing a column.
 
         """
+        if type(obj) == list:
+            for item in obj:
+                self.purge_object(obj=item, deep=deep)
+            return
         if obj._isa() in ['physics', 'algorithm']:
             self._purge(obj)
         if obj._isa() == 'geometry':
