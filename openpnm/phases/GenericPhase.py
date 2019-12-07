@@ -40,14 +40,14 @@ class GenericPhase(Base, ModelsMixin):
     ``models`` attribute can be printed:
 
     >>> print(phase.models)
-    ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-    #   Property Name             Parameter                 Value
-    ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-    1   pore.molar_density        model:                    ideal_gas
-                                  pressure:                 pore.pressure
-                                  temperature:              pore.temperature
-                                  regeneration mode:        normal
-    ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+    ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+    #   Property Name                       Parameter                 Value
+    ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+    1   pore.molar_density                  model:                    ideal_gas
+                                            pressure:                 pore.pressure
+                                            temperature:              pore.temperature
+                                            regeneration mode:        normal
+    ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 
     And the Phase itself has a nice printout using ``print(phase)``.
 
@@ -86,5 +86,15 @@ class GenericPhase(Base, ModelsMixin):
             return net[element+'._id']
         if prop == self.name:
             return self[element+'.all']
+        # An attempt at automatic interpolation if key not found
+        if key not in self.keys():
+            not_el = list(set(['pore', 'throat']).difference(set([element])))[0]
+            if (not_el + '.' + prop) in self.keys():
+                mod = {'pore': mods.misc.from_neighbor_throats,
+                       'throat': mods.misc.from_neighbor_pores}
+                self.add_model(propname=key,
+                               model=mod[element],
+                               prop=not_el + '.' + prop,
+                               mode='mean')
         vals = super().__getitem__(key)
         return vals

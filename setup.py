@@ -17,8 +17,10 @@ with open(ver_path) as f:
 
 setup(
     name='openpnm',
-    description = 'A framework for conducting pore network modeling simulations of multiphase transport in porous materials',
+    description='A framework for conducting pore network modeling simulations '
+    + 'of multiphase transport in porous materials',
     version=main_['__version__'],
+    zip_safe=False,
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'License :: OSI Approved :: MIT License',
@@ -40,11 +42,13 @@ setup(
         'openpnm.utils',
         'openpnm.io',
         'openpnm.models',
+        'openpnm.models.topology',
         'openpnm.models.misc',
         'openpnm.models.geometry',
         'openpnm.models.phases',
         'openpnm.models.physics',
         'openpnm.algorithms',
+        'openpnm.algorithms.metrics',
         'openpnm.topotools',
         'openpnm.materials',
     ],
@@ -64,7 +68,7 @@ setup(
         'jsonschema',
         'unyt',
         'terminaltables',
-        ],
+    ],
     author='OpenPNM Team',
     author_email='jgostick@uwaterloo.ca',
     download_url='https://github.com/pmeal/OpenPNM/',

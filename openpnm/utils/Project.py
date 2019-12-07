@@ -3,7 +3,8 @@ import h5py
 import numpy as np
 import openpnm
 from copy import deepcopy
-from openpnm.utils import SettingsDict, HealthDict, Workspace
+from openpnm.utils import SettingsDict, HealthDict, Workspace, logging
+logger = logging.getLogger(__name__)
 ws = Workspace()
 
 
@@ -598,6 +599,9 @@ class Project(list):
         if filetype.lower() == 'mat':
             openpnm.io.MAT.save(network=network, phases=phases,
                                 filename=filename)
+        if filetype == 'COMSOL':
+            openpnm.io.COMSOL.save(network=network, phases=phases,
+                                   filename=filename)
 
     def _dump_data(self, mode=['props']):
         r"""
@@ -764,6 +768,9 @@ class Project(list):
             health['undefined_pores'] = np.where(Ptemp == 0)[0].tolist()
             health['overlapping_throats'] = np.where(Ttemp > 1)[0].tolist()
             health['undefined_throats'] = np.where(Ttemp == 0)[0].tolist()
+        else:
+            health['undefined_pores'] = self.network.Ps
+            health['undefined_throats'] = self.network.Ts
         return health
 
     def check_physics_health(self, phase):
@@ -804,6 +811,132 @@ class Project(list):
             health['undefined_pores'] = np.where(Ptemp == 0)[0].tolist()
             health['overlapping_throats'] = np.where(Ttemp > 1)[0].tolist()
             health['undefined_throats'] = np.where(Ttemp == 0)[0].tolist()
+        return health
+
+    def check_data_health(self, obj):
+        r"""
+        Check the health of pore and throat data arrays.
+
+        Parameters
+        ----------
+        obj : OpenPNM object
+            A handle of the object to be checked
+
+        Returns
+        -------
+        health : dict
+            Returns a HealthDict object which a basic dictionary with an added
+            ``health`` attribute that is True is all entries in the dict are
+            deemed healthy (empty lists), or False otherwise.
+
+        """
+        health = HealthDict()
+        for item in obj.props():
+            health[item] = []
+            if obj[item].dtype == 'O':
+                health[item] = 'No checks on object'
+            elif np.sum(np.isnan(obj[item])) > 0:
+                health[item] = 'Has NaNs'
+            elif np.shape(obj[item])[0] != obj._count(item.split('.')[0]):
+                health[item] = 'Wrong Length'
+        return health
+
+    def check_network_health(self):
+        r"""
+        This method check the network topological health by checking for:
+
+            (1) Isolated pores
+            (2) Islands or isolated clusters of pores
+            (3) Duplicate throats
+            (4) Bidirectional throats (ie. symmetrical adjacency matrix)
+            (5) Headless throats
+
+        Returns
+        -------
+        health : dict
+            A dictionary containing the offending pores or throat numbers under
+            each named key.
+
+        Notes
+        -----
+        It also returns a list of which pores and throats should be trimmed
+        from the network to restore health.  This list is a suggestion only,
+        and is based on keeping the largest cluster and trimming the others.
+
+        Notes
+        -----
+        - Does not yet check for duplicate pores
+        - Does not yet suggest which throats to remove
+        - This is just a 'check' and does not 'fix' the problems it finds
+        """
+        import scipy.sparse.csgraph as csg
+        import scipy.sparse as sprs
+
+        health = HealthDict()
+        health['disconnected_clusters'] = []
+        health['isolated_pores'] = []
+        health['trim_pores'] = []
+        health['duplicate_throats'] = []
+        health['bidirectional_throats'] = []
+        health['headless_throats'] = []
+        health['looped_throats'] = []
+
+        net = self.network
+
+        # Check for headless throats
+        hits = np.where(net['throat.conns'] > net.Np - 1)[0]
+        if np.size(hits) > 0:
+            health['headless_throats'] = np.unique(hits)
+            return health
+
+        # Check for throats that loop back onto the same pore
+        P12 = net['throat.conns']
+        hits = np.where(P12[:, 0] == P12[:, 1])[0]
+        if np.size(hits) > 0:
+            health['looped_throats'] = hits
+
+        # Check for individual isolated pores
+        Ps = net.num_neighbors(net.pores())
+        if np.sum(Ps == 0) > 0:
+            health['isolated_pores'] = np.where(Ps == 0)[0]
+
+        # Check for separated clusters of pores
+        temp = []
+        am = net.create_adjacency_matrix(fmt='coo', triu=True)
+        Cs = csg.connected_components(am, directed=False)[1]
+        if np.unique(Cs).size > 1:
+            for i in np.unique(Cs):
+                temp.append(np.where(Cs == i)[0])
+            b = np.array([len(item) for item in temp])
+            c = np.argsort(b)[::-1]
+            for i in range(0, len(c)):
+                health['disconnected_clusters'].append(temp[c[i]])
+                if i > 0:
+                    health['trim_pores'].extend(temp[c[i]])
+
+        # Check for duplicate throats
+        am = net.create_adjacency_matrix(fmt='csr', triu=True).tocoo()
+        hits = np.where(am.data > 1)[0]
+        if len(hits):
+            mergeTs = []
+            hits = np.vstack((am.row[hits], am.col[hits])).T
+            ihits = hits[:, 0] + 1j*hits[:, 1]
+            conns = net['throat.conns']
+            iconns = conns[:, 0] + 1j*conns[:, 1]  # Convert to imaginary
+            for item in ihits:
+                mergeTs.append(np.where(iconns == item)[0])
+            health['duplicate_throats'] = mergeTs
+
+        # Check for bidirectional throats
+        adjmat = net.create_adjacency_matrix(fmt='coo')
+        num_full = adjmat.sum()
+        temp = sprs.triu(adjmat, k=1)
+        num_upper = temp.sum()
+        if num_full > num_upper:
+            biTs = np.where(net['throat.conns'][:, 0] >
+                            net['throat.conns'][:, 1])[0]
+            health['bidirectional_throats'] = biTs.tolist()
+
         return health
 
     def _regenerate_models(self, objs=[], propnames=[]):

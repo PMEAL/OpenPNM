@@ -1,11 +1,10 @@
 r"""
 
 .. autofunction:: openpnm.models.physics.dispersive_conductance.dispersion
-.. autofunction:: openpnm.models.physics.ad_dif_conductance.generic_conductance
 
 """
 
-from .ad_dif_conductance import generic_conductance
+from .ad_dif_conductance import ad_dif
 
 
 def dispersion(target,
@@ -14,7 +13,6 @@ def dispersion(target,
                pore_diffusivity='pore.diffusivity',
                throat_diffusivity='throat.diffusivity',
                conduit_lengths='throat.conduit_lengths',
-               conduit_shape_factors='throat.poisson_shape_factors',
                pore_pressure='pore.pressure',
                throat_hydraulic_conductance='throat.hydraulic_conductance',
                throat_diffusive_conductance='throat.diffusive_conductance',
@@ -45,9 +43,6 @@ def dispersion(target,
     conduit_lengths : string
         Dictionary key of the conduit length values
 
-    conduit_shape_factors : string
-        Dictionary key of the conduit DIFFUSION shape factor values
-
     pore_pressure : string
         Dictionary key of the pore pressure values
 
@@ -76,10 +71,14 @@ def dispersion(target,
 
     (3) This function assumes cylindrical throats with constant cross-section
     area. Corrections for different shapes and variable cross-section area can
-    be imposed by passing the proper flow_shape_factor argument.
+    be imposed by passing the proper conduit_shape_factors argument when
+    computig the diffusive and hydraulic conductances.
+
+    (4) shape_factor depends on the physics of the problem, i.e. diffusion-like
+    processes and fluid flow need different shape factors.
 
     """
-    return generic_conductance(
+    return ad_dif(
         target=target,
         transport_type='dispersion',
         pore_area=pore_area,
@@ -87,7 +86,6 @@ def dispersion(target,
         pore_diffusivity=pore_diffusivity,
         throat_diffusivity=throat_diffusivity,
         conduit_lengths=conduit_lengths,
-        conduit_shape_factors=conduit_shape_factors,
         pore_pressure=pore_pressure,
         throat_hydraulic_conductance=throat_hydraulic_conductance,
         throat_diffusive_conductance=throat_diffusive_conductance,

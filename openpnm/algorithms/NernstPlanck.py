@@ -12,7 +12,8 @@ class NernstPlanck(ReactiveTransport):
     def __init__(self, settings={}, phase=None, ion='', **kwargs):
         def_set = {'phase': None,
                    'quantity': 'pore.concentration.'+ion,
-                   'conductance': 'throat.ad_dif_mig_conductance.'+ion}
+                   'conductance': 'throat.ad_dif_mig_conductance.'+ion,
+                   'ion': ion}
         super().__init__(**kwargs)
         # self.name = electrolyte  # This interfers with component name
         self.settings.update(def_set)
@@ -20,7 +21,7 @@ class NernstPlanck(ReactiveTransport):
         if phase is not None:
             self.setup(phase=phase)
 
-    def setup(self, phase=None, quantity='', conductance='', **kwargs):
+    def setup(self, phase=None, quantity='', conductance='', ion='', **kwargs):
         r"""
         """
         if phase:
@@ -29,4 +30,6 @@ class NernstPlanck(ReactiveTransport):
             self.settings['quantity'] = quantity
         if conductance:
             self.settings['conductance'] = conductance
+        if ion:
+            self.settings['ion'] = ion
         super().setup(**kwargs)

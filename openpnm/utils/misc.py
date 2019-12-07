@@ -102,6 +102,12 @@ class SettingsDict(PrintableDict):
     None
 
     """
+    def __setitem__(self, key, value):
+        if hasattr(value, 'Np'):
+            raise Exception('Cannot store OpenPNM objects in settings, ' +
+                            'store object\'s name instead')
+        super().__setitem__(key, value)
+
     def __missing__(self, key):
         self[key] = None
         return self[key]
@@ -417,6 +423,7 @@ def conduit_lengths(network, throats=None, mode='pore'):
         throats = network.throats()
     Ps = network['throat.conns']
     pdia = network['pore.diameter']
+    Lt = network['throat.length']
 
     if mode == 'centroid':
         try:
@@ -425,28 +432,61 @@ def conduit_lengths(network, throats=None, mode='pore'):
             if _sp.sum(_sp.isnan(pcentroids)) + _sp.sum(_sp.isnan(tcentroids)) > 0:
                 mode = 'pore'
             else:
-                plen1 = _sp.sqrt(_sp.sum(_sp.square(pcentroids[Ps[:, 0]] -
-                                         tcentroids), 1))-network['throat.length']/2
-                plen2 = _sp.sqrt(_sp.sum(_sp.square(pcentroids[Ps[:, 1]] -
-                                         tcentroids), 1))-network['throat.length']/2
+                plen1 = _sp.sqrt(_sp.sum(
+                    _sp.square(pcentroids[Ps[:, 0]] - tcentroids), 1)) - Lt/2
+                plen2 = _sp.sqrt(_sp.sum(
+                    _sp.square(pcentroids[Ps[:, 1]] - tcentroids), 1)) - Lt/2
         except KeyError:
             mode = 'pore'
     if mode == 'pore':
         # Find half-lengths of each pore
         pcoords = network['pore.coords']
         # Find the pore-to-pore distance, minus the throat length
-        lengths = _sp.sqrt(_sp.sum(_sp.square(pcoords[Ps[:, 0]] -
-                                   pcoords[Ps[:, 1]]), 1)) - network['throat.length']
+        lengths = _sp.sqrt(_sp.sum(
+            _sp.square(pcoords[Ps[:, 0]] - pcoords[Ps[:, 1]]), 1)) - Lt
         lengths[lengths < 0.0] = 2e-9
         # Calculate the fraction of that distance from the first pore
         try:
-            fractions = pdia[Ps[:, 0]]/(pdia[Ps[:, 0]] + pdia[Ps[:, 1]])
+            fractions = pdia[Ps[:, 0]] / (pdia[Ps[:, 0]] + pdia[Ps[:, 1]])
             # Don't allow zero lengths
             # fractions[fractions == 0.0] = 0.5
             # fractions[fractions == 1.0] = 0.5
         except:
             fractions = 0.5
-        plen1 = lengths*fractions
-        plen2 = lengths*(1-fractions)
+        plen1 = lengths * fractions
+        plen2 = lengths * (1-fractions)
 
-    return _sp.vstack((plen1, network['throat.length'], plen2)).T[throats]
+    return _sp.vstack((plen1, Lt, plen2)).T[throats]
+
+
+def is_symmetric(a, rtol=1e-10):
+    r"""
+    Is ``a`` a symmetric matrix?
+
+    Parameters
+    ----------
+    a : ndarray, sparse matrix
+        Object to check for being a symmetric matrix.
+
+    rtol : float
+        Relative tolerance with respect to the smallest entry in ``a`` that
+        is used to determine if ``a`` is symmetric.
+
+    Returns
+    -------
+    bool
+        ``True`` if ``a`` is a symmetric matrix, ``False`` otherwise.
+
+    """
+    if type(a) != _sp.ndarray and not _sp.sparse.issparse(a):
+        raise Exception("'a' must be either a sparse matrix or an ndarray.")
+    if a.shape[0] != a.shape[1]:
+        raise Exception("'a' must be a square matrix.")
+
+    atol = _sp.amin(_sp.absolute(a.data)) * rtol
+    if _sp.sparse.issparse(a):
+        issym = False if ((a - a.T) > atol).nnz else True
+    elif type(a) == _sp.ndarray:
+        issym = False if _sp.any((a - a.T) > atol) else True
+
+    return issym
