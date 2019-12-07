@@ -60,6 +60,8 @@ class GenericGeometry(Subdomain, ModelsMixin):
 
     The results of the model can be seen using the ``show_hist`` function:
 
+    >>> import matplotlib as mpl
+    >>> mpl.use('Agg')
     >>> geom.show_hist('pore.size')
 
     .. image:: /../docs/static/images/generic_geometry_histogram.png

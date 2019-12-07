@@ -102,6 +102,12 @@ class SettingsDict(PrintableDict):
     None
 
     """
+    def __setitem__(self, key, value):
+        if hasattr(value, 'Np'):
+            raise Exception('Cannot store OpenPNM objects in settings, ' +
+                            'store object\'s name instead')
+        super().__setitem__(key, value)
+
     def __missing__(self, key):
         self[key] = None
         return self[key]
