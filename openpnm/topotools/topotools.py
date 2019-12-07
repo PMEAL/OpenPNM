@@ -1110,7 +1110,10 @@ def extend(network, pore_coords=[], throat_conns=[], labels=[]):
             N = network._count(element=item.split('.')[0])
             arr = network.pop(item)
             s = arr.shape
-            network[item] = sp.zeros(shape=(N, *s[1:]), dtype=arr.dtype)
+            if arr.dtype == bool:
+                network[item] = sp.zeros(shape=(N, *s[1:]), dtype=bool)
+            else:
+                network[item] = sp.ones(shape=(N, *s[1:]), dtype=float)*sp.nan
             # This is a temporary work-around until I learn to handle 2+ dims
             network[item][:arr.shape[0]] = arr
 
@@ -2120,6 +2123,8 @@ def plot_connections(network, throats=None, fig=None, **kwargs):
     Examples
     --------
     >>> import openpnm as op
+    >>> import matplotlib as mpl
+    >>> mpl.use('Agg')
     >>> pn = op.network.Cubic(shape=[10, 10, 3])
     >>> pn.add_boundary_pores()
     >>> Ts = pn.throats('*boundary', mode='nor')
@@ -2215,6 +2220,8 @@ def plot_coordinates(network, pores=None, fig=None, **kwargs):
     Examples
     --------
     >>> import openpnm as op
+    >>> import matplotlib as mpl
+    >>> mpl.use('Agg')
     >>> pn = op.network.Cubic(shape=[10, 10, 3])
     >>> pn.add_boundary_pores()
     >>> Ps = pn.pores('internal')
