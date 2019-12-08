@@ -55,6 +55,8 @@ class Delaunay(DelaunayVoronoiDual):
     --------
     >>> import openpnm as op
     >>> import scipy as sp
+    >>> import matplotlib as mpl
+    >>> mpl.use('Agg')
 
     Supplying custom specified points:
 

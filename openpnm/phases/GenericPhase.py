@@ -40,14 +40,14 @@ class GenericPhase(Base, ModelsMixin):
     ``models`` attribute can be printed:
 
     >>> print(phase.models)
-    ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-    #   Property Name             Parameter                 Value
-    ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-    1   pore.molar_density        model:                    ideal_gas
-                                  pressure:                 pore.pressure
-                                  temperature:              pore.temperature
-                                  regeneration mode:        normal
-    ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+    ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+    #   Property Name                       Parameter                 Value
+    ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+    1   pore.molar_density                  model:                    ideal_gas
+                                            pressure:                 pore.pressure
+                                            temperature:              pore.temperature
+                                            regeneration mode:        normal
+    ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 
     And the Phase itself has a nice printout using ``print(phase)``.
 

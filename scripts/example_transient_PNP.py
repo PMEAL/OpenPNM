@@ -9,10 +9,10 @@ proj = ws.new_project()
 # network, geometry, phase
 np.random.seed(0)
 
-net = op.network.Cubic(shape=[8, 8, 1], spacing=9e-4)
-prs = (net['pore.back'] * net['pore.right'] + net['pore.back'] *
-       net['pore.left'] + net['pore.front'] * net['pore.right'] +
-       net['pore.front'] * net['pore.left'])
+net = op.network.Cubic(shape=[8, 8, 1], spacing=9e-4, project=proj)
+prs = (net['pore.back'] * net['pore.right'] + net['pore.back']
+       * net['pore.left'] + net['pore.front'] * net['pore.right']
+       + net['pore.front'] * net['pore.left'])
 thrts = net['throat.surface']
 op.topotools.trim(network=net, pores=net.Ps[prs], throats=net.Ts[thrts])
 
@@ -37,8 +37,8 @@ phys.add_model(propname='throat.hydraulic_conductance',
                throat_viscosity='throat.viscosity',
                model=flow, regen_mode='normal')
 
-current = op.models.physics.ionic_conductance.laplace
-phys.add_model(propname='throat.ionic_conductance',
+current = op.models.physics.ionic_conductance.electroneutrality
+phys.add_model(propname='throat.ionic_conductance', ions=[Na.name, Cl.name],
                model=current, regen_mode='normal')
 
 eA_dif = op.models.physics.diffusive_conductance.ordinary_diffusion
@@ -61,21 +61,17 @@ sf.settings['rxn_tolerance'] = 1e-12
 sf.run()
 sw.update(sf.results())
 
-p = op.algorithms.OhmicConduction(network=net, phase=sw)
-p.settings['conductance'] = 'throat.ionic_conductance'
-p.settings['quantity'] = 'pore.potential'
+p = op.algorithms.TransientChargeConservation(network=net, phase=sw)
 p.set_value_BC(pores=net.pores('left'), values=0.01)
 p.set_value_BC(pores=net.pores('right'), values=0.00)
-p.settings['rxn_tolerance'] = 1e-12
-p.run()
-sw.update(p.results())
+p.settings['charge_conservation'] = 'electroneutrality'
 
-eA = op.algorithms.NernstPlanck(network=net, phase=sw, ion=Na.name)
+eA = op.algorithms.TransientNernstPlanck(network=net, phase=sw, ion=Na.name)
 eA.set_value_BC(pores=net.pores('back'), values=100)
 eA.set_value_BC(pores=net.pores('front'), values=90)
 eA.settings['rxn_tolerance'] = 1e-12
 
-eB = op.algorithms.NernstPlanck(network=net, phase=sw, ion=Cl.name)
+eB = op.algorithms.TransientNernstPlanck(network=net, phase=sw, ion=Cl.name)
 eB.set_value_BC(pores=net.pores('back'), values=100)
 eB.set_value_BC(pores=net.pores('front'), values=90)
 eB.settings['rxn_tolerance'] = 1e-12
@@ -91,16 +87,21 @@ phys.add_model(propname='throat.ad_dif_mig_conductance.' + Cl.name,
                model=ad_dif_mig_Cl, ion=Cl.name,
                s_scheme='exponential')
 
-pnp = op.algorithms.ChargeConservationNernstPlanck(network=net, phase=sw)
-pnp.setup(potential_field=p, ions=[eA, eB])
-pnp.settings['max_iter'] = 10
-pnp.settings['tolerance'] = 1e-04
-pnp.settings['charge_conservation'] = 'laplace'
-# Electroneutrality condition does not work with new Mixtures
-# pnp.settings['charge_conservation'] = 'electroneutrality'
+pnp = op.algorithms.TransientIonicTransport(network=net, phase=sw)
+pnp.setup(potential_field=p.name, ions=[eA.name, eB.name])
+pnp.settings['i_max_iter'] = 10
+pnp.settings['i_tolerance'] = 1e-04
+pnp.settings['t_output'] = 100
+pnp.settings['t_step'] = 100
+pnp.settings['t_final'] = 3000
+# pnp.settings['t_scheme'] = 'steady'
+
 pnp.run()
 
 sw.update(sf.results())
 sw.update(p.results())
 sw.update(eA.results())
 sw.update(eB.results())
+
+# output results to a vtk file
+# proj.export_data(phases=[sw], filename='OUT', filetype='xdmf')

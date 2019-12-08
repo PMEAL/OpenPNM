@@ -16,8 +16,10 @@ geo = op.geometry.StickAndBall(network=net,
 
 # phase
 phase = op.phases.Water(network=net)
-phase['pore.consistency'] = 0.00089319
-phase['pore.flow_index'] = 2
+phase['pore.consistency'] = 4.2e-2  # Pa.s^n
+phase['pore.flow_index'] = 0.52
+phase['pore.viscosity_min'] = 0.001
+phase['pore.viscosity_max'] = 100
 
 # physics
 phys = op.physics.GenericPhysics(network=net,
@@ -54,6 +56,7 @@ P_sf = phase['pore.pressure_sf']
 P = phase['pore.pressure']
 Qt_sf = np.abs(gh_sf*np.diff(P_sf[cn], axis=1).squeeze())
 Qt = np.abs(gh*np.diff(P[cn], axis=1).squeeze())
+Q = Qt/Qt_sf
 
 # output results to a vtk file
-# proj.export_data(phases=[phase], filename='OUT', filetype='VTK')
+# proj.export_data(phases=[phase], filename='OUT', filetype='XDMF')

@@ -95,9 +95,9 @@ class ModelsDict(PrintableDict):
         return fig
 
     def __str__(self):
-        horizontal_rule = '―' * 78
+        horizontal_rule = '―' * 85
         lines = [horizontal_rule]
-        strg = '{0:<3s} {1:<25s} {2:<25s} {3}'
+        strg = '{0:<3s} {1:<35s} {2:<25s} {3}'
         lines.append(strg.format('#', 'Property Name', 'Parameter', 'Value'))
         lines.append(horizontal_rule)
         for i, item in enumerate(self.keys()):
@@ -196,13 +196,13 @@ class ModelsMixin():
     attribute:
 
     >>> print(temp.models)
-    ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-    #   Property Name             Parameter                 Value
-    ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-    1   pore.test                 model:                    constant
-                                  value:                    2
-                                  regeneration mode:        normal
-    ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+    ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+    #   Property Name                       Parameter                 Value
+    ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+    1   pore.test                           model:                    constant
+                                            value:                    2
+                                            regeneration mode:        normal
+    ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 
     """
 
