@@ -8,3 +8,4 @@ pytest-pep8
 pytest-notebook
 testfixtures
 jupyter
+porespy
