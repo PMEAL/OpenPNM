@@ -5,7 +5,7 @@ import openpnm as op
 
 rootdir = os.path.split(os.path.split(op.__file__)[0])[0]
 examples_dir = os.path.join(rootdir, 'examples')
-test_dir = os.path.join(examples_dir, 'io_and_visualization')
+test_dir = os.path.join(examples_dir, 'extractions')
 
 
 class ExtractionsTest():
