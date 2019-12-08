@@ -9,7 +9,8 @@ rootdir = os.path.split(os.path.split(op.__file__)[0])[0]
 examples_dir = os.path.join(rootdir, r'examples')
 test_dir = os.path.join(examples_dir, 'extractions')
 
-skip = ["Working With Extracted Networks.ipynb"]
+skip = ["Working With Extracted Networks.ipynb",
+        "Managing Geometrical Properties of Imported Networks.ipynb"]
 skip = []
 
 for item in os.listdir(test_dir):
