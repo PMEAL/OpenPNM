@@ -10,6 +10,7 @@ examples_dir = os.path.join(rootdir, r'examples')
 test_dir = os.path.join(examples_dir, 'extractions')
 
 skip = ["Working With Extracted Networks.ipynb"]
+skip = []
 
 for item in os.listdir(test_dir):
     if item.endswith('ipynb'):
