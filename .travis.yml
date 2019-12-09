@@ -9,6 +9,7 @@ language: python
 
 python:
   - "3.6"
+  - "3.7"
 
 cache: pip
 
@@ -29,7 +30,7 @@ install:
   - python setup.py install
 
 script:
-  - python ./bin/test pep8 cov
+  - python ./bin/test pep8 cov --ignore=tests/integration/examples
 
 # after_success:
 #   - codecov
