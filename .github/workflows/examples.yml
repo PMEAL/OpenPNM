@@ -35,4 +35,4 @@ jobs:
         pip install -e .
 
     - name: Running tests
-      run: pytest tests/integration/examples --nb-test-files
+      run: pytest tests/integration/examples
