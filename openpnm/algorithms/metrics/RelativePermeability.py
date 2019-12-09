@@ -332,7 +332,7 @@ class RelativePermeability(GenericAlgorithm):
 
     def plot_Kr_curves(self):
         f = plt.figure()
-        sp = f.add_subplot(111)
+        sp = f.subplots(1,1)
         for inp in self.settings['flow_inlets']:
             if self.settings['wp'] is not None:
                 sp.plot(self.Kr_values['sat'][inp],
