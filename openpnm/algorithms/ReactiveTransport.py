@@ -120,6 +120,15 @@ class ReactiveTransport(GenericTransport):
             self.settings['relaxation_quantity'] = relaxation_quantity
         super().setup(**kwargs)
 
+    def reset(self, source_terms=True, **kwargs):
+        r"""
+        """
+        super().reset(**kwargs)
+        if source_terms:
+            for item in self.settings['sources']:
+                self.pop(item)
+            self.settings.pop('sources', None)
+
     def set_source(self, propname, pores):
         r"""
         Applies a given source term to the specified pores

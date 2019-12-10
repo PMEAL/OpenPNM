@@ -1,11 +1,10 @@
-import uuid
 import scipy as sp
 import scipy.sparse as sprs
 import scipy.spatial as sptl
-import scipy.sparse.csgraph as csg
+# import scipy.sparse.csgraph as csg
 from openpnm.core import Base, ModelsMixin
 from openpnm import topotools
-from openpnm.utils import HealthDict, Workspace, logging
+from openpnm.utils import Workspace, logging
 import openpnm.models.topology as tm
 logger = logging.getLogger(__name__)
 ws = Workspace()
@@ -139,8 +138,8 @@ class GenericNetwork(Base, ModelsMixin):
                 logger.error('Wrong size for throat conns!')
             else:
                 if sp.any(value[:, 0] > value[:, 1]):
-                    logger.warning('Converting throat.conns to be upper ' +
-                                   'triangular')
+                    logger.warning('Converting throat.conns to be upper '
+                                   + 'triangular')
                     value = sp.sort(value, axis=1)
         super().__setitem__(key, value)
 
@@ -609,8 +608,10 @@ class GenericNetwork(Base, ModelsMixin):
         >>> print(Ps)
         [ 0  1  2  5  6 25 26]
         >>> Ps = pn.find_neighbor_pores(pores=[0, 2], flatten=False)
-        >>> print(Ps)
-        [array([ 1,  5, 25]), array([ 1,  3,  7, 27])]
+        >>> print(Ps[0])
+        [ 1  5 25]
+        >>> print(Ps[1])
+        [ 1  3  7 27]
         >>> Ps = pn.find_neighbor_pores(pores=[0, 2], mode='xnor')
         >>> print(Ps)
         [1]
@@ -687,8 +688,10 @@ class GenericNetwork(Base, ModelsMixin):
         >>> print(Ts)
         [  0   1 100 101 200 201]
         >>> Ts = pn.find_neighbor_throats(pores=[0, 1], flatten=False)
-        >>> print(Ts)
-        [array([  0, 100, 200]), array([  0,   1, 101, 201])]
+        >>> print(Ts[0])
+        [  0 100 200]
+        >>> print(Ts[1])
+        [  0   1 101 201]
 
         """
         pores = self._parse_indices(pores)
@@ -827,8 +830,10 @@ class GenericNetwork(Base, ModelsMixin):
         >>> import openpnm as op
         >>> pn = op.network.Cubic(shape=[3, 3, 3])
         >>> Ps = pn.find_nearby_pores(pores=[0, 1], r=1)
-        >>> print(Ps)
-        [array([3, 9]), array([ 2,  4, 10])]
+        >>> print(Ps[0])
+        [3 9]
+        >>> print(Ps[1])
+        [ 2  4 10]
         >>> Ps = pn.find_nearby_pores(pores=[0, 1], r=0.5)
         >>> print(Ps)
         [array([], dtype=int64), array([], dtype=int64)]

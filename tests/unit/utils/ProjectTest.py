@@ -169,6 +169,23 @@ class ProjectTest:
             proj.purge_object(net)
         self.ws.close_project(proj)
 
+    def test_purge_list(self):
+        proj = self.ws.copy_project(self.net.project)
+        phase1 = proj.phases()['phase_01']
+        phase2 = proj.phases()['phase_02']
+        phys11 = proj.physics()['phys_01']
+        phys12 = proj.physics()['phys_02']
+        phys21 = proj.physics()['phys_03']
+        phys22 = proj.physics()['phys_04']
+        proj.purge_object([phase1, phys11, phys12], deep=False)
+        assert phase1 not in proj
+        assert phase2 in proj
+        assert phys11 not in proj
+        assert phys12 not in proj
+        assert phys21 in proj
+        assert phys22 in proj
+        self.ws.close_project(proj)
+
     def test_append_second_network(self):
         proj = self.ws.copy_project(self.net.project)
         net = proj.network
