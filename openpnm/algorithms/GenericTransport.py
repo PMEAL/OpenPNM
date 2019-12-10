@@ -362,7 +362,15 @@ class GenericTransport(GenericAlgorithm):
         # Store boundary values
         if ('pore.bc_' + bctype not in self.keys()) or (mode == 'overwrite'):
             self['pore.bc_' + bctype] = np.nan
-        self['pore.bc_' + bctype][pores] = values
+        if bctype == 'value':
+            self['pore.bc_' + bctype][pores] = values
+        if bctype == 'rate':
+            # Preserve already-assigned rate BCs
+            bc_rate_current = self.Ps[rate_BC_mask]
+            intersect = np.intersect1d(bc_rate_current, pores)
+            self['pore.bc_' + bctype][intersect] += values
+            # Assign rate BCs to those without previously assigned values
+            self['pore.bc_' + bctype][np.setdiff1d(pores, intersect)] = values
 
     def remove_BC(self, pores=None, bctype='all'):
         r"""
@@ -694,12 +702,16 @@ class GenericTransport(GenericAlgorithm):
 
         P12 = network['throat.conns']
         X12 = quantity[P12]
-        f = (-1)**np.argsort(X12, axis=1)[:, 1]
-        Dx = np.abs(np.diff(X12, axis=1).squeeze())
-        Qt = -f*g*Dx
+        if g.size == self.Nt:
+            g = np.tile(g, (2, 1)).T    # Make conductance a Nt by 2 matrix
+        # The next line is critical for rates to be correct
+        g = np.flip(g, axis=1)
+        Qt = np.diff(g*X12, axis=1).squeeze()
 
         if len(throats) and len(pores):
             raise Exception('Must specify either pores or throats, not both')
+        if len(throats) == 0 and len(pores) == 0:
+            raise Exception('Must specify either pores or throats')
         elif len(throats):
             R = np.absolute(Qt[throats])
             if mode == 'group':
