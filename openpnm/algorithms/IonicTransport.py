@@ -9,7 +9,7 @@ class IonicTransport(ReactiveTransport):
     """
     def __init__(self, settings={}, phase=None, **kwargs):
         def_set = {'phase': None,
-                   'potential_field': None,
+                   'potential_field': '',
                    'ions': [],
                    'i_tolerance': 1e-4,
                    'i_max_iter': 10}
@@ -19,8 +19,8 @@ class IonicTransport(ReactiveTransport):
         if phase is not None:
             self.setup(phase=phase)
 
-    def setup(self, phase=None, potential_field=None, ions=[],
-              i_tolerance=None, i_max_iter=None, **kwargs):
+    def setup(self, phase=None, potential_field='', ions=[], i_tolerance=None,
+              i_max_iter=None, **kwargs):
         r"""
         """
         if phase:
@@ -42,8 +42,9 @@ class IonicTransport(ReactiveTransport):
         print('Running IonicTransport')
         # Phase, potential and ions algorithms
         phase = self.project.phases()[self.settings['phase']]
-        p_alg = self.settings['potential_field']
-        e_alg = self.settings['ions']
+        p_alg = self.project.algorithms()[self.settings['potential_field']]
+        e_alg = [self.project.algorithms()[self.settings['ions'][i]] for i in
+                 range(len(self.settings['ions']))]
         algs = e_alg.copy()
         algs.insert(0, p_alg)
         # Define initial conditions (if not defined by the user)
@@ -79,6 +80,16 @@ class IonicTransport(ReactiveTransport):
             print('Gummel iter: '+str(itr+1)+', residuals: '+i_r)
             i_convergence = max(i for i in i_res.values()) < i_tol
             if not i_convergence:
+                # Ions
+                for e in e_alg:
+                    i_old[e.name] = (e[e.settings['quantity']].copy())
+                    e._run_reactive(x=i_old[e.name])
+                    i_new[e.name] = (e[e.settings['quantity']].copy())
+                    # Residual
+                    i_res[e.name] = np.sum(np.absolute(
+                        i_old[e.name]**2-i_new[e.name]**2))
+                    phase.update(e.results())
+
                 # Poisson eq
                 phys[0].regenerate_models()
                 i_old[p_alg.name] = p_alg[p_alg.settings['quantity']].copy()
@@ -90,16 +101,6 @@ class IonicTransport(ReactiveTransport):
                 # Update phase and physics
                 phase.update(p_alg.results())
                 phys[0].regenerate_models()
-
-                # Ions
-                for e in e_alg:
-                    i_old[e.name] = (e[e.settings['quantity']].copy())
-                    e._run_reactive(x=i_old[e.name])
-                    i_new[e.name] = (e[e.settings['quantity']].copy())
-                    # Residual
-                    i_res[e.name] = np.sum(np.absolute(
-                        i_old[e.name]**2-i_new[e.name]**2))
-                    phase.update(e.results())
 
             if i_convergence:
                 print('Solution converged')

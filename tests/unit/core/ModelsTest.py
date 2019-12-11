@@ -20,10 +20,10 @@ class ModelsTest:
     def test_models_dict_print(self):
         net = op.network.Cubic(shape=[3, 3, 3])
         geo = op.geometry.StickAndBall(network=net, pores=net.Ps,
-                                       throats=net.Ts)
+                                        throats=net.Ts)
         s = geo.models.__str__().split('\n')
-        assert len(s) == 68
-        assert s.count('―'*78) == 15
+        assert len(s) == 69
+        assert s.count('―'*85) == 15
 
     def test_regenerate_models(self):
         a = len(self.geo.props())
@@ -39,26 +39,30 @@ class ModelsTest:
         prj = self.net.project
         prj.purge_object(self.geo)
         geom = op.geometry.GenericGeometry(network=self.net,
-                                           pores=self.net.Ps)
+                                            pores=self.net.Ps)
 
         geom.add_model(propname='pore.volume',
                        model=mods.geometry.pore_volume.sphere,
-                       pore_diameter='pore.diameter')
+                       pore_diameter='pore.diameter',
+                       regen_mode='deferred')
 
         geom.add_model(propname='pore.diameter',
                        model=mods.misc.product,
                        prop1='pore.max_size',
-                       prop2='pore.seed')
+                       prop2='pore.seed',
+                       regen_mode='deferred')
 
         geom.add_model(propname='pore.area',
                        model=mods.geometry.pore_area.sphere,
-                       pore_diameter='pore.diameter')
+                       pore_diameter='pore.diameter',
+                       regen_mode='deferred')
 
         geom.add_model(propname='pore.seed',
                        model=mods.misc.random,
                        element='pore',
                        num_range=[0, 0.1],
                        seed=None)
+
         tree = np.asarray(geom.models.dependency_list())
         pos_v = np.argwhere(tree == 'pore.volume').flatten()[0]
         pos_d = np.argwhere(tree == 'pore.diameter').flatten()[0]
@@ -134,16 +138,20 @@ class ModelsTest:
         len_phase = 23
         phase.clear(mode='model_data')
         phys.clear()
+        ws = op.Workspace()
+        loglevel = ws.settings["loglevel"]
+        ws.settings["loglevel"] = 50
         assert len(phys) == 2
-        assert len(phase) == 13
+        assert len(phase) == 14
         phys.regenerate_models(propnames=None, deep=False)
         assert len(phys) == 10
         # Note that 2 new models were added to the phase during interpolation
         assert len(phase) < len_phase
         phase.clear(mode='model_data')
-        assert len(phase) == 13
+        assert len(phase) == 14
         phys.regenerate_models(propnames=None, deep=True)
         assert len(phase) < len_phase
+        ws.settings["loglevel"] = loglevel
 
     def test_regenerate_models_on_network_with_deep(self):
         pn = op.network.Cubic(shape=[5, 5, 5])
@@ -162,7 +170,7 @@ class ModelsTest:
     def test_regen_mode_default_value(self):
         pn = op.network.Cubic(shape=[3, 3, 3], spacing=1e-4)
         geo = op.geometry.StickAndBall(network=pn, pores=pn.Ps, throats=pn.Ts,
-                                       settings={'regen_mode': 'deferred'})
+                                        settings={'regen_mode': 'deferred'})
         assert len(geo.props()) == 0
         geo.regenerate_models()
         assert len(geo.props()) == 16

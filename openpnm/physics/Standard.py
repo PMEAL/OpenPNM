@@ -53,7 +53,9 @@ class Standard(GenericPhysics):
         self.add_model(propname='throat.poisson_shape_factors',
                        model=mods.poisson_shape_factors.ball_and_stick)
         self.add_model(propname='throat.diffusive_conductance',
-                       model=mods.diffusive_conductance.ordinary_diffusion)
+                       model=mods.diffusive_conductance.mixed_diffusion)
+        self.add_model(propname='throat.ad_dif_conductance',
+                       model=mods.ad_dif_conductance.ad_dif)
         self.add_model(propname='throat.entry_pressure',
                        model=mods.capillary_pressure.washburn)
         self.add_model(propname='throat.thermal_conductance',

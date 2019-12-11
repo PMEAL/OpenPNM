@@ -27,6 +27,7 @@ air.add_model(propname='pore.molar_density',
 phys = op.physics.GenericPhysics(network=pn, phase=air, geometry=geo)
 phys.add_model(propname='throat.diffusive_conductance',
                pore_diffusivity='pore.diffusivity.pure_O2',
+               throat_diffusivity='throat.diffusivity.pure_O2',
                model=op.models.physics.diffusive_conductance.ordinary_diffusion)
 phys.add_model(propname='throat.hydraulic_conductance',
                pore_diffusivity='pore.viscosity',
