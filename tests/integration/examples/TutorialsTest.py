@@ -55,6 +55,16 @@ class TutorialTest():
         rc = self._notebook_run(nbook)
         assert rc
 
+    def test_tutorial_1D_heat_equation(self):
+        nbook = os.path.join(test_dir, '1D Heat Transfer.ipynb')
+        rc = self._notebook_run(nbook)
+        assert rc
+
+    # def test_tutorial_1D_heat_equation_w_source(self):
+    #     nbook = os.path.join(test_dir, '1D Heat Transfer with Source Term.ipynb')
+    #     rc = self._notebook_run(nbook)
+    #     assert rc
+
     def test_tutorial_workspaces_and_projects(self):
         nbook = os.path.join(test_dir, 'Using Workspace and Projects.ipynb')
         rc = self._notebook_run(nbook)
