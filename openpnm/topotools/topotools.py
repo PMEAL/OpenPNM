@@ -2281,7 +2281,7 @@ def _scale_3d_axes(ax, X, Y, Z):
 
 
 def plot_networkx(network, plot_throats=True, labels=None, colors=None,
-                  scale=10):
+                  scale=1, ax=None):
     r'''
     Returns a pretty 2d plot for 2d OpenPNM networks.
 
@@ -2302,15 +2302,22 @@ def plot_networkx(network, plot_throats=True, labels=None, colors=None,
         Scale factor for size of pores.
     '''
     from networkx import Graph, draw_networkx_nodes, draw_networkx_edges
+    from matplotlib.collections import PathCollection
+
+    dims = dimensionality(network)
+    if dims.sum() > 2:
+        raise Exception("NetworkX plotting only works for 2D networks.")
     x, y, z = network['pore.coords'].T
     x, y = [j for j in [x, y, z] if not sp.allclose(j, j.mean())]
 
     G = Graph()
     pos = {network.Ps[i]: [x[i], y[i]] for i in range(network.Np)}
-    if 'pore.diameter' in network.keys():
+    manual_sizing = False
+    try:
         node_size = scale * network['pore.diameter']
-    else:
-        node_size = scale
+        manual_sizing = True
+    except KeyError:
+        node_size = scale * 300     # 300 is default node size in networkx
     node_color = sp.array(['r'] * len(network.Ps))
 
     if labels:
@@ -2328,7 +2335,28 @@ def plot_networkx(network, plot_throats=True, labels=None, colors=None,
                         node_size=node_size)
     if plot_throats:
         draw_networkx_edges(G, pos=pos, edge_color='k', alpha=0.8,
-                            edgelist=network['throat.conns'].tolist())
+                            edgelist=network['throat.conns'].tolist(), ax=ax)
+
+    ax = ax if ax else plt.gca()
+    ax.set_aspect('equal', adjustable='box')
+    Lx, Ly = sp.ptp(x), sp.ptp(y)
+    maxlen = max(Lx, Ly)
+    margin = 1 - maxlen / (maxlen + sp.amax(node_size))
+    ax.margins(margin)
+    ax.axis("off")
+
+    if manual_sizing:
+        spi = 1250  # 2950 was obtained by trial and error
+        asymmetric_scale_factor = min(Lx, Ly) / max(Lx, Ly)
+        figwidth = ax.get_figure().get_figwidth()
+        xrange = sp.ptp(ax.get_xlim())
+        markersize = sp.atleast_1d(figwidth**2 / xrange**2 * node_size**2 * spi)
+        markersize *= asymmetric_scale_factor**2
+        collections = ax.collections
+        for item in collections:
+            if type(item) == PathCollection:
+                item.set_sizes(markersize)
+
     return G
 
 
