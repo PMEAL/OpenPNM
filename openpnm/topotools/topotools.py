@@ -2281,7 +2281,7 @@ def _scale_3d_axes(ax, X, Y, Z):
 
 
 def plot_networkx(network, plot_throats=True, labels=None, colors=None,
-                  scale=1, ax=None):
+                  scale=1, ax=None, alpha=1.0):
     r'''
     Returns a pretty 2d plot for 2d OpenPNM networks.
 
@@ -2318,7 +2318,7 @@ def plot_networkx(network, plot_throats=True, labels=None, colors=None,
         manual_sizing = True
     except KeyError:
         node_size = scale * 300     # 300 is default node size in networkx
-    node_color = sp.array(['r'] * len(network.Ps))
+    node_color = sp.array(['k'] * len(network.Ps))
 
     if labels:
         if type(labels) is not list:
@@ -2330,28 +2330,30 @@ def plot_networkx(network, plot_throats=True, labels=None, colors=None,
         for label, color in zip(labels, colors):
             node_color[network.pores(label)] = color
 
-    draw_networkx_nodes(G, pos=pos, nodelist=network.Ps.tolist(),
-                        node_color=node_color, edge_color='r',
-                        node_size=node_size)
-    if plot_throats:
-        draw_networkx_edges(G, pos=pos, edge_color='k', alpha=0.8,
-                            edgelist=network['throat.conns'].tolist(), ax=ax)
-
-    ax = ax if ax else plt.gca()
+    if ax is None:
+        fig, ax = plt.subplots()
     ax.set_aspect('equal', adjustable='box')
-    Lx, Ly = sp.ptp(x), sp.ptp(y)
-    maxlen = max(Lx, Ly)
-    margin = 1 - maxlen / (maxlen + sp.amax(node_size))
-    ax.margins(margin)
+    ax.set_xlim((x.min() - node_size.max(), x.max() + node_size.max()))
+    ax.set_ylim((y.min() - node_size.max(), y.max() + node_size.max()))
     ax.axis("off")
 
+    # Plot pores
+    draw_networkx_nodes(G, ax=ax, pos=pos, nodelist=network.Ps.tolist(),
+                        alpha=alpha, node_color="w", edgecolors=node_color,
+                        node_size=node_size)
+    # (Optionally) Plot throats
+    if plot_throats:
+        draw_networkx_edges(G, pos=pos, edge_color='k', alpha=alpha,
+                            edgelist=network['throat.conns'].tolist(), ax=ax)
+
     if manual_sizing:
-        spi = 1250  # 2950 was obtained by trial and error
-        asymmetric_scale_factor = min(Lx, Ly) / max(Lx, Ly)
-        figwidth = ax.get_figure().get_figwidth()
+        spi = 2700  # 1250 was obtained by trial and error
+        figwidth, figheight = ax.get_figure().get_size_inches()
+        figsize_ratio = figheight / figwidth
+        data_ratio = ax.get_data_ratio()
+        corr = min(figsize_ratio / data_ratio, 1)
         xrange = sp.ptp(ax.get_xlim())
-        markersize = sp.atleast_1d(figwidth**2 / xrange**2 * node_size**2 * spi)
-        markersize *= asymmetric_scale_factor**2
+        markersize = sp.atleast_1d((corr*figwidth)**2 / xrange**2 * node_size**2 * spi)
         collections = ax.collections
         for item in collections:
             if type(item) == PathCollection:
