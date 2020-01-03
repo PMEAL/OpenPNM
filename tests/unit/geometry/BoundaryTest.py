@@ -55,12 +55,17 @@ class BoundaryTest:
         geo.regenerate_models()
         boun.regenerate_models()
         air = op.phases.Air(network=pn)
+        odiff = op.models.physics.diffusive_conductance.ordinary_diffusion
         phys_air_geo = op.physics.Standard(network=pn,
                                            phase=air,
                                            geometry=geo)
+        phys_air_geo.add_model(propname="throat.diffusive_conductance",
+                               model=odiff)
         phys_air_boun = op.physics.Standard(network=pn,
                                             phase=air,
                                             geometry=boun)
+        phys_air_boun.add_model(propname="throat.diffusive_conductance",
+                                model=odiff)
         phys_air_boun.regenerate_models()
         phys_air_geo.regenerate_models()
         checks = phys_air_geo.check_data_health().values()

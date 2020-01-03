@@ -8,10 +8,6 @@ import scipy as _sp
 
 
 def ad_dif_mig(target,
-               pore_area='pore.area',
-               throat_area='throat.area',
-               pore_diffusivity='pore.diffusivity',
-               throat_diffusivity='throat.diffusivity',
                conduit_lengths='throat.conduit_lengths',
                conduit_shape_factors='throat.poisson_shape_factors',
                pore_pressure='pore.pressure',
@@ -35,18 +31,6 @@ def ad_dif_mig(target,
         length of the calculated array, and also provides access to other
         necessary properties.
 
-    pore_area : string
-        Dictionary key of the pore area values
-
-    throat_area : string
-        Dictionary key of the throat area values
-
-    pore_diffusivity : string
-        Dictionary key of the pore diffusivity values
-
-    throat_diffusivity : string
-        Dictionary key of the throat diffusivity values
-
     conduit_lengths : string
         Dictionary key of the conduit length values
 
@@ -59,26 +43,26 @@ def ad_dif_mig(target,
     pore_potential : string
         Dictionary key of the pore potential values
 
-   throat_hydraulic_conductance : string
-       Dictionary key of the throat hydraulic conductance values
+    throat_hydraulic_conductance : string
+        Dictionary key of the throat hydraulic conductance values
 
-   throat_diffusive_conductance : string
-       Dictionary key of the throat diffusive conductance values
+    throat_diffusive_conductance : string
+        Dictionary key of the throat diffusive conductance values
 
-   throat_valence : string
-       Dictionary key of the throat ionic species valence values
+    throat_valence : string
+        Dictionary key of the throat ionic species valence values
 
-   pore_temperature : string
-       Dictionary key of the pore temperature values
+    pore_temperature : string
+        Dictionary key of the pore temperature values
 
-   throat_temperature : string
-       Dictionary key of the throat temperature values
+    throat_temperature : string
+        Dictionary key of the throat temperature values
 
-   ion : string
-       Name of the ionic species
+    ion : string
+        Name of the ionic species
 
-   s_scheme : string
-       Name of the space discretization scheme to use
+    s_scheme : string
+        Name of the space discretization scheme to use
 
     Returns
     -------
@@ -103,8 +87,6 @@ def ad_dif_mig(target,
 
     """
     # Add ion suffix to properties
-    pore_diffusivity = pore_diffusivity + '.' + ion
-    throat_diffusivity = throat_diffusivity + '.' + ion
     throat_diffusive_conductance = throat_diffusive_conductance + '.' + ion
     throat_valence = throat_valence + '.' + ion
 
@@ -112,10 +94,6 @@ def ad_dif_mig(target,
     throats = network.map_throats(throats=target.Ts, origin=target)
     phase = target.project.find_phase(target)
     cn = network['throat.conns'][throats]
-    # Getting equivalent areas
-    A1 = network[pore_area][cn[:, 0]]
-    At = network[throat_area][throats]
-    A2 = network[pore_area][cn[:, 1]]
     # Getting conduit lengths
     L1 = network[conduit_lengths + '.pore1'][throats]
     Lt = network[conduit_lengths + '.throat'][throats]
@@ -133,11 +111,6 @@ def ad_dif_mig(target,
         SF2 = phase[conduit_shape_factors+'.pore2'][throats]
     except KeyError:
         SF1 = SF2 = SFt = 1.0
-    # Interpolate pore phase property values to throats
-    try:
-        Dt = phase[throat_diffusivity][throats]
-    except KeyError:
-        Dt = phase.interpolate_data(propname=pore_diffusivity)[throats]
 
     # Interpolate pore phase property values to throats
     try:
@@ -153,25 +126,19 @@ def ad_dif_mig(target,
         V = phase[pore_potential]
     except KeyError:
         V = _sp.zeros(shape=[phase.Np, ], dtype=float)
-    gh = phase[throat_hydraulic_conductance]
-    gd = phase[throat_diffusive_conductance]
-    gd = _sp.tile(gd, 2)
     z = phase[throat_valence]
-    D = Dt
     F = 96485.3329
     R = 8.3145
+    gh = phase[throat_hydraulic_conductance]
+    gd = phase[throat_diffusive_conductance]
+    gm = (z*F*gd)/(R*T)
+    gd = _sp.tile(gd, 2)
 
     # Advection
     Qij = -gh*_sp.diff(P[cn], axis=1).squeeze()
     Qij = _sp.append(Qij, -Qij)
 
     # Migration
-    gm1, gm2, gmt = _sp.zeros((3, len(Lt)))
-    gm1[~m1] = gm2[~m2] = gmt[~mt] = _sp.inf
-    gm1[m1] = ((z*F*D*A1)/(R*T))[m1] / L1[m1]
-    gm2[m2] = ((z*F*D*A2)/(R*T))[m2] / L2[m2]
-    gmt[mt] = ((z*F*D*At)/(R*T))[mt] / Lt[mt]
-    gm = (1/gm1 + 1/gm2 + 1/gmt)**(-1)
     delta_V = _sp.diff(V[cn], axis=1).squeeze()
     mig = gm * delta_V
     mig = _sp.append(mig, -mig)
@@ -179,10 +146,23 @@ def ad_dif_mig(target,
     # Advection-migration
     adv_mig = Qij-mig
 
-    # Peclet number (includes advection and migration)
-    Peij_adv_mig = adv_mig/gd
+    # Peclet numbers
+    Peij_adv_mig = adv_mig/gd  # includes advection and migration
+    Peij_adv = Qij/gd  # includes advection only
+    Peij_mig = mig/gd  # includes migration only
+    # Filter values
     Peij_adv_mig[(Peij_adv_mig < 1e-10) & (Peij_adv_mig >= 0)] = 1e-10
     Peij_adv_mig[(Peij_adv_mig > -1e-10) & (Peij_adv_mig <= 0)] = -1e-10
+    Peij_adv[(Peij_adv < 1e-10) & (Peij_adv >= 0)] = 1e-10
+    Peij_adv[(Peij_adv > -1e-10) & (Peij_adv <= 0)] = -1e-10
+    Peij_mig[(Peij_mig < 1e-10) & (Peij_mig >= 0)] = 1e-10
+    Peij_mig[(Peij_mig > -1e-10) & (Peij_mig <= 0)] = -1e-10
+
+    # Export Peclet values (half only since Peij_adv_mig = -Peji_adv_mig)
+    phase['throat.peclet.'+'ad_mig.'+ion] = _sp.absolute(
+        Peij_adv_mig[0:len(Lt)])
+    phase['throat.peclet.'+'ad.'+ion] = _sp.absolute(Peij_adv[0:len(Lt)])
+    phase['throat.peclet.'+'mig.'+ion] = _sp.absolute(Peij_mig[0:len(Lt)])
 
     # Corrected advection-migration
     adv_mig = Peij_adv_mig*gd
@@ -194,6 +174,9 @@ def ad_dif_mig(target,
     elif s_scheme == 'powerlaw':
         w = (gd * _sp.maximum(0, (1 - 0.1*_sp.absolute(Peij_adv_mig))**5) +
              _sp.maximum(0, -adv_mig))
+    elif s_scheme == 'powerlaw_upwind':
+        w = (gd * _sp.maximum(0, (1 - 0.1*_sp.absolute(Peij_adv))**5) +
+             _sp.maximum(0, -Qij)) + _sp.maximum(0, mig)
     elif s_scheme == 'exponential':
         w = -adv_mig / (1 - _sp.exp(Peij_adv_mig))
     else:

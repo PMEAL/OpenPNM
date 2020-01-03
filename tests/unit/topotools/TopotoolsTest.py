@@ -294,6 +294,14 @@ class TopotoolsTest:
         coords = [[0, 0, 0], [0, 1, 2], [0, 2, 1], [0, 3, 3], [1, 1, 2]]
         assert ~topotools.iscoplanar(coords)
 
+    def test_extend(self):
+        pn = op.network.Cubic(shape=[2, 2, 1])
+        pn['pore.test'] = 1.0
+        op.topotools.add_boundary_pores(network=pn, pores=pn.pores('left'),
+                                        move_to=[0, None, None],
+                                        apply_label='left')
+        assert np.any(np.isnan(pn['pore.test']))
+
 
 if __name__ == '__main__':
 

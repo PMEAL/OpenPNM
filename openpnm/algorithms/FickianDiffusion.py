@@ -1,5 +1,6 @@
 from openpnm.algorithms import ReactiveTransport
 from openpnm.utils import logging
+import numpy as np
 logger = logging.getLogger(__name__)
 
 

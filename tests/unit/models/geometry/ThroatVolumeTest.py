@@ -18,6 +18,22 @@ class ThroatVolumeTest:
         self.geo['throat.length'] = 1.0
         self.geo['throat.area'] = 0.03
 
+    def test_lens_and_pendular_ring(self):
+        net = op.network.Cubic(shape=[2, 1, 1])
+        net['pore.diameter'] = 0.5
+        net['throat.diameter'] = 0.25
+        mod = op.models.geometry.throat_volume.lens
+        net.add_model(propname='throat.lens_volume',
+                      model=mod)
+        Vlens = net['throat.lens_volume']
+        assert np.isclose(Vlens, 2*0.006733852203712552)
+        mod = op.models.geometry.throat_volume.pendular_ring
+        net.add_model(propname='throat.ring_volume',
+                      model=mod)
+        Vcyl = 2*(0.01315292522620208)
+        Vring = net['throat.ring_volume']
+        assert np.isclose(Vcyl - Vring, 2*0.006733852203712552)
+
     def test_cylinder(self):
         self.geo.add_model(propname='throat.volume',
                            model=mods.cylinder,

@@ -10,10 +10,14 @@ class DiffusiveConductanceTest:
         self.geo = op.geometry.GenericGeometry(network=self.net,
                                                pores=self.net.Ps,
                                                throats=self.net.Ts)
+        self.geo['pore.diameter'] = 1
+        self.geo['throat.diameter'] = 0.5
         self.geo['pore.area'] = 1
         self.geo['throat.area'] = 1
         self.phase = op.phases.GenericPhase(network=self.net)
         self.phase['pore.diffusivity'] = 1
+        self.phase['pore.molecular_weight'] = 0.029
+        self.phase['pore.temperature'] = 345
         self.phys = op.physics.GenericPhysics(network=self.net,
                                               phase=self.phase,
                                               geometry=self.geo)
@@ -39,6 +43,17 @@ class DiffusiveConductanceTest:
         self.phys.regenerate_models()
         actual = self.phys['throat.o_diffusive_conductance'].mean()
         assert_approx_equal(actual, desired=2.5)
+
+    def test_mixed_diffusion(self):
+        self.geo['throat.conduit_lengths.pore1'] = 0.15
+        self.geo['throat.conduit_lengths.throat'] = 0.6
+        self.geo['throat.conduit_lengths.pore2'] = 0.25
+        mod = op.models.physics.diffusive_conductance.mixed_diffusion
+        self.phys.add_model(propname='throat.m_diffusive_conductance',
+                            model=mod)
+        self.phys.regenerate_models()
+        actual = self.phys['throat.m_diffusive_conductance'].mean()
+        assert_approx_equal(actual, desired=0.9905265161584661)
 
     def test_taylor_aris_diffusion(self):
         self.geo['throat.conduit_lengths.pore1'] = 0.15

@@ -60,6 +60,7 @@ class XDMF(GenericIO):
             for key in D.keys():
                 if '@' in key:
                     t_steps.append(key.split('@')[1])
+        t_steps = list(set(t_steps))
         t_grid = create_grid(Name="TimeSeries", GridType="Collection",
                              CollectionType="Temporal")
         # If steady-state, define '0' time step
