@@ -40,23 +40,23 @@ class TutorialTest():
             os.remove(os.path.join(dirname, "temp_output.ipynb"))
         return rc
 
-    def test_invasion_percolation(self):
-        nbook = os.path.join(test_dir, 'Invasion_Percolation.ipynb')
+    def test_ordinary_percolation(self):
+        nbook = os.path.join(test_dir, 'Part_A_Ordinary_Percolation.ipynb')
         rc = self._notebook_run(nbook)
         assert rc
 
-    def test_ordinary_percolation(self):
-        nbook = os.path.join(test_dir, 'Ordinary_Percolation.ipynb')
+    def test_invasion_percolation(self):
+        nbook = os.path.join(test_dir, 'Part_B_Invasion_Percolation.ipynb')
         rc = self._notebook_run(nbook)
         assert rc
 
     def test_mixed_percolation(self):
-        nbook = os.path.join(test_dir, 'Mixed_Invasion_Percolation.ipynb')
+        nbook = os.path.join(test_dir, 'Part_C_Mixed_Invasion_Percolation.ipynb')
         rc = self._notebook_run(nbook)
         assert rc
 
     def test_meniscus_model_comparison(self):
-        nbook = os.path.join(test_dir, 'Meniscus_Model_Comparison.ipynb')
+        nbook = os.path.join(test_dir, 'Part_D_Meniscus_Model_Comparison.ipynb')
         rc = self._notebook_run(nbook)
         assert rc
 
