@@ -396,12 +396,11 @@ class InvasionPercolation(GenericAlgorithm):
         self['pore.invasion_sequence'][self['pore.trapped']] = -1
         self['throat.invasion_sequence'][self['throat.trapped']] = -1
 
-
-    def get_intrusion_data(self, fig=None):
+    def get_intrusion_data(self):
         r"""
         Get the percolation data as the invader volume or number fraction vs
         the capillary capillary pressure.
-    
+
         """
         if 'pore.invasion_pressure' not in self.props():
             logger.error('Algorithm must be run first')
@@ -432,33 +431,27 @@ class InvasionPercolation(GenericAlgorithm):
         sat = np.cumsum(data.vol)
         pc_curve = namedtuple('pc_curve', ('Pcap', 'S_tot'))
         data = pc_curve(data.Pc, sat)
-#        if fig is None:
-#            fig, ax = plt.subplots()
-#        else:
-#            ax = fig.gca()
-#        ax.semilogx(data.Pc, sat,)
-#        plt.ylabel('Invading Phase Saturation')
-#        plt.xlabel('Capillary Pressure')
-#        plt.grid(True)
         return data
-
 
     def plot_intrusion_curve(self, fig=None):
         r"""
         Plot the percolation curve as the invader volume or number fraction vs
         the capillary capillary pressure.
-    
+
         """
         data = self.get_intrusion_data()
-        if fig is None:
-            fig, ax = plt.subplots()
+        if data is not None:
+            if fig is None:
+                fig, ax = plt.subplots()
+            else:
+                ax = fig.gca()
+            ax.semilogx(data.Pcap, data.S_tot,)
+            plt.ylabel('Invading Phase Saturation')
+            plt.xlabel('Capillary Pressure')
+            plt.grid(True)
+            return fig
         else:
-            ax = fig.gca()
-        ax.semilogx(data.Pcap, data.S_tot,)
-        plt.ylabel('Invading Phase Saturation')
-        plt.xlabel('Capillary Pressure')
-        plt.grid(True)
-        return fig
+            return None
 
 
 @njit
