@@ -136,11 +136,11 @@ class MeniscusTest:
                        num_points=1000)
         a = np.around(phys['throat.no_target_pressure.radius'], 10)
         b = np.around(phys['throat.small_target_pressure.radius'], 10)
-        assert np.allclose(a, b)        
+        assert np.allclose(a, b)
         h = phys.check_data_health()
         for check in h.values():
             if len(check) > 0:
-                assert 1 == 2     
+                assert 1 == 2
 
 if __name__ == '__main__':
 
