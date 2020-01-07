@@ -189,7 +189,8 @@ def general_toroidal(target,
     elif profile_equation == 'sinusoidal':
         y = (sym_cos((sym_pi/2)*(x/a)))*b
     else:
-        logger.error('Profile equation is not valid')
+        logger.error('Profile equation is not valid, default to elliptical')
+        y = sym_sqrt(1 - (x/a)**2)*b
     # Throat radius profile
     r = rt + (b-y)
     # Derivative of profile
@@ -251,9 +252,13 @@ def general_toroidal(target,
         Pc_touch = Pc(x_touch, fa, fb, throatRad, contact, surface_tension)
         return Pc_touch
     elif target_Pc is None:
-        logger.exception(msg='Please supply a target capillary pressure' +
-                         ' when mode is "men"')
+        logger.error(msg='Please supply a target capillary pressure' +
+                         ' when mode is "men", default to 1.0e-6')
+        target_Pc = 1.0e-6
     if np.abs(target_Pc) < 1.0e-6:
+        logger.error(msg='Please supply a target capillary pressure' +
+                         ' with absolute value greater than 1.0e-6,' +
+                         ' default to 1.0e-6')
         target_Pc = 1.0e-6
     # Find the position in-between the minima and maxima corresponding to
     # the target pressure
