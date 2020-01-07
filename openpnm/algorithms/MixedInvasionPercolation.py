@@ -162,6 +162,8 @@ class MixedInvasionPercolation(GenericAlgorithm):
         # Basically a quick way of getting to all the elements in the queues
         self._interface_Ts = np.zeros(self.Nt, dtype=bool)
         self._interface_Ps = np.zeros(self.Np, dtype=bool)
+        if hasattr(self, 'invasion_running'):
+            del self.invasion_running
 
     def set_inlets(self, pores=None, clusters=None):
         r"""
