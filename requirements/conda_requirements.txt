@@ -3,7 +3,6 @@ scipy
 matplotlib
 scikit-image
 pandas
-sympy==1.5.1
 numba
 networkx
 h5py

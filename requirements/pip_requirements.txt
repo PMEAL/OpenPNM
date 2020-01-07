@@ -12,3 +12,4 @@ unyt
 gitpython
 flatdict
 transforms3d
+sympy
