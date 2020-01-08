@@ -9,12 +9,11 @@ import heapq as hq
 import scipy as sp
 import numpy as np
 from openpnm.algorithms import GenericAlgorithm
-from openpnm.topotools import site_percolation, bond_percolation
-import time
+from openpnm.topotools import find_clusters, site_percolation
 from collections import namedtuple
 import logging
 import matplotlib.pyplot as plt
-from scipy.sparse import coo_matrix
+
 logger = logging.getLogger(__name__)
 
 
@@ -68,8 +67,7 @@ class MixedInvasionPercolation(GenericAlgorithm):
               snap_off='',
               invade_isolated_Ts=False,
               late_pore_filling='',
-              late_throat_filling='',
-              cooperative_pore_filling=''):
+              late_throat_filling=''):
         r"""
         Used to specify necessary arguments to the simulation.  This method is
         useful for resetting the algorithm or applying more explicit control.
@@ -106,9 +104,6 @@ class MixedInvasionPercolation(GenericAlgorithm):
             The name of the model used to determine late throat filling as
             a function of applied pressure.
 
-        cooperative_pore_filling : string
-            The name of the model used to determine the meniscus properties
-            required for assessing cooperative pore filling.
         """
         if phase:
             self.settings['phase'] = phase.name
@@ -134,9 +129,6 @@ class MixedInvasionPercolation(GenericAlgorithm):
             self.settings['late_pore_filling'] = late_pore_filling
         if late_throat_filling:
             self.settings['late_throat_filling'] = late_throat_filling
-        if cooperative_pore_filling:
-            self.settings['cooperative_pore_filling'] = \
-                cooperative_pore_filling
         self.reset()
 
     def reset(self):
@@ -170,6 +162,8 @@ class MixedInvasionPercolation(GenericAlgorithm):
         # Basically a quick way of getting to all the elements in the queues
         self._interface_Ts = np.zeros(self.Nt, dtype=bool)
         self._interface_Ps = np.zeros(self.Np, dtype=bool)
+        if hasattr(self, 'invasion_running'):
+            del self.invasion_running
 
     def set_inlets(self, pores=None, clusters=None):
         r"""
@@ -194,6 +188,11 @@ class MixedInvasionPercolation(GenericAlgorithm):
             logger.error("Either 'inlets' or 'clusters' must be passed to" +
                          " setup method")
         self.queue = []
+        if (self.settings['cooperative_pore_filling'] and
+           hasattr(self, 'tt_Pc')):
+            check_coop = True
+        else:
+            check_coop = False
         for i, cluster in enumerate(clusters):
             self.queue.append([])
             # Perform initial analysis on input pores
@@ -203,8 +202,12 @@ class MixedInvasionPercolation(GenericAlgorithm):
             if np.size(cluster) > 1:
                 for elem_id in cluster:
                     self._add_ts2q(elem_id, self.queue[i])
+                    if check_coop:
+                        self._check_coop(elem_id, self.queue[i])
             elif np.size(cluster) == 1:
                 self._add_ts2q(cluster, self.queue[i])
+                if check_coop:
+                    self._check_coop(elem_id, self.queue[i])
             else:
                 logger.warning("Some inlet clusters have no pores")
         if self.settings['snap_off']:
@@ -619,7 +622,7 @@ class MixedInvasionPercolation(GenericAlgorithm):
             # Set occupancy
             invaded_ps = self['pore.invasion_sequence'] > -1
             # Put defending phase into clusters
-            clusters = net.find_clusters2(~invaded_ps)
+            clusters = find_clusters(network=net, pmask=~invaded_ps)
             # Identify clusters that are connected to an outlet and set to -2
             # -1 is the invaded fluid
             # -2 is the defender fluid able to escape
@@ -849,276 +852,8 @@ class MixedInvasionPercolation(GenericAlgorithm):
             self['throat.invasion_sequence'][isolated_Ts] = mSeq[isolated_Ts]
             self['throat.cluster'][isolated_Ts] = mClu[isolated_Ts]
 
-    def _max_pressure(self):
-        phase = self.project.find_phase(self)
-        if self.settings['throat_entry_pressure']:
-            max_tPc = np.max(phase[self.settings['throat_entry_pressure']])
-        else:
-            max_tPc = 0.0
-        if self.settings['pore_entry_pressure']:
-            max_pPc = np.max(phase[self.settings['pore_entry_pressure']])
-        else:
-            max_pPc = 0.0
-        return np.max([max_tPc, max_pPc])
-
-    def _my_dot(self, a, b):
-        return a[:, 0]*b[:, 0] + a[:, 1]*b[:, 1] + a[:, 2]*b[:, 2]
-
-    def trilaterate_v(self, P1, P2, P3, r1, r2, r3):
+    def _check_coop(self):
         r'''
-        Find whether 3 spheres intersect
+        Not implemented in this class
         '''
-        temp1 = P2-P1
-        e_x = temp1/np.linalg.norm(temp1, axis=1)[:, np.newaxis]
-        temp2 = P3-P1
-        i = self._my_dot(e_x, temp2)[:, np.newaxis]
-        temp3 = temp2 - i*e_x
-        e_y = temp3/np.linalg.norm(temp3, axis=1)[:, np.newaxis]
-        d = np.linalg.norm(P2-P1, axis=1)[:, np.newaxis]
-        j = self._my_dot(e_y, temp2)[:, np.newaxis]
-        x = (r1*r1 - r2*r2 + d*d) / (2*d)
-        y = (r1*r1 - r3*r3 - 2*i*x + (i*i) + (j*j)) / (2*j)
-        temp4 = r1*r1 - x*x - y*y
-        return temp4 >= 0
-
-    def _get_throat_pairs(self):
-        r'''
-        Generate an array of pores with all connected throats and pairs of
-        throats that connect to the same pore
-        '''
-        network = self.project.network
-        # Collect all throat pairs sharing a pore as list of lists
-        neighbor_Ts = network.find_neighbor_throats(pores=network.pores(),
-                                                    flatten=False)
-        # Pores associated to throat
-        Ps = []
-        # Throats connected to each pore
-        Ts = []
-        # Pairs of throats sharing a pore
-        T1 = []
-        T2 = []
-        start = 0
-        # Build lookup pair index arrays for each coordination number up to the
-        # Maximum coordination max_c
-        max_c = sp.amax(network.num_neighbors(pores=network.Ps, flatten=False))
-        pair_T1 = []
-        pair_T2 = []
-        logger.info('Building throat pair matrices')
-        for num_t in range(max_c+1):
-            temp1 = []
-            temp2 = []
-            for t1 in range(num_t)[:-1]:
-                for t2 in range(num_t)[t1+1:]:
-                    temp1.append(t1)
-                    temp2.append(t2)
-            pair_T1.append(np.asarray(temp1))
-            pair_T2.append(np.asarray(temp2))
-        for p, nTs in enumerate(neighbor_Ts):
-            num_t = len(nTs)
-            for i in range(num_t):
-                Ps.append(p)
-                Ts.append(nTs[i])
-            # Pair indices into Ts
-            tempt1 = pair_T1[num_t] + start
-            tempt2 = pair_T2[num_t] + start
-            for i in range(len(tempt1)):
-                T1.append(tempt1[i])
-                T2.append(tempt2[i])
-            start += num_t
-        # Nt * 2 long
-        Ps = np.asarray(Ps)
-        Ts = np.asarray(Ts)
-        # indices into the above arrays based on throat pairs
-        T1 = np.asarray(T1)
-        T2 = np.asarray(T2)
-
-        return Ps, Ts, T1, T2
-
-    def _apply_cen_to_throats(self, p_cen, t_cen, t_norm, men_cen):
-        r'''
-        Take the pore center and throat center and work out which way
-        the throat normal is pointing relative to the vector between centers.
-        Offset the meniscus center along the throat vector in the correct
-        direction
-        '''
-        v = p_cen - t_cen
-        sign = np.sign(np.sum(v*t_norm, axis=1))
-        c3 = np.vstack((men_cen*sign,
-                        men_cen*sign,
-                        men_cen*sign)).T
-        coords = t_cen + c3*t_norm
-        return coords
-
-    def setup_coop_filling(self, inv_points=None):
-        r"""
-        Evaluate the cooperative pore filling condition that the combined
-        filling angle in next neighbor throats cannot exceed the geometric
-        angle between their throat planes.
-        This is used when the invading fluid has access to multiple throats
-        connected to a pore
-
-        Parameters
-        ----------
-        inv_points : array_like
-            The invasion pressures at which to assess coopertive pore filling.
-        """
-        net = self.project.network
-        phase = self.project.find_phase(self)
-        all_phys = self.project.find_physics(phase=phase)
-        if inv_points is None:
-            inv_points = np.arange(0, 1.01, .01)*self._max_pressure()
-
-        start = time.time()
-        cpf = self.settings['cooperative_pore_filling']
-        tfill_angle = cpf + '.alpha'
-        tmen_rad = cpf + '.radius'
-        tmen_cen = cpf + '.center'
-        try:
-            # The following properties will all be there for Voronoi
-            p_centroids = net['pore.centroid']
-            t_centroids = net['throat.centroid']
-            p_rad = net['pore.indiameter']/2
-            t_norms = net['throat.normal']
-        except KeyError:
-            # Chances are this isn't Voronoi so calculate or replace all
-            p_centroids = net['pore.coords']
-            temp = net['pore.coords'][net['throat.conns']]
-            t_centroids = np.mean(temp, axis=1)
-            p_rad = net['pore.diameter']/2
-            t_norms = net['throat.normal']
-
-        Ps, Ts, T1, T2 = self._get_throat_pairs()
-        # Network indices for the pairs
-        pps = Ps[T1]
-        pt1 = Ts[T1]
-        pt2 = Ts[T2]
-        # Arrays to get upper and lower triangular for reference to later
-        # When checking for phase presence one throat at a time - need to
-        # Check all throat pairs
-        T_all_t1 = Ts[np.concatenate((T1, T2))]
-        T_all_t2 = Ts[np.concatenate((T2, T1))]
-        # Throat-Throat cooperative filling pressure
-        data = np.ones(len(T_all_t1), dtype=float)
-        data.fill(np.nan)
-        # coo format useful for building matrix
-        coo = coo_matrix((data, (T_all_t1, T_all_t2)),
-                         shape=(len(T_all_t1), len(T_all_t2)))
-        # csr useful for indexing into entire matrix when populating with
-        # actual coop filling values
-        self.tt_Pc = coo.tocsr()
-        # Pair pore center and radius
-        pp_cen = p_centroids[pps]
-        pp_rad = p_rad[pps]
-        # Make sure throat normals are unit vector
-        unit = np.linalg.norm(t_norms, axis=1)
-        t_norms /= np.vstack((unit, unit, unit)).T
-
-        for Pc in inv_points:
-            # regenerate model with new target Pc
-            for phys in all_phys:
-                phys.models[cpf]['target_Pc'] = Pc
-                phys.regenerate_models(propnames=cpf)
-            men_cen_dist = phase[tmen_cen]
-            # Work out meniscii coord for each direction along the throat
-            men_cen_coord = self._apply_cen_to_throats(p_centroids[Ps],
-                                                       t_centroids[Ts],
-                                                       t_norms[Ts],
-                                                       men_cen_dist[Ts])
-            # Pair centers
-            pc1 = men_cen_coord[T1]
-            pc2 = men_cen_coord[T2]
-            # Center to center vector between neighboring meniscii
-            c2c = (pc1-pc2)
-            dist = np.linalg.norm(c2c, axis=1)
-            # Pair meniscii radii
-            pr1 = phase[tmen_rad][pt1]
-            pr2 = phase[tmen_rad][pt2]
-            # nans may exist if pressure is outside the range
-            # set these to zero to be ignored by next step without
-            # causing RuntimeWarning
-            pr1[sp.isnan(pr1)] = 0
-            pr2[sp.isnan(pr2)] = 0
-            # Negative mensicii radii means positive pressure
-            # Assume meniscii only interact when bulging into pore
-            check_neg = np.logical_and(pr1 < 0, pr2 < 0)
-            # simple initial distance check on sphere rads
-            check_rads = (np.abs(pr1+pr2)) >= dist
-            # check whether the filling angle is ok at this Pc
-            check_alpha_T1 = ~sp.isnan(phase[tfill_angle][pt1])
-            check_alpha_T2 = ~sp.isnan(phase[tfill_angle][pt2])
-            check_alpha = check_alpha_T1*check_alpha_T2
-            # check whether this throat pair already has a coop value
-            check_nans = np.asarray(sp.isnan(self.tt_Pc[pt1, pt2]).tolist()[0])
-            mask = check_neg*check_alpha*check_nans*check_rads
-            # if all checks pass
-            if np.any(mask):
-                # Check if intersecting circle lies within pore
-                inter = self.trilaterate_v(P1=pc1[mask],
-                                           P2=pc2[mask],
-                                           P3=pp_cen[mask],
-                                           r1=pr1[mask][:, np.newaxis],
-                                           r2=pr2[mask][:, np.newaxis],
-                                           r3=pp_rad[mask][:, np.newaxis])
-                inter = inter.flatten()
-                if np.any(inter):
-                    self.tt_Pc[pt1[mask][inter], pt2[mask][inter]] = Pc
-                    self.tt_Pc[pt2[mask][inter], pt1[mask][inter]] = Pc
-            # Save meniscii data for each throat into each connecting pore
-            men_data = {}
-            men_data['Ps'] = Ps
-            men_data['Ts'] = Ts
-            men_data['cen'] = men_cen_coord
-            men_data['rad'] = phase[tmen_rad][Ts]
-
-        # Change to lil for single throat lookups
-        self.tt_Pc = self.tt_Pc.tolil()
-        logger.info("Coop filling finished in " +
-                    str(np.around(time.time()-start, 2)) + " s")
-
-    def _check_coop(self, pore, queue):
-        r"""
-        Method run in loop after every pore invasion. All connecting throats
-        are now given access to the invading phase. Two throats with access to
-        the invading phase can cooperatively fill any pores that they are both
-        connected to, common pores.
-        The invasion of theses throats connected to the common pore is handled
-        elsewhere.
-        """
-        net = self.project.network
-        t_inv = 'throat.invasion_sequence'
-        p_inv = 'pore.invasion_sequence'
-        for throat in net.find_neighbor_throats(pores=pore):
-            # A pore has just been invaded, all it's throats now have
-            # An interface residing inside them
-            if self[t_inv][throat] == -1:
-                # If the throat is not the invading throat that gave access
-                # to this pore, get the pores that this throat connects with
-                a = set(net['throat.conns'][throat])
-                # Get a list of pre-calculated coop filling pressures for all
-                # Throats this throat can coop fill with
-                ts_Pc = self.tt_Pc.data[throat]
-                # Network indices of throats that can act as filling pairs
-                ts = self.tt_Pc.rows[throat]
-                # If there are any potential coop filling throats
-                if np.any(~np.isnan(ts_Pc)):
-                    ts_Pc = np.asarray(ts_Pc)
-                    ts = np.asarray(ts)
-                    ts = ts[~np.isnan(ts_Pc)]
-                    ts_Pc = ts_Pc[~np.isnan(ts_Pc)]
-                    # For each throat find the common pore and the uncommon
-                    # pores
-                    for i, t in enumerate(ts):
-                        # Find common pore (cP) and uncommon pores (uPs)
-                        b = set(net['throat.conns'][t])
-                        cP = list(a.intersection(b))
-                        uPs = list(a.symmetric_difference(b))
-                        # If the common pore is not invaded but the others are
-                        # The potential coop filling event can now happen
-                        # Add the coop pressure to the queue
-                        if ((np.all(self[p_inv][uPs] > -1)) and
-                           (self[p_inv][cP] == -1)):
-                            # Coop pore filling fills the common pore
-                            # The throats that gave access are not invaded now
-                            # However, isolated throats between invaded pores
-                            # Are taken care of elsewhere...
-                            hq.heappush(queue, [ts_Pc[i], list(cP), 'pore'])
+        pass

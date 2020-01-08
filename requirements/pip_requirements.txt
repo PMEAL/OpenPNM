@@ -3,7 +3,6 @@ scipy
 matplotlib
 scikit-image
 pandas
-sympy
 numba
 networkx
 h5py
@@ -13,3 +12,4 @@ unyt
 gitpython
 flatdict
 transforms3d
+sympy

@@ -1,5 +1,6 @@
 import openpnm as op
 import scipy as sp
+import numpy as np
 from numpy.testing import assert_approx_equal
 
 
@@ -85,7 +86,7 @@ class CapillaryPressureTest:
                             pore_diameter='pore.touch')
         diff = (self.phys['throat.bidirectional'][:, 0] -
                 self.phys['throat.bidirectional'][:, 1])
-        assert sp.any(diff != 0)
+        assert np.any(diff != 0)
 
     def test_sinusoidal_bidirectional(self):
         f = op.models.physics.capillary_pressure.sinusoidal_bidirectional
@@ -99,12 +100,12 @@ class CapillaryPressureTest:
                             pore_diameter='pore.touch')
         diff = (self.phys['throat.bidirectional'][:, 0] -
                 self.phys['throat.bidirectional'][:, 1])
-        assert sp.any(diff != 0)
+        assert np.any(diff != 0)
 
     def test_ransohoff_snapoff_verts(self):
         ws = op.Workspace()
         ws.clear()
-        bp = sp.array([[0.25, 0.25, 0.25], [0.25, 0.75, 0.25],
+        bp = np.array([[0.25, 0.25, 0.25], [0.25, 0.75, 0.25],
                        [0.75, 0.25, 0.25], [0.75, 0.75, 0.25],
                        [0.25, 0.25, 0.75], [0.25, 0.75, 0.75],
                        [0.75, 0.25, 0.75], [0.75, 0.75, 0.75]])
@@ -147,9 +148,8 @@ class CapillaryPressureTest:
                         wavelength=fiber_rad,
                         require_pair=True)
         ts = ~net['throat.interconnect']
-        assert ~sp.any(sp.isnan(water['throat.snap_off'][ts]))
-        assert sp.any(sp.isnan(water['throat.snap_off_pair'][ts]))
-        assert sp.any(~sp.isnan(water['throat.snap_off_pair'][ts]))
+        assert ~np.any(np.isnan(water['throat.snap_off'][ts]))
+        assert np.any(~np.isnan(water['throat.snap_off_pair'][ts]))
 
 
 if __name__ == '__main__':

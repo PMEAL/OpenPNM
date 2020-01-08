@@ -1,10 +1,13 @@
 import heapq as hq
 import scipy as sp
 import numpy as np
+import matplotlib.pyplot as plt
 from numba import njit
 from numba.errors import NumbaPendingDeprecationWarning
 from openpnm.algorithms import GenericAlgorithm
+from openpnm.topotools import find_clusters
 from openpnm.utils import logging
+from collections import namedtuple
 import warnings
 logger = logging.getLogger(__name__)
 warnings.simplefilter('ignore', category=NumbaPendingDeprecationWarning)
@@ -181,12 +184,13 @@ class InvasionPercolation(GenericAlgorithm):
 
         # Create incidence matrix to get neighbor throats later in _run method
         incidence_matrix = self.network.create_incidence_matrix(fmt='csr')
-        t_inv, p_inv = _run_accelerated(
+        t_inv, p_inv, p_inv_t = _run_accelerated(
             queue=self.queue,
             t_sorted=self['throat.sorted'],
             t_order=self['throat.order'],
             t_inv=self['throat.invasion_sequence'],
             p_inv=self['pore.invasion_sequence'],
+            p_inv_t=np.zeros_like(self['pore.invasion_sequence']),
             conns=self.project.network['throat.conns'],
             idx=incidence_matrix.indices,
             indptr=incidence_matrix.indptr,
@@ -195,6 +199,9 @@ class InvasionPercolation(GenericAlgorithm):
 
         self['throat.invasion_sequence'] = t_inv
         self['pore.invasion_sequence'] = p_inv
+        self['throat.invasion_pressure'] = self['throat.entry_pressure']
+        self['pore.invasion_pressure'] = self['throat.entry_pressure'][p_inv_t]
+        self['pore.invasion_pressure'][self['pore.invasion_sequence']==0] = 0.0
 
     def results(self, Snwp=None):
         r"""
@@ -306,7 +313,7 @@ class InvasionPercolation(GenericAlgorithm):
         invaded_ps = self['pore.invasion_sequence'] > -1
         if ~np.all(invaded_ps):
             # Put defending phase into clusters
-            clusters = net.find_clusters2(~invaded_ps)
+            clusters = find_clusters(network=net, mask=~invaded_ps)
             # Identify clusters that are connected to an outlet and set to -2
             # -1 is the invaded fluid
             # -2 is the defender fluid able to escape
@@ -389,9 +396,67 @@ class InvasionPercolation(GenericAlgorithm):
         self['pore.invasion_sequence'][self['pore.trapped']] = -1
         self['throat.invasion_sequence'][self['throat.trapped']] = -1
 
+    def get_intrusion_data(self):
+        r"""
+        Get the percolation data as the invader volume or number fraction vs
+        the capillary capillary pressure.
+
+        """
+        if 'pore.invasion_pressure' not in self.props():
+            logger.error('Algorithm must be run first')
+            return None
+        net = self.project.network
+        pvols = net[self.settings['pore_volume']]
+        tvols = net[self.settings['throat_volume']]
+        tot_vol = np.sum(pvols) + np.sum(tvols)
+        # Normalize
+        pvols /= tot_vol
+        tvols /= tot_vol
+        # Remove trapped volume
+        pvols[self['pore.invasion_sequence'] == -1] = 0.0
+        tvols[self['throat.invasion_sequence'] == -1] = 0.0
+        pseq = self['pore.invasion_sequence']
+        tseq = self['throat.invasion_sequence']
+        tPc = self['throat.invasion_pressure']
+        pPc = self['pore.invasion_pressure']
+        # Change the entry pressure for trapped pores and throats to be 0
+        pPc[self['pore.invasion_sequence'] == -1] = 0.0
+        tPc[self['throat.invasion_sequence'] == -1] = 0.0
+        vols = np.concatenate((pvols, tvols))
+        seqs = np.concatenate((pseq, tseq))
+        Pcs = np.concatenate((pPc, tPc))
+        data = np.rec.fromarrays([seqs, vols, Pcs], formats=['i', 'f', 'f'],
+                                 names=['seq', 'vol', 'Pc'])
+        data.sort(axis=0, order='seq')
+        sat = np.cumsum(data.vol)
+        pc_curve = namedtuple('pc_curve', ('Pcap', 'S_tot'))
+        data = pc_curve(data.Pc, sat)
+        return data
+
+    def plot_intrusion_curve(self, fig=None):
+        r"""
+        Plot the percolation curve as the invader volume or number fraction vs
+        the capillary capillary pressure.
+
+        """
+        data = self.get_intrusion_data()
+        if data is not None:
+            if fig is None:
+                fig, ax = plt.subplots()
+            else:
+                ax = fig.gca()
+            ax.semilogx(data.Pcap, data.S_tot,)
+            plt.ylabel('Invading Phase Saturation')
+            plt.xlabel('Capillary Pressure')
+            plt.grid(True)
+            return fig
+        else:
+            return None
+
 
 @njit
-def _run_accelerated(queue, t_sorted, t_order, t_inv, p_inv, conns, idx, indptr, n_steps):
+def _run_accelerated(queue, t_sorted, t_order, t_inv, p_inv, p_inv_t,
+                     conns, idx, indptr, n_steps):
     r"""
     Numba-jitted run method for InvasionPercolation class.
 
@@ -405,6 +470,7 @@ def _run_accelerated(queue, t_sorted, t_order, t_inv, p_inv, conns, idx, indptr,
 
     """
     count = 0
+#    p_inv_t = np.zeros(len(p_inv), dtype=int)
     while (len(queue) > 0) and (count < n_steps):
         # Find throat at the top of the queue
         t = hq.heappop(queue)
@@ -421,13 +487,14 @@ def _run_accelerated(queue, t_sorted, t_order, t_inv, p_inv, conns, idx, indptr,
         Ps = Ps[p_inv[Ps] < 0]
         if len(Ps) > 0:
             p_inv[Ps] = count
+            p_inv_t[Ps] = t_next
             for i in Ps:
                 Ts = idx[indptr[i]:indptr[i+1]]
                 Ts = Ts[t_inv[Ts] < 0]
             for i in set(Ts):   # set(Ts) to exclude repeated neighbor throats
                 hq.heappush(queue, t_order[i])
         count += 1
-    return t_inv, p_inv
+    return t_inv, p_inv, p_inv_t
 
 
 if __name__ == '__main__':
@@ -439,3 +506,4 @@ if __name__ == '__main__':
     ip = InvasionPercolation(network=pn, phase=water)
     ip.set_inlets(pn.pores('left'))
     ip.run()
+    ip.plot_intrusion_curve()
