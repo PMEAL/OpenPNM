@@ -55,6 +55,9 @@ class RelativePermeability(GenericAlgorithm):
               snwp_num=100):
         r"""
         Assigns values to the algorithms ``settings``
+        This part is revised so that it can be applied on either 2D or 3D
+        networks. The dimension is found by the number of boundary faces
+        existed in the network asumming all boundary faces are labeled.
 
         Parameters
         ----------
@@ -330,26 +333,30 @@ class RelativePermeability(GenericAlgorithm):
             self.Kr_values['relperm_nwp'].update({dirs: relperm_nwp})
             self.Kr_values['sat'].update({dirs: Snwparr})
 
-    def plot_Kr_curves(self):
-        f = plt.figure()
-        sp = f.subplots(1,1)
+    def plot_Kr_curves(self, fig=None):
+        r"""
+        Plot the relative permeability curve of the phase(s) in flow direction(s)
+        as Kr vs Saturation points.
+        """
+        if fig is None:
+            fig = plt.figure()
         for inp in self.settings['flow_inlets']:
             if self.settings['wp'] is not None:
-                sp.plot(self.Kr_values['sat'][inp],
+                plt.plot(self.Kr_values['sat'][inp],
                         self.Kr_values['relperm_wp'][inp],
                         'o-', label='Krwp'+inp)
-                sp.plot(self.Kr_values['sat'][inp],
+                plt.plot(self.Kr_values['sat'][inp],
                         self.Kr_values['relperm_nwp'][inp],
                         '*-', label='Krnwp'+inp)
             else:
-                sp.plot(self.Kr_values['sat'][inp],
+                plt.plot(self.Kr_values['sat'][inp],
                         self.Kr_values['relperm_nwp'][inp],
                         '*-', label='Krnwp'+inp)
-        sp.set_xlabel('Snw')
-        sp.set_ylabel('Kr')
-        sp.set_title('Relative Permability Curves')
-        sp.legend()
-        return f
+        plt.set_xlabel('Snw')
+        plt.set_ylabel('Kr')
+        plt.set_title('Relative Permability Curves')
+        plt.legend()
+        return fig
 
     def get_Kr_data(self):
         self.Kr_values['results']['sat'] = self.Kr_values['sat']
