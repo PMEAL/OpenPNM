@@ -352,9 +352,9 @@ class RelativePermeability(GenericAlgorithm):
                 plt.plot(self.Kr_values['sat'][inp],
                         self.Kr_values['relperm_nwp'][inp],
                         '*-', label='Krnwp'+inp)
-        plt.set_xlabel('Snw')
-        plt.set_ylabel('Kr')
-        plt.set_title('Relative Permability Curves')
+        plt.xlabel('Snw')
+        plt.ylabel('Kr')
+        plt.title('Relative Permability Curves')
         plt.legend()
         return fig
 
