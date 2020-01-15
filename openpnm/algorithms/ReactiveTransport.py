@@ -335,7 +335,7 @@ class ReactiveTransport(GenericTransport):
                 x_new = w * x_new + (1-w) * self[quantity]
                 self[quantity] = x_new
                 x = x_new
-            elif res < res_tol:
+            elif res <= res_tol:
                 logger.info('Solution converged: ' + str(res))
                 x_new = x
                 break
@@ -344,7 +344,7 @@ class ReactiveTransport(GenericTransport):
                 raise Exception("Solution diverged; undefined residual.")
 
         # Check if the tolerance was met
-        if res >= res_tol:
+        if res > res_tol:
             raise Exception("Maximum iterations reached, solution not converged.")
 
         return x_new
