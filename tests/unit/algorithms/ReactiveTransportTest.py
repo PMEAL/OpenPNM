@@ -117,18 +117,18 @@ class ReactiveTransportTest:
     def test_solution_should_diverge_w_large_relaxation(self):
         rt = op.algorithms.ReactiveTransport(network=self.net,
                                              phase=self.phase)
-        rt.setup(rxn_tolerance=1e-10, max_iter=5000,
+        rt.setup(rxn_tolerance=1e-10, max_iter=100,
                  relaxation_source=1.0, relaxation_quantity=1.0)
         rt.settings.update({'conductance': 'throat.diffusive_conductance',
                             'quantity': 'pore.concentration'})
         rt.set_source(pores=self.net.pores('bottom'), propname='pore.reaction')
         rt.set_value_BC(pores=self.net.pores('top'), values=1.0)
-        rt.settings['relaxation_quantity'] = 100.0
+        rt.settings['relaxation_quantity'] = 2.0
         rt.settings['relaxation_source'] = 1.0
         with pytest.raises(Exception):
             rt.run()
         rt.settings['relaxation_quantity'] = 1.0
-        rt.settings['relaxation_source'] = 100.0
+        rt.settings['relaxation_source'] = 2.0
         with pytest.raises(Exception):
             rt.run()
 
