@@ -25,7 +25,7 @@ class TransientImplicitReactiveTransportTest:
                             prefactor='pore.A',
                             exponent='pore.k',
                             quantity='pore.concentration',
-                            regen_mode='normal')
+                            regen_mode='deferred')
         self.settings = {'conductance': 'throat.diffusive_conductance',
                          'quantity': 'pore.concentration'}
 
@@ -102,9 +102,9 @@ class TransientImplicitReactiveTransportTest:
                    'pore.concentration@10', 'pore.concentration@11',
                    'pore.concentration@12']
         results_times_3 = alg.results(steps=None).keys()
-        assert (set(times_1).issubset(set(results_times_1)) and
-                set(times_2).issubset(set(results_times_2)) and
-                set(times_3).issubset(set(results_times_3)))
+        assert (set(times_1).issubset(set(results_times_1))
+                and set(times_2).issubset(set(results_times_2))
+                and set(times_3).issubset(set(results_times_3)))
 
     def test_transient_steady_mode_reactive_transport(self):
         alg = op.algorithms.TransientReactiveTransport(network=self.net,
