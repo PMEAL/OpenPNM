@@ -356,8 +356,8 @@ class GenericTransport(GenericAlgorithm):
         rate_BC_mask = np.isfinite(self["pore.bc_rate"])
         BC_locs = self.Ps[rate_BC_mask + value_BC_mask]
         if np.intersect1d(pores, BC_locs).size:
-            logger.critical('Another boundary condition was detected in some '
-                            + 'of the locations received')
+            logger.warning('Another boundary condition was detected in some '
+                           + 'of the locations received')
 
         # Store boundary values
         if ('pore.bc_' + bctype not in self.keys()) or (mode == 'overwrite'):
