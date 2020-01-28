@@ -1,6 +1,16 @@
-[![](https://badge.fury.io/py/openpnm.svg)](https://pypi.python.org/pypi/openpnm)  [![](https://travis-ci.org/PMEAL/OpenPNM.svg?branch=master)](https://travis-ci.org/PMEAL/OpenPNM)
+[![](https://github.com/PMEAL/OpenPNM/workflows/Ubuntu/badge.svg)](https://github.com/PMEAL/OpenPNM/actions)
+[![](https://github.com/PMEAL/OpenPNM/workflows/macOS/badge.svg)](https://github.com/PMEAL/OpenPNM/actions)
+[![](https://github.com/PMEAL/OpenPNM/workflows/Windows/badge.svg)](https://github.com/PMEAL/OpenPNM/actions)
+[![](https://github.com/PMEAL/OpenPNM/workflows/Examples/badge.svg)](https://github.com/PMEAL/OpenPNM/actions)<br/>
 [![](https://codecov.io/gh/PMEAL/OpenPNM/branch/master/graph/badge.svg)](https://codecov.io/gh/PMEAL/OpenPNM)
 [![](https://img.shields.io/badge/ReadTheDocs-GO-blue.svg)](http://openpnm.readthedocs.io/en/master/)
+[![](https://badge.fury.io/py/openpnm.svg)](https://pypi.python.org/pypi/openpnm)
+
+-----
+
+**Cite as:**
+> _Gostick, Jeff, Mahmoudreza Aghighi, James Hinebaugh, Tom Tranter, Michael A. Hoeh, Harold Day, Brennan Spellacy et al._ "**OpenPNM: a pore network modeling package.**" Computing in Science & Engineering 18, no. 4 (2016): 60-74.
+> [doi:10.1109/MCSE.2016.49](https://ieeexplore.ieee.org/document/7478437)
 
 # Overview of OpenPNM
 

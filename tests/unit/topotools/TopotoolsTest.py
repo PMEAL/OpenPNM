@@ -296,11 +296,33 @@ class TopotoolsTest:
 
     def test_extend(self):
         pn = op.network.Cubic(shape=[2, 2, 1])
-        pn['pore.test'] = 1.0
-        op.topotools.add_boundary_pores(network=pn, pores=pn.pores('left'),
-                                        move_to=[0, None, None],
-                                        apply_label='left')
-        assert np.any(np.isnan(pn['pore.test']))
+        pn['pore.test_float'] = 1.0
+        pn['pore.test_int'] = 1
+        pn['pore.test_bool'] = True
+        op.topotools.extend(network=pn, pore_coords=[[3, 3, 3], [3, 3, 4]])
+        assert np.any(np.isnan(pn['pore.test_float']))
+        assert np.any(np.isnan(pn['pore.test_int']))
+        assert pn['pore.test_bool'].sum() < pn['pore.test_bool'].size
+
+    def test_extend_geometry_present(self):
+        pn = op.network.Cubic(shape=[2, 2, 1])
+        geo = op.geometry.StickAndBall(network=pn)
+        geo['pore.test_float'] = 1.0
+        geo['pore.test_int'] = 1
+        geo['pore.test_bool'] = True
+        op.topotools.extend(network=pn, pore_coords=[[3, 3, 3], [3, 3, 4]])
+        assert ~np.any(np.isnan(geo['pore.test_float']))
+        assert ~np.any(np.isnan(geo['pore.test_int']))
+        assert geo['pore.test_bool'].sum() == geo['pore.test_bool'].size
+
+    def test_extend_phase_present(self):
+        pn = op.network.Cubic(shape=[2, 2, 1])
+        air = op.phases.Air(network=pn)
+        air['pore.test_float'] = 1.0
+        air['pore.test_int'] = 1
+        air['pore.test_bool'] = True
+        with pytest.raises(Exception):
+            op.topotools.extend(network=pn, pore_coords=[[3, 3, 3], [3, 3, 4]])
 
 
 if __name__ == '__main__':

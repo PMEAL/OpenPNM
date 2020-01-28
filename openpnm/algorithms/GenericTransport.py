@@ -1,5 +1,6 @@
 import importlib
 import numpy as np
+import openpnm as op
 import scipy.sparse as sprs
 import scipy.sparse.csgraph as spgr
 from scipy.spatial import ConvexHull
@@ -19,6 +20,8 @@ def_set = {'phase': None,
            'solver_atol': 1e-6,
            'solver_rtol': 1e-6,
            'solver_maxiter': 5000,
+           'iterative_props': [],
+           'cache_A': True, 'cache_b': True,
            'gui': {'setup':        {'quantity': '',
                                     'conductance': ''},
                    'set_rate_BC':  {'pores': None,
@@ -193,6 +196,37 @@ class GenericTransport(GenericAlgorithm):
             self.settings['conductance'] = conductance
         self.settings.update(**kwargs)
 
+    def reset(self, bcs=True, results=True, phase=False):
+        r"""
+        Resets the algorithm to enable re-use to avoid instantiating a new one.
+
+        Parameters
+        ----------
+        bcs : boolean
+            If ``True`` (default) all previous boundary conditions are removed.
+        results : boolean
+            If ``True`` (default) all previously calculated values pertaining
+            to results of the algorithm are removed.
+        phase : boolean
+            Removes the specified phase from the settings. The default is
+            ``False``.
+        """
+        if bcs:
+            self['pore.bc_value'] = np.nan
+            self['pore.bc_rate'] = np.nan
+        if results:
+            self.pop(self.settings['quantity'], None)
+        if phase:
+            self.settings['phase'] = None
+
+    def set_iterative_props(self, propnames):
+        r"""
+        """
+        if type(propnames) is str:  # Convert string to list if necessary
+            propnames = [propnames]
+        d = self.settings["iterative_props"]
+        self.settings["iterative_props"] = list(set(d) | set(propnames))
+
     def set_value_BC(self, pores, values, mode='merge'):
         r"""
         Apply constant value boundary conditons to the specified locations.
@@ -317,10 +351,26 @@ class GenericTransport(GenericAlgorithm):
             raise Exception('The number of boundary values must match the '
                             + 'number of locations')
 
+        # Warn the user that another boundary condition already exists
+        value_BC_mask = np.isfinite(self["pore.bc_value"])
+        rate_BC_mask = np.isfinite(self["pore.bc_rate"])
+        BC_locs = self.Ps[rate_BC_mask + value_BC_mask]
+        if np.intersect1d(pores, BC_locs).size:
+            logger.warning('Another boundary condition was detected in some '
+                           + 'of the locations received')
+
         # Store boundary values
-        if ('pore.bc_'+bctype not in self.keys()) or (mode == 'overwrite'):
-            self['pore.bc_'+bctype] = np.nan
-        self['pore.bc_'+bctype][pores] = values
+        if ('pore.bc_' + bctype not in self.keys()) or (mode == 'overwrite'):
+            self['pore.bc_' + bctype] = np.nan
+        if bctype == 'value':
+            self['pore.bc_' + bctype][pores] = values
+        if bctype == 'rate':
+            # Preserve already-assigned rate BCs
+            bc_rate_current = self.Ps[rate_BC_mask]
+            intersect = np.intersect1d(bc_rate_current, pores)
+            self['pore.bc_' + bctype][intersect] += values
+            # Assign rate BCs to those without previously assigned values
+            self['pore.bc_' + bctype][np.setdiff1d(pores, intersect)] = values
 
     def remove_BC(self, pores=None, bctype='all'):
         r"""
@@ -352,22 +402,15 @@ class GenericTransport(GenericAlgorithm):
         if ('pore.bc_rate' in self.keys()) and ('rate' in bctype):
             self['pore.bc_rate'][pores] = np.nan
 
-    def _build_A(self, force=False):
+    def _build_A(self):
         r"""
         Builds the coefficient matrix based on conductances between pores.
         The conductance to use is specified in the algorithm's ``settings``
         under ``conductance``.  In subclasses (e.g. ``FickianDiffusion``)
         this is set by default, though it can be overwritten.
-
-        Parameters
-        ----------
-        force : Boolean (default is ``False``)
-            If set to ``True`` then the A matrix is built from new.  If
-            ``False`` (the default), a cached version of A is returned.  The
-            cached version is *clean* in the sense that no boundary conditions
-            or sources terms have been added to it.
         """
-        if force:
+        cache_A = self.settings['cache_A']
+        if not cache_A:
             self._pure_A = None
         if self._pure_A is None:
             network = self.project.network
@@ -377,7 +420,7 @@ class GenericTransport(GenericAlgorithm):
             self._pure_A = spgr.laplacian(am).astype(float)
         self.A = self._pure_A.copy()
 
-    def _build_b(self, force=False):
+    def _build_b(self):
         r"""
         Builds the RHS matrix, without applying any boundary conditions or
         source terms. This method is trivial an basically creates a column
@@ -391,16 +434,17 @@ class GenericTransport(GenericAlgorithm):
             cached version is *clean* in the sense that no boundary conditions
             or sources terms have been added to it.
         """
-        if force:
+        cache_b = self.settings['cache_b']
+        if not cache_b:
             self._pure_b = None
         if self._pure_b is None:
-            b = np.zeros(shape=(self.Np, ), dtype=float)  # Create vector of 0s
+            b = np.zeros(shape=self.Np, dtype=float)  # Create vector of 0s
             self._pure_b = b
         self.b = self._pure_b.copy()
 
     def _get_A(self):
         if self._A is None:
-            self._build_A(force=True)
+            self._build_A()
         return self._A
 
     def _set_A(self, A):
@@ -410,7 +454,7 @@ class GenericTransport(GenericAlgorithm):
 
     def _get_b(self):
         if self._b is None:
-            self._build_b(force=True)
+            self._build_b()
         return self._b
 
     def _set_b(self, b):
@@ -428,12 +472,12 @@ class GenericTransport(GenericAlgorithm):
             ind = np.isfinite(self['pore.bc_rate'])
             self.b[ind] = self['pore.bc_rate'][ind]
         if 'pore.bc_value' in self.keys():
-            f = np.abs(self.A.diagonal()).mean()
+            f = self.A.diagonal().mean()
             # Update b (impose bc values)
             ind = np.isfinite(self['pore.bc_value'])
             self.b[ind] = self['pore.bc_value'][ind] * f
             # Update b (substract quantities from b to keep A symmetric)
-            x_BC = np.zeros(self.b.shape)
+            x_BC = np.zeros_like(self.b)
             x_BC[ind] = self['pore.bc_value'][ind]
             self.b[~ind] -= (self.A.tocsr() * x_BC)[~ind]
             # Update A
@@ -443,7 +487,7 @@ class GenericTransport(GenericAlgorithm):
             self.A.data[indrow] = 0  # Remove entries from A for all BC rows
             self.A.data[indcol] = 0  # Remove entries from A for all BC cols
             datadiag = self.A.diagonal()  # Add diagonal entries back into A
-            datadiag[P_bc] = np.ones_like(P_bc, dtype=np.float64) * f
+            datadiag[P_bc] = np.ones_like(P_bc, dtype=float) * f
             self.A.setdiag(datadiag)
             self.A.eliminate_zeros()  # Remove 0 entries
 
@@ -464,7 +508,7 @@ class GenericTransport(GenericAlgorithm):
         attribute.
 
         """
-        logger.info('―'*80)
+        logger.info('―' * 80)
         logger.info('Running GenericTransport')
         self._run_generic()
 
@@ -496,8 +540,7 @@ class GenericTransport(GenericAlgorithm):
         algorithm.
 
         """
-        # Fetch A and b from self if not given, and throw error if they've not
-        # been calculated
+        # Fetch A and b from self if not given, and throw error if not found
         if A is None:
             A = self.A
             if A is None:
@@ -519,6 +562,8 @@ class GenericTransport(GenericAlgorithm):
         # Reference for residual's normalization
         ref = np.sum(np.absolute(self.A.diagonal())) or 1
         atol = ref * rtol
+        # Check if A is symmetric
+        is_sym = op.utils.is_symmetric(self.A)
 
         # SciPy
         if self.settings['solver_family'] == 'scipy':
@@ -528,6 +573,10 @@ class GenericTransport(GenericAlgorithm):
             iterative = ['bicg', 'bicgstab', 'cg', 'cgs', 'gmres', 'lgmres',
                          'minres', 'gcrotmk', 'qmr']
             solver = getattr(sprs.linalg, self.settings['solver_type'])
+
+            if self.settings['solver_type'] == 'cg' and not is_sym:
+                raise Exception('Conjugate gradient (cg) solver cannot be used with '
+                                + 'non-symmetric matrices. Choose a different solver.')
             if self.settings['solver_type'] in iterative:
                 x, exit_code = solver(A=A, b=b, atol=atol, tol=rtol,
                                       maxiter=self.settings['solver_maxiter'])
@@ -560,7 +609,7 @@ class GenericTransport(GenericAlgorithm):
             if importlib.util.find_spec('pyamg'):
                 import pyamg
             else:
-                raise Exception('pyamg is not installed.')
+                raise Exception('PyAMG is not installed.')
             ml = pyamg.ruge_stuben_solver(A)
             x = ml.solve(b=b, tol=1e-10)
             return x
@@ -620,12 +669,16 @@ class GenericTransport(GenericAlgorithm):
 
         P12 = network['throat.conns']
         X12 = quantity[P12]
-        f = (-1)**np.argsort(X12, axis=1)[:, 1]
-        Dx = np.abs(np.diff(X12, axis=1).squeeze())
-        Qt = -f*g*Dx
+        if g.size == self.Nt:
+            g = np.tile(g, (2, 1)).T    # Make conductance a Nt by 2 matrix
+        # The next line is critical for rates to be correct
+        g = np.flip(g, axis=1)
+        Qt = np.diff(g*X12, axis=1).squeeze()
 
         if len(throats) and len(pores):
             raise Exception('Must specify either pores or throats, not both')
+        if len(throats) == 0 and len(pores) == 0:
+            raise Exception('Must specify either pores or throats')
         elif len(throats):
             R = np.absolute(Qt[throats])
             if mode == 'group':
@@ -731,7 +784,7 @@ class GenericTransport(GenericAlgorithm):
         return area
 
     def _get_domain_length(self, inlets=None, outlets=None):
-        logger.warning('Attempting to estimate domain length... '
+        logger.warning('Attempting to estimate domain length...'
                        + 'could be low if boundary pores were not added')
         network = self.project.network
         if inlets is None:

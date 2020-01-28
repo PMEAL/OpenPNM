@@ -52,7 +52,10 @@ It consists of the following submodules:
 
 """
 
-__version__ = '2.1.0'
+__version__ = '2.2.0'
+
+import numpy as np
+np.seterr(divide='ignore', invalid='ignore')
 
 from . import utils
 from .utils import Workspace, Project

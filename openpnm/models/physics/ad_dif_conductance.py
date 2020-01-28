@@ -8,10 +8,6 @@ import scipy as _sp
 
 
 def ad_dif(target,
-           pore_area='pore.area',
-           throat_area='throat.area',
-           pore_diffusivity='pore.diffusivity',
-           throat_diffusivity='throat.diffusivity',
            conduit_lengths='throat.conduit_lengths',
            pore_pressure='pore.pressure',
            throat_hydraulic_conductance='throat.hydraulic_conductance',
@@ -27,18 +23,6 @@ def ad_dif(target,
         The object which this model is associated with. This controls the
         length of the calculated array, and also provides access to other
         necessary properties.
-
-    pore_area : string
-        Dictionary key of the pore area values
-
-    throat_area : string
-        Dictionary key of the throat area values
-
-    pore_diffusivity : string
-        Dictionary key of the pore diffusivity values
-
-    throat_diffusivity : string
-        Dictionary key of the throat diffusivity values
 
     conduit_lengths : string
         Dictionary key of the conduit length values
@@ -94,17 +78,23 @@ def ad_dif(target,
     g1[~m1] = g2[~m2] = gt[~mt] = _sp.inf
     # Find g for half of pore 1, throat, and half of pore 2
     P = phase[pore_pressure]
-    gh = phase[throat_hydraulic_conductance]
-    gd = phase[throat_diffusive_conductance]
+    gh = phase[throat_hydraulic_conductance][throats]
+    gd = phase[throat_diffusive_conductance][throats]
     gd = _sp.tile(gd, 2)
 
     Qij = -gh*_sp.diff(P[cn], axis=1).squeeze()
     Qij = _sp.append(Qij, -Qij)
 
-    Peij = Qij/gd
+    Peij = Qij / gd
     Peij[(Peij < 1e-10) & (Peij >= 0)] = 1e-10
     Peij[(Peij > -1e-10) & (Peij <= 0)] = -1e-10
-    Qij = Peij*gd
+
+    # Export Peclet values (half only since Peij = -Peji)
+    phase['throat.peclet.ad'] = _sp.nan
+    phase['throat.peclet.ad'][throats] = _sp.absolute(Peij[0:len(Lt)])
+
+    # Correct the flow rate
+    Qij = Peij * gd
 
     if s_scheme == 'upwind':
         w = gd + _sp.maximum(0, -Qij)
@@ -117,5 +107,5 @@ def ad_dif(target,
         w = -Qij / (1 - _sp.exp(Peij))
     else:
         raise Exception('Unrecognized discretization scheme: ' + s_scheme)
-    w = _sp.reshape(w, (network.Nt, 2), order='F')
+    w = _sp.reshape(w, (throats.size, 2), order='F')
     return w

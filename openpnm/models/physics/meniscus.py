@@ -11,7 +11,9 @@ import logging
 from sympy import lambdify, symbols
 from sympy import atan as sym_atan
 from sympy import cos as sym_cos
+from sympy import sin as sym_sin
 from sympy import sqrt as sym_sqrt
+from sympy import pi as sym_pi
 from openpnm.models.physics.capillary_pressure import _get_key_props
 logger = logging.getLogger(__name__)
 
@@ -87,11 +89,8 @@ def sinusoidal(target,
         Diffusion Layers with Patterned Wettability.
         J. ECS. 163, 9, F1038-F1048 (2016).
     '''
-    network = target.project.network
-    Dp_av = np.mean(network[pore_diameter][network['throat.conns']], axis=1)
-    scale_b = r_toroid*network[throat_diameter]/Dp_av
     target['throat.scale_a'] = r_toroid
-    target['throat.scale_b'] = scale_b
+    target['throat.scale_b'] = r_toroid
     output = general_toroidal(target=target,
                               mode=mode,
                               profile_equation='sinusoidal',
@@ -147,7 +146,7 @@ def general_toroidal(target,
         The dictionary key containing the scale factor for adjusting the
         profile along the throat axis (x).
 
-    throat_scale_a : dict key (string)
+    throat_scale_b : dict key (string)
         The dictionary key containing the scale factor for adjusting the
         profile perpendicular to the throat axis (y).
 
@@ -188,32 +187,34 @@ def general_toroidal(target,
     if profile_equation == 'elliptical':
         y = sym_sqrt(1 - (x/a)**2)*b
     elif profile_equation == 'sinusoidal':
-        y = (sym_cos(np.pi*x/(2*a)))*b
+        y = (sym_cos((sym_pi/2)*(x/a)))*b
     else:
-        logger.error('Profile equation is not valid')
+        logger.error('Profile equation is not valid, default to elliptical')
+        y = sym_sqrt(1 - (x/a)**2)*b
     # Throat radius profile
     r = rt + (b-y)
     # Derivative of profile
     rprime = r.diff(x)
     # Filling angle
     alpha = sym_atan(rprime)
+    # Angle between y axis and contact point to meniscus center
+    eta = sym_pi - alpha - theta
+    gamma = sym_pi/2 - eta
     # Radius of curvature of meniscus
-    rm = r/sym_cos(alpha+theta)
+    rm = r/sym_cos(eta)
     # distance from center of curvature to meniscus contact point (Pythagoras)
-    d = sym_sqrt(rm**2 - r**2)
+    d = rm*sym_sin(eta)
     # angle between throat axis, meniscus center and meniscus contact point
-    gamma = sym_atan(r/d)
     # Capillary Pressure
-    p = -2*sigma*sym_cos(alpha+theta)/r
+    p = 2*sigma/rm
     # Callable functions
     rx = lambdify((x, a, b, rt), r, 'numpy')
     fill_angle = lambdify((x, a, b, rt), alpha, 'numpy')
-    Pc = lambdify((x, a, b, rt, sigma, theta), p, 'numpy')
-    rad_curve = lambdify((x, a, b, rt, sigma, theta), rm, 'numpy')
-    c2x = lambdify((x, a, b, rt, sigma, theta), d, 'numpy')
-    cap_angle = lambdify((x, a, b, rt, sigma, theta), gamma, 'numpy')
+    rad_curve = lambdify((x, a, b, rt, theta), rm, 'numpy')
+    c2x = lambdify((x, a, b, rt, theta), d, 'numpy')
+    cap_angle = lambdify((x, a, b, rt, theta), gamma, 'numpy')
+    Pc = lambdify((x, a, b, rt, theta, sigma), p, 'numpy')
     # All relative positions along throat
-#    pos = np.arange(-0.999, 0.999, 1/num_points)
     hp = int(num_points/2)
     log_pos = np.logspace(-4, -1, hp+1)[:-1]
     lin_pos = np.arange(0.1, 1.0, 1/hp)
@@ -223,7 +224,7 @@ def general_toroidal(target,
     Y, X = np.meshgrid(throatRad, pos)
     X *= fa
     # throat Capillary Pressure
-    t_Pc = Pc(X, fa, fb, Y, surface_tension, contact)
+    t_Pc = Pc(X, fa, fb, Y, contact, surface_tension)
     # Values of minima and maxima
     Pc_min = np.min(t_Pc, axis=0)
     Pc_max = np.max(t_Pc, axis=0)
@@ -233,12 +234,12 @@ def general_toroidal(target,
     if mode == 'max':
         return Pc_max
     elif mode == 'touch':
-        all_rad = rad_curve(X, fa, fb, Y, surface_tension, contact)
-        all_c2x = c2x(X, fa, fb, Y, surface_tension, contact)
-        all_cen = X + np.sign(all_rad)*all_c2x
-        dist = all_cen + np.abs(all_rad)
+        all_rad = rad_curve(X, fa, fb, Y, contact)
+        all_c2x = c2x(X, fa, fb, Y, contact)
+        all_cen = X - all_c2x
+        dist = all_cen + all_rad
         # Only count lengths where meniscus bulges into pore
-        dist[all_rad > 0] = 0.0
+        dist[all_rad < 0] = 0.0
         touch_len = network[touch_length]
         mask = dist > touch_len
         arg_touch = np.argmax(mask, axis=0)
@@ -248,13 +249,17 @@ def general_toroidal(target,
         arg_touch[~arg_in_range] = a_max[~arg_in_range]
         x_touch = pos[arg_touch]*fa
         # Return the pressure at which a touch happens
-        Pc_touch = Pc(x_touch, fa, fb, throatRad, surface_tension, contact)
+        Pc_touch = Pc(x_touch, fa, fb, throatRad, contact, surface_tension)
         return Pc_touch
     elif target_Pc is None:
-        logger.exception(msg='Please supply a target capillary pressure' +
-                         ' when mode is "men"')
-    if np.abs(target_Pc) < 1.0:
-        target_Pc = 1.0
+        logger.error(msg='Please supply a target capillary pressure' +
+                         ' when mode is "men", default to 1.0e-6')
+        target_Pc = 1.0e-6
+    if np.abs(target_Pc) < 1.0e-6:
+        logger.error(msg='Please supply a target capillary pressure' +
+                         ' with absolute value greater than 1.0e-6,' +
+                         ' default to 1.0e-6')
+        target_Pc = 1.0e-6
     # Find the position in-between the minima and maxima corresponding to
     # the target pressure
     inds = np.indices(np.shape(t_Pc))
@@ -280,13 +285,12 @@ def general_toroidal(target,
     men_data['alpha'] = fill_angle(xpos, fa, fb, throatRad)
     men_data['alpha_min'] = fill_angle(xmin, fa, fb, throatRad)
     men_data['alpha_max'] = fill_angle(xmax, fa, fb, throatRad)
-    men_data['c2x'] = c2x(xpos, fa, fb, throatRad, surface_tension, contact)
-    men_data['gamma'] = cap_angle(xpos, fa, fb, throatRad,
-                                  surface_tension, contact)
-    men_data['radius'] = rad_curve(xpos, fa, fb, throatRad,
-                                   surface_tension, contact)
+    men_data['c2x'] = c2x(xpos, fa, fb, throatRad, contact)
+    men_data['gamma'] = cap_angle(xpos, fa, fb, throatRad, contact)
+    men_data['radius'] = rad_curve(xpos, fa, fb, throatRad, contact)
     # xpos is relative to the throat center
-    men_data['center'] = (xpos + np.sign(men_data['radius'])*men_data['c2x'])
+    men_data['center'] = (xpos - men_data['c2x'])
     men_data['men_max'] = men_data['center'] - men_data['radius']
+
     logger.info(mode+' calculated for Pc: '+str(target_Pc))
     return men_data

@@ -1,0 +1,9 @@
+numpy
+scipy
+matplotlib
+scikit-image
+pandas
+numba
+networkx
+h5py
+jsonschema

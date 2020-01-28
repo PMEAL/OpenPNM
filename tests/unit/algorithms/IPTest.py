@@ -1,5 +1,6 @@
 import openpnm as op
 import scipy as sp
+import matplotlib.pyplot as plt
 mgr = op.Workspace()
 
 
@@ -65,6 +66,24 @@ class IPTest:
         alg.apply_trapping(outlets=self.net.pores('bottom'))
         assert 'pore.trapped' in alg.labels()
 
+    def test_plot_intrusion_curve(self):
+        alg = op.algorithms.InvasionPercolation(network=self.net)
+        alg.setup(phase=self.water)
+        alg.set_inlets(pores=self.net.pores('top'))
+        fig1 = alg.plot_intrusion_curve()
+        assert fig1 is None
+        alg.run()
+        fig2 = alg.plot_intrusion_curve()
+        ax2 = plt.gca()
+        assert fig2 is not None
+        alg.apply_trapping(outlets=self.net.pores('bottom'))
+        fig3 = alg.plot_intrusion_curve()
+        assert fig3 is not None
+        ax3 = plt.gca()
+        ydata2 = ax2.lines[0].get_ydata()
+        ydata3 = ax3.lines[0].get_ydata()
+        assert sp.any(ydata2-ydata3 != 0.0)
+        plt.close('all')
 
 if __name__ == '__main__':
 

@@ -588,7 +588,7 @@ class DelaunayGeometry(GenericGeometry):
             for i in range(len(face)):
                 vec = face[i]-face[i-1]
                 vec_length = np.linalg.norm(vec)
-                increments = np.ceil(vec_length/dx)
+                increments = np.int(np.ceil(vec_length/dx))
                 check_p_old = np.array([-1, -1, -1])
                 for x in np.linspace(0, 1, increments):
                     check_p_new = face[i-1]+(vec*x)

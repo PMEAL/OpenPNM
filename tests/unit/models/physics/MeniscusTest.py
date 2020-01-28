@@ -1,6 +1,7 @@
 import openpnm as op
 import openpnm.models.physics as pm
 import scipy as sp
+import numpy as np
 
 
 class MeniscusTest:
@@ -106,6 +107,40 @@ class MeniscusTest:
             if len(check) > 0:
                 assert 1 == 2
 
+    def test_exceptions(self):
+        phys = self.phys
+        r_tor = 1e-6
+        phys['throat.scale_a'] = r_tor
+        phys['throat.scale_b'] = r_tor
+        phys.add_model(propname='throat.elliptical_pressure',
+                       model=pm.meniscus.general_toroidal,
+                       mode='max',
+                       profile_equation='elliptical',
+                       num_points=1000)
+        phys.add_model(propname='throat.exception_pressure',
+                       model=pm.meniscus.general_toroidal,
+                       mode='max',
+                       profile_equation='scooby-doo',
+                       num_points=1000)
+        a = np.around(phys['throat.elliptical_pressure'], 10)
+        b = np.around(phys['throat.exception_pressure'], 10)
+        assert np.allclose(a, b)
+        phys.add_model(propname='throat.no_target_pressure',
+                       model=pm.meniscus.general_toroidal,
+                       mode='men',
+                       num_points=1000)
+        phys.add_model(propname='throat.small_target_pressure',
+                       model=pm.meniscus.general_toroidal,
+                       mode='men',
+                       target_Pc=1.0e-7,
+                       num_points=1000)
+        a = np.around(phys['throat.no_target_pressure.radius'], 10)
+        b = np.around(phys['throat.small_target_pressure.radius'], 10)
+        assert np.allclose(a, b)
+        h = phys.check_data_health()
+        for check in h.values():
+            if len(check) > 0:
+                assert 1 == 2
 
 if __name__ == '__main__':
 
@@ -113,6 +148,6 @@ if __name__ == '__main__':
     self = t
     t.setup_class()
     for item in t.__dir__():
-        if item.startswith('test'):
+        if item.startswith('test_exceptions'):
             print('running test: '+item)
             t.__getattribute__(item)()

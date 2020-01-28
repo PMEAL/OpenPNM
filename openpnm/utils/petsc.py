@@ -130,9 +130,8 @@ class PETScSparseLinearSolver(Base):
         solver = self.settings['type']
         preconditioner = self.settings['preconditioner']
 
-        if solver not in (iterative_solvers +
-                          lu_direct_solvers +
-                          cholesky_direct_solvers):
+        if solver not in (iterative_solvers + lu_direct_solvers +
+                          cholesky_direct_solvers + preconditioners):
             solver = 'cg'
             print('Warning: ' + self.settings['type'] +
                   ' not availabe, ' + solver + ' used instead.')
@@ -154,6 +153,12 @@ class PETScSparseLinearSolver(Base):
             self.ksp.create(PETSc.COMM_WORLD)
             self.ksp.getPC().setType('cholesky')
             self.ksp.getPC().setFactorSolverPackage(solver)
+            self.ksp.setType('preonly')
+
+        elif solver in preconditioners:
+            self.ksp = PETSc.KSP()
+            self.ksp.create(PETSc.COMM_WORLD)
+            self.ksp.getPC().setType(solver)
             self.ksp.setType('preonly')
 
         elif solver in iterative_solvers:

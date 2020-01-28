@@ -24,7 +24,11 @@ from .OhmicConduction import OhmicConduction
 from .OrdinaryPercolation import OrdinaryPercolation
 from .InvasionPercolation import InvasionPercolation
 from .MixedInvasionPercolation import MixedInvasionPercolation
+from .MixedInvasionPercolationCoop import MixedInvasionPercolationCoop
 from .Porosimetry import Porosimetry
 from .NernstPlanck import NernstPlanck
-from .ChargeConservationNernstPlanck import ChargeConservationNernstPlanck
-from . import metrics
+from .TransientNernstPlanck import TransientNernstPlanck
+from .ChargeConservation import ChargeConservation
+from .TransientChargeConservation import TransientChargeConservation
+from .IonicTransport import IonicTransport
+from .TransientIonicTransport import TransientIonicTransport
