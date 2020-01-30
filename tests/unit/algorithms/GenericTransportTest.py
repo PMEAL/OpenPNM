@@ -50,7 +50,6 @@ class GenericTransportTest:
         assert alg.settings["solver_atol"] == 1e-12
         assert alg.settings["solver_rtol"] == 1e-2
 
-
     def test_remove_boundary_conditions(self):
         alg = op.algorithms.GenericTransport(network=self.net,
                                              phase=self.phase)
