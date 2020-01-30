@@ -769,14 +769,16 @@ class GenericTransport(GenericAlgorithm):
         if settings["solver_rtol"] is not None:
             atol = settings["solver_rtol"]
         # Update settings on algorithm object
-        self.settings.update({
-            "solver_family": solver_family,
-            "solver_type": solver_type,
-            "solver_preconditioner": preconditioner,
-            "solver_tol": tol,
-            "solver_atol": atol,
-            "solver_rtol": rtol
-            })
+        self.settings.update(
+            {
+                "solver_family": solver_family,
+                "solver_type": solver_type,
+                "solver_preconditioner": preconditioner,
+                "solver_tol": tol,
+                "solver_atol": atol,
+                "solver_rtol": rtol
+            }
+        )
 
     def _get_residual(self, x=None):
         r"""
