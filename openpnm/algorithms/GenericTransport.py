@@ -132,10 +132,8 @@ class GenericTransport(GenericAlgorithm):
             project = network.project
         super().__init__(project=project, **kwargs)
         # Create some instance attributes
-        self._A = None
-        self._pure_A = None
-        self._b = None
-        self._pure_b = None
+        self._A = self._pure_A = None
+        self._b = self._pure_b = None
         self['pore.bc_rate'] = np.nan
         self['pore.bc_value'] = np.nan
 
@@ -431,8 +429,8 @@ class GenericTransport(GenericAlgorithm):
         Parameters
         ----------
         force : Boolean (default is ``False``)
-            If set to ``True`` then the b matrix is built from new.  If
-            ``False`` (the default), a cached version of b is returned.  The
+            If set to ``True`` then the b matrix is built from new. If
+            ``False`` (the default), a cached version of b is returned. The
             cached version is *clean* in the sense that no boundary conditions
             or sources terms have been added to it.
         """
@@ -543,15 +541,12 @@ class GenericTransport(GenericAlgorithm):
 
         """
         # Fetch A and b from self if not given, and throw error if not found
-        if A is None:
-            A = self.A
-            if A is None:
-                raise Exception('The A matrix has not been built yet')
-        if b is None:
-            b = self.b
-            if b is None:
-                raise Exception('The b matrix has not been built yet')
+        A = self.A if A is None else A
+        b = self.b if b is None else b
+        if A is None or b is None:
+            raise Exception('The A matrix or the b vector not yet built.')
         A = A.tocsr()
+        x0 = np.zeros_like(b) if x0 is None else x0
 
         # Default behavior -> use Scipy's default solver (spsolve)
         if self.settings['solver'] == 'pyamg':
