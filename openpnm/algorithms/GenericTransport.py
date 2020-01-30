@@ -724,17 +724,27 @@ class GenericTransport(GenericAlgorithm):
                 R = np.sum(R)
         return np.array(R, ndmin=1)
 
-    def set_solver(self, solver_family, solver_type, preconditioner="jacobi",
-                   tol=None, atol=None, rtol=None):
+    def set_solver(
+            self,
+            solver_family=None,
+            solver_type=None,
+            preconditioner=None,
+            tol=None,
+            atol=None,
+            rtol=None
+        ):
         r"""
         Set the solver to be used to solve the algorithm.
 
+        The values of those fields that are not provided will be retrieved from
+        algorithm settings dict.
+
         Parameters
         ----------
-        solver_family : string
+        solver_family : string, optional
             Solver family, could be "scipy", "petsc", and "pyamg".
 
-        solver_type : string
+        solver_type : string, optional
             Solver type, could be "spsolve", "cg", "gmres", etc.
 
         preconditioner : string, optional
@@ -760,14 +770,18 @@ class GenericTransport(GenericAlgorithm):
         """
         settings = self.settings
         # Preserve pre-set values, if any
-        if settings["solver_preconditioner"] is not None:
-            preconditioner = settings["solver"]
-        if settings["solver_tol"] is not None:
+        if solver_family is None:
+            solver_family = settings["solver_family"]
+        if solver_type is None:
+            solver_type = settings["solver_type"]
+        if preconditioner is None:
+            preconditioner = settings["solver_preconditioner"]
+        if tol is None:
             tol = settings["solver_tol"]
-        if settings["solver_atol"] is not None:
+        if atol is None:
             atol = settings["solver_atol"]
-        if settings["solver_rtol"] is not None:
-            atol = settings["solver_rtol"]
+        if rtol is None:
+            rtol = settings["solver_rtol"]
         # Update settings on algorithm object
         self.settings.update(
             {
