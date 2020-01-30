@@ -346,4 +346,18 @@ class ReactiveTransport(GenericTransport):
         if res > res_tol:
             raise Exception("Maximum iterations reached, solution not converged.")
 
-        return x_new
+    def _is_converged(self):
+        r"""
+        Check if solution has converged based on the following criterion:
+            res <= max(norm(b) * tol, atol)
+        """
+        res = self._get_residual()
+        # Verify that residual is finite (i.e. not inf/nan)
+        if not np.isfinite(res):
+            logger.warning(f'Solution diverged: {res:.4e}')
+            raise Exception(f"Solution diverged, undefined residual: {res:.4e}")
+        # Check convergence
+        tol = self.settings["solver_tol"]
+        res_tol = norm(self.b) * tol
+        flag_converged = True if res <= res_tol else False
+        return flag_converged
