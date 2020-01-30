@@ -324,27 +324,18 @@ class ReactiveTransport(GenericTransport):
             self._build_b()
             self._apply_BCs()
             self._apply_sources()
-            # Compute residual and tolerance
-            res = norm(self.A*x - self.b)
-            res_tol = norm(self.b) * rxn_tol
-            if res > res_tol:
-                logger.info('Tolerance not met: ' + str(res))
-                x_new = self._solve()
-                # Relaxation
-                x_new = w * x_new + (1-w) * self[quantity]
-                self[quantity] = x_new
-                x = x_new
-            elif res <= res_tol:
-                logger.info('Solution converged: ' + str(res))
-                x_new = x
-                break
-            elif not np.isfinite(res):  # If res is nan or inf
-                logger.warning('Residual undefined: ' + str(res))
-                raise Exception("Solution diverged; undefined residual.")
+            # Check solution convergence
+            res = self._get_residual()
+            if self._is_converged():
+                logger.info(f'Solution converged: {res:.4e}')
+                return x
+            logger.info(f'Tolerance not met: {res:.4e}')
+            # Solve, use relaxation, and update solution on algorithm obj
+            self[quantity] = x = self._solve(x0=x) * w + x * (1 - w)
 
-        # Check if the tolerance was met
-        if res > res_tol:
-            raise Exception("Maximum iterations reached, solution not converged.")
+        # Check solution convergence after max_it iterations
+        if not self._is_converged():
+            raise Exception("Not converged after {max_it} iterations.")
 
     def _is_converged(self):
         r"""
