@@ -212,7 +212,7 @@ class ReactiveTransport(GenericTransport):
 
     def _update_iterative_props(self):
         """r
-        Update physics using the current value of 'quantity'
+        Update physics using the current value of ``quantity``
 
         Notes
         -----
@@ -232,19 +232,19 @@ class ReactiveTransport(GenericTransport):
 
     def _apply_sources(self):
         """r
-        Update 'A' and 'b' applying source terms to specified pores
+        Update ``A`` and ``b`` applying source terms to specified pores
 
         Notes
         -----
-        Applying source terms to 'A' and 'b' is performed after (optionally)
+        Applying source terms to ``A`` and ``b`` is performed after (optionally)
         under-relaxing the source term to improve numerical stability. Physics
         are also updated before applying source terms to ensure that source
         terms values are associated with the current value of 'quantity'.
 
         Warnings
         --------
-        In the case of a transient simulation, the updates in 'A' and 'b'
-        also depend on the time scheme. So, '_correct_apply_sources()' needs to
+        In the case of a transient simulation, the updates in ``A`` and ``b``
+        also depend on the time scheme. So, ``_correct_apply_sources()`` needs to
         be run afterwards to correct the already applied relaxed source terms.
         """
         phase = self.project.phases()[self.settings['phase']]
