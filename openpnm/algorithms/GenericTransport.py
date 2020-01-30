@@ -566,9 +566,12 @@ class GenericTransport(GenericAlgorithm):
 
         # SciPy
         if self.settings['solver_family'] == 'scipy':
-            if importlib.util.find_spec('scikits.umfpack'):
+            try:
+                import scikits.umfpack
                 A.indices = A.indices.astype(np.int64)
                 A.indptr = A.indptr.astype(np.int64)
+            except ModuleNotFoundError:
+                pass
             iterative = ['bicg', 'bicgstab', 'cg', 'cgs', 'gmres', 'lgmres',
                          'minres', 'gcrotmk', 'qmr']
             solver = getattr(sprs.linalg, self.settings['solver_type'])
