@@ -95,6 +95,37 @@ def charge_conservation(target, phase, p_alg, e_alg, assumption):
 
 def standard_kinetics(target, quantity, prefactor, exponent):
     r"""
+    Calculates the rate, as well as slope and intercept of the following
+    function at the given value of `X`:
+
+        .. math::
+            r = A X^b
+
+    Parameters
+    ----------
+    ``prefactor, exponent`` : {string}
+        The dictionary keys on the target object containing the coefficients
+        values to be used in the source term model
+
+    ``quantity`` : {string}
+        The dictionary key on the target object containing the the quantity
+        of interest
+
+    Returns
+    -------
+    A dictionary containing the following three items:
+
+        **'rate'** - The value of the source term function at the given X.
+
+        **'S1'** - The slope of the source term function at the given X.
+
+        **'S2'** - The intercept of the source term function at the given X.
+
+    The slope and intercept provide a linearized source term equation about the
+    current value of X as follow:
+
+        .. math::
+            rate = S_{1} X + S_{2}
 
     """
     X = target[quantity]
