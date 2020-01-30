@@ -23,6 +23,34 @@ class GenericTransportTest:
         with pytest.raises(Exception):
             alg.results()
 
+    def test_set_solver(self):
+        alg = op.algorithms.GenericTransport(network=self.net,
+                                             phase=self.phase)
+        # Store old values
+        family = alg.settings["solver_family"]
+        stype = alg.settings["solver_type"]
+        tol = alg.settings["solver_tol"]
+        atol = alg.settings["solver_atol"]
+        rtol = alg.settings["solver_rtol"]
+        # Set solver settings, but don't provide any arguments
+        alg.set_solver()
+        # Make sure nothing was changed
+        assert alg.settings["solver_family"] == family
+        assert alg.settings["solver_type"] == stype
+        assert alg.settings["solver_tol"] == tol
+        assert alg.settings["solver_atol"] == atol
+        assert alg.settings["solver_rtol"] == rtol
+        # Set solver settings, this time change everything
+        alg.set_solver(solver_family="petsc", solver_type="gmres",
+                       preconditioner="ilu", tol=1e-3, atol=1e-12, rtol=1e-2)
+        # Make changes went through
+        assert alg.settings["solver_family"] == "petsc"
+        assert alg.settings["solver_type"] == "gmres"
+        assert alg.settings["solver_tol"] == 1e-3
+        assert alg.settings["solver_atol"] == 1e-12
+        assert alg.settings["solver_rtol"] == 1e-2
+
+
     def test_remove_boundary_conditions(self):
         alg = op.algorithms.GenericTransport(network=self.net,
                                              phase=self.phase)
