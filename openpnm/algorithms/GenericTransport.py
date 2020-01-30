@@ -732,7 +732,7 @@ class GenericTransport(GenericAlgorithm):
             tol=None,
             atol=None,
             rtol=None
-        ):
+    ):
         r"""
         Set the solver to be used to solve the algorithm.
 
