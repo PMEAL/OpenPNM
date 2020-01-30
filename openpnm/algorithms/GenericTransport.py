@@ -589,18 +589,17 @@ class GenericTransport(GenericAlgorithm):
         # PETSc
         if self.settings['solver_family'] == 'petsc':
             # Check if petsc is available
-            if importlib.util.find_spec('petsc4py'):
+            try:
                 from openpnm.utils.petsc import PETScSparseLinearSolver as SLS
-            else:
+            except ModuleNotFoundError:
                 raise Exception('PETSc is not installed.')
-            # Define the petsc linear system converting the scipy objects
             ls = SLS(A=A, b=b)
             sets = self.settings
             sets = {k: v for k, v in sets.items() if k.startswith('solver_')}
             sets = {k.split('solver_')[1]: v for k, v in sets.items()}
             ls.settings.update(sets)
-            x = SLS.solve(ls)
-            del(ls)
+            x = ls.solve()
+            del ls
             return x
 
         # PyAMG
