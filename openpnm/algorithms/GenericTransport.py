@@ -491,7 +491,7 @@ class GenericTransport(GenericAlgorithm):
             self.A.setdiag(datadiag)
             self.A.eliminate_zeros()  # Remove 0 entries
 
-    def run(self):
+    def run(self, x0=None):
         r"""
         Builds the A and b matrices, and calls the solver specified in the
         ``settings`` attribute.
@@ -510,14 +510,15 @@ class GenericTransport(GenericAlgorithm):
         """
         logger.info('―' * 80)
         logger.info('Running GenericTransport')
-        self._run_generic()
+        self._run_generic(x0)
 
-    def _run_generic(self):
+    def _run_generic(self, x0):
         self._apply_BCs()
-        x_new = self._solve()
+        x0 = np.zeros_like(self.b)
+        x_new = self._solve(x0=x0)
         self[self.settings['quantity']] = x_new
 
-    def _solve(self, A=None, b=None):
+    def _solve(self, A=None, b=None, x0=None):
         r"""
         Sends the A and b matrices to the specified solver, and solves for *x*
         given the boundary conditions, and source terms based on the present
@@ -533,6 +534,9 @@ class GenericTransport(GenericAlgorithm):
         b : ND-array
             The RHS matrix in any format.  If not specified, then it uses
             the ``b`` matrix attached to the object.
+
+        x0 : ND-array
+            The initial guess for the solution of Ax = b
 
         Notes
         -----
@@ -601,12 +605,14 @@ class GenericTransport(GenericAlgorithm):
 
         # PyAMG
         if self.settings['solver_family'] == 'pyamg':
-            if importlib.util.find_spec('pyamg'):
+            # Check if petsc is available
+            try:
                 import pyamg
-            else:
+            except ModuleNotFoundError:
                 raise Exception('PyAMG is not installed.')
             ml = pyamg.ruge_stuben_solver(A)
-            x = ml.solve(b=b, tol=1e-10)
+            norm_reduction = rtol * norm(A*x0 - b)
+            x = ml.solve(b=b, tol=norm_reduction)
             return x
 
     def _get_atol(self):
