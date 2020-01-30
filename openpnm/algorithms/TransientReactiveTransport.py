@@ -252,8 +252,8 @@ class TransientReactiveTransport(ReactiveTransport):
         self._t_update_A()
         self._t_update_b()
         self._apply_BCs()
-        self._A_t = (self._A).copy()
-        self._b_t = (self._b).copy()
+        self._A_t = self._A.copy()
+        self._b_t = self._b.copy()
         if t is None:
             t = self.settings['t_initial']
         # Create S1 & S1 for 1st Picard's iteration
@@ -351,7 +351,7 @@ class TransientReactiveTransport(ReactiveTransport):
                 logger.info('    Transient solver converged after: '
                             + str(time) + ' s')
 
-    def _t_run_reactive(self, x):
+    def _t_run_reactive(self, x0):
         """r
         Repeatedly updates transient 'A', 'b', and the solution guess within
         each time step according to the applied source term then calls '_solve'
@@ -360,7 +360,7 @@ class TransientReactiveTransport(ReactiveTransport):
 
         Parameters
         ----------
-        x : ND-array
+        x0 : ND-array
             Initial guess of unknown variable
 
         Returns
@@ -373,8 +373,9 @@ class TransientReactiveTransport(ReactiveTransport):
         Description of 'relaxation_quantity' and 'max_iter' settings can be
         found in the parent class 'ReactiveTransport' documentation.
         """
-        if x is None:
-            x = np.zeros(shape=[self.Np, ], dtype=float)
+        if x0 is None:
+            x0 = np.zeros(self.Np, dtype=float)
+        x = x0
         self[self.settings['quantity']] = x
         relax = self.settings['relaxation_quantity']
         phase = self.project.phases()[self.settings['phase']]
