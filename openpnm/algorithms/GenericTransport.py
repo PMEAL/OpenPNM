@@ -2,6 +2,7 @@ import importlib
 import numpy as np
 import openpnm as op
 import scipy.sparse as sprs
+from numpy.linalg import norm
 import scipy.sparse.csgraph as spgr
 from scipy.spatial import ConvexHull
 from scipy.spatial import cKDTree
@@ -559,16 +560,14 @@ class GenericTransport(GenericAlgorithm):
             self.settings['solver_family'] = 'petsc'
 
         # Set tolerance for iterative solvers
-        rtol = self.settings['solver_rtol']
-        # Reference for residual's normalization
-        ref = np.sum(np.absolute(self.A.diagonal())) or 1
-        atol = ref * rtol
+        atol = self._get_atol()
+        rtol = self._get_rtol(x0=x0)
         # Check if A is symmetric
         is_sym = op.utils.is_symmetric(self.A)
 
         # SciPy
         if self.settings['solver_family'] == 'scipy':
-            if importlib.util.find_spec('scikit-umfpack'):
+            if importlib.util.find_spec('scikits.umfpack'):
                 A.indices = A.indices.astype(np.int64)
                 A.indptr = A.indptr.astype(np.int64)
             iterative = ['bicg', 'bicgstab', 'cg', 'cgs', 'gmres', 'lgmres',
@@ -692,6 +691,17 @@ class GenericTransport(GenericAlgorithm):
             if mode == 'group':
                 R = np.sum(R)
         return np.array(R, ndmin=1)
+
+    def _get_residual(self, x=None):
+        r"""
+        Calculate solution residual based on the given ``x`` based on the
+        following formula:
+            ``res = norm(A*x - b)``
+        """
+        if x is None:
+            quantity = self.settings['quantity']
+            x = self[quantity]
+        return norm(self.A * x - self.b)
 
     def _calc_eff_prop(self, inlets=None, outlets=None,
                        domain_area=None, domain_length=None):
