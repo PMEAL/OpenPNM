@@ -308,7 +308,7 @@ class TransientReactiveTransport(ReactiveTransport):
         if (s == 'steady'):  # If solver in steady mode, do one iteration
             logger.info('    Running in steady mode')
             x_old = self[self.settings['quantity']]
-            self._t_run_reactive(x=x_old)
+            self._t_run_reactive(x0=x_old)
             x_new = self[self.settings['quantity']]
 
         else:  # Do time iterations
@@ -320,7 +320,7 @@ class TransientReactiveTransport(ReactiveTransport):
                 if (res_t >= tol):  # Check if the steady state is reached
                     logger.info('    Current time step: '+str(time)+' s')
                     x_old = self[self.settings['quantity']]
-                    self._t_run_reactive(x=x_old)
+                    self._t_run_reactive(x0=x_old)
                     x_new = self[self.settings['quantity']]
                     # Compute the residual
                     res_t = np.sum(np.absolute(x_old**2 - x_new**2))

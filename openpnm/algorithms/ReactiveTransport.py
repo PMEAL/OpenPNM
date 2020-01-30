@@ -288,8 +288,6 @@ class ReactiveTransport(GenericTransport):
         # Create S1 & S2 for the 1st Picard iteration
         if x0 is None:
             x0 = np.zeros(self.Np, dtype=float)
-        # Write initial guess to algorithm obj (for _update_iterative_props to work)
-        self[quantity] = x0
         x = self._run_reactive(x0)
         self[quantity] = x
 
@@ -312,10 +310,11 @@ class ReactiveTransport(GenericTransport):
         x : ND-array
             Solution array.
         """
-        x = x0
         w = self.settings['relaxation_quantity']
         quantity = self.settings['quantity']
         max_it = self.settings['max_iter']
+        # Write initial guess to algorithm obj (for _update_iterative_props to work)
+        self[quantity] = x = x0
 
         for itr in range(max_it):
             # Update iterative properties on phase and physics
