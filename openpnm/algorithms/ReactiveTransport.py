@@ -272,7 +272,7 @@ class ReactiveTransport(GenericTransport):
             phase[item + '.' + 'S1.old'] = phase[item + '.' + 'S1'].copy()
             phase[item + '.' + 'S2.old'] = phase[item + '.' + 'S2'].copy()
 
-    def run(self, x=None):
+    def run(self, x0=None):
         r"""
         Builds the A and b matrices, and calls the solver specified in the
         ``settings`` attribute.
@@ -281,45 +281,46 @@ class ReactiveTransport(GenericTransport):
         ----------
         x : ND-array
             Initial guess of unknown variable
-
         """
         quantity = self.settings['quantity']
         logger.info('Running ReactiveTransport')
 
-        # Create S1 & S1 for the 1st Picard iteration
-        if x is None:
-            x = np.zeros(shape=self.Np, dtype=float)
-        self[quantity] = x
-        x = self._run_reactive(x)
+        # Create S1 & S2 for the 1st Picard iteration
+        if x0 is None:
+            x0 = np.zeros(self.Np, dtype=float)
+        # Write initial guess to algorithm obj (for _update_iterative_props to work)
+        self[quantity] = x0
+        x = self._run_reactive(x0)
         self[quantity] = x
 
-    def _run_reactive(self, x):
+    def _run_reactive(self, x0):
         r"""
-        Repeatedly updates 'A', 'b', and the solution guess within according
-        to the applied source term then calls '_solve' to solve the resulting
+        Repeatedly updates ``A``, ``b``, and the solution guess within according
+        to the applied source term then calls ``_solve`` to solve the resulting
         system of linear equations.
 
-        Stops when the residual falls below 'rxn_tolerance' or when the maximum
-        number of iterations is reached.
+        Stops when the residual falls below ``solver_tol * norm(b)`` or when
+        the maximum number of iterations is reached.
 
         Parameters
         ----------
-        x : ND-array
+        x0 : ND-array
             Initial guess of unknown variable
 
         Returns
         -------
-        x_new : ND-array
+        x : ND-array
             Solution array.
         """
+        x = x0
         w = self.settings['relaxation_quantity']
         quantity = self.settings['quantity']
-        rxn_tol = self.settings['rxn_tolerance']
+        max_it = self.settings['max_iter']
 
-        for itr in range(self.settings['max_iter']):
+        for itr in range(max_it):
             # Update iterative properties on phase and physics
             self._update_iterative_props()
-            # Build A and b, apply BCs, sources and solve!
+            # Build A and b, apply BCs/source terms
             self._build_A()
             self._build_b()
             self._apply_BCs()

@@ -132,10 +132,8 @@ class GenericTransport(GenericAlgorithm):
             project = network.project
         super().__init__(project=project, **kwargs)
         # Create some instance attributes
-        self._A = None
-        self._pure_A = None
-        self._b = None
-        self._pure_b = None
+        self._A = self._pure_A = None
+        self._b = self._pure_b = None
         self['pore.bc_rate'] = np.nan
         self['pore.bc_value'] = np.nan
 
@@ -431,8 +429,8 @@ class GenericTransport(GenericAlgorithm):
         Parameters
         ----------
         force : Boolean (default is ``False``)
-            If set to ``True`` then the b matrix is built from new.  If
-            ``False`` (the default), a cached version of b is returned.  The
+            If set to ``True`` then the b matrix is built from new. If
+            ``False`` (the default), a cached version of b is returned. The
             cached version is *clean* in the sense that no boundary conditions
             or sources terms have been added to it.
         """
@@ -493,7 +491,7 @@ class GenericTransport(GenericAlgorithm):
             self.A.setdiag(datadiag)
             self.A.eliminate_zeros()  # Remove 0 entries
 
-    def run(self):
+    def run(self, x0=None):
         r"""
         Builds the A and b matrices, and calls the solver specified in the
         ``settings`` attribute.
@@ -512,14 +510,15 @@ class GenericTransport(GenericAlgorithm):
         """
         logger.info('―' * 80)
         logger.info('Running GenericTransport')
-        self._run_generic()
+        self._run_generic(x0)
 
-    def _run_generic(self):
+    def _run_generic(self, x0):
         self._apply_BCs()
-        x_new = self._solve()
+        x0 = np.zeros_like(self.b)
+        x_new = self._solve(x0=x0)
         self[self.settings['quantity']] = x_new
 
-    def _solve(self, A=None, b=None):
+    def _solve(self, A=None, b=None, x0=None):
         r"""
         Sends the A and b matrices to the specified solver, and solves for *x*
         given the boundary conditions, and source terms based on the present
@@ -536,6 +535,9 @@ class GenericTransport(GenericAlgorithm):
             The RHS matrix in any format.  If not specified, then it uses
             the ``b`` matrix attached to the object.
 
+        x0 : ND-array
+            The initial guess for the solution of Ax = b
+
         Notes
         -----
         The solver used here is specified in the ``settings`` attribute of the
@@ -543,15 +545,12 @@ class GenericTransport(GenericAlgorithm):
 
         """
         # Fetch A and b from self if not given, and throw error if not found
-        if A is None:
-            A = self.A
-            if A is None:
-                raise Exception('The A matrix has not been built yet')
-        if b is None:
-            b = self.b
-            if b is None:
-                raise Exception('The b matrix has not been built yet')
+        A = self.A if A is None else A
+        b = self.b if b is None else b
+        if A is None or b is None:
+            raise Exception('The A matrix or the b vector not yet built.')
         A = A.tocsr()
+        x0 = np.zeros_like(b) if x0 is None else x0
 
         # Default behavior -> use Scipy's default solver (spsolve)
         if self.settings['solver'] == 'pyamg':
@@ -590,28 +589,29 @@ class GenericTransport(GenericAlgorithm):
         # PETSc
         if self.settings['solver_family'] == 'petsc':
             # Check if petsc is available
-            if importlib.util.find_spec('petsc4py'):
+            try:
                 from openpnm.utils.petsc import PETScSparseLinearSolver as SLS
-            else:
+            except ModuleNotFoundError:
                 raise Exception('PETSc is not installed.')
-            # Define the petsc linear system converting the scipy objects
             ls = SLS(A=A, b=b)
             sets = self.settings
             sets = {k: v for k, v in sets.items() if k.startswith('solver_')}
             sets = {k.split('solver_')[1]: v for k, v in sets.items()}
             ls.settings.update(sets)
-            x = SLS.solve(ls)
-            del(ls)
+            x = ls.solve()
+            del ls
             return x
 
         # PyAMG
         if self.settings['solver_family'] == 'pyamg':
-            if importlib.util.find_spec('pyamg'):
+            # Check if petsc is available
+            try:
                 import pyamg
-            else:
+            except ModuleNotFoundError:
                 raise Exception('PyAMG is not installed.')
             ml = pyamg.ruge_stuben_solver(A)
-            x = ml.solve(b=b, tol=1e-10)
+            norm_reduction = rtol * norm(A*x0 - b)
+            x = ml.solve(b=b, tol=norm_reduction)
             return x
 
     def _get_atol(self):
