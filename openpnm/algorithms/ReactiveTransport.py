@@ -335,7 +335,7 @@ class ReactiveTransport(GenericTransport):
 
         # Check solution convergence after max_it iterations
         if not self._is_converged():
-            raise Exception("Not converged after {max_it} iterations.")
+            raise Exception(f"Not converged after {max_it} iterations.")
 
     def _is_converged(self):
         r"""

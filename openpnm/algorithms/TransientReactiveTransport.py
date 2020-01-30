@@ -289,6 +289,7 @@ class TransientReactiveTransport(ReactiveTransport):
         to = self.settings['t_output']
         tol = self.settings['t_tolerance']
         t_pre = self.settings['t_precision']
+        quantity = self.settings['quantity']
         s = self.settings['t_scheme']
         res_t = 1e+06  # Initialize the residual
 
@@ -305,31 +306,31 @@ class TransientReactiveTransport(ReactiveTransport):
         out = np.unique(out)
         out = np.around(out, decimals=t_pre)
 
-        if (s == 'steady'):  # If solver in steady mode, do one iteration
+        if s == 'steady':  # If solver in steady mode, do one iteration
             logger.info('    Running in steady mode')
-            x_old = self[self.settings['quantity']]
+            x_old = self[quantity]
             self._t_run_reactive(x0=x_old)
-            x_new = self[self.settings['quantity']]
+            x_new = self[quantity]
 
         else:  # Do time iterations
             # Export the initial field (t=t_initial)
             t_str = self._nbr_to_str(t)
-            quant_init = self[self.settings['quantity']]
-            self[self.settings['quantity']+'@'+t_str] = quant_init
+            quant_init = self[quantity]
+            self[quantity + '@' + t_str] = quant_init
             for time in np.arange(t+dt, tf+dt, dt):
                 if (res_t >= tol):  # Check if the steady state is reached
-                    logger.info('    Current time step: '+str(time)+' s')
-                    x_old = self[self.settings['quantity']]
+                    logger.info('    Current time step: ' + str(time) + ' s')
+                    x_old = self[quantity]
                     self._t_run_reactive(x0=x_old)
-                    x_new = self[self.settings['quantity']]
+                    x_new = self[quantity]
                     # Compute the residual
                     res_t = np.sum(np.absolute(x_old**2 - x_new**2))
-                    logger.info('        Residual: '+str(res_t))
+                    logger.info('        Residual: ' + str(res_t))
                     # Output transient solutions. Round time to ensure every
                     # value in outputs is exported.
                     if round(time, t_pre) in out:
                         t_str = self._nbr_to_str(time)
-                        self[self.settings['quantity']+'@'+t_str] = x_new
+                        self[quantity + '@' + t_str] = x_new
                         logger.info('        Exporting time step: '
                                     + str(time) + ' s')
                     # Update A and b and apply BCs
@@ -342,7 +343,7 @@ class TransientReactiveTransport(ReactiveTransport):
                 else:  # Stop time iterations if residual < t_tolerance
                     # Output steady state solution
                     t_str = self._nbr_to_str(time)
-                    self[self.settings['quantity']+'@'+t_str] = x_new
+                    self[quantity + '@' + t_str] = x_new
                     logger.info('        Exporting time step: ' + str(time) + ' s')
                     break
             if (round(time, t_pre) == tf):
