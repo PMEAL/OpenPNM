@@ -614,6 +614,35 @@ class GenericTransport(GenericAlgorithm):
             x = ml.solve(b=b, tol=1e-10)
             return x
 
+    def _get_atol(self):
+        r"""
+        Fetches absolute tolerance for the solver if not ``None``, otherwise
+        calculates it in a way that meets the given ``tol`` requirements.
+
+        ``atol`` is defined such to satisfy the following stopping criterion:
+            ``norm(A*x-b)`` <= ``atol``
+        """
+        atol = self.settings["solver_atol"]
+        if atol is None:
+            tol = self.settings["solver_tol"]
+            atol = norm(self.b) * tol
+        return atol
+
+    def _get_rtol(self, x0):
+        r"""
+        Fetches relative tolerance for the solver if not ``None``, otherwise
+        calculates it in a way that meets the given ``tol`` requirements.
+
+        ``rtol`` is defined based on the following formula:
+            ``rtol = residual(@x_final) / residual(@x0)``
+        """
+        rtol = self.settings["solver_rtol"]
+        if rtol is None:
+            res0 = self._get_residual(x=x0)
+            atol = self._get_atol()
+            rtol = atol / res0
+        return rtol
+
     def results(self):
         r"""
         Fetches the calculated quantity from the algorithm and returns it as
