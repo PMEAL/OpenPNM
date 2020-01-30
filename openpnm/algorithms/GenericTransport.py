@@ -721,6 +721,60 @@ class GenericTransport(GenericAlgorithm):
                 R = np.sum(R)
         return np.array(R, ndmin=1)
 
+    def set_solver(self, solver_family, solver_type, preconditioner="jacobi",
+                   tol=None, atol=None, rtol=None):
+        r"""
+        Set the solver to be used to solve the algorithm.
+
+        Parameters
+        ----------
+        solver_family : string
+            Solver family, could be "scipy", "petsc", and "pyamg".
+
+        solver_type : string
+            Solver type, could be "spsolve", "cg", "gmres", etc.
+
+        preconditioner : string, optional
+            Preconditioner for iterative solvers. The default is "jacobi".
+
+        tol : float, optional
+            Tolerance for iterative solvers, loosely related to number of
+            significant digits in data.
+
+        atol : float, optional
+            Absolute tolerance for iterative solvers, such that
+            norm(Ax-b) <= atol holds.
+
+        rtol : float, optional
+            Relative tolerance for iterative solvers, loosely related to how
+            many orders of magnitude reduction in residual is desired, compared
+            to its value at initial guess.
+
+        Returns
+        -------
+        None.
+
+        """
+        settings = self.settings
+        # Preserve pre-set values, if any
+        if settings["solver_preconditioner"] is not None:
+            preconditioner = settings["solver"]
+        if settings["solver_tol"] is not None:
+            tol = settings["solver_tol"]
+        if settings["solver_atol"] is not None:
+            atol = settings["solver_atol"]
+        if settings["solver_rtol"] is not None:
+            atol = settings["solver_rtol"]
+        # Update settings on algorithm object
+        self.settings.update({
+            "solver_family": solver_family,
+            "solver_type": solver_type,
+            "solver_preconditioner": preconditioner,
+            "solver_tol": tol,
+            "solver_atol": atol,
+            "solver_rtol": rtol
+            })
+
     def _get_residual(self, x=None):
         r"""
         Calculate solution residual based on the given ``x`` based on the
