@@ -199,7 +199,7 @@ def power_law(target, X, A1='', A2='', A3=''):
     function at the given value of *X*:
 
         .. math::
-            r = A_{1}   x^{A_{2}}  +  A_{3}
+            r = A_{1} x^{A_{2}} + A_{3}
 
     Parameters
     ----------
