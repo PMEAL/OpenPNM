@@ -1,4 +1,3 @@
-import importlib
 import numpy as np
 import openpnm as op
 import scipy.sparse as sprs
@@ -19,8 +18,8 @@ def_set = {'phase': None,
            'solver_type': 'spsolve',
            'solver_preconditioner': 'jacobi',
            'solver_tol': 1e-6,
-           'solver_atol': 0,
-           'solver_rtol': 1e-6,
+           'solver_atol': None,
+           'solver_rtol': None,
            'solver_maxiter': 5000,
            'iterative_props': [],
            'cache_A': True, 'cache_b': True,
@@ -356,8 +355,7 @@ class GenericTransport(GenericAlgorithm):
         rate_BC_mask = np.isfinite(self["pore.bc_rate"])
         BC_locs = self.Ps[rate_BC_mask + value_BC_mask]
         if np.intersect1d(pores, BC_locs).size:
-            logger.warning('Another boundary condition was detected in some '
-                           + 'of the locations received')
+            logger.warning('Another boundary condition detected in some locations!')
 
         # Store boundary values
         if ('pore.bc_' + bctype not in self.keys()) or (mode == 'overwrite'):
@@ -552,58 +550,47 @@ class GenericTransport(GenericAlgorithm):
         A = A.tocsr()
         x0 = np.zeros_like(b) if x0 is None else x0
 
-        # Default behavior -> use Scipy's default solver (spsolve)
-        if self.settings['solver'] == 'pyamg':
-            self.settings['solver_family'] = 'pyamg'
-        if self.settings['solver'] == 'petsc':
-            self.settings['solver_family'] = 'petsc'
-
         # Set tolerance for iterative solvers
+        tol = self.settings["solver_tol"]
+        max_it = self.settings["solver_maxiter"]
         atol = self._get_atol()
         rtol = self._get_rtol(x0=x0)
         # Check if A is symmetric
         is_sym = op.utils.is_symmetric(self.A)
+        if self.settings['solver_type'] == 'cg' and not is_sym:
+            raise Exception('CG solver only works on symmetric matrices.')
 
         # SciPy
         if self.settings['solver_family'] == 'scipy':
+            # Umfpack by default uses its 32-bit build -> memory overflow
             try:
                 import scikits.umfpack
                 A.indices = A.indices.astype(np.int64)
                 A.indptr = A.indptr.astype(np.int64)
             except ModuleNotFoundError:
                 pass
+            solver = getattr(sprs.linalg, self.settings['solver_type'])
             iterative = ['bicg', 'bicgstab', 'cg', 'cgs', 'gmres', 'lgmres',
                          'minres', 'gcrotmk', 'qmr']
-            solver = getattr(sprs.linalg, self.settings['solver_type'])
-
-            if self.settings['solver_type'] == 'cg' and not is_sym:
-                raise Exception('Conjugate gradient (cg) solver cannot be used with '
-                                + 'non-symmetric matrices. Choose a different solver.')
-            if self.settings['solver_type'] in iterative:
-                x, exit_code = solver(A=A, b=b, atol=atol, tol=rtol,
-                                      maxiter=self.settings['solver_maxiter'])
+            if solver.__name__ in iterative:
+                x, exit_code = solver(A=A, b=b, atol=atol, tol=tol, maxiter=max_it, x0=x0)
                 if exit_code > 0:
-                    raise Exception('SciPy solver did not converge! '
-                                    + 'Exit code: ' + str(exit_code))
+                    raise Exception(f'Solver did not converge, exit code: {exit_code}')
             else:
                 x = solver(A=A, b=b)
-            return x
 
         # PETSc
         if self.settings['solver_family'] == 'petsc':
             # Check if petsc is available
             try:
+                import petsc4py
                 from openpnm.utils.petsc import PETScSparseLinearSolver as SLS
             except ModuleNotFoundError:
                 raise Exception('PETSc is not installed.')
-            ls = SLS(A=A, b=b)
-            sets = self.settings
-            sets = {k: v for k, v in sets.items() if k.startswith('solver_')}
-            sets = {k.split('solver_')[1]: v for k, v in sets.items()}
-            ls.settings.update(sets)
-            x = ls.solve()
-            del ls
-            return x
+            temp = {"type": self.settings["solver_type"],
+                    "preconditioner": self.settings["solver_preconditioner"]}
+            ls = SLS(A=A, b=b, settings=temp)
+            x = ls.solve(x0=x0, atol=atol, rtol=rtol, max_it=max_it)
 
         # PyAMG
         if self.settings['solver_family'] == 'pyamg':
@@ -613,9 +600,9 @@ class GenericTransport(GenericAlgorithm):
             except ModuleNotFoundError:
                 raise Exception('PyAMG is not installed.')
             ml = pyamg.ruge_stuben_solver(A)
-            norm_reduction = rtol * norm(A*x0 - b)
-            x = ml.solve(b=b, tol=norm_reduction)
-            return x
+            x = ml.solve(b=b, tol=rtol, maxiter=max_it)
+
+        return x
 
     def _get_atol(self):
         r"""
@@ -731,7 +718,8 @@ class GenericTransport(GenericAlgorithm):
             preconditioner=None,
             tol=None,
             atol=None,
-            rtol=None
+            rtol=None,
+            maxiter=None,
     ):
         r"""
         Set the solver to be used to solve the algorithm.
@@ -782,6 +770,8 @@ class GenericTransport(GenericAlgorithm):
             atol = settings["solver_atol"]
         if rtol is None:
             rtol = settings["solver_rtol"]
+        if maxiter is None:
+            maxiter = settings["solver_maxiter"]
         # Update settings on algorithm object
         self.settings.update(
             {
@@ -790,7 +780,8 @@ class GenericTransport(GenericAlgorithm):
                 "solver_preconditioner": preconditioner,
                 "solver_tol": tol,
                 "solver_atol": atol,
-                "solver_rtol": rtol
+                "solver_rtol": rtol,
+                "solver_maxiter": maxiter
             }
         )
 

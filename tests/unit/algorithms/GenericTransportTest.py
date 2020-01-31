@@ -1,6 +1,6 @@
+import pytest
 import openpnm as op
 import scipy as sp
-import pytest
 
 
 class GenericTransportTest:
@@ -32,6 +32,7 @@ class GenericTransportTest:
         tol = alg.settings["solver_tol"]
         atol = alg.settings["solver_atol"]
         rtol = alg.settings["solver_rtol"]
+        maxiter = alg.settings["solver_maxiter"]
         # Set solver settings, but don't provide any arguments
         alg.set_solver()
         # Make sure nothing was changed
@@ -40,8 +41,9 @@ class GenericTransportTest:
         assert alg.settings["solver_tol"] == tol
         assert alg.settings["solver_atol"] == atol
         assert alg.settings["solver_rtol"] == rtol
+        assert alg.settings["solver_maxiter"] == maxiter
         # Set solver settings, this time change everything
-        alg.set_solver(solver_family="petsc", solver_type="gmres",
+        alg.set_solver(solver_family="petsc", solver_type="gmres", maxiter=13,
                        preconditioner="ilu", tol=1e-3, atol=1e-12, rtol=1e-2)
         # Make changes went through
         assert alg.settings["solver_family"] == "petsc"
@@ -49,6 +51,7 @@ class GenericTransportTest:
         assert alg.settings["solver_tol"] == 1e-3
         assert alg.settings["solver_atol"] == 1e-12
         assert alg.settings["solver_rtol"] == 1e-2
+        assert alg.settings["solver_maxiter"] == 13
 
     def test_remove_boundary_conditions(self):
         alg = op.algorithms.GenericTransport(network=self.net,
@@ -69,6 +72,27 @@ class GenericTransportTest:
         alg.set_value_BC(pores=self.net.pores('top'), values=1)
         alg.set_value_BC(pores=self.net.pores('bottom'), values=0)
         alg.run()
+
+    def test_pestc_wrapper(self):
+        alg = op.algorithms.GenericTransport(network=self.net,
+                                             phase=self.phase)
+        alg.settings['conductance'] = 'throat.diffusive_conductance'
+        alg.settings['quantity'] = 'pore.mole_fraction'
+        alg.set_value_BC(pores=self.net.pores('top'), values=1)
+        alg.set_value_BC(pores=self.net.pores('bottom'), values=0)
+        x = [0.0, 0.125, 0.25, 0.375, 0.5, 0.625, 0.75, 0.875, 1.0]
+        # Test different solvers
+        solver_types = ['mumps', 'cg', 'gmres', 'bicg']
+        # PETSc is not by default installed, so testing should be optional too
+        try:
+            import petsc4py
+            for solver_type in solver_types:
+                alg.set_solver(solver_family="petsc", solver_type=solver_type)
+                alg.run()
+                y = sp.unique(sp.around(alg['pore.mole_fraction'], decimals=3))
+                assert sp.all(x == y)
+        except ModuleNotFoundError:
+            pass
 
     def test_two_value_conditions(self):
         alg = op.algorithms.GenericTransport(network=self.net,
