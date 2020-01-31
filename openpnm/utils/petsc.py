@@ -9,9 +9,12 @@ import scipy as sp
 from openpnm.core import Base
 from openpnm.utils import logging
 logger = logging.getLogger(__name__)
-import petsc4py
-from petsc4py import PETSc
-petsc4py.init(sys.argv)
+try:
+    import petsc4py
+    from petsc4py import PETSc
+    petsc4py.init(sys.argv)
+except ModuleNotFoundError:
+    raise ModuleNotFoundError
 
 
 class PETScSparseLinearSolver(Base):
