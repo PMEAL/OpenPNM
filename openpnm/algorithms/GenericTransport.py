@@ -580,15 +580,6 @@ class GenericTransport(GenericAlgorithm):
             else:
                 x = solver(A=A, b=b)
 
-        # PyPARDISO
-        if self.settings['solver_family'] == 'pypardiso':
-            # Check if pypardiso is available
-            try:
-                from pypardiso import spsolve
-            except ModuleNotFoundError:
-                raise Exception('PyPARDISO is not installed.')
-            x = spsolve(A, b)
-
         # PETSc
         if self.settings['solver_family'] == 'petsc':
             # Check if petsc is available
