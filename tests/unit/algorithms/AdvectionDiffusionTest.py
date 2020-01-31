@@ -31,6 +31,9 @@ class AdvectionDiffusionTest:
 
         self.ad = op.algorithms.AdvectionDiffusion(network=self.net,
                                                    phase=self.phase)
+        self.ad.setup(diffusive_conductance="throat.diffusive_conductance",
+                      hydraulic_conductance="throat.hydraulic_conductance",
+                      pressure="pore.pressure")
         self.ad.settings.update({"cache_A": False, "cache_b": False})
         self.ad.set_value_BC(pores=self.net.pores('back'), values=2)
         self.ad.set_value_BC(pores=self.net.pores('front'), values=0)
