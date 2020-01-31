@@ -85,6 +85,7 @@ class GenericTransportTest:
         solver_types = ['mumps', 'cg', 'gmres', 'bicg']
         # PETSc is not by default installed, so testing should be optional too
         try:
+            import petsc4py
             for solver_type in solver_types:
                 alg.set_solver(solver_family="petsc", solver_type=solver_type)
                 alg.run()

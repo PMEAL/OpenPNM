@@ -14,7 +14,7 @@ try:
     from petsc4py import PETSc
     petsc4py.init(sys.argv)
 except ModuleNotFoundError:
-    raise Exception("PETSc is not installed.")
+    pass
 
 
 class PETScSparseLinearSolver(Base):
