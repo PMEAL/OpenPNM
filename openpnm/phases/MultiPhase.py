@@ -70,8 +70,7 @@ class MultiPhase(GenericPhase):
         # Add supplied phases to the phases list and initialize occupancy to 0
         self.add_phases(phases)
 
-        logger.warning('MultiPhases are a beta feature and functionality may '
-                       + 'change in future versions!')
+        logger.warning('MultiPhase is a beta feature. Functionality may change!')
 
     def __getitem__(self, key):
         try:
