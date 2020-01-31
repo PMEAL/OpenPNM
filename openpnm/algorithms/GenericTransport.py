@@ -1,4 +1,3 @@
-import importlib
 import numpy as np
 import openpnm as op
 import scipy.sparse as sprs
@@ -559,6 +558,7 @@ class GenericTransport(GenericAlgorithm):
             self.settings['solver_family'] = 'petsc'
 
         # Set tolerance for iterative solvers
+        tol = self.settings["solver_tol"]
         atol = self._get_atol()
         rtol = self._get_rtol(x0=x0)
         # Check if A is symmetric
@@ -580,7 +580,7 @@ class GenericTransport(GenericAlgorithm):
                 raise Exception('Conjugate gradient (cg) solver cannot be used with '
                                 + 'non-symmetric matrices. Choose a different solver.')
             if self.settings['solver_type'] in iterative:
-                x, exit_code = solver(A=A, b=b, atol=atol, tol=rtol,
+                x, exit_code = solver(A=A, b=b, atol=atol, tol=tol,
                                       maxiter=self.settings['solver_maxiter'])
                 if exit_code > 0:
                     raise Exception('SciPy solver did not converge! '
