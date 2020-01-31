@@ -583,6 +583,7 @@ class GenericTransport(GenericAlgorithm):
         if self.settings['solver_family'] == 'petsc':
             # Check if petsc is available
             try:
+                import petsc4py
                 from openpnm.utils.petsc import PETScSparseLinearSolver as SLS
             except ModuleNotFoundError:
                 raise Exception('PETSc is not installed.')
