@@ -8,7 +8,7 @@ r"""
 
 """
 
-import scipy as _sp
+import numpy as _np
 
 
 def hagen_poiseuille(target,
@@ -82,11 +82,11 @@ def hagen_poiseuille(target,
     Lt = network[conduit_lengths + '.throat'][throats]
     L2 = network[conduit_lengths + '.pore2'][throats]
     # Preallocating g
-    g1, g2, gt = _sp.zeros((3, len(Lt)))
+    g1, g2, gt = _np.zeros((3, len(Lt)))
     # Setting g to inf when Li = 0 (ex. boundary pores)
     # INFO: This is needed since area could also be zero, which confuses NumPy
     m1, m2, mt = [Li != 0 for Li in [L1, L2, Lt]]
-    g1[~m1] = g2[~m2] = gt[~mt] = _sp.inf
+    g1[~m1] = g2[~m2] = gt[~mt] = _np.inf
     # Getting shape factors
     try:
         SF1 = phase[conduit_shape_factors+'.pore1'][throats]
@@ -106,7 +106,7 @@ def hagen_poiseuille(target,
         D1 = phase.interpolate_data(propname=throat_viscosity)[cn[:, 0]]
         D2 = phase.interpolate_data(propname=throat_viscosity)[cn[:, 1]]
     # Find g for half of pore 1, throat, and half of pore 2
-    pi = _sp.pi
+    pi = _np.pi
     g1[m1] = A1[m1]**2 / (8*pi*D1*L1)[m1]
     g2[m2] = A2[m2]**2 / (8*pi*D2*L2)[m2]
     gt[mt] = At[mt]**2 / (8*pi*Dt*Lt)[mt]
@@ -186,11 +186,11 @@ def hagen_poiseuille_2D(target,
     Lt = network[conduit_lengths + '.throat'][throats]
     L2 = network[conduit_lengths + '.pore2'][throats]
     # Preallocating g
-    g1, g2, gt = _sp.zeros((3, len(Lt)))
+    g1, g2, gt = _np.zeros((3, len(Lt)))
     # Setting g to inf when Li = 0 (ex. boundary pores)
     # INFO: This is needed since area could also be zero, which confuses NumPy
     m1, m2, mt = [Li != 0 for Li in [L1, L2, Lt]]
-    g1[~m1] = g2[~m2] = gt[~mt] = _sp.inf
+    g1[~m1] = g2[~m2] = gt[~mt] = _np.inf
     # Getting shape factors
     try:
         SF1 = phase[conduit_shape_factors+'.pore1'][throats]
@@ -318,11 +318,11 @@ def hagen_poiseuille_power_law(
     Lt = network[conduit_lengths + '.throat'][throats]
     L2 = network[conduit_lengths + '.pore2'][throats]
     # Preallocating g
-    g1, g2, gt = _sp.zeros((3, len(Lt)))
+    g1, g2, gt = _np.zeros((3, len(Lt)))
     # Setting g to inf when Li = 0 (ex. boundary pores)
     # INFO: This is needed since area could also be zero, which confuses NumPy
     m1, m2, mt = [Li != 0 for Li in [L1, L2, Lt]]
-    g1[~m1] = g2[~m2] = gt[~mt] = _sp.inf
+    g1[~m1] = g2[~m2] = gt[~mt] = _np.inf
     # Getting shape factors
     try:
         SF1 = phase[conduit_shape_factors+'.pore1'][throats]
@@ -330,7 +330,7 @@ def hagen_poiseuille_power_law(
         SF2 = phase[conduit_shape_factors+'.pore2'][throats]
     except KeyError:
         SF1 = SF2 = SFt = 1.0
-    pi = _sp.pi
+    pi = _np.pi
 
     # Check if pressure field exists
     try:
@@ -385,16 +385,16 @@ def hagen_poiseuille_power_law(
     Pt = phase.interpolate_data(propname=pore_pressure)[throats]
 
     # Pressure differences dP
-    dP1 = _sp.absolute(P[cn[:, 0]]-Pt)
-    dP2 = _sp.absolute(P[cn[:, 1]]-Pt)
-    dPt = _sp.absolute(_sp.diff(P[cn], axis=1).squeeze())
+    dP1 = _np.absolute(P[cn[:, 0]]-Pt)
+    dP2 = _np.absolute(P[cn[:, 1]]-Pt)
+    dPt = _np.absolute(_np.diff(P[cn], axis=1).squeeze())
 
     dP1 = dP1.clip(min=1e-20)
     dP2 = dP2.clip(min=1e-20)
     dPt = dPt.clip(min=1e-20)
 
     # Apparent viscosities
-    mu1, mu2, mut = _sp.zeros((3, len(Lt)))
+    mu1, mu2, mut = _np.zeros((3, len(Lt)))
 
     mu1[m1] = ((dP1**(1-1/n1) * C1**(1/n1))[m1] / ((4*n1/(3*n1+1))[m1] *
                (2*L1[m1]/((A1[m1]/pi)**0.5))**(1-1/n1[m1])))
@@ -406,9 +406,9 @@ def hagen_poiseuille_power_law(
                (2*Lt[mt]/((At[mt]/pi)**0.5))**(1-1/nt[mt])))
 
     # Bound the apparent viscosity
-    mu1[m1] = np.minimum(np.maximum(mu1[m1], mu_min1[m1]), mu_max1[m1])
-    mu2[m2] = np.minimum(np.maximum(mu2[m2], mu_min2[m2]), mu_max2[m2])
-    mut[mt] = np.minimum(np.maximum(mut[mt], mu_mint[mt]), mu_maxt[mt])
+    mu1[m1] = _np.minimum(_np.maximum(mu1[m1], mu_min1[m1]), mu_max1[m1])
+    mu2[m2] = _np.minimum(_np.maximum(mu2[m2], mu_min2[m2]), mu_max2[m2])
+    mut[mt] = _np.minimum(_np.maximum(mut[mt], mu_mint[mt]), mu_maxt[mt])
 
     phase['throat.viscosity_eff.pore1'] = mu1
     phase['throat.viscosity_eff.pore2'] = mu2
@@ -499,25 +499,25 @@ def valvatne_blunt(target,
         mu_t = target.interpolate_data(pore_viscosity)
     # Throat Portion
     Gt = network[throat_shape_factor]
-    tri = Gt <= _sp.sqrt(3)/36.0
+    tri = Gt <= _np.sqrt(3)/36.0
     circ = Gt >= 0.07
     square = ~(tri | circ)
-    ntri = _sp.sum(tri)
-    nsquare = _sp.sum(square)
-    ncirc = _sp.sum(circ)
-    kt = _sp.ones_like(Gt)
+    ntri = _np.sum(tri)
+    nsquare = _np.sum(square)
+    ncirc = _np.sum(circ)
+    kt = _np.ones_like(Gt)
     kt[tri] = 3.0/5.0
     kt[square] = 0.5623
     kt[circ] = 0.5
     # Pore Portions
     Gp = network[pore_shape_factor]
-    tri = Gp <= _sp.sqrt(3)/36.0
+    tri = Gp <= _np.sqrt(3)/36.0
     circ = Gp >= 0.07
     square = ~(tri | circ)
-    ntri += _sp.sum(tri)
-    nsquare += _sp.sum(square)
-    ncirc += _sp.sum(circ)
-    kp = _sp.ones_like(Gp)
+    ntri += _np.sum(tri)
+    nsquare += _np.sum(square)
+    ncirc += _np.sum(circ)
+    kp = _np.ones_like(Gp)
     kp[tri] = 3.0/5.0
     kp[square] = 0.5623
     kp[circ] = 0.5
@@ -570,14 +570,14 @@ def classic_hagen_poiseuille(target,
     plen1[plen1 <= 1e-12] = 1e-12
     plen2[plen2 <= 1e-12] = 1e-12
     # Find g for half of pore 1
-    gp1 = _sp.pi*(pdia[Ps[:, 0]])**4/(128*plen1*mut)
-    gp1[_sp.isnan(gp1)] = _sp.inf
-    gp1[~(gp1 > 0)] = _sp.inf  # Set 0 conductance pores (boundaries) to inf
+    gp1 = _np.pi*(pdia[Ps[:, 0]])**4/(128*plen1*mut)
+    gp1[_np.isnan(gp1)] = _np.inf
+    gp1[~(gp1 > 0)] = _np.inf  # Set 0 conductance pores (boundaries) to inf
 
     # Find g for half of pore 2
-    gp2 = _sp.pi*(pdia[Ps[:, 1]])**4/(128*plen2*mut)
-    gp2[_sp.isnan(gp2)] = _sp.inf
-    gp2[~(gp2 > 0)] = _sp.inf  # Set 0 conductance pores (boundaries) to inf
+    gp2 = _np.pi*(pdia[Ps[:, 1]])**4/(128*plen2*mut)
+    gp2[_np.isnan(gp2)] = _np.inf
+    gp2[~(gp2 > 0)] = _np.inf  # Set 0 conductance pores (boundaries) to inf
     # Find g for full throat
     tdia = network[throat_diameter]
     tlen = network[throat_length]
@@ -587,105 +587,12 @@ def classic_hagen_poiseuille(target,
     try:
         sf = network[shape_factor]
     except KeyError:
-        sf = _sp.ones(network.num_throats())
-    sf[_sp.isnan(sf)] = 1.0
-    gt = (1/sf)*_sp.pi*(tdia)**4/(128*tlen*mut)
-    gt[~(gt > 0)] = _sp.inf  # Set 0 conductance pores (boundaries) to inf
+        sf = _np.ones(network.num_throats())
+    sf[_np.isnan(sf)] = 1.0
+    gt = (1/sf)*_np.pi*(tdia)**4/(128*tlen*mut)
+    gt[~(gt > 0)] = _np.inf  # Set 0 conductance pores (boundaries) to inf
     value = (1/gt + 1/gp1 + 1/gp2)**(-1)
     return value
-
-
-def hagen_poiseuille_2D(target,
-                        pore_diameter='pore.diameter',
-                        throat_diameter='throat.diameter',
-                        pore_viscosity='pore.viscosity',
-                        throat_viscosity='throat.viscosity',
-                        conduit_lengths='throat.conduit_lengths',
-                        conduit_shape_factors='throat.flow_shape_factors'):
-    r"""
-    Calculate the hydraulic conductance of conduits in a 2D network, where a
-    conduit is ( 1/2 pore - full throat - 1/2 pore ). See the notes section.
-
-    Parameters
-    ----------
-    target : OpenPNM Object
-        The object which this model is associated with. This controls the
-        length of the calculated array, and also provides access to other
-        necessary properties.
-
-    pore_area : string
-        Dictionary key of the pore area values
-
-    throat_area : string
-        Dictionary key of the throat area values
-
-    pore_viscosity : string
-        Dictionary key of the pore viscosity values
-
-    throat_viscosity : string
-        Dictionary key of the throat viscosity values
-
-    conduit_lengths : string
-        Dictionary key of the conduit length values
-
-    conduit_shape_factors : string
-        Dictionary key of the conduit flow shape factor values
-
-    Returns
-    -------
-    g : ndarray
-        Array containing hydraulic conductance values for conduits in the
-        geometry attached to the given physics object.
-
-    Notes
-    -----
-    (1) This function requires that all the necessary phase properties already
-    be calculated.
-
-    (2) This function calculates the specified property for the *entire*
-    network then extracts the values for the appropriate throats at the end.
-
-    (3) This function assumes rectangular (2D) throats. Corrections for
-    different shapes and variable cross-section area can be imposed by passing
-    the proper flow_shape_factor argument.
-
-    """
-    network = target.project.network
-    throats = network.map_throats(throats=target.Ts, origin=target)
-    phase = target.project.find_phase(target)
-    cn = network['throat.conns'][throats]
-    # Getting pore/throat diameters
-    D1 = network[pore_diameter][cn[:, 0]]
-    Dt = network[throat_diameter][throats]
-    D2 = network[pore_diameter][cn[:, 1]]
-    # Getting conduit lengths
-    L1 = network[conduit_lengths + '.pore1'][throats]
-    Lt = network[conduit_lengths + '.throat'][throats]
-    L2 = network[conduit_lengths + '.pore2'][throats]
-    # Getting shape factors
-    try:
-        SF1 = phase[conduit_shape_factors+'.pore1'][throats]
-        SFt = phase[conduit_shape_factors+'.throat'][throats]
-        SF2 = phase[conduit_shape_factors+'.pore2'][throats]
-    except KeyError:
-        SF1 = SF2 = SFt = 1.0
-    # Getting viscosity values
-    try:
-        mut = phase[throat_viscosity][throats]
-    except KeyError:
-        mut = phase.interpolate_data(propname=pore_viscosity)[throats]
-    try:
-        mu1 = phase[pore_viscosity][cn[:, 0]]
-        mu2 = phase[pore_viscosity][cn[:, 1]]
-    except KeyError:
-        mu1 = phase.interpolate_data(propname=throat_viscosity)[cn[:, 0]]
-        mu2 = phase.interpolate_data(propname=throat_viscosity)[cn[:, 1]]
-    # Find g for half of pore 1, throat, and half of pore 2
-    g1 = D1**3 / (12*mu1*L1)
-    g2 = D2**3 / (12*mu2*L2)
-    gt = Dt**3 / (12*mut*Lt)
-
-    return (1/gt/SFt + 1/g1/SF1 + 1/g2/SF2)**(-1)
 
 
 def hagen_poiseuille_slit(target, throat_height='throat.height',
@@ -706,7 +613,7 @@ def hagen_poiseuille_slit(target, throat_height='throat.height',
         Lt = network[throat_length][throats]
         conns = network['throat.conns']
         Hp = network[pore_height][conns][Ts]
-        Wp = _sp.copy(Hp)
+        Wp = _np.copy(Hp)
         Lp = network[pore_length][conns][Ts]/2
         return (Ht, Wt, Lt, Hp, Wp, Lp)
 
@@ -715,7 +622,7 @@ def hagen_poiseuille_slit(target, throat_height='throat.height',
     net = project.network
     conns = net['throat.conns']
     phase = project.find_phase(target)
-    gh = _sp.zeros((net.Nt, 3), dtype=float)
+    gh = _np.zeros((net.Nt, 3), dtype=float)
 
     # Start with x-directional throats
     Ts = net.throats('dir_x')
@@ -726,8 +633,8 @@ def hagen_poiseuille_slit(target, throat_height='throat.height',
                                               pore_height='pore.size_z',
                                               pore_length='pore.size_x')
     ght = (Ht**3)*Wt/(4*phase[throat_viscosity][Ts]*Lt)
-    ghp1, ghp2 = ((Hp**3)*_sp.pi/(3*phase[throat_viscosity][conns][Ts]*Lp)).T
-    gh[Ts, :] = _sp.vstack((ghp1, ght, ghp2)).T
+    ghp1, ghp2 = ((Hp**3)*_np.pi/(3*phase[throat_viscosity][conns][Ts]*Lp)).T
+    gh[Ts, :] = _np.vstack((ghp1, ght, ghp2)).T
 
     # y-directional throats
     Ts = net.throats('dir_y')
@@ -737,8 +644,8 @@ def hagen_poiseuille_slit(target, throat_height='throat.height',
                                               throat_length=throat_length,
                                               pore_height='pore.size_z',
                                               pore_length='pore.size_y')
-    ghp1, ghp2 = ((Hp**3)*_sp.pi/(3*phase[throat_viscosity][conns][Ts]*Lp)).T
-    gh[Ts, :] = _sp.vstack((ghp1, ght, ghp2)).T
+    ghp1, ghp2 = ((Hp**3)*_np.pi/(3*phase[throat_viscosity][conns][Ts]*Lp)).T
+    gh[Ts, :] = _np.vstack((ghp1, ght, ghp2)).T
 
     # z-directional throats
     Ts = net.throats('dir_z')
@@ -748,9 +655,9 @@ def hagen_poiseuille_slit(target, throat_height='throat.height',
                                               throat_length=throat_length,
                                               pore_height='pore.size_x',
                                               pore_length='pore.size_z')
-    ghp1, ghp2 = ((Hp**3)*_sp.pi/(3*phase[throat_viscosity][conns][Ts]*Lp)).T
-    gh[Ts, :] = _sp.vstack((ghp1, ght, ghp2)).T
+    ghp1, ghp2 = ((Hp**3)*_np.pi/(3*phase[throat_viscosity][conns][Ts]*Lp)).T
+    gh[Ts, :] = _np.vstack((ghp1, ght, ghp2)).T
 
     # Finally, calculate the gh_total for each conduit
-    ghtotal = 1/(_sp.sum(1/gh, axis=1))
+    ghtotal = 1/(_np.sum(1/gh, axis=1))
     return ghtotal[phase.throats(target.name)]
