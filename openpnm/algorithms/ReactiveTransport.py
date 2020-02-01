@@ -27,7 +27,6 @@ class ReactiveTransport(GenericTransport):
     def __init__(self, settings={}, phase=None, **kwargs):
         def_set = {'phase': None,
                    'sources': [],
-                   'rxn_tolerance': 1e-8,
                    'max_iter': 5000,
                    'relaxation_source': 1.0,
                    'relaxation_quantity': 1.0,
@@ -212,7 +211,7 @@ class ReactiveTransport(GenericTransport):
 
     def _update_iterative_props(self):
         """r
-        Update physics using the current value of 'quantity'
+        Update physics using the current value of ``quantity``
 
         Notes
         -----
@@ -232,19 +231,19 @@ class ReactiveTransport(GenericTransport):
 
     def _apply_sources(self):
         """r
-        Update 'A' and 'b' applying source terms to specified pores
+        Update ``A`` and ``b`` applying source terms to specified pores
 
         Notes
         -----
-        Applying source terms to 'A' and 'b' is performed after (optionally)
+        Applying source terms to ``A`` and ``b`` is performed after (optionally)
         under-relaxing the source term to improve numerical stability. Physics
         are also updated before applying source terms to ensure that source
         terms values are associated with the current value of 'quantity'.
 
         Warnings
         --------
-        In the case of a transient simulation, the updates in 'A' and 'b'
-        also depend on the time scheme. So, '_correct_apply_sources()' needs to
+        In the case of a transient simulation, the updates in ``A`` and ``b``
+        also depend on the time scheme. So, ``_correct_apply_sources()`` needs to
         be run afterwards to correct the already applied relaxed source terms.
         """
         phase = self.project.phases()[self.settings['phase']]
@@ -273,7 +272,7 @@ class ReactiveTransport(GenericTransport):
             phase[item + '.' + 'S1.old'] = phase[item + '.' + 'S1'].copy()
             phase[item + '.' + 'S2.old'] = phase[item + '.' + 'S2'].copy()
 
-    def run(self, x=None):
+    def run(self, x0=None):
         r"""
         Builds the A and b matrices, and calls the solver specified in the
         ``settings`` attribute.
@@ -282,69 +281,74 @@ class ReactiveTransport(GenericTransport):
         ----------
         x : ND-array
             Initial guess of unknown variable
-
         """
         quantity = self.settings['quantity']
         logger.info('Running ReactiveTransport')
 
-        # Create S1 & S1 for the 1st Picard iteration
-        if x is None:
-            x = np.zeros(shape=self.Np, dtype=float)
-        self[quantity] = x
-        x = self._run_reactive(x)
+        # Create S1 & S2 for the 1st Picard iteration
+        if x0 is None:
+            x0 = np.zeros(self.Np, dtype=float)
+        x = self._run_reactive(x0)
         self[quantity] = x
 
-    def _run_reactive(self, x):
+    def _run_reactive(self, x0):
         r"""
-        Repeatedly updates 'A', 'b', and the solution guess within according
-        to the applied source term then calls '_solve' to solve the resulting
+        Repeatedly updates ``A``, ``b``, and the solution guess within according
+        to the applied source term then calls ``_solve`` to solve the resulting
         system of linear equations.
 
-        Stops when the residual falls below 'rxn_tolerance' or when the maximum
-        number of iterations is reached.
+        Stops when the residual falls below ``solver_tol * norm(b)`` or when
+        the maximum number of iterations is reached.
 
         Parameters
         ----------
-        x : ND-array
+        x0 : ND-array
             Initial guess of unknown variable
 
         Returns
         -------
-        x_new : ND-array
+        x : ND-array
             Solution array.
         """
         w = self.settings['relaxation_quantity']
         quantity = self.settings['quantity']
-        rxn_tol = self.settings['rxn_tolerance']
+        max_it = self.settings['max_iter']
+        # Write initial guess to algorithm obj (for _update_iterative_props to work)
+        self[quantity] = x = x0
 
-        for itr in range(self.settings['max_iter']):
+        for itr in range(max_it):
             # Update iterative properties on phase and physics
             self._update_iterative_props()
-            # Build A and b, apply BCs, sources and solve!
+            # Build A and b, apply BCs/source terms
             self._build_A()
             self._build_b()
             self._apply_BCs()
             self._apply_sources()
-            # Compute residual and tolerance
-            res = norm(self.A*x - self.b)
-            res_tol = norm(self.b) * rxn_tol
-            if res > res_tol:
-                logger.info('Tolerance not met: ' + str(res))
-                x_new = self._solve()
-                # Relaxation
-                x_new = w * x_new + (1-w) * self[quantity]
-                self[quantity] = x_new
-                x = x_new
-            elif res <= res_tol:
-                logger.info('Solution converged: ' + str(res))
-                x_new = x
-                break
-            elif not np.isfinite(res):  # If res is nan or inf
-                logger.warning('Residual undefined: ' + str(res))
-                raise Exception("Solution diverged; undefined residual.")
+            # Check solution convergence
+            res = self._get_residual()
+            if self._is_converged():
+                logger.info(f'Solution converged: {res:.4e}')
+                return x
+            logger.info(f'Tolerance not met: {res:.4e}')
+            # Solve, use relaxation, and update solution on algorithm obj
+            self[quantity] = x = self._solve(x0=x) * w + x * (1 - w)
 
-        # Check if the tolerance was met
-        if res > res_tol:
-            raise Exception("Maximum iterations reached, solution not converged.")
+        # Check solution convergence after max_it iterations
+        if not self._is_converged():
+            raise Exception(f"Not converged after {max_it} iterations.")
 
-        return x_new
+    def _is_converged(self):
+        r"""
+        Check if solution has converged based on the following criterion:
+            res <= max(norm(b) * tol, atol)
+        """
+        res = self._get_residual()
+        # Verify that residual is finite (i.e. not inf/nan)
+        if not np.isfinite(res):
+            logger.warning(f'Solution diverged: {res:.4e}')
+            raise Exception(f"Solution diverged, undefined residual: {res:.4e}")
+        # Check convergence
+        tol = self.settings["solver_tol"]
+        res_tol = norm(self.b) * tol
+        flag_converged = True if res <= res_tol else False
+        return flag_converged

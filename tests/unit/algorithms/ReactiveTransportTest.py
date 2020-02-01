@@ -26,7 +26,7 @@ class ReactiveTransportTest:
     def test_one_value_one_source(self):
         rt = op.algorithms.ReactiveTransport(network=self.net,
                                              phase=self.phase)
-        rt.setup(rxn_tolerance=1e-10, max_iter=5000,
+        rt.setup(solver_tol=1e-10, max_iter=5000,
                  relaxation_source=1.0, relaxation_quantity=1.0)
         rt.settings.update({'conductance': 'throat.diffusive_conductance',
                             'quantity': 'pore.concentration'})
@@ -85,7 +85,7 @@ class ReactiveTransportTest:
     def test_quantity_relaxation_consistency_w_base_solution(self):
         rt = op.algorithms.ReactiveTransport(network=self.net,
                                              phase=self.phase)
-        rt.setup(rxn_tolerance=1e-10, max_iter=5000,
+        rt.setup(solver_tol=1e-10, max_iter=5000,
                  relaxation_source=1.0, relaxation_quantity=1.0)
         rt.settings.update({'conductance': 'throat.diffusive_conductance',
                             'quantity': 'pore.concentration'})
@@ -101,7 +101,7 @@ class ReactiveTransportTest:
     def test_source_relaxation_consistency_w_base_solution(self):
         rt = op.algorithms.ReactiveTransport(network=self.net,
                                              phase=self.phase)
-        rt.setup(rxn_tolerance=1e-10, max_iter=5000,
+        rt.setup(solver_tol=1e-10, max_iter=5000,
                  relaxation_source=1.0, relaxation_quantity=1.0)
         rt.settings.update({'conductance': 'throat.diffusive_conductance',
                             'quantity': 'pore.concentration'})
@@ -117,7 +117,7 @@ class ReactiveTransportTest:
     def test_solution_should_diverge_w_large_relaxation(self):
         rt = op.algorithms.ReactiveTransport(network=self.net,
                                              phase=self.phase)
-        rt.setup(rxn_tolerance=1e-10, max_iter=100,
+        rt.setup(solver_tol=1e-10, max_iter=100,
                  relaxation_source=1.0, relaxation_quantity=1.0)
         rt.settings.update({'conductance': 'throat.diffusive_conductance',
                             'quantity': 'pore.concentration'})
@@ -135,7 +135,7 @@ class ReactiveTransportTest:
     def test_reset(self):
         rt = op.algorithms.ReactiveTransport(network=self.net,
                                              phase=self.phase)
-        rt.setup(rxn_tolerance=1e-10, max_iter=5000,
+        rt.setup(solver_tol=1e-10, max_iter=5000,
                  relaxation_source=1.0, relaxation_quantity=1.0)
         rt.settings.update({'conductance': 'throat.diffusive_conductance',
                             'quantity': 'pore.concentration'})
