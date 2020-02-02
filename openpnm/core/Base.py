@@ -1,11 +1,8 @@
-import unyt
-from flatdict import FlatDict
-from collections import namedtuple
-import matplotlib.pyplot as plt
-from openpnm.utils import Workspace, logging
-from openpnm.utils.misc import PrintableList, SettingsDict, HealthDict
-import scipy as sp
 import warnings
+import scipy as sp
+from collections import namedtuple
+from openpnm.utils import Workspace, logging
+from openpnm.utils.misc import PrintableList, SettingsDict
 logger = logging.getLogger(__name__)
 ws = Workspace()
 
@@ -194,19 +191,19 @@ class Base(dict):
         long_keys = [i for i in keys if i.count('.') > 1]
         key_root = '.'.join(key.split('.')[:2])
         if (key.count('.') > 1) and (key_root in keys):
-            raise Exception('Cannot create ' + key + ' when ' +
-                            key_root + ' is already defined')
+            raise Exception('Cannot create ' + key + ' when '
+                            + key_root + ' is already defined')
         # Prevent 'pore.foo' when 'pore.foo.bar' is present
         if (key.count('.') == 1) and any([i.startswith(key) for i in long_keys]):
             hit = [i for i in keys if i.startswith(key)][0]
-            raise Exception('Cannot create ' + key + ' when ' +
-                            hit + ' is already defined')
+            raise Exception('Cannot create ' + key + ' when '
+                            + hit + ' is already defined')
         # Prevent writing pore.foo on boss when present on subdomain
         if boss:
             if boss is self and (key not in ['pore.all', 'throat.all']):
                 if (key in keys) and (key not in self.keys()):
-                    raise Exception('Cannot create ' + key + ' when it is' +
-                                    ' already defined on a subdomain')
+                    raise Exception('Cannot create ' + key + ' when it is'
+                                    + ' already defined on a subdomain')
 
         # This check allows subclassed numpy arrays through, eg. with units
         if not isinstance(value, sp.ndarray):
@@ -662,8 +659,8 @@ class Base(dict):
         if (sp.size(pores) == 0) and (sp.size(throats) == 0):
             labels = PrintableList(self.keys(element=element, mode='labels'))
         elif (sp.size(pores) > 0) and (sp.size(throats) > 0):
-            raise Exception('Cannot perform label query on pores and ' +
-                            'throats simultaneously')
+            raise Exception('Cannot perform label query on pores and '
+                            + 'throats simultaneously')
         elif sp.size(pores) > 0:
             labels = self._get_labels(element='pore', locations=pores,
                                       mode=mode)
@@ -1227,15 +1224,22 @@ class Base(dict):
                 temp_arr[inds] = vals
             else:
                 temp_arr[inds] = dummy_val[atype[0]]
+
         # Check if any arrays have units, if so then apply them to result
+        # Importing unyt significantly adds to our import time, we also
+        # currently don't use this package extensively, so we're not going
+        # to support it for now.
+        """
         if any([hasattr(a, 'units') for a in arrs]):
             [a.convert_to_mks() for a in arrs if hasattr(a, 'units')]
             units = [a.units.__str__() for a in arrs if hasattr(a, 'units')]
             if len(units) > 0:
                 if len(set(units)) == 1:
-                    temp_arr *= sp.array([1])*getattr(unyt, units[0])
+                    temp_arr *= sp.array([1]) * getattr(unyt, units[0])
                 else:
                     raise Exception('Units on the interleaved array are not equal')
+        """
+
         return temp_arr
 
     def interpolate_data(self, propname):
@@ -1579,6 +1583,7 @@ class Base(dict):
         Other keyword arguments are passed to the ``matplotlib.pyplot.hist``
         function.
         """
+        import matplotlib.pyplot as plt
         temp = plt.rcParams['font.size']
         plt.rcParams['font.size'] = fontsize
         if type(props) is str:
@@ -1659,8 +1664,8 @@ class Base(dict):
             elif sp.size(locs) == self.Nt:
                 locs = self.Ts[locs]
             else:
-                raise Exception('Mask of locations must be either ' +
-                                'Np nor Nt long')
+                raise Exception('Mask of locations must be either '
+                                + 'Np nor Nt long')
         locs = locs.astype(dtype=int)
         return locs
 
@@ -1703,8 +1708,8 @@ class Base(dict):
         [element.remove(L) for L in element if element.count(L) > 1]
         if single:
             if len(element) > 1:
-                raise Exception('Both elements recieved when single element ' +
-                                'allowed')
+                raise Exception('Both elements recieved when single element '
+                                + 'allowed')
             else:
                 element = element[0]
         return element
@@ -1783,14 +1788,14 @@ class Base(dict):
             mode = [mode]
         for item in mode:
             if (allowed is not None) and (item not in allowed):
-                raise Exception('\'mode\' must be one of the following: ' +
-                                allowed.__str__())
+                raise Exception('\'mode\' must be one of the following: '
+                                + allowed.__str__())
         # Remove duplicates, if any
         [mode.remove(L) for L in mode if mode.count(L) > 1]
         if single:
             if len(mode) > 1:
-                raise Exception('Multiple modes received when only one mode ' +
-                                'allowed')
+                raise Exception('Multiple modes received when only one mode '
+                                + 'allowed')
             else:
                 mode = mode[0]
         return mode

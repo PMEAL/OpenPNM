@@ -1,16 +1,15 @@
+import warnings
 import heapq as hq
 import scipy as sp
 import numpy as np
-import matplotlib.pyplot as plt
 from numba import njit
-from numba.errors import NumbaPendingDeprecationWarning
-from openpnm.algorithms import GenericAlgorithm
-from openpnm.topotools import find_clusters
-from openpnm.utils import logging
 from collections import namedtuple
-import warnings
-logger = logging.getLogger(__name__)
+from openpnm.utils import logging
+from openpnm.topotools import find_clusters
+from openpnm.algorithms import GenericAlgorithm
+from numba.errors import NumbaPendingDeprecationWarning
 warnings.simplefilter('ignore', category=NumbaPendingDeprecationWarning)
+logger = logging.getLogger(__name__)
 
 
 class InvasionPercolation(GenericAlgorithm):
@@ -433,12 +432,14 @@ class InvasionPercolation(GenericAlgorithm):
         data = pc_curve(data.Pc, sat)
         return data
 
-    def plot_intrusion_curve(self, fig=None):
+    def plot_mntrusion_curve(self, fig=None):
         r"""
         Plot the percolation curve as the invader volume or number fraction vs
         the capillary capillary pressure.
 
         """
+        import matplotlib.pyplot as plt
+
         data = self.get_intrusion_data()
         if data is not None:
             if fig is None:
@@ -470,7 +471,6 @@ def _run_accelerated(queue, t_sorted, t_order, t_inv, p_inv, p_inv_t,
 
     """
     count = 0
-#    p_inv_t = np.zeros(len(p_inv), dtype=int)
     while (len(queue) > 0) and (count < n_steps):
         # Find throat at the top of the queue
         t = hq.heappop(queue)

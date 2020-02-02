@@ -1,8 +1,7 @@
-from openpnm.algorithms import GenericAlgorithm, StokesFlow
-from openpnm.utils import logging
-from openpnm import models
 import numpy as np
-import matplotlib.pyplot as plt
+from openpnm import models
+from openpnm.utils import logging
+from openpnm.algorithms import GenericAlgorithm, StokesFlow
 logger = logging.getLogger(__name__)
 
 
@@ -213,8 +212,7 @@ class RelativePermeability(GenericAlgorithm):
         sat_p = np.sum(network['pore.volume'][pore_mask])
         sat_t = np.sum(network['throat.volume'][throat_mask])
         sat1 = sat_p+sat_t
-        bulk = (np.sum(network['pore.volume']) +
-                np.sum(network['throat.volume']))
+        bulk = network['pore.volume'].sum() + network['throat.volume'].sum()
         sat = sat1/bulk
         nwp = self.project[self.settings['nwp']]
         nwp['pore.occupancy'] = pore_mask
@@ -290,6 +288,7 @@ class RelativePermeability(GenericAlgorithm):
             self.Kr_values['sat'].update({dirs: Snwparr})
 
     def plot_Kr_curves(self):
+        import matplotlib.pyplot as plt
         f = plt.figure()
         sp = f.add_subplot(111)
         for inp in self.settings['flow_inlets']:

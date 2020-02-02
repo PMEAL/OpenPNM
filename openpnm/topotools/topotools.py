@@ -1,14 +1,12 @@
-import scipy as sp
-import scipy.ndimage as spim
-import scipy.sparse as sprs
 import warnings
-import matplotlib.pyplot as plt
+import scipy as sp
+import scipy.sparse as sprs
+import scipy.ndimage as spim
 from scipy.sparse import csgraph
 from scipy.spatial import ConvexHull
 from openpnm.utils import PrintableDict, logging, Workspace
-from mpl_toolkits.mplot3d import Axes3D
-ws = Workspace()
 logger = logging.getLogger(__name__)
+ws = Workspace()
 
 
 def find_neighbor_sites(sites, am, flatten=True, include_input=False,
@@ -2137,6 +2135,7 @@ def plot_connections(network, throats=None, fig=None, **kwargs):
 
     """
     import matplotlib.pyplot as plt
+    from mpl_toolkits.mplot3d import Axes3D
 
     Ts = network.Ts if throats is None else network._parse_indices(throats)
 
@@ -2233,6 +2232,7 @@ def plot_coordinates(network, pores=None, fig=None, **kwargs):
 
     """
     import matplotlib.pyplot as plt
+    from mpl_toolkits.mplot3d import Axes3D
 
     Ps = network.Ps if pores is None else network._parse_indices(pores)
 
@@ -2303,6 +2303,7 @@ def plot_networkx(network, plot_throats=True, labels=None, colors=None,
     '''
     from networkx import Graph, draw_networkx_nodes, draw_networkx_edges
     from matplotlib.collections import PathCollection
+    import matplotlib.pyplot as plt
 
     dims = dimensionality(network)
     if dims.sum() > 2:
@@ -2422,6 +2423,7 @@ def plot_vpython(network,
     visualization use Paraview.
 
     """
+    import matplotlib.pyplot as plt
 
     try:
         from vpython import canvas, vec, sphere, cylinder
