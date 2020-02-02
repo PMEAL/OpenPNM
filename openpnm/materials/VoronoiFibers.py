@@ -11,7 +11,6 @@ from openpnm.utils import logging, Project
 import openpnm.models.geometry as gm
 from openpnm.geometry import GenericGeometry
 from openpnm.utils.misc import unique_list
-from scipy.stats import itemfreq
 logger = logging.getLogger(__name__)
 
 
@@ -548,6 +547,8 @@ class DelaunayGeometry(GenericGeometry):
         Function to count the number of voxels in the pore and fiber space
         Which are assigned to each hull volume
         '''
+        from scipy.stats import itemfreq
+
         num_Ps = self.num_pores()
         pore_vox = sp.zeros(num_Ps, dtype=int)
         fiber_vox = sp.zeros(num_Ps, dtype=int)
