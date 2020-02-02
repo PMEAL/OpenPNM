@@ -1,18 +1,12 @@
-import json
 import os
+import json
 import pickle
-from pathlib import Path
-
-import jsonschema
 import scipy as sp
-
+from pathlib import Path
 from openpnm.utils import logging
 from openpnm.io import GenericIO
-from openpnm.models.geometry import (pore_area, pore_volume, throat_area,
-                                     throat_perimeter, throat_surface_area,
-                                     throat_volume)
+import openpnm.models.geometry as gmods
 from openpnm.network import GenericNetwork
-
 logger = logging.getLogger(__name__)
 
 
@@ -31,6 +25,7 @@ class JSONGraphFormat(GenericIO):
 
     @classmethod
     def __validate_json__(self, json_file):
+        import jsonschema
         # Validate name of schema file
         relative_path = '../../utils/jgf_schema.pkl'
         schema_file = Path(os.path.realpath(__file__), relative_path)
@@ -69,8 +64,8 @@ class JSONGraphFormat(GenericIO):
                               'throat.conns', 'throat.diameter'}
             assert required_props.issubset(network.props())
         except AssertionError:
-            raise Exception('Error - network is missing one of: ' +
-                            str(required_props))
+            raise Exception('Error - network is missing one of: '
+                            + str(required_props))
 
         # Create 'metadata' JSON object
         graph_metadata_obj = {'number_of_nodes': network.Np,
@@ -171,10 +166,10 @@ class JSONGraphFormat(GenericIO):
         network['throat.diameter'] = 2.0 * sp.sqrt(link_squared_radius)
 
         # Define derived throat properties
-        network['throat.area'] = throat_area.cylinder(network)
-        network['throat.volume'] = throat_volume.cylinder(network)
-        network['throat.perimeter'] = throat_perimeter.cylinder(network)
-        network['throat.surface_area'] = throat_surface_area.cylinder(network)
+        network['throat.area'] = gmods.throat_area.cylinder(network)
+        network['throat.volume'] = gmods.throat_volume.cylinder(network)
+        network['throat.perimeter'] = gmods.throat_perimeter.cylinder(network)
+        network['throat.surface_area'] = gmods.throat_surface_area.cylinder(network)
 
         # Define primitive pore properties
         network['pore.index'] = sp.arange(number_of_nodes)
@@ -182,7 +177,7 @@ class JSONGraphFormat(GenericIO):
         network['pore.diameter'] = sp.zeros(number_of_nodes)
 
         # Define derived pore properties
-        network['pore.area'] = pore_area.sphere(network)
-        network['pore.volume'] = pore_volume.sphere(network)
+        network['pore.area'] = gmods.pore_area.sphere(network)
+        network['pore.volume'] = gmods.pore_volume.sphere(network)
 
         return network.project
