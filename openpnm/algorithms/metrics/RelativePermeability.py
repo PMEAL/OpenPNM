@@ -288,7 +288,10 @@ class RelativePermeability(GenericAlgorithm):
             self.Kr_values['sat'].update({dirs: Snwparr})
 
     def plot_Kr_curves(self):
+        r"""
+        """
         import matplotlib.pyplot as plt
+
         f = plt.figure()
         sp = f.add_subplot(111)
         for inp in self.settings['flow_inlets']:
@@ -306,6 +309,8 @@ class RelativePermeability(GenericAlgorithm):
         return f
 
     def get_Kr_data(self):
+        r"""
+        """
         self.Kr_values['results']['sat'] = self.Kr_values['sat']
         if self.settings['wp'] is not None:
             self.Kr_values['results']['krw'] = self.Kr_values['relperm_wp']
