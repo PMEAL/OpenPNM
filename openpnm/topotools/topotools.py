@@ -785,6 +785,8 @@ def site_percolation(ij, occupied_sites):
 
     """
     from collections import namedtuple
+    import scipy.stats as spst
+
     Np = sp.size(occupied_sites)
     occupied_bonds = sp.all(occupied_sites[ij], axis=1)
     adj_mat = sprs.csr_matrix((occupied_bonds, (ij[:, 0], ij[:, 1])),
@@ -792,7 +794,7 @@ def site_percolation(ij, occupied_sites):
     adj_mat.eliminate_zeros()
     clusters = csgraph.connected_components(csgraph=adj_mat, directed=False)[1]
     clusters[~occupied_sites] = -1
-    s_labels = sp.stats.rankdata(clusters + 1, method="dense") - 1
+    s_labels = spst.rankdata(clusters + 1, method="dense") - 1
     if sp.any(~occupied_sites):
         s_labels -= 1
     b_labels = sp.amin(s_labels[ij], axis=1)
