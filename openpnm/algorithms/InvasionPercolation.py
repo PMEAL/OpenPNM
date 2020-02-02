@@ -432,7 +432,7 @@ class InvasionPercolation(GenericAlgorithm):
         data = pc_curve(data.Pc, sat)
         return data
 
-    def plot_mntrusion_curve(self, fig=None):
+    def plot_intrusion_curve(self, fig=None):
         r"""
         Plot the percolation curve as the invader volume or number fraction vs
         the capillary capillary pressure.
