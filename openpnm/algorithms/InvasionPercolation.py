@@ -2,13 +2,10 @@ import warnings
 import heapq as hq
 import scipy as sp
 import numpy as np
-from numba import njit
 from collections import namedtuple
 from openpnm.utils import logging
 from openpnm.topotools import find_clusters
 from openpnm.algorithms import GenericAlgorithm
-from numba.errors import NumbaPendingDeprecationWarning
-warnings.simplefilter('ignore', category=NumbaPendingDeprecationWarning)
 logger = logging.getLogger(__name__)
 
 
@@ -183,7 +180,7 @@ class InvasionPercolation(GenericAlgorithm):
 
         # Create incidence matrix to get neighbor throats later in _run method
         incidence_matrix = self.network.create_incidence_matrix(fmt='csr')
-        t_inv, p_inv, p_inv_t = _run_accelerated(
+        t_inv, p_inv, p_inv_t = InvasionPercolation._run_accelerated(
             queue=self.queue,
             t_sorted=self['throat.sorted'],
             t_order=self['throat.order'],
@@ -454,47 +451,58 @@ class InvasionPercolation(GenericAlgorithm):
         else:
             return None
 
+    def _run_accelerated(queue, t_sorted, t_order, t_inv, p_inv, p_inv_t,
+                         conns, idx, indptr, n_steps):
+        r"""
+        Numba-jitted run method for InvasionPercolation class.
 
-@njit
-def _run_accelerated(queue, t_sorted, t_order, t_inv, p_inv, p_inv_t,
-                     conns, idx, indptr, n_steps):
-    r"""
-    Numba-jitted run method for InvasionPercolation class.
+        Notes
+        -----
+        (1) ``idx`` and ``indptr`` are properties are the network's incidence
+        matrix, and are used to quickly find neighbor throats.
 
-    Notes
-    -----
-    (1) ``idx`` and ``indptr`` are properties are the network's incidence
-    matrix, and are used to quickly find neighbor throats.
+        (2) Numba doesn't like forein data types (i.e. GenericNetwork), and so
+        ``find_neighbor_throats`` method cannot be called in a jitted method.
 
-    (2) Numba doesn't like forein data types (i.e. GenericNetwork), and so
-    ``find_neighbor_throats`` method cannot be called in a jitted method.
+        (3) Nested wrapper is for performance issues (reduced OpenPNM import)
+        time due to local numba import
 
-    """
-    count = 0
-    while (len(queue) > 0) and (count < n_steps):
-        # Find throat at the top of the queue
-        t = hq.heappop(queue)
-        # Extract actual throat number
-        t_next = t_sorted[t]
-        t_inv[t_next] = count
-        # If throat is duplicated
-        while len(queue) > 0 and queue[0] == t:
-            # Note: Preventing duplicate entries below might save some time
-            t = hq.heappop(queue)
-        # Find pores connected to newly invaded throat
-        Ps = conns[t_next]
-        # Remove already invaded pores from Ps
-        Ps = Ps[p_inv[Ps] < 0]
-        if len(Ps) > 0:
-            p_inv[Ps] = count
-            p_inv_t[Ps] = t_next
-            for i in Ps:
-                Ts = idx[indptr[i]:indptr[i+1]]
-                Ts = Ts[t_inv[Ts] < 0]
-            for i in set(Ts):   # set(Ts) to exclude repeated neighbor throats
-                hq.heappush(queue, t_order[i])
-        count += 1
-    return t_inv, p_inv, p_inv_t
+        """
+        from numba import njit
+        from numba.errors import NumbaPendingDeprecationWarning
+        warnings.simplefilter('ignore', category=NumbaPendingDeprecationWarning)
+
+        @njit
+        def wrapper(queue, t_sorted, t_order, t_inv, p_inv, p_inv_t, conns,
+                    idx, indptr, n_steps):
+            count = 0
+            while (len(queue) > 0) and (count < n_steps):
+                # Find throat at the top of the queue
+                t = hq.heappop(queue)
+                # Extract actual throat number
+                t_next = t_sorted[t]
+                t_inv[t_next] = count
+                # If throat is duplicated
+                while len(queue) > 0 and queue[0] == t:
+                    # Note: Preventing duplicate entries below might save some time
+                    t = hq.heappop(queue)
+                # Find pores connected to newly invaded throat
+                Ps = conns[t_next]
+                # Remove already invaded pores from Ps
+                Ps = Ps[p_inv[Ps] < 0]
+                if len(Ps) > 0:
+                    p_inv[Ps] = count
+                    p_inv_t[Ps] = t_next
+                    for i in Ps:
+                        Ts = idx[indptr[i]:indptr[i+1]]
+                        Ts = Ts[t_inv[Ts] < 0]
+                    for i in set(Ts):   # set(Ts) to exclude repeated neighbor throats
+                        hq.heappush(queue, t_order[i])
+                count += 1
+            return t_inv, p_inv, p_inv_t
+
+        return wrapper(queue, t_sorted, t_order, t_inv, p_inv, p_inv_t, conns,
+                       idx, indptr, n_steps)
 
 
 if __name__ == '__main__':
