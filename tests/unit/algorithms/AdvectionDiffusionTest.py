@@ -61,8 +61,10 @@ class AdvectionDiffusionTest:
         fd.run()
         # Verify that the new pressure field has been used
         c = fd["pore.concentration"]
-        c_desired = [0, 0, 0, 0.56164952, 0.56164952, 0.56164952,
-                     0.85096674, 0.85096674, 0.85096674, 1, 1, 1]
+        c_desired = [0., 0., 0.,
+                     0.56164952, 0.56164952, 0.56164952,
+                     0.85096674, 0.85096674, 0.85096674,
+                     1., 1., 1.]
         assert_allclose(actual=c, desired=c_desired)
         self.setup_class()
 
