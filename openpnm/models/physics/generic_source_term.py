@@ -63,13 +63,13 @@ def charge_conservation(target, phase, p_alg, e_alg, assumption):
     if assumption == 'poisson':
         v = network['pore.volume']
         for e in e_alg:
-            rhs += (v * F * phase['pore.valence.'+e.settings['ion']] *
-                    e[e.settings['quantity']])
+            rhs += (v * F * phase['pore.valence.'+e.settings['ion']]
+                    * e[e.settings['quantity']])
     elif assumption == 'poisson_2D':
         s = network['pore.area']
         for e in e_alg:
-            rhs += (s * F * phase['pore.valence.'+e.settings['ion']] *
-                    e[e.settings['quantity']])
+            rhs += (s * F * phase['pore.valence.'+e.settings['ion']]
+                    * e[e.settings['quantity']])
     elif assumption in ['electroneutrality', 'electroneutrality_2D']:
         for e in e_alg:
             try:
@@ -84,10 +84,10 @@ def charge_conservation(target, phase, p_alg, e_alg, assumption):
     elif assumption in ['laplace', 'laplace_2D']:
         pass  # rhs should remain 0
     else:
-        raise Exception('Unknown keyword for "charge_conservation", can ' +
-                        'only be "poisson", "poisson_2D", "laplace", ' +
-                        '"laplace_2D", "electroneutrality" or ' +
-                        "electroneutrality_2D")
+        raise Exception('Unknown keyword for "charge_conservation", can '
+                        + 'only be "poisson", "poisson_2D", "laplace", '
+                        + '"laplace_2D", "electroneutrality" or '
+                        + "electroneutrality_2D")
     S1 = _sp.zeros(shape=(p_alg.Np, ), dtype=float)
     values = {'S1': S1, 'S2': rhs, 'rate': rhs}
     return values
@@ -182,7 +182,7 @@ def linear(target, X, A1='', A2=''):
             rate = S_{1}   X  +  S_{2}
 
     """
-    A = _parse_args(target=target, key=A1, default=1.0)
+    A = _parse_args(target=target, key=A1, default=0.0)
     B = _parse_args(target=target, key=A2, default=0.0)
     X = target[X]
 
@@ -228,7 +228,7 @@ def power_law(target, X, A1='', A2='', A3=''):
             rate = S_{1}   X  +  S_{2}
 
     """
-    A = _parse_args(target=target, key=A1, default=1.0)
+    A = _parse_args(target=target, key=A1, default=0.0)
     B = _parse_args(target=target, key=A2, default=1.0)
     C = _parse_args(target=target, key=A3, default=0.0)
     X = target[X]
@@ -275,7 +275,7 @@ def exponential(target, X, A1='', A2='', A3='', A4='', A5='', A6=''):
             rate = S_{1}   X  +  S_{2}
 
     """
-    A = _parse_args(target=target, key=A1, default=1.0)
+    A = _parse_args(target=target, key=A1, default=0.0)
     B = _parse_args(target=target, key=A2, default=1.0)
     C = _parse_args(target=target, key=A3, default=1.0)
     D = _parse_args(target=target, key=A4, default=1.0)
@@ -325,10 +325,10 @@ def natural_exponential(target, X, A1='', A2='', A3='', A4='', A5=''):
             rate = S_{1}   X  +  S_{2}
 
     """
-    A = _parse_args(target=target, key=A1, default=1.0)
-    B = _parse_args(target=target, key=A2, default=1.0)
-    C = _parse_args(target=target, key=A3, default=1.0)
-    D = _parse_args(target=target, key=A4, default=1.0)
+    A = _parse_args(target=target, key=A1, default=0.0)
+    B = _parse_args(target=target, key=A2, default=0.0)
+    C = _parse_args(target=target, key=A3, default=0.0)
+    D = _parse_args(target=target, key=A4, default=0.0)
     E = _parse_args(target=target, key=A5, default=0.0)
     X = target[X]
 
@@ -374,8 +374,8 @@ def logarithm(target, X, A1='', A2='', A3='', A4='', A5='', A6=''):
             rate = S_{1}   X  +  S_{2}
 
     """
-    A = _parse_args(target=target, key=A1, default=1.0)
-    B = _parse_args(target=target, key=A2, default=1.0)
+    A = _parse_args(target=target, key=A1, default=0.0)
+    B = _parse_args(target=target, key=A2, default=10.0)
     C = _parse_args(target=target, key=A3, default=1.0)
     D = _parse_args(target=target, key=A4, default=1.0)
     E = _parse_args(target=target, key=A5, default=0.0)
@@ -425,10 +425,10 @@ def natural_logarithm(target, X, A1='', A2='', A3='', A4='', A5=''):
             rate = S_{1}   X  +  S_{2}
 
     """
-    A = _parse_args(target=target, key=A1, default=1.0)
+    A = _parse_args(target=target, key=A1, default=0.0)
     B = _parse_args(target=target, key=A2, default=1.0)
     C = _parse_args(target=target, key=A3, default=1.0)
-    D = _parse_args(target=target, key=A4, default=1.0)
+    D = _parse_args(target=target, key=A4, default=0.0)
     E = _parse_args(target=target, key=A5, default=0.0)
     X = target[X]
 
@@ -488,7 +488,7 @@ def linear_sym(target, X, A1='', A2=''):
             rate = S_{1}   X  +  S_{2}
 
     """
-    A = _parse_args(target=target, key=A1, default=1.0)
+    A = _parse_args(target=target, key=A1, default=0.0)
     B = _parse_args(target=target, key=A2, default=0.0)
     X = target[X]
     # Symbols used in symbolic function
@@ -540,7 +540,7 @@ def power_law_sym(target, X, A1='', A2='', A3=''):
             rate = S_{1}   X  +  S_{2}
 
     """
-    A = _parse_args(target=target, key=A1, default=1.0)
+    A = _parse_args(target=target, key=A1, default=0.0)
     B = _parse_args(target=target, key=A2, default=1.0)
     C = _parse_args(target=target, key=A3, default=0.0)
     X = target[X]
@@ -593,7 +593,7 @@ def exponential_sym(target, X, A1='', A2='', A3='', A4='', A5='', A6=''):
             rate = S_{1}   X  +  S_{2}
 
     """
-    A = _parse_args(target=target, key=A1, default=1.0)
+    A = _parse_args(target=target, key=A1, default=0.0)
     B = _parse_args(target=target, key=A2, default=1.0)
     C = _parse_args(target=target, key=A3, default=1.0)
     D = _parse_args(target=target, key=A4, default=1.0)
@@ -649,10 +649,10 @@ def natural_exponential_sym(target, X, A1='', A2='', A3='', A4='', A5=''):
             rate = S_{1}   X  +  S_{2}
 
     """
-    A = _parse_args(target=target, key=A1, default=1.0)
+    A = _parse_args(target=target, key=A1, default=0.0)
     B = _parse_args(target=target, key=A2, default=1.0)
     C = _parse_args(target=target, key=A3, default=1.0)
-    D = _parse_args(target=target, key=A4, default=1.0)
+    D = _parse_args(target=target, key=A4, default=0.0)
     E = _parse_args(target=target, key=A5, default=0.0)
     X = target[X]
     # Symbols used in symbolic function
@@ -704,8 +704,8 @@ def logarithm_sym(target, X, A1='', A2='', A3='', A4='', A5='', A6=''):
             rate = S_{1}   X  +  S_{2}
 
     """
-    A = _parse_args(target=target, key=A1, default=1.0)
-    B = _parse_args(target=target, key=A2, default=1.0)
+    A = _parse_args(target=target, key=A1, default=0.0)
+    B = _parse_args(target=target, key=A2, default=10.0)
     C = _parse_args(target=target, key=A3, default=1.0)
     D = _parse_args(target=target, key=A4, default=1.0)
     E = _parse_args(target=target, key=A5, default=0.0)
@@ -760,10 +760,10 @@ def natural_logarithm_sym(target, X, A1='', A2='', A3='', A4='', A5=''):
             rate = S_{1}   X  +  S_{2}
 
     """
-    A = _parse_args(target=target, key=A1, default=1.0)
+    A = _parse_args(target=target, key=A1, default=0.0)
     B = _parse_args(target=target, key=A2, default=1.0)
     C = _parse_args(target=target, key=A3, default=1.0)
-    D = _parse_args(target=target, key=A4, default=1.0)
+    D = _parse_args(target=target, key=A4, default=0.0)
     E = _parse_args(target=target, key=A5, default=0.0)
     X = target[X]
     # Symbols used in symbolic function
@@ -827,7 +827,7 @@ def general_symbolic(target, eqn=None, arg_map=None):
             if key not in arg_map.keys():
                 raise Exception('argument mapping incomplete, missing '+key)
     if 'x' not in arg_map.keys():
-        raise Exception('argument mapping must contain "x" for the ' +
+        raise Exception('argument mapping must contain "x" for the '
                         'independent variable')
     # Get the data
     data = {}
