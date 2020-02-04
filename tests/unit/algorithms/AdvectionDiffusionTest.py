@@ -31,9 +31,6 @@ class AdvectionDiffusionTest:
 
         self.ad = op.algorithms.AdvectionDiffusion(network=self.net,
                                                    phase=self.phase)
-        self.ad.setup(diffusive_conductance="throat.diffusive_conductance",
-                      hydraulic_conductance="throat.hydraulic_conductance",
-                      pressure="pore.pressure")
         self.ad.settings.update({"cache_A": False, "cache_b": False})
         self.ad.set_value_BC(pores=self.net.pores('back'), values=2)
         self.ad.set_value_BC(pores=self.net.pores('front'), values=0)
@@ -64,8 +61,8 @@ class AdvectionDiffusionTest:
         fd.run()
         # Verify that the new pressure field has been used
         c = fd["pore.concentration"]
-        c_desired = [0, 0, 0, 0.44826365, 0.44826365, 0.44826365,
-                     0.76962099, 0.76962099, 0.76962099, 1, 1, 1]
+        c_desired = [0, 0, 0, 0.56164952, 0.56164952, 0.56164952,
+                     0.85096674, 0.85096674, 0.85096674, 1, 1, 1]
         assert_allclose(actual=c, desired=c_desired)
         self.setup_class()
 
