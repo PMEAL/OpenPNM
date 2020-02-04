@@ -34,6 +34,8 @@ class AdvectionDiffusion(ReactiveTransport):
         self.settings.update(settings)
         if phase is not None:
             self.setup(phase=phase)
+        # Make "conductance" iterative_prop, so it gets updated after running StokesFlow
+        # self.set_iterative_props(propnames=self.settings['conductance'])
 
     def setup(self, phase=None, quantity='', conductance='',
               diffusive_conductance='', hydraulic_conductance='', pressure='',
