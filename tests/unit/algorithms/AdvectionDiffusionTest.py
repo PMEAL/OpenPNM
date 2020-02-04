@@ -35,6 +35,24 @@ class AdvectionDiffusionTest:
         self.ad.set_value_BC(pores=self.net.pores('back'), values=2)
         self.ad.set_value_BC(pores=self.net.pores('front'), values=0)
 
+    def test_AdvectionDiffusion_setup(self):
+        self.ad.setup(quantity="pore.blah",
+                      conductance="throat.foo",
+                      diffusive_conductance="throat.foo2",
+                      hydraulic_conductance="throat.foo3",
+                      pressure="pore.bar",)
+        assert self.ad.settings["quantity"] == "pore.blah"
+        assert self.ad.settings["conductance"] == "throat.foo"
+        assert self.ad.settings["diffusive_conductance"] == "throat.foo2"
+        assert self.ad.settings["hydraulic_conductance"] == "throat.foo3"
+        assert self.ad.settings["pressure"] == "pore.bar"
+        # Reset back to previous values for other tests to run
+        self.ad.setup(quantity="pore.concentration",
+                      conductance="throat.ad_dif_conductance",
+                      diffusive_conductance="throat.diffusive_conductance",
+                      hydraulic_conductance="throat.hydraulic_conductance",
+                      pressure="pore.pressure")
+
     def test_conductance_gets_updated_when_pressure_changes(self):
         mod = op.models.physics.ad_dif_conductance.ad_dif
         self.phase['pore.p'] = self.phase['pore.pressure'].copy()
