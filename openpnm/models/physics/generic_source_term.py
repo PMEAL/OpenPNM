@@ -93,7 +93,7 @@ def charge_conservation(target, phase, p_alg, e_alg, assumption):
     return values
 
 
-def standard_kinetics(target, quantity, prefactor, exponent):
+def standard_kinetics(target, X, prefactor, exponent):
     r"""
     Calculates the rate, as well as slope and intercept of the following
     function at the given value of `X`:
@@ -128,7 +128,7 @@ def standard_kinetics(target, quantity, prefactor, exponent):
             rate = S_{1} X + S_{2}
 
     """
-    X = target[quantity]
+    X = target[X]
     A = target[prefactor]
     b = target[exponent]
 

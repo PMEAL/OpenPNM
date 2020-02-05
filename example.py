@@ -31,7 +31,7 @@ mod = op.models.physics.generic_source_term.standard_kinetics
 phys_air['pore.n'] = 2
 phys_air['pore.A'] = -1e-5
 phys_air.add_model(propname='pore.2nd_order_rxn', model=mod,
-                   quantity='pore.concentration',
+                   X='pore.concentration',
                    prefactor='pore.A', exponent='pore.n',
                    regen_mode='deferred')
 rxn = op.algorithms.FickianDiffusion(network=pn)
