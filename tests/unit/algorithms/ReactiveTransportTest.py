@@ -23,6 +23,20 @@ class ReactiveTransportTest:
                             quantity='pore.concentration',
                             regen_mode='deferred')
 
+    def test_multiple_set_source_with_same_name_should_only_keep_one(self):
+        rt = op.algorithms.ReactiveTransport(network=self.net,
+                                             phase=self.phase)
+        rt.settings.update({'conductance': 'throat.diffusive_conductance',
+                            'quantity': 'pore.concentration'})
+        rt.set_source(pores=self.net.pores('bottom'), propname='pore.reaction')
+        rt.set_source(pores=self.net.pores('bottom'), propname='pore.reaction')
+        rt.set_source(pores=self.net.pores('bottom'), propname='pore.reaction')
+        rt.set_value_BC(pores=self.net.pores('top'), values=1.0)
+        rt.run()
+        c_mean_desired = 0.648268
+        c_mean = rt['pore.concentration'].mean()
+        assert_allclose(c_mean, c_mean_desired, rtol=1e-6)
+
     def test_one_value_one_source(self):
         rt = op.algorithms.ReactiveTransport(network=self.net,
                                              phase=self.phase)
