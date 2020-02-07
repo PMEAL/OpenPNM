@@ -272,8 +272,7 @@ class RelativePermeability(GenericAlgorithm):
     def run(self):
         r"""
         Calculates the saturation of each phase using the invasion sequence 
-        
-        Notes: 
+        Notes:
         Snw_num: Scalar
         Number of saturation point to calculate the relative permseability
         values. If not given, the default value is 100. Saturation points will
@@ -343,11 +342,11 @@ class RelativePermeability(GenericAlgorithm):
         for inp in self.settings['flow_inlets']:
             if self.settings['wp'] is not None:
                 plt.plot(self.Kr_values['sat'][inp],
-                        self.Kr_values['relperm_wp'][inp],
-                        'o-', label='Krwp'+inp)
+                         self.Kr_values['relperm_wp'][inp],
+                         'o-', label='Krwp'+inp)
                 plt.plot(self.Kr_values['sat'][inp],
-                        self.Kr_values['relperm_nwp'][inp],
-                        '*-', label='Krnwp'+inp)
+                         self.Kr_values['relperm_nwp'][inp],
+                         '*-', label='Krnwp'+inp)
             else:
                 plt.plot(self.Kr_values['sat'][inp],
                         self.Kr_values['relperm_nwp'][inp],
