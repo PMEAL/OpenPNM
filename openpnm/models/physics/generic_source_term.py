@@ -91,7 +91,7 @@ def charge_conservation(target, phase, p_alg, e_alg, assumption):
     return values
 
 
-def standard_kinetics(target, quantity, prefactor, exponent):
+def standard_kinetics(target, X, prefactor, exponent):
     r"""
     Calculates the rate, as well as slope and intercept of the following
     function at the given value of `X`:
@@ -126,7 +126,7 @@ def standard_kinetics(target, quantity, prefactor, exponent):
             rate = S_{1} X + S_{2}
 
     """
-    X = target[quantity]
+    X = target[X]
     A = target[prefactor]
     b = target[exponent]
 
@@ -180,7 +180,7 @@ def linear(target, X, A1='', A2=''):
             rate = S_{1}   X  +  S_{2}
 
     """
-    A = _parse_args(target=target, key=A1, default=1.0)
+    A = _parse_args(target=target, key=A1, default=0.0)
     B = _parse_args(target=target, key=A2, default=0.0)
     X = target[X]
 
@@ -226,7 +226,7 @@ def power_law(target, X, A1='', A2='', A3=''):
             rate = S_{1}   X  +  S_{2}
 
     """
-    A = _parse_args(target=target, key=A1, default=1.0)
+    A = _parse_args(target=target, key=A1, default=0.0)
     B = _parse_args(target=target, key=A2, default=1.0)
     C = _parse_args(target=target, key=A3, default=0.0)
     X = target[X]
@@ -273,7 +273,7 @@ def exponential(target, X, A1='', A2='', A3='', A4='', A5='', A6=''):
             rate = S_{1}   X  +  S_{2}
 
     """
-    A = _parse_args(target=target, key=A1, default=1.0)
+    A = _parse_args(target=target, key=A1, default=0.0)
     B = _parse_args(target=target, key=A2, default=1.0)
     C = _parse_args(target=target, key=A3, default=1.0)
     D = _parse_args(target=target, key=A4, default=1.0)
@@ -323,10 +323,10 @@ def natural_exponential(target, X, A1='', A2='', A3='', A4='', A5=''):
             rate = S_{1}   X  +  S_{2}
 
     """
-    A = _parse_args(target=target, key=A1, default=1.0)
-    B = _parse_args(target=target, key=A2, default=1.0)
-    C = _parse_args(target=target, key=A3, default=1.0)
-    D = _parse_args(target=target, key=A4, default=1.0)
+    A = _parse_args(target=target, key=A1, default=0.0)
+    B = _parse_args(target=target, key=A2, default=0.0)
+    C = _parse_args(target=target, key=A3, default=0.0)
+    D = _parse_args(target=target, key=A4, default=0.0)
     E = _parse_args(target=target, key=A5, default=0.0)
     X = target[X]
 
@@ -372,8 +372,8 @@ def logarithm(target, X, A1='', A2='', A3='', A4='', A5='', A6=''):
             rate = S_{1}   X  +  S_{2}
 
     """
-    A = _parse_args(target=target, key=A1, default=1.0)
-    B = _parse_args(target=target, key=A2, default=1.0)
+    A = _parse_args(target=target, key=A1, default=0.0)
+    B = _parse_args(target=target, key=A2, default=10.0)
     C = _parse_args(target=target, key=A3, default=1.0)
     D = _parse_args(target=target, key=A4, default=1.0)
     E = _parse_args(target=target, key=A5, default=0.0)
@@ -423,10 +423,10 @@ def natural_logarithm(target, X, A1='', A2='', A3='', A4='', A5=''):
             rate = S_{1}   X  +  S_{2}
 
     """
-    A = _parse_args(target=target, key=A1, default=1.0)
+    A = _parse_args(target=target, key=A1, default=0.0)
     B = _parse_args(target=target, key=A2, default=1.0)
     C = _parse_args(target=target, key=A3, default=1.0)
-    D = _parse_args(target=target, key=A4, default=1.0)
+    D = _parse_args(target=target, key=A4, default=0.0)
     E = _parse_args(target=target, key=A5, default=0.0)
     X = target[X]
 
@@ -488,7 +488,7 @@ def linear_sym(target, X, A1='', A2=''):
 
     """
     from sympy import symbols
-    A = _parse_args(target=target, key=A1, default=1.0)
+    A = _parse_args(target=target, key=A1, default=0.0)
     B = _parse_args(target=target, key=A2, default=0.0)
     X = target[X]
     # Symbols used in symbolic function
@@ -541,7 +541,7 @@ def power_law_sym(target, X, A1='', A2='', A3=''):
 
     """
     from sympy import symbols
-    A = _parse_args(target=target, key=A1, default=1.0)
+    A = _parse_args(target=target, key=A1, default=0.0)
     B = _parse_args(target=target, key=A2, default=1.0)
     C = _parse_args(target=target, key=A3, default=0.0)
     X = target[X]
@@ -595,7 +595,7 @@ def exponential_sym(target, X, A1='', A2='', A3='', A4='', A5='', A6=''):
 
     """
     from sympy import symbols
-    A = _parse_args(target=target, key=A1, default=1.0)
+    A = _parse_args(target=target, key=A1, default=0.0)
     B = _parse_args(target=target, key=A2, default=1.0)
     C = _parse_args(target=target, key=A3, default=1.0)
     D = _parse_args(target=target, key=A4, default=1.0)
@@ -652,10 +652,10 @@ def natural_exponential_sym(target, X, A1='', A2='', A3='', A4='', A5=''):
 
     """
     from sympy import symbols, exp
-    A = _parse_args(target=target, key=A1, default=1.0)
+    A = _parse_args(target=target, key=A1, default=0.0)
     B = _parse_args(target=target, key=A2, default=1.0)
     C = _parse_args(target=target, key=A3, default=1.0)
-    D = _parse_args(target=target, key=A4, default=1.0)
+    D = _parse_args(target=target, key=A4, default=0.0)
     E = _parse_args(target=target, key=A5, default=0.0)
     X = target[X]
     # Symbols used in symbolic function
@@ -708,8 +708,8 @@ def logarithm_sym(target, X, A1='', A2='', A3='', A4='', A5='', A6=''):
 
     """
     from sympy import symbols, log
-    A = _parse_args(target=target, key=A1, default=1.0)
-    B = _parse_args(target=target, key=A2, default=1.0)
+    A = _parse_args(target=target, key=A1, default=0.0)
+    B = _parse_args(target=target, key=A2, default=10.0)
     C = _parse_args(target=target, key=A3, default=1.0)
     D = _parse_args(target=target, key=A4, default=1.0)
     E = _parse_args(target=target, key=A5, default=0.0)
@@ -765,10 +765,10 @@ def natural_logarithm_sym(target, X, A1='', A2='', A3='', A4='', A5=''):
 
     """
     from sympy import symbols, ln
-    A = _parse_args(target=target, key=A1, default=1.0)
+    A = _parse_args(target=target, key=A1, default=0.0)
     B = _parse_args(target=target, key=A2, default=1.0)
     C = _parse_args(target=target, key=A3, default=1.0)
-    D = _parse_args(target=target, key=A4, default=1.0)
+    D = _parse_args(target=target, key=A4, default=0.0)
     E = _parse_args(target=target, key=A5, default=0.0)
     X = target[X]
     # Symbols used in symbolic function

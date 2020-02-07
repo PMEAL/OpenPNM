@@ -20,7 +20,7 @@ class ReactiveTransportTest:
         std_kinetics = op.models.physics.generic_source_term.standard_kinetics
         self.phys.add_model(propname='pore.reaction', model=std_kinetics,
                             prefactor='pore.A', exponent='pore.k',
-                            quantity='pore.concentration',
+                            X='pore.concentration',
                             regen_mode='deferred')
 
     def test_multiple_set_source_with_same_name_should_only_keep_one(self):
@@ -79,7 +79,7 @@ class ReactiveTransportTest:
         std_kinetics = op.models.physics.generic_source_term.standard_kinetics
         self.phys.add_model(propname='pore.another_reaction', model=std_kinetics,
                             prefactor='pore.A', exponent='pore.k',
-                            quantity='pore.concentration',
+                            X='pore.concentration',
                             regen_mode='deferred')
         rt.set_source(pores=self.net.pores('left'), propname='pore.reaction')
         rt.set_source(pores=self.net.pores('left'), propname='pore.another_reaction')
