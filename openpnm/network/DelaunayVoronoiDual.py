@@ -1,11 +1,10 @@
 import scipy as sp
-import scipy.spatial as sptl
 import scipy.sparse as sprs
-from skimage.filters import rank_order
-from openpnm.network import GenericNetwork
+import scipy.spatial as sptl
 from openpnm import topotools
 from openpnm.utils import logging
 logger = logging.getLogger(__name__)
+from openpnm.network import GenericNetwork
 
 
 class DelaunayVoronoiDual(GenericNetwork):

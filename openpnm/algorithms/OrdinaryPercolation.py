@@ -1,6 +1,5 @@
 import scipy as sp
 import numpy as np
-import matplotlib.pyplot as plt
 from collections import namedtuple
 from openpnm.algorithms import GenericAlgorithm
 from openpnm.topotools import site_percolation, bond_percolation
@@ -237,8 +236,8 @@ class OrdinaryPercolation(GenericAlgorithm):
 
         """
         if self.settings['trapping'] is False:
-            logger.warning('Setting outlets is meaningless unless trapping ' +
-                           'was set to True during setup')
+            logger.warning('Setting outlets is meaningless unless trapping '
+                           + 'was set to True during setup')
         Ps = self._parse_indices(pores)
         if np.sum(self['pore.inlets'][Ps]) > 0:
             raise Exception('Some outlets are already defined as inlets')
@@ -292,8 +291,8 @@ class OrdinaryPercolation(GenericAlgorithm):
         if self.settings['access_limited']:
             thresh = np.amin(self['pore.invasion_pressure'][Pout])
         else:
-            raise Exception('This is currently only implemented for access ' +
-                            'limited simulations')
+            raise Exception('This is currently only implemented for access '
+                            + 'limited simulations')
         return thresh
 
     def is_percolating(self, applied_pressure):
@@ -447,8 +446,8 @@ class OrdinaryPercolation(GenericAlgorithm):
         Tvol = net[self.settings['throat_volume']]
         Total_vol = np.sum(Pvol) + np.sum(Tvol)
         if sp.sum(Pvol[self['pore.inlets']]) > 0.0:
-            logger.warning('Inlets have non-zero volume, percolation curve ' +
-                           'will not start at 0')
+            logger.warning('Inlets have non-zero volume, percolation curve '
+                           + 'will not start at 0')
         # Find cumulative filled volume at each applied capillary pressure
         Vnwp_t = []
         Vnwp_p = []
@@ -473,6 +472,7 @@ class OrdinaryPercolation(GenericAlgorithm):
         the applied capillary pressure.
 
         """
+        import matplotlib.pyplot as plt
         # Begin creating nicely formatted plot
         x, y = self.get_intrusion_data()
         if fig is None:

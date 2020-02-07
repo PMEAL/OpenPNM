@@ -5,15 +5,8 @@ r"""
 .. autofunction:: openpnm.models.physics.meniscus.general_toroidal
 
 """
-
-import numpy as np
 import logging
-from sympy import lambdify, symbols
-from sympy import atan as sym_atan
-from sympy import cos as sym_cos
-from sympy import sin as sym_sin
-from sympy import sqrt as sym_sqrt
-from sympy import pi as sym_pi
+import numpy as np
 from openpnm.models.physics.capillary_pressure import _get_key_props
 logger = logging.getLogger(__name__)
 
@@ -166,6 +159,13 @@ def general_toroidal(target,
         The dictionary key containing the contact angle values to be used. If
         a pore property is given, it is interpolated to a throat list.
     '''
+    from sympy import symbols, lambdify
+    from sympy import atan as sym_atan
+    from sympy import cos as sym_cos
+    from sympy import sin as sym_sin
+    from sympy import sqrt as sym_sqrt
+    from sympy import pi as sym_pi
+
     # Get data from dictionary keys
     network = target.project.network
     phase = target.project.find_phase(target)
@@ -252,13 +252,13 @@ def general_toroidal(target,
         Pc_touch = Pc(x_touch, fa, fb, throatRad, contact, surface_tension)
         return Pc_touch
     elif target_Pc is None:
-        logger.error(msg='Please supply a target capillary pressure' +
-                         ' when mode is "men", default to 1.0e-6')
+        logger.error(msg='Please supply a target capillary pressure'
+                     + ' when mode is "men", default to 1.0e-6')
         target_Pc = 1.0e-6
     if np.abs(target_Pc) < 1.0e-6:
-        logger.error(msg='Please supply a target capillary pressure' +
-                         ' with absolute value greater than 1.0e-6,' +
-                         ' default to 1.0e-6')
+        logger.error(msg='Please supply a target capillary pressure'
+                     + ' with absolute value greater than 1.0e-6,'
+                     + ' default to 1.0e-6')
         target_Pc = 1.0e-6
     # Find the position in-between the minima and maxima corresponding to
     # the target pressure

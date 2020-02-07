@@ -1,6 +1,6 @@
 import numpy as np
 import openpnm as op
-import scipy.sparse as sprs
+import scipy.sparse.linalg
 from numpy.linalg import norm
 import scipy.sparse.csgraph as spgr
 from scipy.spatial import ConvexHull
@@ -17,7 +17,7 @@ def_set = {'phase': None,
            'solver_family': 'scipy',
            'solver_type': 'spsolve',
            'solver_preconditioner': 'jacobi',
-           'solver_tol': 1e-6,
+           'solver_tol': 1e-8,
            'solver_atol': None,
            'solver_rtol': None,
            'solver_maxiter': 5000,
@@ -569,7 +569,7 @@ class GenericTransport(GenericAlgorithm):
                 A.indptr = A.indptr.astype(np.int64)
             except ModuleNotFoundError:
                 pass
-            solver = getattr(sprs.linalg, self.settings['solver_type'])
+            solver = getattr(scipy.sparse.linalg, self.settings['solver_type'])
             iterative = ['bicg', 'bicgstab', 'cg', 'cgs', 'gmres', 'lgmres',
                          'minres', 'gcrotmk', 'qmr']
             if solver.__name__ in iterative:

@@ -1,7 +1,6 @@
 import scipy as sp
 from flatdict import FlatDict
 from collections import namedtuple
-from pandas import DataFrame
 from openpnm.io import Dict, GenericIO
 from openpnm.utils import sanitize_dict, logging
 logger = logging.getLogger(__name__)
@@ -25,7 +24,6 @@ class Pandas(GenericIO):
     by OpenPNM, this could be an solution.
 
     """
-
     @classmethod
     def to_dataframe(cls, network=None, phases=[], join=False, delim=' | '):
         r"""
@@ -55,6 +53,8 @@ class Pandas(GenericIO):
         different.
 
         """
+        from pandas import DataFrame
+
         project, network, phases = cls._parse_args(network=network,
                                                    phases=phases)
 

@@ -14,8 +14,6 @@ r"""
 
 import scipy as _sp
 import scipy.sparse.csgraph as _spgr
-from sympy import lambdify, symbols, log, ln, exp
-from sympy import postorder_traversal, srepr
 
 
 def charge_conservation(target, phase, p_alg, e_alg, assumption):
@@ -444,6 +442,7 @@ def _build_func(eq, **args):
     Take a symbolic equation and return the lambdified version plus the
     linearization of form S1 * x + S2
     '''
+    from sympy import lambdify
     eq_prime = eq.diff(args['x'])
     s1 = eq_prime
     s2 = eq - eq_prime*args['x']
@@ -488,6 +487,7 @@ def linear_sym(target, X, A1='', A2=''):
             rate = S_{1}   X  +  S_{2}
 
     """
+    from sympy import symbols
     A = _parse_args(target=target, key=A1, default=0.0)
     B = _parse_args(target=target, key=A2, default=0.0)
     X = target[X]
@@ -540,6 +540,7 @@ def power_law_sym(target, X, A1='', A2='', A3=''):
             rate = S_{1}   X  +  S_{2}
 
     """
+    from sympy import symbols
     A = _parse_args(target=target, key=A1, default=0.0)
     B = _parse_args(target=target, key=A2, default=1.0)
     C = _parse_args(target=target, key=A3, default=0.0)
@@ -593,6 +594,7 @@ def exponential_sym(target, X, A1='', A2='', A3='', A4='', A5='', A6=''):
             rate = S_{1}   X  +  S_{2}
 
     """
+    from sympy import symbols
     A = _parse_args(target=target, key=A1, default=0.0)
     B = _parse_args(target=target, key=A2, default=1.0)
     C = _parse_args(target=target, key=A3, default=1.0)
@@ -649,6 +651,7 @@ def natural_exponential_sym(target, X, A1='', A2='', A3='', A4='', A5=''):
             rate = S_{1}   X  +  S_{2}
 
     """
+    from sympy import symbols, exp
     A = _parse_args(target=target, key=A1, default=0.0)
     B = _parse_args(target=target, key=A2, default=1.0)
     C = _parse_args(target=target, key=A3, default=1.0)
@@ -704,6 +707,7 @@ def logarithm_sym(target, X, A1='', A2='', A3='', A4='', A5='', A6=''):
             rate = S_{1}   X  +  S_{2}
 
     """
+    from sympy import symbols, log
     A = _parse_args(target=target, key=A1, default=0.0)
     B = _parse_args(target=target, key=A2, default=10.0)
     C = _parse_args(target=target, key=A3, default=1.0)
@@ -714,7 +718,7 @@ def logarithm_sym(target, X, A1='', A2='', A3='', A4='', A5='', A6=''):
     # Symbols used in symbolic function
     a, b, c, d, e, f, x = symbols('a,b,c,d,e,f,x')
     # Equation
-    y = a*log((c*x**d + e), b) + f
+    y = a * log((c * x**d + e), b) + f
     # Callable functions
     r, s1, s2 = _build_func(eq=y, a=a, b=b, c=c, d=d, e=e, f=f, x=x)
     # Values
@@ -760,6 +764,7 @@ def natural_logarithm_sym(target, X, A1='', A2='', A3='', A4='', A5=''):
             rate = S_{1}   X  +  S_{2}
 
     """
+    from sympy import symbols, ln
     A = _parse_args(target=target, key=A1, default=0.0)
     B = _parse_args(target=target, key=A2, default=1.0)
     C = _parse_args(target=target, key=A3, default=1.0)
@@ -769,7 +774,7 @@ def natural_logarithm_sym(target, X, A1='', A2='', A3='', A4='', A5=''):
     # Symbols used in symbolic function
     a, b, c, d, e, x = symbols('a,b,c,d,e,x')
     # Equation
-    y = a*ln(b*x**c + d) + e
+    y = a * ln(b * x**c + d) + e
     # Callable functions
     r, s1, s2 = _build_func(eq=y, a=a, b=b, c=c, d=d, e=e, x=x)
     # Values
@@ -820,6 +825,7 @@ def general_symbolic(target, eqn=None, arg_map=None):
     >>> assert 'pore.general.S1' in water.props()
     >>> assert 'pore.general.S1' in water.props()
     '''
+    from sympy import postorder_traversal, srepr, symbols
     # First make sure all the symbols have been allocated dict items
     for arg in postorder_traversal(eqn):
         if srepr(arg)[:6] == 'Symbol':
@@ -828,7 +834,7 @@ def general_symbolic(target, eqn=None, arg_map=None):
                 raise Exception('argument mapping incomplete, missing '+key)
     if 'x' not in arg_map.keys():
         raise Exception('argument mapping must contain "x" for the '
-                        'independent variable')
+                        + 'independent variable')
     # Get the data
     data = {}
     args = {}

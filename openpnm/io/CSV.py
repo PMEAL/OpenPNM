@@ -1,8 +1,7 @@
 import re
 import scipy as sp
-from pandas import read_table
-from openpnm.io import GenericIO, Dict
 from openpnm.io.Pandas import Pandas
+from openpnm.io import GenericIO, Dict
 from openpnm.utils import logging, Workspace
 logger = logging.getLogger(__name__)
 ws = Workspace()
@@ -94,6 +93,8 @@ class CSV(GenericIO):
             returned.
 
         """
+        from pandas import read_table
+
         if project is None:
             project = ws.new_project()
 
