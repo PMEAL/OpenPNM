@@ -359,6 +359,11 @@ class RelativePermeability(GenericAlgorithm):
         return fig
 
     def get_Kr_data(self):
+        r"""
+        Data of the relative permeability of the phase(s) in flow direction(s)
+        and Saturation points. The output data can be used as a table of data
+        points.
+        """
         self.Kr_values['results']['sat'] = self.Kr_values['sat']
         if self.settings['wp'] is not None:
             self.Kr_values['results']['krw'] = self.Kr_values['relperm_wp']
