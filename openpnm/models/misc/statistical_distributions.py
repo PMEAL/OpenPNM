@@ -6,9 +6,7 @@ r"""
 .. autofunction:: openpnm.models.misc.statistical_distributions.generic_distribution
 
 """
-
 import numpy as np
-import scipy.stats as spts
 from openpnm.utils import logging
 logger = logging.getLogger(__name__)
 
@@ -94,6 +92,8 @@ def weibull(target, seeds, shape, scale, loc):
     >>> fig = plt.hist(func.ppf(q=scipy.rand(10000)), bins=50)
 
     """
+    import scipy.stats as spts
+
     seeds = target[seeds]
     value = spts.weibull_min.ppf(q=seeds, c=shape, scale=scale, loc=loc)
     return value
@@ -138,6 +138,8 @@ def normal(target, seeds, scale, loc):
     >>> fig = plt.hist(func.ppf(q=scipy.rand(10000)), bins=50)
 
     """
+    import scipy.stats as spts
+
     seeds = target[seeds]
     value = spts.norm.ppf(q=seeds, scale=scale, loc=loc)
     return value
