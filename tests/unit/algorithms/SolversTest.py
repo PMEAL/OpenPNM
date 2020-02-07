@@ -41,7 +41,7 @@ class SolversTest:
             self.alg.settings['solver_type'] = solver
             self.alg.run()
             xmean = self.alg['pore.x'].mean()
-            nt.assert_allclose(actual=xmean, desired=0.587595, rtol=1e-4)
+            nt.assert_allclose(actual=xmean, desired=0.587595, rtol=1e-5)
 
     def test_scipy_iterative_diverge(self):
         solvers = ['bicg', 'bicgstab', 'cg', 'cgs', 'qmr', 'gcrotmk',
@@ -54,11 +54,15 @@ class SolversTest:
                 self.alg.run()
         self.alg.settings.update(solver_maxiter=100)
 
-    # def test_pyamg(self):
-    #     self.alg.settings['solver_family'] = 'pyamg'
-    #     self.alg.run()
-    #     xmean = self.alg['pore.x'].mean()
-    #     nt.assert_allclose(actual=xmean, desired=0.587595, rtol=1e-5)
+    def test_pyamg(self):
+        self.alg.settings['solver_family'] = 'pyamg'
+        if importlib.util.find_spec('pyamg') is None:
+            with nt.assert_raises(Exception):
+                self.alg.run()
+        else:
+            self.alg.run()
+            xmean = self.alg['pore.x'].mean()
+            nt.assert_allclose(actual=xmean, desired=0.587595, rtol=1e-5)
 
     def test_petsc(self):
         self.alg.settings['solver_family'] = 'petsc'

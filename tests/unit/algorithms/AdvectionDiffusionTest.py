@@ -1,5 +1,5 @@
-import openpnm as op
 import scipy as sp
+import openpnm as op
 from numpy.testing import assert_allclose
 
 
@@ -31,12 +31,42 @@ class AdvectionDiffusionTest:
 
         self.ad = op.algorithms.AdvectionDiffusion(network=self.net,
                                                    phase=self.phase)
-        self.ad.setup(diffusive_conductance="throat.diffusive_conductance",
-                      hydraulic_conductance="throat.hydraulic_conductance",
-                      pressure="pore.pressure")
         self.ad.settings.update({"cache_A": False, "cache_b": False})
         self.ad.set_value_BC(pores=self.net.pores('back'), values=2)
         self.ad.set_value_BC(pores=self.net.pores('front'), values=0)
+
+    def test_AdvectionDiffusion_setup(self):
+        self.ad.setup(quantity="pore.blah",
+                      conductance="throat.foo",
+                      diffusive_conductance="throat.foo2",
+                      hydraulic_conductance="throat.foo3",
+                      pressure="pore.bar",)
+        assert self.ad.settings["quantity"] == "pore.blah"
+        assert self.ad.settings["conductance"] == "throat.foo"
+        assert self.ad.settings["diffusive_conductance"] == "throat.foo2"
+        assert self.ad.settings["hydraulic_conductance"] == "throat.foo3"
+        assert self.ad.settings["pressure"] == "pore.bar"
+        # Reset back to previous values for other tests to run
+        self.ad.setup(quantity="pore.concentration",
+                      conductance="throat.ad_dif_conductance",
+                      diffusive_conductance="throat.diffusive_conductance",
+                      hydraulic_conductance="throat.hydraulic_conductance",
+                      pressure="pore.pressure")
+
+    def test_conductance_gets_updated_when_pressure_changes(self):
+        mod = op.models.physics.ad_dif_conductance.ad_dif
+        self.phase['pore.p'] = self.phase['pore.pressure'].copy()
+        self.phys.add_model(propname='throat.ad_dif_conductance',
+                            model=mod, s_scheme='powerlaw',
+                            pore_pressure='pore.p')
+        g_old = self.phys["throat.ad_dif_conductance"]
+        # Manually change pressure field
+        self.phase['pore.p'] = self.phase['pore.p']**0.5
+        self.ad.run()
+        g_updated = self.phys["throat.ad_dif_conductance"]
+        # Ensure conductance values are updated
+        assert g_old.mean() != g_updated.mean()
+        assert_allclose(g_updated.mean(), 1.0071212e-15)
 
     def test_powerlaw_advection_diffusion(self):
         mod = op.models.physics.ad_dif_conductance.ad_dif
