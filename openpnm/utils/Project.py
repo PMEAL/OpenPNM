@@ -1002,12 +1002,12 @@ class Project(list):
         elif astype == 'dict':
             grid = grid.to_dict()
         elif astype == 'table':
-            from terminaltables import SingleTable
+            from terminaltables import AsciiTable
             headings = [self.network.name] + list(grid.keys())
             g = [headings]
             for row in list(grid.index):
                 g.append([row] + list(grid.loc[row]))
-            grid = SingleTable(g)
+            grid = AsciiTable(g)
             grid.title = 'Project: ' + self.name
             grid.padding_left = 3
             grid.padding_right = 3
