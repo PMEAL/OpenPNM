@@ -1,6 +1,5 @@
 import openpnm as op
 import scipy as sp
-import pytest
 mgr = op.Workspace()
 
 

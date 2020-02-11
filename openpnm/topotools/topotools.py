@@ -1351,8 +1351,8 @@ def clone_pores(network, pores, labels=['clone'], mode='parents'):
         - 'isolated': No connections between parents or siblings
     """
     if len(network.project.geometries()) > 0:
-        logger.warning('Network has active Geometries, new pores must be \
-                        assigned a Geometry')
+        logger.warning('Network has active Geometries, new pores must be '
+                       'assigned a Geometry')
     if len(network.project.phases()) > 0:
         raise Exception('Network has active Phases, cannot proceed')
 
