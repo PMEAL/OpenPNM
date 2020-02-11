@@ -1556,7 +1556,7 @@ class Base(dict):
 
     def show_hist(self,
                   props=['pore.diameter', 'throat.diameter', 'throat.length'],
-                  bins=20, fontsize=22, **kwargs):
+                  bins=20, fontsize=14, **kwargs):
         r"""
         Show a quick plot of key property distributions.
 
@@ -1573,7 +1573,7 @@ class Base(dict):
 
         fontsize : int
             Sets the font size temporarily.  The default size of matplotlib is
-            10, which is too small for many screenn.  This function has a
+            10, which is too small for many screens.  This function has a
             default of 22, which does not overwrite the matplotlib setting.
             Note that you can override matplotlib setting globally with
             ``matplotlib.rcParams['font.size'] = 22``.
