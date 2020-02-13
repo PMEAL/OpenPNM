@@ -33,6 +33,7 @@ jobs:
         pip install -r requirements/test_requirements.txt
         pip uninstall openpnm --yes
         pip install -e .
+        pip install porespy # for ipynb tests
 
     - name: Running tests
       run:
