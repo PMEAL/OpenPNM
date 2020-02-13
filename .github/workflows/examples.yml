@@ -33,6 +33,9 @@ jobs:
         pip install -r requirements/test_requirements.txt
         pip uninstall openpnm --yes
         pip install -e .
-        
+
     - name: Running tests
-      run: pytest tests/integration/examples
+      run: pytest --nbval -p no:python  \
+           --ignore=tests/              \
+           --ignore="examples/paper_recreations/Blunt et al. (2013)" \
+           --ignore="examples/paper_recreations/Wu et al. (2010)"
