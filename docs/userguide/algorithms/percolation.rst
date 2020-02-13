@@ -105,9 +105,10 @@ A full invasion simulation using a 2D network can be run with the following comm
  >>> import openpnm as op
  >>> import matplotlib.pyplot as plt
  >>> import scipy as sp
+ >>> import numpy as np
  >>> ws = op.Workspace()
  >>> proj = ws.new_project()
- >>> S = sp.array([100, 100, 1])
+ >>> S = np.array([100, 100, 1])
  >>> pn = op.network.Cubic(shape=S, spacing=0.0001)
  >>> geom = op.geometry.StickAndBall(network=pn, pores=pn.Ps, throats=pn.Ts)
  >>> water = op.phases.Water(network=pn)
