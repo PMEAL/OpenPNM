@@ -11,8 +11,8 @@ dist/
 
 *\.ipynb_checkpoints/
 
-*.vtp
-*.pnm
+# *.vtp
+# *.pnm
 *.hdf
 *.xmf
 !tests/fixtures/*.vtp
