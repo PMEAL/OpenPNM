@@ -1,4 +1,5 @@
 import warnings
+import numpy as np
 import scipy as sp
 import scipy.sparse as sprs
 import scipy.ndimage as spim
@@ -74,38 +75,38 @@ def find_neighbor_sites(sites, am, flatten=True, include_input=False,
     if am.format != 'lil':
         am = am.tolil(copy=False)
     n_sites = am.shape[0]
-    rows = [am.rows[i] for i in sp.array(sites, ndmin=1)]
+    rows = [am.rows[i] for i in np.array(sites, ndmin=1)]
     if len(rows) == 0:
         return []
-    neighbors = sp.hstack(rows).astype(sp.int64)  # Flatten list to apply logic
+    neighbors = np.hstack(rows).astype(sp.int64)  # Flatten list to apply logic
     if logic in ['or', 'union', 'any']:
-        neighbors = sp.unique(neighbors)
+        neighbors = np.unique(neighbors)
     elif logic in ['xor', 'exclusive_or']:
-        neighbors = sp.unique(sp.where(sp.bincount(neighbors) == 1)[0])
+        neighbors = np.unique(np.where(np.bincount(neighbors) == 1)[0])
     elif logic in ['xnor', 'nxor']:
-        neighbors = sp.unique(sp.where(sp.bincount(neighbors) > 1)[0])
+        neighbors = np.unique(np.where(np.bincount(neighbors) > 1)[0])
     elif logic in ['and', 'all', 'intersection']:
         neighbors = set(neighbors)
         [neighbors.intersection_update(i) for i in rows]
-        neighbors = sp.array(list(neighbors), dtype=sp.int64, ndmin=1)
+        neighbors = np.array(list(neighbors), dtype=sp.int64, ndmin=1)
     else:
         raise Exception('Specified logic is not implemented')
     # Deal with removing inputs or not
-    mask = sp.zeros(shape=n_sites, dtype=bool)
+    mask = np.zeros(shape=n_sites, dtype=bool)
     mask[neighbors] = True
     if not include_input:
         mask[sites] = False
     # Finally flatten or not
     if flatten:
-        neighbors = sp.where(mask)[0]
+        neighbors = np.where(mask)[0]
     else:
         if (neighbors.size > 0):
             for i in range(len(rows)):
-                vals = sp.array(rows[i], dtype=sp.int64)
+                vals = np.array(rows[i], dtype=sp.int64)
                 rows[i] = vals[mask[vals]]
             neighbors = rows
         else:
-            neighbors = [sp.array([], dtype=int) for i in range(len(sites))]
+            neighbors = [np.array([], dtype=int) for i in range(len(sites))]
     return neighbors
 
 
@@ -178,33 +179,33 @@ def find_neighbor_bonds(sites, im=None, am=None, flatten=True, logic='or'):
     if im is not None:
         if im.format != 'lil':
             im = im.tolil(copy=False)
-        rows = [im.rows[i] for i in sp.array(sites, ndmin=1, dtype=sp.int64)]
+        rows = [im.rows[i] for i in np.array(sites, ndmin=1, dtype=sp.int64)]
         if len(rows) == 0:
             return []
-        neighbors = sp.hstack(rows).astype(sp.int64)
+        neighbors = np.hstack(rows).astype(sp.int64)
         n_bonds = int(im.nnz/2)
         if logic in ['or', 'union', 'any']:
-            neighbors = sp.unique(neighbors)
+            neighbors = np.unique(neighbors)
         elif logic in ['xor', 'exclusive_or']:
-            neighbors = sp.unique(sp.where(sp.bincount(neighbors) == 1)[0])
+            neighbors = np.unique(np.where(np.bincount(neighbors) == 1)[0])
         elif logic in ['xnor', 'shared']:
-            neighbors = sp.unique(sp.where(sp.bincount(neighbors) > 1)[0])
+            neighbors = np.unique(np.where(np.bincount(neighbors) > 1)[0])
         elif logic in ['and', 'all', 'intersection']:
             neighbors = set(neighbors)
             [neighbors.intersection_update(i) for i in rows]
-            neighbors = sp.array(list(neighbors), dtype=int, ndmin=1)
+            neighbors = np.array(list(neighbors), dtype=int, ndmin=1)
         else:
             raise Exception('Specified logic is not implemented')
         if (flatten is False):
             if (neighbors.size > 0):
-                mask = sp.zeros(shape=n_bonds, dtype=bool)
+                mask = np.zeros(shape=n_bonds, dtype=bool)
                 mask[neighbors] = True
                 for i in range(len(rows)):
-                    vals = sp.array(rows[i], dtype=sp.int64)
+                    vals = np.array(rows[i], dtype=sp.int64)
                     rows[i] = vals[mask[vals]]
                 neighbors = rows
             else:
-                neighbors = [sp.array([], dtype=sp.int64) for i in range(len(sites))]
+                neighbors = [np.array([], dtype=sp.int64) for i in range(len(sites))]
         return neighbors
     elif am is not None:
         if am.format != 'coo':
@@ -213,20 +214,20 @@ def find_neighbor_bonds(sites, im=None, am=None, flatten=True, logic='or'):
             am = sp.sparse.triu(am, k=1)
         if flatten is False:
             raise Exception('flatten cannot be used with an adjacency matrix')
-        Ps = sp.zeros(am.shape[0], dtype=bool)
+        Ps = np.zeros(am.shape[0], dtype=bool)
         Ps[sites] = True
-        conns = sp.vstack((am.row, am.col)).T
+        conns = np.vstack((am.row, am.col)).T
         if logic in ['or', 'union', 'any']:
-            neighbors = sp.any(Ps[conns], axis=1)
+            neighbors = np.any(Ps[conns], axis=1)
         elif logic in ['xor', 'exclusive_or']:
-            neighbors = sp.sum(Ps[conns], axis=1) == 1
+            neighbors = np.sum(Ps[conns], axis=1) == 1
         elif logic in ['xnor', 'shared']:
-            neighbors = sp.all(Ps[conns], axis=1)
+            neighbors = np.all(Ps[conns], axis=1)
         elif logic in ['and', 'all', 'intersection']:
             raise Exception('Specified logic is not implemented')
         else:
             raise Exception('Specified logic is not implemented')
-        neighbors = sp.where(neighbors)[0]
+        neighbors = np.where(neighbors)[0]
         return neighbors
     else:
         raise Exception('Either the incidence or the adjacency matrix must '
@@ -287,40 +288,40 @@ def find_connected_sites(bonds, am, flatten=True, logic='or'):
     """
     if am.format != 'coo':
         raise Exception('Adjacency matrix must be in COO format')
-    bonds = sp.array(bonds, ndmin=1)
+    bonds = np.array(bonds, ndmin=1)
     if len(bonds) == 0:
         return []
-    neighbors = sp.hstack((am.row[bonds], am.col[bonds])).astype(sp.int64)
+    neighbors = np.hstack((am.row[bonds], am.col[bonds])).astype(sp.int64)
     if neighbors.size:
-        n_sites = sp.amax(neighbors)
+        n_sites = np.amax(neighbors)
     if logic in ['or', 'union', 'any']:
-        neighbors = sp.unique(neighbors)
+        neighbors = np.unique(neighbors)
     elif logic in ['xor', 'exclusive_or']:
-        neighbors = sp.unique(sp.where(sp.bincount(neighbors) == 1)[0])
+        neighbors = np.unique(np.where(np.bincount(neighbors) == 1)[0])
     elif logic in ['xnor']:
-        neighbors = sp.unique(sp.where(sp.bincount(neighbors) > 1)[0])
+        neighbors = np.unique(np.where(np.bincount(neighbors) > 1)[0])
     elif logic in ['and', 'all', 'intersection']:
-        temp = sp.vstack((am.row[bonds], am.col[bonds])).T.tolist()
+        temp = np.vstack((am.row[bonds], am.col[bonds])).T.tolist()
         temp = [set(pair) for pair in temp]
         neighbors = temp[0]
         [neighbors.intersection_update(pair) for pair in temp[1:]]
-        neighbors = sp.array(list(neighbors), dtype=sp.int64, ndmin=1)
+        neighbors = np.array(list(neighbors), dtype=sp.int64, ndmin=1)
     else:
         raise Exception('Specified logic is not implemented')
     if flatten is False:
         if neighbors.size:
-            mask = sp.zeros(shape=n_sites+1, dtype=bool)
+            mask = np.zeros(shape=n_sites+1, dtype=bool)
             mask[neighbors] = True
-            temp = sp.hstack((am.row[bonds], am.col[bonds])).astype(sp.int64)
+            temp = np.hstack((am.row[bonds], am.col[bonds])).astype(sp.int64)
             temp[~mask[temp]] = -1
-            inds = sp.where(temp == -1)[0]
+            inds = np.where(temp == -1)[0]
             if len(inds):
                 temp = temp.astype(float)
                 temp[inds] = sp.nan
-            temp = sp.reshape(a=temp, newshape=[len(bonds), 2], order='F')
+            temp = np.reshape(a=temp, newshape=[len(bonds), 2], order='F')
             neighbors = temp
         else:
-            neighbors = [sp.array([], dtype=sp.int64) for i in range(len(bonds))]
+            neighbors = [np.array([], dtype=sp.int64) for i in range(len(bonds))]
     return neighbors
 
 
@@ -353,7 +354,7 @@ def find_connecting_bonds(sites, am):
     """
     if am.format != 'dok':
         am = am.todok(copy=False)
-    sites = sp.array(sites, ndmin=2)
+    sites = np.array(sites, ndmin=2)
     if sites.size == 0:
         return []
     z = tuple(zip(sites[:, 0], sites[:, 1]))
@@ -392,21 +393,21 @@ def find_complement(am, sites=None, bonds=None, asmask=False):
 
     """
     if (sites is not None) and (bonds is None):
-        inds = sp.unique(sites)
+        inds = np.unique(sites)
         N = am.shape[0]
     elif (bonds is not None) and (sites is None):
-        inds = sp.unique(bonds)
+        inds = np.unique(bonds)
         N = int(am.nnz/2)
     elif (bonds is not None) and (sites is not None):
         raise Exception('Only one of sites or bonds can be specified')
     else:
         raise Exception('Either sites or bonds must be specified')
-    mask = sp.ones(shape=N, dtype=bool)
+    mask = np.ones(shape=N, dtype=bool)
     mask[inds] = False
     if asmask:
         return mask
     else:
-        return sp.arange(N)[mask]
+        return np.arange(N)[mask]
 
 
 def istriu(am):
@@ -418,7 +419,7 @@ def istriu(am):
         return False
     if am.format != 'coo':
         am = am.tocoo(copy=False)
-    return sp.all(am.row <= am.col)
+    return np.all(am.row <= am.col)
 
 
 def istril(am):
@@ -430,7 +431,7 @@ def istril(am):
         return False
     if am.format != 'coo':
         am = am.tocoo(copy=False)
-    return sp.all(am.row >= am.col)
+    return np.all(am.row >= am.col)
 
 
 def istriangular(am):
@@ -468,14 +469,14 @@ def am_to_im(am):
         raise Exception('Adjacency matrices must be square')
     if am.format != 'coo':
         am = am.tocoo(copy=False)
-    conn = sp.vstack((am.row, am.col)).T
+    conn = np.vstack((am.row, am.col)).T
     row = conn[:, 0]
     data = am.data
-    col = sp.arange(sp.size(am.data))
+    col = np.arange(np.size(am.data))
     if istriangular(am):
-        row = sp.append(row, conn[:, 1])
-        data = sp.append(data, data)
-        col = sp.append(col, col)
+        row = np.append(row, conn[:, 1])
+        data = np.append(data, data)
+        col = np.append(col, col)
     im = sprs.coo.coo_matrix((data, (row, col)), (row.max()+1, col.max()+1))
     return im
 
@@ -519,7 +520,7 @@ def tri_to_am(tri):
     lil.data = lil.rows  # Just a dummy array to make things work properly
     coo = lil.tocoo()
     # Set weights to 1's
-    coo.data = sp.ones_like(coo.data)
+    coo.data = np.ones_like(coo.data)
     # Remove diagonal, and convert to csr remove duplicates
     am = sp.sparse.triu(A=coo, k=1, format='csr')
     # The convert back to COO and return
@@ -554,15 +555,15 @@ def vor_to_am(vor):
         # Add connections to rc list
         rc[0].extend(row[:-1])
         rc[1].extend(row[1:])
-    rc = sp.vstack(rc).T
+    rc = np.vstack(rc).T
     # Make adj mat upper triangular
-    rc = sp.sort(rc, axis=1)
+    rc = np.sort(rc, axis=1)
     # Remove any pairs with ends at infinity (-1)
-    keep = ~sp.any(rc == -1, axis=1)
+    keep = ~np.any(rc == -1, axis=1)
     rc = rc[keep]
-    data = sp.ones_like(rc[:, 0])
+    data = np.ones_like(rc[:, 0])
     # Build adj mat in COO format
-    M = N = sp.amax(rc) + 1
+    M = N = np.amax(rc) + 1
     am = sprs.coo_matrix((data, (rc[:, 0], rc[:, 1])), shape=(M, N))
     # Remove diagonal, and convert to csr remove duplicates
     am = sp.sparse.triu(A=am, k=1, format='csr')
@@ -602,15 +603,15 @@ def conns_to_am(conns, shape=None, force_triu=True, drop_diag=True,
 
     """
     if force_triu:  # Sort connections to [low, high]
-        conns = sp.sort(conns, axis=1)
+        conns = np.sort(conns, axis=1)
     if drop_negs:  # Remove connections to -1
-        keep = ~sp.any(conns < 0, axis=1)
+        keep = ~np.any(conns < 0, axis=1)
         conns = conns[keep]
     if drop_diag:  # Remove connections of [self, self]
-        keep = sp.where(conns[:, 0] != conns[:, 1])[0]
+        keep = np.where(conns[:, 0] != conns[:, 1])[0]
         conns = conns[keep]
     # Now convert to actual sparse array in COO format
-    data = sp.ones_like(conns[:, 0], dtype=int)
+    data = np.ones_like(conns[:, 0], dtype=int)
     if shape is None:
         N = conns.max() + 1
         shape = (N, N)
@@ -619,8 +620,8 @@ def conns_to_am(conns, shape=None, force_triu=True, drop_diag=True,
         am = am.tocsr()
         am = am.tocoo()
     # Perform one last check on adjacency matrix
-    missing = sp.where(sp.bincount(conns.flatten()) == 0)[0]
-    if sp.size(missing) or sp.any(am.col.max() < (shape[0] - 1)):
+    missing = np.where(np.bincount(conns.flatten()) == 0)[0]
+    if np.size(missing) or np.any(am.col.max() < (shape[0] - 1)):
         warnings.warn('Some nodes are not connected to any bonds')
     return am
 
@@ -655,11 +656,11 @@ def isoutside(coords, shape):
     # Label external pores for trimming below
     if len(shape) == 1:  # Spherical
         # Find external points
-        r = sp.sqrt(sp.sum(coords**2, axis=1))
+        r = np.sqrt(np.sum(coords**2, axis=1))
         Ps = r > shape[0]
     elif len(shape) == 2:  # Cylindrical
         # Find external pores outside radius
-        r = sp.sqrt(sp.sum(coords[:, [0, 1]]**2, axis=1))
+        r = np.sqrt(np.sum(coords[:, [0, 1]]**2, axis=1))
         Ps = r > shape[0]
         # Find external pores above and below cylinder
         if shape[1] > 0:
@@ -668,15 +669,15 @@ def isoutside(coords, shape):
         else:
             pass
     elif len(shape) == 3:  # Rectilinear
-        shape = sp.array(shape, dtype=float)
+        shape = np.array(shape, dtype=float)
         try:
             lo_lim = shape[:, 0]
             hi_lim = shape[:, 1]
         except IndexError:
-            lo_lim = sp.array([0, 0, 0])
+            lo_lim = np.array([0, 0, 0])
             hi_lim = shape
-        Ps1 = sp.any(coords > hi_lim, axis=1)
-        Ps2 = sp.any(coords < lo_lim, axis=1)
+        Ps1 = np.any(coords > hi_lim, axis=1)
+        Ps2 = np.any(coords < lo_lim, axis=1)
         Ps = Ps1 + Ps2
     return Ps
 
@@ -705,22 +706,22 @@ def ispercolating(am, inlets, outlets, mode='site'):
     """
     if am.format != 'coo':
         am = am.to_coo()
-    ij = sp.vstack((am.col, am.row)).T
+    ij = np.vstack((am.col, am.row)).T
     if mode.startswith('site'):
-        occupied_sites = sp.zeros(shape=am.shape[0], dtype=bool)
+        occupied_sites = np.zeros(shape=am.shape[0], dtype=bool)
         occupied_sites[ij[am.data].flatten()] = True
         clusters = site_percolation(ij, occupied_sites)
     elif mode.startswith('bond'):
         occupied_bonds = am.data
         clusters = bond_percolation(ij, occupied_bonds)
-    ins = sp.unique(clusters.sites[inlets])
+    ins = np.unique(clusters.sites[inlets])
     if ins[0] == -1:
         ins = ins[1:]
-    outs = sp.unique(clusters.sites[outlets])
+    outs = np.unique(clusters.sites[outlets])
     if outs[0] == -1:
         outs = outs[1:]
-    hits = sp.in1d(ins, outs)
-    return sp.any(hits)
+    hits = np.in1d(ins, outs)
+    return np.any(hits)
 
 
 def remove_isolated_clusters(labels, inlets):
@@ -745,13 +746,13 @@ def remove_isolated_clusters(labels, inlets):
 
     """
     # Identify clusters of invasion sites
-    inv_clusters = sp.unique(labels.sites[inlets])
+    inv_clusters = np.unique(labels.sites[inlets])
     # Remove cluster numbers == -1, if any
     inv_clusters = inv_clusters[inv_clusters >= 0]
     # Find all pores in invading clusters
-    p_invading = sp.in1d(labels.sites, inv_clusters)
+    p_invading = np.in1d(labels.sites, inv_clusters)
     labels.sites[~p_invading] = -1
-    t_invading = sp.in1d(labels.bonds, inv_clusters)
+    t_invading = np.in1d(labels.bonds, inv_clusters)
     labels.bonds[~t_invading] = -1
     return labels
 
@@ -787,17 +788,17 @@ def site_percolation(ij, occupied_sites):
     from collections import namedtuple
     import scipy.stats as spst
 
-    Np = sp.size(occupied_sites)
-    occupied_bonds = sp.all(occupied_sites[ij], axis=1)
+    Np = np.size(occupied_sites)
+    occupied_bonds = np.all(occupied_sites[ij], axis=1)
     adj_mat = sprs.csr_matrix((occupied_bonds, (ij[:, 0], ij[:, 1])),
                               shape=(Np, Np))
     adj_mat.eliminate_zeros()
     clusters = csgraph.connected_components(csgraph=adj_mat, directed=False)[1]
     clusters[~occupied_sites] = -1
     s_labels = spst.rankdata(clusters + 1, method="dense") - 1
-    if sp.any(~occupied_sites):
+    if np.any(~occupied_sites):
         s_labels -= 1
-    b_labels = sp.amin(s_labels[ij], axis=1)
+    b_labels = np.amin(s_labels[ij], axis=1)
     tup = namedtuple('cluster_labels', ('sites', 'bonds'))
     return tup(s_labels, b_labels)
 
@@ -830,16 +831,16 @@ def bond_percolation(ij, occupied_bonds):
 
     """
     from collections import namedtuple
-    Np = sp.amax(ij) + 1
+    Np = np.amax(ij) + 1
     adj_mat = sprs.csr_matrix((occupied_bonds, (ij[:, 0], ij[:, 1])),
                               shape=(Np, Np))
     adj_mat.eliminate_zeros()
     clusters = csgraph.connected_components(csgraph=adj_mat, directed=False)[1]
-    valid_clusters = sp.bincount(clusters) > 1
-    mapping = -sp.ones(shape=(clusters.max()+1, ), dtype=int)
-    mapping[valid_clusters] = sp.arange(0, valid_clusters.sum())
+    valid_clusters = np.bincount(clusters) > 1
+    mapping = -np.ones(shape=(clusters.max()+1, ), dtype=int)
+    mapping[valid_clusters] = np.arange(0, valid_clusters.sum())
     s_labels = mapping[clusters]
-    b_labels = sp.amin(s_labels[ij], axis=1)
+    b_labels = np.amin(s_labels[ij], axis=1)
     tup = namedtuple('cluster_labels', ('sites', 'bonds'))
     return tup(s_labels, b_labels)
 
@@ -875,25 +876,25 @@ def rotate_coords(network, a=0, b=0, c=0, R=None):
     """
     if R is None:
         if a:
-            R = sp.array([[1, 0, 0],
-                          [0, sp.cos(sp.deg2rad(a)), -sp.sin(sp.deg2rad(a))],
-                          [0, sp.sin(sp.deg2rad(a)), sp.cos(sp.deg2rad(a))]])
-            network['pore.coords'] = sp.tensordot(network['pore.coords'], R,
+            R = np.array([[1, 0, 0],
+                          [0, np.cos(np.deg2rad(a)), -np.sin(np.deg2rad(a))],
+                          [0, np.sin(np.deg2rad(a)), np.cos(np.deg2rad(a))]])
+            network['pore.coords'] = np.tensordot(network['pore.coords'], R,
                                                   axes=(1, 1))
         if b:
-            R = sp.array([[sp.cos(sp.deg2rad(b)), 0, -sp.sin(sp.deg2rad(b))],
+            R = np.array([[np.cos(np.deg2rad(b)), 0, -np.sin(np.deg2rad(b))],
                           [0, 1, 0],
-                          [sp.sin(sp.deg2rad(b)), 0, sp.cos(sp.deg2rad(b))]])
-            network['pore.coords'] = sp.tensordot(network['pore.coords'], R,
+                          [np.sin(np.deg2rad(b)), 0, np.cos(np.deg2rad(b))]])
+            network['pore.coords'] = np.tensordot(network['pore.coords'], R,
                                                   axes=(1, 1))
         if c:
-            R = sp.array([[sp.cos(sp.deg2rad(c)), -sp.sin(sp.deg2rad(c)), 0],
-                          [sp.sin(sp.deg2rad(c)), sp.cos(sp.deg2rad(c)), 0],
+            R = np.array([[np.cos(np.deg2rad(c)), -np.sin(np.deg2rad(c)), 0],
+                          [np.sin(np.deg2rad(c)), np.cos(np.deg2rad(c)), 0],
                           [0, 0, 1]])
-            network['pore.coords'] = sp.tensordot(network['pore.coords'], R,
+            network['pore.coords'] = np.tensordot(network['pore.coords'], R,
                                                   axes=(1, 1))
     else:
-        network['pore.coords'] = sp.tensordot(network['pore.coords'], R,
+        network['pore.coords'] = np.tensordot(network['pore.coords'], R,
                                               axes=(1, 1))
 
 
@@ -949,7 +950,7 @@ def shear_coords(network, ay=0, az=0, bx=0, bz=0, cx=0, cy=0, S=None):
 
     """
     if S is None:
-        S = sp.array([[1, ay, az],
+        S = np.array([[1, ay, az],
                       [bx, 1, bz],
                       [cx, cy, 1]])
     network['pore.coords'] = (S@network['pore.coords'].T).T
@@ -991,41 +992,41 @@ def trim(network, pores=[], throats=[]):
     '''
     pores = network._parse_indices(pores)
     throats = network._parse_indices(throats)
-    Pkeep = sp.copy(network['pore.all'])
-    Tkeep = sp.copy(network['throat.all'])
-    if sp.size(pores) > 0:
+    Pkeep = np.copy(network['pore.all'])
+    Tkeep = np.copy(network['throat.all'])
+    if np.size(pores) > 0:
         Pkeep[pores] = False
-        if not sp.any(Pkeep):
+        if not np.any(Pkeep):
             raise Exception('Cannot delete ALL pores')
         # Performing customized find_neighbor_throats which is much faster, but
         # not general for other types of queries
-#        temp = sp.in1d(network['throat.conns'].flatten(), pores)
-#        temp = sp.reshape(temp, (network.Nt, 2))
-#        Ts = sp.any(temp, axis=1)
+#        temp = np.in1d(network['throat.conns'].flatten(), pores)
+#        temp = np.reshape(temp, (network.Nt, 2))
+#        Ts = np.any(temp, axis=1)
 #        Ts = network.Ts[Ts]
 #        tic()
         Ts = network.find_neighbor_throats(pores=~Pkeep, mode='union')
 #        toc()
         if len(Ts) > 0:
             Tkeep[Ts] = False
-    if sp.size(throats) > 0:
+    if np.size(throats) > 0:
         Tkeep[throats] = False
         # The following IF catches the special case of deleting ALL throats
         # It removes all throat props, adds 'all', and skips rest of function
-        if not sp.any(Tkeep):
+        if not np.any(Tkeep):
             logger.info('Removing ALL throats from network')
             for item in network.keys():
                 if item.split('.')[0] == 'throat':
                     del network[item]
-            network['throat.all'] = sp.array([], ndmin=1)
+            network['throat.all'] = np.array([], ndmin=1)
             return
 
     # Temporarily store throat conns and pore map for processing later
     Np_old = network.Np
     Nt_old = network.Nt
-    Pkeep_inds = sp.where(Pkeep)[0]
-    Tkeep_inds = sp.where(Tkeep)[0]
-    Pmap = sp.ones((network.Np,), dtype=int)*-1
+    Pkeep_inds = np.where(Pkeep)[0]
+    Tkeep_inds = np.where(Tkeep)[0]
+    Pmap = np.ones((network.Np,), dtype=int)*-1
     tpore1 = network['throat.conns'][:, 0]
     tpore2 = network['throat.conns'][:, 1]
 
@@ -1045,10 +1046,10 @@ def trim(network, pores=[], throats=[]):
                 obj.update({key: temp[Ps]})
 
     # Remap throat connections
-    Pmap[Pkeep] = sp.arange(0, sp.sum(Pkeep))
+    Pmap[Pkeep] = np.arange(0, np.sum(Pkeep))
     Tnew1 = Pmap[tpore1[Tkeep]]
     Tnew2 = Pmap[tpore2[Tkeep]]
-    network.update({'throat.conns': sp.vstack((Tnew1, Tnew2)).T})
+    network.update({'throat.conns': np.vstack((Tnew1, Tnew2)).T})
 
     # Clear adjacency and incidence matrices which will be out of date now
     network._am.clear()
@@ -1090,18 +1091,18 @@ def extend(network, pore_coords=[], throat_conns=[], labels=[]):
 
     Np_old = network.num_pores()
     Nt_old = network.num_throats()
-    Np = Np_old + int(sp.size(pore_coords)/3)
-    Nt = Nt_old + int(sp.size(throat_conns)/2)
+    Np = Np_old + int(np.size(pore_coords)/3)
+    Nt = Nt_old + int(np.size(throat_conns)/2)
     # Adjust 'all' labels
     del network['pore.all'], network['throat.all']
-    network['pore.all'] = sp.ones((Np,), dtype=bool)
-    network['throat.all'] = sp.ones((Nt,), dtype=bool)
+    network['pore.all'] = np.ones((Np,), dtype=bool)
+    network['throat.all'] = np.ones((Nt,), dtype=bool)
     # Add coords and conns
-    if sp.size(pore_coords) > 0:
-        coords = sp.vstack((network['pore.coords'], pore_coords))
+    if np.size(pore_coords) > 0:
+        coords = np.vstack((network['pore.coords'], pore_coords))
         network['pore.coords'] = coords
-    if sp.size(throat_conns) > 0:
-        conns = sp.vstack((network['throat.conns'], throat_conns))
+    if np.size(throat_conns) > 0:
+        conns = np.vstack((network['throat.conns'], throat_conns))
         network['throat.conns'] = conns
 
     # Increase size of any prop or label arrays aready on Network
@@ -1111,9 +1112,9 @@ def extend(network, pore_coords=[], throat_conns=[], labels=[]):
             arr = network.pop(item)
             s = arr.shape
             if arr.dtype == bool:
-                network[item] = sp.zeros(shape=(N, *s[1:]), dtype=bool)
+                network[item] = np.zeros(shape=(N, *s[1:]), dtype=bool)
             else:
-                network[item] = sp.ones(shape=(N, *s[1:]), dtype=float)*sp.nan
+                network[item] = np.ones(shape=(N, *s[1:]), dtype=float)*sp.nan
             # This is a temporary work-around until I learn to handle 2+ dims
             network[item][:arr.shape[0]] = arr
 
@@ -1125,12 +1126,12 @@ def extend(network, pore_coords=[], throat_conns=[], labels=[]):
         for label in labels:
             # Remove pore or throat from label, if present
             label = label.split('.')[-1]
-            if sp.size(pore_coords) > 0:
+            if np.size(pore_coords) > 0:
                 Ps = sp.r_[Np_old:Np]
                 if 'pore.'+label not in network.labels():
                     network['pore.'+label] = False
                 network['pore.'+label][Ps] = True
-            if sp.size(throat_conns) > 0:
+            if np.size(throat_conns) > 0:
                 Ts = sp.r_[Nt_old:Nt]
                 if 'throat.'+label not in network.labels():
                     network['throat.'+label] = False
@@ -1145,14 +1146,14 @@ def reduce_coordination(network, z):
     r"""
     """
     # Find minimum spanning tree using random weights
-    am = network.create_adjacency_matrix(weights=sp.rand(network.Nt),
+    am = network.create_adjacency_matrix(weights=np.random.rand(network.Nt),
                                          triu=False)
     mst = csgraph.minimum_spanning_tree(am, overwrite=True)
     mst = mst.tocoo()
 
     # Label throats on spanning tree to avoid deleting them
     Ts = network.find_connecting_throat(mst.row, mst.col)
-    Ts = sp.hstack(Ts)
+    Ts = np.hstack(Ts)
     network['throat.mst'] = False
     network['throat.mst'][Ts] = True
 
@@ -1190,11 +1191,11 @@ def label_faces(network, tol=0.0, label='surface'):
         find_surface_pores(network, label=label)
     Psurf = network['pore.'+label]
     crds = network['pore.coords']
-    xmin, xmax = sp.amin(crds[:, 0]), sp.amax(crds[:, 0])
+    xmin, xmax = np.amin(crds[:, 0]), np.amax(crds[:, 0])
     xspan = xmax - xmin
-    ymin, ymax = sp.amin(crds[:, 1]), sp.amax(crds[:, 1])
+    ymin, ymax = np.amin(crds[:, 1]), np.amax(crds[:, 1])
     yspan = ymax - ymin
-    zmin, zmax = sp.amin(crds[:, 2]), sp.amax(crds[:, 2])
+    zmin, zmax = np.amin(crds[:, 2]), np.amax(crds[:, 2])
     zspan = zmax - zmin
     dims = dimensionality(network)
     if dims[0]:
@@ -1262,8 +1263,8 @@ def find_surface_pores(network, markers=None, label='surface'):
     coords = network['pore.coords'][:, dims]
     if markers is None:
         # normalize coords to a 1 unit cube centered on origin
-        coords -= sp.amin(coords, axis=0)
-        coords /= sp.amax(coords, axis=0)
+        coords -= np.amin(coords, axis=0)
+        coords /= np.amax(coords, axis=0)
         coords -= 0.5
         npts = max((network.Np/10, 100))
         if sum(dims) == 1:
@@ -1272,35 +1273,35 @@ def find_surface_pores(network, markers=None, label='surface'):
         if sum(dims) == 2:
             r = 0.75
             theta = sp.linspace(0, 2*sp.pi, npts, dtype=float)
-            x = r*sp.cos(theta)
-            y = r*sp.sin(theta)
-            markers = sp.vstack((x, y)).T
+            x = r*np.cos(theta)
+            y = r*np.sin(theta)
+            markers = np.vstack((x, y)).T
         if sum(dims) == 3:
             r = 1.00
-            indices = sp.arange(0, npts, dtype=float) + 0.5
-            phi = sp.arccos(1 - 2*indices/npts)
+            indices = np.arange(0, npts, dtype=float) + 0.5
+            phi = np.arccos(1 - 2*indices/npts)
             theta = sp.pi * (1 + 5**0.5) * indices
-            x = r*sp.cos(theta) * sp.sin(phi)
-            y = r*sp.sin(theta) * sp.sin(phi)
-            z = r*sp.cos(phi)
-            markers = sp.vstack((x, y, z)).T
+            x = r*np.cos(theta) * np.sin(phi)
+            y = r*np.sin(theta) * np.sin(phi)
+            z = r*np.cos(phi)
+            markers = np.vstack((x, y, z)).T
     else:
         if sum(dims) == 1:
             pass
         if sum(dims) == 2:
-            markers = sp.atleast_2d(markers)
+            markers = np.atleast_2d(markers)
             if markers.shape[1] != 2:
                 raise Exception('Network appears planar, so markers must be 2D')
         if sum(dims) == 3:
-            markers = sp.atleast_2d(markers)
+            markers = np.atleast_2d(markers)
             if markers.shape[1] != 3:
                 raise Exception('Markers must be 3D for this network')
-    pts = sp.vstack((coords, markers))
+    pts = np.vstack((coords, markers))
     tri = sptl.Delaunay(pts, incremental=False)
     (indices, indptr) = tri.vertex_neighbor_vertices
     for k in range(network.Np, tri.npoints):
         neighbors = indptr[indices[k]:indices[k+1]]
-        inds = sp.where(neighbors < network.Np)
+        inds = np.where(neighbors < network.Np)
         neighbors = neighbors[inds]
         if 'pore.'+label not in network.keys():
             network['pore.'+label] = False
@@ -1323,8 +1324,8 @@ def dimensionality(network):
     in that direction.
     """
     xyz = network["pore.coords"]
-    xyz_unique = [sp.unique(xyz[:, i]) for i in range(3)]
-    return sp.array([elem.size != 1 for elem in xyz_unique])
+    xyz_unique = [np.unique(xyz[:, i]) for i in range(3)]
+    return np.array([elem.size != 1 for elem in xyz_unique])
 
 
 def clone_pores(network, pores, labels=['clone'], mode='parents'):
@@ -1362,19 +1363,19 @@ def clone_pores(network, pores, labels=['clone'], mode='parents'):
     Np = network.Np
     Nt = network.Nt
     # Clone pores
-    parents = sp.array(pores, ndmin=1)
+    parents = np.array(pores, ndmin=1)
     pcurrent = network['pore.coords']
     pclone = pcurrent[pores, :]
-    pnew = sp.concatenate((pcurrent, pclone), axis=0)
-    Npnew = sp.shape(pnew)[0]
-    clones = sp.arange(Np, Npnew)
+    pnew = np.concatenate((pcurrent, pclone), axis=0)
+    Npnew = np.shape(pnew)[0]
+    clones = np.arange(Np, Npnew)
     # Add clone labels to network
     for item in labels:
         network['pore.'+item] = False
         network['throat.'+item] = False
     # Add connections between parents and clones
     if mode == 'parents':
-        tclone = sp.vstack((parents, clones)).T
+        tclone = np.vstack((parents, clones)).T
         extend(network=network, pore_coords=pclone, throat_conns=tclone)
     if mode == 'siblings':
         ts = network.find_neighbor_throats(pores=pores, mode='xnor')
@@ -1422,13 +1423,13 @@ def merge_networks(network, donor=[]):
         donors = [donor]
 
     for donor in donors:
-        network['pore.coords'] = sp.vstack((network['pore.coords'],
+        network['pore.coords'] = np.vstack((network['pore.coords'],
                                             donor['pore.coords']))
-        network['throat.conns'] = sp.vstack((network['throat.conns'],
+        network['throat.conns'] = np.vstack((network['throat.conns'],
                                              donor['throat.conns']
                                              + network.Np))
-        p_all = sp.ones((sp.shape(network['pore.coords'])[0],), dtype=bool)
-        t_all = sp.ones((sp.shape(network['throat.conns'])[0],), dtype=bool)
+        p_all = np.ones((np.shape(network['pore.coords'])[0],), dtype=bool)
+        t_all = np.ones((np.shape(network['throat.conns'])[0],), dtype=bool)
         network.update({'pore.all': p_all})
         network.update({'throat.all': t_all})
         for key in set(network.keys()).union(set(donor.keys())):
@@ -1445,9 +1446,9 @@ def merge_networks(network, donor=[]):
                         pop_flag = True
                     # Then merge it with existing array on network
                     try:
-                        temp = sp.hstack((network[key], donor[key]))
+                        temp = np.hstack((network[key], donor[key]))
                     except ValueError:
-                        temp = sp.vstack((network[key], donor[key]))
+                        temp = np.vstack((network[key], donor[key]))
                     network[key] = temp
                     if pop_flag:
                         donor.pop(key, None)
@@ -1462,7 +1463,7 @@ def merge_networks(network, donor=[]):
                         data_shape[0] = network.Np if pore_prop else network.Nt
                         network[key] = sp.empty(data_shape) * sp.nan
                     # Then append donor values to network
-                    s = sp.shape(donor[key])[0]
+                    s = np.shape(donor[key])[0]
                     network[key][-s:] = donor[key]
 
     # Clear adjacency and incidence matrices which will be out of date now
@@ -1542,8 +1543,8 @@ def stitch(network, donor, P_network, P_donor, method='nearest',
         C1 = network['pore.coords'][P_network]
         C2 = donor['pore.coords'][P_donor]
         D = sp.spatial.distance.cdist(C1, C2)
-        [P1_ind, P2_ind] = sp.where(D <= len_max)
-        conns = sp.vstack((P1[P1_ind], P2[P2_ind])).T
+        [P1_ind, P2_ind] = np.where(D <= len_max)
+        conns = np.vstack((P1[P1_ind], P2[P2_ind])).T
     else:
         raise Exception('<{}> method not supported'.format(method))
 
@@ -1556,7 +1557,7 @@ def stitch(network, donor, P_network, P_donor, method='nearest',
     # Trim throats that are longer then given len_max
     C1 = network['pore.coords'][conns[:, 0]]
     C2 = network['pore.coords'][conns[:, 1]]
-    L = sp.sum((C1 - C2)**2, axis=1)**0.5
+    L = np.sum((C1 - C2)**2, axis=1)**0.5
     conns = conns[L <= len_max]
 
     # Add donor labels to recipient network
@@ -1565,7 +1566,7 @@ def stitch(network, donor, P_network, P_donor, method='nearest',
             label_suffix = '_'+label_suffix
         for label in donor.labels():
             element = label.split('.')[0]
-            locations = sp.where(network._get_indices(element)
+            locations = np.where(network._get_indices(element)
                                  >= N_init[element])[0]
             if label + label_suffix not in network.keys():
                 network[label + label_suffix] = False
@@ -1661,11 +1662,11 @@ def connect_pores(network, pores1, pores2, labels=[], add_conns=True):
 
     arr1, arr2 = [], []
     for ps1, ps2 in zip(pores1, pores2):
-        size1 = sp.size(ps1)
-        size2 = sp.size(ps2)
+        size1 = np.size(ps1)
+        size2 = np.size(ps2)
         arr1.append(sp.repeat(ps1, size2))
-        arr2.append(sp.tile(ps2, size1))
-    conns = sp.vstack([sp.concatenate(arr1), sp.concatenate(arr2)]).T
+        arr2.append(np.tile(ps2, size1))
+    conns = np.vstack([np.concatenate(arr1), np.concatenate(arr2)]).T
     if add_conns:
         extend(network=network, throat_conns=conns, labels=labels)
     else:
@@ -1703,8 +1704,8 @@ def find_pore_to_pore_distance(network, pores1=None, pores2=None):
 
     '''
     from scipy.spatial.distance import cdist
-    p1 = sp.array(pores1, ndmin=1)
-    p2 = sp.array(pores2, ndmin=1)
+    p1 = np.array(pores1, ndmin=1)
+    p2 = np.array(pores2, ndmin=1)
     coords = network['pore.coords']
     return cdist(coords[p1], coords[p2])
 
@@ -1748,7 +1749,7 @@ def subdivide(network, pores, shape, labels=[]):
 
     # Checks to find boundary pores in the selected pores
     if 'pore.boundary' in network.labels():
-        if (sp.in1d(pores, network.pores('boundary'))).any():
+        if (np.in1d(pores, network.pores('boundary'))).any():
             raise Exception('boundary pores cannot be subdivided!')
     if not hasattr(network, '_subdivide_flag'):
         network._subdivide_flag = True
@@ -1756,26 +1757,26 @@ def subdivide(network, pores, shape, labels=[]):
         raise Exception('The network has subdivided pores, so the method \
                          does not support another subdivision')
     # Assigning right shape and division
-    if sp.size(shape) != 2 and sp.size(shape) != 3:
+    if np.size(shape) != 2 and np.size(shape) != 3:
         raise Exception('Subdivide not implemented for Networks other than 2D \
                          and 3D')
-    elif sp.size(shape) == 3 and 1 not in shape:
-        div = sp.array(shape, ndmin=1)
+    elif np.size(shape) == 3 and 1 not in shape:
+        div = np.array(shape, ndmin=1)
         single_dim = None
     else:
-        single_dim = sp.where(sp.array(network.shape) == 1)[0]
-        if sp.size(single_dim) == 0:
+        single_dim = np.where(np.array(network.shape) == 1)[0]
+        if np.size(single_dim) == 0:
             single_dim = None
-        if sp.size(shape) == 3:
-            div = sp.array(shape, ndmin=1)
+        if np.size(shape) == 3:
+            div = np.array(shape, ndmin=1)
         else:
-            div = sp.zeros(3, dtype=sp.int32)
+            div = np.zeros(3, dtype=sp.int32)
             if single_dim is None:
                 dim = 2
             else:
                 dim = single_dim
             div[dim] = 1
-            div[-sp.array(div, ndmin=1, dtype=bool)] = sp.array(shape, ndmin=1)
+            div[-np.array(div, ndmin=1, dtype=bool)] = np.array(shape, ndmin=1)
 
     # Creating small network and handling labels
     networkspacing = network.spacing
@@ -1783,10 +1784,10 @@ def subdivide(network, pores, shape, labels=[]):
     new_net = Cubic(shape=div, spacing=new_netspacing)
     main_labels = ['left', 'right', 'front', 'back', 'top', 'bottom']
     if single_dim is not None:
-        label_groups = sp.array([['front', 'back'],
+        label_groups = np.array([['front', 'back'],
                                  ['left', 'right'],
                                  ['top', 'bottom']])
-        non_single_labels = label_groups[sp.array([0, 1, 2]) != single_dim]
+        non_single_labels = label_groups[np.array([0, 1, 2]) != single_dim]
     for l in main_labels:
         new_net['pore.surface_' + l] = False
         network['pore.surface_' + l] = False
@@ -1798,7 +1799,7 @@ def subdivide(network, pores, shape, labels=[]):
                 temp_pores = new_net.pores(non_single_labels[ind][loc])
                 new_net['pore.surface_' + l][temp_pores] = True
 
-    old_coords = sp.copy(new_net['pore.coords'])
+    old_coords = np.copy(new_net['pore.coords'])
     if labels == []:
         labels = ['pore.subdivided_' + new_net.name]
     for P in pores:
@@ -1811,7 +1812,7 @@ def subdivide(network, pores, shape, labels=[]):
             Pn_new_net = network.pores(labels)
         except KeyError:
             Pn_new_net = []
-        Pn_old_net = Pn[~sp.in1d(Pn, Pn_new_net)]
+        Pn_old_net = Pn[~np.in1d(Pn, Pn_new_net)]
         Np1 = network.Np
         extend(pore_coords=new_net['pore.coords'],
                throat_conns=new_net['throat.conns'] + Np1,
@@ -1828,13 +1829,13 @@ def subdivide(network, pores, shape, labels=[]):
             neighbor_coord = network['pore.coords'][neighbor]
             dist = [round(sp.inner(neighbor_coord-x, neighbor_coord-x),
                           20) for x in surf_coord]
-            nearest_neighbor = surf_pores[dist == sp.amin(dist)]
+            nearest_neighbor = surf_pores[dist == np.amin(dist)]
             if neighbor in Pn_old_net:
                 coplanar_labels = network.labels(pores=nearest_neighbor)
                 new_neighbors = network.pores(coplanar_labels,
                                               mode='and')
                 # This might happen to the edge of the small network
-                if sp.size(new_neighbors) == 0:
+                if np.size(new_neighbors) == 0:
                     labels = network.labels(pores=nearest_neighbor,
                                             mode='and')
                     common_label = [l for l in labels if 'surface_' in l]
@@ -1847,7 +1848,7 @@ def subdivide(network, pores, shape, labels=[]):
         # Removing temporary labels
         for l in main_labels:
             network['pore.surface_' + l] = False
-        new_net['pore.coords'] = sp.copy(old_coords)
+        new_net['pore.coords'] = np.copy(old_coords)
 
     label_faces(network=network)
     for l in main_labels:
@@ -1870,7 +1871,7 @@ def trim_occluded_throats(network, mask='all'):
         Applies routine only to pores and throats with this label
     """
     occluded_ts = network['throat.area'] == 0
-    if sp.sum(occluded_ts) > 0:
+    if np.sum(occluded_ts) > 0:
         occluded_ts *= network["throat."+mask]
         trim(network=network, throats=occluded_ts)
 
@@ -1928,7 +1929,7 @@ def merge_pores(network, pores, labels=['merged']):
         temp = network.find_neighbor_pores(pores=Ps, mode='union', flatten=True,
                                            include_input=False)
         NBs.append(temp)
-        points = sp.concatenate((temp, Ps))
+        points = np.concatenate((temp, Ps))
         XYZs.append(hull_centroid(network["pore.coords"][points]))
 
     extend(network, pore_coords=XYZs, labels=labels)
@@ -1950,9 +1951,9 @@ def merge_pores(network, pores, labels=['merged']):
     # Add (possible) connections between the new pores
     connect_pores(network, pores1=ps1, pores2=ps2, labels=labels)
     # Add connections between the new pores and the rest of the network
-    connect_pores(network, pores2=sp.split(Pnew, N), pores1=NBs, labels=labels)
+    connect_pores(network, pores2=np.split(Pnew, N), pores1=NBs, labels=labels)
     # Trim merged pores from the network
-    trim(network=network, pores=sp.concatenate(pores))
+    trim(network=network, pores=np.concatenate(pores))
 
 
 def hull_centroid(points):
@@ -1969,7 +1970,7 @@ def hull_centroid(points):
     A 3 by 1 Numpy array containing coordinates of the centroid.
 
     """
-    dim = [sp.unique(points[:, i]).size != 1 for i in range(3)]
+    dim = [np.unique(points[:, i]).size != 1 for i in range(3)]
     hull = ConvexHull(points[:, dim])
     centroid = points.mean(axis=0)
     centroid[dim] = hull.points[hull.vertices].mean(axis=0)
@@ -2000,10 +2001,10 @@ def _template_sphere_disc(dim, outer_radius, inner_radius):
     elsewhere.
 
     """
-    rmax = sp.array(outer_radius, ndmin=1)
-    rmin = sp.array(inner_radius, ndmin=1)
+    rmax = np.array(outer_radius, ndmin=1)
+    rmin = np.array(inner_radius, ndmin=1)
     ind = 2 * rmax - 1
-    coord = sp.indices((ind * sp.ones(dim, dtype=int)))
+    coord = sp.indices((ind * np.ones(dim, dtype=int)))
     coord = coord - (ind - 1)/2
     x = coord[0, :]
     y = coord[1, :]
@@ -2078,7 +2079,7 @@ def template_cylinder_annulus(height, outer_radius, inner_radius=0):
 
     img = _template_sphere_disc(dim=2, outer_radius=outer_radius,
                                 inner_radius=inner_radius)
-    img = sp.tile(sp.atleast_3d(img), reps=height)
+    img = np.tile(np.atleast_3d(img), reps=height)
     return img
 
 
@@ -2141,7 +2142,7 @@ def plot_connections(network, throats=None, fig=None, **kwargs):
 
     Ts = network.Ts if throats is None else network._parse_indices(throats)
 
-    temp = [sp.unique(network["pore.coords"][:, i]).size for i in range(3)]
+    temp = [np.unique(network["pore.coords"][:, i]).size for i in range(3)]
     ThreeD = False if 1 in temp else True
 
     if fig is None:
@@ -2154,21 +2155,21 @@ def plot_connections(network, throats=None, fig=None, **kwargs):
         ax = fig.gca()
 
     # Create dummy indexing to sp.inf
-    i = -1*sp.ones((sp.size(Ts)*3, ), dtype=int)
+    i = -1*np.ones((np.size(Ts)*3, ), dtype=int)
     i[0::3] = network['throat.conns'][Ts, 0]
     i[1::3] = network['throat.conns'][Ts, 1]
 
     # Collect coordinates and scale axes to fit
-    Ps = sp.unique(network['throat.conns'][Ts])
+    Ps = np.unique(network['throat.conns'][Ts])
     X, Y, Z = network['pore.coords'][Ps].T
 
     _scale_3d_axes(ax=ax, X=X, Y=Y, Z=Z)
 
     # Add sp.inf to the last element of pore.coords (i.e. -1)
-    inf = sp.array((sp.inf,))
-    X = sp.hstack([network['pore.coords'][:, 0], inf])
-    Y = sp.hstack([network['pore.coords'][:, 1], inf])
-    Z = sp.hstack([network['pore.coords'][:, 2], inf])
+    inf = np.array((sp.inf,))
+    X = np.hstack([network['pore.coords'][:, 0], inf])
+    Y = np.hstack([network['pore.coords'][:, 1], inf])
+    Z = np.hstack([network['pore.coords'][:, 2], inf])
 
     if ThreeD:
         ax.plot(xs=X[i], ys=Y[i], zs=Z[i], **kwargs)
@@ -2238,7 +2239,7 @@ def plot_coordinates(network, pores=None, fig=None, **kwargs):
 
     Ps = network.Ps if pores is None else network._parse_indices(pores)
 
-    temp = [sp.unique(network["pore.coords"][:, i]).size for i in range(3)]
+    temp = [np.unique(network["pore.coords"][:, i]).size for i in range(3)]
     ThreeD = False if 1 in temp else True
 
     if fig is None:
@@ -2269,7 +2270,7 @@ def _scale_3d_axes(ax, X, Y, Z):
         logger.warning('Axes is already scaled to previously plotted data')
     else:
         ax._scaled = True
-        max_range = sp.array([X.max()-X.min(), Y.max()-Y.min(),
+        max_range = np.array([X.max()-X.min(), Y.max()-Y.min(),
                               Z.max()-Z.min()]).max() / 2.0
         mid_x = (X.max()+X.min()) * 0.5
         mid_y = (Y.max()+Y.min()) * 0.5
@@ -2311,7 +2312,7 @@ def plot_networkx(network, plot_throats=True, labels=None, colors=None,
     if dims.sum() > 2:
         raise Exception("NetworkX plotting only works for 2D networks.")
     x, y, z = network['pore.coords'].T
-    x, y = [j for j in [x, y, z] if not sp.allclose(j, j.mean())]
+    x, y = [j for j in [x, y, z] if not np.allclose(j, j.mean())]
 
     G = Graph()
     pos = {network.Ps[i]: [x[i], y[i]] for i in range(network.Np)}
@@ -2321,7 +2322,7 @@ def plot_networkx(network, plot_throats=True, labels=None, colors=None,
         manual_sizing = True
     except KeyError:
         node_size = scale * 300     # 300 is default node size in networkx
-    node_color = sp.array(['k'] * len(network.Ps))
+    node_color = np.array(['k'] * len(network.Ps))
 
     if labels:
         if type(labels) is not list:
@@ -2355,7 +2356,7 @@ def plot_networkx(network, plot_throats=True, labels=None, colors=None,
         figsize_ratio = figheight / figwidth
         data_ratio = ax.get_data_ratio()
         corr = min(figsize_ratio / data_ratio, 1)
-        xrange = sp.ptp(ax.get_xlim())
+        xrange = np.ptp(ax.get_xlim())
         markersize = sp.atleast_1d((corr*figwidth)**2 / xrange**2 * node_size**2 * spi)
         collections = ax.collections
         for item in collections:
@@ -2474,7 +2475,7 @@ def plot_vpython(network,
         tail = network['throat.endpoints.tail'][t]
         v = tail - head
         r = network[Tsize][t]
-        L = sp.sqrt(sp.sum((head-tail)**2))
+        L = np.sqrt(np.sum((head-tail)**2))
         c = Tcolor[t]
         cylinder(pos=vec(*head), axis=vec(*v), opacity=1, size=vec(L, r, r),
                  color=c)
@@ -2555,11 +2556,11 @@ def generate_base_points(num_points, domain_size, density_map=None,
     >>> import openpnm as op
     >>> import scipy as sp
     >>> import scipy.ndimage as spim
-    >>> im = sp.ones([21, 21, 21], dtype=int)
+    >>> im = np.ones([21, 21, 21], dtype=int)
     >>> im[10, 10, 10] = 0
     >>> im = spim.distance_transform_edt(im) <= 20  # Create sphere of 1's
     >>> prob = spim.distance_transform_edt(im)
-    >>> prob = prob / sp.amax(prob)  # Normalize between 0 and 1
+    >>> prob = prob / np.amax(prob)  # Normalize between 0 and 1
     >>> pts = op.topotools.generate_base_points(num_points=50,
     ...                                         domain_size=[1, 1, 1],
     ...                                         density_map=prob)
@@ -2567,60 +2568,60 @@ def generate_base_points(num_points, domain_size, density_map=None,
 
     """
     def _try_points(num_points, prob):
-        prob = sp.atleast_3d(prob)
-        prob = sp.array(prob)/sp.amax(prob)  # Ensure prob is normalized
+        prob = np.atleast_3d(prob)
+        prob = np.array(prob)/np.amax(prob)  # Ensure prob is normalized
         base_pts = []
         N = 0
         while N < num_points:
             pt = sp.random.rand(3)  # Generate a point
             # Test whether to keep it or not
-            [indx, indy, indz] = sp.floor(pt*sp.shape(prob)).astype(int)
+            [indx, indy, indz] = np.floor(pt*np.shape(prob)).astype(int)
             if sp.random.rand(1) <= prob[indx][indy][indz]:
                 base_pts.append(pt)
                 N += 1
-        base_pts = sp.array(base_pts)
+        base_pts = np.array(base_pts)
         return base_pts
 
     if len(domain_size) == 1:  # Spherical
-        domain_size = sp.array(domain_size)
+        domain_size = np.array(domain_size)
         r = domain_size[0]
         if density_map is None:
             # Make an image of a sphere filled with ones and use _try_points
-            density_map = sp.ones([41, 41, 41])
+            density_map = np.ones([41, 41, 41])
             density_map[20, 20, 20] = 0
             density_map = spim.distance_transform_edt(density_map) < 20
         base_pts = _try_points(num_points, density_map)
         # Convert to spherical coordinates
-        [X, Y, Z] = sp.array(base_pts - [0.5, 0.5, 0.5]).T
-        r = 2*sp.sqrt(X**2 + Y**2 + Z**2)*domain_size[0]
-        theta = 2*sp.arctan(Y/X)
-        phi = 2*sp.arctan(sp.sqrt(X**2 + Y**2)/Z)
+        [X, Y, Z] = np.array(base_pts - [0.5, 0.5, 0.5]).T
+        r = 2*np.sqrt(X**2 + Y**2 + Z**2)*domain_size[0]
+        theta = 2*np.arctan(Y/X)
+        phi = 2*np.arctan(np.sqrt(X**2 + Y**2)/Z)
         # Trim points outside the domain (from improper prob images)
         inds = r <= domain_size[0]
         [r, theta, phi] = [r[inds], theta[inds], phi[inds]]
         # Reflect base points across perimeter
         if reflect:
-            r, theta, phi = reflect_base_points(sp.vstack((r, theta, phi)),
+            r, theta, phi = reflect_base_points(np.vstack((r, theta, phi)),
                                                 domain_size)
         # Convert to Cartesean coordinates
-        X = r*sp.cos(theta)*sp.sin(phi)
-        Y = r*sp.sin(theta)*sp.sin(phi)
-        Z = r*sp.cos(phi)
-        base_pts = sp.vstack([X, Y, Z]).T
+        X = r*np.cos(theta)*np.sin(phi)
+        Y = r*np.sin(theta)*np.sin(phi)
+        Z = r*np.cos(phi)
+        base_pts = np.vstack([X, Y, Z]).T
 
     elif len(domain_size) == 2:  # Cylindrical or Disk
-        domain_size = sp.array(domain_size)
+        domain_size = np.array(domain_size)
         if density_map is None:
-            density_map = sp.ones([41, 41, 41])
+            density_map = np.ones([41, 41, 41])
             density_map[20, 20, :] = 0
             if domain_size[1] == 0:  # Disk
                 density_map = density_map[:, :, 0]
             density_map = spim.distance_transform_edt(density_map) < 20
         base_pts = _try_points(num_points, density_map)
         # Convert to cylindrical coordinates
-        [X, Y, Z] = sp.array(base_pts - [0.5, 0.5, 0]).T  # Center on z-axis
-        r = 2*sp.sqrt(X**2 + Y**2)*domain_size[0]
-        theta = 2*sp.arctan(Y/X)
+        [X, Y, Z] = np.array(base_pts - [0.5, 0.5, 0]).T  # Center on z-axis
+        r = 2*np.sqrt(X**2 + Y**2)*domain_size[0]
+        theta = 2*np.arctan(Y/X)
         z = Z*domain_size[1]
         # Trim points outside the domain (from improper prob images)
         inds = r <= domain_size[0]
@@ -2628,17 +2629,17 @@ def generate_base_points(num_points, domain_size, density_map=None,
         inds = ~((z > domain_size[1]) + (z < 0))
         [r, theta, z] = [r[inds], theta[inds], z[inds]]
         if reflect:
-            r, theta, z = reflect_base_points(sp.vstack([r, theta, z]),
+            r, theta, z = reflect_base_points(np.vstack([r, theta, z]),
                                               domain_size)
         # Convert to Cartesean coordinates
-        X = r*sp.cos(theta)
-        Y = r*sp.sin(theta)
+        X = r*np.cos(theta)
+        Y = r*np.sin(theta)
         Z = z
-        base_pts = sp.vstack([X, Y, Z]).T
+        base_pts = np.vstack([X, Y, Z]).T
 
     elif len(domain_size) == 3:  # Cube or square
         if density_map is None:
-            density_map = sp.ones([41, 41, 41])
+            density_map = np.ones([41, 41, 41])
             if domain_size[2] == 0:
                 density_map = density_map[:, :, 0]
         base_pts = _try_points(num_points, density_map)
@@ -2681,39 +2682,39 @@ def reflect_base_points(base_pts, domain_size):
         created.
 
     '''
-    domain_size = sp.array(domain_size)
+    domain_size = np.array(domain_size)
     if len(domain_size) == 1:
         r, theta, phi = base_pts
         new_r = 2*domain_size[0] - r
-        r = sp.hstack([r, new_r])
-        theta = sp.hstack([theta, theta])
-        phi = sp.hstack([phi, phi])
-        base_pts = sp.vstack((r, theta, phi))
+        r = np.hstack([r, new_r])
+        theta = np.hstack([theta, theta])
+        phi = np.hstack([phi, phi])
+        base_pts = np.vstack((r, theta, phi))
     if len(domain_size) == 2:
         r, theta, z = base_pts
         new_r = 2*domain_size[0] - r
-        r = sp.hstack([r, new_r])
-        theta = sp.hstack([theta, theta])
-        z = sp.hstack([z, z])
+        r = np.hstack([r, new_r])
+        theta = np.hstack([theta, theta])
+        z = np.hstack([z, z])
         if domain_size[1] != 0:  # If not a disk
-            r = sp.hstack([r, r, r])
-            theta = sp.hstack([theta, theta, theta])
-            z = sp.hstack([z, -z, 2-z])
-        base_pts = sp.vstack((r, theta, z))
+            r = np.hstack([r, r, r])
+            theta = np.hstack([theta, theta, theta])
+            z = np.hstack([z, -z, 2-z])
+        base_pts = np.vstack((r, theta, z))
     elif len(domain_size) == 3:
         Nx, Ny, Nz = domain_size
         # Reflect base points about all 6 faces
         orig_pts = base_pts
-        base_pts = sp.vstack((base_pts,
+        base_pts = np.vstack((base_pts,
                               [-1, 1, 1] * orig_pts + [2.0 * Nx, 0, 0]))
-        base_pts = sp.vstack((base_pts, [-1, 1, 1] * orig_pts))
-        base_pts = sp.vstack((base_pts,
+        base_pts = np.vstack((base_pts, [-1, 1, 1] * orig_pts))
+        base_pts = np.vstack((base_pts,
                               [1, -1, 1] * orig_pts + [0, 2.0 * Ny, 0]))
-        base_pts = sp.vstack((base_pts, [1, -1, 1] * orig_pts))
+        base_pts = np.vstack((base_pts, [1, -1, 1] * orig_pts))
         if domain_size[2] != 0:
-            base_pts = sp.vstack((base_pts,
+            base_pts = np.vstack((base_pts,
                                   [1, 1, -1] * orig_pts + [0, 0, 2.0 * Nz]))
-            base_pts = sp.vstack((base_pts, [1, 1, -1] * orig_pts))
+            base_pts = np.vstack((base_pts, [1, 1, -1] * orig_pts))
     return base_pts
 
 
@@ -2752,15 +2753,15 @@ def find_clusters(network, mask=[], t_labels=False):
 
     """
     # Parse the input arguments
-    mask = sp.array(mask, ndmin=1)
+    mask = np.array(mask, ndmin=1)
     if mask.dtype != bool:
         raise Exception('Mask must be a boolean array of Np or Nt length')
 
     # If pore mask was given perform site percolation
-    if sp.size(mask) == network.Np:
+    if np.size(mask) == network.Np:
         (p_clusters, t_clusters) = _site_percolation(network, mask)
     # If pore mask was given perform bond percolation
-    elif sp.size(mask) == network.Nt:
+    elif np.size(mask) == network.Nt:
         (p_clusters, t_clusters) = _bond_percolation(network, mask)
     else:
         raise Exception('Mask received was neither Nt nor Np long')
@@ -2773,11 +2774,11 @@ def _site_percolation(network, pmask):
     This private method is called by 'find_clusters'
     """
     # Find throats that produce site percolation
-    conns = sp.copy(network['throat.conns'])
+    conns = np.copy(network['throat.conns'])
     conns[:, 0] = pmask[conns[:, 0]]
     conns[:, 1] = pmask[conns[:, 1]]
     # Only if both pores are True is the throat set to True
-    tmask = sp.all(conns, axis=1)
+    tmask = np.all(conns, axis=1)
 
     # Perform the clustering using scipy.csgraph
     csr = network.create_adjacency_matrix(weights=tmask, fmt='csr',
@@ -2862,11 +2863,11 @@ def add_boundary_pores(network, pores, offset=None, move_to=None,
 
     """
     # Parse the input pores
-    Ps = sp.array(pores, ndmin=1)
+    Ps = np.array(pores, ndmin=1)
     if Ps.dtype is bool:
         Ps = network.toindices(Ps)
-    if sp.size(pores) == 0:  # Handle an empty array if given
-        return sp.array([], dtype=sp.int64)
+    if np.size(pores) == 0:  # Handle an empty array if given
+        return np.array([], dtype=sp.int64)
     # Clone the specifed pores
     clone_pores(network=network, pores=Ps)
     newPs = network.pores('pore.clone')
@@ -2933,16 +2934,16 @@ def find_path(network, pore_pairs, weights=None):
     >>> a['throats']
     [array([ 0, 19]), array([ 0, 37])]
     """
-    Ps = sp.array(pore_pairs, ndmin=2)
+    Ps = np.array(pore_pairs, ndmin=2)
     if weights is None:
-        weights = sp.ones_like(network.Ts)
+        weights = np.ones_like(network.Ts)
     graph = network.create_adjacency_matrix(weights=weights, fmt='csr',
                                             drop_zeros=False)
     paths = csgraph.dijkstra(csgraph=graph, indices=Ps[:, 0],
                              return_predecessors=True)[1]
     pores = []
     throats = []
-    for row in range(0, sp.shape(Ps)[0]):
+    for row in range(0, np.shape(Ps)[0]):
         j = Ps[row][1]
         ans = []
         while paths[row][j] > -9999:
@@ -2950,9 +2951,9 @@ def find_path(network, pore_pairs, weights=None):
             j = paths[row][j]
         ans.append(Ps[row][0])
         ans.reverse()
-        pores.append(sp.array(ans, dtype=int))
+        pores.append(np.array(ans, dtype=int))
         Ts = network.find_neighbor_throats(pores=ans, mode='xnor')
-        throats.append(sp.array(Ts, dtype=int))
+        throats.append(np.array(Ts, dtype=int))
     pdict = PrintableDict
     dict_ = pdict(**{'pores': pores, 'throats': throats})
     return dict_
@@ -2972,8 +2973,8 @@ def iscoplanar(coords):
     -------
     A boolean value of whether given points are coplanar (True) or not (False)
     '''
-    coords = sp.array(coords, ndmin=1)
-    if sp.shape(coords)[0] < 3:
+    coords = np.array(coords, ndmin=1)
+    if np.shape(coords)[0] < 3:
         raise Exception('At least 3 input pores are required')
 
     Px = coords[:, 0]
@@ -2981,33 +2982,33 @@ def iscoplanar(coords):
     Pz = coords[:, 2]
 
     # Do easy check first, for common coordinate
-    if sp.shape(sp.unique(Px))[0] == 1:
+    if np.shape(np.unique(Px))[0] == 1:
         return True
-    if sp.shape(sp.unique(Py))[0] == 1:
+    if np.shape(np.unique(Py))[0] == 1:
         return True
-    if sp.shape(sp.unique(Pz))[0] == 1:
+    if np.shape(np.unique(Pz))[0] == 1:
         return True
 
     # Perform rigorous check using vector algebra
     # Grab first basis vector from list of coords
-    n1 = sp.array((Px[1] - Px[0], Py[1] - Py[0], Pz[1] - Pz[0])).T
-    n = sp.array([0.0, 0.0, 0.0])
+    n1 = np.array((Px[1] - Px[0], Py[1] - Py[0], Pz[1] - Pz[0])).T
+    n = np.array([0.0, 0.0, 0.0])
     i = 1
     while n.sum() == 0:
-        if i >= (sp.size(Px) - 1):
+        if i >= (np.size(Px) - 1):
             logger.warning('No valid basis vectors found')
             return False
         # Chose a secon basis vector
-        n2 = sp.array((Px[i+1] - Px[i], Py[i+1] - Py[i], Pz[i+1] - Pz[i])).T
+        n2 = np.array((Px[i+1] - Px[i], Py[i+1] - Py[i], Pz[i+1] - Pz[i])).T
         # Find their cross product
-        n = sp.cross(n1, n2)
+        n = np.cross(n1, n2)
         i += 1
     # Create vectors between all other pairs of points
-    r = sp.array((Px[1:-1] - Px[0], Py[1:-1] - Py[0], Pz[1:-1] - Pz[0]))
+    r = np.array((Px[1:-1] - Px[0], Py[1:-1] - Py[0], Pz[1:-1] - Pz[0]))
     # Ensure they all lie on the same plane
-    n_dot = sp.dot(n, r)
+    n_dot = np.dot(n, r)
 
-    if sp.sum(sp.absolute(n_dot)) == 0:
+    if np.sum(np.absolute(n_dot)) == 0:
         return True
     else:
         return False

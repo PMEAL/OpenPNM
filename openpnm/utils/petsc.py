@@ -5,6 +5,7 @@ petsc: A class for solving sparse linear systems using petsc
 
 """
 import sys
+import numpy as np
 import scipy as sp
 from openpnm.core import Base
 from openpnm.utils import logging
@@ -187,7 +188,7 @@ class PETScSparseLinearSolver(Base):
 
         # Define the petsc rhs vector from the numpy one.
         # If the rhs is defined by blocks, use this:
-        PETSc.Vec.setValuesBlocked(self.petsc_b, [sp.arange(self.m)], self.b)
+        PETSc.Vec.setValuesBlocked(self.petsc_b, [np.arange(self.m)], self.b)
         # Otherwise, use:
         # PETSc.Vec.createWithArray(self.petsc_b, self.b)
 
@@ -227,7 +228,7 @@ class PETScSparseLinearSolver(Base):
         can be found here:
         https://www.mcs.anl.gov/petsc/documentation/linearsolvertable.html
         """
-        self.x0 = sp.zeros_like(self.b) if x0 is None else x0
+        self.x0 = np.zeros_like(self.b) if x0 is None else x0
         self._initialize_A()
         self._create_solver()
         self._set_tolerances(atol=atol, rtol=rtol, max_it=max_it)

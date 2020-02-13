@@ -120,8 +120,8 @@ A full invasion simulation using a 2D network can be run with the following comm
  >>> ip.run()
  >>> water.update(ip.results(Snwp=0.5))
 
-Images can be produced easily for 2D networks with commands such as ``plt.imshow(sp.reshape(ip['pore.invasion_sequence'], newshape=S[S > 1]))``
-and ``plt.imshow(sp.reshape(water['pore.occupancy'], newshape=S[S > 1]))``, which produces the following output:
+Images can be produced easily for 2D networks with commands such as ``plt.imshow(np.reshape(ip['pore.invasion_sequence'], newshape=S[S > 1]))``
+and ``plt.imshow(np.reshape(water['pore.occupancy'], newshape=S[S > 1]))``, which produces the following output:
 
 .. image:: https://imgur.com/VPf24cN.png
 

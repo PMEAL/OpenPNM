@@ -1,6 +1,7 @@
 import pytest
-import openpnm as op
+import numpy as np
 import scipy as sp
+import openpnm as op
 
 
 class GenericTransportTest:
@@ -58,11 +59,11 @@ class GenericTransportTest:
                                              phase=self.phase)
         alg.set_value_BC(pores=self.net.pores('top'), values=1)
         alg.set_value_BC(pores=self.net.pores('bottom'), values=0)
-        assert sp.sum(sp.isfinite(alg['pore.bc_value'])) > 0
+        assert np.sum(np.isfinite(alg['pore.bc_value'])) > 0
         alg.remove_BC(pores=self.net.pores('top'))
-        assert sp.sum(sp.isfinite(alg['pore.bc_value'])) > 0
+        assert np.sum(np.isfinite(alg['pore.bc_value'])) > 0
         alg.remove_BC(pores=self.net.pores('bottom'))
-        assert sp.sum(sp.isfinite(alg['pore.bc_value'])) == 0
+        assert np.sum(np.isfinite(alg['pore.bc_value'])) == 0
 
     def test_generic_transport(self):
         alg = op.algorithms.GenericTransport(network=self.net,
@@ -89,8 +90,8 @@ class GenericTransportTest:
             for solver_type in solver_types:
                 alg.set_solver(solver_family="petsc", solver_type=solver_type)
                 alg.run()
-                y = sp.unique(sp.around(alg['pore.mole_fraction'], decimals=3))
-                assert sp.all(x == y)
+                y = np.unique(np.around(alg['pore.mole_fraction'], decimals=3))
+                assert np.all(x == y)
         except ModuleNotFoundError:
             pass
 
@@ -103,8 +104,8 @@ class GenericTransportTest:
         alg.set_value_BC(pores=self.net.pores('bottom'), values=0)
         alg.run()
         x = [0.0, 0.125, 0.25, 0.375, 0.5, 0.625, 0.75, 0.875, 1.0]
-        y = sp.unique(sp.around(alg['pore.mole_fraction'], decimals=3))
-        assert sp.all(x == y)
+        y = np.unique(np.around(alg['pore.mole_fraction'], decimals=3))
+        assert np.all(x == y)
 
     def test_two_value_conditions_cg(self):
         alg = op.algorithms.GenericTransport(network=self.net,
@@ -116,8 +117,8 @@ class GenericTransportTest:
         alg.settings['solver'] = 'cg'
         alg.run()
         x = [0.0, 0.125, 0.25, 0.375, 0.5, 0.625, 0.75, 0.875, 1.0]
-        y = sp.unique(sp.around(alg['pore.mole_fraction'], decimals=3))
-        assert sp.all(x == y)
+        y = np.unique(np.around(alg['pore.mole_fraction'], decimals=3))
+        assert np.all(x == y)
 
     def test_one_value_one_rate(self):
         alg = op.algorithms.GenericTransport(network=self.net,
@@ -128,8 +129,8 @@ class GenericTransportTest:
         alg.set_value_BC(pores=self.net.pores('top'), values=0)
         alg.run()
         x = [0., 1., 2., 3., 4., 5., 6., 7., 8.]
-        y = sp.unique(sp.around(alg['pore.mole_fraction'], decimals=3))
-        assert sp.all(x == y)
+        y = np.unique(np.around(alg['pore.mole_fraction'], decimals=3))
+        assert np.all(x == y)
 
     def test_set_iterative_props(self):
         alg = op.algorithms.GenericTransport(network=self.net,
@@ -177,9 +178,9 @@ class GenericTransportTest:
         alg.set_value_BC(pores=self.net.pores("right"), values=0.0)
         alg.run()
         rate = alg.rate(pores=self.net.pores("right"))[0]
-        assert sp.isclose(rate, -1.235*self.net.pores("right").size)
+        assert np.isclose(rate, -1.235*self.net.pores("right").size)
         # Net rate must always be zero at steady state conditions
-        assert sp.isclose(alg.rate(pores=self.net.Ps), 0.0)
+        assert np.isclose(alg.rate(pores=self.net.Ps), 0.0)
 
     def test_rate_multiple(self):
         alg = op.algorithms.GenericTransport(network=self.net,
@@ -192,9 +193,9 @@ class GenericTransportTest:
         alg.set_value_BC(pores=[50, 51, 52, 53], values=0.0)
         alg.run()
         rate = alg.rate(pores=[50, 51, 52, 53])[0]
-        assert sp.isclose(rate, -(1.235*4 + 3.455*5))   # 4, 5 are number of pores
+        assert np.isclose(rate, -(1.235*4 + 3.455*5))   # 4, 5 are number of pores
         # Net rate must always be zero at steady state conditions
-        assert sp.isclose(alg.rate(pores=self.net.Ps), 0.0)
+        assert np.isclose(alg.rate(pores=self.net.Ps), 0.0)
 
     def test_rate_Nt_by_2_conductance(self):
         net = op.network.Cubic(shape=[1, 6, 1])
@@ -218,17 +219,17 @@ class GenericTransportTest:
         alg.set_value_BC(pores=5, values=0.0)
         alg.run()
         rate = alg.rate(pores=5)[0]
-        assert sp.isclose(rate, -1.235)
+        assert np.isclose(rate, -1.235)
         # Rate at air-water interface throat (#2) must match imposed rate
         rate = alg.rate(throats=2)[0]
-        assert sp.isclose(rate, 1.235)
+        assert np.isclose(rate, 1.235)
         # Rate at interface pores (#2 @ air-side, #3 @ water-side) must be 0
         rate_air_side = alg.rate(pores=2)[0]
         rate_water_side = alg.rate(pores=3)[0]
-        assert sp.isclose(rate_air_side, 0.0)
-        assert sp.isclose(rate_water_side, 0.0)
+        assert np.isclose(rate_air_side, 0.0)
+        assert np.isclose(rate_water_side, 0.0)
         # Net rate must always be zero at steady state conditions
-        assert sp.isclose(alg.rate(pores=net.Ps), 0.0)
+        assert np.isclose(alg.rate(pores=net.Ps), 0.0)
 
     def test_reset(self):
         alg = op.algorithms.GenericTransport(network=self.net,
@@ -238,12 +239,12 @@ class GenericTransportTest:
         alg.set_rate_BC(pores=self.net.pores('bottom'), values=1)
         alg.set_value_BC(pores=self.net.pores('top'), values=0)
         alg.run()
-        assert ~sp.all(sp.isnan(alg['pore.bc_value']))
-        assert ~sp.all(sp.isnan(alg['pore.bc_rate']))
+        assert ~np.all(np.isnan(alg['pore.bc_value']))
+        assert ~np.all(np.isnan(alg['pore.bc_rate']))
         assert 'pore.mole_fraction' in alg.keys()
         alg.reset(bcs=True, results=False)
-        assert sp.all(sp.isnan(alg['pore.bc_value']))
-        assert sp.all(sp.isnan(alg['pore.bc_rate']))
+        assert np.all(np.isnan(alg['pore.bc_value']))
+        assert np.all(np.isnan(alg['pore.bc_rate']))
         assert 'pore.mole_fraction' in alg.keys()
         alg.reset(bcs=True, results=True)
         assert 'pore.mole_fraction' not in alg.keys()

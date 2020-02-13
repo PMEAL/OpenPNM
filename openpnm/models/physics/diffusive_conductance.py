@@ -7,7 +7,7 @@ r"""
 .. autofunction:: openpnm.models.physics.diffusive_conductance.classic_ordinary_diffusion
 
 """
-
+import numpy as _np
 import scipy as _sp
 import scipy.constants as const
 
@@ -477,11 +477,11 @@ def classic_ordinary_diffusion(
     plen2[plen2 <= 1e-12] = 1e-12
     # Find g for half of pore 1
     gp1 = ct * DABt * parea[Ps[:, 0]] / plen1
-    gp1[_sp.isnan(gp1)] = _sp.inf
+    gp1[_np.isnan(gp1)] = _sp.inf
     gp1[~(gp1 > 0)] = _sp.inf  # Set 0 conductance pores (boundaries) to inf
     # Find g for half of pore 2
     gp2 = ct * DABt * parea[Ps[:, 1]] / plen2
-    gp2[_sp.isnan(gp2)] = _sp.inf
+    gp2[_np.isnan(gp2)] = _sp.inf
     gp2[~(gp2 > 0)] = _sp.inf  # Set 0 conductance pores (boundaries) to inf
     # Find g for full throat, remove any non-positive lengths
     tlen[tlen <= 0] = 1e-12
@@ -489,8 +489,8 @@ def classic_ordinary_diffusion(
     try:
         sf = network[shape_factor]
     except KeyError:
-        sf = _sp.ones(network.num_throats())
-    sf[_sp.isnan(sf)] = 1.0
+        sf = _np.ones(network.num_throats())
+    sf[_np.isnan(sf)] = 1.0
     gt = (1 / sf) * ct * DABt * tarea / tlen
     # Set 0 conductance pores (boundaries) to inf
     gt[~(gt > 0)] = _sp.inf
@@ -554,4 +554,4 @@ def multiphase_diffusion(
     K12 = phase[partition_coef][throats]
     G12 = K12 * (1.0/g1 + 0.5/gt + K12*(1.0/g2 + 0.5/gt)) ** (-1)
     G21 = 1.0/K12 * (1.0/g2 + 0.5/gt + 1.0/K12*(1.0/g1 + 0.5/gt)) ** (-1)
-    return _sp.vstack((G12, G21)).T
+    return _np.vstack((G12, G21)).T

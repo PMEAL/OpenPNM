@@ -1,6 +1,7 @@
-import openpnm as op
-import scipy as sp
 import pytest
+import scipy as sp
+import numpy as np
+import openpnm as op
 
 
 class UtilsTest:
@@ -40,14 +41,14 @@ class UtilsTest:
 
     def test_printable_dict(self):
         D = op.utils.PrintableDict(**{'item1': 1, 'item2': 2,
-                                      'item3': sp.array([1, 2])})
+                                      'item3': np.array([1, 2])})
         s = D.__str__().split('\n')
         assert len(s) == 7
         r = D.__repr__()
         assert r == "{'item1': 1, 'item2': 2, 'item3': array([1, 2])}"
 
     def test_is_symmetric_w_rtol(self):
-        A = sp.array([[1, 2, 3], [2, 4, 6], [3.000001, 6, 99]])
+        A = np.array([[1, 2, 3], [2, 4, 6], [3.000001, 6, 99]])
         is_sym = op.utils.misc.is_symmetric(A, rtol=1e-4)
         assert is_sym
         is_sym = op.utils.misc.is_symmetric(A, rtol=1e-6)

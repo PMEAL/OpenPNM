@@ -38,8 +38,9 @@ class StickAndBall(GenericGeometry):
     models to be applied in different regions.  This is illustrated in the
     following code:
 
-    >>> import openpnm as op
+    >>> import numpy as np
     >>> import scipy as sp
+    >>> import openpnm as op
     >>> import matplotlib.pyplot as plt
     >>> pn = op.network.CubicDual(shape=[5, 5, 5])
     >>> Ps = pn.pores('primary')
@@ -52,7 +53,7 @@ class StickAndBall(GenericGeometry):
     Now override the 'pore.diameter' values on the ``geo2`` object:
 
     >>> geo2.remove_model('pore.diameter')  # Remove model and data
-    >>> geo2['pore.diameter'] = sp.rand(geo2.Np)*0.05
+    >>> geo2['pore.diameter'] = np.random.rand(geo2.Np)*0.05
 
     Look at the 'pore.diameter' distributions on each object:
 

@@ -1,3 +1,4 @@
+import numpy as np
 import scipy as sp
 import openpnm as op
 from numpy.testing import assert_allclose
@@ -6,7 +7,7 @@ from numpy.testing import assert_allclose
 class AdvectionDiffusionTest:
 
     def setup_class(self):
-        sp.random.seed(0)
+        np.random.seed(0)
         self.net = op.network.Cubic(shape=[4, 3, 1], spacing=1.0)
         self.geo = op.geometry.GenericGeometry(network=self.net,
                                                pores=self.net.Ps,
@@ -80,7 +81,7 @@ class AdvectionDiffusionTest:
              0.89653, 0.89653, 0.89653,
              1.53924, 1.53924, 1.53924,
              2., 2., 2.]
-        y = sp.around(self.ad['pore.concentration'], decimals=5)
+        y = np.around(self.ad['pore.concentration'], decimals=5)
         assert_allclose(actual=y, desired=x)
 
     def test_upwind_advection_diffusion(self):
@@ -94,7 +95,7 @@ class AdvectionDiffusionTest:
              0.86486, 0.86486, 0.86486,
              1.51351, 1.51351, 1.51351,
              2., 2., 2.]
-        y = sp.around(self.ad['pore.concentration'], decimals=5)
+        y = np.around(self.ad['pore.concentration'], decimals=5)
         assert_allclose(actual=y, desired=x)
 
     def test_hybrid_advection_diffusion(self):
@@ -109,7 +110,7 @@ class AdvectionDiffusionTest:
              0.89908, 0.89908, 0.89908,
              1.54128, 1.54128, 1.54128,
              2., 2., 2.]
-        y = sp.around(self.ad['pore.concentration'], decimals=5)
+        y = np.around(self.ad['pore.concentration'], decimals=5)
         assert_allclose(actual=y, desired=x)
 
     def test_exponential_advection_diffusion(self):

@@ -1,5 +1,6 @@
-import openpnm as op
+import numpy as np
 import scipy as sp
+import openpnm as op
 mgr = op.Workspace()
 
 
@@ -22,15 +23,15 @@ class MercuryIntrusionTest:
         mip.run()
         mip.pc_data = [1e1, 1e3, 1e5, 1e6]
         mip.snwp_data = [0.0, 0.1, 0.5, 0.9]
-        assert sp.all(mip.pc_data == [1e1, 1e3, 1e5, 1e6])
-        assert sp.all(mip.snwp_data == [0.0, 0.1, 0.5, 0.9])
+        assert np.all(mip.pc_data == [1e1, 1e3, 1e5, 1e6])
+        assert np.all(mip.snwp_data == [0.0, 0.1, 0.5, 0.9])
 
     def test_plot_data(self):
         mip = op.algorithms.metrics.MercuryIntrusion(network=self.net)
         mip.run()
         mip.pc_data = [1e1, 1e3, 1e5, 1e6]
         mip.snwp_data = [0.0, 0.1, 0.5, 0.9]
-        fig = mip.plot_intrusion_curve()
+        _ = mip.plot_intrusion_curve()
 
 
 if __name__ == '__main__':

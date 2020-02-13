@@ -1,12 +1,13 @@
-import openpnm as op
-import scipy as sp
 import pytest
+import numpy as np
+import scipy as sp
+import openpnm as op
 
 
 class TransientImplicitReactiveTransportTest:
 
     def setup_class(self):
-        sp.random.seed(0)
+        np.random.seed(0)
         self.net = op.network.Cubic(shape=[3, 3, 1], spacing=1e-6)
         self.geo = op.geometry.GenericGeometry(network=self.net,
                                                pores=self.net.Ps,
@@ -45,8 +46,8 @@ class TransientImplicitReactiveTransportTest:
         x = [2., 1.00158, 0.00316,
              2., 1.00158, 0.00316,
              2., 1.00158, 0.00316]
-        y = sp.around(alg[alg.settings['quantity']], decimals=5)
-        assert sp.all(x == y)
+        y = np.around(alg[alg.settings['quantity']], decimals=5)
+        assert np.all(x == y)
 
     def test_transient_cranknicolson_reactive_transport(self):
         alg = op.algorithms.TransientReactiveTransport(network=self.net,
@@ -61,8 +62,8 @@ class TransientImplicitReactiveTransportTest:
         x = ([2., 1.02351, 0.04428,
               2., 1.02351, 0.04428,
               2., 1.02351, 0.04428])
-        y = sp.around(alg[alg.settings['quantity']], decimals=5)
-        assert sp.all(x == y)
+        y = np.around(alg[alg.settings['quantity']], decimals=5)
+        assert np.all(x == y)
 
     def test_transient_reactive_transport_output(self):
         alg = op.algorithms.TransientReactiveTransport(network=self.net,
@@ -71,7 +72,7 @@ class TransientImplicitReactiveTransportTest:
         alg.setup(t_initial=2, t_final=12, t_precision=10)
         alg.settings.update({'t_scheme': 'cranknicolson', 't_step': 0.1,
                              't_tolerance': 1e-07, 'rxn_tolerance': 1e-06,
-                             't_output': sp.arange(4, 7, 1)})
+                             't_output': np.arange(4, 7, 1)})
         alg.set_value_BC(pores=self.net.pores('left'), values=2)
         alg.set_source(propname='pore.reaction', pores=self.net.pores('right'))
         alg.run()
@@ -87,7 +88,7 @@ class TransientImplicitReactiveTransportTest:
         alg.setup(t_initial=2, t_final=12, t_precision=10)
         alg.settings.update({'t_scheme': 'cranknicolson', 't_step': 0.1,
                              't_tolerance': 1e-07, 'rxn_tolerance': 1e-06,
-                             't_output': sp.arange(2, 13, 1)})
+                             't_output': np.arange(2, 13, 1)})
         alg.set_value_BC(pores=self.net.pores('left'), values=2)
         alg.set_source(propname='pore.reaction', pores=self.net.pores('right'))
         alg.run()
@@ -118,8 +119,8 @@ class TransientImplicitReactiveTransportTest:
         x = [2, 1.00158, 0.00316,
              2, 1.00158, 0.00316,
              2, 1.00158, 0.00316]
-        y = sp.around(alg[alg.settings['quantity']], decimals=5)
-        assert sp.all(x == y)
+        y = np.around(alg[alg.settings['quantity']], decimals=5)
+        assert np.all(x == y)
 
     def test_adding_bc_over_sources(self):
         alg = op.algorithms.TransientReactiveTransport(network=self.net,
