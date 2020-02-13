@@ -12,13 +12,15 @@ import scipy as _sp
 import scipy.constants as const
 
 
-def ordinary_diffusion(target,
-                       pore_area='pore.area',
-                       throat_area='throat.area',
-                       pore_diffusivity='pore.diffusivity',
-                       throat_diffusivity='throat.diffusivity',
-                       conduit_lengths='throat.conduit_lengths',
-                       conduit_shape_factors='throat.poisson_shape_factors'):
+def ordinary_diffusion(
+    target,
+    pore_area='pore.area',
+    throat_area='throat.area',
+    pore_diffusivity='pore.diffusivity',
+    throat_diffusivity='throat.diffusivity',
+    conduit_lengths='throat.conduit_lengths',
+    conduit_shape_factors='throat.poisson_shape_factors'
+):
     r"""
     Calculate the diffusive conductance of conduits in network, where a
     conduit is ( 1/2 pore - full throat - 1/2 pore ). See the notes section.
@@ -78,12 +80,6 @@ def ordinary_diffusion(target,
     L1 = network[conduit_lengths + '.pore1'][throats]
     Lt = network[conduit_lengths + '.throat'][throats]
     L2 = network[conduit_lengths + '.pore2'][throats]
-    # Preallocating g
-    g1, g2, gt = _sp.zeros((3, len(Lt)))
-    # Setting g to inf when Li = 0 (ex. boundary pores)
-    # INFO: This is needed since area could also be zero, which confuses NumPy
-    m1, m2, mt = [Li != 0 for Li in [L1, L2, Lt]]
-    g1[~m1] = g2[~m2] = gt[~mt] = _sp.inf
     # Getting shape factors
     try:
         SF1 = phase[conduit_shape_factors+'.pore1'][throats]
@@ -92,24 +88,29 @@ def ordinary_diffusion(target,
     except KeyError:
         SF1 = SF2 = SFt = 1.0
     # Interpolate pore phase property values to throats
-    Dt = phase[throat_diffusivity][throats]
-    D1 = phase[pore_diffusivity][cn[:, 0]]
-    D2 = phase[pore_diffusivity][cn[:, 1]]
+    D1, D2 = phase[pore_diffusivity][cn].T
+    Dt = phase.interpolate_data(propname=pore_diffusivity)[throats]
     # Find g for half of pore 1, throat, and half of pore 2
-    g1[m1] = (D1*A1)[m1] / L1[m1]
-    g2[m2] = (D2*A2)[m2] / L2[m2]
-    gt[mt] = (Dt*At)[mt] / Lt[mt]
+    g1 = (D1*A1) / L1
+    g2 = (D2*A2) / L2
+    gt = (Dt*At) / Lt
+    # Ensure infinite conductance for elements with zero length
+    g1[L1==0] = _sp.inf
+    g2[L2==0] = _sp.inf
+    gt[Lt==0] = _sp.inf
     # Apply shape factors and calculate the final conductance
     return (1/gt/SFt + 1/g1/SF1 + 1/g2/SF2)**(-1)
 
 
-def ordinary_diffusion_2D(target,
-                          pore_diameter='pore.diameter',
-                          throat_diameter='throat.diameter',
-                          pore_diffusivity='pore.diffusivity',
-                          throat_diffusivity='throat.diffusivity',
-                          conduit_lengths='throat.conduit_lengths',
-                          conduit_shape_factors='throat.poisson_shape_factors'):
+def ordinary_diffusion_2D(
+    target,
+    pore_diameter='pore.diameter',
+    throat_diameter='throat.diameter',
+    pore_diffusivity='pore.diffusivity',
+    throat_diffusivity='throat.diffusivity',
+    conduit_lengths='throat.conduit_lengths',
+    conduit_shape_factors='throat.poisson_shape_factors'
+):
     r"""
     Calculate the diffusive conductance of conduits in network, where a
     conduit is ( 1/2 pore - full throat - 1/2 pore ). The conduit consists of 2
@@ -174,12 +175,6 @@ def ordinary_diffusion_2D(target,
     L1 = network[conduit_lengths + '.pore1'][throats]
     Lt = network[conduit_lengths + '.throat'][throats]
     L2 = network[conduit_lengths + '.pore2'][throats]
-    # Preallocating g
-    g1, g2, gt = _sp.zeros((3, len(Lt)))
-    # Setting g to inf when Li = 0 (ex. boundary pores)
-    # INFO: This is needed since area could also be zero, which confuses NumPy
-    m1, m2, mt = [Li != 0 for Li in [L1, L2, Lt]]
-    g1[~m1] = g2[~m2] = gt[~mt] = _sp.inf
     # Getting shape factors
     try:
         SF1 = phase[conduit_shape_factors+'.pore1'][throats]
@@ -188,36 +183,32 @@ def ordinary_diffusion_2D(target,
     except KeyError:
         SF1 = SF2 = SFt = 1.0
     # Interpolate pore phase property values to throats
-    try:
-        Dt = phase[throat_diffusivity][throats]
-    except KeyError:
-        Dt = phase.interpolate_data(propname=pore_diffusivity)[throats]
-    try:
-        D1 = phase[pore_diffusivity][cn[:, 0]]
-        D2 = phase[pore_diffusivity][cn[:, 1]]
-    except KeyError:
-        D1 = phase.interpolate_data(propname=throat_diffusivity)[cn[:, 0]]
-        D2 = phase.interpolate_data(propname=throat_diffusivity)[cn[:, 1]]
+    D1, D2 = phase[pore_diffusivity][cn].T
+    Dt = phase.interpolate_data(propname=pore_diffusivity)[throats]
     # Find g for half of pore 1, throat, and half of pore 2
-    g1[m1] = (D1*A1)[m1] / L1[m1]
-    g2[m2] = (D2*A2)[m2] / L2[m2]
-    gt[mt] = (Dt*At)[mt] / Lt[mt]
+    g1 = (D1*A1) / L1
+    g2 = (D2*A2) / L2
+    gt = (Dt*At) / Lt
+    # Ensure infinite conductance for elements with zero length
+    g1[L1==0] = _sp.inf
+    g2[L2==0] = _sp.inf
+    gt[Lt==0] = _sp.inf
     # Apply shape factors and calculate the final conductance
     return (1/gt/SFt + 1/g1/SF1 + 1/g2/SF2)**(-1)
 
 
 def mixed_diffusion(
-        target,
-        pore_area='pore.area',
-        throat_area='throat.area',
-        pore_diameter='pore.diameter',
-        throat_diameter='throat.diameter',
-        pore_diffusivity='pore.diffusivity',
-        pore_temperature='pore.temperature',
-        molecular_weight='pore.molecular_weight',
-        throat_diffusivity='throat.diffusivity',
-        conduit_lengths='throat.conduit_lengths',
-        conduit_shape_factors='throat.poisson_shape_factors'
+    target,
+    pore_area='pore.area',
+    throat_area='throat.area',
+    pore_diameter='pore.diameter',
+    throat_diameter='throat.diameter',
+    pore_diffusivity='pore.diffusivity',
+    pore_temperature='pore.temperature',
+    molecular_weight='pore.molecular_weight',
+    throat_diffusivity='throat.diffusivity',
+    conduit_lengths='throat.conduit_lengths',
+    conduit_shape_factors='throat.poisson_shape_factors',
 ):
     r"""
     Calculate the diffusive conductance of conduits in network, where a
@@ -313,20 +304,25 @@ def mixed_diffusion(
     g1 = (D1e * A1) / L1
     g2 = (D2e * A2) / L2
     gt = (Dte * At) / Lt
+    # Ensure infinite conductance for elements with zero length
+    g1[L1==0] = _sp.inf
+    g2[L2==0] = _sp.inf
+    gt[Lt==0] = _sp.inf
     # Apply shape factors and calculate the final conductance
     return (1/gt/SFt + 1/g1/SF1 + 1/g2/SF2)**(-1)
 
 
 def taylor_aris_diffusion(
-        target,
-        pore_area='pore.area',
-        throat_area='throat.area',
-        pore_diffusivity='pore.diffusivity',
-        pore_pressure='pore.pressure',
-        throat_hydraulic_conductance='throat.hydraulic_conductance',
-        throat_diffusivity='throat.diffusivity',
-        conduit_lengths='throat.conduit_lengths',
-        conduit_shape_factors='throat.poisson_shape_factors'):
+    target,
+    pore_area='pore.area',
+    throat_area='throat.area',
+    pore_diffusivity='pore.diffusivity',
+    pore_pressure='pore.pressure',
+    throat_hydraulic_conductance='throat.hydraulic_conductance',
+    throat_diffusivity='throat.diffusivity',
+    conduit_lengths='throat.conduit_lengths',
+    conduit_shape_factors='throat.poisson_shape_factors'
+):
     r"""
     Calculate the diffusive conductance of conduits in network considering the
     Taylor-Aris effect (effect of fluid flow on diffusion), where a
@@ -397,12 +393,6 @@ def taylor_aris_diffusion(
     L1 = network[conduit_lengths + '.pore1'][throats]
     Lt = network[conduit_lengths + '.throat'][throats]
     L2 = network[conduit_lengths + '.pore2'][throats]
-    # Preallocating g
-    g1, g2, gt = _sp.zeros((3, len(Lt)))
-    # Setting g to inf when Li = 0 (ex. boundary pores)
-    # INFO: This is needed since area could also be zero, which confuses NumPy
-    m1, m2, mt = [Li != 0 for Li in [L1, L2, Lt]]
-    g1[~m1] = g2[~m2] = gt[~mt] = _sp.inf
     # Getting shape factors
     try:
         SF1 = phase[conduit_shape_factors+'.pore1'][throats]
@@ -411,46 +401,44 @@ def taylor_aris_diffusion(
     except KeyError:
         SF1 = SF2 = SFt = 1.0
     # Interpolate pore phase property values to throats
-    try:
-        Dt = phase[throat_diffusivity][throats]
-    except KeyError:
-        Dt = phase.interpolate_data(propname=pore_diffusivity)[throats]
-    try:
-        D1 = phase[pore_diffusivity][cn[:, 0]]
-        D2 = phase[pore_diffusivity][cn[:, 1]]
-    except KeyError:
-        D1 = phase.interpolate_data(propname=throat_diffusivity)[cn[:, 0]]
-        D2 = phase.interpolate_data(propname=throat_diffusivity)[cn[:, 1]]
-    # Find g for half of pore 1, throat, and half of pore 2
+    D1, D2 = phase[pore_diffusivity][cn].T
+    Dt = phase.interpolate_data(propname=pore_diffusivity)[throats]
+    # Fetch properties for calculating Peclet
     P = phase[pore_pressure]
     gh = phase[throat_hydraulic_conductance]
     Qt = -gh*_sp.diff(P[cn], axis=1).squeeze()
-
-    u1 = Qt[m1]/A1[m1]
-    u2 = Qt[m2]/A2[m2]
-    ut = Qt[mt]/At[mt]
-
-    Pe1 = u1 * ((4*A1[m1]/_sp.pi)**0.5) / D1[m1]
-    Pe2 = u2 * ((4*A2[m2]/_sp.pi)**0.5) / D2[m2]
-    Pet = ut * ((4*At[mt]/_sp.pi)**0.5) / Dt[mt]
-
-    g1[m1] = D1[m1]*(1+(Pe1**2)/192)*A1[m1] / L1[m1]
-    g2[m2] = D2[m2]*(1+(Pe2**2)/192)*A2[m2] / L2[m2]
-    gt[mt] = Dt[mt]*(1+(Pet**2)/192)*At[mt] / Lt[mt]
+    # Find fluid velocity in elements
+    u1 = Qt / A1
+    u2 = Qt / A2
+    ut = Qt / At
+    # Find Peclet number in elements
+    Pe1 = u1 * ((4 * A1 / _sp.pi)**0.5) / D1
+    Pe2 = u2 * ((4 * A2 / _sp.pi)**0.5) / D2
+    Pet = ut * ((4 * At / _sp.pi)**0.5) / Dt
+    # Find g for half of pore 1, throat, and half of pore 2
+    g1 = D1 * (1 + (Pe1**2)/192) * A1 / L1
+    g2 = D2 * (1 + (Pe2**2)/192) * A2 / L2
+    gt = Dt * (1 + (Pet**2)/192) * At / Lt
+    # Ensure infinite conductance for elements with zero length
+    g1[L1==0] = _sp.inf
+    g2[L2==0] = _sp.inf
+    gt[Lt==0] = _sp.inf
     # Apply shape factors and calculate the final conductance
     return (1/gt/SFt + 1/g1/SF1 + 1/g2/SF2)**(-1)
 
 
-def classic_ordinary_diffusion(target,
-                               pore_molar_density='pore.molar_density',
-                               pore_diffusivity='pore.diffusivity',
-                               pore_area='pore.area',
-                               pore_diameter='pore.diameter',
-                               throat_area='throat.area',
-                               throat_length='throat.length',
-                               throat_diameter='throat.diameter',
-                               shape_factor='throat.shape_factor',
-                               **kwargs):
+def classic_ordinary_diffusion(
+    target,
+    pore_molar_density='pore.molar_density',
+    pore_diffusivity='pore.diffusivity',
+    pore_area='pore.area',
+    pore_diameter='pore.diameter',
+    throat_area='throat.area',
+    throat_length='throat.length',
+    throat_diameter='throat.diameter',
+    shape_factor='throat.shape_factor',
+    **kwargs
+):
     r"""
     Calculate the diffusive conductance of conduits in network, where a
     conduit is ( 1/2 pore - full throat - 1/2 pore ) based on the areas
@@ -510,13 +498,15 @@ def classic_ordinary_diffusion(target,
     return value
 
 
-def multiphase_diffusion(target,
-                         pore_area='pore.area',
-                         throat_area='throat.area',
-                         pore_diffusivity='pore.diffusivity',
-                         throat_diffusivity='throat.diffusivity',
-                         conduit_lengths='throat.conduit_lengths',
-                         conduit_shape_factors='throat.poisson_shape_factors'):
+def multiphase_diffusion(
+    target,
+    pore_area='pore.area',
+    throat_area='throat.area',
+    pore_diffusivity='pore.diffusivity',
+    throat_diffusivity='throat.diffusivity',
+    conduit_lengths='throat.conduit_lengths',
+    conduit_shape_factors='throat.poisson_shape_factors'
+):
     r"""
     Similar to ordinary_diffusion, except it also accounts for Henry's law
     partitioning.
@@ -548,13 +538,16 @@ def multiphase_diffusion(target,
     except KeyError:
         SF1 = SF2 = SFt = 1.0
     # Interpolate pore phase property values to throats
-    Dt = phase[throat_diffusivity][throats]
-    D1 = phase[pore_diffusivity][cn[:, 0]]
-    D2 = phase[pore_diffusivity][cn[:, 1]]
+    D1, D2 = phase[pore_diffusivity][cn].T
+    Dt = phase.interpolate_data(propname=pore_diffusivity)[throats]
     # Find g for half of pore 1, throat, and half of pore 2 + apply shape factors
     g1 = (D1*A1) / L1 * SF1
     g2 = (D2*A2) / L2 * SF2
     gt = (Dt*At) / Lt * SFt
+    # Ensure infinite conductance for elements with zero length
+    g1[L1==0] = _sp.inf
+    g2[L2==0] = _sp.inf
+    gt[Lt==0] = _sp.inf
     # Get partition coefficient dictionary key from phase settings
     partition_coef = phase.settings["partition_coef"]
     # Apply Henry's partitioning coefficient
