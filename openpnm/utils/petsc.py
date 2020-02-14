@@ -6,7 +6,6 @@ petsc: A class for solving sparse linear systems using petsc
 """
 import sys
 import numpy as np
-import scipy as sp
 from openpnm.core import Base
 from openpnm.utils import logging
 logger = logging.getLogger(__name__)
@@ -131,13 +130,15 @@ class PETScSparseLinearSolver(Base):
 
         solver = self.settings['type']
         preconditioner = self.settings['preconditioner']
-        if solver not in (iterative_solvers + lu_direct_solvers
-                          + cholesky_direct_solvers + preconditioners):
-            logger.critical(f"{solver} solver not availabe, cg used instead.")
-            solver = 'cg'
+        if solver not in (
+            iterative_solvers
+            + lu_direct_solvers
+            + cholesky_direct_solvers
+            + preconditioners
+        ):
+            raise Exception(f"{solver} solver not availabe, choose another solver")
         if preconditioner not in preconditioners:
-            logger.critical(f"{preconditioner} not found, jacobi was used.")
-            preconditioner = 'jacobi'
+            raise Exception(f"{preconditioner} not found, choose another preconditioner")
 
         if solver in lu_direct_solvers:
             self.ksp = PETSc.KSP()
