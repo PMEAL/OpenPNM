@@ -601,8 +601,8 @@ class GenericTransport(GenericAlgorithm):
             # Check if petsc is available
             try:
                 import pyamg
-            except ModuleNotFoundError:
-                raise Exception('PyAMG is not installed.')
+            except Exception:
+                raise ModuleNotFoundError('PyAMG is not installed.')
             ml = pyamg.ruge_stuben_solver(A)
             x = ml.solve(b=b, tol=rtol, maxiter=max_it)
 
