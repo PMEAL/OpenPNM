@@ -550,6 +550,10 @@ class GenericTransport(GenericAlgorithm):
         A = A.tocsr()
         x0 = np.zeros_like(b) if x0 is None else x0
 
+        # Raise error if solver_family not available
+        if self.settings["solver_family"] not in ["scipy", "petsc", "pyamg"]:
+            raise Exception(f"{self.settings['solver_family']} not available.")
+
         # Set tolerance for iterative solvers
         tol = self.settings["solver_tol"]
         max_it = self.settings["solver_maxiter"]
