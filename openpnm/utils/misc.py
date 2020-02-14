@@ -379,6 +379,20 @@ def models_to_table(obj, params=True):
     return "\n".join(lines)
 
 
+def catch_ModuleNotFound(function):
+    """
+    A decorator that wraps the passed in function and catches
+    ModuleNotFound exception.
+    """
+    @functools.wraps(function)
+    def wrapper(*args, **kwargs):
+        try:
+            return function(*args, **kwargs)
+        except ModuleNotFoundError:
+            pass
+    return wrapper
+
+
 def ignore_warnings(warning=RuntimeWarning):
     r"""
     Decorator for catching warnings. Useful in pore-scale models where nans
