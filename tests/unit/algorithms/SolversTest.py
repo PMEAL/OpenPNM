@@ -3,6 +3,7 @@ import importlib
 import scipy as sp
 import openpnm as op
 import numpy.testing as nt
+from openpnm.utils.misc import catch_ModuleNotFound
 
 
 class SolversTest:
@@ -70,31 +71,24 @@ class SolversTest:
             xmean = self.alg['pore.x'].mean()
             nt.assert_allclose(actual=xmean, desired=0.587595, rtol=1e-5)
 
-    def test_petsc_mumps(self):
-        self.alg.settings['solver_family'] = 'petsc'
-        self.alg.settings['solver_type'] = 'mumps'
-        # If PETSc is not found
+    def test_petsc_exception_if_not_found(self):
         try:
             import petsc4py
         except ModuleNotFoundError:
             with pytest.raises(Exception):
                 self.alg.run()
-            return
-        # If PETSc is found
+
+    @catch_ModuleNotFound
+    def test_petsc_mumps(self):
+        self.alg.settings['solver_family'] = 'petsc'
+        self.alg.settings['solver_type'] = 'mumps'
         self.alg.run()
         xmean = self.alg['pore.x'].mean()
         nt.assert_allclose(actual=xmean, desired=0.587595, rtol=1e-5)
 
+    @catch_ModuleNotFound
     def test_petsc_iterative(self):
         self.alg.settings['solver_family'] = 'petsc'
-        # If PETSc is not found
-        try:
-            import petsc4py
-        except ModuleNotFoundError:
-            with pytest.raises(Exception):
-                self.alg.run()
-            return
-        # If PETSc is found
         iterative_solvers = [
             'cg', 'groppcg', 'pipecg', 'pipecgrr',
             'nash', 'stcg', 'gltr', 'fcg', 'pipefcg', 'gmres', 'pipefgmres', 'fgmres',
@@ -108,7 +102,7 @@ class SolversTest:
             xmean = self.alg['pore.x'].mean()
             nt.assert_allclose(actual=xmean, desired=0.587595, rtol=1e-5)
 
-    def test_cg_raises_exception_nonsymmetric_A(self):
+    def test_cg_exception_nonsymmetric_A(self):
         air = op.phases.Air(network=self.net)
         phys = op.physics.Standard(network=self.net, phase=air, geometry=self.geom)
         ad = op.algorithms.AdvectionDiffusion(network=self.net, phase=air)
@@ -120,7 +114,14 @@ class SolversTest:
         sf.run()
         air.update(sf.results())
         phys.regenerate_models()
-        ad.settings.update({"cache_A": False, "cache_b": False, "solver_type": "cg"})
+        ad.settings.update(
+            {
+                "cache_A": False,
+                "cache_b": False,
+                "solver_type": "cg",
+                "solver_family": "scipy"
+            }
+        )
         with pytest.raises(Exception):
             ad.run()
 
