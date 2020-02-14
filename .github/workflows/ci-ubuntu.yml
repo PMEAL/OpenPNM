@@ -29,11 +29,10 @@ jobs:
     - name: Install Dependencies
       # if: steps.cache.outputs.cache-hit != 'true'
       run: |
-        # pip install -r requirements/pip_requirements.txt
-        # pip install -r requirements/test_requirements.txt
-        # pip uninstall openpnm --yes
-        # python setup.py install
-        pip install numpy
+        pip install -r requirements/pip_requirements.txt
+        pip install -r requirements/test_requirements.txt
+        pip uninstall openpnm --yes
+        python setup.py install
         export PETSC_CONFIGURE_OPTIONS='--download-f2cblaslapack=1'
         pip install petsc petsc4py
 
