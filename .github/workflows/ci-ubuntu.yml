@@ -33,7 +33,7 @@ jobs:
         pip install -r requirements/test_requirements.txt
         pip uninstall openpnm --yes
         python setup.py install
-        pip install mpi4py petsc petsc4py
+        pip install petsc petsc4py
 
     - name: Running tests
       run: pytest --pep8 --cov=./ --cov-report=xml --ignore=scripts/
