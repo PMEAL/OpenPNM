@@ -33,6 +33,8 @@ jobs:
         pip install -r requirements/test_requirements.txt
         pip uninstall openpnm --yes
         python setup.py install
+	sudo apt install mpich
+        pip install mpi4py
         export PETSC_CONFIGURE_OPTIONS='--download-f2cblaslapack=1 --download-mumps'
         pip install petsc petsc4py
 
