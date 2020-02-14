@@ -33,7 +33,7 @@ jobs:
         pip install -r requirements/test_requirements.txt
         pip uninstall openpnm --yes
         python setup.py install
-        export PETSC_CONFIGURE_OPTIONS='--download-f2cblaslapack=1'
+        export PETSC_CONFIGURE_OPTIONS='--download-f2cblaslapack=1 --download-mumps'
         pip install petsc petsc4py
 
     - name: Running tests
