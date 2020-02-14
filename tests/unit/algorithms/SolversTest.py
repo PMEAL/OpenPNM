@@ -3,7 +3,7 @@ import importlib
 import scipy as sp
 import openpnm as op
 import numpy.testing as nt
-from openpnm.utils.misc import catch_ModuleNotFound
+from openpnm.utils.misc import catch_module_not_found
 
 
 class SolversTest:
@@ -78,7 +78,7 @@ class SolversTest:
             with pytest.raises(Exception):
                 self.alg.run()
 
-    @catch_ModuleNotFound
+    @catch_module_not_found
     def test_petsc_mumps(self):
         self.alg.settings['solver_family'] = 'petsc'
         self.alg.settings['solver_type'] = 'mumps'
@@ -86,7 +86,7 @@ class SolversTest:
         xmean = self.alg['pore.x'].mean()
         nt.assert_allclose(actual=xmean, desired=0.587595, rtol=1e-5)
 
-    @catch_ModuleNotFound
+    @catch_module_not_found
     def test_petsc_iterative(self):
         self.alg.settings['solver_family'] = 'petsc'
         iterative_solvers = [

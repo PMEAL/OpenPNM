@@ -379,7 +379,7 @@ def models_to_table(obj, params=True):
     return "\n".join(lines)
 
 
-def catch_ModuleNotFound(function):
+def catch_module_not_found(function):
     """
     A decorator that wraps the passed in function and catches
     ModuleNotFound exception.

@@ -589,8 +589,8 @@ class GenericTransport(GenericAlgorithm):
             try:
                 import petsc4py
                 from openpnm.utils.petsc import PETScSparseLinearSolver as SLS
-            except ModuleNotFoundError:
-                raise Exception('PETSc is not installed.')
+            except Exception:
+                raise ModuleNotFoundError('PETSc is not installed.')
             temp = {"type": self.settings["solver_type"],
                     "preconditioner": self.settings["solver_preconditioner"]}
             ls = SLS(A=A, b=b, settings=temp)
