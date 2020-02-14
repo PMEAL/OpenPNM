@@ -35,7 +35,7 @@ jobs:
         python setup.py install
         sudo apt-get install mpich
         pip install mpi4py
-        export PETSC_CONFIGURE_OPTIONS='--download-f2cblaslapack=1 --download-mumps'
+        export PETSC_CONFIGURE_OPTIONS='--download-f2cblaslapack=1 --download-scalapack --download-mumps'
         pip install petsc petsc4py
 
     - name: Running tests
