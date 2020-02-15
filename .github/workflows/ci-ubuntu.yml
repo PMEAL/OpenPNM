@@ -37,6 +37,7 @@ jobs:
         pip install mpi4py
         export PETSC_CONFIGURE_OPTIONS='--download-f2cblaslapack=1 --download-scalapack --download-mumps'
         pip install petsc petsc4py
+	pip install pyamg
 
     - name: Running tests
       run: pytest --pep8 --cov=./ --cov-report=xml --ignore=scripts/
