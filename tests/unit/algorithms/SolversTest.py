@@ -63,7 +63,7 @@ class SolversTest:
 
     def test_pyamg_exception_if_not_found(self):
         self.alg.settings['solver_family'] = 'pyamg'
-	try:
+	    try:
             import pyamg
         except ModuleNotFoundError:
             with pytest.raises(Exception):
