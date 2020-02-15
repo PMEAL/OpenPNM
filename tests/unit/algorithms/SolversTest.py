@@ -63,7 +63,7 @@ class SolversTest:
 
     def test_pyamg_exception_if_not_found(self):
         self.alg.settings['solver_family'] = 'pyamg'
-	    try:
+        try:
             import pyamg
         except ModuleNotFoundError:
             with pytest.raises(Exception):
@@ -77,8 +77,8 @@ class SolversTest:
         nt.assert_allclose(actual=xmean, desired=0.587595, rtol=1e-5)
 
     def test_petsc_exception_if_not_found(self):
-	self.alg.settings['solver_family'] = 'petsc'
-	self.alg.settings['solver_type'] = 'cg'
+        self.alg.settings['solver_family'] = 'petsc'
+        self.alg.settings['solver_type'] = 'cg'
         try:
             import petsc4py
         except ModuleNotFoundError:
