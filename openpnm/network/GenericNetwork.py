@@ -808,14 +808,18 @@ class GenericNetwork(Base, ModelsMixin):
             The maximum radius within which the search should be performed
 
         include_input : bool
-            Controls whether the input pores should be included in the returned
-            list.  The default is ``False``.
+            Controls whether the input pores should be included in the list of
+            pores nearby the *other pores* in the input list.  So if
+            ``pores=[1, 2]`` and 1 and 2 are within ``r`` of each other,
+            then 1 will be included in the returned for pores near 2, and
+            vice-versa *if* this argument is ``True``.  The default is
+            ``False``.
 
         flatten : bool
-            If true returns a single list of all pores that match the criteria,
-            otherwise returns an array containing a sub-array for each input
-            pore, where each sub-array contains the pores that are nearby to
-            each given input pore.  The default is False.
+            If ``True`` returns a single list of all pores that match the
+            criteria, otherwise returns an array containing a sub-array for
+            each input pore, where each sub-array contains the pores that
+            are nearby to each given input pore.  The default is False.
 
         Returns
         -------
