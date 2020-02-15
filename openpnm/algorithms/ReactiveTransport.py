@@ -65,21 +65,17 @@ class ReactiveTransport(GenericTransport):
         Parameters
         ----------
         %(GenericTransport.setup.parameters)s
-
         rxn_tolerance : scalar
             Tolerance to achieve. The solver returns a solution when 'residual'
             falls below 'rxn_tolerance'. The default value is 1e-05.
-
         max_iter : scalar
             The maximum number of iterations the solver can perform to find
             a solution. The default value is 5000.
-
         relaxation_source : scalar, between 0 and 1
             A relaxation factor to control under-relaxation of the source term.
             Factor approaching 0 : improved stability but slow simulation.
             Factor approaching 1 : fast simulation but may be unstable.
             Default value is 1 (no under-relaxation).
-
         relaxation_quantity :  scalar, between 0 and 1
             A relaxation factor to control under-relaxation for the quantity
             solving for.
@@ -112,8 +108,16 @@ class ReactiveTransport(GenericTransport):
             self.settings['relaxation_quantity'] = relaxation_quantity
         super().setup(**kwargs)
 
-    def reset(self, source_terms=True, **kwargs):
+    @docstr.dedent
+    def reset(self, source_terms=False, **kwargs):
         r"""
+        %(GenericTransport.reset.full_desc)s
+
+        Parameters
+        ----------
+        %(GenericTransport.reset.parameters)s
+        source_terms : boolean
+            If ``True`` removes source terms.  The default is ``False``.
         """
         super().reset(**kwargs)
         if source_terms:

@@ -190,9 +190,16 @@ class GenericTransport(GenericAlgorithm):
             self.settings['conductance'] = conductance
         self.settings.update(**kwargs)
 
+    @docstr.get_full_descriptionf(base='GenericTransport.reset')
+    @docstr.get_sectionsf(base='GenericTransport.reset',
+                          sections=['Parameters'])
+    @docstr.dedent
     def reset(self, bcs=True, results=True, phase=False):
         r"""
-        Resets the algorithm to enable re-use to avoid instantiating a new one.
+        Resets the algorithm to enable re-use.
+
+        This function is meant to allow the reuse of an algorithm inside a
+        for-loop which often occurs for parametric studies for instance.
 
         Parameters
         ----------
