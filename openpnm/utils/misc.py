@@ -4,6 +4,17 @@ import functools
 import scipy as _sp
 import time as _time
 from collections import OrderedDict
+from docrep import DocstringProcessor
+
+
+class Docorator(DocstringProcessor):
+
+    __instance__ = None
+
+    def __new__(cls, *args, **kwargs):
+        if Docorator.__instance__ is None:
+            Docorator.__instance__ = DocstringProcessor()
+        return Docorator.__instance__
 
 
 class PrintableList(list):

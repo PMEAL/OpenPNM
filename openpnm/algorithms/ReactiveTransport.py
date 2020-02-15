@@ -1,7 +1,8 @@
 import numpy as np
 from numpy.linalg import norm
 from openpnm.algorithms import GenericTransport
-from openpnm.utils import logging
+from openpnm.utils import logging, Docorator
+docstr = Docorator()
 logger = logging.getLogger(__name__)
 
 
@@ -51,6 +52,9 @@ class ReactiveTransport(GenericTransport):
         if phase is not None:
             self.setup(phase=phase)
 
+    @docstr.get_sectionsf('ReactiveTransport.setup',
+                          sections=['Parameters', 'Notes'])
+    @docstr.dedent
     def setup(self, phase=None, quantity='', conductance='',
               rxn_tolerance=None, max_iter=None, relaxation_source=None,
               relaxation_quantity=None, **kwargs):
@@ -60,18 +64,7 @@ class ReactiveTransport(GenericTransport):
 
         Parameters
         ----------
-        phase : OpenPNM Phase object
-            The phase on which the algorithm is to be run. If no value is
-            given, the existing value is kept.
-
-        quantity : string
-            The name of the physical quantity to be calcualted such as
-            ``'pore.xxx'``.
-
-        conductance : string
-            The name of the pore-scale transport conductance values. These
-            are typically calculated by a model attached to a *Physics* object
-            associated with the given *Phase*. Example; ``'throat.yyy'``.
+        %(GenericTransport.setup.parameters)s
 
         rxn_tolerance : scalar
             Tolerance to achieve. The solver returns a solution when 'residual'
