@@ -194,7 +194,7 @@ class GenericTransport(GenericAlgorithm):
     @docstr.get_sectionsf(base='GenericTransport.reset',
                           sections=['Parameters'])
     @docstr.dedent
-    def reset(self, bcs=True, results=True, phase=False):
+    def reset(self, bcs=True, results=True, phase=False, iter_props=False):
         r"""
         Resets the algorithm to enable re-use.
 
@@ -209,7 +209,9 @@ class GenericTransport(GenericAlgorithm):
             If ``True`` (default) all previously calculated values pertaining
             to results of the algorithm are removed.
         phase : boolean
-            Removes the specified phase from the settings. The default is
+            Removes the phase from the settings. The default is ``False``.
+        iter_props : boolean
+            Removes iterative properties from the settings.  The default is
             ``False``.
         """
         if bcs:
@@ -219,9 +221,19 @@ class GenericTransport(GenericAlgorithm):
             self.pop(self.settings['quantity'], None)
         if phase:
             self.settings['phase'] = None
+        if iter_props:
+            self.settings['iterative_props'] = []
 
     def set_iterative_props(self, propnames):
         r"""
+        Informs the algorithm which properties are iterative and should be
+        update on each loop.
+
+        Parameters
+        ----------
+        propnames : string or list of strings
+            The propnames of the properties that should be updated.
+
         """
         if type(propnames) is str:  # Convert string to list if necessary
             propnames = [propnames]
@@ -238,19 +250,17 @@ class GenericTransport(GenericAlgorithm):
         ----------
         pores : array_like
             The pore indices where the condition should be applied
-
         values : scalar or array_like
             The value to apply in each pore.  If a scalar is supplied
             it is assigne to all locations, and if a vector is applied is
             must be the same size as the indices given in ``pores``.
-
         mode : string, optional
             Controls how the boundary conditions are applied.  Options are:
 
-            - ``'merge'``: (Default) Adds supplied boundary conditions to
+            'merge' - (Default) Adds supplied boundary conditions to
             already existing conditions
 
-            - ``'overwrite'``: Deletes all boundary condition on object then
+            'overwrite' - Deletes all boundary condition on object then
             adds the given ones
 
         Notes
@@ -275,19 +285,17 @@ class GenericTransport(GenericAlgorithm):
         ----------
         pores : array_like
             The pore indices where the condition should be applied
-
         values : scalar or array_like
             The values of rate to apply in each pore.  If a scalar is supplied
             it is assigned to all locations, and if a vector is applied it
             must be the same size as the indices given in ``pores``.
-
         mode : string, optional
             Controls how the boundary conditions are applied.  Options are:
 
-            - ``'merge'``: (Default) Adds supplied boundary conditions to
+            'merge' - (Default) Adds supplied boundary conditions to
             already existing conditions
 
-            - ``'overwrite'``: Deletes all boundary condition on object then
+            'overwrite' - Deletes all boundary condition on object then
             adds the given ones
 
         Notes
