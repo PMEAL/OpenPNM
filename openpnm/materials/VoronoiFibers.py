@@ -1,20 +1,16 @@
+import math
 import scipy as sp
 import numpy as np
+from scipy import ndimage
 import scipy.spatial as sptl
 from scipy.spatial import ConvexHull
-import matplotlib.pyplot as plt
 from transforms3d import _gohlketransforms as tr
-from scipy import ndimage
-import math
-from skimage.morphology import convex_hull_image
-from skimage.measure import regionprops
 from openpnm import topotools
 from openpnm.network import DelaunayVoronoiDual
 from openpnm.utils import logging, Project
 import openpnm.models.geometry as gm
 from openpnm.geometry import GenericGeometry
 from openpnm.utils.misc import unique_list
-from scipy.stats import itemfreq
 logger = logging.getLogger(__name__)
 
 
@@ -97,7 +93,6 @@ class VoronoiFibers(Project):
     ...                                  fiber_rad=5e-6,
     ...                                  resolution=1e-6)
     """
-
     def __init__(self, num_points=None, points=None, shape=[1, 1, 1],
                  fiber_rad=None, resolution=1e-2, name=None,
                  linear_scale=None, **kwargs):
@@ -106,8 +101,8 @@ class VoronoiFibers(Project):
         scale_applied = False
         if linear_scale is not None:
             if len(linear_scale) != 3:
-                logger.exception(msg='linear_scale must have length 3 ' +
-                                 'to scale each axis')
+                logger.exception(msg='linear_scale must have length 3 '
+                                 + 'to scale each axis')
             else:
                 ls = np.asarray(linear_scale)
                 shape *= ls
@@ -299,6 +294,9 @@ class DelaunayGeometry(GenericGeometry):
         Use the Voronoi vertices and perform image analysis to obtain throat
         properties
         """
+        from skimage.measure import regionprops
+        from skimage.morphology import convex_hull_image
+
         offset = self.network.fiber_rad
         Nt = self.num_throats()
         centroid = sp.zeros([Nt, 3])
@@ -549,6 +547,8 @@ class DelaunayGeometry(GenericGeometry):
         Function to count the number of voxels in the pore and fiber space
         Which are assigned to each hull volume
         '''
+        from scipy.stats import itemfreq
+
         num_Ps = self.num_pores()
         pore_vox = sp.zeros(num_Ps, dtype=int)
         fiber_vox = sp.zeros(num_Ps, dtype=int)
@@ -632,8 +632,8 @@ class DelaunayGeometry(GenericGeometry):
             cx = cy = cz = 1
             chunk_len = np.max(np.shape(pore_space))
         except:
-            logger.info("Domain too large to fit into memory so chunking " +
-                        "domain to process image, this may take some time")
+            logger.info("Domain too large to fit into memory so chunking "
+                        + "domain to process image, this may take some time")
             # Do chunking
             chunk_len = 100
             if (lx > chunk_len):
@@ -656,8 +656,8 @@ class DelaunayGeometry(GenericGeometry):
             try:
                 pore_space[x][y][z] = 0
             except IndexError:
-                logger.warning("Some elements in image processing are out" +
-                               "of bounds")
+                logger.warning("Some elements in image processing are out"
+                               + "of bounds")
 
         num_chunks = np.int(cx*cy*cz)
         cnum = 1
@@ -665,8 +665,8 @@ class DelaunayGeometry(GenericGeometry):
             for cj in range(cy):
                 for ck in range(cz):
                     # Work out chunk range
-                    logger.info("Processing fiber Chunk: "+str(cnum)+" of " +
-                                str(num_chunks))
+                    logger.info("Processing fiber Chunk: "+str(cnum)+" of "
+                                + str(num_chunks))
                     cxmin = ci*chunk_len
                     cxmax = np.int(np.ceil((ci+1)*chunk_len + 5*fiber_rad))
                     cymin = cj*chunk_len
@@ -727,8 +727,8 @@ class DelaunayGeometry(GenericGeometry):
             if 'array' not in plane.__class__.__name__:
                 plane = sp.asarray(plane)
             if sp.sum(plane == 0) != 2:
-                logger.warning('Plane argument must have two zero valued ' +
-                               'elements to produce a planar slice')
+                logger.warning('Plane argument must have two zero valued '
+                               + 'elements to produce a planar slice')
                 return None
             l = sp.asarray(sp.shape(self._fiber_image))
             s = sp.around(plane*l).astype(int)
@@ -737,8 +737,8 @@ class DelaunayGeometry(GenericGeometry):
             if 'array' not in index.__class__.__name__:
                 index = sp.asarray(index)
             if sp.sum(index == 0) != 2:
-                logger.warning('Index argument must have two zero valued ' +
-                               'elements to produce a planar slice')
+                logger.warning('Index argument must have two zero valued '
+                               + 'elements to produce a planar slice')
                 return None
             if 'int' not in str(index.dtype):
                 index = sp.around(index).astype(int)
@@ -768,6 +768,7 @@ class DelaunayGeometry(GenericGeometry):
         similar to plane but instead of the fraction an index of the image is
         used
         """
+        import matplotlib.pyplot as plt
         if hasattr(self, '_fiber_image') is False:
             logger.warning('This method only works when a fiber image exists')
             return
@@ -785,6 +786,8 @@ class DelaunayGeometry(GenericGeometry):
         Return a porosity profile in all orthogonal directions by summing
         the voxel volumes in consectutive slices.
         """
+        import matplotlib.pyplot as plt
+
         if hasattr(self, '_fiber_image') is False:
             logger.warning('This method only works when a fiber image exists')
             return
@@ -828,6 +831,7 @@ class DelaunayGeometry(GenericGeometry):
 
         fig : matplotlib figure object to place plot in
         """
+        import matplotlib.pyplot as plt
         throat_list = []
         for throat in throats:
             if throat in range(self.num_throats()):
@@ -912,7 +916,9 @@ class DelaunayGeometry(GenericGeometry):
         include_points : bool
             Determines whether to scatter pore and throat centroids
         """
+        import matplotlib.pyplot as plt
         from mpl_toolkits.mplot3d.art3d import Poly3DCollection
+
         if len(pores) > 0:
             net = self.network
             net_pores = net.map_pores(pores=pores, origin=self)

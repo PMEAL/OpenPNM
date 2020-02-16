@@ -24,7 +24,7 @@ class TransientImplicitReactiveTransportTest:
                             model=mod,
                             prefactor='pore.A',
                             exponent='pore.k',
-                            quantity='pore.concentration',
+                            X='pore.concentration',
                             regen_mode='deferred')
         self.settings = {'conductance': 'throat.diffusive_conductance',
                          'quantity': 'pore.concentration'}

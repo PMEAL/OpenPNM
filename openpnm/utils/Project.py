@@ -736,12 +736,12 @@ class Project(list):
         s = []
         hr = '―'*78
         s.append(hr)
-        s.append(' {0:<15} '.format('Object Name') +
-                 '{0:<65}'.format('Object ID'))
+        s.append(' {0:<15} '.format('Object Name')
+                 + '{0:<65}'.format('Object ID'))
         s.append(hr)
         for item in self:
-            s.append(' {0:<15} '.format(item.name) +
-                     '{0:<65}'.format(item.__repr__()))
+            s.append(' {0:<15} '.format(item.name)
+                     + '{0:<65}'.format(item.__repr__()))
         s.append(hr)
         return '\n'.join(s)
 
@@ -800,17 +800,17 @@ class Project(list):
         if len(geoms):
             phys = self.find_physics(phase=phase)
             if len(phys) == 0:
-                raise Exception(str(len(geoms))+' geometries were found, but' +
-                                ' no physics')
+                raise Exception(str(len(geoms))+' geometries were found, but'
+                                + ' no physics')
             if None in phys:
                 raise Exception('Undefined physics found, check the grid')
             Ptemp = np.zeros((phase.Np,))
             Ttemp = np.zeros((phase.Nt,))
             for item in phys:
-                    Pind = phase['pore.'+item.name]
-                    Tind = phase['throat.'+item.name]
-                    Ptemp[Pind] = Ptemp[Pind] + 1
-                    Ttemp[Tind] = Ttemp[Tind] + 1
+                Pind = phase['pore.'+item.name]
+                Tind = phase['throat.'+item.name]
+                Ptemp[Pind] = Ptemp[Pind] + 1
+                Ttemp[Tind] = Ttemp[Tind] + 1
             health['overlapping_pores'] = np.where(Ptemp > 1)[0].tolist()
             health['undefined_pores'] = np.where(Ptemp == 0)[0].tolist()
             health['overlapping_throats'] = np.where(Ttemp > 1)[0].tolist()
@@ -937,8 +937,8 @@ class Project(list):
         temp = sprs.triu(adjmat, k=1)
         num_upper = temp.sum()
         if num_full > num_upper:
-            biTs = np.where(net['throat.conns'][:, 0] >
-                            net['throat.conns'][:, 1])[0]
+            biTs = np.where(net['throat.conns'][:, 0]
+                            > net['throat.conns'][:, 1])[0]
             health['bidirectional_throats'] = biTs.tolist()
 
         return health
@@ -983,7 +983,10 @@ class Project(list):
                 obj.regenerate_models()
 
     def get_grid(self, astype='table'):
+        r"""
+        """
         from pandas import DataFrame as df
+
         geoms = self.geometries().keys()
         phases = [p.name for p in self.phases().values() if not hasattr(p, 'mixture')]
         grid = df(index=geoms, columns=phases)

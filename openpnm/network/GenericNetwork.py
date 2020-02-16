@@ -1,7 +1,6 @@
 import scipy as sp
 import scipy.sparse as sprs
 import scipy.spatial as sptl
-# import scipy.sparse.csgraph as csg
 from openpnm.core import Base, ModelsMixin
 from openpnm import topotools
 from openpnm.utils import Workspace, logging

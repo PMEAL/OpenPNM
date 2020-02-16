@@ -5,15 +5,13 @@ MixedInvasionPercolation: IP allowing pores and throats to invade separately
 ===============================================================================
 
 """
+import logging
 import heapq as hq
 import scipy as sp
 import numpy as np
+from collections import namedtuple
 from openpnm.algorithms import GenericAlgorithm
 from openpnm.topotools import find_clusters, site_percolation
-from collections import namedtuple
-import logging
-import matplotlib.pyplot as plt
-
 logger = logging.getLogger(__name__)
 
 
@@ -185,11 +183,11 @@ class MixedInvasionPercolation(GenericAlgorithm):
         elif clusters is not None:
             logger.info("Setting inlet clusters at individual pressures")
         else:
-            logger.error("Either 'inlets' or 'clusters' must be passed to" +
-                         " setup method")
+            logger.error("Either 'inlets' or 'clusters' must be passed to"
+                         + " setup method")
         self.queue = []
-        if (self.settings['cooperative_pore_filling'] and
-           hasattr(self, 'tt_Pc')):
+        if (self.settings['cooperative_pore_filling'] and hasattr(
+                self, 'tt_Pc')):
             check_coop = True
         else:
             check_coop = False
@@ -233,8 +231,8 @@ class MixedInvasionPercolation(GenericAlgorithm):
 
         """
         if self.settings['trapping'] is False:
-            logger.warning('Setting outlets is meaningless unless trapping ' +
-                           'was set to True during setup')
+            logger.warning('Setting outlets is meaningless unless trapping '
+                           + 'was set to True during setup')
         Ps = self._parse_indices(pores)
         if np.sum(self['pore.inlets'][Ps]) > 0:
             raise Exception('Some outlets are already defined as inlets')
@@ -347,8 +345,8 @@ class MixedInvasionPercolation(GenericAlgorithm):
                     for tc in tcs:
                         if self.invasion_running[tc] is True:
                             self.invasion_running[tc] = False
-                            logger.info("Cluster " + str(tc) + " reached " +
-                                        " outlet at sequence " + str(self.count))
+                            logger.info("Cluster " + str(tc) + " reached "
+                                        + " outlet at sequence " + str(self.count))
 
     def _invade_cluster(self, c_num):
         queue = self.queue[c_num]
@@ -377,29 +375,29 @@ class MixedInvasionPercolation(GenericAlgorithm):
                     self._add_ps2q(elem_id, queue)
                 elif elem_type == 'pore':
                     self._add_ts2q(elem_id, queue)
-                    if (self.settings['cooperative_pore_filling'] and
-                       hasattr(self, 'tt_Pc')):
+                    if (self.settings['cooperative_pore_filling'] and hasattr(
+                            self, 'tt_Pc')):
                         self._check_coop(elem_id, queue)
             # Element is part of existing cluster that is still invading
-            elif (elem_cluster != c_num and
-                  self.invasion_running[elem_cluster]):
+            elif (elem_cluster != c_num
+                  and self.invasion_running[elem_cluster]):
                 # The newly invaded element is part of an invading
                 # cluster. Merge the clusters using the existing
                 # cluster number)
                 self._merge_cluster(c2keep=c_num, c2empty=elem_cluster)
-                logger.info("Merging cluster "+str(elem_cluster) +
-                            " into cluster "+str(c_num) +
-                            " at sequence "+str(self.count))
+                logger.info("Merging cluster " + str(elem_cluster)
+                            + " into cluster " + str(c_num)
+                            + " at sequence " + str(self.count))
             # Element is part of residual cluster - now invasion can start
-            elif (elem_cluster != c_num and
-                  len(self.queue[elem_cluster]) > 0):
+            elif (elem_cluster != c_num
+                  and len(self.queue[elem_cluster]) > 0):
                 # The newly invaded element is part of an invading
                 # cluster. Merge the clusters using the existing
                 # cluster number)
                 self._merge_cluster(c2keep=c_num, c2empty=elem_cluster)
-                logger.info("Merging residual cluster "+str(elem_cluster) +
-                            " into cluster "+str(c_num) +
-                            " at sequence "+str(self.count))
+                logger.info("Merging residual cluster " + str(elem_cluster)
+                            + " into cluster " + str(c_num)
+                            + " at sequence " + str(self.count))
             else:
                 pass
 
@@ -513,8 +511,8 @@ class MixedInvasionPercolation(GenericAlgorithm):
         """
         net = self.project.network
         if "pore.invasion_pressure" not in self.props():
-            logger.error("Cannot plot drainage curve. Please run " +
-                         " algorithm first")
+            logger.error("Cannot plot drainage curve. Please run "
+                         + " algorithm first")
         if inv_points is None:
             mask = ~sp.isnan(self['throat.invasion_pressure'])
             ok_Pc = self['throat.invasion_pressure'][mask]
@@ -544,6 +542,7 @@ class MixedInvasionPercolation(GenericAlgorithm):
         r"""
         Plot a simple drainage curve
         """
+        import matplotlib.pyplot as plt
         data = self.get_intrusion_data(inv_points)
         if fig is None:
             fig = plt.figure()
@@ -616,8 +615,8 @@ class MixedInvasionPercolation(GenericAlgorithm):
         net = self.project.network
         outlets = self['pore.outlets']
         if np.sum(outlets) == 0:
-            raise Exception('Outlets must be set using the set_outlets method' +
-                            ' before applying trapping')
+            raise Exception('Outlets must be set using the set_outlets method'
+                            + ' before applying trapping')
         if partial:
             # Set occupancy
             invaded_ps = self['pore.invasion_sequence'] > -1
@@ -634,7 +633,7 @@ class MixedInvasionPercolation(GenericAlgorithm):
                     clusters[clusters == c] = -2
         else:
             # Go from end
-            clusters = np.ones(net.Np, dtype=int)*-1
+            clusters = np.ones(net.Np, dtype=int) * -1
             clusters[outlets] = -2
 
         # Turn into a list for indexing
@@ -657,15 +656,15 @@ class MixedInvasionPercolation(GenericAlgorithm):
                     # This is the start of a new trapped cluster
                     clusters[pore] = next_cluster_num
                     next_cluster_num += 1
-                    msg = (seq_pore+" C:1 new cluster number: " +
-                           str(clusters[pore]))
+                    msg = (seq_pore+" C:1 new cluster number: "
+                           + str(clusters[pore]))
                     logger.info(msg)
                 elif len(unique_ns) == 1:
                     # Grow the only connected neighboring cluster
                     if not stopped_clusters[unique_ns[0]]:
                         clusters[pore] = unique_ns[0]
-                        msg = (seq_pore+" C:2 joins cluster number: " +
-                               str(clusters[pore]))
+                        msg = (seq_pore+" C:2 joins cluster number: "
+                               + str(clusters[pore]))
                         logger.info(msg)
                     else:
                         clusters[pore] = -2
@@ -691,8 +690,8 @@ class MixedInvasionPercolation(GenericAlgorithm):
                         clusters[pore] = new_num
                         for c in unique_ns:
                             clusters[clusters == c] = new_num
-                            msg = (seq_pore + " C:5 merge clusters: " +
-                                   str(c) + " into "+str(new_num))
+                            msg = (seq_pore + " C:5 merge clusters: "
+                                   + str(c) + " into "+str(new_num))
                             logger.info(msg)
 
         # And now return clusters
@@ -736,8 +735,8 @@ class MixedInvasionPercolation(GenericAlgorithm):
                 if not np.isnan(Pc_snap_off[T]):
                     hq.heappush(queue, [Pc_snap_off[T], T, 'throat'])
         except KeyError:
-            logger.warning("Phase " + phase.name + " doesn't have " +
-                           "property " + snap_off)
+            logger.warning("Phase " + phase.name + " doesn't have "
+                           + "property " + snap_off)
 
     def set_residual(self, pores=[], overwrite=False):
         r"""

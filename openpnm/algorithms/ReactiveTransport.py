@@ -154,7 +154,9 @@ class ReactiveTransport(GenericTransport):
                             + 'pores, cannot also assign source terms')
         # Set source term
         self[propname] = locs
-        self.settings['sources'].append(propname)
+        # Check if propname already in source term list
+        if propname not in self.settings['sources']:
+            self.settings['sources'].append(propname)
         # Add source term as an iterative prop
         self.set_iterative_props(propname)
 
