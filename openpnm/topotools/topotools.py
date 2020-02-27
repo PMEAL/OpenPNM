@@ -1441,7 +1441,13 @@ def merge_networks(network, donor=[]):
                         if network[key].dtype == bool:
                             donor[key] = False
                         else:
-                            donor[key] = sp.nan
+                            element = key.split('.')[0]
+                            L = donor._count(element)
+                            try:
+                                W = network[key].shape[1]
+                            except IndexError:
+                                W = 1
+                            donor[key] = sp.squeeze(sp.empty([L, W])*sp.nan)
                         pop_flag = True
                     # Then merge it with existing array on network
                     try:
