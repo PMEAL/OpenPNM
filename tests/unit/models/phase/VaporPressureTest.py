@@ -1,5 +1,6 @@
-import openpnm as op
+import numpy as np
 import scipy as sp
+import openpnm as op
 from numpy.testing import assert_approx_equal
 
 
@@ -7,8 +8,8 @@ class VaporPressureTest:
     def setup_class(self):
         self.net = op.network.Cubic(shape=[3, 3, 3])
         self.phase = op.phases.GenericPhase(network=self.net)
-        self.phase['pore.temperature'] = 300*sp.ones(self.phase.Np,)
-        self.phase['pore.salinity'] = sp.zeros((self.phase.Np,))
+        self.phase['pore.temperature'] = 300*np.ones(self.phase.Np,)
+        self.phase['pore.salinity'] = np.zeros((self.phase.Np,))
 
     def test_antoine(self):
         f = op.models.phases.vapor_pressure.antoine
@@ -42,7 +43,7 @@ class VaporPressureTest:
         self.phase.regenerate_models()
         assert_approx_equal(self.phase['pore.test'].mean(),
                             3536.0130)
-        self.phase['pore.salinity'] = sp.zeros((self.phase.Np,))
+        self.phase['pore.salinity'] = np.zeros((self.phase.Np,))
 
 
 if __name__ == '__main__':

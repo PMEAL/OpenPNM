@@ -550,6 +550,10 @@ class GenericTransport(GenericAlgorithm):
         A = A.tocsr()
         x0 = np.zeros_like(b) if x0 is None else x0
 
+        # Raise error if solver_family not available
+        if self.settings["solver_family"] not in ["scipy", "petsc", "pyamg"]:
+            raise Exception(f"{self.settings['solver_family']} not available.")
+
         # Set tolerance for iterative solvers
         tol = self.settings["solver_tol"]
         max_it = self.settings["solver_maxiter"]
@@ -585,8 +589,8 @@ class GenericTransport(GenericAlgorithm):
             try:
                 import petsc4py
                 from openpnm.utils.petsc import PETScSparseLinearSolver as SLS
-            except ModuleNotFoundError:
-                raise Exception('PETSc is not installed.')
+            except Exception:
+                raise ModuleNotFoundError('PETSc is not installed.')
             temp = {"type": self.settings["solver_type"],
                     "preconditioner": self.settings["solver_preconditioner"]}
             ls = SLS(A=A, b=b, settings=temp)
@@ -597,8 +601,8 @@ class GenericTransport(GenericAlgorithm):
             # Check if petsc is available
             try:
                 import pyamg
-            except ModuleNotFoundError:
-                raise Exception('PyAMG is not installed.')
+            except Exception:
+                raise ModuleNotFoundError('PyAMG is not installed.')
             ml = pyamg.ruge_stuben_solver(A)
             x = ml.solve(b=b, tol=rtol, maxiter=max_it)
 

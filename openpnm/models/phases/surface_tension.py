@@ -6,7 +6,7 @@ r"""
 .. autofunction:: openpnm.models.phases.surface_tension.brock_bird_scaling
 
 """
-
+import numpy as np
 import scipy as sp
 
 
@@ -60,7 +60,7 @@ def water(target, temperature='pore.temperature', salinity='pore.salinity'):
     a2 = 9.4579521377E-03
     a3 = 3.3104954843E-02
     TC = T-273.15
-    sigma_sw = sigma_w*(1+(a1*TC+a2)*sp.log(1+a3*S))
+    sigma_sw = sigma_w*(1+(a1*TC+a2)*np.log(1+a3*S))
     value = sigma_sw
     return value
 

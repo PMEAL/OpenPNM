@@ -1,12 +1,13 @@
-import openpnm as op
-import scipy as sp
 import pytest
+import numpy as np
+import scipy as sp
+import openpnm as op
 
 
 class TransientFickianDiffusionTest:
 
     def setup_class(self):
-        sp.random.seed(0)
+        np.random.seed(0)
         self.net = op.network.Cubic(shape=[4, 3, 1], spacing=1.0)
         self.geo = op.geometry.GenericGeometry(network=self.net,
                                                pores=self.net.Ps,
@@ -36,8 +37,8 @@ class TransientFickianDiffusionTest:
              0.33333, 0.33333, 0.33333,
              0.66667, 0.66667, 0.66667,
              1., 1., 1.]
-        y = sp.around(alg[alg.settings['quantity']], decimals=5)
-        assert sp.all(x == y)
+        y = np.around(alg[alg.settings['quantity']], decimals=5)
+        assert np.all(x == y)
 
     def teardown_class(self):
         ws = op.Workspace()

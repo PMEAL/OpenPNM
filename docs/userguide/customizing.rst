@@ -49,7 +49,7 @@ We can now update our script:
 .. code-block:: python
 
 	import openpnm as op
-	import scipy as sp
+	import numpy as np
 	import my_models
 
 	#Generate a simple Cubic Network
@@ -59,7 +59,7 @@ We can now update our script:
 	geom = op.geometry.GenericGeometry(network=pn,pores=pn.pores(),throats=pn.throats())
 
 	#Assign random pores diameters between 0 and 40
-	geom['pore.diameter'] = sp.rand(pn.Np,)*40
+	geom['pore.diameter'] = np.random.rand(pn.Np,)*40
 
 	#Assign model to geometry
 	geom.add_model(propname='pore.surface_area',

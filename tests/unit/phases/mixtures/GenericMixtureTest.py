@@ -1,7 +1,8 @@
+import pytest
+import numpy as np
+import scipy as sp
 import openpnm as op
 from openpnm.phases import mixtures
-import scipy as sp
-import pytest
 
 
 class MixtureTest:
@@ -23,7 +24,7 @@ class MixtureTest:
         self.air.set_mole_fraction(self.N2, 0.790)
         self.air.set_mole_fraction(self.O2, 0.209)
         self.air.set_mole_fraction(self.CO2, 0.001)
-        assert sp.all(self.air['pore.mole_fraction.all'] == 1.0)
+        assert np.all(self.air['pore.mole_fraction.all'] == 1.0)
 
     def test_props(self):
         a = self.air.props(deep=False)
@@ -37,7 +38,7 @@ class MixtureTest:
         self.air['pore.concentration.'+self.H2.name] = 0.0
         self.air['pore.molar_density'] = 2.0
         self.air.update_mole_fractions(molar_density='pore.molar_density')
-        assert sp.all(self.air['pore.mole_fraction.all'] == 1.0)
+        assert np.all(self.air['pore.mole_fraction.all'] == 1.0)
 
     def test_update_mole_fraction_with_all_concentrations(self):
         self.air['pore.concentration.'+self.O2.name] = 1.5
@@ -45,7 +46,7 @@ class MixtureTest:
         self.air['pore.concentration.'+self.CO2.name] = 0.0
         self.air['pore.concentration.'+self.H2.name] = 0.0
         self.air.update_mole_fractions()
-        assert sp.all(self.air['pore.mole_fraction.all'] == 1.0)
+        assert np.all(self.air['pore.mole_fraction.all'] == 1.0)
 
     def test_interleave_data(self):
         r"""

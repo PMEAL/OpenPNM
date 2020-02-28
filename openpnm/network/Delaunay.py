@@ -1,6 +1,6 @@
-from openpnm.network import DelaunayVoronoiDual
 from openpnm import topotools
 from openpnm.utils import logging
+from openpnm.network import DelaunayVoronoiDual
 logger = logging.getLogger(__name__)
 
 
@@ -53,14 +53,15 @@ class Delaunay(DelaunayVoronoiDual):
 
     Examples
     --------
-    >>> import openpnm as op
+    >>> import numpy as np
     >>> import scipy as sp
+    >>> import openpnm as op
     >>> import matplotlib as mpl
     >>> mpl.use('Agg')
 
     Supplying custom specified points:
 
-    >>> pts = sp.rand(200, 3)
+    >>> pts = np.random.rand(200, 3)
     >>> gn = op.network.Delaunay(points=pts, shape=[1, 1, 1])
     >>> gn.Np
     200
@@ -77,7 +78,7 @@ class Delaunay(DelaunayVoronoiDual):
     domain.  Points can be generated that lie outside the domain ``shape``
     and they will be automatically trimmed.
 
-    >>> pts = sp.rand(300, 3)*1.2 - 0.1  # Must have more points for same density
+    >>> pts = np.random.rand(300, 3)*1.2 - 0.1  # Must have more points for same density
     >>> gn = op.network.Delaunay(points=pts, shape=[1, 1, 1])
     >>> gn.Np < 300  # Confirm base points have been trimmed
     True

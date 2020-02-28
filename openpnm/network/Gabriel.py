@@ -1,3 +1,4 @@
+import numpy as np
 import scipy as sp
 import scipy.spatial as sptl
 from openpnm.network import Delaunay
@@ -54,7 +55,7 @@ class Gabriel(Delaunay):
     --------
     >>> import openpnm as op
     >>> import scipy as sp
-    >>> pts = sp.rand(100, 3) * [1, 1, 0]  # Set z-axis to 0
+    >>> pts = np.random.rand(100, 3) * [1, 1, 0]  # Set z-axis to 0
     >>> gn = op.network.Gabriel(shape=[1, 1, 0], points=pts)
     >>> dn = op.network.Delaunay(shape=[1, 1, 0], points=pts)
 
@@ -78,10 +79,10 @@ class Gabriel(Delaunay):
         c = points[conns]
         m = (c[:, 0, :] + c[:, 1, :])/2
         # Find radius of circle connecting each pair of nodes
-        r = sp.sqrt(sp.sum((c[:, 0, :] - c[:, 1, :])**2, axis=1))/2
+        r = np.sqrt(np.sum((c[:, 0, :] - c[:, 1, :])**2, axis=1))/2
         # Use KD-Tree to find distance to nearest neighbors
         tree = sptl.cKDTree(points)
         n = tree.query(x=m, k=1)[0]
         # Identify throats whose centroid is not near an unconnected node
-        g = sp.around(n, decimals=5) == sp.around(r, decimals=5)
+        g = np.around(n, decimals=5) == np.around(r, decimals=5)
         trim(self, throats=~g)
