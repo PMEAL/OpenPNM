@@ -1,4 +1,5 @@
 import pytest
+import numpy as np
 import scipy as sp
 import openpnm as op
 from numpy.testing import assert_allclose
@@ -14,8 +15,8 @@ class MultiPhaseTest:
     def test_multiphase_init(self):
         m = op.phases.MultiPhase(network=self.net, phases=[self.air,
                                                            self.water])
-        assert sp.all(m['pore.occupancy.all'] == 0.0)
-        assert sp.all(m['throat.occupancy.all'] == 0.0)
+        assert np.all(m['pore.occupancy.all'] == 0.0)
+        assert np.all(m['throat.occupancy.all'] == 0.0)
         assert self.air.name in m.settings['phases']
         assert self.water.name in m.settings['phases']
 
@@ -23,16 +24,16 @@ class MultiPhaseTest:
         m = op.phases.MultiPhase(network=self.net, phases=[self.air,
                                                            self.water])
         self.water['pore.temperature'] = 300
-        assert sp.all(self.water['pore.temperature'] == 300)
+        assert np.all(self.water['pore.temperature'] == 300)
         with pytest.raises(Exception):
             m['pore.temperature']
 
     def test_multiphase_set_occupancy_w_indices_only(self):
         m = op.phases.MultiPhase(network=self.net, phases=[self.air,
                                                            self.water])
-        Ps_water = sp.array([0, 1, 2])
+        Ps_water = np.array([0, 1, 2])
         Ps_water_mask = self.net.tomask(pores=Ps_water)
-        Ts_water = sp.array([4, 12, 22])
+        Ts_water = np.array([4, 12, 22])
         Ts_water_mask = self.net.tomask(throats=Ts_water)
         m.set_occupancy(self.water, pores=Ps_water, throats=Ts_water)
         assert m["pore.occupancy.water"][Ps_water_mask].mean() == 1
@@ -43,8 +44,8 @@ class MultiPhaseTest:
     def test_multiphase_set_occupancy_w_values_only(self):
         m = op.phases.MultiPhase(network=self.net, phases=[self.air,
                                                            self.water])
-        Pvals = sp.array([0.5, 0.9, 0.01])
-        Tvals = sp.array([0.9, 0.01])
+        Pvals = np.array([0.5, 0.9, 0.01])
+        Tvals = np.array([0.9, 0.01])
         # Pvals must be Np-long if not accompanied by "pores" argument
         with pytest.raises(Exception):
             m.set_occupancy(self.water, Pvals=Pvals)
@@ -54,25 +55,25 @@ class MultiPhaseTest:
         # Set pore occupancy
         m.set_occupancy(self.water, Pvals=1)
         assert m["pore.occupancy.water"].mean() == 1
-        Pvals = sp.ones(self.net.Np) * 0.5
+        Pvals = np.ones(self.net.Np) * 0.5
         m.set_occupancy(self.water, Pvals=Pvals)
         assert m["pore.occupancy.water"].mean() == 0.5
         # Setting throat occupancy
         m.set_occupancy(self.water, Tvals=1)
         assert m["throat.occupancy.water"].mean() == 1
-        Tvals = sp.ones(self.net.Nt) * 0.54
+        Tvals = np.ones(self.net.Nt) * 0.54
         m.set_occupancy(self.water, Tvals=Tvals)
         assert m["throat.occupancy.water"].mean() == 0.54
 
     def test_multiphase_set_occupancy_w_pore_indices_and_Pvals(self):
         m = op.phases.MultiPhase(network=self.net, phases=[self.air,
                                                            self.water])
-        Ps_water = sp.array([0, 1, 2])
-        Pvals = sp.array([0.5, 0.9, 0.01])
+        Ps_water = np.array([0, 1, 2])
+        Pvals = np.array([0.5, 0.9, 0.01])
         Ps_water_mask = self.net.tomask(Ps_water)
-        Ts_water = sp.array([4, 12, 22])
+        Ts_water = np.array([4, 12, 22])
         Ts_water_mask = self.net.tomask(throats=Ts_water)
-        Tvals = sp.array([0.3, 0.4, 0.1])
+        Tvals = np.array([0.3, 0.4, 0.1])
         # Pvals/Tvals and pores/throats; same array length
         m.set_occupancy(self.water, pores=Ps_water, Pvals=Pvals,
                         throats=Ts_water, Tvals=Tvals)
@@ -105,30 +106,30 @@ class MultiPhaseTest:
         assert_allclose(m["throat.occupancy.water"], (oc1+oc2)/2)
         # Throats take maximum occupancy of adjacent pores
         m._set_automatic_throat_occupancy(mode="max")
-        assert_allclose(m["throat.occupancy.water"], sp.maximum(oc1, oc2))
+        assert_allclose(m["throat.occupancy.water"], np.maximum(oc1, oc2))
         # Throats take minimum occupancy of adjacent pores
         m._set_automatic_throat_occupancy(mode="min")
-        assert_allclose(m["throat.occupancy.water"], sp.minimum(oc1, oc2))
+        assert_allclose(m["throat.occupancy.water"], np.minimum(oc1, oc2))
 
     def test_multiphase_occupancy_set_single_phase(self):
         m = op.phases.MultiPhase(network=self.net)
         self.water['pore.temperature'] = 300
-        assert sp.all(self.water['pore.temperature'] == 300)
+        assert np.all(self.water['pore.temperature'] == 300)
         m.set_occupancy(phase=self.water, Pvals=1, Tvals=1)
-        assert sp.all(m['pore.temperature'] == 300)
+        assert np.all(m['pore.temperature'] == 300)
 
     def test_multiphase_occupancy_set_two_phase(self):
         m = op.phases.MultiPhase(network=self.net)
         self.water['pore.temperature'] = 300
         self.air['pore.temperature'] = 200
-        assert sp.all(self.water['pore.temperature'] == 300)
-        assert sp.all(self.air['pore.temperature'] == 200)
+        assert np.all(self.water['pore.temperature'] == 300)
+        assert np.all(self.air['pore.temperature'] == 200)
         Ps = self.net['pore.coords'][:, 0] < 3
         Ts = self.net.tomask(throats=self.net.find_neighbor_throats(Ps))
         m.set_occupancy(phase=self.water, Pvals=Ps, Tvals=Ts)
         m.set_occupancy(phase=self.air, Pvals=~Ps, Tvals=~Ts)
-        assert sp.all(m['pore.temperature'] >= 200)
-        assert sp.all(m['pore.temperature'] <= 300)
+        assert np.all(m['pore.temperature'] >= 200)
+        assert np.all(m['pore.temperature'] <= 300)
 
     def test_mutliphase_partition_coef(self):
         m = op.phases.MultiPhase(network=self.net,
@@ -158,33 +159,33 @@ class MultiPhaseTest:
         K_ao = m["throat.partition_coef.air:oil"]
         K_wo = m["throat.partition_coef.water:oil"]
         K_global = m["throat.partition_coef.all"]
-        assert sp.isclose(K_aw.mean(), K_air_water)
-        assert sp.isclose(K_ao.mean(), K_air_oil)
-        assert sp.isclose(K_wo.mean(), K_water_oil)
+        assert np.isclose(K_aw.mean(), K_air_water)
+        assert np.isclose(K_ao.mean(), K_air_oil)
+        assert np.isclose(K_wo.mean(), K_water_oil)
         # Get water-air interface throats
         tmp1 = self.net.find_neighbor_throats(ps_water, mode="xor")
         tmp2 = self.net.find_neighbor_throats(ps_air, mode="xor")
-        Ts_water_air_interface = sp.intersect1d(tmp1, tmp2)
+        Ts_water_air_interface = np.intersect1d(tmp1, tmp2)
         # Get air-oil interface throats
         tmp1 = self.net.find_neighbor_throats(ps_air, mode="xor")
         tmp2 = self.net.find_neighbor_throats(ps_oil, mode="xor")
-        Ts_air_oil_interface = sp.intersect1d(tmp1, tmp2)
+        Ts_air_oil_interface = np.intersect1d(tmp1, tmp2)
         # Get oil-water interface throats
         tmp1 = self.net.find_neighbor_throats(ps_oil, mode="xor")
         tmp2 = self.net.find_neighbor_throats(ps_water, mode="xor")
-        Ts_oil_water_interface = sp.intersect1d(tmp1, tmp2)
+        Ts_oil_water_interface = np.intersect1d(tmp1, tmp2)
         # K_global for water-air interface must be 1/K_air_water
-        assert sp.isclose(K_global[Ts_water_air_interface].mean(), 1/K_air_water)
+        assert np.isclose(K_global[Ts_water_air_interface].mean(), 1/K_air_water)
         # K_global for air-oil interface must be K_air_oil (not 1/K_air_oil)
-        assert sp.isclose(K_global[Ts_air_oil_interface].mean(), K_air_oil)
+        assert np.isclose(K_global[Ts_air_oil_interface].mean(), K_air_oil)
         # K_global for oil-water interface must be 1/K_water_oil
-        assert sp.isclose(K_global[Ts_oil_water_interface].mean(), 1/K_water_oil)
+        assert np.isclose(K_global[Ts_oil_water_interface].mean(), 1/K_water_oil)
         # K_global for single-phase regions must be 1.0
-        interface_throats = sp.hstack((Ts_water_air_interface,
+        interface_throats = np.hstack((Ts_water_air_interface,
                                        Ts_air_oil_interface,
                                        Ts_oil_water_interface))
-        Ts_single_phase = sp.setdiff1d(self.net.Ts, interface_throats)
-        assert sp.isclose(K_global[Ts_single_phase].mean(), 1.0)
+        Ts_single_phase = np.setdiff1d(self.net.Ts, interface_throats)
+        assert np.isclose(K_global[Ts_single_phase].mean(), 1.0)
 
     def test_multiphase_invalid_phase(self):
         pn = op.network.Cubic(shape=[3, 3, 3])

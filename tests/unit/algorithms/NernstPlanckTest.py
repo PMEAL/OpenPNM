@@ -1,12 +1,13 @@
-import openpnm as op
+import numpy as np
 import scipy as sp
+import openpnm as op
 from numpy.testing import assert_allclose
 
 
 class NernstPlanckTest:
 
     def setup_class(self):
-        sp.random.seed(0)
+        np.random.seed(0)
         self.net = op.network.Cubic(shape=[4, 3, 1], spacing=1.0)
         self.geo = op.geometry.GenericGeometry(network=self.net,
                                                pores=self.net.Ps,
@@ -61,7 +62,7 @@ class NernstPlanckTest:
              1.27816, 1.79057, 2.70356,
              1.59724, 1.93331, 2.46112,
              2.,      2.,      2.]
-        y = sp.around(self.adm['pore.concentration.ionX'], decimals=5)
+        y = np.around(self.adm['pore.concentration.ionX'], decimals=5)
         assert_allclose(actual=y, desired=x)
 
     def test_upwind_NernstPlanck(self):
@@ -75,7 +76,7 @@ class NernstPlanckTest:
              1.15437, 1.497,   2.02144,
              1.60103, 1.87748, 2.27264,
              2.,      2.,      2.]
-        y = sp.around(self.adm['pore.concentration.ionX'], decimals=5)
+        y = np.around(self.adm['pore.concentration.ionX'], decimals=5)
         assert_allclose(actual=y, desired=x)
 
     def test_hybrid_NernstPlanck(self):
@@ -90,7 +91,7 @@ class NernstPlanckTest:
              1.29501, 1.84357, 2.86142,
              1.58876, 1.93152, 2.47971,
              2.,      2.,      2.]
-        y = sp.around(self.adm['pore.concentration.ionX'], decimals=5)
+        y = np.around(self.adm['pore.concentration.ionX'], decimals=5)
         assert_allclose(actual=y, desired=x)
 
     def test_exponential_NernstPlanck(self):
@@ -105,7 +106,7 @@ class NernstPlanckTest:
              1.2788,  1.79357, 2.71385,
              1.59656, 1.93321, 2.46286,
              2.,      2.,      2.]
-        y = sp.around(self.adm['pore.concentration.ionX'], decimals=5)
+        y = np.around(self.adm['pore.concentration.ionX'], decimals=5)
         assert_allclose(actual=y, desired=x)
 
     def teardown_class(self):

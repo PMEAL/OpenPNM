@@ -1,7 +1,9 @@
-import openpnm as op
-import scipy as sp
-from pathlib import Path
+import py
 import os
+import numpy as np
+import scipy as sp
+import openpnm as op
+from pathlib import Path
 
 
 class VTKTest:
@@ -54,7 +56,7 @@ class VTKTest:
         self.phys_4['pore.baz'] = 22
         self.phys_4['throat.baz'] = 22
 
-        self.net['pore.object'] = sp.ones(self.net.Np, dtype=object)
+        self.net['pore.object'] = np.ones(self.net.Np, dtype=object)
         self.net.check_data_health()
 
     def teardown_class(self):
@@ -82,8 +84,8 @@ class VTKTest:
         net = project.network
         assert net.Np == 8
         assert net.Nt == 12
-        assert sp.shape(net['pore.coords']) == (8, 3)
-        assert sp.shape(net['throat.conns']) == (12, 2)
+        assert np.shape(net['pore.coords']) == (8, 3)
+        assert np.shape(net['throat.conns']) == (12, 2)
 
     def test_load_with_phases(self):
         path = Path(os.path.realpath(__file__),
@@ -94,8 +96,8 @@ class VTKTest:
         net = project.network
         assert net.Np == 8
         assert net.Nt == 12
-        assert sp.shape(net['pore.coords']) == (8, 3)
-        assert sp.shape(net['throat.conns']) == (12, 2)
+        assert np.shape(net['pore.coords']) == (8, 3)
+        assert np.shape(net['throat.conns']) == (12, 2)
         assert len(project.phases()) == 1
 
 

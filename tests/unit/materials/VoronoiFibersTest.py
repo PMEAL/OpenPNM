@@ -1,13 +1,14 @@
-import openpnm as op
-from openpnm.topotools import reflect_base_points
+import numpy as np
 import scipy as sp
+import openpnm as op
 import matplotlib.pyplot as plt
+from openpnm.topotools import reflect_base_points
 
 
 class VoronoiTest:
 
     def setup_class(self):
-        bp = sp.array([[0.25, 0.25, 0.25], [0.25, 0.75, 0.25],
+        bp = np.array([[0.25, 0.25, 0.25], [0.25, 0.75, 0.25],
                        [0.75, 0.25, 0.25], [0.75, 0.75, 0.25],
                        [0.75, 0.25, 0.75], [0.25, 0.75, 0.75],
                        [0.25, 0.25, 0.75], [0.75, 0.75, 0.75]])
@@ -54,7 +55,7 @@ class VoronoiTest:
 
     def test_get_fibre_slice(self):
         slc = self.del_geom._get_fiber_slice(index=[0, 50, 0])
-        assert sp.shape(slc) == (101, 101)
+        assert np.shape(slc) == (101, 101)
 
     def test_plot_pore(self):
         self.del_geom.plot_pore(pores=self.del_geom.pores())

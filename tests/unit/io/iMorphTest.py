@@ -1,7 +1,8 @@
-import openpnm as op
-import scipy as sp
-from pathlib import Path
 import os
+import numpy as np
+import scipy as sp
+import openpnm as op
+from pathlib import Path
 
 
 class iMorphTest:
@@ -22,8 +23,8 @@ class iMorphTest:
         net = project.network
         assert net.Np == 1518
         assert net.Nt == 2424
-        assert sp.shape(net['pore.coords']) == (1518, 3)
-        assert sp.shape(net['throat.conns']) == (2424, 2)
+        assert np.shape(net['pore.coords']) == (1518, 3)
+        assert np.shape(net['throat.conns']) == (2424, 2)
         a = {'pore.volume', 'pore.types', 'throat.volume', 'throat.types'}
         assert a.issubset(net.props())
         a = {'pore.internal', 'pore.top_boundary', 'pore.bottom_boundary',

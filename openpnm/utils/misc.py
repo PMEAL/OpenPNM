@@ -1,6 +1,7 @@
 import inspect
 import warnings
 import functools
+import numpy as _np
 import scipy as _sp
 import time as _time
 from collections import OrderedDict
@@ -37,13 +38,13 @@ class PrintableList(list):
     """
 
     def __str__(self):
-        horizontal_rule = '―' * 78
+        horizontal_rule = "―" * 78
         lines = [horizontal_rule]
         self.sort()
         for i, item in enumerate(self):
-            lines.append('{0:<5s} : {1}'.format(str(i + 1), item))
+            lines.append("{0:<5s} : {1}".format(str(i + 1), item))
         lines.append(horizontal_rule)
-        return '\n'.join(lines)
+        return "\n".join(lines)
 
     def __repr__(self):
         self.sort()
@@ -73,9 +74,10 @@ class PrintableDict(OrderedDict):
     shape, otherwise it will contain the result of ``print(item)``
 
     """
+
     def __init__(self, *args, **kwargs):
-        self._value = 'value'
-        self._key = 'key'
+        self._value = "value"
+        self._key = "key"
         super().__init__(*args, **kwargs)
 
     def __repr__(self):
@@ -83,17 +85,17 @@ class PrintableDict(OrderedDict):
         return text
 
     def __str__(self):
-        header = '―' * 78
+        header = "―" * 78
         lines = [header]
-        lines.append('{0:<35s} {1}'.format(self._key, self._value))
+        lines.append("{0:<35s} {1}".format(self._key, self._value))
         lines.append(header)
         for item in list(self.keys()):
             if type(self[item]) == _sp.ndarray:
-                lines.append('{0:<35s} {1}'.format(item, _sp.shape(self[item])))
+                lines.append("{0:<35s} {1}".format(item, _np.shape(self[item])))
             else:
-                lines.append('{0:<35s} {1}'.format(item, self[item]))
+                lines.append("{0:<35s} {1}".format(item, self[item]))
         lines.append(header)
-        return '\n'.join(lines)
+        return "\n".join(lines)
 
 
 class SettingsDict(PrintableDict):
@@ -113,10 +115,13 @@ class SettingsDict(PrintableDict):
     None
 
     """
+
     def __setitem__(self, key, value):
-        if hasattr(value, 'Np'):
-            raise Exception('Cannot store OpenPNM objects in settings, ' +
-                            'store object\'s name instead')
+        if hasattr(value, "Np"):
+            raise Exception(
+                "Cannot store OpenPNM objects in settings, "
+                + "store object's name instead"
+            )
         super().__setitem__(key, value)
 
     def __missing__(self, key):
@@ -125,8 +130,7 @@ class SettingsDict(PrintableDict):
 
 
 class NestedDict(dict):
-
-    def __init__(self, mapping={}, delimiter='/'):
+    def __init__(self, mapping={}, delimiter="/"):
         super().__init__()
         self.delimiter = delimiter
         self.update(mapping)
@@ -155,7 +159,7 @@ class NestedDict(dict):
         plain_dict = dict()
         for key in dct.keys():
             value = dct[key]
-            if hasattr(value, 'keys'):
+            if hasattr(value, "keys"):
                 plain_dict[key] = self.to_dict(value)
             else:
                 plain_dict[key] = value
@@ -165,7 +169,7 @@ class NestedDict(dict):
         k = list(super().keys())
         new_keys = []
         for item in k:
-            if hasattr(self[item], 'keys'):
+            if hasattr(self[item], "keys"):
                 if dicts:
                     new_keys.append(item)
             else:
@@ -174,14 +178,15 @@ class NestedDict(dict):
         return new_keys
 
     def __str__(self):
-        def print_level(self, p='', indent='-'):
+        def print_level(self, p="", indent="-"):
             for item in self.keys():
-                if hasattr(self[item], 'keys'):
+                if hasattr(self[item], "keys"):
                     p = print_level(self[item], p=p, indent=indent + indent[0])
-                elif indent[-1] != ' ':
-                    indent = indent + ''
-                p = indent + item + '\n' + p
-            return(p)
+                elif indent[-1] != " ":
+                    indent = indent + ""
+                p = indent + item + "\n" + p
+            return p
+
         p = print_level(self)
         return p
 
@@ -194,6 +199,7 @@ class HealthDict(PrintableDict):
     returns False.
 
     """
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
@@ -241,14 +247,14 @@ def toc(quiet=False):
     tic
 
     """
-    if '_startTime_for_tictoc' in globals():
+    if "_startTime_for_tictoc" in globals():
         t = _time.time() - _startTime_for_tictoc
         if quiet is False:
-            print(f'Elapsed time in seconds: {t:0.2f}')
+            print(f"Elapsed time in seconds: {t:0.2f}")
         else:
             return t
     else:
-        raise Exception('Start time not set, call tic first')
+        raise Exception("Start time not set, call tic first")
 
 
 def unique_list(input_list):
@@ -258,7 +264,7 @@ def unique_list(input_list):
     """
     output_list = []
     if len(input_list) > 0:
-        dim = _sp.shape(input_list)[1]
+        dim = _np.shape(input_list)[1]
         for i in input_list:
             match = False
             for j in output_list:
@@ -299,7 +305,7 @@ def sanitize_dict(input_dict):
     plain_dict = dict()
     for key in input_dict.keys():
         value = input_dict[key]
-        if hasattr(value, 'keys'):
+        if hasattr(value, "keys"):
             plain_dict[key] = sanitize_dict(value)
         else:
             plain_dict[key] = value
@@ -311,29 +317,29 @@ def methods_to_table(obj):
     """
     parent = obj.__class__.__mro__[1]
     temp = inspect.getmembers(parent, predicate=inspect.isroutine)
-    parent_funcs = [i[0] for i in temp if not i[0].startswith('_')]
+    parent_funcs = [i[0] for i in temp if not i[0].startswith("_")]
 
     temp = inspect.getmembers(obj.__class__, predicate=inspect.isroutine)
-    obj_funcs = [i[0] for i in temp if not i[0].startswith('_')]
+    obj_funcs = [i[0] for i in temp if not i[0].startswith("_")]
     funcs = set(obj_funcs).difference(set(parent_funcs))
 
-    row = '+' + '-'*22 + '+' + '-'*49 + '+'
-    fmt = '{0:1s} {1:20s} {2:1s} {3:47s} {4:1s}'
+    row = "+" + "-" * 22 + "+" + "-" * 49 + "+"
+    fmt = "{0:1s} {1:20s} {2:1s} {3:47s} {4:1s}"
     lines = []
     lines.append(row)
-    lines.append(fmt.format('|', 'Method', '|', 'Description', '|'))
-    lines.append(row.replace('-', '='))
+    lines.append(fmt.format("|", "Method", "|", "Description", "|"))
+    lines.append(row.replace("-", "="))
     for i, item in enumerate(funcs):
         try:
             s = getattr(obj, item).__doc__.strip()
-            end = s.find('\n')
+            end = s.find("\n")
             if end > 47:
-                s = s[:44] + '...'
-            lines.append(fmt.format('|', item, '|', s[:end], '|'))
+                s = s[:44] + "..."
+            lines.append(fmt.format("|", item, "|", s[:end], "|"))
             lines.append(row)
         except AttributeError:
             pass
-    return '\n'.join(lines)
+    return "\n".join(lines)
 
 
 def models_to_table(obj, params=True):
@@ -351,36 +357,51 @@ def models_to_table(obj, params=True):
         True for a more verbose table with all parameter values.
 
     """
-    if not hasattr(obj, 'models'):
-        raise Exception('Received object does not have any models')
-    row = '+' + '-'*4 + '+' + '-'*22 + '+' + '-'*18 + '+' + '-'*26 + '+'
-    fmt = '{0:1s} {1:2s} {2:1s} {3:20s} {4:1s} {5:16s} {6:1s} {7:24s} {8:1s}'
+    if not hasattr(obj, "models"):
+        raise Exception("Received object does not have any models")
+    row = "+" + "-" * 4 + "+" + "-" * 22 + "+" + "-" * 18 + "+" + "-" * 26 + "+"
+    fmt = "{0:1s} {1:2s} {2:1s} {3:20s} {4:1s} {5:16s} {6:1s} {7:24s} {8:1s}"
     lines = []
     lines.append(row)
-    lines.append(fmt.format('|', '#', '|', 'Property Name', '|', 'Parameter',
-                            '|', 'Value', '|'))
-    lines.append(row.replace('-', '='))
+    lines.append(
+        fmt.format("|", "#", "|", "Property Name", "|", "Parameter", "|", "Value", "|")
+    )
+    lines.append(row.replace("-", "="))
     for i, item in enumerate(obj.models.keys()):
         prop = item
         if len(prop) > 20:
             prop = item[:17] + "..."
         temp = obj.models[item].copy()
-        model = str(temp.pop('model')).split(' ')[1]
-        lines.append(fmt.format('|', str(i+1), '|', prop, '|', 'model:',
-                                '|', model, '|'))
+        model = str(temp.pop("model")).split(" ")[1]
+        lines.append(
+            fmt.format("|", str(i + 1), "|", prop, "|", "model:", "|", model, "|")
+        )
         lines.append(row)
         if params:
             for param in temp.keys():
                 p1 = param
                 if len(p1) > 16:
-                    p1 = p1[:14] + '...'
+                    p1 = p1[:14] + "..."
                 p2 = str(temp[param])
                 if len(p2) > 24:
-                    p2 = p2[:21] + '...'
-                lines.append(fmt.format('|', '', '|', '', '|', p1, '|',
-                                        p2, '|'))
+                    p2 = p2[:21] + "..."
+                lines.append(fmt.format("|", "", "|", "", "|", p1, "|", p2, "|"))
                 lines.append(row)
-    return '\n'.join(lines)
+    return "\n".join(lines)
+
+
+def catch_module_not_found(function):
+    """
+    A decorator that wraps the passed in function and catches
+    ModuleNotFound exception.
+    """
+    @functools.wraps(function)
+    def wrapper(*args, **kwargs):
+        try:
+            return function(*args, **kwargs)
+        except ModuleNotFoundError:
+            pass
+    return wrapper
 
 
 def ignore_warnings(warning=RuntimeWarning):
@@ -406,20 +427,23 @@ def ignore_warnings(warning=RuntimeWarning):
     array([       inf, 1.        , 0.5       , 0.33333333, 0.25      ])
 
     """
+
     def _ignore_warning(function):
         @functools.wraps(function)
         def __ignore_warning(*args, **kwargs):
             with warnings.catch_warnings(record=True):
                 # Catch all warnings of this type
-                warnings.simplefilter('always', warning)
+                warnings.simplefilter("always", warning)
                 # Execute the function
                 result = function(*args, **kwargs)
             return result
+
         return __ignore_warning
+
     return _ignore_warning
 
 
-def conduit_lengths(network, throats=None, mode='pore'):
+def conduit_lengths(network, throats=None, mode="pore"):
     r"""
     Return the respective lengths of the conduit components defined by the throat
     conns P1 - T - P2
@@ -432,29 +456,34 @@ def conduit_lengths(network, throats=None, mode='pore'):
     """
     if throats is None:
         throats = network.throats()
-    Ps = network['throat.conns']
-    pdia = network['pore.diameter']
-    Lt = network['throat.length']
+    Ps = network["throat.conns"]
+    pdia = network["pore.diameter"]
+    Lt = network["throat.length"]
 
-    if mode == 'centroid':
+    if mode == "centroid":
         try:
-            pcentroids = network['pore.centroid']
-            tcentroids = network['throat.centroid']
-            if _sp.sum(_sp.isnan(pcentroids)) + _sp.sum(_sp.isnan(tcentroids)) > 0:
-                mode = 'pore'
+            pcentroids = network["pore.centroid"]
+            tcentroids = network["throat.centroid"]
+            if _np.sum(_np.isnan(pcentroids)) + _np.sum(_np.isnan(tcentroids)) > 0:
+                mode = "pore"
             else:
-                plen1 = _sp.sqrt(_sp.sum(
-                    _sp.square(pcentroids[Ps[:, 0]] - tcentroids), 1)) - Lt/2
-                plen2 = _sp.sqrt(_sp.sum(
-                    _sp.square(pcentroids[Ps[:, 1]] - tcentroids), 1)) - Lt/2
+                plen1 = (
+                    _np.sqrt(_np.sum(_sp.square(pcentroids[Ps[:, 0]] - tcentroids), 1))
+                    - Lt / 2
+                )
+                plen2 = (
+                    _np.sqrt(_np.sum(_sp.square(pcentroids[Ps[:, 1]] - tcentroids), 1))
+                    - Lt / 2
+                )
         except KeyError:
-            mode = 'pore'
-    if mode == 'pore':
+            mode = "pore"
+    if mode == "pore":
         # Find half-lengths of each pore
-        pcoords = network['pore.coords']
+        pcoords = network["pore.coords"]
         # Find the pore-to-pore distance, minus the throat length
-        lengths = _sp.sqrt(_sp.sum(
-            _sp.square(pcoords[Ps[:, 0]] - pcoords[Ps[:, 1]]), 1)) - Lt
+        lengths = (
+            _np.sqrt(_np.sum(_sp.square(pcoords[Ps[:, 0]] - pcoords[Ps[:, 1]]), 1)) - Lt
+        )
         lengths[lengths < 0.0] = 2e-9
         # Calculate the fraction of that distance from the first pore
         try:
@@ -462,12 +491,12 @@ def conduit_lengths(network, throats=None, mode='pore'):
             # Don't allow zero lengths
             # fractions[fractions == 0.0] = 0.5
             # fractions[fractions == 1.0] = 0.5
-        except:
+        except Exception:
             fractions = 0.5
         plen1 = lengths * fractions
-        plen2 = lengths * (1-fractions)
+        plen2 = lengths * (1 - fractions)
 
-    return _sp.vstack((plen1, Lt, plen2)).T[throats]
+    return _np.vstack((plen1, Lt, plen2)).T[throats]
 
 
 def is_symmetric(a, rtol=1e-10):
@@ -494,10 +523,10 @@ def is_symmetric(a, rtol=1e-10):
     if a.shape[0] != a.shape[1]:
         raise Exception("'a' must be a square matrix.")
 
-    atol = _sp.amin(_sp.absolute(a.data)) * rtol
+    atol = _np.amin(_np.absolute(a.data)) * rtol
     if _sp.sparse.issparse(a):
         issym = False if ((a - a.T) > atol).nnz else True
     elif type(a) == _sp.ndarray:
-        issym = False if _sp.any((a - a.T) > atol) else True
+        issym = False if _np.any((a - a.T) > atol) else True
 
     return issym

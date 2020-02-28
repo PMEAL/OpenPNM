@@ -24,12 +24,13 @@ before_install:
 install:
   - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION
   - source activate test-environment
+  # - conda config --add channels conda-forge
   - conda install --file requirements/conda_requirements.txt
   - pip install -r requirements/test_requirements.txt
   - python setup.py install
 
 script:
-  - python ./bin/test pep8 cov
+  - python ./bin/test pep8 cov nbval ignore-examples
 
 # after_success:
 #   - codecov
