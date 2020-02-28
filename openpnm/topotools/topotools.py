@@ -1272,13 +1272,13 @@ def find_surface_pores(network, markers=None, label='surface'):
             return
         if sum(dims) == 2:
             r = 0.75
-            theta = sp.linspace(0, 2*sp.pi, npts, dtype=float)
+            theta = sp.linspace(0, 2*sp.pi, int(npts), dtype=float)
             x = r*np.cos(theta)
             y = r*np.sin(theta)
             markers = np.vstack((x, y)).T
         if sum(dims) == 3:
             r = 1.00
-            indices = np.arange(0, npts, dtype=float) + 0.5
+            indices = np.arange(0, int(npts), dtype=float) + 0.5
             phi = np.arccos(1 - 2*indices/npts)
             theta = sp.pi * (1 + 5**0.5) * indices
             x = r*np.cos(theta) * np.sin(phi)
