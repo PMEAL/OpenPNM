@@ -240,6 +240,7 @@ class GenericTransport(GenericAlgorithm):
         d = self.settings["iterative_props"]
         self.settings["iterative_props"] = list(set(d) | set(propnames))
 
+    @docstr.dedent
     def set_value_BC(self, pores, values, mode='merge'):
         r"""
         Apply constant value boundary conditons to the specified locations.
@@ -257,11 +258,15 @@ class GenericTransport(GenericAlgorithm):
         mode : string, optional
             Controls how the boundary conditions are applied.  Options are:
 
-            'merge' - (Default) Adds supplied boundary conditions to
-            already existing conditions
+            +-------------+--------------------------------------------------+
+            | 'merge'     | (Default) Adds supplied boundary conditions to   |
+            |             | already existing conditions                      |
+            +-------------+--------------------------------------------------+
+            | 'overwrite' | Deletes all boundary condition on object then    |
+            |             | adds the given ones                              |
+            +-------------+--------------------------------------------------+
 
-            'overwrite' - Deletes all boundary condition on object then
-            adds the given ones
+            %(GenericTransport._set_BC.parameters.mode)s
 
         Notes
         -----
@@ -292,21 +297,25 @@ class GenericTransport(GenericAlgorithm):
         mode : string, optional
             Controls how the boundary conditions are applied.  Options are:
 
-            'merge' - (Default) Adds supplied boundary conditions to
-            already existing conditions
-
-            'overwrite' - Deletes all boundary condition on object then
-            adds the given ones
+            +-------------+--------------------------------------------------+
+            | 'merge'     | (Default) Adds supplied boundary conditions to   |
+            |             | already existing conditions                      |
+            +-------------+--------------------------------------------------+
+            | 'overwrite' | Deletes all boundary condition on object then    |
+            |             | adds the given ones                              |
+            +-------------+--------------------------------------------------+
 
         Notes
         -----
         The definition of ``quantity`` is specified in the algorithm's
-        ``settings``, e.g. ``alg.settings['quentity'] = 'pore.pressure'``.
+        ``settings``, e.g. ``alg.settings['quantity'] = 'pore.pressure'``.
         """
         mode = self._parse_mode(mode, allowed=['merge', 'overwrite'],
                                 single=True)
         self._set_BC(pores=pores, bctype='rate', bcvalues=values, mode=mode)
 
+    @docstr.get_sectionsf(base='GenericTransport._set_BC',
+                          sections=['Parameters', 'Notes'])
     def _set_BC(self, pores, bctype, bcvalues=None, mode='merge'):
         r"""
         This private method is called by public facing BC methods, to apply
@@ -316,29 +325,31 @@ class GenericTransport(GenericAlgorithm):
         ----------
         pores : array_like
             The pores where the boundary conditions should be applied
-
         bctype : string
             Specifies the type or the name of boundary condition to apply. The
             types can be one one of the following:
 
-            - ``'value'``: Specify the value of the quantity in each location
-
-            - ``'rate'``: Specify the flow rate into each location
-
+            +-------------+--------------------------------------------------+
+            | 'value'     | Specify the value of the quantity in each        |
+            |             | location                                         |
+            +-------------+--------------------------------------------------+
+            | 'rate'      | Specify the flow rate into each location         |
+            +-------------+--------------------------------------------------+
         bcvalues : int or array_like
             The boundary value to apply, such as concentration or rate.  If
             a single value is given, it's assumed to apply to all locations.
             Different values can be applied to all pores in the form of an
             array of the same length as ``pores``.
-
         mode : string, optional
             Controls how the boundary conditions are applied.  Options are:
 
-            - ``'merge'``: (Default) Adds supplied boundary conditions to
-            already existing conditions
-
-            - ``'overwrite'``: Deletes all boundary condition on object then
-            adds the given ones
+            +-------------+--------------------------------------------------+
+            | 'merge'     | (Default) Adds supplied boundary conditions to   |
+            |             | already existing conditions                      |
+            +-------------+--------------------------------------------------+
+            | 'overwrite' | Deletes all boundary condition on object then    |
+            |             | adds the given ones                              |
+            +-------------+--------------------------------------------------+
 
         Notes
         -----

@@ -157,6 +157,7 @@ class ReactiveTransport(GenericTransport):
         # Add source term as an iterative prop
         self.set_iterative_props(propname)
 
+    @docstr.dedent
     def _set_BC(self, pores, bctype, bcvalues=None, mode='merge'):
         r"""
         Apply boundary conditions to specified pores if no source terms are
@@ -164,37 +165,11 @@ class ReactiveTransport(GenericTransport):
 
         Parameters
         ----------
-        pores : array_like
-            The pores where the boundary conditions should be applied
-
-        bctype : string
-            Specifies the type or the name of boundary condition to apply. The
-            types can be one one of the following:
-
-            - *'value'* : Specify the value of the quantity in each location
-            - *'rate'* : Specify the flow rate into each location
-
-        bcvalues : int or array_like
-            The boundary value to apply, such as concentration or rate.  If
-            a single value is given, it's assumed to apply to all locations.
-            Different values can be applied to all pores in the form of an
-            array of the same length as ``pores``.
-
-        mode : string, optional
-            Controls how the conditions are applied.  Options are:
-
-            *'merge'*: (Default) Adds supplied boundary conditions to already
-            existing conditions.
-
-            *'overwrite'*: Deletes all boundary condition on object then add
-            the given ones
+        %(GenericTransport._set_BC.parameters)s
 
         Notes
         -----
-        It is not possible to have multiple boundary conditions for a
-        specified location in one algorithm. Use ``remove_BCs`` to
-        clear existing BCs before applying new ones or ``mode='overwrite'``
-        which removes all existing BC's before applying the new ones.
+        %(GenericTransport._set_BC.notes)s
         """
         # First check that given pores do not have source terms already set
         for item in self.settings['sources']:
@@ -205,8 +180,6 @@ class ReactiveTransport(GenericTransport):
         # Then call parent class function if above check passes
         super()._set_BC(pores=pores, bctype=bctype, bcvalues=bcvalues,
                         mode=mode)
-
-    _set_BC.__doc__ = GenericTransport._set_BC.__doc__
 
     def _update_iterative_props(self):
         """r
