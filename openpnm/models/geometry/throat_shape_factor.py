@@ -5,7 +5,7 @@ r"""
 .. autofunction:: openpnm.models.geometry.throat_shape_factor.jenkins_rao
 
 """
-
+import numpy as _np
 import scipy as _sp
 
 
@@ -47,16 +47,16 @@ def compactness(target, throat_perimeter='throat.perimeter',
     ts = target.throats()[target[throat_area] > 0]
     P = target[throat_perimeter]
     A = target[throat_area]
-    C = _sp.ones(target.num_throats())
+    C = _np.ones(target.num_throats())
     C[ts] = P[ts]**2/A[ts]
-    alpha = _sp.ones_like(C)*8*_sp.pi
+    alpha = _np.ones_like(C)*8*_sp.pi
     if 'throat.offset_vertices' in target.props():
         verts = target['throat.offset_vertices']
         for i in ts:
-            if ~_sp.any(_sp.isnan(verts[i])):
+            if ~_np.any(_np.isnan(verts[i])):
                 if len(verts[i]) == 3:
                     # Triangular Correction
-                    alpha[i] = C[i]*(25/17) + (40*_sp.sqrt(3)/17)
+                    alpha[i] = C[i]*(25/17) + (40*_np.sqrt(3)/17)
                 elif len(verts[i]) == 4:
                     # Rectangular Correction
                     alpha[i] = C[i]*(22/7) - (65/3)

@@ -1,6 +1,7 @@
-import openpnm as op
-import scipy as sp
 import pytest
+import numpy as np
+import scipy as sp
+import openpnm as op
 
 
 class SubdomainTest:
@@ -12,10 +13,10 @@ class SubdomainTest:
         self.geo = op.geometry.GenericGeometry(network=self.net,
                                                pores=self.net.Ps,
                                                throats=self.net.Ts)
-        self.geo['pore.diameter'] = sp.rand(self.net.Np)
+        self.geo['pore.diameter'] = np.random.rand(self.net.Np)
         self.geo.add_model(propname='pore.volume',
                            model=op.models.geometry.pore_volume.sphere)
-        self.geo['throat.diameter'] = sp.rand(self.net.Nt)
+        self.geo['throat.diameter'] = np.random.rand(self.net.Nt)
         self.geo.add_model(propname='throat.area',
                            model=op.models.geometry.throat_area.cylinder)
         self.geo.regenerate_models()

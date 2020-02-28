@@ -8,7 +8,7 @@ sizes.
 .. autofunction:: openpnm.models.geometry.pore_seed.spatially_correlated
 
 """
-
+import numpy as _np
 import scipy as _sp
 from openpnm.models import misc as _misc
 from openpnm.utils import logging as _logging
@@ -48,7 +48,7 @@ def spatially_correlated(target, weights=None, strel=None):
 
     ::
 
-        strel = sp.array([[[0, 0, 0], [0, 0, 0], [0, 0, 0]],
+        strel = np.array([[[0, 0, 0], [0, 0, 0], [0, 0, 0]],
                           [[0, 0, 0], [1, 1, 1], [0, 0, 0]],
                           [[0, 0, 0], [0, 0, 0], [0, 0, 0]]])
 
@@ -91,21 +91,21 @@ def spatially_correlated(target, weights=None, strel=None):
     x = network._shape[0]
     y = network._shape[1]
     z = network._shape[2]
-    im = _sp.rand(x, y, z)
+    im = _np.random.rand(x, y, z)
     if strel is None:  # Then generate a strel
         if sum(weights) == 0:
             # If weights of 0 are sent, then skip everything and return rands.
             return im.flatten()
-        w = _sp.array(weights)
-        strel = _sp.zeros(w*2+1)
+        w = _np.array(weights)
+        strel = _np.zeros(w*2+1)
         strel[:, w[1], w[2]] = 1
         strel[w[0], :, w[2]] = 1
         strel[w[0], w[1], :] = 1
     im = spim.convolve(im, strel)
     # Convolution is no longer randomly distributed, so fit a gaussian
     # and find it's seeds
-    im = (im - _sp.mean(im))/_sp.std(im)
-    im = 1/2*_sp.special.erfc(-im/_sp.sqrt(2))
+    im = (im - _np.mean(im))/_np.std(im)
+    im = 1/2*_sp.special.erfc(-im/_np.sqrt(2))
     values = im.flatten()
     values = values[network.pores(target.name)]
     return values

@@ -33,6 +33,6 @@ jobs:
         pip install -r requirements/test_requirements.txt
         pip uninstall openpnm --yes
         python setup.py install
-        
+
     - name: Running tests
-      run: pytest --pep8 --ignore=tests/integration/examples
+      run: pytest --pep8 --ignore=scripts/
