@@ -5,6 +5,25 @@ from openpnm.geometry import GenericGeometry
 defset = {'pore_diameter': 'equivalent_diameter',
           'throat_diameter': 'equivalent_diameter'}
 
+# The following will appear as the "help" docstring for the settings attribute
+s = r"""
+    The following table lists the various settings on this object and
+    provides a brief description of their meaning.
+
+    ================  =========================================================
+    pore_diameter     Key into the extracted data array to use as pore
+                      diameter in other geometry calculations. The default is
+                      'pore.equivalent_diameter'.  Use of 'pore.' is not
+                      required.
+    ----------------  ---------------------------------------------------------
+    throat_diameter   Key into the extracted data array to use as throat
+                      diameter in other geometry calculations. The default is
+                      'throat.equivalent_diameter'.  Use of 'throat.' is not
+                      required.
+    ================  =========================================================
+
+    """
+
 
 class Imported(GenericGeometry):
     r"""
@@ -13,13 +32,7 @@ class Imported(GenericGeometry):
 
     This class is intended for use with networks imported from network
     extraction codes, where the geometry properties are included on the
-    network itself.  In these cases, an error occurs when adding other
-    geometries to the project, such as adding boundary pores or in more
-    elaborate scenarios such as stitching networks together.  The issue
-    arises since OpenPNM prevents a property, such as 'pore.volume', from
-    existing on both the network and also a geometry.  Thus it is necessary
-    to move the extracted network properties to this ``Imported`` class,
-    then create new geometry objects for any added pores as needed.
+    network itself.
 
     Parameters
     ----------
@@ -39,11 +52,23 @@ class Imported(GenericGeometry):
         The name of the object, which is also used as the label where this
         geometry is defined.
 
+    Notes
+    -----
+    An error occurs when adding other geometries to a network that has
+    geometrical properties such as 'pore.diameter'.  This can occur when
+    adding boundary pores or in more elaborate scenarios such as stitching
+    networks together.  The issue arises because OpenPNM prevents a property,
+    such as 'pore.volume', from existing on both the network and also a
+    geometry.  Thus it is necessary to move the extracted network properties
+    to this ``Imported`` class, then create new geometry objects for any
+    added pores as needed.
+
     """
 
     def __init__(self, network, exclude=[], settings={}, **kwargs):
         super().__init__(network=network, **kwargs)
         self.settings.update(defset)
+        self.settings.__doc__ = s
         self.settings.update(settings)
         exclude.extend(['pore.coords', 'throat.conns'])
         for item in network.props():
