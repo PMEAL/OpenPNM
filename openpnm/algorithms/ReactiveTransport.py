@@ -6,6 +6,26 @@ docstr = Docorator()
 logger = logging.getLogger(__name__)
 
 
+# The following will appear as the "help" docstring for the settings attribute
+s = r"""
+
+    The following table describes the various settings relevant to the
+    ReactiveTransport class
+
+    ================  =========================================================
+    sources           List of source terms added via the ``set_source_term``
+                      method
+    ----------------  ---------------------------------------------------------
+    relaxation        *source* : The amount of under-relaxation to apply to the
+                      source term on each iteration.  The default is 1.0.
+
+                      *quantity* : The amount of under-relaxation to apply to
+                      the quantity on each iteration.  The default is 1.0.
+    ================  =========================================================
+
+    """
+
+
 class ReactiveTransport(GenericTransport):
     r"""
     A subclass for steady-state simulations with (optionally) source terms
@@ -49,6 +69,7 @@ class ReactiveTransport(GenericTransport):
         super().__init__(**kwargs)
         self.settings.update(def_set)
         self.settings.update(settings)
+        self.settings.__doc__ += s
         if phase is not None:
             self.setup(phase=phase)
 

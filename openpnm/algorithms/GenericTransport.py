@@ -23,16 +23,47 @@ def_set = {'phase': None,
            'solver_rtol': None,
            'solver_maxiter': 5000,
            'iterative_props': [],
-           'cache_A': True, 'cache_b': True,
-           'gui': {'setup':        {'quantity': '',
-                                    'conductance': ''},
-                   'set_rate_BC':  {'pores': None,
-                                    'values': None},
-                   'set_value_BC': {'pores': None,
-                                    'values': None},
-                   'remove_BC':    {'pores': None}
-                   }
+           'cache_A': True,
+           'cache_b': True,
            }
+
+# The following will appear as the "help" docstring for the settings attribute
+s = r"""
+
+    The following table describes the various settings relevant to the
+    GenericTransport class
+
+    ================  =========================================================
+    phase             The name of the phase on which this algorithm acts
+    ----------------  ---------------------------------------------------------
+    conductance       The name of the conduit conductance model to use
+    ----------------  ---------------------------------------------------------
+    solver            *family* : The package from which to fetch the solver,
+                      such as 'scipy' or 'petsc'.
+
+                      *type* : The specific solver to use, such as 'cg' or
+                      'spsolve'
+
+                      *preconditioner* : The preconditioner to use such as
+                      'jacobi'
+
+                      *tol* : The tolerance to use if the *type* is iterative
+
+                      *atol* : ??
+
+                      *rtol* : ??
+    ----------------  ---------------------------------------------------------
+    iterative_props   A list of properties which should be updated on each
+                      iteration
+    ----------------  ---------------------------------------------------------
+    cache_A           Whether or not to cache the A matrix.  The default is
+                      ``True``
+    ----------------  ---------------------------------------------------------
+    cache_b           Whether or not to cache the b matrix.  The default is
+                      ``True``
+    ================  =========================================================
+
+    """
 
 
 class GenericTransport(GenericAlgorithm):
@@ -125,6 +156,8 @@ class GenericTransport(GenericAlgorithm):
         self.settings.update(def_set)
         # Overwrite any given in init
         self.settings.update(settings)
+        # Update settings string
+        self.settings.__doc__ = s
         # Assign phase if given during init
         self.setup(phase=phase)
         # If network given, get project, otherwise let parent class create it
