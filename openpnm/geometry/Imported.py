@@ -2,6 +2,10 @@ import openpnm.models as mods
 from openpnm.geometry import GenericGeometry
 
 
+defset = {'pore_diameter': 'equivalent_diameter',
+          'throat_diameter': 'equivalent_diameter'}
+
+
 class Imported(GenericGeometry):
     r"""
     This geometry class extracts all numerical properites from the received
@@ -37,12 +41,22 @@ class Imported(GenericGeometry):
 
     """
 
-    def __init__(self, network, exclude=[], **kwargs):
+    def __init__(self, network, exclude=[], settings={}, **kwargs):
         super().__init__(network=network, **kwargs)
+        self.settings.update(defset)
+        self.settings.update(settings)
         exclude.extend(['pore.coords', 'throat.conns'])
         for item in network.props():
             if item not in exclude:
                 self[item] = network.pop(item)
+
+        if 'pore.diameter' not in self.keys():
+            pdia = 'pore.'+self.settings['pore_diameter'].split('pore.')[-1]
+            self['pore.diameter'] = self[pdia]
+
+        if 'throat.diameter' not in self.keys():
+            tdia = 'throat.'+self.settings['throat_diameter'].split('thraot.')[-1]
+            self['throat.diameter'] = self[tdia]
 
         if 'throat.endpoints' not in self.keys():
             self.add_model(propname='throat.endpoints',
