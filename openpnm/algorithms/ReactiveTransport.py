@@ -6,24 +6,36 @@ docstr = Docorator()
 logger = logging.getLogger(__name__)
 
 
-# The following will appear as the "help" docstring for the settings attribute
-s = r"""
-
-    The following table describes the various settings relevant to the
-    ReactiveTransport class
-
-    ================  =========================================================
-    sources           List of source terms added via the ``set_source_term``
-                      method
-    ----------------  ---------------------------------------------------------
-    relaxation        *source* : The amount of under-relaxation to apply to the
-                      source term on each iteration.  The default is 1.0.
-
-                      *quantity* : The amount of under-relaxation to apply to
-                      the quantity on each iteration.  The default is 1.0.
-    ================  =========================================================
-
-    """
+def_set = \
+    {'sources': {'value': [],
+                 'docs': r""" List of source terms that have been added. """},
+     'relaxation_source': {'value': 1.0,
+                           'docs': r"""  A relaxation factor to control under-
+                           relaxation of the source term. Factor approaching 0
+                           leads to improved stability but slower simulation.
+                           Factor approaching 1 gives fast simulation but may
+                           be unstable. Default value is 1 (no under-
+                           relaxation).
+                           """},
+     'relaxation_quantity': {'value': 1.0,
+                             'docs': r""" A relaxation factor to control under-
+                             relaxation for the quantity solving for. Factor
+                             approaching 0 leads to improved stability but
+                             slower simulation. Factor approaching 1 gives fast
+                             simulation but may be unstable. Default value is 1
+                             (no under-relaxation).
+                             """},
+     'rxn_tolerance': {'value': 1e-5,
+                       'docs': r"""
+                       Tolerance to achieve. The solver returns a solution
+                       when 'residual' falls below 'rxn_tolerance'. The
+                       default value is 1e-05.
+                       """},
+     'max_iter': {'value': 5000,
+                  'docs': r"""
+                  #
+                  """},
+     }
 
 
 class ReactiveTransport(GenericTransport):
@@ -46,30 +58,9 @@ class ReactiveTransport(GenericTransport):
     """
 
     def __init__(self, settings={}, phase=None, **kwargs):
-        def_set = {'phase': None,
-                   'sources': [],
-                   'max_iter': 5000,
-                   'relaxation_source': 1.0,
-                   'relaxation_quantity': 1.0,
-                   'gui': {'setup':        {'phase': None,
-                                            'quantity': '',
-                                            'conductance': '',
-                                            'rxn_tolerance': None,
-                                            'max_iter': None,
-                                            'relaxation_source': None,
-                                            'relaxation_quantity': None},
-                           'set_rate_BC':  {'pores': None,
-                                            'values': None},
-                           'set_value_BC': {'pores': None,
-                                            'values': None},
-                           'set_source':   {'pores': None,
-                                            'propname': ''}
-                           }
-                   }
         super().__init__(**kwargs)
-        self.settings.update(def_set)
+        self.settings._update_settings_and_docs(def_set)
         self.settings.update(settings)
-        self.settings.__doc__ += s
         if phase is not None:
             self.setup(phase=phase)
 

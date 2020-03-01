@@ -4,8 +4,10 @@ import functools
 import numpy as _np
 import scipy as _sp
 import time as _time
+import copy
 from collections import OrderedDict
 from docrep import DocstringProcessor
+from terminaltables import AsciiTable
 
 
 class Docorator(DocstringProcessor):
@@ -115,6 +117,7 @@ class SettingsDict(PrintableDict):
     None
 
     """
+    __doc__ = ''
 
     def __setitem__(self, key, value):
         if hasattr(value, "Np"):
@@ -127,6 +130,23 @@ class SettingsDict(PrintableDict):
     def __missing__(self, key):
         self[key] = None
         return self[key]
+
+    def _update_settings_and_docs(self, def_set):
+        def_set = copy.deepcopy(def_set)
+        from textwrap import wrap
+        table_data = []
+        for k in def_set.keys():
+            super().__setitem__(k, def_set[k]['value'])
+            s = ' '.join(def_set[k]['docs'].split())
+            table_data.append([k, s])
+        table = AsciiTable(table_data)
+        table.inner_row_border = True
+        max_width = table.column_max_width(1)
+        for i, k in enumerate(def_set.keys()):
+            wrapped_string = '\n'.join(wrap(table.table_data[i][1], max_width))
+            table.table_data[i][1] = wrapped_string
+        self.__doc__ += table.table
+        self.__doc__ += '\n\n'
 
 
 class NestedDict(dict):

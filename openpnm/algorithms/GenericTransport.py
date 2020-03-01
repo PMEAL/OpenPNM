@@ -12,58 +12,64 @@ docstr = Docorator()
 logger = logging.getLogger(__name__)
 
 # Set some default settings
-def_set = {'phase': None,
-           'conductance': None,
-           'quantity': None,
-           'solver_family': 'scipy',
-           'solver_type': 'spsolve',
-           'solver_preconditioner': 'jacobi',
-           'solver_tol': 1e-8,
-           'solver_atol': None,
-           'solver_rtol': None,
-           'solver_maxiter': 5000,
-           'iterative_props': [],
-           'cache_A': True,
-           'cache_b': True,
-           }
-
-# The following will appear as the "help" docstring for the settings attribute
-s = r"""
-
-    The following table describes the various settings relevant to the
-    GenericTransport class
-
-    ================  =========================================================
-    phase             The name of the phase on which this algorithm acts
-    ----------------  ---------------------------------------------------------
-    conductance       The name of the conduit conductance model to use
-    ----------------  ---------------------------------------------------------
-    solver            *family* : The package from which to fetch the solver,
-                      such as 'scipy' or 'petsc'.
-
-                      *type* : The specific solver to use, such as 'cg' or
-                      'spsolve'
-
-                      *preconditioner* : The preconditioner to use such as
-                      'jacobi'
-
-                      *tol* : The tolerance to use if the *type* is iterative
-
-                      *atol* : ??
-
-                      *rtol* : ??
-    ----------------  ---------------------------------------------------------
-    iterative_props   A list of properties which should be updated on each
-                      iteration
-    ----------------  ---------------------------------------------------------
-    cache_A           Whether or not to cache the A matrix.  The default is
-                      ``True``
-    ----------------  ---------------------------------------------------------
-    cache_b           Whether or not to cache the b matrix.  The default is
-                      ``True``
-    ================  =========================================================
-
-    """
+def_set = \
+    {'phase': {'value': None,
+               'docs': r""" The phase on which the algorithm is to be run """},
+     'conductance': {'value': None,
+                     'docs': r""" The name of the physical quantity to be
+                     calculated """},
+     'quantity': {'value': None,
+                  'docs': r""" The name of the pore-scale transport
+                  conductance values. These are typically calculated by a model
+                  attached to a *Physics* object associated with the given
+                  *Phase*. """},
+     'solver_family': {'value': 'scipy',
+                       'docs': r""" The solver package to use.  OpenPNM
+                       currently supports ``scipy``, ``pyamg`` and ``petsc``
+                       (if you have it installed). The default is ``scipy``.
+                       """},
+     'solver_type': {'value': 'spsolve',
+                     'docs': r""" The specific solver to use.  For instance,
+                     if ``solver_family`` is ``scipy`` then you can specify
+                     any of the iterative solvers such as ``cg`` or ``gmres``.
+                     [More info here]
+                     (https://docs.scipy.org/doc/scipy/reference/sparse.linalg.html),
+                     """},
+     'solver_preconditioner': {'value': 'jacobi',
+                               'docs': r""" This is used by the PETSc solver
+                               to specify which preconditioner to use. The
+                               default is ``jacobi``. """},
+     'solver_tol': {'value': 1e-8,
+                    'docs': r""" Used to control the accuracy to which the
+                            iterative solver aims to achieve before stopping.
+                            The default is 1e-6.
+                            """},
+     'solver_atol': {'value': None,
+                     'docs': r""" Limits the number of iterations to attempt
+                     before quiting when aiming for the specified tolerance.
+                     The default is 5000.
+                             """},
+     'solver_rtol': {'value': None,
+                     'docs': r"""
+                             #
+                             """},
+     'solver_maxiter': {'value': 5000,
+                        'docs': r"""
+                                #
+                                """},
+     'iterative_props': {'value': [],
+                         'docs': r"""
+                                 #
+                                 """},
+     'cache_A': {'value': True,
+                 'docs': r"""
+                 #
+                 """},
+     'cache_b': {'value': True,
+                 'docs': r"""
+                 #
+                 """},
+     }
 
 
 class GenericTransport(GenericAlgorithm):
@@ -153,11 +159,9 @@ class GenericTransport(GenericAlgorithm):
     def __init__(self, project=None, network=None, phase=None, settings={},
                  **kwargs):
         # Apply default settings
-        self.settings.update(def_set)
+        self.settings._update_settings_and_docs(def_set)
         # Overwrite any given in init
         self.settings.update(settings)
-        # Update settings string
-        self.settings.__doc__ = s
         # Assign phase if given during init
         self.setup(phase=phase)
         # If network given, get project, otherwise let parent class create it
@@ -299,12 +303,11 @@ class GenericTransport(GenericAlgorithm):
             |             | adds the given ones                              |
             +-------------+--------------------------------------------------+
 
-            %(GenericTransport._set_BC.parameters.mode)s
 
         Notes
         -----
         The definition of ``quantity`` is specified in the algorithm's
-        ``settings``, e.g. ``alg.settings['quentity'] = 'pore.pressure'``.
+        ``settings``, e.g. ``alg.settings['quantity'] = 'pore.pressure'``.
         """
         mode = self._parse_mode(mode, allowed=['merge', 'overwrite'],
                                 single=True)

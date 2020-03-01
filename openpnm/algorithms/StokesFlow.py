@@ -4,6 +4,11 @@ from openpnm.algorithms import ReactiveTransport
 from openpnm.utils import logging
 logger = logging.getLogger(__name__)
 
+def_set = \
+    {'quantity': 'pore.pressure',
+     'conductance': 'throat.hydraulic_conductance',
+     }
+
 
 class StokesFlow(ReactiveTransport):
     r"""
@@ -15,20 +20,6 @@ class StokesFlow(ReactiveTransport):
     """
 
     def __init__(self, settings={}, phase=None, **kwargs):
-        def_set = {'phase': None,
-                   'quantity': 'pore.pressure',
-                   'conductance': 'throat.hydraulic_conductance',
-                   'gui': {'setup':        {'phase': None,
-                                            'quantity': '',
-                                            'conductance': ''},
-                           'set_rate_BC':  {'pores': None,
-                                            'values': None},
-                           'set_value_BC': {'pores': None,
-                                            'values': None},
-                           'set_source':   {'pores': None,
-                                            'propname': ''}
-                           }
-                   }
         super().__init__(**kwargs)
         self.settings.update(def_set)
         self.settings.update(settings)
