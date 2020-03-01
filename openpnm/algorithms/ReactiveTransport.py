@@ -1,9 +1,55 @@
 import numpy as np
 from numpy.linalg import norm
 from openpnm.algorithms import GenericTransport
+from dataclasses import dataclass
+from typing import List
 from openpnm.utils import logging, Docorator
 docstr = Docorator()
 logger = logging.getLogger(__name__)
+
+
+@docstr.get_sectionsf('ReactiveTransportSettings',
+                      sections=['Parameters'])
+@docstr.dedent
+@dataclass
+class ReactiveTransportSettings:
+    r"""
+    Stores the seetings for ReactiveTransport algorithms
+
+    Parameters
+    ----------
+    sources : (list)
+        List of source terms that have been added
+    relaxation_source : (float)
+        A relaxation factor to control under-relaxation of the source term.
+        Factor approaching 0 leads to improved stability but slower simulation.
+        Factor approaching 1 gives fast simulation but may be unstable.
+        Default value is 1 (no under-relaxation).
+    relaxation_quantity : (float)
+        A relaxation factor to control under-relaxation for the quantity
+        solving for. Factor approaching 0 leads to improved stability but
+        slower simulation. Factor approaching 1 gives fast simulation but
+        may be unstable. Default value is 1 (no under-relaxation).
+    rxn_tolerance : (float)
+        Tolerance to achieve. The solver returns a solution when 'residual'
+        falls below 'rxn_tolerance'. The default value is 1e-05.
+    max_iter : (int)
+        ##
+    """
+
+    phase: str = None
+    conductance: str = None
+    quantity: str = None
+    solver_family: str = 'scipy'
+    solver_type: str = 'spsolve'
+    solver_preconditioner: str = 'jacobi'
+    solver_tol: float = 1e-8
+    solver_atol: float = None
+    solver_rtol: float = None
+    solver_maxiter: int = 5000
+    iterative_props: List = None
+    cache_A: bool = True
+    cache_b: bool = True
 
 
 def_set = \
@@ -76,24 +122,8 @@ class ReactiveTransport(GenericTransport):
 
         Parameters
         ----------
-        %(GenericTransport.setup.parameters)s
-        rxn_tolerance : scalar
-            Tolerance to achieve. The solver returns a solution when 'residual'
-            falls below 'rxn_tolerance'. The default value is 1e-05.
-        max_iter : scalar
-            The maximum number of iterations the solver can perform to find
-            a solution. The default value is 5000.
-        relaxation_source : scalar, between 0 and 1
-            A relaxation factor to control under-relaxation of the source term.
-            Factor approaching 0 : improved stability but slow simulation.
-            Factor approaching 1 : fast simulation but may be unstable.
-            Default value is 1 (no under-relaxation).
-        relaxation_quantity :  scalar, between 0 and 1
-            A relaxation factor to control under-relaxation for the quantity
-            solving for.
-            Factor approaching 0 : improved stability but slow simulation.
-            Factor approaching 1 : fast simulation but may be unstable.
-            Default value is 1 (no under-relaxation).
+        %(GenericTransportSettings.parameters)s
+        %(ReactiveTransportSettings.parameters)s
 
         Notes
         -----

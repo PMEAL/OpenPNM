@@ -8,8 +8,74 @@ from scipy.spatial import cKDTree
 from openpnm.topotools import iscoplanar
 from openpnm.algorithms import GenericAlgorithm
 from openpnm.utils import logging, Docorator
+from dataclasses import dataclass
+from typing import List
 docstr = Docorator()
 logger = logging.getLogger(__name__)
+
+
+@docstr.get_sectionsf('GenericTransportSettings',
+                      sections=['Parameters'])
+@docstr.dedent
+@dataclass
+class GenericTransportSettings:
+    r"""
+    Stores the seetings for GenericTransport algorithms
+
+    Parameters
+    ----------
+    phase : (str)
+        The name of the phase on which this algorithm acts
+    quantity : (str)
+        The name of the pore-scale transport conductance values. These are
+        typically calculated by a model attached to a *Physics* object
+        associated with the given *Phase*.
+    conductance : (str)
+        The name of the physical quantity to be calculated
+    solver_family : (str)
+        The solver package to use.  OpenPNM currently supports ``scipy``,
+        ``pyamg`` and ``petsc`` (if you have it installed). The default is
+        ``scipy``.
+    solver_type : (str)
+        The specific solver to use.  For instance, if ``solver_family`` is
+        ``scipy`` then you can specify any of the iterative solvers such as
+        ``cg`` or ``gmres``. [More info here]
+        (https://docs.scipy.org/doc/scipy/reference/sparse.linalg.html),
+    solver_preconditioner : (str)
+        This is used by the PETSc solver to specify which preconditioner to
+        use. The default is ``jacobi``.
+    solver_tol : (float)
+        Used to control the accuracy to which the iterative solver aims to
+        achieve before stopping. The default is 1e-6.
+    solver_atol : (float)
+        Limits the number of iterations to attempt before quiting when aiming
+        for the specified tolerance. The default is 5000.
+    solver_rtol : (float)
+        ##
+    solver_maxiter : (int)
+        ##
+    iterative_props : (list)
+        ##
+    cache_A : (bool)
+        ##
+    cache_b : (bool)
+        ##
+    """
+
+    phase: str = None
+    conductance: str = None
+    quantity: str = None
+    solver_family: str = 'scipy'
+    solver_type: str = 'spsolve'
+    solver_preconditioner: str = 'jacobi'
+    solver_tol: float = 1e-8
+    solver_atol: float = None
+    solver_rtol: float = None
+    solver_maxiter: int = 5000
+    iterative_props: List = None
+    cache_A: bool = True
+    cache_b: bool = True
+
 
 # Set some default settings
 def_set = \
@@ -179,46 +245,12 @@ class GenericTransport(GenericAlgorithm):
     @docstr.dedent
     def setup(self, phase=None, quantity='', conductance='', **kwargs):
         r"""
-        This method takes several arguments that are essential to running the
-        algorithm and adds them to the settings.
 
         Parameters
         ----------
-        phase : OpenPNM Phase object
-            The phase on which the algorithm is to be run.
-        quantity : string
-            The name of the physical quantity to be calculated.
-        conductance : string
-            The name of the pore-scale transport conductance values.  These
-            are typically calculated by a model attached to a *Physics* object
-            associated with the given *Phase*.
-        solver : string
-            To use the default scipy solver, set this value to `spsolve` or
-            `umfpack`.  To use an iterative solver or a non-scipy solver,
-            additional arguments are required as described next.
-        solver_family : string
-            The solver package to use.  OpenPNM currently supports ``scipy``,
-            ``pyamg`` and ``petsc`` (if you have it installed).  The default is
-            ``scipy``.
-        solver_type : string
-            The specific solver to use.  For instance, if ``solver_family`` is
-            ``scipy`` then you can specify any of the iterative solvers such as
-            ``cg`` or ``gmres``.  [More info here]
-            (https://docs.scipy.org/doc/scipy/reference/sparse.linalg.html)
-        solver_preconditioner : string
-            This is used by the PETSc solver to specify which preconditioner
-            to use.  The default is ``jacobi``.
-        solver_atol : scalar
-            Used to control the accuracy to which the iterative solver aims.
-            The default is 1e-6.
-        solver_rtol : scalar
-            Used by PETSc as an additional tolerance control.  The default is
-            1e-6.
-        solver_maxiter : scalar
-            Limits the number of iterations to attempt before quiting when
-            aiming for the specified tolerance. The default is 5000.
-
+        %(GenericTransportSettings.parameters)s
         """
+
         if phase:
             self.settings['phase'] = phase.name
         if quantity:
