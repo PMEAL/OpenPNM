@@ -54,11 +54,7 @@ phys.add_model(propname='throat.ad_dif_conductance',
 ad = op.algorithms.TransientAdvectionDiffusion(network=net, phase=water)
 ad.set_value_BC(pores=net.pores('back'), values=100)
 ad.set_value_BC(pores=net.pores('front'), values=90)
-ad.settings['rxn_tolerance'] = 1e-12
-
-ad.settings['i_max_iter'] = 10
-ad.settings['i_tolerance'] = 1e-04
-ad.settings['charge_conservation'] = 'laplace'
+ad.settings['solver_tol'] = 1e-12
 ad.settings['t_output'] = 500
 ad.settings['t_step'] = 100
 ad.settings['t_final'] = 2000
