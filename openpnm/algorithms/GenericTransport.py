@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 @dataclass
 class GenericTransportSettings:
     r"""
-    Stores the settings for GenericTransport algorithms
+    Defines the settings for GenericTransport algorithms
 
     Parameters
     ----------
@@ -77,17 +77,15 @@ class GenericTransportSettings:
     cache_b: bool = True
 
 
+@docstr.get_sectionsf('GenericTransport', sections=['Parameters'])
+@docstr.dedent
 class GenericTransport(GenericAlgorithm):
     r"""
     This class implements steady-state linear transport calculations
 
     Parameters
     ----------
-    network : OpenPNM Network object
-        The Network with which this algorithm is associated
-
-    project : OpenPNM Project object, optional
-        A Project can be specified instead of ``network``
+    %(GenericAlgorithm.parameters)s
 
     Notes
     -----
@@ -164,7 +162,7 @@ class GenericTransport(GenericAlgorithm):
     def __init__(self, project=None, network=None, phase=None, settings={},
                  **kwargs):
         # Apply default settings
-        self.settings._update_settings_and_docs_from_dataclass(GenericTransportSettings)
+        self.settings._update_settings_and_docs(GenericTransportSettings)
         # Overwrite any given in init
         self.settings.update(settings)
         # Assign phase if given during init

@@ -4,21 +4,14 @@ docstr = Docorator()
 logger = logging.getLogger(__name__)
 
 
+@docstr.dedent
 class FickianDiffusion(ReactiveTransport):
     r"""
     A class to simulate binary diffusion.
 
     Parameters
     ----------
-    network : OpenPNM Network object
-        The network on which this algorithm operates
-
-    project : OpenPNM Project object
-        Either a network or a project must be specified
-
-    name : string, optional
-        A unique name to give the object for easier identification.  If not
-        given, one is generated.
+    %(ReactiveTransport.parameters)s
 
     Notes
     -----

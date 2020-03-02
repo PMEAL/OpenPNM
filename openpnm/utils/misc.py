@@ -132,25 +132,10 @@ class SettingsDict(PrintableDict):
         self[key] = None
         return self[key]
 
-    def _update_settings_and_docs(self, def_set):
-        def_set = copy.deepcopy(def_set)
-        from textwrap import wrap
-        table_data = []
-        for k in def_set.keys():
-            super().__setitem__(k, def_set[k]['value'])
-            s = ' '.join(def_set[k]['docs'].split())
-            table_data.append([k, s])
-        table = AsciiTable(table_data)
-        table.inner_row_border = True
-        max_width = table.column_max_width(1)
-        for i, k in enumerate(def_set.keys()):
-            wrapped_string = '\n'.join(wrap(table.table_data[i][1], max_width))
-            table.table_data[i][1] = wrapped_string
-        self.__doc__ += table.table
-        self.__doc__ += '\n\n'
-
-    def _update_settings_and_docs_from_dataclass(self, dc):
-        dc = dc()
+    def _update_settings_and_docs(self, dc):
+        # If dc is class then instantiate it
+        if type(dc) is type:
+            dc = dc()
         for item in dir(dc):
             if not item.startswith('__'):
                 super().__setitem__(item, getattr(dc, item))

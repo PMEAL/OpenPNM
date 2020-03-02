@@ -1,22 +1,23 @@
 from openpnm.core import Base
-from openpnm.utils import logging
+from openpnm.utils import logging, Docorator
 import numpy as np
 logger = logging.getLogger(__name__)
+docstr = Docorator()
 
 
+@docstr.get_sectionsf('GenericAlgorithm', sections=['Parameters'])
+@docstr.dedent
 class GenericAlgorithm(Base):
     r"""
     Generic class to define the foundation of Algorithms.
 
     Parameters
     ----------
-    network : OpenPNM Network object
+    network : (OpenPNM Network object)
         The network object to which this algorithm will apply.
-
-    name : string, optional
+    name : (string, optional)
         Name of the algorithm
-
-    project : OpenPNM Project object
+    project : (OpenPNM Project object, optional)
         Either a Network or a Project must be supplied
 
     Notes

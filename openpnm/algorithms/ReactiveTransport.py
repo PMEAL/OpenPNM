@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 @dataclass
 class ReactiveTransportSettings:
     r"""
-    Stores the seetings for ReactiveTransport algorithms
+    Defines the settings for ReactiveTransport algorithms
 
     Parameters
     ----------
@@ -45,17 +45,15 @@ class ReactiveTransportSettings:
     sources: List = field(default_factory=lambda: [])
 
 
+@docstr.get_sectionsf('ReactiveTransport', sections=['Parameters'])
+@docstr.dedent
 class ReactiveTransport(GenericTransport):
     r"""
     A subclass for steady-state simulations with (optionally) source terms
 
     Parameters
     ----------
-    network : OpenPNM Network object
-        The Network with which this algorithm is associated.
-
-    project : OpenPNM Project object
-        Either a Network or a Project must be specified.
+    %(GenericTransport.parameters)s
 
     Notes
     -----
@@ -66,7 +64,7 @@ class ReactiveTransport(GenericTransport):
 
     def __init__(self, settings={}, phase=None, **kwargs):
         super().__init__(**kwargs)
-        self.settings._update_settings_and_docs_from_dataclass(ReactiveTransportSettings)
+        self.settings._update_settings_and_docs(ReactiveTransportSettings)
         self.settings.update(settings)
         if phase is not None:
             self.setup(phase=phase)
