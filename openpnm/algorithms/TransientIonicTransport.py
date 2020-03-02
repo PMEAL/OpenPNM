@@ -232,7 +232,8 @@ class TransientIonicTransport(IonicTransport, TransientReactiveTransport):
                     for alg in algs:  # Save new fields & compute t residuals
                         t_new[alg.name] = alg[alg.settings['quantity']].copy()
                         t_res[alg.name] = np.sum(
-                            np.absolute(t_old[alg.name]**2 - t_new[alg.name]**2))
+                            np.absolute(t_old[alg.name]**2 -
+                                        t_new[alg.name]**2))
 
                     # Output transient solutions. Round time to ensure every
                     # value in outputs is exported.
