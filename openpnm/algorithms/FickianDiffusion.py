@@ -4,12 +4,6 @@ docstr = Docorator()
 logger = logging.getLogger(__name__)
 
 
-def_set = \
-    {'quantity': 'pore.concentration',
-     'conductance': 'throat.diffusive_conductance',
-     }
-
-
 class FickianDiffusion(ReactiveTransport):
     r"""
     A class to simulate binary diffusion.
@@ -48,15 +42,13 @@ class FickianDiffusion(ReactiveTransport):
 
     """
 
-    def __init__(self, settings={}, phase=None, **kwargs):
+    def __init__(self,
+                 settings={'quantity': 'pore.concentration',
+                           'conductance': 'throat.diffusive_conductance'},
+                 **kwargs):
         super().__init__(**kwargs)
-        self.settings.update(def_set)
         self.settings.update(settings)
-        if phase is not None:
-            self.setup(phase=phase)
 
-    # docstr.delete_params_s('ReactiveTransport.setup.parameters', 'quantity')
-    # docstr.delete_params('ReactiveTransport.setup.parameters', 'conductance')
     @docstr.dedent
     def setup(self, phase=None, quantity='', conductance='', **kwargs):
         r"""

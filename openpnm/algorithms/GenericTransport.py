@@ -8,7 +8,7 @@ from scipy.spatial import cKDTree
 from openpnm.topotools import iscoplanar
 from openpnm.algorithms import GenericAlgorithm
 from openpnm.utils import logging, Docorator
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import List
 docstr = Docorator()
 logger = logging.getLogger(__name__)
@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 @dataclass
 class GenericTransportSettings:
     r"""
-    Stores the seetings for GenericTransport algorithms
+    Stores the settings for GenericTransport algorithms
 
     Parameters
     ----------
@@ -72,70 +72,9 @@ class GenericTransportSettings:
     solver_atol: float = None
     solver_rtol: float = None
     solver_maxiter: int = 5000
-    iterative_props: List = None
+    iterative_props: List = field(default_factory=lambda: [])
     cache_A: bool = True
     cache_b: bool = True
-
-
-# Set some default settings
-def_set = \
-    {'phase': {'value': None,
-               'docs': r""" The phase on which the algorithm is to be run """},
-     'conductance': {'value': None,
-                     'docs': r""" The name of the physical quantity to be
-                     calculated """},
-     'quantity': {'value': None,
-                  'docs': r""" The name of the pore-scale transport
-                  conductance values. These are typically calculated by a model
-                  attached to a *Physics* object associated with the given
-                  *Phase*. """},
-     'solver_family': {'value': 'scipy',
-                       'docs': r""" The solver package to use.  OpenPNM
-                       currently supports ``scipy``, ``pyamg`` and ``petsc``
-                       (if you have it installed). The default is ``scipy``.
-                       """},
-     'solver_type': {'value': 'spsolve',
-                     'docs': r""" The specific solver to use.  For instance,
-                     if ``solver_family`` is ``scipy`` then you can specify
-                     any of the iterative solvers such as ``cg`` or ``gmres``.
-                     [More info here]
-                     (https://docs.scipy.org/doc/scipy/reference/sparse.linalg.html),
-                     """},
-     'solver_preconditioner': {'value': 'jacobi',
-                               'docs': r""" This is used by the PETSc solver
-                               to specify which preconditioner to use. The
-                               default is ``jacobi``. """},
-     'solver_tol': {'value': 1e-8,
-                    'docs': r""" Used to control the accuracy to which the
-                            iterative solver aims to achieve before stopping.
-                            The default is 1e-6.
-                            """},
-     'solver_atol': {'value': None,
-                     'docs': r""" Limits the number of iterations to attempt
-                     before quiting when aiming for the specified tolerance.
-                     The default is 5000.
-                             """},
-     'solver_rtol': {'value': None,
-                     'docs': r"""
-                             #
-                             """},
-     'solver_maxiter': {'value': 5000,
-                        'docs': r"""
-                                #
-                                """},
-     'iterative_props': {'value': [],
-                         'docs': r"""
-                                 #
-                                 """},
-     'cache_A': {'value': True,
-                 'docs': r"""
-                 #
-                 """},
-     'cache_b': {'value': True,
-                 'docs': r"""
-                 #
-                 """},
-     }
 
 
 class GenericTransport(GenericAlgorithm):
@@ -154,7 +93,7 @@ class GenericTransport(GenericAlgorithm):
     -----
 
     The following table shows the methods that are accessible to the user
-    for settig up the simulation.
+    for setting up the simulation.
 
     +---------------------+---------------------------------------------------+
     | Methods             | Description                                       |
@@ -225,7 +164,7 @@ class GenericTransport(GenericAlgorithm):
     def __init__(self, project=None, network=None, phase=None, settings={},
                  **kwargs):
         # Apply default settings
-        self.settings._update_settings_and_docs(def_set)
+        self.settings._update_settings_and_docs_from_dataclass(GenericTransportSettings)
         # Overwrite any given in init
         self.settings.update(settings)
         # Assign phase if given during init

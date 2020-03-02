@@ -1,7 +1,7 @@
 import numpy as np
 from numpy.linalg import norm
 from openpnm.algorithms import GenericTransport
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import List
 from openpnm.utils import logging, Docorator
 docstr = Docorator()
@@ -18,6 +18,7 @@ class ReactiveTransportSettings:
 
     Parameters
     ----------
+    %(GenericTransportSettings.parameters)s
     sources : (list)
         List of source terms that have been added
     relaxation_source : (float)
@@ -37,51 +38,11 @@ class ReactiveTransportSettings:
         ##
     """
 
-    phase: str = None
-    conductance: str = None
-    quantity: str = None
-    solver_family: str = 'scipy'
-    solver_type: str = 'spsolve'
-    solver_preconditioner: str = 'jacobi'
-    solver_tol: float = 1e-8
-    solver_atol: float = None
-    solver_rtol: float = None
-    solver_maxiter: int = 5000
-    iterative_props: List = None
-    cache_A: bool = True
-    cache_b: bool = True
-
-
-def_set = \
-    {'sources': {'value': [],
-                 'docs': r""" List of source terms that have been added. """},
-     'relaxation_source': {'value': 1.0,
-                           'docs': r"""  A relaxation factor to control under-
-                           relaxation of the source term. Factor approaching 0
-                           leads to improved stability but slower simulation.
-                           Factor approaching 1 gives fast simulation but may
-                           be unstable. Default value is 1 (no under-
-                           relaxation).
-                           """},
-     'relaxation_quantity': {'value': 1.0,
-                             'docs': r""" A relaxation factor to control under-
-                             relaxation for the quantity solving for. Factor
-                             approaching 0 leads to improved stability but
-                             slower simulation. Factor approaching 1 gives fast
-                             simulation but may be unstable. Default value is 1
-                             (no under-relaxation).
-                             """},
-     'rxn_tolerance': {'value': 1e-5,
-                       'docs': r"""
-                       Tolerance to achieve. The solver returns a solution
-                       when 'residual' falls below 'rxn_tolerance'. The
-                       default value is 1e-05.
-                       """},
-     'max_iter': {'value': 5000,
-                  'docs': r"""
-                  #
-                  """},
-     }
+    max_iter: int = 5000
+    relaxation_source: float = 1.0
+    relaxation_quantity: float = 1.0
+    rxn_tolerance: float = 1e-8
+    sources: List = field(default_factory=lambda: [])
 
 
 class ReactiveTransport(GenericTransport):
@@ -105,7 +66,7 @@ class ReactiveTransport(GenericTransport):
 
     def __init__(self, settings={}, phase=None, **kwargs):
         super().__init__(**kwargs)
-        self.settings._update_settings_and_docs(def_set)
+        self.settings._update_settings_and_docs_from_dataclass(ReactiveTransportSettings)
         self.settings.update(settings)
         if phase is not None:
             self.setup(phase=phase)

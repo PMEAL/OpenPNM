@@ -5,6 +5,7 @@ import numpy as _np
 import scipy as _sp
 import time as _time
 import copy
+from dataclasses import dataclass
 from collections import OrderedDict
 from docrep import DocstringProcessor
 from terminaltables import AsciiTable
@@ -147,6 +148,13 @@ class SettingsDict(PrintableDict):
             table.table_data[i][1] = wrapped_string
         self.__doc__ += table.table
         self.__doc__ += '\n\n'
+
+    def _update_settings_and_docs_from_dataclass(self, dc):
+        dc = dc()
+        for item in dir(dc):
+            if not item.startswith('__'):
+                super().__setitem__(item, getattr(dc, item))
+        self.__doc__ = dc.__doc__
 
 
 class NestedDict(dict):
