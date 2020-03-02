@@ -35,7 +35,7 @@ class TransientReactiveTransport(ReactiveTransport):
                    't_step': 0.1,
                    't_output': 1e+08,
                    't_tolerance': 1e-06,
-                   'rxn_tolerance': 1e-05,
+                   'solver_tol': 1e-08,
                    't_precision': 12,
                    't_scheme': 'implicit',
                    'gui': {'setup':        {'phase': None,
@@ -114,9 +114,9 @@ class TransientReactiveTransport(ReactiveTransport):
             default value is 1e-06. The 'residual' measures the variation from
             one time-step to another in the value of the 'quantity' solved for.
 
-        rxn_tolerance : scalar
+        solver_tol : scalar
             Tolerance to achieve within each time step. The solver passes to
-            next time step when 'residual' falls below 'rxn_tolerance'. The
+            next time step when 'residual' falls below 'solver_tol'. The
             default value is 1e-05.
 
         t_precision : integer
@@ -358,7 +358,7 @@ class TransientReactiveTransport(ReactiveTransport):
         Repeatedly updates transient 'A', 'b', and the solution guess within
         each time step according to the applied source term then calls '_solve'
         to solve the resulting system of linear equations. Stops when the
-        residual falls below 'rxn_tolerance'.
+        residual falls below 'solver_tol'.
 
         Parameters
         ----------
@@ -379,36 +379,34 @@ class TransientReactiveTransport(ReactiveTransport):
             x0 = np.zeros(self.Np, dtype=float)
         x = x0
         self[self.settings['quantity']] = x
-        relax = self.settings['relaxation_quantity']
-        phase = self.project.phases()[self.settings['phase']]
-        # Reference for residual's normalization
-        ref = np.sum(np.absolute(self._A_t.diagonal())) or 1
-        for itr in range(int(self.settings['max_iter'])):
-            self[self.settings['quantity']] = x
-            phase.update(self.results())
+
+        w = self.settings['relaxation_quantity']
+        quantity = self.settings['quantity']
+        max_it = int(self.settings['max_iter'])
+        # Write initial guess to algorithm for _update_iterative_props to work
+        self[quantity] = x = x0
+
+        for itr in range(max_it):
+            # Update iterative properties on phase and physics
             self._update_iterative_props()
+            # Build A and b, apply source terms and correct according to scheme
             self._A = (self._A_t).copy()
             self._b = (self._b_t).copy()
             self._apply_sources()
             self._correct_apply_sources()
-            # Compute the normalized residual
-            res = np.linalg.norm(self.b-self.A*x)/ref
-            if res >= self.settings['rxn_tolerance']:
-                logger.info('Tolerance not met: ' + str(res))
-                x_new = self._solve()
-                # Relaxation
-                x_new = relax*x_new + (1-relax)*self[self.settings['quantity']]
-                self[self.settings['quantity']] = x_new
-                x = x_new
-            elif (res < self.settings['rxn_tolerance']):
-                x_new = x
-                logger.info('Solution converged: ' + str(res))
-                break
-            else:  # If res is nan or inf
-                x_new = x
-                logger.warning('Residual undefined: ' + str(res))
-                break
-        return x_new
+            # Compute the residual
+            res = self._get_residual()
+
+            if self._is_converged():
+                logger.info(f'Solution converged: {res:.4e}')
+                return x
+            logger.info(f'Tolerance not met: {res:.4e}')
+            # Solve, use relaxation, and update solution on algorithm obj
+            self[quantity] = x = self._solve(x0=x) * w + x * (1 - w)
+
+        # Check solution convergence after max_it iterations
+        if not self._is_converged():
+            raise Exception(f"Not converged after {max_it} iterations.")
 
     def results(self, times=None, **kwargs):
         r"""
