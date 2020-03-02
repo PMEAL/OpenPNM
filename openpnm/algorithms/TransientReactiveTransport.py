@@ -343,10 +343,12 @@ class TransientReactiveTransport(ReactiveTransport):
                     # Output steady state solution
                     t_str = self._nbr_to_str(time)
                     self[quantity + '@' + t_str] = x_new
-                    logger.info('        Exporting time step: ' + str(time) + ' s')
+                    logger.info('        Exporting time step: ' +
+                                str(time) + ' s')
                     break
             if (round(time, t_pre) == tf):
-                logger.info('    Maximum time step reached: ' + str(time) + ' s')
+                logger.info('    Maximum time step reached: ' +
+                            str(time) + ' s')
             else:
                 logger.info('    Transient solver converged after: '
                             + str(time) + ' s')
