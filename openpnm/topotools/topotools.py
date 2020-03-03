@@ -1436,18 +1436,23 @@ def merge_networks(network, donor=[]):
             if key.split('.')[1] not in ['conns', 'coords', '_id', 'all']:
                 if key in network.keys():
                     pop_flag = False
+                    # If key not on donor add it first with dummy values to
+                    # simplify merging later
                     if key not in donor.keys():
                         logger.debug('Adding ' + key + ' to donor')
-                        # If key not on donor add it first
-                        if network[key].dtype == bool:
+                        if network[key].dtype == bool:  # Deal with labels
                             donor[key] = False
-                        else:
-                            donor[key] = sp.nan
+                        else:  # Deal with numerical data
+                            element = key.split('.')[0]
+                            shape = list(network[key].shape)
+                            N = donor._count(element)
+                            shape[0] = N
+                            donor[key] = sp.empty(shape=shape)*sp.nan
                         pop_flag = True
                     # Then merge it with existing array on network
-                    try:
+                    if len(network[key].shape) == 1:
                         temp = np.hstack((network[key], donor[key]))
-                    except ValueError:
+                    else:
                         temp = np.vstack((network[key], donor[key]))
                     network[key] = temp
                     if pop_flag:

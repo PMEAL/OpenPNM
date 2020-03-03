@@ -152,13 +152,15 @@ class TopotoolsTest:
         net2 = op.network.Cubic(shape=[3, 3, 3])
         net1['pore.test1'] = True
         net1['pore.test2'] = 10
-        net2['pore.test3'] = True
-        net2['pore.test4'] = 10.0
-        topotools.merge_networks(net1, net2)
+        net1['pore.test3'] = np.ones((net1.Np, 3))
+        net2['pore.test4'] = True
+        net2['pore.test5'] = 10.0
+        net2['pore.test6'] = np.ones((net2.Np, 2))
+        topotools.merge_networks(network=net1, donor=net2)
         assert np.sum(net1['pore.test1']) == 27
-        assert np.sum(net1['pore.test3']) == 27
-        assert np.sum(net1['pore.test2'][:27]) == 270
-        assert np.sum(net1['pore.test4'][27:]) == 270
+        assert np.all(net1['pore.test3'].shape == (54, 3))
+        assert np.sum(net1['pore.test2'][:27]) == 270.0
+        assert np.sum(net1['pore.test4'][27:]) == 27
         assert 'pore.test1' not in net2
         assert 'pore.test2' not in net2
 
