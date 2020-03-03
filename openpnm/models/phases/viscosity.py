@@ -5,8 +5,7 @@ r"""
 .. autofunction:: openpnm.models.phases.viscosity.chung
 
 """
-
-import scipy as sp
+import numpy as np
 
 
 def water(target, temperature='pore.temperature', salinity='pore.salinity'):
@@ -104,7 +103,7 @@ def reynolds(target, u0, b, temperature='pore.temperature'):
     [1] Reynolds O. (1886). Phil Trans Royal Soc London, v. 177, p.157.
 
     """
-    value = u0*sp.exp(b*target[temperature])
+    value = u0*np.exp(b*target[temperature])
     return value
 
 
@@ -159,7 +158,7 @@ def chung(target, temperature='pore.temperature',
     D = 0.77320
     E = 2.16178
     F = 2.43787
-    omega = (A*(Tstar)**(-B)) + C*(sp.exp(-D*Tstar)) + E*(sp.exp(-F*Tstar))
+    omega = (A*(Tstar)**(-B)) + C*(np.exp(-D*Tstar)) + E*(np.exp(-F*Tstar))
     sigma = 0.809*(Vc**(1/3))
-    value = 26.69E-9*sp.sqrt(MW*T)/(omega*sigma**2)
+    value = 26.69E-9*np.sqrt(MW*T)/(omega*sigma**2)
     return value

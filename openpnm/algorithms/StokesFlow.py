@@ -1,3 +1,4 @@
+import numpy as np
 import scipy as sp
 from openpnm.algorithms import ReactiveTransport
 from openpnm.utils import logging
@@ -109,5 +110,5 @@ class StokesFlow(ReactiveTransport):
         d_normal = self._calc_eff_prop(inlets=inlets, outlets=outlets,
                                        domain_area=domain_area,
                                        domain_length=domain_length)
-        K = d_normal * sp.mean(phase['pore.viscosity'])
+        K = d_normal * np.mean(phase['pore.viscosity'])
         return K

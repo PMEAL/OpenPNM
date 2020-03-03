@@ -85,17 +85,33 @@ class ModelsDict(PrintableDict):
 
         """
         import networkx as nx
+        import matplotlib.pyplot as plt
 
         dtree = self.dependency_graph()
-        fig = nx.draw_spectral(dtree,
-                               with_labels=True,
-                               arrowsize=50,
-                               node_size=2000,
-                               edge_color='lightgrey',
-                               width=3.0,
-                               font_size=32,
-                               font_weight='bold')
-        return fig
+        labels = {}
+        for node in dtree.nodes:
+            if node.startswith("pore."):
+                value = node.replace("pore.", "[P] ")
+            elif node.startswith("throat."):
+                value = node.replace("throat.", "[T] ")
+            labels[node] = value
+
+        nx.draw_shell(
+            dtree,
+            labels=labels,
+            with_labels=True,
+            # arrowsize=50,
+            # node_size=2000,
+            edge_color='lightgrey',
+            width=3.0,
+            font_size=12,
+            # font_weight='bold',
+        )
+
+        ax = plt.gca()
+        ax.margins(x=0.2, y=0.02)
+
+        return ax.figure
 
     def __str__(self):
         horizontal_rule = '―' * 85

@@ -4,7 +4,7 @@ r"""
 .. autofunction:: openpnm.models.physics.multiphase.late_filling
 
 """
-
+import numpy as np
 import scipy as sp
 
 
@@ -66,9 +66,9 @@ def conduit_conductance(target, throat_conductance,
     if mode == 'loose':
         mask = Tinv
     elif mode == 'medium':
-        mask = Tinv + sp.all(Pinv, axis=1)
+        mask = Tinv + np.all(Pinv, axis=1)
     elif mode == 'strict':
-        mask = Tinv + sp.any(Pinv, axis=1)
+        mask = Tinv + np.any(Pinv, axis=1)
     else:
         raise Exception('Unrecongnized mode '+mode)
     value = phase[throat_conductance].copy()
@@ -121,9 +121,9 @@ def late_filling(target, pressure='pore.pressure',
     pc_star = phase[Pc_star]
     Pc = phase[pressure]
     # Remove any 0's from the Pc array to prevent numpy div by 0 warning
-    Pc = sp.maximum(Pc, 1e-9)
+    Pc = np.maximum(Pc, 1e-9)
     Swp = Swp_star*((pc_star/Pc)**eta)
-    values = sp.clip(1 - Swp, 0.0, 1.0)
+    values = np.clip(1 - Swp, 0.0, 1.0)
     # Now map element onto target object
     if element == 'throat':
         Ts = network.map_throats(throats=target.Ts, origin=target)
