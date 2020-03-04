@@ -1,4 +1,4 @@
-from openpnm.algorithms import Reacti)veTransport
+from openpnm.algorithms import ReactiveTransport
 from openpnm.utils import logging
 logger = logging.getLogger(__name__)
 
