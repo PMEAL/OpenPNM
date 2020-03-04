@@ -92,19 +92,22 @@ def from_neighbor_pores(target, prop=None, pore_prop='pore.seed', mode='min',
 
     """
     prj = target.project
+    lookup = prj.find_full_domain(target)
     network = prj.network
     throats = network.map_throats(target.throats(), target)
     P12 = network.find_connected_pores(throats)
-    lookup = prj.find_full_domain(target)
     if prop is not None:
         pore_prop = prop
     pvalues = lookup[pore_prop][P12]
     if ignore_nans:
         pvalues = np.ma.MaskedArray(data=pvalues, mask=np.isnan(pvalues))
-    if mode == 'min':
-        value = np.amin(pvalues, axis=1)
-    if mode == 'max':
-        value = np.amax(pvalues, axis=1)
-    if mode == 'mean':
-        value = np.mean(pvalues, axis=1)
+    try:  # If pvalues is not empty
+        if mode == 'min':
+            value = np.amin(pvalues, axis=1)
+        if mode == 'max':
+            value = np.amax(pvalues, axis=1)
+        if mode == 'mean':
+            value = np.mean(pvalues, axis=1)
+    except np.AxisError:  # Handle case of empty pvalues
+        value = []
     return np.array(value)
