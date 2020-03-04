@@ -40,13 +40,13 @@ class ReactiveTransportSettings(GenericSettings):
         ##
     """
 
-    max_iter: int = 5000
-    relaxation_source: float = 1.0
-    relaxation_quantity: float = 1.0
-    rxn_tolerance: float = 1e-8
+    max_iter = 5000
+    relaxation_source = 1.0
+    relaxation_quantity = 1.0
+    rxn_tolerance = 1e-8
     # Swap the following 2 lines when we stop supporting Python 3.6
     # sources: List = field(default_factory=lambda: [])
-    sources: List = []
+    sources = []
 
 
 @docstr.get_sectionsf('ReactiveTransport', sections=['Parameters'])

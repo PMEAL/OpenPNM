@@ -64,21 +64,21 @@ class GenericTransportSettings(GenericSettings):
         ##
     """
 
-    phase: str = None
-    conductance: str = None
-    quantity: str = None
-    solver_family: str = 'scipy'
-    solver_type: str = 'spsolve'
-    solver_preconditioner: str = 'jacobi'
-    solver_tol: float = 1e-8
-    solver_atol: float = None
-    solver_rtol: float = None
-    solver_maxiter: int = 5000
+    phase = None
+    conductance = None
+    quantity = None
+    solver_family = 'scipy'
+    solver_type = 'spsolve'
+    solver_preconditioner = 'jacobi'
+    solver_tol = 1e-8
+    solver_atol = None
+    solver_rtol = None
+    solver_maxiter = 5000
     # Swap the following 2 lines when we stop supporting Python 3.6
     iterative_props: List = []
     # iterative_props: List = field(default_factory=lambda: [])
-    cache_A: bool = True
-    cache_b: bool = True
+    cache_A = True
+    cache_b = True
 
 
 @docstr.get_sectionsf('GenericTransport', sections=['Parameters'])
