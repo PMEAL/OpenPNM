@@ -31,8 +31,8 @@ class TransientIonicTransport(IonicTransport, TransientReactiveTransport):
         if phase is not None:
             self.setup(phase=phase)
 
-    def setup(self, phase=None, potential_field='', ions=[], i_tolerance=None,
-              i_max_iter=None, t_initial=None, t_final=None, t_step=None,
+    def setup(self, phase=None, potential_field='', ions=[], g_tol=None,
+              g_max_iter=None, t_initial=None, t_final=None, t_step=None,
               t_output=None, t_tolerance=None, t_precision=None, t_scheme='',
               **kwargs):
         if phase:
@@ -41,10 +41,10 @@ class TransientIonicTransport(IonicTransport, TransientReactiveTransport):
             self.settings['potential_field'] = potential_field
         if ions:
             self.settings['ions'] = ions
-        if i_tolerance:
-            self.settings['i_tolerance'] = i_tolerance
-        if i_max_iter:
-            self.settings['i_max_iter'] = i_max_iter
+        if g_tol:
+            self.settings['g_tol'] = g_tol
+        if g_max_iter:
+            self.settings['g_max_iter'] = g_max_iter
         if t_initial is not None:
             self.settings['t_initial'] = t_initial
         if t_final is not None:
@@ -83,21 +83,19 @@ class TransientIonicTransport(IonicTransport, TransientReactiveTransport):
                 except KeyError:
                     alg.set_IC(0)
 
-        # Save A matrix of the steady sys of eqs (WITHOUT BCs applied)
-        for alg in algs:
-            alg._build_A()
-            alg._A_steady = (alg._A).copy()
-        # Initialize A and b with BCs applied
         for e in e_alg:
+            # Save A matrix of the steady sys of eqs (WITHOUT BCs applied)
+            e._build_A()
+            e._A_steady = (e._A).copy()
+            # Initialize A and b with BCs applied
             e._t_update_A()
             e._t_update_b()
             e._apply_BCs()
             e._A_t = (e._A).copy()
             e._b_t = (e._b).copy()
         # Init A&b with BCs for charge conservation eq, independent of t_scheme
+        p_alg._build_A()
         p_alg._apply_BCs()
-        p_alg._A_t = (p_alg._A).copy()
-        p_alg._b_t = (p_alg._b).copy()
 
         if t is None:
             t = self.settings['t_initial']
@@ -106,14 +104,14 @@ class TransientIonicTransport(IonicTransport, TransientReactiveTransport):
             alg._update_iterative_props()
 
         # Setup algorithms transient settings
-        for alg in algs:
-            alg.setup(t_initial=self.settings['t_initial'],
-                      t_final=self.settings['t_final'],
-                      t_step=self.settings['t_step'],
-                      t_output=self.settings['t_output'],
-                      t_tolerance=self.settings['t_tolerance'],
-                      t_precision=self.settings['t_precision'],
-                      t_scheme=self.settings['t_scheme'])
+        for e in e_alg:
+            e.setup(t_initial=self.settings['t_initial'],
+                    t_final=self.settings['t_final'],
+                    t_step=self.settings['t_step'],
+                    t_output=self.settings['t_output'],
+                    t_tolerance=self.settings['t_tolerance'],
+                    t_precision=self.settings['t_precision'],
+                    t_scheme=self.settings['t_scheme'])
 
         self._run_transient(t=t)
 
@@ -132,9 +130,10 @@ class TransientIonicTransport(IonicTransport, TransientReactiveTransport):
         dt = self.settings['t_step']
         to = self.settings['t_output']
         t_tol = self.settings['t_tolerance']
-        i_tol = self.settings['i_tolerance']
         t_pre = self.settings['t_precision']
         s = self.settings['t_scheme']
+        g_tol = self.settings['g_tol']
+        g_max_iter = int(self.settings['g_max_iter'])
         # Initialize residuals & old/new fields for time marching
         t_res = {}
         t_old = {}
@@ -183,48 +182,50 @@ class TransientIonicTransport(IonicTransport, TransientReactiveTransport):
                         t_old[alg.name] = alg[alg.settings['quantity']].copy()
 
                     # Initialize residuals & old/new fields for Gummel iterats
-                    i_res = {}
-                    i_old = {}
-                    i_new = {}
+                    g_res = {}
+                    g_old = {}
+                    g_new = {}
                     for alg in algs:
-                        i_res[alg.name] = 1e+06
-                        i_old[alg.name] = None
-                        i_new[alg.name] = None
+                        g_res[alg.name] = 1e+03
+                        g_old[alg.name] = None
+                        g_new[alg.name] = None
 
                     # Iterate (Gummel) until solutions converge
-                    for itr in range(int(self.settings['i_max_iter'])):
-                        i_r = [float(format(i, '.3g')) for i in i_res.values()]
-                        i_r = str(i_r)[1:-1]
-                        print('Gummel iter: '+str(itr+1)+', residuals: '+i_r)
-                        i_convergence = max(i for i in i_res.values()) < i_tol
-                        if not i_convergence:
+                    for itr in range(g_max_iter):
+                        g_r = [float(format(i, '.3g')) for i in g_res.values()]
+                        g_r = str(g_r)[1:-1]
+                        print('Start Gummel iter: ' + str(itr+1) +
+                              ', residuals: ' + g_r)
+                        g_convergence = max(i for i in g_res.values()) < g_tol
+                        if not g_convergence:
                             # Ions
                             for e in e_alg:
-                                i_old[e.name] = (
+                                g_old[e.name] = (
                                     e[e.settings['quantity']].copy())
-                                e._t_run_reactive(x0=i_old[e.name])
-                                i_new[e.name] = (
+
+                                e._t_run_reactive(x0=g_old[e.name])
+                                g_new[e.name] = (
                                     e[e.settings['quantity']].copy())
                                 # Residual
-                                i_res[e.name] = np.sum(np.absolute(
-                                    i_old[e.name]**2 - i_new[e.name]**2))
+                                g_res[e.name] = np.sum(np.absolute(
+                                    g_old[e.name]**2 - g_new[e.name]**2))
                                 phase.update(e.results())
 
-                            # Poisson eq
+                            # Charge conservation eq
                             phys[0].regenerate_models()
-                            i_old[p_alg.name] = (
+                            g_old[p_alg.name] = (
                                 p_alg[p_alg.settings['quantity']].copy())
-                            p_alg._t_run_reactive(x0=i_old[p_alg.name])
-                            i_new[p_alg.name] = (
+                            p_alg._run_reactive(x0=g_old[p_alg.name])
+                            g_new[p_alg.name] = (
                                 p_alg[p_alg.settings['quantity']].copy())
                             # Residual
-                            i_res[p_alg.name] = np.sum(np.absolute(
-                                i_old[p_alg.name]**2 - i_new[p_alg.name]**2))
+                            g_res[p_alg.name] = np.sum(np.absolute(
+                                g_old[p_alg.name]**2 - g_new[p_alg.name]**2))
                             # Update phase and physics
                             phase.update(p_alg.results())
                             phys[0].regenerate_models()
 
-                        elif i_convergence:
+                        elif g_convergence:
                             print('Solution for time step: ' + str(time)
                                   + ' s converged')
                             break
@@ -245,22 +246,22 @@ class TransientIonicTransport(IonicTransport, TransientReactiveTransport):
                                 t_new[alg.name])
 
                     # Update A matrix of the steady sys of eqs (WITHOUT BCs)
-                    for alg in algs:
+                    for e in e_alg:
                         # Update conductance first
-                        physics = alg.project.find_physics(phase=phase)
+                        physics = e.project.find_physics(phase=phase)
                         for ph in physics:
                             ph.regenerate_models()
                         # Update A matrix
-                        alg._build_A()
-                        alg._A_steady = (alg._A).copy()
+                        e._build_A()
+                        e._A_steady = (e._A).copy()
 
                     # Update A and b and apply BCs
-                    for alg in algs:
-                        alg._t_update_A()
-                        alg._t_update_b()
-                        alg._apply_BCs()
-                        alg._A_t = (alg._A).copy()
-                        alg._b_t = (alg._b).copy()
+                    for e in e_alg:
+                        e._t_update_A()
+                        e._t_update_b()
+                        e._apply_BCs()
+                        e._A_t = (e._A).copy()
+                        e._b_t = (e._b).copy()
 
                 else:  # Stop time iterations if residual < t_tolerance
                     # Output steady state solution
