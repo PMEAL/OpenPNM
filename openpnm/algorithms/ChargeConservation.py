@@ -24,6 +24,8 @@ class ChargeConservation(ReactiveTransport):
 
     def __init__(self, settings={}, phase=None, **kwargs):
         def_set = {'phase': None,
+                   'cache_A': False,
+                   'cache_b': False,
                    'quantity': 'pore.potential',
                    'conductance': 'throat.ionic_conductance',
                    'charge_conservation': 'electroneutrality',
