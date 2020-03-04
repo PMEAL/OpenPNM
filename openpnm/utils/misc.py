@@ -133,13 +133,25 @@ class SettingsDict(PrintableDict):
         return self[key]
 
     def _update_settings_and_docs(self, dc):
-        # If dc is class then instantiate it
-        if type(dc) is type:
+        if type(dc) is type:  # If dc is class then instantiate it
             dc = dc()
-        for item in dir(dc):
-            if not item.startswith('__'):
-                super().__setitem__(item, getattr(dc, item))
         self.__doc__ = dc.__doc__
+        # if dc is a dataclass object.  This step is only necessary to support
+        # Python 3.6 which doesn't have the dataclasses module
+        if hasattr(dc, '__dict__'):
+            dc = copy.deepcopy(dc.__dict__)
+        else:
+            dc = copy.deepcopy(dc)
+        for item in dc.keys():
+            self[item] = dc[item]
+
+
+class GenericSettings:
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for item in dir(self):
+            if not item.startswith('__'):
+                self.__dict__[item] = getattr(self, item)
 
 
 class NestedDict(dict):

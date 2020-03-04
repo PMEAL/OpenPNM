@@ -23,7 +23,7 @@ class GenericAlgorithm(Base):
     Notes
     -----
     This class defines the following methods, which all raise a
-    ``NotImplementedError`` and must be defined by the various subclasses:
+    ``NotImplementedError`` and must be defined by the various subclasses
 
     +---------------------+---------------------------------------------------+
     | Methods             | Description                                       |

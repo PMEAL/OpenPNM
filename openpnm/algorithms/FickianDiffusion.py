@@ -58,7 +58,6 @@ class FickianDiffusion(ReactiveTransport):
             are typically calculated by a model attached to a *Physics* object
             associated with the given *Phase*.  The default is
             ``'throat.diffusive_conductance'``.
-        %(ReactiveTransport.setup.parameters)s
 
         Notes
         -----

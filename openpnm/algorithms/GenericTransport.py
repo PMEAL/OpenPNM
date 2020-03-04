@@ -7,8 +7,9 @@ from scipy.spatial import ConvexHull
 from scipy.spatial import cKDTree
 from openpnm.topotools import iscoplanar
 from openpnm.algorithms import GenericAlgorithm
-from openpnm.utils import logging, Docorator
-from dataclasses import dataclass, field
+from openpnm.utils import logging, Docorator, GenericSettings
+# Uncomment this line when we stop supporting Python 3.6
+# from dataclasses import dataclass, field
 from typing import List
 docstr = Docorator()
 logger = logging.getLogger(__name__)
@@ -17,8 +18,9 @@ logger = logging.getLogger(__name__)
 @docstr.get_sectionsf('GenericTransportSettings',
                       sections=['Parameters'])
 @docstr.dedent
-@dataclass
-class GenericTransportSettings:
+# Uncomment this line when we stop supporting Python 3.6
+# @dataclass
+class GenericTransportSettings(GenericSettings):
     r"""
     Defines the settings for GenericTransport algorithms
 
@@ -72,7 +74,9 @@ class GenericTransportSettings:
     solver_atol: float = None
     solver_rtol: float = None
     solver_maxiter: int = 5000
-    iterative_props: List = field(default_factory=lambda: [])
+    # Swap the following 2 lines when we stop supporting Python 3.6
+    iterative_props: List = []
+    # iterative_props: List = field(default_factory=lambda: [])
     cache_A: bool = True
     cache_b: bool = True
 

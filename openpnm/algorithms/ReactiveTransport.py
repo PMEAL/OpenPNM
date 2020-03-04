@@ -1,9 +1,10 @@
 import numpy as np
 from numpy.linalg import norm
 from openpnm.algorithms import GenericTransport
-from dataclasses import dataclass, field
+# Uncomment this line when we stop supporting Python 3.6
+# from dataclasses import dataclass, field
 from typing import List
-from openpnm.utils import logging, Docorator
+from openpnm.utils import logging, Docorator, GenericSettings
 docstr = Docorator()
 logger = logging.getLogger(__name__)
 
@@ -11,8 +12,9 @@ logger = logging.getLogger(__name__)
 @docstr.get_sectionsf('ReactiveTransportSettings',
                       sections=['Parameters'])
 @docstr.dedent
-@dataclass
-class ReactiveTransportSettings:
+# Uncomment this line when we stop supporting Python 3.6
+# @dataclass
+class ReactiveTransportSettings(GenericSettings):
     r"""
     Defines the settings for ReactiveTransport algorithms
 
@@ -42,7 +44,9 @@ class ReactiveTransportSettings:
     relaxation_source: float = 1.0
     relaxation_quantity: float = 1.0
     rxn_tolerance: float = 1e-8
-    sources: List = field(default_factory=lambda: [])
+    # Swap the following 2 lines when we stop supporting Python 3.6
+    # sources: List = field(default_factory=lambda: [])
+    sources: List = []
 
 
 @docstr.get_sectionsf('ReactiveTransport', sections=['Parameters'])
