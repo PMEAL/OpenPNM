@@ -75,7 +75,7 @@ class GenericTransportSettings(GenericSettings):
     solver_rtol = None
     solver_maxiter = 5000
     # Swap the following 2 lines when we stop supporting Python 3.6
-    iterative_props: List = []
+    iterative_props = []
     # iterative_props: List = field(default_factory=lambda: [])
     cache_A = True
     cache_b = True
