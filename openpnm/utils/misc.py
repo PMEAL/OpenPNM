@@ -5,10 +5,8 @@ import numpy as _np
 import scipy as _sp
 import time as _time
 import copy
-from dataclasses import dataclass
 from collections import OrderedDict
 from docrep import DocstringProcessor
-from terminaltables import AsciiTable
 
 
 class Docorator(DocstringProcessor):
