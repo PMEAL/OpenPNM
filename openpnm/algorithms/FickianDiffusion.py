@@ -7,7 +7,7 @@ logger = logging.getLogger(__name__)
 @docstr.dedent
 class FickianDiffusion(ReactiveTransport):
     r"""
-    A class to simulate binary diffusion.
+    A class to simulate binary diffusion with reactions
 
     Parameters
     ----------
@@ -42,7 +42,6 @@ class FickianDiffusion(ReactiveTransport):
         super().__init__(**kwargs)
         self.settings.update(settings)
 
-    @docstr.dedent
     def setup(self, phase=None, quantity='', conductance='', **kwargs):
         r"""
         This method takes several arguments that are essential to running the
@@ -50,14 +49,12 @@ class FickianDiffusion(ReactiveTransport):
 
         Parameters
         ----------
-        quantity : (string)
-             The name of the physical quantity to be calculated. The default
-             is ``'pore.mole_fraction'``.
-        conductance : (string)
+        quantity : str (default = ``'pore.mole_fraction'``)
+             The name of the physical quantity to be calculated.
+        conductance : str (default = ``'throat.diffusive_conductance'``)
             The name of the pore-scale transport conductance values.  These
             are typically calculated by a model attached to a *Physics* object
-            associated with the given *Phase*.  The default is
-            ``'throat.diffusive_conductance'``.
+            associated with the given *Phase*.
 
         Notes
         -----

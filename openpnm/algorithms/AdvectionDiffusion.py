@@ -1,7 +1,29 @@
 import numpy as np
 from openpnm.algorithms import ReactiveTransport
-from openpnm.utils import logging
+from openpnm.utils import logging, Docorator, GenericSettings
+docstr = Docorator()
 logger = logging.getLogger(__name__)
+
+
+@docstr.dedent
+class AdvectionDiffusionSettings(GenericSettings):
+    r"""
+    Parameters
+    ----------
+    %(ReactiveTransportSettings.parameters)s
+    diffusive_conductance : string
+        ##
+    hydraulic_conductance : string
+        ##
+    pressure : string
+        ##
+    s_scheme : string
+        ##
+    """
+    diffusive_conductance = 'throat.diffusive_conductance'
+    hydraulic_conductance = 'throat.hydraulic_conductance'
+    pressure = 'pore.pressure'
+    s_scheme = 'exponential'
 
 
 class AdvectionDiffusion(ReactiveTransport):
@@ -10,30 +32,16 @@ class AdvectionDiffusion(ReactiveTransport):
 
     """
 
-    def __init__(self, settings={}, phase=None, **kwargs):
-        def_set = {'phase': None,
-                   'quantity': 'pore.concentration',
-                   'conductance': 'throat.ad_dif_conductance',
-                   'diffusive_conductance': 'throat.diffusive_conductance',
-                   'hydraulic_conductance': 'throat.hydraulic_conductance',
-                   'pressure': 'pore.pressure',
-                   's_scheme': 'exponential',
-                   'gui': {'setup':        {'phase': None,
-                                            'quantity': '',
-                                            'conductance': ''},
-                           'set_rate_BC':  {'pores': None,
-                                            'values': None},
-                           'set_value_BC': {'pores': None,
-                                            'values': None},
-                           'set_source':   {'pores': None,
-                                            'propname': ''}
-                           }
-                   }
+    def __init__(self,
+                 settings={'quantity': 'pore.concentration',
+                           'conductance': 'throat.ad_dif_conductance',
+                           'diffusive_conductance': 'throat.diffusive_conductance',
+                           'hydraulic_conductance': 'throat.hydraulic_conductance',
+                           'pressure': 'pore.pressure',
+                           's_scheme': 'exponential'}, **kwargs):
         super().__init__(**kwargs)
-        self.settings.update(def_set)
+        self.settings._update_settings_and_docs(AdvectionDiffusionSettings())
         self.settings.update(settings)
-        if phase is not None:
-            self.setup(phase=phase)
         # Make "conductance" iterative_prop, so it gets updated after running StokesFlow
         self.set_iterative_props(propnames=self.settings['conductance'])
 
