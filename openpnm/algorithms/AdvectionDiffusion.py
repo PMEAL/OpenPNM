@@ -5,21 +5,51 @@ docstr = Docorator()
 logger = logging.getLogger(__name__)
 
 
+@docstr.get_sectionsf('AdvectionDiffusionSettings',
+                      sections=['Parameters', 'Other Parameters'])
 @docstr.dedent
 class AdvectionDiffusionSettings(GenericSettings):
     r"""
     Parameters
     ----------
-    %(ReactiveTransportSettings.parameters)s
-    diffusive_conductance : string
-        ##
-    hydraulic_conductance : string
-        ##
-    pressure : string
-        ##
-    s_scheme : string
-        ##
+    quantity : string (default = 'pore.concentration')
+        The name of the physical quantity to be calculated
+    conductance : string (default = 'throat.ad_dif_conductance')
+        The name of the advective-diffusive conductance model to use for
+        calculating the transport conductance used by the algorithm.
+    diffusive_conductance : string (default = 'throat.diffusive_conductance')
+        The name of the diffusive conductance values to be used by the
+        specified ``'conductance'`` model to find the advective-diffusive
+        conductance.
+    hydraulic_conductance : string (default = 'throat.hydraulic_conductance')
+        The name of the hydraulic conductance values to be used by the
+        specified ``'conductance'`` model to find the advective-diffusive
+        conductance.
+    pressure : string (default = 'pore.pressure')
+        The name of the pressure values calculated by the ``StokesFlow``
+        algorithm.
+
+    Other Parameters
+    ----------------
+    s_scheme : string {'exponential' (default), 'power law', 'hybrid', 'upwind'}
+        The spatial discretization used
+
+    ----
+
+    **The following parameters pertain to the ReactiveTransport class**
+
+    %(ReactiveTransportSettings.other_parameters)s
+
+    ----
+
+    **The following parameters pertain to the GenericTransport class**
+
+    %(GenericTransportSettings.other_parameters)s
+
     """
+
+    quantity = 'pore.concentration'
+    conductance = 'throat.ad_dif_conductance'
     diffusive_conductance = 'throat.diffusive_conductance'
     hydraulic_conductance = 'throat.hydraulic_conductance'
     pressure = 'pore.pressure'
@@ -32,13 +62,7 @@ class AdvectionDiffusion(ReactiveTransport):
 
     """
 
-    def __init__(self,
-                 settings={'quantity': 'pore.concentration',
-                           'conductance': 'throat.ad_dif_conductance',
-                           'diffusive_conductance': 'throat.diffusive_conductance',
-                           'hydraulic_conductance': 'throat.hydraulic_conductance',
-                           'pressure': 'pore.pressure',
-                           's_scheme': 'exponential'}, **kwargs):
+    def __init__(self, settings={}, **kwargs):
         super().__init__(**kwargs)
         self.settings._update_settings_and_docs(AdvectionDiffusionSettings())
         self.settings.update(settings)

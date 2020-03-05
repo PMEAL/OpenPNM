@@ -6,8 +6,9 @@ from openpnm.utils import logging, GenericSettings, Docorator
 docstr = Docorator()
 logger = logging.getLogger(__name__)
 
+
 @docstr.get_sectionsf('TransientReactiveTransportSettings',
-                      sections=['Parameters'])
+                      sections=['Parameters', 'Other Parameters'])
 @docstr.dedent
 class TransientReactiveTransportSettings(GenericSettings):
     r"""
@@ -15,6 +16,16 @@ class TransientReactiveTransportSettings(GenericSettings):
     Parameters
     ----------
     %(ReactiveTransportSettings.parameters)s
+
+    quantity : (str)
+        The name of the physical quantity to be calculated
+    conductance : (str)
+        The name of the pore-scale transport conductance values. These are
+        typically calculated by a model attached to a *Physics* object
+        associated with the given *Phase*.
+
+    Other Parameters
+    ----------------
     t_initial : scalar
         The simulation's start time, which must be smaller than
         't_final'. The default value is 0.
@@ -51,7 +62,21 @@ class TransientReactiveTransportSettings(GenericSettings):
         to perform a steady-state simulation, and 'implicit' (fast, 1st
         order accurate) and 'cranknicolson' (slow, 2nd order accurate) both
         for transient simulations. The default value is 'implicit'.
+
+    ----
+
+    **The following parameters pertain to the ReactiveTransport class**
+
+    %(ReactiveTransportSettings.other_parameters)s
+
+    ----
+
+    **The following parameters pertain to the GenericTransport class**
+
+    %(GenericTransportSettings.other_parameters)s
+
     """
+
     phase = None
     t_initial = 0
     t_final = 10

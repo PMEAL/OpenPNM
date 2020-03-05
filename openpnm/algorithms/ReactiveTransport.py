@@ -3,41 +3,55 @@ from numpy.linalg import norm
 from openpnm.algorithms import GenericTransport
 # Uncomment this line when we stop supporting Python 3.6
 # from dataclasses import dataclass, field
-from typing import List
+# from typing import List
 from openpnm.utils import logging, Docorator, GenericSettings
 docstr = Docorator()
 logger = logging.getLogger(__name__)
 
 
 @docstr.get_sectionsf('ReactiveTransportSettings',
-                      sections=['Parameters'])
+                      sections=['Parameters', 'Other Parameters'])
 @docstr.dedent
 # Uncomment this line when we stop supporting Python 3.6
 # @dataclass
 class ReactiveTransportSettings(GenericSettings):
     r"""
-    Defines the settings for ReactiveTransport algorithms
 
     Parameters
     ----------
     %(GenericTransportSettings.parameters)s
-    sources : (list)
+
+    quantity : (str)
+        The name of the physical quantity to be calculated
+    conductance : (str)
+        The name of the pore-scale transport conductance values. These are
+        typically calculated by a model attached to a *Physics* object
+        associated with the given *Phase*.
+
+    Other Parameters
+    ----------------
+    sources : list
         List of source terms that have been added
-    relaxation_source : (float)
+    relaxation_source : float (default = 1.0)
         A relaxation factor to control under-relaxation of the source term.
         Factor approaching 0 leads to improved stability but slower simulation.
         Factor approaching 1 gives fast simulation but may be unstable.
-        Default value is 1 (no under-relaxation).
-    relaxation_quantity : (float)
+    relaxation_quantity : float (default = 1.0)
         A relaxation factor to control under-relaxation for the quantity
         solving for. Factor approaching 0 leads to improved stability but
         slower simulation. Factor approaching 1 gives fast simulation but
-        may be unstable. Default value is 1 (no under-relaxation).
-    rxn_tolerance : (float)
+        may be unstable.
+    rxn_tolerance : float (default = 1e-8)
         Tolerance to achieve. The solver returns a solution when 'residual'
-        falls below 'rxn_tolerance'. The default value is 1e-05.
+        falls below 'rxn_tolerance'.
     max_iter : (int)
         ##
+
+    ----
+
+    **The following parameters pertain to the GenericTransport class**
+
+    %(GenericTransportSettings.other_parameters)s
     """
 
     max_iter = 5000

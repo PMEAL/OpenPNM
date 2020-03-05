@@ -10,13 +10,13 @@ from openpnm.algorithms import GenericAlgorithm
 from openpnm.utils import logging, Docorator, GenericSettings
 # Uncomment this line when we stop supporting Python 3.6
 # from dataclasses import dataclass, field
-from typing import List
+# from typing import List
 docstr = Docorator()
 logger = logging.getLogger(__name__)
 
 
 @docstr.get_sectionsf('GenericTransportSettings',
-                      sections=['Parameters'])
+                      sections=['Parameters', 'Other Parameters'])
 @docstr.dedent
 # Uncomment this line when we stop supporting Python 3.6
 # @dataclass
@@ -27,40 +27,43 @@ class GenericTransportSettings(GenericSettings):
     Parameters
     ----------
     phase : (str)
-        The name of the phase on which this algorithm acts
+        The name of the phase on which the algorithm acts
+
     quantity : (str)
+        The name of the physical quantity to be calculated
+    conductance : (str)
         The name of the pore-scale transport conductance values. These are
         typically calculated by a model attached to a *Physics* object
         associated with the given *Phase*.
-    conductance : (str)
-        The name of the physical quantity to be calculated
-    solver_family : (str)
+
+    Other Parameters
+    ----------------
+    solver_family : str (default = 'scipy')
         The solver package to use.  OpenPNM currently supports ``scipy``,
-        ``pyamg`` and ``petsc`` (if you have it installed). The default is
-        ``scipy``.
-    solver_type : (str)
+        ``pyamg`` and ``petsc`` (if you have it installed).
+    solver_type : str
         The specific solver to use.  For instance, if ``solver_family`` is
         ``scipy`` then you can specify any of the iterative solvers such as
         ``cg`` or ``gmres``. [More info here]
         (https://docs.scipy.org/doc/scipy/reference/sparse.linalg.html),
-    solver_preconditioner : (str)
+    solver_preconditioner : str (default = ``jacobi``)
         This is used by the PETSc solver to specify which preconditioner to
-        use. The default is ``jacobi``.
-    solver_tol : (float)
+        use.
+    solver_tol : float (default = 1e-6)
         Used to control the accuracy to which the iterative solver aims to
-        achieve before stopping. The default is 1e-6.
-    solver_atol : (float)
+        achieve before stopping.
+    solver_atol : float
+        ##
+    solver_rtol : float
+        ##
+    solver_maxiter : int (default = 5000)
         Limits the number of iterations to attempt before quiting when aiming
         for the specified tolerance. The default is 5000.
-    solver_rtol : (float)
+    iterative_props : list
         ##
-    solver_maxiter : (int)
+    cache_A : bool
         ##
-    iterative_props : (list)
-        ##
-    cache_A : (bool)
-        ##
-    cache_b : (bool)
+    cache_b : bool
         ##
     """
 
