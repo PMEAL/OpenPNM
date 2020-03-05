@@ -12,6 +12,7 @@ class AdvectionDiffusionSettings(GenericSettings):
     r"""
     Parameters
     ----------
+    %(ReactiveTransportSettings.parameters)s
     quantity : string (default = 'pore.concentration')
         The name of the physical quantity to be calculated
     conductance : string (default = 'throat.ad_dif_conductance')
