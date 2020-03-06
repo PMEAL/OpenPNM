@@ -167,14 +167,10 @@ class TransientIonicTransportTest:
               9.941129e+01, 9.941129e+01, 9.941129e+01, 9.941129e+01,
               9.941129e+01, 9.941129e+01, 1.000000e+02, 1.000000e+02,
               1.000000e+02, 1.000000e+02, 1.000000e+02, 1.000000e+02])
-        self.output = self.phase.keys()
         y1 = np.around(p[p.settings['quantity']], decimals=5)
         y2 = np.around(eA[eA.settings['quantity']], decimals=5)
         y3 = np.around(eB[eB.settings['quantity']], decimals=5)
         y = np.concatenate((y1, y2, y3))
-        assert np.all(x == y)
-
-    def test_transient_ionic_reactive_transport_output(self):
         times = ['pore.concentration.Na_mix_01@5000',
                  'pore.concentration.Cl_mix_01@5000', 'pore.potential@5000',
                  'pore.concentration.Na_mix_01@10000',
@@ -183,7 +179,8 @@ class TransientIonicTransportTest:
                  'pore.concentration.Cl_mix_01@15000', 'pore.potential@15000',
                  'pore.concentration.Na_mix_01@19500',
                  'pore.concentration.Cl_mix_01@19500', 'pore.potential@19500']
-        assert (set(times).issubset(set(self.output)))
+        assert np.all(x == y)
+        assert (set(times).issubset(set(self.phase.keys())))
 
     def teardown_class(self):
         ws = op.Workspace()
