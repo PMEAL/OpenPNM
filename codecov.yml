@@ -25,3 +25,5 @@ comment:
 
 ignore:
   - tests/**/*
+  - docs/**/*
+  - example.py
