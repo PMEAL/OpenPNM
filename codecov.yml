@@ -24,6 +24,6 @@ comment:
   behavior: default
 
 ignore:
-  - tests/**/*
-  - docs/**/*
-  - example.py
+  - "tests/**/*"
+  - "docs/**/*"
+  - "example.py"
