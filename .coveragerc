@@ -4,3 +4,11 @@ omit =
     test/*
     setup.py
     example_script.py
+
+[report]
+exclude_lines =
+    raise NotImplementedError
+    if __name__ == .__main__.:
+omit =
+    tests/*
+    setup.py
