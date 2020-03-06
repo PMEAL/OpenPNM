@@ -117,7 +117,7 @@ class TransientReactiveTransport(ReactiveTransport):
         solver_tol : scalar
             Tolerance to achieve within each time step. The solver passes to
             next time step when 'residual' falls below 'solver_tol'. The
-            default value is 1e-05.
+            default value is 1e-08.
 
         t_precision : integer
             The time precision (number of decimal places).
