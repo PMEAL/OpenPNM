@@ -11,3 +11,4 @@ omit =
     docs/*
     tests/*
     example.py
+    setup.py
