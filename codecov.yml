@@ -19,7 +19,7 @@ coverage:
         branches: null
 
   ignore:
-    - tests/**/*
+    # - tests/**/*
     - docs/**/*
     - example.py
 
