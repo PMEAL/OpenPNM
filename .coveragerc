@@ -8,3 +8,6 @@ exclude_lines =
     if __name__ == .__main__.:
 omit =
     test/*
+    docs/*
+    tests/*
+    example.py
