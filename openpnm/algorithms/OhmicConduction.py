@@ -3,9 +3,10 @@ from openpnm.utils import logging, Docorator, GenericSettings
 docstr = Docorator()
 logger = logging.getLogger(__name__)
 
-
+@docstr.get_sectionsf('OhmicConductionSettings',
+                      sections=['Parameters'])
 @docstr.dedent
-class OhmicTransportSettings(GenericSettings):
+class OhmicConductionSettings(GenericSettings):
     r"""
 
     Parameters
@@ -48,7 +49,7 @@ class OhmicConduction(ReactiveTransport):
 
     def __init__(self, settings={}, **kwargs):
         super().__init__(**kwargs)
-        self.settings._update_settings_and_docs(OhmicTransportSettings())
+        self.settings._update_settings_and_docs(OhmicConductionSettings())
         self.settings.update(settings)
 
     def setup(self, phase=None, quantity='', conductance='', **kwargs):
@@ -58,21 +59,7 @@ class OhmicConduction(ReactiveTransport):
 
         Parameters
         ----------
-        phase : OpenPNM Phase object
-            The phase on which the algorithm is to be run.  If no value is
-            given, the existing value is kept.
-
-        quantity : string
-            The name of the physical quantity to be calcualted.  If no value is
-            given, the existing value is kept.  The default value is
-            ``'pore.voltage'``.
-
-        conductance : string
-            The name of the pore-scale transport conductance values.  These
-            are typically calculate by a model attached to a *Physics* object
-            associated with the given *Phase*.  If no value is given, the
-            existing value is kept.  The default value is
-            ``'throat.electrical_conductance'``.
+        %(OhmicConductionSettings.parameters)s
 
         Notes
         -----

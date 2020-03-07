@@ -1,24 +1,53 @@
 import numpy as np
 import scipy as sp
 from openpnm.algorithms import ReactiveTransport
-from openpnm.utils import logging
+from openpnm.utils import logging, GenericSettings, Docorator
 logger = logging.getLogger(__name__)
+docstr = Docorator()
+
+@docstr.get_sectionsf('StokesFlowSettings',
+                      sections=['Parameters'])
+@docstr.dedent
+class StokesFlowSettings(GenericSettings):
+    r"""
+
+    Parameters
+    ----------
+    %(GenericTransportSettings.parameters)s
+    quantity : str (default = 'pore.pressure')
+        The name of the physical quantity to be calculated
+    conductance : str (default = 'throat.hydraulic_conductance')
+        The name of the pore-scale transport conductance values. These are
+        typically calculated by a model attached to a *Physics* object
+        associated with the given *Phase*.
+
+    Other Parameters
+    ----------------
+
+    **The following parameters pertain to the ReactiveTransport class**
+
+    %(ReactiveTransportSettings.other_parameters)s
+
+    ----
+
+    **The following parameters pertain to the GenericTransport class**
+
+    %(GenericTransportSettings.other_parameters)s
+
+    """
+    quantity = 'pore.pressure'
+    conductance = 'throat.hydraulic_conductance'
 
 
 class StokesFlow(ReactiveTransport):
     r"""
-    A subclass of GenericLinearTransport to simulate viscous flow.  The 2
-    main roles of this subclass are to set the default property names and to
-    implement a method for calculating the hydraulic permeability of the
-    network.
+    A subclass of GenericLinearTransport to simulate viscous flow.
 
     """
 
-    def __init__(self,
-                 settings={'quantity': 'pore.pressure',
-                           'conductance': 'throat.hydraulic_conductance'},
-                 **kwargs):
+    def __init__(self, settings={}, **kwargs):
         super().__init__(**kwargs)
+        self.settings._update_settings_and_docs(StokesFlowSettings())
         self.settings.update(settings)
 
     def setup(self, phase=None, quantity='', conductance='', **kwargs):
@@ -28,21 +57,7 @@ class StokesFlow(ReactiveTransport):
 
         Parameters
         ----------
-        phase : OpenPNM Phase object
-            The phase on which the algorithm is to be run.  If no value is
-            given, the existing value is kept.
-
-        quantity : string
-            The name of the physical quantity to be calcualted.  If no value is
-            given, the existing value is kept.  The default value is
-            ``'pore.pressure'``.
-
-        conductance : string
-            The name of the pore-scale transport conductance values.  These
-            are typically calculate by a model attached to a *Physics* object
-            associated with the given *Phase*.  If no value is given, the
-            existing value is kept.  The default value is
-            ``'throat.hydraulic_conductance'``.
+        %(StokesFlowSettings.parameters)s
 
         Notes
         -----

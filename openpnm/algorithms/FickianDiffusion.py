@@ -3,7 +3,8 @@ from openpnm.utils import logging, Docorator, GenericSettings
 docstr = Docorator()
 logger = logging.getLogger(__name__)
 
-
+@docstr.get_sectionsf('FickianDiffusionSettings',
+                      sections=['Parameters'])
 @docstr.dedent
 class FickianDiffusionSettings(GenericSettings):
     r"""
@@ -80,12 +81,7 @@ class FickianDiffusion(ReactiveTransport):
 
         Parameters
         ----------
-        quantity : str (default = ``'pore.mole_fraction'``)
-             The name of the physical quantity to be calculated.
-        conductance : str (default = ``'throat.diffusive_conductance'``)
-            The name of the pore-scale transport conductance values.  These
-            are typically calculated by a model attached to a *Physics* object
-            associated with the given *Phase*.
+        %(FickianDiffusionSettings.parameters)s
 
         Notes
         -----
