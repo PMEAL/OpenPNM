@@ -1,11 +1,6 @@
 [run]
 source =
     openpnm/
-omit =
-    *__init__*
-    test/*
-    setup.py
-    example_script.py
 
 [report]
 exclude_lines =
@@ -13,5 +8,3 @@ exclude_lines =
     if __name__ == .__main__.:
 omit =
     test/*
-    tests/*
-    setup.py
