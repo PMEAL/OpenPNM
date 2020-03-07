@@ -86,7 +86,7 @@ class NernstPlanck(ReactiveTransport):
                 conductance = 'throat.' + conductance
             # Remove ion name whether present or not
             conductance = '.'.join(conductance.split('.')[:2])
-            # conductance += ('.' + ion)  # Re-add ion name
+            conductance += ('.' + ion)  # Re-add ion name
             self.settings['conductance'] = conductance
         if ion:
             if not type(ion) is str:
@@ -97,7 +97,7 @@ class NernstPlanck(ReactiveTransport):
             if quantity == '':
                 quantity = self.settings['quantity']
             conductance = '.'.join(conductance.split('.')[:2])
-            # conductance += ('.' + ion)
+            conductance += ('.' + ion)
             self.settings['conductance'] = conductance
             quantity = '.'.join(quantity.split('.')[:2])
             quantity += ('.' + ion)
