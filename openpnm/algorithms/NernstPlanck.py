@@ -34,7 +34,7 @@ class NernstPlanckSettings(GenericSettings):
     %(GenericTransportSettings.other_parameters)s
 
     """
-    ion = None
+    ion = ''
     quantity = 'pore.concentration'
     conductance = 'throat.ad_dif_mig_conductance'
 
@@ -46,7 +46,7 @@ class NernstPlanck(ReactiveTransport):
 
     """
 
-    def __init__(self, ion=None, settings={}, **kwargs):
+    def __init__(self, ion, settings={}, **kwargs):
         super().__init__(**kwargs)
         # self.name = electrolyte  # This interfers with component name
         self.settings._update_settings_and_docs(NernstPlanckSettings())
@@ -59,21 +59,41 @@ class NernstPlanck(ReactiveTransport):
         if phase:
             self.settings['phase'] = phase.name
         if quantity:
-            self.settings['quantity'] = quantity
-            self.setup(ion=ion)
+            if ion:
+                if not type(ion) is str:  # Convert ion object to str
+                    ion = ion.name
+            else:  # Get ion name from settings if not given
+                ion = self.settings['ion']
+            if not quantity.startswith('pore'):
+                quantity = 'pore.' + quantity
+            # Remove ion name whether present or not
+            quantity = '.'.join(quantity.split('.')[:2])
+            quantity += ('.' + ion)  # Re-add ion name
+            self.settings['quantity'] = quantity  # Add full value to settings
         if conductance:
+            if ion:
+                if not type(ion) is str:  # Convert ion object to str
+                    ion = ion.name
+            else:  # Get ion name from settings if not given
+                ion = self.settings['ion']
+            if not conductance.startswith('throat'):
+                conductance = 'throat.' + conductance
+            # Remove ion name whether present or not
+            conductance = '.'.join(conductance.split('.')[:2])
+            # conductance += ('.' + ion)  # Re-add ion name
             self.settings['conductance'] = conductance
-            self.setup(ion=ion)
         if ion:
             if not type(ion) is str:
                 ion = ion.name
             self.settings['ion'] = ion
-            cond_str = self.settings['conductance']
-            cond_str = '.'.join(cond_str.split('.')[:2])
-            cond_str += ('.' + ion.name)
-            self.settings['conductance'] = cond_str
-            quan_str = self.settings['quantity']
-            quan_str = '.'.join(quan_str.split('.')[:2])
-            quan_str += ('.' + ion.name)
-            self.settings['quantity'] = cond_str
+            if conductance == '':
+                conductance = self.settings['conductance']
+            if quantity == '':
+                quantity = self.settings['quantity']
+            conductance = '.'.join(conductance.split('.')[:2])
+            # conductance += ('.' + ion)
+            self.settings['conductance'] = conductance
+            quantity = '.'.join(quantity.split('.')[:2])
+            quantity += ('.' + ion)
+            self.settings['quantity'] = quantity
         super().setup(**kwargs)
