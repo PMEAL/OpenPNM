@@ -4,6 +4,7 @@ docstr = Docorator()
 logger = logging.getLogger(__name__)
 
 
+@docstr.get_sectionsf('NernstPlanckSettings', sections=['Parameters'])
 @docstr.dedent
 class NernstPlanckSettings(GenericSettings):
     r"""
@@ -55,6 +56,11 @@ class NernstPlanck(ReactiveTransport):
 
     def setup(self, phase=None, quantity='', conductance='', ion='', **kwargs):
         r"""
+
+        Parameters
+        ----------
+        %(NernstPlanckSettings.parameters)s
+
         """
         if phase:
             self.settings['phase'] = phase.name

@@ -26,11 +26,21 @@ class IonicTransportSettings(GenericSettings):
 
     Other Parameters
     ----------------
-    %(ReactiveTransportSettings.parameters)s
+
+    **The following parameters pertain to the ReactiveTransport class**
+
+    %(ReactiveTransportSettings.other_parameters)s
+
+    ----
+
+    **The following parameters pertain to the GenericTransport class**
+
+    %(GenericTransportSettings.other_parameters)s
+
     """
     potential_field = ''
     ions = []
-    i_tolerance =1e-4
+    i_tolerance = 1e-4
     i_max_iter = 10
 
 
@@ -39,6 +49,7 @@ class IonicTransport(ReactiveTransport):
     A subclass of GenericTransport to solve the charge conservation and
     Nernst-Planck equations.
     """
+
     def __init__(self, settings={},  **kwargs):
         super().__init__(**kwargs)
         self.settings._update_settings_and_docs(IonicTransportSettings())
