@@ -19,9 +19,9 @@ coverage:
         branches: null
 
   ignore:
-  - tests/**/*
-  - docs/**/*
-  - example.py
+    - tests/**/*
+    - docs/**/*
+    - example.py
 
 comment:
   layout: "header, diff, changes, sunburst, uncovered"
