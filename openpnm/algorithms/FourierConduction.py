@@ -12,7 +12,6 @@ class FourierConductionSettings(GenericSettings):
     Parameters
     ----------
     %(GenericTransportSettings.parameters)s
-
     quantity : str (default = ``'pore.temperature'``
         The name of the physical quantity to be calculated
     conductance : str (default = ``'pore.thermal_conductance'``)

@@ -12,7 +12,6 @@ class FickianDiffusionSettings(GenericSettings):
     Parameters
     ----------
     %(GenericTransportSettings.parameters)s
-
     quantity : str (default = 'pore.concentration')
         The name of the physical quantity to be calculated
     conductance : str (default = 'throat.diffusive_conductance')

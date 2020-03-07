@@ -1,6 +1,7 @@
 from openpnm.algorithms import TransientReactiveTransport, FickianDiffusion
-from openpnm.utils import logging
+from openpnm.utils import logging, Docorator
 logger = logging.getLogger(__name__)
+docstr = Docorator()
 
 
 class TransientFickianDiffusion(TransientReactiveTransport, FickianDiffusion):
@@ -9,15 +10,26 @@ class TransientFickianDiffusion(TransientReactiveTransport, FickianDiffusion):
 
     """
 
-    def __init__(self, settings={}, phase=None, **kwargs):
+    def __init__(self, settings={}, **kwargs):
         super().__init__(**kwargs)
         self.settings.update(settings)
-        if phase is not None:
-            self.setup(phase=phase)
 
+    @docstr.dedent
     def setup(self, phase=None, quantity='', conductance='',
               t_initial=None, t_final=None, t_step=None, t_output=None,
               t_tolerance=None, t_scheme='', **kwargs):
+        r"""
+
+        Parameters
+        ----------
+        %(FickianDiffusionSettings.parameters)s
+
+        Notes
+        -----
+        Any additional arguments are added to the ``settings`` dictionary of
+        the object.
+
+        """
         if phase:
             self.settings['phase'] = phase.name
         if quantity:

@@ -12,7 +12,6 @@ class OhmicConductionSettings(GenericSettings):
     Parameters
     ----------
     %(GenericTransportSettings.parameters)s
-
     quantity : str (default = ``'pore.voltage'``)
         The name of the physical quantity to be calculated
     conductance : str (default = ``'throat.electrical_conductance'``)
