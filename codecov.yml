@@ -20,8 +20,8 @@ coverage:
 
   ignore:
     # - tests/**/*
-    - docs/**/*
-    - example.py
+    # - docs/**/*
+    - "example.py"
 
 comment:
   layout: "header, diff, changes, sunburst, uncovered"
