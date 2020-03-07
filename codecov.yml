@@ -18,12 +18,12 @@ coverage:
         target: auto
         branches: null
 
+  ignore:
+  - tests/**/*
+  - docs/**/*
+  - example.py
+
 comment:
   layout: "header, diff, changes, sunburst, uncovered"
   branches: null
   behavior: default
-
-ignore:
-  - "tests/**/*"
-  - "docs/**/*"
-  - "example.py"
