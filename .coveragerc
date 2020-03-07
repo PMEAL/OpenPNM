@@ -1,4 +1,6 @@
 [run]
+source =
+    openpnm/
 omit =
     *__init__*
     test/*
