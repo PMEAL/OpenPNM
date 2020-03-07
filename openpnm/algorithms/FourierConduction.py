@@ -33,8 +33,8 @@ class FourierConductionSettings(GenericSettings):
     %(GenericTransportSettings.other_parameters)s
 
     """
-    quantity = 'pore.voltage'
-    conductance = 'throat.electrical_conductance'
+    quantity = 'pore.temperature'
+    conductance = 'throat.thermal_conductance'
 
 
 class FourierConduction(ReactiveTransport):
