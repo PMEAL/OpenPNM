@@ -65,7 +65,9 @@ class NernstPlanck(ReactiveTransport):
             self.settings['conductance'] = conductance
             self.setup(ion=ion)
         if ion:
-            self.settings['ion'] = ion.name
+            if not type(ion) is str:
+                ion = ion.name
+            self.settings['ion'] = ion
             cond_str = self.settings['conductance']
             cond_str = '.'.join(cond_str.split('.')[:2])
             cond_str += ('.' + ion.name)
