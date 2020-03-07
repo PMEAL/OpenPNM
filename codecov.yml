@@ -20,7 +20,7 @@ coverage:
 
   ignore:
     # - tests/**/*
-    # - docs/**/*
+    - docs/.*
     - "example.py"
 
 comment:
