@@ -13,9 +13,9 @@ class FourierConductionSettings(GenericSettings):
     ----------
     %(GenericTransportSettings.parameters)s
 
-    quantity : (str)
+    quantity : str (default = ``'pore.temperature'``
         The name of the physical quantity to be calculated
-    conductance : (str)
+    conductance : str (default = ``'pore.thermal_conductance'``)
         The name of the pore-scale transport conductance values. These are
         typically calculated by a model attached to a *Physics* object
         associated with the given *Phase*.
