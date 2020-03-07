@@ -1,8 +1,24 @@
 import numpy as np
 from openpnm.algorithms import ReactiveTransport
 from openpnm.models.physics import generic_source_term as gst
-from openpnm.utils import logging
+from openpnm.utils import logging, Docorator, GenericSettings
 logger = logging.getLogger(__name__)
+docstr = Docorator()
+
+@docstr.get_sectionsf('ChargeTransportSettings',
+                      sections=['Parameters'])
+@docstr.dedent
+class ChargeTransportSettings(GenericSettings):
+    r"""
+
+    Parameters
+    ----------
+    charge_conservation : str (default = ``'electroneutrality'``)
+        The assumption adopted to enforce charge conservation when
+        performing ions transport simulations.
+    %(ReactiveTransportSettings.parameters)s
+    """
+    charge_conservasion = 'electroneutrality'
 
 
 class ChargeConservation(ReactiveTransport):
@@ -22,28 +38,14 @@ class ChargeConservation(ReactiveTransport):
         given, one is generated.
     """
 
-    def __init__(self, settings={}, phase=None, **kwargs):
-        def_set = {'phase': None,
-                   'quantity': 'pore.potential',
-                   'conductance': 'throat.ionic_conductance',
-                   'charge_conservation': 'electroneutrality',
-                   'gui': {'setup':        {'phase': None,
-                                            'quantity': '',
-                                            'conductance': '',
-                                            'charge_conservation': ''},
-                           'set_rate_BC':  {'pores': None,
-                                            'values': None},
-                           'set_value_BC': {'pores': None,
-                                            'values': None},
-                           'set_source':   {'pores': None,
-                                            'propname': ''}
-                           }
-                   }
+    def __init__(self,
+                 settings={'quantity': 'pore.potential',
+                           'conductance': 'throat.ionic_conductance',
+                           'charge_conservation': 'electroneutrality',
+                           }, **kwargs):
         super().__init__(**kwargs)
-        self.settings.update(def_set)
+        self.settings._update_settings_and_docs(ChargeTransportSettings())
         self.settings.update(settings)
-        if phase is not None:
-            self.setup(phase=phase)
 
     def setup(self, phase=None, quantity='', conductance='',
               charge_conservation=None, **kwargs):
@@ -55,21 +57,16 @@ class ChargeConservation(ReactiveTransport):
         ----------
         phase : OpenPNM Phase object
             The phase on which the algorithm is to be run.
-
-        quantity : string
-            (default is ``'pore.mole_fraction'``)  The name of the physical
+        quantity : str (default = ``'pore.mole_fraction'``)
+              The name of the physical
             quantity to be calculated.
-
-        conductance : string
-            (default is ``'throat.diffusive_conductance'``) The name of the
-            pore-scale transport conductance values.  These are typically
-            calculated by a model attached to a *Physics* object associated
-            with the given *Phase*.
-
-        charge_conservation : string
+        conductance : str (default is ``'throat.ionic_conductance'``)
+            The name of thepore-scale transport conductance values.  These are
+            typically calculated by a model attached to a *Physics* object
+            associated with the given *Phase*.
+        charge_conservation : str (default = ``'electroneutrality'``)
             The assumption adopted to enforce charge conservation when
-            performing ions transport simulations (default is
-            "electroneutrality").
+            performing ions transport simulations.
 
         Notes
         -----

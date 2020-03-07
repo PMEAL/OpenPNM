@@ -1,5 +1,37 @@
 import numpy as np
 from openpnm.algorithms import ReactiveTransport
+from openpnm.utils import logging, Docorator, GenericSettings
+docstr = Docorator()
+logger = logging.getLogger(__name__)
+
+
+@docstr.get_sectionsf('IonicTransportSettings',
+                      sections=['Parameters'])
+@docstr.dedent
+class IonicTransportSettings(GenericSettings):
+    r"""
+    The following decribes the settings associated with the IonicTransport
+    algorithm as well as settings related the ReactiveTransport in general.
+
+    Parameters
+    ----------
+    potential_field : str
+        ##
+    ions : list of OpenPNM object names
+        ##
+    i_tolerance : float (default = 1e-4)
+        ##
+    i_max_iter : int (default = 10)
+        ##
+
+    Other Parameters
+    ----------------
+    %(ReactiveTransportSettings.parameters)s
+    """
+    potential_field = ''
+    ions = []
+    i_tolerance =1e-4
+    i_max_iter = 10
 
 
 class IonicTransport(ReactiveTransport):
@@ -7,24 +39,20 @@ class IonicTransport(ReactiveTransport):
     A subclass of GenericTransport to solve the charge conservation and
     Nernst-Planck equations.
     """
-    def __init__(self, settings={}, phase=None, **kwargs):
-        def_set = {'phase': None,
-                   'potential_field': '',
-                   'ions': [],
-                   'i_tolerance': 1e-4,
-                   'i_max_iter': 10}
+    def __init__(self, settings={},  **kwargs):
         super().__init__(**kwargs)
-        self.settings.update(def_set)
+        self.settings._update_settings_and_docs(IonicTransportSettings())
         self.settings.update(settings)
-        if phase is not None:
-            self.setup(phase=phase)
 
-    def setup(self, phase=None, potential_field='', ions=[], i_tolerance=None,
+    @docstr.dedent
+    def setup(self, potential_field='', ions=[], i_tolerance=None,
               i_max_iter=None, **kwargs):
         r"""
+
+        Parameters
+        ----------
+        %(IonicTransportSettings.parameters)s
         """
-        if phase:
-            self.settings['phase'] = phase.name
         if potential_field:
             self.settings['potential_field'] = potential_field
         if ions:
