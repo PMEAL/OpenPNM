@@ -1,7 +1,40 @@
 from openpnm.algorithms import ReactiveTransport
-from openpnm.utils import logging, Docorator
+from openpnm.utils import logging, Docorator, GenericSettings
 docstr = Docorator()
 logger = logging.getLogger(__name__)
+
+
+@docstr.dedent
+class FickianDiffusionSettings(GenericSettings):
+    r"""
+
+    Parameters
+    ----------
+    %(GenericTransportSettings.parameters)s
+
+    quantity : str (default = 'pore.concentration')
+        The name of the physical quantity to be calculated
+    conductance : str (default = 'throat.diffusive_conductance')
+        The name of the pore-scale transport conductance values. These are
+        typically calculated by a model attached to a *Physics* object
+        associated with the given *Phase*.
+
+    Other Parameters
+    ----------------
+
+    **The following parameters pertain to the ReactiveTransport class**
+
+    %(ReactiveTransportSettings.other_parameters)s
+
+    ----
+
+    **The following parameters pertain to the GenericTransport class**
+
+    %(GenericTransportSettings.other_parameters)s
+
+    """
+    quantity = 'pore.concentration'
+    conductance = 'throat.diffusive_conductance'
 
 
 @docstr.dedent
@@ -35,11 +68,9 @@ class FickianDiffusion(ReactiveTransport):
 
     """
 
-    def __init__(self,
-                 settings={'quantity': 'pore.concentration',
-                           'conductance': 'throat.diffusive_conductance'},
-                 **kwargs):
+    def __init__(self, settings={}, **kwargs):
         super().__init__(**kwargs)
+        self.settings._update_settings_and_docs(FickianDiffusionSettings())
         self.settings.update(settings)
 
     def setup(self, phase=None, quantity='', conductance='', **kwargs):
