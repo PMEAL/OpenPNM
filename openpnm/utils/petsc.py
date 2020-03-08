@@ -11,8 +11,8 @@ from openpnm.utils import logging
 logger = logging.getLogger(__name__)
 try:
     import petsc4py
-    from petsc4py import PETSc
     petsc4py.init(sys.argv)
+    from petsc4py import PETSc
 except ModuleNotFoundError:
     pass
 
@@ -140,28 +140,25 @@ class PETScSparseLinearSolver(Base):
         if preconditioner not in preconditioners:
             raise Exception(f"{preconditioner} not found, choose another preconditioner")
 
+        self.ksp = PETSc.KSP()
+        self.ksp.create(PETSc.COMM_WORLD)
+        self.ksp.setType('cg')
+
         if solver in lu_direct_solvers:
-            self.ksp = PETSc.KSP()
-            self.ksp.create(PETSc.COMM_WORLD)
             self.ksp.getPC().setType('lu')
             self.ksp.getPC().setFactorSolverType(solver)
             self.ksp.setType('preonly')
 
         elif solver in cholesky_direct_solvers:
-            self.ksp = PETSc.KSP()
-            self.ksp.create(PETSc.COMM_WORLD)
             self.ksp.getPC().setType('cholesky')
             self.ksp.getPC().setFactorSolverType(solver)
             self.ksp.setType('preonly')
 
         elif solver in preconditioners:
-            self.ksp = PETSc.KSP()
-            self.ksp.create(PETSc.COMM_WORLD)
             self.ksp.getPC().setType(solver)
             self.ksp.setType('preonly')
 
         elif solver in iterative_solvers:
-            self.ksp = PETSc.KSP()
             self.ksp.create(PETSc.COMM_WORLD)
             self.ksp.getPC().setType(preconditioner)
             self.ksp.setType(solver)
@@ -185,7 +182,7 @@ class PETScSparseLinearSolver(Base):
         self.petsc_x, self.petsc_b = self.petsc_A.getVecs()
 
         # Set the solution vector to zeros or the given initial guess (if any).
-        self.petsc_x.setArray(self.x0)
+        PETSc.Vec.setValuesBlocked(self.petsc_x, [np.arange(self.m)], self.x0)
 
         # Define the petsc rhs vector from the numpy one.
         # If the rhs is defined by blocks, use this:

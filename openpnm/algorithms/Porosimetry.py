@@ -160,7 +160,7 @@ class Porosimetry(OrdinaryPercolation):
             self.settings['throat_partial_filling'] = propname
 
     def run(self, points=25, start=None, stop=None):
-        if self.settings['mode'] is not 'bond':
+        if self.settings['mode'] != 'bond':
             raise Exception('Porosimetry must be run as bond percolation')
         if self.settings['access_limited'] is False:
             raise Exception('Porosimetry must be run as access limited')
