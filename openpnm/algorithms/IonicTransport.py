@@ -40,7 +40,7 @@ class IonicTransportSettings(GenericSettings):
     """
     potential_field = ''
     ions = []
-    g_tol = 1e-4
+    g_tol = 1e-8
     g_max_iter = 10
 
 
@@ -69,7 +69,7 @@ class IonicTransport(ReactiveTransport):
         if ions:
             self.settings['ions'] = ions
         if g_tol:
-            self.settings['i_tolerance'] = g_tol
+            self.settings['g_tol'] = g_tol
         if g_max_iter:
             self.settings['g_max_iter'] = g_max_iter
         super().setup(**kwargs)
