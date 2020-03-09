@@ -60,6 +60,8 @@ class ChargeConservation(ReactiveTransport):
     """
 
     def __init__(self, settings={}, **kwargs):
+                   'cache_A': False,
+                   'cache_b': False,
         super().__init__(**kwargs)
         self.settings._update_settings_and_docs(ChargeConservationSettings())
         self.settings.update(settings)

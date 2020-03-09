@@ -103,44 +103,44 @@ class IonicTransport(ReactiveTransport):
         p_alg._charge_conservation_eq_source_term(e_alg=e_alg)
 
         # Initialize residuals & old/new fields for Gummel iterats
-        i_tol = self.settings['i_tolerance']
-        i_res = {}
-        i_old = {}
-        i_new = {}
+        g_tol = self.settings['g_tol']
+        g_res = {}
+        g_old = {}
+        g_new = {}
         for alg in algs:
-            i_res[alg.name] = 1e+06
-            i_old[alg.name] = None
-            i_new[alg.name] = None
+            g_res[alg.name] = 1e+06
+            g_old[alg.name] = None
+            g_new[alg.name] = None
 
         # Iterate (Gummel) until solutions converge
-        for itr in range(int(self.settings['i_max_iter'])):
-            i_r = [float(format(i, '.3g')) for i in i_res.values()]
-            i_r = str(i_r)[1:-1]
-            print('Gummel iter: '+str(itr+1)+', residuals: '+i_r)
-            i_convergence = max(i for i in i_res.values()) < i_tol
-            if not i_convergence:
+        for itr in range(int(self.settings['g_max_iter'])):
+            g_r = [float(format(i, '.3g')) for i in g_res.values()]
+            g_r = str(g_r)[1:-1]
+            print('Gummel iter: '+str(itr+1)+', residuals: '+g_r)
+            g_convergence = max(i for i in g_res.values()) < g_tol
+            if not g_convergence:
                 # Ions
                 for e in e_alg:
-                    i_old[e.name] = (e[e.settings['quantity']].copy())
-                    e._run_reactive(x0=i_old[e.name])
-                    i_new[e.name] = (e[e.settings['quantity']].copy())
+                    g_old[e.name] = (e[e.settings['quantity']].copy())
+                    e._run_reactive(x0=g_old[e.name])
+                    g_new[e.name] = (e[e.settings['quantity']].copy())
                     # Residual
-                    i_res[e.name] = np.sum(np.absolute(
-                        i_old[e.name]**2-i_new[e.name]**2))
+                    g_res[e.name] = np.sum(np.absolute(
+                        g_old[e.name]**2-g_new[e.name]**2))
                     phase.update(e.results())
 
                 # Poisson eq
                 phys[0].regenerate_models()
-                i_old[p_alg.name] = p_alg[p_alg.settings['quantity']].copy()
-                p_alg._run_reactive(x0=i_old[p_alg.name])
-                i_new[p_alg.name] = p_alg[p_alg.settings['quantity']].copy()
+                g_old[p_alg.name] = p_alg[p_alg.settings['quantity']].copy()
+                p_alg._run_reactive(x0=g_old[p_alg.name])
+                g_new[p_alg.name] = p_alg[p_alg.settings['quantity']].copy()
                 # Residual
-                i_res[p_alg.name] = np.sum(np.absolute(
-                    i_old[p_alg.name]**2 - i_new[p_alg.name]**2))
+                g_res[p_alg.name] = np.sum(np.absolute(
+                    g_old[p_alg.name]**2 - g_new[p_alg.name]**2))
                 # Update phase and physics
                 phase.update(p_alg.results())
                 phys[0].regenerate_models()
 
-            if i_convergence:
+            if g_convergence:
                 print('Solution converged')
                 break

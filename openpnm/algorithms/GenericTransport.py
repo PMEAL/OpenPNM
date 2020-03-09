@@ -631,7 +631,7 @@ class GenericTransport(GenericAlgorithm):
 
         # PyAMG
         if self.settings['solver_family'] == 'pyamg':
-            # Check if petsc is available
+            # Check if PyAMG is available
             try:
                 import pyamg
             except Exception:
