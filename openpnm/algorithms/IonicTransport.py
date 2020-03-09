@@ -19,7 +19,7 @@ class IonicTransportSettings(GenericSettings):
         ##
     ions : list of OpenPNM object names
         ##
-    i_tolerance : float (default = 1e-4)
+    g_tol : float (default = 1e-4)
         ##
     i_max_iter : int (default = 10)
         ##
@@ -40,8 +40,8 @@ class IonicTransportSettings(GenericSettings):
     """
     potential_field = ''
     ions = []
-    i_tolerance = 1e-4
-    i_max_iter = 10
+    g_tol = 1e-4
+    g_max_iter = 10
 
 
 class IonicTransport(ReactiveTransport):
@@ -56,8 +56,8 @@ class IonicTransport(ReactiveTransport):
         self.settings.update(settings)
 
     @docstr.dedent
-    def setup(self, potential_field='', ions=[], i_tolerance=None,
-              i_max_iter=None, **kwargs):
+    def setup(self, potential_field='', ions=[], g_tol=None,
+              g_max_iter=None, **kwargs):
         r"""
 
         Parameters
@@ -68,10 +68,10 @@ class IonicTransport(ReactiveTransport):
             self.settings['potential_field'] = potential_field
         if ions:
             self.settings['ions'] = ions
-        if i_tolerance:
-            self.settings['i_tolerance'] = i_tolerance
-        if i_max_iter:
-            self.settings['i_max_iter'] = i_max_iter
+        if g_tol:
+            self.settings['i_tolerance'] = g_tol
+        if g_max_iter:
+            self.settings['g_max_iter'] = g_max_iter
         super().setup(**kwargs)
 
     def run(self, t=None):
