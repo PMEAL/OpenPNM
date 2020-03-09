@@ -9,6 +9,20 @@ docstr = Docorator()
 logger = logging.getLogger(__name__)
 
 
+# class RelaxationSettings(GenericSettings):
+#     r"""
+#     This class is a demonstration of how we can add nested settings classes
+#     to other settings classes to make categories for some settings.  This is
+#     being appended to the ReactiveTransportSettings class under the
+#     'relaxation' attribute, and it works as planned by allowing the nested
+#     dot access to its parameters. More work would be required to get it
+#     functional such as dealing with deeply nested dicts and so on, but it
+#     works in principal.
+#     """
+#     source = 1.0
+#     quantity = 1.0
+
+
 @docstr.get_sectionsf('ReactiveTransportSettings',
                       sections=['Parameters', 'Other Parameters'])
 @docstr.dedent
@@ -55,6 +69,7 @@ class ReactiveTransportSettings(GenericSettings):
     """
 
     max_iter = 5000
+    # relaxation = RelaxationSettings()
     relaxation_source = 1.0
     relaxation_quantity = 1.0
     rxn_tolerance = 1e-8

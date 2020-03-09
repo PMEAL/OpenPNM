@@ -6,9 +6,9 @@ logger = logging.getLogger(__name__)
 docstr = Docorator()
 
 
-@docstr.get_sectionsf('ChargeConservasionSettings', sections=['Parameters'])
+@docstr.get_sectionsf('ChargeConservationSettings', sections=['Parameters'])
 @docstr.dedent
-class ChargeConservasionSettings(GenericSettings):
+class ChargeConservationSettings(GenericSettings):
     r"""
 
     Parameters
@@ -61,7 +61,7 @@ class ChargeConservation(ReactiveTransport):
 
     def __init__(self, settings={}, **kwargs):
         super().__init__(**kwargs)
-        self.settings._update_settings_and_docs(ChargeConservasionSettings())
+        self.settings._update_settings_and_docs(ChargeConservationSettings())
         self.settings.update(settings)
 
     @docstr.dedent
