@@ -110,6 +110,10 @@ class Imported(GenericGeometry):
                            model=mods.geometry.throat_length.piecewise,
                            throat_endpoints='throat.endpoints')
 
+        if 'throat.volume' not in self.keys():
+            self.add_model(propname='throat.volume',
+                           model=mods.geometry.throat_volume.cylinder)
+
         self.add_model(propname='throat.conduit_lengths',
                        model=mods.geometry.throat_length.conduit_lengths,
                        throat_endpoints='throat.endpoints',
