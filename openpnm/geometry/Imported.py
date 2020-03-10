@@ -1,28 +1,37 @@
 import openpnm.models as mods
 from openpnm.geometry import GenericGeometry
+from openpnm.utils import logging
+logger = logging.getLogger(__name__)
 
 
-defset = {'pore_diameter': 'equivalent_diameter',
-          'throat_diameter': 'equivalent_diameter'}
+class ImportedSettings:
+    r"""
 
-# The following will appear as the "help" docstring for the settings attribute
-s = r"""
-    The following table lists the various settings on this object and
-    provides a brief description of their meaning.
+    Parameters
+    ----------
 
-    ================  =========================================================
-    pore_diameter     Key into the extracted data array to use as pore
-                      diameter in other geometry calculations. The default is
-                      'pore.equivalent_diameter'.  Use of 'pore.' is not
-                      required.
-    ----------------  ---------------------------------------------------------
-    throat_diameter   Key into the extracted data array to use as throat
-                      diameter in other geometry calculations. The default is
-                      'throat.equivalent_diameter'.  Use of 'throat.' is not
-                      required.
-    ================  =========================================================
+    pore_diameter : str (default = 'pore.equivalent_diameter')
+        Key into the extracted data array to use as pore diameter in other
+        geometry calculations. The default is .  Use of 'pore.' is not
+        required.
+    throat_diameter : str (default = 'throat.equivalent_diameter')
+        Key into the extracted data array to use as throat diameter in other
+        geometry calculations. Use of 'throat.' is not required.
+    throat_length : str (default = 'throat.total_length')
+        Key into extracted data containing the desired throat length.
 
     """
+    pore_diameter = 'equivalent_diameter'
+    throat_diameter = 'equivalent_diameter'
+    throat_length = 'total_length'
+
+    # This overloaded init can be removed when GenericSettings is available
+    # from the "update_reset_method" branch when it is merged
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for item in dir(self):
+            if not item.startswith('__'):
+                self.__dict__[item] = getattr(self, item)
 
 
 class Imported(GenericGeometry):
@@ -67,8 +76,9 @@ class Imported(GenericGeometry):
 
     def __init__(self, network, exclude=[], settings={}, **kwargs):
         super().__init__(network=network, **kwargs)
-        self.settings.update(defset)
-        self.settings.__doc__ = s
+        sets = ImportedSettings()
+        self.settings.update(sets.__dict__)
+        self.settings.__doc__ = sets.__doc__
         self.settings.update(settings)
         exclude.extend(['pore.coords', 'throat.conns'])
         for item in network.props():
@@ -77,11 +87,17 @@ class Imported(GenericGeometry):
 
         if 'pore.diameter' not in self.keys():
             pdia = 'pore.'+self.settings['pore_diameter'].split('pore.')[-1]
-            self['pore.diameter'] = self[pdia]
+            try:
+                self['pore.diameter'] = self[pdia]
+            except KeyError:
+                logger.error(pdia + " not found, can't assign 'pore.diameter'")
 
         if 'throat.diameter' not in self.keys():
-            tdia = 'throat.'+self.settings['throat_diameter'].split('thraot.')[-1]
-            self['throat.diameter'] = self[tdia]
+            tdia = 'throat.'+self.settings['throat_diameter'].split('throat.')[-1]
+            try:
+                self['throat.diameter'] = self[tdia]
+            except KeyError:
+                logger.error(tdia + " not found, can't assign 'throat.diameter'")
 
         if 'throat.endpoints' not in self.keys():
             self.add_model(propname='throat.endpoints',
@@ -98,3 +114,6 @@ class Imported(GenericGeometry):
                        model=mods.geometry.throat_length.conduit_lengths,
                        throat_endpoints='throat.endpoints',
                        throat_length='throat.length')
+
+        self.add_model(propname='pore.area',
+                       model=mods.geometry.pore_area.sphere)
