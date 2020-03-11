@@ -155,9 +155,15 @@ class ReactiveTransport(GenericTransport):
         """
         super().reset(**kwargs)
         if source_terms:
+            # Remove item from label dictionary
             for item in self.settings['sources']:
                 self.pop(item)
-            self.settings.pop('sources', None)
+                try:
+                    self.settings['iterative_props'].remove(item)
+                except ValueError:
+                    pass
+            # Reset the settings dict
+            self.settings['sources'] = []
 
     def set_source(self, propname, pores):
         r"""

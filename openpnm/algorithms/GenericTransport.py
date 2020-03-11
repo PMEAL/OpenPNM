@@ -207,35 +207,39 @@ class GenericTransport(GenericAlgorithm):
     @docstr.get_sectionsf(base='GenericTransport.reset',
                           sections=['Parameters'])
     @docstr.dedent
-    def reset(self, bcs=True, results=True, phase=False, iter_props=False):
+    def reset(self, bcs=False, results=True, iter_props=False):
         r"""
         Resets the algorithm to enable re-use.
 
-        This function is meant to allow the reuse of an algorithm inside a
-        for-loop which often occurs for parametric studies for instance.
+        This allows the reuse of an algorithm inside a for-loop for parametric
+        studies.  The default behavior means that only ``alg.reset()`` and
+        ``alg.run()`` must be called inside a loop.  To reset the algorithm
+        more completely requires overriding the default arguments.
 
         Parameters
         ----------
-        bcs : boolean
-            If ``True`` (default) all previous boundary conditions are removed.
         results : boolean
             If ``True`` (default) all previously calculated values pertaining
             to results of the algorithm are removed.
-        phase : boolean
-            Removes the phase from the settings. The default is ``False``.
-        iter_props : boolean
+        bcs : boolean (default = ``False``)
+            If ``True`` all previous boundary conditions are removed.
+        iter_props : boolean (default = ``False``)
             Removes iterative properties from the settings.  The default is
             ``False``.
         """
+        self._pure_b = None
+        self._b = None
+        self._pure_A = None
+        self._A = None
         if bcs:
             self['pore.bc_value'] = np.nan
             self['pore.bc_rate'] = np.nan
         if results:
             self.pop(self.settings['quantity'], None)
-        if phase:
-            self.settings['phase'] = None
         if iter_props:
-            self.settings['iterative_props'] = []
+            for item in self.settings['iterative_props']:
+                if item not in self.settings['sources']:
+                    self.settings['iterative_props'].remove(item)
 
     def set_iterative_props(self, propnames):
         r"""
