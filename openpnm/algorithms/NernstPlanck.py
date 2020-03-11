@@ -56,6 +56,7 @@ class NernstPlanck(ReactiveTransport):
         if ion:
             if not type(ion) is str:  # Convert ion object to str
                 ion = ion.name
+            self.settings['ion'] = ion
         quantity = self.settings['quantity']
         if not quantity.endswith(ion):
             quantity = '.'.join(quantity.split('.')[:2])
