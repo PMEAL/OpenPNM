@@ -85,6 +85,12 @@ class Imported(GenericGeometry):
             if item not in exclude:
                 self[item] = network.pop(item)
 
+        if 'pore.volume' in self.keys():
+            self['pore.region_volume'] = self.pop('pore.volume')
+            self.add_model(propname='pore.volume',
+                           model=mods.geometry.pore_volume.sphere,
+                           pore_diameter='pore.inscribed_diameter')
+
         if 'pore.diameter' not in self.keys():
             pdia = 'pore.'+self.settings['pore_diameter'].split('pore.')[-1]
             try:
