@@ -34,6 +34,9 @@ class PoreSpy(GenericIO):
                      'throat.volume']:
             network.pop(item, None)
 
+        # Deal with a few other PoreSpy specific issues
+        network['pore.region_volume'] = network.pop('pore.volume')
+
         Imported(network=network, settings=settings)
 
         return network.project

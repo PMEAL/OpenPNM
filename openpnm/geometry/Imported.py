@@ -10,20 +10,17 @@ class ImportedSettings:
     Parameters
     ----------
 
-    pore_diameter : str (default = 'pore.equivalent_diameter')
+    pore_diameter : str (default = 'pore.extended_diameter')
         Key into the extracted data array to use as pore diameter in other
         geometry calculations. The default is .  Use of 'pore.' is not
         required.
     throat_diameter : str (default = 'throat.equivalent_diameter')
         Key into the extracted data array to use as throat diameter in other
         geometry calculations. Use of 'throat.' is not required.
-    throat_length : str (default = 'throat.total_length')
-        Key into extracted data containing the desired throat length.
 
     """
-    pore_diameter = 'equivalent_diameter'
-    throat_diameter = 'equivalent_diameter'
-    throat_length = 'total_length'
+    pore_diameter = 'pore.extended_diameter'
+    throat_diameter = 'throat.equivalent_diameter'
 
     # This overloaded init can be removed when GenericSettings is available
     # from the "update_reset_method" branch when it is merged
@@ -80,16 +77,11 @@ class Imported(GenericGeometry):
         self.settings.update(sets.__dict__)
         self.settings.__doc__ = sets.__doc__
         self.settings.update(settings)
+        # Transfer all geometrical properties off of network
         exclude.extend(['pore.coords', 'throat.conns'])
         for item in network.props():
             if item not in exclude:
                 self[item] = network.pop(item)
-
-        if 'pore.volume' in self.keys():
-            self['pore.region_volume'] = self.pop('pore.volume')
-            self.add_model(propname='pore.volume',
-                           model=mods.geometry.pore_volume.sphere,
-                           pore_diameter='pore.inscribed_diameter')
 
         if 'pore.diameter' not in self.keys():
             pdia = 'pore.'+self.settings['pore_diameter'].split('pore.')[-1]
@@ -97,6 +89,11 @@ class Imported(GenericGeometry):
                 self['pore.diameter'] = self[pdia]
             except KeyError:
                 logger.error(pdia + " not found, can't assign 'pore.diameter'")
+
+        if 'pore.volume' not in self.keys():
+            self.add_model(propname='pore.volume',
+                           model=mods.geometry.pore_volume.sphere,
+                           pore_diameter='pore.diameter')
 
         if 'throat.diameter' not in self.keys():
             tdia = 'throat.'+self.settings['throat_diameter'].split('throat.')[-1]
