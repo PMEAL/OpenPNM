@@ -1636,15 +1636,76 @@ class Base(dict):
         health = self.project.check_data_health(obj=self)
         return health
 
-    def inspect(self, locations, element, mode=['props', 'labels']):
+    def inspect_pores(self, pores, mode=['all']):
         r"""
+        Shows the values of all props and/or labels for a given subset of pores
+
+        Parameters
+        ----------
+        pores : array_like
+            The pore indices to inspect
+        mode : list of strings
+            Indicates whether to inspect 'props', 'labels', or 'all'
+
+        Returns
+        -------
+        df : Pandas DataFrame
+            A data frame object with each pore as a column and each row as a
+            property and/or label.
         """
-        d = {k: self[k][locations] for k in self.keys(element=element, mode=mode)}
+        df = self._inspect(locs=pores, element='pores', mode=mode)
+        return df
+
+    def inspect_throats(self, throats, mode=['all']):
+        r"""
+        Shows the values of all props and/or labels for a given subset of throats
+
+        Parameters
+        ----------
+        throats : array_like
+            The throat indices to inspect
+        mode : list of strings
+            Indicates whether to inspect 'props', 'labels', or 'all'
+
+        Returns
+        -------
+        df : Pandas DataFrame
+            A data frame object with each throat as a column and each row as a
+            property and/or label.
+        """
+        df = self._inspect(locs=throats, element='throats', mode=mode)
+        return df
+
+    def _inspect(self, locs, element, mode):
+        r"""
+        Private general method called by ``inspect_pores`` and
+        ``inspect_throats``
+
+        Parameters
+        ----------
+        locs : array_like
+            The indices of the pores or throats to extract
+        element : string
+            Whether to fetch pore or throat information
+        mode : list of strings
+            Whether to fetch pore and/or throat info
+
+        Returns
+        -------
+        df : Pandas DataFrame
+        """
+        d = {k: self[k][locs] for k in self.keys(element=element, mode=mode)}
         for item in list(d.keys()):
             if d[item].ndim > 1:
                 d.pop(item)
+                if item == 'pore.coords':
+                    d['pore.coords_X'], d['pore.coords_Y'], \
+                        d['pore.coords_Z'] = self['pore.coords'][locs].T
+                if item == 'throat.conns':
+                    d['throat.conns_head'], d['throat.conns_tail'] = \
+                        self['throat.conns'][locs].T
         df = pd.DataFrame(d)
-        df = df.rename(index={k: locations[k] for k in range(len(locations))})
+        df = df.rename(index={k: locs[k] for k in range(len(locs))})
         return df.T
 
     def _parse_indices(self, indices):
