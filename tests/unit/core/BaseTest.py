@@ -1044,6 +1044,14 @@ class BaseTest:
         pn.set_label(label='tester', mode='purge')
         # Should only issue warning
 
+    def test_inspect_pores_and_throats(self):
+        df = self.net.inspect_pores([0, 3, 9])
+        assert df.shape[1] == 3
+        assert 'pore.coords_X' in df.index
+        df = self.net.inspect_throats([0, 3, 9])
+        assert df.shape[1] == 3
+        assert 'throat.conns_head' in df.index
+
 
 if __name__ == '__main__':
 
