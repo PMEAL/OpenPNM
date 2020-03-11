@@ -511,10 +511,14 @@ class GenericTransport(GenericAlgorithm):
         self._run_generic(x0)
 
     def _run_generic(self, x0):
+        self._build_A()
+        self._build_b()
         self._apply_BCs()
-        x0 = np.zeros_like(self.b)
+        if x0 is None:
+            x0 = np.zeros(self.Np, dtype=float)
         x_new = self._solve(x0=x0)
-        self[self.settings['quantity']] = x_new
+        quantity = self.settings['quantity']
+        self[quantity] = x_new
 
     def _solve(self, A=None, b=None, x0=None):
         r"""
