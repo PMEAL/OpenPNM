@@ -1,6 +1,7 @@
 import warnings
 import numpy as np
 import scipy as sp
+import pandas as pd
 from collections import namedtuple
 from openpnm.utils import Workspace, logging
 from openpnm.utils.misc import PrintableList, SettingsDict
@@ -1634,6 +1635,17 @@ class Base(dict):
         """
         health = self.project.check_data_health(obj=self)
         return health
+
+    def inspect(self, locations, element, mode=['props', 'labels']):
+        r"""
+        """
+        d = {k: self[k][locations] for k in self.keys(element=element, mode=mode)}
+        for item in list(d.keys()):
+            if d[item].ndim > 1:
+                d.pop(item)
+        df = pd.DataFrame(d)
+        df = df.rename(index={k: locations[k] for k in range(len(locations))})
+        return df.T
 
     def _parse_indices(self, indices):
         r"""
