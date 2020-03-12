@@ -5,7 +5,7 @@ import openpnm.models as mods
 import matplotlib.pyplot as plt
 
 
-proj = op.materials.BereaCubic(shape=[15, 15, 15])
+proj = op.materials.BereaCubic(shape=[10, 10, 10])
 net = proj.network
 geo = proj[1]
 
@@ -17,7 +17,13 @@ plt.hist(x=geo['throat.size']*1e6, bins=25,
          weights=geo['throat.volume']*(1e3)**3, edgecolor='k')
 plt.hist(x=geo['pore.size_z']*1e6, bins=25,
          weights=geo['pore.volume']*(1e3)**3, edgecolor='k')
-
+# comparing with Marios paper figure 16
+x = [38.6, 38.7, 39, 39.2, 39.8, 40.25, 42.09, 42.55, 45, 45.9, 47.7, 48.9,
+     50.84, 51.6, 54.44, 55.33, 57.6, 60.92, 64.4, 66.51, 67.72, 71.36, 73.63]
+y = [0.00555, 0.018, 0.032, 0.035, 0.044, 0.0465, 0.05, 0.051, 0.0475, 0.0461,
+     0.0471, 0.0384, 0.0336, 0.03, 0.024, 0.021, 0.0172, 0.011, 0.0071, 0.0053,
+     0.0043, 0.0014, 0.00047]
+plt.plot(x, y, linestyle='-')
 
 # %% Define phase objects
 hg = op.phases.Mercury(network=net)
