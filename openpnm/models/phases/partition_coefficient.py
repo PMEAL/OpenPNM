@@ -1,6 +1,5 @@
 import os
 import numpy as np
-import pandas as pd
 from pathlib import Path
 from openpnm.utils import logging
 logger = logging.getLogger(__name__)
@@ -36,6 +35,7 @@ def gaseous_species_in_water(target, chemical_formula,
     Chemical Engineering 110.8 (2003): 60-65.
 
     """
+    import pandas as pd
     fname = "gas_water_henry.csv"
     path = Path(os.path.realpath(__file__), "../")
     path = Path(path.resolve(), fname)

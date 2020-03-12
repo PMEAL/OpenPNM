@@ -237,7 +237,7 @@ class BaseTest:
 
     def test_tomask_pores_and_throats(self):
         with pytest.raises(Exception):
-            a = self.net.tomask(throats=[0, 1, 2], pores=[0, 1, 2])
+            _ = self.net.tomask(throats=[0, 1, 2], pores=[0, 1, 2])
 
     def test_toindices_pores(self):
         mask = sp.zeros((self.net.Np), dtype=bool)
@@ -763,7 +763,7 @@ class BaseTest:
         Ps = net.pores('top')
         geom1 = op.geometry.GenericGeometry(network=net, pores=Ps)
         Ps = net.pores('bottom')
-        geom2 = op.geometry.GenericGeometry(network=net, pores=Ps)
+        _ = op.geometry.GenericGeometry(network=net, pores=Ps)
         geom1['pore.blah'] = [[1, 2], [1, 2, 3], [1, 2, 3, 4], [1]]
         assert 'object' in net['pore.blah'].dtype.name
         # Ensure missing elements are None
@@ -816,42 +816,42 @@ class BaseTest:
         with pytest.raises(KeyError):
             self.geo['pore.blah']
 
-    def test_interleave_data_with_unyts_on_all(self):
-        import unyt
-        pn = op.network.Cubic(shape=[10, 1, 1])
-        geo1 = op.geometry.GenericGeometry(network=pn, pores=[0, 1, 2, 3, 4])
-        geo2 = op.geometry.GenericGeometry(network=pn, pores=[5, 6, 7, 8, 9])
-        geo1['pore.test'] = sp.rand(geo1.Np, ) * unyt.m
-        geo2['pore.test'] = sp.rand(geo2.Np, ) * unyt.m
-        assert hasattr(pn['pore.test'], 'units')
-
     def test_get_string(self):
         a = self.net.get('pore.coords')
         assert a.shape == (self.net.Np, 3)
 
-    def test_interleave_data_with_unyts_on_only_one(self):
-        import unyt
-        pn = op.network.Cubic(shape=[10, 1, 1])
-        geo1 = op.geometry.GenericGeometry(network=pn, pores=[0, 1, 2, 3, 4])
-        geo2 = op.geometry.GenericGeometry(network=pn, pores=[5, 6, 7, 8, 9])
-        geo1['pore.test'] = sp.rand(geo1.Np, )
-        geo2['pore.test'] = sp.rand(geo2.Np, ) * unyt.m
-        assert hasattr(pn['pore.test'], 'units')
+    # def test_interleave_data_with_unyts_on_all(self):
+    #     import unyt
+    #     pn = op.network.Cubic(shape=[10, 1, 1])
+    #     geo1 = op.geometry.GenericGeometry(network=pn, pores=[0, 1, 2, 3, 4])
+    #     geo2 = op.geometry.GenericGeometry(network=pn, pores=[5, 6, 7, 8, 9])
+    #     geo1['pore.test'] = sp.rand(geo1.Np, ) * unyt.m
+    #     geo2['pore.test'] = sp.rand(geo2.Np, ) * unyt.m
+    #     assert hasattr(pn['pore.test'], 'units')
 
-    def test_interpolate_date_with_unyts(self):
-        import unyt
-        pn = op.network.Cubic(shape=[10, 1, 1])
-        geo = op.geometry.GenericGeometry(network=pn, pores=pn.Ps)
-        geo['pore.test'] = sp.rand(geo.Np, ) * unyt.m
-        a = geo.interpolate_data('pore.test')
-        assert hasattr(a, 'units')
+    # def test_interleave_data_with_unyts_on_only_one(self):
+    #     import unyt
+    #     pn = op.network.Cubic(shape=[10, 1, 1])
+    #     geo1 = op.geometry.GenericGeometry(network=pn, pores=[0, 1, 2, 3, 4])
+    #     geo2 = op.geometry.GenericGeometry(network=pn, pores=[5, 6, 7, 8, 9])
+    #     geo1['pore.test'] = sp.rand(geo1.Np, )
+    #     geo2['pore.test'] = sp.rand(geo2.Np, ) * unyt.m
+    #     assert hasattr(pn['pore.test'], 'units')
 
-    def test_interpolate_date_with_unyts_but_none_assigned(self):
-        pn = op.network.Cubic(shape=[10, 1, 1])
-        geo = op.geometry.GenericGeometry(network=pn, pores=pn.Ps)
-        geo['pore.test'] = sp.rand(geo.Np, )
-        b = geo.interpolate_data('pore.test')
-        assert not hasattr(b, 'units')
+    # def test_interpolate_date_with_unyts(self):
+    #     import unyt
+    #     pn = op.network.Cubic(shape=[10, 1, 1])
+    #     geo = op.geometry.GenericGeometry(network=pn, pores=pn.Ps)
+    #     geo['pore.test'] = sp.rand(geo.Np, ) * unyt.m
+    #     a = geo.interpolate_data('pore.test')
+    #     assert hasattr(a, 'units')
+
+    # def test_interpolate_date_with_unyts_but_none_assigned(self):
+    #     pn = op.network.Cubic(shape=[10, 1, 1])
+    #     geo = op.geometry.GenericGeometry(network=pn, pores=pn.Ps)
+    #     geo['pore.test'] = sp.rand(geo.Np, )
+    #     b = geo.interpolate_data('pore.test')
+    #     assert not hasattr(b, 'units')
 
     def test_subdict_getitem_on_network_from_network(self):
         pn = op.network.Cubic(shape=[5, 5, 5])

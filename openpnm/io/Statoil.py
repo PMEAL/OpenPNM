@@ -1,6 +1,4 @@
-import os as os
 import scipy as sp
-from pandas import read_table, DataFrame
 from openpnm.topotools import trim
 from openpnm.utils import logging
 from openpnm.io import GenericIO
@@ -23,7 +21,6 @@ class Statoil(GenericIO):
     specific property.  Headers are not provided in the files, so one must
     refer to various theses and documents to interpret their meaning.
     """
-
     @classmethod
     def load(cls, path, prefix, network=None):
         r"""
@@ -47,9 +44,10 @@ class Statoil(GenericIO):
         An OpenPNM Project containing a GenericNetwork holding all the data
 
         """
+        from pandas import read_table, DataFrame
+
         net = {}
 
-        # ---------------------------------------------------------------------
         # Parse the link1 file
         path = Path(path)
         filename = Path(path.resolve(), prefix+'_link1.dat')
@@ -69,7 +67,7 @@ class Statoil(GenericIO):
         net['throat.radius'] = sp.array(link1['throat.radius'])
         net['throat.shape_factor'] = sp.array(link1['throat.shape_factor'])
         net['throat.total_length'] = sp.array(link1['throat.total_length'])
-        # ---------------------------------------------------------------------
+
         filename = Path(path.resolve(), prefix+'_link2.dat')
         with open(filename, mode='r') as f:
             link2 = read_table(filepath_or_buffer=f,
@@ -125,10 +123,10 @@ class Statoil(GenericIO):
         net['pore.radius'] = sp.array(node2['pore.radius'])
         net['pore.shape_factor'] = sp.array(node2['pore.shape_factor'])
         net['pore.clay_volume'] = sp.array(node2['pore.clay_volume'])
-        net['throat.area'] = ((net['throat.radius']**2) /
-                              (4.0*net['throat.shape_factor']))
-        net['pore.area'] = ((net['pore.radius']**2) /
-                            (4.0*net['pore.shape_factor']))
+        net['throat.area'] = ((net['throat.radius']**2)
+                              / (4.0*net['throat.shape_factor']))
+        net['pore.area'] = ((net['pore.radius']**2)
+                            / (4.0*net['pore.shape_factor']))
 
         if network is None:
             network = GenericNetwork()

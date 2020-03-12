@@ -1,5 +1,4 @@
 import scipy as sp
-import scipy.stats as spst
 from openpnm.utils import logging, Project
 from openpnm.network import Cubic
 from openpnm.geometry import GenericGeometry
@@ -48,17 +47,18 @@ class BundleOfTubes(Project):
         The name to give the Project
 
     """
+    def __init__(
+        self,
+        shape,
+        spacing=1.0,
+        length=1.0,
+        psd_params={"distribution": "norm", "loc": None, "scale": None},
+        name=None,
+        settings={},
+        **kwargs
+    ):
+        import scipy.stats as spst
 
-    def __init__(self,
-                 shape,
-                 spacing=1.0,
-                 length=1.0,
-                 psd_params={'distribution': 'norm',
-                             'loc': None,
-                             'scale': None},
-                 name=None,
-                 settings={},
-                 **kwargs):
         super().__init__(name=name)
         self.settings.update(defsets)
         self.settings.update(settings)
@@ -68,8 +68,8 @@ class BundleOfTubes(Project):
         elif len(shape) == 2:
             shape = sp.concatenate((sp.array(shape), [2]))
         else:
-            raise Exception('shape not understood, must be int ' +
-                            ' or list of 2 ints')
+            raise Exception('shape not understood, must be int '
+                            + ' or list of 2 ints')
 
         if isinstance(spacing, float) or isinstance(spacing, int):
             spacing = float(spacing)
@@ -115,8 +115,8 @@ class BundleOfTubes(Project):
                            func=psd)
 
         if sp.any(geom['throat.size_distribution'] < 0):
-            logger.warning('Given size distribution produced negative ' +
-                           'throat diameters...these will be set to 0')
+            logger.warning('Given size distribution produced negative '
+                           + 'throat diameters...these will be set to 0')
         geom.add_model(propname='throat.diameter',
                        model=mods.misc.clip,
                        prop='throat.size_distribution',
@@ -124,8 +124,8 @@ class BundleOfTubes(Project):
 
         if self.settings['adjust_psd'] is None:
             if geom['throat.size_distribution'].max() > spacing[0]:
-                logger.warning('Given size distribution produced throats ' +
-                               'larger than the spacing.')
+                logger.warning('Given size distribution produced throats '
+                               + 'larger than the spacing.')
 
         elif self.settings['adjust_psd'] == 'clip':
             geom.add_model(propname='throat.diameter',
@@ -133,9 +133,9 @@ class BundleOfTubes(Project):
                            prop='throat.size_distribution',
                            xmin=1e-12, xmax=spacing[0])
             if geom['throat.size_distribution'].max() > spacing[0]:
-                logger.warning('Given size distribution produced throats ' +
-                               'larger than the spacing...tube diameters ' +
-                               'will be clipped between 0 and given spacing')
+                logger.warning('Given size distribution produced throats '
+                               + 'larger than the spacing...tube diameters '
+                               + 'will be clipped between 0 and given spacing')
 
         elif self.settings['adjust_psd'] == 'normalize':
             tmin = max(1e-12, geom['throat.size_distribution'].min())
@@ -144,9 +144,9 @@ class BundleOfTubes(Project):
                            prop='throat.size_distribution',
                            xmin=tmin, xmax=spacing[0])
             if geom['throat.size_distribution'].max() > spacing[0]:
-                logger.warning('Given size distribution produced throats ' +
-                               'larger than the spacing...tube diameters ' +
-                               'will be normalized to fit given spacing')
+                logger.warning('Given size distribution produced throats '
+                               + 'larger than the spacing...tube diameters '
+                               + 'will be normalized to fit given spacing')
         else:
             logger.warning('Settings not understood, ignoring')
 

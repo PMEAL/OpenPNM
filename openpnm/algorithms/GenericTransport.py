@@ -1,7 +1,7 @@
-import importlib
 import numpy as np
 import openpnm as op
-import scipy.sparse as sprs
+import scipy.sparse.linalg
+from numpy.linalg import norm
 import scipy.sparse.csgraph as spgr
 from scipy.spatial import ConvexHull
 from scipy.spatial import cKDTree
@@ -17,8 +17,9 @@ def_set = {'phase': None,
            'solver_family': 'scipy',
            'solver_type': 'spsolve',
            'solver_preconditioner': 'jacobi',
-           'solver_atol': 1e-6,
-           'solver_rtol': 1e-6,
+           'solver_tol': 1e-8,
+           'solver_atol': None,
+           'solver_rtol': None,
            'solver_maxiter': 5000,
            'iterative_props': [],
            'cache_A': True, 'cache_b': True,
@@ -130,10 +131,8 @@ class GenericTransport(GenericAlgorithm):
             project = network.project
         super().__init__(project=project, **kwargs)
         # Create some instance attributes
-        self._A = None
-        self._pure_A = None
-        self._b = None
-        self._pure_b = None
+        self._A = self._pure_A = None
+        self._b = self._pure_b = None
         self['pore.bc_rate'] = np.nan
         self['pore.bc_value'] = np.nan
 
@@ -356,8 +355,7 @@ class GenericTransport(GenericAlgorithm):
         rate_BC_mask = np.isfinite(self["pore.bc_rate"])
         BC_locs = self.Ps[rate_BC_mask + value_BC_mask]
         if np.intersect1d(pores, BC_locs).size:
-            logger.warning('Another boundary condition was detected in some '
-                           + 'of the locations received')
+            logger.warning('Another boundary condition detected in some locations!')
 
         # Store boundary values
         if ('pore.bc_' + bctype not in self.keys()) or (mode == 'overwrite'):
@@ -429,8 +427,8 @@ class GenericTransport(GenericAlgorithm):
         Parameters
         ----------
         force : Boolean (default is ``False``)
-            If set to ``True`` then the b matrix is built from new.  If
-            ``False`` (the default), a cached version of b is returned.  The
+            If set to ``True`` then the b matrix is built from new. If
+            ``False`` (the default), a cached version of b is returned. The
             cached version is *clean* in the sense that no boundary conditions
             or sources terms have been added to it.
         """
@@ -491,7 +489,7 @@ class GenericTransport(GenericAlgorithm):
             self.A.setdiag(datadiag)
             self.A.eliminate_zeros()  # Remove 0 entries
 
-    def run(self):
+    def run(self, x0=None):
         r"""
         Builds the A and b matrices, and calls the solver specified in the
         ``settings`` attribute.
@@ -510,14 +508,15 @@ class GenericTransport(GenericAlgorithm):
         """
         logger.info('―' * 80)
         logger.info('Running GenericTransport')
-        self._run_generic()
+        self._run_generic(x0)
 
-    def _run_generic(self):
+    def _run_generic(self, x0):
         self._apply_BCs()
-        x_new = self._solve()
+        x0 = np.zeros_like(self.b)
+        x_new = self._solve(x0=x0)
         self[self.settings['quantity']] = x_new
 
-    def _solve(self, A=None, b=None):
+    def _solve(self, A=None, b=None, x0=None):
         r"""
         Sends the A and b matrices to the specified solver, and solves for *x*
         given the boundary conditions, and source terms based on the present
@@ -534,6 +533,9 @@ class GenericTransport(GenericAlgorithm):
             The RHS matrix in any format.  If not specified, then it uses
             the ``b`` matrix attached to the object.
 
+        x0 : ND-array
+            The initial guess for the solution of Ax = b
+
         Notes
         -----
         The solver used here is specified in the ``settings`` attribute of the
@@ -541,78 +543,95 @@ class GenericTransport(GenericAlgorithm):
 
         """
         # Fetch A and b from self if not given, and throw error if not found
-        if A is None:
-            A = self.A
-            if A is None:
-                raise Exception('The A matrix has not been built yet')
-        if b is None:
-            b = self.b
-            if b is None:
-                raise Exception('The b matrix has not been built yet')
+        A = self.A if A is None else A
+        b = self.b if b is None else b
+        if A is None or b is None:
+            raise Exception('The A matrix or the b vector not yet built.')
         A = A.tocsr()
-
-        # Default behavior -> use Scipy's default solver (spsolve)
-        if self.settings['solver'] == 'pyamg':
-            self.settings['solver_family'] = 'pyamg'
-        if self.settings['solver'] == 'petsc':
-            self.settings['solver_family'] = 'petsc'
+        x0 = np.zeros_like(b) if x0 is None else x0
 
         # Set tolerance for iterative solvers
-        rtol = self.settings['solver_rtol']
-        # Reference for residual's normalization
-        ref = np.sum(np.absolute(self.A.diagonal())) or 1
-        atol = ref * rtol
+        tol = self.settings["solver_tol"]
+        max_it = self.settings["solver_maxiter"]
+        atol = self._get_atol()
+        rtol = self._get_rtol(x0=x0)
         # Check if A is symmetric
         is_sym = op.utils.is_symmetric(self.A)
+        if self.settings['solver_type'] == 'cg' and not is_sym:
+            raise Exception('CG solver only works on symmetric matrices.')
 
         # SciPy
         if self.settings['solver_family'] == 'scipy':
-            if importlib.util.find_spec('scikit-umfpack'):
+            # Umfpack by default uses its 32-bit build -> memory overflow
+            try:
+                import scikits.umfpack
                 A.indices = A.indices.astype(np.int64)
                 A.indptr = A.indptr.astype(np.int64)
+            except ModuleNotFoundError:
+                pass
+            solver = getattr(scipy.sparse.linalg, self.settings['solver_type'])
             iterative = ['bicg', 'bicgstab', 'cg', 'cgs', 'gmres', 'lgmres',
                          'minres', 'gcrotmk', 'qmr']
-            solver = getattr(sprs.linalg, self.settings['solver_type'])
-
-            if self.settings['solver_type'] == 'cg' and not is_sym:
-                raise Exception('Conjugate gradient (cg) solver cannot be used with '
-                                + 'non-symmetric matrices. Choose a different solver.')
-            if self.settings['solver_type'] in iterative:
-                x, exit_code = solver(A=A, b=b, atol=atol, tol=rtol,
-                                      maxiter=self.settings['solver_maxiter'])
+            if solver.__name__ in iterative:
+                x, exit_code = solver(A=A, b=b, atol=atol, tol=tol, maxiter=max_it, x0=x0)
                 if exit_code > 0:
-                    raise Exception('SciPy solver did not converge! '
-                                    + 'Exit code: ' + str(exit_code))
+                    raise Exception(f'Solver did not converge, exit code: {exit_code}')
             else:
                 x = solver(A=A, b=b)
-            return x
 
         # PETSc
         if self.settings['solver_family'] == 'petsc':
             # Check if petsc is available
-            if importlib.util.find_spec('petsc4py'):
+            try:
+                import petsc4py
                 from openpnm.utils.petsc import PETScSparseLinearSolver as SLS
-            else:
+            except ModuleNotFoundError:
                 raise Exception('PETSc is not installed.')
-            # Define the petsc linear system converting the scipy objects
-            ls = SLS(A=A, b=b)
-            sets = self.settings
-            sets = {k: v for k, v in sets.items() if k.startswith('solver_')}
-            sets = {k.split('solver_')[1]: v for k, v in sets.items()}
-            ls.settings.update(sets)
-            x = SLS.solve(ls)
-            del(ls)
-            return x
+            temp = {"type": self.settings["solver_type"],
+                    "preconditioner": self.settings["solver_preconditioner"]}
+            ls = SLS(A=A, b=b, settings=temp)
+            x = ls.solve(x0=x0, atol=atol, rtol=rtol, max_it=max_it)
 
         # PyAMG
         if self.settings['solver_family'] == 'pyamg':
-            if importlib.util.find_spec('pyamg'):
+            # Check if petsc is available
+            try:
                 import pyamg
-            else:
+            except ModuleNotFoundError:
                 raise Exception('PyAMG is not installed.')
             ml = pyamg.ruge_stuben_solver(A)
-            x = ml.solve(b=b, tol=1e-10)
-            return x
+            x = ml.solve(b=b, tol=rtol, maxiter=max_it)
+
+        return x
+
+    def _get_atol(self):
+        r"""
+        Fetches absolute tolerance for the solver if not ``None``, otherwise
+        calculates it in a way that meets the given ``tol`` requirements.
+
+        ``atol`` is defined such to satisfy the following stopping criterion:
+            ``norm(A*x-b)`` <= ``atol``
+        """
+        atol = self.settings["solver_atol"]
+        if atol is None:
+            tol = self.settings["solver_tol"]
+            atol = norm(self.b) * tol
+        return atol
+
+    def _get_rtol(self, x0):
+        r"""
+        Fetches relative tolerance for the solver if not ``None``, otherwise
+        calculates it in a way that meets the given ``tol`` requirements.
+
+        ``rtol`` is defined based on the following formula:
+            ``rtol = residual(@x_final) / residual(@x0)``
+        """
+        rtol = self.settings["solver_rtol"]
+        if rtol is None:
+            res0 = self._get_residual(x=x0)
+            atol = self._get_atol()
+            rtol = atol / res0
+        return rtol
 
     def results(self):
         r"""
@@ -691,6 +710,91 @@ class GenericTransport(GenericAlgorithm):
             if mode == 'group':
                 R = np.sum(R)
         return np.array(R, ndmin=1)
+
+    def set_solver(
+            self,
+            solver_family=None,
+            solver_type=None,
+            preconditioner=None,
+            tol=None,
+            atol=None,
+            rtol=None,
+            maxiter=None,
+    ):
+        r"""
+        Set the solver to be used to solve the algorithm.
+
+        The values of those fields that are not provided will be retrieved from
+        algorithm settings dict.
+
+        Parameters
+        ----------
+        solver_family : string, optional
+            Solver family, could be "scipy", "petsc", and "pyamg".
+
+        solver_type : string, optional
+            Solver type, could be "spsolve", "cg", "gmres", etc.
+
+        preconditioner : string, optional
+            Preconditioner for iterative solvers. The default is "jacobi".
+
+        tol : float, optional
+            Tolerance for iterative solvers, loosely related to number of
+            significant digits in data.
+
+        atol : float, optional
+            Absolute tolerance for iterative solvers, such that
+            norm(Ax-b) <= atol holds.
+
+        rtol : float, optional
+            Relative tolerance for iterative solvers, loosely related to how
+            many orders of magnitude reduction in residual is desired, compared
+            to its value at initial guess.
+
+        Returns
+        -------
+        None.
+
+        """
+        settings = self.settings
+        # Preserve pre-set values, if any
+        if solver_family is None:
+            solver_family = settings["solver_family"]
+        if solver_type is None:
+            solver_type = settings["solver_type"]
+        if preconditioner is None:
+            preconditioner = settings["solver_preconditioner"]
+        if tol is None:
+            tol = settings["solver_tol"]
+        if atol is None:
+            atol = settings["solver_atol"]
+        if rtol is None:
+            rtol = settings["solver_rtol"]
+        if maxiter is None:
+            maxiter = settings["solver_maxiter"]
+        # Update settings on algorithm object
+        self.settings.update(
+            {
+                "solver_family": solver_family,
+                "solver_type": solver_type,
+                "solver_preconditioner": preconditioner,
+                "solver_tol": tol,
+                "solver_atol": atol,
+                "solver_rtol": rtol,
+                "solver_maxiter": maxiter
+            }
+        )
+
+    def _get_residual(self, x=None):
+        r"""
+        Calculate solution residual based on the given ``x`` based on the
+        following formula:
+            ``res = norm(A*x - b)``
+        """
+        if x is None:
+            quantity = self.settings['quantity']
+            x = self[quantity]
+        return norm(self.A * x - self.b)
 
     def _calc_eff_prop(self, inlets=None, outlets=None,
                        domain_area=None, domain_length=None):

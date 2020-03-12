@@ -33,7 +33,8 @@ log_format = \
 '=' * 80 + '\n\
 %(levelname)-11s: %(message)s \n\
 SOURCE     : %(name)s.%(funcName)s \n\
-TIME STAMP : %(asctime)s\
-'
+TIME STAMP : %(asctime)s\n\
+' + '=' * 80
+
 logging.basicConfig(level=logging.WARNING, format=log_format)
 del log_format

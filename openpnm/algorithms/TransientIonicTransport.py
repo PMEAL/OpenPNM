@@ -202,7 +202,7 @@ class TransientIonicTransport(IonicTransport, TransientReactiveTransport):
                             for e in e_alg:
                                 i_old[e.name] = (
                                     e[e.settings['quantity']].copy())
-                                e._t_run_reactive(x=i_old[e.name])
+                                e._t_run_reactive(x0=i_old[e.name])
                                 i_new[e.name] = (
                                     e[e.settings['quantity']].copy())
                                 # Residual
@@ -214,7 +214,7 @@ class TransientIonicTransport(IonicTransport, TransientReactiveTransport):
                             phys[0].regenerate_models()
                             i_old[p_alg.name] = (
                                 p_alg[p_alg.settings['quantity']].copy())
-                            p_alg._t_run_reactive(x=i_old[p_alg.name])
+                            p_alg._t_run_reactive(x0=i_old[p_alg.name])
                             i_new[p_alg.name] = (
                                 p_alg[p_alg.settings['quantity']].copy())
                             # Residual

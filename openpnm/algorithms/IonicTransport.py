@@ -83,7 +83,7 @@ class IonicTransport(ReactiveTransport):
                 # Ions
                 for e in e_alg:
                     i_old[e.name] = (e[e.settings['quantity']].copy())
-                    e._run_reactive(x=i_old[e.name])
+                    e._run_reactive(x0=i_old[e.name])
                     i_new[e.name] = (e[e.settings['quantity']].copy())
                     # Residual
                     i_res[e.name] = np.sum(np.absolute(
@@ -93,7 +93,7 @@ class IonicTransport(ReactiveTransport):
                 # Poisson eq
                 phys[0].regenerate_models()
                 i_old[p_alg.name] = p_alg[p_alg.settings['quantity']].copy()
-                p_alg._run_reactive(x=i_old[p_alg.name])
+                p_alg._run_reactive(x0=i_old[p_alg.name])
                 i_new[p_alg.name] = p_alg[p_alg.settings['quantity']].copy()
                 # Residual
                 i_res[p_alg.name] = np.sum(np.absolute(
