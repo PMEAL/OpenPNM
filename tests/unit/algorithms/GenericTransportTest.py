@@ -153,18 +153,18 @@ class GenericTransportTest:
         alg.set_rate_BC(pores=self.net.pores('bottom'), values=1)
         alg.set_value_BC(pores=self.net.pores('top'), values=0)
         alg.settings["cache_A"] = True
-        alg._build_A()
-        x = alg._A.mean()
+        alg.run()
+        x_before = alg["pore.mole_fraction"].mean()
         self.phys["throat.diffusive_conductance"][1] = 50.0
-        alg._build_A()
-        y = alg._A.mean()
+        alg.run()
+        x_after = alg["pore.mole_fraction"].mean()
         # When cache_A is True, A is not recomputed, hence x == y
-        assert x == y
+        assert x_before == x_after
         alg.settings["cache_A"] = False
-        alg._build_A()
-        y = alg._A.mean()
+        alg.run()
+        x_after = alg["pore.mole_fraction"].mean()
         # When cache_A is False, A must be recomputed, hence x!= y
-        assert x != y
+        assert x_before != x_after
         # Revert back changes to objects
         self.setup_class()
 
