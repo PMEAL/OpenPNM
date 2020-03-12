@@ -6,6 +6,7 @@ r"""
 
 """
 import scipy as _sp
+import numpy as _np
 
 
 def cylinder(target, throat_length='throat.length',
@@ -170,12 +171,12 @@ def lens(target, throat_diameter='throat.diameter',
     conns = network['throat.conns']
     Rp = target[pore_diameter]
     Rt = target[throat_diameter]
-    a = _sp.atleast_2d(Rt).T
-    q = _sp.arcsin(a/Rp[conns])
-    b = Rp[conns]*_sp.cos(q)
+    a = _np.atleast_2d(Rt).T
+    q = _np.arcsin(a/Rp[conns])
+    b = Rp[conns]*_np.cos(q)
     h = Rp[conns] - b
     V = 1/6*_sp.pi*h*(3*a**2 + h**2)
-    return _sp.sum(V, axis=1)
+    return _np.sum(V, axis=1)
 
 
 def pendular_ring(target, throat_diameter='throat.diameter',
@@ -217,11 +218,11 @@ def pendular_ring(target, throat_diameter='throat.diameter',
     conns = network['throat.conns']
     Rp = target[pore_diameter]
     Rt = target[throat_diameter]
-    a = _sp.atleast_2d(Rt).T
-    q = _sp.arcsin(a/Rp[conns])
-    b = Rp[conns]*_sp.cos(q)
+    a = _np.atleast_2d(Rt).T
+    q = _np.arcsin(a/Rp[conns])
+    b = Rp[conns]*_np.cos(q)
     h = Rp[conns] - b
     Vlens = 1/6*_sp.pi*h*(3*a**2 + h**2)
     Vcyl = _sp.pi*(a)**2*h
     V = Vcyl - Vlens
-    return _sp.sum(V, axis=1)
+    return _np.sum(V, axis=1)

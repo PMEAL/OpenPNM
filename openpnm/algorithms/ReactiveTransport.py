@@ -1,21 +1,92 @@
 import numpy as np
 from numpy.linalg import norm
 from openpnm.algorithms import GenericTransport
-from openpnm.utils import logging
+# Uncomment this line when we stop supporting Python 3.6
+# from dataclasses import dataclass, field
+# from typing import List
+from openpnm.utils import logging, Docorator, GenericSettings
+docstr = Docorator()
 logger = logging.getLogger(__name__)
 
 
+# class RelaxationSettings(GenericSettings):
+#     r"""
+#     This class is a demonstration of how we can add nested settings classes
+#     to other settings classes to make categories for some settings.  This is
+#     being appended to the ReactiveTransportSettings class under the
+#     'relaxation' attribute, and it works as planned by allowing the nested
+#     dot access to its parameters. More work would be required to get it
+#     functional such as dealing with deeply nested dicts and so on, but it
+#     works in principal.
+#     """
+#     source = 1.0
+#     quantity = 1.0
+
+
+@docstr.get_sectionsf('ReactiveTransportSettings',
+                      sections=['Parameters', 'Other Parameters'])
+@docstr.dedent
+# Uncomment this line when we stop supporting Python 3.6
+# @dataclass
+class ReactiveTransportSettings(GenericSettings):
+    r"""
+
+    Parameters
+    ----------
+    %(GenericTransportSettings.parameters)s
+
+    quantity : (str)
+        The name of the physical quantity to be calculated
+    conductance : (str)
+        The name of the pore-scale transport conductance values. These are
+        typically calculated by a model attached to a *Physics* object
+        associated with the given *Phase*.
+
+    Other Parameters
+    ----------------
+    sources : list
+        List of source terms that have been added
+    relaxation_source : float (default = 1.0)
+        A relaxation factor to control under-relaxation of the source term.
+        Factor approaching 0 leads to improved stability but slower simulation.
+        Factor approaching 1 gives fast simulation but may be unstable.
+    relaxation_quantity : float (default = 1.0)
+        A relaxation factor to control under-relaxation for the quantity
+        solving for. Factor approaching 0 leads to improved stability but
+        slower simulation. Factor approaching 1 gives fast simulation but
+        may be unstable.
+    rxn_tolerance : float (default = 1e-8)
+        Tolerance to achieve. The solver returns a solution when 'residual'
+        falls below 'rxn_tolerance'.
+    max_iter : (int)
+        ##
+
+    ----
+
+    **The following parameters pertain to the GenericTransport class**
+
+    %(GenericTransportSettings.other_parameters)s
+    """
+
+    max_iter = 5000
+    # relaxation = RelaxationSettings()
+    relaxation_source = 1.0
+    relaxation_quantity = 1.0
+    rxn_tolerance = 1e-8
+    # Swap the following 2 lines when we stop supporting Python 3.6
+    # sources: List = field(default_factory=lambda: [])
+    sources = []
+
+
+@docstr.get_sectionsf('ReactiveTransport', sections=['Parameters'])
+@docstr.dedent
 class ReactiveTransport(GenericTransport):
     r"""
     A subclass for steady-state simulations with (optionally) source terms
 
     Parameters
     ----------
-    network : OpenPNM Network object
-        The Network with which this algorithm is associated.
-
-    project : OpenPNM Project object
-        Either a Network or a Project must be specified.
+    %(GenericTransport.parameters)s
 
     Notes
     -----
@@ -25,32 +96,15 @@ class ReactiveTransport(GenericTransport):
     """
 
     def __init__(self, settings={}, phase=None, **kwargs):
-        def_set = {'phase': None,
-                   'sources': [],
-                   'max_iter': 5000,
-                   'relaxation_source': 1.0,
-                   'relaxation_quantity': 1.0,
-                   'gui': {'setup':        {'phase': None,
-                                            'quantity': '',
-                                            'conductance': '',
-                                            'rxn_tolerance': None,
-                                            'max_iter': None,
-                                            'relaxation_source': None,
-                                            'relaxation_quantity': None},
-                           'set_rate_BC':  {'pores': None,
-                                            'values': None},
-                           'set_value_BC': {'pores': None,
-                                            'values': None},
-                           'set_source':   {'pores': None,
-                                            'propname': ''}
-                           }
-                   }
         super().__init__(**kwargs)
-        self.settings.update(def_set)
+        self.settings._update_settings_and_docs(ReactiveTransportSettings)
         self.settings.update(settings)
         if phase is not None:
             self.setup(phase=phase)
 
+    @docstr.get_sectionsf('ReactiveTransport.setup',
+                          sections=['Parameters', 'Notes'])
+    @docstr.dedent
     def setup(self, phase=None, quantity='', conductance='',
               rxn_tolerance=None, max_iter=None, relaxation_source=None,
               relaxation_quantity=None, **kwargs):
@@ -60,39 +114,8 @@ class ReactiveTransport(GenericTransport):
 
         Parameters
         ----------
-        phase : OpenPNM Phase object
-            The phase on which the algorithm is to be run. If no value is
-            given, the existing value is kept.
-
-        quantity : string
-            The name of the physical quantity to be calcualted such as
-            ``'pore.xxx'``.
-
-        conductance : string
-            The name of the pore-scale transport conductance values. These
-            are typically calculated by a model attached to a *Physics* object
-            associated with the given *Phase*. Example; ``'throat.yyy'``.
-
-        rxn_tolerance : scalar
-            Tolerance to achieve. The solver returns a solution when 'residual'
-            falls below 'rxn_tolerance'. The default value is 1e-05.
-
-        max_iter : scalar
-            The maximum number of iterations the solver can perform to find
-            a solution. The default value is 5000.
-
-        relaxation_source : scalar, between 0 and 1
-            A relaxation factor to control under-relaxation of the source term.
-            Factor approaching 0 : improved stability but slow simulation.
-            Factor approaching 1 : fast simulation but may be unstable.
-            Default value is 1 (no under-relaxation).
-
-        relaxation_quantity :  scalar, between 0 and 1
-            A relaxation factor to control under-relaxation for the quantity
-            solving for.
-            Factor approaching 0 : improved stability but slow simulation.
-            Factor approaching 1 : fast simulation but may be unstable.
-            Default value is 1 (no under-relaxation).
+        %(GenericTransportSettings.parameters)s
+        %(ReactiveTransportSettings.parameters)s
 
         Notes
         -----
@@ -119,14 +142,28 @@ class ReactiveTransport(GenericTransport):
             self.settings['relaxation_quantity'] = relaxation_quantity
         super().setup(**kwargs)
 
-    def reset(self, source_terms=True, **kwargs):
+    @docstr.dedent
+    def reset(self, source_terms=False, **kwargs):
         r"""
+        %(GenericTransport.reset.full_desc)s
+
+        Parameters
+        ----------
+        %(GenericTransport.reset.parameters)s
+        source_terms : boolean
+            If ``True`` removes source terms.  The default is ``False``.
         """
         super().reset(**kwargs)
         if source_terms:
+            # Remove item from label dictionary
             for item in self.settings['sources']:
                 self.pop(item)
-            self.settings.pop('sources', None)
+                try:
+                    self.settings['iterative_props'].remove(item)
+                except ValueError:
+                    pass
+            # Reset the settings dict
+            self.settings['sources'] = []
 
     def set_source(self, propname, pores):
         r"""
@@ -160,6 +197,7 @@ class ReactiveTransport(GenericTransport):
         # Add source term as an iterative prop
         self.set_iterative_props(propname)
 
+    @docstr.dedent
     def _set_BC(self, pores, bctype, bcvalues=None, mode='merge'):
         r"""
         Apply boundary conditions to specified pores if no source terms are
@@ -167,37 +205,11 @@ class ReactiveTransport(GenericTransport):
 
         Parameters
         ----------
-        pores : array_like
-            The pores where the boundary conditions should be applied
-
-        bctype : string
-            Specifies the type or the name of boundary condition to apply. The
-            types can be one one of the following:
-
-            - *'value'* : Specify the value of the quantity in each location
-            - *'rate'* : Specify the flow rate into each location
-
-        bcvalues : int or array_like
-            The boundary value to apply, such as concentration or rate.  If
-            a single value is given, it's assumed to apply to all locations.
-            Different values can be applied to all pores in the form of an
-            array of the same length as ``pores``.
-
-        mode : string, optional
-            Controls how the conditions are applied.  Options are:
-
-            *'merge'*: (Default) Adds supplied boundary conditions to already
-            existing conditions.
-
-            *'overwrite'*: Deletes all boundary condition on object then add
-            the given ones
+        %(GenericTransport._set_BC.parameters)s
 
         Notes
         -----
-        It is not possible to have multiple boundary conditions for a
-        specified location in one algorithm. Use ``remove_BCs`` to
-        clear existing BCs before applying new ones or ``mode='overwrite'``
-        which removes all existing BC's before applying the new ones.
+        %(GenericTransport._set_BC.notes)s
         """
         # First check that given pores do not have source terms already set
         for item in self.settings['sources']:
@@ -208,8 +220,6 @@ class ReactiveTransport(GenericTransport):
         # Then call parent class function if above check passes
         super()._set_BC(pores=pores, bctype=bctype, bcvalues=bcvalues,
                         mode=mode)
-
-    _set_BC.__doc__ = GenericTransport._set_BC.__doc__
 
     def _update_iterative_props(self):
         """r

@@ -1,4 +1,5 @@
 import scipy as sp
+import numpy as np
 from openpnm.io import GenericIO
 from openpnm.utils import logging
 from openpnm.network import GenericNetwork
@@ -80,7 +81,7 @@ class NetworkX(GenericIO):
 
         # Parsing node data
         Np = len(G)
-        net.update({'pore.all': sp.ones((Np,), dtype=bool)})
+        net.update({'pore.all': np.ones((Np,), dtype=bool)})
         for n, props in G.nodes(data=True):
             for item in props.keys():
                 val = props[item]
@@ -106,14 +107,14 @@ class NetworkX(GenericIO):
         # Deal with conns explicitly
         try:
             conns = list(G.edges)   # NetworkX V2
-        except:
+        except Exception:
             conns = G.edges()       # NetworkX V1
         conns.sort()
 
         # Add conns to Network
         Nt = len(conns)
-        net.update({'throat.all': sp.ones(Nt, dtype=bool)})
-        net.update({'throat.conns': sp.array(conns)})
+        net.update({'throat.all': np.ones(Nt, dtype=bool)})
+        net.update({'throat.conns': np.array(conns)})
 
         # Scan through each edge and extract all its properties
         i = 0

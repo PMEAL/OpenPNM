@@ -1,10 +1,9 @@
 import numpy
+import numpy as np
 import scipy as sp
 from openpnm.utils import logging
 from openpnm.io import GenericIO
 from openpnm.network import GenericNetwork
-import numpy as np
-
 logger = logging.getLogger(__name__)
 
 
@@ -94,14 +93,14 @@ class PerGeos(GenericIO):
             if item != 'throat.EdgeConnectivity':
                 s.append('\n\n@' + propmap[item] + '\n')
                 if shapemap[item] == '':
-                    data = sp.atleast_2d(data).T
+                    data = np.atleast_2d(data).T
                 if typemap[item] == 'float':
                     formatter = {'float_kind': lambda x: "%.15E" % x}
                 else:
                     formatter = None
                 if data.dtype == 'bool':
                     data = data.astype(int)
-                d = sp.array2string(data, formatter=formatter)
+                d = np.array2string(data, formatter=formatter)
                 s.append(d.replace('[', '').replace(']', '').replace('\n ', '\n'))
 
         # Add POINT data
@@ -109,7 +108,7 @@ class PerGeos(GenericIO):
         formatter = {'float_kind': lambda x: "%.15E" % x}
 
         conns = network['throat.conns']
-        d = sp.array2string(network['pore.coords'][conns], formatter=formatter)
+        d = np.array2string(network['pore.coords'][conns], formatter=formatter)
         for r in (('[', ''), (']', ''), ('\n\n', '\n'), ('\n  ', '\n'),
                   ('\n ', '\n')):
             d = d.replace(*r)
@@ -160,7 +159,7 @@ class PerGeos(GenericIO):
                         ncols = int(s[2].split('[', 1)[1].split(']')[0])
                         dshape.append(ncols)
                     dtype = s[2].split('[')[0]
-                    temp = sp.zeros(dshape, dtype=dtype)
+                    temp = np.zeros(dshape, dtype=dtype)
                     net['pore.'+s[3]] = temp
                     key = int(s[-1].replace('@', ''))
                     propmap[key] = 'pore.'+s[3]
@@ -172,7 +171,7 @@ class PerGeos(GenericIO):
                         ncols = int(s[2].split('[', 1)[1].split(']')[0])
                         dshape.append(ncols)
                     dtype = s[2].split('[')[0]
-                    temp = sp.zeros(dshape, dtype=dtype)
+                    temp = np.zeros(dshape, dtype=dtype)
                     net['throat.'+s[3]] = temp
                     key = int(s[-1].replace('@', ''))
                     propmap[key] = 'throat.'+s[3]
@@ -186,13 +185,13 @@ class PerGeos(GenericIO):
                 if key in s:
                     data = s[key].split('\n')[1:]
                     data = ' '.join(data)
-                    arr = sp.fromstring(data, dtype=typemap[key], sep=' ')
-                    arr = sp.reshape(arr, newshape=shapemap[key])
+                    arr = np.fromstring(data, dtype=typemap[key], sep=' ')
+                    arr = np.reshape(arr, newshape=shapemap[key])
                     net[propmap[key]] = arr
             # End file parsing
 
         net['pore.coords'] = net['pore.VertexCoordinates']
-        net['throat.conns'] = sp.sort(net['throat.EdgeConnectivity'], axis=1)
+        net['throat.conns'] = np.sort(net['throat.EdgeConnectivity'], axis=1)
 
         if network is None:
             network = GenericNetwork()

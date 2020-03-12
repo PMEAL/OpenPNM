@@ -1,3 +1,4 @@
+import numpy as _np
 import scipy as _sp
 from .throat_length import ctc as _ctc
 
@@ -128,15 +129,15 @@ def spherical_pores(target, pore_diameter='pore.diameter',
     Dt = network[throat_diameter][throats]
     D1 = network[pore_diameter][cn[:, 0]]
     D2 = network[pore_diameter][cn[:, 1]]
-    L1 = _sp.zeros_like(L)
-    L2 = _sp.zeros_like(L)
+    L1 = _np.zeros_like(L)
+    L2 = _np.zeros_like(L)
     # Handle the case where Dt > Dp
     mask = Dt > D1
     L1[mask] = 0.5 * D1[mask]
-    L1[~mask] = _sp.sqrt(D1[~mask]**2 - Dt[~mask]**2) / 2
+    L1[~mask] = _np.sqrt(D1[~mask]**2 - Dt[~mask]**2) / 2
     mask = Dt > D2
     L2[mask] = 0.5 * D2[mask]
-    L2[~mask] = _sp.sqrt(D2[~mask]**2 - Dt[~mask]**2) / 2
+    L2[~mask] = _np.sqrt(D2[~mask]**2 - Dt[~mask]**2) / 2
     # Handle non-colinear pores and throat centroids
     try:
         TC = network[throat_centroid][throats]
@@ -153,7 +154,7 @@ def spherical_pores(target, pore_diameter='pore.diameter',
     # Handle throats w/ overlapping pores
     L1 = (4*L**2 + D1**2 - D2**2) / (8*L)
     # L2 = (4*L**2 + D2**2 - D1**2) / (8*L)
-    h = (2*_sp.sqrt(D1**2/4 - L1**2)).real
+    h = (2*_np.sqrt(D1**2/4 - L1**2)).real
     overlap = L - 0.5 * (D1+D2) < 0
     mask = overlap & (Dt < h)
     EP1[mask] = EP2[mask] = (xyz[cn[:, 0]] + L1[:, None] * unit_vec_P1T)[mask]

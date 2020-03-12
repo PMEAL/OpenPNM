@@ -1,5 +1,6 @@
-import openpnm as op
+import numpy as np
 import scipy as sp
+import openpnm as op
 from networkx import complete_graph, random_layout
 from networkx import set_node_attributes, set_edge_attributes
 
@@ -43,8 +44,8 @@ class NetworkXTest:
         net = project.network
         assert net.Np == num_nodes
         assert net.Nt == num_edges
-        assert sp.shape(net['pore.coords']) == (num_nodes, 3)
-        assert sp.shape(net['throat.conns']) == (num_edges, 2)
+        assert np.shape(net['pore.coords']) == (num_nodes, 3)
+        assert np.shape(net['throat.conns']) == (num_edges, 2)
         a = {'pore.area', 'pore.diameter', 'throat.length', 'throat.perimeter'}
         assert a.issubset(net.props())
 
@@ -55,8 +56,8 @@ class NetworkXTest:
         net = project.network
         assert net.Np == 8
         assert net.Nt == 12
-        assert sp.shape(net['pore.coords']) == (8, 3)
-        assert sp.shape(net['throat.conns']) == (12, 2)
+        assert np.shape(net['pore.coords']) == (8, 3)
+        assert np.shape(net['throat.conns']) == (12, 2)
 
 
 if __name__ == '__main__':

@@ -1,7 +1,6 @@
-import openpnm as op
-import pytest
 import py
 import os
+import openpnm as op
 from pathlib import Path
 
 

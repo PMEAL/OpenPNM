@@ -2,8 +2,90 @@ import numpy as np
 import scipy.sparse as sprs
 from decimal import Decimal as dc
 from openpnm.algorithms import ReactiveTransport
-from openpnm.utils import logging
+from openpnm.utils import logging, GenericSettings, Docorator
+docstr = Docorator()
 logger = logging.getLogger(__name__)
+
+
+@docstr.get_sectionsf('TransientReactiveTransportSettings',
+                      sections=['Parameters', 'Other Parameters'])
+@docstr.dedent
+class TransientReactiveTransportSettings(GenericSettings):
+    r"""
+
+    Parameters
+    ----------
+    %(ReactiveTransportSettings.parameters)s
+
+    quantity : (str)
+        The name of the physical quantity to be calculated
+    conductance : (str)
+        The name of the pore-scale transport conductance values. These are
+        typically calculated by a model attached to a *Physics* object
+        associated with the given *Phase*.
+
+    Other Parameters
+    ----------------
+    t_initial : scalar
+        The simulation's start time, which must be smaller than
+        't_final'. The default value is 0.
+    t_final : scalar
+        The simulation's end time, which must be bigger than 't_initial'.
+        The default value is 10.
+    t_step : scalar
+        The simulation's time step, which must be smaller than 't_final' less
+        and 't_initial'. The default value is 0.1.
+    t_output : scalar, ND-array, or list
+        When 't_output' is a scalar, it is considered as an output interval
+        to store transient solutions. The default value is 1e+08. Initial,
+        final and steady-state (if reached) fields are always stored. If
+        't_output' > 't_final', no transient data is stored. If 't_output'
+        is not a multiple of 't_step', 't_output' will be approximated.
+        When 't_output' is a list or ND-array, transient solutions
+        corresponding to this list or array will be stored.
+    output_times : list
+        List of output times. The values in the list must be multiples of
+        the time step 't_step'.
+    t_tolerance : scalar
+        Transient solver tolerance. The simulation stops (before reaching
+        't_final') when the residual falls below 't_tolerance'. The
+        default value is 1e-06. The 'residual' measures the variation from
+        one time-step to another in the value of the 'quantity' solved for.
+    rxn_tolerance : scalar
+        Tolerance to achieve within each time step. The solver passes to
+        next time step when 'residual' falls below 'rxn_tolerance'. The
+        default value is 1e-05.
+    t_precision : integer
+        The time precision (number of decimal places).
+    t_scheme : string
+        The time discretization scheme. Three options available: 'steady'
+        to perform a steady-state simulation, and 'implicit' (fast, 1st
+        order accurate) and 'cranknicolson' (slow, 2nd order accurate) both
+        for transient simulations. The default value is 'implicit'.
+
+    ----
+
+    **The following parameters pertain to the ReactiveTransport class**
+
+    %(ReactiveTransportSettings.other_parameters)s
+
+    ----
+
+    **The following parameters pertain to the GenericTransport class**
+
+    %(GenericTransportSettings.other_parameters)s
+
+    """
+
+    phase = None
+    t_initial = 0
+    t_final = 10
+    t_step = 0.1
+    t_output = 1e+08
+    t_tolerance = 1e-06
+    rxn_tolerance = 1e-05
+    t_precision = 12
+    t_scheme = 'implicit'
 
 
 class TransientReactiveTransport(ReactiveTransport):
@@ -29,36 +111,8 @@ class TransientReactiveTransport(ReactiveTransport):
     """
 
     def __init__(self, settings={}, phase=None, **kwargs):
-        def_set = {'phase': None,
-                   't_initial': 0,
-                   't_final': 10,
-                   't_step': 0.1,
-                   't_output': 1e+08,
-                   't_tolerance': 1e-06,
-                   'rxn_tolerance': 1e-05,
-                   't_precision': 12,
-                   't_scheme': 'implicit',
-                   'gui': {'setup':        {'phase': None,
-                                            'quantity': '',
-                                            'conductance': '',
-                                            't_initial': None,
-                                            't_final': None,
-                                            't_step': None,
-                                            't_output': None,
-                                            't_tolerance': None,
-                                            't_precision': None,
-                                            't_scheme': ''},
-                           'set_IC':       {'values': None},
-                           'set_rate_BC':  {'pores': None,
-                                            'values': None},
-                           'set_value_BC': {'pores': None,
-                                            'values': None},
-                           'set_source':   {'pores': None,
-                                            'propname': ''}
-                           }
-                   }
         super().__init__(**kwargs)
-        self.settings.update(def_set)
+        self.settings._update_settings_and_docs(TransientReactiveTransportSettings)
         self.settings.update(settings)
         self._A_steady = None  # Initialize the steady sys of eqs A matrix
         if phase is not None:
@@ -73,60 +127,7 @@ class TransientReactiveTransport(ReactiveTransport):
 
         Parameters
         ----------
-        phase : OpenPNM Phase object
-            The phase on which the algorithm is to be run. If no value is
-            given, the existing value is kept.
 
-        quantity : string
-            The name of the physical quantity to be calcualted such as
-            ``'pore.xxx'``.
-
-        conductance : string
-            The name of the pore-scale transport conductance values. These
-            are typically calculated by a model attached to a *Physics* object
-            associated with the given *Phase*. Example; ``'throat.yyy'``.
-
-        t_initial : scalar, smaller than 't_final'
-            The simulation's start time. The default value is 0.
-
-        t_final : scalar, bigger than 't_initial'
-            The simulation's end time. The default value is 10.
-
-        t_step : scalar, between 't_initial' and 't_final'
-            The simulation's time step. The default value is 0.1.
-
-        t_output : scalar, ND-array, or list
-            When 't_output' is a scalar, it is considered as an output interval
-            to store transient solutions. The default value is 1e+08. Initial,
-            final and steady-state (if reached) fields are always stored. If
-            't_output' > 't_final', no transient data is stored. If 't_output'
-            is not a multiple of 't_step', 't_output' will be approximated.
-            When 't_output' is a list or ND-array, transient solutions
-            corresponding to this list or array will be stored.
-
-        output_times : list
-            List of output times. The values in the list must be multiples of
-            the time step 't_step'.
-
-        t_tolerance : scalar
-            Transient solver tolerance. The simulation stops (before reaching
-            't_final') when the residual falls below 't_tolerance'. The
-            default value is 1e-06. The 'residual' measures the variation from
-            one time-step to another in the value of the 'quantity' solved for.
-
-        rxn_tolerance : scalar
-            Tolerance to achieve within each time step. The solver passes to
-            next time step when 'residual' falls below 'rxn_tolerance'. The
-            default value is 1e-05.
-
-        t_precision : integer
-            The time precision (number of decimal places).
-
-        t_scheme : string
-            The time discretization scheme. Three options available: 'steady'
-            to perform a steady-state simulation, and 'implicit' (fast, 1st
-            order accurate) and 'cranknicolson' (slow, 2nd order accurate) both
-            for transient simulations. The default value is 'implicit'.
 
         Notes
         -----
@@ -186,7 +187,6 @@ class TransientReactiveTransport(ReactiveTransport):
         elif (s == 'steady'):
             f1, f2 = 1, 0
         # Compute A (operations involve conversion to 'csr')
-        temp = np.reshape(Vi, (self.Np, 1))
         A = ((f2/dt) * sprs.coo_matrix.multiply(
             sprs.coo_matrix(np.reshape(Vi, (self.Np, 1)), shape=(self.Np, 1)),
             sprs.identity(self.Np, format='coo')) + f1 * self._A_steady)
@@ -344,10 +344,12 @@ class TransientReactiveTransport(ReactiveTransport):
                     # Output steady state solution
                     t_str = self._nbr_to_str(time)
                     self[quantity + '@' + t_str] = x_new
-                    logger.info('        Exporting time step: ' + str(time) + ' s')
+                    logger.info('        Exporting time step: ' +
+                                str(time) + ' s')
                     break
             if (round(time, t_pre) == tf):
-                logger.info('    Maximum time step reached: ' + str(time) + ' s')
+                logger.info('    Maximum time step reached: ' +
+                            str(time) + ' s')
             else:
                 logger.info('    Transient solver converged after: '
                             + str(time) + ' s')
@@ -357,7 +359,7 @@ class TransientReactiveTransport(ReactiveTransport):
         Repeatedly updates transient 'A', 'b', and the solution guess within
         each time step according to the applied source term then calls '_solve'
         to solve the resulting system of linear equations. Stops when the
-        residual falls below 'rxn_tolerance'.
+        residual falls below 'solver_tol'.
 
         Parameters
         ----------
@@ -378,36 +380,34 @@ class TransientReactiveTransport(ReactiveTransport):
             x0 = np.zeros(self.Np, dtype=float)
         x = x0
         self[self.settings['quantity']] = x
-        relax = self.settings['relaxation_quantity']
-        phase = self.project.phases()[self.settings['phase']]
-        # Reference for residual's normalization
-        ref = np.sum(np.absolute(self._A_t.diagonal())) or 1
-        for itr in range(int(self.settings['max_iter'])):
-            self[self.settings['quantity']] = x
-            phase.update(self.results())
+
+        w = self.settings['relaxation_quantity']
+        quantity = self.settings['quantity']
+        max_it = int(self.settings['max_iter'])
+        # Write initial guess to algorithm for _update_iterative_props to work
+        self[quantity] = x = x0
+
+        for itr in range(max_it):
+            # Update iterative properties on phase and physics
             self._update_iterative_props()
+            # Build A and b, apply source terms and correct according to scheme
             self._A = (self._A_t).copy()
             self._b = (self._b_t).copy()
             self._apply_sources()
             self._correct_apply_sources()
-            # Compute the normalized residual
-            res = np.linalg.norm(self.b-self.A*x)/ref
-            if res >= self.settings['rxn_tolerance']:
-                logger.info('Tolerance not met: ' + str(res))
-                x_new = self._solve()
-                # Relaxation
-                x_new = relax*x_new + (1-relax)*self[self.settings['quantity']]
-                self[self.settings['quantity']] = x_new
-                x = x_new
-            elif (res < self.settings['rxn_tolerance']):
-                x_new = x
-                logger.info('Solution converged: ' + str(res))
-                break
-            else:  # If res is nan or inf
-                x_new = x
-                logger.warning('Residual undefined: ' + str(res))
-                break
-        return x_new
+            # Compute the residual
+            res = self._get_residual()
+
+            if self._is_converged():
+                logger.info(f'Solution converged: {res:.4e}')
+                return x
+            logger.info(f'Tolerance not met: {res:.4e}')
+            # Solve, use relaxation, and update solution on algorithm obj
+            self[quantity] = x = self._solve(x0=x) * w + x * (1 - w)
+
+        # Check solution convergence after max_it iterations
+        if not self._is_converged():
+            raise Exception(f"Not converged after {max_it} iterations.")
 
     def results(self, times=None, **kwargs):
         r"""

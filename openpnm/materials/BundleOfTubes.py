@@ -1,12 +1,12 @@
 import scipy as sp
-from openpnm.utils import logging, Project
+import numpy as np
 from openpnm.network import Cubic
+from openpnm.utils import logging, Project
 from openpnm.geometry import GenericGeometry
 from openpnm.phases import GenericPhase
 from openpnm.topotools import trim
 import openpnm.models as mods
 logger = logging.getLogger(__name__)
-
 defsets = {'adjust_psd': 'clip'}
 
 
@@ -64,9 +64,9 @@ class BundleOfTubes(Project):
         self.settings.update(settings)
 
         if isinstance(shape, int):
-            shape = sp.array([shape, shape, 2])
+            shape = np.array([shape, shape, 2])
         elif len(shape) == 2:
-            shape = sp.concatenate((sp.array(shape), [2]))
+            shape = np.concatenate((np.array(shape), [2]))
         else:
             raise Exception('shape not understood, must be int '
                             + ' or list of 2 ints')
@@ -74,7 +74,7 @@ class BundleOfTubes(Project):
         if isinstance(spacing, float) or isinstance(spacing, int):
             spacing = float(spacing)
             self.settings['spacing'] = spacing
-            spacing = sp.array([spacing, spacing, length])
+            spacing = np.array([spacing, spacing, length])
         else:
             raise Exception('spacing not understood, must be float')
 
@@ -114,7 +114,7 @@ class BundleOfTubes(Project):
                            model=mods.geometry.throat_size.generic_distribution,
                            func=psd)
 
-        if sp.any(geom['throat.size_distribution'] < 0):
+        if np.any(geom['throat.size_distribution'] < 0):
             logger.warning('Given size distribution produced negative '
                            + 'throat diameters...these will be set to 0')
         geom.add_model(propname='throat.diameter',
