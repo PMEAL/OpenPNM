@@ -39,9 +39,26 @@ class BereaCubic(Project):
 
     """
 
-    def __init__(self, shape=[10, 10, 10], Lc=0.0001076, **kwargs):
+    def __init__(self, shape=[10, 10, 10], sandstone='berea', **kwargs):
         super().__init__(**kwargs)
-        pn = Cubic(shape=shape, spacing=Lc, connectivity=6, project=self)
+        if sandstone == 'berea':
+            settings = {'pore_shape': 1.18,
+                        'pore_scale': 6.08e-6,
+                        'pore_loc': 24.6e-6,
+                        'throat_shape': 0.536,
+                        'throat_scale': 1.904,
+                        'throat_loc': 0.7e-6,
+                        'lattice_constant': 0.0001712}
+        elif sandstone == 'boise':
+            settings = {'pore_shape': 1.18,
+                        'pore_scale': 6.08e-6,
+                        'pore_loc': 24.6e-6,
+                        'throat_shape': 0.536,
+                        'throat_scale': 1.904,
+                        'throat_loc': 0.7e-6,
+                        'lattice_constant': 0.0001712}
+        pn = Cubic(shape=shape, spacing=self.settings['lattice_constant'],
+                   connectivity=6, project=self)
         geom = GenericGeometry(network=pn, pores=pn.Ps, throats=pn.Ts)
         geom['pore.seed'] = sp.rand(pn.Np)
         geom.add_model(propname='throat.seed',
@@ -53,11 +70,15 @@ class BereaCubic(Project):
         # Berea 108 sample from table 5.
         geom.add_model(propname='pore.size_z',
                        model=mods.geometry.pore_size.weibull,
-                       shape=1.75, loc=4.081e-5, scale=0.00001,
+                       shape=settings[family['shapepore']],
+                       loc=settings[family['locpore']],
+                       scale=settings[family['scalepore']],
                        seeds='pore.seed')
         geom.add_model(propname='throat.size',
                        model=mods.geometry.throat_size.weibull,
-                       shape=0.8, loc=1.1e-6, scale=0.0000075,
+                       shape=settings[family['shapethroat']],
+                       loc=settings[family['locthroat']],
+                       scale=settings[family['scalethroat']],
                        seeds='throat.seed')
 
         # All pores in this model are of square x-section
