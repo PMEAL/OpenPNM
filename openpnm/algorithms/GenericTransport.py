@@ -445,12 +445,15 @@ class GenericTransport(GenericAlgorithm):
         this is set by default, though it can be overwritten.
         """
         cache_A = self.settings['cache_A']
+        gvals = self.settings['conductance']
+        if not gvals:
+            raise Exception('conductance has not been defined on this algorithm')
         if not cache_A:
             self._pure_A = None
         if self._pure_A is None:
             network = self.project.network
             phase = self.project.phases()[self.settings['phase']]
-            g = phase[self.settings['conductance']]
+            g = phase[gvals]
             am = network.create_adjacency_matrix(weights=g, fmt='coo')
             self._pure_A = spgr.laplacian(am).astype(float)
         self.A = self._pure_A.copy()
@@ -551,6 +554,8 @@ class GenericTransport(GenericAlgorithm):
         self._apply_BCs()
         x0 = np.zeros_like(self.b)
         x_new = self._solve(x0=x0)
+        if not self.settings['quantity']:
+            raise Exception('quantity has not been defined on this algorithm')
         self[self.settings['quantity']] = x_new
 
     def _solve(self, A=None, b=None, x0=None):
