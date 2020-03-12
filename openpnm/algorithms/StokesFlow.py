@@ -5,6 +5,7 @@ from openpnm.utils import logging, GenericSettings, Docorator
 logger = logging.getLogger(__name__)
 docstr = Docorator()
 
+
 @docstr.get_sectionsf('StokesFlowSettings',
                       sections=['Parameters'])
 @docstr.dedent

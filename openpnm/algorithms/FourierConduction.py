@@ -3,6 +3,7 @@ from openpnm.utils import logging, Docorator, GenericSettings
 logger = logging.getLogger(__name__)
 docstr = Docorator()
 
+
 @docstr.get_sectionsf('FourierConductionSettings',
                       sections=['Parameters'])
 @docstr.dedent
