@@ -13,3 +13,4 @@ gitpython
 flatdict
 transforms3d
 sympy
+docrep
