@@ -1,50 +1,73 @@
 import numpy as np
 from openpnm.algorithms import IonicTransport, TransientReactiveTransport
+from openpnm.utils import logging, Docorator, GenericSettings, nbr_to_str
+docstr = Docorator()
+logger = logging.getLogger(__name__)
 
 
-class TransientIonicTransport(IonicTransport, TransientReactiveTransport):
+@docstr.get_sectionsf('TransientIonicTransportSettings',
+                      sections=['Parameters'])
+@docstr.dedent
+class TransientIonicTransportSettings(GenericSettings):
     r"""
-    A subclass of GenericTransport to perform steady and transient simulations
-    of pure diffusion, advection-diffusion and advection-diffusion with
-    migration.
+    The following decribes the settings associated with the IonicTransport
+    algorithm.
+
+    Parameters
+    ----------
+    t_initial : int
+        ##
+    t_final : int
+        ##
+    t_step : int
+        ##
+    t_output : int
+        ##
+    t_tolerance : int
+        ##
+    t_precision : int
+        ##
+    t_scheme : str
+        ##
+
+    Other Parameters
+    ----------------
+    **The following parameters pertain to the steady-state version of this
+    class**
+
+    %(IonicTransportSettings.parameters)s
+
+    """
+    t_initial = 0
+    t_final = None
+    t_step = None
+    t_output = None
+    t_tolerance = 1e-06
+    t_precision = 12
+    t_scheme = 'implicit'
+
+
+class TransientIonicTransport(IonicTransport):
+    r"""
+    Transient PNP system solver
 
     """
 
-    def __init__(self, settings={}, phase=None, **kwargs):
-        def_set = {'phase': None,
-                   'gui': {'setup':        {'phase': None,
-                                            'potential_field': '',
-                                            'ions': [],
-                                            'solver_tol': None,
-                                            'solver_maxiter': None,
-                                            't_initial': None,
-                                            't_final': None,
-                                            't_step': None,
-                                            't_output': None,
-                                            't_tolerance': None,
-                                            't_scheme': ''}
-                           }
-                   }
+    def __init__(self, settings={}, **kwargs):
         super().__init__(**kwargs)
-        self.settings.update(def_set)
+        self.settings._update_settings_and_docs(TransientIonicTransportSettings())
         self.settings.update(settings)
-        if phase is not None:
-            self.setup(phase=phase)
 
-    def setup(self, phase=None, potential_field='', ions=[], g_tol=None,
-              g_max_iter=None, t_initial=None, t_final=None, t_step=None,
-              t_output=None, t_tolerance=None, t_precision=None, t_scheme='',
-              **kwargs):
-        if phase:
-            self.settings['phase'] = phase.name
-        if potential_field:
-            self.settings['potential_field'] = potential_field
-        if ions:
-            self.settings['ions'] = ions
-        if g_tol:
-            self.settings['g_tol'] = g_tol
-        if g_max_iter:
-            self.settings['g_max_iter'] = g_max_iter
+    def setup(self, t_initial=None, t_final=None, t_step=None,
+              t_output=None, t_tolerance=None, t_precision=None,
+                  t_scheme='implicit', **kwargs):
+        r"""
+
+        Parameters
+        ----------
+        %(TransientIonicTransportSettings.parameters)s
+
+        """
         if t_initial is not None:
             self.settings['t_initial'] = t_initial
         if t_final is not None:
@@ -60,6 +83,7 @@ class TransientIonicTransport(IonicTransport, TransientReactiveTransport):
         if t_scheme:
             self.settings['t_scheme'] = t_scheme
         self.settings.update(kwargs)
+        self.settings.update(**kwargs)
 
     def run(self, t=None):
         r"""
@@ -166,7 +190,7 @@ class TransientIonicTransport(IonicTransport, TransientReactiveTransport):
 
         else:  # Do time iterations
             # Export the initial field (t=t_initial)
-            t_str = self._nbr_to_str(t)
+            t_str = nbr_to_str(nbr=t, t_precision=self.settings['t_precision'])
             for alg in algs:
                 quant_init = alg[alg.settings['quantity']]
                 alg[alg.settings['quantity']+'@'+t_str] = quant_init
@@ -239,7 +263,8 @@ class TransientIonicTransport(IonicTransport, TransientReactiveTransport):
                     # Output transient solutions. Round time to ensure every
                     # value in outputs is exported.
                     if round(time, t_pre) in out:
-                        t_str = self._nbr_to_str(time)
+                        t_str = nbr_to_str(nbr=time,
+                                           t_precision=self.settings['t_precision'])
                         print('\nExporting time step: ' + str(time) + ' s')
                         for alg in algs:
                             alg[alg.settings['quantity']+'@'+t_str] = (
@@ -265,7 +290,8 @@ class TransientIonicTransport(IonicTransport, TransientReactiveTransport):
 
                 else:  # Stop time iterations if residual < t_tolerance
                     # Output steady state solution
-                    t_str = self._nbr_to_str(time)
+                    t_str = nbr_to_str(nbr=time,
+                                       t_precision=self.settings['t_precision'])
                     print('\nExporting time step: '+str(time)+' s')
                     for alg in algs:
                         alg[alg.settings['quantity']+'@'+t_str] = (

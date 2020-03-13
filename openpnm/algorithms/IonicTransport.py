@@ -1,5 +1,5 @@
 import numpy as np
-from openpnm.algorithms import ReactiveTransport
+from openpnm.algorithms import GenericAlgorithm
 from openpnm.utils import logging, Docorator, GenericSettings
 docstr = Docorator()
 logger = logging.getLogger(__name__)
@@ -11,52 +11,44 @@ logger = logging.getLogger(__name__)
 class IonicTransportSettings(GenericSettings):
     r"""
     The following decribes the settings associated with the IonicTransport
-    algorithm as well as settings related the ReactiveTransport in general.
+    algorithm.
 
     Parameters
     ----------
+    phase : OpenPNM Phase object
+        The object representing the solvent phase
     potential_field : str
-        ##
+        The name of the potential or voltage field data that is being solved
+        for
     ions : list of OpenPNM object names
-        ##
+        The name of the ionic species being solved for
     g_tol : float (default = 1e-4)
-        ##
-    i_max_iter : int (default = 10)
-        ##
-
-    Other Parameters
-    ----------------
-
-    **The following parameters pertain to the ReactiveTransport class**
-
-    %(ReactiveTransportSettings.other_parameters)s
-
-    ----
-
-    **The following parameters pertain to the GenericTransport class**
-
-    %(GenericTransportSettings.other_parameters)s
+        The tolerance to use for stopping Gummel iterations
+    g_max_iter : int (default = 10)
+        The maximum number if times to perform the Gummel iteration
 
     """
+    phase = None
     potential_field = ''
     ions = []
     g_tol = 1e-8
     g_max_iter = 10
 
 
-class IonicTransport(ReactiveTransport):
+class IonicTransport(GenericAlgorithm):
     r"""
     A subclass of GenericTransport to solve the charge conservation and
     Nernst-Planck equations.
     """
 
-    def __init__(self, settings={},  **kwargs):
+    def __init__(self, phase=None, settings={},  **kwargs):
         super().__init__(**kwargs)
         self.settings._update_settings_and_docs(IonicTransportSettings())
+        settings['phase'] = phase.name
         self.settings.update(settings)
 
     @docstr.dedent
-    def setup(self, potential_field='', ions=[], g_tol=None,
+    def setup(self, phase=None, potential_field='', ions=[], g_tol=None,
               g_max_iter=None, **kwargs):
         r"""
 
@@ -64,6 +56,8 @@ class IonicTransport(ReactiveTransport):
         ----------
         %(IonicTransportSettings.parameters)s
         """
+        if phase:
+            self.settings['phase'] = phase.name
         if potential_field:
             self.settings['potential_field'] = potential_field
         if ions:
@@ -72,7 +66,6 @@ class IonicTransport(ReactiveTransport):
             self.settings['g_tol'] = g_tol
         if g_max_iter:
             self.settings['g_max_iter'] = g_max_iter
-        super().setup(**kwargs)
 
     def run(self, t=None):
         r"""
