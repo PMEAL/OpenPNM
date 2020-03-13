@@ -1,8 +1,9 @@
-import openpnm as op
-import scipy as sp
-import pytest
-from pathlib import Path
 import os
+import pytest
+import scipy as sp
+import numpy as np
+import openpnm as op
+from pathlib import Path
 
 
 class ProjectTest:
@@ -283,13 +284,13 @@ class ProjectTest:
         assert len(physics1) == 2
         assert len(physics2) == 2
         # Make sure lists are mutually exclusive
-        assert ~sp.all([item in physics2 for item in physics1])
+        assert ~np.all([item in physics2 for item in physics1])
 
     def test_find_physics_no_phase_or_geometry(self):
         proj = self.proj
         a = proj.find_physics()
         b = proj.physics().values()
-        assert sp.all([item in b for item in a])
+        assert np.all([item in b for item in a])
 
     def test_find_full_domain_geometry(self):
         proj = self.proj
@@ -386,7 +387,7 @@ class ProjectTest:
         # Ensure only pore.coords and throat.conns are found
         assert sum([len(item.props()) for item in proj]) == 2
         proj._fetch_data()
-        assert sp.any([len(item.props()) for item in proj])
+        assert np.any([len(item.props()) for item in proj])
         os.remove(proj.name+'.hdf5')
 
     def test_export_data(self):

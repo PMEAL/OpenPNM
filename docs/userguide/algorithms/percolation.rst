@@ -105,9 +105,10 @@ A full invasion simulation using a 2D network can be run with the following comm
  >>> import openpnm as op
  >>> import matplotlib.pyplot as plt
  >>> import scipy as sp
+ >>> import numpy as np
  >>> ws = op.Workspace()
  >>> proj = ws.new_project()
- >>> S = sp.array([100, 100, 1])
+ >>> S = np.array([100, 100, 1])
  >>> pn = op.network.Cubic(shape=S, spacing=0.0001)
  >>> geom = op.geometry.StickAndBall(network=pn, pores=pn.Ps, throats=pn.Ts)
  >>> water = op.phases.Water(network=pn)
@@ -119,8 +120,8 @@ A full invasion simulation using a 2D network can be run with the following comm
  >>> ip.run()
  >>> water.update(ip.results(Snwp=0.5))
 
-Images can be produced easily for 2D networks with commands such as ``plt.imshow(sp.reshape(ip['pore.invasion_sequence'], newshape=S[S > 1]))``
-and ``plt.imshow(sp.reshape(water['pore.occupancy'], newshape=S[S > 1]))``, which produces the following output:
+Images can be produced easily for 2D networks with commands such as ``plt.imshow(np.reshape(ip['pore.invasion_sequence'], newshape=S[S > 1]))``
+and ``plt.imshow(np.reshape(water['pore.occupancy'], newshape=S[S > 1]))``, which produces the following output:
 
 .. image:: https://imgur.com/VPf24cN.png
 

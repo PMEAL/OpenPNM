@@ -5,14 +5,14 @@ petsc: A class for solving sparse linear systems using petsc
 
 """
 import sys
-import scipy as sp
+import numpy as np
 from openpnm.core import Base
 from openpnm.utils import logging
 logger = logging.getLogger(__name__)
 try:
     import petsc4py
-    from petsc4py import PETSc
     petsc4py.init(sys.argv)
+    from petsc4py import PETSc
 except ModuleNotFoundError:
     pass
 
@@ -130,36 +130,35 @@ class PETScSparseLinearSolver(Base):
 
         solver = self.settings['type']
         preconditioner = self.settings['preconditioner']
-        if solver not in (iterative_solvers + lu_direct_solvers
-                          + cholesky_direct_solvers + preconditioners):
-            logger.critical(f"{solver} solver not availabe, cg used instead.")
-            solver = 'cg'
+        if solver not in (
+            iterative_solvers
+            + lu_direct_solvers
+            + cholesky_direct_solvers
+            + preconditioners
+        ):
+            raise Exception(f"{solver} solver not availabe, choose another solver")
         if preconditioner not in preconditioners:
-            logger.critical(f"{preconditioner} not found, jacobi was used.")
-            preconditioner = 'jacobi'
+            raise Exception(f"{preconditioner} not found, choose another preconditioner")
+
+        self.ksp = PETSc.KSP()
+        self.ksp.create(PETSc.COMM_WORLD)
+        self.ksp.setType('cg')
 
         if solver in lu_direct_solvers:
-            self.ksp = PETSc.KSP()
-            self.ksp.create(PETSc.COMM_WORLD)
             self.ksp.getPC().setType('lu')
             self.ksp.getPC().setFactorSolverType(solver)
             self.ksp.setType('preonly')
 
         elif solver in cholesky_direct_solvers:
-            self.ksp = PETSc.KSP()
-            self.ksp.create(PETSc.COMM_WORLD)
             self.ksp.getPC().setType('cholesky')
             self.ksp.getPC().setFactorSolverType(solver)
             self.ksp.setType('preonly')
 
         elif solver in preconditioners:
-            self.ksp = PETSc.KSP()
-            self.ksp.create(PETSc.COMM_WORLD)
             self.ksp.getPC().setType(solver)
             self.ksp.setType('preonly')
 
         elif solver in iterative_solvers:
-            self.ksp = PETSc.KSP()
             self.ksp.create(PETSc.COMM_WORLD)
             self.ksp.getPC().setType(preconditioner)
             self.ksp.setType(solver)
@@ -183,11 +182,11 @@ class PETScSparseLinearSolver(Base):
         self.petsc_x, self.petsc_b = self.petsc_A.getVecs()
 
         # Set the solution vector to zeros or the given initial guess (if any).
-        self.petsc_x.setArray(self.x0)
+        PETSc.Vec.setValuesBlocked(self.petsc_x, [np.arange(self.m)], self.x0)
 
         # Define the petsc rhs vector from the numpy one.
         # If the rhs is defined by blocks, use this:
-        PETSc.Vec.setValuesBlocked(self.petsc_b, [sp.arange(self.m)], self.b)
+        PETSc.Vec.setValuesBlocked(self.petsc_b, [np.arange(self.m)], self.b)
         # Otherwise, use:
         # PETSc.Vec.createWithArray(self.petsc_b, self.b)
 
@@ -227,7 +226,7 @@ class PETScSparseLinearSolver(Base):
         can be found here:
         https://www.mcs.anl.gov/petsc/documentation/linearsolvertable.html
         """
-        self.x0 = sp.zeros_like(self.b) if x0 is None else x0
+        self.x0 = np.zeros_like(self.b) if x0 is None else x0
         self._initialize_A()
         self._create_solver()
         self._set_tolerances(atol=atol, rtol=rtol, max_it=max_it)

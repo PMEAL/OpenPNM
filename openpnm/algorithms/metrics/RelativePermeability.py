@@ -293,19 +293,19 @@ class RelativePermeability(GenericAlgorithm):
         import matplotlib.pyplot as plt
 
         f = plt.figure()
-        sp = f.add_subplot(111)
+        ax = f.add_subplot(111)
         for inp in self.settings['flow_inlets']:
             if self.settings['wp'] is not None:
-                sp.plot(self.Kr_values['sat'][inp],
+                ax.plot(self.Kr_values['sat'][inp],
                         self.Kr_values['relperm_wp'][inp],
                         'o-', label='Krwp'+inp)
-            sp.plot(self.Kr_values['sat'][inp],
+            ax.plot(self.Kr_values['sat'][inp],
                     self.Kr_values['relperm_nwp'][inp],
                     '*-', label='Krnwp'+inp)
-        sp.set_xlabel('Snw')
-        sp.set_ylabel('Kr')
-        sp.set_title('Relative Permability Curves')
-        sp.legend()
+        ax.set_xlabel('Snw')
+        ax.set_ylabel('Kr')
+        ax.set_title('Relative Permability Curves')
+        ax.legend()
         return f
 
     def get_Kr_data(self):

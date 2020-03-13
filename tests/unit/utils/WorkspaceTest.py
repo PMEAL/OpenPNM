@@ -1,8 +1,9 @@
-import openpnm as op
-import scipy as sp
-import pytest
 import os
+import pytest
 import pickle
+import numpy as np
+import scipy as sp
+import openpnm as op
 
 
 class WorkspaceTest:
@@ -74,7 +75,7 @@ class WorkspaceTest:
         os.remove('test.pnm')
 
     def test_save_and_load_project_from_pickled_object(self):
-        a = sp.ones((10, ))
+        a = np.ones((10, ))
         pickle.dump(a, open('single_object.pnm', 'wb'))
         self.ws.clear()
         with pytest.raises(Exception):
