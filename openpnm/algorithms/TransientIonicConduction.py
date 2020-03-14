@@ -1,10 +1,10 @@
-from openpnm.algorithms import TransientReactiveTransport, ChargeConservation
+from openpnm.algorithms import TransientReactiveTransport, IonicConduction
 from openpnm.utils import logging
 logger = logging.getLogger(__name__)
 
 
-class TransientChargeConservation(TransientReactiveTransport,
-                                  ChargeConservation):
+class TransientIonicConduction(TransientReactiveTransport,
+                               IonicConduction):
     r"""
     A subclass of GenericTransport to perform steady and transient simulations
     of pure diffusion and advection-diffusion problems.

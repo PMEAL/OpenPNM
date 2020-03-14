@@ -66,8 +66,8 @@ sf.set_value_BC(pores=net.pores('front'), values=0.00)
 sf.run()
 sw.update(sf.results())
 
-p = op.algorithms.TransientChargeConservation(network=net, phase=sw,
-                                              settings=setts1)
+p = op.algorithms.TransientIonicConduction(network=net, phase=sw,
+                                           settings=setts1)
 p.set_value_BC(pores=net.pores('left'), values=0.1)
 p.set_value_BC(pores=net.pores('right'), values=0.00)
 p.settings['charge_conservation'] = 'electroneutrality'
