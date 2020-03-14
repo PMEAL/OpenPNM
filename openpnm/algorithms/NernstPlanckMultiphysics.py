@@ -5,10 +5,10 @@ docstr = Docorator()
 logger = logging.getLogger(__name__)
 
 
-@docstr.get_sectionsf('IonicTransportSettings',
+@docstr.get_sectionsf('NernstPlanckMultiphysicsSettings',
                       sections=['Parameters'])
 @docstr.dedent
-class IonicTransportSettings(GenericSettings):
+class NernstPlanckMultiphysicsSettings(GenericSettings):
     r"""
     The following decribes the settings associated with the IonicTransport
     algorithm.
@@ -35,15 +35,16 @@ class IonicTransportSettings(GenericSettings):
     g_max_iter = 10
 
 
-class IonicTransport(GenericAlgorithm):
+class NernstPlanckMultiphysics(GenericAlgorithm):
     r"""
-    A subclass of GenericTransport to solve the charge conservation and
-    Nernst-Planck equations.
+    A multiphysics algorithm to solve the Nernst-Planck and Ionic Conduction
+    system
     """
 
     def __init__(self, phase=None, settings={},  **kwargs):
         super().__init__(**kwargs)
-        self.settings._update_settings_and_docs(IonicTransportSettings())
+        c = NernstPlanckMultiphysicsSettings()
+        self.settings._update_settings_and_docs(c)
         settings['phase'] = phase.name
         self.settings.update(settings)
 
@@ -54,7 +55,7 @@ class IonicTransport(GenericAlgorithm):
 
         Parameters
         ----------
-        %(IonicTransportSettings.parameters)s
+        %(NernstPlanckMultiphysicsSettings.parameters)s
         """
         if phase:
             self.settings['phase'] = phase.name

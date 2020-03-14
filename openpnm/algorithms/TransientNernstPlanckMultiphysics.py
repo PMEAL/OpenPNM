@@ -1,14 +1,14 @@
 import numpy as np
-from openpnm.algorithms import IonicTransport
+from openpnm.algorithms import NernstPlanckMultiphysics
 from openpnm.utils import logging, Docorator, GenericSettings, nbr_to_str
 docstr = Docorator()
 logger = logging.getLogger(__name__)
 
 
-@docstr.get_sectionsf('TransientIonicTransportSettings',
+@docstr.get_sectionsf('TransientNernstPlanckMultiphysicsSettings',
                       sections=['Parameters'])
 @docstr.dedent
-class TransientIonicTransportSettings(GenericSettings):
+class TransientNernstPlanckMultiphysicsSettings(GenericSettings):
     r"""
     The Parameters section below describes the settings pertaining to the
     running of all transient classes which this algorithm orchestrates.
@@ -22,7 +22,7 @@ class TransientIonicTransportSettings(GenericSettings):
     **The following parameters pertain to the steady-state version of this
     class**
 
-    %(IonicTransportSettings.parameters)s
+    %(NernstPlanckMultiphysicsSettings.parameters)s
 
     """
     t_initial = 0
@@ -35,15 +35,17 @@ class TransientIonicTransportSettings(GenericSettings):
     t_scheme = 'implicit'
 
 
-class TransientIonicTransport(IonicTransport):
+class TransientNernstPlanckMultiphysics(NernstPlanckMultiphysics):
     r"""
-    Transient PNP system solver
+    A multiphysics algorithm to solve the Nernst-Planck and Ionic Conduction
+    system *transiently*.
 
     """
 
     def __init__(self, settings={}, **kwargs):
         super().__init__(**kwargs)
-        self.settings._update_settings_and_docs(TransientIonicTransportSettings())
+        c = TransientNernstPlanckMultiphysicsSettings()
+        self.settings._update_settings_and_docs(c)
         self.settings.update(settings)
 
     @docstr.dedent
@@ -54,7 +56,7 @@ class TransientIonicTransport(IonicTransport):
 
         Parameters
         ----------
-        %(TransientIonicTransportSettings.parameters)s
+        %(TransientNernstPlanckMultiphysicsSettings.parameters)s
 
         """
         if t_initial is not None:
