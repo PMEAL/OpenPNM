@@ -1,5 +1,5 @@
 import numpy as np
-from openpnm.algorithms import IonicTransport, TransientReactiveTransport
+from openpnm.algorithms import IonicTransport
 from openpnm.utils import logging, Docorator, GenericSettings, nbr_to_str
 docstr = Docorator()
 logger = logging.getLogger(__name__)
@@ -10,25 +10,12 @@ logger = logging.getLogger(__name__)
 @docstr.dedent
 class TransientIonicTransportSettings(GenericSettings):
     r"""
-    The following decribes the settings associated with the IonicTransport
-    algorithm.
+    The Parameters section below describes the settings pertaining to the
+    running of all transient classes which this algorithm orchestrates.
 
     Parameters
     ----------
-    t_initial : int
-        ##
-    t_final : int
-        ##
-    t_step : int
-        ##
-    t_output : int
-        ##
-    t_tolerance : int
-        ##
-    t_precision : int
-        ##
-    t_scheme : str
-        ##
+    %(TransientReactiveTransportSettings.other_parameters)s
 
     Other Parameters
     ----------------
@@ -39,10 +26,11 @@ class TransientIonicTransportSettings(GenericSettings):
 
     """
     t_initial = 0
-    t_final = None
-    t_step = None
-    t_output = None
+    t_final = 10
+    t_step = 0.1
+    t_output = 1e+08
     t_tolerance = 1e-06
+    rxn_tolerance = 1e-05
     t_precision = 12
     t_scheme = 'implicit'
 
@@ -58,9 +46,10 @@ class TransientIonicTransport(IonicTransport):
         self.settings._update_settings_and_docs(TransientIonicTransportSettings())
         self.settings.update(settings)
 
+    @docstr.dedent
     def setup(self, t_initial=None, t_final=None, t_step=None,
               t_output=None, t_tolerance=None, t_precision=None,
-                  t_scheme='implicit', **kwargs):
+              t_scheme='implicit', **kwargs):
         r"""
 
         Parameters
@@ -218,8 +207,8 @@ class TransientIonicTransport(IonicTransport):
                     for itr in range(g_max_iter):
                         g_r = [float(format(i, '.3g')) for i in g_res.values()]
                         g_r = str(g_r)[1:-1]
-                        print('Start Gummel iter: ' + str(itr+1) +
-                              ', residuals: ' + g_r)
+                        print('Start Gummel iter: ' + str(itr+1)
+                              + ', residuals: ' + g_r)
                         g_convergence = max(i for i in g_res.values()) < g_tol
                         if not g_convergence:
                             # Ions
@@ -257,8 +246,8 @@ class TransientIonicTransport(IonicTransport):
                     for alg in algs:  # Save new fields & compute t residuals
                         t_new[alg.name] = alg[alg.settings['quantity']].copy()
                         t_res[alg.name] = np.sum(
-                            np.absolute(t_old[alg.name]**2 -
-                                        t_new[alg.name]**2))
+                            np.absolute(t_old[alg.name]**2
+                                        - t_new[alg.name]**2))
 
                     # Output transient solutions. Round time to ensure every
                     # value in outputs is exported.
