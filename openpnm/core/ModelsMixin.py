@@ -45,16 +45,15 @@ class ModelsDict(PrintableDict):
         d = nx.algorithms.dag.lexicographical_topological_sort(dtree, sorted)
         return list(d)
 
-    def dependency_graph(self, mode="shallow"):
+    def dependency_graph(self, deep=False):
         r"""
         Returns a NetworkX graph object of the dependencies
 
         Parameters
         ----------
-        mode : str, optional
+        mode : bool, optional
             Defines whether intra- or inter-object dependency graph is desired.
-            Default is 'shallow', i.e. only returns dependencies within the
-            object. The other valid choice is 'deep'.
+            Default is False, i.e. only returns dependencies within the object.
 
         See Also
         --------
@@ -79,8 +78,6 @@ class ModelsDict(PrintableDict):
 
         """
         import networkx as nx
-        if mode not in ["shallow", "deep"]:
-            raise Exception(f"Invalid 'mode': {mode}")
 
         dtree = nx.DiGraph()
         models = list(self.keys())
@@ -94,10 +91,10 @@ class ModelsDict(PrintableDict):
                     dependencies.add(param)
             # Add depenency from model's parameters
             for d in dependencies:
-                if mode == "shallow":
+                if not deep:
                     if d in models:
                         dtree.add_edge(d, model)
-                if mode == "deep":
+                else:
                     dtree.add_edge(d, model)
 
         return dtree
