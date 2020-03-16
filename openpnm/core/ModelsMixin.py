@@ -45,9 +45,16 @@ class ModelsDict(PrintableDict):
         d = nx.algorithms.dag.lexicographical_topological_sort(dtree, sorted)
         return list(d)
 
-    def dependency_graph(self):
+    def dependency_graph(self, mode="shallow"):
         r"""
         Returns a NetworkX graph object of the dependencies
+
+        Parameters
+        ----------
+        mode : str, optional
+            Defines whether intra- or inter-object dependency graph is desired.
+            Default is 'shallow', i.e. only returns dependencies within the
+            object. The other valid choice is 'deep'.
 
         See Also
         --------
@@ -59,24 +66,53 @@ class ModelsDict(PrintableDict):
         To visualize the dependencies, the following NetworkX function and
         settings is helpful:
 
-        nx.draw_spectral(d, arrowsize=50, font_size=32, with_labels=True,
-                         node_size=2000, width=3.0, edge_color='lightgrey',
-                         font_weight='bold')
+        nx.draw_spectral(
+            dtree,
+            arrowsize=50,
+            font_size=32,
+            with_labels=True,
+            node_size=2000,
+            width=3.0,
+            edge_color='lightgrey',
+            font_weight='bold'
+        )
 
         """
         import networkx as nx
+        if mode not in ["shallow", "deep"]:
+            raise Exception(f"Invalid 'mode': {mode}")
 
         dtree = nx.DiGraph()
-        for propname in self.keys():
-            dtree.add_node(propname)
-            for dependency in self[propname].values():
-                if dependency in list(self.keys()):
-                    dtree.add_edge(dependency, propname)
+        models = list(self.keys())
+
+        for model in models:
+            dtree.add_node(model)
+            # Filter pore/throat props only
+            dependencies = set()
+            for param in self[model].values():
+                if type(param) is str and param.split(".")[0] in ["pore", "throat"]:
+                    dependencies.add(param)
+            # Add depenency from model's parameters
+            for d in dependencies:
+                if mode == "shallow":
+                    if d in models:
+                        dtree.add_edge(d, model)
+                if mode == "deep":
+                    dtree.add_edge(d, model)
+
         return dtree
 
-    def dependency_map(self):
+    def dependency_map(self, ax=None, figsize=None):
         r"""
         Create a graph of the dependency graph in a decent format
+
+        Parameters
+        ----------
+        ax : matplotlib.axis, optional
+            Matplotlib axis object on which dependency map is to be drawn
+
+        figsize : tuple, optional
+            Tuple containing frame size
 
         See Also
         --------
@@ -96,22 +132,23 @@ class ModelsDict(PrintableDict):
                 value = node.replace("throat.", "[T] ")
             labels[node] = value
 
+        if ax is None:
+            fig, ax = plt.subplots()
+        fig.set_size_inches(figsize)
+
         nx.draw_shell(
             dtree,
             labels=labels,
             with_labels=True,
-            # arrowsize=50,
-            # node_size=2000,
             edge_color='lightgrey',
-            width=3.0,
             font_size=12,
-            # font_weight='bold',
+            width=3.0,
         )
 
         ax = plt.gca()
         ax.margins(x=0.2, y=0.02)
 
-        return ax.figure
+        # return ax.figure
 
     def __str__(self):
         horizontal_rule = '―' * 85
