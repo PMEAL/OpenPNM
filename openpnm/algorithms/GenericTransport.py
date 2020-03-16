@@ -241,9 +241,9 @@ class GenericTransport(GenericAlgorithm):
         phase = self.project.phases(self.settings['phase'])
         physics = self.project.find_physics(phase=phase)
         # Combine dependency graphs of phase and all physics
-        dg = phase.models.dependency_graph(mode="deep")
+        dg = phase.models.dependency_graph(deep=True)
         for p in physics:
-            dg = nx.compose(dg, p.models.dependency_graph(mode="deep"))
+            dg = nx.compose(dg, p.models.dependency_graph(deep=True))
         quantity = self.settings["quantity"]
         if quantity is None:
             return []
