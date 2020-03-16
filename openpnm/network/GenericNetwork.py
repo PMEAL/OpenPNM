@@ -167,8 +167,8 @@ class GenericNetwork(Base, ModelsMixin):
 
     def get_adjacency_matrix(self, fmt='coo'):
         r"""
-        Returns an adjacency matrix in the specified sparse format, with 1's
-        indicating the non-zero values.
+        Returns an adjacency matrix in the specified sparse format, with throat
+        IDs indicating the non-zero values.
 
         Parameters
         ----------
@@ -190,7 +190,7 @@ class GenericNetwork(Base, ModelsMixin):
         this method will create and return the matrix, as well as store it
         for future use.
 
-        To obtain a matrix with weights other than ones at each non-zero
+        To obtain a matrix with weights other than throat IDs at each non-zero
         location use ``create_adjacency_matrix``.
 
         To obtain the non-directed graph, with only upper-triangular entries,
@@ -212,8 +212,8 @@ class GenericNetwork(Base, ModelsMixin):
 
     def get_incidence_matrix(self, fmt='coo'):
         r"""
-        Returns an incidence matrix in the specified sparse format, with 1's
-        indicating the non-zero values.
+        Returns an incidence matrix in the specified sparse format, with pore
+        IDs indicating the non-zero values.
 
         Parameters
         ----------
@@ -235,7 +235,7 @@ class GenericNetwork(Base, ModelsMixin):
         this method will create and return the matrix, as well as store it
         for future use.
 
-        To obtain a matrix with weights other than ones at each non-zero
+        To obtain a matrix with weights other than pore IDs at each non-zero
         location use ``create_incidence_matrix``.
         """
         if fmt in self._im.keys():
