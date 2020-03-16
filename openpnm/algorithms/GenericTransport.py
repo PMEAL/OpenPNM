@@ -205,7 +205,7 @@ class GenericTransport(GenericAlgorithm):
     @docstr.get_sectionsf(base='GenericTransport.reset',
                           sections=['Parameters'])
     @docstr.dedent
-    def reset(self, bcs=False, results=True, iter_props=False):
+    def reset(self, bcs=False, results=True):
         r"""
         Resets the algorithm to enable re-use.
 
@@ -221,9 +221,6 @@ class GenericTransport(GenericAlgorithm):
             to results of the algorithm are removed.
         bcs : boolean (default = ``False``)
             If ``True`` all previous boundary conditions are removed.
-        iter_props : boolean (default = ``False``)
-            Removes iterative properties from the settings.  The default is
-            ``False``.
         """
         self._pure_b = None
         self._b = None
@@ -234,10 +231,6 @@ class GenericTransport(GenericAlgorithm):
             self['pore.bc_rate'] = np.nan
         if results:
             self.pop(self.settings['quantity'], None)
-        if iter_props:
-            for item in self.settings['iterative_props']:
-                if item not in self.settings['sources']:
-                    self.settings['iterative_props'].remove(item)
 
     def find_iterative_props(self):
         r"""
