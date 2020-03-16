@@ -94,7 +94,7 @@ class ReactiveTransportTest:
         rt.settings.update({'conductance': 'throat.diffusive_conductance',
                             'quantity': 'pore.concentration'})
         rt.set_source(pores=self.net.pores('left'), propname='pore.reaction')
-        assert "pore.reaction" in rt.settings["iterative_props"]
+        assert "pore.reaction" in rt.find_iterative_props()
 
     def test_quantity_relaxation_consistency_w_base_solution(self):
         rt = op.algorithms.ReactiveTransport(network=self.net,

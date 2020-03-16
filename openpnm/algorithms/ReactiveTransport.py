@@ -158,10 +158,6 @@ class ReactiveTransport(GenericTransport):
             # Remove item from label dictionary
             for item in self.settings['sources']:
                 self.pop(item)
-                try:
-                    self.settings['iterative_props'].remove(item)
-                except ValueError:
-                    pass
             # Reset the settings dict
             self.settings['sources'] = []
 
@@ -194,8 +190,6 @@ class ReactiveTransport(GenericTransport):
         # Check if propname already in source term list
         if propname not in self.settings['sources']:
             self.settings['sources'].append(propname)
-        # Add source term as an iterative prop
-        self.set_iterative_props(propname)
 
     @docstr.dedent
     def _set_BC(self, pores, bctype, bcvalues=None, mode='merge'):
