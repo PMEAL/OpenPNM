@@ -236,7 +236,7 @@ class ReactiveTransport(GenericTransport):
         # Put quantity on phase so physics finds it when regenerating
         phase.update(self.results())
         # Regenerate iterative props with new guess
-        iterative_props = self.settings["iterative_props"]
+        iterative_props = self.find_iterative_props()
         phase.regenerate_models(propnames=iterative_props)
         for physic in physics:
             physic.regenerate_models(iterative_props)
