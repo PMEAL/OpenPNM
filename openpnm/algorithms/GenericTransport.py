@@ -241,21 +241,23 @@ class GenericTransport(GenericAlgorithm):
                 if item not in self.settings['sources']:
                     self.settings['iterative_props'].remove(item)
 
-    def set_iterative_props(self, propnames):
+    def find_iterative_props(self):
         r"""
-        Informs the algorithm which properties are iterative and should be
-        update on each loop.
-
-        Parameters
-        ----------
-        propnames : string or list of strings
-            The propnames of the properties that should be updated.
-
+        Find and return properties that need to be iterated while running the
+        algorithm
         """
-        if type(propnames) is str:  # Convert string to list if necessary
-            propnames = [propnames]
-        d = self.settings["iterative_props"]
-        self.settings["iterative_props"] = list(set(d) | set(propnames))
+        import networkx as nx
+        phase = self.project.phases(self.settings['phase'])
+        physics = self.project.find_physics(phase=phase)
+        # Combine dependency graphs of phase and all physics
+        dg = phase.models.dependency_graph(mode="deep")
+        for p in physics:
+            dg = nx.compose(dg, p.models.dependency_graph(mode="deep"))
+        quantity = self.settings["quantity"]
+        # Find all props downstream that rely on "quantity"
+        dg = nx.DiGraph(nx.edge_dfs(dg, source=quantity))
+        dg.remove_node(quantity)
+        return list(nx.dag.lexicographical_topological_sort(dg))
 
     @docstr.dedent
     def set_value_BC(self, pores, values, mode='merge'):
