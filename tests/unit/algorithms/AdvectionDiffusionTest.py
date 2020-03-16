@@ -56,18 +56,20 @@ class AdvectionDiffusionTest:
 
     def test_conductance_gets_updated_when_pressure_changes(self):
         mod = op.models.physics.ad_dif_conductance.ad_dif
-        self.phase['pore.p'] = self.phase['pore.pressure'].copy()
         self.phys.add_model(propname='throat.ad_dif_conductance',
-                            model=mod, s_scheme='powerlaw',
-                            pore_pressure='pore.p')
+                            model=mod, s_scheme='powerlaw')
         g_old = self.phys["throat.ad_dif_conductance"]
-        # Manually change pressure field
-        self.phase['pore.p'] = self.phase['pore.p']**0.5
+        # Run StokesFlow with a different BC to change pressure field
+        self.sf.set_value_BC(pores=self.net.pores('back'), values=1.5)
+        # Running the next line should update "throat.ad_dif_conductance"
+        self.sf.run()
         self.ad.run()
         g_updated = self.phys["throat.ad_dif_conductance"]
         # Ensure conductance values are updated
         assert g_old.mean() != g_updated.mean()
-        assert_allclose(g_updated.mean(), 1.0071212e-15)
+        assert_allclose(g_updated.mean(), 1.01258990e-15)
+        # Reset everything for other tests to run properly
+        self.setup_class()
 
     def test_powerlaw_advection_diffusion(self):
         mod = op.models.physics.ad_dif_conductance.ad_dif
