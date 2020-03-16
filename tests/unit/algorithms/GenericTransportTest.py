@@ -137,6 +137,7 @@ class GenericTransportTest:
         # When quantity is None
         iterative_props = alg.find_iterative_props()
         assert len(iterative_props) == 0
+
         # When there's no dependent property
         alg.settings["quantity"] = "pore.foo"
         iterative_props = alg.find_iterative_props()
