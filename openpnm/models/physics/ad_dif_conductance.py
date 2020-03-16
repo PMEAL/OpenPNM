@@ -8,8 +8,8 @@ import scipy as _sp
 
 
 def ad_dif(target,
-           conduit_lengths='throat.conduit_lengths',
            pore_pressure='pore.pressure',
+           conduit_lengths='throat.conduit_lengths',
            throat_hydraulic_conductance='throat.hydraulic_conductance',
            throat_diffusive_conductance='throat.diffusive_conductance',
            s_scheme='powerlaw'):

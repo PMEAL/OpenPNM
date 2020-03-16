@@ -63,20 +63,22 @@ class AdvectionDiffusionTest:
         self.sf.set_value_BC(pores=self.net.pores('back'), values=1.5)
         # Running the next line should update "throat.ad_dif_conductance"
         self.sf.run()
+        self.phase.update(self.sf.results())
+        self.ad.settings["conductance"] = "throat.ad_dif_conductance"
         self.ad.run()
         g_updated = self.phys["throat.ad_dif_conductance"]
         # Ensure conductance values are updated
         assert g_old.mean() != g_updated.mean()
         assert_allclose(g_updated.mean(), 1.01258990e-15)
-        # Reset everything for other tests to run properly
-        self.setup_class()
+        # Reset BCs for other tests to run properly
+        self.sf.set_value_BC(pores=self.net.pores('back'), values=1)
+        self.sf.run()
 
     def test_powerlaw_advection_diffusion(self):
         mod = op.models.physics.ad_dif_conductance.ad_dif
         self.phys.add_model(propname='throat.ad_dif_conductance_powerlaw',
                             model=mod, s_scheme='powerlaw')
         self.phys.regenerate_models()
-
         self.ad.setup(conductance='throat.ad_dif_conductance_powerlaw')
         self.ad.run()
         x = [0., 0., 0.,
@@ -94,9 +96,9 @@ class AdvectionDiffusionTest:
         self.ad.setup(conductance='throat.ad_dif_conductance_upwind')
         self.ad.run()
         x = [0., 0., 0.,
-             0.86486, 0.86486, 0.86486,
-             1.51351, 1.51351, 1.51351,
-             2., 2., 2.]
+              0.86486, 0.86486, 0.86486,
+              1.51351, 1.51351, 1.51351,
+              2., 2., 2.]
         y = np.around(self.ad['pore.concentration'], decimals=5)
         assert_allclose(actual=y, desired=x)
 
@@ -109,9 +111,9 @@ class AdvectionDiffusionTest:
         self.ad.setup(conductance='throat.ad_dif_conductance_hybrid')
         self.ad.run()
         x = [0., 0., 0.,
-             0.89908, 0.89908, 0.89908,
-             1.54128, 1.54128, 1.54128,
-             2., 2., 2.]
+              0.89908, 0.89908, 0.89908,
+              1.54128, 1.54128, 1.54128,
+              2., 2., 2.]
         y = np.around(self.ad['pore.concentration'], decimals=5)
         assert_allclose(actual=y, desired=x)
 
@@ -124,9 +126,9 @@ class AdvectionDiffusionTest:
         self.ad.setup(conductance='throat.ad_dif_conductance_exponential')
         self.ad.run()
         x = [0., 0., 0.,
-             0.89688173, 0.89688173, 0.89688173,
-             1.53952557, 1.53952557, 1.53952557,
-             2., 2., 2.]
+              0.89688173, 0.89688173, 0.89688173,
+              1.53952557, 1.53952557, 1.53952557,
+              2., 2., 2.]
         y = self.ad['pore.concentration']
         assert_allclose(actual=y, desired=x)
 
@@ -135,7 +137,7 @@ class AdvectionDiffusionTest:
             ad = op.algorithms.AdvectionDiffusion(network=self.net,
                                                   phase=self.phase)
             ad.setup(quantity='pore.concentration',
-                     conductance='throat.ad_dif_conductance_'+s_scheme)
+                      conductance='throat.ad_dif_conductance_'+s_scheme)
 
             ad.set_value_BC(pores=self.net.pores('back'), values=2)
             ad.set_outflow_BC(pores=self.net.pores('front'))
@@ -149,8 +151,8 @@ class AdvectionDiffusionTest:
             ad = op.algorithms.AdvectionDiffusion(network=self.net,
                                                   phase=self.phase)
             ad.setup(quantity='pore.concentration',
-                     conductance='throat.ad_dif_conductance_'+s_scheme,
-                     s_scheme=s_scheme)
+                      conductance='throat.ad_dif_conductance_'+s_scheme,
+                      s_scheme=s_scheme)
 
             ad.set_value_BC(pores=self.net.pores('back'), values=2)
             ad.set_value_BC(pores=self.net.pores('front'), values=0)
@@ -159,7 +161,7 @@ class AdvectionDiffusionTest:
             mdot_inlet = ad.rate(pores=self.net.pores("back"))[0]
             mdot_outlet = ad.rate(pores=self.net.pores("front"))[0]
             temp = sp.random.choice(self.net.pores(["back", "front"],
-                                                   mode="not"),
+                                                    mode="not"),
                                     size=3, replace=False)
             mdot_internal = ad.rate(pores=temp)[0]
             # Ensure no mass is generated within the network
