@@ -551,6 +551,8 @@ class GenericTransport(GenericAlgorithm):
         self._run_generic(x0)
 
     def _run_generic(self, x0):
+        # (Re)build A,b in case phase/physics are updated and alg.run()
+        # is to be called a second time
         self._build_A()
         self._build_b()
         self._apply_BCs()
