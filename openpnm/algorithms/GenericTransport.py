@@ -252,8 +252,12 @@ class GenericTransport(GenericAlgorithm):
         for p in physics:
             dg = nx.compose(dg, p.models.dependency_graph(mode="deep"))
         quantity = self.settings["quantity"]
-        # Find all props downstream that rely on "quantity"
+        if quantity is None:
+            return []
+        # Find all props downstream that rely on "quantity" (if at all)
         dg = nx.DiGraph(nx.edge_dfs(dg, source=quantity))
+        if len(dg.nodes) == 0:
+            return []
         dg.remove_node(quantity)
         return list(nx.dag.lexicographical_topological_sort(dg))
 
