@@ -33,7 +33,8 @@ jobs:
         pip uninstall openpnm --yes
         python setup.py install
         pip install pyamg
-        sudo apt-get install mpich
+        sudo apt update --yes
+        sudo apt-get install mpich --yes
         pip install mpi4py
         export PETSC_CONFIGURE_OPTIONS='--download-f2cblaslapack=1 --download-scalapack --download-mumps'
         pip install petsc petsc4py
