@@ -55,7 +55,6 @@ class NernstPlanckTest:
         self.phys.add_model(propname='throat.ad_dif_mig_conductance_powerlaw',
                             model=mod, s_scheme='powerlaw', ion='ionX')
         self.phys.regenerate_models()
-
         self.adm.setup(conductance='throat.ad_dif_mig_conductance_powerlaw')
         self.adm.run()
         x = [0.,      0.,      0.,
@@ -117,8 +116,8 @@ class NernstPlanckTest:
 if __name__ == '__main__':
     t = NernstPlanckTest()
     t.setup_class()
+    self = t
     for item in t.__dir__():
         if item.startswith('test'):
             print('running test: '+item)
             t.__getattribute__(item)()
-    self = t

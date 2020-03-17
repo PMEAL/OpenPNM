@@ -75,6 +75,7 @@ setup(
         'jsonschema',
         'unyt',
         'terminaltables',
+        'docrep',
     ],
     author='OpenPNM Team',
     author_email='jgostick@uwaterloo.ca',

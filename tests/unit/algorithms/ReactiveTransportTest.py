@@ -157,7 +157,7 @@ class ReactiveTransportTest:
         rt.set_value_BC(pores=self.net.pores('top'), values=1.0)
         assert 'sources' in rt.settings.keys()
         rt.reset(source_terms=True)
-        assert 'sources' not in rt.settings.keys()
+        assert not rt.settings['sources']
 
     def teardown_class(self):
         ws = op.Workspace()
@@ -168,8 +168,8 @@ if __name__ == '__main__':
 
     t = ReactiveTransportTest()
     t.setup_class()
+    self = t
     for item in t.__dir__():
         if item.startswith('test'):
             print('running test: '+item)
             t.__getattribute__(item)()
-    self = t
