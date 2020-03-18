@@ -1,7 +1,9 @@
-import openpnm as op
-import scipy as sp
+import pytest
 import importlib
+import scipy as sp
+import openpnm as op
 import numpy.testing as nt
+from openpnm.utils.misc import catch_module_not_found
 
 
 class SolversTest:
@@ -23,6 +25,11 @@ class SolversTest:
         self.alg.set_value_BC(pores=self.net.pores('left'), values=1.0)
         self.alg.set_value_BC(pores=self.net.pores('bottom'), values=0.0)
 
+    def test_solver_not_available(self):
+        self.alg.settings['solver_family'] = 'not_supported_solver'
+        with pytest.raises(Exception):
+            self.alg.run()
+
     def test_scipy_direct(self):
         solvers = ['spsolve']
         self.alg.settings['solver_family'] = 'scipy'
@@ -41,7 +48,7 @@ class SolversTest:
             self.alg.settings['solver_type'] = solver
             self.alg.run()
             xmean = self.alg['pore.x'].mean()
-            nt.assert_allclose(actual=xmean, desired=0.587595, rtol=1e-4)
+            nt.assert_allclose(actual=xmean, desired=0.587595, rtol=1e-5)
 
     def test_scipy_iterative_diverge(self):
         solvers = ['bicg', 'bicgstab', 'cg', 'cgs', 'qmr', 'gcrotmk',
@@ -54,21 +61,76 @@ class SolversTest:
                 self.alg.run()
         self.alg.settings.update(solver_maxiter=100)
 
-#    def test_pyamg(self):
-#        self.alg.settings['solver_family'] = 'pyamg'
-#        self.alg.run()
-#        xmean = self.alg['pore.x'].mean()
-#        nt.assert_allclose(actual=xmean, desired=0.587595, rtol=1e-5)
-
-    def test_petsc(self):
-        self.alg.settings['solver_family'] = 'petsc'
-        if importlib.util.find_spec('petsc4py') is None:
-            with nt.assert_raises(Exception):
+    def test_pyamg_exception_if_not_found(self):
+        self.alg.settings['solver_family'] = 'pyamg'
+        try:
+            import pyamg
+        except ModuleNotFoundError:
+            with pytest.raises(Exception):
                 self.alg.run()
-        else:
+
+    @catch_module_not_found
+    def test_pyamg(self):
+        self.alg.settings['solver_family'] = 'pyamg'
+        self.alg.run()
+        xmean = self.alg['pore.x'].mean()
+        nt.assert_allclose(actual=xmean, desired=0.587595, rtol=1e-5)
+
+    def test_petsc_exception_if_not_found(self):
+        self.alg.settings['solver_family'] = 'petsc'
+        self.alg.settings['solver_type'] = 'cg'
+        try:
+            import petsc4py
+        except ModuleNotFoundError:
+            with pytest.raises(Exception):
+                self.alg.run()
+
+    @catch_module_not_found
+    def test_petsc_mumps(self):
+        self.alg.settings['solver_family'] = 'petsc'
+        self.alg.settings['solver_type'] = 'mumps'
+        self.alg.run()
+        xmean = self.alg['pore.x'].mean()
+        nt.assert_allclose(actual=xmean, desired=0.587595, rtol=1e-5)
+
+    @catch_module_not_found
+    def test_petsc_iterative(self):
+        self.alg.settings['solver_family'] = 'petsc'
+        iterative_solvers = [
+            'cg', 'groppcg', 'pipecg', 'pipecgrr',
+            'nash', 'stcg', 'gltr', 'fcg', 'pipefcg', 'gmres', 'pipefgmres', 'fgmres',
+            'lgmres', 'dgmres', 'pgmres', 'tcqmr', 'bcgs', 'ibcgs', 'fbcgs', 'fbcgsr',
+            'bcgsl', 'pipebcgs', 'cgs', 'tfqmr', 'cr', 'pipecr',
+            'bicg', 'minres', 'symmlq', 'lcd', 'gcr', 'pipegcr',
+        ]
+        for solver in iterative_solvers:
+            self.alg.settings['solver_type'] = solver
             self.alg.run()
             xmean = self.alg['pore.x'].mean()
             nt.assert_allclose(actual=xmean, desired=0.587595, rtol=1e-5)
+
+    def test_cg_exception_nonsymmetric_A(self):
+        air = op.phases.Air(network=self.net)
+        phys = op.physics.Standard(network=self.net, phase=air, geometry=self.geom)
+        ad = op.algorithms.AdvectionDiffusion(network=self.net, phase=air)
+        ad.set_value_BC(pores=self.net.pores("left"), values=1.0)
+        ad.set_value_BC(pores=self.net.pores("right"), values=0.1)
+        sf = op.algorithms.StokesFlow(network=self.net, phase=air)
+        sf.set_value_BC(pores=self.net.pores("left"), values=1.0)
+        sf.set_value_BC(pores=self.net.pores("right"), values=0.0)
+        sf.run()
+        air.update(sf.results())
+        phys.regenerate_models()
+        ad.settings.update(
+            {
+                "cache_A": False,
+                "cache_b": False,
+                "solver_type": "cg",
+                "solver_family": "scipy"
+            }
+        )
+        with pytest.raises(Exception):
+            ad.run()
 
 
 if __name__ == '__main__':

@@ -1,5 +1,6 @@
-import openpnm as op
 import scipy as sp
+import numpy as np
+import openpnm as op
 import openpnm.models.misc as mods
 from numpy.testing import assert_approx_equal, assert_array_almost_equal_nulp
 
@@ -16,7 +17,7 @@ class MiscTest:
         self.geo.add_model(model=mods.constant,
                            propname='pore.value',
                            value=3.3)
-        assert sp.all(sp.unique(self.geo['pore.value']) == 3.3)
+        assert np.all(np.unique(self.geo['pore.value']) == 3.3)
 
     def test_product(self):
         self.geo.add_model(model=mods.constant,
@@ -29,7 +30,7 @@ class MiscTest:
                            propname='pore.result1',
                            prop1='pore.value1',
                            prop2='pore.value2')
-        assert sp.all(sp.unique(self.geo['pore.result1']) == 4)
+        assert np.all(np.unique(self.geo['pore.result1']) == 4)
         self.geo.add_model(model=mods.constant,
                            propname='pore.value3',
                            value=2)
@@ -38,17 +39,17 @@ class MiscTest:
                            prop1='pore.value1',
                            prop2='pore.value2',
                            prop3='pore.value3')
-        assert sp.all(sp.unique(self.geo['pore.result2']) == 8)
+        assert np.all(np.unique(self.geo['pore.result2']) == 8)
 
     def test_generic_function(self):
-        self.geo['pore.rand'] = sp.rand(self.geo.Np)
+        self.geo['pore.rand'] = np.random.rand(self.geo.Np)
         self.geo.add_model(model=mods.generic_function,
-                           func=sp.clip,
+                           func=np.clip,
                            propname='pore.clipped',
                            prop='pore.rand',
                            a_min=0.2, a_max=0.8)
-        assert sp.amax(self.geo['pore.clipped']) == 0.8
-        assert sp.amin(self.geo['pore.clipped']) == 0.2
+        assert np.amax(self.geo['pore.clipped']) == 0.8
+        assert np.amin(self.geo['pore.clipped']) == 0.2
 
     def test_scaled(self):
         self.geo['pore.value4'] = 4
@@ -56,7 +57,7 @@ class MiscTest:
                            propname='pore.value5',
                            prop='pore.value4',
                            factor=2)
-        assert sp.all(sp.unique(self.geo['pore.value5']) == 8)
+        assert np.all(np.unique(self.geo['pore.value5']) == 8)
 
     def test_linear(self):
         self.geo['pore.value4'] = 4
@@ -64,7 +65,7 @@ class MiscTest:
                            propname='pore.value6',
                            prop='pore.value4',
                            m=2, b=2)
-        assert sp.all(sp.unique(self.geo['pore.value6']) == 10)
+        assert np.all(np.unique(self.geo['pore.value6']) == 10)
 
     def test_polynomial(self):
         self.geo['pore.value4'] = 4
@@ -72,7 +73,7 @@ class MiscTest:
                            propname='pore.value7',
                            prop='pore.value4',
                            a=[0, 2, 4, 6])
-        assert sp.all(sp.unique(self.geo['pore.value7']) == 456)
+        assert np.all(np.unique(self.geo['pore.value7']) == 456)
 
     def test_random_no_seed(self):
         self.geo.add_model(model=mods.random,
@@ -82,7 +83,7 @@ class MiscTest:
         temp1 = self.geo['pore.seed'].copy()
         self.geo.regenerate_models()
         temp2 = self.geo['pore.seed'].copy()
-        assert sp.all(~(temp1 == temp2))
+        assert np.all(~(temp1 == temp2))
 
     def test_random_with_seed(self):
         self.geo.add_model(model=mods.random,
@@ -92,7 +93,7 @@ class MiscTest:
         temp1 = self.geo['pore.seed'].copy()
         self.geo.regenerate_models()
         temp2 = self.geo['pore.seed'].copy()
-        # assert_array_almost_equal_nulp(temp1, temp2)
+        assert_array_almost_equal_nulp(temp1, temp2)
 
     def test_random_with_range(self):
         self.geo.add_model(model=mods.random,
@@ -100,82 +101,130 @@ class MiscTest:
                            element='pore',
                            num_range=[0.1, 0.9])
         self.geo.regenerate_models()
-        assert sp.amax(self.geo['pore.seed']) <= 0.9
-        assert sp.amin(self.geo['pore.seed']) >= 0.1
+        assert np.amax(self.geo['pore.seed']) <= 0.9
+        assert np.amin(self.geo['pore.seed']) >= 0.1
 
     def test_from_neighbor_throats_min(self):
         self.geo.pop('pore.seed', None)
         self.geo.models.pop('pore.seed', None)
         self.geo.models.pop('throat.seed', None)
-        self.geo['throat.seed'] = sp.rand(self.net.Nt,)
+        self.geo['throat.seed'] = np.random.rand(self.net.Nt,)
         self.geo.add_model(model=mods.from_neighbor_throats,
                            propname='pore.seed',
                            throat_prop='throat.seed',
                            mode='min')
-        assert sp.all(sp.in1d(self.geo['pore.seed'], self.geo['throat.seed']))
-        pmax = sp.amax(self.geo['pore.seed'])
-        tmax = sp.amax(self.geo['throat.seed'])
+        assert np.all(np.in1d(self.geo['pore.seed'], self.geo['throat.seed']))
+        pmax = np.amax(self.geo['pore.seed'])
+        tmax = np.amax(self.geo['throat.seed'])
         assert pmax <= tmax
 
     def test_from_neighbor_throats_max(self):
         self.geo.pop('pore.seed', None)
         self.geo.models.pop('pore.seed', None)
         self.geo.models.pop('throat.seed', None)
-        self.geo['throat.seed'] = sp.rand(self.net.Nt,)
+        self.geo['throat.seed'] = np.random.rand(self.net.Nt,)
         self.geo.add_model(model=mods.from_neighbor_throats,
                            propname='pore.seed',
                            throat_prop='throat.seed',
                            mode='max')
-        assert sp.all(sp.in1d(self.geo['pore.seed'], self.geo['throat.seed']))
-        pmin = sp.amin(self.geo['pore.seed'])
-        tmin = sp.amin(self.geo['throat.seed'])
+        assert np.all(np.in1d(self.geo['pore.seed'], self.geo['throat.seed']))
+        pmin = np.amin(self.geo['pore.seed'])
+        tmin = np.amin(self.geo['throat.seed'])
         assert pmin >= tmin
 
     def test_from_neighbor_throats_mean(self):
         self.geo.pop('pore.seed', None)
         self.geo.models.pop('pore.seed', None)
         self.geo.models.pop('throat.seed', None)
-        self.geo['throat.seed'] = sp.rand(self.net.Nt,)
+        self.geo['throat.seed'] = np.random.rand(self.net.Nt,)
         self.geo.add_model(model=mods.from_neighbor_throats,
                            propname='pore.seed',
                            throat_prop='throat.seed',
                            mode='mean')
-        tmax = sp.amax(self.geo['throat.seed'])
-        tmin = sp.amin(self.geo['throat.seed'])
-        assert sp.all(self.geo['pore.seed'] > tmin)
-        assert sp.all(self.geo['pore.seed'] < tmax)
+        tmax = np.amax(self.geo['throat.seed'])
+        tmin = np.amin(self.geo['throat.seed'])
+        assert np.all(self.geo['pore.seed'] > tmin)
+        assert np.all(self.geo['pore.seed'] < tmax)
+
+    def test_neighbor_pores_with_nans(self):
+        net = op.network.Cubic(shape=[2, 2, 2])
+        net['pore.values'] = 1.0
+        net['pore.values'][0] = sp.nan
+        f = mods.from_neighbor_pores
+        with_nans = f(target=net, pore_prop='pore.values',
+                      ignore_nans=False, mode='min')
+        assert np.any(np.isnan(with_nans))
+        no_nans = f(target=net, pore_prop='pore.values',
+                    ignore_nans=True, mode='min')
+        assert np.all(~np.isnan(no_nans))
+        with_nans = f(target=net, pore_prop='pore.values',
+                      ignore_nans=False, mode='max')
+        assert np.any(np.isnan(with_nans))
+        no_nans = f(target=net, pore_prop='pore.values',
+                    ignore_nans=True, mode='max')
+        assert np.all(~np.isnan(no_nans))
+        with_nans = f(target=net, pore_prop='pore.values',
+                      ignore_nans=False, mode='mean')
+        assert np.any(np.isnan(with_nans))
+        no_nans = f(target=net, pore_prop='pore.values',
+                    ignore_nans=True, mode='mean')
+        assert np.all(~np.isnan(no_nans))
+
+    def test_neighbor_throats_with_nans(self):
+        net = op.network.Cubic(shape=[2, 2, 2])
+        net['throat.values'] = 1.0
+        net['throat.values'][0] = sp.nan
+        f = mods.from_neighbor_throats
+        with_nans = f(target=net, throat_prop='throat.values',
+                      ignore_nans=False, mode='min')
+        assert np.any(np.isnan(with_nans))
+        no_nans = f(target=net, throat_prop='throat.values',
+                    ignore_nans=True, mode='min')
+        assert np.all(~np.isnan(no_nans))
+        with_nans = f(target=net, throat_prop='throat.values',
+                      ignore_nans=False, mode='max')
+        assert np.any(np.isnan(with_nans))
+        no_nans = f(target=net, throat_prop='throat.values',
+                    ignore_nans=True, mode='max')
+        assert np.all(~np.isnan(no_nans))
+        with_nans = f(target=net, throat_prop='throat.values',
+                      ignore_nans=False, mode='mean')
+        assert np.any(np.isnan(with_nans))
+        no_nans = f(target=net, throat_prop='throat.values',
+                    ignore_nans=True, mode='mean')
+        assert np.all(~np.isnan(no_nans))
 
     def test_from_neighbor_pores_min(self):
         self.geo.remove_model('throat.seed')
-        self.geo['pore.seed'] = sp.rand(self.net.Np,)
+        self.geo['pore.seed'] = np.random.rand(self.net.Np,)
         self.geo.add_model(model=mods.from_neighbor_pores,
                            propname='throat.seed',
                            pore_prop='pore.seed',
                            mode='min')
         P12 = self.net['throat.conns']
-        tseed = sp.amin(self.geo['pore.seed'][P12], axis=1)
+        tseed = np.amin(self.geo['pore.seed'][P12], axis=1)
         assert_array_almost_equal_nulp(self.geo['throat.seed'], tseed)
 
     def test_from_neighbor_pores_max(self):
         self.geo.remove_model('throat.seed')
-        self.geo['pore.seed'] = sp.rand(self.net.Np,)
+        self.geo['pore.seed'] = np.random.rand(self.net.Np,)
         self.geo.add_model(model=mods.from_neighbor_pores,
                            propname='throat.seed',
                            pore_prop='pore.seed',
                            mode='max')
         P12 = self.net['throat.conns']
-        tseed = sp.amax(self.geo['pore.seed'][P12], axis=1)
+        tseed = np.amax(self.geo['pore.seed'][P12], axis=1)
         assert_array_almost_equal_nulp(self.geo['throat.seed'], tseed)
 
     def test_from_neighbor_pores_mean(self):
         self.geo.remove_model('throat.seed')
-        self.geo['pore.seed'] = sp.rand(self.net.Np,)
+        self.geo['pore.seed'] = np.random.rand(self.net.Np,)
         self.geo.add_model(model=mods.from_neighbor_pores,
                            propname='throat.seed',
                            pore_prop='pore.seed',
                            mode='mean')
         P12 = self.net['throat.conns']
-        tseed = sp.mean(self.geo['pore.seed'][P12], axis=1)
+        tseed = np.mean(self.geo['pore.seed'][P12], axis=1)
         assert_array_almost_equal_nulp(self.geo['throat.seed'], tseed)
 
     def test_from_neighbors_multi_geom(self):
@@ -197,20 +246,29 @@ class MiscTest:
                        propname='throat.rand1',
                        pore_prop='pore.rand1',
                        mode='min')
-        test = sp.amin(net['pore.rand1'][net['throat.conns']], axis=1)[Ts1]
-        assert sp.all(test == geo1['throat.rand1'])
+        test = np.amin(net['pore.rand1'][net['throat.conns']], axis=1)[Ts1]
+        assert np.all(test == geo1['throat.rand1'])
         geo1['throat.rand2'] = sp.random.random(geo1.Nt)
         geo2['throat.rand2'] = sp.random.random(geo2.Nt)
         geo2.add_model(model=mods.from_neighbor_throats,
                        propname='pore.rand2',
                        throat_prop='throat.rand2',
                        mode='max')
-        test = sp.zeros(geo2.Np).astype(bool)
+        test = np.zeros(geo2.Np).astype(bool)
         for i, pore in enumerate(net.pores(geo2.name)):
             Ts = net.find_neighbor_throats(pores=pore)
-            T_max = sp.amax(net['throat.rand2'][Ts])
+            T_max = np.amax(net['throat.rand2'][Ts])
             test[i] = net['pore.rand2'][pore] == T_max
-        assert sp.all(test)
+        assert np.all(test)
+
+    def test_invert(self):
+        net = op.network.Cubic(shape=[5, 5, 5])
+        net['pore.diameter'] = 2.0
+        net.add_model(propname='pore.entry_pressure',
+                      prop='pore.diameter',
+                      model=mods.basic_math.invert)
+        assert net['pore.entry_pressure'][0] == 0.5
+
 
 if __name__ == '__main__':
 

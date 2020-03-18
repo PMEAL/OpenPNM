@@ -1,11 +1,11 @@
 import scipy as sp
-import scipy.spatial as sptl
+import numpy as np
 import scipy.sparse as sprs
-from skimage.filters import rank_order
-from openpnm.network import GenericNetwork
+import scipy.spatial as sptl
 from openpnm import topotools
 from openpnm.utils import logging
 logger = logging.getLogger(__name__)
+from openpnm.network import GenericNetwork
 
 
 class DelaunayVoronoiDual(GenericNetwork):
@@ -76,7 +76,7 @@ class DelaunayVoronoiDual(GenericNetwork):
                                     points=points)
 
         # Deal with points that are only 2D...they break tessellations
-        if points.shape[1] == 3 and len(sp.unique(points[:, 2])) == 1:
+        if points.shape[1] == 3 and len(np.unique(points[:, 2])) == 1:
             points = points[:, :2]
 
         # Perform tessellation
@@ -84,8 +84,8 @@ class DelaunayVoronoiDual(GenericNetwork):
         self._vor = vor
 
         # Combine points
-        pts_all = sp.vstack((vor.points, vor.vertices))
-        Nall = sp.shape(pts_all)[0]
+        pts_all = np.vstack((vor.points, vor.vertices))
+        Nall = np.shape(pts_all)[0]
 
         # Create adjacency matrix in lil format for quick construction
         am = sprs.lil_matrix((Nall, Nall))
@@ -107,17 +107,17 @@ class DelaunayVoronoiDual(GenericNetwork):
         # Convert to COO format for direct acces to row and col
         am = am.tocoo()
         # Extract rows and cols
-        conns = sp.vstack((am.row, am.col)).T
+        conns = np.vstack((am.row, am.col)).T
 
         # Convert to sanitized adjacency matrix
         am = topotools.conns_to_am(conns)
         # Finally, retrieve conns back from am
-        conns = sp.vstack((am.row, am.col)).T
+        conns = np.vstack((am.row, am.col)).T
 
         # Translate adjacency matrix and points to OpenPNM format
-        coords = sp.around(pts_all, decimals=10)
+        coords = np.around(pts_all, decimals=10)
         if coords.shape[1] == 2:  # Make points back into 3D if necessary
-            coords = sp.vstack((coords.T, sp.zeros((coords.shape[0], )))).T
+            coords = np.vstack((coords.T, np.zeros((coords.shape[0], )))).T
         super().__init__(conns=conns, coords=coords, **kwargs)
 
         # Label all pores and throats by type
@@ -127,11 +127,11 @@ class DelaunayVoronoiDual(GenericNetwork):
         self['pore.voronoi'][vor.npoints:] = True
         # Label throats between Delaunay pores
         self['throat.delaunay'] = False
-        Ts = sp.all(self['throat.conns'] < vor.npoints, axis=1)
+        Ts = np.all(self['throat.conns'] < vor.npoints, axis=1)
         self['throat.delaunay'][Ts] = True
         # Label throats between Voronoi pores
         self['throat.voronoi'] = False
-        Ts = sp.all(self['throat.conns'] >= vor.npoints, axis=1)
+        Ts = np.all(self['throat.conns'] >= vor.npoints, axis=1)
         self['throat.voronoi'][Ts] = True
         # Label throats connecting a Delaunay and a Voronoi pore
         self['throat.interconnect'] = False
@@ -199,7 +199,7 @@ class DelaunayVoronoiDual(GenericNetwork):
         for P in Ps:
             Ns = self.find_neighbor_pores(pores=P)
             Ns = Ps = self['pore.voronoi']*self.tomask(pores=Ns)
-            coords = sp.mean(self['pore.coords'][Ns], axis=0)
+            coords = np.mean(self['pore.coords'][Ns], axis=0)
             self['pore.coords'][P] = coords
 
         self['pore.internal'] = ~self['pore.boundary']
@@ -213,7 +213,7 @@ class DelaunayVoronoiDual(GenericNetwork):
         self['throat.surface'] = False
         self['throat.surface'][Ts] = True
         surf_pores = self['throat.conns'][Ts].flatten()
-        surf_pores = sp.unique(surf_pores[~self['pore.boundary'][surf_pores]])
+        surf_pores = np.unique(surf_pores[~self['pore.boundary'][surf_pores]])
         self['pore.surface'] = False
         self['pore.surface'][surf_pores] = True
         # Clean-up
@@ -248,7 +248,7 @@ class DelaunayVoronoiDual(GenericNetwork):
             P12 = self['throat.conns'][t]
             Ps = list(set(am.rows[P12][0]).intersection(am.rows[P12][1]))
             temp.append(Ps)
-        return sp.array(temp, dtype=object)
+        return np.array(temp, dtype=object)
 
     def find_pore_hulls(self, pores=None):
         r"""
@@ -276,7 +276,7 @@ class DelaunayVoronoiDual(GenericNetwork):
         for p in pores:
             Ps = am.rows[p]
             temp.append(Ps)
-        return sp.array(temp, dtype=object)
+        return np.array(temp, dtype=object)
 
     def _parse_points(self, shape, points, num_points):
         # Deal with input arguments
@@ -288,10 +288,10 @@ class DelaunayVoronoiDual(GenericNetwork):
                                                     reflect=True)
         else:
             # Should we check to ensure that points are reflected?
-            points = sp.array(points)
+            points = np.array(points)
 
         # Deal with points that are only 2D...they break Delaunay
-        if points.shape[1] == 3 and len(sp.unique(points[:, 2])) == 1:
+        if points.shape[1] == 3 and len(np.unique(points[:, 2])) == 1:
             points = points[:, :2]
 
         return points
@@ -301,11 +301,11 @@ class DelaunayVoronoiDual(GenericNetwork):
         Label the pores sitting on the faces of the domain in accordance with
         the conventions used for cubic etc.
         '''
-        coords = sp.around(self['pore.coords'], decimals=10)
+        coords = np.around(self['pore.coords'], decimals=10)
         min_labels = ['front', 'left', 'bottom']
         max_labels = ['back', 'right', 'top']
-        min_coords = sp.amin(coords, axis=0)
-        max_coords = sp.amax(coords, axis=0)
+        min_coords = np.amin(coords, axis=0)
+        max_coords = np.amax(coords, axis=0)
         for ax in range(3):
             self['pore.' + min_labels[ax]] = coords[:, ax] == min_coords[ax]
             self['pore.' + max_labels[ax]] = coords[:, ax] == max_coords[ax]
@@ -329,15 +329,15 @@ class DelaunayVoronoiDual(GenericNetwork):
             for instance if boundary pores have already added to other faces.
 
         """
-        offset = sp.array(offset)
+        offset = np.array(offset)
         if offset.size == 1:
-            offset = sp.ones(3)*offset
+            offset = np.ones(3)*offset
         for item in labels:
             Ps = self.pores(item)
-            coords = sp.absolute(self['pore.coords'][Ps])
-            axis = sp.count_nonzero(sp.diff(coords, axis=0), axis=0) == 0
-            ax_off = sp.array(axis, dtype=int)*offset
-            if sp.amin(coords) == sp.amin(coords[:, sp.where(axis)[0]]):
+            coords = np.absolute(self['pore.coords'][Ps])
+            axis = np.count_nonzero(sp.diff(coords, axis=0), axis=0) == 0
+            ax_off = np.array(axis, dtype=int)*offset
+            if np.amin(coords) == np.amin(coords[:, np.where(axis)[0]]):
                 ax_off = -1*ax_off
             topotools.add_boundary_pores(network=self, pores=Ps, offset=ax_off,
                                          apply_label=item + '_boundary')

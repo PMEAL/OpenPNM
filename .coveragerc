@@ -1,6 +1,14 @@
 [run]
+source =
+    openpnm/
+
+[report]
+exclude_lines =
+    raise NotImplementedError
+    if __name__ == .__main__.:
 omit =
-    *__init__*
     test/*
+    docs/*
+    tests/*
+    example.py
     setup.py
-    example_script.py

@@ -10,15 +10,18 @@ as a number of helper classes.
 """
 
 import logging as logging
+from .misc import Docorator
 from .misc import PrintableDict
 from .misc import PrintableList
 from .misc import NestedDict
 from .misc import SettingsDict
+from .misc import GenericSettings
 from .misc import HealthDict
 from .misc import flat_list
 from .misc import sanitize_dict
 from .misc import unique_list
 from .misc import tic, toc
+from .misc import is_symmetric
 from .Workspace import Workspace
 from .Project import Project
 
@@ -29,10 +32,11 @@ from .Project import Project
 # NOTE: If the calling locations appears as 'root' it's because the logger
 # was not given a name in a file somewhere.  A good option is __name__.
 log_format = \
-    '―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――\n\
-    %(levelname)-s: %(message)s \n\
-    SOURCE: %(name)s.%(funcName)s \n\
-    TIME STAMP: %(asctime)s\
-    '
+'=' * 80 + '\n\
+%(levelname)-11s: %(message)s \n\
+SOURCE     : %(name)s.%(funcName)s \n\
+TIME STAMP : %(asctime)s\n\
+' + '=' * 80
+
 logging.basicConfig(level=logging.WARNING, format=log_format)
 del log_format

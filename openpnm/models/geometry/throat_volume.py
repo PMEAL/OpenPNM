@@ -6,6 +6,7 @@ r"""
 
 """
 import scipy as _sp
+import numpy as _np
 
 
 def cylinder(target, throat_length='throat.length',
@@ -130,3 +131,98 @@ def rectangle(target, throat_length='throat.length',
     intersection of the throat with a spherical pore body.
     """
     return target[throat_length] * target[throat_diameter]
+
+
+def lens(target, throat_diameter='throat.diameter',
+         pore_diameter='pore.diameter'):
+    r"""
+    Calculates the volume residing the hemispherical caps formed by the
+    intersection between cylindrical throats and spherical pores.
+
+    This volume should be subtracted from throat volumes if the throat lengths
+    were found using throat end points.
+
+    Parameters
+    ----------
+    throat_diameter : string
+        The dictionary keys containing the array with the throat diameter
+        values.
+    pore_diameter : string
+        The dictionary keys containing the array with the pore diameter
+        values.
+
+    Returns
+    -------
+    volume : ND-array
+        The volume that should be subtracted from each throat volume to prevent
+        double counting the volume of overlapping area.
+
+    Notes
+    -----
+    This model does NOT consider the possibility that multiple throats might
+    overlap in the same location which could happen if throats are large and
+    connectivity is random.
+
+    See Also
+    --------
+    pendular_ring
+    """
+    network = target.network
+    conns = network['throat.conns']
+    Rp = target[pore_diameter]
+    Rt = target[throat_diameter]
+    a = _np.atleast_2d(Rt).T
+    q = _np.arcsin(a/Rp[conns])
+    b = Rp[conns]*_np.cos(q)
+    h = Rp[conns] - b
+    V = 1/6*_sp.pi*h*(3*a**2 + h**2)
+    return _np.sum(V, axis=1)
+
+
+def pendular_ring(target, throat_diameter='throat.diameter',
+                  pore_diameter='pore.diameter'):
+    r"""
+    Calculates the volume of the pendular rings residing between the end of
+    a cylindrical throat and spherical pores that are in contact but not
+    overlapping.
+
+    This volume should be added to the throat volume if the throat length was
+    found as the center-to-center distance less the pore radii.
+
+    Parameters
+    ----------
+    throat_diameter : string
+        The dictionary keys containing the array with the throat diameter
+        values.
+    pore_diameter : string
+        The dictionary keys containing the array with the pore diameter
+        values.
+
+    Returns
+    -------
+    volume : ND-array
+        The volume that should be added to each throat volume to account for
+        under-represented void volume at the pore-throat junctions.
+
+    Notes
+    -----
+    This model does NOT consider the possibility that multiple throats might
+    overlap in the same location which could happen if throats are large and
+    connectivity is random.
+
+    See Also
+    --------
+    lens
+    """
+    network = target.network
+    conns = network['throat.conns']
+    Rp = target[pore_diameter]
+    Rt = target[throat_diameter]
+    a = _np.atleast_2d(Rt).T
+    q = _np.arcsin(a/Rp[conns])
+    b = Rp[conns]*_np.cos(q)
+    h = Rp[conns] - b
+    Vlens = 1/6*_sp.pi*h*(3*a**2 + h**2)
+    Vcyl = _sp.pi*(a)**2*h
+    V = Vcyl - Vlens
+    return _np.sum(V, axis=1)

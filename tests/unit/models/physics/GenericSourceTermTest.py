@@ -1,8 +1,10 @@
-import openpnm as op
-import numpy as np
-import openpnm.models.physics as pm
-import sympy as syp
 import collections
+import numpy as np
+import openpnm as op
+import openpnm.models.physics as pm
+from numpy.testing import assert_allclose
+from sympy import ln as sym_ln
+from sympy import symbols
 
 
 class GenericSourceTermTest:
@@ -20,6 +22,26 @@ class GenericSourceTermTest:
         self.phase['pore.mole_fraction'] = 0.0
         self.BC_pores = np.arange(20, 30)
         self.source_pores = np.arange(55, 85)
+
+    def test_default_values_should_give_zero_rate(self):
+        sources = ["linear", "power_law", "exponential", "natural_exponential",
+                   "logarithm", "natural_logarithm"]
+        self.alg = op.algorithms.ReactiveTransport(network=self.net,
+                                                   phase=self.phase)
+        self.alg.settings.update({'conductance': 'throat.diffusive_conductance',
+                                  'quantity': 'pore.mole_fraction'})
+        self.alg.set_value_BC(values=0.4, pores=self.BC_pores)
+        self.alg.set_source(propname='pore.source_term',
+                            pores=self.source_pores)
+        # To avoid nans in logarithm-based source term models
+        self.phase['pore.mole_fraction'] = 0.1
+        for source in sources:
+            self.phys.add_model(propname="pore.source_term",
+                                model=getattr(pm.generic_source_term, source),
+                                X="pore.mole_fraction")
+            assert self.phys["pore.source_term.rate"].mean() == 0
+            assert self.phys["pore.source_term.S1"].mean() == 0
+            assert self.phys["pore.source_term.S2"].mean() == 0
 
     def test_linear(self):
         self.phys['pore.item1'] = 0.5e-11
@@ -129,12 +151,11 @@ class GenericSourceTermTest:
         self.phys.regenerate_models(propnames='pore.source1')
         self.phys.regenerate_models(propnames='pore.source2')
         X = self.phase['pore.mole_fraction']
-        r1 = np.round(np.sum(0.8e-11 * 3 ** (0.5 * X[self.source_pores]**2 -
-                      0.34) + 2e-14), 20)
-        r2 = np.round(np.sum(self.phys['pore.source1.rate'][self.source_pores]), 20)
-        rs = np.round(np.sum(self.phys['pore.source2.rate'][self.source_pores]), 20)
-        assert r1 == r2
-        assert r1== rs
+        r1 = np.sum(0.8e-11 * 3 ** (0.5 * X[self.source_pores]**2 - 0.34) + 2e-14)
+        r2 = np.sum(self.phys['pore.source1.rate'][self.source_pores])
+        rs = np.sum(self.phys['pore.source2.rate'][self.source_pores])
+        assert_allclose(actual=r2, desired=r1, rtol=1e-7)
+        assert_allclose(actual=rs, desired=r1, rtol=1e-7)
 
     def test_natural_exponential(self):
         self.phys['pore.item1'] = 0.8e-11
@@ -172,12 +193,11 @@ class GenericSourceTermTest:
         self.phys.regenerate_models(propnames='pore.source1')
         self.phys.regenerate_models(propnames='pore.source2')
         X = self.phase['pore.mole_fraction']
-        r1 = np.round(np.sum(0.8e-11 * np.exp(0.5 * X[self.source_pores]**2 -
-                      0.34) + 2e-14), 20)
-        r2 = np.round(np.sum(self.phys['pore.source1.rate'][self.source_pores]), 20)
-        rs = np.round(np.sum(self.phys['pore.source1.rate'][self.source_pores]), 20)
-        assert r1 == r2
-        assert r1 == rs
+        r1 = np.sum(0.8e-11 * np.exp(0.5 * X[self.source_pores]**2 - 0.34) + 2e-14)
+        r2 = np.sum(self.phys['pore.source1.rate'][self.source_pores])
+        rs = np.sum(self.phys['pore.source1.rate'][self.source_pores])
+        assert_allclose(actual=r2, desired=r1)
+        assert_allclose(actual=rs, desired=r1)
 
     def test_logarithm(self):
         self.phys['pore.item1'] = 0.16e-13
@@ -218,12 +238,12 @@ class GenericSourceTermTest:
         self.phys.regenerate_models(propnames='pore.source1')
         self.phys.regenerate_models(propnames='pore.source2')
         X = self.phase['pore.mole_fraction']
-        r1 = np.round(np.sum(0.16e-13*np.log(4*X[self.source_pores]**(1.4) +
-                             0.133) / np.log(10) - 5.1e-13), 20)
-        r2 = np.round(np.sum(self.phys['pore.source1.rate'][self.source_pores]), 20)
-        rs = np.round(np.sum(self.phys['pore.source2.rate'][self.source_pores]), 20)
-        assert r1 == r2
-        assert r1 == rs
+        r1 = np.sum(0.16e-13 * np.log(4*X[self.source_pores]**(1.4) + 0.133)
+                    / np.log(10) - 5.1e-13)
+        r2 = np.sum(self.phys['pore.source1.rate'][self.source_pores])
+        rs = np.sum(self.phys['pore.source2.rate'][self.source_pores])
+        assert_allclose(actual=r2, desired=r1)
+        assert_allclose(actual=rs, desired=r1)
 
     def test_natural_logarithm(self):
         self.phys['pore.item1'] = 0.16e-14
@@ -261,17 +281,16 @@ class GenericSourceTermTest:
         self.phys.regenerate_models(propnames='pore.source1')
         self.phys.regenerate_models(propnames='pore.source2')
         X = self.phase['pore.mole_fraction']
-        r1 = np.round(np.sum(0.16e-14*np.log(4*X[self.source_pores]**(1.4) +
-                             0.133) - 5.1e-14), 20)
-        r2 = np.round(np.sum(self.phys['pore.source1.rate'][self.source_pores]), 20)
-        rs = np.round(np.sum(self.phys['pore.source1.rate'][self.source_pores]), 20)
+        r1 = np.sum(0.16e-14*np.log(4*X[self.source_pores]**1.4 + 0.133) - 5.1e-14)
+        r2 = np.sum(self.phys['pore.source1.rate'][self.source_pores])
+        rs = np.sum(self.phys['pore.source1.rate'][self.source_pores])
         assert r1 == r2
         assert r1 == rs
 
     def test_general_symbolic(self):
-        a, b, c, d, e, x = syp.symbols('a,b,c,d,e,x')
+        a, b, c, d, e, x = symbols('a,b,c,d,e,x')
         # natural log function
-        y =  a*syp.ln(b*x**c + d)+e
+        y =  a*sym_ln(b*x**c + d)+e
         phys = self.phys
         phys['pore.item1'] = 0.16e-14
         phys['pore.item2'] = 4
@@ -300,6 +319,7 @@ class GenericSourceTermTest:
         assert np.allclose(phys['pore.source1.rate'], phys['pore.general.rate'])
         assert np.allclose(phys['pore.source1.S1'], phys['pore.general.S1'])
         assert np.allclose(phys['pore.source1.S2'], phys['pore.general.S2'])
+
 
 if __name__ == '__main__':
 

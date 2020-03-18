@@ -1,6 +1,38 @@
 from openpnm.algorithms import TransientReactiveTransport, AdvectionDiffusion
-from openpnm.utils import logging
+from openpnm.utils import logging, Docorator, GenericSettings
+docstr = Docorator()
 logger = logging.getLogger(__name__)
+
+
+@docstr.dedent
+class TransientAdvectionDiffusionSettings(GenericSettings):
+    r"""
+    Parameters
+    ----------
+    %(AdvectionDiffusionSettings.parameters)s
+
+    Other Parameters
+    ----------------
+    %(AdvectionDiffusionSettings.other_parameters)s
+
+    ----
+
+    **The following parameters pertain to the TransientReactiveTransport class**
+
+    %(TransientReactiveTransportSettings.other_parameters)s
+
+    ----
+
+    **The following parameters pertain to the ReactiveTransport class**
+
+    %(ReactiveTransportSettings.other_parameters)s
+
+    ----
+
+    **The following parameters pertain to the GenericTransport class**
+
+    %(GenericTransportSettings.other_parameters)s
+    """
 
 
 class TransientAdvectionDiffusion(TransientReactiveTransport,
@@ -12,27 +44,8 @@ class TransientAdvectionDiffusion(TransientReactiveTransport,
     """
 
     def __init__(self, settings={}, phase=None, **kwargs):
-        def_set = {'phase': None,
-                   'gui': {'setup':        {'phase': None,
-                                            'quantity': '',
-                                            'conductance': '',
-                                            't_initial': None,
-                                            't_final': None,
-                                            't_step': None,
-                                            't_output': None,
-                                            't_tolerance': None,
-                                            't_scheme': ''},
-                           'set_IC':       {'values': None},
-                           'set_rate_BC':  {'pores': None,
-                                            'values': None},
-                           'set_value_BC': {'pores': None,
-                                            'values': None},
-                           'set_source':   {'pores': None,
-                                            'propname': ''}
-                           }
-                   }
         super().__init__(**kwargs)
-        self.settings.update(def_set)
+        self.settings._update_settings_and_docs(TransientAdvectionDiffusionSettings())
         self.settings.update(settings)
         if phase is not None:
             self.setup(phase=phase)

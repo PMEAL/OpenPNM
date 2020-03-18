@@ -8,17 +8,21 @@ r"""
 
 """
 
-import scipy as _sp
-import numpy as np
 import logging
-from transforms3d import _gohlketransforms as tr
+import scipy as _sp
+import numpy as _np
 from openpnm.models import physics as pm
+from transforms3d import _gohlketransforms as tr
+
 logger = logging.getLogger(__name__)
 
 
-def _get_key_props(phase=None, diameter='throat.diameter',
-                   surface_tension='pore.surface_tension',
-                   contact_angle='pore.contact_angle'):
+def _get_key_props(
+    phase=None,
+    diameter="throat.diameter",
+    surface_tension="pore.surface_tension",
+    contact_angle="pore.contact_angle",
+):
     r"""
     Many of the methods are generic to pores and throats. Some information may
     be stored on either the pore or throat and needs to be interpolated.
@@ -26,22 +30,22 @@ def _get_key_props(phase=None, diameter='throat.diameter',
     To do:
         Check for method to convert throat to pore data
     """
-    element = diameter.split('.')[0]
-    if element == 'pore':
-        if 'throat' in surface_tension:
+    element = diameter.split(".")[0]
+    if element == "pore":
+        if "throat" in surface_tension:
             sigma = phase.interpolate_data(propname=surface_tension)
         else:
             sigma = phase[surface_tension]
-        if 'throat' in contact_angle:
+        if "throat" in contact_angle:
             theta = phase.interpolate_data(propname=contact_angle)
         else:
             theta = phase[contact_angle]
-    if element == 'throat':
-        if 'pore' in surface_tension:
+    if element == "throat":
+        if "pore" in surface_tension:
             sigma = phase.interpolate_data(propname=surface_tension)
         else:
             sigma = phase[surface_tension]
-        if 'pore' in contact_angle:
+        if "pore" in contact_angle:
             theta = phase.interpolate_data(propname=contact_angle)
         else:
             theta = phase[contact_angle]
@@ -49,9 +53,12 @@ def _get_key_props(phase=None, diameter='throat.diameter',
     return element, sigma, theta
 
 
-def washburn(target, surface_tension='pore.surface_tension',
-             contact_angle='pore.contact_angle',
-             diameter='throat.diameter'):
+def washburn(
+    target,
+    surface_tension="pore.surface_tension",
+    contact_angle="pore.contact_angle",
+    diameter="throat.diameter",
+):
     r"""
     Computes the capillary entry pressure assuming the throat in a cylindrical
     tube.
@@ -92,23 +99,29 @@ def washburn(target, surface_tension='pore.surface_tension',
     """
     network = target.project.network
     phase = target.project.find_phase(target)
-    element, sigma, theta = _get_key_props(phase=phase,
-                                           diameter=diameter,
-                                           surface_tension=surface_tension,
-                                           contact_angle=contact_angle)
-    r = network[diameter]/2
-    value = -2*sigma*_sp.cos(_sp.radians(theta))/r
-    if diameter.split('.')[0] == 'throat':
+    element, sigma, theta = _get_key_props(
+        phase=phase,
+        diameter=diameter,
+        surface_tension=surface_tension,
+        contact_angle=contact_angle,
+    )
+    r = network[diameter] / 2
+    value = -2 * sigma * _np.cos(_np.radians(theta)) / r
+    if diameter.split(".")[0] == "throat":
         value = value[phase.throats(target.name)]
     else:
         value = value[phase.pores(target.name)]
-    value[_sp.absolute(value) == _sp.inf] = 0
+    value[_np.absolute(value) == _sp.inf] = 0
     return value
 
 
-def purcell(target, r_toroid, surface_tension='pore.surface_tension',
-            contact_angle='pore.contact_angle',
-            diameter='throat.diameter'):
+def purcell(
+    target,
+    r_toroid,
+    surface_tension="pore.surface_tension",
+    contact_angle="pore.contact_angle",
+    diameter="throat.diameter",
+):
     r"""
     Computes the throat capillary entry pressure assuming the throat is a
     toroid.
@@ -161,33 +174,39 @@ def purcell(target, r_toroid, surface_tension='pore.surface_tension',
     """
     network = target.project.network
     phase = target.project.find_phase(target)
-    element, sigma, theta = _get_key_props(phase=phase,
-                                           diameter=diameter,
-                                           surface_tension=surface_tension,
-                                           contact_angle=contact_angle)
-    r = network[diameter]/2
+    element, sigma, theta = _get_key_props(
+        phase=phase,
+        diameter=diameter,
+        surface_tension=surface_tension,
+        contact_angle=contact_angle,
+    )
+    r = network[diameter] / 2
     R = r_toroid
-    alpha = theta - 180 + \
-        _sp.rad2deg(_sp.arcsin(_sp.sin(_sp.radians(theta))/(1+r/R)))
-    value = (-2*sigma/r) * \
-        (_sp.cos(_sp.radians(theta - alpha)) /
-            (1 + R/r*(1 - _sp.cos(_sp.radians(alpha)))))
-    if diameter.split('.')[0] == 'throat':
+    alpha = (
+        theta - 180 + _sp.rad2deg(_np.arcsin(_np.sin(_np.radians(theta)) / (1 + r / R)))
+    )
+    value = (-2 * sigma / r) * (
+        _np.cos(_np.radians(theta - alpha))
+        / (1 + R / r * (1 - _np.cos(_np.radians(alpha))))
+    )
+    if diameter.split(".")[0] == "throat":
         value = value[phase.throats(target.name)]
     else:
         value = value[phase.pores(target.name)]
     return value
 
 
-def ransohoff_snap_off(target,
-                       shape_factor=2.0,
-                       wavelength=5e-6,
-                       require_pair=False,
-                       surface_tension='pore.surface_tension',
-                       contact_angle='pore.contact_angle',
-                       diameter='throat.diameter',
-                       vertices='throat.offset_vertices',
-                       **kwargs):
+def ransohoff_snap_off(
+    target,
+    shape_factor=2.0,
+    wavelength=5e-6,
+    require_pair=False,
+    surface_tension="pore.surface_tension",
+    contact_angle="pore.contact_angle",
+    diameter="throat.diameter",
+    vertices="throat.offset_vertices",
+    **kwargs
+):
     r"""
     Computes the capillary snap-off pressure assuming the throat is cylindrical
     with converging-diverging change in diamater - like the Purcell model.
@@ -241,16 +260,18 @@ def ransohoff_snap_off(target,
     """
     phase = target.project.find_phase(target)
     geometry = target.project.find_geometry(target)
-    element, sigma, theta = _get_key_props(phase=phase,
-                                           diameter=diameter,
-                                           surface_tension=surface_tension,
-                                           contact_angle=contact_angle)
+    element, sigma, theta = _get_key_props(
+        phase=phase,
+        diameter=diameter,
+        surface_tension=surface_tension,
+        contact_angle=contact_angle,
+    )
     try:
         all_verts = geometry[vertices]
         # Work out whether throat geometry can support at least one pair of
         # adjacent arc menisci that can grow and merge to form snap-off
         # Only works if throat vertices are in convex hull order
-        angles_ok = np.zeros(geometry.Nt, dtype=bool)
+        angles_ok = _np.zeros(geometry.Nt, dtype=bool)
         for T in range(geometry.Nt):
             verts = all_verts[T]
             x = verts[:, 0]
@@ -260,53 +281,50 @@ def ransohoff_snap_off(target,
             p = 1
             # Minus
             m = -1
-            verts_p = np.vstack((np.roll(x, p),
-                                 np.roll(y, p),
-                                 np.roll(z, p))).T
-            verts_m = np.vstack((np.roll(x, m),
-                                 np.roll(y, m),
-                                 np.roll(z, m))).T
+            verts_p = _np.vstack((_np.roll(x, p), _np.roll(y, p), _np.roll(z, p))).T
+            verts_m = _np.vstack((_np.roll(x, m), _np.roll(y, m), _np.roll(z, m))).T
             v1 = verts_p - verts
             v2 = verts_m - verts
-            corner_angles = np.rad2deg(tr.angle_between_vectors(v1,
-                                                                v2,
-                                                                axis=1))
+            corner_angles = _np.rad2deg(tr.angle_between_vectors(v1, v2, axis=1))
             # Logical test for existence of arc menisci
-            am = theta[T] <= 90 - corner_angles/2
+            am = theta[T] <= 90 - corner_angles / 2
             if require_pair:
                 # Logical test for two adjacent arc menisci
-                pair_p = np.logical_and(am, np.roll(am, + p))
-                pair_m = np.logical_and(am, np.roll(am, + m))
-                am_pair = np.any(np.logical_or(pair_p, pair_m))
+                pair_p = _np.logical_and(am, _np.roll(am, +p))
+                pair_m = _np.logical_and(am, _np.roll(am, +m))
+                am_pair = _np.any(_np.logical_or(pair_p, pair_m))
                 angles_ok[T] = am_pair
             else:
                 # Logical test for any arc menisci
-                angles_ok[T] = np.any(am)
-    except:
-        logger.warning("Model is designed to work with property: " +
-                       vertices)
-        angles_ok = np.ones(geometry.Nt, dtype=bool)
+                angles_ok[T] = _np.any(am)
+    except Exception:
+        logger.warning("Model is designed to work with property: " + vertices)
+        angles_ok = _np.ones(geometry.Nt, dtype=bool)
 
     # Condition for arc menisci to form in corners
-    rad_Ts = geometry[diameter]/2
+    rad_Ts = geometry[diameter] / 2
     # Ransohoff and Radke eq. 4
-    C = 1/rad_Ts - 1/wavelength
-    value = sigma[phase.throats(target.name)]*C
+    C = 1 / rad_Ts - 1 / wavelength
+    value = sigma[phase.throats(target.name)] * C
     # Only throats that can support arc menisci can snap-off
-    value[~angles_ok] = np.nan
-    logger.info("Snap off pressures calculated for " +
-                str(np.around(100*np.sum(angles_ok)/np.size(angles_ok), 0)) +
-                "% of throats")
+    value[~angles_ok] = _np.nan
+    logger.info(
+        "Snap off pressures calculated for "
+        + str(_np.around(100 * _np.sum(angles_ok) / _np.size(angles_ok), 0))
+        + "% of throats"
+    )
     return value
 
 
-def purcell_bidirectional(target,
-                          r_toroid=5e-6,
-                          num_points=1e3,
-                          surface_tension='pore.surface_tension',
-                          contact_angle='pore.contact_angle',
-                          throat_diameter='throat.diameter',
-                          pore_diameter='pore.diameter'):
+def purcell_bidirectional(
+    target,
+    r_toroid=5e-6,
+    num_points=1e3,
+    surface_tension="pore.surface_tension",
+    contact_angle="pore.contact_angle",
+    throat_diameter="throat.diameter",
+    pore_diameter="pore.diameter",
+):
     r"""
     Computes the throat capillary entry pressure assuming the throat is a
     toroid. Makes use of the toroidal meniscus model with mode touch.
@@ -350,33 +368,37 @@ def purcell_bidirectional(target,
 
     """
     network = target.project.network
-    conns = network['throat.conns']
+    conns = network["throat.conns"]
     values = {}
     for p in range(2):
-        network['throat.temp_diameter'] = network[pore_diameter][conns[:, p]]
-        key = 'throat.touch_pore_'+str(p)
-        target.add_model(propname=key,
-                         model=pm.meniscus.purcell,
-                         mode='touch',
-                         r_toroid=r_toroid,
-                         num_points=num_points,
-                         throat_diameter=throat_diameter,
-                         surface_tension=surface_tension,
-                         contact_angle=contact_angle,
-                         touch_length='throat.temp_diameter')
+        network["throat.temp_diameter"] = network[pore_diameter][conns[:, p]]
+        key = "throat.touch_pore_" + str(p)
+        target.add_model(
+            propname=key,
+            model=pm.meniscus.purcell,
+            mode="touch",
+            r_toroid=r_toroid,
+            num_points=num_points,
+            throat_diameter=throat_diameter,
+            surface_tension=surface_tension,
+            contact_angle=contact_angle,
+            touch_length="throat.temp_diameter",
+        )
         values[p] = target[key]
         target.remove_model(key)
-    del network['throat.temp_diameter']
-    return np.vstack((values[0], values[1])).T
+    del network["throat.temp_diameter"]
+    return _np.vstack((values[0], values[1])).T
 
 
-def sinusoidal_bidirectional(target,
-                             r_toroid=5e-6,
-                             num_points=1e3,
-                             surface_tension='pore.surface_tension',
-                             contact_angle='pore.contact_angle',
-                             throat_diameter='throat.diameter',
-                             pore_diameter='pore.diameter'):
+def sinusoidal_bidirectional(
+    target,
+    r_toroid=5e-6,
+    num_points=1e3,
+    surface_tension="pore.surface_tension",
+    contact_angle="pore.contact_angle",
+    throat_diameter="throat.diameter",
+    pore_diameter="pore.diameter",
+):
     r"""
     Computes the throat capillary entry pressure assuming the throat has a
     sinusoisal profile.
@@ -421,21 +443,23 @@ def sinusoidal_bidirectional(target,
 
     """
     network = target.project.network
-    conns = network['throat.conns']
+    conns = network["throat.conns"]
     values = {}
     for p in range(2):
-        network['throat.temp_diameter'] = network[pore_diameter][conns[:, p]]
-        key = 'throat.touch_pore_'+str(p)
-        target.add_model(propname=key,
-                         model=pm.meniscus.sinusoidal,
-                         mode='touch',
-                         r_toroid=r_toroid,
-                         num_points=num_points,
-                         surface_tension=surface_tension,
-                         contact_angle=contact_angle,
-                         throat_diameter=throat_diameter,
-                         touch_length='throat.temp_diameter')
+        network["throat.temp_diameter"] = network[pore_diameter][conns[:, p]]
+        key = "throat.touch_pore_" + str(p)
+        target.add_model(
+            propname=key,
+            model=pm.meniscus.sinusoidal,
+            mode="touch",
+            r_toroid=r_toroid,
+            num_points=num_points,
+            surface_tension=surface_tension,
+            contact_angle=contact_angle,
+            throat_diameter=throat_diameter,
+            touch_length="throat.temp_diameter",
+        )
         values[p] = target[key]
         target.remove_model(key)
-    del network['throat.temp_diameter']
-    return np.vstack((values[0], values[1])).T
+    del network["throat.temp_diameter"]
+    return _np.vstack((values[0], values[1])).T

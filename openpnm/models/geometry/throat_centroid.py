@@ -4,7 +4,7 @@ Submodule -- throat_centroid
 ===============================================================================
 
 """
-import scipy as _sp
+import numpy as _np
 
 
 def pore_coords(target):
@@ -28,4 +28,4 @@ def pore_coords(target):
     Ts = network.throats(target.name)
     conns = network['throat.conns']
     coords = network['pore.coords']
-    return _sp.mean(coords[conns], axis=1)[Ts]
+    return _np.mean(coords[conns], axis=1)[Ts]

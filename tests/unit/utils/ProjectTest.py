@@ -1,8 +1,9 @@
-import openpnm as op
-import scipy as sp
-import pytest
-from pathlib import Path
 import os
+import pytest
+import scipy as sp
+import numpy as np
+import openpnm as op
+from pathlib import Path
 
 
 class ProjectTest:
@@ -169,6 +170,23 @@ class ProjectTest:
             proj.purge_object(net)
         self.ws.close_project(proj)
 
+    def test_purge_list(self):
+        proj = self.ws.copy_project(self.net.project)
+        phase1 = proj.phases()['phase_01']
+        phase2 = proj.phases()['phase_02']
+        phys11 = proj.physics()['phys_01']
+        phys12 = proj.physics()['phys_02']
+        phys21 = proj.physics()['phys_03']
+        phys22 = proj.physics()['phys_04']
+        proj.purge_object([phase1, phys11, phys12], deep=False)
+        assert phase1 not in proj
+        assert phase2 in proj
+        assert phys11 not in proj
+        assert phys12 not in proj
+        assert phys21 in proj
+        assert phys22 in proj
+        self.ws.close_project(proj)
+
     def test_append_second_network(self):
         proj = self.ws.copy_project(self.net.project)
         net = proj.network
@@ -266,13 +284,13 @@ class ProjectTest:
         assert len(physics1) == 2
         assert len(physics2) == 2
         # Make sure lists are mutually exclusive
-        assert ~sp.all([item in physics2 for item in physics1])
+        assert ~np.all([item in physics2 for item in physics1])
 
     def test_find_physics_no_phase_or_geometry(self):
         proj = self.proj
         a = proj.find_physics()
         b = proj.physics().values()
-        assert sp.all([item in b for item in a])
+        assert np.all([item in b for item in a])
 
     def test_find_full_domain_geometry(self):
         proj = self.proj
@@ -369,7 +387,7 @@ class ProjectTest:
         # Ensure only pore.coords and throat.conns are found
         assert sum([len(item.props()) for item in proj]) == 2
         proj._fetch_data()
-        assert sp.any([len(item.props()) for item in proj])
+        assert np.any([len(item.props()) for item in proj])
         os.remove(proj.name+'.hdf5')
 
     def test_export_data(self):
@@ -392,6 +410,14 @@ class ProjectTest:
         self.proj.export_data(phases=self.phase1, filename=fname,
                               filetype='mat')
         os.remove(fname+'.mat')
+
+    def test_inspect_pores_and_throats(self):
+        df = self.proj.inspect_locations(element='pores', indices=[0, 2, 3])
+        assert df.shape[1] == 3
+        assert self.net.name + '.pore.coords_X' in df.index
+        df = self.proj.inspect_locations(element='throats', indices=[0, 1, 3])
+        assert df.shape[1] == 3
+        assert self.net.name + '.throat.conns_head' in df.index
 
 
 if __name__ == '__main__':

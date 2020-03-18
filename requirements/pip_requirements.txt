@@ -1,0 +1,16 @@
+numpy
+scipy
+matplotlib
+scikit-image
+pandas
+numba
+networkx
+h5py
+jsonschema
+terminaltables
+unyt
+gitpython
+flatdict
+transforms3d
+sympy
+docrep

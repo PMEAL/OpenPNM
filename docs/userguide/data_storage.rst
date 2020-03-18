@@ -37,6 +37,7 @@ The physical details about pores and throats are referred to as *properties*, wh
 
     >>> import openpnm as op
     >>> import scipy as sp
+    >>> import numpy as np
     >>> pn = op.network.Cubic(shape=[3, 3, 3])
     >>> pn['pore.coords'][1]
     array([0.5, 0.5, 1.5])
@@ -60,7 +61,7 @@ The above lines illustrate how a scalar value is converted to a vector (*Np*-lon
 
 .. code-block:: python
 
-    >>> pn['pore.bar'] = sp.rand(27)  # pn has 27 pores (3*3*3)
+    >>> pn['pore.bar'] = np.random.rand(27)  # pn has 27 pores (3*3*3)
 
 Attempts to write an array of the wrong size will result in an error:
 
@@ -94,7 +95,7 @@ The only distinction between *labels* and *properties* is that *labels* are Bool
 .. code-block:: python
 
     >>> pn['pore.top'][2] = False
-    >>> list(sp.where(pn['pore.top'])[0])
+    >>> list(np.where(pn['pore.top'])[0])
     [5, 8, 11, 14, 17, 20, 23, 26]
     >>> pn['pore.top'][2] = True  # Re-apply label to pore 2
 
@@ -102,7 +103,7 @@ Creating a new label array occurs automatically if a Boolean array is stored on 
 
 .. code-block:: python
 
-    >>> pn['pore.dummy_1'] = sp.rand(27) < 0.5
+    >>> pn['pore.dummy_1'] = np.random.rand(27) < 0.5
 
 A complication arises if you have a list of pore numbers you wish to label, such as [3, 4, 5].  You must first create the label array with all ``False`` values, *then* assign ``True`` to the desired locations:
 
@@ -117,7 +118,7 @@ The *label* functionality uses Scipy's ``where`` method to return a list of loca
 
 .. code-block:: python
 
-    >>> list(sp.where(pn['pore.dummy_2'])[0])
+    >>> list(np.where(pn['pore.dummy_2'])[0])
     [3, 4, 5]
 
 The ``pores`` and ``throats`` methods offer several useful enhancements to this approach.  For instance, several labels can be queried at once:

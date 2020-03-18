@@ -1,7 +1,7 @@
 import scipy as sp
-import networkx as nx
-from openpnm.utils import logging
+import numpy as np
 from openpnm.io import GenericIO
+from openpnm.utils import logging
 from openpnm.network import GenericNetwork
 logger = logging.getLogger(__name__)
 
@@ -37,8 +37,8 @@ class NetworkX(GenericIO):
     need to be specified explicitly as a property in NetworkX.  The
     connectivity is embedded into the network representation and is extracted
     by OpenPNM.
-    """
 
+    """
     @classmethod
     def from_networkx(cls, G, project=None):
         r"""
@@ -62,6 +62,8 @@ class NetworkX(GenericIO):
         the NetworkX object.
 
         """
+        import networkx as nx
+
         net = {}
 
         # Ensure G is an undirected networkX graph with numerically numbered
@@ -79,7 +81,7 @@ class NetworkX(GenericIO):
 
         # Parsing node data
         Np = len(G)
-        net.update({'pore.all': sp.ones((Np,), dtype=bool)})
+        net.update({'pore.all': np.ones((Np,), dtype=bool)})
         for n, props in G.nodes(data=True):
             for item in props.keys():
                 val = props[item]
@@ -104,15 +106,15 @@ class NetworkX(GenericIO):
         # Parsing edge data
         # Deal with conns explicitly
         try:
-            conns = list(G.edges)  # NetworkX V2
-        except:
-            conns = G.edges()  # NetworkX V1
+            conns = list(G.edges)   # NetworkX V2
+        except Exception:
+            conns = G.edges()       # NetworkX V1
         conns.sort()
 
         # Add conns to Network
         Nt = len(conns)
-        net.update({'throat.all': sp.ones(Nt, dtype=bool)})
-        net.update({'throat.conns': sp.array(conns)})
+        net.update({'throat.all': np.ones(Nt, dtype=bool)})
+        net.update({'throat.conns': np.array(conns)})
 
         # Scan through each edge and extract all its properties
         i = 0
@@ -158,6 +160,8 @@ class NetworkX(GenericIO):
         -------
         A NetworkX object with all pore/throat properties attached to it
         """
+        import networkx as nx
+
         # Ensure network is an OpenPNM Network object.
         if not isinstance(network, GenericNetwork):
             raise('Provided network is not an OpenPNM Network.')

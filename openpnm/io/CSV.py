@@ -1,10 +1,9 @@
 import re
+import numpy as np
 import scipy as sp
-import pandas as pd
-from openpnm.network import GenericNetwork
-from openpnm.io import GenericIO, Dict
 from openpnm.io.Pandas import Pandas
-from openpnm.utils import NestedDict, logging, Workspace
+from openpnm.io import GenericIO, Dict
+from openpnm.utils import logging, Workspace
 logger = logging.getLogger(__name__)
 ws = Workspace()
 
@@ -95,16 +94,18 @@ class CSV(GenericIO):
             returned.
 
         """
+        from pandas import read_table
+
         if project is None:
             project = ws.new_project()
 
         fname = cls._parse_filename(filename, ext='csv')
-        a = pd.read_table(filepath_or_buffer=fname,
-                          sep=',',
-                          skipinitialspace=True,
-                          index_col=False,
-                          true_values=['T', 't', 'True', 'true', 'TRUE'],
-                          false_values=['F', 'f', 'False', 'false', 'FALSE'])
+        a = read_table(filepath_or_buffer=fname,
+                       sep=',',
+                       skipinitialspace=True,
+                       index_col=False,
+                       true_values=['T', 't', 'True', 'true', 'TRUE'],
+                       false_values=['F', 'f', 'False', 'false', 'FALSE'])
 
         dct = {}
         # First parse through all the items and re-merge columns
@@ -118,11 +119,11 @@ class CSV(GenericIO):
                 # Rerieve and remove arrays with same base propname
                 merge_cols = [a.pop(k) for k in merge_keys]
                 # Merge arrays into multi-column array and store in DataFrame
-                dct[pname] = sp.vstack(merge_cols).T
+                dct[pname] = np.vstack(merge_cols).T
                 # Remove key from list of keys
                 [keys.pop(keys.index(k)) for k in keys if k.startswith(pname)]
             else:
-                dct[item] = sp.array(a.pop(item))
+                dct[item] = np.array(a.pop(item))
 
         project = Dict.from_dict(dct, project=project, delim=delim)
 

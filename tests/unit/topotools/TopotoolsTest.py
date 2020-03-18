@@ -1,5 +1,7 @@
-import openpnm as op
+import pytest
 import numpy as np
+import openpnm as op
+import matplotlib.pyplot as plt
 from numpy.testing import assert_allclose
 from openpnm import topotools
 
@@ -50,13 +52,41 @@ class TopotoolsTest:
         assert net.num_pores('top') == 9
         assert net.num_pores('bottom') == 9
 
-    def test_find_surface_pores(self):
+    def test_find_surface_pores_default_markers(self):
         from skimage.morphology import ball
         net = op.network.CubicTemplate(template=ball(3), spacing=1)
         net.clear(mode='labels')
         assert net.labels() == ['pore.all', 'throat.all']
         topotools.find_surface_pores(network=net)
         assert net.num_pores('surface') == 66
+
+    def test_find_surface_pores_custom_markers_2d(self):
+        net = op.network.Cubic(shape=[4, 4, 1], spacing=1)
+        net.clear(mode='labels')
+        assert net.labels() == ['pore.all', 'throat.all']
+        markers = [[-1, 2], [2, -1], [2, 5], [5, 2]]
+        topotools.find_surface_pores(network=net, markers=markers)
+        assert net.num_pores('surface') == 12
+        markers = [[-1], [2], [2], [5]]
+        with pytest.raises(Exception):
+            topotools.find_surface_pores(network=net, markers=markers)
+        markers = [[-1, 2, 0], [2, -1, 0], [2, 5, 0], [5, 2, 0]]
+        with pytest.raises(Exception):
+            topotools.find_surface_pores(network=net, markers=markers)
+
+    def test_find_surface_pores_custom_markers_3d(self):
+        net = op.network.Cubic(shape=[4, 4, 4], spacing=1)
+        net.clear(mode='labels')
+        assert net.labels() == ['pore.all', 'throat.all']
+        markers = [[-1, 2, 2], [2, -1, 2], [2, 5, 2], [5, 2, 2]]
+        topotools.find_surface_pores(network=net, markers=markers)
+        assert net.num_pores('surface') == 48
+        markers = [[-1], [2], [2], [5]]
+        with pytest.raises(Exception):
+            topotools.find_surface_pores(network=net, markers=markers)
+        markers = [[-1, 2], [2, -1], [2, 5], [5, 2]]
+        with pytest.raises(Exception):
+            topotools.find_surface_pores(network=net, markers=markers)
 
     def test_find_pore_to_pore_distance(self):
         net = op.network.Cubic(shape=[3, 3, 3], connectivity=6)
@@ -123,13 +153,15 @@ class TopotoolsTest:
         net2 = op.network.Cubic(shape=[3, 3, 3])
         net1['pore.test1'] = True
         net1['pore.test2'] = 10
-        net2['pore.test3'] = True
-        net2['pore.test4'] = 10.0
-        topotools.merge_networks(net1, net2)
+        net1['pore.test3'] = np.ones((net1.Np, 3))
+        net2['pore.test4'] = True
+        net2['pore.test5'] = 10.0
+        net2['pore.test6'] = np.ones((net2.Np, 2))
+        topotools.merge_networks(network=net1, donor=net2)
         assert np.sum(net1['pore.test1']) == 27
-        assert np.sum(net1['pore.test3']) == 27
-        assert np.sum(net1['pore.test2'][:27]) == 270
-        assert np.sum(net1['pore.test4'][27:]) == 270
+        assert np.all(net1['pore.test3'].shape == (54, 3))
+        assert np.sum(net1['pore.test2'][:27]) == 270.0
+        assert np.sum(net1['pore.test4'][27:]) == 27
         assert 'pore.test1' not in net2
         assert 'pore.test2' not in net2
 
@@ -264,6 +296,66 @@ class TopotoolsTest:
         # Non-planar points, none parallel
         coords = [[0, 0, 0], [0, 1, 2], [0, 2, 1], [0, 3, 3], [1, 1, 2]]
         assert ~topotools.iscoplanar(coords)
+
+    def test_extend(self):
+        pn = op.network.Cubic(shape=[2, 2, 1])
+        pn['pore.test_float'] = 1.0
+        pn['pore.test_int'] = 1
+        pn['pore.test_bool'] = True
+        op.topotools.extend(network=pn, pore_coords=[[3, 3, 3], [3, 3, 4]])
+        assert np.any(np.isnan(pn['pore.test_float']))
+        assert np.any(np.isnan(pn['pore.test_int']))
+        assert pn['pore.test_bool'].sum() < pn['pore.test_bool'].size
+
+    def test_extend_geometry_present(self):
+        pn = op.network.Cubic(shape=[2, 2, 1])
+        geo = op.geometry.StickAndBall(network=pn)
+        geo['pore.test_float'] = 1.0
+        geo['pore.test_int'] = 1
+        geo['pore.test_bool'] = True
+        op.topotools.extend(network=pn, pore_coords=[[3, 3, 3], [3, 3, 4]])
+        assert ~np.any(np.isnan(geo['pore.test_float']))
+        assert ~np.any(np.isnan(geo['pore.test_int']))
+        assert geo['pore.test_bool'].sum() == geo['pore.test_bool'].size
+
+    def test_extend_phase_present(self):
+        pn = op.network.Cubic(shape=[2, 2, 1])
+        air = op.phases.Air(network=pn)
+        air['pore.test_float'] = 1.0
+        air['pore.test_int'] = 1
+        air['pore.test_bool'] = True
+        with pytest.raises(Exception):
+            op.topotools.extend(network=pn, pore_coords=[[3, 3, 3], [3, 3, 4]])
+
+    def test_plot_networkx(self):
+        # 2D networks in XY, YZ, XZ planes
+        for i in range(3):
+            shape = np.ones(3, dtype=int)
+            shape[np.arange(3)!=i] = [5, 8]
+            pn = op.network.Cubic(shape=shape)
+            x, y = pn["pore.coords"].T[op.topotools.dimensionality(pn)]
+            fig, ax = plt.subplots()
+            m = op.topotools.plot_networkx(pn, ax=ax)
+            x_plot, y_plot = np.array(m.get_offsets()).T
+            np.testing.assert_allclose(x_plot, x)
+            np.testing.assert_allclose(y_plot, y)
+            plt.close()
+        # 1D networks in XY, YZ, XZ planes
+        for i in range(3):
+            shape = np.ones(3, dtype=int)
+            shape[np.arange(3)==i] = [5]
+            pn = op.network.Cubic(shape=shape)
+            x, = pn["pore.coords"].T[op.topotools.dimensionality(pn)]
+            fig, ax = plt.subplots()
+            m = op.topotools.plot_networkx(pn, ax=ax)
+            x_plot, y_plot = np.array(m.get_offsets()).T
+            np.testing.assert_allclose(x_plot, x)
+            plt.close()
+
+    def test_plot_networkx_3d(self):
+        pn = op.network.Cubic(shape=[5, 8, 3])
+        with pytest.raises(Exception):
+            op.topotools.plot_networkx(pn)
 
 
 if __name__ == '__main__':

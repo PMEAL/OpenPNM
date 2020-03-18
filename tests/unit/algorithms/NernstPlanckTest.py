@@ -1,18 +1,17 @@
-import openpnm as op
+import numpy as np
 import scipy as sp
+import openpnm as op
 from numpy.testing import assert_allclose
 
 
 class NernstPlanckTest:
 
     def setup_class(self):
-        sp.random.seed(0)
+        np.random.seed(0)
         self.net = op.network.Cubic(shape=[4, 3, 1], spacing=1.0)
         self.geo = op.geometry.GenericGeometry(network=self.net,
                                                pores=self.net.Ps,
                                                throats=self.net.Ts)
-        self.geo['pore.area'] = 2e-14
-        self.geo['throat.area'] = 1e-14
         self.geo['throat.conduit_lengths.pore1'] = 0.1
         self.geo['throat.conduit_lengths.throat'] = 0.6
         self.geo['throat.conduit_lengths.pore2'] = 0.1
@@ -24,7 +23,7 @@ class NernstPlanckTest:
         self.phys = op.physics.GenericPhysics(network=self.net,
                                               phase=self.phase,
                                               geometry=self.geo)
-        self.phys['throat.diffusive_conductance.ionX'] = 1e-15
+        self.phys['throat.diffusive_conductance.ionX'] = 1e-16
         self.phys['throat.hydraulic_conductance'] = 1e-15
         self.phys['throat.ionic_conductance'] = 1e-15
 
@@ -47,6 +46,7 @@ class NernstPlanckTest:
 
         self.adm = op.algorithms.NernstPlanck(network=self.net,
                                               phase=self.phase, ion='ionX')
+        self.adm.settings.update({"cache_A": False, "cache_b": False})
         self.adm.set_value_BC(pores=self.net.pores('back'), values=2)
         self.adm.set_value_BC(pores=self.net.pores('front'), values=0)
 
@@ -55,14 +55,13 @@ class NernstPlanckTest:
         self.phys.add_model(propname='throat.ad_dif_mig_conductance_powerlaw',
                             model=mod, s_scheme='powerlaw', ion='ionX')
         self.phys.regenerate_models()
-
         self.adm.setup(conductance='throat.ad_dif_mig_conductance_powerlaw')
         self.adm.run()
         x = [0.,      0.,      0.,
-             0.89653, 0.89653, 0.89653,
-             1.53924, 1.53924, 1.53924,
+             1.27816, 1.79057, 2.70356,
+             1.59724, 1.93331, 2.46112,
              2.,      2.,      2.]
-        y = sp.around(self.adm['pore.concentration.ionX'], decimals=5)
+        y = np.around(self.adm['pore.concentration.ionX'], decimals=5)
         assert_allclose(actual=y, desired=x)
 
     def test_upwind_NernstPlanck(self):
@@ -73,10 +72,10 @@ class NernstPlanckTest:
         self.adm.setup(conductance='throat.ad_dif_mig_conductance_upwind')
         self.adm.run()
         x = [0.,      0.,      0.,
-             0.86486, 0.86486, 0.86486,
-             1.51351, 1.51351, 1.51351,
+             1.15437, 1.497,   2.02144,
+             1.60103, 1.87748, 2.27264,
              2.,      2.,      2.]
-        y = sp.around(self.adm['pore.concentration.ionX'], decimals=5)
+        y = np.around(self.adm['pore.concentration.ionX'], decimals=5)
         assert_allclose(actual=y, desired=x)
 
     def test_hybrid_NernstPlanck(self):
@@ -88,10 +87,10 @@ class NernstPlanckTest:
         self.adm.setup(conductance='throat.ad_dif_mig_conductance_hybrid')
         self.adm.run()
         x = [0.,      0.,      0.,
-             0.89908, 0.89908, 0.89908,
-             1.54128, 1.54128, 1.54128,
+             1.29501, 1.84357, 2.86142,
+             1.58876, 1.93152, 2.47971,
              2.,      2.,      2.]
-        y = sp.around(self.adm['pore.concentration.ionX'], decimals=5)
+        y = np.around(self.adm['pore.concentration.ionX'], decimals=5)
         assert_allclose(actual=y, desired=x)
 
     def test_exponential_NernstPlanck(self):
@@ -103,10 +102,10 @@ class NernstPlanckTest:
         self.adm.setup(conductance='throat.ad_dif_mig_conductance_exp')
         self.adm.run()
         x = [0.,      0.,      0.,
-             0.89688, 0.89688, 0.89688,
-             1.53953, 1.53953, 1.53953,
+             1.2788,  1.79357, 2.71385,
+             1.59656, 1.93321, 2.46286,
              2.,      2.,      2.]
-        y = sp.around(self.adm['pore.concentration.ionX'], decimals=5)
+        y = np.around(self.adm['pore.concentration.ionX'], decimals=5)
         assert_allclose(actual=y, desired=x)
 
     def teardown_class(self):
@@ -117,8 +116,8 @@ class NernstPlanckTest:
 if __name__ == '__main__':
     t = NernstPlanckTest()
     t.setup_class()
+    self = t
     for item in t.__dir__():
         if item.startswith('test'):
             print('running test: '+item)
             t.__getattribute__(item)()
-    self = t
