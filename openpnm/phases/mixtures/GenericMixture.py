@@ -29,6 +29,7 @@ class GenericMixture(GenericPhase):
         If no name is given, one is generated.
 
     """
+
     def __init__(self, components=[], settings={}, **kwargs):
         self.settings.update({'components': [],
                               })
@@ -38,9 +39,9 @@ class GenericMixture(GenericPhase):
         # Add any supplied phases to the phases list
         for comp in components:
             self.settings['components'].append(comp.name)
-            self['pore.mole_fraction.'+comp.name] = 0.0
+            self['pore.mole_fraction.'+comp.name] = np.nan
 
-        self['pore.mole_fraction.all'] = np.zeros(self.Np, dtype=float)
+        self['pore.mole_fraction.all'] = np.nan
         logger.warning('Mixtures are a beta feature and functionality may ' +
                        'change in future versions')
 
@@ -97,10 +98,12 @@ class GenericMixture(GenericPhase):
         if len(dict_) > 1:
             self['throat.mole_fraction.all'] = np.sum(dict_, axis=0)
 
-    def update_concentrations(self, mole_fraction='pore.mole_fraction'):
+    def update_concentrations(self,
+                              mole_fraction='pore.mole_fraction',
+                              molar_density='pore.molar_density'):
         r"""
         Re-calculates the concentration of each species in the mixture based
-        on the current mole fractions.
+        on the current mole fractions and molar density in each pore
 
         This method looks up the mole fractions *and* the density of the
         mixture, then finds the respective concentrations in $mol/m^{3}$.
@@ -109,12 +112,13 @@ class GenericMixture(GenericPhase):
         ----------
 
         """
-        density = self['pore.molar_density']
+        density = self[molar_density]
         for item in self.components.values():
             mf = self['pore.mole_fraction.'+item.name]
             self['pore.concentration.'+item.name] = density*mf
 
-    def update_mole_fractions(self, concentration='pore.concentration',
+    def update_mole_fractions(self,
+                              concentration='pore.concentration',
                               molar_density='pore.molar_density'):
         r"""
         Re-calculates mole fraction of each species in mixture based on the
