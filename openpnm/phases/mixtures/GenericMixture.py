@@ -1,8 +1,18 @@
 # from collections import ChainMap  # Might use eventually
 import numpy as np
 from openpnm.phases import GenericPhase as GenericPhase
-from openpnm.utils import logging, HealthDict, PrintableList
+from openpnm.utils import HealthDict, PrintableList, Docorator, GenericSettings
+from openpnm.utils import logging
 logger = logging.getLogger(__name__)
+docstr = Docorator()
+
+
+class GenericMixtureSettings(GenericSettings):
+    r"""
+
+    """
+    components = []
+    prefix = 'mix'
 
 
 class GenericMixture(GenericPhase):
@@ -14,15 +24,12 @@ class GenericMixture(GenericPhase):
     ----------
     network : OpenPNM Network object
         The network to which this phase object will be attached.
-
     components : list of OpenPNM Phase objects
         A list of all components that constitute this mixture
-
     project : OpenPNM Project object, optional
         The Project with which this phase should be associted.  If a
         ``network`` is given then this is ignored and the Network's project
         is used.  If a ``network`` is not given then this is mandatory.
-
     name : string, optional
         The name of the phase.  This is useful to keep track of the objects
         throughout the simulation.  The name must be unique to the project.
@@ -31,10 +38,9 @@ class GenericMixture(GenericPhase):
     """
 
     def __init__(self, components=[], settings={}, **kwargs):
-        self.settings.update({'components': [],
-                              })
-        super().__init__(settings={'prefix': 'mix'}, **kwargs)
+        self.settings._update_settings_and_docs(GenericMixtureSettings)
         self.settings.update(settings)
+        super().__init__(**kwargs)
 
         # Add any supplied phases to the phases list
         for comp in components:
@@ -117,36 +123,34 @@ class GenericMixture(GenericPhase):
             mf = self['pore.mole_fraction.'+item.name]
             self['pore.concentration.'+item.name] = density*mf
 
-    def update_mole_fractions(self,
-                              concentration='pore.concentration',
-                              molar_density='pore.molar_density'):
+    def update_mole_fractions(self):
         r"""
-        Re-calculates mole fraction of each species in mixture based on the
-        current concentrations.
+        If one mole fraction is missing (indicatd by all nan's), its value
+        is inferred from the fact that mole fractions of all species must
+        sum to 1.0.
 
-        This method looks up the concentration of each species (using the
-        optionally specified concentration dictionary key), and calculates
-        the mole fraction.  Optionally, it can use a molar density for the
-        mixture and N-1 concentrations to determine the Nth concentration and
-        all species mole fractions.
-
-        Parameters
-        ----------
-        concentration : string, optional
-            The dictionary key pointing to the desired concentration values.
-            The default is 'pore.concentration'.  Given this value, lookups
-            are performed for each species in the mixture.
-        molar_density : string, optional
-            The dictionary key pointing to the molar density of the mixture.
-            If not given (default), then 'pore.molar_density' is used. If
-            there are N-1 concentrations specified, then ``molar_density`` is
-            automatically used to find the Nth concentration.
+        If all mole fractions are present, they are adjusted based on the
+        concentrations of each species.
 
         Notes
         -----
         The method does not return any values.  Instead it updates the mole
         fraction arrays of each species directly.
         """
+        # First update missing mole fraction, if possible
+        comps = self.settings['components'].copy()
+        hasnans = []
+        for item in comps:
+            if np.any(np.isnan(self['pore.mole_fraction.'+item])):
+                hasnans.append(item)
+        if len(hasnans) == 1:
+            comp = hasnans[0]
+            self['pore.mole_fraction.'+comp] = 1.0
+            comps.remove(comp)
+            for item in comps:
+                self['pore.mole_fraction.'+comp] -= self['pore.mole_fraction.'+item]
+            self._update_total_molfrac()
+        # Next...
         concentrations = [concentration + '.' + comp for comp
                           in self.settings['components']
                           if concentration + '.' + comp in self.keys()]
