@@ -8,8 +8,7 @@ geo = op.geometry.StickAndBall(network=pn, pores=pn.Ps, throats=pn.Ts)
 
 N2 = mixtures.species.gases.N2(network=pn, name='pure_N2')
 O2 = mixtures.species.gases.O2(network=pn, name='pure_O2')
-air = mixtures.GenericMixture(network=pn, components=[N2, O2],
-                              name='air_mixture')
+air = mixtures.GenericMixture(network=pn, components=[N2, O2])
 air.set_mole_fraction(N2, 0.79)
 air.set_mole_fraction(O2, 0.21)
 air.add_model(propname='pore.molar_mass',
