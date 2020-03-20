@@ -500,6 +500,6 @@ class TransientReactiveTransport(ReactiveTransport):
             S1, S2 = [phase[item + '.' + x][Ps] for x in ['S1', 'S2']]
             # correct S1 and S2 in A and b as a function of t_scheme
             datadiag = self._A.diagonal().copy()
-            datadiag[Ps] = datadiag[Ps] + S1 - f1*S1
+            datadiag[Ps] = datadiag[Ps] - S1 + f1*S1
             self._A.setdiag(datadiag)
-            self._b[Ps] = self._b[Ps] - S2 + f1*S2
+            self._b[Ps] = self._b[Ps] + S2 - f1*S2
