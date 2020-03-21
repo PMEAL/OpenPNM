@@ -104,14 +104,12 @@ class GenericMixture(GenericPhase):
 
     def _update_total_molfrac(self):
         # Update mole_fraction.all
-        self['pore.mole_fraction.all'] = 0.0
-        dict_ = list(self['pore.mole_fraction'].values())
-        if len(dict_) > 1:
-            self['pore.mole_fraction.all'] = np.sum(dict_, axis=0)
-        self['throat.mole_fraction.all'] = 0.0
-        dict_ = list(self['throat.mole_fraction'].values())
-        if len(dict_) > 1:
-            self['throat.mole_fraction.all'] = np.sum(dict_, axis=0)
+        self.pop('pore.mole_fraction.all', None)
+        temp = np.zeros((self.Np, ), dtype=float)
+        for item in self.keys():
+            if item.startswith('pore.mole_fraction'):
+                temp += self[item]
+        self['pore.mole_fraction.all'] = temp
 
     def update_concentrations(self, molar_density='pore.molar_density'):
         r"""
@@ -128,7 +126,7 @@ class GenericMixture(GenericPhase):
         ``pore.molar_density`` is not automatically specified on Mixtures.
         If creating a gas mixture, then something like the ideal gas law
         should be used to find it.  For a liquid it can be specified or
-        calculated as a function of temperature for instance.  Several
+        calculated as a function of temperature, for instance.  Several
         suitable pore-scale models are available in the ``models`` library.
 
         """
@@ -139,8 +137,8 @@ class GenericMixture(GenericPhase):
 
     def update_mole_fractions(self, free_comp=None):
         r"""
-        Updates mole fraction values for the given species so the sum of all
-        mole fractions is 1.0 in each pore.
+        Updates mole fraction values so the sum of all mole fractions is
+        1.0 in each pore.
 
         Parameters
         ----------
@@ -172,18 +170,25 @@ class GenericMixture(GenericPhase):
                 self.update_mole_fractions()
             else:
                 raise Exception('No free component found, specify which to adjust')
-        elif len(hasnans) > 1:
-            raise Exception('More than one free component found, compositions'
-                            + ' are under-specified')
+        elif len(hasnans) == len(comps):
+            total_conc = np.zeros((self.Np, ), dtype=float)
+            for item in self.keys():
+                if item.startswith('pore.concentration'):
+                    total_conc += self[item]
+            for item in self.keys():
+                if item.startswith('pore.concentration'):
+                    self['pore.mole_fraction'] = self[item]/total_conc
+
 
     def set_concentration(self, component, values=[]):
         r"""
-        Specify the concentration of each component in each pore
+        Specify the concentration of a component in each pore
 
         Parameters
         ----------
-        components : OpenPNM Phase object or name string
-            The phase whose concentration is being specified
+        component : OpenPNM Phase object or name
+            The phase object of the component whose concentration is being
+            specified
         values : array_like
             The concentration of the given ``component `` in each pore.  This
             array must be *Np*-long, with one value for each pore in the
@@ -197,15 +202,11 @@ class GenericMixture(GenericPhase):
         if type(component) == str:
             component = self.components[component]
         Pvals = np.array(values, ndmin=1)
-        if component not in self.project:
-            raise Exception(f"{component.name} doesn't belong to this project")
-        else:
-            if component.name not in self.settings['components']:
-                self.settings['components'].append(component.name)
-        if np.any(Pvals < 0.0):
-            logger.warning('Received values contain negative concentrations')
+        if component.name not in self.settings['components']:
+            self.set_component(component)
         if Pvals.size:
             self['pore.concentration.' + component.name] = Pvals
+            self['pore.mole_fraction.' + component.name] = np.nan
 
     def set_mole_fraction(self, component, values=[]):
         r"""
