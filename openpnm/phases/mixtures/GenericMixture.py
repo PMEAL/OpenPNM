@@ -113,42 +113,45 @@ class GenericMixture(GenericPhase):
         if len(dict_) > 1:
             self['throat.mole_fraction.all'] = np.sum(dict_, axis=0)
 
-    def update_concentrations(self):
+    def update_concentrations(self, molar_density='pore.molar_density'):
         r"""
-        Re-calculates the concentration of each species in the mixture based
+        Calculates the concentration of each species in the mixture based
         on the current mole fractions and molar density in each pore
 
-        This method looks up the mole fractions *and* the density of the
-        mixture, then finds the respective concentrations in $mol/m^{3}$.
+        Parameters
+        ----------
+        molar_density : string, optional (default = 'pore.molar_density')
+            The dictionary key containing the molar density values to use
+
+        Notes
+        -----
+        ``pore.molar_density`` is not automatically specified on Mixtures.
+        If creating a gas mixture, then something like the ideal gas law
+        should be used to find it.  For a liquid it can be specified or
+        calculated as a function of temperature for instance.  Several
+        suitable pore-scale models are available in the ``models`` library.
 
         """
-        density = self[self.settings['molar_density']]
+        density = self[molar_density]
         for item in self.components.values():
             mf = self['pore.mole_fraction.'+item.name]
             self['pore.concentration.'+item.name] = density*mf
 
     def update_mole_fractions(self, free_comp=None):
         r"""
-        If one mole fraction is missing (indicatd by all nan's), its value
-        is inferred from the fact that mole fractions of all species must
-        sum to 1.0.
-
-        If all mole fractions are present, they are adjusted based on the
-        concentrations of each species.
+        Updates mole fraction values for the given species so the sum of all
+        mole fractions is 1.0 in each pore.
 
         Parameters
         ----------
         free_comp : OpenPNM object
             Specifies which component's mole fraction should be adjusted to
             enforce the sum of all mole fractions to equal 1.0.  If not given
-            then the component whose mole fraction is set to nan will be
-            assumed.  If more or less than one component is found an error is
-            raised.
+            then a search is conducted to find a component whose mole
+            fractions are *nans* and this component is treated as
+            ``free_comp``.  If more or less than one component is found
+            during this search an error is raised.
 
-        Notes
-        -----
-        The method does not return any values.  Instead it updates the mole
-        fraction arrays of each component species directly.
         """
         # First update missing mole fraction, if possible
         comps = self.settings['components'].copy()
@@ -175,13 +178,12 @@ class GenericMixture(GenericPhase):
 
     def set_concentration(self, component, values=[]):
         r"""
-        Specify mole fraction of each component in each pore
+        Specify the concentration of each component in each pore
 
         Parameters
         ----------
         components : OpenPNM Phase object or name string
-            The phase whose mole fraction is being specified
-
+            The phase whose concentration is being specified
         values : array_like
             The concentration of the given ``component `` in each pore.  This
             array must be *Np*-long, with one value for each pore in the
@@ -213,16 +215,11 @@ class GenericMixture(GenericPhase):
         ----------
         components : OpenPNM Phase object or name string
             The phase whose mole fraction is being specified
-
         values : array_like
             The mole fraction of the given ``component `` in each pore.  This
             array must be *Np*-long, with one value between 0 and 1 for each
             pore in the network.  If a scalar is received it is applied to
             all pores.
-
-        See Also
-        --------
-        set_concentration
 
         """
         if type(component) == str:
@@ -240,6 +237,18 @@ class GenericMixture(GenericPhase):
             self['pore.mole_fraction.' + component.name] = Pvals
         self._update_total_molfrac()
 
+    def _del_comps(self, components):
+        if not isinstance(components, list):
+            components = [components]
+        # Remove from settings:
+        for comp in components:
+            self.settings['components'].remove(comp.name)
+        # Remove data from dict:
+        for item in list(self.keys()):
+            if item.endswith(comp.name):
+                self.pop(item)
+        self['pore.mole_fraction.all'] = np.nan
+
     def _get_comps(self):
         comps = {item: self.project[item] for item in self.settings['components']}
         return comps
@@ -247,9 +256,29 @@ class GenericMixture(GenericPhase):
     def _set_comps(self, components):
         if not isinstance(components, list):
             components = [components]
-        self.settings['components'] = [val.name for val in components]
+        temp = self.settings['components'].copy()
+        temp.extend([val.name for val in components])
+        self.settings['components'] = list(set(temp))
 
     components = property(fget=_get_comps, fset=_set_comps)
+
+    def set_component(self, component, mode='add'):
+        r"""
+        Add another component to the mixture
+
+        Parameters
+        ----------
+        component : OpenPNM Phase object
+            The phase object of the component to add.  Can also be a list
+            of phases to add more than one at a time.
+        mode : string {'add', 'remove'}
+            Indicates whether to add or remove the give component(s)
+
+        """
+        if mode == 'add':
+            self._set_comps(component)
+        if mode == 'remove':
+            self._del_comps(component)
 
     def interleave_data(self, prop):
         r"""
