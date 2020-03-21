@@ -7,6 +7,7 @@ logger = logging.getLogger(__name__)
 class SalineWater(GenericMixture):
     r"""
     """
+
     def __init__(self, network, components=None, **kwargs):
         if components is not None:
             logger.warn('Ignoring received components')

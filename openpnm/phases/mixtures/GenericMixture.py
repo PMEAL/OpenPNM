@@ -9,13 +9,24 @@ docstr = Docorator()
 
 class GenericMixtureSettings(GenericSettings):
     r"""
+    The following settings are specific to Mixture objects
 
+    Parameters
+    ----------
+    components : list of strings
+        The names of each pure component object that constitute the mixture
+    molar_density : string, optional (default = 'molar_density')
+        The name of the dictionary key containing the molar density of the
+        mixture, which is used for calculating concentrations from mole
+        fractions
     """
     components = []
     molar_density = 'pore.molar_density'
     prefix = 'mix'
 
 
+@docstr.get_sectionsf('GenericMixture', sections=['Parameters'])
+@docstr.dedent
 class GenericMixture(GenericPhase):
     r"""
     Creates Phase object that represents a multicomponent mixture system
@@ -23,18 +34,15 @@ class GenericMixture(GenericPhase):
 
     Parameters
     ----------
-    network : OpenPNM Network object
-        The network to which this phase object will be attached.
-    project : OpenPNM Project object, optional
-        The Project with which this phase should be associted.  If a
-        ``network`` is given then this is ignored and the Network's project
-        is used.  If a ``network`` is not given then this is mandatory.
-    name : string, optional
-        The name of the phase.  This is useful to keep track of the objects
-        throughout the simulation.  The name must be unique to the project.
-        If no name is given, one is generated.
+    %(GenericPhase.parameters)s
     components : list of OpenPNM Phase objects
         A list of all components that constitute this mixture
+
+    Notes
+    -----
+    All mixtures assume that mole fractions are always stored as
+    ``'pore.mole_fraction'`` and that concentration is always stored as
+    ``'pore.concentration'``.
 
     """
 

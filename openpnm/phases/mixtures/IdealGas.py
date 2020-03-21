@@ -2,10 +2,12 @@
 import numpy as np
 from openpnm.phases.mixtures import GenericMixture, species
 import openpnm.models as mods
-from openpnm.utils import logging, HealthDict, PrintableList
+from openpnm.utils import logging, HealthDict, PrintableList, Docorator
+docstr = Docorator()
 logger = logging.getLogger(__name__)
 
 
+@docstr.dedent
 class IdealGas(GenericMixture):
     r"""
     Creates Mixture object that represents a ideal gas system
@@ -13,8 +15,7 @@ class IdealGas(GenericMixture):
 
     Parameters
     ----------
-    components : list of OpenPNM Phase objects
-        A list of all components that constitute this mixture
+    %(GenericMixture.parameters)s
 
     """
 
