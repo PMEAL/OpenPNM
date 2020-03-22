@@ -78,6 +78,9 @@ class GenericMixture(GenericPhase):
         invalid_keys = set(self.props(deep=True)).difference(set(self.props()))
         if key in invalid_keys:
             raise Exception(key + ' already assigned to a component object')
+        # If writing a concentration, use set_concentration setter
+        if key.startswith('pore.concentration'):
+            self.set_concentration(component=key.split('.')[-1], values=value)
         super().__setitem__(key, value)
 
     def props(self, deep=False, **kwargs):
@@ -161,8 +164,8 @@ class GenericMixture(GenericPhase):
                 try:
                     total_conc += self['pore.concentration.'+item]
                 except KeyError:
-                    raise Exception('Concentrations for all species are not '
-                                    + ' defined')
+                    logger.warn('Concentrations for all species are not yet '
+                                + ' defined')
             for item in self.settings['components']:
                 mf = self['pore.concentration.'+item]/total_conc
                 self['pore.mole_fraction.'+item] = mf
@@ -197,7 +200,8 @@ class GenericMixture(GenericPhase):
         if component not in self.components.values():
             raise Exception('Given component not part of mixture')
         if Pvals.size:
-            self['pore.concentration.' + component.name] = Pvals
+            key = 'pore.concentration.' + component.name
+            super().__setitem__(key, Pvals)
         self._reset_molfracs()
 
     def set_mole_fraction(self, component, values=[]):
