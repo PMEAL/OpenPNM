@@ -18,9 +18,7 @@ class SalineWater(GenericMixture):
         self.set_concentration(component=W, values=998/0.018)
         self.set_concentration(component=Na, values=0.0)
         self.set_concentration(component=Cl, values=0.0)
-        self.set_mole_fraction(W, 1.0)
-        self.set_mole_fraction(Na, 0.0)
-        self.set_mole_fraction(Cl, 0.0)
+        self.update_mole_fractions()
         self.add_model(propname='pore.salt_concentration',
                        model=mods.misc.summation,
                        props=['pore.concentration.Na_'+self.name,

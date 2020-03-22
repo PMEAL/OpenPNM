@@ -15,13 +15,10 @@ class GenericMixtureSettings(GenericSettings):
     ----------
     components : list of strings
         The names of each pure component object that constitute the mixture
-    molar_density : string, optional (default = 'molar_density')
-        The name of the dictionary key containing the molar density of the
-        mixture, which is used for calculating concentrations from mole
-        fractions
+
     """
+
     components = []
-    molar_density = 'pore.molar_density'
     prefix = 'mix'
 
 
@@ -57,8 +54,8 @@ class GenericMixture(GenericPhase):
             self['pore.mole_fraction.'+comp.name] = np.nan
 
         self['pore.mole_fraction.all'] = np.nan
-        logger.warning('Mixtures are a beta feature and functionality may ' +
-                       'change in future versions')
+        logger.warning('Mixtures are a beta feature and functionality may '
+                       + 'change in future versions')
 
     def __getitem__(self, key):
         try:
@@ -97,8 +94,8 @@ class GenericMixture(GenericPhase):
         lines = super().__str__()
         lines = '\n'.join((lines, 'Component Phases', horizontal_rule))
         for item in self.components.values():
-            lines = '\n'.join((lines, item.__module__.replace('__', '') +
-                               ' : ' + item.name))
+            lines = '\n'.join((lines, item.__module__.replace('__', '')
+                               + ' : ' + item.name))
         lines = '\n'.join((lines, horizontal_rule))
         return lines
 
@@ -111,29 +108,10 @@ class GenericMixture(GenericPhase):
                 temp += self[item]
         self['pore.mole_fraction.all'] = temp
 
-    def update_concentrations(self, molar_density='pore.molar_density'):
-        r"""
-        Calculates the concentration of each species in the mixture based
-        on the current mole fractions and molar density in each pore
-
-        Parameters
-        ----------
-        molar_density : string, optional (default = 'pore.molar_density')
-            The dictionary key containing the molar density values to use
-
-        Notes
-        -----
-        ``pore.molar_density`` is not automatically specified on Mixtures.
-        If creating a gas mixture, then something like the ideal gas law
-        should be used to find it.  For a liquid it can be specified or
-        calculated as a function of temperature, for instance.  Several
-        suitable pore-scale models are available in the ``models`` library.
-
-        """
-        density = self[molar_density]
-        for item in self.components.values():
-            mf = self['pore.mole_fraction.'+item.name]
-            self['pore.concentration.'+item.name] = density*mf
+    def _reset_molfracs(self):
+        for item in self.settings['components']:
+            self['pore.mole_fraction.'+item] = np.nan
+        self['pore.mole_fraction.all'] = np.nan
 
     def update_mole_fractions(self, free_comp=None):
         r"""
@@ -147,16 +125,21 @@ class GenericMixture(GenericPhase):
             enforce the sum of all mole fractions to equal 1.0.  If not given
             then a search is conducted to find a component whose mole
             fractions are *nans* and this component is treated as
-            ``free_comp``.  If more or less than one component is found
-            during this search an error is raised.
+            ``free_comp``.  If more than one component is found during
+            this search an error is raised.  If *all* the components are
+            *nans* then an attempt is made to determine mole fractions from
+            the concentrations.
 
         """
-        # First update missing mole fraction, if possible
+        # Scan the list of components and find if any have nans
         comps = self.settings['components'].copy()
         hasnans = []
         for item in comps:
+            if 'pore.mole_fraction.'+item not in self.keys():
+                self['pore.mole_fraction.'+item] = np.nan
             if np.any(np.isnan(self['pore.mole_fraction.'+item])):
                 hasnans.append(item)
+        # If only one has nans then update it's mole fraction to make sum = 1.0
         if len(hasnans) == 1:
             comp = hasnans[0]
             self['pore.mole_fraction.'+comp] = 1.0
@@ -164,21 +147,26 @@ class GenericMixture(GenericPhase):
             for item in comps:
                 self['pore.mole_fraction.'+comp] -= self['pore.mole_fraction.'+item]
             self._update_total_molfrac()
+        # If none have nans then either adjust given free_comp or raise error
         elif len(hasnans) == 0:
             if free_comp:
                 self['pore.mole_fraction.'+free_comp] = np.nan
                 self.update_mole_fractions()
             else:
                 raise Exception('No free component found, specify which to adjust')
+        # If they all have nans, then compute them all based on concentrations
         elif len(hasnans) == len(comps):
             total_conc = np.zeros((self.Np, ), dtype=float)
-            for item in self.keys():
-                if item.startswith('pore.concentration'):
-                    total_conc += self[item]
-            for item in self.keys():
-                if item.startswith('pore.concentration'):
-                    self['pore.mole_fraction'] = self[item]/total_conc
-
+            for item in self.settings['components']:
+                try:
+                    total_conc += self['pore.concentration.'+item]
+                except KeyError:
+                    raise Exception('Concentrations for all species are not '
+                                    + ' defined')
+            for item in self.settings['components']:
+                mf = self['pore.concentration.'+item]/total_conc
+                self['pore.mole_fraction.'+item] = mf
+            self._update_total_molfrac()
 
     def set_concentration(self, component, values=[]):
         r"""
@@ -198,15 +186,19 @@ class GenericMixture(GenericPhase):
         --------
         set_mole_fraction
 
+        Notes
+        -----
+        This method automatically sets all the mole fractions to *nans*.
+
         """
         if type(component) == str:
             component = self.components[component]
         Pvals = np.array(values, ndmin=1)
-        if component.name not in self.settings['components']:
-            self.set_component(component)
+        if component not in self.components.values():
+            raise Exception('Given component not part of mixture')
         if Pvals.size:
             self['pore.concentration.' + component.name] = Pvals
-            self['pore.mole_fraction.' + component.name] = np.nan
+        self._reset_molfracs()
 
     def set_mole_fraction(self, component, values=[]):
         r"""
@@ -232,8 +224,8 @@ class GenericMixture(GenericPhase):
             if component.name not in self.settings['components']:
                 self.settings['components'].append(component.name)
         if np.any(Pvals > 1.0) or np.any(Pvals < 0.0):
-            logger.warning('Received values contain mole fractions outside ' +
-                           'the range of 0 to 1')
+            logger.warning('Received values contain mole fractions outside '
+                           + 'the range of 0 to 1')
         if Pvals.size:
             self['pore.mole_fraction.' + component.name] = Pvals
         self._update_total_molfrac()
@@ -259,7 +251,11 @@ class GenericMixture(GenericPhase):
             components = [components]
         temp = self.settings['components'].copy()
         temp.extend([val.name for val in components])
-        self.settings['components'] = list(set(temp))
+        comps = list(set(temp))
+        self.settings['components'] = comps
+        # Add mole_fraction array to dict, filled with nans
+        for item in comps:
+            self['pore.mole_fraction.' + item] = np.nan
 
     components = property(fget=_get_comps, fset=_set_comps)
 
@@ -306,8 +302,8 @@ class GenericMixture(GenericPhase):
             if np.any(self[element + '.mole_fraction.all'] != 1.0):
                 self._update_total_molfrac()
                 if np.any(self[element + '.mole_fraction.all'] != 1.0):
-                    raise Exception('Mole fraction does not add to unity in all ' +
-                                    element + 's')
+                    raise Exception('Mole fraction does not add to unity in all '
+                                    + element + 's')
         vals = np.zeros([self._count(element=element)], dtype=float)
         try:
             for comp in self.components.values():
