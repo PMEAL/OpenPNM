@@ -103,12 +103,10 @@ class GenericMixture(GenericPhase):
         return lines
 
     def _update_total_molfrac(self):
-        # Update mole_fraction.all
-        self.pop('pore.mole_fraction.all', None)
         temp = np.zeros((self.Np, ), dtype=float)
-        for item in self.keys():
-            if item.startswith('pore.mole_fraction'):
-                temp += self[item]
+        comps = list(self.components.values())
+        for item in comps:
+            temp += self['pore.mole_fraction.' + item.name]
         self['pore.mole_fraction.all'] = temp
 
     def _reset_molfracs(self):
@@ -125,51 +123,53 @@ class GenericMixture(GenericPhase):
         ----------
         free_comp : OpenPNM object
             Specifies which component's mole fraction should be adjusted to
-            enforce the sum of all mole fractions to equal 1.0.  If not given
-            then a search is conducted to find a component whose mole
-            fractions are *nans* and this component is treated as
-            ``free_comp``.  If more than one component is found during
-            this search an error is raised.  If *all* the components are
-            *nans* then an attempt is made to determine mole fractions from
-            the concentrations.
+            enforce the sum of all mole fractions to equal 1.0.  See ``Notes``
+            for more details.
+
+        Notes
+        -----
+        If ``free_comp`` is not given then a search is conducted to find a
+        component whose mole fractions are *nans* and this component is
+        treated as ``free_comp``.
+
+        If more than one component, or *no* components, is/are found during
+        this search, an attempt is made to determine mole fractions from
+        the concentrations, such that $x_i = C_i/C_total$.
 
         """
+        # Parse the free_comp argument
+        if hasattr(free_comp, 'name'):  # Get name if give openpnm object
+            free_comp = free_comp.name
+        if free_comp is not None:  # Set the component's mole fraction to nan
+            self['pore.mole_fraction.' + free_comp] = np.nan
         # Scan the list of components and find if any have nans
         comps = self.settings['components'].copy()
         hasnans = []
         for item in comps:
+            # If component not found, give it nans
             if 'pore.mole_fraction.'+item not in self.keys():
                 self['pore.mole_fraction.'+item] = np.nan
-            if np.any(np.isnan(self['pore.mole_fraction.'+item])):
-                hasnans.append(item)
+            hasnans.append(np.any(np.isnan(self['pore.mole_fraction.' + item])))
         # If only one has nans then update it's mole fraction to make sum = 1.0
-        if len(hasnans) == 1:
-            comp = hasnans[0]
+        if hasnans.count(True) == 1:
+            # Remove free_comp from list
+            comp = comps.pop(hasnans.index(True))
+            # Set comp with nans to 1.0, then deduct other mole fracs
             self['pore.mole_fraction.'+comp] = 1.0
-            comps.remove(comp)
             for item in comps:
-                self['pore.mole_fraction.'+comp] -= self['pore.mole_fraction.'+item]
-            self._update_total_molfrac()
-        # If none have nans then either adjust given free_comp or raise error
-        elif len(hasnans) == 0:
-            if free_comp:
-                self['pore.mole_fraction.'+free_comp] = np.nan
-                self.update_mole_fractions()
-            else:
-                raise Exception('No free component found, specify which to adjust')
-        # If they all have nans, then compute them all based on concentrations
-        elif len(hasnans) == len(comps):
-            total_conc = np.zeros((self.Np, ), dtype=float)
-            for item in self.settings['components']:
-                try:
-                    total_conc += self['pore.concentration.'+item]
-                except KeyError:
-                    logger.warn('Concentrations for all species are not yet '
-                                + ' defined')
-            for item in self.settings['components']:
-                mf = self['pore.concentration.'+item]/total_conc
-                self['pore.mole_fraction.'+item] = mf
-            self._update_total_molfrac()
+                self['pore.mole_fraction.' + comp] -= \
+                    self['pore.mole_fraction.' + item]
+        # If all or none of the components have values, then use concentrations
+        else:
+            # First find total concentration of all components
+            total_conc = 0.0
+            for item in comps:
+                total_conc += self['pore.concentration.' + item]
+            # Then find mole fractions as C_i/C_total
+            for item in comps:
+                mf = self['pore.concentration.' + item] / total_conc
+                self['pore.mole_fraction.' + item] = mf
+        self._update_total_molfrac()
 
     def set_concentration(self, component, values=[]):
         r"""
@@ -202,7 +202,7 @@ class GenericMixture(GenericPhase):
         if Pvals.size:
             key = 'pore.concentration.' + component.name
             super().__setitem__(key, Pvals)
-        self._reset_molfracs()
+            self._reset_molfracs()
 
     def set_mole_fraction(self, component, values=[]):
         r"""
@@ -219,14 +219,13 @@ class GenericMixture(GenericPhase):
             all pores.
 
         """
+        # Parse the input args
         if type(component) == str:
             component = self.components[component]
         Pvals = np.array(values, ndmin=1)
-        if component not in self.project:
-            raise Exception(f"{component.name} doesn't belong to this project")
-        else:
-            if component.name not in self.settings['components']:
-                self.settings['components'].append(component.name)
+        # If given component not part of mixture, set it
+        if component.name not in self.setftings['components']:
+            self.set_component(component)
         if np.any(Pvals > 1.0) or np.any(Pvals < 0.0):
             logger.warning('Received values contain mole fractions outside '
                            + 'the range of 0 to 1')
