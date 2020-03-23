@@ -46,14 +46,14 @@ class GenericMixture(GenericPhase):
     def __init__(self, components=[], settings={}, **kwargs):
         self.settings._update_settings_and_docs(GenericMixtureSettings)
         self.settings.update(settings)
-        super().__init__(**kwargs)
+        super().__init__(settings={'prefix': 'mix'}, **kwargs)
 
         # Add any supplied phases to the phases list
         for comp in components:
-            self.settings['components'].append(comp.name)
-            self['pore.mole_fraction.'+comp.name] = np.nan
-
+            self.set_component(comp)
+            self.set_mole_fraction(comp, np.nan)
         self['pore.mole_fraction.all'] = np.nan
+
         logger.warning('Mixtures are a beta feature and functionality may '
                        + 'change in future versions')
 
