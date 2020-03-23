@@ -28,7 +28,9 @@ class TransientIonicTransportTest:
 
         self.phase = mixtures.SalineWater(network=self.net)
         # Retrieve handles to each species for use below
-        self.Na, self.H2O, self.Cl = self.phase.components.values()
+        self.Na = self.phase.components['Na_' + self.phase.name]
+        self.Cl = self.phase.components['Cl_' + self.phase.name]
+        self.H2O = self.phase.components['H2O_' + self.phase.name]
 
         # physics
         self.phys = op.physics.GenericPhysics(network=self.net,

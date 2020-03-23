@@ -46,7 +46,7 @@ class MixtureTest:
         self.air['pore.mole_fraction.'+self.H2.name] = np.nan
         self.air.update_mole_fractions()
         MW = self.air['pore.molecular_weight'][0]
-        assert MW == 0.0575902
+        np.testing.assert_almost_equal(MW, 0.0575902, decimal=6)
 
     def test_check_health(self):
         self.air.set_mole_fraction(self.N2, 0.790)
