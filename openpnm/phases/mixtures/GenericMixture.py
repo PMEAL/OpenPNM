@@ -224,7 +224,7 @@ class GenericMixture(GenericPhase):
             component = self.components[component]
         Pvals = np.array(values, ndmin=1)
         # If given component not part of mixture, set it
-        if component.name not in self.setftings['components']:
+        if component.name not in self.settings['components']:
             self.set_component(component)
         if np.any(Pvals > 1.0) or np.any(Pvals < 0.0):
             logger.warning('Received values contain mole fractions outside '
