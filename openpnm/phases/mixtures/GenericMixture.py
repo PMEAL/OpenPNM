@@ -280,41 +280,6 @@ class GenericMixture(GenericPhase):
         if mode == 'remove':
             self._del_comps(component)
 
-    def interleave_data(self, prop):
-        r"""
-        Gathers property values from component phases to build a single array
-
-        If the requested ``prop`` is not on this Mixture, then a search is
-        conducted on all associated components objects, and values from each
-        are assembled into a single array.
-
-        Parameters
-        ----------
-        prop : string
-            The property to be retrieved
-
-        Returns
-        -------
-        array : ND-array
-            An array containing the specified property retrieved from each
-            component phase and assembled based on the specified mixing rule
-
-        """
-        element = prop.split('.')[0]
-        if element == 'pore':
-            if np.any(self[element + '.mole_fraction.all'] != 1.0):
-                self._update_total_molfrac()
-                if np.any(self[element + '.mole_fraction.all'] != 1.0):
-                    raise Exception('Mole fraction does not add to unity in all '
-                                    + element + 's')
-        vals = np.zeros([self._count(element=element)], dtype=float)
-        try:
-            for comp in self.components.values():
-                vals += comp[prop]*self[element+'.mole_fraction.'+comp.name]
-        except KeyError:
-            vals = super().interleave_data(prop)
-        return vals
-
     def check_mixture_health(self):
         r"""
         Checks the "health" of the mixture
