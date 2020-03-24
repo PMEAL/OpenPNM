@@ -2,6 +2,7 @@
 import numpy as np
 from openpnm.phases import GenericPhase as GenericPhase
 from openpnm.utils import HealthDict, PrintableList, Docorator, GenericSettings
+from openpnm import models
 from openpnm.utils import logging
 logger = logging.getLogger(__name__)
 docstr = Docorator()
@@ -53,6 +54,11 @@ class GenericMixture(GenericPhase):
             self.set_component(comp)
             self.set_mole_fraction(comp, np.nan)
         self['pore.mole_fraction.all'] = np.nan
+
+        self.add_model(propname='pore.molar_mass',
+                       model=models.phases.mixtures.mole_weighted_average,
+                       prop='pore.molecular_weight',
+                       regen_mode='deferred')
 
         logger.warning('Mixtures are a beta feature and functionality may '
                        + 'change in future versions')
@@ -170,6 +176,7 @@ class GenericMixture(GenericPhase):
                 mf = self['pore.concentration.' + item] / total_conc
                 self['pore.mole_fraction.' + item] = mf
         self._update_total_molfrac()
+        self.regenerate_models(['pore.molar_mass'])
 
     def set_concentration(self, component, values=[]):
         r"""

@@ -25,10 +25,6 @@ class IdealGas(GenericMixture):
         super().__init__(settings={'prefix': 'mix'}, **kwargs)
         self.settings.update(settings)
 
-        self.add_model(propname='pore.molar_mass',
-                       model=mods.phases.mixtures.mole_weighted_average,
-                       prop='pore.molecular_weight',
-                       regen_mode='deferred')
-
         self.add_model(propname='pore.molar_density',
-                       model=mods.phases.molar_density.ideal_gas)
+                       model=mods.phases.molar_density.ideal_gas,
+                       mode='deferred')

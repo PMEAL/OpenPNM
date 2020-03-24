@@ -11,17 +11,13 @@ O2 = mixtures.species.gases.O2(network=pn, name='pure_O2')
 air = mixtures.GenericMixture(network=pn, components=[N2, O2])
 air.set_mole_fraction(N2, 0.79)
 air.set_mole_fraction(O2, 0.21)
-air.add_model(propname='pore.molar_mass',
-              model=op.models.phases.mixtures.mole_weighted_average,
-              prop='pore.molecular_weight')
+
 air.add_model(propname='pore.diffusivity.pure_O2',
               model=op.models.phases.mixtures.fuller_diffusivity)
 air.add_model(propname='pore.viscosity',
               model=op.models.misc.polynomial,
               prop='pore.temperature',
               a=[0.00000182082, 6.51815E-08, -3.48553E-11, 1.11409E-14])
-air.add_model(propname='pore.molar_density',
-              model=op.models.phases.density.ideal_gas)
 
 phys = op.physics.GenericPhysics(network=pn, phase=air, geometry=geo)
 phys.add_model(propname='throat.diffusive_conductance',
