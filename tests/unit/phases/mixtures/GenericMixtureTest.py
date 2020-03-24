@@ -20,33 +20,52 @@ class MixtureTest:
                                                        self.H2, self.CO2],
                                            name='air_mixture')
 
-    def test_set_mole_fraction(self):
-        self.air.set_mole_fraction(self.N2, 0.790)
-        self.air.set_mole_fraction(self.O2, 0.209)
-        self.air.set_mole_fraction(self.CO2, 0.001)
-        self.air.update_mole_fractions()
-        assert np.all(self.air['pore.mole_fraction.all'] == 1.0)
-
     def test_props(self):
         a = self.air.props(deep=False)
         b = self.air.props(deep=True)
         assert len(b) > len(a)
 
-    def test_interleave_data(self):
-        self.air['pore.mole_fraction.'+self.O2.name] = 1.0
-        self.air['pore.mole_fraction.'+self.N2.name] = 0.0
-        self.air['pore.mole_fraction.'+self.CO2.name] = 0.0
-        self.air['pore.mole_fraction.'+self.H2.name] = np.nan
+    def test_set_mole_fraction(self):
+        self.air.pop('pore.mole_fraction.' + self.O2.name, None)
+        self.air.set_mole_fraction(self.O2, values=0)
+        assert np.all(self.air['pore.mole_fraction.' + self.O2.name] == 0.0)
+        self.air.set_mole_fraction(self.O2, values=0.1)
+        assert np.all(self.air['pore.mole_fraction.' + self.O2.name] == 0.1)
+
+    def test_set_concentration(self):
+        self.air.set_mole_fraction(self.O2, values=0.1)
+        assert np.all(self.air['pore.mole_fraction.' + self.O2.name] == 0.1)
+        self.air.set_concentration(component=self.O2, values=1.0)
+        assert np.all(self.air['pore.concentration.' + self.O2.name] == 1.0)
+        # Ensure all mole fracs are set to nans when a concentration is set
+        assert np.all(np.isnan(self.air['pore.mole_fraction.' + self.O2.name]))
+        assert np.all(np.isnan(self.air['pore.mole_fraction.' + self.N2.name]))
+
+    def test_update_mole_fraction(self):
+        self.air.set_mole_fraction(self.H2, values=0.0)
+        self.air.set_mole_fraction(self.CO2, values=0.0)
+        self.air.set_mole_fraction(self.O2, values=0.1)
+        self.air.set_mole_fraction(self.N2, values=np.nan)
         self.air.update_mole_fractions()
-        MW = self.air['pore.molecular_weight'][0]
-        assert MW == 0.032
-        self.air['pore.mole_fraction.'+self.O2.name] = 1.0
-        self.air['pore.mole_fraction.'+self.N2.name] = 0.5
-        self.air['pore.mole_fraction.'+self.CO2.name] = 0.3
-        self.air['pore.mole_fraction.'+self.H2.name] = np.nan
+        assert np.all(self.air['pore.mole_fraction.' + self.N2.name] == 0.9)
+
+    def test_update_mole_fraction_too_many_nans_not_enough_concs(self):
+        self.air.set_mole_fraction(self.H2, values=np.nan)
+        self.air.set_mole_fraction(self.CO2, values=0.0)
+        self.air.set_mole_fraction(self.O2, values=0.1)
+        self.air.set_mole_fraction(self.N2, values=np.nan)
+        with pytest.raises(KeyError):
+            self.air.update_mole_fractions()
+
+    def test_update_mole_fraction_too_many_nans_but_enough_concs(self):
+        self.air.set_mole_fraction(self.H2, values=np.nan)
+        self.air.set_mole_fraction(self.N2, values=np.nan)
+        self.air.set_concentration(self.H2, values=1)
+        self.air.set_concentration(self.N2, values=1)
+        self.air.set_concentration(self.O2, values=1)
+        self.air.set_concentration(self.CO2, values=1)
         self.air.update_mole_fractions()
-        MW = self.air['pore.molecular_weight'][0]
-        np.testing.assert_almost_equal(MW, 0.0575902, decimal=6)
+        assert np.all(self.air['pore.mole_fraction.' + self.N2.name] == 0.25)
 
     def test_check_health(self):
         self.air.set_mole_fraction(self.N2, 0.790)
