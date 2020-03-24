@@ -12,9 +12,9 @@ scheme = 'powerlaw'
 np.random.seed(0)
 
 net = op.network.Cubic(shape=[23, 15, 1], spacing=1e-6, project=proj)
-prs = (net['pore.back'] * net['pore.right'] + net['pore.back'] *
-       net['pore.left'] + net['pore.front'] * net['pore.right'] +
-       net['pore.front'] * net['pore.left'])
+prs = (net['pore.back'] * net['pore.right'] + net['pore.back']
+       * net['pore.left'] + net['pore.front'] * net['pore.right']
+       + net['pore.front'] * net['pore.left'])
 prs = net.Ps[prs]
 
 b_prs_1 = np.append(net.pores('back'), net.pores('front'))
@@ -41,7 +41,9 @@ geo = op.geometry.StickAndBall(network=net, pores=net.Ps, throats=net.Ts)
 
 sw = mixtures.SalineWater(network=net)
 # Retrieve handles to each species for use below
-Cl, Na, H2O = sw.components.values()
+Na = sw.components['Na_' + sw.name]
+Cl = sw.components['Cl_' + sw.name]
+H2O = sw.components['H2O_' + sw.name]
 
 # physics
 phys = op.physics.GenericPhysics(network=net, phase=sw, geometry=geo)
