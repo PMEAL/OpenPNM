@@ -1,7 +1,8 @@
 # from collections import ChainMap  # Might use eventually
 import numpy as np
 from openpnm.phases import GenericPhase as GenericPhase
-from openpnm.utils import HealthDict, PrintableList, Docorator, GenericSettings
+from openpnm.utils import HealthDict, PrintableList
+from openpnm.utils import Docorator, GenericSettings
 from openpnm import models
 from openpnm.utils import logging
 logger = logging.getLogger(__name__)
@@ -169,12 +170,16 @@ class GenericMixture(GenericPhase):
         else:
             # First find total concentration of all components
             total_conc = 0.0
-            for item in comps:
-                total_conc += self['pore.concentration.' + item]
-            # Then find mole fractions as C_i/C_total
-            for item in comps:
-                mf = self['pore.concentration.' + item] / total_conc
-                self['pore.mole_fraction.' + item] = mf
+            try:
+                for item in comps:
+                    total_conc += self['pore.concentration.' + item]
+                # Then find mole fractions as C_i/C_total
+                for item in comps:
+                    mf = self['pore.concentration.' + item] / total_conc
+                    self['pore.mole_fraction.' + item] = mf
+            except KeyError:
+                logger.warning("Insufficient concentrations defined, cannot "
+                               + "recalculate mole fractions")
         self._update_total_molfrac()
         self.regenerate_models(['pore.molar_mass'])
 
@@ -253,7 +258,9 @@ class GenericMixture(GenericPhase):
         self['pore.mole_fraction.all'] = np.nan
 
     def _get_comps(self):
-        comps = {item: self.project[item] for item in self.settings['components']}
+        comps = {}
+        comps.update({item: self.project[item]
+                      for item in self.settings['components']})
         return comps
 
     def _set_comps(self, components):
