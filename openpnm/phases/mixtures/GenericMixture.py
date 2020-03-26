@@ -287,7 +287,7 @@ class GenericMixture(GenericPhase):
     def _get_comps(self):
         comps = {}
         comps.update({item: self.project[item]
-                      for item in self.settings['components']})
+                      for item in sorted(self.settings['components'])})
         return comps
 
     def _set_comps(self, components):
