@@ -142,14 +142,16 @@ class GenericMixture(GenericPhase):
 
         """
         if 'pore.molar_density' not in self.keys():
-            logger.warn("Cannot update concentration without \'pore.molar_density\'")
-            return
+            raise Exception("Cannot update concentration without "
+                            + "\'pore.molar_density\'")
         comps = self.settings['components'].copy()
-        if mode == 'all':
-            for item in comps:
-                c = self['pore.mole_fraction.' + item] * self['pore.molar_density']
+        for item in comps:
+            c = self['pore.mole_fraction.' + item] * self['pore.molar_density']
+            if mode == 'all':
                 self['pore.concentration.' + item] = c
-
+            elif mode == 'update':
+                if 'pore.concentration.' + item not in self.items():
+                    self['pore.concentration.' + item] = c
 
     def update_mole_fractions(self, free_comp=None):
         r"""
