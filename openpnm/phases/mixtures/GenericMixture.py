@@ -124,6 +124,33 @@ class GenericMixture(GenericPhase):
             self['pore.mole_fraction.'+item] = np.nan
         self['pore.mole_fraction.all'] = np.nan
 
+    def update_concentrations(self, mode='all'):
+        r"""
+        Updates all unspecified concentrations from mole fractions and molar
+        density.
+
+        Parameters
+        ----------
+        mode : str {'all' (default), 'update'}
+            If 'all' then all concentrations will be updated based on the
+            current mole fractions.  If 'update', then only concentrations
+            that are missing or filled with *nans* will be updated.
+
+        Notes
+        -----
+        This function requires that molar density be defined on the mixture.
+
+        """
+        if 'pore.molar_density' not in self.keys():
+            logger.warn("Cannot update concentration without \'pore.molar_density\'")
+            return
+        comps = self.settings['components'].copy()
+        if mode == 'all':
+            for item in comps:
+                c = self['pore.mole_fraction.' + item] * self['pore.molar_density']
+                self['pore.concentration.' + item] = c
+
+
     def update_mole_fractions(self, free_comp=None):
         r"""
         Updates mole fraction values so the sum of all mole fractions is
@@ -204,10 +231,6 @@ class GenericMixture(GenericPhase):
         --------
         set_mole_fraction
 
-        Notes
-        -----
-        This method automatically sets all the mole fractions to *nans*.
-
         """
         if type(component) == str:
             component = self.components[component]
@@ -217,7 +240,6 @@ class GenericMixture(GenericPhase):
         if Pvals.size:
             key = 'pore.concentration.' + component.name
             super().__setitem__(key, Pvals)
-            self._reset_molfracs()
 
     def set_mole_fraction(self, component, values=[]):
         r"""

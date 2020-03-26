@@ -37,9 +37,6 @@ class MixtureTest:
         assert np.all(self.air['pore.mole_fraction.' + self.O2.name] == 0.1)
         self.air.set_concentration(component=self.O2, values=1.0)
         assert np.all(self.air['pore.concentration.' + self.O2.name] == 1.0)
-        # Ensure all mole fracs are set to nans when a concentration is set
-        assert np.all(np.isnan(self.air['pore.mole_fraction.' + self.O2.name]))
-        assert np.all(np.isnan(self.air['pore.mole_fraction.' + self.N2.name]))
 
     def test_update_mole_fraction(self):
         self.air.set_mole_fraction(self.H2, values=0.0)
@@ -48,14 +45,6 @@ class MixtureTest:
         self.air.set_mole_fraction(self.N2, values=np.nan)
         self.air.update_mole_fractions()
         assert np.all(self.air['pore.mole_fraction.' + self.N2.name] == 0.9)
-
-    def test_update_mole_fraction_too_many_nans_not_enough_concs(self):
-        self.air.set_mole_fraction(self.H2, values=np.nan)
-        self.air.set_mole_fraction(self.CO2, values=0.0)
-        self.air.set_mole_fraction(self.O2, values=0.1)
-        self.air.set_mole_fraction(self.N2, values=np.nan)
-        with pytest.raises(KeyError):
-            self.air.update_mole_fractions()
 
     def test_update_mole_fraction_too_many_nans_but_enough_concs(self):
         self.air.set_mole_fraction(self.H2, values=np.nan)
