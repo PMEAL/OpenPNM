@@ -8,7 +8,7 @@ proj = ws.new_project()
 # network, geometry, phase
 np.random.seed(0)
 
-net = op.network.Cubic(shape=[8, 8, 1], spacing=9e-4, project=proj)
+net = op.network.Cubic(shape=[33, 33, 1], spacing=9e-4, project=proj)
 prs = (net['pore.back'] * net['pore.right'] + net['pore.back']
        * net['pore.left'] + net['pore.front'] * net['pore.right']
        + net['pore.front'] * net['pore.left'])
@@ -50,14 +50,26 @@ phys.add_model(propname='throat.diffusive_conductance', model=dif,
 ad_dif = op.models.physics.ad_dif_conductance.ad_dif
 phys.add_model(propname='throat.ad_dif_conductance',
                model=ad_dif, regen_mode='normal')
+# set source term
+linear = op.models.physics.generic_source_term.linear
+phys['pore.A1'] = -1e-15
+phys['pore.A2'] = 0.0
+phys.add_model(propname='pore.rxn', model=linear, X='pore.concentration',
+               A1='pore.A1', A2='pore.A2')
+rxn_pores = np.array([200])
+net.set_label('rxn', pores=rxn_pores)
 
 ad = op.algorithms.TransientAdvectionDiffusion(network=net, phase=water)
+ad.set_source(propname='pore.rxn', pores=rxn_pores)
 ad.set_value_BC(pores=net.pores('back'), values=100)
 ad.set_value_BC(pores=net.pores('front'), values=90)
+ad.set_IC(90)
 ad.settings['solver_tol'] = 1e-12
-ad.settings['t_output'] = 500
-ad.settings['t_step'] = 100
-ad.settings['t_final'] = 2000
+ad.settings['t_output'] = 1000
+ad.settings['t_step'] = 500
+ad.settings['t_final'] = 100000
+# change 'steady' to 'implicit' or 'cranknicolson' for transient simulations
+ad.settings['t_scheme'] = 'steady'
 ad.run()
 
 water.update(ad.results())
