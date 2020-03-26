@@ -9,10 +9,10 @@ class TransientIonicTransportTest:
         np.random.seed(0)
         self.net = op.network.Cubic(shape=[8, 8, 1], spacing=9e-4)
 
-        prs = (self.net['pore.back'] * self.net['pore.right'] +
-               self.net['pore.back'] * self.net['pore.left'] +
-               self.net['pore.front'] * self.net['pore.right'] +
-               self.net['pore.front'] * self.net['pore.left'])
+        prs = (self.net['pore.back'] * self.net['pore.right']
+               + self.net['pore.back'] * self.net['pore.left']
+               + self.net['pore.front'] * self.net['pore.right']
+               + self.net['pore.front'] * self.net['pore.left'])
         thrts = self.net['throat.surface']
         op.topotools.trim(network=self.net, pores=self.net.Ps[prs],
                           throats=self.net.Ts[thrts])
@@ -28,7 +28,9 @@ class TransientIonicTransportTest:
 
         self.phase = mixtures.SalineWater(network=self.net)
         # Retrieve handles to each species for use below
-        self.Cl, self.Na, self.H2O = self.phase.components.values()
+        self.Na = self.phase.components['Na_' + self.phase.name]
+        self.Cl = self.phase.components['Cl_' + self.phase.name]
+        self.H2O = self.phase.components['H2O_' + self.phase.name]
 
         # physics
         self.phys = op.physics.GenericPhysics(network=self.net,
@@ -47,18 +49,18 @@ class TransientIonicTransportTest:
                             model=current, regen_mode='normal')
 
         eA_dif = op.models.physics.diffusive_conductance.ordinary_diffusion
-        self.phys.add_model(propname='throat.diffusive_conductance.' +
-                            self.Na.name,
+        self.phys.add_model(propname='throat.diffusive_conductance.'
+                            + self.Na.name,
                             pore_diffusivity='pore.diffusivity.'+self.Na.name,
-                            throat_diffusivity='throat.diffusivity.' +
-                            self.Na.name, model=eA_dif, regen_mode='normal')
+                            throat_diffusivity='throat.diffusivity.'
+                            + self.Na.name, model=eA_dif, regen_mode='normal')
 
         eB_dif = op.models.physics.diffusive_conductance.ordinary_diffusion
-        self.phys.add_model(propname='throat.diffusive_conductance.' +
-                            self.Cl.name,
+        self.phys.add_model(propname='throat.diffusive_conductance.'
+                            + self.Cl.name,
                             pore_diffusivity='pore.diffusivity.'+self.Cl.name,
-                            throat_diffusivity='throat.diffusivity.' +
-                            self.Cl.name, model=eB_dif, regen_mode='normal')
+                            throat_diffusivity='throat.diffusivity.'
+                            + self.Cl.name, model=eB_dif, regen_mode='normal')
 
         # settings for algorithms
         self.settings1 = {'solver_maxiter': 5, 'solver_tol': 1e-08,
@@ -98,15 +100,15 @@ class TransientIonicTransportTest:
         eB.set_value_BC(pores=self.net.pores('front'), values=90)
 
         ad_dif_mig_Na = op.models.physics.ad_dif_mig_conductance.ad_dif_mig
-        self.phys.add_model(propname='throat.ad_dif_mig_conductance.' +
-                            self.Na.name,
+        self.phys.add_model(propname='throat.ad_dif_mig_conductance.'
+                            + self.Na.name,
                             pore_pressure=sf.settings['quantity'],
                             model=ad_dif_mig_Na, ion=self.Na.name,
                             s_scheme='powerlaw')
 
         ad_dif_mig_Cl = op.models.physics.ad_dif_mig_conductance.ad_dif_mig
-        self.phys.add_model(propname='throat.ad_dif_mig_conductance.' +
-                            self.Cl.name,
+        self.phys.add_model(propname='throat.ad_dif_mig_conductance.'
+                            + self.Cl.name,
                             pore_pressure=sf.settings['quantity'],
                             model=ad_dif_mig_Cl, ion=self.Cl.name,
                             s_scheme='powerlaw')
@@ -191,8 +193,8 @@ if __name__ == '__main__':
 
     t = TransientIonicTransportTest()
     t.setup_class()
+    self = t
     for item in t.__dir__():
         if item.startswith('test'):
             print('running test: '+item)
             t.__getattribute__(item)()
-    self = t

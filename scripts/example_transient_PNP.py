@@ -26,7 +26,9 @@ geo.regenerate_models()
 
 sw = mixtures.SalineWater(network=net)
 # Retrieve handles to each species for use below
-Cl, Na, H2O = sw.components.values()
+Na = sw.components['Na_' + sw.name]
+Cl = sw.components['Cl_' + sw.name]
+H2O = sw.components['H2O_' + sw.name]
 
 # physics
 phys = op.physics.GenericPhysics(network=net, phase=sw, geometry=geo)

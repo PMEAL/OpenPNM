@@ -152,6 +152,14 @@ class GenericSettings:
                 self.__dict__[item] = getattr(self, item)
 
 
+class SubDict(dict):
+    def __getitem__(self, key):
+        for item in self.keys():
+            if item.endswith('.' + key):
+                key = item
+        return super().__getitem__(key)
+
+
 class NestedDict(dict):
     def __init__(self, mapping={}, delimiter="/"):
         super().__init__()

@@ -4,33 +4,32 @@ import scipy as sp
 import pandas as pd
 from collections import namedtuple
 from openpnm.utils import Workspace, logging
-from openpnm.utils.misc import PrintableList, SettingsDict
+from openpnm.utils.misc import PrintableList, SettingsDict, Docorator
+docstr = Docorator()
 logger = logging.getLogger(__name__)
 ws = Workspace()
 
 
+@docstr.get_sectionsf('Base', sections=['Parameters'])
 class Base(dict):
     r"""
     Contains methods for working with the data in the OpenPNM dict objects
 
     Parameters
     ----------
-    Np : int, default is 0
-        The total number of pores to be assigned to the object
-
-    Nt : int, default is 0
-        The total number of throats to be assigned to the object
-
-    name : string, optional
-        The unique name of the object.  If not given one will be generated.
-
     project : OpenPNM Project object, optional
         The Project with which the object should be assigned.  If not supplied
         then a new Project is created
+    name : string, optional
+        The unique name of the object.  If not given one will be generated.
+
+    Np : int, default is 0
+        The total number of pores to be assigned to the object
+    Nt : int, default is 0
+        The total number of throats to be assigned to the object
 
     Notes
     -----
-
     This Base class is used as the template for all other OpenPNM objects,
     including Networks, Geometries, Phases, Physics, and Algorithms.  This
     class is a subclass of the standard ``dict`` so has the usual methods such
