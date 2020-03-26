@@ -553,3 +553,23 @@ def is_symmetric(a, rtol=1e-10):
         issym = False if _np.any((a - a.T) > atol) else True
 
     return issym
+
+
+def nbr_to_str(nbr, t_precision):
+    r"""
+    Converts a scalar into a string in scientific (exponential) notation
+    without the decimal point.
+
+    Parameters
+    ----------
+    nbr : scalar
+        The number to be converted into a scalar.
+
+    t_precision : integer
+        The time precision (number of decimal places). Default value is 12.
+    """
+    from decimal import Decimal as dc
+    n = int(-dc(str(round(nbr, t_precision))).as_tuple().exponent
+            * (round(nbr, t_precision) != int(nbr)))
+    nbr_str = (str(int(round(nbr, t_precision)*10**n)) + ('e-'+str(n))*(n != 0))
+    return nbr_str

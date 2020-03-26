@@ -22,6 +22,7 @@ from .misc import sanitize_dict
 from .misc import unique_list
 from .misc import tic, toc
 from .misc import is_symmetric
+from .misc import nbr_to_str
 from .Workspace import Workspace
 from .Project import Project
 

@@ -76,9 +76,9 @@ class TransientIonicTransportTest:
         sf.run()
         self.phase.update(sf.results())
 
-        p = op.algorithms.TransientChargeConservation(network=self.net,
-                                                      phase=self.phase,
-                                                      settings=self.settings1)
+        p = op.algorithms.TransientIonicConduction(network=self.net,
+                                                   phase=self.phase,
+                                                   settings=self.settings1)
         p.set_value_BC(pores=self.net.pores('left'), values=0.1)
         p.set_value_BC(pores=self.net.pores('right'), values=0.00)
         p.settings['charge_conservation'] = 'electroneutrality'
@@ -111,9 +111,9 @@ class TransientIonicTransportTest:
                             model=ad_dif_mig_Cl, ion=self.Cl.name,
                             s_scheme='powerlaw')
 
-        it = op.algorithms.TransientIonicTransport(network=self.net,
-                                                   phase=self.phase,
-                                                   settings=self.settings2)
+        it = op.algorithms.TransientNernstPlanckMultiphysics(network=self.net,
+                                                             phase=self.phase,
+                                                             settings=self.settings2)
         it.setup(potential_field=p.name, ions=[eA.name, eB.name])
         it.run()
 
