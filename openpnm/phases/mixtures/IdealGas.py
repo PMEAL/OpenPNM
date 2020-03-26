@@ -1,8 +1,7 @@
 # from collections import ChainMap  # Might use eventually
-import numpy as np
-from openpnm.phases.mixtures import GenericMixture, species
+from openpnm.phases.mixtures import GenericMixture
 import openpnm.models as mods
-from openpnm.utils import logging, HealthDict, PrintableList, Docorator
+from openpnm.utils import logging, Docorator
 docstr = Docorator()
 logger = logging.getLogger(__name__)
 
@@ -19,12 +18,10 @@ class IdealGas(GenericMixture):
 
     """
 
-    def __init__(self, components=[], settings={}, **kwargs):
-        self.settings.update({'components': [],
-                              })
+    def __init__(self, settings={}, **kwargs):
         super().__init__(settings={'prefix': 'mix'}, **kwargs)
         self.settings.update(settings)
 
         self.add_model(propname='pore.molar_density',
                        model=mods.phases.molar_density.ideal_gas,
-                       mode='deferred')
+                       regen_mode='deferred')
