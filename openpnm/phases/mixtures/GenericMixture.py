@@ -1,7 +1,7 @@
 # from collections import ChainMap  # Might use eventually
 import numpy as np
 from openpnm.phases import GenericPhase as GenericPhase
-from openpnm.utils import HealthDict, PrintableList
+from openpnm.utils import HealthDict, PrintableList, SubDict
 from openpnm.utils import Docorator, GenericSettings
 from openpnm import models
 from openpnm.utils import logging
@@ -75,7 +75,10 @@ class GenericMixture(GenericPhase):
                     vals = comp[key.rsplit('.', maxsplit=1)[0]]
                     return vals
                 else:
-                    raise KeyError
+                    # If does not end in component name, see if components have it
+                    vals = SubDict()
+                    for comp in self.components.keys():
+                        vals[key + '.' + comp] = self.components[comp][key]
             except KeyError:
                 vals = self.interleave_data(key)
         return vals
