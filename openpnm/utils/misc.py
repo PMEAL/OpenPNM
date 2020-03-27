@@ -4,7 +4,19 @@ import functools
 import numpy as _np
 import scipy as _sp
 import time as _time
+import copy
 from collections import OrderedDict
+from docrep import DocstringProcessor
+
+
+class Docorator(DocstringProcessor):
+
+    __instance__ = None
+
+    def __new__(cls, *args, **kwargs):
+        if Docorator.__instance__ is None:
+            Docorator.__instance__ = DocstringProcessor()
+        return Docorator.__instance__
 
 
 class PrintableList(list):
@@ -104,6 +116,7 @@ class SettingsDict(PrintableDict):
     None
 
     """
+    __doc__ = ''
 
     def __setitem__(self, key, value):
         if hasattr(value, "Np"):
@@ -116,6 +129,35 @@ class SettingsDict(PrintableDict):
     def __missing__(self, key):
         self[key] = None
         return self[key]
+
+    def _update_settings_and_docs(self, dc):
+        if type(dc) is type:  # If dc is class then instantiate it
+            dc = dc()
+        self.__doc__ = dc.__doc__
+        # if dc is a dataclass object.  This step is only necessary to support
+        # Python 3.6 which doesn't have the dataclasses module
+        if hasattr(dc, '__dict__'):
+            dc = copy.deepcopy(dc.__dict__)
+        else:
+            dc = copy.deepcopy(dc)
+        for item in dc.keys():
+            self[item] = dc[item]
+
+
+class GenericSettings:
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for item in dir(self):
+            if not item.startswith('__'):
+                self.__dict__[item] = getattr(self, item)
+
+
+class SubDict(dict):
+    def __getitem__(self, key):
+        for item in self.keys():
+            if item.endswith('.' + key):
+                key = item
+        return super().__getitem__(key)
 
 
 class NestedDict(dict):
@@ -519,3 +561,23 @@ def is_symmetric(a, rtol=1e-10):
         issym = False if _np.any((a - a.T) > atol) else True
 
     return issym
+
+
+def nbr_to_str(nbr, t_precision):
+    r"""
+    Converts a scalar into a string in scientific (exponential) notation
+    without the decimal point.
+
+    Parameters
+    ----------
+    nbr : scalar
+        The number to be converted into a scalar.
+
+    t_precision : integer
+        The time precision (number of decimal places). Default value is 12.
+    """
+    from decimal import Decimal as dc
+    n = int(-dc(str(round(nbr, t_precision))).as_tuple().exponent
+            * (round(nbr, t_precision) != int(nbr)))
+    nbr_str = (str(int(round(nbr, t_precision)*10**n)) + ('e-'+str(n))*(n != 0))
+    return nbr_str

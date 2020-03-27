@@ -167,8 +167,8 @@ class GenericNetwork(Base, ModelsMixin):
 
     def get_adjacency_matrix(self, fmt='coo'):
         r"""
-        Returns an adjacency matrix in the specified sparse format, with 1's
-        indicating the non-zero values.
+        Returns an adjacency matrix in the specified sparse format, with throat
+        IDs indicating the non-zero values.
 
         Parameters
         ----------
@@ -190,7 +190,7 @@ class GenericNetwork(Base, ModelsMixin):
         this method will create and return the matrix, as well as store it
         for future use.
 
-        To obtain a matrix with weights other than ones at each non-zero
+        To obtain a matrix with weights other than throat IDs at each non-zero
         location use ``create_adjacency_matrix``.
 
         To obtain the non-directed graph, with only upper-triangular entries,
@@ -212,8 +212,8 @@ class GenericNetwork(Base, ModelsMixin):
 
     def get_incidence_matrix(self, fmt='coo'):
         r"""
-        Returns an incidence matrix in the specified sparse format, with 1's
-        indicating the non-zero values.
+        Returns an incidence matrix in the specified sparse format, with pore
+        IDs indicating the non-zero values.
 
         Parameters
         ----------
@@ -235,7 +235,7 @@ class GenericNetwork(Base, ModelsMixin):
         this method will create and return the matrix, as well as store it
         for future use.
 
-        To obtain a matrix with weights other than ones at each non-zero
+        To obtain a matrix with weights other than pore IDs at each non-zero
         location use ``create_incidence_matrix``.
         """
         if fmt in self._im.keys():
@@ -809,14 +809,18 @@ class GenericNetwork(Base, ModelsMixin):
             The maximum radius within which the search should be performed
 
         include_input : bool
-            Controls whether the input pores should be included in the returned
-            list.  The default is ``False``.
+            Controls whether the input pores should be included in the list of
+            pores nearby the *other pores* in the input list.  So if
+            ``pores=[1, 2]`` and 1 and 2 are within ``r`` of each other,
+            then 1 will be included in the returned for pores near 2, and
+            vice-versa *if* this argument is ``True``.  The default is
+            ``False``.
 
         flatten : bool
-            If true returns a single list of all pores that match the criteria,
-            otherwise returns an array containing a sub-array for each input
-            pore, where each sub-array contains the pores that are nearby to
-            each given input pore.  The default is False.
+            If ``True`` returns a single list of all pores that match the
+            criteria, otherwise returns an array containing a sub-array for
+            each input pore, where each sub-array contains the pores that
+            are nearby to each given input pore.  The default is False.
 
         Returns
         -------

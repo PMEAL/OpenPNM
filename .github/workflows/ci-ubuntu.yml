@@ -27,17 +27,17 @@ jobs:
           ${{ runner.os }}-pip-
 
     - name: Install Dependencies
-      # if: steps.cache.outputs.cache-hit != 'true'
       run: |
         pip install -r requirements/pip_requirements.txt
         pip install -r requirements/test_requirements.txt
         pip uninstall openpnm --yes
         python setup.py install
         pip install pyamg
-      #  sudo apt-get install mpich
-      #  pip install mpi4py
-      #  export PETSC_CONFIGURE_OPTIONS='--download-f2cblaslapack=1 --download-scalapack --download-mumps'
-      #  pip install petsc petsc4py
+        sudo apt update --yes
+        sudo apt-get install mpich --yes
+        pip install mpi4py
+        export PETSC_CONFIGURE_OPTIONS='--download-f2cblaslapack=1 --download-scalapack --download-mumps'
+        pip install petsc petsc4py
 
     - name: Running tests
       run: pytest --pep8 --cov=./ --cov-report=xml --ignore=scripts/

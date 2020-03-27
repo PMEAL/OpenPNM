@@ -48,6 +48,8 @@ parameters.
 | STL      | The STL Format is a Standard Triangle (or Tessellation) Language |
 |          | supported by many CAD packages and used for 3D printing          |
 +----------+------------------------------------------------------------------+
+| Salome   | A *.py instruction file to be read by Salome to build a geomertry|
++----------+------------------------------------------------------------------+
 | PerGeos  | The PerGeos format is used by the commercial software Avizo      |
 +----------+------------------------------------------------------------------+
 | PoreSpy  | PoreSpy contains the snow extraction algorithm                   |
@@ -83,3 +85,4 @@ from .XDMF import XDMF
 from .JSONGraphFormat import JSONGraphFormat
 from .STL import STL
 from .COMSOL import COMSOL
+from .Salome import Salome

@@ -1,12 +1,13 @@
-from openpnm.phases.mixtures import GenericMixture, species
+from openpnm.phases.mixtures import IdealGas, species
 import openpnm.models as mods
 from openpnm.utils import logging
 logger = logging.getLogger(__name__)
 
 
-class HumidAir(GenericMixture):
+class HumidAir(IdealGas):
     r"""
     """
+
     def __init__(self, network, **kwargs):
         super().__init__(network=network, components=[], **kwargs)
 
@@ -17,9 +18,6 @@ class HumidAir(GenericMixture):
         self.set_mole_fraction(component=N2, values=0.791)
         self.set_mole_fraction(component=O2, values=0.209)
         self.set_mole_fraction(component=H2O, values=0.000)
-        self.add_model(propname='pore.molar_mass',
-                       model=mods.phases.mixtures.mole_weighted_average,
-                       prop='pore.molecular_weight')
         self.add_model(propname='pore.vapor_pressure',
                        model=mods.phases.vapor_pressure.water)
 #        self.add_model(propname='pore.mole_fraction.'+H2O.name,

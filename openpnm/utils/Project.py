@@ -943,6 +943,52 @@ class Project(list):
 
         return health
 
+    def inspect_locations(self, element, indices, objs=[], mode='all'):
+        r"""
+        Shows the values of all props and/or labels for a given subset of
+        pores or throats.
+
+        Parameters
+        ----------
+        element : str
+            The type of locations to inspect, either 'pores', or 'throats'
+        indices : array_like
+            The pore or throat indices to inspect
+        objs : list of OpenPNM Objects
+            If given, then only the properties on the recieved object are
+            inspected.  If not given, then all objects are inspected (default).
+        mode : list of strings
+            Indicates whether to inspect 'props', 'labels', or 'all'.  The
+            default is all
+
+        Returns
+        -------
+        df : Pandas DataFrame
+            A data frame object with each location as a column and each row
+            as a property and/or label.
+        """
+        from pandas import DataFrame
+        props = {}
+        if type(objs) is not list:
+            objs = [objs]
+        if not objs:
+            objs = self
+        for obj in objs:
+            d = {k: obj[k][indices] for k in obj.keys(element=element, mode=mode)}
+            for item in list(d.keys()):
+                if d[item].ndim > 1:
+                    d.pop(item)
+                    if item == 'pore.coords':
+                        d['pore.coords_X'], d['pore.coords_Y'], \
+                            d['pore.coords_Z'] = obj['pore.coords'][indices].T
+                    if item == 'throat.conns':
+                        d['throat.conns_head'], d['throat.conns_tail'] = \
+                            obj['throat.conns'][indices].T
+                _ = [props.update({obj.name+'.'+item: d[item]}) for item in d.keys()]
+        df = DataFrame(props)
+        df = df.rename(index={k: indices[k] for k in range(len(indices))})
+        return df.T
+
     def _regenerate_models(self, objs=[], propnames=[]):
         r"""
         Can be used to regenerate models across all objects in the project.
