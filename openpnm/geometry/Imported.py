@@ -1,10 +1,10 @@
 import openpnm.models as mods
 from openpnm.geometry import GenericGeometry
-from openpnm.utils import logging
+from openpnm.utils import logging, GenericSettings
 logger = logging.getLogger(__name__)
 
 
-class ImportedSettings:
+class ImportedSettings(GenericSettings):
     r"""
 
     Parameters
@@ -17,18 +17,18 @@ class ImportedSettings:
     throat_diameter : str (default = 'throat.equivalent_diameter')
         Key into the extracted data array to use as throat diameter in other
         geometry calculations. Use of 'throat.' is not required.
+    pore_shape : string {'sphere' (default), 'cube'}
+        Specifies which shape to assume when calculating dependent properties
+        such as volume and surface area.
+    throat_shape : string {'cylinder' (default), 'cuboid'}
+        Specifies which shape to assume when calculating dependent properties
+        such as volume and surface area.
 
     """
     pore_diameter = 'pore.extended_diameter'
     throat_diameter = 'throat.equivalent_diameter'
-
-    # This overloaded init can be removed when GenericSettings is available
-    # from the "update_reset_method" branch when it is merged
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        for item in dir(self):
-            if not item.startswith('__'):
-                self.__dict__[item] = getattr(self, item)
+    pore_shape = 'sphere'
+    throat_shape = 'cylinder'
 
 
 class Imported(GenericGeometry):
@@ -72,16 +72,17 @@ class Imported(GenericGeometry):
     """
 
     def __init__(self, network, exclude=[], settings={}, **kwargs):
-        super().__init__(network=network, **kwargs)
-        sets = ImportedSettings()
-        self.settings.update(sets.__dict__)
-        self.settings.__doc__ = sets.__doc__
+        self.settings._update_settings_and_docs(ImportedSettings())
         self.settings.update(settings)
+        super().__init__(network=network, **kwargs)
         # Transfer all geometrical properties off of network
         exclude.extend(['pore.coords', 'throat.conns'])
         for item in network.props():
             if item not in exclude:
                 self[item] = network.pop(item)
+
+        # If the following 'essential' props are not already defined, then
+        # they should be added using the specified values or models
 
         if 'pore.diameter' not in self.keys():
             pdia = 'pore.'+self.settings['pore_diameter'].split('pore.')[-1]
@@ -91,9 +92,16 @@ class Imported(GenericGeometry):
                 logger.error(pdia + " not found, can't assign 'pore.diameter'")
 
         if 'pore.volume' not in self.keys():
+            pore_shape = self.settings['pore_shape']
+            m = getattr(mods.geometry.pore_volume, pore_shape)
             self.add_model(propname='pore.volume',
-                           model=mods.geometry.pore_volume.sphere,
-                           pore_diameter='pore.diameter')
+                           model=m, pore_diameter='pore.diameter')
+
+        if 'pore.area' not in self.keys():
+            pore_shape = self.settings['pore_shape']
+            m = getattr(mods.geometry.pore_area, pore_shape)
+            self.add_model(propname='pore.area',
+                           model=m)
 
         if 'throat.diameter' not in self.keys():
             tdia = 'throat.'+self.settings['throat_diameter'].split('throat.')[-1]
@@ -114,13 +122,15 @@ class Imported(GenericGeometry):
                            throat_endpoints='throat.endpoints')
 
         if 'throat.volume' not in self.keys():
+            shape = self.settings['throat_shape']
+            m = getattr(mods.geometry.throat_volume, shape)
             self.add_model(propname='throat.volume',
-                           model=mods.geometry.throat_volume.cylinder)
+                           model=m,
+                           throat_length='throat.length',
+                           throat_diameter='throat.diameter')
 
-        self.add_model(propname='throat.conduit_lengths',
-                       model=mods.geometry.throat_length.conduit_lengths,
-                       throat_endpoints='throat.endpoints',
-                       throat_length='throat.length')
-
-        self.add_model(propname='pore.area',
-                       model=mods.geometry.pore_area.sphere)
+        if 'throat.conduit_lengths' not in self.key():
+            self.add_model(propname='throat.conduit_lengths',
+                           model=mods.geometry.throat_length.conduit_lengths,
+                           throat_endpoints='throat.endpoints',
+                           throat_length='throat.length')
