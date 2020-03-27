@@ -129,7 +129,7 @@ class Imported(GenericGeometry):
                            throat_length='throat.length',
                            throat_diameter='throat.diameter')
 
-        if 'throat.conduit_lengths' not in self.key():
+        if 'throat.conduit_lengths' not in self.keys():
             self.add_model(propname='throat.conduit_lengths',
                            model=mods.geometry.throat_length.conduit_lengths,
                            throat_endpoints='throat.endpoints',
