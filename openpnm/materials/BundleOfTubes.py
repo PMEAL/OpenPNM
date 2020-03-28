@@ -47,19 +47,13 @@ class BundleOfTubes(Project):
         The name to give the Project
 
     """
-    def __init__(
-        self,
-        shape,
-        spacing=1.0,
-        length=1.0,
-        psd_params={"distribution": "norm", "loc": None, "scale": None},
-        name=None,
-        settings={},
-        **kwargs
-    ):
+
+    def __init__(self, shape, spacing=1.0, length=1.0,
+                 psd_params={"distribution": "norm", "loc": None, "scale": None},
+                 name=None, **kwargs):
         import scipy.stats as spst
 
-        super().__init__(name=name)
+        super().__init__()
         self.settings.update(defsets)
         self.settings.update(settings)
 
