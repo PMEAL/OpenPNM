@@ -6,24 +6,44 @@ import openpnm.models as mods
 logger = logging.getLogger(__name__)
 
 
-class BereaCubic(Project):
-    r"""
-    A traditional Berea Sandstone on a Cubic lattice
+class SandstoneParams():
+    berea = {'pore_shape': 1.18,
+             'pore_scale': 6.08e-6,
+             'pore_loc': 24.6e-6,
+             'throat_shape': 0.536,
+             'throat_scale': 1.904e-6,
+             'throat_loc': 0.7e-6,
+             'lattice_constant': 0.0001712}
+    boise = {'pore_shape': 1.75,
+             'pore_scale': 0.00001,
+             'pore_loc': 4.081e-5,
+             'throat_shape': 0.8,
+             'throat_scale': 0.0000075,
+             'throat_loc': 1.1e-6,
+             'lattice_constant': 0.0001712}
 
-    Berea Sandstone is one of the standard materials used on geoscience
-    studies due to it's importance in oil reservoir engineering as well as
-    having well defined pore structure.  This class creates a Cubic Network
-    with the appropriate lattice spacing and connectivity, then adds a Geometry
-    object with the necessary pore-scale models and prescribed parameters.
+
+class CubicSandstone(Project):
+    r"""
+    A network representing sandstone on a Cubic lattice
+
+    Sandstone is one of the standard materials used on geoscience studies due
+    to it's importance in oil reservoir engineering as well as having well
+    defined pore structure.  This class creates a Cubic network with the
+    appropriate lattice spacing and connectivity, then adds a Geometry object
+    with the necessary pore-scale models and prescribed parameters.
 
     Parameters
     ----------
     shape : array_like
         The number of pores along each direction of the domain.  All other
         aspects of this model are prescribed by the code.
-
-    name : string, optional
-        The name to give the Project
+    sandstone : str
+        Options are 'berea' (default), 'boise', etc.
+    settings : dict
+        If ``sandstone`` is given as ``None``, then the user can specify their
+        own parameters for the pore and throat size distribution via these
+        settings.
 
     Notes
     -----
@@ -39,24 +59,13 @@ class BereaCubic(Project):
 
     """
 
-    def __init__(self, shape=[10, 10, 10], sandstone='berea', **kwargs):
+    def __init__(self, shape=[10, 10, 10], sandstone='berea', settings={},
+                 **kwargs):
         super().__init__(**kwargs)
-        if sandstone == 'berea':
-            settings = {'pore_shape': 1.18,
-                        'pore_scale': 6.08e-6,
-                        'pore_loc': 24.6e-6,
-                        'throat_shape': 0.536,
-                        'throat_scale': 1.904,
-                        'throat_loc': 0.7e-6,
-                        'lattice_constant': 0.0001712}
-        elif sandstone == 'boise':
-            settings = {'pore_shape': 1.18,
-                        'pore_scale': 6.08e-6,
-                        'pore_loc': 24.6e-6,
-                        'throat_shape': 0.536,
-                        'throat_scale': 1.904,
-                        'throat_loc': 0.7e-6,
-                        'lattice_constant': 0.0001712}
+        self.settings.update(settings)
+        if sandstone is not None:
+            standstone_settings = getattr(SandstoneParams, sandstone)
+            self.settings.update(standstone_settings)
         pn = Cubic(shape=shape, spacing=self.settings['lattice_constant'],
                    connectivity=6, project=self)
         geom = GenericGeometry(network=pn, pores=pn.Ps, throats=pn.Ts)
@@ -70,15 +79,15 @@ class BereaCubic(Project):
         # Berea 108 sample from table 5.
         geom.add_model(propname='pore.size_z',
                        model=mods.geometry.pore_size.weibull,
-                       shape=settings[family['shapepore']],
-                       loc=settings[family['locpore']],
-                       scale=settings[family['scalepore']],
+                       shape=self.settings['pore_shape'],
+                       loc=self.settings['pore_loc'],
+                       scale=self.settings['pore_scale'],
                        seeds='pore.seed')
         geom.add_model(propname='throat.size',
                        model=mods.geometry.throat_size.weibull,
-                       shape=settings[family['shapethroat']],
-                       loc=settings[family['locthroat']],
-                       scale=settings[family['scalethroat']],
+                       shape=self.settings['throat_shape'],
+                       loc=self.settings['throat_loc'],
+                       scale=self.settings['throat_scale'],
                        seeds='throat.seed')
 
         # All pores in this model are of square x-section
@@ -107,6 +116,7 @@ class BereaCubic(Project):
         geom['throat.height'] = 0.0
 
         # Start with x-directional throats
+        Lc = self.settings['lattice_constant']
         Ts = pn.throats('dir_x')
         geom['throat.size_z'][Ts] = geom['throat.size'][Ts]
         geom['throat.size_y'][Ts] = geom['throat.size'][Ts]*6

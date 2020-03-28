@@ -5,9 +5,7 @@ import openpnm.models as mods
 import matplotlib.pyplot as plt
 
 
-proj = op.materials.BereaCubic(shape=[10, 10, 10])
-net = proj.network
-geo = proj[1]
+net, geo = op.materials.CubicSandstone(shape=[10, 10, 10], sandstone='boise')
 
 # Fetch network shape and spacing for use later
 Lx, Ly, Lz = net.spacing
