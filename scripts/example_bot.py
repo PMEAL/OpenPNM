@@ -4,11 +4,11 @@ ws.settings['loglevel'] = 30
 proj = ws.new_project()
 
 net, geo = op.materials.BundleOfTubes(shape=50, spacing=0.0001, length=0.001,
-                                      psd_params={'distribution': 'weibull',
-                                                  'loc': 0.000001,
-                                                  'scale': 0.00004,
-                                                  'shape': 2.2},
-                                      settings={'adjust_psd': 'normalize',
+                                      settings={'distribution': 'weibull',
+                                                'loc': 0.000001,
+                                                'scale': 0.00004,
+                                                'shape': 2.2,
+                                                'adjust_psd': 'normalize',
                                                 'seed': 0})
 hg = op.phases.Mercury(network=net)
 phys = op.physics.Classic(network=net, phase=hg, geometry=geo)
