@@ -1,5 +1,5 @@
 import scipy as sp
-from openpnm.utils import logging, Project
+from openpnm.utils import logging, Project, GenericSettings
 from openpnm.network import Cubic
 from openpnm.geometry import GenericGeometry
 import openpnm.models as mods
@@ -7,20 +7,76 @@ logger = logging.getLogger(__name__)
 
 
 class SandstoneParams():
-    berea = {'pore_shape': 1.18,
-             'pore_scale': 6.08e-6,
-             'pore_loc': 24.6e-6,
-             'throat_shape': 0.536,
-             'throat_scale': 1.904e-6,
-             'throat_loc': 0.7e-6,
-             'lattice_constant': 0.0001712}
-    boise = {'pore_shape': 1.75,
-             'pore_scale': 0.00001,
-             'pore_loc': 4.081e-5,
+    r"""
+    The following parameters are taken from the paper by Ioannidis and Chatzis,
+    Chemical Engineering Science, 1992.
+    """
+    berea_108 = {'alpha_t': 1.904e-6,
+                 'alpha_b': 6.081e-6,
+                 'beta_t': 0.536,
+                 'beta_b': 1.18,
+                 'lattice_constant': 125.6e-6,
+                 'b_min': 24.6e-6,
+                 'b_max': 70.4e-6,
+                 'b_vo': 34.7e-6,
+                 'pore_shape': 1.18,  # shape is beta_b
+                 'pore_scale': 6.08e-6,  # scale is alpha_b
+                 'pore_loc': 24.6e-6,  # loc is b_min
+                 'throat_shape': 0.536,  # shape is beta_t
+                 'throat_scale': 1.904e-6,  # scale is alpha_t
+                 'throat_loc': 0.7e-6}  # loc is ??
+    # f = (beta_b/alpha_b)*((x - b_min)/alpha_b)**(beta_b-1)
+    # n1 = exp(-((x-b_min)/alpha_b)**(beta_b))
+    # n2 = exp(-((b_max-b_min)/alpha_b)**(beta_b))
+    # d = 1 - exp(-((b_max-b_min)/alpha_b)**(beta_b))
+    # F = (n1 - n2)/d
+    boise = {'alpha_t': 13.050e-6,
+             'alpha_b': 8.333e-6,
+             'beta_t': 0.536,
+             'beta_b': 1.18,
+             'lattice_constant': 171.2e-6,
+             'b_min': 38.7e-6,
+             'b_max': 73.9e-6,
+             'b_vo': 42.3e-6,
+             'pore_shape': 1.75,
+             'pore_scale': 10e-6,
+             'pore_loc': 40.81e-6,
              'throat_shape': 0.8,
-             'throat_scale': 0.0000075,
-             'throat_loc': 1.1e-6,
-             'lattice_constant': 0.0001712}
+             'throat_scale': 7.5e-6,
+             'throat_loc': 1.1e-6}
+
+
+class CubicSandstoneSettings(GenericSettings):
+    r"""
+    The following parameters are used to generate the network and geometry
+
+    Parameters
+    ----------
+    sandstone : str (default = 'berea')
+        The type of sandstone to model
+    pore_shape : float
+        The shape factor used in the Weibull distribution for pore sizes
+    pore_scale : float
+        The scale factor used in the Weibull distribution for pore sizes
+    pore_loc : float
+        The location used in the Weibull distribution for pore sizes
+    throat_shape : float
+        The shape factor used in the Weibull distribution for throat sizes
+    throat_scale : float
+        The scale factor used in the Weibull distribution for throat sizes
+    throat_loc : float
+        The location used in the Weibull distribution for throat sizes
+    lattice_constant : float
+        The lattice spacing used when creating the network
+    """
+    sandstone = 'berea'
+    pore_shape = 1.18
+    pore_scale = 6.08e-6
+    pore_loc = 24.6e-6
+    throat_shape = 0.536
+    throat_scale = 1.904e-6
+    throat_loc = 0.7e-6
+    lattice_constant = 0.0001712
 
 
 class CubicSandstone(Project):
@@ -62,6 +118,7 @@ class CubicSandstone(Project):
     def __init__(self, shape=[10, 10, 10], sandstone='berea', settings={},
                  **kwargs):
         super().__init__(**kwargs)
+        self.settings._update_settings_and_docs(CubicSandstoneSettings())
         self.settings.update(settings)
         if sandstone is not None:
             standstone_settings = getattr(SandstoneParams, sandstone)
