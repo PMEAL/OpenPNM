@@ -14,6 +14,7 @@ from .misc import Docorator
 from .misc import PrintableDict
 from .misc import PrintableList
 from .misc import NestedDict
+from .misc import SubDict
 from .misc import SettingsDict
 from .misc import GenericSettings
 from .misc import HealthDict
@@ -22,6 +23,7 @@ from .misc import sanitize_dict
 from .misc import unique_list
 from .misc import tic, toc
 from .misc import is_symmetric
+from .misc import nbr_to_str
 from .Workspace import Workspace
 from .Project import Project
 

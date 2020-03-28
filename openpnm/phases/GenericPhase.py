@@ -1,11 +1,14 @@
 from openpnm.core import Base, ModelsMixin
-from openpnm.utils import PrintableDict, Workspace, logging
+from openpnm.utils import Workspace, logging, Docorator
+from numpy import ones
 import openpnm.models as mods
+docstr = Docorator()
 logger = logging.getLogger(__name__)
 ws = Workspace()
-from numpy import ones
 
 
+@docstr.get_sectionsf('GenericPhase', sections=['Parameters'])
+@docstr.dedent
 class GenericPhase(Base, ModelsMixin):
     r"""
     This generic class is meant as a starter for custom Phase objects
@@ -16,12 +19,9 @@ class GenericPhase(Base, ModelsMixin):
 
     Parameters
     ----------
-    network : openpnm Network object
-        The network to which this Phase should be attached
-
-    name : str, optional
-        A unique string name to identify the Phase object, typically same as
-        instance name but can be anything.
+    network : OpenPNM network object
+        The network with which this object is associated
+    %(Base.parameters)s
 
     Examples
     --------

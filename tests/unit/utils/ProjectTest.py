@@ -411,6 +411,14 @@ class ProjectTest:
                               filetype='mat')
         os.remove(fname+'.mat')
 
+    def test_inspect_pores_and_throats(self):
+        df = self.proj.inspect_locations(element='pores', indices=[0, 2, 3])
+        assert df.shape[1] == 3
+        assert self.net.name + '.pore.coords_X' in df.index
+        df = self.proj.inspect_locations(element='throats', indices=[0, 1, 3])
+        assert df.shape[1] == 3
+        assert self.net.name + '.throat.conns_head' in df.index
+
 
 if __name__ == '__main__':
 

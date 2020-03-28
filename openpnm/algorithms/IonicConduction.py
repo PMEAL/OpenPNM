@@ -6,9 +6,9 @@ logger = logging.getLogger(__name__)
 docstr = Docorator()
 
 
-@docstr.get_sectionsf('ChargeConservationSettings', sections=['Parameters'])
+@docstr.get_sectionsf('IonicConductionSettings', sections=['Parameters'])
 @docstr.dedent
-class ChargeConservationSettings(GenericSettings):
+class IonicConductionSettings(GenericSettings):
     r"""
 
     Parameters
@@ -46,7 +46,7 @@ class ChargeConservationSettings(GenericSettings):
     cache_b = False
 
 
-class ChargeConservation(ReactiveTransport):
+class IonicConduction(ReactiveTransport):
     r"""
     A class to enforce charge conservation in ionic transport simulations.
 
@@ -63,7 +63,7 @@ class ChargeConservation(ReactiveTransport):
 
     def __init__(self, settings={}, **kwargs):
         super().__init__(**kwargs)
-        self.settings._update_settings_and_docs(ChargeConservationSettings())
+        self.settings._update_settings_and_docs(IonicConductionSettings())
         self.settings.update(settings)
 
     @docstr.dedent
@@ -75,7 +75,7 @@ class ChargeConservation(ReactiveTransport):
 
         Parameters
         ----------
-        %(ChargeConservationSettings.parameters)s
+        %(IonicConductionSettings.parameters)s
 
         Notes
         -----

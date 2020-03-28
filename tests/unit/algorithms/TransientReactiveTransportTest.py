@@ -43,9 +43,9 @@ class TransientImplicitReactiveTransportTest:
         alg.set_value_BC(pores=self.net.pores('left'), values=2)
         alg.set_source(propname='pore.reaction', pores=self.net.pores('right'))
         alg.run()
-        x = [2., 1.00158, 0.00316,
-             2., 1.00158, 0.00316,
-             2., 1.00158, 0.00316]
+        x = ([2., 1.00158, 0.00316,
+              2., 1.00158, 0.00316,
+              2., 1.00158, 0.00316])
         y = np.around(alg[alg.settings['quantity']], decimals=5)
         assert np.all(x == y)
 
@@ -53,15 +53,15 @@ class TransientImplicitReactiveTransportTest:
         alg = op.algorithms.TransientReactiveTransport(network=self.net,
                                                        phase=self.phase,
                                                        settings=self.settings)
-        alg.setup(t_initial=1, t_final=11, t_precision=14)
+        alg.setup(t_initial=1, t_final=1000, t_precision=14)
         alg.settings.update({'t_scheme': 'cranknicolson', 't_step': 0.1,
                              't_tolerance': 1e-07, 'rxn_tolerance': 1e-06})
         alg.set_value_BC(pores=self.net.pores('left'), values=2)
         alg.set_source(propname='pore.reaction', pores=self.net.pores('right'))
         alg.run()
-        x = ([2., 1.02351, 0.04428,
-              2., 1.02351, 0.04428,
-              2., 1.02351, 0.04428])
+        x = ([2., 1.00158, 0.00316,
+              2., 1.00158, 0.00316,
+              2., 1.00158, 0.00316])
         y = np.around(alg[alg.settings['quantity']], decimals=5)
         assert np.all(x == y)
 
