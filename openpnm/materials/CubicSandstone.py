@@ -14,8 +14,8 @@ class SandstoneParams():
                  'beta_b': 1.18e-6,
                  'bmin_b': 7.1e-6,
                  'bmax_b': 47.5e-6,
-                 'bmin_t': 0.0,
-                 'bmax_t': 47.5e-6,
+                 'bmin_t': 0.074e-6,
+                 'bmax_t': 45.0e-6,
                  'lattice_constant': 37.0e-6}
     bandera = {'sandstone': 'bandera',
                'alpha_t': 0.329e-6,
@@ -24,8 +24,8 @@ class SandstoneParams():
                'beta_b': 1.18,
                'bmin_b': 14.1e-6,
                'bmax_b': 45.8e-6,
-               'bmin_t': 0.0,
-               'bmax_t': 45.8e-6,
+               'bmin_t': 0.137e-6,
+               'bmax_t': 45.0e-6,
                'lattice_constant': 73.3e-6}
     torpedo = {'sandstone': 'torpedo',
                'alpha_t': 0.755e-6,
@@ -34,8 +34,8 @@ class SandstoneParams():
                'beta_b': 1.18,
                'bmin_b': 10.6e-6,
                'bmax_b': 45.8e-6,
-               'bmin_t': 0.0,
-               'bmax_t': 45.8e-6,
+               'bmin_t': 0.310e-6,
+               'bmax_t': 45.0e-6,
                'lattice_constant': 54.6e-6}
     clear_creek = {'sandstone': 'clear_creek',
                    'alpha_t': 0.780e-6,
@@ -44,8 +44,8 @@ class SandstoneParams():
                    'beta_b': 1.18,
                    'bmin_b': 21.1e-6,
                    'bmax_b': 42.3e-6,
-                   'bmin_t': 0.0,
-                   'bmax_t': 42.3e-6,
+                   'bmin_t': 0.321e-6,
+                   'bmax_t': 45.0e-6,
                    'lattice_constant': 92.3e-6}
     cottage_grove = {'sandstone': 'cottage_grove',
                      'alpha_t': 0.780e-6,
@@ -54,8 +54,8 @@ class SandstoneParams():
                      'beta_b': 1.18,
                      'bmin_b': 14.1e-6,
                      'bmax_b': 49.3e-6,
-                     'bmin_t': 0.0,
-                     'bmax_t': 49.3e-6,
+                     'bmin_t': 0.323e-6,
+                     'bmax_t': 45.0e-6,
                      'lattice_constant': 68.6e-6}
     big_clifty = {'sandstone': 'big_clifty',
                   'alpha_t': 1.137e-6,
@@ -64,8 +64,8 @@ class SandstoneParams():
                   'beta_b': 1.18,
                   'bmin_b': 14.1e-6,
                   'bmax_b': 42.3e-6,
-                  'bmin_t': 0.0,
-                  'bmax_t': 42.3e-6,
+                  'bmin_t': 0.456e-6,
+                  'bmax_t': 45.0e-6,
                   'lattice_constant': 71.1e-6}
     st_meinrad = {'sandstone': 'st_meinrad',
                   'alpha_t': 1.269e-6,
@@ -74,8 +74,8 @@ class SandstoneParams():
                   'beta_b': 1.18,
                   'bmin_b': 14.1e-6,
                   'bmax_b': 49.3e-6,
-                  'bmin_t': 0.0,
-                  'bmax_t': 49.3e-6,
+                  'bmin_t': 0.503e-6,
+                  'bmax_t': 45.0e-6,
                   'lattice_constant': 69.6e-6}
     noxie_129 = {'sandstone': 'noxie_129',
                  'alpha_t': 0.718e-6,
@@ -84,8 +84,8 @@ class SandstoneParams():
                  'beta_b': 1.18,
                  'bmin_b': 12.3e-6,
                  'bmax_b': 49.3e-6,
-                 'bmin_t': 0.0,
-                 'bmax_t': 49.3e-6,
+                 'bmin_t': 0.296e-6,
+                 'bmax_t': 45.0e-6,
                  'lattice_constant': 73.3e-6}
     noxie_47 = {'sandstone': 'noxie_47',
                 'alpha_t': 1.842e-6,
@@ -94,8 +94,8 @@ class SandstoneParams():
                 'beta_b': 1.18,
                 'bmin_b': 19.4e-6,
                 'bmax_b': 52.8e-6,
-                'bmin_t': 0.0,
-                'bmax_t': 52.8e-6,
+                'bmin_t': 0.684e-6,
+                'bmax_t': 45.0e-6,
                 'lattice_constant': 87.0e-6}
     bartlesville = {'sandstone': 'bartlesville',
                     'alpha_t': 2.252e-6,
@@ -104,8 +104,8 @@ class SandstoneParams():
                     'beta_b': 1.18,
                     'bmin_b': 19.0e-6,
                     'bmax_b': 44.1e-6,
-                    'bmin_t': 0.0,
-                    'bmax_t': 44.1e-6,
+                    'bmin_t': 0.791e-6,
+                    'bmax_t': 45.0e-6,
                     'lattice_constant': 72.9e-6}
     berea_BE1 = {'sandstone': 'berea_BE1',
                  'alpha_t': 1.697e-6,
@@ -114,8 +114,8 @@ class SandstoneParams():
                  'beta_b': 1.18,
                  'bmin_b': 14.1e-6,
                  'bmax_b': 42.3e-6,
-                 'bmin_t': 0.0,
-                 'bmax_t': 42.3e-6,
+                 'bmin_t': 0.643e-6,
+                 'bmax_t': 45.0e-6,
                  'lattice_constant': 73.9e-6}
     berea_108 = {'sandstone': 'berea_108',
                  'alpha_t': 1.904e-6,
@@ -124,18 +124,18 @@ class SandstoneParams():
                  'beta_b': 1.18,
                  'bmin_b': 24.6e-6,
                  'bmax_b': 70.4e-6,
-                 'bmin_t': 0.0,
-                 'bmax_t': 70.4e-6,
+                 'bmin_t': 0.702e-6,
+                 'bmax_t': 45.0e-6,
                  'lattice_constant': 125.6e-6}
     boise = {'sandstone': 'boise',
              'alpha_t': 13.050e-6,
-             'alpha_b': 18.333e-6,
+             'alpha_b': 8.333e-6,
              'beta_t': 0.536,
              'beta_b': 1.18,
              'bmin_b': 38.7e-6,
              'bmax_b': 73.9e-6,
-             'bmin_t': 0.0,
-             'bmax_t': 73.9e-6,
+             'bmin_t': 1.52e-6,
+             'bmax_t': 45.0e-6,
              'lattice_constant': 171.2e-6}
 
 
@@ -179,7 +179,7 @@ class CubicSandstoneSettings(GenericSettings):
         Controls the largest value returned by the Weibull distributions.
     """
     sandstone = 'berea_108'
-    lattice_constant = 0.0001712
+    lattice_constant = 125.6e-6
     beta_b = 1.18  # The beta values are set to constants for ALL materials
     beta_t = 0.536
     alpha_t = 1.904e-6
@@ -197,43 +197,44 @@ class CubicSandstone(Project):
     This ``material`` is based on the 1993 paper of Ioannidis and Chatzis
     in Chemical Engineering Science entitled "Network modelling of pore
     structure and transport properties of porous media".  The pore and throat
-    size parameters are taken from their Table 1 and 5,and are compiled in
-    the table below for reference.  These values are looked-up based on the
-    ``sandstone`` parameter specified.  They also used a common shape factor
-    for all materials, :math:`\beta_b=1.18` and :math:`\beta_t=0.536`
+    size parameters are taken from their Table 1 and 5, and are compiled in
+    the table below for reference.  To generate the network in the present
+    case, these values are looked-up based on the ``sandstone`` parameter
+    specified.  They also used a common shape factor for all materials,
+    :math:`\beta_b=1.18` and :math:`\beta_t=0.536`.
 
     Note that all the values listed below are in *um*, while the
     actual values should be given in *m*.
 
-    +---------------+---------+---------+-------+--------+--------+
-    | Sandstone     | alpha_t | alpha_b | Lc    | bmin_b | bmax_b |
-    +===============+=========+=========+=======+========+========+
-    | boise         | 13.050  | 8.333   | 171.2 | 38.7   | 73.9   |
-    +---------------+---------+---------+-------+--------+--------+
-    | bartlesville  |  2.252  | 4.251   |  72.9 | 19.0   | 44.1   |
-    +---------------+---------+---------+-------+--------+--------+
-    | berea_108     |  1.904  | 6.081   | 125.6 | 24.6   | 70.4   |
-    +---------------+---------+---------+-------+--------+--------+
-    | berea_BE1     |  1.697  | 8.333   |  73.9 | 14.1   | 42.3   |
-    +---------------+---------+---------+-------+--------+--------+
-    | noxie_47      |  1.842  | 4.600   |  87.0 | 19.4   | 52.8   |
-    +---------------+---------+---------+-------+--------+--------+
-    | noxie_129     |  0.718  | 2.935   |  73.3 | 12.3   | 49.3   |
-    +---------------+---------+---------+-------+--------+--------+
-    | st_meinrad    |  1.269  | 3.903   |  69.6 | 14.1   | 49.3   |
-    +---------------+---------+---------+-------+--------+--------+
-    | big_clifty    |  1.137  | 1.870   |  71.1 | 14.1   | 42.3   |
-    +---------------+---------+---------+-------+--------+--------+
-    | cottage_grove |  0.780  | 3.166   |  68.6 | 14.1   | 49.3   |
-    +---------------+---------+---------+-------+--------+--------+
-    | clear_creek   |  0.780  | 3.865   |  92.3 | 21.1   | 42.3   |
-    +---------------+---------+---------+-------+--------+--------+
-    | torpedo       |  0.755  | 2.194   |  54.6 | 10.6   | 45.8   |
-    +---------------+---------+---------+-------+--------+--------+
-    | bandera       |  0.329  | 5.097   |  73.3 | 14.1   | 45.8   |
-    +---------------+---------+---------+-------+--------+--------+
-    | whetstone     |  0.178  | 0.221   |  37.0 |  7.1   | 47.5   |
-    +---------------+---------+---------+-------+--------+--------+
+    +---------------+---------+---------+-------+--------+--------+--------+
+    | Sandstone     | alpha_t | alpha_b | Lc    | bmin_b | bmax_b | bmin_b |
+    +===============+=========+=========+=======+========+========+========+
+    | boise         | 13.050  | 8.333   | 171.2 | 38.7   | 73.9   | 1.52   |
+    +---------------+---------+---------+-------+--------+--------+--------+
+    | bartlesville  |  2.252  | 4.251   |  72.9 | 19.0   | 44.1   | 0.791  |
+    +---------------+---------+---------+-------+--------+--------+--------+
+    | berea_108     |  1.904  | 6.081   | 125.6 | 24.6   | 70.4   | 0.702  |
+    +---------------+---------+---------+-------+--------+--------+--------+
+    | berea_BE1     |  1.697  | 8.333   |  73.9 | 14.1   | 42.3   | 0.643  |
+    +---------------+---------+---------+-------+--------+--------+--------+
+    | noxie_47      |  1.842  | 4.600   |  87.0 | 19.4   | 52.8   | 0.684  |
+    +---------------+---------+---------+-------+--------+--------+--------+
+    | noxie_129     |  0.718  | 2.935   |  73.3 | 12.3   | 49.3   | 0.296  |
+    +---------------+---------+---------+-------+--------+--------+--------+
+    | st_meinrad    |  1.269  | 3.903   |  69.6 | 14.1   | 49.3   | 0.503  |
+    +---------------+---------+---------+-------+--------+--------+--------+
+    | big_clifty    |  1.137  | 1.870   |  71.1 | 14.1   | 42.3   | 0.456  |
+    +---------------+---------+---------+-------+--------+--------+--------+
+    | cottage_grove |  0.780  | 3.166   |  68.6 | 14.1   | 49.3   | 0.323  |
+    +---------------+---------+---------+-------+--------+--------+--------+
+    | clear_creek   |  0.780  | 3.865   |  92.3 | 21.1   | 42.3   | 0.321  |
+    +---------------+---------+---------+-------+--------+--------+--------+
+    | torpedo       |  0.755  | 2.194   |  54.6 | 10.6   | 45.8   | 0.310  |
+    +---------------+---------+---------+-------+--------+--------+--------+
+    | bandera       |  0.329  | 5.097   |  73.3 | 14.1   | 45.8   | 0.137  |
+    +---------------+---------+---------+-------+--------+--------+--------+
+    | whetstone     |  0.178  | 0.221   |  37.0 |  7.1   | 47.5   | 0.074  |
+    +---------------+---------+---------+-------+--------+--------+--------+
 
     Parameters
     ----------
@@ -274,7 +275,7 @@ class CubicSandstone(Project):
         geom['pore.seed'] = sp.rand(pn.Np)
         geom.add_model(propname='throat.seed',
                        model=mods.misc.neighbor_lookups.from_neighbor_pores,
-                       pore_prop='pore.seed')
+                       pore_prop='pore.seed', mode='min')
         geom.add_model(propname='pore.size_z',
                        model=mods.geometry.pore_size.weibull,
                        shape=self.settings['beta_b'],
@@ -287,6 +288,12 @@ class CubicSandstone(Project):
                        loc=self.settings['bmin_t'],
                        scale=self.settings['alpha_t'],
                        seeds='throat.seed')
+        # geom.add_model(propname='throat.size_from_neighbor',
+        #                model=mods.misc.neighbor_lookups.from_neighbor_pores,
+        #                pore_prop='pore.size_z')
+        # geom.add_model(propname='throat.size',
+        #                model=mods.misc.scaled,
+        #                prop='throat.size_from_neighbor', factor=0.5)
 
         # All pores in this model are of square x-section
         # All throats are of slit shape x-section
