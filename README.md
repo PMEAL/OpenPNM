@@ -58,7 +58,7 @@ The network can be visualized in [`ParaView`](http://www.paraview.org) giving th
   <img src="https://user-images.githubusercontent.com/14086031/77927983-dc3dd000-7275-11ea-8700-c96c2d51aa1f.png" width="60%"></img>
 </p>
 
-The drainage curve can be visualized with `MIP.plot_intrusion_curve()` giving something like this:
+The drainage curve can be visualized with `mip.plot_intrusion_curve()` giving something like this:
 
 <p align="center">
   <img src="https://user-images.githubusercontent.com/14086031/77930201-96363b80-7278-11ea-95fd-4a55fb1d6148.png" width="60%"></img>
