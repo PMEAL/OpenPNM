@@ -1,20 +1,18 @@
 import openpnm as op
 import numpy as np
-import scipy as sp
-import openpnm.models as mods
 import matplotlib.pyplot as plt
 
 
-net, geo = op.materials.CubicSandstone(shape=[10, 10, 10], sandstone='boise')
+net, geo = op.materials.CubicSandstone(shape=[20, 20, 20], sandstone='boise')
 
 # Fetch network shape and spacing for use later
 Lx, Ly, Lz = net.spacing
 Nx, Ny, Nz = net.shape
 
-plt.hist(x=geo['throat.size']*1e6, bins=25,
-         weights=geo['throat.volume']*(1e3)**3, edgecolor='k')
-plt.hist(x=geo['pore.size_z']*1e6, bins=25,
-         weights=geo['pore.volume']*(1e3)**3, edgecolor='k')
+plt.hist(x=geo['throat.size']*1e6, bins=25, density=True,
+         weights=geo['throat.volume'], edgecolor='k')
+plt.hist(x=geo['pore.size_z']*1e6, bins=25, density=True,
+         weights=geo['pore.volume'], edgecolor='k')
 # comparing with Marios paper figure 16
 x = [38.6, 38.7, 39, 39.2, 39.8, 40.25, 42.09, 42.55, 45, 45.9, 47.7, 48.9,
      50.84, 51.6, 54.44, 55.33, 57.6, 60.92, 64.4, 66.51, 67.72, 71.36, 73.63]
@@ -59,15 +57,15 @@ Q = alg.rate(pores=net.pores('front'))
 
 A = (Ly*Lz)*(Ny*Nz)
 L = Lx*Nx
-mu = sp.mean(water['throat.viscosity'])
+mu = np.mean(water['throat.viscosity'])
 Kxx = Q*mu*L/(A*101325)
 print("The permeability coefficient is:", Kxx/1e-15, 'mD')
 
 # %%Calculating porosity
 Vp = geo['pore.volume'][net.Ps]
 Vt = geo['throat.volume'][net.Ts]
-Vps = sp.sum(Vp)
-Vts = sp.sum(Vt)
+Vps = np.sum(Vp)
+Vts = np.sum(Vt)
 Vt = Vps + Vts
 Vb = Nx*Ny*Nz*Lx*Ly*Lz
 e = Vt/Vb
