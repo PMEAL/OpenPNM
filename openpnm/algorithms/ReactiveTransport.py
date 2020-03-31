@@ -46,6 +46,8 @@ class ReactiveTransportSettings(GenericSettings):
     ----------------
     sources : list
         List of source terms that have been added
+    variable_props : list
+        List of props that are variable throughout the algorithm
     relaxation_source : float (default = 1.0)
         A relaxation factor to control under-relaxation of the source term.
         Factor approaching 0 leads to improved stability but slower simulation.
@@ -76,6 +78,9 @@ class ReactiveTransportSettings(GenericSettings):
     # Swap the following 2 lines when we stop supporting Python 3.6
     # sources: List = field(default_factory=lambda: [])
     sources = []
+    # Swap the following 2 lines when we stop supporting Python 3.6
+    variable_props = []
+    # variable_props: List = field(default_factory=lambda: [])
 
 
 @docstr.get_sectionsf('ReactiveTransport', sections=['Parameters'])
@@ -143,7 +148,7 @@ class ReactiveTransport(GenericTransport):
         super().setup(**kwargs)
 
     @docstr.dedent
-    def reset(self, source_terms=False, **kwargs):
+    def reset(self, source_terms=False, variable_props=False, **kwargs):
         r"""
         %(GenericTransport.reset.full_desc)s
 
@@ -160,6 +165,57 @@ class ReactiveTransport(GenericTransport):
                 self.pop(item)
             # Reset the settings dict
             self.settings['sources'] = []
+        if variable_props:
+            self.settings['variable_props'] = []
+
+    def set_variable_props(self, propnames):
+        r"""
+        Inform the algorithm which properties are variable, so those on which
+        they depend will be updated on each solver iteration.
+
+        Parameters
+        ----------
+        propnames : string or list of strings
+            The propnames of the properties that are variable throughout
+            the algorithm.
+
+        """
+        if type(propnames) is str:  # Convert string to list if necessary
+            propnames = [propnames]
+        d = self.settings["variable_props"]
+        self.settings["variable_props"] = list(set(d) | set(propnames))
+
+    def _find_iterative_props(self):
+        r"""
+        Find and return properties that need to be iterated while running the
+        algorithm
+
+        Parameters
+        ----------
+        propnames : string or list of strings
+            The propnames of the properties that are variable throughout
+            the algorithm.
+
+        """
+        import networkx as nx
+        phase = self.project.phases(self.settings['phase'])
+        physics = self.project.find_physics(phase=phase)
+        geometries = self.project.geometries().values()
+        # Combine dependency graphs of phase and all physics/geometries
+        dg = phase.models.dependency_graph(deep=True)
+        for g in geometries:
+            dg = nx.compose(dg, g.models.dependency_graph(deep=True))
+        for p in physics:
+            dg = nx.compose(dg, p.models.dependency_graph(deep=True))
+        base_props = [self.settings["quantity"]] + self.settings["variable_props"]
+        if base_props is None:
+            return []
+        # Find all props downstream that rely on "quantity" (if at all)
+        dg = nx.DiGraph(nx.edge_dfs(dg, source=base_props))
+        if len(dg.nodes) == 0:
+            return []
+        dg.remove_nodes_from(base_props)
+        return list(nx.dag.lexicographical_topological_sort(dg))
 
     def set_source(self, propname, pores):
         r"""
@@ -227,11 +283,14 @@ class ReactiveTransport(GenericTransport):
         """
         phase = self.project.phases()[self.settings['phase']]
         physics = self.project.find_physics(phase=phase)
+        geometries = self.project.geometries().values()
         # Put quantity on phase so physics finds it when regenerating
         phase.update(self.results())
         # Regenerate iterative props with new guess
-        iterative_props = self.find_iterative_props()
+        iterative_props = self._find_iterative_props()
         phase.regenerate_models(propnames=iterative_props)
+        for geometry in geometries:
+            geometry.regenerate_models(iterative_props)
         for physic in physics:
             physic.regenerate_models(iterative_props)
 
