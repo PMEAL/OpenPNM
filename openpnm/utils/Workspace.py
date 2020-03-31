@@ -65,7 +65,7 @@ class Workspace(dict):
         if Workspace.__instance__ is None:
             Workspace.__instance__ = dict.__new__(cls)
             cls.settings = SettingsDict()
-            cls.settings['loglevel'] = 40
+            cls.settings['loglevel'] = 30
         return Workspace.__instance__
 
     def __init__(self):
