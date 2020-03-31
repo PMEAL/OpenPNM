@@ -23,6 +23,57 @@ class ReactiveTransportTest:
                             X='pore.concentration',
                             regen_mode='deferred')
 
+    def test_set_variable_props(self):
+        alg = op.algorithms.ReactiveTransport(network=self.net,
+                                              phase=self.phase)
+        assert len(alg.settings["variable_props"]) == 0
+        alg.set_variable_props(propnames="pore.pressure")
+        assert "pore.pressure" in alg.settings["variable_props"]
+        # Ensure each prop is only added once
+        alg.set_variable_props(propnames="pore.pressure")
+        assert len(alg.settings["variable_props"]) == 1
+        alg.set_variable_props(propnames=["pore.temperature", "pore.pressure"])
+        assert len(alg.settings["variable_props"]) == 2
+        assert "pore.pressure" in alg.settings["variable_props"]
+        assert "pore.temperature" in alg.settings["variable_props"]
+
+    def test_find_iterative_props(self):
+        alg = op.algorithms.ReactiveTransport(network=self.net,
+                                              phase=self.phase)
+        # When quantity is None
+        iterative_props = alg._find_iterative_props()
+        assert len(iterative_props) == 0
+
+        # When there's no dependent property
+        alg.settings["quantity"] = "pore.foo"
+        iterative_props = alg._find_iterative_props()
+        assert len(iterative_props) == 0
+
+        # When there's one dependent property
+        def mymodel(target, bar="pore.foo"):
+            return 0.0
+        self.phase.add_model(propname="pore.bar_depends_on_foo", model=mymodel)
+        iterative_props = alg._find_iterative_props()
+        assert len(iterative_props) == 1
+        assert "pore.bar_depends_on_foo" in iterative_props
+
+        # When there are multiple dependent properties (direct and indirect)
+        def mymodel2(target, bar="pore.bar_depends_on_foo"):
+            return 0.0
+        self.phys.add_model(propname="pore.baz_depends_on_bar", model=mymodel2)
+        iterative_props = alg._find_iterative_props()
+        assert len(iterative_props) == 2
+        assert "pore.baz_depends_on_bar" in iterative_props
+
+        # When settings["variable_props"] is not empty
+        def mymodel3(target, bar="pore.blah"):
+            return 0.0
+        self.phys.add_model(propname="pore.lambda_depends_on_blah", model=mymodel3)
+        alg.set_variable_props("pore.blah")
+        iterative_props = alg._find_iterative_props()
+        assert len(iterative_props) == 3
+        assert "pore.lambda_depends_on_blah" in iterative_props
+
     def test_multiple_set_source_with_same_name_should_only_keep_one(self):
         rt = op.algorithms.ReactiveTransport(network=self.net,
                                              phase=self.phase)
@@ -94,7 +145,7 @@ class ReactiveTransportTest:
         rt.settings.update({'conductance': 'throat.diffusive_conductance',
                             'quantity': 'pore.concentration'})
         rt.set_source(pores=self.net.pores('left'), propname='pore.reaction')
-        assert "pore.reaction" in rt.find_iterative_props()
+        assert "pore.reaction" in rt._find_iterative_props()
 
     def test_quantity_relaxation_consistency_w_base_solution(self):
         rt = op.algorithms.ReactiveTransport(network=self.net,
@@ -158,6 +209,10 @@ class ReactiveTransportTest:
         assert 'sources' in rt.settings.keys()
         rt.reset(source_terms=True)
         assert not rt.settings['sources']
+        rt.set_variable_props(["pore.blah", "pore.foo"])
+        assert len(rt.settings["variable_props"]) == 2
+        rt.reset(variable_props=True)
+        assert not rt.settings["variable_props"]
 
     def teardown_class(self):
         ws = op.Workspace()

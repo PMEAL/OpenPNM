@@ -131,34 +131,6 @@ class GenericTransportTest:
         y = np.unique(np.around(alg['pore.mole_fraction'], decimals=3))
         assert np.all(x == y)
 
-    def test_find_iterative_props(self):
-        alg = op.algorithms.GenericTransport(network=self.net,
-                                             phase=self.phase)
-        # When quantity is None
-        iterative_props = alg.find_iterative_props()
-        assert len(iterative_props) == 0
-
-        # When there's no dependent property
-        alg.settings["quantity"] = "pore.foo"
-        iterative_props = alg.find_iterative_props()
-        assert len(iterative_props) == 0
-
-        # When there's one dependent property
-        def mymodel(target, bar="pore.foo"):
-            return 0.0
-        self.phase.add_model(propname="pore.bar_depends_on_foo", model=mymodel)
-        iterative_props = alg.find_iterative_props()
-        assert len(iterative_props) == 1
-        assert "pore.bar_depends_on_foo" in iterative_props
-
-        # When there are multiple dependent properties (direct and indirect)
-        def mymodel2(target, bar="pore.bar_depends_on_foo"):
-            return 0.0
-        self.phys.add_model(propname="pore.baz_depends_on_bar", model=mymodel2)
-        iterative_props = alg.find_iterative_props()
-        assert len(iterative_props) == 2
-        assert "pore.baz_depends_on_bar" in iterative_props
-
     def test_cache_A(self):
         alg = op.algorithms.GenericTransport(network=self.net,
                                              phase=self.phase)
