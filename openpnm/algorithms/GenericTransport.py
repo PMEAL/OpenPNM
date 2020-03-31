@@ -60,6 +60,8 @@ class GenericTransportSettings(GenericSettings):
         Limits the number of iterations to attempt before quiting when aiming
         for the specified tolerance. The default is 5000.
         ##
+    variable_props : list
+        ##
     cache_A : bool
         ##
     cache_b : bool
@@ -76,8 +78,6 @@ class GenericTransportSettings(GenericSettings):
     solver_atol = None
     solver_rtol = None
     solver_maxiter = 5000
-    # Sample for a list property (when we stop supporting Python 3.6)
-    # sample_list: List = field(default_factory=lambda: [])
     cache_A = True
     cache_b = True
 
@@ -232,28 +232,6 @@ class GenericTransport(GenericAlgorithm):
         if results:
             self.pop(self.settings['quantity'], None)
 
-    def find_iterative_props(self):
-        r"""
-        Find and return properties that need to be iterated while running the
-        algorithm
-        """
-        import networkx as nx
-        phase = self.project.phases(self.settings['phase'])
-        physics = self.project.find_physics(phase=phase)
-        # Combine dependency graphs of phase and all physics
-        dg = phase.models.dependency_graph(deep=True)
-        for p in physics:
-            dg = nx.compose(dg, p.models.dependency_graph(deep=True))
-        quantity = self.settings["quantity"]
-        if quantity is None:
-            return []
-        # Find all props downstream that rely on "quantity" (if at all)
-        dg = nx.DiGraph(nx.edge_dfs(dg, source=quantity))
-        if len(dg.nodes) == 0:
-            return []
-        dg.remove_node(quantity)
-        return list(nx.dag.lexicographical_topological_sort(dg))
-
     @docstr.dedent
     def set_value_BC(self, pores, values, mode='merge'):
         r"""
@@ -389,7 +367,7 @@ class GenericTransport(GenericAlgorithm):
         rate_BC_mask = np.isfinite(self["pore.bc_rate"])
         BC_locs = self.Ps[rate_BC_mask + value_BC_mask]
         if np.intersect1d(pores, BC_locs).size:
-            logger.warning('Another boundary condition detected in some locations!')
+            logger.info('Another boundary condition detected in some locations!')
 
         # Store boundary values
         if ('pore.bc_' + bctype not in self.keys()) or (mode == 'overwrite'):
