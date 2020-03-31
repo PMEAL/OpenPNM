@@ -1,9 +1,5 @@
-import pickle
 import openpnm
-import time
-import warnings
 import numpy as np
-from pathlib import Path
 from openpnm.utils import SettingsDict, logging
 logger = logging.getLogger(__name__)
 
