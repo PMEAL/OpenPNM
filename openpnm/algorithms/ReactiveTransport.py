@@ -417,7 +417,7 @@ class ReactiveTransport(GenericTransport):
         res = self._get_residual()
         # Verify that residual is finite (i.e. not inf/nan)
         if not np.isfinite(res):
-            logger.warning(f'Solution diverged: {res:.4e}')
+            logger.error(f'Solution diverged: {res:.4e}')
             raise Exception(f"Solution diverged, undefined residual: {res:.4e}")
         # Check convergence
         tol = self.settings["solver_tol"]
