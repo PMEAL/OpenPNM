@@ -553,3 +553,27 @@ def is_symmetric(a, rtol=1e-10):
         issym = False if _np.any((a - a.T) > atol) else True
 
     return issym
+
+
+def is_valid_propname(propname):
+    r"""
+    Check if ``propname`` is a valid OpenPNM propname, i.e. starts with
+    'pore.' or 'throat.'
+
+    Parameters
+    ----------
+    propname : str
+        Property name to check whether it's a valid OpenPNM propname.
+
+    Returns
+    -------
+    bool
+        Whether or not ``propname`` is a valid name
+
+    """
+    if type(propname) is not str:
+        return False
+    if propname.split(".")[0] in ["pore", "throat"]:
+        if len(propname.split(".")) > 1:
+            return True
+    return False
