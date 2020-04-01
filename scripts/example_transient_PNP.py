@@ -26,7 +26,9 @@ geo.regenerate_models()
 
 sw = mixtures.SalineWater(network=net)
 # Retrieve handles to each species for use below
-Cl, Na, H2O = sw.components.values()
+Na = sw.components['Na_' + sw.name]
+Cl = sw.components['Cl_' + sw.name]
+H2O = sw.components['H2O_' + sw.name]
 
 # physics
 phys = op.physics.GenericPhysics(network=net, phase=sw, geometry=geo)
@@ -66,8 +68,8 @@ sf.set_value_BC(pores=net.pores('front'), values=0.00)
 sf.run()
 sw.update(sf.results())
 
-p = op.algorithms.TransientChargeConservation(network=net, phase=sw,
-                                              settings=setts1)
+p = op.algorithms.TransientIonicConduction(network=net, phase=sw,
+                                           settings=setts1)
 p.set_value_BC(pores=net.pores('left'), values=0.1)
 p.set_value_BC(pores=net.pores('right'), values=0.00)
 p.settings['charge_conservation'] = 'electroneutrality'
@@ -94,8 +96,8 @@ phys.add_model(propname='throat.ad_dif_mig_conductance.' + Cl.name,
                model=ad_dif_mig_Cl, ion=Cl.name,
                s_scheme='powerlaw')
 
-it = op.algorithms.TransientIonicTransport(network=net, phase=sw,
-                                           settings=setts2)
+it = op.algorithms.TransientNernstPlanckMultiphysics(network=net, phase=sw,
+                                                     settings=setts2)
 it.setup(potential_field=p.name, ions=[eA.name, eB.name])
 it.run()
 

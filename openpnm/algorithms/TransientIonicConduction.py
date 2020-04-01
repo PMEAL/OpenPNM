@@ -1,10 +1,48 @@
-from openpnm.algorithms import TransientReactiveTransport, ChargeConservation
-from openpnm.utils import logging
+from openpnm.algorithms import TransientReactiveTransport, IonicConduction
+from openpnm.utils import logging, Docorator, GenericSettings
 logger = logging.getLogger(__name__)
+docstr = Docorator()
 
 
-class TransientChargeConservation(TransientReactiveTransport,
-                                  ChargeConservation):
+@docstr.get_sectionsf('TransientIonicConductionSettings',
+                      sections=['Parameters'])
+@docstr.dedent
+class TransientIonicConductionSettings(GenericSettings):
+    r"""
+
+    Parameters
+    ----------
+    ##
+
+    Other Parameters
+    ----------------
+
+    **The following parameters pertain to steady-state IonicConduction**
+
+    %(IonicConductionSettings.parameters)s
+
+    ----
+
+    **The following parameters pertain to the ReactiveTransport class**
+
+    %(ReactiveTransportSettings.other_parameters)s
+
+    ----
+
+    **The following parameters pertain to the GenericTransport class**
+
+    %(GenericTransportSettings.other_parameters)s
+
+    """
+    quantity = 'pore.potential'
+    conductance = 'throat.ionic_conductance'
+    charge_conservation = 'electroneutrality'
+    cache_A = False
+    cache_b = False
+
+
+class TransientIonicConduction(TransientReactiveTransport,
+                               IonicConduction):
     r"""
     A subclass of GenericTransport to perform steady and transient simulations
     of pure diffusion and advection-diffusion problems.
@@ -12,28 +50,9 @@ class TransientChargeConservation(TransientReactiveTransport,
     """
 
     def __init__(self, settings={}, phase=None, **kwargs):
-        def_set = {'phase': None,
-                   'gui': {'setup':        {'phase': None,
-                                            'quantity': '',
-                                            'conductance': '',
-                                            'charge_conservation': '',
-                                            't_initial': None,
-                                            't_final': None,
-                                            't_step': None,
-                                            't_output': None,
-                                            't_tolerance': None,
-                                            't_scheme': ''},
-                           'set_IC':       {'values': None},
-                           'set_rate_BC':  {'pores': None,
-                                            'values': None},
-                           'set_value_BC': {'pores': None,
-                                            'values': None},
-                           'set_source':   {'pores': None,
-                                            'propname': ''}
-                           }
-                   }
         super().__init__(**kwargs)
-        self.settings.update(def_set)
+        c = TransientIonicConductionSettings()
+        self.settings._update_settings_and_docs(c)
         self.settings.update(settings)
         if phase is not None:
             self.setup(phase=phase)

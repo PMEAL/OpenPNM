@@ -22,6 +22,7 @@ class TransientIonicTransportTest:
         self.geo = op.geometry.StickAndBall(
             network=self.net, pores=self.net.Ps, throats=self.net.Ts
         )
+
         pr_d = op.models.misc.constant
         trt_d = op.models.misc.constant
         self.geo.add_model(propname="pore.diameter", model=pr_d, value=1.5e-4)
@@ -30,7 +31,9 @@ class TransientIonicTransportTest:
 
         self.phase = mixtures.SalineWater(network=self.net)
         # Retrieve handles to each species for use below
-        self.Cl, self.Na, self.H2O = self.phase.components.values()
+        self.Na = self.phase.components['Na_' + self.phase.name]
+        self.Cl = self.phase.components['Cl_' + self.phase.name]
+        self.H2O = self.phase.components['H2O_' + self.phase.name]
 
         # physics
         self.phys = op.physics.GenericPhysics(
@@ -229,8 +232,8 @@ if __name__ == "__main__":
 
     t = TransientIonicTransportTest()
     t.setup_class()
+    self = t
     for item in t.__dir__():
         if item.startswith("test"):
             print("running test: " + item)
             t.__getattribute__(item)()
-    self = t

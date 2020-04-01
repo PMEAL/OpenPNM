@@ -7,17 +7,17 @@ r"""
 """
 import scipy as _sp
 import numpy as _np
+from numpy import pi as _pi
 
 
 def hagen_poiseuille(
-    target,
-    pore_area="pore.area",
-    throat_area="throat.area",
-    pore_viscosity="pore.viscosity",
-    throat_viscosity="throat.viscosity",
-    conduit_lengths="throat.conduit_lengths",
-    conduit_shape_factors="throat.flow_shape_factors",
-):
+        target,
+        pore_area="pore.area",
+        throat_area="throat.area",
+        pore_viscosity="pore.viscosity",
+        throat_viscosity="throat.viscosity",
+        conduit_lengths="throat.conduit_lengths",
+        conduit_shape_factors="throat.flow_shape_factors"):
     r"""
     Calculate the hydraulic conductance of conduits in network, where a
     conduit is ( 1/2 pore - full throat - 1/2 pore ). See the notes section.
