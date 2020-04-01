@@ -101,7 +101,7 @@ class TransientIonicTransportTest:
         sf.run()
         self.phase.update(sf.results())
 
-        p = op.algorithms.TransientChargeConservation(
+        p = op.algorithms.TransientIonicConduction(
             network=self.net, phase=self.phase, settings=self.settings1
         )
         p.set_value_BC(pores=self.net.pores("left"), values=0.1)
@@ -144,7 +144,7 @@ class TransientIonicTransportTest:
             s_scheme="powerlaw",
         )
 
-        it = op.algorithms.TransientIonicTransport(
+        it = op.algorithms.TransientNernstPlanckMultiphysics(
             network=self.net, phase=self.phase, settings=self.settings2
         )
         it.setup(potential_field=p.name, ions=[eA.name, eB.name])
