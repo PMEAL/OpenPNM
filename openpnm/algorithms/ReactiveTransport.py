@@ -381,6 +381,14 @@ class ReactiveTransport(GenericTransport):
         -------
         x : ND-array
             Solution array.
+
+        Notes
+        -----
+        The algorithm must at least complete one iteration, and hence the check for
+        itr >= 1, because otherwise, _sanity_check() never get's called in case
+        there's something wrong with the data, and therefore, the user won't get
+        notified about the root cause of the algorithm divergence.
+
         """
         w = self.settings['relaxation_quantity']
         quantity = self.settings['quantity']
@@ -398,7 +406,7 @@ class ReactiveTransport(GenericTransport):
             self._apply_sources()
             # Check solution convergence
             res = self._get_residual()
-            if self._is_converged():
+            if itr >= 1 and self._is_converged():
                 logger.info(f'Solution converged: {res:.4e}')
                 return x
             logger.info(f'Tolerance not met: {res:.4e}')
