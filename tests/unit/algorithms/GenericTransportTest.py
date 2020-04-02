@@ -131,20 +131,6 @@ class GenericTransportTest:
         y = np.unique(np.around(alg['pore.mole_fraction'], decimals=3))
         assert np.all(x == y)
 
-    def test_set_iterative_props(self):
-        alg = op.algorithms.GenericTransport(network=self.net,
-                                              phase=self.phase)
-        assert len(alg.settings["iterative_props"]) == 0
-        alg.set_iterative_props(propnames="pore.pressure")
-        assert "pore.pressure" in alg.settings["iterative_props"]
-        # Ensure each prop is only added once
-        alg.set_iterative_props(propnames="pore.pressure")
-        assert len(alg.settings["iterative_props"]) == 1
-        alg.set_iterative_props(propnames=["pore.temperature", "pore.pressure"])
-        assert len(alg.settings["iterative_props"]) == 2
-        assert "pore.pressure" in alg.settings["iterative_props"]
-        assert "pore.temperature" in alg.settings["iterative_props"]
-
     def test_cache_A(self):
         alg = op.algorithms.GenericTransport(network=self.net,
                                              phase=self.phase)

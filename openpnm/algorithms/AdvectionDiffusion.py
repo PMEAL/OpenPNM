@@ -67,8 +67,6 @@ class AdvectionDiffusion(ReactiveTransport):
         super().__init__(**kwargs)
         self.settings._update_settings_and_docs(AdvectionDiffusionSettings())
         self.settings.update(settings)
-        # Make "conductance" iterative_prop, so it gets updated after running StokesFlow
-        self.set_iterative_props(propnames=self.settings['conductance'])
 
     def setup(self, phase=None, quantity='', conductance='',
               diffusive_conductance='', hydraulic_conductance='', pressure='',

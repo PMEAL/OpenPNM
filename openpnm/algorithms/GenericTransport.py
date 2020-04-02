@@ -59,7 +59,8 @@ class GenericTransportSettings(GenericSettings):
     solver_maxiter : int (default = 5000)
         Limits the number of iterations to attempt before quiting when aiming
         for the specified tolerance. The default is 5000.
-    iterative_props : list
+        ##
+    variable_props : list
         ##
     cache_A : bool
         ##
@@ -77,9 +78,6 @@ class GenericTransportSettings(GenericSettings):
     solver_atol = None
     solver_rtol = None
     solver_maxiter = 5000
-    # Swap the following 2 lines when we stop supporting Python 3.6
-    iterative_props = []
-    # iterative_props: List = field(default_factory=lambda: [])
     cache_A = True
     cache_b = True
 
@@ -207,7 +205,7 @@ class GenericTransport(GenericAlgorithm):
     @docstr.get_sectionsf(base='GenericTransport.reset',
                           sections=['Parameters'])
     @docstr.dedent
-    def reset(self, bcs=False, results=True, iter_props=False):
+    def reset(self, bcs=False, results=True):
         r"""
         Resets the algorithm to enable re-use.
 
@@ -223,9 +221,6 @@ class GenericTransport(GenericAlgorithm):
             to results of the algorithm are removed.
         bcs : boolean (default = ``False``)
             If ``True`` all previous boundary conditions are removed.
-        iter_props : boolean (default = ``False``)
-            Removes iterative properties from the settings.  The default is
-            ``False``.
         """
         self._pure_b = None
         self._b = None
@@ -236,26 +231,6 @@ class GenericTransport(GenericAlgorithm):
             self['pore.bc_rate'] = np.nan
         if results:
             self.pop(self.settings['quantity'], None)
-        if iter_props:
-            for item in self.settings['iterative_props']:
-                if item not in self.settings['sources']:
-                    self.settings['iterative_props'].remove(item)
-
-    def set_iterative_props(self, propnames):
-        r"""
-        Informs the algorithm which properties are iterative and should be
-        update on each loop.
-
-        Parameters
-        ----------
-        propnames : string or list of strings
-            The propnames of the properties that should be updated.
-
-        """
-        if type(propnames) is str:  # Convert string to list if necessary
-            propnames = [propnames]
-        d = self.settings["iterative_props"]
-        self.settings["iterative_props"] = list(set(d) | set(propnames))
 
     @docstr.dedent
     def set_value_BC(self, pores, values, mode='merge'):
@@ -392,7 +367,7 @@ class GenericTransport(GenericAlgorithm):
         rate_BC_mask = np.isfinite(self["pore.bc_rate"])
         BC_locs = self.Ps[rate_BC_mask + value_BC_mask]
         if np.intersect1d(pores, BC_locs).size:
-            logger.warning('Another boundary condition detected in some locations!')
+            logger.info('Another boundary condition detected in some locations!')
 
         # Store boundary values
         if ('pore.bc_' + bctype not in self.keys()) or (mode == 'overwrite'):
@@ -551,6 +526,8 @@ class GenericTransport(GenericAlgorithm):
         self._run_generic(x0)
 
     def _run_generic(self, x0):
+        # (Re)build A,b in case phase/physics are updated and alg.run()
+        # is to be called a second time
         self._build_A()
         self._build_b()
         self._apply_BCs()
