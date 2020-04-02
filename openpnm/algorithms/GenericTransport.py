@@ -691,6 +691,7 @@ class GenericTransport(GenericAlgorithm):
             for obj in objs:
                 for k, v in obj.check_data_health().items():
                     if "Has NaNs" in v:
+                        # FIXME: The next line doesn't cover multi-level props
                         base_prop = ".".join(k.split(".")[:2])
                         if base_prop in dg.nodes:
                             d[base_prop] = obj.name
