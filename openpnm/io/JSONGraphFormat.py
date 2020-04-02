@@ -1,18 +1,13 @@
-import json
 import os
+import json
 import pickle
-from pathlib import Path
-
-import jsonschema
+import numpy as np
 import scipy as sp
-
+from pathlib import Path
 from openpnm.utils import logging
 from openpnm.io import GenericIO
-from openpnm.models.geometry import (pore_area, pore_volume, throat_area,
-                                     throat_perimeter, throat_surface_area,
-                                     throat_volume)
+import openpnm.models.geometry as gmods
 from openpnm.network import GenericNetwork
-
 logger = logging.getLogger(__name__)
 
 
@@ -31,6 +26,7 @@ class JSONGraphFormat(GenericIO):
 
     @classmethod
     def __validate_json__(self, json_file):
+        import jsonschema
         # Validate name of schema file
         relative_path = '../../utils/jgf_schema.pkl'
         schema_file = Path(os.path.realpath(__file__), relative_path)
@@ -69,8 +65,8 @@ class JSONGraphFormat(GenericIO):
                               'throat.conns', 'throat.diameter'}
             assert required_props.issubset(network.props())
         except AssertionError:
-            raise Exception('Error - network is missing one of: ' +
-                            str(required_props))
+            raise Exception('Error - network is missing one of: '
+                            + str(required_props))
 
         # Create 'metadata' JSON object
         graph_metadata_obj = {'number_of_nodes': network.Np,
@@ -150,16 +146,16 @@ class JSONGraphFormat(GenericIO):
 
         # Extract node properties from JSON
         nodes = sorted(json_file['graph']['nodes'], key=lambda node: int(node['id']))
-        x = sp.array([node['metadata']['node_coordinates']['x'] for node in nodes])
-        y = sp.array([node['metadata']['node_coordinates']['y'] for node in nodes])
-        z = sp.array([node['metadata']['node_coordinates']['z'] for node in nodes])
+        x = np.array([node['metadata']['node_coordinates']['x'] for node in nodes])
+        y = np.array([node['metadata']['node_coordinates']['y'] for node in nodes])
+        z = np.array([node['metadata']['node_coordinates']['z'] for node in nodes])
 
         # Extract link properties from JSON
         edges = sorted(json_file['graph']['edges'], key=lambda edge: int(edge['id']))
-        source = sp.array([int(edge['source']) for edge in edges])
-        target = sp.array([int(edge['target']) for edge in edges])
-        link_length = sp.array([edge['metadata']['link_length'] for edge in edges])
-        link_squared_radius = sp.array(
+        source = np.array([int(edge['source']) for edge in edges])
+        target = np.array([int(edge['target']) for edge in edges])
+        link_length = np.array([edge['metadata']['link_length'] for edge in edges])
+        link_squared_radius = np.array(
             [edge['metadata']['link_squared_radius'] for edge in edges])
 
         # Generate network object
@@ -167,22 +163,22 @@ class JSONGraphFormat(GenericIO):
 
         # Define primitive throat properties
         network['throat.length'] = link_length
-        network['throat.conns'] = sp.column_stack([source, target])
-        network['throat.diameter'] = 2.0 * sp.sqrt(link_squared_radius)
+        network['throat.conns'] = np.column_stack([source, target])
+        network['throat.diameter'] = 2.0 * np.sqrt(link_squared_radius)
 
         # Define derived throat properties
-        network['throat.area'] = throat_area.cylinder(network)
-        network['throat.volume'] = throat_volume.cylinder(network)
-        network['throat.perimeter'] = throat_perimeter.cylinder(network)
-        network['throat.surface_area'] = throat_surface_area.cylinder(network)
+        network['throat.area'] = gmods.throat_area.cylinder(network)
+        network['throat.volume'] = gmods.throat_volume.cylinder(network)
+        network['throat.perimeter'] = gmods.throat_perimeter.cylinder(network)
+        network['throat.surface_area'] = gmods.throat_surface_area.cylinder(network)
 
         # Define primitive pore properties
-        network['pore.index'] = sp.arange(number_of_nodes)
-        network['pore.coords'] = sp.column_stack([x, y, z])
-        network['pore.diameter'] = sp.zeros(number_of_nodes)
+        network['pore.index'] = np.arange(number_of_nodes)
+        network['pore.coords'] = np.column_stack([x, y, z])
+        network['pore.diameter'] = np.zeros(number_of_nodes)
 
         # Define derived pore properties
-        network['pore.area'] = pore_area.sphere(network)
-        network['pore.volume'] = pore_volume.sphere(network)
+        network['pore.area'] = gmods.pore_area.sphere(network)
+        network['pore.volume'] = gmods.pore_volume.sphere(network)
 
         return network.project

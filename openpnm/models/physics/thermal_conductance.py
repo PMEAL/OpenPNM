@@ -3,7 +3,7 @@ r"""
 .. autofunction:: openpnm.models.physics.thermal_conductance.series_resistors
 
 """
-
+import numpy as _np
 import scipy as _sp
 
 
@@ -78,7 +78,7 @@ def series_resistors(target,
     Lt = network[conduit_lengths + '.throat'][throats]
     L2 = network[conduit_lengths + '.pore2'][throats]
     # Preallocating g
-    g1, g2, gt = _sp.zeros((3, len(Lt)))
+    g1, g2, gt = _np.zeros((3, len(Lt)))
     # Setting g to inf when Li = 0 (ex. boundary pores)
     # INFO: This is needed since area could also be zero, which confuses NumPy
     m1, m2, mt = [Li != 0 for Li in [L1, L2, Lt]]

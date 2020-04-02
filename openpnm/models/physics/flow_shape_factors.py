@@ -4,11 +4,10 @@ r"""
 .. autofunction:: openpnm.models.physics.flow_shape_factors.conical_frustum_and_stick
 
 """
-
 from scipy import pi as _pi
-from scipy import arctanh as _atanh
-import scipy as _sp
+from numpy import arctanh as _atanh
 import numpy as _np
+import scipy as _sp
 
 
 def ball_and_stick(target, pore_area='pore.area',
@@ -83,8 +82,8 @@ def ball_and_stick(target, pore_area='pore.area',
     At = network[throat_area][throats]
     # Preallocating F, SF
     # F is INTEGRAL(1/A^2) dx , x : 0 --> L
-    F1, F2, Ft = _sp.zeros((3, len(Lt)))
-    SF1, SF2, SFt = _sp.ones((3, len(Lt)))
+    F1, F2, Ft = _np.zeros((3, len(Lt)))
+    SF1, SF2, SFt = _np.ones((3, len(Lt)))
     # Setting SF to 1 when Li = 0 (ex. boundary pores)
     # INFO: This is needed since area could also be zero, which confuses NumPy
     m1, m2, mt = [Li != 0 for Li in [L1, L2, Lt]]
@@ -170,8 +169,8 @@ def conical_frustum_and_stick(target, pore_area='pore.area',
     Lt = network[conduit_lengths + '.throat'][throats]
     # Preallocating F, SF
     # F is INTEGRAL(1/A^2) dx , x : 0 --> L
-    F1, F2, Ft = _sp.zeros((3, len(Lt)))
-    SF1, SF2, SFt = _sp.ones((3, len(Lt)))
+    F1, F2, Ft = _np.zeros((3, len(Lt)))
+    SF1, SF2, SFt = _np.ones((3, len(Lt)))
     # Setting SF to 1 when Li = 0 (ex. boundary pores)
     # INFO: This is needed since area could also be zero, which confuses NumPy
     m1, m2, mt = [Li != 0 for Li in [L1, L2, Lt]]
@@ -258,8 +257,8 @@ def ball_and_stick_2D(target, pore_area='pore.area',
     At = network[throat_area][throats]
     # Preallocating F, SF
     # F is INTEGRAL(1/A^2) dx , x : 0 --> L
-    F1, F2, Ft = _sp.zeros((3, len(Lt)))
-    SF1, SF2, SFt = _sp.ones((3, len(Lt)))
+    F1, F2, Ft = _np.zeros((3, len(Lt)))
+    SF1, SF2, SFt = _np.ones((3, len(Lt)))
     # Setting SF to 1 when Li = 0 (ex. boundary pores)
     # INFO: This is needed since area could also be zero, which confuses NumPy
     m1, m2, mt = [Li != 0 for Li in [L1, L2, Lt]]

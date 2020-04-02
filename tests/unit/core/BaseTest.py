@@ -1,6 +1,7 @@
-import openpnm as op
-import scipy as sp
 import pytest
+import numpy as np
+import scipy as sp
+import openpnm as op
 
 
 class BaseTest:
@@ -12,10 +13,10 @@ class BaseTest:
         self.geo = op.geometry.GenericGeometry(network=self.net,
                                                pores=self.net.Ps,
                                                throats=self.net.Ts)
-        self.geo['pore.diameter'] = sp.rand(self.net.Np)
+        self.geo['pore.diameter'] = np.random.rand(self.net.Np)
         self.geo.add_model(propname='pore.volume',
                            model=op.models.geometry.pore_volume.sphere)
-        self.geo['throat.diameter'] = sp.rand(self.net.Nt)
+        self.geo['throat.diameter'] = np.random.rand(self.net.Nt)
         self.geo.add_model(propname='throat.area',
                            model=op.models.geometry.throat_area.cylinder)
         self.geo.regenerate_models()
@@ -36,12 +37,12 @@ class BaseTest:
                                                geometry=self.geo1,
                                                phase=self.phase2)
         self.net2 = op.network.Cubic(shape=[3, 3, 3])
-        Ps = sp.arange(0, 18)
+        Ps = np.arange(0, 18)
         Ts = self.net2.find_neighbor_pores(Ps, mode='or')
         self.geo21 = op.geometry.GenericGeometry(network=self.net2,
                                                  pores=Ps,
                                                  throats=Ts)
-        Ps = sp.arange(18, 27)
+        Ps = np.arange(18, 27)
         Ts = self.net2.find_neighbor_pores(Ps, mode='xnor')
         self.geo22 = op.geometry.GenericGeometry(network=self.net2,
                                                  pores=Ps,
@@ -68,34 +69,34 @@ class BaseTest:
 
     def test_pores(self):
         a = self.net.pores()
-        assert sp.all(a == sp.arange(0, self.net.Np))
+        assert np.all(a == np.arange(0, self.net.Np))
 
     def test_pores_one_label(self):
         a = self.net.pores(labels='top')
-        assert sp.all(a == [2, 5, 8, 11, 14, 17, 20, 23, 26])
+        assert np.all(a == [2, 5, 8, 11, 14, 17, 20, 23, 26])
 
     def test_pores_two_labels_or(self):
         a = self.net.pores(labels=['top', 'front'], mode='or')
-        assert sp.all(a == [0, 1, 2, 3, 4, 5, 6, 7, 8, 11, 14, 17, 20, 23, 26])
+        assert np.all(a == [0, 1, 2, 3, 4, 5, 6, 7, 8, 11, 14, 17, 20, 23, 26])
 
     def test_pores_two_labels_xnor(self):
         a = self.net.pores(labels=['top', 'front'], mode='xnor')
-        assert sp.all(a == [2, 5, 8])
+        assert np.all(a == [2, 5, 8])
 
     def test_pores_two_labels_not_xor(self):
         a = self.net.pores(labels=['top', 'front'], mode='xor')
-        assert sp.all(a == [0, 1, 3, 4, 6, 7, 11, 14, 17, 20, 23, 26])
+        assert np.all(a == [0, 1, 3, 4, 6, 7, 11, 14, 17, 20, 23, 26])
 
     def test_pores_two_labels_nor(self):
         a = self.net.pores(labels=['top', 'front'], mode='nor')
-        assert sp.all(a == [9, 10, 12, 13, 15, 16, 18, 19, 21, 22, 24, 25])
+        assert np.all(a == [9, 10, 12, 13, 15, 16, 18, 19, 21, 22, 24, 25])
         b = self.net.pores(labels=['top', 'front'], mode='or')
         c = self.net.tomask(pores=a)*self.net.tomask(pores=b)
         assert c.sum() == 0
 
     def test_pores_two_labels_nand(self):
         a = self.net.pores(labels=['top', 'front'], mode='nand')
-        assert sp.all(a == [0, 1, 3, 4, 6, 7, 11, 14, 17, 20, 23, 26])
+        assert np.all(a == [0, 1, 3, 4, 6, 7, 11, 14, 17, 20, 23, 26])
 
     def test_pores_bad_mode(self):
         with pytest.raises(Exception):
@@ -109,7 +110,7 @@ class BaseTest:
         a = self.net.pores(labels=['top', 'front'], mode='or', asmask=True)
         assert a.sum() == 15
         b = self.net.pores(labels=['top', 'front'], mode='or')
-        assert sp.all(sp.where(a)[0] == b)
+        assert np.all(np.where(a)[0] == b)
 
     def test_pores_with_target(self):
         net = op.network.Cubic(shape=[2, 2, 2])
@@ -119,12 +120,12 @@ class BaseTest:
         geo2 = op.geometry.GenericGeometry(network=net,
                                            pores=[0, 2, 4, 6],
                                            throats=range(6, 12))
-        assert sp.all(net.pores('top', target=geo1) == [0, 1, 2, 3])
+        assert np.all(net.pores('top', target=geo1) == [0, 1, 2, 3])
         assert len(net.pores('top', target=geo2)) == 0
         mapped = net.map_pores(pores=[0, 1, 2, 3], origin=geo1)
-        assert sp.all(mapped == net.pores('geo_01'))
+        assert np.all(mapped == net.pores('geo_01'))
         mapped = net.map_pores(pores=[0, 1, 2, 3], origin=geo2)
-        assert sp.all(mapped == net.pores('geo_02'))
+        assert np.all(mapped == net.pores('geo_02'))
 
     def test_throats_with_target(self):
         net = op.network.Cubic(shape=[2, 2, 2])
@@ -134,38 +135,38 @@ class BaseTest:
         geo2 = op.geometry.GenericGeometry(network=net,
                                            pores=[0, 2, 4, 6],
                                            throats=range(6, 12))
-        assert sp.all(net.throats('surface', target=geo1) == [0, 1, 2, 3, 4, 5])
-        assert sp.all(net.throats('surface', target=geo2) == [0, 1, 2, 3, 4, 5])
+        assert np.all(net.throats('surface', target=geo1) == [0, 1, 2, 3, 4, 5])
+        assert np.all(net.throats('surface', target=geo2) == [0, 1, 2, 3, 4, 5])
         mapped = net.map_throats(throats=[0, 1, 2, 3, 4, 5], origin=geo1)
-        assert sp.all(mapped == net.throats('geo_01'))
+        assert np.all(mapped == net.throats('geo_01'))
         mapped = net.map_throats(throats=[0, 1, 2, 3, 4, 5], origin=geo2)
-        assert sp.all(mapped == net.throats('geo_02'))
+        assert np.all(mapped == net.throats('geo_02'))
 
     def test_throats(self):
         a = self.net.throats()
-        assert sp.all(a == sp.arange(0, self.net.Nt))
+        assert np.all(a == np.arange(0, self.net.Nt))
 
     def test_throats_asmask(self):
         a = self.net.throats(labels=['internal'], mode='or', asmask=True)
         assert a.sum() == 54
         b = self.net.throats(labels=['internal'], mode='or')
-        assert sp.all(sp.where(a)[0] == b)
+        assert np.all(np.where(a)[0] == b)
 
     def test_throats_one_label(self):
         a = self.net.throats(labels='label1')
-        assert sp.all(a == [0, 1, 2, 3, 4, 5])
+        assert np.all(a == [0, 1, 2, 3, 4, 5])
 
     def test_throats_two_labels_or(self):
         a = self.net.throats(labels=['label1', 'label2'], mode='or')
-        assert sp.all(a == [0, 1, 2, 3, 4, 5, 6, 7, 8])
+        assert np.all(a == [0, 1, 2, 3, 4, 5, 6, 7, 8])
 
     def test_throats_two_labels_xnor(self):
         a = self.net.throats(labels=['label1', 'label2'], mode='xnor')
-        assert sp.all(a == [3, 4, 5])
+        assert np.all(a == [3, 4, 5])
 
     def test_throats_two_labels_xor(self):
         a = self.net.throats(labels=['label1', 'label2'], mode='xor')
-        assert sp.all(a == [0, 1, 2, 6, 7, 8])
+        assert np.all(a == [0, 1, 2, 6, 7, 8])
 
     def test_filter_by_label_pores_no_label(self):
         Ps = self.net.pores(['top', 'bottom', 'front'])
@@ -176,52 +177,52 @@ class BaseTest:
         Ps = self.net.pores(['top', 'bottom', 'front'])
         a = self.net.filter_by_label(pores=Ps, labels='top', mode='or')
         b = [2, 5, 8, 11, 14, 17, 20, 23, 26]
-        assert sp.all(a == b)
+        assert np.all(a == b)
 
     def test_filter_by_label_pores_one_label_as_list(self):
         Ps = self.net.pores(['top', 'bottom', 'front'])
         a = self.net.filter_by_label(pores=Ps, labels=['top'])
         b = [2, 5, 8, 11, 14, 17, 20, 23, 26]
-        assert sp.all(a == b)
+        assert np.all(a == b)
 
     def test_filter_by_label_pores_two_labels_or(self):
         Ps = self.net.pores(['top', 'bottom', 'front'])
         a = self.net.filter_by_label(pores=Ps, labels=['top', 'bottom'],
                                      mode='or')
         b = [0, 2, 3, 5, 6, 8, 9, 11, 12, 14, 15, 17, 18, 20, 21, 23, 24, 26]
-        assert sp.all(a == b)
+        assert np.all(a == b)
 
     def test_filter_by_label_pores_two_labels_xnor(self):
         Ps = self.net.pores(['top', 'bottom', 'front'])
         a = self.net.filter_by_label(pores=Ps, labels=['top', 'front'],
                                      mode='xnor')
         b = [2, 5, 8]
-        assert sp.all(a == b)
+        assert np.all(a == b)
 
     def test_filter_by_label_pores_two_labels_xnor_empty(self):
         Ps = self.net.pores(['top', 'bottom', 'front'])
         a = self.net.filter_by_label(pores=Ps, labels=['top', 'bottom'],
                                      mode='xnor')
         b = []
-        assert sp.all(a == b)
+        assert np.all(a == b)
 
     def test_filter_by_label_pores_two_labels_xor(self):
         Ps = self.net.pores(['top', 'bottom', 'front'])
         a = self.net.filter_by_label(pores=Ps, labels=['top', 'front'],
                                      mode='xor')
         b = [0, 1, 3, 4, 6, 7, 11, 14, 17, 20, 23, 26]
-        assert sp.all(a == b)
+        assert np.all(a == b)
 
     def test_filter_by_label_pores_two_labels_nor(self):
         Ps = self.net.pores(['top', 'bottom', 'front'])
         a = self.net.filter_by_label(pores=Ps, labels=['top', 'front'],
                                      mode='nor')
         b = [9, 12, 15, 18, 21, 24]
-        assert sp.all(a == b)
+        assert np.all(a == b)
 
     def test_filter_by_label_empty_locations(self):
         a = self.net.filter_by_label(pores=[], labels='top')
-        assert sp.size(a) == 0
+        assert np.size(a) == 0
 
     def test_filter_by_label_pores_and_throats(self):
         with pytest.raises(Exception):
@@ -229,35 +230,35 @@ class BaseTest:
 
     def test_tomask_pores(self):
         a = self.net.tomask(pores=self.net.pores('top'))
-        assert sp.sum(a) == 9
+        assert np.sum(a) == 9
 
     def test_tomask_throats(self):
         a = self.net.tomask(throats=self.net.throats('label1'))
-        assert sp.sum(a) == 6
+        assert np.sum(a) == 6
 
     def test_tomask_pores_and_throats(self):
         with pytest.raises(Exception):
-            a = self.net.tomask(throats=[0, 1, 2], pores=[0, 1, 2])
+            _ = self.net.tomask(throats=[0, 1, 2], pores=[0, 1, 2])
 
     def test_toindices_pores(self):
-        mask = sp.zeros((self.net.Np), dtype=bool)
+        mask = np.zeros((self.net.Np), dtype=bool)
         Ps = [0, 3, 6]
         mask[Ps] = True
         a = self.net.toindices(mask)
-        assert sp.all(a == Ps)
+        assert np.all(a == Ps)
 
     def test_toindices_throats(self):
-        mask = sp.zeros((self.net.Nt), dtype=bool)
+        mask = np.zeros((self.net.Nt), dtype=bool)
         Ts = [0, 3, 6]
         mask[Ts] = True
         a = self.net.toindices(mask)
-        assert sp.all(a == Ts)
+        assert np.all(a == Ts)
 
     def test_toindices_float_mask(self):
-        mask = (sp.rand(self.net.Np) < 0.5)
-        inds_in = sp.where(mask)[0]
+        mask = (np.random.rand(self.net.Np) < 0.5)
+        inds_in = np.where(mask)[0]
         inds_out = self.net.toindices(mask*1.0)
-        assert sp.all(inds_in == inds_out)
+        assert np.all(inds_in == inds_out)
 
     def test_toindices_invalid_mask(self):
         mask = self.net.Np
@@ -265,7 +266,7 @@ class BaseTest:
             self.net.toindices(mask)
 
     def test_toindices_wrong_mask(self):
-        mask = sp.zeros((self.net.Nt)-2, dtype=bool)
+        mask = np.zeros((self.net.Nt)-2, dtype=bool)
         mask[[0, 3, 6]] = True
         with pytest.raises(Exception):
             self.net.toindices(mask)
@@ -446,7 +447,7 @@ class BaseTest:
         assert sorted(a) == sorted(b)
 
     def test_labels_locations_boolean(self):
-        ind = sp.zeros((self.net.Np), dtype=bool)
+        ind = np.zeros((self.net.Np), dtype=bool)
         ind[[0, 1]] = True
         a = self.net.labels(pores=ind)
         b = ['pore.all', 'pore.bottom', 'pore.front',
@@ -498,14 +499,14 @@ class BaseTest:
         assert 'pore._foo' in self.net.keys()
 
     def test_parse_indices_boolean(self):
-        b = sp.array([True, True, True])
+        b = np.array([True, True, True])
         with pytest.raises(Exception):
             self.net._parse_indices(indices=b)
-        b = sp.zeros((self.net.Np,), dtype=bool)
+        b = np.zeros((self.net.Np,), dtype=bool)
         assert len(self.net._parse_indices(indices=b)) == 0
-        b = sp.zeros((self.net.Nt,), dtype=bool)
+        b = np.zeros((self.net.Nt,), dtype=bool)
         b[[0, 1, 2]] = True
-        assert sp.shape(self.net._parse_indices(indices=b)) == (3,)
+        assert np.shape(self.net._parse_indices(indices=b)) == (3,)
 
     def test_parse_indices_None(self):
         assert len(self.net._parse_indices(indices=None)) == 0
@@ -513,12 +514,12 @@ class BaseTest:
     def test_parse_indices_int(self):
         a = self.net._parse_indices(indices=0)
         assert type(a) == sp.ndarray
-        assert sp.all(a == 0)
+        assert np.all(a == 0)
 
     def test_parse_indices_list(self):
         a = self.net._parse_indices(indices=[0, 1])
         assert type(a) == sp.ndarray
-        assert sp.all(a == [0, 1])
+        assert np.all(a == [0, 1])
 
     def test_parse_element_None(self):
         a = self.net._parse_element(element=None)
@@ -615,20 +616,20 @@ class BaseTest:
 
     def test_setitem_wrong_length(self):
         with pytest.raises(Exception):
-            self.geo['pore.test'] = sp.ones((self.geo.Np+1))
+            self.geo['pore.test'] = np.ones((self.geo.Np+1))
         assert 'pore.test' not in self.geo.keys()
 
     def test_setitem_replace_all(self):
-        array_len = sp.size(self.geo['pore.all'])
-        self.geo['pore.all'] = sp.ones((self.geo.Np+1))
-        assert sp.size(self.geo['pore.all']) == array_len
+        array_len = np.size(self.geo['pore.all'])
+        self.geo['pore.all'] = np.ones((self.geo.Np+1))
+        assert np.size(self.geo['pore.all']) == array_len
 
     def test_setitem_overwrite_into_all(self):
         pass
         # This test will fail as there is currently no way to prevent this
-        # array_sum = sp.sum(self.geo['pore.all'])
+        # array_sum = np.sum(self.geo['pore.all'])
         # self.geo['pore.all'][0] = False
-        # assert sp.sum(self.geo['pore.all']) == array_sum
+        # assert np.sum(self.geo['pore.all']) == array_sum
 
     def test_setitem_subdict_conflicts(self):
         self.geo['pore.foo'] = 1
@@ -658,9 +659,9 @@ class BaseTest:
 
     def test_get_indices_wildcard(self):
         a = self.net._get_indices(element='pore', labels='ri*')
-        assert sp.all(a == [6, 7, 8, 15, 16, 17, 24, 25, 26])
+        assert np.all(a == [6, 7, 8, 15, 16, 17, 24, 25, 26])
         b = self.net._get_indices(element='pore', labels='*ght')
-        assert sp.all(a == b)
+        assert np.all(a == b)
 
     def test_write_dict(self):
         self.net['pore.test_dict'] = {'test1': 1, 'test2': self.net.Ps}
@@ -673,23 +674,23 @@ class BaseTest:
         b = self.geo22['pore._id']
         assert a.size == self.geo21.Np
         assert b.size == self.geo22.Np
-        assert ~sp.any(sp.in1d(a, b))
+        assert ~np.any(np.in1d(a, b))
         Pgeo21 = self.net2.map_pores(pores=self.geo21.Ps, origin=self.geo21)
-        assert sp.all(Pgeo21 == self.net2.pores(self.geo21.name))
+        assert np.all(Pgeo21 == self.net2.pores(self.geo21.name))
         Pgeo22 = self.net2.map_pores(pores=self.geo22.Ps, origin=self.geo22)
-        assert sp.all(Pgeo22 == self.net2.pores(self.geo22.name))
+        assert np.all(Pgeo22 == self.net2.pores(self.geo22.name))
 
     def test_map_throats(self):
         a = self.geo21['throat._id']
         assert a.size == self.geo21.Nt
         Tgeo21 = self.net2.map_throats(throats=self.geo21.Ts,
                                        origin=self.geo21)
-        assert sp.all(Tgeo21 == self.net2.throats(self.geo21.name))
+        assert np.all(Tgeo21 == self.net2.throats(self.geo21.name))
 
     def test_map_pores_unfiltered(self):
         b = self.net.map_pores(pores=self.geo.Ps, origin=self.geo,
                                filtered=False)
-        assert sp.all(b.indices == self.net.pores(self.geo.name))
+        assert np.all(b.indices == self.net.pores(self.geo.name))
         assert b.mask.size == self.geo.Np
 
     def test_map_pores_unfiltered_missing(self):
@@ -701,10 +702,10 @@ class BaseTest:
     def test_map_pores_reverse(self):
         Ps = self.net2.Ps[:5]
         b = self.geo21.map_pores(pores=Ps, origin=self.net2)
-        assert sp.all(b == [0, 1, 2, 3, 4])
+        assert np.all(b == [0, 1, 2, 3, 4])
         Ps = self.net2.Ps[-5:]
         b = self.geo22.map_pores(pores=Ps, origin=self.net2)
-        assert sp.all(b == [4, 5, 6, 7, 8])
+        assert np.all(b == [4, 5, 6, 7, 8])
 
     def test_map_pores_missing(self):
         Ps = self.net2.Ps[:5]
@@ -719,12 +720,12 @@ class BaseTest:
         geom2 = op.geometry.GenericGeometry(network=net, pores=Ps)
         # Ensure Falses return in missing places
         geom1['pore.blah'] = True
-        assert sp.all(~geom2['pore.blah'])
-        assert sp.sum(net['pore.blah']) == 4
+        assert np.all(~geom2['pore.blah'])
+        assert np.sum(net['pore.blah']) == 4
         # Ensure all Trues returned now
         geom2['pore.blah'] = True
-        assert sp.all(geom2['pore.blah'])
-        assert sp.sum(net['pore.blah']) == 8
+        assert np.all(geom2['pore.blah'])
+        assert np.sum(net['pore.blah']) == 8
 
     def test_interleave_data_int(self):
         net = op.network.Cubic(shape=[2, 2, 2])
@@ -736,11 +737,11 @@ class BaseTest:
         # Ensure ints are returned geom1
         assert 'int' in geom1['pore.blah'].dtype.name
         # Ensure nans are returned on geom2
-        assert sp.all(sp.isnan(geom2['pore.blah']))
+        assert np.all(np.isnan(geom2['pore.blah']))
         # Ensure interleaved array is float with nans
         assert 'float' in net['pore.blah'].dtype.name
         # Ensure missing values are floats
-        assert sp.sum(sp.isnan(net['pore.blah'])) == 4
+        assert np.sum(np.isnan(net['pore.blah'])) == 4
 
     def test_interleave_data_float(self):
         net = op.network.Cubic(shape=[2, 2, 2])
@@ -752,22 +753,22 @@ class BaseTest:
         # Ensure flaots are returned geom1
         assert 'float' in geom1['pore.blah'].dtype.name
         # Ensure nans are returned on geom2
-        assert sp.all(sp.isnan(geom2['pore.blah']))
+        assert np.all(np.isnan(geom2['pore.blah']))
         # Ensure interleaved array is float with nans
         assert 'float' in net['pore.blah'].dtype.name
         # Ensure missing values are floats
-        assert sp.sum(sp.isnan(net['pore.blah'])) == 4
+        assert np.sum(np.isnan(net['pore.blah'])) == 4
 
     def test_interleave_data_object(self):
         net = op.network.Cubic(shape=[2, 2, 2])
         Ps = net.pores('top')
         geom1 = op.geometry.GenericGeometry(network=net, pores=Ps)
         Ps = net.pores('bottom')
-        geom2 = op.geometry.GenericGeometry(network=net, pores=Ps)
+        _ = op.geometry.GenericGeometry(network=net, pores=Ps)
         geom1['pore.blah'] = [[1, 2], [1, 2, 3], [1, 2, 3, 4], [1]]
         assert 'object' in net['pore.blah'].dtype.name
         # Ensure missing elements are None
-        assert sp.sum([item is None for item in net['pore.blah']]) == 4
+        assert np.sum([item is None for item in net['pore.blah']]) == 4
 
     def test_interleave_data_key_error(self):
         net = op.network.Cubic(shape=[2, 2, 2])
@@ -786,19 +787,19 @@ class BaseTest:
         net = op.network.Cubic(shape=[2, 2, 2])
         geom = op.geometry.GenericGeometry(network=net, pores=[0, 1, 2])
         geom['pore.blah'] = 1.0
-        assert sp.any(sp.isnan(net['pore.blah']))
+        assert np.any(np.isnan(net['pore.blah']))
 
     def test_interleave_data_int_missing_geometry(self):
         net = op.network.Cubic(shape=[2, 2, 2])
         geom = op.geometry.GenericGeometry(network=net, pores=[0, 1, 2])
         geom['pore.blah'] = 1
-        assert sp.any(sp.isnan(net['pore.blah']))
+        assert np.any(np.isnan(net['pore.blah']))
 
     def test_interleave_data_bool_missing_geometry(self):
         net = op.network.Cubic(shape=[2, 2, 2])
         geom = op.geometry.GenericGeometry(network=net, pores=[0, 1, 2])
         geom['pore.blah'] = True
-        assert sp.sum(net['pore.blah']) == geom.Np
+        assert np.sum(net['pore.blah']) == geom.Np
 
     def test_getitem_with_no_matches(self):
         self.geo.pop('pore.blah', None)
@@ -816,42 +817,42 @@ class BaseTest:
         with pytest.raises(KeyError):
             self.geo['pore.blah']
 
-    def test_interleave_data_with_unyts_on_all(self):
-        import unyt
-        pn = op.network.Cubic(shape=[10, 1, 1])
-        geo1 = op.geometry.GenericGeometry(network=pn, pores=[0, 1, 2, 3, 4])
-        geo2 = op.geometry.GenericGeometry(network=pn, pores=[5, 6, 7, 8, 9])
-        geo1['pore.test'] = sp.rand(geo1.Np, ) * unyt.m
-        geo2['pore.test'] = sp.rand(geo2.Np, ) * unyt.m
-        assert hasattr(pn['pore.test'], 'units')
-
     def test_get_string(self):
         a = self.net.get('pore.coords')
         assert a.shape == (self.net.Np, 3)
 
-    def test_interleave_data_with_unyts_on_only_one(self):
-        import unyt
-        pn = op.network.Cubic(shape=[10, 1, 1])
-        geo1 = op.geometry.GenericGeometry(network=pn, pores=[0, 1, 2, 3, 4])
-        geo2 = op.geometry.GenericGeometry(network=pn, pores=[5, 6, 7, 8, 9])
-        geo1['pore.test'] = sp.rand(geo1.Np, )
-        geo2['pore.test'] = sp.rand(geo2.Np, ) * unyt.m
-        assert hasattr(pn['pore.test'], 'units')
+    # def test_interleave_data_with_unyts_on_all(self):
+    #     import unyt
+    #     pn = op.network.Cubic(shape=[10, 1, 1])
+    #     geo1 = op.geometry.GenericGeometry(network=pn, pores=[0, 1, 2, 3, 4])
+    #     geo2 = op.geometry.GenericGeometry(network=pn, pores=[5, 6, 7, 8, 9])
+    #     geo1['pore.test'] = np.random.rand(geo1.Np, ) * unyt.m
+    #     geo2['pore.test'] = np.random.rand(geo2.Np, ) * unyt.m
+    #     assert hasattr(pn['pore.test'], 'units')
 
-    def test_interpolate_date_with_unyts(self):
-        import unyt
-        pn = op.network.Cubic(shape=[10, 1, 1])
-        geo = op.geometry.GenericGeometry(network=pn, pores=pn.Ps)
-        geo['pore.test'] = sp.rand(geo.Np, ) * unyt.m
-        a = geo.interpolate_data('pore.test')
-        assert hasattr(a, 'units')
+    # def test_interleave_data_with_unyts_on_only_one(self):
+    #     import unyt
+    #     pn = op.network.Cubic(shape=[10, 1, 1])
+    #     geo1 = op.geometry.GenericGeometry(network=pn, pores=[0, 1, 2, 3, 4])
+    #     geo2 = op.geometry.GenericGeometry(network=pn, pores=[5, 6, 7, 8, 9])
+    #     geo1['pore.test'] = np.random.rand(geo1.Np, )
+    #     geo2['pore.test'] = np.random.rand(geo2.Np, ) * unyt.m
+    #     assert hasattr(pn['pore.test'], 'units')
 
-    def test_interpolate_date_with_unyts_but_none_assigned(self):
-        pn = op.network.Cubic(shape=[10, 1, 1])
-        geo = op.geometry.GenericGeometry(network=pn, pores=pn.Ps)
-        geo['pore.test'] = sp.rand(geo.Np, )
-        b = geo.interpolate_data('pore.test')
-        assert not hasattr(b, 'units')
+    # def test_interpolate_date_with_unyts(self):
+    #     import unyt
+    #     pn = op.network.Cubic(shape=[10, 1, 1])
+    #     geo = op.geometry.GenericGeometry(network=pn, pores=pn.Ps)
+    #     geo['pore.test'] = np.random.rand(geo.Np, ) * unyt.m
+    #     a = geo.interpolate_data('pore.test')
+    #     assert hasattr(a, 'units')
+
+    # def test_interpolate_date_with_unyts_but_none_assigned(self):
+    #     pn = op.network.Cubic(shape=[10, 1, 1])
+    #     geo = op.geometry.GenericGeometry(network=pn, pores=pn.Ps)
+    #     geo['pore.test'] = np.random.rand(geo.Np, )
+    #     b = geo.interpolate_data('pore.test')
+    #     assert not hasattr(b, 'units')
 
     def test_subdict_getitem_on_network_from_network(self):
         pn = op.network.Cubic(shape=[5, 5, 5])
@@ -971,13 +972,13 @@ class BaseTest:
         assert len(d) == 2
         assert 'pore.foo.bar' in d.keys()
         assert 'pore.foo.baz' in d.keys()
-        assert sp.any(sp.isnan(d['pore.foo.bar']))
-        assert sp.any(sp.isnan(d['pore.foo.baz']))
+        assert np.any(np.isnan(d['pore.foo.bar']))
+        assert np.any(np.isnan(d['pore.foo.baz']))
         geo2['pore.foo.bar'] = 1
         geo2['pore.foo.baz'] = 2
         d = pn['pore.foo']
-        assert sp.all(~sp.isnan(d['pore.foo.bar']))
-        assert sp.all(~sp.isnan(d['pore.foo.baz']))
+        assert np.all(~np.isnan(d['pore.foo.bar']))
+        assert np.all(~np.isnan(d['pore.foo.baz']))
 
     def test_subdict_lookup_errors(self):
         pn = op.network.Cubic(shape=[5, 5, 5])

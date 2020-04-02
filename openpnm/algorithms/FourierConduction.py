@@ -1,36 +1,53 @@
 from openpnm.algorithms import ReactiveTransport
-from openpnm.utils import logging
+from openpnm.utils import logging, Docorator, GenericSettings
 logger = logging.getLogger(__name__)
+docstr = Docorator()
+
+
+@docstr.get_sectionsf('FourierConductionSettings',
+                      sections=['Parameters'])
+@docstr.dedent
+class FourierConductionSettings(GenericSettings):
+    r"""
+
+    Parameters
+    ----------
+    %(GenericTransportSettings.parameters)s
+    quantity : str (default = ``'pore.temperature'``
+        The name of the physical quantity to be calculated
+    conductance : str (default = ``'pore.thermal_conductance'``)
+        The name of the pore-scale transport conductance values. These are
+        typically calculated by a model attached to a *Physics* object
+        associated with the given *Phase*.
+
+    Other Parameters
+    ----------------
+
+    **The following parameters pertain to the ReactiveTransport class**
+
+    %(ReactiveTransportSettings.other_parameters)s
+
+    ----
+
+    **The following parameters pertain to the GenericTransport class**
+
+    %(GenericTransportSettings.other_parameters)s
+
+    """
+    quantity = 'pore.temperature'
+    conductance = 'throat.thermal_conductance'
 
 
 class FourierConduction(ReactiveTransport):
     r"""
-    A subclass of GenericLinearTransport to simulate heat conduction.  The 2
-    main roles of this subclass are to set the default property names and to
-    implement a method for calculating the effective conductivity of the
-    network.
+    A subclass of GenericLinearTransport to simulate heat conduction.
 
     """
-    def __init__(self, settings={}, phase=None, **kwargs):
-        def_set = {'phase': None,
-                   'quantity': 'pore.temperature',
-                   'conductance': 'throat.thermal_conductance',
-                   'gui': {'setup':        {'phase': None,
-                                            'quantity': '',
-                                            'conductance': ''},
-                           'set_rate_BC':  {'pores': None,
-                                            'values': None},
-                           'set_value_BC': {'pores': None,
-                                            'values': None},
-                           'set_source':   {'pores': None,
-                                            'propname': ''}
-                           }
-                   }
+
+    def __init__(self, settings={}, **kwargs):
         super().__init__(**kwargs)
-        self.settings.update(def_set)
         self.settings.update(settings)
-        if phase is not None:
-            self.setup(phase=phase)
+        self.settings._update_settings_and_docs(FourierConductionSettings())
 
     def setup(self, phase=None, quantity='', conductance='', **kwargs):
         r"""
@@ -39,21 +56,7 @@ class FourierConduction(ReactiveTransport):
 
         Parameters
         ----------
-        phase : OpenPNM Phase object
-            The phase on which the algorithm is to be run.  If no value is
-            given, the existing value is kept.
-
-        quantity : string
-            The name of the physical quantity to be calcualted.  If no value is
-            given, the existing value is kept.  The default value is
-            ``'pore.temperature'``.
-
-        conductance : string
-            The name of the pore-scale transport conductance values.  These
-            are typically calculate by a model attached to a *Physics* object
-            associated with the given *Phase*.  If no value is given, the
-            existing value is kept.  The default value is
-            ``'throat.thermal_conductance'``.
+        %(FourierConductionSettings.parameters)s
 
         Notes
         -----

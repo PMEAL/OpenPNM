@@ -736,12 +736,12 @@ class Project(list):
         s = []
         hr = '―'*78
         s.append(hr)
-        s.append(' {0:<15} '.format('Object Name') +
-                 '{0:<65}'.format('Object ID'))
+        s.append(' {0:<15} '.format('Object Name')
+                 + '{0:<65}'.format('Object ID'))
         s.append(hr)
         for item in self:
-            s.append(' {0:<15} '.format(item.name) +
-                     '{0:<65}'.format(item.__repr__()))
+            s.append(' {0:<15} '.format(item.name)
+                     + '{0:<65}'.format(item.__repr__()))
         s.append(hr)
         return '\n'.join(s)
 
@@ -800,17 +800,17 @@ class Project(list):
         if len(geoms):
             phys = self.find_physics(phase=phase)
             if len(phys) == 0:
-                raise Exception(str(len(geoms))+' geometries were found, but' +
-                                ' no physics')
+                raise Exception(str(len(geoms))+' geometries were found, but'
+                                + ' no physics')
             if None in phys:
                 raise Exception('Undefined physics found, check the grid')
             Ptemp = np.zeros((phase.Np,))
             Ttemp = np.zeros((phase.Nt,))
             for item in phys:
-                    Pind = phase['pore.'+item.name]
-                    Tind = phase['throat.'+item.name]
-                    Ptemp[Pind] = Ptemp[Pind] + 1
-                    Ttemp[Tind] = Ttemp[Tind] + 1
+                Pind = phase['pore.'+item.name]
+                Tind = phase['throat.'+item.name]
+                Ptemp[Pind] = Ptemp[Pind] + 1
+                Ttemp[Tind] = Ttemp[Tind] + 1
             health['overlapping_pores'] = np.where(Ptemp > 1)[0].tolist()
             health['undefined_pores'] = np.where(Ptemp == 0)[0].tolist()
             health['overlapping_throats'] = np.where(Ttemp > 1)[0].tolist()
@@ -937,11 +937,57 @@ class Project(list):
         temp = sprs.triu(adjmat, k=1)
         num_upper = temp.sum()
         if num_full > num_upper:
-            biTs = np.where(net['throat.conns'][:, 0] >
-                            net['throat.conns'][:, 1])[0]
+            biTs = np.where(net['throat.conns'][:, 0]
+                            > net['throat.conns'][:, 1])[0]
             health['bidirectional_throats'] = biTs.tolist()
 
         return health
+
+    def inspect_locations(self, element, indices, objs=[], mode='all'):
+        r"""
+        Shows the values of all props and/or labels for a given subset of
+        pores or throats.
+
+        Parameters
+        ----------
+        element : str
+            The type of locations to inspect, either 'pores', or 'throats'
+        indices : array_like
+            The pore or throat indices to inspect
+        objs : list of OpenPNM Objects
+            If given, then only the properties on the recieved object are
+            inspected.  If not given, then all objects are inspected (default).
+        mode : list of strings
+            Indicates whether to inspect 'props', 'labels', or 'all'.  The
+            default is all
+
+        Returns
+        -------
+        df : Pandas DataFrame
+            A data frame object with each location as a column and each row
+            as a property and/or label.
+        """
+        from pandas import DataFrame
+        props = {}
+        if type(objs) is not list:
+            objs = [objs]
+        if not objs:
+            objs = self
+        for obj in objs:
+            d = {k: obj[k][indices] for k in obj.keys(element=element, mode=mode)}
+            for item in list(d.keys()):
+                if d[item].ndim > 1:
+                    d.pop(item)
+                    if item == 'pore.coords':
+                        d['pore.coords_X'], d['pore.coords_Y'], \
+                            d['pore.coords_Z'] = obj['pore.coords'][indices].T
+                    if item == 'throat.conns':
+                        d['throat.conns_head'], d['throat.conns_tail'] = \
+                            obj['throat.conns'][indices].T
+                _ = [props.update({obj.name+'.'+item: d[item]}) for item in d.keys()]
+        df = DataFrame(props)
+        df = df.rename(index={k: indices[k] for k in range(len(indices))})
+        return df.T
 
     def _regenerate_models(self, objs=[], propnames=[]):
         r"""
@@ -983,7 +1029,10 @@ class Project(list):
                 obj.regenerate_models()
 
     def get_grid(self, astype='table'):
+        r"""
+        """
         from pandas import DataFrame as df
+
         geoms = self.geometries().keys()
         phases = [p.name for p in self.phases().values() if not hasattr(p, 'mixture')]
         grid = df(index=geoms, columns=phases)
@@ -999,12 +1048,12 @@ class Project(list):
         elif astype == 'dict':
             grid = grid.to_dict()
         elif astype == 'table':
-            from terminaltables import SingleTable
+            from terminaltables import AsciiTable
             headings = [self.network.name] + list(grid.keys())
             g = [headings]
             for row in list(grid.index):
                 g.append([row] + list(grid.loc[row]))
-            grid = SingleTable(g)
+            grid = AsciiTable(g)
             grid.title = 'Project: ' + self.name
             grid.padding_left = 3
             grid.padding_right = 3

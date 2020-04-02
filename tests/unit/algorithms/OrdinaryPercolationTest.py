@@ -1,6 +1,7 @@
-import openpnm as op
-import scipy as sp
 import pytest
+import numpy as np
+import scipy as sp
+import openpnm as op
 mgr = op.Workspace()
 
 
@@ -25,16 +26,16 @@ class OrdinaryPercolationTest:
         self.alg.setup(phase=self.water)
 
         self.alg.set_inlets(pores=self.net.pores('top'))
-        assert sp.sum(self.alg['pore.inlets']) == 25
+        assert np.sum(self.alg['pore.inlets']) == 25
 
         self.alg.set_inlets(pores=self.net.pores('bottom'))
-        assert sp.sum(self.alg['pore.inlets']) == 50
+        assert np.sum(self.alg['pore.inlets']) == 50
 
         self.alg.set_inlets(pores=self.net.pores('top'), overwrite=True)
-        assert sp.sum(self.alg['pore.inlets']) == 25
+        assert np.sum(self.alg['pore.inlets']) == 25
 
         self.alg.set_inlets(pores=[], overwrite=True)
-        assert sp.sum(self.alg['pore.inlets']) == 0
+        assert np.sum(self.alg['pore.inlets']) == 0
 
     def test_set_inlets_conflicting_with_outlets(self):
         self.alg = op.algorithms.OrdinaryPercolation(network=self.net)
@@ -62,16 +63,16 @@ class OrdinaryPercolationTest:
         self.alg.setup(phase=self.water)
 
         self.alg.set_outlets(pores=self.net.pores('top'))
-        assert sp.sum(self.alg['pore.outlets']) == 25
+        assert np.sum(self.alg['pore.outlets']) == 25
 
         self.alg.set_outlets(pores=self.net.pores('bottom'))
-        assert sp.sum(self.alg['pore.outlets']) == 50
+        assert np.sum(self.alg['pore.outlets']) == 50
 
         self.alg.set_outlets(pores=self.net.pores('top'), overwrite=True)
-        assert sp.sum(self.alg['pore.outlets']) == 25
+        assert np.sum(self.alg['pore.outlets']) == 25
 
         self.alg.set_outlets(pores=[], overwrite=True)
-        assert sp.sum(self.alg['pore.outlets']) == 0
+        assert np.sum(self.alg['pore.outlets']) == 0
 
     def test_set_residual_modes(self):
         self.alg = op.algorithms.OrdinaryPercolation(network=self.net)
@@ -80,27 +81,27 @@ class OrdinaryPercolationTest:
         Ps = sp.random.randint(0, self.net.Np, 10)
         Ts = self.net.find_neighbor_pores(pores=Ps)
         self.alg.set_residual(pores=Ps, throats=Ts)
-        assert sp.sum(self.alg['pore.residual']) == sp.size(sp.unique(Ps))
-        assert sp.sum(self.alg['throat.residual']) == sp.size(sp.unique(Ts))
+        assert np.sum(self.alg['pore.residual']) == np.size(np.unique(Ps))
+        assert np.sum(self.alg['throat.residual']) == np.size(np.unique(Ts))
 
         Ps = sp.random.randint(0, self.net.Np, 10)
         Ts = self.net.find_neighbor_pores(pores=Ps)
         self.alg.set_residual(pores=Ps, throats=Ts)
-        assert sp.sum(self.alg['pore.residual']) > sp.size(sp.unique(Ps))
-        assert sp.sum(self.alg['throat.residual']) > sp.size(sp.unique(Ts))
+        assert np.sum(self.alg['pore.residual']) > np.size(np.unique(Ps))
+        assert np.sum(self.alg['throat.residual']) > np.size(np.unique(Ts))
 
         Ps = sp.random.randint(0, self.net.Np, 10)
         Ts = self.net.find_neighbor_pores(pores=Ps)
         self.alg.set_residual(pores=Ps, throats=Ts, overwrite=True)
-        assert sp.sum(self.alg['pore.residual']) == sp.size(sp.unique(Ps))
-        assert sp.sum(self.alg['throat.residual']) == sp.size(sp.unique(Ts))
+        assert np.sum(self.alg['pore.residual']) == np.size(np.unique(Ps))
+        assert np.sum(self.alg['throat.residual']) == np.size(np.unique(Ts))
 
         self.alg.set_residual(pores=[], throats=[], overwrite=True)
-        assert sp.sum(self.alg['pore.residual']) == 0
+        assert np.sum(self.alg['pore.residual']) == 0
 
         self.alg.set_residual(pores=Ps, throats=Ts)
         self.alg.set_residual(overwrite=True)
-        assert sp.sum(self.alg['pore.residual']) == 0
+        assert np.sum(self.alg['pore.residual']) == 0
 
     def test_run_npts(self):
         self.alg = op.algorithms.OrdinaryPercolation(network=self.net)

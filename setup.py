@@ -15,10 +15,17 @@ with open(ver_path) as f:
         if line.startswith('__version__'):
             exec(line, main_)
 
+# Read the contents of README file
+this_directory = os.path.abspath(os.path.dirname(__file__))
+with open(os.path.join(this_directory, 'README.md'), encoding='utf-8') as f:
+    long_description = f.read()
+
 setup(
     name='openpnm',
     description='A framework for conducting pore network modeling simulations '
     + 'of multiphase transport in porous materials',
+    long_description=long_description,
+    long_description_content_type='text/markdown',
     version=main_['__version__'],
     zip_safe=False,
     classifiers=[
@@ -68,6 +75,7 @@ setup(
         'jsonschema',
         'unyt',
         'terminaltables',
+        'docrep',
     ],
     author='OpenPNM Team',
     author_email='jgostick@uwaterloo.ca',

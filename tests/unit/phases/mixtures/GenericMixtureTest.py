@@ -1,7 +1,8 @@
+import pytest
+import numpy as np
+import scipy as sp
 import openpnm as op
 from openpnm.phases import mixtures
-import scipy as sp
-import pytest
 
 
 class MixtureTest:
@@ -19,51 +20,41 @@ class MixtureTest:
                                                        self.H2, self.CO2],
                                            name='air_mixture')
 
-    def test_set_mole_fraction(self):
-        self.air.set_mole_fraction(self.N2, 0.790)
-        self.air.set_mole_fraction(self.O2, 0.209)
-        self.air.set_mole_fraction(self.CO2, 0.001)
-        assert sp.all(self.air['pore.mole_fraction.all'] == 1.0)
-
     def test_props(self):
         a = self.air.props(deep=False)
         b = self.air.props(deep=True)
         assert len(b) > len(a)
 
-    def test_update_mole_fraction_with_molar_density(self):
-        self.air.pop('pore.concentration.'+self.N2.name, None)
-        self.air['pore.concentration.'+self.O2.name] = 0.5
-        self.air['pore.concentration.'+self.CO2.name] = 0.0
-        self.air['pore.concentration.'+self.H2.name] = 0.0
-        self.air['pore.molar_density'] = 2.0
-        self.air.update_mole_fractions(molar_density='pore.molar_density')
-        assert sp.all(self.air['pore.mole_fraction.all'] == 1.0)
+    def test_set_mole_fraction(self):
+        self.air.pop('pore.mole_fraction.' + self.O2.name, None)
+        self.air.set_mole_fraction(self.O2, values=0)
+        assert np.all(self.air['pore.mole_fraction.' + self.O2.name] == 0.0)
+        self.air.set_mole_fraction(self.O2, values=0.1)
+        assert np.all(self.air['pore.mole_fraction.' + self.O2.name] == 0.1)
 
-    def test_update_mole_fraction_with_all_concentrations(self):
-        self.air['pore.concentration.'+self.O2.name] = 1.5
-        self.air['pore.concentration.'+self.N2.name] = 0.5
-        self.air['pore.concentration.'+self.CO2.name] = 0.0
-        self.air['pore.concentration.'+self.H2.name] = 0.0
-        self.air.update_mole_fractions()
-        assert sp.all(self.air['pore.mole_fraction.all'] == 1.0)
+    def test_set_concentration(self):
+        self.air.set_mole_fraction(self.O2, values=0.1)
+        assert np.all(self.air['pore.mole_fraction.' + self.O2.name] == 0.1)
+        self.air.set_concentration(component=self.O2, values=1.0)
+        assert np.all(self.air['pore.concentration.' + self.O2.name] == 1.0)
 
-    def test_interleave_data(self):
-        r"""
-        """
-        self.air['pore.concentration.'+self.O2.name] = 1.0
-        self.air['pore.concentration.'+self.N2.name] = 0.0
-        self.air['pore.concentration.'+self.CO2.name] = 0.0
-        self.air['pore.concentration.'+self.H2.name] = 0.0
+    def test_update_mole_fraction(self):
+        self.air.set_mole_fraction(self.H2, values=0.0)
+        self.air.set_mole_fraction(self.CO2, values=0.0)
+        self.air.set_mole_fraction(self.O2, values=0.1)
+        self.air.set_mole_fraction(self.N2, values=np.nan)
         self.air.update_mole_fractions()
-        MW = self.air['pore.molecular_weight'][0]
-        assert MW == 0.032
-        self.air['pore.concentration.'+self.O2.name] = 1.0
-        self.air['pore.concentration.'+self.N2.name] = 0.5
-        self.air['pore.concentration.'+self.CO2.name] = 0.3
-        self.air['pore.concentration.'+self.H2.name] = 0.2
+        assert np.all(self.air['pore.mole_fraction.' + self.N2.name] == 0.9)
+
+    def test_update_mole_fraction_too_many_nans_but_enough_concs(self):
+        self.air.set_mole_fraction(self.H2, values=np.nan)
+        self.air.set_mole_fraction(self.N2, values=np.nan)
+        self.air.set_concentration(self.H2, values=1)
+        self.air.set_concentration(self.N2, values=1)
+        self.air.set_concentration(self.O2, values=1)
+        self.air.set_concentration(self.CO2, values=1)
         self.air.update_mole_fractions()
-        MW = self.air['pore.molecular_weight'][0]
-        assert MW == 0.0298031
+        assert np.all(self.air['pore.mole_fraction.' + self.N2.name] == 0.25)
 
     def test_check_health(self):
         self.air.set_mole_fraction(self.N2, 0.790)

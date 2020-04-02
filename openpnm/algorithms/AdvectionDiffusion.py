@@ -1,7 +1,60 @@
 import numpy as np
 from openpnm.algorithms import ReactiveTransport
-from openpnm.utils import logging
+from openpnm.utils import logging, Docorator, GenericSettings
+docstr = Docorator()
 logger = logging.getLogger(__name__)
+
+
+@docstr.get_sectionsf('AdvectionDiffusionSettings',
+                      sections=['Parameters', 'Other Parameters'])
+@docstr.dedent
+class AdvectionDiffusionSettings(GenericSettings):
+    r"""
+    Parameters
+    ----------
+    %(ReactiveTransportSettings.parameters)s
+    quantity : string (default = 'pore.concentration')
+        The name of the physical quantity to be calculated
+    conductance : string (default = 'throat.ad_dif_conductance')
+        The name of the advective-diffusive conductance model to use for
+        calculating the transport conductance used by the algorithm.
+    diffusive_conductance : string (default = 'throat.diffusive_conductance')
+        The name of the diffusive conductance values to be used by the
+        specified ``'conductance'`` model to find the advective-diffusive
+        conductance.
+    hydraulic_conductance : string (default = 'throat.hydraulic_conductance')
+        The name of the hydraulic conductance values to be used by the
+        specified ``'conductance'`` model to find the advective-diffusive
+        conductance.
+    pressure : string (default = 'pore.pressure')
+        The name of the pressure values calculated by the ``StokesFlow``
+        algorithm.
+
+    Other Parameters
+    ----------------
+    s_scheme : string {'exponential' (default), 'power law', 'hybrid', 'upwind'}
+        The spatial discretization used
+
+    ----
+
+    **The following parameters pertain to the ReactiveTransport class**
+
+    %(ReactiveTransportSettings.other_parameters)s
+
+    ----
+
+    **The following parameters pertain to the GenericTransport class**
+
+    %(GenericTransportSettings.other_parameters)s
+
+    """
+
+    quantity = 'pore.concentration'
+    conductance = 'throat.ad_dif_conductance'
+    diffusive_conductance = 'throat.diffusive_conductance'
+    hydraulic_conductance = 'throat.hydraulic_conductance'
+    pressure = 'pore.pressure'
+    s_scheme = 'exponential'
 
 
 class AdvectionDiffusion(ReactiveTransport):
@@ -10,30 +63,10 @@ class AdvectionDiffusion(ReactiveTransport):
 
     """
 
-    def __init__(self, settings={}, phase=None, **kwargs):
-        def_set = {'phase': None,
-                   'quantity': 'pore.concentration',
-                   'conductance': 'throat.ad_dif_conductance',
-                   'diffusive_conductance': 'throat.diffusive_conductance',
-                   'hydraulic_conductance': 'throat.hydraulic_conductance',
-                   'pressure': 'pore.pressure',
-                   's_scheme': 'exponential',
-                   'gui': {'setup':        {'phase': None,
-                                            'quantity': '',
-                                            'conductance': ''},
-                           'set_rate_BC':  {'pores': None,
-                                            'values': None},
-                           'set_value_BC': {'pores': None,
-                                            'values': None},
-                           'set_source':   {'pores': None,
-                                            'propname': ''}
-                           }
-                   }
+    def __init__(self, settings={}, **kwargs):
         super().__init__(**kwargs)
-        self.settings.update(def_set)
+        self.settings._update_settings_and_docs(AdvectionDiffusionSettings())
         self.settings.update(settings)
-        if phase is not None:
-            self.setup(phase=phase)
 
     def setup(self, phase=None, quantity='', conductance='',
               diffusive_conductance='', hydraulic_conductance='', pressure='',
@@ -95,92 +128,3 @@ class AdvectionDiffusion(ReactiveTransport):
         ind = np.isfinite(self['pore.bc_outflow'])
         diag[ind] += self['pore.bc_outflow'][ind]
         self.A.setdiag(diag)
-
-    def rate(self, pores=[], throats=[], mode='group'):
-        r"""
-        Calculates the net rate of material moving into a given set of pores or
-        throats
-
-        Parameters
-        ----------
-        pores : array_like
-            The pores for which the rate should be calculated
-
-        throats : array_like
-            The throats through which the rate should be calculated
-
-        mode : string, optional
-            Controls how to return the rate.  Options are:
-
-            *'group'*: (default) Returns the cumulative rate of material
-            moving into the given set of pores
-
-            *'single'* : Calculates the rate for each pore individually
-
-        Returns
-        -------
-        If ``pores`` are specified, then the returned values indicate the
-        net rate of material exiting the pore or pores.  Thus a positive
-        rate indicates material is leaving the pores, and negative values
-        mean material is entering.
-
-        If ``throats`` are specified the rate is calculated in the direction of
-        the gradient, thus is always positive.
-
-        If ``mode`` is 'single' then the cumulative rate through the given
-        pores (or throats) are returned as a vector, if ``mode`` is 'group'
-        then the individual rates are summed and returned as a scalar.
-
-        """
-        pores = self._parse_indices(pores)
-        throats = self._parse_indices(throats)
-
-        network = self.project.network
-        C12 = network["throat.conns"]
-        phase = self.project.phases()[self.settings['phase']]
-
-        P = phase[self.settings['pressure']]
-        X = self[self.settings['quantity']]
-        gh = phase[self.settings['hydraulic_conductance']]
-        gd = phase[self.settings['diffusive_conductance']]
-
-        Q12 = -gh * np.diff(P[C12], axis=1).squeeze()
-        Pe12 = Q12 / gd
-        Pe12 = np.abs(Pe12).clip(min=1e-10) * np.sign(Pe12 + 1e-50)
-        Q12 = Pe12 * gd
-
-        X12 = X[C12]
-        dX = -np.diff(X12, axis=1).squeeze()
-
-        s_dis = self.settings['s_scheme']
-
-        if s_dis == 'upwind':
-            w = gd + np.maximum(0, -Q12)
-            Qt = -Q12 * X12[:, 0] - dX * w
-        elif s_dis == 'hybrid':
-            w = np.maximum(0, np.maximum(-Q12, gd-Q12/2))
-            Qt = -Q12 * X12[:, 0] - dX * w
-        elif s_dis == 'powerlaw':
-            w = gd * np.maximum(0, (1 - 0.1*np.abs(Pe12))**5) + \
-                np.maximum(0, -Q12)
-            Qt = -Q12 * X12[:, 0] - dX * w
-        elif s_dis == 'exponential':
-            w = -Q12 / (1 - np.exp(Pe12))
-            Qt = -Q12 * X12[:, 0] - dX * w
-
-        if len(throats) and len(pores):
-            raise Exception('Must specify either pores or throats, not both')
-
-        if len(throats):
-            R = np.absolute(Qt[throats])
-
-        if len(pores):
-            Qp = np.zeros((self.Np,))
-            np.add.at(Qp, C12[:, 0], -Qt)
-            np.add.at(Qp, C12[:, 1], Qt)
-            R = Qp[pores]
-
-        if mode == 'group':
-            R = np.sum(R)
-
-        return np.array(R, ndmin=1)

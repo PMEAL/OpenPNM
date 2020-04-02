@@ -9,7 +9,7 @@ jobs:
     strategy:
       max-parallel: 4
       matrix:
-        python-version: [3.6, 3.7]
+        python-version: [3.6, 3.7, 3.8]
         operating-system: [ubuntu-latest]
 
     steps:
@@ -27,16 +27,21 @@ jobs:
           ${{ runner.os }}-pip-
 
     - name: Install Dependencies
-      # if: steps.cache.outputs.cache-hit != 'true'
       run: |
         pip install -r requirements/pip_requirements.txt
         pip install -r requirements/test_requirements.txt
         pip uninstall openpnm --yes
         python setup.py install
-        
+        pip install pyamg
+        sudo apt update --yes
+        sudo apt-get install mpich --yes
+        pip install mpi4py
+        export PETSC_CONFIGURE_OPTIONS='--download-f2cblaslapack=1 --download-scalapack --download-mumps'
+        pip install petsc petsc4py
+
     - name: Running tests
-      run: pytest --pep8 --cov=./ --cov-report=xml --ignore=tests/integration/examples
-    
+      run: pytest --pep8 --cov=./ --cov-report=xml --ignore=scripts/
+
     - name: Upload coverage to Codecov
       if: matrix.python-version == 3.7
       uses: codecov/codecov-action@v1
@@ -45,4 +50,4 @@ jobs:
         file: ./coverage.xml
         flags: unittests
         name: codecov-umbrella
-        yml: ./codecov.yml     
+        yml: ./codecov.yml

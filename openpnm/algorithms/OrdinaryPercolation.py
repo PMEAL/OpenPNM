@@ -1,6 +1,5 @@
 import scipy as sp
 import numpy as np
-import matplotlib.pyplot as plt
 from collections import namedtuple
 from openpnm.algorithms import GenericAlgorithm
 from openpnm.topotools import site_percolation, bond_percolation
@@ -237,8 +236,8 @@ class OrdinaryPercolation(GenericAlgorithm):
 
         """
         if self.settings['trapping'] is False:
-            logger.warning('Setting outlets is meaningless unless trapping ' +
-                           'was set to True during setup')
+            logger.warning('Setting outlets is meaningless unless trapping '
+                           + 'was set to True during setup')
         Ps = self._parse_indices(pores)
         if np.sum(self['pore.inlets'][Ps]) > 0:
             raise Exception('Some outlets are already defined as inlets')
@@ -292,8 +291,8 @@ class OrdinaryPercolation(GenericAlgorithm):
         if self.settings['access_limited']:
             thresh = np.amin(self['pore.invasion_pressure'][Pout])
         else:
-            raise Exception('This is currently only implemented for access ' +
-                            'limited simulations')
+            raise Exception('This is currently only implemented for access '
+                            + 'limited simulations')
         return thresh
 
     def is_percolating(self, applied_pressure):
@@ -370,27 +369,27 @@ class OrdinaryPercolation(GenericAlgorithm):
             self['throat.entry_pressure'] = \
                 phase[self.settings['throat_entry_threshold']]
             if start is None:
-                start = sp.amin(self['throat.entry_pressure'])*0.5
+                start = np.amin(self['throat.entry_pressure'])*0.5
             if stop is None:
-                stop = sp.amax(self['throat.entry_pressure'])*2.0
+                stop = np.amax(self['throat.entry_pressure'])*2.0
 
         elif self.settings['mode'] == 'site':
             self['pore.entry_pressure'] = \
                 phase[self.settings['pore_entry_threshold']]
             if start is None:
-                start = sp.amin(self['pore.entry_pressure'])*0.5
+                start = np.amin(self['pore.entry_pressure'])*0.5
             if stop is None:
-                stop = sp.amax(self['pore.entry_pressure'])*2.0
+                stop = np.amax(self['pore.entry_pressure'])*2.0
         else:
             raise Exception('Percolation type has not been set')
         if type(points) is int:
-            points = sp.logspace(start=sp.log10(max(1, start)),
-                                 stop=sp.log10(stop), num=points)
+            points = np.logspace(start=np.log10(max(1, start)),
+                                 stop=np.log10(stop), num=points)
         self._points = points
 
         # Ensure pore inlets have been set IF access limitations is True
         if self.settings['access_limited']:
-            if sp.sum(self['pore.inlets']) == 0:
+            if np.sum(self['pore.inlets']) == 0:
                 raise Exception('Inlet pores must be specified first')
             else:
                 Pin = self['pore.inlets']
@@ -422,8 +421,8 @@ class OrdinaryPercolation(GenericAlgorithm):
         # Convert invasion pressures in sequence values
         Pinv = self['pore.invasion_pressure']
         Tinv = self['throat.invasion_pressure']
-        Pseq = sp.searchsorted(sp.unique(Pinv), Pinv)
-        Tseq = sp.searchsorted(sp.unique(Tinv), Tinv)
+        Pseq = np.searchsorted(np.unique(Pinv), Pinv)
+        Tseq = np.searchsorted(np.unique(Tinv), Tinv)
         self['pore.invasion_sequence'] = Pseq
         self['throat.invasion_sequence'] = Tseq
 
@@ -446,9 +445,9 @@ class OrdinaryPercolation(GenericAlgorithm):
         Pvol = net[self.settings['pore_volume']]
         Tvol = net[self.settings['throat_volume']]
         Total_vol = np.sum(Pvol) + np.sum(Tvol)
-        if sp.sum(Pvol[self['pore.inlets']]) > 0.0:
-            logger.warning('Inlets have non-zero volume, percolation curve ' +
-                           'will not start at 0')
+        if np.sum(Pvol[self['pore.inlets']]) > 0.0:
+            logger.warning('Inlets have non-zero volume, percolation curve '
+                           + 'will not start at 0')
         # Find cumulative filled volume at each applied capillary pressure
         Vnwp_t = []
         Vnwp_p = []
@@ -473,6 +472,7 @@ class OrdinaryPercolation(GenericAlgorithm):
         the applied capillary pressure.
 
         """
+        import matplotlib.pyplot as plt
         # Begin creating nicely formatted plot
         x, y = self.get_intrusion_data()
         if fig is None:
@@ -518,8 +518,8 @@ class OrdinaryPercolation(GenericAlgorithm):
             Psatn = self['pore.invasion_pressure'] <= Pc
             Tsatn = self['throat.invasion_pressure'] <= Pc
             inv_phase = {}
-            inv_phase['pore.occupancy'] = sp.array(Psatn, dtype=float)
-            inv_phase['throat.occupancy'] = sp.array(Tsatn, dtype=float)
+            inv_phase['pore.occupancy'] = np.array(Psatn, dtype=float)
+            inv_phase['throat.occupancy'] = np.array(Tsatn, dtype=float)
         else:
             inv_phase = {}
             Ppressure = self['pore.invasion_pressure']

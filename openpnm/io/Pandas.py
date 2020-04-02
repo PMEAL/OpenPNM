@@ -1,7 +1,7 @@
+import numpy as np
 import scipy as sp
 from flatdict import FlatDict
 from collections import namedtuple
-from pandas import DataFrame
 from openpnm.io import Dict, GenericIO
 from openpnm.utils import sanitize_dict, logging
 logger = logging.getLogger(__name__)
@@ -25,7 +25,6 @@ class Pandas(GenericIO):
     by OpenPNM, this could be an solution.
 
     """
-
     @classmethod
     def to_dataframe(cls, network=None, phases=[], join=False, delim=' | '):
         r"""
@@ -55,6 +54,8 @@ class Pandas(GenericIO):
         different.
 
         """
+        from pandas import DataFrame
+
         project, network, phases = cls._parse_args(network=network,
                                                    phases=phases)
 
@@ -70,16 +71,16 @@ class Pandas(GenericIO):
 
         # Scan data and convert non-1d arrays to multiple columns
         for key in list(pdata.keys()):
-            if sp.shape(pdata[key]) != (network[0].Np,):
+            if np.shape(pdata[key]) != (network[0].Np,):
                 arr = pdata.pop(key)
-                tmp = sp.split(arr, arr.shape[1], axis=1)
+                tmp = np.split(arr, arr.shape[1], axis=1)
                 cols = range(len(tmp))
                 pdata.update({key+'['+str(i)+']': tmp[i].squeeze()
                               for i in cols})
         for key in list(tdata.keys()):
-            if sp.shape(tdata[key]) != (network[0].Nt,):
+            if np.shape(tdata[key]) != (network[0].Nt,):
                 arr = tdata.pop(key)
-                tmp = sp.split(arr, arr.shape[1], axis=1)
+                tmp = np.split(arr, arr.shape[1], axis=1)
                 cols = range(len(tmp))
                 tdata.update({key+'['+str(i)+']': tmp[i].squeeze()
                               for i in cols})

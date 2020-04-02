@@ -1,7 +1,7 @@
 import scipy as sp
+import numpy as np
 import scipy.sparse as sprs
 import scipy.spatial as sptl
-# import scipy.sparse.csgraph as csg
 from openpnm.core import Base, ModelsMixin
 from openpnm import topotools
 from openpnm.utils import Workspace, logging
@@ -118,13 +118,13 @@ class GenericNetwork(Base, ModelsMixin):
         self.settings.update(settings)
         super().__init__(project=project, **kwargs)
         if coords is not None:
-            Np = sp.shape(coords)[0]
-            self['pore.all'] = sp.ones(Np, dtype=bool)
-            self['pore.coords'] = sp.array(coords)
+            Np = np.shape(coords)[0]
+            self['pore.all'] = np.ones(Np, dtype=bool)
+            self['pore.coords'] = np.array(coords)
         if conns is not None:
-            Nt = sp.shape(conns)[0]
-            self['throat.all'] = sp.ones(Nt, dtype=bool)
-            self['throat.conns'] = sp.array(conns)
+            Nt = np.shape(conns)[0]
+            self['throat.all'] = np.ones(Nt, dtype=bool)
+            self['throat.conns'] = np.array(conns)
         # Initialize adjacency and incidence matrix dictionaries
         self._im = {}
         self._am = {}
@@ -134,13 +134,13 @@ class GenericNetwork(Base, ModelsMixin):
 
     def __setitem__(self, key, value):
         if key == 'throat.conns':
-            if sp.shape(value)[1] != 2:
+            if np.shape(value)[1] != 2:
                 logger.error('Wrong size for throat conns!')
             else:
-                if sp.any(value[:, 0] > value[:, 1]):
+                if np.any(value[:, 0] > value[:, 1]):
                     logger.warning('Converting throat.conns to be upper '
                                    + 'triangular')
-                    value = sp.sort(value, axis=1)
+                    value = np.sort(value, axis=1)
         super().__setitem__(key, value)
 
     def __getitem__(self, key):
@@ -156,19 +156,19 @@ class GenericNetwork(Base, ModelsMixin):
         return vals
 
     def _gen_ids(self):
-        IDs = self.get('pore._id', sp.array([], ndmin=1, dtype=sp.int64))
+        IDs = self.get('pore._id', np.array([], ndmin=1, dtype=sp.int64))
         if len(IDs) < self.Np:
             temp = ws._gen_ids(size=self.Np - len(IDs))
-            self['pore._id'] = sp.concatenate((IDs, temp))
-        IDs = self.get('throat._id', sp.array([], ndmin=1, dtype=sp.int64))
+            self['pore._id'] = np.concatenate((IDs, temp))
+        IDs = self.get('throat._id', np.array([], ndmin=1, dtype=sp.int64))
         if len(IDs) < self.Nt:
             temp = ws._gen_ids(size=self.Nt - len(IDs))
-            self['throat._id'] = sp.concatenate((IDs, temp))
+            self['throat._id'] = np.concatenate((IDs, temp))
 
     def get_adjacency_matrix(self, fmt='coo'):
         r"""
-        Returns an adjacency matrix in the specified sparse format, with 1's
-        indicating the non-zero values.
+        Returns an adjacency matrix in the specified sparse format, with throat
+        IDs indicating the non-zero values.
 
         Parameters
         ----------
@@ -190,7 +190,7 @@ class GenericNetwork(Base, ModelsMixin):
         this method will create and return the matrix, as well as store it
         for future use.
 
-        To obtain a matrix with weights other than ones at each non-zero
+        To obtain a matrix with weights other than throat IDs at each non-zero
         location use ``create_adjacency_matrix``.
 
         To obtain the non-directed graph, with only upper-triangular entries,
@@ -212,8 +212,8 @@ class GenericNetwork(Base, ModelsMixin):
 
     def get_incidence_matrix(self, fmt='coo'):
         r"""
-        Returns an incidence matrix in the specified sparse format, with 1's
-        indicating the non-zero values.
+        Returns an incidence matrix in the specified sparse format, with pore
+        IDs indicating the non-zero values.
 
         Parameters
         ----------
@@ -235,7 +235,7 @@ class GenericNetwork(Base, ModelsMixin):
         this method will create and return the matrix, as well as store it
         for future use.
 
-        To obtain a matrix with weights other than ones at each non-zero
+        To obtain a matrix with weights other than pore IDs at each non-zero
         location use ``create_incidence_matrix``.
         """
         if fmt in self._im.keys():
@@ -314,14 +314,14 @@ class GenericNetwork(Base, ModelsMixin):
         --------
         >>> import openpnm as op
         >>> pn = op.network.Cubic(shape=[5, 5, 5])
-        >>> weights = sp.rand(pn.num_throats(), ) < 0.5
+        >>> weights = np.random.rand(pn.num_throats(), ) < 0.5
         >>> am = pn.create_adjacency_matrix(weights=weights, fmt='csr')
 
         """
         # Check if provided data is valid
         if weights is None:
-            weights = sp.ones((self.Nt,), dtype=int)
-        elif sp.shape(weights)[0] not in [self.Nt, 2*self.Nt, (self.Nt, 2)]:
+            weights = np.ones((self.Nt,), dtype=int)
+        elif np.shape(weights)[0] not in [self.Nt, 2*self.Nt, (self.Nt, 2)]:
             raise Exception('Received weights are of incorrect length')
 
         # Append row & col to each other, and data to itself
@@ -329,16 +329,16 @@ class GenericNetwork(Base, ModelsMixin):
         row = conn[:, 0]
         col = conn[:, 1]
         if weights.shape == (2*self.Nt,):
-            row = sp.append(row, conn[:, 1])
-            col = sp.append(col, conn[:, 0])
+            row = np.append(row, conn[:, 1])
+            col = np.append(col, conn[:, 0])
         elif weights.shape == (self.Nt, 2):
-            row = sp.append(row, conn[:, 1])
-            col = sp.append(col, conn[:, 0])
+            row = np.append(row, conn[:, 1])
+            col = np.append(col, conn[:, 0])
             weights = weights.flatten(order='F')
         elif not triu:
-            row = sp.append(row, conn[:, 1])
-            col = sp.append(col, conn[:, 0])
-            weights = sp.append(weights, weights)
+            row = np.append(row, conn[:, 1])
+            col = np.append(col, conn[:, 0])
+            weights = np.append(weights, weights)
 
         # Generate sparse adjacency matrix in 'coo' format
         temp = sprs.coo_matrix((weights, (row, col)), (self.Np, self.Np))
@@ -407,21 +407,21 @@ class GenericNetwork(Base, ModelsMixin):
         --------
         >>> import openpnm as op
         >>> pn = op.network.Cubic(shape=[5, 5, 5])
-        >>> weights = sp.rand(pn.num_throats(), ) < 0.5
+        >>> weights = np.random.rand(pn.num_throats(), ) < 0.5
         >>> im = pn.create_incidence_matrix(weights=weights, fmt='csr')
         """
         # Check if provided data is valid
         if weights is None:
-            weights = sp.ones((self.Nt,), dtype=int)
-        elif sp.shape(weights)[0] != self.Nt:
+            weights = np.ones((self.Nt,), dtype=int)
+        elif np.shape(weights)[0] != self.Nt:
             raise Exception('Received dataset of incorrect length')
 
         conn = self['throat.conns']
         row = conn[:, 0]
-        row = sp.append(row, conn[:, 1])
-        col = sp.arange(self.Nt)
-        col = sp.append(col, col)
-        weights = sp.append(weights, weights)
+        row = np.append(row, conn[:, 1])
+        col = np.arange(self.Nt)
+        col = np.append(col, col)
+        weights = np.append(weights, weights)
 
         temp = sprs.coo.coo_matrix((weights, (row, col)), (self.Np, self.Nt))
 
@@ -530,7 +530,7 @@ class GenericNetwork(Base, ModelsMixin):
         [None, 1, None]
         """
         am = self.create_adjacency_matrix(weights=self.Ts, fmt='coo')
-        sites = sp.vstack((P1, P2)).T
+        sites = np.vstack((P1, P2)).T
         Ts = topotools.find_connecting_bonds(sites=sites, am=am)
         return Ts
 
@@ -620,8 +620,8 @@ class GenericNetwork(Base, ModelsMixin):
         [ 3  5  7 25 27]
         """
         pores = self._parse_indices(pores)
-        if sp.size(pores) == 0:
-            return sp.array([], ndmin=1, dtype=int)
+        if np.size(pores) == 0:
+            return np.array([], ndmin=1, dtype=int)
         if 'lil' not in self._am.keys():
             self.get_adjacency_matrix(fmt='lil')
         neighbors = topotools.find_neighbor_sites(sites=pores, logic=mode,
@@ -695,8 +695,8 @@ class GenericNetwork(Base, ModelsMixin):
 
         """
         pores = self._parse_indices(pores)
-        if sp.size(pores) == 0:
-            return sp.array([], ndmin=1, dtype=int)
+        if np.size(pores) == 0:
+            return np.array([], ndmin=1, dtype=int)
         if flatten is False:
             if 'lil' not in self._im.keys():
                 self.get_incidence_matrix(fmt='lil')
@@ -711,8 +711,8 @@ class GenericNetwork(Base, ModelsMixin):
 
     def _find_neighbors(self, pores, element, **kwargs):
         element = self._parse_element(element=element, single=True)
-        if sp.size(pores) == 0:
-            return sp.array([], ndmin=1, dtype=int)
+        if np.size(pores) == 0:
+            return np.array([], ndmin=1, dtype=int)
         if element == 'pore':
             neighbors = self.find_neighbor_pores(pores=pores, **kwargs)
         else:
@@ -790,9 +790,9 @@ class GenericNetwork(Base, ModelsMixin):
         num = self.find_neighbor_pores(pores, flatten=flatten,
                                        mode=mode, include_input=True)
         if flatten:
-            num = sp.size(num)
+            num = np.size(num)
         else:
-            num = sp.array([sp.size(i) for i in num], dtype=int)
+            num = np.array([np.size(i) for i in num], dtype=int)
         return num
 
     def find_nearby_pores(self, pores, r, flatten=False, include_input=False):
@@ -809,14 +809,18 @@ class GenericNetwork(Base, ModelsMixin):
             The maximum radius within which the search should be performed
 
         include_input : bool
-            Controls whether the input pores should be included in the returned
-            list.  The default is ``False``.
+            Controls whether the input pores should be included in the list of
+            pores nearby the *other pores* in the input list.  So if
+            ``pores=[1, 2]`` and 1 and 2 are within ``r`` of each other,
+            then 1 will be included in the returned for pores near 2, and
+            vice-versa *if* this argument is ``True``.  The default is
+            ``False``.
 
         flatten : bool
-            If true returns a single list of all pores that match the criteria,
-            otherwise returns an array containing a sub-array for each input
-            pore, where each sub-array contains the pores that are nearby to
-            each given input pore.  The default is False.
+            If ``True`` returns a single list of all pores that match the
+            criteria, otherwise returns an array containing a sub-array for
+            each input pore, where each sub-array contains the pores that
+            are nearby to each given input pore.  The default is False.
 
         Returns
         -------
@@ -843,8 +847,8 @@ class GenericNetwork(Base, ModelsMixin):
         """
         pores = self._parse_indices(pores)
         # Handle an empty array if given
-        if sp.size(pores) == 0:
-            return sp.array([], dtype=sp.int64)
+        if np.size(pores) == 0:
+            return np.array([], dtype=sp.int64)
         if r <= 0:
             raise Exception('Provided distances should be greater than 0')
         # Create kdTree objects
@@ -856,22 +860,22 @@ class GenericNetwork(Base, ModelsMixin):
         for i in range(len(Ps_within_r)):
             Ps_within_r[i].remove(pores[i])
         # Convert to flattened list by default
-        temp = sp.concatenate((Ps_within_r))
-        Pn = sp.unique(temp).astype(sp.int64)
+        temp = np.concatenate((Ps_within_r))
+        Pn = np.unique(temp).astype(sp.int64)
         # Remove inputs if necessary
         if include_input is False:
-            Pn = Pn[~sp.in1d(Pn, pores)]
+            Pn = Pn[~np.in1d(Pn, pores)]
         # Convert list of lists to a list of nd-arrays
         if flatten is False:
             if len(Pn) == 0:  # Deal with no nearby neighbors
-                Pn = [sp.array([], dtype=sp.int64) for i in pores]
+                Pn = [np.array([], dtype=sp.int64) for i in pores]
             else:
-                mask = sp.zeros(shape=sp.amax((Pn.max(), pores.max()))+1,
+                mask = np.zeros(shape=np.amax((Pn.max(), pores.max()))+1,
                                 dtype=bool)
                 mask[Pn] = True
                 temp = []
                 for item in Ps_within_r:
-                    temp.append(sp.array(item, dtype=sp.int64)[mask[item]])
+                    temp.append(np.array(item, dtype=sp.int64)[mask[item]])
                 Pn = temp
         return Pn
 

@@ -43,11 +43,11 @@ class MultiPhase(GenericPhase):
     distance is 0, while the mixture phase has the viscosity of air in some
     locations and water in others, hence a heterogenous viscosity array:
 
-    >>> sp.ptp(water['pore.viscosity']) == 0
+    >>> np.ptp(water['pore.viscosity']) == 0
     True
-    >>> sp.ptp(air['pore.viscosity']) == 0
+    >>> np.ptp(air['pore.viscosity']) == 0
     True
-    >>> sp.ptp(m['pore.viscosity']) == 0
+    >>> np.ptp(m['pore.viscosity']) == 0
     False
 
     """
@@ -70,8 +70,7 @@ class MultiPhase(GenericPhase):
         # Add supplied phases to the phases list and initialize occupancy to 0
         self.add_phases(phases)
 
-        logger.warning('MultiPhases are a beta feature and functionality may '
-                       + 'change in future versions!')
+        logger.warning('MultiPhase is a beta feature. Functionality may change!')
 
     def __getitem__(self, key):
         try:

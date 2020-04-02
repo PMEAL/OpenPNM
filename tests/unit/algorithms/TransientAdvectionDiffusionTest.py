@@ -1,11 +1,12 @@
-import openpnm as op
+import numpy as np
 import scipy as sp
+import openpnm as op
 
 
 class TransientAdvectionDiffusionTest:
 
     def setup_class(self):
-        sp.random.seed(0)
+        np.random.seed(0)
         self.net = op.network.Cubic(shape=[4, 3, 1], spacing=1.0)
         self.geo = op.geometry.GenericGeometry(network=self.net,
                                                pores=self.net.Ps,
@@ -54,8 +55,8 @@ class TransientAdvectionDiffusionTest:
              0.89653, 0.89653, 0.89653,
              1.53924, 1.53924, 1.53924,
              2., 2., 2.]
-        y = sp.around(ad[ad.settings['quantity']], decimals=5)
-        assert sp.all(x == y)
+        y = np.around(ad[ad.settings['quantity']], decimals=5)
+        assert np.all(x == y)
 
     def teardown_class(self):
         ws = op.Workspace()

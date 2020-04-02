@@ -3,7 +3,7 @@ r"""
 .. autofunction:: openpnm.models.phases.electrical_conductivity.percolating_continua
 
 """
-import scipy as _sp
+import numpy as _np
 
 
 def percolating_continua(target, phi_crit, tau,
@@ -49,6 +49,6 @@ def percolating_continua(target, phi_crit, tau,
     '''
     sigma = target[bulk_property]
     phi = target[volume_fraction]
-    diff_phi = _sp.clip(phi - phi_crit, a_min=0, a_max=_sp.inf)
+    diff_phi = _np.clip(phi - phi_crit, a_min=0, a_max=_np.inf)
     sigma_eff = sigma*(diff_phi)**tau
     return sigma_eff

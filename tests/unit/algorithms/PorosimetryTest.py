@@ -1,6 +1,6 @@
-import openpnm as op
+import numpy as np
 import scipy as sp
-import pytest
+import openpnm as op
 mgr = op.Workspace()
 
 
@@ -24,10 +24,10 @@ class PorosimetryTest:
         mip.setup(phase=self.hg)
         mip.set_inlets(pores=self.net.pores('left'))
         mip.run()
-        assert len(sp.unique(mip['pore.invasion_pressure'])) > 1
-        assert len(sp.unique(mip['pore.invasion_sequence'])) > 1
-        assert len(sp.unique(mip['throat.invasion_pressure'])) > 1
-        assert len(sp.unique(mip['throat.invasion_sequence'])) > 1
+        assert len(np.unique(mip['pore.invasion_pressure'])) > 1
+        assert len(np.unique(mip['pore.invasion_sequence'])) > 1
+        assert len(np.unique(mip['throat.invasion_pressure'])) > 1
+        assert len(np.unique(mip['throat.invasion_sequence'])) > 1
 
     def test_late_pore_and_throat_filling(self):
         mip = op.algorithms.Porosimetry(network=self.net)
@@ -48,7 +48,7 @@ class PorosimetryTest:
         mip.run()
         self.phys.regenerate_models()
         data_w_lpf = mip.get_intrusion_data()
-        assert sp.all(sp.array(data_w_lpf.Snwp) <= sp.array(data_no_lpf.Snwp))
+        assert np.all(np.array(data_w_lpf.Snwp) <= np.array(data_no_lpf.Snwp))
         # Now run with late throat filling
         self.phys['throat.pc_star'] = 2/self.net['throat.diameter']
         self.phys.add_model(propname='throat.partial_filling',
@@ -60,7 +60,7 @@ class PorosimetryTest:
         mip.set_partial_filling(propname='throat.partial_filling')
         mip.run()
         data_w_ltf = mip.get_intrusion_data()
-        assert sp.any(sp.array(data_w_ltf.Snwp) <= sp.array(data_w_lpf.Snwp))
+        assert np.any(np.array(data_w_ltf.Snwp) <= np.array(data_w_lpf.Snwp))
 
 
 if __name__ == '__main__':

@@ -1,8 +1,8 @@
 import re
+import numpy as np
 import scipy as sp
-from pandas import read_table
-from openpnm.io import GenericIO, Dict
 from openpnm.io.Pandas import Pandas
+from openpnm.io import GenericIO, Dict
 from openpnm.utils import logging, Workspace
 logger = logging.getLogger(__name__)
 ws = Workspace()
@@ -94,6 +94,8 @@ class CSV(GenericIO):
             returned.
 
         """
+        from pandas import read_table
+
         if project is None:
             project = ws.new_project()
 
@@ -117,11 +119,11 @@ class CSV(GenericIO):
                 # Rerieve and remove arrays with same base propname
                 merge_cols = [a.pop(k) for k in merge_keys]
                 # Merge arrays into multi-column array and store in DataFrame
-                dct[pname] = sp.vstack(merge_cols).T
+                dct[pname] = np.vstack(merge_cols).T
                 # Remove key from list of keys
                 [keys.pop(keys.index(k)) for k in keys if k.startswith(pname)]
             else:
-                dct[item] = sp.array(a.pop(item))
+                dct[item] = np.array(a.pop(item))
 
         project = Dict.from_dict(dct, project=project, delim=delim)
 

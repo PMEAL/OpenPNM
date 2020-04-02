@@ -1,4 +1,4 @@
-import scipy as sp
+import numpy as np
 from openpnm.network import Cubic
 from openpnm import topotools
 from openpnm.utils import logging
@@ -64,20 +64,20 @@ class CubicTemplate(Cubic):
     """
     def __init__(self, template, spacing=[1, 1, 1], **kwargs):
 
-        template = sp.atleast_3d(template)
+        template = np.atleast_3d(template)
         if 'shape' in kwargs:
             del kwargs['shape']
-            logger.warning('shape argument ignored, inferred from template')
+            logger.warning('"shape" argument ignored, inferred from template')
         super().__init__(shape=template.shape, spacing=spacing, **kwargs)
 
-        coords = sp.unravel_index(range(template.size), template.shape)
-        self['pore.template_coords'] = sp.vstack(coords).T
+        coords = np.unravel_index(range(template.size), template.shape)
+        self['pore.template_coords'] = np.vstack(coords).T
         self['pore.template_indices'] = self.Ps
-        self['pore.drop'] = template.flatten() == 0
-        topotools.trim(network=self, pores=self.pores('drop'))
-        del self['pore.drop']
-        # remove labels pertaining to surface pores, then redo post-trim
-        self.clear(mode='labels')
-        self['pore.internal'] = True
-        self['throat.internal'] = True
-        topotools.find_surface_pores(self)
+        topotools.trim(network=self, pores=template.flatten()==0)
+        # Add "internal_surface" label to "fake" surface pores!
+        ndims = topotools.dimensionality(self).sum()
+        max_neighbors = 6 if ndims == 3 else 4
+        num_neighbors = np.diff(self.get_adjacency_matrix(fmt="csr").indptr)
+        mask_surface = self["pore.surface"]
+        mask_internal_surface = (num_neighbors < max_neighbors) & ~mask_surface
+        self.set_label("pore.internal_surface", pores=mask_internal_surface)

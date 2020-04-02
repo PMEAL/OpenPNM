@@ -1,8 +1,7 @@
-from openpnm.algorithms import GenericAlgorithm, StokesFlow
-from openpnm.utils import logging
-from openpnm import models
 import numpy as np
-import matplotlib.pyplot as plt
+from openpnm import models
+from openpnm.utils import logging
+from openpnm.algorithms import GenericAlgorithm, StokesFlow
 logger = logging.getLogger(__name__)
 
 
@@ -213,8 +212,7 @@ class RelativePermeability(GenericAlgorithm):
         sat_p = np.sum(network['pore.volume'][pore_mask])
         sat_t = np.sum(network['throat.volume'][throat_mask])
         sat1 = sat_p+sat_t
-        bulk = (np.sum(network['pore.volume']) +
-                np.sum(network['throat.volume']))
+        bulk = network['pore.volume'].sum() + network['throat.volume'].sum()
         sat = sat1/bulk
         nwp = self.project[self.settings['nwp']]
         nwp['pore.occupancy'] = pore_mask
@@ -290,23 +288,29 @@ class RelativePermeability(GenericAlgorithm):
             self.Kr_values['sat'].update({dirs: Snwparr})
 
     def plot_Kr_curves(self):
+        r"""
+        """
+        import matplotlib.pyplot as plt
+
         f = plt.figure()
-        sp = f.add_subplot(111)
+        ax = f.add_subplot(111)
         for inp in self.settings['flow_inlets']:
             if self.settings['wp'] is not None:
-                sp.plot(self.Kr_values['sat'][inp],
+                ax.plot(self.Kr_values['sat'][inp],
                         self.Kr_values['relperm_wp'][inp],
                         'o-', label='Krwp'+inp)
-            sp.plot(self.Kr_values['sat'][inp],
+            ax.plot(self.Kr_values['sat'][inp],
                     self.Kr_values['relperm_nwp'][inp],
                     '*-', label='Krnwp'+inp)
-        sp.set_xlabel('Snw')
-        sp.set_ylabel('Kr')
-        sp.set_title('Relative Permability Curves')
-        sp.legend()
+        ax.set_xlabel('Snw')
+        ax.set_ylabel('Kr')
+        ax.set_title('Relative Permability Curves')
+        ax.legend()
         return f
 
     def get_Kr_data(self):
+        r"""
+        """
         self.Kr_values['results']['sat'] = self.Kr_values['sat']
         if self.settings['wp'] is not None:
             self.Kr_values['results']['krw'] = self.Kr_values['relperm_wp']

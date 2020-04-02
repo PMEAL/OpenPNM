@@ -1,55 +1,102 @@
-import importlib
 import numpy as np
 import openpnm as op
-import scipy.sparse as sprs
+import scipy.sparse.linalg
+from numpy.linalg import norm
 import scipy.sparse.csgraph as spgr
 from scipy.spatial import ConvexHull
 from scipy.spatial import cKDTree
 from openpnm.topotools import iscoplanar
 from openpnm.algorithms import GenericAlgorithm
-from openpnm.utils import logging
+from openpnm.utils import logging, Docorator, GenericSettings
+# Uncomment this line when we stop supporting Python 3.6
+# from dataclasses import dataclass, field
+# from typing import List
+docstr = Docorator()
 logger = logging.getLogger(__name__)
 
-# Set some default settings
-def_set = {'phase': None,
-           'conductance': None,
-           'quantity': None,
-           'solver_family': 'scipy',
-           'solver_type': 'spsolve',
-           'solver_preconditioner': 'jacobi',
-           'solver_atol': 1e-6,
-           'solver_rtol': 1e-6,
-           'solver_maxiter': 5000,
-           'iterative_props': [],
-           'cache_A': True, 'cache_b': True,
-           'gui': {'setup':        {'quantity': '',
-                                    'conductance': ''},
-                   'set_rate_BC':  {'pores': None,
-                                    'values': None},
-                   'set_value_BC': {'pores': None,
-                                    'values': None},
-                   'remove_BC':    {'pores': None}
-                   }
-           }
+
+@docstr.get_sectionsf('GenericTransportSettings',
+                      sections=['Parameters', 'Other Parameters'])
+@docstr.dedent
+# Uncomment this line when we stop supporting Python 3.6
+# @dataclass
+class GenericTransportSettings(GenericSettings):
+    r"""
+    Defines the settings for GenericTransport algorithms
+
+    Parameters
+    ----------
+    phase : (str)
+        The name of the phase on which the algorithm acts
+
+    quantity : (str)
+        The name of the physical quantity to be calculated
+    conductance : (str)
+        The name of the pore-scale transport conductance values. These are
+        typically calculated by a model attached to a *Physics* object
+        associated with the given *Phase*.
+
+    Other Parameters
+    ----------------
+    solver_family : str (default = 'scipy')
+        The solver package to use.  OpenPNM currently supports ``scipy``,
+        ``pyamg`` and ``petsc`` (if you have it installed).
+    solver_type : str
+        The specific solver to use.  For instance, if ``solver_family`` is
+        ``scipy`` then you can specify any of the iterative solvers such as
+        ``cg`` or ``gmres``. [More info here]
+        (https://docs.scipy.org/doc/scipy/reference/sparse.linalg.html),
+    solver_preconditioner : str (default = ``jacobi``)
+        This is used by the PETSc solver to specify which preconditioner to
+        use.
+    solver_tol : float (default = 1e-6)
+        Used to control the accuracy to which the iterative solver aims to
+        achieve before stopping.
+    solver_atol : float
+        ##
+    solver_rtol : float
+        ##
+    solver_maxiter : int (default = 5000)
+        Limits the number of iterations to attempt before quiting when aiming
+        for the specified tolerance. The default is 5000.
+        ##
+    variable_props : list
+        ##
+    cache_A : bool
+        ##
+    cache_b : bool
+        ##
+    """
+
+    phase = None
+    conductance = None
+    quantity = None
+    solver_family = 'scipy'
+    solver_type = 'spsolve'
+    solver_preconditioner = 'jacobi'
+    solver_tol = 1e-8
+    solver_atol = None
+    solver_rtol = None
+    solver_maxiter = 5000
+    cache_A = True
+    cache_b = True
 
 
+@docstr.get_sectionsf('GenericTransport', sections=['Parameters'])
+@docstr.dedent
 class GenericTransport(GenericAlgorithm):
     r"""
     This class implements steady-state linear transport calculations
 
     Parameters
     ----------
-    network : OpenPNM Network object
-        The Network with which this algorithm is associated
-
-    project : OpenPNM Project object, optional
-        A Project can be specified instead of ``network``
+    %(GenericAlgorithm.parameters)s
 
     Notes
     -----
 
     The following table shows the methods that are accessible to the user
-    for settig up the simulation.
+    for setting up the simulation.
 
     +---------------------+---------------------------------------------------+
     | Methods             | Description                                       |
@@ -120,7 +167,7 @@ class GenericTransport(GenericAlgorithm):
     def __init__(self, project=None, network=None, phase=None, settings={},
                  **kwargs):
         # Apply default settings
-        self.settings.update(def_set)
+        self.settings._update_settings_and_docs(GenericTransportSettings)
         # Overwrite any given in init
         self.settings.update(settings)
         # Assign phase if given during init
@@ -130,64 +177,22 @@ class GenericTransport(GenericAlgorithm):
             project = network.project
         super().__init__(project=project, **kwargs)
         # Create some instance attributes
-        self._A = None
-        self._pure_A = None
-        self._b = None
-        self._pure_b = None
+        self._A = self._pure_A = None
+        self._b = self._pure_b = None
         self['pore.bc_rate'] = np.nan
         self['pore.bc_value'] = np.nan
 
+    @docstr.get_sectionsf('GenericTransport.setup',
+                          sections=['Parameters'])
+    @docstr.dedent
     def setup(self, phase=None, quantity='', conductance='', **kwargs):
         r"""
-        This method takes several arguments that are essential to running the
-        algorithm and adds them to the settings.
 
         Parameters
         ----------
-        phase : OpenPNM Phase object
-            The phase on which the algorithm is to be run.
-
-        quantity : string
-            The name of the physical quantity to be calculated.
-
-        conductance : string
-            The name of the pore-scale transport conductance values.  These
-            are typically calculated by a model attached to a *Physics* object
-            associated with the given *Phase*.
-
-        solver : string
-            To use the default scipy solver, set this value to `spsolve` or
-            `umfpack`.  To use an iterative solver or a non-scipy solver,
-            additional arguments are required as described next.
-
-        solver_family : string
-            The solver package to use.  OpenPNM currently supports ``scipy``,
-            ``pyamg`` and ``petsc`` (if you have it installed).  The default is
-            ``scipy``.
-
-        solver_type : string
-            The specific solver to use.  For instance, if ``solver_family`` is
-            ``scipy`` then you can specify any of the iterative solvers such as
-            ``cg`` or ``gmres``.  [More info here]
-            (https://docs.scipy.org/doc/scipy/reference/sparse.linalg.html)
-
-        solver_preconditioner : string
-            This is used by the PETSc solver to specify which preconditioner
-            to use.  The default is ``jacobi``.
-
-        solver_atol : scalar
-            Used to control the accuracy to which the iterative solver aims.
-            The default is 1e-6.
-
-        solver_rtol : scalar
-            Used by PETSc as an additional tolerance control.  The default is
-            1e-6.
-
-        solver_maxiter : scalar
-            Limits the number of iterations to attempt before quiting when
-            aiming for the specified tolerance. The default is 5000.
-
+        %(GenericTransportSettings.parameters)s
         """
+
         if phase:
             self.settings['phase'] = phase.name
         if quantity:
@@ -196,37 +201,38 @@ class GenericTransport(GenericAlgorithm):
             self.settings['conductance'] = conductance
         self.settings.update(**kwargs)
 
-    def reset(self, bcs=True, results=True, phase=False):
+    @docstr.get_full_descriptionf(base='GenericTransport.reset')
+    @docstr.get_sectionsf(base='GenericTransport.reset',
+                          sections=['Parameters'])
+    @docstr.dedent
+    def reset(self, bcs=False, results=True):
         r"""
-        Resets the algorithm to enable re-use to avoid instantiating a new one.
+        Resets the algorithm to enable re-use.
+
+        This allows the reuse of an algorithm inside a for-loop for parametric
+        studies.  The default behavior means that only ``alg.reset()`` and
+        ``alg.run()`` must be called inside a loop.  To reset the algorithm
+        more completely requires overriding the default arguments.
 
         Parameters
         ----------
-        bcs : boolean
-            If ``True`` (default) all previous boundary conditions are removed.
         results : boolean
             If ``True`` (default) all previously calculated values pertaining
             to results of the algorithm are removed.
-        phase : boolean
-            Removes the specified phase from the settings. The default is
-            ``False``.
+        bcs : boolean (default = ``False``)
+            If ``True`` all previous boundary conditions are removed.
         """
+        self._pure_b = None
+        self._b = None
+        self._pure_A = None
+        self._A = None
         if bcs:
             self['pore.bc_value'] = np.nan
             self['pore.bc_rate'] = np.nan
         if results:
             self.pop(self.settings['quantity'], None)
-        if phase:
-            self.settings['phase'] = None
 
-    def set_iterative_props(self, propnames):
-        r"""
-        """
-        if type(propnames) is str:  # Convert string to list if necessary
-            propnames = [propnames]
-        d = self.settings["iterative_props"]
-        self.settings["iterative_props"] = list(set(d) | set(propnames))
-
+    @docstr.dedent
     def set_value_BC(self, pores, values, mode='merge'):
         r"""
         Apply constant value boundary conditons to the specified locations.
@@ -237,25 +243,26 @@ class GenericTransport(GenericAlgorithm):
         ----------
         pores : array_like
             The pore indices where the condition should be applied
-
         values : scalar or array_like
             The value to apply in each pore.  If a scalar is supplied
             it is assigne to all locations, and if a vector is applied is
             must be the same size as the indices given in ``pores``.
-
         mode : string, optional
             Controls how the boundary conditions are applied.  Options are:
 
-            - ``'merge'``: (Default) Adds supplied boundary conditions to
-            already existing conditions
+            +-------------+--------------------------------------------------+
+            | 'merge'     | (Default) Adds supplied boundary conditions to   |
+            |             | already existing conditions                      |
+            +-------------+--------------------------------------------------+
+            | 'overwrite' | Deletes all boundary condition on object then    |
+            |             | adds the given ones                              |
+            +-------------+--------------------------------------------------+
 
-            - ``'overwrite'``: Deletes all boundary condition on object then
-            adds the given ones
 
         Notes
         -----
         The definition of ``quantity`` is specified in the algorithm's
-        ``settings``, e.g. ``alg.settings['quentity'] = 'pore.pressure'``.
+        ``settings``, e.g. ``alg.settings['quantity'] = 'pore.pressure'``.
         """
         mode = self._parse_mode(mode, allowed=['merge', 'overwrite'],
                                 single=True)
@@ -274,30 +281,32 @@ class GenericTransport(GenericAlgorithm):
         ----------
         pores : array_like
             The pore indices where the condition should be applied
-
         values : scalar or array_like
             The values of rate to apply in each pore.  If a scalar is supplied
             it is assigned to all locations, and if a vector is applied it
             must be the same size as the indices given in ``pores``.
-
         mode : string, optional
             Controls how the boundary conditions are applied.  Options are:
 
-            - ``'merge'``: (Default) Adds supplied boundary conditions to
-            already existing conditions
-
-            - ``'overwrite'``: Deletes all boundary condition on object then
-            adds the given ones
+            +-------------+--------------------------------------------------+
+            | 'merge'     | (Default) Adds supplied boundary conditions to   |
+            |             | already existing conditions                      |
+            +-------------+--------------------------------------------------+
+            | 'overwrite' | Deletes all boundary condition on object then    |
+            |             | adds the given ones                              |
+            +-------------+--------------------------------------------------+
 
         Notes
         -----
         The definition of ``quantity`` is specified in the algorithm's
-        ``settings``, e.g. ``alg.settings['quentity'] = 'pore.pressure'``.
+        ``settings``, e.g. ``alg.settings['quantity'] = 'pore.pressure'``.
         """
         mode = self._parse_mode(mode, allowed=['merge', 'overwrite'],
                                 single=True)
         self._set_BC(pores=pores, bctype='rate', bcvalues=values, mode=mode)
 
+    @docstr.get_sectionsf(base='GenericTransport._set_BC',
+                          sections=['Parameters', 'Notes'])
     def _set_BC(self, pores, bctype, bcvalues=None, mode='merge'):
         r"""
         This private method is called by public facing BC methods, to apply
@@ -307,29 +316,31 @@ class GenericTransport(GenericAlgorithm):
         ----------
         pores : array_like
             The pores where the boundary conditions should be applied
-
         bctype : string
             Specifies the type or the name of boundary condition to apply. The
             types can be one one of the following:
 
-            - ``'value'``: Specify the value of the quantity in each location
-
-            - ``'rate'``: Specify the flow rate into each location
-
+            +-------------+--------------------------------------------------+
+            | 'value'     | Specify the value of the quantity in each        |
+            |             | location                                         |
+            +-------------+--------------------------------------------------+
+            | 'rate'      | Specify the flow rate into each location         |
+            +-------------+--------------------------------------------------+
         bcvalues : int or array_like
             The boundary value to apply, such as concentration or rate.  If
             a single value is given, it's assumed to apply to all locations.
             Different values can be applied to all pores in the form of an
             array of the same length as ``pores``.
-
         mode : string, optional
             Controls how the boundary conditions are applied.  Options are:
 
-            - ``'merge'``: (Default) Adds supplied boundary conditions to
-            already existing conditions
-
-            - ``'overwrite'``: Deletes all boundary condition on object then
-            adds the given ones
+            +-------------+--------------------------------------------------+
+            | 'merge'     | (Default) Adds supplied boundary conditions to   |
+            |             | already existing conditions                      |
+            +-------------+--------------------------------------------------+
+            | 'overwrite' | Deletes all boundary condition on object then    |
+            |             | adds the given ones                              |
+            +-------------+--------------------------------------------------+
 
         Notes
         -----
@@ -356,8 +367,7 @@ class GenericTransport(GenericAlgorithm):
         rate_BC_mask = np.isfinite(self["pore.bc_rate"])
         BC_locs = self.Ps[rate_BC_mask + value_BC_mask]
         if np.intersect1d(pores, BC_locs).size:
-            logger.critical('Another boundary condition was detected in some '
-                            + 'of the locations received')
+            logger.info('Another boundary condition detected in some locations!')
 
         # Store boundary values
         if ('pore.bc_' + bctype not in self.keys()) or (mode == 'overwrite'):
@@ -410,12 +420,15 @@ class GenericTransport(GenericAlgorithm):
         this is set by default, though it can be overwritten.
         """
         cache_A = self.settings['cache_A']
+        gvals = self.settings['conductance']
+        if not gvals:
+            raise Exception('conductance has not been defined on this algorithm')
         if not cache_A:
             self._pure_A = None
         if self._pure_A is None:
             network = self.project.network
             phase = self.project.phases()[self.settings['phase']]
-            g = phase[self.settings['conductance']]
+            g = phase[gvals]
             am = network.create_adjacency_matrix(weights=g, fmt='coo')
             self._pure_A = spgr.laplacian(am).astype(float)
         self.A = self._pure_A.copy()
@@ -429,8 +442,8 @@ class GenericTransport(GenericAlgorithm):
         Parameters
         ----------
         force : Boolean (default is ``False``)
-            If set to ``True`` then the b matrix is built from new.  If
-            ``False`` (the default), a cached version of b is returned.  The
+            If set to ``True`` then the b matrix is built from new. If
+            ``False`` (the default), a cached version of b is returned. The
             cached version is *clean* in the sense that no boundary conditions
             or sources terms have been added to it.
         """
@@ -491,7 +504,7 @@ class GenericTransport(GenericAlgorithm):
             self.A.setdiag(datadiag)
             self.A.eliminate_zeros()  # Remove 0 entries
 
-    def run(self):
+    def run(self, x0=None):
         r"""
         Builds the A and b matrices, and calls the solver specified in the
         ``settings`` attribute.
@@ -510,14 +523,23 @@ class GenericTransport(GenericAlgorithm):
         """
         logger.info('―' * 80)
         logger.info('Running GenericTransport')
-        self._run_generic()
+        self._run_generic(x0)
 
-    def _run_generic(self):
+    def _run_generic(self, x0):
+        # (Re)build A,b in case phase/physics are updated and alg.run()
+        # is to be called a second time
+        self._build_A()
+        self._build_b()
         self._apply_BCs()
-        x_new = self._solve()
-        self[self.settings['quantity']] = x_new
+        if x0 is None:
+            x0 = np.zeros(self.Np, dtype=float)
+        x_new = self._solve(x0=x0)
+        quantity = self.settings['quantity']
+        self[quantity] = x_new
+        if not self.settings['quantity']:
+            raise Exception('quantity has not been defined on this algorithm')
 
-    def _solve(self, A=None, b=None):
+    def _solve(self, A=None, b=None, x0=None):
         r"""
         Sends the A and b matrices to the specified solver, and solves for *x*
         given the boundary conditions, and source terms based on the present
@@ -534,6 +556,9 @@ class GenericTransport(GenericAlgorithm):
             The RHS matrix in any format.  If not specified, then it uses
             the ``b`` matrix attached to the object.
 
+        x0 : ND-array
+            The initial guess for the solution of Ax = b
+
         Notes
         -----
         The solver used here is specified in the ``settings`` attribute of the
@@ -541,78 +566,156 @@ class GenericTransport(GenericAlgorithm):
 
         """
         # Fetch A and b from self if not given, and throw error if not found
-        if A is None:
-            A = self.A
-            if A is None:
-                raise Exception('The A matrix has not been built yet')
-        if b is None:
-            b = self.b
-            if b is None:
-                raise Exception('The b matrix has not been built yet')
+        A = self.A if A is None else A
+        b = self.b if b is None else b
+        if A is None or b is None:
+            raise Exception('The A matrix or the b vector not yet built.')
         A = A.tocsr()
+        x0 = np.zeros_like(b) if x0 is None else x0
 
-        # Default behavior -> use Scipy's default solver (spsolve)
-        if self.settings['solver'] == 'pyamg':
-            self.settings['solver_family'] = 'pyamg'
-        if self.settings['solver'] == 'petsc':
-            self.settings['solver_family'] = 'petsc'
+        # Check if A and b are well-defined
+        self._check_for_nans()
+
+        # Raise error if solver_family not available
+        if self.settings["solver_family"] not in ["scipy", "petsc", "pyamg"]:
+            raise Exception(f"{self.settings['solver_family']} not available.")
 
         # Set tolerance for iterative solvers
-        rtol = self.settings['solver_rtol']
-        # Reference for residual's normalization
-        ref = np.sum(np.absolute(self.A.diagonal())) or 1
-        atol = ref * rtol
+        tol = self.settings["solver_tol"]
+        max_it = self.settings["solver_maxiter"]
+        atol = self._get_atol()
+        rtol = self._get_rtol(x0=x0)
         # Check if A is symmetric
         is_sym = op.utils.is_symmetric(self.A)
+        if self.settings['solver_type'] == 'cg' and not is_sym:
+            raise Exception('CG solver only works on symmetric matrices.')
 
         # SciPy
         if self.settings['solver_family'] == 'scipy':
-            if importlib.util.find_spec('scikit-umfpack'):
+            # Umfpack by default uses its 32-bit build -> memory overflow
+            try:
+                import scikits.umfpack
                 A.indices = A.indices.astype(np.int64)
                 A.indptr = A.indptr.astype(np.int64)
+            except ModuleNotFoundError:
+                pass
+            solver = getattr(scipy.sparse.linalg, self.settings['solver_type'])
             iterative = ['bicg', 'bicgstab', 'cg', 'cgs', 'gmres', 'lgmres',
                          'minres', 'gcrotmk', 'qmr']
-            solver = getattr(sprs.linalg, self.settings['solver_type'])
-
-            if self.settings['solver_type'] == 'cg' and not is_sym:
-                raise Exception('Conjugate gradient (cg) solver cannot be used with '
-                                + 'non-symmetric matrices. Choose a different solver.')
-            if self.settings['solver_type'] in iterative:
-                x, exit_code = solver(A=A, b=b, atol=atol, tol=rtol,
-                                      maxiter=self.settings['solver_maxiter'])
+            if solver.__name__ in iterative:
+                x, exit_code = solver(A=A, b=b, atol=atol, tol=tol, maxiter=max_it, x0=x0)
                 if exit_code > 0:
-                    raise Exception('SciPy solver did not converge! '
-                                    + 'Exit code: ' + str(exit_code))
+                    raise Exception(f'Solver did not converge, exit code: {exit_code}')
             else:
                 x = solver(A=A, b=b)
-            return x
 
         # PETSc
         if self.settings['solver_family'] == 'petsc':
             # Check if petsc is available
-            if importlib.util.find_spec('petsc4py'):
+            try:
+                import petsc4py
                 from openpnm.utils.petsc import PETScSparseLinearSolver as SLS
-            else:
-                raise Exception('PETSc is not installed.')
-            # Define the petsc linear system converting the scipy objects
-            ls = SLS(A=A, b=b)
-            sets = self.settings
-            sets = {k: v for k, v in sets.items() if k.startswith('solver_')}
-            sets = {k.split('solver_')[1]: v for k, v in sets.items()}
-            ls.settings.update(sets)
-            x = SLS.solve(ls)
-            del(ls)
-            return x
+            except Exception:
+                raise ModuleNotFoundError('PETSc is not installed.')
+            temp = {"type": self.settings["solver_type"],
+                    "preconditioner": self.settings["solver_preconditioner"]}
+            ls = SLS(A=A, b=b, settings=temp)
+            x = ls.solve(x0=x0, atol=atol, rtol=rtol, max_it=max_it)
 
         # PyAMG
         if self.settings['solver_family'] == 'pyamg':
-            if importlib.util.find_spec('pyamg'):
+            # Check if PyAMG is available
+            try:
                 import pyamg
-            else:
-                raise Exception('PyAMG is not installed.')
+            except Exception:
+                raise ModuleNotFoundError('PyAMG is not installed.')
             ml = pyamg.ruge_stuben_solver(A)
-            x = ml.solve(b=b, tol=1e-10)
-            return x
+            x = ml.solve(b=b, tol=rtol, maxiter=max_it)
+
+        return x
+
+    def _get_atol(self):
+        r"""
+        Fetches absolute tolerance for the solver if not ``None``, otherwise
+        calculates it in a way that meets the given ``tol`` requirements.
+
+        ``atol`` is defined such to satisfy the following stopping criterion:
+            ``norm(A*x-b)`` <= ``atol``
+        """
+        atol = self.settings["solver_atol"]
+        if atol is None:
+            tol = self.settings["solver_tol"]
+            atol = norm(self.b) * tol
+        return atol
+
+    def _get_rtol(self, x0):
+        r"""
+        Fetches relative tolerance for the solver if not ``None``, otherwise
+        calculates it in a way that meets the given ``tol`` requirements.
+
+        ``rtol`` is defined based on the following formula:
+            ``rtol = residual(@x_final) / residual(@x0)``
+        """
+        rtol = self.settings["solver_rtol"]
+        if rtol is None:
+            res0 = self._get_residual(x=x0)
+            atol = self._get_atol()
+            rtol = atol / res0
+        return rtol
+
+    def _check_for_nans(self):
+        r"""
+        Check whether A and b are well-defined, i.e. doesn't contain nans.
+        """
+        # Return if everything looks good
+        if not np.isnan(self.A.data).any():
+            if not np.isnan(self.b).any():
+                return
+
+        import networkx as nx
+        from pandas import unique
+
+        # Fetch phase/geometries/physics
+        prj = self.network.project
+        phase = prj.find_phase(self)
+        geometries = prj.geometries().values()
+        physics = prj.physics().values()
+
+        # Locate the root of NaNs
+        unaccounted_nans = []
+        for geom, phys in zip(geometries, physics):
+            objs = [phase, geom, phys]
+            # Generate global dependency graph
+            dg = nx.compose_all([x.models.dependency_graph(deep=True) for x in objs])
+            d = {}  # maps prop -> obj.name
+            for obj in objs:
+                for k, v in obj.check_data_health().items():
+                    if "Has NaNs" in v:
+                        # FIXME: The next line doesn't cover multi-level props
+                        base_prop = ".".join(k.split(".")[:2])
+                        if base_prop in dg.nodes:
+                            d[base_prop] = obj.name
+                        else:
+                            unaccounted_nans.append(base_prop)
+            # Generate dependency subgraph for props with NaNs
+            dg_nans = nx.subgraph(dg, d.keys())
+            # Find prop(s)/object(s) from which NaNs have propagated
+            root_props = [n for n in d.keys() if not nx.ancestors(dg_nans, n)]
+            root_objs = unique([d[x] for x in nx.topological_sort(dg_nans)])
+            # Throw error with helpful info on how to resolve the issue
+            if root_props:
+                msg = (
+                    f"Found NaNs in A matrix, possibly caused by NaNs in "
+                    f"{', '.join(root_props)} \n{'-' * 80}\nThe issue might get "
+                    f"resolved if you call regenerate_models on the following "
+                    f"object(s): {', '.join(root_objs)}"
+                )
+                raise Exception(msg)
+
+        # Raise Exception otherwise
+        if unaccounted_nans:
+            raise Exception(f"Found NaNs in A matrix, possibly caused by NaNs in "
+                            f"{', '.join(unaccounted_nans)}.")
 
     def results(self):
         r"""
@@ -691,6 +794,91 @@ class GenericTransport(GenericAlgorithm):
             if mode == 'group':
                 R = np.sum(R)
         return np.array(R, ndmin=1)
+
+    def set_solver(
+            self,
+            solver_family=None,
+            solver_type=None,
+            preconditioner=None,
+            tol=None,
+            atol=None,
+            rtol=None,
+            maxiter=None,
+    ):
+        r"""
+        Set the solver to be used to solve the algorithm.
+
+        The values of those fields that are not provided will be retrieved from
+        algorithm settings dict.
+
+        Parameters
+        ----------
+        solver_family : string, optional
+            Solver family, could be "scipy", "petsc", and "pyamg".
+
+        solver_type : string, optional
+            Solver type, could be "spsolve", "cg", "gmres", etc.
+
+        preconditioner : string, optional
+            Preconditioner for iterative solvers. The default is "jacobi".
+
+        tol : float, optional
+            Tolerance for iterative solvers, loosely related to number of
+            significant digits in data.
+
+        atol : float, optional
+            Absolute tolerance for iterative solvers, such that
+            norm(Ax-b) <= atol holds.
+
+        rtol : float, optional
+            Relative tolerance for iterative solvers, loosely related to how
+            many orders of magnitude reduction in residual is desired, compared
+            to its value at initial guess.
+
+        Returns
+        -------
+        None.
+
+        """
+        settings = self.settings
+        # Preserve pre-set values, if any
+        if solver_family is None:
+            solver_family = settings["solver_family"]
+        if solver_type is None:
+            solver_type = settings["solver_type"]
+        if preconditioner is None:
+            preconditioner = settings["solver_preconditioner"]
+        if tol is None:
+            tol = settings["solver_tol"]
+        if atol is None:
+            atol = settings["solver_atol"]
+        if rtol is None:
+            rtol = settings["solver_rtol"]
+        if maxiter is None:
+            maxiter = settings["solver_maxiter"]
+        # Update settings on algorithm object
+        self.settings.update(
+            {
+                "solver_family": solver_family,
+                "solver_type": solver_type,
+                "solver_preconditioner": preconditioner,
+                "solver_tol": tol,
+                "solver_atol": atol,
+                "solver_rtol": rtol,
+                "solver_maxiter": maxiter
+            }
+        )
+
+    def _get_residual(self, x=None):
+        r"""
+        Calculate solution residual based on the given ``x`` based on the
+        following formula:
+            ``res = norm(A*x - b)``
+        """
+        if x is None:
+            quantity = self.settings['quantity']
+            x = self[quantity]
+        return norm(self.A * x - self.b)
 
     def _calc_eff_prop(self, inlets=None, outlets=None,
                        domain_area=None, domain_length=None):
