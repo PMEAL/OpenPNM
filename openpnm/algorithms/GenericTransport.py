@@ -682,6 +682,7 @@ class GenericTransport(GenericAlgorithm):
         physics = prj.physics().values()
 
         # Locate the root of NaNs
+        unaccounted_nans = []
         for geom, phys in zip(geometries, physics):
             objs = [phase, geom, phys]
             # Generate global dependency graph
@@ -693,6 +694,8 @@ class GenericTransport(GenericAlgorithm):
                         base_prop = ".".join(k.split(".")[:2])
                         if base_prop in dg.nodes:
                             d[base_prop] = obj.name
+                        else:
+                            unaccounted_nans.append(base_prop)
             # Generate dependency subgraph for props with NaNs
             dg_nans = nx.subgraph(dg, d.keys())
             # Find prop(s)/object(s) from which NaNs have propagated
@@ -707,6 +710,11 @@ class GenericTransport(GenericAlgorithm):
                     f"object(s): {', '.join(root_objs)}"
                 )
                 raise Exception(msg)
+
+        # Raise Exception otherwise
+        if unaccounted_nans:
+            raise Exception(f"Found NaNs in A matrix, possibly caused by NaNs in "
+                            f"{', '.join(unaccounted_nans)}.")
 
     def results(self):
         r"""
