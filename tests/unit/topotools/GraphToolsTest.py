@@ -477,6 +477,7 @@ class GraphToolsTest:
         b = topotools.find_complement(sites=a, am=am, asmask=True)
         assert len(b) == self.net.Np
 
+
 if __name__ == '__main__':
 
     t = GraphToolsTest()

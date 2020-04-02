@@ -85,6 +85,19 @@ class UtilsTest:
         # Non-uniform pressure field --> positive advection --> non-symmetric
         assert not op.utils.misc.is_symmetric(ad.A)
 
+    def test_is_valid_propname(self):
+        assert op.utils.misc.is_valid_propname("pore.foo")
+        assert op.utils.misc.is_valid_propname("pore.zed.foo")
+        assert op.utils.misc.is_valid_propname("throat.bar")
+        assert op.utils.misc.is_valid_propname("throat.bar.foo")
+        assert not op.utils.misc.is_valid_propname("pores.blah")
+        assert not op.utils.misc.is_valid_propname("foo.blah")
+        assert not op.utils.misc.is_valid_propname("pore")
+        assert not op.utils.misc.is_valid_propname("throat")
+        assert not op.utils.misc.is_valid_propname("pore.")
+        assert not op.utils.misc.is_valid_propname("throat.")
+        assert not op.utils.misc.is_valid_propname("pore.foo..bar")
+
 
 if __name__ == '__main__':
 

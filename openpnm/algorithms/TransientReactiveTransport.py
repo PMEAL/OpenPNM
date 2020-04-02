@@ -256,7 +256,7 @@ class TransientReactiveTransport(ReactiveTransport):
         self._b_t = self._b.copy()
         if t is None:
             t = self.settings['t_initial']
-        # Create S1 & S1 for 1st Picard's iteration
+        # Create S1 & S2 for 1st Picard's iteration
         self._update_iterative_props()
 
         self._run_transient(t=t)
@@ -344,12 +344,12 @@ class TransientReactiveTransport(ReactiveTransport):
                     # Output steady state solution
                     t_str = self._nbr_to_str(time)
                     self[quantity + '@' + t_str] = x_new
-                    logger.info('        Exporting time step: ' +
-                                str(time) + ' s')
+                    logger.info('        Exporting time step: '
+                                + str(time) + ' s')
                     break
             if (round(time, t_pre) == tf):
-                logger.info('    Maximum time step reached: ' +
-                            str(time) + ' s')
+                logger.info('    Maximum time step reached: '
+                            + str(time) + ' s')
             else:
                 logger.info('    Transient solver converged after: '
                             + str(time) + ' s')
@@ -375,6 +375,7 @@ class TransientReactiveTransport(ReactiveTransport):
         -----
         Description of 'relaxation_quantity' and 'max_iter' settings can be
         found in the parent class 'ReactiveTransport' documentation.
+
         """
         if x0 is None:
             x0 = np.zeros(self.Np, dtype=float)
@@ -397,8 +398,7 @@ class TransientReactiveTransport(ReactiveTransport):
             self._correct_apply_sources()
             # Compute the residual
             res = self._get_residual()
-
-            if self._is_converged():
+            if itr >= 1 and self._is_converged():
                 logger.info(f'Solution converged: {res:.4e}')
                 return x
             logger.info(f'Tolerance not met: {res:.4e}')

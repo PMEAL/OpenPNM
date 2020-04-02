@@ -291,8 +291,8 @@ class ReactiveTransport(GenericTransport):
         phase.regenerate_models(propnames=iterative_props)
         for geometry in geometries:
             geometry.regenerate_models(iterative_props)
-        for physic in physics:
-            physic.regenerate_models(iterative_props)
+        for phys in physics:
+            phys.regenerate_models(iterative_props)
 
     def _apply_sources(self):
         """r
@@ -300,42 +300,49 @@ class ReactiveTransport(GenericTransport):
 
         Notes
         -----
-        Applying source terms to ``A`` and ``b`` is performed after (optionally)
+        - Applying source terms to ``A`` and ``b`` is performed after (optionally)
         under-relaxing the source term to improve numerical stability. Physics
         are also updated before applying source terms to ensure that source
         terms values are associated with the current value of 'quantity'.
+
+        - For source term under-relaxation, old values of S1 and S2 need to be
+        stored somewhere, we chose to store them on the algorithm object. This is
+        because storing them on phase/physics creates unintended problems, ex.
+        storing them on physics -> IO complains added depth to the NestedDict, and
+        storing them on the phase object results in NaNs in case source term is
+        only added to a subset of nodes, which breaks our _check_for_nans algorithm.
 
         Warnings
         --------
         In the case of a transient simulation, the updates in ``A`` and ``b``
         also depend on the time scheme. So, ``_correct_apply_sources()`` needs to
         be run afterwards to correct the already applied relaxed source terms.
+
         """
         phase = self.project.phases()[self.settings['phase']]
         w = self.settings['relaxation_source']
 
         for item in self.settings['sources']:
+            element, prop = item.split(".")
+            _item = ".".join([element, "_" + prop])
+            first_iter = False if _item + ".S1.old" in self.keys() else True
             Ps = self.pores(item)
+            # Fetch S1/S2 and their old values (don't exist on 1st iter)
+            S1 = phase[item + ".S1"][Ps]
+            S2 = phase[item + ".S2"][Ps]
+            X1 = self[_item + ".S1.old"][Ps] if not first_iter else S1
+            X2 = self[_item + ".S2.old"][Ps] if not first_iter else S2
             # Source term relaxation
-            S1, S2 = [phase[item + '.' + x][Ps] for x in ['S1', 'S2']]
-            # Get old values of S1 and S2
-            try:
-                X1, X2 = [phase[item + '.' + x + '.old'][Ps] for x in ['S1', 'S2']]
-            # S1.old and S2.old are not yet available in 1st iteration
-            except KeyError:
-                X1, X2 = S1.copy(), S2.copy()
-            S1 = phase[item + '.' + 'S1'][Ps] = w * S1 + (1-w) * X1
-            S2 = phase[item + '.' + 'S2'][Ps] = w * S2 + (1-w) * X2
-            # Add "relaxed" S1 and S2 to A and b
+            S1 = phase[item + '.S1'][Ps] = w * S1 + (1.0 - w) * X1
+            S2 = phase[item + '.S2'][Ps] = w * S2 + (1.0 - w) * X2
+            # Modify A and b based on "relaxed" S1/S2
             datadiag = self._A.diagonal().copy()
             datadiag[Ps] = datadiag[Ps] - S1
             self._A.setdiag(datadiag)
             self._b[Ps] = self._b[Ps] + S2
-
-        # Replace old values of S1 and S2 by their current values
-        for item in self.settings['sources']:
-            phase[item + '.' + 'S1.old'] = phase[item + '.' + 'S1'].copy()
-            phase[item + '.' + 'S2.old'] = phase[item + '.' + 'S2'].copy()
+            # Replace old values of S1/S2 by their current values
+            self[_item + ".S1.old"] = phase[item + ".S1"]
+            self[_item + ".S2.old"] = phase[item + ".S2"]
 
     def run(self, x0=None):
         r"""
@@ -374,6 +381,14 @@ class ReactiveTransport(GenericTransport):
         -------
         x : ND-array
             Solution array.
+
+        Notes
+        -----
+        The algorithm must at least complete one iteration, and hence the check for
+        itr >= 1, because otherwise, _check_for_nans() never get's called in case
+        there's something wrong with the data, and therefore, the user won't get
+        notified about the root cause of the algorithm divergence.
+
         """
         w = self.settings['relaxation_quantity']
         quantity = self.settings['quantity']
@@ -391,7 +406,7 @@ class ReactiveTransport(GenericTransport):
             self._apply_sources()
             # Check solution convergence
             res = self._get_residual()
-            if self._is_converged():
+            if itr >= 1 and self._is_converged():
                 logger.info(f'Solution converged: {res:.4e}')
                 return x
             logger.info(f'Tolerance not met: {res:.4e}')
@@ -410,7 +425,7 @@ class ReactiveTransport(GenericTransport):
         res = self._get_residual()
         # Verify that residual is finite (i.e. not inf/nan)
         if not np.isfinite(res):
-            logger.warning(f'Solution diverged: {res:.4e}')
+            logger.error(f'Solution diverged: {res:.4e}')
             raise Exception(f"Solution diverged, undefined residual: {res:.4e}")
         # Check convergence
         tol = self.settings["solver_tol"]

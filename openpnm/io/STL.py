@@ -58,8 +58,8 @@ class STL(GenericIO):
             from netgen.meshing import SetMessageImportance as log
             log(logger_level)
         except ModuleNotFoundError:
-            logger.warning('Module "netgen.meshing" not found. ' +
-                           'The "logger_level" ignored.')
+            logger.warning('Module "netgen.meshing" not found. '
+                           + 'The "logger_level" ignored.')
 
         project, network, phases = cls._parse_args(network=network,
                                                    phases=phases)

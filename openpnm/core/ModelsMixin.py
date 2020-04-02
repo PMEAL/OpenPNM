@@ -1,5 +1,6 @@
 import inspect
 from openpnm.utils import PrintableDict, logging, Workspace
+from openpnm.utils.misc import is_valid_propname
 logger = logging.getLogger(__name__)
 ws = Workspace()
 
@@ -87,7 +88,7 @@ class ModelsDict(PrintableDict):
             # Filter pore/throat props only
             dependencies = set()
             for param in self[model].values():
-                if type(param) is str and param.split(".")[0] in ["pore", "throat"]:
+                if is_valid_propname(param):
                     dependencies.add(param)
             # Add depenency from model's parameters
             for d in dependencies:

@@ -563,6 +563,35 @@ def is_symmetric(a, rtol=1e-10):
     return issym
 
 
+def is_valid_propname(propname):
+    r"""
+    Check if ``propname`` is a valid OpenPNM propname, i.e. starts with
+    'pore.' or 'throat.'
+
+    Parameters
+    ----------
+    propname : str
+        Property name to check whether it's a valid OpenPNM propname.
+
+    Returns
+    -------
+    bool
+        Whether or not ``propname`` is a valid name
+
+    """
+    if type(propname) is not str:
+        return False
+    temp = propname.split(".")
+    if temp[0] not in ["pore", "throat"]:
+        return False
+    if len(temp) == 1:
+        return False
+    for field in temp:
+        if len(field) == 0:
+            return False
+    return True
+
+
 def nbr_to_str(nbr, t_precision):
     r"""
     Converts a scalar into a string in scientific (exponential) notation

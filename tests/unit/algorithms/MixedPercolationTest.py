@@ -222,8 +222,7 @@ class MixedPercolationTest:
         IP_1.setup(phase=self.phase)
         inv_points = np.arange(0, 100, 1, dtype=float)
         sat = np.zeros_like(inv_points)
-        tot_vol = (np.sum(self.net['pore.volume']) +
-                   np.sum(self.net['throat.volume']))
+        tot_vol = self.net['pore.volume'].sum() + self.net['throat.volume'].sum()
         for i, Pc in enumerate(inv_points):
             IP_1.reset()
             IP_1.set_inlets(pores=self.inlets)

@@ -573,6 +573,9 @@ class GenericTransport(GenericAlgorithm):
         A = A.tocsr()
         x0 = np.zeros_like(b) if x0 is None else x0
 
+        # Check if A and b are well-defined
+        self._check_for_nans()
+
         # Raise error if solver_family not available
         if self.settings["solver_family"] not in ["scipy", "petsc", "pyamg"]:
             raise Exception(f"{self.settings['solver_family']} not available.")
@@ -659,6 +662,60 @@ class GenericTransport(GenericAlgorithm):
             atol = self._get_atol()
             rtol = atol / res0
         return rtol
+
+    def _check_for_nans(self):
+        r"""
+        Check whether A and b are well-defined, i.e. doesn't contain nans.
+        """
+        # Return if everything looks good
+        if not np.isnan(self.A.data).any():
+            if not np.isnan(self.b).any():
+                return
+
+        import networkx as nx
+        from pandas import unique
+
+        # Fetch phase/geometries/physics
+        prj = self.network.project
+        phase = prj.find_phase(self)
+        geometries = prj.geometries().values()
+        physics = prj.physics().values()
+
+        # Locate the root of NaNs
+        unaccounted_nans = []
+        for geom, phys in zip(geometries, physics):
+            objs = [phase, geom, phys]
+            # Generate global dependency graph
+            dg = nx.compose_all([x.models.dependency_graph(deep=True) for x in objs])
+            d = {}  # maps prop -> obj.name
+            for obj in objs:
+                for k, v in obj.check_data_health().items():
+                    if "Has NaNs" in v:
+                        # FIXME: The next line doesn't cover multi-level props
+                        base_prop = ".".join(k.split(".")[:2])
+                        if base_prop in dg.nodes:
+                            d[base_prop] = obj.name
+                        else:
+                            unaccounted_nans.append(base_prop)
+            # Generate dependency subgraph for props with NaNs
+            dg_nans = nx.subgraph(dg, d.keys())
+            # Find prop(s)/object(s) from which NaNs have propagated
+            root_props = [n for n in d.keys() if not nx.ancestors(dg_nans, n)]
+            root_objs = unique([d[x] for x in nx.topological_sort(dg_nans)])
+            # Throw error with helpful info on how to resolve the issue
+            if root_props:
+                msg = (
+                    f"Found NaNs in A matrix, possibly caused by NaNs in "
+                    f"{', '.join(root_props)} \n{'-' * 80}\nThe issue might get "
+                    f"resolved if you call regenerate_models on the following "
+                    f"object(s): {', '.join(root_objs)}"
+                )
+                raise Exception(msg)
+
+        # Raise Exception otherwise
+        if unaccounted_nans:
+            raise Exception(f"Found NaNs in A matrix, possibly caused by NaNs in "
+                            f"{', '.join(unaccounted_nans)}.")
 
     def results(self):
         r"""
