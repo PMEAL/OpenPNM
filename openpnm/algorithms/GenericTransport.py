@@ -574,7 +574,7 @@ class GenericTransport(GenericAlgorithm):
         x0 = np.zeros_like(b) if x0 is None else x0
 
         # Check if A and b are well-defined
-        self._sanity_check()
+        self._check_for_nans()
 
         # Raise error if solver_family not available
         if self.settings["solver_family"] not in ["scipy", "petsc", "pyamg"]:
@@ -663,7 +663,7 @@ class GenericTransport(GenericAlgorithm):
             rtol = atol / res0
         return rtol
 
-    def _sanity_check(self):
+    def _check_for_nans(self):
         r"""
         Check whether A and b are well-defined, i.e. doesn't contain nans.
         """

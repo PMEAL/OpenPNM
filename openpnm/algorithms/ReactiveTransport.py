@@ -310,7 +310,7 @@ class ReactiveTransport(GenericTransport):
         because storing them on phase/physics creates unintended problems, ex.
         storing them on physics -> IO complains added depth to the NestedDict, and
         storing them on the phase object results in NaNs in case source term is
-        only added to a subset of nodes, which breaks our _sanity_check algorithm.
+        only added to a subset of nodes, which breaks our _check_for_nans algorithm.
 
         Warnings
         --------
@@ -385,7 +385,7 @@ class ReactiveTransport(GenericTransport):
         Notes
         -----
         The algorithm must at least complete one iteration, and hence the check for
-        itr >= 1, because otherwise, _sanity_check() never get's called in case
+        itr >= 1, because otherwise, _check_for_nans() never get's called in case
         there's something wrong with the data, and therefore, the user won't get
         notified about the root cause of the algorithm divergence.
 

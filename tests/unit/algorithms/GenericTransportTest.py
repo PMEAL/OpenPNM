@@ -266,7 +266,7 @@ class GenericTransportTest:
         # Now this will pass again
         np.testing.assert_allclose(m1, m2)
 
-    def test_sanity_check(self):
+    def test_check_for_nans(self):
         alg = op.algorithms.GenericTransport(network=self.net,
                                              phase=self.phase)
         alg.settings['conductance'] = 'throat.diffusive_conductance'
