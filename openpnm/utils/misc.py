@@ -586,7 +586,7 @@ def is_valid_propname(propname):
             return True
     return False
 
-  
+
 def nbr_to_str(nbr, t_precision):
     r"""
     Converts a scalar into a string in scientific (exponential) notation

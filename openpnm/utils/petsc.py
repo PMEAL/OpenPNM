@@ -146,8 +146,8 @@ class PETScSparseLinearSolver(Base):
 
         # Assign values to the coefficients matrix from the scipy sparse csr
         size_tmp = self.A.shape
-        csr1 = (self.A.indptr[self.Istart:self.Iend+1] -
-                self.A.indptr[self.Istart])  # row indices
+        # Row indices
+        csr1 = self.A.indptr[self.Istart:self.Iend+1] - self.A.indptr[self.Istart]
         ind1 = self.A.indptr[self.Istart]
         ind2 = self.A.indptr[self.Iend]
         csr2 = self.A.indices[ind1:ind2]  # column indices
