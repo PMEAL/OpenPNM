@@ -581,10 +581,15 @@ def is_valid_propname(propname):
     """
     if type(propname) is not str:
         return False
-    if propname.split(".")[0] in ["pore", "throat"]:
-        if len(propname.split(".")) > 1:
-            return True
-    return False
+    temp = propname.split(".")
+    if temp[0] not in ["pore", "throat"]:
+        return False
+    if len(temp) == 1:
+        return False
+    for field in temp:
+        if len(field) == 0:
+            return False
+    return True
 
 
 def nbr_to_str(nbr, t_precision):
