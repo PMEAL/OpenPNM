@@ -8,7 +8,7 @@
 
 -----
 
-**Cite as:**
+**Please cite as:**
 > _Gostick, Jeff, Mahmoudreza Aghighi, James Hinebaugh, Tom Tranter, Michael A. Hoeh, Harold Day, Brennan Spellacy et al._ "**OpenPNM: a pore network modeling package.**" Computing in Science & Engineering 18, no. 4 (2016): 60-74.
 > [doi:10.1109/MCSE.2016.49](https://ieeexplore.ieee.org/document/7478437)
 
@@ -76,12 +76,6 @@ OpenPNM depends on several other packages widely known as the [Scipy Stack](http
 
 The main developer for this project is Prof. Jeff Gostick (jgostick@gmail.com).
 
-## Licence and Citation
+## Licence
 
 OpenPNM is free to use and is offered under the permissive [MIT License](http://opensource.org/licenses/MIT)
-
-If you do use OpenPNM in an academic work, the developers ask that you cite the following paper, which outlines the design principles and general uses of OpenPNM:
-
-    Gostick et al. OpenPNM: A pore network modeling package. Computing in Science & Engineering. 18(4), p60-74.
-
-A link to this article can be found [here](http://doi.org/10.1109/MCSE.2016.49).
