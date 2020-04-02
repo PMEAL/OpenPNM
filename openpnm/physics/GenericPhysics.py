@@ -50,17 +50,17 @@ class GenericPhysics(Subdomain, ModelsMixin):
         network = self.project.network
         if network:
             if phase is None:
-                logger.warning('No Phase provided, ' + self.name +
-                               ' will not be associated with a phase')
+                logger.warning('No Phase provided, ' + self.name
+                               + ' will not be associated with a phase')
             else:
                 self.set_phase(phase=phase)
             if geometry is None:
-                logger.warning('No Geometry provided, ' + self.name +
-                               ' will not be associated with any locations')
+                logger.warning('No Geometry provided, ' + self.name
+                               + ' will not be associated with any locations')
             else:
                 if (phase is None):
-                    logger.warning('Cannot associate with a geometry unless ' +
-                                   'a phase is also given')
+                    logger.warning('Cannot associate with a geometry unless '
+                                   + 'a phase is also given')
                 else:
                     self.set_geometry(geometry=geometry)
 

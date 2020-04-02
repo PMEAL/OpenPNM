@@ -102,8 +102,8 @@ class XDMF(GenericIO):
             # Make HDF5 file with all datasets, and no groups
             for item in D.keys():
                 if D[item].dtype == 'O':
-                    logger.warning(item + ' has dtype object,' +
-                                   ' will not write to file')
+                    logger.warning(item + ' has dtype object,'
+                                   + ' will not write to file')
                     del D[item]
                 elif 'U' in str(D[item][0].dtype):
                     pass
@@ -122,20 +122,19 @@ class XDMF(GenericIO):
             # Add pore and throat properties
             for item in D.keys():
                 if item not in ['coordinates', 'connections']:
-                    if (('@' in item and t_steps[t] == item.split('@')[1]) or
-                            ('@' not in item)):
+                    if ("@" in item and t_steps[t] == item.split("@")[1]) or (
+                        "@" not in item
+                    ):
                         attr_type = 'Scalar'
                         shape = D[item].shape
-                        dims = (''.join([str(i) +
-                                         ' ' for i in list(shape)[::-1]]))
+                        dims = (''.join([str(i) + ' ' for i in list(shape)[::-1]]))
                         if '@' in item:
                             item = item.split('@')[0]+'@t'
                             hdf_loc = fname_hdf + ":" + item
                         elif ('@' not in item and t == 0):
                             hdf_loc = fname_hdf + ":" + item
                         elif ('@' not in item and t > 0):
-                            hdf_loc = (path.stem+'@'+t_steps[0]+".hdf" +
-                                       ":" + item)
+                            hdf_loc = path.stem + '@' + t_steps[0] + ".hdf" + ":" + item
                         attr = create_data_item(value=hdf_loc,
                                                 Dimensions=dims,
                                                 Format='HDF',

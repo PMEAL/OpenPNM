@@ -59,8 +59,8 @@ class Subdomain(Base):
             # Prevent 'pore.foo' on subdomain when already present on boss
             if key in set(boss.keys()).difference(set(self.keys())):
                 hit = [i for i in keys if i.startswith(key)][0]
-                raise Exception('Cannot create ' + key + ' when ' +
-                                hit + ' is already defined')
+                raise Exception('Cannot create ' + key + ' when '
+                                + hit + ' is already defined')
         super().__setitem__(key, value)
 
     def _add_locations(self, pores=[], throats=[]):
@@ -135,8 +135,7 @@ class Subdomain(Base):
             for name in objs:
                 if element+'.'+name in boss.keys():
                     if np.any(boss[element+'.'+name][indices]):
-                        raise Exception('Given indices are already assigned ' +
-                                        'to ' + name)
+                        raise Exception('Given indices are already assigned to' + name)
 
         # Find mask of existing locations (network indexing)
         mask = boss[element+'.'+self.name]

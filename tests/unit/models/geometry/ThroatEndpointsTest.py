@@ -322,8 +322,7 @@ class ThroatEndpointsTest:
 
         def throat_vector(network):
             cn = network['throat.conns']
-            vec = (network['pore.coords'][cn[:, 1]] -
-                   network['pore.coords'][cn[:, 0]])
+            vec = network['pore.coords'][cn[:, 1]] - network['pore.coords'][cn[:, 0]]
             return vec/np.linalg.norm(vec, axis=1)[:, np.newaxis]
 
         conds = []

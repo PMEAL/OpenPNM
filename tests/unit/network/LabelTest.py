@@ -44,6 +44,7 @@ class LabelTest:
         assert 'pore.back' not in net.labels()
         assert net.num_pores('surface') == 16
 
+
 if __name__ == '__main__':
 
     t = LabelTest()

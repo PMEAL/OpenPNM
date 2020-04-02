@@ -8,17 +8,19 @@
 
 -----
 
-**Cite as:**
-> _Gostick, Jeff, Mahmoudreza Aghighi, James Hinebaugh, Tom Tranter, Michael A. Hoeh, Harold Day, Brennan Spellacy et al._ "**OpenPNM: a pore network modeling package.**" Computing in Science & Engineering 18, no. 4 (2016): 60-74.
+**Please cite as:**
+> _Gostick et al._ "**OpenPNM: a pore network modeling package.**" Computing in Science & Engineering 18, no. 4 (2016): 60-74.
 > [doi:10.1109/MCSE.2016.49](https://ieeexplore.ieee.org/document/7478437)
 
 # Overview of OpenPNM
 
-*OpenPNM* is an open source project aiming to provide porous media researchers with a comprehensive framework for performing pore network simulations on a wide range of materials.
+*OpenPNM* is a comprehensive framework for performing pore network simulations of porous materials.
+
+For more details about the package can be found in the [on-line documentation](https://openpnm.readthedocs.io/en/master/index.html)
 
 ## Installation and Requirements
 
-OpenPNM can be installed from the Python Package index using:
+OpenPNM can be installed from the [Python Package Index](https://pypi.org/project/openpnm/) using:
 
 ```
 pip install openpnm
@@ -52,32 +54,22 @@ mip.run()
 
 ```
 
-The network can be visualized in [Paraview](http://www.paraview.org) giving the following:
+The network can be visualized in [`ParaView`](http://www.paraview.org) giving the following:
 
-![](https://i.imgur.com/mSDrIBOm.png)
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/14086031/77927983-dc3dd000-7275-11ea-8700-c96c2d51aa1f.png" width="60%"></img>
+</p>
 
-The drainage curve can be visualized with `MIP.plot_intrusion_curve()` giving something like this:
+The drainage curve can be visualized with `mip.plot_intrusion_curve()` giving something like this:
 
-![](https://i.imgur.com/1C2uXt9m.png)
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/14086031/77930201-96363b80-7278-11ea-95fd-4a55fb1d6148.png" width="60%"></img>
+</p>
 
 A collection of examples is available in the *examples* folder of this repository: [Examples](https://www.github.com/PMEAL/OpenPNM/tree/master/examples)
 
-## Release Management and Versioning
+## Contact
 
-OpenPNM uses [Semantic Versioning](http://semver.org) (i.e. X.Y.Z) to label releases.  All major and minor versions (X.Y.z) are available on [PyPI](https://pypi.python.org/pypi), but bugfixe releases (x.y.Z) are not generally pushed unless the bug is important.
+OpenPNM is developed by the Porous Materials Engineering and Analysis Lab [(PMEAL)](http://pmeal.com), in the [Department of Chemical Engineering](https://uwaterloo.ca/chemical-engineering/) at the [University of Waterloo](https://uwaterloo.ca/) in Waterloo, Ontario, Canada.
 
-OpenPNM uses the [Github Flow](https://guides.github.com/introduction/flow/) system of Git branching, except instead of merging PRs into *master*, they are merged into a branch called *dev*. Any code added to *dev* is done via Pull Requests (PRs).  When new PRs are merged into the *dev* branch, they are *not* given a new version number. Once enough new features have been added, the *dev* branch is merged into the *master* branch, and the minor release number (x.Y.z) will be incremented. An exception to this rule are bugfixes which may be found on *master*.  In these cases a PR can be merged into *master* and the version number wil be incremented (x.y.Z) to indicate the fix.
-
-OpenPNM depends on several other packages widely known as the [Scipy Stack](https://www.scipy.org/stackspec.html).  It is our policy to always support the latest version of all these packages and their dependencies.
-
-The main developer for this project is Prof. Jeff Gostick (jgostick@gmail.com).
-
-## Licence and Citation
-
-OpenPNM is free to use and is offered under the permissive [MIT License](http://opensource.org/licenses/MIT)
-
-If you do use OpenPNM in an academic work, the developers ask that you cite the following paper, which outlines the design principles and general uses of OpenPNM:
-
-    Gostick et al. OpenPNM: A pore network modeling package. Computing in Science & Engineering. 18(4), p60-74.
-
-A link to this article can be found [here](http://doi.org/10.1109/MCSE.2016.49).
+The lead developer for this project is Prof. Jeff Gostick (jgostick@gmail.com).
