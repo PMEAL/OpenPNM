@@ -706,7 +706,7 @@ class GenericTransport(GenericAlgorithm):
             if root_props:
                 msg = (
                     f"Found NaNs in A matrix, possibly caused by NaNs in "
-                    f"{', '.join(root_props)} \n{'-' * 80}\nThe issue might get "
+                    f"{', '.join(root_props)} \nThe issue might get "
                     f"resolved if you call regenerate_models on the following "
                     f"object(s): {', '.join(root_objs)}"
                 )
