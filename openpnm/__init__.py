@@ -52,7 +52,7 @@ It consists of the following submodules:
 
 """
 
-__version__ = '2.3.0'
+__version__ = '2.3.1'
 
 import numpy as np
 np.seterr(divide='ignore', invalid='ignore')
