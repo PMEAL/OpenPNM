@@ -1,6 +1,5 @@
-import h5py
-import xml.etree.cElementTree as ET
 from flatdict import FlatDict
+import xml.etree.cElementTree as ET
 from openpnm.io import Dict, GenericIO
 from openpnm.utils import logging
 logger = logging.getLogger(__name__)
@@ -40,6 +39,7 @@ class XDMF(GenericIO):
         ``Workspace`` object.
 
         """
+        import h5py
         project, network, phases = cls._parse_args(network=network,
                                                    phases=phases)
         network = network[0]

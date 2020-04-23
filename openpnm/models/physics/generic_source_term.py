@@ -12,8 +12,6 @@ r"""
 
 """
 import numpy as _np
-import scipy as _sp
-import scipy.sparse.csgraph as _spgr
 
 
 def charge_conservation(target, phase, p_alg, e_alg, assumption):
@@ -55,6 +53,8 @@ def charge_conservation(target, phase, p_alg, e_alg, assumption):
     "laplace".
 
     """
+    import scipy.sparse.csgraph as _spgr
+
     F = 96485.3321233100184
     rhs = _np.zeros(shape=(p_alg.Np, ), dtype=float)
     network = p_alg.project.network

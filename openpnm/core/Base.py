@@ -1,7 +1,6 @@
 import warnings
 import numpy as np
 import scipy as sp
-import pandas as pd
 from collections import namedtuple
 from openpnm.utils import Workspace, logging
 from openpnm.utils.misc import PrintableList, SettingsDict, Docorator
