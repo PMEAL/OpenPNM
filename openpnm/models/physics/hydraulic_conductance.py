@@ -612,11 +612,11 @@ def hagen_poiseuille_slit(target, throat_height='throat.height',
                          pore_height=None,
                          pore_width=None,
                          pore_length=None):
-        Ht = network[throat_height][throats]
-        Wt = network[throat_width][throats]
+        Ht = network[throat_height][throats]/2
+        Wt = network[throat_width][throats]/2
         Lt = network[throat_length][throats]
         conns = network['throat.conns']
-        Hp = network[pore_height][conns][Ts]
+        Hp = network[pore_height][conns][Ts]/2
         Wp = _np.copy(Hp)
         Lp = network[pore_length][conns][Ts]/2
         return (Ht, Wt, Lt, Hp, Wp, Lp)
@@ -635,9 +635,11 @@ def hagen_poiseuille_slit(target, throat_height='throat.height',
                                               throat_width=throat_width,
                                               throat_length=throat_length,
                                               pore_height='pore.size_z',
+                                              pore_width='pore.size_y',
                                               pore_length='pore.size_x')
     ght = (Ht**3)*Wt/(4*phase[throat_viscosity][Ts]*Lt)
-    ghp1, ghp2 = ((Hp**3)*_np.pi/(3*phase[throat_viscosity][conns][Ts]*Lp)).T
+    ghp1 = (Ht**2)*Wt*_np.pi/(3*phase[throat_viscosity][Ts])
+    ghp2 = (Ht**2)*Wt*_np.pi/(3*phase[throat_viscosity][Ts])
     gh[Ts, :] = _np.vstack((ghp1, ght, ghp2)).T
 
     # y-directional throats
@@ -647,8 +649,11 @@ def hagen_poiseuille_slit(target, throat_height='throat.height',
                                               throat_width=throat_width,
                                               throat_length=throat_length,
                                               pore_height='pore.size_z',
+                                              pore_width='pore_size_x',
                                               pore_length='pore.size_y')
-    ghp1, ghp2 = ((Hp**3)*_np.pi/(3*phase[throat_viscosity][conns][Ts]*Lp)).T
+    ght = (Ht**3)*Wt/(4*phase[throat_viscosity][Ts]*Lt)
+    ghp1 = (Ht**2)*Wt*_np.pi/(3*phase[throat_viscosity][Ts])
+    ghp2 = (Ht**2)*Wt*_np.pi/(3*phase[throat_viscosity][Ts])
     gh[Ts, :] = _np.vstack((ghp1, ght, ghp2)).T
 
     # z-directional throats
@@ -658,8 +663,11 @@ def hagen_poiseuille_slit(target, throat_height='throat.height',
                                               throat_width=throat_width,
                                               throat_length=throat_length,
                                               pore_height='pore.size_x',
+                                              pore_width='pore.size_y',
                                               pore_length='pore.size_z')
-    ghp1, ghp2 = ((Hp**3)*_np.pi/(3*phase[throat_viscosity][conns][Ts]*Lp)).T
+    ght = (Ht**3)*Wt/(4*phase[throat_viscosity][Ts]*Lt)
+    ghp1 = (Ht**2)*Wt*_np.pi/(3*phase[throat_viscosity][Ts])
+    ghp2 = (Ht**2)*Wt*_np.pi/(3*phase[throat_viscosity][Ts])
     gh[Ts, :] = _np.vstack((ghp1, ght, ghp2)).T
 
     # Finally, calculate the gh_total for each conduit

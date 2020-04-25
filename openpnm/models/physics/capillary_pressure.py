@@ -485,9 +485,10 @@ def washburn_slit(target,
     project = target.project
     network = project.network
     phase = project.find_phase(target)
-
-    Ht = network[throat_height]
-    Wt = network[throat_width]
+    # Dividing by two to convert diameter to radius to be inline with Marios
+    # paper
+    Ht = network[throat_height]/2
+    Wt = network[throat_width]/2
     rt = 1/Ht + 1/Wt
     theta = phase[contact_angle]
     sigma = phase[surface_tension]
