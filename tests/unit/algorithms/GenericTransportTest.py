@@ -131,20 +131,6 @@ class GenericTransportTest:
         y = np.unique(np.around(alg['pore.mole_fraction'], decimals=3))
         assert np.all(x == y)
 
-    def test_set_iterative_props(self):
-        alg = op.algorithms.GenericTransport(network=self.net,
-                                              phase=self.phase)
-        assert len(alg.settings["iterative_props"]) == 0
-        alg.set_iterative_props(propnames="pore.pressure")
-        assert "pore.pressure" in alg.settings["iterative_props"]
-        # Ensure each prop is only added once
-        alg.set_iterative_props(propnames="pore.pressure")
-        assert len(alg.settings["iterative_props"]) == 1
-        alg.set_iterative_props(propnames=["pore.temperature", "pore.pressure"])
-        assert len(alg.settings["iterative_props"]) == 2
-        assert "pore.pressure" in alg.settings["iterative_props"]
-        assert "pore.temperature" in alg.settings["iterative_props"]
-
     def test_cache_A(self):
         alg = op.algorithms.GenericTransport(network=self.net,
                                              phase=self.phase)
@@ -279,6 +265,22 @@ class GenericTransportTest:
         m2 = -alg.rate(pores=self.net.pores('bottom'))
         # Now this will pass again
         np.testing.assert_allclose(m1, m2)
+
+    def test_check_for_nans(self):
+        alg = op.algorithms.GenericTransport(network=self.net,
+                                             phase=self.phase)
+        alg.settings['conductance'] = 'throat.diffusive_conductance'
+        alg.settings['quantity'] = 'pore.concentration'
+        alg.set_value_BC(pores=self.net.pores('top'), values=1)
+        alg.set_value_BC(pores=self.net.pores('bottom'), values=0)
+        self.phys['throat.diffusive_conductance'][0] = np.nan
+        with pytest.raises(Exception):
+            alg.run()
+        mod = op.models.misc.from_neighbor_pores
+        self.phase["pore.seed"] = np.nan
+        self.phys.add_model(propname="throat.diffusive_conductance", model=mod)
+        with pytest.raises(Exception):
+            alg.run()
 
     def teardown_class(self):
         ws = op.Workspace()

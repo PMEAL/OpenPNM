@@ -20,7 +20,7 @@ class ModelsTest:
     def test_models_dict_print(self):
         net = op.network.Cubic(shape=[3, 3, 3])
         geo = op.geometry.StickAndBall(network=net, pores=net.Ps,
-                                        throats=net.Ts)
+                                       throats=net.Ts)
         s = geo.models.__str__().split('\n')
         assert len(s) == 69
         assert s.count('―'*85) == 15
@@ -35,11 +35,29 @@ class ModelsTest:
         a = len(self.geo.props())
         assert a == 16
 
+    def test_dependency_graph(self):
+        phase = op.phases.GenericPhase(network=self.net)
+        phase.add_model(propname="pore.foo", model=op.models.misc.constant, value=1.0)
+        phys = op.physics.GenericPhysics(network=self.net,
+                                         phase=phase,
+                                         geometry=self.geo)
+        phys.add_model(propname="pore.baz", model=op.models.misc.constant, value=0.0)
+
+        def mymodel(target, foo="pore.foo", baz="pore.baz"):
+            return 0.0
+        phys.add_model(propname="pore.bar_depends_on_foo_and_baz", model=mymodel)
+        dg = phys.models.dependency_graph()
+        assert ["pore.baz", "pore.bar_depends_on_foo_and_baz"] in dg.edges()
+        assert ["pore.foo", "pore.bar_depends_on_foo_and_baz"] not in dg.edges
+        dg = phys.models.dependency_graph(deep=True)
+        assert ["pore.baz", "pore.bar_depends_on_foo_and_baz"] in dg.edges
+        assert ["pore.foo", "pore.bar_depends_on_foo_and_baz"] in dg.edges
+
     def test_dependency_list(self):
         prj = self.net.project
         prj.purge_object(self.geo)
         geom = op.geometry.GenericGeometry(network=self.net,
-                                            pores=self.net.Ps)
+                                           pores=self.net.Ps)
 
         geom.add_model(propname='pore.volume',
                        model=mods.geometry.pore_volume.sphere,

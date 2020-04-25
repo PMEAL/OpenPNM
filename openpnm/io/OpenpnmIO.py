@@ -178,15 +178,15 @@ class OpenpnmIO(GenericIO):
                     if isinstance(d[name], list):
                         temp[name] = d[name]
                     else:
-                        raise Exception('File does not contain a valid ' +
-                                        'OpenPNM Workspace')
+                        raise Exception('File does not contain a valid '
+                                        + 'OpenPNM Workspace')
         # Now scan through temp dict to ensure valid types and names
         conflicts = set(temp.keys()).intersection(set(ws.keys()))
         for name in list(temp.keys()):
             if name in conflicts:
                 new_name = ws._gen_name()
-                logger.warning('A project named ' + name + ' already exists,' +
-                               ' renaming to ' + new_name)
+                logger.warning('A project named ' + name + ' already exists,'
+                               + ' renaming to ' + new_name)
                 ws[new_name] = temp[name]
             else:
                 ws[name] = temp[name]
@@ -224,8 +224,8 @@ class OpenpnmIO(GenericIO):
                     # Return Project handle to user and exit
                     return ws[proj]
                 else:
-                    raise Exception(filename.name + ' contains multiple ' +
-                                    'projects, use load_workspace instead')
+                    raise Exception(filename.name + ' contains multiple '
+                                    + 'projects, use load_workspace instead')
             # If pickle contains a single list
             elif isinstance(d, list):
                 if projname not in ws.keys():
@@ -233,9 +233,9 @@ class OpenpnmIO(GenericIO):
                     return ws[projname]
                 else:
                     newname = ws._gen_name()
-                    logger.warning('Project named ' + projname +
-                                   ' already present in Workspace,' +
-                                   ' renaming to ' + newname)
+                    logger.warning('Project named ' + projname
+                                   + ' already present in Workspace,'
+                                   + ' renaming to ' + newname)
                     ws[newname] = d
                     return ws[newname]
             else:

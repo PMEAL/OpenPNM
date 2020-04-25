@@ -10,7 +10,7 @@ Welcome to the OpenPNM Documentation
 .. sidebar:: Highlight
 
     The image below was extracted using the SNOW algorithm from PoreSpy, then
-    imported into OpenPNM for use, the exported to Paraview for visualization.
+    imported into OpenPNM for use, then exported to Paraview for visualization.
 
     .. image:: /../docs/static/images/extracted_berea.png
         :width: 400px
