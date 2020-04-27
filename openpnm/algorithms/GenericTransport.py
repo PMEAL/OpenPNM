@@ -492,7 +492,7 @@ class GenericTransport(GenericAlgorithm):
             # Update b (substract quantities from b to keep A symmetric)
             x_BC = np.zeros_like(self.b)
             x_BC[ind] = self['pore.bc_value'][ind]
-            self.b[~ind] -= (self.A.tocsr() * x_BC)[~ind]
+            self.b[~ind] -= (self.A * x_BC)[~ind]
             # Update A
             P_bc = self.toindices(ind)
             indrow = np.isin(self.A.row, P_bc)
