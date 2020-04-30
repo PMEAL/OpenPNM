@@ -998,15 +998,13 @@ def trim(network, pores=[], throats=[]):
         Pkeep[pores] = False
         if not np.any(Pkeep):
             raise Exception('Cannot delete ALL pores')
-        # Performing customized find_neighbor_throats which is much faster, but
-        # not general for other types of queries
-#        temp = np.in1d(network['throat.conns'].flatten(), pores)
-#        temp = np.reshape(temp, (network.Nt, 2))
-#        Ts = np.any(temp, axis=1)
-#        Ts = network.Ts[Ts]
-#        tic()
+        # # Performing customized find_neighbor_throats which is much faster, but
+        # # not general for other types of queries
+        # temp = np.in1d(network['throat.conns'].flatten(), pores)
+        # temp = np.reshape(temp, (network.Nt, 2))
+        # Ts = np.any(temp, axis=1)
+        # Ts = network.Ts[Ts]
         Ts = network.find_neighbor_throats(pores=~Pkeep, mode='union')
-#        toc()
         if len(Ts) > 0:
             Tkeep[Ts] = False
     if np.size(throats) > 0:

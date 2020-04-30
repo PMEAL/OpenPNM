@@ -492,7 +492,7 @@ class GenericTransport(GenericAlgorithm):
             # Update b (substract quantities from b to keep A symmetric)
             x_BC = np.zeros_like(self.b)
             x_BC[ind] = self['pore.bc_value'][ind]
-            self.b[~ind] -= (self.A.tocsr() * x_BC)[~ind]
+            self.b[~ind] -= (self.A * x_BC)[~ind]
             # Update A
             P_bc = self.toindices(ind)
             indrow = np.isin(self.A.row, P_bc)
@@ -706,7 +706,7 @@ class GenericTransport(GenericAlgorithm):
             if root_props:
                 msg = (
                     f"Found NaNs in A matrix, possibly caused by NaNs in "
-                    f"{', '.join(root_props)} \n{'-' * 80}\nThe issue might get "
+                    f"{', '.join(root_props)}. The issue might get "
                     f"resolved if you call regenerate_models on the following "
                     f"object(s): {', '.join(root_objs)}"
                 )

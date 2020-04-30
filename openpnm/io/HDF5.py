@@ -1,4 +1,3 @@
-from h5py import File as hdfFile
 from flatdict import FlatDict
 from openpnm.io import Dict, GenericIO
 from openpnm.utils import logging
@@ -64,6 +63,7 @@ class HDF5(GenericIO):
             are no longer prepended by a 'pore.' or 'throat.'
 
         """
+        from h5py import File as hdfFile
         project, network, phases = cls._parse_args(network=network,
                                                    phases=phases)
         if filename == '':

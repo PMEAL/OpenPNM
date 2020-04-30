@@ -8,17 +8,17 @@ r"""
 """
 import scipy as _sp
 import numpy as _np
-from numpy import pi as _pi
 
 
 def hagen_poiseuille(
-        target,
-        pore_area="pore.area",
-        throat_area="throat.area",
-        pore_viscosity="pore.viscosity",
-        throat_viscosity="throat.viscosity",
-        conduit_lengths="throat.conduit_lengths",
-        conduit_shape_factors="throat.flow_shape_factors"):
+    target,
+    pore_area="pore.area",
+    throat_area="throat.area",
+    pore_viscosity="pore.viscosity",
+    throat_viscosity="throat.viscosity",
+    conduit_lengths="throat.conduit_lengths",
+    conduit_shape_factors="throat.flow_shape_factors"
+):
     r"""
     Calculate the hydraulic conductance of conduits in network, where a
     conduit is ( 1/2 pore - full throat - 1/2 pore ). See the notes section.
@@ -95,24 +95,14 @@ def hagen_poiseuille(
         SF2 = phase[conduit_shape_factors + ".pore2"][throats]
     except KeyError:
         SF1 = SF2 = SFt = 1.0
-    # Interpolate pore phase property values to throats
-    try:
-        Dt = phase[throat_viscosity][throats]
-    except KeyError:
-        Dt = phase.interpolate_data(propname=pore_viscosity)[throats]
-    try:
-        D1 = phase[pore_viscosity][cn[:, 0]]
-        D2 = phase[pore_viscosity][cn[:, 1]]
-    except KeyError:
-        D1 = phase.interpolate_data(propname=throat_viscosity)[cn[:, 0]]
-        D2 = phase.interpolate_data(propname=throat_viscosity)[cn[:, 1]]
+    Dt = phase[throat_viscosity][throats]
+    D1, D2 = phase[pore_viscosity][cn].T
     # Find g for half of pore 1, throat, and half of pore 2
-    pi = _sp.pi
-    g1[m1] = A1[m1] ** 2 / (8 * pi * D1 * L1)[m1]
-    g2[m2] = A2[m2] ** 2 / (8 * pi * D2 * L2)[m2]
-    gt[mt] = At[mt] ** 2 / (8 * pi * Dt * Lt)[mt]
+    g1[m1] = A1[m1] ** 2 / (8 * _sp.pi * D1 * L1)[m1]
+    g2[m2] = A2[m2] ** 2 / (8 * _sp.pi * D2 * L2)[m2]
+    gt[mt] = At[mt] ** 2 / (8 * _sp.pi * Dt * Lt)[mt]
     # Apply shape factors and calculate the final conductance
-    return (1 / gt / SFt + 1 / g1 / SF1 + 1 / g2 / SF2) ** (-1)
+    return (1/gt/SFt + 1/g1/SF1 + 1/g2/SF2) ** (-1)
 
 
 def hagen_poiseuille_2D(
@@ -192,22 +182,14 @@ def hagen_poiseuille_2D(
     except KeyError:
         SF1 = SF2 = SFt = 1.0
     # Getting viscosity values
-    try:
-        mut = phase[throat_viscosity][throats]
-    except KeyError:
-        mut = phase.interpolate_data(propname=pore_viscosity)[throats]
-    try:
-        mu1 = phase[pore_viscosity][cn[:, 0]]
-        mu2 = phase[pore_viscosity][cn[:, 1]]
-    except KeyError:
-        mu1 = phase.interpolate_data(propname=throat_viscosity)[cn[:, 0]]
-        mu2 = phase.interpolate_data(propname=throat_viscosity)[cn[:, 1]]
+    mut = phase[throat_viscosity][throats]
+    mu1, mu2 = phase[pore_viscosity][cn].T
     # Find g for half of pore 1, throat, and half of pore 2
     g1 = D1 ** 3 / (12 * mu1 * L1)
     g2 = D2 ** 3 / (12 * mu2 * L2)
     gt = Dt ** 3 / (12 * mut * Lt)
 
-    return (1 / gt / SFt + 1 / g1 / SF1 + 1 / g2 / SF2) ** (-1)
+    return (1/gt/SFt + 1/g1/SF1 + 1/g2/SF2) ** (-1)
 
 
 def hagen_poiseuille_power_law(
@@ -419,7 +401,7 @@ def hagen_poiseuille_power_law(
     gt[mt] = At[mt] ** 2 / ((8 * pi * Lt) * mut)[mt]
 
     # Apply shape factors and calculate the final conductance
-    return (1 / gt / SFt + 1 / g1 / SF1 + 1 / g2 / SF2) ** (-1)
+    return (1/gt/SFt + 1/g1/SF1 + 1/g2/SF2) ** (-1)
 
 
 def valvatne_blunt(

@@ -29,7 +29,8 @@ class ThroatStraightTest:
         actual = self.geo['throat.length'][0]
         assert_approx_equal(actual, desired=1.1216117)
 
-    def test_conduit_lengths(self):
+    def test_conduit_lengths_wo_centroid(self):
+        del self.geo["throat.centroid"]
         self.geo['throat.length'] = 0.5
         self.geo.add_model(propname='throat.conduit_lengths',
                            model=mods.conduit_lengths,
@@ -40,6 +41,20 @@ class ThroatStraightTest:
         assert_approx_equal(actual=L1, desired=0.2)
         assert_approx_equal(actual=L2, desired=0.3)
         assert_approx_equal(actual=Lt, desired=0.5)
+
+    def test_conduit_lengths_w_centroid(self):
+        # Delete "throat.length" key, otherwise, it won't get re-calculated
+        del self.geo['throat.length']
+        self.geo["throat.centroid"] = np.array([[0, 0.5, 0.5]]) + self.base
+        self.geo.add_model(propname='throat.conduit_lengths',
+                           model=mods.conduit_lengths,
+                           regen_mode='normal')
+        L1 = self.geo['throat.conduit_lengths.pore1'][0]
+        L2 = self.geo['throat.conduit_lengths.pore2'][0]
+        Lt = self.geo['throat.conduit_lengths.throat'][0]
+        assert_approx_equal(actual=L1, desired=0.2)
+        assert_approx_equal(actual=L2, desired=0.3)
+        assert_approx_equal(actual=Lt, desired=1.12161167)
 
 
 if __name__ == '__main__':
