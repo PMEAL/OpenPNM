@@ -1,6 +1,5 @@
 import pytest
-import importlib
-import scipy as sp
+import numpy as np
 import openpnm as op
 import numpy.testing as nt
 from openpnm.utils.misc import catch_module_not_found
@@ -17,7 +16,7 @@ class SolversTest:
         self.phys = op.physics.GenericPhysics(network=self.net,
                                               phase=self.phase,
                                               geometry=self.geom)
-        self.phys['throat.conductance'] = sp.linspace(1, 5, num=self.net.Nt)
+        self.phys['throat.conductance'] = np.linspace(1, 5, num=self.net.Nt)
         self.alg = op.algorithms.GenericTransport(network=self.net)
         self.alg.settings.update(quantity='pore.x',
                                  conductance='throat.conductance')
