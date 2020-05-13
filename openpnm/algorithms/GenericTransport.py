@@ -11,8 +11,15 @@ from openpnm.utils import logging, Docorator, GenericSettings
 # Uncomment this line when we stop supporting Python 3.6
 # from dataclasses import dataclass, field
 # from typing import List
+
 docstr = Docorator()
 logger = logging.getLogger(__name__)
+
+use_umfpack = True
+try:
+    import scikits.umfpack as umfpack
+except ImportError:
+    use_umfpack = False
 
 
 @docstr.get_sectionsf('GenericTransportSettings',
