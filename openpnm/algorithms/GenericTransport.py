@@ -538,13 +538,12 @@ class GenericTransport(GenericAlgorithm):
         self._build_A()
         self._build_b()
         self._apply_BCs()
-        if x0 is None:
-            x0 = np.zeros(self.Np, dtype=float)
+        x0 = np.zeros_like(self.b) if x0 is None else x0
         x_new = self._solve(x0=x0)
         quantity = self.settings['quantity']
+        if not quantity:
+            raise Exception('"quantity" has not been defined on this algorithm')
         self[quantity] = x_new
-        if not self.settings['quantity']:
-            raise Exception('quantity has not been defined on this algorithm')
 
     def _solve(self, A=None, b=None, x0=None):
         r"""
@@ -597,6 +596,10 @@ class GenericTransport(GenericAlgorithm):
         # Fetch solver object based on settings dict.
         solver = self._get_solver()
         x = solver(A, b, atol=atol, rtol=rtol, max_it=max_it, x0=x0)
+
+        # Check solution convergence
+        if not self._is_converged(x=x):
+            raise Exception(f"Solver did not converge.")
 
         return x
 
@@ -903,6 +906,22 @@ class GenericTransport(GenericAlgorithm):
             quantity = self.settings['quantity']
             x = self[quantity]
         return norm(self.A * x - self.b)
+
+    def _is_converged(self, x=None):
+        r"""
+        Check if solution has converged based on the following criterion:
+            res <= max(norm(b) * tol, atol)
+        """
+        res = self._get_residual(x=x)
+        # Verify that residual is finite (i.e. not inf/nan)
+        if not np.isfinite(res):
+            logger.error(f'Solution diverged: {res:.4e}')
+            raise Exception(f"Solution diverged, undefined residual: {res:.4e}")
+        # Check convergence
+        tol = self.settings["solver_tol"]
+        res_tol = norm(self.b) * tol
+        flag_converged = True if res <= res_tol else False
+        return flag_converged
 
     def _calc_eff_prop(self, inlets=None, outlets=None,
                        domain_area=None, domain_length=None):
