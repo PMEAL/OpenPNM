@@ -572,74 +572,91 @@ class GenericTransport(GenericAlgorithm):
         algorithm.
 
         """
+        x0 = np.zeros_like(self.b) if x0 is None else x0
+
         # Fetch A and b from self if not given, and throw error if not found
         A = self.A if A is None else A
         b = self.b if b is None else b
         if A is None or b is None:
             raise Exception('The A matrix or the b vector not yet built.')
         A = A.tocsr()
-        x0 = np.zeros_like(b) if x0 is None else x0
 
         # Check if A and b are well-defined
         self._check_for_nans()
 
-        # Raise error if solver_family not available
-        if self.settings["solver_family"] not in ["scipy", "petsc", "pyamg"]:
-            raise Exception(f"{self.settings['solver_family']} not available.")
-
-        # Set tolerance for iterative solvers
-        tol = self.settings["solver_tol"]
-        max_it = self.settings["solver_maxiter"]
-        atol = self._get_atol()
-        rtol = self._get_rtol(x0=x0)
         # Check if A is symmetric
         is_sym = op.utils.is_symmetric(self.A)
         if self.settings['solver_type'] == 'cg' and not is_sym:
             raise Exception('CG solver only works on symmetric matrices.')
 
-        # SciPy
-        if self.settings['solver_family'] == 'scipy':
-            # Umfpack by default uses its 32-bit build -> memory overflow
-            try:
-                import scikits.umfpack
-                A.indices = A.indices.astype(np.int64)
-                A.indptr = A.indptr.astype(np.int64)
-            except ModuleNotFoundError:
-                pass
-            solver = getattr(scipy.sparse.linalg, self.settings['solver_type'])
-            iterative = ['bicg', 'bicgstab', 'cg', 'cgs', 'gmres', 'lgmres',
-                         'minres', 'gcrotmk', 'qmr']
-            if solver.__name__ in iterative:
-                x, exit_code = solver(A=A, b=b, atol=atol, tol=tol, maxiter=max_it, x0=x0)
-                if exit_code > 0:
-                    raise Exception(f'Solver did not converge, exit code: {exit_code}')
-            else:
-                x = solver(A=A, b=b)
+        # Fetch additional parameters for iterative solvers
+        max_it = self.settings["solver_maxiter"]
+        atol = self._get_atol()
+        rtol = self._get_rtol(x0=x0)
 
-        # PETSc
-        if self.settings['solver_family'] == 'petsc':
-            # Check if petsc is available
-            try:
-                import petsc4py
-                from openpnm.utils.petsc import PETScSparseLinearSolver as SLS
-            except Exception:
-                raise ModuleNotFoundError('PETSc is not installed.')
-            temp = {"type": self.settings["solver_type"],
-                    "preconditioner": self.settings["solver_preconditioner"]}
-            ls = SLS(A=A, b=b, settings=temp)
-            x = ls.solve(x0=x0, atol=atol, rtol=rtol, max_it=max_it)
-
-        # PyAMG
-        if self.settings['solver_family'] == 'pyamg':
-            # Check if PyAMG is available
-            try:
-                import pyamg
-            except Exception:
-                raise ModuleNotFoundError('PyAMG is not installed.')
-            ml = pyamg.ruge_stuben_solver(A)
-            x = ml.solve(b=b, tol=rtol, maxiter=max_it)
+        # Fetch solver object based on settings dict.
+        solver = self._get_solver()
+        x = solver(A, b, atol=atol, rtol=rtol, max_it=max_it, x0=x0)
 
         return x
+
+    def _get_solver(self):
+        r"""
+        Fetch solver object based on solver settings stored in settings dict.
+
+        The returned object can be called via ``obj.solve(A, b, x0[optional])``
+        """
+        # SciPy
+        if self.settings['solver_family'] == 'scipy':
+            def solver(A, b, atol=None, rtol=None, max_it=None, x0=None):
+                r"""
+                Wrapper method for scipy sparse linear solvers.
+                """
+                if use_umfpack:
+                    A.indices = A.indices.astype(np.int64)
+                    A.indptr = A.indptr.astype(np.int64)
+                ls = getattr(scipy.sparse.linalg, self.settings['solver_type'])
+                if self.settings["solver_type"] == "spsolve":
+                    x = ls(A=A, b=b)
+                else:
+                    tol = self.settings["solver_tol"]
+                    x, _ = ls(A=A, b=b, atol=atol, tol=tol, maxiter=max_it, x0=x0)
+                return x
+        # PETSc
+        elif self.settings['solver_family'] == 'petsc':
+            def solver(A, b, atol=None, rtol=None, max_it=None, x0=None):
+                r"""
+                Wrapper method for PETSc sparse linear solvers.
+                """
+                from openpnm.utils.petsc import PETScSparseLinearSolver as SLS
+                temp = {"type": self.settings["solver_type"],
+                        "preconditioner": self.settings["solver_preconditioner"]}
+                ls = SLS(A=A, b=b, settings=temp)
+                x = ls.solve(x0=x0, atol=atol, rtol=rtol, max_it=max_it)
+                return x
+        # PyAMG
+        elif self.settings['solver_family'] == 'pyamg':
+            def solver(A, b, rtol=None, max_it=None, x0=None, **kwargs):
+                r"""
+                Wrapper method for PyAMG sparse linear solvers.
+                """
+                import pyamg
+                ml = pyamg.smoothed_aggregation_solver(A)
+                x = ml.solve(b=b, x0=x0, tol=rtol, maxiter=max_it, accel="bicgstab")
+                return x
+        # PyPardiso
+        elif self.settings['solver_family'] == 'pypardiso':
+            def solver(A, b, **kwargs):
+                r"""
+                Wrapper method for PyPardiso sparse linear solver.
+                """
+                import pypardiso
+                x = pypardiso.spsolve(A=A, b=b)
+                return x
+        else:
+            raise Exception(f"{self.settings['solver_family']} not available.")
+
+        return solver
 
     def _get_atol(self):
         r"""
