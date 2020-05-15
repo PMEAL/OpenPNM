@@ -119,7 +119,8 @@ class PETScSparseLinearSolver(Base):
         atol = self.settings['atol'] if atol is None else atol
         rtol = self.settings['rtol'] if rtol is None else rtol
         max_it = self.settings['maxiter'] if max_it is None else max_it
-        self.ksp.setTolerances(atol=atol, rtol=rtol, max_it=max_it)
+        # BUG: PETSc misses rtol requirement by ~10-20X -> Report to petsc4py
+        self.ksp.setTolerances(atol=None, rtol=rtol/50, max_it=max_it)
 
     def _initialize_A(self):
         r"""

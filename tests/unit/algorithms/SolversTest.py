@@ -58,7 +58,7 @@ class SolversTest:
             self.alg.settings['solver_type'] = solver
             with nt.assert_raises(Exception):
                 self.alg.run()
-        self.alg.settings.update(solver_maxiter=100)
+        self.alg.settings.update(solver_maxiter=5000)
 
     def test_pyamg_exception_if_not_found(self):
         self.alg.settings['solver_family'] = 'pyamg'
