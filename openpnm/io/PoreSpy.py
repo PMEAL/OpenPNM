@@ -14,10 +14,13 @@ class PoreSpy(GenericIO):
     def load(cls, filename, project=None, settings={}):
         r"""
         """
-        # Parse the link1 file
-        filename = cls._parse_filename(filename=filename, ext='dict')
-        with open(filename, mode='rb') as f:
-            net = pk.load(f)
+        # Parse the filename
+        if isinstance(filename, dict):
+            net = filename
+        else:
+            filename = cls._parse_filename(filename=filename, ext='dict')
+            with open(filename, mode='rb') as f:
+                net = pk.load(f)
 
         network = GenericNetwork(project=project)
         network = cls._update_network(network=network, net=net)
