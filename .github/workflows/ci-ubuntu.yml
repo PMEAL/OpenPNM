@@ -40,7 +40,8 @@ jobs:
         pip install petsc petsc4py
 
     - name: Running tests
-      run: pytest --pep8 --cov=./ --cov-report=xml --ignore=scripts/
+      run:
+        pytest --pep8 --cov=./ --cov-report=xml --ignore=scripts/
 
     - name: Upload coverage to Codecov
       if: matrix.python-version == 3.7
