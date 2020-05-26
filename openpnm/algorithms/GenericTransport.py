@@ -586,7 +586,8 @@ class GenericTransport(GenericAlgorithm):
         # Check if A is symmetric
         if self.settings['solver_type'] == 'cg':
             is_sym = op.utils.is_symmetric(self.A)
-            raise Exception('CG solver only works on symmetric matrices.')
+            if not is_sym:
+                raise Exception('CG solver only works on symmetric matrices.')
 
         # Fetch additional parameters for iterative solvers
         max_it = self.settings["solver_maxiter"]
