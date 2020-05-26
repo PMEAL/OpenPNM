@@ -1,6 +1,7 @@
 import pytest
 import numpy as np
 import openpnm as op
+import numpy.testing as nt
 
 
 class GenericTransportTest:
@@ -120,7 +121,7 @@ class GenericTransportTest:
         # Revert back changes to objects
         self.setup_class()
 
-    def test_rate_single(self):
+    def test_rate_single_pore(self):
         alg = op.algorithms.ReactiveTransport(network=self.net,
                                               phase=self.phase)
         alg.settings['conductance'] = 'throat.diffusive_conductance'
@@ -133,20 +134,34 @@ class GenericTransportTest:
         # Net rate must always be zero at steady state conditions
         assert np.isclose(alg.rate(pores=self.net.Ps), 0.0)
 
-    def test_rate_multiple(self):
+    def test_rate_multiple_pores(self):
         alg = op.algorithms.GenericTransport(network=self.net,
                                              phase=self.phase)
         alg.settings['conductance'] = 'throat.diffusive_conductance'
         alg.settings['quantity'] = 'pore.mole_fraction'
         alg.set_rate_BC(pores=[0, 1, 2, 3], values=1.235)
-        # Note that pore = 0 is assigned two rate values (rate = sum(rates))
         alg.set_rate_BC(pores=[5, 6, 19, 35, 0], values=3.455)
+        # Pore 0 is assigned two rate BCs, only the most recent will be kept
         alg.set_value_BC(pores=[50, 51, 52, 53], values=0.0)
         alg.run()
         rate = alg.rate(pores=[50, 51, 52, 53])[0]
-        assert np.isclose(rate, -(1.235*4 + 3.455*5))   # 4, 5 are number of pores
+        # 3 and 5 are number of pores in each rate BC
+        assert np.isclose(rate, -(1.235*3 + 3.455*5))
         # Net rate must always be zero at steady state conditions
         assert np.isclose(alg.rate(pores=self.net.Ps), 0.0)
+
+    def test_rate_multiple_values(self):
+        alg = op.algorithms.GenericTransport(network=self.net,
+                                              phase=self.phase)
+        alg.settings['conductance'] = 'throat.diffusive_conductance'
+        alg.settings['quantity'] = 'pore.mole_fraction'
+        alg.set_rate_BC(pores=[0, 1, 2, 3], values=[0, 3.5, 0.4, -12])
+        alg.set_value_BC(pores=[50, 51, 52, 53], values=0.0)
+        alg.run()
+        rate_individual = alg.rate(pores=[0, 1, 2, 3], mode='single')
+        rate_net = alg.rate(pores=[0, 1, 2, 3], mode='group')[0]
+        nt.assert_allclose(rate_individual, [0, 3.5, 0.4, -12], atol=1e-10)
+        nt.assert_allclose(rate_net, sum([0, 3.5, 0.4, -12]))
 
     def test_rate_Nt_by_2_conductance(self):
         net = op.network.Cubic(shape=[1, 6, 1])
