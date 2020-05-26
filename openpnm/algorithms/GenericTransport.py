@@ -369,18 +369,12 @@ class GenericTransport(GenericAlgorithm):
         if np.intersect1d(pores, BC_locs).size:
             logger.info('Another boundary condition detected in some locations!')
 
-        # Store boundary values
+        # Clear old boundary values if needed
         if ('pore.bc_' + bctype not in self.keys()) or (mode == 'overwrite'):
             self['pore.bc_' + bctype] = np.nan
-        if bctype == 'value':
-            self['pore.bc_' + bctype][pores] = values
-        if bctype == 'rate':
-            # Preserve already-assigned rate BCs
-            bc_rate_current = self.Ps[rate_BC_mask]
-            intersect = np.intersect1d(bc_rate_current, pores)
-            self['pore.bc_' + bctype][intersect] += values
-            # Assign rate BCs to those without previously assigned values
-            self['pore.bc_' + bctype][np.setdiff1d(pores, intersect)] = values
+
+        # Store boundary values
+        self['pore.bc_' + bctype][pores] = values
 
     def remove_BC(self, pores=None, bctype='all'):
         r"""
