@@ -584,8 +584,8 @@ class GenericTransport(GenericAlgorithm):
         self._check_for_nans()
 
         # Check if A is symmetric
-        is_sym = op.utils.is_symmetric(self.A)
-        if self.settings['solver_type'] == 'cg' and not is_sym:
+        if self.settings['solver_type'] == 'cg':
+            is_sym = op.utils.is_symmetric(self.A)
             raise Exception('CG solver only works on symmetric matrices.')
 
         # Fetch additional parameters for iterative solvers
