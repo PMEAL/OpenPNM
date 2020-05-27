@@ -9,7 +9,7 @@ jobs:
 
     runs-on: ${{ matrix.operating-system }}
     strategy:
-      max-parallel: 4
+      max-parallel: 1
       matrix:
         python-version: [3.7]
         operating-system: [ubuntu-latest]
