@@ -12,6 +12,7 @@ r"""
 
 """
 import numpy as _np
+import scipy as _sp
 
 
 def charge_conservation(target, phase, p_alg, e_alg, assumption):
@@ -894,4 +895,200 @@ def general_symbolic(target, eqn=None, arg_map=None):
     s1_val = s1(*data.values())
     s2_val = s2(*data.values())
     values = {'S1': s1_val, 'S2': s2_val, 'rate': r_val}
+    return values
+
+
+def butler_volmer_c(
+    target, X, z, j0, c_ref, alpha_anode, alpha_cathode,
+    temperature="pore.temperature",
+    reaction_area="pore.reaction_area",
+    solid_voltage="pore.solid_voltage",
+    electrolyte_voltage="pore.electrolyte_voltage",
+    open_circuit_voltage="pore.open_circuit_voltage",
+):
+    r"""
+    Calculates the rate, slope and intercept of the Butler-Volmer kinetic model
+    based on **concentration** to be used in mass transfer algorithms.
+
+        .. math::
+            r = j_0 A_{rxn} \frac{ X }{ c_{ref} }
+            \Big(
+                \exp[  \frac{\alpha_a z F}{RT} \eta ]
+              - \exp[ -\frac{\alpha_c z F}{RT} \eta ]
+            \Big)
+
+    Parameters
+    ----------
+    target : OpenPNM object
+        The OpenPNM object where the result will be applied.
+
+    X : string
+        The dictionary key on the target object containing the the quantity
+        of interest (i.e. main variable to be solved -> concentration)
+
+    z : float
+        Number of electrons transferred in the redox reaction [1]
+
+    j0 : float
+        Exchange current density [A/m^2]
+
+    c_ref : float
+        Reference concentration [mol/m^3]
+
+    alpha_anode, alpha_cathode : float
+        Anodic/cathodic transfer coefficient [1]
+
+    solid_voltage : string
+        The dictionary key on the target object containing solid phase voltages [V]
+
+    electrolyte_voltage : string
+        The dictionary key on the target object containing electrolyte phase voltages [V]
+
+    open_circuit_voltage : string
+        The dictionary key on the target object containing open-circuit voltage values [V]
+
+    reaction_area : string
+        The dictionary key on the target object containing reaction area values [m^2]
+
+    temperature : string
+        The dictionary key on the target object containing temperature values [K]
+
+    Returns
+    -------
+    A dictionary containing the following three items:
+
+        **'rate'** - The value of the source term function at the given X.
+
+        **'S1'** - The slope of the source term function at the given X.
+
+        **'S2'** - The intercept of the source term function at the given X.
+
+    The slope and intercept provide a linearized source term equation about the
+    current value of X as follow:
+
+        .. math::
+            rate = S_{1} X + S_{2}
+
+    """
+    network = target.project.network
+    pores = network.map_pores(pores=target.Ps, origin=target)
+    # Fetch model variables
+    X = target[X]
+    T = target[temperature]
+    Vs = target[solid_voltage]
+    Ve = target[electrolyte_voltage]
+    Voc = target[open_circuit_voltage]
+    A_rxn = network[reaction_area][pores]
+    F = _sp.constants.physical_constants["Faraday constant"][0]
+    R = _sp.constants.R
+    # Linearize with respect to X (electrolyte concentration)
+    eta = Vs - Ve - Voc
+    m1 = alpha_anode * z * F / (R * T)
+    m2 = alpha_cathode * z * F / (R * T)
+    # Correct for units [C/s] -> [mol/s]
+    r = j0 * A_rxn * X / c_ref * (_np.exp(m1 * eta) - _np.exp(-m2 * eta)) / z / F
+    S1 = j0 * A_rxn / c_ref * (_np.exp(m1 * eta) - _np.exp(-m2 * eta)) / z / F
+    S2 = 0.0
+    values = {"pore.S1": S1, "pore.S2": S2, "pore.rate": r}
+    return values
+
+
+def butler_volmer_v(
+    target, X, z, j0, c_ref, alpha_anode, alpha_cathode,
+    temperature="pore.temperature",
+    reaction_area="pore.reaction_area",
+    solid_voltage="pore.solid_voltage",
+    open_circuit_voltage="pore.open_circuit_voltage",
+    electrolyte_concentration="pore.electrolyte_concentration",
+):
+    r"""
+    Calculates the rate, slope and intercept of the Butler-Volmer kinetic model
+    based on **voltage** to be used in electron conduction algorithms.
+
+        .. math::
+            r = j_0 A_{rxn} \frac{ X }{ c_{ref} }
+            \Big(
+                \exp[  \frac{\alpha_a z F}{RT} \eta ]
+              - \exp[ -\frac{\alpha_c z F}{RT} \eta ]
+            \Big)
+
+    Parameters
+    ----------
+    target : OpenPNM object
+        The OpenPNM object where the result will be applied.
+
+    X : string
+        The dictionary key on the target object containing the the quantity
+        of interest (i.e. main variable to be solved -> electrolyte voltage)
+
+    z : float
+        Number of electrons transferred in the redox reaction [1]
+
+    j0 : float
+        Exchange current density [A/m^2]
+
+    c_ref : float
+        Reference concentration [mol/m^3]
+
+    alpha_anode, alpha_cathode : float
+        Anodic/cathodic transfer coefficient [1]
+
+    electrolyte_concentration : string
+        The dictionary key on the target object containing electrolyte concentrations
+        [mol/m^3]
+
+    solid_voltage : string
+        The dictionary key on the target object containing solid phase voltages [V]
+
+    electrolyte_voltage : string
+        The dictionary key on the target object containing electrolyte phase voltages [V]
+
+    open_circuit_voltage : string
+        The dictionary key on the target object containing open-circuit voltage values [V]
+
+    reaction_area : string
+        The dictionary key on the target object containing reaction area values [m^2]
+
+    temperature : string
+        The dictionary key on the target object containing temperature values [K]
+
+    Returns
+    -------
+    A dictionary containing the following three items:
+
+        **'rate'** - The value of the source term function at the given X.
+
+        **'S1'** - The slope of the source term function at the given X.
+
+        **'S2'** - The intercept of the source term function at the given X.
+
+    The slope and intercept provide a linearized source term equation about the
+    current value of X as follow:
+
+        .. math::
+            rate = S_{1} X + S_{2}
+
+    """
+    network = target.project.network
+    pores = network.map_pores(pores=target.Ps, origin=target)
+    # Fetch model variables
+    A_rxn = network[reaction_area][pores]
+    Vs = target[solid_voltage]
+    Voc = target[open_circuit_voltage]
+    c = target[electrolyte_concentration]
+    T = target[temperature]
+    X = target[X]
+    # Fetch model parameters (i.e. doesn't change between pores)
+    F = _sp.constants.physical_constants["Faraday constant"][0]
+    R = _sp.constants.R
+    # Linearize with respect to X (electrolyte voltage)
+    eta = Vs - X - Voc
+    gamma = j0 * A_rxn * c / c_ref
+    m1 = alpha_anode * z * F / (R * T)
+    m2 = alpha_cathode * z * F / (R * T)
+    r = gamma * (_sp.exp(m1 * eta) - _sp.exp(-m2 * eta))
+    drdv = -gamma * (m1 * _sp.exp(m1 * eta) + m2 * _sp.exp(-m2 * eta))
+    S1 = drdv
+    S2 = r - drdv * X
+    values = {"pore.S1": S1, "pore.S2": S2, "pore.rate": r}
     return values
