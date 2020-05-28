@@ -94,18 +94,25 @@ def charge_conservation(target, phase, p_alg, e_alg, assumption):
 def standard_kinetics(target, X, prefactor, exponent):
     r"""
     Calculates the rate, as well as slope and intercept of the following
-    function at the given value of `X`:
+    function at the given value of ``X``:
 
         .. math::
             r = A X^b
 
     Parameters
     ----------
-    ``prefactor, exponent`` : {string}
+    target : OpenPNM object
+        The OpenPNM object where the result will be applied.
+
+    X : string
+        The dictionary key on the target object containing the the quantity
+        of interest
+
+    prefactor, exponent : {string}
         The dictionary keys on the target object containing the coefficients
         values to be used in the source term model
 
-    ``quantity`` : {string}
+    quantity : {string}
         The dictionary key on the target object containing the the quantity
         of interest
 
@@ -138,6 +145,10 @@ def standard_kinetics(target, X, prefactor, exponent):
 
 
 def _parse_args(target, key, default):
+    r"""
+    Parses the passed ``key``: returns ``default`` if ``key`` is empty,
+    otherwise fetches and returns the values from ``target``.
+    """
     if key == '':
         val = default
     else:
@@ -148,20 +159,23 @@ def _parse_args(target, key, default):
 def linear(target, X, A1='', A2=''):
     r"""
     Calculates the rate, as well as slope and intercept of the following
-    function at the given value of `X`:
+    function at the given value of ``X``:
 
         .. math::
-            r = A_{1}   X  +  A_{2}
+            r = A_{1} X + A_{2}
 
     Parameters
     ----------
+    target : OpenPNM object
+        The OpenPNM object where the result will be applied.
+
+    X : string
+        The dictionary key on the target object containing the the quantity
+        of interest
+
     A1 -> A2 : string
         The dictionary keys on the target object containing the coefficients
         values to be used in the source term model
-
-    X : string
-        The dictionary key on the target objecxt containing the the quantity
-        of interest
 
     Returns
     -------
@@ -177,7 +191,7 @@ def linear(target, X, A1='', A2=''):
     current value of X as follow:
 
         .. math::
-            rate = S_{1}   X  +  S_{2}
+            rate = S_{1} X + S_{2}
 
     """
     A = _parse_args(target=target, key=A1, default=0.0)
@@ -201,13 +215,16 @@ def power_law(target, X, A1='', A2='', A3=''):
 
     Parameters
     ----------
+    target : OpenPNM object
+        The OpenPNM object where the result will be applied.
+
+    X : string
+        The dictionary key on the target object containing the the quantity
+        of interest
+
     A1 -> A3 : string
         The dictionary keys on the target object containing the coefficients
         values to be used in the source term model
-
-    X : string
-        The dictionary key on the target objecxt containing the the quantity
-        of interest
 
     Returns
     -------
@@ -223,7 +240,7 @@ def power_law(target, X, A1='', A2='', A3=''):
     current value of X as follow:
 
         .. math::
-            rate = S_{1}   X  +  S_{2}
+            rate = S_{1} X + S_{2}
 
     """
     A = _parse_args(target=target, key=A1, default=0.0)
@@ -248,13 +265,16 @@ def exponential(target, X, A1='', A2='', A3='', A4='', A5='', A6=''):
 
     Parameters
     ----------
+    target : OpenPNM object
+        The OpenPNM object where the result will be applied.
+
+    X : string
+        The dictionary key on the target object containing the the quantity
+        of interest
+
     A1 -> A6 : string
         The dictionary keys on the target object containing the coefficients
         values to be used in the source term model
-
-    X : string
-        The dictionary key on the target objecxt containing the the quantity
-        of interest
 
     Returns
     -------
@@ -270,7 +290,7 @@ def exponential(target, X, A1='', A2='', A3='', A4='', A5='', A6=''):
     current value of X as follow:
 
         .. math::
-            rate = S_{1}   X  +  S_{2}
+            rate = S_{1} X + S_{2}
 
     """
     A = _parse_args(target=target, key=A1, default=0.0)
@@ -294,17 +314,20 @@ def natural_exponential(target, X, A1='', A2='', A3='', A4='', A5=''):
     function at the given value of `X`:
 
         .. math::
-            r =   A_{1} exp( A_{2}  x^{ A_{3} } + A_{4} )+ A_{5}
+            r = A_{1} exp( A_{2}  x^{ A_{3} } + A_{4} )+ A_{5}
 
     Parameters
     ----------
+    target : OpenPNM object
+        The OpenPNM object where the result will be applied.
+
+    X : string
+        The dictionary key on the target object containing the the quantity
+        of interest
+
     A1 -> A5 : string
         The dictionary keys on the target object containing the coefficients
         values to be used in the source term model
-
-    X : string
-        The dictionary key on the target objecxt containing the the quantity
-        of interest
 
     Returns
     -------
@@ -320,7 +343,7 @@ def natural_exponential(target, X, A1='', A2='', A3='', A4='', A5=''):
     current value of X as follow:
 
         .. math::
-            rate = S_{1}   X  +  S_{2}
+            rate = S_{1} X + S_{2}
 
     """
     A = _parse_args(target=target, key=A1, default=0.0)
@@ -343,17 +366,20 @@ def logarithm(target, X, A1='', A2='', A3='', A4='', A5='', A6=''):
     function at the given value of `X`:
 
         .. math::
-            r =  A_{1}   Log_{ A_{2} }( A_{3} x^{ A_{4} }+ A_{5})+ A_{6}
+            r =  A_{1} Log_{ A_{2} }( A_{3} x^{ A_{4} }+ A_{5})+ A_{6}
 
     Parameters
     ----------
+    target : OpenPNM object
+        The OpenPNM object where the result will be applied.
+
+    X : string
+        The dictionary key on the target object containing the the quantity
+        of interest
+
     A1 -> A6 : string
         The dictionary keys on the target object containing the coefficients
         values to be used in the source term model
-
-    X : string
-        The dictionary key on the target objecxt containing the the quantity
-        of interest
 
     Returns
     -------
@@ -369,7 +395,7 @@ def logarithm(target, X, A1='', A2='', A3='', A4='', A5='', A6=''):
     current value of X as follow:
 
         .. math::
-            rate = S_{1}   X  +  S_{2}
+            rate = S_{1} X + S_{2}
 
     """
     A = _parse_args(target=target, key=A1, default=0.0)
@@ -394,17 +420,20 @@ def natural_logarithm(target, X, A1='', A2='', A3='', A4='', A5=''):
     function at the given value of `X`:
 
         .. math::
-            r =   A_{1}  Ln( A_{2} x^{ A_{3} }+ A_{4})+ A_{5}
+            r =   A_{1} Ln( A_{2} x^{ A_{3} }+ A_{4})+ A_{5}
 
     Parameters
     ----------
+    target : OpenPNM object
+        The OpenPNM object where the result will be applied.
+
+    X : string
+        The dictionary key on the target object containing the the quantity
+        of interest
+
     A1 -> A5 : string
         The dictionary keys on the target object containing the coefficients
         values to be used in the source term model
-
-    X : string
-        The dictionary key on the target objecxt containing the the quantity
-        of interest
 
     Returns
     -------
@@ -420,7 +449,7 @@ def natural_logarithm(target, X, A1='', A2='', A3='', A4='', A5=''):
     current value of X as follow:
 
         .. math::
-            rate = S_{1}   X  +  S_{2}
+            rate = S_{1} X + S_{2}
 
     """
     A = _parse_args(target=target, key=A1, default=0.0)
@@ -458,17 +487,20 @@ def linear_sym(target, X, A1='', A2=''):
     function at the given value of *x*:
 
         .. math::
-            r = A_{1}   x  +  A_{2}
+            r = A_{1} x + A_{2}
 
     Parameters
     ----------
-    A1 -> A2 : string
-        The dictionary keys on the target object containing the coefficients
-        values to be used in the source term model
+    target : OpenPNM object
+        The OpenPNM object where the result will be applied.
 
     X : string
         The dictionary key on the target object containing the the quantity
         of interest
+
+    A1 -> A2 : string
+        The dictionary keys on the target object containing the coefficients
+        values to be used in the source term model
 
     Returns
     -------
@@ -484,7 +516,7 @@ def linear_sym(target, X, A1='', A2=''):
     current value of X as follow:
 
         .. math::
-            rate = S_{1}   X  +  S_{2}
+            rate = S_{1} X + S_{2}
 
     """
     from sympy import symbols
@@ -511,17 +543,20 @@ def power_law_sym(target, X, A1='', A2='', A3=''):
     function at the given value of *x*:
 
         .. math::
-            r = A_{1}   x^{A_{2}}  +  A_{3}
+            r = A_{1} x^{A_{2}} + A_{3}
 
     Parameters
     ----------
+    target : OpenPNM object
+        The OpenPNM object where the result will be applied.
+
+    X : string
+        The dictionary key on the target object containing the the quantity
+        of interest
+
     A1 -> A3 : string
         The dictionary keys on the target object containing the coefficients
         values to be used in the source term model
-
-    X : string
-        The dictionary key on the target objecxt containing the the quantity
-        of interest
 
     Returns
     -------
@@ -537,7 +572,7 @@ def power_law_sym(target, X, A1='', A2='', A3=''):
     current value of X as follow:
 
         .. math::
-            rate = S_{1}   X  +  S_{2}
+            rate = S_{1} X + S_{2}
 
     """
     from sympy import symbols
@@ -565,17 +600,20 @@ def exponential_sym(target, X, A1='', A2='', A3='', A4='', A5='', A6=''):
     function at the given value of *x*:
 
         .. math::
-            r =  A_{1} A_{2}^{( A_{3} x^{ A_{4} } + A_{5})} + A_{6}
+            r = A_{1} A_{2}^{( A_{3} x^{ A_{4} } + A_{5})} + A_{6}
 
     Parameters
     ----------
+    target : OpenPNM object
+        The OpenPNM object where the result will be applied.
+
+    X : string
+        The dictionary key on the target object containing the the quantity
+        of interest
+
     A1 -> A6 : string
         The dictionary keys on the target object containing the coefficients
         values to be used in the source term model
-
-    X : string or float/int or array/list
-        The dictionary key on the target objecxt containing the the quantity
-        of interest
 
     Returns
     -------
@@ -591,7 +629,7 @@ def exponential_sym(target, X, A1='', A2='', A3='', A4='', A5='', A6=''):
     current value of X as follow:
 
         .. math::
-            rate = S_{1}   X  +  S_{2}
+            rate = S_{1} X + S_{2}
 
     """
     from sympy import symbols
@@ -622,17 +660,20 @@ def natural_exponential_sym(target, X, A1='', A2='', A3='', A4='', A5=''):
     function at the given value of *x*:
 
         .. math::
-            r =   A_{1} exp( A_{2}  x^{ A_{3} } + A_{4} )+ A_{5}
+            r = A_{1} exp( A_{2} x^{ A_{3} } + A_{4} )+ A_{5}
 
     Parameters
     ----------
+    target : OpenPNM object
+        The OpenPNM object where the result will be applied.
+
+    X : string
+        The dictionary key on the target object containing the the quantity
+        of interest
+
     A1 -> A6 : string
         The dictionary keys on the target object containing the coefficients
         values to be used in the source term model
-
-    X : string or float/int or array/list
-        The dictionary key on the target objecxt containing the the quantity
-        of interest
 
     Returns
     -------
@@ -648,7 +689,7 @@ def natural_exponential_sym(target, X, A1='', A2='', A3='', A4='', A5=''):
     current value of X as follow:
 
         .. math::
-            rate = S_{1}   X  +  S_{2}
+            rate = S_{1} X + S_{2}
 
     """
     from sympy import symbols, exp
@@ -678,17 +719,20 @@ def logarithm_sym(target, X, A1='', A2='', A3='', A4='', A5='', A6=''):
     function at the given value of *x*:
 
         .. math::
-            r =  A_{1}   Log_{ A_{2} }( A_{3} x^{ A_{4} }+ A_{5})+ A_{6}
+            r = A_{1} Log_{ A_{2} }( A_{3} x^{ A_{4} }+ A_{5})+ A_{6}
 
     Parameters
     ----------
+    target : OpenPNM object
+        The OpenPNM object where the result will be applied.
+
+    X : string
+        The dictionary key on the target object containing the the quantity
+        of interest
+
     A1 -> A6 : string
         The dictionary keys on the target object containing the coefficients
         values to be used in the source term model
-
-    x : string or float/int or array/list
-        The dictionary key on the target objecxt containing the the quantity
-        of interest
 
     Returns
     -------
@@ -704,7 +748,7 @@ def logarithm_sym(target, X, A1='', A2='', A3='', A4='', A5='', A6=''):
     current value of X as follow:
 
         .. math::
-            rate = S_{1}   X  +  S_{2}
+            rate = S_{1} X + S_{2}
 
     """
     from sympy import symbols, log
@@ -735,17 +779,20 @@ def natural_logarithm_sym(target, X, A1='', A2='', A3='', A4='', A5=''):
     function at the given value of *x*:
 
         .. math::
-            rate =   A_{1}  Ln( A_{2} x^{ A_{3} }+ A_{4})+ A_{5}
+            rate = A_{1} Ln( A_{2} x^{ A_{3} }+ A_{4})+ A_{5}
 
     Parameters
     ----------
+    target : OpenPNM object
+        The OpenPNM object where the result will be applied.
+
+    X : string
+        The dictionary key on the target object containing the the quantity
+        of interest
+
     A1 -> A5 : string
         The dictionary keys on the target object containing the coefficients
         values to be used in the source term model
-
-    X : string or float/int or array/list
-        The dictionary key on the target objecxt containing the the quantity
-        of interest
 
     Returns
     -------
@@ -761,7 +808,7 @@ def natural_logarithm_sym(target, X, A1='', A2='', A3='', A4='', A5=''):
     current value of X as follow:
 
         .. math::
-            rate = S_{1}   X  +  S_{2}
+            rate = S_{1} X + S_{2}
 
     """
     from sympy import symbols, ln
