@@ -948,7 +948,7 @@ def butler_volmer_c(
         The dictionary key on the target object containing open-circuit voltage values [V]
 
     reaction_area : string
-        The dictionary key on the target object containing reaction area values [m^2]
+        The dictionary key on the network object containing reaction area values [m^2]
 
     temperature : string
         The dictionary key on the target object containing temperature values [K]
@@ -1047,7 +1047,7 @@ def butler_volmer_v(
         The dictionary key on the target object containing open-circuit voltage values [V]
 
     reaction_area : string
-        The dictionary key on the target object containing reaction area values [m^2]
+        The dictionary key on the network object containing reaction area values [m^2]
 
     temperature : string
         The dictionary key on the target object containing temperature values [K]
