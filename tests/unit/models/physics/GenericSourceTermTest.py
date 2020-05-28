@@ -320,6 +320,43 @@ class GenericSourceTermTest:
         assert np.allclose(phys['pore.source1.S1'], phys['pore.general.S1'])
         assert np.allclose(phys['pore.source1.S2'], phys['pore.general.S2'])
 
+    def test_butler_volmer_v(self):
+        np.random.seed(10)
+        self.net["pore.reaction_area"] = np.random.rand(self.net.Np)
+        self.phys['pore.electrolyte_voltage'] = np.random.rand(self.net.Np) * 0.2
+        self.phys['pore.solid_voltage'] = 1.1
+        self.phys['pore.open_circuit_voltage'] = 1.2
+        self.phase['pore.electrolyte_concentration'] = np.random.rand(self.net.Np)
+        BV_params = {
+            "z": 4,
+            "j0": 1e-3,
+            "c_ref": 1000,
+            "alpha_anode": 0.4,
+            "alpha_cathode": 0.6
+        }
+        self.phys.add_model(propname='pore.rxn_BV_c',
+                            model=pm.generic_source_term.butler_volmer_c,
+                            X="pore.electrolyte_concentration", **BV_params)
+        self.phys.add_model(propname='pore.rxn_BV_v',
+                            model=pm.generic_source_term.butler_volmer_v,
+                            X="pore.electrolyte_voltage", **BV_params)
+        # Check Butler-Volmer model (concentration)
+        S1_BV_c = self.phys["pore.rxn_BV_c.S1"]
+        S2_BV_c = self.phys["pore.rxn_BV_c.S2"]
+        rate_BV_c = self.phys["pore.rxn_BV_c.rate"]
+        assert_allclose(S2_BV_c.mean(), 0)
+        assert_allclose(S1_BV_c.mean(), -0.06977055)
+        assert_allclose(rate_BV_c.mean(), -0.03541646)
+        # Check Butler-Volmer model (voltage)
+        S1_BV_v = self.phys["pore.rxn_BV_v.S1"]
+        S2_BV_v = self.phys["pore.rxn_BV_v.S2"]
+        rate_BV_v = self.phys["pore.rxn_BV_v.rate"]
+        assert_allclose(S2_BV_v.mean(), 226884.32)
+        assert_allclose(S1_BV_v.mean(), -1277463.52)
+        assert_allclose(rate_BV_v.mean(), -13668.675)
+        # The two Butler-Volmer models must only differ by z*F (unit conversion)
+        assert_allclose(rate_BV_v, rate_BV_c * BV_params["z"] * 96485.33212)
+
 
 if __name__ == '__main__':
 
