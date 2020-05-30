@@ -114,10 +114,12 @@ class TransientReactiveTransport(ReactiveTransport):
         super().__init__(**kwargs)
         self.settings._update_settings_and_docs(TransientReactiveTransportSettings)
         self.settings.update(settings)
-        self._A_steady = None   # Initialize the steady sys of eqs A matrix
+        # Initialize the steady sys of eqs A matrix
+        self._A_steady = None
         if phase is not None:
             self.setup(phase=phase)
-        self.set_IC(np.nan)     # Initialize the initial condition
+        # Initialize the initial condition
+        self["pore.ic"] = np.nan
 
     def setup(self, phase=None, quantity='', conductance='',
               t_initial=None, t_final=None, t_step=None, t_output=None,
@@ -129,12 +131,12 @@ class TransientReactiveTransport(ReactiveTransport):
         Parameters
         ----------
 
-
         Notes
         -----
         More settings can be adjusted in the presence of a non-linear source
         term such as under-relaxation.
         See the 'ReactiveTransport' class documentation for details.
+
         """
         if phase:
             self.settings['phase'] = phase.name
@@ -175,6 +177,8 @@ class TransientReactiveTransport(ReactiveTransport):
         if values.size > 1 and values.size != self.Np:
             raise Exception('The number of initial values must be either 1 or Np')
         self['pore.ic'] = values
+        if not quantity:
+            raise Exception('"quantity" has not been defined on this algorithm')
         self[quantity] = values
 
     def _get_f1_f2_f3(self):
