@@ -89,6 +89,19 @@ class TransientImplicitReactiveTransportTest:
              2, 1.76556357, 1.53112766]
         y = self.alg["pore.concentration"]
         nt.assert_allclose(y, x, rtol=1e-5)
+        self.alg.run()
+
+    def test_consecutive_runs_preserves_solution(self):
+        self.alg.setup(t_scheme='implicit')
+        self.alg.run()
+        x = [2, 0.95029957, 0.41910096,
+             2, 0.95029957, 0.41910096,
+             2, 0.95029957, 0.41910096]
+        y = self.alg["pore.concentration"]
+        nt.assert_allclose(y, x, rtol=1e-5)
+        self.alg.run()
+        y = self.alg["pore.concentration"]
+        nt.assert_allclose(y, x, rtol=1e-5)
 
     def test_adding_bc_over_sources(self):
         with pytest.raises(Exception):
@@ -97,6 +110,12 @@ class TransientImplicitReactiveTransportTest:
     def test_adding_sources_over_bc(self):
         with pytest.raises(Exception):
             self.alg.set_source(propname='pore.reaction', pores=self.net.pores('left'))
+
+    def test_set_IC_exception_if_quantity_not_specified(self):
+        alg = op.algorithms.TransientReactiveTransport(network=self.net,
+                                                       phase=self.phase)
+        with pytest.raises(Exception):
+            alg.set_IC(0)
 
     def teardown_class(self):
         ws = op.Workspace()

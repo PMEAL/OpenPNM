@@ -6,7 +6,7 @@ from numpy.testing import assert_allclose
 class ReactiveTransportTest:
 
     def setup_class(self):
-        self.net = op.network.Cubic(shape=[9, 9, 9])
+        self.net = op.network.Cubic(shape=[4, 4, 4])
         self.geo = op.geometry.GenericGeometry(network=self.net,
                                                pores=self.net.Ps,
                                                throats=self.net.Ts)
@@ -84,9 +84,9 @@ class ReactiveTransportTest:
         rt.set_source(pores=self.net.pores('bottom'), propname='pore.reaction')
         rt.set_value_BC(pores=self.net.pores('top'), values=1.0)
         rt.run()
-        c_mean_desired = 0.648268
+        c_mean_desired = 0.717129
         c_mean = rt['pore.concentration'].mean()
-        assert_allclose(c_mean, c_mean_desired, rtol=1e-6)
+        assert_allclose(c_mean, c_mean_desired, rtol=1e-5)
 
     def test_one_value_one_source(self):
         rt = op.algorithms.ReactiveTransport(network=self.net,
@@ -98,7 +98,7 @@ class ReactiveTransportTest:
         rt.set_source(pores=self.net.pores('bottom'), propname='pore.reaction')
         rt.set_value_BC(pores=self.net.pores('top'), values=1.0)
         rt.run()
-        c_mean_desired = 0.648268
+        c_mean_desired = 0.717129
         c_mean = rt['pore.concentration'].mean()
         assert_allclose(c_mean, c_mean_desired, rtol=1e-6)
 
@@ -137,7 +137,7 @@ class ReactiveTransportTest:
         rt.set_value_BC(pores=self.net.pores('right'), values=1.0)
         rt.run()
         cavg = rt["pore.concentration"].mean()
-        assert_allclose(cavg, 0.61034780)
+        assert_allclose(cavg, 0.666667, rtol=1e-5)
 
     def test_source_term_is_set_as_iterative_prop(self):
         rt = op.algorithms.ReactiveTransport(network=self.net,
@@ -182,18 +182,18 @@ class ReactiveTransportTest:
     def test_solution_should_diverge_w_large_relaxation(self):
         rt = op.algorithms.ReactiveTransport(network=self.net,
                                              phase=self.phase)
-        rt.setup(solver_tol=1e-10, max_iter=100,
+        rt.setup(solver_tol=1e-10, max_iter=25,
                  relaxation_source=1.0, relaxation_quantity=1.0)
         rt.settings.update({'conductance': 'throat.diffusive_conductance',
                             'quantity': 'pore.concentration'})
         rt.set_source(pores=self.net.pores('bottom'), propname='pore.reaction')
         rt.set_value_BC(pores=self.net.pores('top'), values=1.0)
-        rt.settings['relaxation_quantity'] = 2.0
+        rt.settings['relaxation_quantity'] = 20.0
         rt.settings['relaxation_source'] = 1.0
         with pytest.raises(Exception):
             rt.run()
         rt.settings['relaxation_quantity'] = 1.0
-        rt.settings['relaxation_source'] = 2.0
+        rt.settings['relaxation_source'] = 20.0
         with pytest.raises(Exception):
             rt.run()
 
@@ -223,8 +223,8 @@ if __name__ == '__main__':
 
     t = ReactiveTransportTest()
     t.setup_class()
-    self = t
     for item in t.__dir__():
         if item.startswith('test'):
             print('running test: '+item)
             t.__getattribute__(item)()
+    self = t

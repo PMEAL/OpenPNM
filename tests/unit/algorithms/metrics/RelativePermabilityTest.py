@@ -1,14 +1,22 @@
 import openpnm as op
+import numpy.testing as nt
 mgr = op.Workspace()
 
 
 class RelativePermeabilityTest:
 
     def setup_class(self):
-        self.net = op.network.Cubic(shape=[10, 10, 10], spacing=0.0006)
-        self.geo = op.geometry.StickAndBall(network=self.net,
-                                            pores=self.net.Ps,
-                                            throats=self.net.Ts)
+        self.net = op.network.Cubic(shape=[5, 5, 5], spacing=1)
+        self.geo = op.geometry.GenericGeometry(network=self.net)
+        self.geo["pore.diameter"] = 0.5
+        self.geo["pore.area"] = 0.5**2
+        self.geo["pore.volume"] = 0.5**3
+        self.geo["throat.diameter"] = 0.3
+        self.geo["throat.area"] = 0.3**2
+        self.geo["throat.volume"] = 0.3**3
+        self.geo["throat.conduit_lengths.throat"] = 1
+        self.geo["throat.conduit_lengths.pore1"] = 0.3
+        self.geo["throat.conduit_lengths.pore2"] = 0.9
         self.non_wet_phase = op.phases.Air(network=self.net)
         self.wet_phase = op.phases.Water(network=self.net)
         mod = op.models.physics.hydraulic_conductance.hagen_poiseuille
@@ -32,7 +40,7 @@ class RelativePermeabilityTest:
         rp = op.algorithms.metrics.RelativePermeability(network=self.net)
         rp.setup(invading_phase=self.non_wet_phase,
                  invasion_sequence='invasion_sequence')
-        rp.run()
+        rp.run(Snw_num=10)
         results = rp.get_Kr_data()
         assert results['relperm_wp'] == {}
 
@@ -45,11 +53,16 @@ class RelativePermeabilityTest:
                  invasion_sequence='invasion_sequence',
                  flow_inlets=inlets,
                  flow_outlets=outlets)
-        rp.run()
+        rp.run(Snw_num=10)
         results = rp.get_Kr_data()
-        val1 = results['relperm_wp']['x']
-        val2 = results['relperm_wp']['y']
-        assert val1 == val2
+        kx = results['relperm_wp']['x']
+        ky = results['relperm_wp']['y']
+        kr = [0.7230822778535343, 0.5469031280514686, 0.4675498520331332,
+              0.10041453914739418, 1.2428494917580884e-06, 1.0000000000000004e-06,
+              1.0000000000000004e-06, 1.0000000000000004e-06, 1.0000000000000004e-06,
+              1.0000000000000004e-06]
+        nt.assert_allclose(kx, ky)
+        nt.assert_allclose(kx, kr)
 
     def test_lacking_boundary_faces(self):
         inlets = {'x': 'top'}
@@ -60,9 +73,16 @@ class RelativePermeabilityTest:
                  invasion_sequence='invasion_sequence',
                  flow_inlets=inlets,
                  flow_outlets=outlets)
-        rp.run()
+        rp.run(Snw_num=10)
         results = rp.get_Kr_data()
-        assert results['relperm_wp']['x'] == results['relperm_wp']['z']
+        kx = results['relperm_wp']['x']
+        kz = results['relperm_wp']['z']
+        kr = [0.5953556221922877, 0.42713264157774794, 0.3658925423425995,
+              0.21493111700350034, 1.2600781827032384e-06, 1.000000000000001e-06,
+              1.000000000000001e-06, 1.000000000000001e-06, 1.000000000000001e-06,
+              1.000000000000001e-06]
+        nt.assert_allclose(kx, kz)
+        nt.assert_allclose(kx, kr)
 
     def test_user_defined_boundary_face(self):
         pores_in = self.net.pores('top')
@@ -73,21 +93,28 @@ class RelativePermeabilityTest:
         outlets = {'x': 'pore_out'}
         rp = op.algorithms.metrics.RelativePermeability(network=self.net)
         rp.setup(invading_phase=self.non_wet_phase,
-                 defending_phase=self.wet_phase,
-                 invasion_sequence='invasion_sequence',
-                 flow_inlets=inlets,
-                 flow_outlets=outlets)
-        rp.run()
+                  defending_phase=self.wet_phase,
+                  invasion_sequence='invasion_sequence',
+                  flow_inlets=inlets,
+                  flow_outlets=outlets)
+        rp.run(Snw_num=10)
         results = rp.get_Kr_data()
-        assert results['relperm_wp']['x'] == results['relperm_wp']['z']
+        kx = results['relperm_wp']['x']
+        kz = results['relperm_wp']['z']
+        kr = [0.5953556221922877, 0.42713264157774794, 0.3658925423425995,
+              0.21493111700350034, 1.2600781827032384e-06, 1.000000000000001e-06,
+              1.000000000000001e-06, 1.000000000000001e-06, 1.000000000000001e-06,
+              1.000000000000001e-06]
+        nt.assert_allclose(kx, kz)
+        nt.assert_allclose(kx, kr)
 
 
 if __name__ == '__main__':
 
     t = RelativePermeabilityTest()
     t.setup_class()
-    self = t
     for item in t.__dir__():
         if item.startswith('test'):
             print('running test: '+item)
             t.__getattribute__(item)()
+    self = t

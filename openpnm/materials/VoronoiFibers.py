@@ -89,10 +89,10 @@ class VoronoiFibers(Project):
     >>> import openpnm as op
     >>> ws = op.Workspace()
     >>> ws.clear()
-    >>> prj = op.materials.VoronoiFibers(num_points=50,
+    >>> prj = op.materials.VoronoiFibers(num_points=10,
     ...                                  shape=[1e-4, 1e-4, 1e-4],
     ...                                  fiber_rad=5e-6,
-    ...                                  resolution=1e-6)
+    ...                                  resolution=1e-5)
     """
 
     def __init__(
