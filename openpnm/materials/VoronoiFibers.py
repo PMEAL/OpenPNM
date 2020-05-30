@@ -92,7 +92,7 @@ class VoronoiFibers(Project):
     >>> prj = op.materials.VoronoiFibers(num_points=10,
     ...                                  shape=[1e-4, 1e-4, 1e-4],
     ...                                  fiber_rad=5e-6,
-    ...                                  resolution=1e-5)
+    ...                                  resolution=2e-6)
     """
 
     def __init__(
