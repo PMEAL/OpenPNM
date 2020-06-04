@@ -320,7 +320,7 @@ class GenericSourceTermTest:
         assert np.allclose(phys['pore.source1.S1'], phys['pore.general.S1'])
         assert np.allclose(phys['pore.source1.S2'], phys['pore.general.S2'])
 
-    def test_butler_volmer_v(self):
+    def test_butler_volmer_kinetics(self):
         np.random.seed(10)
         self.net["pore.reaction_area"] = np.random.rand(self.net.Np)
         self.phys['pore.electrolyte_voltage'] = np.random.rand(self.net.Np) * 0.2
