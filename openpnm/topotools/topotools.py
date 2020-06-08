@@ -819,7 +819,7 @@ def bond_percolation(ij, occupied_bonds):
 
     Returns
     -------
-    A tuple contain a list of site and bond labels, indicating which
+    A tuple containing a list of site and bond labels, indicating which
     cluster each belongs to.  A value of -1 indicates uninvaded.
 
     Notes
@@ -832,15 +832,23 @@ def bond_percolation(ij, occupied_bonds):
     """
     from collections import namedtuple
     Np = np.amax(ij) + 1
+    # Find occupied sites based on occupied bonds
+    # (the following 2 lines are not needed but worth keeping for future ref)
+    # occupied_sites = np.zeros([Np, ], dtype=bool)
+    # np.add.at(occupied_sites, ij[occupied_bonds].flatten(), True)
     adj_mat = sprs.csr_matrix((occupied_bonds, (ij[:, 0], ij[:, 1])),
                               shape=(Np, Np))
     adj_mat.eliminate_zeros()
     clusters = csgraph.connected_components(csgraph=adj_mat, directed=False)[1]
+    # Clusters of size 1 only occur if all a site's bonds are uninvaded
     valid_clusters = np.bincount(clusters) > 1
     mapping = -np.ones(shape=(clusters.max()+1, ), dtype=int)
     mapping[valid_clusters] = np.arange(0, valid_clusters.sum())
     s_labels = mapping[clusters]
+    # Bond inherit the cluster number of its connected sites
     b_labels = np.amin(s_labels[ij], axis=1)
+    # Set bond cluster to -1 if not actually occupied
+    b_labels[~occupied_bonds] = -1
     tup = namedtuple('cluster_labels', ('sites', 'bonds'))
     return tup(s_labels, b_labels)
 
