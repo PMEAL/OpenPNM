@@ -100,13 +100,13 @@ class TransientNernstPlanckMultiphysics(NernstPlanckMultiphysics):
         for e in e_alg:
             # Save A matrix of the steady sys of eqs (WITHOUT BCs applied)
             e._build_A()
-            e._A_steady = (e._A).copy()
+            e._A_steady = e._A.copy()
             # Initialize A and b with BCs applied
             e._t_update_A()
             e._t_update_b()
             e._apply_BCs()
-            e._A_t = (e._A).copy()
-            e._b_t = (e._b).copy()
+            e._A_t = e._A.copy()
+            e._b_t = e._b.copy()
         # Init A&b with BCs for charge conservation eq, independent of t_scheme
         p_alg._build_A()
         p_alg._apply_BCs()
@@ -174,7 +174,7 @@ class TransientNernstPlanckMultiphysics(NernstPlanckMultiphysics):
         phys = p_alg.project.find_physics(phase=phase)
         p_alg._charge_conservation_eq_source_term(e_alg=e_alg)
 
-        if (s == 'steady'):  # If solver in steady mode, do one iteration
+        if s == 'steady':  # If solver in steady mode, do one iteration
             print('Running in steady mode')
             super().run()
 
@@ -219,7 +219,8 @@ class TransientNernstPlanckMultiphysics(NernstPlanckMultiphysics):
 
                                 e._t_run_reactive(x0=g_old[e.name])
                                 g_new[e.name] = (
-                                    e[e.settings['quantity']].copy())
+                                    e[e.settings['quantity']].copy()
+                                )
                                 # Residual
                                 g_res[e.name] = np.sum(np.absolute(
                                     g_old[e.name]**2 - g_new[e.name]**2))
@@ -231,7 +232,8 @@ class TransientNernstPlanckMultiphysics(NernstPlanckMultiphysics):
                                 p_alg[p_alg.settings['quantity']].copy())
                             p_alg._run_reactive(x0=g_old[p_alg.name])
                             g_new[p_alg.name] = (
-                                p_alg[p_alg.settings['quantity']].copy())
+                                p_alg[p_alg.settings['quantity']].copy()
+                            )
                             # Residual
                             g_res[p_alg.name] = np.sum(np.absolute(
                                 g_old[p_alg.name]**2 - g_new[p_alg.name]**2))
@@ -268,15 +270,15 @@ class TransientNernstPlanckMultiphysics(NernstPlanckMultiphysics):
                             ph.regenerate_models()
                         # Update A matrix
                         e._build_A()
-                        e._A_steady = (e._A).copy()
+                        e._A_steady = e._A.copy()
 
                     # Update A and b and apply BCs
                     for e in e_alg:
                         e._t_update_A()
                         e._t_update_b()
                         e._apply_BCs()
-                        e._A_t = (e._A).copy()
-                        e._b_t = (e._b).copy()
+                        e._A_t = e._A.copy()
+                        e._b_t = e._b.copy()
 
                 else:  # Stop time iterations if residual < t_tolerance
                     # Output steady state solution
@@ -287,7 +289,7 @@ class TransientNernstPlanckMultiphysics(NernstPlanckMultiphysics):
                         alg[alg.settings['quantity']+'@'+t_str] = (
                             t_new[alg.name])
                     break
-            if (round(time, t_pre) == tf):
+            if round(time, t_pre) == tf:
                 print('\nMaximum time step reached: '+str(time)+' s')
             else:
                 print('\nTransient solver converged after: '+str(time)+' s')
