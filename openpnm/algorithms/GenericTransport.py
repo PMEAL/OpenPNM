@@ -33,12 +33,11 @@ class GenericTransportSettings(GenericSettings):
 
     Parameters
     ----------
-    phase : (str)
+    phase : str
         The name of the phase on which the algorithm acts
-
-    quantity : (str)
+    quantity : str
         The name of the physical quantity to be calculated
-    conductance : (str)
+    conductance : str
         The name of the pore-scale transport conductance values. These are
         typically calculated by a model attached to a *Physics* object
         associated with the given *Phase*.
