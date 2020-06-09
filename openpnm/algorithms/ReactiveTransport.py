@@ -143,6 +143,25 @@ class ReactiveTransport(GenericTransport):
             self.settings['relaxation_quantity'] = relaxation_quantity
         super().setup(**kwargs)
 
+    def run(self, x0=None):
+        r"""
+        Builds the A and b matrices, and calls the solver specified in the
+        ``settings`` attribute.
+
+        Parameters
+        ----------
+        x0 : ND-array
+            Initial guess of unknown variable
+        """
+        quantity = self.settings['quantity']
+        gvals = self.settings["conductance"]
+        logger.info('Running ReactiveTransport')
+        x0 = np.zeros(self.Np, dtype=float) if x0 is None else x0
+        if gvals in self._get_iterative_props():
+            self.settings.update({"cache_A": False, "cache_b": False})
+        x = self._run_reactive(x0)
+        self[quantity] = x
+
     @docstr.dedent
     def reset(self, source_terms=False, variable_props=False, **kwargs):
         r"""
@@ -152,7 +171,9 @@ class ReactiveTransport(GenericTransport):
         ----------
         %(GenericTransport.reset.parameters)s
         source_terms : boolean
-            If ``True`` removes source terms.  The default is ``False``.
+            If ``True`` removes source terms. The default is ``False``.
+        variable_props : boolean
+            If ``True`` removes variable properties. The default is ``False``.
         """
         super().reset(**kwargs)
         if source_terms:
@@ -163,55 +184,6 @@ class ReactiveTransport(GenericTransport):
             self.settings['sources'] = []
         if variable_props:
             self.settings['variable_props'] = []
-
-    def set_variable_props(self, propnames):
-        r"""
-        Inform the algorithm which properties are variable, so those on which
-        they depend will be updated on each solver iteration.
-
-        Parameters
-        ----------
-        propnames : string or list of strings
-            The propnames of the properties that are variable throughout
-            the algorithm.
-
-        """
-        if type(propnames) is str:  # Convert string to list if necessary
-            propnames = [propnames]
-        d = self.settings["variable_props"]
-        self.settings["variable_props"] = list(set(d) | set(propnames))
-
-    def _find_iterative_props(self):
-        r"""
-        Find and return properties that need to be iterated while running the
-        algorithm
-
-        Parameters
-        ----------
-        propnames : string or list of strings
-            The propnames of the properties that are variable throughout
-            the algorithm.
-
-        """
-        import networkx as nx
-        phase = self.project.phases(self.settings['phase'])
-        physics = self.project.find_physics(phase=phase)
-        geometries = self.project.geometries().values()
-        # Combine dependency graphs of phase and all physics/geometries
-        dg = phase.models.dependency_graph(deep=True)
-        for g in geometries:
-            dg = nx.compose(dg, g.models.dependency_graph(deep=True))
-        for p in physics:
-            dg = nx.compose(dg, p.models.dependency_graph(deep=True))
-        base_props = [self.settings["quantity"]] + self.settings["variable_props"]
-        if base_props is None:
-            return []
-        # Find all props downstream that rely on "quantity" (if at all)
-        dg = nx.DiGraph(nx.edge_dfs(dg, source=base_props))
-        if len(dg.nodes) == 0:
-            return []
-        dg.remove_nodes_from(base_props)
-        return list(nx.dag.lexicographical_topological_sort(dg))
 
     def set_source(self, propname, pores):
         r"""
@@ -243,29 +215,22 @@ class ReactiveTransport(GenericTransport):
         if propname not in self.settings['sources']:
             self.settings['sources'].append(propname)
 
-    @docstr.dedent
-    def _set_BC(self, pores, bctype, bcvalues=None, mode='merge'):
+    def set_variable_props(self, propnames):
         r"""
-        Apply boundary conditions to specified pores if no source terms are
-        already assigned to these pores. Otherwise, raise an error.
+        Inform the algorithm which properties are variable, so those on which
+        they depend will be updated on each solver iteration.
 
         Parameters
         ----------
-        %(GenericTransport._set_BC.parameters)s
+        propnames : string or list of strings
+            The propnames of the properties that are variable throughout
+            the algorithm.
 
-        Notes
-        -----
-        %(GenericTransport._set_BC.notes)s
         """
-        # First check that given pores do not have source terms already set
-        for item in self.settings['sources']:
-            if np.any(self[item][pores]):
-                raise Exception('Source term already present in given '
-                                + 'pores, cannot also assign boundary '
-                                + 'conditions')
-        # Then call parent class function if above check passes
-        super()._set_BC(pores=pores, bctype=bctype, bcvalues=bcvalues,
-                        mode=mode)
+        if type(propnames) is str:  # Convert string to list if necessary
+            propnames = [propnames]
+        d = self.settings["variable_props"]
+        self.settings["variable_props"] = list(set(d) | set(propnames))
 
     def _update_iterative_props(self):
         """r
@@ -283,7 +248,7 @@ class ReactiveTransport(GenericTransport):
         # Put quantity on phase so physics finds it when regenerating
         phase.update(self.results())
         # Regenerate iterative props with new guess
-        iterative_props = self._find_iterative_props()
+        iterative_props = self._get_iterative_props()
         phase.regenerate_models(propnames=iterative_props)
         for geometry in geometries:
             geometry.regenerate_models(iterative_props)
@@ -340,25 +305,6 @@ class ReactiveTransport(GenericTransport):
             self[_item + ".S1.old"] = phase[item + ".S1"]
             self[_item + ".S2.old"] = phase[item + ".S2"]
 
-    def run(self, x0=None):
-        r"""
-        Builds the A and b matrices, and calls the solver specified in the
-        ``settings`` attribute.
-
-        Parameters
-        ----------
-        x : ND-array
-            Initial guess of unknown variable
-        """
-        quantity = self.settings['quantity']
-        logger.info('Running ReactiveTransport')
-
-        # Create S1 & S2 for the 1st Picard iteration
-        if x0 is None:
-            x0 = np.zeros(self.Np, dtype=float)
-        x = self._run_reactive(x0)
-        self[quantity] = x
-
     def _run_reactive(self, x0):
         r"""
         Repeatedly updates ``A``, ``b``, and the solution guess within according
@@ -388,12 +334,12 @@ class ReactiveTransport(GenericTransport):
         """
         w = self.settings['relaxation_quantity']
         quantity = self.settings['quantity']
-        max_it = self.settings['max_iter']
+        max_it = self.settings['nlin_max_iter']
         # Write initial guess to algorithm obj (for _update_iterative_props to work)
         self[quantity] = x = x0
 
         for itr in range(max_it):
-            # Update iterative properties on phase and physics
+            # Update iterative properties on phase, geometries, and physics
             self._update_iterative_props()
             # Build A and b, apply BCs/source terms
             self._build_A()
@@ -412,3 +358,57 @@ class ReactiveTransport(GenericTransport):
         # Check solution convergence after max_it iterations
         if not self._is_converged():
             raise Exception(f"Not converged after {max_it} iterations.")
+
+    def _get_iterative_props(self):
+        r"""
+        Find and return properties that need to be iterated while running the
+        algorithm
+
+        Notes
+        -----
+        This method was moved from ReactiveTransport class to GenericTransport
+        because source terms are not necessarily the only properties that need
+        iteration during an algorithm (ex. concentration-dependent conductance)
+        """
+        import networkx as nx
+        phase = self.project.phases(self.settings['phase'])
+        physics = self.project.find_physics(phase=phase)
+        geometries = self.project.geometries().values()
+        # Combine dependency graphs of phase and all physics/geometries
+        dg = phase.models.dependency_graph(deep=True)
+        for g in geometries:
+            dg = nx.compose(dg, g.models.dependency_graph(deep=True))
+        for p in physics:
+            dg = nx.compose(dg, p.models.dependency_graph(deep=True))
+        base_props = [self.settings["quantity"]] + self.settings["variable_props"]
+        if base_props is None:
+            return []
+        # Find all props downstream that rely on "quantity" and variable_props
+        dg = nx.DiGraph(nx.edge_dfs(dg, source=base_props))
+        if len(dg.nodes) == 0:
+            return []
+        dg.remove_nodes_from(base_props)
+        return list(nx.dag.lexicographical_topological_sort(dg))
+
+    @docstr.dedent
+    def _set_BC(self, pores, bctype, bcvalues=None, mode='merge'):
+        r"""
+        Apply boundary conditions to specified pores if no source terms are
+        already assigned to these pores. Otherwise, raise an error.
+
+        Parameters
+        ----------
+        %(GenericTransport._set_BC.parameters)s
+
+        Notes
+        -----
+        %(GenericTransport._set_BC.notes)s
+        """
+        # First check that given pores do not have source terms already set
+        for item in self.settings['sources']:
+            if np.any(self[item][pores]):
+                raise Exception('Source term already present in given '
+                                + 'pores, cannot also assign boundary '
+                                + 'conditions')
+        # Then call parent class function if above check passes
+        super()._set_BC(pores=pores, bctype=bctype, bcvalues=bcvalues, mode=mode)
