@@ -10,12 +10,13 @@ coverage:
     project:
       default:
         target: auto
-        threshold: null
+        threshold: 0.1%
         branches: null
 
     patch:
       default:
         target: auto
+        threshold: 0.1%
         branches: null
 
 comment:
