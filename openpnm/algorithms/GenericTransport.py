@@ -520,7 +520,7 @@ class GenericTransport(GenericAlgorithm):
 
         Parameters
         ----------
-        x : ND-array
+        x0 : ND-array
             Initial guess of unknown variable
 
         Returns
