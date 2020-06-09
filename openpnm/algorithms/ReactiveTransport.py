@@ -35,9 +35,9 @@ class ReactiveTransportSettings(GenericSettings):
     ----------
     %(GenericTransportSettings.parameters)s
 
-    quantity : (str)
+    quantity : str
         The name of the physical quantity to be calculated
-    conductance : (str)
+    conductance : str
         The name of the pore-scale transport conductance values. These are
         typically calculated by a model attached to a *Physics* object
         associated with the given *Phase*.
@@ -57,24 +57,22 @@ class ReactiveTransportSettings(GenericSettings):
         solving for. Factor approaching 0 leads to improved stability but
         slower simulation. Factor approaching 1 gives fast simulation but
         may be unstable.
-    rxn_tolerance : float (default = 1e-8)
-        Tolerance to achieve. The solver returns a solution when 'residual'
-        falls below 'rxn_tolerance'.
-    max_iter : (int)
-        ##
+    nlin_max_iter : int
+        Maximum number of iterations allowed for the nonlinear solver to
+        converge. This parameter is different that ``GenericTransport``'s
+        ``solver_max_iter``.
 
     ----
 
-    **The following parameters pertain to the GenericTransport class**
+    **The following parameters pertain to the ``GenericTransport`` class**
 
     %(GenericTransportSettings.other_parameters)s
     """
 
-    max_iter = 5000
+    nlin_max_iter = 5000
     # relaxation = RelaxationSettings()
     relaxation_source = 1.0
     relaxation_quantity = 1.0
-    rxn_tolerance = 1e-8
     # Swap the following 2 lines when we stop supporting Python 3.6
     # sources: List = field(default_factory=lambda: [])
     sources = []
@@ -111,7 +109,7 @@ class ReactiveTransport(GenericTransport):
                           sections=['Parameters', 'Notes'])
     @docstr.dedent
     def setup(self, phase=None, quantity='', conductance='',
-              rxn_tolerance=None, max_iter=None, relaxation_source=None,
+              nlin_max_iter=None, relaxation_source=None,
               relaxation_quantity=None, **kwargs):
         r"""
         This method takes several arguments that are essential to running the
@@ -137,10 +135,8 @@ class ReactiveTransport(GenericTransport):
             self.settings['quantity'] = quantity
         if conductance:
             self.settings['conductance'] = conductance
-        if rxn_tolerance:
-            self.settings['rxn_tolerance'] = rxn_tolerance
-        if max_iter:
-            self.settings['max_iter'] = max_iter
+        if nlin_max_iter:
+            self.settings['max_iter'] = nlin_max_iter
         if relaxation_source:
             self.settings['relaxation_source'] = relaxation_source
         if relaxation_quantity:
