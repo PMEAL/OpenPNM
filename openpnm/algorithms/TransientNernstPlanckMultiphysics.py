@@ -30,7 +30,6 @@ class TransientNernstPlanckMultiphysicsSettings(GenericSettings):
     t_step = 0.1
     t_output = 1e+08
     t_tolerance = 1e-06
-    rxn_tolerance = 1e-05
     t_precision = 12
     t_scheme = 'implicit'
 

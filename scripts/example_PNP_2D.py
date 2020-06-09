@@ -74,25 +74,21 @@ phys.add_model(propname='throat.diffusive_conductance.' + Cl.name,
 sf = op.algorithms.StokesFlow(network=net, phase=sw)
 sf.set_value_BC(pores=net.pores('back'), values=2010)
 sf.set_value_BC(pores=net.pores('front'), values=10)
-sf.settings['rxn_tolerance'] = 1e-12
 sf.run()
 sw.update(sf.results())
 
 p = op.algorithms.IonicConduction(network=net, phase=sw)
 p.set_value_BC(pores=net.pores('left'), values=0.02)
 p.set_value_BC(pores=net.pores('right'), values=0.01)
-p.settings['rxn_tolerance'] = 1e-12
 p.settings['charge_conservation'] = 'electroneutrality_2D'
 
 eA = op.algorithms.NernstPlanck(network=net, phase=sw, ion=Na.name)
 eA.set_value_BC(pores=net.pores('back'), values=20)
 eA.set_value_BC(pores=net.pores('front'), values=10)
-eA.settings['rxn_tolerance'] = 1e-12
 
 eB = op.algorithms.NernstPlanck(network=net, phase=sw, ion=Cl.name)
 eB.set_value_BC(pores=net.pores('back'), values=20)
 eB.set_value_BC(pores=net.pores('front'), values=10)
-eB.settings['rxn_tolerance'] = 1e-12
 
 ad_dif_mig_Na = op.models.physics.ad_dif_mig_conductance.ad_dif_mig
 phys.add_model(propname='throat.ad_dif_mig_conductance.' + Na.name,

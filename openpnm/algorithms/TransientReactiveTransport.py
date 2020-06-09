@@ -51,10 +51,6 @@ class TransientReactiveTransportSettings(GenericSettings):
         't_final') when the residual falls below 't_tolerance'. The
         default value is 1e-06. The 'residual' measures the variation from
         one time-step to another in the value of the 'quantity' solved for.
-    rxn_tolerance : scalar
-        Tolerance to achieve within each time step. The solver passes to
-        next time step when 'residual' falls below 'rxn_tolerance'. The
-        default value is 1e-05.
     t_precision : integer
         The time precision (number of decimal places).
     t_scheme : string
@@ -83,7 +79,6 @@ class TransientReactiveTransportSettings(GenericSettings):
     t_step = 0.1
     t_output = 1e+08
     t_tolerance = 1e-06
-    rxn_tolerance = 1e-05
     t_precision = 12
     t_scheme = 'implicit'
 
@@ -382,20 +377,17 @@ class TransientReactiveTransport(ReactiveTransport):
 
         Notes
         -----
-        Description of 'relaxation_quantity' and 'max_iter' settings can be
+        Description of 'relaxation_quantity' and 'nlin_max_iter' settings can be
         found in the parent class 'ReactiveTransport' documentation.
 
         """
-        if x0 is None:
-            x0 = np.zeros(self.Np, dtype=float)
-        x = x0
-        self[self.settings['quantity']] = x
-
-        w = self.settings['relaxation_quantity']
         quantity = self.settings['quantity']
-        max_it = int(self.settings['max_iter'])
+        w = self.settings['relaxation_quantity']
+        max_it = int(self.settings['nlin_max_iter'])
+        x = np.zeros(self.Np, dtype=float) if x0 is None else x0.copy()
+
         # Write initial guess to algorithm for _update_iterative_props to work
-        self[quantity] = x = x0
+        self[quantity] = x
 
         for itr in range(max_it):
             # Update iterative properties on phase and physics
