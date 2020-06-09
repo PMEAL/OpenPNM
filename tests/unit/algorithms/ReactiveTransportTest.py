@@ -109,7 +109,8 @@ class ReactiveTransportTest:
                             X='pore.concentration',
                             regen_mode='deferred')
         self.alg.set_source(pores=self.net.pores('left'), propname='pore.reaction')
-        self.alg.set_source(pores=self.net.pores('left'), propname='pore.another_reaction')
+        self.alg.set_source(pores=self.net.pores('left'),
+                            propname='pore.another_reaction')
         self.alg.set_value_BC(pores=self.net.pores('right'), values=1.0)
         self.alg.run()
         cavg = self.alg["pore.concentration"].mean()
