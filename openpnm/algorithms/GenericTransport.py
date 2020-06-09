@@ -693,6 +693,33 @@ class GenericTransport(GenericAlgorithm):
             rtol = atol / res0
         return rtol
 
+    def _get_residual(self, x=None):
+        r"""
+        Calculate solution residual based on the given ``x`` based on the
+        following formula:
+            ``res = norm(A*x - b)``
+        """
+        if x is None:
+            quantity = self.settings['quantity']
+            x = self[quantity]
+        return norm(self.A * x - self.b)
+
+    def _is_converged(self, x=None):
+        r"""
+        Check if solution has converged based on the following criterion:
+            res <= max(norm(b) * tol, atol)
+        """
+        res = self._get_residual(x=x)
+        # Verify that residual is finite (i.e. not inf/nan)
+        if not np.isfinite(res):
+            logger.error(f'Solution diverged: {res:.4e}')
+            raise Exception(f"Solution diverged, undefined residual: {res:.4e}")
+        # Check convergence
+        tol = self.settings["solver_tol"]
+        res_tol = norm(self.b) * tol
+        flag_converged = True if res <= res_tol else False
+        return flag_converged
+
     def _check_for_nans(self):
         r"""
         Check whether A and b are well-defined, i.e. doesn't contain nans.
@@ -901,33 +928,6 @@ class GenericTransport(GenericAlgorithm):
                 "solver_max_iter": max_iter
             }
         )
-
-    def _get_residual(self, x=None):
-        r"""
-        Calculate solution residual based on the given ``x`` based on the
-        following formula:
-            ``res = norm(A*x - b)``
-        """
-        if x is None:
-            quantity = self.settings['quantity']
-            x = self[quantity]
-        return norm(self.A * x - self.b)
-
-    def _is_converged(self, x=None):
-        r"""
-        Check if solution has converged based on the following criterion:
-            res <= max(norm(b) * tol, atol)
-        """
-        res = self._get_residual(x=x)
-        # Verify that residual is finite (i.e. not inf/nan)
-        if not np.isfinite(res):
-            logger.error(f'Solution diverged: {res:.4e}')
-            raise Exception(f"Solution diverged, undefined residual: {res:.4e}")
-        # Check convergence
-        tol = self.settings["solver_tol"]
-        res_tol = norm(self.b) * tol
-        flag_converged = True if res <= res_tol else False
-        return flag_converged
 
     def _calc_eff_prop(self, inlets=None, outlets=None,
                        domain_area=None, domain_length=None):
