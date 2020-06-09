@@ -1,6 +1,6 @@
 import pytest
 import importlib
-import scipy as sp
+import numpy as np
 import openpnm as op
 import numpy.testing as nt
 from openpnm.utils.misc import catch_module_not_found
@@ -17,7 +17,7 @@ class SolversTest:
         self.phys = op.physics.GenericPhysics(network=self.net,
                                               phase=self.phase,
                                               geometry=self.geom)
-        self.phys['throat.conductance'] = sp.linspace(1, 5, num=self.net.Nt)
+        self.phys['throat.conductance'] = np.linspace(1, 5, num=self.net.Nt)
         self.alg = op.algorithms.GenericTransport(network=self.net)
         self.alg.settings.update(quantity='pore.x',
                                  conductance='throat.conductance')
@@ -59,13 +59,11 @@ class SolversTest:
             self.alg.settings['solver_type'] = solver
             with nt.assert_raises(Exception):
                 self.alg.run()
-        self.alg.settings.update(solver_maxiter=100)
+        self.alg.settings.update(solver_maxiter=5000)
 
     def test_pyamg_exception_if_not_found(self):
         self.alg.settings['solver_family'] = 'pyamg'
-        try:
-            import pyamg
-        except ModuleNotFoundError:
+        if not importlib.util.find_spec("pyamg"):
             with pytest.raises(Exception):
                 self.alg.run()
 
@@ -76,12 +74,23 @@ class SolversTest:
         xmean = self.alg['pore.x'].mean()
         nt.assert_allclose(actual=xmean, desired=0.587595, rtol=1e-5)
 
+    def test_pypardiso_exception_if_not_found(self):
+        self.alg.settings['solver_family'] = 'pypardiso'
+        if not importlib.util.find_spec("pypardiso"):
+            with pytest.raises(Exception):
+                self.alg.run()
+
+    @catch_module_not_found
+    def test_pypardiso(self):
+        self.alg.settings['solver_family'] = 'pypardiso'
+        self.alg.run()
+        xmean = self.alg['pore.x'].mean()
+        nt.assert_allclose(actual=xmean, desired=0.587595, rtol=1e-5)
+
     def test_petsc_exception_if_not_found(self):
         self.alg.settings['solver_family'] = 'petsc'
         self.alg.settings['solver_type'] = 'cg'
-        try:
-            import petsc4py
-        except ModuleNotFoundError:
+        if not importlib.util.find_spec("petsc4py"):
             with pytest.raises(Exception):
                 self.alg.run()
 

@@ -1,7 +1,6 @@
 import time
-import h5py
-import numpy as np
 import openpnm
+import numpy as np
 from copy import deepcopy
 from openpnm.utils import SettingsDict, HealthDict, Workspace, logging
 logger = logging.getLogger(__name__)
@@ -637,6 +636,7 @@ class Project(list):
         has not been confirmed yet, which is why these functions are hidden.
 
         """
+        import h5py
         with h5py.File(self.name + '.hdf5') as f:
             for obj in self:
                 for key in list(obj.keys()):
@@ -669,6 +669,7 @@ class Project(list):
         has not been confirmed yet, which is why these functions are hidden.
 
         """
+        import h5py
         with h5py.File(self.name + '.hdf5') as f:
             # Reload data into project
             for item in f.keys():

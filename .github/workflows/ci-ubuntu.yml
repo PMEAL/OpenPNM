@@ -5,6 +5,8 @@ on: [push]
 jobs:
   build:
 
+    if: "!contains(github.event.head_commit.message, 'ci min')"
+
     runs-on: ${{ matrix.operating-system }}
     strategy:
       max-parallel: 4
@@ -40,7 +42,8 @@ jobs:
         pip install petsc petsc4py
 
     - name: Running tests
-      run: pytest --pep8 --cov=./ --cov-report=xml --ignore=scripts/
+      run:
+        pytest --pep8 --cov=./ --cov-report=xml --ignore=scripts/
 
     - name: Upload coverage to Codecov
       if: matrix.python-version == 3.7
@@ -50,4 +53,4 @@ jobs:
         file: ./coverage.xml
         flags: unittests
         name: codecov-umbrella
-        yml: ./codecov.yml
+        # yml: ./codecov.yml  # arg deprecated

@@ -5,6 +5,8 @@ on: [push]
 jobs:
   build:
 
+    if: "!contains(github.event.head_commit.message, 'ci min')"
+
     runs-on: ${{ matrix.operating-system }}
     strategy:
       max-parallel: 4
@@ -33,4 +35,5 @@ jobs:
         python setup.py install
 
     - name: Running tests
-      run: pytest --pep8 --ignore=scripts/
+      run:
+        pytest --pep8 --ignore=scripts/ --ignore="openpnm/utils/petsc.py"

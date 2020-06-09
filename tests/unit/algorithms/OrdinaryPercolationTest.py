@@ -143,6 +143,18 @@ class OrdinaryPercolationTest:
         assert not self.alg.is_percolating(0)
         assert self.alg.is_percolating(1e5)
 
+    def test_entry_vs_invasion_pressure(self):
+        self.alg = op.algorithms.OrdinaryPercolation(network=self.net)
+        self.alg.setup(phase=self.water,
+                       mode='bond',
+                       access_limited=True)
+        self.alg.set_inlets(pores=self.net.pores('top'))
+        self.alg.set_outlets(pores=self.net.pores('bottom'))
+        self.alg.run()
+        Tinv = self.alg['throat.invasion_pressure']
+        Tent = self.water['throat.entry_pressure']
+        assert np.all(Tent <= Tinv)
+
 
 if __name__ == '__main__':
 

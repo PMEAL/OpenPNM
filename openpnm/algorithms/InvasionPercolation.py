@@ -469,7 +469,10 @@ class InvasionPercolation(GenericAlgorithm):
 
         """
         from numba import njit
-        from numba.errors import NumbaPendingDeprecationWarning
+        try:
+            from numba.core.errors import NumbaPendingDeprecationWarning
+        except ModuleNotFoundError:
+            from numba.errors import NumbaPendingDeprecationWarning
         warnings.simplefilter('ignore', category=NumbaPendingDeprecationWarning)
 
         @njit
