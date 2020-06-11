@@ -215,7 +215,7 @@ class ReactiveTransport(GenericTransport):
         if propname not in self.settings['sources']:
             self.settings['sources'].append(propname)
 
-    def set_variable_props(self, propnames):
+    def _set_variable_props(self, propnames):
         r"""
         Inform the algorithm which properties are variable, so those on which
         they depend will be updated on each solver iteration.

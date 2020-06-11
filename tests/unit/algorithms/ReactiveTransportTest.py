@@ -28,12 +28,12 @@ class ReactiveTransportTest:
 
     def test_set_variable_props(self):
         assert len(self.alg.settings["variable_props"]) == 0
-        self.alg.set_variable_props(propnames="pore.pressure")
+        self.alg._set_variable_props(propnames="pore.pressure")
         assert "pore.pressure" in self.alg.settings["variable_props"]
         # Ensure each prop is only added once
-        self.alg.set_variable_props(propnames="pore.pressure")
+        self.alg._set_variable_props(propnames="pore.pressure")
         assert len(self.alg.settings["variable_props"]) == 1
-        self.alg.set_variable_props(propnames=["pore.temperature", "pore.pressure"])
+        self.alg._set_variable_props(propnames=["pore.temperature", "pore.pressure"])
         assert len(self.alg.settings["variable_props"]) == 2
         assert "pore.pressure" in self.alg.settings["variable_props"]
         assert "pore.temperature" in self.alg.settings["variable_props"]
@@ -61,7 +61,7 @@ class ReactiveTransportTest:
         # When settings["variable_props"] is not empty
         self.phys.add_model(propname="pore.lambda_depends_on_blah",
                             model=lambda target, bar="pore.blah": 0.0)
-        self.alg.set_variable_props("pore.blah")
+        self.alg._set_variable_props("pore.blah")
         iterative_props = self.alg._get_iterative_props()
         assert len(iterative_props) == 3
         assert "pore.lambda_depends_on_blah" in iterative_props
@@ -191,7 +191,7 @@ class ReactiveTransportTest:
         assert 'sources' in self.alg.settings.keys()
         self.alg.reset(source_terms=True)
         assert not self.alg.settings['sources']
-        self.alg.set_variable_props(["pore.blah", "pore.foo"])
+        self.alg._set_variable_props(["pore.blah", "pore.foo"])
         assert len(self.alg.settings["variable_props"]) == 2
         self.alg.reset(variable_props=True)
         assert not self.alg.settings["variable_props"]
