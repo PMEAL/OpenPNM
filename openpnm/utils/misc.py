@@ -87,9 +87,7 @@ class PrintableDict(OrderedDict):
 
     def __str__(self):
         header = "―" * 78
-        lines = [header]
-        lines.append("{0:<35s} {1}".format(self._key, self._value))
-        lines.append(header)
+        lines = [header, "{0:<35s} {1}".format(self._key, self._value), header]
         for item in list(self.keys()):
             if type(self[item]) == _sp.ndarray:
                 lines.append("{0:<35s} {1}".format(item, _np.shape(self[item])))

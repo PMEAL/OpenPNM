@@ -56,8 +56,8 @@ phys.add_model(propname='throat.diffusive_conductance.' + Cl.name,
                model=eB_dif, regen_mode='normal')
 
 # settings for algorithms
-setts1 = {'solver_maxiter': 5, 'solver_tol': 1e-08, 'solver_rtol': 1e-08,
-          'max_iter': 10}
+setts1 = {'solver_max_iter': 5, 'solver_tol': 1e-08, 'solver_rtol': 1e-08,
+          'nlin_max_iter': 10}
 setts2 = {'g_tol': 1e-4, 'g_max_iter': 4, 't_output': 5000, 't_step': 500,
           't_final': 20000, 't_scheme': 'implicit'}
 

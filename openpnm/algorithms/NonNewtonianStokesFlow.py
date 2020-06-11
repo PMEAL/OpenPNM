@@ -16,7 +16,6 @@ class NonNewtonianStokesFlow(ReactiveTransport):
         def_set = {'phase': None,
                    'quantity': 'pore.pressure',
                    'conductance': 'throat.nonNewtonian_hydraulic_conductance',
-                   'rxn_tolerance': 1e-12,
                    'gui': {'setup':        {'phase': None,
                                             'quantity': '',
                                             'conductance': ''},
