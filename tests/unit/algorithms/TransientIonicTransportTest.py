@@ -78,10 +78,10 @@ class TransientIonicTransportTest:
 
         # settings for algorithms
         self.settings1 = {
-            "solver_maxiter": 5,
+            "solver_max_iter": 5,
             "solver_tol": 1e-08,
             "solver_rtol": 1e-08,
-            "max_iter": 10,
+            "nlin_max_iter": 10,
         }
         self.settings2 = {
             "g_tol": 1e-4,

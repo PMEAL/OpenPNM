@@ -33,12 +33,11 @@ class GenericTransportSettings(GenericSettings):
 
     Parameters
     ----------
-    phase : (str)
+    phase : str
         The name of the phase on which the algorithm acts
-
-    quantity : (str)
+    quantity : str
         The name of the physical quantity to be calculated
-    conductance : (str)
+    conductance : str
         The name of the pore-scale transport conductance values. These are
         typically calculated by a model attached to a *Physics* object
         associated with the given *Phase*.
@@ -54,25 +53,34 @@ class GenericTransportSettings(GenericSettings):
         ``cg`` or ``gmres``. [More info here]
         (https://docs.scipy.org/doc/scipy/reference/sparse.linalg.html),
     solver_preconditioner : str (default = ``jacobi``)
-        This is used by the PETSc solver to specify which preconditioner to
-        use.
-    solver_tol : float (default = 1e-6)
+        Used by the PETSc solver to specify which preconditioner to use.
+    solver_tol : float (default = 1e-8)
         Used to control the accuracy to which the iterative solver aims to
-        achieve before stopping.
+        achieve before stopping. Can roughly be interpreted as the number of
+        significant digits you want in your solution, i.e. 1e-8 -> 8
     solver_atol : float
-        ##
+        Absolute tolerance as a stopping criterion when using iterative
+        solvers, defined as:
+            atol = norm(Ax-b) @ x_final
+        Don't specify this parameter unless you know what you're doing. The
+        algorithm automatically calculates it based on ``solver_tol``.
     solver_rtol : float
-        ##
-    solver_maxiter : int (default = 5000)
-        Limits the number of iterations to attempt before quiting when aiming
-        for the specified tolerance. The default is 5000.
-        ##
+        Relative tolerance as a stopping criterion when using iterative
+        solvers, defined as the ratio of the residual computed using the
+        accepted solution to that using the initial guess, i.e.:
+            rtol = norm(Ax-b) @ x_final / norm(Ax-b) @ x0
+        Don't specify this parameter unless you know what you're doing. The
+        algorithm automatically calculates it based on ``solver_tol``.
+    solver_max_iter : int (default = 5000)
+        Maximum number of iterations allowed when using iterative solvers.
     variable_props : list
-        ##
+        List of pore/throat properties whose values might change during the
+        algorithm and thus, need to be iterated for the solution to converge,
+        e.g. "pore.diffusivity" if diffusivity is concentration-dependent.
     cache_A : bool
-        ##
+        If ``True``, A matrix is cached and reused rather than getting rebuilt.
     cache_b : bool
-        ##
+        If ``True``, b vector is cached and reused rather than getting rebuilt.
     """
 
     phase = None
@@ -84,7 +92,7 @@ class GenericTransportSettings(GenericSettings):
     solver_tol = 1e-8
     solver_atol = None
     solver_rtol = None
-    solver_maxiter = 5000
+    solver_max_iter = 5000
     cache_A = True
     cache_b = True
 
@@ -512,7 +520,7 @@ class GenericTransport(GenericAlgorithm):
 
         Parameters
         ----------
-        x : ND-array
+        x0 : ND-array
             Initial guess of unknown variable
 
         Returns
@@ -584,7 +592,7 @@ class GenericTransport(GenericAlgorithm):
                 raise Exception('CG solver only works on symmetric matrices.')
 
         # Fetch additional parameters for iterative solvers
-        max_it = self.settings["solver_maxiter"]
+        max_it = self.settings["solver_max_iter"]
         atol = self._get_atol()
         rtol = self._get_rtol(x0=x0)
 
@@ -684,6 +692,33 @@ class GenericTransport(GenericAlgorithm):
             atol = self._get_atol()
             rtol = atol / res0
         return rtol
+
+    def _get_residual(self, x=None):
+        r"""
+        Calculate solution residual based on the given ``x`` based on the
+        following formula:
+            ``res = norm(A*x - b)``
+        """
+        if x is None:
+            quantity = self.settings['quantity']
+            x = self[quantity]
+        return norm(self.A * x - self.b)
+
+    def _is_converged(self, x=None):
+        r"""
+        Check if solution has converged based on the following criterion:
+            res <= max(norm(b) * tol, atol)
+        """
+        res = self._get_residual(x=x)
+        # Verify that residual is finite (i.e. not inf/nan)
+        if not np.isfinite(res):
+            logger.error(f'Solution diverged: {res:.4e}')
+            raise Exception(f"Solution diverged, undefined residual: {res:.4e}")
+        # Check convergence
+        tol = self.settings["solver_tol"]
+        res_tol = norm(self.b) * tol
+        flag_converged = True if res <= res_tol else False
+        return flag_converged
 
     def _check_for_nans(self):
         r"""
@@ -825,7 +860,7 @@ class GenericTransport(GenericAlgorithm):
             tol=None,
             atol=None,
             rtol=None,
-            maxiter=None,
+            max_iter=None,
     ):
         r"""
         Set the solver to be used to solve the algorithm.
@@ -857,6 +892,9 @@ class GenericTransport(GenericAlgorithm):
             many orders of magnitude reduction in residual is desired, compared
             to its value at initial guess.
 
+        max_iter : int, optional
+            Maximum number of iterations
+
         Returns
         -------
         None.
@@ -876,8 +914,8 @@ class GenericTransport(GenericAlgorithm):
             atol = settings["solver_atol"]
         if rtol is None:
             rtol = settings["solver_rtol"]
-        if maxiter is None:
-            maxiter = settings["solver_maxiter"]
+        if max_iter is None:
+            max_iter = settings["solver_max_iter"]
         # Update settings on algorithm object
         self.settings.update(
             {
@@ -887,36 +925,9 @@ class GenericTransport(GenericAlgorithm):
                 "solver_tol": tol,
                 "solver_atol": atol,
                 "solver_rtol": rtol,
-                "solver_maxiter": maxiter
+                "solver_max_iter": max_iter
             }
         )
-
-    def _get_residual(self, x=None):
-        r"""
-        Calculate solution residual based on the given ``x`` based on the
-        following formula:
-            ``res = norm(A*x - b)``
-        """
-        if x is None:
-            quantity = self.settings['quantity']
-            x = self[quantity]
-        return norm(self.A * x - self.b)
-
-    def _is_converged(self, x=None):
-        r"""
-        Check if solution has converged based on the following criterion:
-            res <= max(norm(b) * tol, atol)
-        """
-        res = self._get_residual(x=x)
-        # Verify that residual is finite (i.e. not inf/nan)
-        if not np.isfinite(res):
-            logger.error(f'Solution diverged: {res:.4e}')
-            raise Exception(f"Solution diverged, undefined residual: {res:.4e}")
-        # Check convergence
-        tol = self.settings["solver_tol"]
-        res_tol = norm(self.b) * tol
-        flag_converged = True if res <= res_tol else False
-        return flag_converged
 
     def _calc_eff_prop(self, inlets=None, outlets=None,
                        domain_area=None, domain_length=None):

@@ -5,6 +5,8 @@
 [![](https://codecov.io/gh/PMEAL/OpenPNM/branch/master/graph/badge.svg)](https://codecov.io/gh/PMEAL/OpenPNM)
 [![](https://img.shields.io/badge/ReadTheDocs-GO-blue.svg)](http://openpnm.readthedocs.io/en/master/)
 [![](https://badge.fury.io/py/openpnm.svg)](https://pypi.python.org/pypi/openpnm)
+[![](https://anaconda.org/conda-forge/openpnm/badges/installer/conda.svg)](https://anaconda.org/conda-forge/openpnm)
+
 
 -----
 
@@ -26,7 +28,13 @@ OpenPNM can be installed from the [Python Package Index](https://pypi.org/projec
 pip install openpnm
 ```
 
-Or the source code can be downloaded from [Github](https://github.com/pmeal/OpenPNM/) and installed by running:
+or from [Anaconda Cloud](https://anaconda.org/conda-forge/openpnm) using:
+
+```
+conda install -c conda-forge openpnm
+```
+
+or the source code can be downloaded from [Github](https://github.com/pmeal/OpenPNM/) and installed by running:
 
 ```
 pip install -e 'path/to/downloaded/files'
