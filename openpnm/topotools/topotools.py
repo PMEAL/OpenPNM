@@ -2262,10 +2262,15 @@ def plot_coordinates(network, pores=None, fig=None, **kwargs):
     if ThreeD:
         _scale_3d_axes(ax=ax, X=X, Y=Y, Z=Z)
         ax.scatter(xs=X, ys=Y, zs=Z, **kwargs)
+        ax.set_xlabel('x-axis')
+        ax.set_ylabel('y-axis')
+        ax.set_zlabel('z-axis')
     else:
         dummy_dim = temp.index(1)
         X, Y = [xi for j, xi in enumerate([X, Y, Z]) if j != dummy_dim]
         ax.scatter(X, Y, **kwargs)
+        ax.set_xlabel('x-axis')
+        ax.set_ylabel('y-axis')
 
     return fig
 
