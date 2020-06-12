@@ -1,6 +1,6 @@
 name: macOS
 
-on: [push, pull_request]
+on: [push]
 
 jobs:
   build:
@@ -11,7 +11,7 @@ jobs:
     strategy:
       max-parallel: 4
       matrix:
-        python-version: [3.6, 3.7]
+        python-version: [3.7]
         operating-system: [macos-latest]
 
     steps:
