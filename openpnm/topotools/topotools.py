@@ -2150,45 +2150,34 @@ def plot_connections(network, throats=None, fig=None, **kwargs):
     """
     import matplotlib.pyplot as plt
     from mpl_toolkits.mplot3d import Axes3D
+    from matplotlib.collections import LineCollection
+    from mpl_toolkits.mplot3d.art3d import Line3DCollection
 
     Ts = network.Ts if throats is None else network._parse_indices(throats)
+    dim = dimensionality(network)
+    ThreeD = True if dim.sum() == 3 else False
+    # Add a dummy axis for 1D networks
+    if dim.sum() == 1:
+        dim[np.argwhere(dim == False)[0]] = True
 
-    temp = [np.unique(network["pore.coords"][:, i]).size for i in range(3)]
-    ThreeD = False if 1 in temp else True
-
-    if fig is None:
-        fig = plt.figure()
-        if ThreeD:
-            ax = fig.add_subplot(111, projection='3d')
-        else:
-            ax = fig.gca()
-    else:
-        ax = fig.gca()
-
-    # Create dummy indexing to sp.inf
-    i = -1*np.ones((np.size(Ts)*3, ), dtype=int)
-    i[0::3] = network['throat.conns'][Ts, 0]
-    i[1::3] = network['throat.conns'][Ts, 1]
+    fig = plt.figure() if fig is None else fig
+    ax = fig.gca()
+    if ThreeD and ax.name != '3d':
+        fig.delaxes(ax)
+        ax = fig.add_subplot(111, projection='3d')
 
     # Collect coordinates and scale axes to fit
     Ps = np.unique(network['throat.conns'][Ts])
     X, Y, Z = network['pore.coords'][Ps].T
+    xyz = network["pore.coords"][:, dim]
+    P1, P2 = network["throat.conns"][Ts].T
+
+    throat_pos = np.column_stack((xyz[P1], xyz[P2])).reshape((Ts.size, 2, dim.sum()))
+    lc = Line3DCollection(throat_pos) if ThreeD else LineCollection(throat_pos)
+    ax.add_collection(lc)
 
     _scale_3d_axes(ax=ax, X=X, Y=Y, Z=Z)
-
-    # Add sp.inf to the last element of pore.coords (i.e. -1)
-    inf = np.array((sp.inf,))
-    X = np.hstack([network['pore.coords'][:, 0], inf])
-    Y = np.hstack([network['pore.coords'][:, 1], inf])
-    Z = np.hstack([network['pore.coords'][:, 2], inf])
-
-    if ThreeD:
-        ax.plot(xs=X[i], ys=Y[i], zs=Z[i], **kwargs)
-    else:
-        dummy_dim = temp.index(1)
-        X, Y = [xi for j, xi in enumerate([X, Y, Z]) if j != dummy_dim]
-        ax.plot(X[i], Y[i], **kwargs)
-        ax.autoscale()
+    _label_axes(ax=ax, X=X, Y=Y, Z=Z)
 
     return fig
 
@@ -2250,30 +2239,53 @@ def plot_coordinates(network, pores=None, fig=None, **kwargs):
 
     Ps = network.Ps if pores is None else network._parse_indices(pores)
 
-    temp = [np.unique(network["pore.coords"][:, i]).size for i in range(3)]
-    ThreeD = False if 1 in temp else True
+    dim = dimensionality(network)
+    ThreeD = True if dim.sum() == 3 else False
+    # Add a dummy axis for 1D networks
+    if dim.sum() == 1:
+        dim[np.argwhere(dim == False)[0]] = True
+    # Add 2 dummy axes for 0D networks (1 pore only)
+    if dim.sum() == 0:
+        dim[[0, 1]] = True
 
-    if fig is None:
-        fig = plt.figure()
-        if ThreeD:
-            ax = fig.add_subplot(111, projection='3d')
-        else:
-            ax = fig.add_subplot(111)
-    else:
-        ax = fig.gca()
+    fig = plt.figure() if fig is None else fig
+    ax = fig.gca()
+    if ThreeD and ax.name != '3d':
+        fig.delaxes(ax)
+        ax = fig.add_subplot(111, projection='3d')
 
     # Collect specified coordinates
     X, Y, Z = network['pore.coords'][Ps].T
 
     if ThreeD:
-        _scale_3d_axes(ax=ax, X=X, Y=Y, Z=Z)
-        ax.scatter(xs=X, ys=Y, zs=Z, **kwargs)
+        ax.scatter(X, Y, Z, **kwargs)
     else:
-        dummy_dim = temp.index(1)
-        X, Y = [xi for j, xi in enumerate([X, Y, Z]) if j != dummy_dim]
-        ax.scatter(X, Y, **kwargs)
+        X_temp, Y_temp = np.column_stack((X, Y, Z))[:, dim].T
+        ax.scatter(X_temp, Y_temp, **kwargs)
+
+    _scale_3d_axes(ax=ax, X=X, Y=Y, Z=Z)
+    _label_axes(ax=ax, X=X, Y=Y, Z=Z)
 
     return fig
+
+
+def _label_axes(ax, X, Y, Z):
+    labels = ["X", "Y", "Z"]
+    dim = np.zeros(3, dtype=bool)
+    for i, arr in enumerate([X, Y, Z]):
+        if np.unique(arr).size > 1:
+            dim[i] = True
+    # Add a dummy axis for 1D networks
+    if dim.sum() == 1:
+        dim[np.argwhere(dim == False)[0]] = True
+    # Add 2 dummy axes for 0D networks (1 pore only)
+    if dim.sum() == 0:
+        dim[[0, 1]] = True
+    dim_idx = np.argwhere(dim == True).squeeze()
+    ax.set_xlabel(labels[dim_idx[0]])
+    ax.set_ylabel(labels[dim_idx[1]])
+    if hasattr(ax, "set_zlim"):
+        ax.set_zlabel("Z")
 
 
 def _scale_3d_axes(ax, X, Y, Z):
@@ -2281,17 +2293,18 @@ def _scale_3d_axes(ax, X, Y, Z):
         logger.warning('Axes is already scaled to previously plotted data')
     else:
         ax._scaled = True
-        max_range = np.array([X.max()-X.min(), Y.max()-Y.min(),
-                              Z.max()-Z.min()]).max() / 2.0
-        mid_x = (X.max()+X.min()) * 0.5
-        mid_y = (Y.max()+Y.min()) * 0.5
-        mid_z = (Z.max()+Z.min()) * 0.5
+        max_range = np.ptp([X, Y, Z]).max() / 2
+        mid_x = (X.max() + X.min()) * 0.5
+        mid_y = (Y.max() + Y.min()) * 0.5
+        mid_z = (Z.max() + Z.min()) * 0.5
         ax.set_xlim(mid_x - max_range, mid_x + max_range)
         ax.set_ylim(mid_y - max_range, mid_y + max_range)
-        try:
+        if hasattr(ax, "set_zlim"):
             ax.set_zlim(mid_z - max_range, mid_z + max_range)
-        except AttributeError:
-            pass
+        else:
+            ax.axis("equal")
+            ax.autoscale()
+            ax.margins(0.15)
 
 
 def plot_networkx(network, plot_throats=True, labels=None, colors=None,
