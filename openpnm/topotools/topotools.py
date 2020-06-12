@@ -2244,6 +2244,9 @@ def plot_coordinates(network, pores=None, fig=None, **kwargs):
     # Add a dummy axis for 1D networks
     if dim.sum() == 1:
         dim[np.argwhere(dim == False)[0]] = True
+    # Add 2 dummy axes for 0D networks (1 pore only)
+    if dim.sum() == 0:
+        dim[[0, 1]] = True
 
     fig = plt.figure() if fig is None else fig
     ax = fig.gca()
@@ -2275,6 +2278,9 @@ def _label_axes(ax, X, Y, Z):
     # Add a dummy axis for 1D networks
     if dim.sum() == 1:
         dim[np.argwhere(dim == False)[0]] = True
+    # Add 2 dummy axes for 0D networks (1 pore only)
+    if dim.sum() == 0:
+        dim[[0, 1]] = True
     dim_idx = np.argwhere(dim == True).squeeze()
     ax.set_xlabel(labels[dim_idx[0]])
     ax.set_ylabel(labels[dim_idx[1]])
