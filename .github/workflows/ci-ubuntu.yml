@@ -2,10 +2,15 @@ name: Ubuntu
 
 on: [push]
 
+env:
+  MSG: ${{ github.event.head_commit.message }}
+
 jobs:
   build:
 
-    if: "!contains(github.event.head_commit.message, 'ci min') && !contains(github.event.head_commit.message, 'ci skip')"
+    if: contains(${{ MSG }}, 'ci skip')
+  
+    # if: "!contains(github.event.head_commit.message, 'ci min') && !contains(github.event.head_commit.message, 'ci skip')"
 
     runs-on: ${{ matrix.operating-system }}
     strategy:
