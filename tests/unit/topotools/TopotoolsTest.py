@@ -224,7 +224,7 @@ class TopotoolsTest:
 
     def test_connect_pores(self):
         testnet = op.network.Cubic(shape=[10, 10, 10])
-        Nt_old= testnet.Nt
+        Nt_old = testnet.Nt
         ps1 = [[0, 1], [23, 65]]
         ps2 = [[55], [982, 555]]
         topotools.connect_pores(testnet, pores1=ps1, pores2=ps2)
@@ -331,7 +331,7 @@ class TopotoolsTest:
         # 2D networks in XY, YZ, XZ planes
         for i in range(3):
             shape = np.ones(3, dtype=int)
-            shape[np.arange(3)!=i] = [5, 8]
+            shape[np.arange(3) != i] = [5, 8]
             pn = op.network.Cubic(shape=shape)
             x, y = pn["pore.coords"].T[op.topotools.dimensionality(pn)]
             fig, ax = plt.subplots()
@@ -343,7 +343,7 @@ class TopotoolsTest:
         # 1D networks in XY, YZ, XZ planes
         for i in range(3):
             shape = np.ones(3, dtype=int)
-            shape[np.arange(3)==i] = [5]
+            shape[np.arange(3) == i] = [5]
             pn = op.network.Cubic(shape=shape)
             x, = pn["pore.coords"].T[op.topotools.dimensionality(pn)]
             fig, ax = plt.subplots()
@@ -357,6 +357,20 @@ class TopotoolsTest:
         with pytest.raises(Exception):
             op.topotools.plot_networkx(pn)
 
+    def test_dimensionality(self):
+        # 3D network
+        pn = op.network.Cubic(shape=[3, 4, 5])
+        dims = op.topotools.dimensionality(pn)
+        assert np.allclose(dims, np.array([True, True, True]))
+        # 2D network
+        pn = op.network.Cubic(shape=[3, 1, 5])
+        dims = op.topotools.dimensionality(pn)
+        assert np.allclose(dims, np.array([True, False, True]))
+        # 1D network
+        pn = op.network.Cubic(shape=[1, 1, 5])
+        dims = op.topotools.dimensionality(pn)
+        assert np.allclose(dims, np.array([False, False, True]))
+
 
 if __name__ == '__main__':
 
@@ -365,5 +379,5 @@ if __name__ == '__main__':
     t.setup_class()
     for item in t.__dir__():
         if item.startswith('test'):
-            print('running test: '+item)
+            print('running test: ' + item)
             t.__getattribute__(item)()

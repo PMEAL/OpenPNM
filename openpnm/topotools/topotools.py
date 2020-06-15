@@ -1330,8 +1330,8 @@ def dimensionality(network):
     in that direction.
     """
     xyz = network["pore.coords"]
-    xyz_unique = [np.unique(xyz[:, i]) for i in range(3)]
-    return np.array([elem.size != 1 for elem in xyz_unique])
+    is_unique = [not np.allclose(xyz[:,i], xyz[:,i].mean()) for i in range(3)]
+    return np.array(is_unique)
 
 
 def clone_pores(network, pores, labels=['clone'], mode='parents'):
