@@ -3,7 +3,7 @@ name: Ubuntu
 on: [push]
 
 env:
-  MSG: github.event.head_commit.message 
+  MSG: ci skip#github.event.head_commit.message 
 
 jobs:
   build:
