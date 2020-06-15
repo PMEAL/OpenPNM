@@ -10,12 +10,10 @@ Tutorials
 .. csv-table:: Tutorials
    :header: "Links", "Description"
    :widths: 100, 100
-   :width: 100%
 
-   `Tutorial 1 </examples/tutorial%20%- Intro to OpenPNM - Basics.ipynb>`_, "An overview of OpenPNM in terms of basic manual calculations" 
+   `Tutorial 1 </examples/tutorial - Intro to OpenPNM - Basics.ipynb>`_, "An overview of OpenPNM in terms of basic manual calculations" 
    `Tutorial 2 </examples/tutorial - Intro to OpenPNM - Intermediate.ipynb>`_, "A repeat of tutorial 1, but using the more advanced features of OpenPNM"
    `Tutorial 3 </examples/tutorial - Intro to OpenPNM - Advanced.ipynb>`_, "A deeper dive into OpenPNM including defining custom pore-scale models and phases"
-
 
 +++++++++++++++++++++
 Geometry Calculations
@@ -24,12 +22,9 @@ Geometry Calculations
 .. csv-table:: a title
    :header: "Links", "Description"
    :widths: 100, 100
-   :width: 100%
 
-   " blank ", " blank " 
-   " blank ", " blank " 
-
-<hr>  
+   "blank ", "blank " 
+   "blank ", "blank " 
 
 ++++++++++++++++++++
 Predefined Materials
@@ -38,12 +33,9 @@ Predefined Materials
 .. csv-table:: Predefined Materials
    :header: "Links", "Description"
    :widths: 100, 100
-   :width: 100%
 
-   " blank ", " blank " 
-   " blank ", " blank " 
-   
-<br>
+   "blank ", "blank " 
+   "blank ", "blank " 
 
 +++++++++++++++++++++++++
 Thermophysical Properties
@@ -53,10 +45,8 @@ Thermophysical Properties
    :header: "Links", "Description"
    :widths: 100, 100
 
-   " blank ", " blank " 
-   " blank ", " blank " 
-
-<br>
+   "blank ", "blank " 
+   "blank ", "blank " 
 
 +++++++++++
 Simulations
@@ -70,8 +60,8 @@ Percolation
    :header: "Links", "Description"
    :widths: 100, 100
 
-   " blank ", " blank " 
-   " blank ", " blank " 
+   "blank ", "blank " 
+   "blank ", "blank " 
 
 ----------------------
 Single Phase Transport
@@ -81,8 +71,8 @@ Single Phase Transport
    :header: " ", " "
    :widths: 100, 100
 
-   " blank ", " blank " 
-   " blank ", " blank " 
+   "blank ", "blank " 
+   "blank ", "blank " 
 
 --------------------
 Multiphase Transport
@@ -92,8 +82,8 @@ Multiphase Transport
    :header: " ", " "
    :widths: 100, 100
 
-   " blank ", " blank " 
-   " blank ", " blank " 
+   "blank ", "blank " 
+   "blank ", "blank " 
 
 ------------------
 Reactive Transport
@@ -103,8 +93,8 @@ Reactive Transport
    :header: " ", " "
    :widths: 100, 100
 
-   " blank ", " blank " 
-   " blank ", " blank " 
+   "blank ", "blank " 
+   "blank ", "blank " 
 
 -------------------
 Transient Transport
@@ -114,8 +104,8 @@ Transient Transport
    :header: " ", " "
    :widths: 100, 100
 
-   " blank ", " blank " 
-   " blank ", " blank " 
+   "blank ", "blank " 
+   "blank ", "blank " 
 
 ------------
 Multiphysics
@@ -125,10 +115,8 @@ Multiphysics
    :header: " ", " "
    :widths: 100, 100
 
-   " blank ", " blank " 
-   " blank ", " blank " 
-
-<br>
+   "blank ", "blank " 
+   "blank ", "blank " 
 
 ++++++++++++++++++++++++++++++++
 Import, Export and Visualization
@@ -138,6 +126,5 @@ Import, Export and Visualization
    :header: " ", " "
    :widths: 100, 100
 
-   " blank ", " blank " 
-   " blank ", " blank " 
-   
+   "blank ", "blank " 
+   "blank ", "blank " 
