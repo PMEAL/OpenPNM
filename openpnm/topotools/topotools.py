@@ -2348,6 +2348,8 @@ def plot_networkx(network, plot_throats=True, labels=None, colors=None,
         node_size = scale * network['pore.diameter']
     except KeyError:
         node_size = np.ones_like(x) * scale * 0.5
+    if not np.isfinite(node_size).all():
+        raise Exception('nan/inf values found in network["pore.diameter"]')
     node_color = np.array(['k'] * len(network.Ps))
 
     if labels:
@@ -2363,9 +2365,13 @@ def plot_networkx(network, plot_throats=True, labels=None, colors=None,
     if ax is None:
         fig, ax = plt.subplots()
     ax.set_aspect('equal', adjustable='box')
-    ax.set_xlim((x.min() - node_size.max(), x.max() + node_size.max()))
-    ax.set_ylim((y.min() - node_size.max(), y.max() + node_size.max()))
+    offset = node_size.max() * 0.25
+    ax.set_xlim((x.min() - offset, x.max() + offset))
+    ax.set_ylim((y.min() - offset, y.max() + offset))
     ax.axis("off")
+
+    # Keep track of already plotted nodes
+    temp = [id(item) for item in ax.collections if type(item) == PathCollection]
 
     # Plot pores
     gplot = draw_networkx_nodes(G, ax=ax, pos=pos, nodelist=network.Ps.tolist(),
@@ -2383,9 +2389,8 @@ def plot_networkx(network, plot_throats=True, labels=None, colors=None,
     corr = min(figsize_ratio / data_ratio, 1)
     xrange = np.ptp(ax.get_xlim())
     markersize = sp.atleast_1d((corr*figwidth)**2 / xrange**2 * node_size**2 * spi)
-    collections = ax.collections
-    for item in collections:
-        if type(item) == PathCollection:
+    for item in ax.collections:
+        if type(item) == PathCollection and id(item) not in temp:
             item.set_sizes(markersize)
 
     return gplot
