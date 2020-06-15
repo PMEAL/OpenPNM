@@ -7,6 +7,7 @@ env:
 
 jobs:
   build:
+    runs-on: ubuntu-latest
     steps:
       - if: contains(MSG, "ci skip")
         run: echo $MSG
