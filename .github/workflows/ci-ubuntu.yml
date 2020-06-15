@@ -2,7 +2,8 @@ name: Ubuntu
 
 on: [push]
 
-env: MSG: github.event.head_commit.message 
+env:
+  MSG: github.event.head_commit.message 
 
 jobs:
   build:
