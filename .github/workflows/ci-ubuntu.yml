@@ -8,8 +8,7 @@ env:
 jobs:
   build:
     
-    # if: env.MSG == "ci skip" #contains(${{ env.MSG }}, 'ci skip')
-    # if: "!contains(github.event.head_commit.message, 'ci min')"
+    if: MSG == "ci skip"
 
     runs-on: ${{ matrix.operating-system }}
     strategy:
@@ -34,7 +33,6 @@ jobs:
 
     - name: Install Dependencies
       run: |
-        echo $MSG
         pip install -r requirements/pip_requirements.txt
         pip install -r requirements/test_requirements.txt
         pip uninstall openpnm --yes
