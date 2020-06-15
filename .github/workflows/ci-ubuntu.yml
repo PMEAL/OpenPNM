@@ -8,7 +8,7 @@ env:
 jobs:
   build:
     
-    if: MSG == "ci skip"
+    if: "!contains(MSG, 'ci skip')"
 
     runs-on: ${{ matrix.operating-system }}
     strategy:
