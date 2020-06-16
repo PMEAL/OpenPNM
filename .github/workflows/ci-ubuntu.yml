@@ -8,7 +8,7 @@ env:
 jobs:
   build:
 
-    # if: "!contains(github.event.head_commit.message, 'ci min') && !contains(github.event.head_commit.message, 'ci skip')"
+    if: "!contains(github.event.head_commit.message, 'ci min') && !contains(github.event.head_commit.message, 'ci skip')"
   
     runs-on: ${{ matrix.operating-system }}
 
@@ -18,9 +18,7 @@ jobs:
         python-version: [3.6, 3.7, 3.8]
         operating-system: [ubuntu-latest]
 
-    steps:
-    - if: contains(env.MSG, 'ci skip')
-          
+    steps:      
     - uses: actions/checkout@v1
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v1
