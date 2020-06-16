@@ -1,5 +1,4 @@
 import numpy as np
-import scipy as sp
 import openpnm as op
 import matplotlib.pyplot as plt
 from openpnm.topotools import reflect_base_points
@@ -13,7 +12,7 @@ class VoronoiTest:
                        [0.75, 0.25, 0.75], [0.25, 0.75, 0.75],
                        [0.25, 0.25, 0.75], [0.75, 0.75, 0.75]])
         scale = 1e-4
-        bp = reflect_base_points(bp, [1, 1, 1])*scale
+        bp = reflect_base_points(bp, [1, 1, 1]) * scale
         self.wrk = op.Workspace()
         self.prj = op.materials.VoronoiFibers(fiber_rad=2e-6,
                                               resolution=1e-6,
@@ -66,7 +65,7 @@ class VoronoiTest:
         plt.close('all')
 
     def test_vertex_dimension(self):
-        prj = op.materials.VoronoiFibers(num_points=50,
+        prj = op.materials.VoronoiFibers(num_points=10,
                                          fiber_rad=0.2,
                                          resolution=0.1,
                                          shape=[3, 2, 1],
@@ -85,7 +84,7 @@ class VoronoiTest:
             [0.0, 3.0, 0.0, 2.0, 0.0, 1.0]
 
     def test_linear_scale(self):
-        prj = op.materials.VoronoiFibers(num_points=50,
+        prj = op.materials.VoronoiFibers(num_points=10,
                                          fiber_rad=0.2,
                                          resolution=0.1,
                                          shape=[2, 2, 2],
@@ -99,7 +98,7 @@ class VoronoiTest:
         assert del_geom.vertex_dimension(B1, B2, 'length') == 2.0
 
     def test_linear_scale_wrong_shape(self):
-        prj = op.materials.VoronoiFibers(num_points=50,
+        prj = op.materials.VoronoiFibers(num_points=10,
                                          fiber_rad=0.2,
                                          resolution=0.1,
                                          shape=[2, 2, 2],
@@ -116,7 +115,6 @@ class VoronoiTest:
 if __name__ == '__main__':
 
     t = VoronoiTest()
-    self = t
     t.setup_class()
     for item in t.__dir__():
         if item.startswith('test'):
