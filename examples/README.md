@@ -43,7 +43,7 @@ This page links to examples in the github repo at [github.com/PMEAL/OpenPNM/exam
 | [Benthiemer ICL Benchmark]() | `Done` |
 | [Doddington ICL Benchmark]() | `Done` |
 | [Berea ICL Benchmark]() | `Done` |
-| [Working with Extracted Networks]() |  |
+| [Working with Extracted Networks]() |`Niloo` |
 
 ### Geometry Calculations
 
