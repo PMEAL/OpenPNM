@@ -4,137 +4,139 @@ This page links to examples in the github repo at [github.com/PMEAL/OpenPNM/exam
 
 
 [//]: # (This line and the one below are not rendered in the final file, so basically act as comments)
-[//]: # (https://github.com/PMEAL/OpenPNM/blob/master/examples/XXXX.ipynb)
+[//]: # (It's possible to insert images into the cells using <img src="../docs/static/logo.png" width="50" align='top'> )
 
 
 ### Tutorials
 
 | Link | Description |
-|:---|:---|
-| [Tutorial 1 - Basic](/examples/notebooks/intro_to_openpnm_basic.ipynb) | An overview of OpenPNM in terms of basic manual calculations |
-| [Tutorial 2 - Intermediate](/examples/notebooks/tutorials/intro_to_openpnm_intermediate.ipynb) | A repeat of tutorial 1, but using the features of OpenPNM correctly |
-| [Tutorial 3 - Advanced](/examples/notebooks/tutorials/intro_to_openpnm_advanced.ipynb) | A deeper dive into OpenPNM including defining custom pore-scale models and phases |
-| [Concise but Detailed Overview](/examples/notebooks/tutorials/concise_overview_of_openpnm.ipynb)  | This notebook goes over most of the key aspects OpenPNM with minimal description, favoring links to other relevant notebooks and resources instead for further reading. |
-| [Storage of Network Data and Topology](/examples/notebooks/tutorials/data_and_topology_storage.ipynb) | Provides a explanation of how data is stored in OpenPNM, including the storage of the topological information |
-| [Querying the Topology to Find Neighbors](/examples/notebooks/tutorials/finding_neighbor_pores_and_throats.ipynb) | Illustrates how to find neighboring pores and throats using topological and spatial information. |
-| [Using and Creating Labels](/examples/notebooks/tutorials/using_and_creating_labels.ipynb) |  |
-| [Defining Multiple Subdomains](/examples/notebooks/tutorials/defining_multiple_subdomains.ipynb) |  |
-| [The Workspace and Projects](/examples/notebooks/tutorials/overview_of_workspace_and_projects.ipynb) |  |
+|:-----|:------------|
+| [Tutorial 1 - Basic](/examples/notebooks/tutorials/intro_to_openpnm_basic.ipynb) | An overview of OpenPNM in terms of basic manual calculations |
+| [Tutorial 2 - Intermediate](/examples/notebooks/tutorials/intro_to_openpnm_intermediate.ipynb) | A repeat of Tutorial 1, but using the features of OpenPNM correctly |
+| [Concise but Detailed Overview](/examples/notebooks/tutorials/concise_overview_of_openpnm.ipynb)  | This notebook goes over most of the key aspects OpenPNM with minimal description, favoring links to other relevant notebooks and resources instead for further reading |
+| [Storage of Network Data and Topology](/examples/notebooks/tutorials/data_and_topology_storage.ipynb) | Provides a explanation of how numerical data is stored in OpenPNM, including the storage of the topological information using sparse adjacency matrices |
+| [Querying the Topology to Find Neighbors](/examples/notebooks/tutorials/finding_neighbor_pores_and_throats.ipynb) | Illustrates how to find neighboring pores and throats using topological and spatial information |
+| [Using and Creating Labels](/examples/notebooks/tutorials/using_and_creating_labels.ipynb) | Labels are used to mark pores and throats for easier selection elsewhere in the simulation, such as applying boundary conditions.  This tutorial illustrates how to use the labels that are automatically included on generated networks and how to add new user-defined labels. |
+| [Defining Multiple Subdomains](/examples/notebooks/tutorials/defining_multiple_subdomains.ipynb) | One of the "power" features of OpenPNM is the ability to define multiple subdomains, enabling the simulation of layered or hierarchical materials with different pore sizes.  This tutorial provides an explanation of this feature. |
+| [The Workspace and Projects](/examples/notebooks/tutorials/overview_of_workspace_and_projects.ipynb) | OpenPNM simulations called Projects and several Projects can be open within a single Workspace.  This tutorial illustrates the relationship between these to constructs and their features. |
 
 ### Network
 
 #### Generation
 
 | Link | Description |
-|:---|:---|
-| [Cubic Lattice]() | `Done` |
-| [Dual Cubic Lattice]() | `Done` |
-| [Cubic Template]() | `Jeff` |
-| [Delaunay and Voronoi Tessellation]() | `Jeff` |
+|:-----|:------------|
+| [Cubic Lattice](/examples/notebooks/networks/generation/cubic_networks.ipynb) | The Cubic lattice is the classic pore network topology, and provides an excellent starting point for any investigation.  The ability to alter the coodination number up to 26 combined with deleting random pores and throats creates an even more realistic topology. |
+| [Dual Cubic Lattice](/examples/notebooks/networks/generation/dual_cubic_lattices.ipynb) | The simultaneous simulation transport in the void and solid, and their interactions, can be done with two interpenetrating cubic networks as illustrated in this tutorial |
+| [Cubic Template](/examples/notebooks/networks/generation/cubic_templates.ipynb) | Cubic lattices do not have to be contrained to cubic shaped domains.  This tutorial explains how arbitrary shaped domains (e.g. a spherical particle) can be created. |
+| [Delaunay and Voronoi Tessellation](/examples/notebooks/networks/generation/random_networks_based_on_delaunay_and_voronoi_tessellations.ipynb) | If truly random topology is necessary then this can be accomplished by performaing a Delaunay tessellation on randomly (or not so randomly) distributed points |
 
 #### Manipulation
 
 | Link | Description |
-|:---|:---|
-| [Adding Boundary Pores](/examples/notebooks/networks/manipulation/) | `Done` |
-| [Adding Pores and Throats](/examples/notebooks/networks/manipulation/) |  |
-| [Merging Networks](/examples/notebooks/networks/manipulation/) |  |
-| [Stitching Networks](/examples/notebooks/networks/manipulation/) |  |
-| [Joining Pore Network and Continuum Domains](/examples/notebooks/networks/manipulation/) |  |
+|:-----|:------------|
+| [Adding Boundary Pores](/examples/notebooks/networks/manipulation/adding_boundary_pores.ipynb) | `Done` |
+| [Manually Adding Pores and Throats](/examples/notebooks/networks/manipulation/manually_adding_pores_and_throats.ipynb) |  |
+| [Stitching and Merging Networks](/examples/notebooks/networks/manipulation/stitching_and_merging_networks_together.ipynb) |  |
+| [Joining Pore Network and Continuum Domains](/examples/notebooks/networks/manipulation/coupling_continuum_regions_with_pore_networks.ipynb) |  |
 
 #### Extraction
 
 | Link | Description |
-|:---|:---|
-| [Benthiemer ICL Benchmark](/examples/notebooks/networks/extraction/) | `Done` |
-| [Doddington ICL Benchmark](/examples/notebooks/networks/extraction/) | `Done` |
-| [Berea ICL Benchmark](/examples/notebooks/networks/extraction/) | `Done` |
-| [Working with Extracted Networks](/examples/notebooks/networks/extraction/) |`Niloo` |
+|:-----|:------------|
+| [Benthiemer ICL Benchmark](/examples/notebooks/networks/extraction/benthiemer_ICL_benchmark.ipynb) | `Done` |
+| [Doddington ICL Benchmark](/examples/notebooks/networks/extraction/doddington_ICL_benchmark.ipynb) | `Done` |
+| [Berea ICL Benchmark](/examples/notebooks/networks/extraction/berea_ICL_benchmark.ipynb) | `Done` |
+| [Predicting Permeability of Berea](/examples/notebooks/networks/extraction/predicting_effective_permeability_of_berea.ipynb) | `Done` |
+| [Working with Extracted Networks](/examples/notebooks/networks/extraction/working_with_extracted_networks.ipynb) |`Niloo` |
 
 ### Geometry Calculations
 
 | Link | Description |
-|:---|:---|
-| [Basic Stick and Ball](/examples/notebooks/geometry/) |  |
-| [Defining Continuum Regions](/examples/notebooks/geometry/) |  |
-| [Overview of Shape Factors](/examples/notebooks/geometry/) | `Zohaib and/or Amin` |
-| [Adjusting Pore Size Distributions](/examples/notebooks/geometry/) | `Jeff` |
+|:-----|:------------|
+| [Basic Stick and Ball](/examples/notebooks/geometry/stick_and_ball.ipynb) |  |
+| [Defining Continuum Regions](/examples/notebooks/geometry/defining_continuum_regions.ipynb) |  |
+| [Overview of Shape Factors](/examples/notebooks/geometry/overview_of_shape_factors.ipynb) | `Zohaib and/or Amin` |
+| [Adjusting Pore Size Distributions](/examples/notebooks/geometry/adjusting_pore_size_distributions.ipynb) |  |
 
 ### Predefined Materials
 
 | Link | Description |
-|:---|:---|
-| [Fibrous Media with Voronoi Tessellations](/examples/notebooks/materials/) | `Done` |
+|:-----|:------------|
+| [Fibrous Media with Voronoi Tessellations](/examples/notebooks/materials/fibrous_media_based_on_voronoi_tessellation.ipynb) | `Done` |
 
 ### Thermophysical Properties
 
 | Link | Description |
-|:---|:---|
-| [Creating a Custom Phase](/examples/notebooks/phases/) | `Done` |
-| [Working with Mixtures](/examples/notebooks/phases/) | `Jeff` |
+|:-----|:------------|
+| [Creating a Custom Phase](/examples/notebooks/phasescreating_a_custom_phase.ipynb/) | `Done` |
+| [Working with Mixtures](/examples/notebooks/phases/working_with_mixtures.ipynb) | `Jeff` |
 
 ### Simulations
 
 #### Percolation
 
 | Link | Description |
-|:---|:---|
-| [Ordinary Percolation](/examples/notebooks/algorithms/percolation/) |  |
-| [Invasion Percolation](/examples/notebooks/algorithms/percolation/) |  |
-| [Mixed Invasion Percolation](/examples/notebooks/algorithms/percolation/) |  |
-| [Meniscus Model Comparison](/examples/notebooks/algorithms/percolation/) |  |
+|:-----|:------------|
+| [Ordinary Percolation](/examples/notebooks/algorithms/percolation/A_ordinary_percolation.ipynb) |  |
+| [Invasion Percolation](/examples/notebooks/algorithms/percolation/B_invasion_percolation.ipynb) |  |
+| [Mixed Invasion Percolation](/examples/notebooks/algorithms/percolation/C_mixed_invasion_percolation.ipynb) |  |
+| [Meniscus Model Comparison](/examples/notebooks/algorithms/percolation/D_meniscus_model_comparison.ipynb) |  |
+| [Mercury Intrusion Porosimetry](/examples/notebooks/algorithms/percolation/capillary_pressure_curves.ipynb) |  |
 
 #### Single Phase Transport
 
 | Link | Description |
-|:---|:---|
-| [Basic Fickian Diffusion](/examples/notebooks/algorithms/single_phase/) | `Jeff` |
-| [Permeability Tensor](/examples/notebooks/algorithms/single_phase/) | `Jeff` |
-| [Deep Dive into Conductance Models](/examples/notebooks/algorithms/single_phase/) | `Amin and Zohaib` |
-| [Diffusion with Concentration Dependent Diffusivity](/examples/notebooks/algorithms/single_phase/) | `Amin` |
-| [1D Heat Transfer](/examples/notebooks/algorithms/single_phase/) | `Remove?` |
+|:-----|:------------|
+| [Basic Fickian Diffusion, Tortuosity, and Formation Factor](/examples/notebooks/algorithms/single_phase/fickian_diffusion_and_tortuosity.ipynb) | `Jeff` |
+| [Permeability Tensor](/examples/notebooks/algorithms/single_phase/stokes_flow_and_permeability_tensor.ipynb) | `Jeff` |
+| [Deep Dive into Conductance Models](/examples/notebooks/algorithms/single_phase/deep_dive_into_conductance_models.ipynb) | `Amin and Zohaib` |
+| [Diffusion with Concentration Dependent Diffusivity](/examples/notebooks/algorithms/single_phase/diffusion_with_concentration_dependent_diffusivity.ipynb) | `Amin` |
+| [1D Heat Transfer](/examples/notebooks/algorithms/single_phase/one_dimensional_heat_transfer.ipynb) | `Remove?` |
 
 #### Multiphase Transport
 
 | Link | Description |
-|:---|:---|
-| [Relative Diffusivity](/examples/notebooks/algorithms/multiphase/) | `Niloo` |
-| [Relative Permeability in 2D](/examples/notebooks/algorithms/multiphase/) | `Niloo` |
+|:-----|:------------|
+| [Relative Diffusivity](/examples/notebooks/algorithms/multiphase/relative_diffusivity.ipynb) | `Niloo` |
+| [Relative Permeability in 2D](/examples/notebooks/algorithms/multiphase/relative_permeability_2D.ipynb) | `Niloo` |
 
 #### Reactive Transport
 
 | Link | Description |
-|:---|:---|
-| [Diffusion with Source and Sink Terms](/examples/notebooks/algorithms/reactive/) | `Mike` |
-| [Heat Transfer with Source Terms](/examples/notebooks/algorithms/reactive/) | `Done` |
+|:-----|:------------|
+| [Diffusion with Source and Sink Terms](/examples/notebooks/algorithms/reactive/diffusion_with_source_and_sink_terms.ipynb) | `Mike` |
+| [Heat Transfer with Source Terms](/examples/notebooks/algorithms/reactive/one_dimensional_continuum_heat_transfer_with_source_term.ipynb) | `Done` |
 
 #### Transient Transport
 
 | Link | Description |
-|:---|:---|
-| [Transient Fickian Diffusion](/examples/notebooks/algorithms/transient/) | `Mike` |
-| [Transient Advection-Diffusion](/examples/notebooks/algorithms/transient/) | `Stephen` |
+|:-----|:------------|
+| [Transient Fickian Diffusion](/examples/notebooks/algorithms/transient/transient_fickian_diffusion.ipynb) | `Mike` |
+| [Transient Fickian Diffusion with Reaction](/examples/notebooks/algorithms/transient/transient_fickian_diffusion_with_reaction.ipynb) | `Mike` |
+| [Transient Advection-Diffusion](/examples/notebooks/algorithms/transient/transient_advection_diffusion.ipynb) | `Stephen` |
 
 #### Multiphysics
 
 | Link | Description |
-|:---|:---|
-| [Advection-Diffusion](/examples/notebooks/algorithms/multiphysics/) | `Amin` |
-| [Nernst-Planck-Poisson](/examples/notebooks/algorithms/multiphysics/) | `Mehrez` |
+|:-----|:------------|
+| [Advection-Diffusion](/examples/notebooks/algorithms/multiphysics/advection_diffusion.ipynb) | `Amin` |
+| [Nernst-Planck-Poisson](/examples/notebooks/algorithms/multiphysics/nernst_planck_poisson.ipynb) | `Mehrez` |
 
 #### Solvers and Settings
 
 | Link | Description |
-|:---|:---|
-| [Overview of Basic Solver Settings](/examples/notebooks/algorithms/general/) | `Mehrez` |
-| [Overview of Reactive Solver Settings](/examples/notebooks/algorithms/general/) | `Mehrez` |
-| [Overview of Transient Solver Settings](/examples/notebooks/algorithms/general/) | `Mehrez` |
-| [Overview of Available Matrix Solvers](/examples/notebooks/algorithms/general/) | `Amin` |
+|:-----|:------------|
+| [Understanding Basic Solver Settings](/examples/notebooks/algorithms/general/understanding_basic_transport_settings.ipynb) | `Mehrez` |
+| [Understanding Reactive Solver Settings](/examples/notebooks/algorithms/general/understanding_reactive_transport_settings.ipynb) | `Mehrez` |
+| [Understanding Transient Solver Settings](/examples/notebooks/algorithms/general/understanding_transient_transport_settings.ipynb) | `Mehrez` |
+| [Comparison of Available Matrix Solvers](/examples/notebooks/algorithms/general/available_matrix_solvers.ipynb) | `Amin` |
+| [Overview of Inheritance](/examples/notebooks/algorithms/general/overview_of_inheritance.ipynb) | `Amin` |
 
 ### Import, Export and Visualization
 
 | Link | Description |
-|:---|:---|
-| [Quick Plotting Networks](/examples/notebooks/io/) | `Amin` |
-| [Rendering in Paraview](/examples/notebooks/io/) | `Jeff` |
-| [Loading a Statoil File and Calculating K](/examples/notebooks/io/) | `Done` |
+|:-----|:------------|
+| [Quick Plotting Networks](/examples/notebooks/io/quick_plotting_networks.ipynb) |  |
+| [Rendering in Paraview](/examples/notebooks/io/rendering_in_paraview.ipynb) |  |
+| [Loading a Statoil File and Calculating K](/examples/notebooks/io/loading_statoil_finding_permeability.ipynb) |  |
