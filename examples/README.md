@@ -11,9 +11,9 @@ This page links to examples in the github repo at [github.com/PMEAL/OpenPNM/exam
 
 | Link | Description |
 |:---|:---|
-| [Tutorial 1 - Basic](notebooks/tutorial - Intro to OpenPNM - Basics.ipynb) | An overview of OpenPNM in terms of basic manual calculations |
+| [Tutorial 1 - Basic](basics.ipynb) | An overview of OpenPNM in terms of basic manual calculations |
 | [Tutorial 2 - Intermediate](/examples/notebooks/tutorial - Intro to OpenPNM - Intermediate.ipynb) | A repeat of tutorial 1, but using the features of OpenPNM correctly |
-| [Tutorial 3 - Advanced](/examples/notebooks/tutorial - Intro to OpenPNM - Advanced.ipynb) | A deeper dive into OpenPNM including defining custom pore-scale models and phases | 
+| [Tutorial 3 - Advanced](/examples/notebooks/tutorial - Intro to OpenPNM - Advanced.ipynb) | A deeper dive into OpenPNM including defining custom pore-scale models and phases |
 
 ### Network
 
