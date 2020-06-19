@@ -30,7 +30,7 @@ This page links to examples in the github repo at [github.com/PMEAL/OpenPNM/exam
 
 | Link | Description |
 |:---|:---|
-| [Adding Boundary Pores]() |  |
+| [Adding Boundary Pores]() | `Done` |
 | [Adding Pores and Throats]() |  |
 | [Merging Networks]() |  |
 | [Stitching Networks]() |  |
