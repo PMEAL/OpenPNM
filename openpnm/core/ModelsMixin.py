@@ -183,7 +183,7 @@ class ModelWrapper(dict):
     def __str__(self):
         horizontal_rule = '―' * 78
         lines = [horizontal_rule]
-        strg = '{0:<25s} {2:<25s} {2}'
+        strg = '{0:<25s} {1:<25s} {2}'
         lines.append(strg.format('Property Name', 'Parameter', 'Value'))
         lines.append(horizontal_rule)
         temp = self.copy()
