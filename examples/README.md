@@ -65,11 +65,11 @@ This page links to examples in the github repo at [github.com/PMEAL/OpenPNM/exam
 |:-----|:------------|
 | [Fibrous Media with Voronoi Tessellations](/examples/notebooks/materials/fibrous_media_based_on_voronoi_tessellation.ipynb) | `Done` |
 
-### Thermophysical Properties
+### [Thermophysical Properties](/examples/notebooks/phases)
 
 | Link | Description |
 |:-----|:------------|
-| [Creating a Custom Phase](/examples/notebooks/phasescreating_a_custom_phase.ipynb) | `Done` |
+| [Creating a Custom Phase](/examples/notebooks/phases/creating_a_custom_phase.ipynb) | `Done` |
 | [Working with Mixtures](/examples/notebooks/phases/working_with_mixtures.ipynb) | `Jeff` |
 
 ### [Simulations](/examples/notebooks/algorithms)
