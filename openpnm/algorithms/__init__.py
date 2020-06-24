@@ -31,3 +31,4 @@ from .IonicConduction import IonicConduction
 from .TransientIonicConduction import TransientIonicConduction
 from .NernstPlanckMultiphysics import NernstPlanckMultiphysics
 from .TransientNernstPlanckMultiphysics import TransientNernstPlanckMultiphysics
+from . import metrics
