@@ -2094,7 +2094,9 @@ def template_cylinder_annulus(height, outer_radius, inner_radius=0):
     return img
 
 
-def plot_connections(network, throats=None, fig=None, **kwargs):
+def plot_connections(network, throats=None, fig=None, colors='b',
+                     cmap='jet', alpha=1.0, linestyles='solid',
+                     linewidths=1, **kwargs):
     r"""
     Produces a 3D plot of the network topology showing how throats connect
     for quick visualization without having to export data to veiw in Paraview.
@@ -2103,24 +2105,26 @@ def plot_connections(network, throats=None, fig=None, **kwargs):
     ----------
     network : OpenPNM Network Object
         The network whose topological connections to plot
-
     throats : array_like (optional)
         The list of throats to plot if only a sub-sample is desired.  This is
         useful for inspecting a small region of the network.  If no throats are
         specified then all throats are shown.
-
     fig : Matplotlib figure handle and line property arguments
         If a ``fig`` is supplied, then the topology will be overlaid on this
         plot.  This makes it possible to combine coordinates and connections,
-        and to color different throats differently (see ``kwargs``)
-
-    kwargs : other named arguments
-        By also in different line properties such as ``color`` it's possible to
-        plot several different sets of connections with unique colors.
-
-        For information on available line style options, visit the Matplotlib
-        documentation on the `web
-        <http://matplotlib.org/api/lines_api.html#matplotlib.lines.Line2D>`_
+        and to color throats differently
+    colors : str
+        Can be a dictionary key to a throat property (e.g. 'throat.diameter'),
+        or a matplotlib named color (e.g. 'r' for red).
+    cmap : str or cmap object
+        The matplotlib colormap to use if specfying a throat property
+        for ``colors``
+    alpha : float
+        The transparency of the lines, with 1 being solid and 0 being invisible
+    linestyles : str
+        Can be one of {'solid', 'dashed', 'dashdot', 'dotted'}
+    linewidths : float
+        Controls the thickness of drawn lines
 
     Notes
     -----
@@ -2145,13 +2149,14 @@ def plot_connections(network, throats=None, fig=None, **kwargs):
     >>> Ts = pn.throats('*boundary')
     >>> # Pass existing fig back into function to plot additional throats
     >>> fig = op.topotools.plot_connections(network=pn, throats=Ts,
-    ...                                     fig=fig, color='r')
+    ...                                     fig=fig, colors='r')
 
     """
     import matplotlib.pyplot as plt
     from mpl_toolkits.mplot3d import Axes3D
     from matplotlib.collections import LineCollection
     from mpl_toolkits.mplot3d.art3d import Line3DCollection
+    from matplotlib import cm
 
     Ts = network.Ts if throats is None else network._parse_indices(throats)
     dim = dimensionality(network)
@@ -2173,7 +2178,34 @@ def plot_connections(network, throats=None, fig=None, **kwargs):
     P1, P2 = network["throat.conns"][Ts].T
 
     throat_pos = np.column_stack((xyz[P1], xyz[P2])).reshape((Ts.size, 2, dim.sum()))
-    lc = Line3DCollection(throat_pos) if ThreeD else LineCollection(throat_pos)
+
+    # Deal with optional style related arguments
+    if 'c' in kwargs.keys():
+        colors = kwargs.pop('c')
+    if 'color' in kwargs.keys():
+        colors = kwargs.pop('color')
+    if colors.startswith('throat.'):
+        c = network[colors]/network[colors].max()
+        colors = cm.get_cmap(name=cmap)(c)
+        colors[:, 3] = alpha
+    else:
+        c = {'b': (0, 0, 1, alpha),
+             'g': (0, 0.5, 0, alpha),
+             'r': (1, 0, 0, alpha),
+             'c': (0, 0.75, 0.75, alpha),
+             'm': (0.75, 0, 0.75, alpha),
+             'y': (0.75, 0.75, 0, alpha),
+             'k': (0, 0, 0, alpha),
+             'w': (1, 1, 1, alpha)}
+        colors = c[colors]
+    if ThreeD:
+        lc = Line3DCollection(throat_pos, colors=colors, cmap=cmap,
+                              linestyles=linestyles, linewidths=linewidths,
+                              antialiaseds=np.ones_like(network.Ts))
+    else:
+        lc = LineCollection(throat_pos, colors=colors, cmap=cmap,
+                            linestyles=linestyles, linewidths=linewidths,
+                            antialiaseds=np.ones_like(network.Ts))
     ax.add_collection(lc)
 
     _scale_3d_axes(ax=ax, X=X, Y=Y, Z=Z)
