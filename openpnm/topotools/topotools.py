@@ -2156,6 +2156,7 @@ def plot_connections(network, throats=None, fig=None, colors='b',
     from mpl_toolkits.mplot3d import Axes3D
     from matplotlib.collections import LineCollection
     from mpl_toolkits.mplot3d.art3d import Line3DCollection
+    from matplotlib import colors as mcolors
     from matplotlib import cm
 
     Ts = network.Ts if throats is None else network._parse_indices(throats)
@@ -2171,12 +2172,11 @@ def plot_connections(network, throats=None, fig=None, colors='b',
         fig.delaxes(ax)
         ax = fig.add_subplot(111, projection='3d')
 
-    # Collect coordinates and scale axes to fit
+    # Collect coordinates
     Ps = np.unique(network['throat.conns'][Ts])
     X, Y, Z = network['pore.coords'][Ps].T
     xyz = network["pore.coords"][:, dim]
     P1, P2 = network["throat.conns"][Ts].T
-
     throat_pos = np.column_stack((xyz[P1], xyz[P2])).reshape((Ts.size, 2, dim.sum()))
 
     # Deal with optional style related arguments
@@ -2185,19 +2185,12 @@ def plot_connections(network, throats=None, fig=None, colors='b',
     if 'color' in kwargs.keys():
         colors = kwargs.pop('color')
     if colors.startswith('throat.'):
-        c = network[colors]/network[colors].max()
+        c = network[colors] / network[colors].max()
         colors = cm.get_cmap(name=cmap)(c)
         colors[:, 3] = alpha
     else:
-        c = {'b': (0, 0, 1, alpha),
-             'g': (0, 0.5, 0, alpha),
-             'r': (1, 0, 0, alpha),
-             'c': (0, 0.75, 0.75, alpha),
-             'm': (0.75, 0, 0.75, alpha),
-             'y': (0.75, 0.75, 0, alpha),
-             'k': (0, 0, 0, alpha),
-             'w': (1, 1, 1, alpha)}
-        colors = c[colors]
+        colors = mcolors.to_rgb(colors) + tuple([alpha])
+
     if ThreeD:
         lc = Line3DCollection(throat_pos, colors=colors, cmap=cmap,
                               linestyles=linestyles, linewidths=linewidths,
