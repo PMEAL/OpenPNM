@@ -2094,8 +2094,8 @@ def template_cylinder_annulus(height, outer_radius, inner_radius=0):
     return img
 
 
-def plot_connections(network, throats=None, fig=None, colors='b',
-                     cmap='jet', alpha=1.0, linestyles='solid',
+def plot_connections(network, throats=None, fig=None, color_by=None,
+                     colors='b', cmap='jet', alpha=1.0, linestyles='solid',
                      linewidths=1, **kwargs):
     r"""
     Produces a 3D plot of the network topology showing how throats connect
@@ -2113,9 +2113,10 @@ def plot_connections(network, throats=None, fig=None, colors='b',
         If a ``fig`` is supplied, then the topology will be overlaid on this
         plot.  This makes it possible to combine coordinates and connections,
         and to color throats differently
+    color_by : str
+        A dictionary key to a throat property (e.g. 'throat.diameter')
     colors : str
-        Can be a dictionary key to a throat property (e.g. 'throat.diameter'),
-        or a matplotlib named color (e.g. 'r' for red).
+        A matplotlib named color (e.g. 'r' for red).
     cmap : str or cmap object
         The matplotlib colormap to use if specfying a throat property
         for ``colors``
@@ -2184,12 +2185,18 @@ def plot_connections(network, throats=None, fig=None, colors='b',
         colors = kwargs.pop('c')
     if 'color' in kwargs.keys():
         colors = kwargs.pop('color')
-    if colors.startswith('throat.'):
-        c = network[colors] / network[colors].max()
+    colors = mcolors.to_rgb(colors) + tuple([alpha])
+    # Override colors with color_by if given
+    if color_by is not None:
+        if not color_by.startswith('throat.'):
+            color_by = 'throat.' + color_by
+        c = network[color_by] / network[color_by].max()
         colors = cm.get_cmap(name=cmap)(c)
         colors[:, 3] = alpha
-    else:
-        colors = mcolors.to_rgb(colors) + tuple([alpha])
+    if 'linewidth' in kwargs.keys():
+        linewidths = kwargs.pop('linewidth')
+    if 'linestyle' in kwargs.keys():
+        linestyles = kwargs.pop('linestyle')
 
     if ThreeD:
         lc = Line3DCollection(throat_pos, colors=colors, cmap=cmap,
@@ -2226,18 +2233,11 @@ def plot_coordinates(network, pores=None, fig=None, **kwargs):
         enables the plotting of multiple different sets of pores as well as
         throat connections from ``plot_connections``.
 
-    kwargs : dict
-        By also  in different marker properties such as size (``s``) and color
-        (``c``).
-
-        For information on available marker style options, visit the Matplotlib
-        documentation on the `web
-        <http://matplotlib.org/api/lines_api.html#matplotlib.lines.Line2D>`_
 
     Notes
     -----
     The figure handle returned by this method can be passed into
-    ``plot_topology`` to create a plot that combines pore coordinates and
+    ``plot_connections`` to create a plot that combines pore coordinates and
     throat connections, and vice versa.
 
     See Also
