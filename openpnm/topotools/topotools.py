@@ -2094,9 +2094,9 @@ def template_cylinder_annulus(height, outer_radius, inner_radius=0):
     return img
 
 
-def plot_connections(network, throats=None, fig=None, color_by=None,
-                     colors='b', cmap='jet', alpha=1.0, linestyles='solid',
-                     linewidths=1, **kwargs):
+def plot_connections(network, throats=None, fig=None, size_by=None,
+                     color_by=None, cmap='jet', color='b', alpha=1.0,
+                     linestyle='solid', linewidth=1, **kwargs):
     r"""
     Produces a 3D plot of the network topology showing how throats connect
     for quick visualization without having to export data to veiw in Paraview.
@@ -2113,19 +2113,23 @@ def plot_connections(network, throats=None, fig=None, color_by=None,
         If a ``fig`` is supplied, then the topology will be overlaid on this
         plot.  This makes it possible to combine coordinates and connections,
         and to color throats differently
+    size_by : str
+        A dictionary key to a throat property (e.g. 'throat.diameter').  These
+        values are normalized then scaled by ``linewidth``.
     color_by : str
         A dictionary key to a throat property (e.g. 'throat.diameter')
-    colors : str
-        A matplotlib named color (e.g. 'r' for red).
     cmap : str or cmap object
         The matplotlib colormap to use if specfying a throat property
-        for ``colors``
+        for ``color_by``
+    color : str
+        A matplotlib named color (e.g. 'r' for red).
     alpha : float
         The transparency of the lines, with 1 being solid and 0 being invisible
-    linestyles : str
+    linestyle : str
         Can be one of {'solid', 'dashed', 'dashdot', 'dotted'}
-    linewidths : float
-        Controls the thickness of drawn lines
+    linewidth : float
+        Controls the thickness of drawn lines.  Is used to scale the thickness
+        if ``size_by`` is given.
 
     Notes
     -----
@@ -2182,29 +2186,27 @@ def plot_connections(network, throats=None, fig=None, color_by=None,
 
     # Deal with optional style related arguments
     if 'c' in kwargs.keys():
-        colors = kwargs.pop('c')
-    if 'color' in kwargs.keys():
-        colors = kwargs.pop('color')
-    colors = mcolors.to_rgb(colors) + tuple([alpha])
+        color = kwargs.pop('c')
+    color = mcolors.to_rgb(color) + tuple([alpha])
     # Override colors with color_by if given
     if color_by is not None:
         if not color_by.startswith('throat.'):
             color_by = 'throat.' + color_by
         c = network[color_by] / network[color_by].max()
-        colors = cm.get_cmap(name=cmap)(c)
-        colors[:, 3] = alpha
-    if 'linewidth' in kwargs.keys():
-        linewidths = kwargs.pop('linewidth')
-    if 'linestyle' in kwargs.keys():
-        linestyles = kwargs.pop('linestyle')
+        color = cm.get_cmap(name=cmap)(c)
+        color[:, 3] = alpha
+    if size_by is not None:
+        if not size_by.startswith('throat.'):
+            size_by = 'throat.' + size_by
+        linewidth = network[size_by] / network[size_by].max() * linewidth
 
     if ThreeD:
-        lc = Line3DCollection(throat_pos, colors=colors, cmap=cmap,
-                              linestyles=linestyles, linewidths=linewidths,
+        lc = Line3DCollection(throat_pos, colors=color, cmap=cmap,
+                              linestyles=linestyle, linewidths=linewidth,
                               antialiaseds=np.ones_like(network.Ts))
     else:
-        lc = LineCollection(throat_pos, colors=colors, cmap=cmap,
-                            linestyles=linestyles, linewidths=linewidths,
+        lc = LineCollection(throat_pos, colors=color, cmap=cmap,
+                            linestyles=linestyle, linewidths=linewidth,
                             antialiaseds=np.ones_like(network.Ts))
     ax.add_collection(lc)
 
@@ -2214,7 +2216,9 @@ def plot_connections(network, throats=None, fig=None, color_by=None,
     return fig
 
 
-def plot_coordinates(network, pores=None, fig=None, **kwargs):
+def plot_coordinates(network, pores=None, fig=None, size_by=None,
+                     color_by=None, cmap='jet', color='r', alpha=1.0,
+                     marker='o', markersize=1, **kwargs):
     r"""
     Produces a 3D plot showing specified pore coordinates as markers
 
@@ -2222,17 +2226,32 @@ def plot_coordinates(network, pores=None, fig=None, **kwargs):
     ----------
     network : OpenPNM Network Object
         The network whose topological connections to plot
-
     pores : array_like (optional)
         The list of pores to plot if only a sub-sample is desired.  This is
         useful for inspecting a small region of the network.  If no pores are
         specified then all are shown.
-
     fig : Matplotlib figure handle
         If a ``fig`` is supplied, then the coordinates will be overlaid.  This
         enables the plotting of multiple different sets of pores as well as
         throat connections from ``plot_connections``.
-
+    size_by : str
+        A dictionary key to a pore property (e.g. 'pore.diameter').  These
+        values are normalized by scaled by ``markersize``.
+    color_by : str
+        A dictionary key to a pore property (e.g. 'pore.diameter')
+    cmap : str or cmap object
+        The matplotlib colormap to use if specfying a pore property
+        for ``color_by``
+    color : str
+        A matplotlib named color (e.g. 'r' for red).
+    alpha : float
+        The transparency of the lines, with 1 being solid and 0 being invisible
+    marker : 's'
+        The marker to use.  The default is a circle.  Options are explained
+        `here <https://matplotlib.org/3.2.1/api/markers_api.html>`_
+    markersize : scalar
+        Controls size of marker, default is 1.0.  This value is used to scale
+        the ``size_by`` argument if given.
 
     Notes
     -----
@@ -2261,6 +2280,7 @@ def plot_coordinates(network, pores=None, fig=None, **kwargs):
     """
     import matplotlib.pyplot as plt
     from mpl_toolkits.mplot3d import Axes3D
+    from matplotlib import cm
 
     Ps = network.Ps if pores is None else network._parse_indices(pores)
 
@@ -2282,11 +2302,24 @@ def plot_coordinates(network, pores=None, fig=None, **kwargs):
     # Collect specified coordinates
     X, Y, Z = network['pore.coords'][Ps].T
 
+    # Parse formating args
+    if color_by is not None:
+        if not color_by.startswith('pore.'):
+            color_by = 'pore.' + color_by
+        c = network[color_by] / network[color_by].max()
+        color = cm.get_cmap(name=cmap)(c)
+    if size_by is not None:
+        if not size_by.startswith('pore.'):
+            size_by = 'pore.' + size_by
+        markersize = network[size_by] / network[size_by].max() * markersize
+
     if ThreeD:
-        ax.scatter(X, Y, Z, **kwargs)
+        ax.scatter(X, Y, Z, c=color, s=markersize,
+                   marker=marker, alpha=alpha)
     else:
         X_temp, Y_temp = np.column_stack((X, Y, Z))[:, dim].T
-        ax.scatter(X_temp, Y_temp, **kwargs)
+        ax.scatter(X_temp, Y_temp, c=color, s=markersize,
+                   marker=marker, alpha=alpha)
 
     _scale_3d_axes(ax=ax, X=X, Y=Y, Z=Z)
     _label_axes(ax=ax, X=X, Y=Y, Z=Z)
