@@ -879,6 +879,14 @@ class GenericNetwork(Base, ModelsMixin):
                 Pn = temp
         return Pn
 
+    @property
+    def conns(self):
+        return self['throat.conns']
+
+    @property
+    def coords(self):
+        return self['pore.coords']
+
     def check_network_health(self):
         r"""
         This method check the network topological health by checking for:
