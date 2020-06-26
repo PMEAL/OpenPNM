@@ -36,10 +36,6 @@ from .topotools import istriangular
 from .topotools import label_faces
 from .topotools import merge_networks
 from .topotools import merge_pores
-from .topotools import plot_connections
-from .topotools import plot_coordinates
-from .topotools import plot_networkx
-from .topotools import plot_vpython
 from .topotools import reduce_coordination
 from .topotools import reflect_base_points
 from .topotools import remove_isolated_clusters
@@ -55,3 +51,8 @@ from .topotools import trim_occluded_throats
 from .topotools import vor_to_am
 from .topotools import tri_to_am
 from .topotools import conns_to_am
+from .plottools import plot_tutorial
+from .plottools import plot_connections
+from .plottools import plot_coordinates
+from .plottools import plot_networkx
+from .plottools import plot_vpython

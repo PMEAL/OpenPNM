@@ -33,7 +33,7 @@ class GenericTransportTest:
         tol = alg.settings["solver_tol"]
         atol = alg.settings["solver_atol"]
         rtol = alg.settings["solver_rtol"]
-        maxiter = alg.settings["solver_maxiter"]
+        max_iter = alg.settings["solver_max_iter"]
         # Set solver settings, but don't provide any arguments
         alg.set_solver()
         # Make sure nothing was changed
@@ -42,9 +42,9 @@ class GenericTransportTest:
         assert alg.settings["solver_tol"] == tol
         assert alg.settings["solver_atol"] == atol
         assert alg.settings["solver_rtol"] == rtol
-        assert alg.settings["solver_maxiter"] == maxiter
+        assert alg.settings["solver_max_iter"] == max_iter
         # Set solver settings, this time change everything
-        alg.set_solver(solver_family="petsc", solver_type="gmres", maxiter=13,
+        alg.set_solver(solver_family="petsc", solver_type="gmres", max_iter=13,
                        preconditioner="ilu", tol=1e-3, atol=1e-12, rtol=1e-2)
         # Make changes went through
         assert alg.settings["solver_family"] == "petsc"
@@ -52,7 +52,7 @@ class GenericTransportTest:
         assert alg.settings["solver_tol"] == 1e-3
         assert alg.settings["solver_atol"] == 1e-12
         assert alg.settings["solver_rtol"] == 1e-2
-        assert alg.settings["solver_maxiter"] == 13
+        assert alg.settings["solver_max_iter"] == 13
 
     def test_remove_boundary_conditions(self):
         alg = op.algorithms.GenericTransport(network=self.net,
