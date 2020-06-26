@@ -143,8 +143,8 @@ class iMorph(GenericIO):
                 vals = np.fromstring(file.readline(), sep="\t", dtype=int)
                 if len(vals) <= 1:
                     break
-                lil.rows[vals[0]] = vals[2:]
-                lil.data[vals[0]] = np.ones(vals[1])
+                lil.rows[vals[0]] = vals[2:].tolist()
+                lil.data[vals[0]] = np.ones(vals[1]).tolist()
 
         # fixing any negative volumes or distances so they are 1 voxel/micron
         network["pore.volume"][np.where(network["pore.volume"] < 0)[0]] = 1.0
