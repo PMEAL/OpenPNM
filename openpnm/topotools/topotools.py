@@ -2303,6 +2303,10 @@ def plot_coordinates(network, pores=None, fig=None, size_by=None,
     X, Y, Z = network['pore.coords'][Ps].T
 
     # Parse formating args
+    if 'c' in kwargs.keys():
+        color = kwargs.pop('c')
+    if 's' in kwargs.keys():
+        markersize = kwargs.pop('s')
     if color_by is not None:
         if not color_by.startswith('pore.'):
             color_by = 'pore.' + color_by
