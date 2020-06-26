@@ -163,8 +163,8 @@ class NetworkX(GenericIO):
         import networkx as nx
 
         # Ensure network is an OpenPNM Network object.
-        if not isinstance(network, GenericNetwork):
-            raise('Provided network is not an OpenPNM Network.')
+        # if not isinstance(network, GenericNetwork):
+        #     raise('Provided network is not an OpenPNM Network.')
 
         G = nx.Graph()
 
