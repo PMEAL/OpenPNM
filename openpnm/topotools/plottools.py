@@ -1,8 +1,6 @@
 import numpy as np
 import networkx as nx
 import matplotlib.pyplot as plt
-from openpnm.io import NetworkX
-from openpnm.topotools import dimensionality
 
 
 def plot_connections(network, throats=None, fig=None, size_by=None,
@@ -76,6 +74,7 @@ def plot_connections(network, throats=None, fig=None, size_by=None,
     from mpl_toolkits.mplot3d.art3d import Line3DCollection
     from matplotlib import colors as mcolors
     from matplotlib import cm
+    from openpnm.topotools import dimensionality
 
     Ts = network.Ts if throats is None else network._parse_indices(throats)
     dim = dimensionality(network)
@@ -194,6 +193,7 @@ def plot_coordinates(network, pores=None, fig=None, size_by=None,
     import matplotlib.pyplot as plt
     from mpl_toolkits.mplot3d import Axes3D
     from matplotlib import cm
+    from openpnm.topotools import dimensionality
 
     Ps = network.Ps if pores is None else network._parse_indices(pores)
 
@@ -304,6 +304,7 @@ def plot_networkx(network, plot_throats=True, labels=None, colors=None,
     from networkx import Graph, draw_networkx_nodes, draw_networkx_edges
     from matplotlib.collections import PathCollection
     import matplotlib.pyplot as plt
+    from openpnm.topotools import dimensionality
 
     dims = dimensionality(network)
     if dims.sum() > 2:
@@ -512,6 +513,7 @@ def plot_tutorial(network, font_size=24, line_width=3,
     g : NetworkX plot object
 
     """
+    from openpnm.io import NetworkX
     G = NetworkX.to_networkx(network=network)
     pos = {i: network['pore.coords'][i, 0:2] for i in network.Ps}
     labels = {i: i for i in network.Ps}
