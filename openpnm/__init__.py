@@ -67,3 +67,6 @@ from . import topotools
 from . import io
 
 from .utils import Workspace, Project
+
+import numpy
+numpy.seterr(divide='ignore', invalid='ignore')
