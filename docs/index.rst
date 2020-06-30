@@ -8,7 +8,7 @@ OpenPNM Documentation
 
 
 .. toctree::
-    :maxdepth: 2
+    :maxdepth: 1
 
     installation.rst
     quick_start.rst
