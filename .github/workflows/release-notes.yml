@@ -16,7 +16,7 @@ jobs:
 
       - name: Generate release notes
         run: |
-          ./logger.sh
+          .github/workflows/logger.sh
           echo ::set-env name=RELEASE_NOTES::$(./logger.sh)
 
       # - name: Create release notes
