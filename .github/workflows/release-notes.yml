@@ -7,12 +7,18 @@ name: Create release notes
 
 jobs:
   build:
-    name: Create release notes
+    name: Release notes
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-      - name: Create Release
+
+      - name: Generate release notes
+        run: |
+          echo ::set-env name=RELEASE_NOTES::$(./logger.sh)
+
+      - name: Create release notes
         id: create_release
         uses: actions/create-release@v1
         env:
@@ -20,6 +26,6 @@ jobs:
         with:
           tag_name: ${{ github.ref }}
           release_name: Release ${{ github.ref }}
-          body: ./logger.sh
+          body: env.RELEASE_NOTES
           draft: true
           prerelease: false
