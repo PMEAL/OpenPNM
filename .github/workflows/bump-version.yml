@@ -65,6 +65,8 @@ jobs:
       uses: anothrNick/github-tag-action@1.22.0
       env:
         # If secrets.GITHUB_TOKEN is used, "Publish to PyPI" action will not be triggered
+        RELEASE_BRANCHES: release
         GITHUB_TOKEN: ${{ secrets.PUSH_ACTION_TOKEN }}
-        WITH_V: true
         DEFAULT_BUMP: none
+        WITH_V: true
+
