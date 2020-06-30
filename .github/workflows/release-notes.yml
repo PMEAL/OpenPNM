@@ -16,16 +16,25 @@ jobs:
 
       - name: Generate release notes
         run: |
+          ./logger.sh
           echo ::set-env name=RELEASE_NOTES::$(./logger.sh)
 
-      - name: Create release notes
-        id: create_release
-        uses: actions/create-release@v1
+      # - name: Create release notes
+      #   id: create_release
+      #   uses: actions/create-release@v1
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #   with:
+      #     tag_name: ${{ github.ref }}
+      #     release_name: Release ${{ github.ref }}
+      #     body: ${ env.RELEASE_NOTES }
+      #     draft: true
+      #     prerelease: false
+
+      - name: Create GitHub release
+        uses: Roang-zero1/github-create-release-action@master
+        with:
+          version_regex: ^v[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+
+          create_draft: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
-          body: ${ env.RELEASE_NOTES }
-          draft: true
-          prerelease: false

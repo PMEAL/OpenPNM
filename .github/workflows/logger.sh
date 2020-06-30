@@ -69,6 +69,11 @@ if test -f entry; then
     rm entry
 fi
 
+# Delete "CHANGELOG.md" file if already exists
+if test -f CHANGELOG.md; then
+    rm CHANGELOG.md
+fi
+
 # Compile change log
 echo -e "## ${tag_new}\n" >> entry
 append_to_entry_with_label "$features" entry "New features"
@@ -78,7 +83,6 @@ append_to_entry_with_label "$fixes" entry "Bugfixes"
 echo "$(<entry)"
 
 # Modify CHANGELOG.md to reflect new changes
-rm CHANGELOG.md
 echo -e "# Change log\n" >> CHANGELOG.md
 echo "$(<entry)" >> CHANGELOG.md
 rm entry
