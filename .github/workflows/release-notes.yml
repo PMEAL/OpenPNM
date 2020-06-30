@@ -29,5 +29,3 @@ jobs:
           body: ${ env.RELEASE_NOTES }
           draft: true
           prerelease: false
-        run:
-          echo $RELEASE_NOTES
