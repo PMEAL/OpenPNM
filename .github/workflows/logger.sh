@@ -1,4 +1,3 @@
-#!/usr/bin/bash
 function join_by {
     # It was necessary to define this function because
     # Unix's `join` didn't work.
