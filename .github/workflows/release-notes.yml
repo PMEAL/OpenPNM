@@ -1,0 +1,44 @@
+on:
+  push:
+    tags:
+      - 'v*'
+
+name: Create release notes
+
+jobs:
+  build:
+    name: Release notes
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Generate release notes
+        run: |
+          git fetch --all --tags
+          chmod +x .github/workflows/logger.sh
+          bash .github/workflows/logger.sh
+          echo ::set-env name=TAG::$(git tag | sort -V | tail -1)
+
+      - name: Create GitHub release
+        uses: Roang-zero1/github-create-release-action@master
+        with:
+          version_regex: ^v[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+
+          create_draft: true
+          created_tag: ${{ env.TAG }}
+          update_existing: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # - name: Create release notes
+      #   id: create_release
+      #   uses: actions/create-release@v1
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #   with:
+      #     tag_name: ${{ github.ref }}
+      #     release_name: Release ${{ github.ref }}
+      #     body: ${ env.RELEASE_NOTES }
+      #     draft: true
+      #     prerelease: false

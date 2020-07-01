@@ -21,7 +21,6 @@ jobs:
     - name: Set env variables
       run: |
         git fetch --all --tags
-        # echo ::set-env name=TAG::$(git describe --tags `git rev-list --tags --max-count=1`)
         echo ::set-env name=TAG::$(git tag | sort -V | tail -1)
         echo ::set-env name=VER::$(python -c "import sys; sys.path.append('./openpnm'); from __version__ import __version__; print(__version__)")
 
