@@ -53,7 +53,7 @@ function get_nth_recent_tag {
 }
 
 # Fetching merge commit messages since the last tag
-tag_old=$(get_nth_recent_tag 4)
+tag_old=$(get_nth_recent_tag 2)
 tag_new=$(get_nth_recent_tag 1)
 tag_date=$(git show "$tag_new" --format="%cs")
 merge_commits=$(filter_commits_by_tag_interval $tag_old $tag_new)
@@ -75,9 +75,9 @@ fi
 
 # Compile change log
 echo -e "## ${tag_new}\n" >> entry
-append_to_entry_with_label "$features" entry "New features"
-append_to_entry_with_label "$changes" entry "API changes"
-append_to_entry_with_label "$fixes" entry "Bugfixes"
+append_to_entry_with_label "$features" entry ":rocket: New features"
+append_to_entry_with_label "$changes" entry ":warning: API changes"
+append_to_entry_with_label "$fixes" entry ":bug: Bugfixes"
 
 echo "$(<entry)"
 

@@ -19,6 +19,7 @@ jobs:
           git fetch --all --tags
           chmod +x .github/workflows/logger.sh
           bash .github/workflows/logger.sh
+          echo ::set-env name=TAG::$(git tag | sort -V | tail -1)
 
       # - name: Create release notes
       #   id: create_release
@@ -37,6 +38,6 @@ jobs:
         with:
           version_regex: ^v[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+
           create_draft: true
-          created_tag: v2.3.2
+          created_tag: ${{ env.TAG }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
