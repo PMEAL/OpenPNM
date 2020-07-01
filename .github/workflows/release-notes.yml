@@ -1,7 +1,7 @@
-on:
-  push:
-    tags:
-      - 'v*'
+on: push
+  # push:
+  #   tags:
+  #     - 'v*'
 
 name: Create release notes
 
@@ -32,15 +32,3 @@ jobs:
           update_existing: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      # - name: Create release notes
-      #   id: create_release
-      #   uses: actions/create-release@v1
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      #   with:
-      #     tag_name: ${{ github.ref }}
-      #     release_name: Release ${{ github.ref }}
-      #     body: ${ env.RELEASE_NOTES }
-      #     draft: true
-      #     prerelease: false
