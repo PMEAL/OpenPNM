@@ -21,6 +21,15 @@ jobs:
           bash .github/workflows/logger.sh
           echo ::set-env name=TAG::$(git tag | sort -V | tail -1)
 
+      - name: Create GitHub release
+        uses: Roang-zero1/github-create-release-action@master
+        with:
+          version_regex: ^v[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+
+          create_draft: true
+          created_tag: ${{ env.TAG }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       # - name: Create release notes
       #   id: create_release
       #   uses: actions/create-release@v1
@@ -32,12 +41,3 @@ jobs:
       #     body: ${ env.RELEASE_NOTES }
       #     draft: true
       #     prerelease: false
-
-      - name: Create GitHub release
-        uses: Roang-zero1/github-create-release-action@master
-        with:
-          version_regex: ^v[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+
-          create_draft: true
-          created_tag: ${{ env.TAG }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
