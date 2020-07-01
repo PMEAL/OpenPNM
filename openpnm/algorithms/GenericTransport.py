@@ -15,6 +15,7 @@ from openpnm.utils import logging, Docorator, GenericSettings
 docstr = Docorator()
 logger = logging.getLogger(__name__)
 
+
 @docstr.get_sectionsf('GenericTransportSettings',
                       sections=['Parameters', 'Other Parameters'])
 @docstr.dedent
