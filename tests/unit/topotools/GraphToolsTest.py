@@ -80,6 +80,15 @@ class GraphToolsTest:
         Ps = topotools.find_connected_sites(bonds=[6], am=am, flatten=True)
         assert np.all(Ps == [4, 5])
 
+    def test_find_connected_sites_from_lil_format(self):
+        pn = op.network.Cubic(shape=[5, 1, 1], spacing=1e-4)
+        am = pn.create_adjacency_matrix(weights=pn.Ts, fmt='lil')
+        am = am.tocoo()
+        Ps1 = topotools.find_connected_sites(bonds=[3], am=am, flatten=True)
+        am = pn.create_adjacency_matrix(weights=pn.Ts, fmt='coo')
+        Ps2 = topotools.find_connected_sites(bonds=[3], am=am, flatten=True)
+        assert np.all(Ps1 == Ps2)
+
     def test_find_connected_sites_single(self):
         am = self.net.create_adjacency_matrix(fmt='coo')
         Ps = topotools.find_connected_sites(bonds=0, am=am, flatten=True)
