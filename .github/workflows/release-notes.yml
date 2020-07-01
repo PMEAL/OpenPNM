@@ -30,5 +30,6 @@ jobs:
           create_draft: true
           created_tag: ${{ env.TAG }}
           update_existing: false
+          release_title: ${{ env.TAG }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
