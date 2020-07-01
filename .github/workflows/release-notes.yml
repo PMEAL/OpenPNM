@@ -1,7 +1,7 @@
 on: push
-  # push:
-  #   tags:
-  #     - 'v*'
+  push:
+    tags:
+      - 'v*'
 
 name: Create release notes
 
