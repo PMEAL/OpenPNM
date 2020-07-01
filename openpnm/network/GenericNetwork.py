@@ -200,11 +200,6 @@ class GenericNetwork(Base, ModelsMixin):
         # Retrieve existing matrix if available
         if fmt in self._am.keys():
             am = self._am[fmt]
-        elif self._am.keys():
-            am = self._am[list(self._am.keys())[0]]
-            tofmt = getattr(am, 'to'+fmt)
-            am = tofmt()
-            self._am[fmt] = am
         else:
             am = self.create_adjacency_matrix(weights=self.Ts, fmt=fmt)
             self._am[fmt] = am
