@@ -583,7 +583,7 @@ class GenericTransport(GenericAlgorithm):
         A = A.tocsr()
 
         # Check if A and b are well-defined
-        self._check_for_nans()
+        self._validate_data_health()
 
         # Check if A is symmetric
         if self.settings['solver_type'] == 'cg':
