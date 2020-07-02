@@ -720,15 +720,10 @@ class GenericTransport(GenericAlgorithm):
         flag_converged = True if res <= res_tol else False
         return flag_converged
 
-    def _check_for_nans(self):
+    def _validate_data_health(self):
         r"""
         Check whether A and b are well-defined, i.e. doesn't contain nans.
         """
-        # Return if everything looks good
-        if not np.isnan(self.A.data).any():
-            if not np.isnan(self.b).any():
-                return
-
         import networkx as nx
         from pandas import unique
 
@@ -737,6 +732,19 @@ class GenericTransport(GenericAlgorithm):
         phase = prj.find_phase(self)
         geometries = prj.geometries().values()
         physics = prj.physics().values()
+
+        # Validate network topology health
+        if not prj.network._is_fully_connected():
+            msg = (
+                "Your network is clustered. Run h = net.check_network_health()"
+                " followed by op.topotools.trim(net, pores=h['trim_pores'])"
+                " to make your network fully connected."
+            )
+            raise Exception(msg)
+
+        # Short-circuit subsequent checks if data are healthy
+        if np.isfinite(self.A.data).all() and np.isfinite(self.b).all():
+            return True
 
         # Locate the root of NaNs
         unaccounted_nans = []
@@ -762,17 +770,27 @@ class GenericTransport(GenericAlgorithm):
             # Throw error with helpful info on how to resolve the issue
             if root_props:
                 msg = (
-                    f"Found NaNs in A matrix, possibly caused by NaNs in "
-                    f"{', '.join(root_props)}. The issue might get "
-                    f"resolved if you call regenerate_models on the following "
-                    f"object(s): {', '.join(root_objs)}"
+                    r"Found NaNs in A matrix, possibly caused by NaNs in"
+                    f" {', '.join(root_props)}. The issue might get"
+                    r" resolved if you call regenerate_models on the following"
+                    f" object(s): {', '.join(root_objs)}"
                 )
                 raise Exception(msg)
 
-        # Raise Exception otherwise
+        # Raise Exception for unaccounted properties
         if unaccounted_nans:
-            raise Exception(f"Found NaNs in A matrix, possibly caused by NaNs in "
-                            f"{', '.join(unaccounted_nans)}.")
+            raise Exception(
+                r"Found NaNs in A matrix, possibly caused by NaNs in"
+                f" {', '.join(unaccounted_nans)}."
+            )
+
+        # Raise Exception otherwise if root cannot be found
+        raise Exception(
+            "Found NaNs in A matrix but couldn't locate the root object(s)"
+            " that might have caused it. It's likely that disabling caching"
+            " of A matrix via alg.settings['cache_A'] = False after"
+            " instantiating the algorithm object fixes the problem."
+        )
 
     def results(self):
         r"""
