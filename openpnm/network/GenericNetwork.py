@@ -911,3 +911,13 @@ class GenericNetwork(Base, ModelsMixin):
         health = self.project.check_network_health()
 
         return health
+
+    def _is_fully_connected(self):
+        r"""
+        Checks whether network is fully connected, i.e. not clustered.
+        """
+        import scipy.sparse.csgraph as csgraph
+
+        am = self.get_adjacency_matrix(fmt='coo')
+        temp = csgraph.connected_components(am, directed=False)[1]
+        return False if np.unique(temp).size > 1 else True
