@@ -1523,8 +1523,8 @@ def stitch(network, donor, P_network, P_donor, method='nearest',
     method : string (default = 'nearest')
         The method to use when making pore to pore connections. Options are:
 
-        - 'radii' : Connects each pore on the recipient network to the
-                    nearest pores on the donor network, within ``len_max``
+        - 'radius' : Connects each pore on the recipient network to the
+                     nearest pores on the donor network, within ``len_max``
         - 'nearest' : Connects each pore on the recipienet network to the
                       nearest pore on the donor network.
 
@@ -1545,7 +1545,7 @@ def stitch(network, donor, P_network, P_donor, method='nearest',
     [125, 300]
     >>> pn2['pore.coords'][:, 2] += 5.0
     >>> op.topotools.stitch(network=pn, donor=pn2, P_network=pn.pores('top'),
-    ...                     P_donor=pn2.pores('bottom'), method='radii',
+    ...                     P_donor=pn2.pores('bottom'), method='radius',
     ...                     len_max=1.0)
     >>> [pn.Np, pn.Nt]
     [250, 625]
