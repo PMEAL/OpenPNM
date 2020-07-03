@@ -327,35 +327,19 @@ class TopotoolsTest:
         with pytest.raises(Exception):
             op.topotools.extend(network=pn, pore_coords=[[3, 3, 3], [3, 3, 4]])
 
-    def test_plot_networkx(self):
-        # 2D networks in XY, YZ, XZ planes
-        for i in range(3):
-            shape = np.ones(3, dtype=int)
-            shape[np.arange(3) != i] = [5, 8]
-            pn = op.network.Cubic(shape=shape)
-            x, y = pn["pore.coords"].T[op.topotools.dimensionality(pn)]
-            fig, ax = plt.subplots()
-            m = op.topotools.plot_networkx(pn, ax=ax)
-            x_plot, y_plot = np.array(m.get_offsets()).T
-            np.testing.assert_allclose(x_plot, x)
-            np.testing.assert_allclose(y_plot, y)
-            plt.close()
-        # 1D networks in XY, YZ, XZ planes
-        for i in range(3):
-            shape = np.ones(3, dtype=int)
-            shape[np.arange(3) == i] = [5]
-            pn = op.network.Cubic(shape=shape)
-            x, = pn["pore.coords"].T[op.topotools.dimensionality(pn)]
-            fig, ax = plt.subplots()
-            m = op.topotools.plot_networkx(pn, ax=ax)
-            x_plot, y_plot = np.array(m.get_offsets()).T
-            np.testing.assert_allclose(x_plot, x)
-            plt.close()
-
-    def test_plot_networkx_3d(self):
-        pn = op.network.Cubic(shape=[5, 8, 3])
-        with pytest.raises(Exception):
-            op.topotools.plot_networkx(pn)
+    def test_stitch(self):
+        Nx, Ny, Nz = (10, 10, 1)
+        Lc = 1e-4
+        pn = op.network.Cubic(shape=[Nx, Ny, Nz], spacing=Lc)
+        pn2 = op.network.Cubic(shape=[Nx, Ny, Nz], spacing=Lc)
+        pn2['pore.coords'] += [Lc*Nx, 0, 0]
+        op.topotools.stitch(network=pn, donor=pn2,
+                            P_network=pn.pores('back'), P_donor=pn2.pores('front'),
+                            len_max=Lc,
+                            label_stitches=['test', 'test2'])
+        assert 'throat.test' in pn.keys()
+        assert 'throat.test2' in pn.keys()
+        assert pn.Nt == (pn2.Nt*2 + 10)
 
     def test_dimensionality(self):
         # 3D network
