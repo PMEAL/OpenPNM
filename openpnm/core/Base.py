@@ -182,7 +182,8 @@ class Base(dict):
 
         # Check 3: Enforce correct dict naming
         element = key.split('.')[0]
-        element = self._parse_element(element, single=True)
+        if element not in ['pore', 'throat']:
+                raise Exception('All keys must start with either pore or throat')
 
         # Check 2: If adding a new key, make sure it has no conflicts
         if self.project:
@@ -1688,16 +1689,14 @@ class Base(dict):
 
         Returns
         -------
-        When ``single`` is False (default) a list contain the element(s) is
-        returned.  When ``single`` is True a bare string containing the element
-        is returned.
+        When ``single`` is ``False`` (default) a list containing the element(s)
+        is returned.  When ``single`` is ``True`` a bare string containing the
+        element is returned.
         """
         if element is None:
             element = ['pore', 'throat']
         # Convert element to a list for subsequent processing
         if type(element) is str:
-            if element not in ['pore', 'throat']:
-                raise Exception('All keys must start with either pore or throat')
             element = [element]
         # Convert 'pore.prop' and 'throat.prop' into just 'pore' and 'throat'
         element = [item.split('.')[0] for item in element]
@@ -1707,7 +1706,7 @@ class Base(dict):
         element = [item.rsplit('s', maxsplit=1)[0] for item in element]
         for item in element:
             if item not in ['pore', 'throat']:
-                raise Exception('Invalid element received: '+item)
+                raise Exception('All keys must start with either pore or throat')
         # Remove duplicates if any
         [element.remove(L) for L in element if element.count(L) > 1]
         if single:
@@ -1799,7 +1798,7 @@ class Base(dict):
         if single:
             if len(mode) > 1:
                 raise Exception('Multiple modes received when only one mode '
-                                + 'allowed')
+                                + 'is allowed by this method')
             else:
                 mode = mode[0]
         return mode
