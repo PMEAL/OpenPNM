@@ -5,7 +5,7 @@ Installing OpenPNM
 
 OpenPNM requires the *Scipy Stack* (Numpy, Scipy, Matplotlib, etc), which is most conveniently obtained by installing the `Anaconda Distribution <https://conda.io/docs/user-guide/install/download.html>`_, so first download and install this if you don't have it already.
 
-OpenPNM can be installed from the `Python Package Index https://pypi.org/project/openpnm/`_ using:
+OpenPNM can be installed from the `Python Package Index <https://pypi.org/project/openpnm/>`_ using:
 
 .. code-block::
 
