@@ -327,7 +327,7 @@ class TopotoolsTest:
         with pytest.raises(Exception):
             op.topotools.extend(network=pn, pore_coords=[[3, 3, 3], [3, 3, 4]])
 
-    def test_stitch_no_connections(self):
+    def test_stitch_radius_no_connections(self):
         Nx, Ny, Nz = (10, 10, 1)
         Lc = 1e-4
         pn = op.network.Cubic(shape=[Nx, Ny, Nz], spacing=Lc)
@@ -335,7 +335,7 @@ class TopotoolsTest:
         pn2['pore.coords'] += [Lc*Nx, 0, 0]
         op.topotools.stitch(network=pn, donor=pn2,
                             P_network=pn.pores('back'), P_donor=pn2.pores('front'),
-                            len_max=0,
+                            method='radius', len_max=0,
                             label_stitches=['test', 'test2'])
         assert pn.Nt == (pn2.Nt*2)
 
@@ -347,7 +347,6 @@ class TopotoolsTest:
         pn2['pore.coords'] += [Lc*Nx, 0, 0]
         op.topotools.stitch(network=pn, donor=pn2,
                             P_network=pn.pores('back'), P_donor=pn2.pores('front'),
-                            len_max=Lc,
                             label_stitches=['test', 'test2'])
         assert pn.Nt == (pn2.Nt*2 + 10)
 
@@ -359,10 +358,23 @@ class TopotoolsTest:
         pn2['pore.coords'] += [Lc*Nx, 0, 0]
         op.topotools.stitch(network=pn, donor=pn2,
                             P_network=pn.pores('back'), P_donor=pn2.pores('front'),
-                            len_max=Lc,
                             label_stitches=['test', 'test2'])
         assert 'throat.test' in pn.keys()
         assert 'throat.test2' in pn.keys()
+
+    def test_stitch_repeatedly(self):
+        pn = op.network.Cubic(shape=[10, 10, 1], spacing=1e-4)
+        pn2 = op.network.Cubic(shape=[10, 10, 1], spacing=1e-4)
+        pn2['pore.coords'] += [1e-4*10, 0, 0]
+        pn3 = op.network.Cubic(shape=[10, 10, 1], spacing=1e-4)
+        pn3['pore.coords'] += [1e-4*20, 0, 0]
+        op.topotools.stitch(network=pn, donor=pn2,
+                            P_network=pn.pores('back'), P_donor=pn2.pores('front'),
+                            method='nearest')
+        op.topotools.stitch(network=pn, donor=pn3,
+                            P_network=pn.pores('back'), P_donor=pn2.pores('front'),
+                            method='nearest')
+        assert pn.Nt == (pn2.Nt*3 + 20)
 
     def test_dimensionality(self):
         # 3D network
