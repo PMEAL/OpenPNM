@@ -327,7 +327,31 @@ class TopotoolsTest:
         with pytest.raises(Exception):
             op.topotools.extend(network=pn, pore_coords=[[3, 3, 3], [3, 3, 4]])
 
-    def test_stitch(self):
+    def test_stitch_no_connections(self):
+        Nx, Ny, Nz = (10, 10, 1)
+        Lc = 1e-4
+        pn = op.network.Cubic(shape=[Nx, Ny, Nz], spacing=Lc)
+        pn2 = op.network.Cubic(shape=[Nx, Ny, Nz], spacing=Lc)
+        pn2['pore.coords'] += [Lc*Nx, 0, 0]
+        op.topotools.stitch(network=pn, donor=pn2,
+                            P_network=pn.pores('back'), P_donor=pn2.pores('front'),
+                            len_max=0,
+                            label_stitches=['test', 'test2'])
+        assert pn.Nt == (pn2.Nt*2)
+
+    def test_stitch_10_connections(self):
+        Nx, Ny, Nz = (10, 10, 1)
+        Lc = 1e-4
+        pn = op.network.Cubic(shape=[Nx, Ny, Nz], spacing=Lc)
+        pn2 = op.network.Cubic(shape=[Nx, Ny, Nz], spacing=Lc)
+        pn2['pore.coords'] += [Lc*Nx, 0, 0]
+        op.topotools.stitch(network=pn, donor=pn2,
+                            P_network=pn.pores('back'), P_donor=pn2.pores('front'),
+                            len_max=Lc,
+                            label_stitches=['test', 'test2'])
+        assert pn.Nt == (pn2.Nt*2 + 10)
+
+    def test_stitch_with_multiple_labels(self):
         Nx, Ny, Nz = (10, 10, 1)
         Lc = 1e-4
         pn = op.network.Cubic(shape=[Nx, Ny, Nz], spacing=Lc)
@@ -339,7 +363,6 @@ class TopotoolsTest:
                             label_stitches=['test', 'test2'])
         assert 'throat.test' in pn.keys()
         assert 'throat.test2' in pn.keys()
-        assert pn.Nt == (pn2.Nt*2 + 10)
 
     def test_dimensionality(self):
         # 3D network
