@@ -173,11 +173,16 @@ class Base(dict):
 
         """
         # Check 1: If value is a dictionary, break it into constituent arrays
+        # and recursively call __setitem__ on each
         if hasattr(value, 'keys'):
             for item in value.keys():
                 prop = item.replace('pore.', '').replace('throat.', '')
                 self.__setitem__(key+'.'+prop, value[item])
             return
+
+        # Check 3: Enforce correct dict naming
+        element = key.split('.')[0]
+        element = self._parse_element(element, single=True)
 
         # Check 2: If adding a new key, make sure it has no conflicts
         if self.project:
@@ -209,9 +214,6 @@ class Base(dict):
         if not isinstance(value, sp.ndarray):
             value = np.array(value, ndmin=1)  # Convert value to an ndarray
 
-        # Check 3: Enforce correct dict naming
-        element = key.split('.')[0]
-        element = self._parse_element(element, single=True)
 
         # Skip checks for 'coords', 'conns'
         if key in ['pore.coords', 'throat.conns']:
@@ -1694,6 +1696,8 @@ class Base(dict):
             element = ['pore', 'throat']
         # Convert element to a list for subsequent processing
         if type(element) is str:
+            if element not in ['pore', 'throat']:
+                raise Exception('All keys must start with either pore or throat')
             element = [element]
         # Convert 'pore.prop' and 'throat.prop' into just 'pore' and 'throat'
         element = [item.split('.')[0] for item in element]
