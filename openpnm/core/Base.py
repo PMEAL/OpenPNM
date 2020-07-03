@@ -243,7 +243,7 @@ class Base(dict):
             if self._count(element) == 0:
                 self.update({key: value})
             else:
-                raise Exception('Cannot write array, wrong length: '+key)
+                raise Exception('Provided array is wrong legth for ' + key)
 
     def __getitem__(self, key):
         element, prop = key.split('.', 1)
@@ -1118,7 +1118,7 @@ class Base(dict):
 
         """
         if np.amax(mask) > 1:
-            raise Exception('Received mask is invalid, with values above 1')
+            raise Exception('Received mask does not appear to be boolean')
         mask = np.array(mask, dtype=bool)
         indices = self._parse_indices(mask)
         return indices
