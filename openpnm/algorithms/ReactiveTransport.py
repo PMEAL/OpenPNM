@@ -387,8 +387,10 @@ class ReactiveTransport(GenericTransport):
         dg = nx.DiGraph(nx.edge_dfs(dg, source=base_props))
         if len(dg.nodes) == 0:
             return []
-        dg.remove_nodes_from(base_props)
-        return list(nx.dag.lexicographical_topological_sort(dg))
+        iterative_props = list(nx.dag.lexicographical_topological_sort(dg))
+        # "quantity" shouldn't be in the returned list but "variable_props" should
+        iterative_props.remove(self.settings["quantity"])
+        return iterative_props
 
     @docstr.dedent
     def _set_BC(self, pores, bctype, bcvalues=None, mode='merge'):
