@@ -798,7 +798,7 @@ class GenericNetwork(Base, ModelsMixin):
         if flatten:
             num = np.size(num)
         else:
-            counts = _count_neighbors(tuple(num))
+            counts = self._count_neighbors(tuple(num))
             num = np.array(counts, dtype=int)
         return num
 
