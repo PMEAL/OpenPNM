@@ -714,6 +714,14 @@ class GenericNetwork(Base, ModelsMixin):
             neighbors = self.find_neighbor_throats(pores=pores, **kwargs)
         return neighbors
 
+    @njit
+    def _count_neighbors(lil):
+        r"""This method is called num_neighbors"""
+        counts = np.zeros(len(lil), dtype=np.int64)
+        for i in range(len(counts)):
+            counts[i] = len(lil[i])
+        return counts
+
     def num_neighbors(self, pores, mode='or', flatten=False):
         r"""
         Returns the number of neigbhoring pores for each given input pore
@@ -780,12 +788,6 @@ class GenericNetwork(Base, ModelsMixin):
         >>> print(Np)
         1
         """
-        @njit
-        def _count_neighbors(lil):
-            counts = np.zeros(len(lil), dtype=np.int64)
-            for i in range(len(counts)):
-                counts[i] = len(lil[i])
-            return counts
 
         pores = self._parse_indices(pores)
         # Count number of neighbors
