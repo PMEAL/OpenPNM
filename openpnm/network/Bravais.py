@@ -155,13 +155,13 @@ class Bravais(GenericNetwork):
                 n.update({'throat.all': np.array([], dtype=bool)})
                 n.update({'throat.conns': np.ndarray([0, 2], dtype=bool)})
             # Join networks 2, 3 and 4 into one with all face sites
-            topotools.stitch(net2, net3, net2.Ps, net3.Ps,
-                             len_min=0.70, len_max=0.75)
-            topotools.stitch(net2, net4, net2.Ps, net4.Ps,
-                             len_min=0.70, len_max=0.75)
+            topotools.stitch(net2, net3, net2.Ps, net3.Ps, method='radius',
+                             len_max=0.75)
+            topotools.stitch(net2, net4, net2.Ps, net4.Ps, method='radius',
+                             len_max=0.75)
             # Join face sites network with the corner sites network
-            topotools.stitch(net1, net2, net1.Ps, net2.Ps,
-                             len_min=0.70, len_max=0.75)
+            topotools.stitch(net1, net2, net1.Ps, net2.Ps, method='radius',
+                             len_max=0.75)
             self.update(net1)
             ws.close_project(net1.project)
             # Deal with labels

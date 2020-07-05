@@ -1487,7 +1487,7 @@ def merge_networks(network, donor=[]):
 
 
 def stitch(network, donor, P_network, P_donor, method='nearest',
-           len_max=sp.inf, len_min=0, label_suffix=''):
+           len_max=sp.inf, label_suffix='', label_stitches='stitched'):
     r'''
     Stitches a second a network to the current network.
 
@@ -1505,21 +1505,28 @@ def stitch(network, donor, P_network, P_donor, method='nearest',
     P_donor : array_like
         The pores on the donor Network
 
-    label_suffix : string or None
+    label_suffix : str or None
         Some text to append to each label in the donor Network before
         inserting them into the recipient.  The default is to append no
         text, but a common option would be to append the donor Network's
-        name. To insert none of the donor labels, use None.
+        name. To insert none of the donor labels, use ``None``.
+
+    label_stitches : str or list of strings
+        The label to apply to the newly created 'stitch' throats.  The
+        defaul is 'stitched'.  If performing multiple stitches in a row it
+        might be helpful to the throats created during each step uniquely
+        for later identification.
 
     len_max : float
         Set a length limit on length of new throats
 
-    method : string (default = 'delaunay')
+    method : string (default = 'nearest')
         The method to use when making pore to pore connections. Options are:
 
-        - 'delaunay' : Use a Delaunay tessellation
-        - 'nearest' : Connects each pore on the receptor network to its nearest
-                      pore on the donor network
+        - 'radius' : Connects each pore on the recipient network to the
+                     nearest pores on the donor network, within ``len_max``
+        - 'nearest' : Connects each pore on the recipienet network to the
+                      nearest pore on the donor network.
 
     Notes
     -----
@@ -1538,7 +1545,7 @@ def stitch(network, donor, P_network, P_donor, method='nearest',
     [125, 300]
     >>> pn2['pore.coords'][:, 2] += 5.0
     >>> op.topotools.stitch(network=pn, donor=pn2, P_network=pn.pores('top'),
-    ...                     P_donor=pn2.pores('bottom'), method='nearest',
+    ...                     P_donor=pn2.pores('bottom'), method='radius',
     ...                     len_max=1.0)
     >>> [pn.Np, pn.Nt]
     [250, 625]
@@ -1547,12 +1554,24 @@ def stitch(network, donor, P_network, P_donor, method='nearest',
     # Ensure Networks have no associated objects yet
     if (len(network.project) > 1) or (len(donor.project) > 1):
         raise Exception('Cannot stitch a Network with active objects')
-    network['throat.stitched'] = False
+    if isinstance(label_stitches, str):
+        label_stitches = [label_stitches]
+    for s in label_stitches:
+        if s not in network.keys():
+            network['throat.' + s] = False
     # Get the initial number of pores and throats
     N_init = {}
     N_init['pore'] = network.Np
     N_init['throat'] = network.Nt
     if method == 'nearest':
+        P1 = P_network
+        P2 = P_donor + N_init['pore']  # Increment pores on donor
+        C1 = network['pore.coords'][P_network]
+        C2 = donor['pore.coords'][P_donor]
+        D = sp.spatial.distance.cdist(C1, C2)
+        [P1_ind, P2_ind] = np.where(D == D.min(axis=0))
+        conns = np.vstack((P1[P1_ind], P2[P2_ind])).T
+    elif method == 'radius':
         P1 = P_network
         P2 = P_donor + N_init['pore']  # Increment pores on donor
         C1 = network['pore.coords'][P_network]
@@ -1570,10 +1589,10 @@ def stitch(network, donor, P_network, P_donor, method='nearest',
     extend(network=network, throat_conns=donor['throat.conns'] + N_init['pore'])
 
     # Trim throats that are longer then given len_max
-    C1 = network['pore.coords'][conns[:, 0]]
-    C2 = network['pore.coords'][conns[:, 1]]
-    L = np.sum((C1 - C2)**2, axis=1)**0.5
-    conns = conns[L <= len_max]
+    # C1 = network['pore.coords'][conns[:, 0]]
+    # C2 = network['pore.coords'][conns[:, 1]]
+    # L = np.sum((C1 - C2)**2, axis=1)**0.5
+    # conns = conns[L <= len_max]
 
     # Add donor labels to recipient network
     if label_suffix is not None:
@@ -1588,7 +1607,7 @@ def stitch(network, donor, P_network, P_donor, method='nearest',
             network[label+label_suffix][locations] = donor[label]
 
     # Add the new stitch throats to the Network
-    extend(network=network, throat_conns=conns, labels='stitched')
+    extend(network=network, throat_conns=conns, labels=label_stitches)
 
     # Remove donor from Workspace, if present
     # This check allows for the reuse of a donor Network multiple times
@@ -1599,7 +1618,7 @@ def stitch(network, donor, P_network, P_donor, method='nearest',
 
 def connect_pores(network, pores1, pores2, labels=[], add_conns=True):
     r'''
-    Returns the possible connections between two group of pores, and optionally
+    Returns the possible connections between two groups of pores, and optionally
     makes the connections.
 
     See ``Notes`` for advanced usage.
