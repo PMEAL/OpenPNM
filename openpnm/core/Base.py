@@ -183,7 +183,7 @@ class Base(dict):
         # Check 3: Enforce correct dict naming
         element = key.split('.')[0]
         if element not in ['pore', 'throat']:
-                raise Exception('All keys must start with either pore or throat')
+            raise Exception('All keys must start with either pore or throat')
 
         # Check 2: If adding a new key, make sure it has no conflicts
         if self.project:
@@ -214,7 +214,6 @@ class Base(dict):
         # This check allows subclassed numpy arrays through, eg. with units
         if not isinstance(value, sp.ndarray):
             value = np.array(value, ndmin=1)  # Convert value to an ndarray
-
 
         # Skip checks for 'coords', 'conns'
         if key in ['pore.coords', 'throat.conns']:
@@ -476,9 +475,6 @@ class Base(dict):
 
         return temp
 
-    # -------------------------------------------------------------------------
-    """Data Query Methods"""
-    # -------------------------------------------------------------------------
     def props(self, element=None, mode='all', deep=False):
         r"""
         Returns a list containing the names of all defined pore or throat
