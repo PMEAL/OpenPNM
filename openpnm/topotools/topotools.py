@@ -75,10 +75,11 @@ def find_neighbor_sites(sites, am, flatten=True, include_input=False,
     if am.format != 'lil':
         am = am.tolil(copy=False)
     n_sites = am.shape[0]
-    rows = [am.rows[i] for i in np.array(sites, ndmin=1)]
+    sites = np.array(sites, ndmin=1)
+    rows = [am.rows[i] for i in sites]
     if len(rows) == 0:
         return []
-    neighbors = np.hstack(rows).astype(sp.int64)  # Flatten list to apply logic
+    neighbors = np.hstack(rows).astype(np.int64)  # Flatten list to apply logic
     if logic in ['or', 'union', 'any']:
         neighbors = np.unique(neighbors)
     elif logic in ['xor', 'exclusive_or']:
@@ -102,7 +103,7 @@ def find_neighbor_sites(sites, am, flatten=True, include_input=False,
     else:
         if (neighbors.size > 0):
             for i in range(len(rows)):
-                vals = np.array(rows[i], dtype=sp.int64)
+                vals = np.array(rows[i], dtype=np.int64)
                 rows[i] = vals[mask[vals]]
             neighbors = rows
         else:

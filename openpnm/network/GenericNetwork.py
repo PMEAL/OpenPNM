@@ -2,6 +2,7 @@ import scipy as sp
 import numpy as np
 import scipy.sparse as sprs
 import scipy.spatial as sptl
+from numba import njit
 from openpnm.core import Base, ModelsMixin
 from openpnm import topotools
 from openpnm.utils import Workspace, logging
@@ -13,7 +14,6 @@ ws = Workspace()
 class GenericNetwork(Base, ModelsMixin):
     r"""
     This generic class contains the main functionality used by all networks
-
     Parameters
     ----------
     coords : array_like
@@ -751,8 +751,8 @@ class GenericNetwork(Base, ModelsMixin):
 
         Returns
         -------
-        If ``flatten`` is False, a 1D array with number of neighbors in each
-        element, otherwise a scalar value of the number of neighbors.
+        If ``flatten`` is ``False``, a 1D array with number of neighbors in
+        each element, otherwise a scalar value of the number of neighbors.
 
         Notes
         -----
@@ -780,6 +780,13 @@ class GenericNetwork(Base, ModelsMixin):
         >>> print(Np)
         1
         """
+        @njit
+        def _count_neighbors(lil):
+            counts = np.zeros(len(lil), dtype=np.int64)
+            for i in range(len(counts)):
+                counts[i] = len(lil[i])
+            return counts
+
         pores = self._parse_indices(pores)
         # Count number of neighbors
         num = self.find_neighbor_pores(pores, flatten=flatten,
@@ -787,7 +794,8 @@ class GenericNetwork(Base, ModelsMixin):
         if flatten:
             num = np.size(num)
         else:
-            num = np.array([np.size(i) for i in num], dtype=int)
+            counts = _count_neighbors(tuple(num))
+            num = np.array(counts, dtype=int)
         return num
 
     def find_nearby_pores(self, pores, r, flatten=False, include_input=False):
