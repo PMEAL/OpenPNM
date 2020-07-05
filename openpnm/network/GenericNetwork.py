@@ -714,14 +714,6 @@ class GenericNetwork(Base, ModelsMixin):
             neighbors = self.find_neighbor_throats(pores=pores, **kwargs)
         return neighbors
 
-    @njit
-    def _count_neighbors(lil):
-        r"""This method is called num_neighbors"""
-        counts = np.zeros(len(lil), dtype=np.int64)
-        for i in range(len(counts)):
-            counts[i] = len(lil[i])
-        return counts
-
     def num_neighbors(self, pores, mode='or', flatten=False):
         r"""
         Returns the number of neigbhoring pores for each given input pore
@@ -798,7 +790,7 @@ class GenericNetwork(Base, ModelsMixin):
         if flatten:
             num = np.size(num)
         else:
-            counts = self._count_neighbors(tuple(num))
+            counts = _count_neighbors(tuple(num))
             num = np.array(counts, dtype=int)
         return num
 
@@ -923,3 +915,12 @@ class GenericNetwork(Base, ModelsMixin):
         health = self.project.check_network_health()
 
         return health
+
+
+@njit
+def _count_neighbors(lil):
+    r"""This method is called num_neighbors"""
+    counts = np.zeros(len(lil), dtype=np.int64)
+    for i in range(len(counts)):
+        counts[i] = len(lil[i])
+    return counts
