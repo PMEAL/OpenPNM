@@ -791,6 +791,8 @@ class GenericNetwork(Base, ModelsMixin):
         # Count number of neighbors
         num = self.find_neighbor_pores(pores, flatten=flatten,
                                        mode=mode, include_input=True)
+        if len(num) == 0:
+            return num
         if flatten:
             num = np.size(num)
         else:
