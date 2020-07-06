@@ -173,11 +173,17 @@ class Base(dict):
 
         """
         # Check 1: If value is a dictionary, break it into constituent arrays
+        # and recursively call __setitem__ on each
         if hasattr(value, 'keys'):
             for item in value.keys():
                 prop = item.replace('pore.', '').replace('throat.', '')
                 self.__setitem__(key+'.'+prop, value[item])
             return
+
+        # Check 3: Enforce correct dict naming
+        element = key.split('.')[0]
+        if element not in ['pore', 'throat']:
+            raise Exception('All keys must start with either pore or throat')
 
         # Check 2: If adding a new key, make sure it has no conflicts
         if self.project:
@@ -209,10 +215,6 @@ class Base(dict):
         if not isinstance(value, sp.ndarray):
             value = np.array(value, ndmin=1)  # Convert value to an ndarray
 
-        # Check 3: Enforce correct dict naming
-        element = key.split('.')[0]
-        element = self._parse_element(element, single=True)
-
         # Skip checks for 'coords', 'conns'
         if key in ['pore.coords', 'throat.conns']:
             super(Base, self).__setitem__(key, value)
@@ -240,7 +242,7 @@ class Base(dict):
             if self._count(element) == 0:
                 self.update({key: value})
             else:
-                raise Exception('Cannot write array, wrong length: '+key)
+                raise Exception('Provided array is wrong legth for ' + key)
 
     def __getitem__(self, key):
         element, prop = key.split('.', 1)
@@ -473,9 +475,6 @@ class Base(dict):
 
         return temp
 
-    # -------------------------------------------------------------------------
-    """Data Query Methods"""
-    # -------------------------------------------------------------------------
     def props(self, element=None, mode='all', deep=False):
         r"""
         Returns a list containing the names of all defined pore or throat
@@ -1115,7 +1114,7 @@ class Base(dict):
 
         """
         if np.amax(mask) > 1:
-            raise Exception('Received mask is invalid, with values above 1')
+            raise Exception('Received mask does not appear to be boolean')
         mask = np.array(mask, dtype=bool)
         indices = self._parse_indices(mask)
         return indices
@@ -1686,9 +1685,9 @@ class Base(dict):
 
         Returns
         -------
-        When ``single`` is False (default) a list contain the element(s) is
-        returned.  When ``single`` is True a bare string containing the element
-        is returned.
+        When ``single`` is ``False`` (default) a list containing the element(s)
+        is returned.  When ``single`` is ``True`` a bare string containing the
+        element is returned.
         """
         if element is None:
             element = ['pore', 'throat']
@@ -1703,7 +1702,7 @@ class Base(dict):
         element = [item.rsplit('s', maxsplit=1)[0] for item in element]
         for item in element:
             if item not in ['pore', 'throat']:
-                raise Exception('Invalid element received: '+item)
+                raise Exception('All keys must start with either pore or throat')
         # Remove duplicates if any
         [element.remove(L) for L in element if element.count(L) > 1]
         if single:
@@ -1795,7 +1794,7 @@ class Base(dict):
         if single:
             if len(mode) > 1:
                 raise Exception('Multiple modes received when only one mode '
-                                + 'allowed')
+                                + 'is allowed by this method')
             else:
                 mode = mode[0]
         return mode
