@@ -9,8 +9,6 @@ from openpnm.utils import PrintableDict, logging, Workspace
 logger = logging.getLogger(__name__)
 ws = Workspace()
 
-from openpnm.utils import tic, toc
-
 
 def find_neighbor_sites(sites, am, flatten=True, include_input=False,
                         logic='or'):
@@ -103,7 +101,7 @@ def find_neighbor_sites(sites, am, flatten=True, include_input=False,
     if flatten:
         neighbors = np.where(mask)[0]
     else:
-        if (neighbors.size > 0):
+        if neighbors.size > 0:
             for i in range(len(rows)):
                 vals = np.array(rows[i], dtype=sp.int64)
                 rows[i] = vals[mask[vals]]
