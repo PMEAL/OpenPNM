@@ -76,7 +76,7 @@ def find_neighbor_sites(sites, am, flatten=True, include_input=False,
         am = am.tolil(copy=False)
     am_coo = am.tocoo()
     n_sites = am.shape[0]
-    rows = am.rows[sites]
+    rows = am.rows[sites].tolist()
     if len(rows) == 0:
         return []
     neighbors = am_coo.col[np.in1d(am_coo.row, sites)]
