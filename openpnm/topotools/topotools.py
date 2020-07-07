@@ -74,6 +74,7 @@ def find_neighbor_sites(sites, am, flatten=True, include_input=False,
     """
     if am.format != 'lil':
         am = am.tolil(copy=False)
+    sites = np.array(sites, ndmin=1)
     am_coo = am.tocoo()
     n_sites = am.shape[0]
     rows = am.rows[sites].tolist()
