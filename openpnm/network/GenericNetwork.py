@@ -790,7 +790,7 @@ class GenericNetwork(Base, ModelsMixin):
             num = np.size(num)
         else:   # Could be done much faster if flatten == False
             am = self.create_adjacency_matrix(fmt="csr")
-            num = am[pores].sum(axis=1).squeeze()
+            num = am[pores].sum(axis=1).A1
         return num
 
     def find_nearby_pores(self, pores, r, flatten=False, include_input=False):
