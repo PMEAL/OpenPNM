@@ -9,6 +9,8 @@ from openpnm.utils import PrintableDict, logging, Workspace
 logger = logging.getLogger(__name__)
 ws = Workspace()
 
+from openpnm.utils import tic, toc
+
 
 def find_neighbor_sites(sites, am, flatten=True, include_input=False,
                         logic='or'):
@@ -74,11 +76,12 @@ def find_neighbor_sites(sites, am, flatten=True, include_input=False,
     """
     if am.format != 'lil':
         am = am.tolil(copy=False)
+    am_coo = am.tocoo()
     n_sites = am.shape[0]
-    rows = [am.rows[i] for i in np.array(sites, ndmin=1)]
+    rows = am.rows[sites]
     if len(rows) == 0:
         return []
-    neighbors = np.hstack(rows).astype(sp.int64)  # Flatten list to apply logic
+    neighbors = am_coo.col[np.in1d(am_coo.row, sites)]
     if logic in ['or', 'union', 'any']:
         neighbors = np.unique(neighbors)
     elif logic in ['xor', 'exclusive_or']:
@@ -2115,7 +2118,6 @@ def template_cylinder_annulus(height, outer_radius, inner_radius=0):
                                 inner_radius=inner_radius)
     img = np.tile(np.atleast_3d(img), reps=height)
     return img
-
 
 
 def generate_base_points(num_points, domain_size, density_map=None,
