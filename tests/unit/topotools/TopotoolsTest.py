@@ -1,7 +1,6 @@
 import pytest
 import numpy as np
 import openpnm as op
-import matplotlib.pyplot as plt
 from numpy.testing import assert_allclose
 from openpnm import topotools
 
