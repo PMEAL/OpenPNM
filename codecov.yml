@@ -25,4 +25,6 @@ comment:
   behavior: default
 
 ignore:
-  - "plottools.py"
+  - "tests/**/*"
+  - "examples/**/*"
+  - "scripts/**/*"
