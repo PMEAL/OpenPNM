@@ -97,8 +97,6 @@ def ball_and_stick(target, pore_area='pore.area',
     F2[MLD2] = (16/(3*_pi**2)) * ((L2/(Dt-D2))*((1/Dt**3)-(1/(2*Dt-D2)**3)))[MLD2]
     # Handle the rest (true balls and sticks)
     N1, N2 = [(Di > Dt) & mi & (Di>2*Li) for Di, mi, Li in zip([D1, D2], [m1, m2], [L1, L2])]
-    # Handle the rest (true balls and sticks)
-    N1, N2 = [(Di > Dt) & mi for Di, mi in zip([D1, D2], [m1, m2])]
     F1[N1] = (4/(D1**3*_pi**2) * ((2*D1*L1) / (D1**2-4*L1**2) + _atanh(2*L1/D1)))[N1]
     F2[N2] = (4/(D2**3*_pi**2) * ((2*D2*L2) / (D2**2-4*L2**2) + _atanh(2*L2/D2)))[N2]
     Ft[mt] = (Lt / At**2)[mt]
