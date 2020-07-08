@@ -88,15 +88,21 @@ def ball_and_stick(target, pore_area='pore.area',
     m1, m2, mt = [Li != 0 for Li in [L1, L2, Lt]]
     SF1[~m1] = SF2[~m2] = SFt[~mt] = 1
     # Handle the case where Dt >= Dp
-    M1, M2 = [(Di <= Dt) & mi for Di, mi in zip([D1, D2], [m1, m2])]
+    M1, M2 = [(Di <= Dt) & mi & (Di>2*Li)for Di, mi, Li in zip([D1, D2], [m1, m2], [L1, L2])]
     F1[M1] = 16/3 * (L1*(D1**2 + D1*Dt + Dt**2) / (D1**3 * Dt**3 * _pi**2))[M1]
     F2[M2] = 16/3 * (L2*(D2**2 + D2*Dt + Dt**2) / (D2**3 * Dt**3 * _pi**2))[M2]
     # Handle the cases with 2*L1>D1
-    MLD1, MLD2 = [(Di<=2*Li) & mi for Di, Li, mi in zip([D1, D2], [L1, L2], [m1, m2])]
-    F1[MLD1] = (16/(3*_pi**2)) * ((L1/(Dt-D1))*((1/Dt**3)-(1/(2*Dt-D1)**3)))[MLD1]
-    F2[MLD2] = (16/(3*_pi**2)) * ((L2/(Dt-D2))*((1/Dt**3)-(1/(2*Dt-D2)**3)))[MLD2]
+    #MLD1, MLD2 = [(Di<=2*Li) & mi for Di, Li, mi in zip([D1, D2], [L1, L2], [m1, m2])]
+    #Integral for Dt!=0.5Di
+    #F1[MLD1] = (16/(3*_pi**2)) * ((L1/(Dt-D1))*((1/Dt**3)-(1/(2*Dt-D1)**3)))[MLD1]
+    #F2[MLD2] = (16/(3*_pi**2)) * ((L2/(Dt-D2))*((1/Dt**3)-(1/(2*Dt-D2)**3)))[MLD2]
+    # conical approximation
+    #F1[MLD1] = 16/3 * (L1*(D1**2 + D1*Dt + Dt**2) / (D1**3 * Dt**3 * _pi**2))[MLD1]
+    #F2[MLD2] = 16/3 * (L2*(D2**2 + D2*Dt + Dt**2) / (D2**3 * Dt**3 * _pi**2))[MLD2]
     # Handle the rest (true balls and sticks)
     N1, N2 = [(Di > Dt) & mi & (Di>2*Li) for Di, mi, Li in zip([D1, D2], [m1, m2], [L1, L2])]
+    # Handle the rest (true balls and sticks)
+    N1, N2 = [(Di > Dt) & mi for Di, mi in zip([D1, D2], [m1, m2])]
     F1[N1] = (4/(D1**3*_pi**2) * ((2*D1*L1) / (D1**2-4*L1**2) + _atanh(2*L1/D1)))[N1]
     F2[N2] = (4/(D2**3*_pi**2) * ((2*D2*L2) / (D2**2-4*L2**2) + _atanh(2*L2/D2)))[N2]
     Ft[mt] = (Lt / At**2)[mt]
