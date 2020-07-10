@@ -192,7 +192,7 @@ def ad_dif_mig(
         w = -adv_mig / (1 - _np.exp(Peij_adv_mig))
     else:
         raise Exception("Unrecognized discretization scheme: " + s_scheme)
-    w = w.reshape(throats, 2, order="F")
+    w = w.reshape(throats.size, 2, order="F")
     return w
 
     # Apply shape factors and calculate the final conductance
