@@ -133,24 +133,29 @@ def ad_dif_mig(
     R = 8.3145
     gh = phase[throat_hydraulic_conductance]
     gd = phase[throat_diffusive_conductance]
-    gm = (z * F * gd) / (R * T)
+    # .T below is for when gd is (Nt, 2) instead of (Nt, 1)
+    gm = (gd.T * (z * F) / (R * T)).T
+    delta_V = _sp.diff(V[cn], axis=1).squeeze()
+    delta_V = _np.append(delta_V, -delta_V)
+
+    # Normal treatment when gd is Nt by 1
     if gd.size == throats.size:
         gd = _np.tile(gd, 2)
+        gm = _np.tile(gm, 2)
     # Special treatment when gd is not Nt by 1 (ex. mass partitioning)
     elif gd.size == 2 * throats.size:
         gd = gd.reshape(throats.size * 2, order="F")
+        gm = gm.reshape(throats.size * 2, order="F")
     else:
         raise Exception(f"Shape of {throat_diffusive_conductance} must either"
                         r" be (Nt,1) or (Nt,2)")
 
+    # Migration
+    mig = gm * delta_V
+
     # Advection
     Qij = -gh * _sp.diff(P[cn], axis=1).squeeze()
     Qij = _np.append(Qij, -Qij)
-
-    # Migration
-    delta_V = _sp.diff(V[cn], axis=1).squeeze()
-    mig = gm * delta_V
-    mig = _np.append(mig, -mig)
 
     # Advection-migration
     adv_mig = Qij - mig
