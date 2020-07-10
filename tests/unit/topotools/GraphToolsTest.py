@@ -373,6 +373,15 @@ class GraphToolsTest:
             topotools.find_neighbor_sites(sites=[0, 1], am=am, flatten=True,
                                           logic='foobar')
 
+    def test_find_neighbor_sites_include_inputs(self):
+        am = self.net.create_adjacency_matrix(fmt='lil')
+        Ps = topotools.find_neighbor_sites(sites=[0, 1], am=am, flatten=True,
+                                           logic='or', include_input=True)
+        assert (Ps == [0, 1, 2, 3, 4]).all()
+        Ps = topotools.find_neighbor_sites(sites=[0, 1], am=am, flatten=True,
+                                           logic='or', include_input=False)
+        assert (Ps == [2, 3, 4]).all()
+
     def test_istriu(self):
         net = op.network.Cubic(shape=[5, 5, 5])
         am = net.create_adjacency_matrix(triu=False)

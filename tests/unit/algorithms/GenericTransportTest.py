@@ -1,6 +1,7 @@
 import pytest
 import numpy as np
 import openpnm as op
+import numpy.testing as nt
 
 
 class GenericTransportTest:
@@ -32,7 +33,7 @@ class GenericTransportTest:
         tol = alg.settings["solver_tol"]
         atol = alg.settings["solver_atol"]
         rtol = alg.settings["solver_rtol"]
-        maxiter = alg.settings["solver_maxiter"]
+        max_iter = alg.settings["solver_max_iter"]
         # Set solver settings, but don't provide any arguments
         alg.set_solver()
         # Make sure nothing was changed
@@ -41,9 +42,9 @@ class GenericTransportTest:
         assert alg.settings["solver_tol"] == tol
         assert alg.settings["solver_atol"] == atol
         assert alg.settings["solver_rtol"] == rtol
-        assert alg.settings["solver_maxiter"] == maxiter
+        assert alg.settings["solver_max_iter"] == max_iter
         # Set solver settings, this time change everything
-        alg.set_solver(solver_family="petsc", solver_type="gmres", maxiter=13,
+        alg.set_solver(solver_family="petsc", solver_type="gmres", max_iter=13,
                        preconditioner="ilu", tol=1e-3, atol=1e-12, rtol=1e-2)
         # Make changes went through
         assert alg.settings["solver_family"] == "petsc"
@@ -51,7 +52,7 @@ class GenericTransportTest:
         assert alg.settings["solver_tol"] == 1e-3
         assert alg.settings["solver_atol"] == 1e-12
         assert alg.settings["solver_rtol"] == 1e-2
-        assert alg.settings["solver_maxiter"] == 13
+        assert alg.settings["solver_max_iter"] == 13
 
     def test_remove_boundary_conditions(self):
         alg = op.algorithms.GenericTransport(network=self.net,
@@ -73,27 +74,6 @@ class GenericTransportTest:
         alg.set_value_BC(pores=self.net.pores('bottom'), values=0)
         alg.run()
 
-    def test_pestc_wrapper(self):
-        alg = op.algorithms.GenericTransport(network=self.net,
-                                             phase=self.phase)
-        alg.settings['conductance'] = 'throat.diffusive_conductance'
-        alg.settings['quantity'] = 'pore.mole_fraction'
-        alg.set_value_BC(pores=self.net.pores('top'), values=1)
-        alg.set_value_BC(pores=self.net.pores('bottom'), values=0)
-        x = [0.0, 0.125, 0.25, 0.375, 0.5, 0.625, 0.75, 0.875, 1.0]
-        # Test different solvers
-        solver_types = ['mumps', 'cg', 'gmres', 'bicg']
-        # PETSc is not by default installed, so testing should be optional too
-        try:
-            import petsc4py
-            for solver_type in solver_types:
-                alg.set_solver(solver_family="petsc", solver_type=solver_type)
-                alg.run()
-                y = np.unique(np.around(alg['pore.mole_fraction'], decimals=3))
-                assert np.all(x == y)
-        except ModuleNotFoundError:
-            pass
-
     def test_two_value_conditions(self):
         alg = op.algorithms.GenericTransport(network=self.net,
                                              phase=self.phase)
@@ -101,19 +81,6 @@ class GenericTransportTest:
         alg.settings['quantity'] = 'pore.mole_fraction'
         alg.set_value_BC(pores=self.net.pores('top'), values=1)
         alg.set_value_BC(pores=self.net.pores('bottom'), values=0)
-        alg.run()
-        x = [0.0, 0.125, 0.25, 0.375, 0.5, 0.625, 0.75, 0.875, 1.0]
-        y = np.unique(np.around(alg['pore.mole_fraction'], decimals=3))
-        assert np.all(x == y)
-
-    def test_two_value_conditions_cg(self):
-        alg = op.algorithms.GenericTransport(network=self.net,
-                                             phase=self.phase)
-        alg.settings['conductance'] = 'throat.diffusive_conductance'
-        alg.settings['quantity'] = 'pore.mole_fraction'
-        alg.set_value_BC(pores=self.net.pores('top'), values=1)
-        alg.set_value_BC(pores=self.net.pores('bottom'), values=0)
-        alg.settings['solver'] = 'cg'
         alg.run()
         x = [0.0, 0.125, 0.25, 0.375, 0.5, 0.625, 0.75, 0.875, 1.0]
         y = np.unique(np.around(alg['pore.mole_fraction'], decimals=3))
@@ -154,7 +121,7 @@ class GenericTransportTest:
         # Revert back changes to objects
         self.setup_class()
 
-    def test_rate_single(self):
+    def test_rate_single_pore(self):
         alg = op.algorithms.ReactiveTransport(network=self.net,
                                               phase=self.phase)
         alg.settings['conductance'] = 'throat.diffusive_conductance'
@@ -167,20 +134,34 @@ class GenericTransportTest:
         # Net rate must always be zero at steady state conditions
         assert np.isclose(alg.rate(pores=self.net.Ps), 0.0)
 
-    def test_rate_multiple(self):
+    def test_rate_multiple_pores(self):
         alg = op.algorithms.GenericTransport(network=self.net,
                                              phase=self.phase)
         alg.settings['conductance'] = 'throat.diffusive_conductance'
         alg.settings['quantity'] = 'pore.mole_fraction'
         alg.set_rate_BC(pores=[0, 1, 2, 3], values=1.235)
-        # Note that pore = 0 is assigned two rate values (rate = sum(rates))
         alg.set_rate_BC(pores=[5, 6, 19, 35, 0], values=3.455)
+        # Pore 0 is assigned two rate BCs, only the most recent will be kept
         alg.set_value_BC(pores=[50, 51, 52, 53], values=0.0)
         alg.run()
         rate = alg.rate(pores=[50, 51, 52, 53])[0]
-        assert np.isclose(rate, -(1.235*4 + 3.455*5))   # 4, 5 are number of pores
+        # 3 and 5 are number of pores in each rate BC
+        assert np.isclose(rate, -(1.235*3 + 3.455*5))
         # Net rate must always be zero at steady state conditions
         assert np.isclose(alg.rate(pores=self.net.Ps), 0.0)
+
+    def test_rate_multiple_values(self):
+        alg = op.algorithms.GenericTransport(network=self.net,
+                                              phase=self.phase)
+        alg.settings['conductance'] = 'throat.diffusive_conductance'
+        alg.settings['quantity'] = 'pore.mole_fraction'
+        alg.set_rate_BC(pores=[0, 1, 2, 3], values=[0, 3.5, 0.4, -12])
+        alg.set_value_BC(pores=[50, 51, 52, 53], values=0.0)
+        alg.run()
+        rate_individual = alg.rate(pores=[0, 1, 2, 3], mode='single')
+        rate_net = alg.rate(pores=[0, 1, 2, 3], mode='group')[0]
+        nt.assert_allclose(rate_individual, [0, 3.5, 0.4, -12], atol=1e-10)
+        nt.assert_allclose(rate_net, sum([0, 3.5, 0.4, -12]))
 
     def test_rate_Nt_by_2_conductance(self):
         net = op.network.Cubic(shape=[1, 6, 1])
@@ -266,21 +247,33 @@ class GenericTransportTest:
         # Now this will pass again
         np.testing.assert_allclose(m1, m2)
 
-    def test_check_for_nans(self):
+    def test_validate_data_health(self):
         alg = op.algorithms.GenericTransport(network=self.net,
                                              phase=self.phase)
         alg.settings['conductance'] = 'throat.diffusive_conductance'
         alg.settings['quantity'] = 'pore.concentration'
+        alg.settings['cache_A'] = False
         alg.set_value_BC(pores=self.net.pores('top'), values=1)
         alg.set_value_BC(pores=self.net.pores('bottom'), values=0)
+        # Check if the method can catch NaNs in data
         self.phys['throat.diffusive_conductance'][0] = np.nan
         with pytest.raises(Exception):
             alg.run()
         mod = op.models.misc.from_neighbor_pores
         self.phase["pore.seed"] = np.nan
-        self.phys.add_model(propname="throat.diffusive_conductance", model=mod)
+        self.phys.add_model(propname="throat.diffusive_conductance", model=mod,
+                            pore_prop="pore.seed", ignore_nans=False)
         with pytest.raises(Exception):
             alg.run()
+        self.phase["pore.seed"] = 1
+        self.phys.regenerate_models(propnames="throat.diffusive_conductance")
+        # Check if the method can catch unhealthy topology
+        Ts = self.net.find_neighbor_throats(pores=0)
+        op.topotools.trim(self.net, throats=Ts)
+        with pytest.raises(Exception):
+            alg.run()
+        # Reset network back to original
+        self.setup_class()
 
     def teardown_class(self):
         ws = op.Workspace()

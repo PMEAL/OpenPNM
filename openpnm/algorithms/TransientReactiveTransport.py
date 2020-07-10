@@ -51,10 +51,6 @@ class TransientReactiveTransportSettings(GenericSettings):
         't_final') when the residual falls below 't_tolerance'. The
         default value is 1e-06. The 'residual' measures the variation from
         one time-step to another in the value of the 'quantity' solved for.
-    rxn_tolerance : scalar
-        Tolerance to achieve within each time step. The solver passes to
-        next time step when 'residual' falls below 'rxn_tolerance'. The
-        default value is 1e-05.
     t_precision : integer
         The time precision (number of decimal places).
     t_scheme : string
@@ -83,7 +79,6 @@ class TransientReactiveTransportSettings(GenericSettings):
     t_step = 0.1
     t_output = 1e+08
     t_tolerance = 1e-06
-    rxn_tolerance = 1e-05
     t_precision = 12
     t_scheme = 'implicit'
 
@@ -114,9 +109,12 @@ class TransientReactiveTransport(ReactiveTransport):
         super().__init__(**kwargs)
         self.settings._update_settings_and_docs(TransientReactiveTransportSettings)
         self.settings.update(settings)
-        self._A_steady = None  # Initialize the steady sys of eqs A matrix
+        # Initialize the steady sys of eqs A matrix
+        self._A_steady = None
         if phase is not None:
             self.setup(phase=phase)
+        # Initialize the initial condition
+        self["pore.ic"] = np.nan
 
     def setup(self, phase=None, quantity='', conductance='',
               t_initial=None, t_final=None, t_step=None, t_output=None,
@@ -128,12 +126,12 @@ class TransientReactiveTransport(ReactiveTransport):
         Parameters
         ----------
 
-
         Notes
         -----
         More settings can be adjusted in the presence of a non-linear source
         term such as under-relaxation.
         See the 'ReactiveTransport' class documentation for details.
+
         """
         if phase:
             self.settings['phase'] = phase.name
@@ -167,10 +165,31 @@ class TransientReactiveTransport(ReactiveTransport):
             Set the initial conditions using an 'Np' long array. 'Np' being
             the number of pores. If a scalar is given, the same value is
             imposed to all pores.
+
         """
-        self[self.settings['quantity']] = values
-        converted_array = self[self.settings['quantity']].astype('float64')
-        self[self.settings['quantity']] = converted_array
+        quantity = self.settings['quantity']
+        values = np.array(values) * 1.0
+        if values.size > 1 and values.size != self.Np:
+            raise Exception('The number of initial values must be either 1 or Np')
+        self['pore.ic'] = values
+        if not quantity:
+            raise Exception('"quantity" has not been defined on this algorithm')
+        self[quantity] = values
+
+    def _get_f1_f2_f3(self):
+        r"""
+        Helper method: returns f1, f2, and f3 for _t_update_A and _t_update_b methods.
+        """
+        s = self.settings['t_scheme']
+        if s == 'implicit':
+            f1, f2, f3 = 1, 1, 0
+        elif s == 'cranknicolson':
+            f1, f2, f3 = 0.5, 1, 0
+        elif s == 'steady':
+            f1, f2, f3 = 1, 0, 1
+        else:
+            raise Exception(f'Unsupported t_scheme: "{s}"')
+        return f1, f2, f3
 
     def _t_update_A(self):
         r"""
@@ -179,13 +198,7 @@ class TransientReactiveTransport(ReactiveTransport):
         network = self.project.network
         Vi = network['pore.volume']
         dt = self.settings['t_step']
-        s = self.settings['t_scheme']
-        if (s == 'implicit'):
-            f1, f2 = 1, 1
-        elif (s == 'cranknicolson'):
-            f1, f2 = 0.5, 1
-        elif (s == 'steady'):
-            f1, f2 = 1, 0
+        f1, f2, _ = self._get_f1_f2_f3()
         # Compute A (operations involve conversion to 'csr')
         A = ((f2/dt) * sprs.coo_matrix.multiply(
             sprs.coo_matrix(np.reshape(Vi, (self.Np, 1)), shape=(self.Np, 1)),
@@ -200,18 +213,13 @@ class TransientReactiveTransport(ReactiveTransport):
         A method to update 'b' array at each time step according to
         't_scheme' and the source term value
         """
+        quantity = self.settings['quantity']
         network = self.project.network
         phase = self.project.phases()[self.settings['phase']]
         Vi = network['pore.volume']
         dt = self.settings['t_step']
-        s = self.settings['t_scheme']
-        if (s == 'implicit'):
-            f1, f2, f3 = 1, 1, 0
-        elif (s == 'cranknicolson'):
-            f1, f2, f3 = 0.5, 1, 0
-        elif (s == 'steady'):
-            f1, f2, f3 = 1, 0, 1
-        x_old = self[self.settings['quantity']]
+        f1, f2, f3 = self._get_f1_f2_f3()
+        x_old = self[quantity]
         b = (f2 * (1-f1) * (-self._A_steady) * x_old
              + f2 * (Vi/dt) * x_old
              + f3 * np.zeros(shape=(self.Np,), dtype=float))
@@ -238,27 +246,24 @@ class TransientReactiveTransport(ReactiveTransport):
         """
         logger.info('―' * 80)
         logger.info('Running TransientTransport')
-        # If solver used in steady mode, no need to add ICs
-        if (self.settings['t_scheme'] == 'steady'):
-            self[self.settings['quantity']] = 0.0
         # If ICs are not defined, assume zero
-        try:
-            self[self.settings['quantity']]
-        except KeyError:
+        if not np.isfinite(self["pore.ic"]).all():
             self.set_IC(0)
-        # Save A matrix of the steady sys of eqs (WITHOUT BCs applied)
-        self._A_steady = (self.A).copy()
+        # Make sure _A is None to force _build_A, otherwise _A_steady might be wrong
+        self._A = None
+        # Save A matrix of the steady state problem (without BCs applied)
+        self._A_steady = self.A.copy()
         # Initialize A and b with BCs applied
         self._t_update_A()
         self._t_update_b()
         self._apply_BCs()
+        # Save copies of A and b to be used in _t_run_reactive()
         self._A_t = self._A.copy()
         self._b_t = self._b.copy()
         if t is None:
             t = self.settings['t_initial']
         # Create S1 & S2 for 1st Picard's iteration
         self._update_iterative_props()
-
         self._run_transient(t=t)
 
     def _run_transient(self, t):
@@ -306,55 +311,54 @@ class TransientReactiveTransport(ReactiveTransport):
         out = np.unique(out)
         out = np.around(out, decimals=t_pre)
 
-        if s == 'steady':  # If solver in steady mode, do one iteration
+        # If solver in steady mode, do one iteration
+        if s == 'steady':
             logger.info('    Running in steady mode')
-            x_old = self[quantity]
-            self._t_run_reactive(x0=x_old)
-            x_new = self[quantity]
+            self._t_run_reactive()
 
-        else:  # Do time iterations
+        # Time marching step
+        else:
             # Export the initial field (t=t_initial)
             t_str = self._nbr_to_str(t)
-            quant_init = self[quantity]
+            quant_init = self["pore.ic"]
             self[quantity + '@' + t_str] = quant_init
+            self[quantity] = quant_init
+
             for time in np.arange(t+dt, tf+dt, dt):
-                if (res_t >= tol):  # Check if the steady state is reached
-                    logger.info('    Current time step: ' + str(time) + ' s')
+                if res_t >= tol:  # Check if the steady state is reached
+                    logger.info(f'    Current time step: {time} s')
+                    # Update A and b and apply BCs
+                    self._t_update_A()
+                    self._t_update_b()
+                    self._apply_BCs()
+                    # Save copies of A and b to be used in _t_run_reactive()
+                    self._A_t = self._A.copy()
+                    self._b_t = self._b.copy()
                     x_old = self[quantity]
                     self._t_run_reactive(x0=x_old)
                     x_new = self[quantity]
                     # Compute the residual
                     res_t = np.sum(np.absolute(x_old**2 - x_new**2))
-                    logger.info('        Residual: ' + str(res_t))
+                    logger.info(f'        Residual: {res_t}')
                     # Output transient solutions. Round time to ensure every
                     # value in outputs is exported.
                     if round(time, t_pre) in out:
                         t_str = self._nbr_to_str(time)
                         self[quantity + '@' + t_str] = x_new
-                        logger.info('        Exporting time step: '
-                                    + str(time) + ' s')
-                    # Update A and b and apply BCs
-                    self._t_update_A()
-                    self._t_update_b()
-                    self._apply_BCs()
-                    self._A_t = (self._A).copy()
-                    self._b_t = (self._b).copy()
-
-                else:  # Stop time iterations if residual < t_tolerance
+                        logger.info(f'        Exporting time step: {time} s')
+                else:
                     # Output steady state solution
                     t_str = self._nbr_to_str(time)
                     self[quantity + '@' + t_str] = x_new
-                    logger.info('        Exporting time step: '
-                                + str(time) + ' s')
+                    logger.info(f'        Exporting time step: {time} s')
                     break
-            if (round(time, t_pre) == tf):
-                logger.info('    Maximum time step reached: '
-                            + str(time) + ' s')
-            else:
-                logger.info('    Transient solver converged after: '
-                            + str(time) + ' s')
 
-    def _t_run_reactive(self, x0):
+            if round(time, t_pre) == tf:
+                logger.info(f'    Maximum time step reached: {time} s')
+            else:
+                logger.info(f'    Transient solver converged after: {time} s')
+
+    def _t_run_reactive(self, x0=None):
         """r
         Repeatedly updates transient 'A', 'b', and the solution guess within
         each time step according to the applied source term then calls '_solve'
@@ -373,27 +377,24 @@ class TransientReactiveTransport(ReactiveTransport):
 
         Notes
         -----
-        Description of 'relaxation_quantity' and 'max_iter' settings can be
+        Description of 'relaxation_quantity' and 'nlin_max_iter' settings can be
         found in the parent class 'ReactiveTransport' documentation.
 
         """
-        if x0 is None:
-            x0 = np.zeros(self.Np, dtype=float)
-        x = x0
-        self[self.settings['quantity']] = x
-
-        w = self.settings['relaxation_quantity']
         quantity = self.settings['quantity']
-        max_it = int(self.settings['max_iter'])
+        w = self.settings['relaxation_quantity']
+        max_it = int(self.settings['nlin_max_iter'])
+        x = np.zeros(self.Np, dtype=float) if x0 is None else x0.copy()
+
         # Write initial guess to algorithm for _update_iterative_props to work
-        self[quantity] = x = x0
+        self[quantity] = x
 
         for itr in range(max_it):
             # Update iterative properties on phase and physics
             self._update_iterative_props()
             # Build A and b, apply source terms and correct according to scheme
-            self._A = (self._A_t).copy()
-            self._b = (self._b_t).copy()
+            self._A = self._A_t.copy()
+            self._b = self._b_t.copy()
             self._apply_sources()
             self._correct_apply_sources()
             # Compute the residual

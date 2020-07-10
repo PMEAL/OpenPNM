@@ -101,6 +101,7 @@ class OpenpnmIO(GenericIO):
             project = Project()
         new_obj = project._new_object(objtype=objtype, name=objname)
         new_obj.update(obj)
+        return new_obj
 
     @classmethod
     def save_project(cls, project, filename=''):

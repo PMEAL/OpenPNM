@@ -39,7 +39,6 @@ phys.add_model(propname='throat.hydraulic_conductance',
 sf = op.algorithms.StokesFlow(network=net, phase=water)
 sf.set_value_BC(pores=net.pores('back'), values=0.01)
 sf.set_value_BC(pores=net.pores('front'), values=0.00)
-sf.settings['rxn_tolerance'] = 1e-12
 sf.run()
 water.update(sf.results())
 

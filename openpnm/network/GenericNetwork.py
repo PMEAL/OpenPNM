@@ -9,6 +9,8 @@ import openpnm.models.topology as tm
 logger = logging.getLogger(__name__)
 ws = Workspace()
 
+from openpnm.utils import tic, toc
+
 
 class GenericNetwork(Base, ModelsMixin):
     r"""
@@ -781,13 +783,14 @@ class GenericNetwork(Base, ModelsMixin):
         1
         """
         pores = self._parse_indices(pores)
-        # Count number of neighbors
-        num = self.find_neighbor_pores(pores, flatten=flatten,
-                                       mode=mode, include_input=True)
         if flatten:
+            # Count number of neighbors
+            num = self.find_neighbor_pores(pores, flatten=flatten,
+                                           mode=mode, include_input=True)
             num = np.size(num)
-        else:
-            num = np.array([np.size(i) for i in num], dtype=int)
+        else:   # Could be done much faster if flatten == False
+            am = self.create_adjacency_matrix(fmt="csr")
+            num = am[pores].sum(axis=1).A1
         return num
 
     def find_nearby_pores(self, pores, r, flatten=False, include_input=False):
@@ -874,6 +877,14 @@ class GenericNetwork(Base, ModelsMixin):
                 Pn = temp
         return Pn
 
+    @property
+    def conns(self):
+        return self['throat.conns']
+
+    @property
+    def coords(self):
+        return self['pore.coords']
+
     def check_network_health(self):
         r"""
         This method check the network topological health by checking for:
@@ -903,3 +914,13 @@ class GenericNetwork(Base, ModelsMixin):
         health = self.project.check_network_health()
 
         return health
+
+    def _is_fully_connected(self):
+        r"""
+        Checks whether network is fully connected, i.e. not clustered.
+        """
+        import scipy.sparse.csgraph as csgraph
+
+        am = self.get_adjacency_matrix(fmt='coo')
+        temp = csgraph.connected_components(am, directed=False)[1]
+        return False if np.unique(temp).size > 1 else True

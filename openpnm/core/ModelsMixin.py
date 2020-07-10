@@ -18,7 +18,7 @@ class ModelsDict(PrintableDict):
 
     """
     def dependency_list(self):
-        r'''
+        r"""
         Returns a list of dependencies in the order with which they should be
         called to ensure data is calculated by one model before it's asked for
         by another.
@@ -35,7 +35,7 @@ class ModelsDict(PrintableDict):
         dependency_graph
         dependency_map
 
-        '''
+        """
         import networkx as nx
 
         dtree = self.dependency_graph()
@@ -52,7 +52,7 @@ class ModelsDict(PrintableDict):
 
         Parameters
         ----------
-        mode : bool, optional
+        deep : bool, optional
             Defines whether intra- or inter-object dependency graph is desired.
             Default is False, i.e. only returns dependencies within the object.
 
@@ -197,7 +197,7 @@ class ModelWrapper(dict):
         return '\n'.join(lines)
 
 
-class ModelsMixin():
+class ModelsMixin:
     r"""
     This class is meant to be combined by the Base class in multiple
     inheritence.  This approach is used since Network and Algorithm do not

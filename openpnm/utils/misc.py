@@ -1,10 +1,10 @@
+import copy
 import inspect
 import warnings
 import functools
 import numpy as _np
 import scipy as _sp
 import time as _time
-import copy
 from collections import OrderedDict
 from docrep import DocstringProcessor
 
@@ -87,9 +87,7 @@ class PrintableDict(OrderedDict):
 
     def __str__(self):
         header = "―" * 78
-        lines = [header]
-        lines.append("{0:<35s} {1}".format(self._key, self._value))
-        lines.append(header)
+        lines = [header, "{0:<35s} {1}".format(self._key, self._value), header]
         for item in list(self.keys()):
             if type(self[item]) == _sp.ndarray:
                 lines.append("{0:<35s} {1}".format(item, _np.shape(self[item])))
@@ -604,6 +602,7 @@ def nbr_to_str(nbr, t_precision):
 
     t_precision : integer
         The time precision (number of decimal places). Default value is 12.
+
     """
     from decimal import Decimal as dc
     n = int(-dc(str(round(nbr, t_precision))).as_tuple().exponent

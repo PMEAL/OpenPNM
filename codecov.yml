@@ -1,5 +1,5 @@
 codecov:
-  branch: release
+  branch: dev
 
 coverage:
   precision: 1

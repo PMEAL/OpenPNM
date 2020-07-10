@@ -11,8 +11,15 @@ from openpnm.utils import logging, Docorator, GenericSettings
 # Uncomment this line when we stop supporting Python 3.6
 # from dataclasses import dataclass, field
 # from typing import List
+
 docstr = Docorator()
 logger = logging.getLogger(__name__)
+
+use_umfpack = True
+try:
+    import scikits.umfpack as umfpack
+except ImportError:
+    use_umfpack = False
 
 
 @docstr.get_sectionsf('GenericTransportSettings',
@@ -26,12 +33,11 @@ class GenericTransportSettings(GenericSettings):
 
     Parameters
     ----------
-    phase : (str)
+    phase : str
         The name of the phase on which the algorithm acts
-
-    quantity : (str)
+    quantity : str
         The name of the physical quantity to be calculated
-    conductance : (str)
+    conductance : str
         The name of the pore-scale transport conductance values. These are
         typically calculated by a model attached to a *Physics* object
         associated with the given *Phase*.
@@ -47,25 +53,34 @@ class GenericTransportSettings(GenericSettings):
         ``cg`` or ``gmres``. [More info here]
         (https://docs.scipy.org/doc/scipy/reference/sparse.linalg.html),
     solver_preconditioner : str (default = ``jacobi``)
-        This is used by the PETSc solver to specify which preconditioner to
-        use.
-    solver_tol : float (default = 1e-6)
+        Used by the PETSc solver to specify which preconditioner to use.
+    solver_tol : float (default = 1e-8)
         Used to control the accuracy to which the iterative solver aims to
-        achieve before stopping.
+        achieve before stopping. Can roughly be interpreted as the number of
+        significant digits you want in your solution, i.e. 1e-8 -> 8
     solver_atol : float
-        ##
+        Absolute tolerance as a stopping criterion when using iterative
+        solvers, defined as:
+            atol = norm(Ax-b) @ x_final
+        Don't specify this parameter unless you know what you're doing. The
+        algorithm automatically calculates it based on ``solver_tol``.
     solver_rtol : float
-        ##
-    solver_maxiter : int (default = 5000)
-        Limits the number of iterations to attempt before quiting when aiming
-        for the specified tolerance. The default is 5000.
-        ##
+        Relative tolerance as a stopping criterion when using iterative
+        solvers, defined as the ratio of the residual computed using the
+        accepted solution to that using the initial guess, i.e.:
+            rtol = norm(Ax-b) @ x_final / norm(Ax-b) @ x0
+        Don't specify this parameter unless you know what you're doing. The
+        algorithm automatically calculates it based on ``solver_tol``.
+    solver_max_iter : int (default = 5000)
+        Maximum number of iterations allowed when using iterative solvers.
     variable_props : list
-        ##
+        List of pore/throat properties whose values might change during the
+        algorithm and thus, need to be iterated for the solution to converge,
+        e.g. "pore.diffusivity" if diffusivity is concentration-dependent.
     cache_A : bool
-        ##
+        If ``True``, A matrix is cached and reused rather than getting rebuilt.
     cache_b : bool
-        ##
+        If ``True``, b vector is cached and reused rather than getting rebuilt.
     """
 
     phase = None
@@ -77,7 +92,7 @@ class GenericTransportSettings(GenericSettings):
     solver_tol = 1e-8
     solver_atol = None
     solver_rtol = None
-    solver_maxiter = 5000
+    solver_max_iter = 5000
     cache_A = True
     cache_b = True
 
@@ -369,18 +384,12 @@ class GenericTransport(GenericAlgorithm):
         if np.intersect1d(pores, BC_locs).size:
             logger.info('Another boundary condition detected in some locations!')
 
-        # Store boundary values
+        # Clear old boundary values if needed
         if ('pore.bc_' + bctype not in self.keys()) or (mode == 'overwrite'):
             self['pore.bc_' + bctype] = np.nan
-        if bctype == 'value':
-            self['pore.bc_' + bctype][pores] = values
-        if bctype == 'rate':
-            # Preserve already-assigned rate BCs
-            bc_rate_current = self.Ps[rate_BC_mask]
-            intersect = np.intersect1d(bc_rate_current, pores)
-            self['pore.bc_' + bctype][intersect] += values
-            # Assign rate BCs to those without previously assigned values
-            self['pore.bc_' + bctype][np.setdiff1d(pores, intersect)] = values
+
+        # Store boundary values
+        self['pore.bc_' + bctype][pores] = values
 
     def remove_BC(self, pores=None, bctype='all'):
         r"""
@@ -492,7 +501,7 @@ class GenericTransport(GenericAlgorithm):
             # Update b (substract quantities from b to keep A symmetric)
             x_BC = np.zeros_like(self.b)
             x_BC[ind] = self['pore.bc_value'][ind]
-            self.b[~ind] -= (self.A.tocsr() * x_BC)[~ind]
+            self.b[~ind] -= (self.A * x_BC)[~ind]
             # Update A
             P_bc = self.toindices(ind)
             indrow = np.isin(self.A.row, P_bc)
@@ -511,7 +520,7 @@ class GenericTransport(GenericAlgorithm):
 
         Parameters
         ----------
-        x : ND-array
+        x0 : ND-array
             Initial guess of unknown variable
 
         Returns
@@ -531,13 +540,12 @@ class GenericTransport(GenericAlgorithm):
         self._build_A()
         self._build_b()
         self._apply_BCs()
-        if x0 is None:
-            x0 = np.zeros(self.Np, dtype=float)
+        x0 = np.zeros_like(self.b) if x0 is None else x0
         x_new = self._solve(x0=x0)
         quantity = self.settings['quantity']
+        if not quantity:
+            raise Exception('"quantity" has not been defined on this algorithm')
         self[quantity] = x_new
-        if not self.settings['quantity']:
-            raise Exception('quantity has not been defined on this algorithm')
 
     def _solve(self, A=None, b=None, x0=None):
         r"""
@@ -565,74 +573,96 @@ class GenericTransport(GenericAlgorithm):
         algorithm.
 
         """
+        x0 = np.zeros_like(self.b) if x0 is None else x0
+
         # Fetch A and b from self if not given, and throw error if not found
         A = self.A if A is None else A
         b = self.b if b is None else b
         if A is None or b is None:
             raise Exception('The A matrix or the b vector not yet built.')
         A = A.tocsr()
-        x0 = np.zeros_like(b) if x0 is None else x0
 
         # Check if A and b are well-defined
-        self._check_for_nans()
+        self._validate_data_health()
 
-        # Raise error if solver_family not available
-        if self.settings["solver_family"] not in ["scipy", "petsc", "pyamg"]:
-            raise Exception(f"{self.settings['solver_family']} not available.")
+        # Check if A is symmetric
+        if self.settings['solver_type'] == 'cg':
+            is_sym = op.utils.is_symmetric(self.A)
+            if not is_sym:
+                raise Exception('CG solver only works on symmetric matrices.')
 
-        # Set tolerance for iterative solvers
-        tol = self.settings["solver_tol"]
-        max_it = self.settings["solver_maxiter"]
+        # Fetch additional parameters for iterative solvers
+        max_it = self.settings["solver_max_iter"]
         atol = self._get_atol()
         rtol = self._get_rtol(x0=x0)
-        # Check if A is symmetric
-        is_sym = op.utils.is_symmetric(self.A)
-        if self.settings['solver_type'] == 'cg' and not is_sym:
-            raise Exception('CG solver only works on symmetric matrices.')
 
-        # SciPy
-        if self.settings['solver_family'] == 'scipy':
-            # Umfpack by default uses its 32-bit build -> memory overflow
-            try:
-                import scikits.umfpack
-                A.indices = A.indices.astype(np.int64)
-                A.indptr = A.indptr.astype(np.int64)
-            except ModuleNotFoundError:
-                pass
-            solver = getattr(scipy.sparse.linalg, self.settings['solver_type'])
-            iterative = ['bicg', 'bicgstab', 'cg', 'cgs', 'gmres', 'lgmres',
-                         'minres', 'gcrotmk', 'qmr']
-            if solver.__name__ in iterative:
-                x, exit_code = solver(A=A, b=b, atol=atol, tol=tol, maxiter=max_it, x0=x0)
-                if exit_code > 0:
-                    raise Exception(f'Solver did not converge, exit code: {exit_code}')
-            else:
-                x = solver(A=A, b=b)
+        # Fetch solver object based on settings dict.
+        solver = self._get_solver()
+        x = solver(A, b, atol=atol, rtol=rtol, max_it=max_it, x0=x0)
 
-        # PETSc
-        if self.settings['solver_family'] == 'petsc':
-            # Check if petsc is available
-            try:
-                import petsc4py
-                from openpnm.utils.petsc import PETScSparseLinearSolver as SLS
-            except Exception:
-                raise ModuleNotFoundError('PETSc is not installed.')
-            temp = {"type": self.settings["solver_type"],
-                    "preconditioner": self.settings["solver_preconditioner"]}
-            ls = SLS(A=A, b=b, settings=temp)
-            x = ls.solve(x0=x0, atol=atol, rtol=rtol, max_it=max_it)
-
-        # PyAMG
-        if self.settings['solver_family'] == 'pyamg':
-            # Check if PyAMG is available
-            try:
-                import pyamg
-            except Exception:
-                raise ModuleNotFoundError('PyAMG is not installed.')
-            ml = pyamg.ruge_stuben_solver(A)
-            x = ml.solve(b=b, tol=rtol, maxiter=max_it)
+        # Check solution convergence
+        if not self._is_converged(x=x):
+            raise Exception(f"Solver did not converge.")
 
         return x
+
+    def _get_solver(self):
+        r"""
+        Fetch solver object based on solver settings stored in settings dict.
+
+        The returned object can be called via ``obj.solve(A, b, x0[optional])``
+        """
+        # SciPy
+        if self.settings['solver_family'] == 'scipy':
+            def solver(A, b, atol=None, rtol=None, max_it=None, x0=None):
+                r"""
+                Wrapper method for scipy sparse linear solvers.
+                """
+                if use_umfpack:
+                    A.indices = A.indices.astype(np.int64)
+                    A.indptr = A.indptr.astype(np.int64)
+                ls = getattr(scipy.sparse.linalg, self.settings['solver_type'])
+                if self.settings["solver_type"] == "spsolve":
+                    x = ls(A=A, b=b)
+                else:
+                    tol = self.settings["solver_tol"]
+                    x, _ = ls(A=A, b=b, atol=atol, tol=tol, maxiter=max_it, x0=x0)
+                return x
+        # PETSc
+        elif self.settings['solver_family'] == 'petsc':
+            def solver(A, b, atol=None, rtol=None, max_it=None, x0=None):
+                r"""
+                Wrapper method for PETSc sparse linear solvers.
+                """
+                from openpnm.utils.petsc import PETScSparseLinearSolver as SLS
+                temp = {"type": self.settings["solver_type"],
+                        "preconditioner": self.settings["solver_preconditioner"]}
+                ls = SLS(A=A, b=b, settings=temp)
+                x = ls.solve(x0=x0, atol=atol, rtol=rtol, max_it=max_it)
+                return x
+        # PyAMG
+        elif self.settings['solver_family'] == 'pyamg':
+            def solver(A, b, rtol=None, max_it=None, x0=None, **kwargs):
+                r"""
+                Wrapper method for PyAMG sparse linear solvers.
+                """
+                import pyamg
+                ml = pyamg.smoothed_aggregation_solver(A)
+                x = ml.solve(b=b, x0=x0, tol=rtol, maxiter=max_it, accel="bicgstab")
+                return x
+        # PyPardiso
+        elif self.settings['solver_family'] == 'pypardiso':
+            def solver(A, b, **kwargs):
+                r"""
+                Wrapper method for PyPardiso sparse linear solver.
+                """
+                import pypardiso
+                x = pypardiso.spsolve(A=A, b=b)
+                return x
+        else:
+            raise Exception(f"{self.settings['solver_family']} not available.")
+
+        return solver
 
     def _get_atol(self):
         r"""
@@ -663,15 +693,37 @@ class GenericTransport(GenericAlgorithm):
             rtol = atol / res0
         return rtol
 
-    def _check_for_nans(self):
+    def _get_residual(self, x=None):
+        r"""
+        Calculate solution residual based on the given ``x`` based on the
+        following formula:
+            ``res = norm(A*x - b)``
+        """
+        if x is None:
+            quantity = self.settings['quantity']
+            x = self[quantity]
+        return norm(self.A * x - self.b)
+
+    def _is_converged(self, x=None):
+        r"""
+        Check if solution has converged based on the following criterion:
+            res <= max(norm(b) * tol, atol)
+        """
+        res = self._get_residual(x=x)
+        # Verify that residual is finite (i.e. not inf/nan)
+        if not np.isfinite(res):
+            logger.error(f'Solution diverged: {res:.4e}')
+            raise Exception(f"Solution diverged, undefined residual: {res:.4e}")
+        # Check convergence
+        tol = self.settings["solver_tol"]
+        res_tol = norm(self.b) * tol
+        flag_converged = True if res <= res_tol else False
+        return flag_converged
+
+    def _validate_data_health(self):
         r"""
         Check whether A and b are well-defined, i.e. doesn't contain nans.
         """
-        # Return if everything looks good
-        if not np.isnan(self.A.data).any():
-            if not np.isnan(self.b).any():
-                return
-
         import networkx as nx
         from pandas import unique
 
@@ -680,6 +732,19 @@ class GenericTransport(GenericAlgorithm):
         phase = prj.find_phase(self)
         geometries = prj.geometries().values()
         physics = prj.physics().values()
+
+        # Validate network topology health
+        if not prj.network._is_fully_connected():
+            msg = (
+                "Your network is clustered. Run h = net.check_network_health()"
+                " followed by op.topotools.trim(net, pores=h['trim_pores'])"
+                " to make your network fully connected."
+            )
+            raise Exception(msg)
+
+        # Short-circuit subsequent checks if data are healthy
+        if np.isfinite(self.A.data).all() and np.isfinite(self.b).all():
+            return True
 
         # Locate the root of NaNs
         unaccounted_nans = []
@@ -705,17 +770,27 @@ class GenericTransport(GenericAlgorithm):
             # Throw error with helpful info on how to resolve the issue
             if root_props:
                 msg = (
-                    f"Found NaNs in A matrix, possibly caused by NaNs in "
-                    f"{', '.join(root_props)}. The issue might get "
-                    f"resolved if you call regenerate_models on the following "
-                    f"object(s): {', '.join(root_objs)}"
+                    r"Found NaNs in A matrix, possibly caused by NaNs in"
+                    f" {', '.join(root_props)}. The issue might get"
+                    r" resolved if you call regenerate_models on the following"
+                    f" object(s): {', '.join(root_objs)}"
                 )
                 raise Exception(msg)
 
-        # Raise Exception otherwise
+        # Raise Exception for unaccounted properties
         if unaccounted_nans:
-            raise Exception(f"Found NaNs in A matrix, possibly caused by NaNs in "
-                            f"{', '.join(unaccounted_nans)}.")
+            raise Exception(
+                r"Found NaNs in A matrix, possibly caused by NaNs in"
+                f" {', '.join(unaccounted_nans)}."
+            )
+
+        # Raise Exception otherwise if root cannot be found
+        raise Exception(
+            "Found NaNs in A matrix but couldn't locate the root object(s)"
+            " that might have caused it. It's likely that disabling caching"
+            " of A matrix via alg.settings['cache_A'] = False after"
+            " instantiating the algorithm object fixes the problem."
+        )
 
     def results(self):
         r"""
@@ -803,7 +878,7 @@ class GenericTransport(GenericAlgorithm):
             tol=None,
             atol=None,
             rtol=None,
-            maxiter=None,
+            max_iter=None,
     ):
         r"""
         Set the solver to be used to solve the algorithm.
@@ -835,6 +910,9 @@ class GenericTransport(GenericAlgorithm):
             many orders of magnitude reduction in residual is desired, compared
             to its value at initial guess.
 
+        max_iter : int, optional
+            Maximum number of iterations
+
         Returns
         -------
         None.
@@ -854,8 +932,8 @@ class GenericTransport(GenericAlgorithm):
             atol = settings["solver_atol"]
         if rtol is None:
             rtol = settings["solver_rtol"]
-        if maxiter is None:
-            maxiter = settings["solver_maxiter"]
+        if max_iter is None:
+            max_iter = settings["solver_max_iter"]
         # Update settings on algorithm object
         self.settings.update(
             {
@@ -865,20 +943,9 @@ class GenericTransport(GenericAlgorithm):
                 "solver_tol": tol,
                 "solver_atol": atol,
                 "solver_rtol": rtol,
-                "solver_maxiter": maxiter
+                "solver_max_iter": max_iter
             }
         )
-
-    def _get_residual(self, x=None):
-        r"""
-        Calculate solution residual based on the given ``x`` based on the
-        following formula:
-            ``res = norm(A*x - b)``
-        """
-        if x is None:
-            quantity = self.settings['quantity']
-            x = self[quantity]
-        return norm(self.A * x - self.b)
 
     def _calc_eff_prop(self, inlets=None, outlets=None,
                        domain_area=None, domain_length=None):
