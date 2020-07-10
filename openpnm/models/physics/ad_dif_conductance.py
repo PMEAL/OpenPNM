@@ -84,7 +84,7 @@ def ad_dif(target,
         gd = _np.tile(gd, 2)
     # Special treatment when gd is not Nt by 1 (ex. mass partitioning)
     elif gd.size == 2 * throats.size:
-        gd = gd.reshape(throats.size * 2)
+        gd = gd.reshape(throats.size * 2, order='F')
     else:
         raise Exception(f"Shape of {throat_diffusive_conductance} must either"
                         r" be (Nt,1) or (Nt,2)")
@@ -114,5 +114,5 @@ def ad_dif(target,
         w = -Qij / (1 - _np.exp(Peij))
     else:
         raise Exception('Unrecognized discretization scheme: ' + s_scheme)
-    w = _np.reshape(w, (throats.size, 2), order='F')
+    w = w.reshape(throats.size, 2, order='F')
     return w
