@@ -1,3 +1,4 @@
+import pytest
 import numpy as np
 import openpnm as op
 from numpy.testing import assert_allclose
@@ -17,6 +18,12 @@ class DispersiveConductanceTest:
                                               geometry=self.geo)
         self.phys["throat.diffusive_conductance"] = np.arange(self.net.Nt) + 1.0
         self.phys["throat.hydraulic_conductance"] = np.arange(self.net.Nt) + 4.0
+
+    def test_unsupported_discretization_scheme(self):
+        mod = op.models.physics.dispersive_conductance.ad_dif
+        with pytest.raises(Exception):
+            self.phys.add_model(propname='throat.ad_dif_conductance',
+                                model=mod, s_scheme="unsupported_scheme")
 
     def test_upwind(self):
         mod = op.models.physics.dispersive_conductance.ad_dif
@@ -80,6 +87,15 @@ class DispersiveConductanceTest:
         g_ad_dif = self.phys['throat.ad_dif_conductance']
         g_dif = self.phys['throat.Nt_by_2']
         assert_allclose(actual=g_ad_dif, desired=g_dif)
+
+    def test_ad_dif_when_dif_cond_in_wrong_shape(self):
+        gd = self.phase["throat.diffusive_conductance"]
+        self.phys["throat.Nt_by_3"] = np.vstack((gd, gd, gd)).T
+        mod = op.models.physics.dispersive_conductance.ad_dif
+        with pytest.raises(Exception):
+            self.phys.add_model(propname='throat.ad_dif_conductance',
+                                model=mod, s_scheme="powerlaw",
+                                throat_diffusive_conductance="throat.Nt_by_3")
 
 
 if __name__ == '__main__':
