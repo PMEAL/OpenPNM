@@ -63,8 +63,9 @@ class ReactiveTransportTest:
                             model=lambda target, bar="pore.blah": 0.0)
         self.alg._set_variable_props("pore.blah")
         iterative_props = self.alg._get_iterative_props()
-        assert len(iterative_props) == 3
+        assert len(iterative_props) == 4
         assert "pore.lambda_depends_on_blah" in iterative_props
+        assert "pore.blah" in iterative_props
 
     def test_multiple_set_source_with_same_name_should_only_keep_one(self):
         self.alg.settings.update({'conductance': 'throat.diffusive_conductance',
