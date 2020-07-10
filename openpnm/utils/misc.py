@@ -1,10 +1,10 @@
+import copy
 import inspect
 import warnings
 import functools
 import numpy as _np
 import scipy as _sp
 import time as _time
-import copy
 from collections import OrderedDict
 from docrep import DocstringProcessor
 
@@ -602,6 +602,7 @@ def nbr_to_str(nbr, t_precision):
 
     t_precision : integer
         The time precision (number of decimal places). Default value is 12.
+
     """
     from decimal import Decimal as dc
     n = int(-dc(str(round(nbr, t_precision))).as_tuple().exponent

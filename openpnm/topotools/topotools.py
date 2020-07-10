@@ -74,11 +74,13 @@ def find_neighbor_sites(sites, am, flatten=True, include_input=False,
     """
     if am.format != 'lil':
         am = am.tolil(copy=False)
+    sites = np.array(sites, ndmin=1)
+    am_coo = am.tocoo()
     n_sites = am.shape[0]
-    rows = [am.rows[i] for i in np.array(sites, ndmin=1)]
+    rows = am.rows[sites].tolist()
     if len(rows) == 0:
         return []
-    neighbors = np.hstack(rows).astype(sp.int64)  # Flatten list to apply logic
+    neighbors = am_coo.col[np.in1d(am_coo.row, sites)]
     if logic in ['or', 'union', 'any']:
         neighbors = np.unique(neighbors)
     elif logic in ['xor', 'exclusive_or']:
@@ -100,7 +102,7 @@ def find_neighbor_sites(sites, am, flatten=True, include_input=False,
     if flatten:
         neighbors = np.where(mask)[0]
     else:
-        if (neighbors.size > 0):
+        if neighbors.size > 0:
             for i in range(len(rows)):
                 vals = np.array(rows[i], dtype=sp.int64)
                 rows[i] = vals[mask[vals]]
@@ -2115,7 +2117,6 @@ def template_cylinder_annulus(height, outer_radius, inner_radius=0):
                                 inner_radius=inner_radius)
     img = np.tile(np.atleast_3d(img), reps=height)
     return img
-
 
 
 def generate_base_points(num_points, domain_size, density_map=None,
