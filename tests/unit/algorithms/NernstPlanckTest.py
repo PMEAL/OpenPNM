@@ -1,3 +1,4 @@
+import pytest
 import numpy as np
 import openpnm as op
 from numpy.testing import assert_allclose
@@ -106,6 +107,33 @@ class NernstPlanckTest:
              2.,      2.,      2.]
         y = np.around(self.adm['pore.concentration.ionX'], decimals=5)
         assert_allclose(actual=y, desired=x)
+
+    def test_unsupported_scheme_NernstPlanck(self):
+        mod = op.models.physics.ad_dif_mig_conductance.ad_dif_mig
+        with pytest.raises(Exception):
+            self.phys.add_model(propname='throat.ad_dif_mig_conductance_exp',
+                                model=mod, s_scheme='unsupported_scheme', ion='ionX')
+
+    def test_ad_dif_mig_cond_w_Nt_by_2_dif_cond(self):
+        gd = self.phase["throat.diffusive_conductance.ionX"]
+        self.phys["throat.Nt_by_2.ionX"] = np.vstack((gd, gd)).T
+        mod = op.models.physics.ad_dif_mig_conductance.ad_dif_mig
+        self.phys.add_model(propname='throat.ad_dif_mig_conductance_Nt_by_2',
+                            model=mod, s_scheme='upwind', ion='ionX',
+                            throat_diffusive_conductance="throat.Nt_by_2")
+        gd_old = self.phys["throat.ad_dif_mig_conductance_upwind"]
+        gd_new = self.phys["throat.ad_dif_mig_conductance_Nt_by_2"]
+        # New conductance based on (Nt,2) dif_cond must match the old values
+        assert_allclose(actual=gd_new, desired=gd_old)
+
+    def test_ad_dif_mig_cond_when_dif_cond_in_wrong_shape(self):
+        gd = self.phase["throat.diffusive_conductance.ionX"]
+        self.phys["throat.Nt_by_3.ionX"] = np.vstack((gd, gd, gd)).T
+        mod = op.models.physics.ad_dif_mig_conductance.ad_dif_mig
+        with pytest.raises(Exception):
+            self.phys.add_model(propname='throat.ad_dif_mig_conductance_Nt_by_2',
+                                model=mod, s_scheme='upwind', ion='ionX',
+                                throat_diffusive_conductance="throat.Nt_by_3")
 
     def teardown_class(self):
         ws = op.Workspace()
