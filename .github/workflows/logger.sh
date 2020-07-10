@@ -60,7 +60,8 @@ merge_commits=$(filter_commits_by_tag_interval $tag_old $tag_new)
 
 # Fetching new features/changed API/bugfixes
 features=$(filter_commits_by_label "$merge_commits" "Added")
-changes=$(filter_commits_by_label "$merge_commits" "Changed")
+enhancements=$(filter_commits_by_label "$merge_commits" "Enhanced" "Optimized")
+changes=$(filter_commits_by_label "$merge_commits" "Changed" "Removed")
 fixes=$(filter_commits_by_label "$merge_commits" "Bugfix" "Hotfix" "Fixed")
 
 # Delete "entry" file if already exists
@@ -76,6 +77,7 @@ fi
 # Compile change log
 echo -e "## ${tag_new}\n" >> entry
 append_to_entry_with_label "$features" entry ":rocket: New features"
+append_to_entry_with_label "$enhancements" entry ":cake: Enhancements"
 append_to_entry_with_label "$changes" entry ":warning: API changes"
 append_to_entry_with_label "$fixes" entry ":bug: Bugfixes"
 
