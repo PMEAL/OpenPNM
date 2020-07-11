@@ -197,8 +197,7 @@ class GenericTransport(GenericAlgorithm):
         self['pore.bc_rate'] = np.nan
         self['pore.bc_value'] = np.nan
 
-    @docstr.get_sectionsf('GenericTransport.setup',
-                          sections=['Parameters'])
+    @docstr.get_sectionsf('GenericTransport.setup', sections=['Parameters'])
     @docstr.dedent
     def setup(self, phase=None, quantity='', conductance='', **kwargs):
         r"""
@@ -207,7 +206,6 @@ class GenericTransport(GenericAlgorithm):
         ----------
         %(GenericTransportSettings.parameters)s
         """
-
         if phase:
             self.settings['phase'] = phase.name
         if quantity:
@@ -217,8 +215,7 @@ class GenericTransport(GenericAlgorithm):
         self.settings.update(**kwargs)
 
     @docstr.get_full_descriptionf(base='GenericTransport.reset')
-    @docstr.get_sectionsf(base='GenericTransport.reset',
-                          sections=['Parameters'])
+    @docstr.get_sectionsf(base='GenericTransport.reset', sections=['Parameters'])
     @docstr.dedent
     def reset(self, bcs=False, results=True):
         r"""
@@ -279,10 +276,8 @@ class GenericTransport(GenericAlgorithm):
         The definition of ``quantity`` is specified in the algorithm's
         ``settings``, e.g. ``alg.settings['quantity'] = 'pore.pressure'``.
         """
-        mode = self._parse_mode(mode, allowed=['merge', 'overwrite'],
-                                single=True)
-        self._set_BC(pores=pores, bctype='value', bcvalues=values,
-                     mode=mode)
+        mode = self._parse_mode(mode, allowed=['merge', 'overwrite'], single=True)
+        self._set_BC(pores=pores, bctype='value', bcvalues=values, mode=mode)
 
     def set_rate_BC(self, pores, values, mode='merge'):
         r"""
@@ -316,12 +311,11 @@ class GenericTransport(GenericAlgorithm):
         The definition of ``quantity`` is specified in the algorithm's
         ``settings``, e.g. ``alg.settings['quantity'] = 'pore.pressure'``.
         """
-        mode = self._parse_mode(mode, allowed=['merge', 'overwrite'],
-                                single=True)
+        mode = self._parse_mode(mode, allowed=['merge', 'overwrite'], single=True)
         self._set_BC(pores=pores, bctype='rate', bcvalues=values, mode=mode)
 
-    @docstr.get_sectionsf(base='GenericTransport._set_BC',
-                          sections=['Parameters', 'Notes'])
+    @docstr.get_sectionsf(
+        base='GenericTransport._set_BC', sections=['Parameters', 'Notes'])
     def _set_BC(self, pores, bctype, bcvalues=None, mode='merge'):
         r"""
         This private method is called by public facing BC methods, to apply
