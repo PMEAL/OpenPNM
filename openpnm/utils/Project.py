@@ -520,7 +520,7 @@ class Project(list):
         elif objtype.startswith('phy'):
             obj = openpnm.physics.GenericPhysics(project=self, name=name)
         elif objtype.startswith('alg'):
-            obj = openpnm.algorithm.GenericAlgorithm(project=self, name=name)
+            obj = openpnm.algorithms.GenericAlgorithm(project=self, name=name)
         else:
             obj = openpnm.core.Base(project=self, name=name)
         return obj
