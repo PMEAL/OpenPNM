@@ -197,8 +197,7 @@ class GenericTransport(GenericAlgorithm):
         self['pore.bc_rate'] = np.nan
         self['pore.bc_value'] = np.nan
 
-    @docstr.get_sectionsf('GenericTransport.setup',
-                          sections=['Parameters'])
+    @docstr.get_sectionsf('GenericTransport.setup', sections=['Parameters'])
     @docstr.dedent
     def setup(self, phase=None, quantity='', conductance='', **kwargs):
         r"""
@@ -207,7 +206,6 @@ class GenericTransport(GenericAlgorithm):
         ----------
         %(GenericTransportSettings.parameters)s
         """
-
         if phase:
             self.settings['phase'] = phase.name
         if quantity:
@@ -217,8 +215,7 @@ class GenericTransport(GenericAlgorithm):
         self.settings.update(**kwargs)
 
     @docstr.get_full_descriptionf(base='GenericTransport.reset')
-    @docstr.get_sectionsf(base='GenericTransport.reset',
-                          sections=['Parameters'])
+    @docstr.get_sectionsf(base='GenericTransport.reset', sections=['Parameters'])
     @docstr.dedent
     def reset(self, bcs=False, results=True):
         r"""
@@ -279,10 +276,8 @@ class GenericTransport(GenericAlgorithm):
         The definition of ``quantity`` is specified in the algorithm's
         ``settings``, e.g. ``alg.settings['quantity'] = 'pore.pressure'``.
         """
-        mode = self._parse_mode(mode, allowed=['merge', 'overwrite'],
-                                single=True)
-        self._set_BC(pores=pores, bctype='value', bcvalues=values,
-                     mode=mode)
+        mode = self._parse_mode(mode, allowed=['merge', 'overwrite'], single=True)
+        self._set_BC(pores=pores, bctype='value', bcvalues=values, mode=mode)
 
     def set_rate_BC(self, pores, values, mode='merge'):
         r"""
@@ -316,12 +311,11 @@ class GenericTransport(GenericAlgorithm):
         The definition of ``quantity`` is specified in the algorithm's
         ``settings``, e.g. ``alg.settings['quantity'] = 'pore.pressure'``.
         """
-        mode = self._parse_mode(mode, allowed=['merge', 'overwrite'],
-                                single=True)
+        mode = self._parse_mode(mode, allowed=['merge', 'overwrite'], single=True)
         self._set_BC(pores=pores, bctype='rate', bcvalues=values, mode=mode)
 
-    @docstr.get_sectionsf(base='GenericTransport._set_BC',
-                          sections=['Parameters', 'Notes'])
+    @docstr.get_sectionsf(
+        base='GenericTransport._set_BC', sections=['Parameters', 'Notes'])
     def _set_BC(self, pores, bctype, bcvalues=None, mode='merge'):
         r"""
         This private method is called by public facing BC methods, to apply
@@ -428,11 +422,17 @@ class GenericTransport(GenericAlgorithm):
         under ``conductance``.  In subclasses (e.g. ``FickianDiffusion``)
         this is set by default, though it can be overwritten.
         """
-        cache_A = self.settings['cache_A']
         gvals = self.settings['conductance']
         if not gvals:
             raise Exception('conductance has not been defined on this algorithm')
-        if not cache_A:
+        # Decide if caching of A and b is allowed
+        # FIXME: this needs to be properly addressed (see issue #1548)
+        try:
+            if gvals in self._get_iterative_props():
+                self.settings.update({"cache_A": False, "cache_b": False})
+        except AttributeError:
+            pass
+        if not self.settings['cache_A']:
             self._pure_A = None
         if self._pure_A is None:
             network = self.project.network
@@ -447,14 +447,6 @@ class GenericTransport(GenericAlgorithm):
         Builds the RHS matrix, without applying any boundary conditions or
         source terms. This method is trivial an basically creates a column
         vector of 0's.
-
-        Parameters
-        ----------
-        force : Boolean (default is ``False``)
-            If set to ``True`` then the b matrix is built from new. If
-            ``False`` (the default), a cached version of b is returned. The
-            cached version is *clean* in the sense that no boundary conditions
-            or sources terms have been added to it.
         """
         cache_b = self.settings['cache_b']
         if not cache_b:
@@ -504,10 +496,8 @@ class GenericTransport(GenericAlgorithm):
             self.b[~ind] -= (self.A * x_BC)[~ind]
             # Update A
             P_bc = self.toindices(ind)
-            indrow = np.isin(self.A.row, P_bc)
-            indcol = np.isin(self.A.col, P_bc)
-            self.A.data[indrow] = 0  # Remove entries from A for all BC rows
-            self.A.data[indcol] = 0  # Remove entries from A for all BC cols
+            mask = np.isin(self.A.row, P_bc) | np.isin(self.A.col, P_bc)
+            self.A.data[mask] = 0  # Remove entries from A for all BC rows/cols
             datadiag = self.A.diagonal()  # Add diagonal entries back into A
             datadiag[P_bc] = np.ones_like(P_bc, dtype=float) * f
             self.A.setdiag(datadiag)
