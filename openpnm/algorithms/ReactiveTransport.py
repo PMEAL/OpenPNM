@@ -154,11 +154,8 @@ class ReactiveTransport(GenericTransport):
             Initial guess of unknown variable
         """
         quantity = self.settings['quantity']
-        gvals = self.settings["conductance"]
         logger.info('Running ReactiveTransport')
         x0 = np.zeros(self.Np, dtype=float) if x0 is None else x0
-        if gvals in self._get_iterative_props():
-            self.settings.update({"cache_A": False, "cache_b": False})
         x = self._run_reactive(x0)
         self[quantity] = x
 
