@@ -495,10 +495,8 @@ class GenericTransport(GenericAlgorithm):
             self.b[~ind] -= (self.A * x_BC)[~ind]
             # Update A
             P_bc = self.toindices(ind)
-            indrow = np.isin(self.A.row, P_bc)
-            indcol = np.isin(self.A.col, P_bc)
-            self.A.data[indrow] = 0  # Remove entries from A for all BC rows
-            self.A.data[indcol] = 0  # Remove entries from A for all BC cols
+            mask = np.isin(self.A.row, P_bc) | np.isin(self.A.col, P_bc)
+            self.A.data[mask] = 0  # Remove entries from A for all BC rows/cols
             datadiag = self.A.diagonal()  # Add diagonal entries back into A
             datadiag[P_bc] = np.ones_like(P_bc, dtype=float) * f
             self.A.setdiag(datadiag)
