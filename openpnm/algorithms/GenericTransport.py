@@ -446,14 +446,6 @@ class GenericTransport(GenericAlgorithm):
         Builds the RHS matrix, without applying any boundary conditions or
         source terms. This method is trivial an basically creates a column
         vector of 0's.
-
-        Parameters
-        ----------
-        force : Boolean (default is ``False``)
-            If set to ``True`` then the b matrix is built from new. If
-            ``False`` (the default), a cached version of b is returned. The
-            cached version is *clean* in the sense that no boundary conditions
-            or sources terms have been added to it.
         """
         cache_b = self.settings['cache_b']
         if not cache_b:
