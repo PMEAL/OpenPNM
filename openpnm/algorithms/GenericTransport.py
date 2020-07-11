@@ -426,6 +426,7 @@ class GenericTransport(GenericAlgorithm):
         if not gvals:
             raise Exception('conductance has not been defined on this algorithm')
         # Decide if caching of A and b is allowed
+        # FIXME: this needs to be properly addressed (see issue #1548)
         try:
             if gvals in self._get_iterative_props():
                 self.settings.update({"cache_A": False, "cache_b": False})
