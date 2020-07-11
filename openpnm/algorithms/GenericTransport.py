@@ -422,11 +422,16 @@ class GenericTransport(GenericAlgorithm):
         under ``conductance``.  In subclasses (e.g. ``FickianDiffusion``)
         this is set by default, though it can be overwritten.
         """
-        cache_A = self.settings['cache_A']
         gvals = self.settings['conductance']
         if not gvals:
             raise Exception('conductance has not been defined on this algorithm')
-        if not cache_A:
+        # Decide if caching of A and b is allowed
+        try:
+            if gvals in self._get_iterative_props():
+                self.settings.update({"cache_A": False, "cache_b": False})
+        except AttributeError:
+            pass
+        if not self.settings['cache_A']:
             self._pure_A = None
         if self._pure_A is None:
             network = self.project.network
