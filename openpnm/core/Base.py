@@ -1201,7 +1201,8 @@ class Base(dict):
                 temp_arr[inds] = np.nan
 
         # Lastly, convert to correct data type
-        if None in arrs:  # If one subdomain does not have array...
+        found = any([True for a in arrs if a is None])
+        if found:  # If one subdomain does not have array...
             t = [a.dtype for a in arrs if a is not None]
             if len(set(t)) == 1:  # If existing arrays are same type
                 if t[0] == bool:  # If type is bool, put False for nans
