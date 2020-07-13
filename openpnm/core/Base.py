@@ -1181,28 +1181,48 @@ class Base(dict):
 
         # Attempt to fetch the requested array from each object
         arrs = [item.get(prop, None) for item in sources]
+        # See if subdomains add up to full domain
+        Nt = 0
+        Np = 0
+        for item in sources:
+            if item is not None:
+                Nt += item.Nt
+                Np += item.Np
+        if (Nt < self.network.Nt) or (Np < self.network.Np):
+            arrs.append(None)  # This will trigger the empty array logic below
         locs = [self._get_indices(element, item.name) for item in sources]
+        missing_arrs = [True for a in arrs if a is None]
+        # if np.all([item is None for item in arrs]):  # prop not found anywhere
+            # raise KeyError(prop)
 
         # Create an empty array of the right shape, assume float dtype
         for item in arrs:  # Scan list of arrays
             if item is not None:
                 if len(item.shape) == 1:
-                    temp_arr = np.zeros((N, ), dtype=float)
+                    temp_arr = np.zeros((N, ), dtype=float)*np.nan
                 else:
-                    temp_arr = np.zeros((N, item.shape[1]), dtype=float)
-                # Stop after finding first array
+                    temp_arr = np.zeros((N, item.shape[1]), dtype=float)*np.nan
                 break
+
+        # Deal with arrays that are 'object' type
+        for item in arrs:
+            if item is not None:
+                if item.dtype == object:
+                    temp_arr = temp_arr.astype(object)
+                    break
 
         # Fill new array with values in the corresponding locations
         for vals, inds in zip(arrs, locs):
             if vals is not None:
                 temp_arr[inds] = vals
             else:
-                temp_arr[inds] = np.nan
+                if temp_arr.dtype == object:
+                    temp_arr[inds] = None
+                else:
+                    temp_arr[inds] = np.nan
 
         # Lastly, convert to correct data type
-        found = any([True for a in arrs if a is None])
-        if found:  # If one subdomain does not have array...
+        if any(missing_arrs):  # If one subdomain does not have array...
             t = [a.dtype for a in arrs if a is not None]
             if len(set(t)) == 1:  # If existing arrays are same type
                 if t[0] == bool:  # If type is bool, put False for nans
