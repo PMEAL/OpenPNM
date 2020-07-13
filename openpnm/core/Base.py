@@ -1182,62 +1182,54 @@ class Base(dict):
         # Attempt to fetch the requested array from each object
         arrs = [item.get(prop, None) for item in sources]
         locs = [self._get_indices(element, item.name) for item in sources]
-        sizes = [np.size(a) for a in arrs]
-        if np.all([item is None for item in arrs]):  # prop not found anywhere
-            raise KeyError(prop)
 
-        # Check the general type of each array
-        atype = []
-        for a in arrs:
-            if a is not None:
-                t = a.dtype.name
-                if t.startswith('int') or t.startswith('float'):
-                    atype.append('numeric')
-                elif t.startswith('bool'):
-                    atype.append('boolean')
-                else:
-                    atype.append('other')
-        if not all([item == atype[0] for item in atype]):
-            raise Exception('The array types are not compatible')
-        else:
-            dummy_val = {'numeric': sp.nan, 'boolean': False, 'other': None}
-
-        # Create an empty array of the right type and shape
-        for item in arrs:
+        # Create an empty array of the right shape, assume float dtype
+        for item in arrs:  # Scan list of arrays
             if item is not None:
                 if len(item.shape) == 1:
-                    temp_arr = np.zeros((N, ), dtype=item.dtype)
+                    temp_arr = np.zeros((N, ), dtype=float)
                 else:
-                    temp_arr = np.zeros((N, item.shape[1]), dtype=item.dtype)
-                temp_arr.fill(dummy_val[atype[0]])
-
-        # Convert int arrays to float IF NaNs are expected
-        if temp_arr.dtype.name.startswith('int') and \
-           (np.any([i is None for i in arrs]) or np.sum(sizes) != N):
-            temp_arr = temp_arr.astype(float)
-            temp_arr.fill(sp.nan)
+                    temp_arr = np.zeros((N, item.shape[1]), dtype=float)
+                # Stop after finding first array
+                break
 
         # Fill new array with values in the corresponding locations
         for vals, inds in zip(arrs, locs):
             if vals is not None:
                 temp_arr[inds] = vals
             else:
-                temp_arr[inds] = dummy_val[atype[0]]
+                temp_arr[inds] = np.nan
+
+        # Lastly, convert to correct data type
+        if None in arrs:  # If one subdomain does not have array...
+            t = [a.dtype for a in arrs if a is not None]
+            if len(set(t)) == 1:  # If existing arrays are same type
+                if t[0] == bool:  # If type is bool, put False for nans
+                    temp_ind = np.isnan(temp_arr)
+                    temp_arr[temp_ind] = 0.0
+                    temp_arr = temp_arr.astype(bool)
+        else:  # If array present on all subdomains...
+            t = [a.dtype for a in arrs]
+            if len(set(t)) == 1:
+                # If all arrays are of the same type
+                temp_arr = temp_arr.astype(t[0])
+            else:
+                # Leave them as float, note that bool is handled above
+                pass
 
         # Check if any arrays have units, if so then apply them to result
         # Importing unyt significantly adds to our import time, we also
         # currently don't use this package extensively, so we're not going
         # to support it for now.
-        """
-        if any([hasattr(a, 'units') for a in arrs]):
-            [a.convert_to_mks() for a in arrs if hasattr(a, 'units')]
-            units = [a.units.__str__() for a in arrs if hasattr(a, 'units')]
-            if len(units) > 0:
-                if len(set(units)) == 1:
-                    temp_arr *= np.array([1]) * getattr(unyt, units[0])
-                else:
-                    raise Exception('Units on the interleaved array are not equal')
-        """
+
+        # if any([hasattr(a, 'units') for a in arrs]):
+        #     [a.convert_to_mks() for a in arrs if hasattr(a, 'units')]
+        #     units = [a.units.__str__() for a in arrs if hasattr(a, 'units')]
+        #     if len(units) > 0:
+        #         if len(set(units)) == 1:
+        #             temp_arr *= np.array([1]) * getattr(unyt, units[0])
+        #         else:
+        #             raise Exception('Units on the interleaved array are not equal')
 
         return temp_arr
 
