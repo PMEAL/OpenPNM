@@ -80,7 +80,14 @@ def ad_dif(target,
     P = phase[pore_pressure]
     gh = phase[throat_hydraulic_conductance][throats]
     gd = phase[throat_diffusive_conductance][throats]
-    gd = _np.tile(gd, 2)
+    if gd.size == throats.size:
+        gd = _np.tile(gd, 2)
+    # Special treatment when gd is not Nt by 1 (ex. mass partitioning)
+    elif gd.size == 2 * throats.size:
+        gd = gd.reshape(throats.size * 2, order='F')
+    else:
+        raise Exception(f"Shape of {throat_diffusive_conductance} must either"
+                        r" be (Nt,1) or (Nt,2)")
 
     Qij = -gh*_sp.diff(P[cn], axis=1).squeeze()
     Qij = _np.append(Qij, -Qij)
@@ -107,5 +114,5 @@ def ad_dif(target,
         w = -Qij / (1 - _np.exp(Peij))
     else:
         raise Exception('Unrecognized discretization scheme: ' + s_scheme)
-    w = _np.reshape(w, (throats.size, 2), order='F')
+    w = w.reshape(throats.size, 2, order='F')
     return w

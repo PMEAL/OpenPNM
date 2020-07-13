@@ -247,21 +247,33 @@ class GenericTransportTest:
         # Now this will pass again
         np.testing.assert_allclose(m1, m2)
 
-    def test_check_for_nans(self):
+    def test_validate_data_health(self):
         alg = op.algorithms.GenericTransport(network=self.net,
                                              phase=self.phase)
         alg.settings['conductance'] = 'throat.diffusive_conductance'
         alg.settings['quantity'] = 'pore.concentration'
+        alg.settings['cache_A'] = False
         alg.set_value_BC(pores=self.net.pores('top'), values=1)
         alg.set_value_BC(pores=self.net.pores('bottom'), values=0)
+        # Check if the method can catch NaNs in data
         self.phys['throat.diffusive_conductance'][0] = np.nan
         with pytest.raises(Exception):
             alg.run()
         mod = op.models.misc.from_neighbor_pores
         self.phase["pore.seed"] = np.nan
-        self.phys.add_model(propname="throat.diffusive_conductance", model=mod)
+        self.phys.add_model(propname="throat.diffusive_conductance", model=mod,
+                            pore_prop="pore.seed", ignore_nans=False)
         with pytest.raises(Exception):
             alg.run()
+        self.phase["pore.seed"] = 1
+        self.phys.regenerate_models(propnames="throat.diffusive_conductance")
+        # Check if the method can catch unhealthy topology
+        Ts = self.net.find_neighbor_throats(pores=0)
+        op.topotools.trim(self.net, throats=Ts)
+        with pytest.raises(Exception):
+            alg.run()
+        # Reset network back to original
+        self.setup_class()
 
     def teardown_class(self):
         ws = op.Workspace()
