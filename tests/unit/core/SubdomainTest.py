@@ -1,6 +1,5 @@
 import pytest
 import numpy as np
-import scipy as sp
 import openpnm as op
 
 
@@ -144,7 +143,7 @@ class SubdomainTest:
         geo2 = op.geometry.GenericGeometry(network=pn, pores=[1], throats=[1])
         geo3 = op.geometry.GenericGeometry(network=pn, pores=[2])
 
-         # Test ints with a missing array
+        # Test ints with a missing array
         geo1['pore.test_int_missing'] = 1
         geo2['pore.test_int_missing'] = 2
         assert np.isnan(pn['pore.test_int_missing']).sum() == 1
