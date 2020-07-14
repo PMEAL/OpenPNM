@@ -1165,10 +1165,7 @@ class Base(dict):
         >>> print(g1['pore.label'])  # 'pore.label' is defined on pn, not g1
         [False False False False]
         """
-        element = self._parse_element(prop.split('.')[0], single=True)
-        N = self.project.network._count(element)
-
-        # Fetch sources list depending on object type?
+        # Fetch sources list depending on type of self
         proj = self.project
         if self._isa() in ['network', 'geometry']:
             sources = list(proj.geometries().values())
@@ -1179,64 +1176,79 @@ class Base(dict):
         else:
             raise Exception('Unrecognized object type, cannot find dependents')
 
+        # Get generalized element and array length
+        element = self._parse_element(prop.split('.')[0], single=True)
+        N = self.project.network._count(element)
+
         # Attempt to fetch the requested array from each object
-        arrs = [item.get(prop, None) for item in sources]
-        # See if subdomains add up to full domain
-        Nt = 0
-        Np = 0
-        for item in sources:
-            if item is not None:
-                Nt += item.Nt
-                Np += item.Np
-        if (Nt < self.network.Nt) or (Np < self.network.Np):
-            arrs.append(None)  # This will trigger the empty array logic below
+        arrs = [obj.get(prop, None) for obj in sources]
+
+        # Check for missing sources, and add None to arrs if necessary
+        if N > sum([obj._count(element) for obj in sources]):
+            arrs.append(None)
+
+        # Obtain list of locations for inserting values
         locs = [self._get_indices(element, item.name) for item in sources]
-        missing_arrs = [True for a in arrs if a is None]
-        # if np.all([item is None for item in arrs]):  # prop not found anywhere
-            # raise KeyError(prop)
 
-        # Create an empty array of the right shape, assume float dtype
-        for item in arrs:  # Scan list of arrays
-            if item is not None:
-                if len(item.shape) == 1:
-                    temp_arr = np.zeros((N, ), dtype=float)*np.nan
+        # --------------------------------------------------------------------
+        # Let's start by handling the easy cases first
+        if not any([a is None for a in arrs]):
+            # All objs present and array found on all objs
+            shape = list(arrs[0].shape)
+            shape[0] = N
+            types = [a.dtype for a in arrs]
+            if len(set(types)) == 1:
+                # All types are the same
+                temp_arr = np.ones(shape, dtype=types[0])
+                for vals, inds in zip(arrs, locs):
+                    temp_arr[inds] = vals
+                return temp_arr  # Return early because it's just easier
+            elif all([a.dtype in [float, int, bool] for a in arrs]):
+                # All types are numeric, make float
+                temp_arr = np.ones(shape, dtype=float)
+                for vals, inds in zip(arrs, locs):
+                    temp_arr[inds] = vals
+                return temp_arr  # Return early because it's just easier
+        # ---------------------------------------------------------------------
+        # Now handle the complicated cases
+        # Check the general type of each array
+        atype = []
+        for a in arrs:
+            if a is not None:
+                t = a.dtype.name
+                if t.startswith('int') or t.startswith('float'):
+                    atype.append('numeric')
+                elif t.startswith('bool'):
+                    atype.append('boolean')
                 else:
-                    temp_arr = np.zeros((N, item.shape[1]), dtype=float)*np.nan
-                break
+                    atype.append('other')
+        if not all([item == atype[0] for item in atype]):
+            raise Exception('The array types are not compatible')
+        else:
+            dummy_val = {'numeric': sp.nan, 'boolean': False, 'other': None}
 
-        # Deal with arrays that are 'object' type
+        # Create an empty array of the right type and shape
         for item in arrs:
             if item is not None:
-                if item.dtype == object:
-                    temp_arr = temp_arr.astype(object)
-                    break
+                if len(item.shape) == 1:
+                    temp_arr = np.zeros((N, ), dtype=item.dtype)
+                else:
+                    temp_arr = np.zeros((N, item.shape[1]), dtype=item.dtype)
+                temp_arr.fill(dummy_val[atype[0]])
+
+        sizes = [np.size(a) for a in arrs]
+        # Convert int arrays to float IF NaNs are expected
+        if temp_arr.dtype.name.startswith('int') and \
+           (np.any([i is None for i in arrs]) or np.sum(sizes) != N):
+            temp_arr = temp_arr.astype(float)
+            temp_arr.fill(sp.nan)
 
         # Fill new array with values in the corresponding locations
         for vals, inds in zip(arrs, locs):
             if vals is not None:
                 temp_arr[inds] = vals
             else:
-                if temp_arr.dtype == object:
-                    temp_arr[inds] = None
-                else:
-                    temp_arr[inds] = np.nan
-
-        # Lastly, convert to correct data type
-        if any(missing_arrs):  # If one subdomain does not have array...
-            t = [a.dtype for a in arrs if a is not None]
-            if len(set(t)) == 1:  # If existing arrays are same type
-                if t[0] == bool:  # If type is bool, put False for nans
-                    temp_ind = np.isnan(temp_arr)
-                    temp_arr[temp_ind] = 0.0
-                    temp_arr = temp_arr.astype(bool)
-        else:  # If array present on all subdomains...
-            t = [a.dtype for a in arrs]
-            if len(set(t)) == 1:
-                # If all arrays are of the same type
-                temp_arr = temp_arr.astype(t[0])
-            else:
-                # Leave them as float, note that bool is handled above
-                pass
+                temp_arr[inds] = dummy_val[atype[0]]
 
         # Check if any arrays have units, if so then apply them to result
         # Importing unyt significantly adds to our import time, we also
