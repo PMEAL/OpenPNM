@@ -1165,10 +1165,7 @@ class Base(dict):
         >>> print(g1['pore.label'])  # 'pore.label' is defined on pn, not g1
         [False False False False]
         """
-        element = self._parse_element(prop.split('.')[0], single=True)
-        N = self.project.network._count(element)
-
-        # Fetch sources list depending on object type?
+        # Fetch sources list depending on type of self
         proj = self.project
         if self._isa() in ['network', 'geometry']:
             sources = list(proj.geometries().values())
@@ -1179,13 +1176,45 @@ class Base(dict):
         else:
             raise Exception('Unrecognized object type, cannot find dependents')
 
+        # Get generalized element and array length
+        element = self._parse_element(prop.split('.')[0], single=True)
+        N = self.project.network._count(element)
+
         # Attempt to fetch the requested array from each object
-        arrs = [item.get(prop, None) for item in sources]
+        arrs = [obj.get(prop, None) for obj in sources]
+
+        # Check for missing sources, and add None to arrs if necessary
+        if N > sum([obj._count(element) for obj in sources]):
+            arrs.append(None)
+
+        # Obtain list of locations for inserting values
         locs = [self._get_indices(element, item.name) for item in sources]
-        sizes = [np.size(a) for a in arrs]
+
         if np.all([item is None for item in arrs]):  # prop not found anywhere
             raise KeyError(prop)
 
+        # --------------------------------------------------------------------
+        # Let's start by handling the easy cases first
+        if not any([a is None for a in arrs]):
+            # All objs present and array found on all objs
+            shape = list(arrs[0].shape)
+            shape[0] = N
+            types = [a.dtype for a in arrs]
+            if len(set(types)) == 1:
+                # All types are the same
+                temp_arr = np.ones(shape, dtype=types[0])
+                for vals, inds in zip(arrs, locs):
+                    temp_arr[inds] = vals
+                return temp_arr  # Return early because it's just easier
+            elif all([a.dtype in [float, int, bool] for a in arrs]):
+                # All types are numeric, make float
+                temp_arr = np.ones(shape, dtype=float)
+                for vals, inds in zip(arrs, locs):
+                    temp_arr[inds] = vals
+                return temp_arr  # Return early because it's just easier
+
+        # ---------------------------------------------------------------------
+        # Now handle the complicated cases
         # Check the general type of each array
         atype = []
         for a in arrs:
@@ -1211,6 +1240,7 @@ class Base(dict):
                     temp_arr = np.zeros((N, item.shape[1]), dtype=item.dtype)
                 temp_arr.fill(dummy_val[atype[0]])
 
+        sizes = [np.size(a) for a in arrs]
         # Convert int arrays to float IF NaNs are expected
         if temp_arr.dtype.name.startswith('int') and \
            (np.any([i is None for i in arrs]) or np.sum(sizes) != N):
@@ -1228,16 +1258,15 @@ class Base(dict):
         # Importing unyt significantly adds to our import time, we also
         # currently don't use this package extensively, so we're not going
         # to support it for now.
-        """
-        if any([hasattr(a, 'units') for a in arrs]):
-            [a.convert_to_mks() for a in arrs if hasattr(a, 'units')]
-            units = [a.units.__str__() for a in arrs if hasattr(a, 'units')]
-            if len(units) > 0:
-                if len(set(units)) == 1:
-                    temp_arr *= np.array([1]) * getattr(unyt, units[0])
-                else:
-                    raise Exception('Units on the interleaved array are not equal')
-        """
+
+        # if any([hasattr(a, 'units') for a in arrs]):
+        #     [a.convert_to_mks() for a in arrs if hasattr(a, 'units')]
+        #     units = [a.units.__str__() for a in arrs if hasattr(a, 'units')]
+        #     if len(units) > 0:
+        #         if len(set(units)) == 1:
+        #             temp_arr *= np.array([1]) * getattr(unyt, units[0])
+        #         else:
+        #             raise Exception('Units on the interleaved array are not equal')
 
         return temp_arr
 
