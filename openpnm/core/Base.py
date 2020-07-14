@@ -1190,6 +1190,9 @@ class Base(dict):
         # Obtain list of locations for inserting values
         locs = [self._get_indices(element, item.name) for item in sources]
 
+        if np.all([item is None for item in arrs]):  # prop not found anywhere
+            raise KeyError(prop)
+
         # --------------------------------------------------------------------
         # Let's start by handling the easy cases first
         if not any([a is None for a in arrs]):
@@ -1209,6 +1212,7 @@ class Base(dict):
                 for vals, inds in zip(arrs, locs):
                     temp_arr[inds] = vals
                 return temp_arr  # Return early because it's just easier
+
         # ---------------------------------------------------------------------
         # Now handle the complicated cases
         # Check the general type of each array
