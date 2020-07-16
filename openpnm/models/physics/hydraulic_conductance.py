@@ -122,6 +122,8 @@ def hagen_poiseuille(
         g1[m1] = (3 * alpha1 * _sp.pi / (8 * D1[m1])) * beta1[m1]
         g2[m2] = (3 * alpha2 * _sp.pi / (8 * D2[m2])) * beta2[m2]
         gt[mt] = At[mt] ** 2 / (8 * _sp.pi * Dt * Lt)[mt]
+    else:
+        raise Exception("'model' can either be 'cylinder' or 'cone'.")
     # Apply shape factors and calculate the final conductance
     return (1/gt/SFt + 1/g1/SF1 + 1/g2/SF2) ** (-1)
 
