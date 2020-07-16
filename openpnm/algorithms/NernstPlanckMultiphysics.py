@@ -124,7 +124,7 @@ class NernstPlanckMultiphysics(GenericAlgorithm):
                     phase.update(e.results())
 
                 # Poisson eq
-                phys[0].regenerate_models()
+                [x.regenerate_models() for x in phys]
                 g_old[p_alg.name] = p_alg[p_alg.settings['quantity']].copy()
                 p_alg._run_reactive(x0=g_old[p_alg.name])
                 g_new[p_alg.name] = p_alg[p_alg.settings['quantity']].copy()
@@ -133,7 +133,7 @@ class NernstPlanckMultiphysics(GenericAlgorithm):
                     g_old[p_alg.name]**2 - g_new[p_alg.name]**2))
                 # Update phase and physics
                 phase.update(p_alg.results())
-                phys[0].regenerate_models()
+                [x.regenerate_models() for x in phys]
 
             if g_convergence:
                 print('Solution converged')
