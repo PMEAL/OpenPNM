@@ -206,6 +206,7 @@ def hagen_poiseuille_power_law(
     pore_flow_index="pore.flow_index",
     throat_flow_index="throat.flow_index",
     pore_pressure="pore.pressure",
+    model="cylinder"
 ):
     r"""
     Calculate the hydraulic conductance of conduits in network (assuming a non
