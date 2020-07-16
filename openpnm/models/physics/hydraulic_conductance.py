@@ -127,6 +127,7 @@ def hagen_poiseuille(
     # Apply shape factors and calculate the final conductance
     return (1/gt/SFt + 1/g1/SF1 + 1/g2/SF2) ** (-1)
 
+
 def hagen_poiseuille_2D(
     target,
     pore_diameter="pore.diameter",
