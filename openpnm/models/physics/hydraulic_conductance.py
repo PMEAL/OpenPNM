@@ -98,12 +98,32 @@ def hagen_poiseuille(
     Dt = phase[throat_viscosity][throats]
     D1, D2 = phase[pore_viscosity][cn].T
     # Find g for half of pore 1, throat, and half of pore 2
-    g1[m1] = A1[m1] ** 2 / (8 * _sp.pi * D1 * L1)[m1]
-    g2[m2] = A2[m2] ** 2 / (8 * _sp.pi * D2 * L2)[m2]
-    gt[mt] = At[mt] ** 2 / (8 * _sp.pi * Dt * Lt)[mt]
+    if model == "cylinder":
+        g1[m1] = A1[m1] ** 2 / (8 * _sp.pi * D1 * L1)[m1]
+        g2[m2] = A2[m2] ** 2 / (8 * _sp.pi * D2 * L2)[m2]
+        gt[mt] = At[mt] ** 2 / (8 * _sp.pi * Dt * Lt)[mt]
+    elif model == "cone":
+        R1 = (A1/_sp.pi)**0.5
+        R2 = (A2/_sp.pi)**0.5
+        Rt_orig = (At/_sp.pi)**0.5
+
+        Rt = Rt_orig
+        mask = R1 == Rt_orig
+        Rt[mask] *= 0.99
+        alpha1 = (R1-Rt)[m1]/L1[m1]
+        beta1 = 1 / (1/(Rt**3) - 1/(R1**3))
+
+        Rt = Rt_orig
+        mask = R2 == Rt_orig
+        Rt[mask] *= 0.99
+        alpha2 = (R2-Rt)[m2]/L2[m2]
+        beta2 = 1 / (1/(Rt**3) - 1/(R2**3))
+
+        g1[m1] = (3 * alpha1 * _sp.pi / (8 * D1[m1])) * beta1[m1]
+        g2[m2] = (3 * alpha2 * _sp.pi / (8 * D2[m2])) * beta2[m2]
+        gt[mt] = At[mt] ** 2 / (8 * _sp.pi * Dt * Lt)[mt]
     # Apply shape factors and calculate the final conductance
     return (1/gt/SFt + 1/g1/SF1 + 1/g2/SF2) ** (-1)
-
 
 def hagen_poiseuille_2D(
     target,
