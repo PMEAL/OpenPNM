@@ -227,7 +227,7 @@ class TransientNernstPlanckMultiphysics(NernstPlanckMultiphysics):
                                 phase.update(e.results())
 
                             # Charge conservation eq
-                            phys[0].regenerate_models()
+                            [x.regenerate_models() for x in phys]
                             g_old[p_alg.name] = (
                                 p_alg[p_alg.settings['quantity']].copy())
                             p_alg._run_reactive(x0=g_old[p_alg.name])
@@ -239,7 +239,7 @@ class TransientNernstPlanckMultiphysics(NernstPlanckMultiphysics):
                                 g_old[p_alg.name]**2 - g_new[p_alg.name]**2))
                             # Update phase and physics
                             phase.update(p_alg.results())
-                            phys[0].regenerate_models()
+                            [x.regenerate_models() for x in phys]
 
                         elif g_convergence:
                             print('Solution for time step: ' + str(time)
