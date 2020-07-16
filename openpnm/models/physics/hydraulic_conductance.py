@@ -371,17 +371,17 @@ def hagen_poiseuille_power_law(
     # Apparent viscosities
     mu1, mu2, mut = _np.zeros((3, len(Lt)))
 
-    mu1[m1] = (dP1 ** (1 - 1 / n1) * C1 ** (1 / n1))[m1] / (
+    mu1[m1] = mu_min1+(dP1 ** (1 - 1 / n1) * C1 ** (1 / n1))[m1] / (
         (4 * n1 / (3 * n1 + 1))[m1]
         * (2 * L1[m1] / ((A1[m1] / pi) ** 0.5)) ** (1 - 1 / n1[m1])
     )
 
-    mu2[m2] = (dP2 ** (1 - 1 / n2) * C2 ** (1 / n2))[m2] / (
+    mu2[m2] = mu_min2+(dP2 ** (1 - 1 / n2) * C2 ** (1 / n2))[m2] / (
         (4 * n2 / (3 * n2 + 1))[m2]
         * (2 * L2[m2] / ((A2[m2] / pi) ** 0.5)) ** (1 - 1 / n2[m2])
     )
 
-    mut[mt] = (dPt ** (1 - 1 / nt) * Ct ** (1 / nt))[mt] / (
+    mut[mt] = mu_mint+(dPt ** (1 - 1 / nt) * Ct ** (1 / nt))[mt] / (
         (4 * nt / (3 * nt + 1))[mt]
         * (2 * Lt[mt] / ((At[mt] / pi) ** 0.5)) ** (1 - 1 / nt[mt])
     )
