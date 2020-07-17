@@ -40,7 +40,7 @@ from .TransientIonicConduction import TransientIonicConduction
 from .NernstPlanck import NernstPlanck
 from .TransientNernstPlanck import TransientNernstPlanck
 
-from .NernstPlanckMultiphysics import NernstPlanckMultiphysics
-from .TransientNernstPlanckMultiphysics import TransientNernstPlanckMultiphysics
+from .NernstPlanckMultiphysics import NernstPlanckMultiphysicsSolver
+from .TransientNernstPlanckMultiphysics import TransientNernstPlanckMultiphysicsSolver
 
 # from . import metrics
