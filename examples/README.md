@@ -105,15 +105,15 @@ This page links to examples in the github repo at [github.com/PMEAL/OpenPNM/exam
 
 | Link | Description |
 |:-----|:------------|
-| [Diffusion with Source and Sink Terms](/examples/notebooks/algorithms/reactive/diffusion_with_source_and_sink_terms.ipynb) | `Mike` |
+| [Diffusion with Source and Sink Terms](/examples/notebooks/algorithms/reactive/diffusion_with_source_and_sink_terms.ipynb) | OpenPNM is capable of simulating chemical reactions in pores by adding source and sink terms. This example shows how to add source and sink terms to a steady state fickian diffusion simulation. |
 | [Heat Transfer with Source Terms](/examples/notebooks/algorithms/reactive/one_dimensional_continuum_heat_transfer_with_source_term.ipynb) | `Done` |
 
 #### [Transient Transport](/examples/notebooks/algorithms/transient)
 
 | Link | Description |
 |:-----|:------------|
-| [Transient Fickian Diffusion](/examples/notebooks/algorithms/transient/transient_fickian_diffusion.ipynb) | `Mike` |
-| [Transient Fickian Diffusion with Reaction](/examples/notebooks/algorithms/transient/transient_fickian_diffusion_with_reaction.ipynb) | `Mike` |
+| [Transient Fickian Diffusion](/examples/notebooks/algorithms/transient/transient_fickian_diffusion.ipynb) | The package OpenPNM allows for the simulation of many transport phenomena in porous media such as Stokes flow, Fickian diffusion, advection-diffusion, transport of charged species, etc. Transient and steady-state simulations are both supported. An example of a transient Fickian diffusion simulation through a Cubic pore network is shown here. |
+| [Transient Fickian Diffusion with Reaction](/examples/notebooks/algorithms/transient/transient_fickian_diffusion_with_reaction.ipynb) | OpenPNM supports adding reaction terms to both steady state and transient simulations. OpenPNM already includes many different source term models that can be added to simulate a reaction. In this example, we show how to add a powerlaw source term model to a transient fickian diffusion simulation. |
 | [Transient Advection-Diffusion](/examples/notebooks/algorithms/transient/transient_advection_diffusion.ipynb) | `Stephen` |
 
 #### [Multiphysics](/examples/notebooks/algorithms/multiphysics)
