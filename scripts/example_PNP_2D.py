@@ -101,7 +101,7 @@ phys.add_model(propname='throat.ad_dif_mig_conductance.' + Cl.name,
                model=ad_dif_mig_Cl, ion=Cl.name,
                s_scheme=scheme)
 
-pnp = op.algorithms.NernstPlanckMultiphysics(network=net, phase=sw)
+pnp = op.algorithms.NernstPlanckMultiphysicsSolver(network=net, phase=sw)
 pnp.setup(potential_field=p.name, ions=[eA.name, eB.name])
 pnp.settings['i_max_iter'] = 10
 pnp.settings['i_tolerance'] = 1e-04
