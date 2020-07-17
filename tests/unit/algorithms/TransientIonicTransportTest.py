@@ -145,7 +145,7 @@ class TransientIonicTransportTest:
             s_scheme="powerlaw",
         )
 
-        it = op.algorithms.TransientNernstPlanckMultiphysics(
+        it = op.algorithms.TransientNernstPlanckMultiphysicsSolver(
             network=self.net, phase=self.phase, settings=self.settings2
         )
         it.setup(potential_field=p.name, ions=[eA.name, eB.name])
