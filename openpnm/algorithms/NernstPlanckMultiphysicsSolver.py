@@ -5,10 +5,10 @@ docstr = Docorator()
 logger = logging.getLogger(__name__)
 
 
-@docstr.get_sectionsf('NernstPlanckMultiphysicsSettings',
+@docstr.get_sectionsf('NernstPlanckMultiphysicsSolverSettings',
                       sections=['Parameters'])
 @docstr.dedent
-class NernstPlanckMultiphysicsSettings(GenericSettings):
+class NernstPlanckMultiphysicsSolverSettings(GenericSettings):
     r"""
     The following decribes the settings associated with the IonicTransport
     algorithm.
@@ -35,7 +35,7 @@ class NernstPlanckMultiphysicsSettings(GenericSettings):
     g_max_iter = 10
 
 
-class NernstPlanckMultiphysics(GenericAlgorithm):
+class NernstPlanckMultiphysicsSolver(GenericAlgorithm):
     r"""
     A multiphysics algorithm to solve the Nernst-Planck and Ionic Conduction
     system
@@ -43,7 +43,7 @@ class NernstPlanckMultiphysics(GenericAlgorithm):
 
     def __init__(self, phase=None, settings={},  **kwargs):
         super().__init__(**kwargs)
-        c = NernstPlanckMultiphysicsSettings()
+        c = NernstPlanckMultiphysicsSolverSettings()
         self.settings._update_settings_and_docs(c)
         settings['phase'] = phase.name
         self.settings.update(settings)
@@ -55,7 +55,7 @@ class NernstPlanckMultiphysics(GenericAlgorithm):
 
         Parameters
         ----------
-        %(NernstPlanckMultiphysicsSettings.parameters)s
+        %(NernstPlanckMultiphysicsSolverSettings.parameters)s
         """
         if phase:
             self.settings['phase'] = phase.name
