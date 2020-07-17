@@ -36,9 +36,14 @@ class TransientNernstPlanckMultiphysicsSolverSettings(GenericSettings):
 
 class TransientNernstPlanckMultiphysicsSolver(NernstPlanckMultiphysicsSolver):
     r"""
-    A multiphysics algorithm to solve the Nernst-Planck and Ionic Conduction
+    A multiphysics solver to solve the Nernst-Planck and Ionic Conduction
     system *transiently*.
 
+    Warnings
+    --------
+    This is not a true OpenPNM algorithm. This solver wraps the provided
+    Nernst-Planck and ionic conduction algorithms and solves the associated
+    system of equations.
     """
 
     def __init__(self, settings={}, **kwargs):

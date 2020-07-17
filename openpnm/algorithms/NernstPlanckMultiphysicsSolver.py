@@ -10,8 +10,8 @@ logger = logging.getLogger(__name__)
 @docstr.dedent
 class NernstPlanckMultiphysicsSolverSettings(GenericSettings):
     r"""
-    The following decribes the settings associated with the IonicTransport
-    algorithm.
+    The following decribes the settings associated with the
+    NernstPlanckMultiphysicsSolver.
 
     Parameters
     ----------
@@ -37,8 +37,14 @@ class NernstPlanckMultiphysicsSolverSettings(GenericSettings):
 
 class NernstPlanckMultiphysicsSolver(GenericAlgorithm):
     r"""
-    A multiphysics algorithm to solve the Nernst-Planck and Ionic Conduction
-    system
+    A multiphysics solver to solve the Nernst-Planck and Ionic Conduction
+    system.
+
+    Warnings
+    --------
+    This is not a true OpenPNM algorithm. This solver wraps the provided
+    Nernst-Planck and ionic conduction algorithms and solves the associated
+    system of equations.
     """
 
     def __init__(self, phase=None, settings={},  **kwargs):
