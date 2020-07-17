@@ -1,14 +1,14 @@
 import numpy as np
-from openpnm.algorithms import NernstPlanckMultiphysics
+from openpnm.algorithms import NernstPlanckMultiphysicsSolver
 from openpnm.utils import logging, Docorator, GenericSettings, nbr_to_str
 docstr = Docorator()
 logger = logging.getLogger(__name__)
 
 
-@docstr.get_sectionsf('TransientNernstPlanckMultiphysicsSettings',
+@docstr.get_sectionsf('TransientNernstPlanckMultiphysicsSolverSettings',
                       sections=['Parameters'])
 @docstr.dedent
-class TransientNernstPlanckMultiphysicsSettings(GenericSettings):
+class TransientNernstPlanckMultiphysicsSolverSettings(GenericSettings):
     r"""
     The Parameters section below describes the settings pertaining to the
     running of all transient classes which this algorithm orchestrates.
@@ -22,7 +22,7 @@ class TransientNernstPlanckMultiphysicsSettings(GenericSettings):
     **The following parameters pertain to the steady-state version of this
     class**
 
-    %(NernstPlanckMultiphysicsSettings.parameters)s
+    %(NernstPlanckMultiphysicsSolverSettings.parameters)s
 
     """
     t_initial = 0
@@ -34,7 +34,7 @@ class TransientNernstPlanckMultiphysicsSettings(GenericSettings):
     t_scheme = 'implicit'
 
 
-class TransientNernstPlanckMultiphysics(NernstPlanckMultiphysics):
+class TransientNernstPlanckMultiphysicsSolver(NernstPlanckMultiphysicsSolver):
     r"""
     A multiphysics algorithm to solve the Nernst-Planck and Ionic Conduction
     system *transiently*.
@@ -43,7 +43,7 @@ class TransientNernstPlanckMultiphysics(NernstPlanckMultiphysics):
 
     def __init__(self, settings={}, **kwargs):
         super().__init__(**kwargs)
-        c = TransientNernstPlanckMultiphysicsSettings()
+        c = TransientNernstPlanckMultiphysicsSolverSettings()
         self.settings._update_settings_and_docs(c)
         self.settings.update(settings)
 
@@ -55,7 +55,7 @@ class TransientNernstPlanckMultiphysics(NernstPlanckMultiphysics):
 
         Parameters
         ----------
-        %(TransientNernstPlanckMultiphysicsSettings.parameters)s
+        %(TransientNernstPlanckMultiphysicsSolverSettings.parameters)s
 
         """
         if t_initial is not None:
