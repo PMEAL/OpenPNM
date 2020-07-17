@@ -96,8 +96,8 @@ phys.add_model(propname='throat.ad_dif_mig_conductance.' + Cl.name,
                model=ad_dif_mig_Cl, ion=Cl.name,
                s_scheme='powerlaw')
 
-it = op.algorithms.TransientNernstPlanckMultiphysics(network=net, phase=sw,
-                                                     settings=setts2)
+it = op.algorithms.TransientNernstPlanckMultiphysicsSolver(network=net, phase=sw,
+                                                           settings=setts2)
 it.setup(potential_field=p.name, ions=[eA.name, eB.name])
 it.run()
 
