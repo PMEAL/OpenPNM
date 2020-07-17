@@ -206,7 +206,7 @@ def hagen_poiseuille_power_law(
     pore_flow_index="pore.flow_index",
     throat_flow_index="throat.flow_index",
     pore_pressure="pore.pressure",
-    model="cylinder"
+    shape="cylinder"
 ):
     r"""
     Calculate the hydraulic conductance of conduits in network (assuming a non
@@ -397,12 +397,12 @@ def hagen_poiseuille_power_law(
     phase["throat.viscosity_eff.throat"] = mut
 
     # Find g for half of pore 1, throat, and half of pore 2
-    if model == "cylinder":
+    if shape == "cylinder":
         g1[m1] = A1[m1] ** 2 / ((8 * pi * L1) * mu1)[m1]
         g2[m2] = A2[m2] ** 2 / ((8 * pi * L2) * mu2)[m2]
         gt[mt] = At[mt] ** 2 / ((8 * pi * Lt) * mut)[mt]
 
-    elif model == "cone":
+    elif shape == "cone":
         R1 = (A1/_sp.pi)**0.5
         R2 = (A2/_sp.pi)**0.5
         Rt_orig = (At/_sp.pi)**0.5
