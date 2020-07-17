@@ -17,7 +17,7 @@ def hagen_poiseuille(
     throat_viscosity="throat.viscosity",
     conduit_lengths="throat.conduit_lengths",
     conduit_shape_factors="throat.flow_shape_factors",
-    model="cylinder"
+    shape="cylinder"
 ):
     r"""
     Calculate the hydraulic conductance of conduits in network, where a
@@ -98,11 +98,11 @@ def hagen_poiseuille(
     Dt = phase[throat_viscosity][throats]
     D1, D2 = phase[pore_viscosity][cn].T
     # Find g for half of pore 1, throat, and half of pore 2
-    if model == "cylinder":
+    if shape == "cylinder":
         g1[m1] = A1[m1] ** 2 / (8 * _sp.pi * D1 * L1)[m1]
         g2[m2] = A2[m2] ** 2 / (8 * _sp.pi * D2 * L2)[m2]
         gt[mt] = At[mt] ** 2 / (8 * _sp.pi * Dt * Lt)[mt]
-    elif model == "cone":
+    elif shape == "cone":
         R1 = (A1/_sp.pi)**0.5
         R2 = (A2/_sp.pi)**0.5
         Rt_orig = (At/_sp.pi)**0.5
@@ -123,7 +123,7 @@ def hagen_poiseuille(
         g2[m2] = (3 * alpha2 * _sp.pi / (8 * D2[m2])) * beta2[m2]
         gt[mt] = At[mt] ** 2 / (8 * _sp.pi * Dt * Lt)[mt]
     else:
-        raise Exception("'model' can either be 'cylinder' or 'cone'.")
+        raise Exception("'shape' can either be 'cylinder' or 'cone'.")
     # Apply shape factors and calculate the final conductance
     return (1/gt/SFt + 1/g1/SF1 + 1/g2/SF2) ** (-1)
 
