@@ -34,18 +34,34 @@ class StokesFlowPowerLawTest:
         self.flow.set_value_BC(pores=self.net.pores('back'), values=2)
         self.flow.set_value_BC(pores=self.net.pores('front'), values=0)
 
-    def test_stokes_flow_power_law(self):
+    def test_stokes_flow_power_law_cylinder(self):
         hyd_cond = op.models.physics.hydraulic_conductance
         propname = 'throat.nonNewtonian_hydraulic_conductance'
         self.mod = hyd_cond.hagen_poiseuille_power_law
         self.phys.add_model(model=self.mod, regen_mode='normal',
-                            propname=propname)
+                            propname=propname, shape='cylinder')
         self.phys.regenerate_models()
         self.flow.run()
         x = [0.,      0.,      0.,      0.,      0.,
-             0.96051, 0.58898, 0.59932, 0.25297, 0.12773,
-             1.30402, 1.06207, 1.3037,  1.05894, 0.44354,
-             1.61413, 1.55325, 1.6475, 1.82346, 1.39743,
+             0.96144, 0.59069, 0.59915, 0.25231, 0.12742,
+             1.30443, 1.06373, 1.30464, 1.05821, 0.44284,
+             1.61415, 1.55411, 1.64821, 1.82377, 1.39799,
+             2.,      2.,      2.,      2.,      2.]
+        y = np.around(self.flow['pore.pressure'], decimals=5)
+        assert_allclose(actual=y, desired=x)
+
+    def test_stokes_flow_power_law_cone(self):
+        hyd_cond = op.models.physics.hydraulic_conductance
+        propname = 'throat.nonNewtonian_hydraulic_conductance'
+        self.mod = hyd_cond.hagen_poiseuille_power_law
+        self.phys.add_model(model=self.mod, regen_mode='normal',
+                            propname=propname, shape='cone')
+        self.phys.regenerate_models()
+        self.flow.run()
+        x = [0.,      0.,      0.,      0.,      0.,
+             0.95375, 0.58708, 0.59716, 0.25443, 0.13113,
+             1.29703, 1.05664, 1.29892, 1.05618, 0.44736,
+             1.61168, 1.5502,  1.6427, 1.81941, 1.39755,
              2.,      2.,      2.,      2.,      2.]
         y = np.around(self.flow['pore.pressure'], decimals=5)
         assert_allclose(actual=y, desired=x)
