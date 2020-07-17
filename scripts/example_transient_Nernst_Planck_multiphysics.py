@@ -6,6 +6,16 @@ proj = ws.new_project()
 # ws.settings['loglevel'] = 20
 
 
+"""
+    Details about the continum and numerical model equations can be found on:
+    Agnaou, M., Sadeghi, M. A., Tranter, T. G., & Gostick, J. (2020).
+    Modeling transport of charged species in pore networks: solution of the
+    Nernst-Planck equations coupled with fluid flow and charge conservation
+    equations.
+    Computers & Geosciences, 104505.
+"""
+
+
 # network, geometry, phase
 np.random.seed(0)
 
@@ -96,7 +106,8 @@ phys.add_model(propname='throat.ad_dif_mig_conductance.' + Cl.name,
                model=ad_dif_mig_Cl, ion=Cl.name,
                s_scheme='powerlaw')
 
-it = op.algorithms.TransientNernstPlanckMultiphysicsSolver(network=net, phase=sw,
+it = op.algorithms.TransientNernstPlanckMultiphysicsSolver(network=net,
+                                                           phase=sw,
                                                            settings=setts2)
 it.setup(potential_field=p.name, ions=[eA.name, eB.name])
 it.run()
@@ -106,5 +117,5 @@ sw.update(p.results())
 sw.update(eA.results())
 sw.update(eB.results())
 
-# output results to a vtk file
+# output results to a vtk file for visualization on Paraview
 # proj.export_data(phases=[sw], filename='OUT', filetype='xdmf')

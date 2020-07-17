@@ -6,7 +6,15 @@ proj = ws.new_project()
 # ws.settings['loglevel'] = 20
 
 
-scheme = 'powerlaw'
+"""
+    Details about the continum and numerical model equations can be found on:
+    Agnaou, M., Sadeghi, M. A., Tranter, T. G., & Gostick, J. (2020).
+    Modeling transport of charged species in pore networks: solution of the
+    Nernst-Planck equations coupled with fluid flow and charge conservation
+    equations.
+    Computers & Geosciences, 104505.
+"""
+
 
 # network, geometry, phase
 np.random.seed(0)
@@ -90,6 +98,7 @@ eB = op.algorithms.NernstPlanck(network=net, phase=sw, ion=Cl.name)
 eB.set_value_BC(pores=net.pores('back'), values=20)
 eB.set_value_BC(pores=net.pores('front'), values=10)
 
+scheme = 'powerlaw'
 ad_dif_mig_Na = op.models.physics.ad_dif_mig_conductance.ad_dif_mig
 phys.add_model(propname='throat.ad_dif_mig_conductance.' + Na.name,
                model=ad_dif_mig_Na, ion=Na.name,
@@ -113,5 +122,5 @@ sw.update(p.results())
 sw.update(eA.results())
 sw.update(eB.results())
 
-# output data
+# output data to Paraview
 # proj.export_data(phases=[sw], filename='OUT', filetype='xdmf')
