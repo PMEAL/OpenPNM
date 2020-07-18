@@ -189,6 +189,7 @@ class TransientNernstPlanckMultiphysicsSolver(NernstPlanckMultiphysicsSolver):
             for alg in algs:
                 quant_init = alg[alg.settings['quantity']]
                 alg[alg.settings['quantity']+'@'+t_str] = quant_init
+            time = t + dt
             for time in np.arange(t+dt, tf+dt, dt):
                 t_r = [float(format(i, '.3g')) for i in t_res.values()]
                 t_r = str(t_r)[1:-1]
@@ -232,7 +233,8 @@ class TransientNernstPlanckMultiphysicsSolver(NernstPlanckMultiphysicsSolver):
                                 phase.update(e.results())
 
                             # Charge conservation eq
-                            [x.regenerate_models() for x in phys]
+                            for obj in phys:
+                                obj.regenerate_models()
                             g_old[p_alg.name] = (
                                 p_alg[p_alg.settings['quantity']].copy())
                             p_alg._run_reactive(x0=g_old[p_alg.name])
@@ -244,7 +246,8 @@ class TransientNernstPlanckMultiphysicsSolver(NernstPlanckMultiphysicsSolver):
                                 g_old[p_alg.name]**2 - g_new[p_alg.name]**2))
                             # Update phase and physics
                             phase.update(p_alg.results())
-                            [x.regenerate_models() for x in phys]
+                            for obj in phys:
+                                obj.regenerate_models()
 
                         elif g_convergence:
                             print('Solution for time step: ' + str(time)
