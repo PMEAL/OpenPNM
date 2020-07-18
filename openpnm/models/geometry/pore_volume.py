@@ -6,6 +6,7 @@ These models calculate pore volumes depending on the specified shape
 
 """
 
+import numpy as np
 from numpy import pi as _pi
 
 
@@ -114,4 +115,40 @@ def cylinder(target, pore_diameter='pore.diameter'):
     """
     diams = target[pore_diameter]
     value = _pi/4*diams**2*diams
+    return value
+
+def effective(target, pore_volume='pore.volume',
+              throat_volume='throat.volume'):
+    r"""
+    Calculate the effective pore volume for optional use in transient
+    simulations. The effective pore volume is calculated by adding half the
+    volume of all neighbouring throats to the pore volume.
+
+    Parameters
+    ----------
+    target : OpenPNM Object
+        The object which this model is associated with. This controls
+        the length of the calculated array, and also provides access to other
+        necessary geometric properties.
+
+    pore_volume : string
+        The dictionary key of the pore volume values
+
+    throat_volume : string
+        The dictionary key of the throat volume values
+
+    Returns
+    -------
+    value : NumPy ndarray
+        Array containing pore volume values.
+
+    """
+    network = target.project.network
+    cn = network['throat.conns']
+    P1 = cn[:,0]
+    P2 = cn[:,1]
+    eff_vol = np.copy(target[pore_volume])
+    np.add.at(eff_vol, P1, 1/2*target[throat_volume])
+    np.add.at(eff_vol, P2, 1/2*target[throat_volume])
+    value = eff_vol
     return value
