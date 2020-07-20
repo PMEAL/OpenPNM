@@ -25,25 +25,15 @@ prs = (net['pore.back'] * net['pore.right'] + net['pore.back']
        + net['pore.front'] * net['pore.left'])
 prs = net.Ps[prs]
 
-b_prs_1 = np.append(net.pores('back'), net.pores('front'))
-b_prs_2 = np.append(net.pores('left'), net.pores('right'))
-b_prs = np.append(b_prs_1, b_prs_2)
-b_thrts = net.find_neighbor_throats(b_prs)
-
-thrts_1 = net['throat.surface']
-thrts_1 = net.Ts[thrts_1]
-np.random.seed(0)
-thrts_i = net.Ts[~net['throat.surface']]
-thrts_sample = [i for i in thrts_i if i not in b_thrts]
-L = int(0.05*len(thrts_sample))
-thrts_2 = np.random.choice(thrts_sample, size=(L,), replace=False)
-thrts_2 = np.array([])
-thrts = np.append(thrts_1, thrts_2)
+thrts = net['throat.surface']
+thrts = net.Ts[thrts]
 
 op.topotools.trim(network=net, pores=prs, throats=thrts)
 
+np.random.seed(0)
 op.topotools.reduce_coordination(net, 3)
 
+np.random.seed(0)
 geo = op.geometry.StickAndBall(network=net, pores=net.Ps, throats=net.Ts)
 
 
@@ -63,8 +53,8 @@ phys.add_model(propname='throat.hydraulic_conductance',
                model=flow, regen_mode='normal')
 
 current = op.models.physics.ionic_conductance.electroneutrality_2D
-phys.add_model(propname='throat.ionic_conductance',
-               model=current, regen_mode='normal', ions=[Na.name, Cl.name])
+phys.add_model(propname='throat.ionic_conductance', ions=[Na.name, Cl.name],
+               model=current, regen_mode='normal')
 
 eA_dif = op.models.physics.diffusive_conductance.ordinary_diffusion_2D
 phys.add_model(propname='throat.diffusive_conductance.' + Na.name,
@@ -78,43 +68,47 @@ phys.add_model(propname='throat.diffusive_conductance.' + Cl.name,
                throat_diffusivity='throat.diffusivity.' + Cl.name,
                model=eB_dif, regen_mode='normal')
 
+scheme = 'powerlaw'
+ad_dif_mig_Na = op.models.physics.ad_dif_mig_conductance.ad_dif_mig
+phys.add_model(propname='throat.ad_dif_mig_conductance.' + Na.name,
+               pore_pressure='pore.pressure', model=ad_dif_mig_Na,
+               ion=Na.name, s_scheme=scheme)
+
+ad_dif_mig_Cl = op.models.physics.ad_dif_mig_conductance.ad_dif_mig
+phys.add_model(propname='throat.ad_dif_mig_conductance.' + Cl.name,
+               pore_pressure='pore.pressure', model=ad_dif_mig_Cl,
+               ion=Cl.name, s_scheme=scheme)
+
+# settings for algorithms
+setts1 = {'solver_max_iter': 5, 'solver_tol': 1e-08, 'solver_rtol': 1e-08,
+          'nlin_max_iter': 10, 'cache_A': False, 'cache_b': False}
+setts2 = {'g_tol': 1e-4, 'g_max_iter': 100}
+
 # algorithms
-sf = op.algorithms.StokesFlow(network=net, phase=sw)
-sf.set_value_BC(pores=net.pores('back'), values=2010)
+sf = op.algorithms.StokesFlow(network=net, phase=sw, settings=setts1)
+sf.set_value_BC(pores=net.pores('back'), values=11)
 sf.set_value_BC(pores=net.pores('front'), values=10)
 sf.run()
 sw.update(sf.results())
 
-p = op.algorithms.IonicConduction(network=net, phase=sw)
+p = op.algorithms.IonicConduction(network=net, phase=sw, settings=setts1)
 p.set_value_BC(pores=net.pores('left'), values=0.02)
 p.set_value_BC(pores=net.pores('right'), values=0.01)
 p.settings['charge_conservation'] = 'electroneutrality_2D'
 
-eA = op.algorithms.NernstPlanck(network=net, phase=sw, ion=Na.name)
+eA = op.algorithms.NernstPlanck(network=net, phase=sw, ion=Na.name,
+                                settings=setts1)
 eA.set_value_BC(pores=net.pores('back'), values=20)
 eA.set_value_BC(pores=net.pores('front'), values=10)
 
-eB = op.algorithms.NernstPlanck(network=net, phase=sw, ion=Cl.name)
+eB = op.algorithms.NernstPlanck(network=net, phase=sw, ion=Cl.name,
+                                settings=setts1)
 eB.set_value_BC(pores=net.pores('back'), values=20)
 eB.set_value_BC(pores=net.pores('front'), values=10)
 
-scheme = 'powerlaw'
-ad_dif_mig_Na = op.models.physics.ad_dif_mig_conductance.ad_dif_mig
-phys.add_model(propname='throat.ad_dif_mig_conductance.' + Na.name,
-               model=ad_dif_mig_Na, ion=Na.name,
-               s_scheme=scheme)
-
-ad_dif_mig_Cl = op.models.physics.ad_dif_mig_conductance.ad_dif_mig
-phys.add_model(propname='throat.ad_dif_mig_conductance.' + Cl.name,
-               pore_pressure=sf.settings['quantity'],
-               model=ad_dif_mig_Cl, ion=Cl.name,
-               s_scheme=scheme)
-
-pnp = op.algorithms.NernstPlanckMultiphysicsSolver(network=net, phase=sw)
+pnp = op.algorithms.NernstPlanckMultiphysicsSolver(network=net, phase=sw,
+                                                   settings=setts2)
 pnp.setup(potential_field=p.name, ions=[eA.name, eB.name])
-pnp.settings['i_max_iter'] = 10
-pnp.settings['i_tolerance'] = 1e-04
-
 pnp.run()
 
 sw.update(sf.results())
