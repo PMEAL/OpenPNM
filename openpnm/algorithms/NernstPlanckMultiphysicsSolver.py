@@ -88,6 +88,7 @@ class NernstPlanckMultiphysicsSolver(GenericAlgorithm):
         algs.insert(0, p_alg)
         # Define initial conditions (if not defined by the user)
         for alg in algs:
+            alg.settings.update({'cache_A': False, 'cache_b': False})
             try:
                 alg[alg.settings['quantity']]
             except KeyError:
