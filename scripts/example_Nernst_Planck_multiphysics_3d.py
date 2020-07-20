@@ -19,7 +19,7 @@ proj = ws.new_project()
 # network, geometry, phase
 np.random.seed(0)
 
-net = op.network.Cubic(shape=[6, 6, 1], spacing=1e-6, project=proj)
+net = op.network.Cubic(shape=[23, 15, 1], spacing=1e-6, project=proj)
 prs = (net['pore.back'] * net['pore.right'] + net['pore.back']
        * net['pore.left'] + net['pore.front'] * net['pore.right']
        + net['pore.front'] * net['pore.left'])
