@@ -80,8 +80,7 @@ phys.add_model(propname='throat.ad_dif_mig_conductance.' + Cl.name,
 setts1 = {'solver_max_iter': 5, 'solver_tol': 1e-08, 'solver_rtol': 1e-08,
           'nlin_max_iter': 10, 'cache_A': False, 'cache_b': False}
 setts2 = {'g_tol': 1e-4, 'g_max_iter': 4, 't_output': 5000, 't_step': 500,
-          't_final': 20000, 't_scheme': 'implicit', 'cache_A': False,
-          'cache_b': False}
+          't_final': 20000, 't_scheme': 'implicit'}
 
 # algorithms
 sf = op.algorithms.StokesFlow(network=net, phase=sw, settings=setts1)
