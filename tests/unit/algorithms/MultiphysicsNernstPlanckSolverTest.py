@@ -38,35 +38,44 @@ class MultiphysicsNernstPlanckSolverTest:
         self.phys = op.physics.GenericPhysics(network=self.net,
                                               phase=self.sw,
                                               geometry=self.geo)
-        self.flow = op.models.physics.hydraulic_conductance.hagen_poiseuille
+        modphys = op.models.physics
+        self.flow = modphys.hydraulic_conductance.hagen_poiseuille
         self.phys.add_model(propname='throat.hydraulic_conductance',
                             pore_viscosity='pore.viscosity',
                             throat_viscosity='throat.viscosity',
                             model=self.flow, regen_mode='normal')
-        self.current = op.models.physics.ionic_conductance.electroneutrality
+        self.current = modphys.ionic_conductance.electroneutrality
         self.phys.add_model(propname='throat.ionic_conductance',
                             ions=[self.Na.name, self.Cl.name],
                             model=self.current, regen_mode='normal')
-        self.eA_dif = op.models.physics.diffusive_conductance.ordinary_diffusion
-        self.phys.add_model(propname='throat.diffusive_conductance.' + self.Na.name,
-                            pore_diffusivity='pore.diffusivity.' + self.Na.name,
-                            throat_diffusivity='throat.diffusivity.' + self.Na.name,
+        self.eA_dif = modphys.diffusive_conductance.ordinary_diffusion
+        self.phys.add_model(propname=('throat.diffusive_conductance.' +
+                                      self.Na.name),
+                            pore_diffusivity=('pore.diffusivity.' +
+                                              self.Na.name),
+                            throat_diffusivity=('throat.diffusivity.' +
+                                                self.Na.name),
                             model=self.eA_dif, regen_mode='normal')
-        self.eB_dif = op.models.physics.diffusive_conductance.ordinary_diffusion
-        self.phys.add_model(propname='throat.diffusive_conductance.' + self.Cl.name,
-                            pore_diffusivity='pore.diffusivity.' + self.Cl.name,
-                            throat_diffusivity='throat.diffusivity.' + self.Cl.name,
+        self.eB_dif = modphys.diffusive_conductance.ordinary_diffusion
+        self.phys.add_model(propname=('throat.diffusive_conductance.' +
+                                      self.Cl.name),
+                            pore_diffusivity=('pore.diffusivity.' +
+                                              self.Cl.name),
+                            throat_diffusivity=('throat.diffusivity.' +
+                                                self.Cl.name),
                             model=self.eB_dif, regen_mode='normal')
 
         scheme = 'powerlaw'
-        self.ad_dif_mig_Na = op.models.physics.ad_dif_mig_conductance.ad_dif_mig
-        self.phys.add_model(propname='throat.ad_dif_mig_conductance.' + self.Na.name,
+        self.ad_dif_mig_Na = modphys.ad_dif_mig_conductance.ad_dif_mig
+        self.phys.add_model(propname=('throat.ad_dif_mig_conductance.' +
+                                      self.Na.name),
                             pore_pressure='pore.pressure',
                             model=self.ad_dif_mig_Na, ion=self.Na.name,
                             s_scheme=scheme)
 
-        self.ad_dif_mig_Cl = op.models.physics.ad_dif_mig_conductance.ad_dif_mig
-        self.phys.add_model(propname='throat.ad_dif_mig_conductance.' + self.Cl.name,
+        self.ad_dif_mig_Cl = modphys.ad_dif_mig_conductance.ad_dif_mig
+        self.phys.add_model(propname=('throat.ad_dif_mig_conductance.' +
+                                      self.Cl.name),
                             pore_pressure='pore.pressure',
                             model=self.ad_dif_mig_Cl, ion=self.Cl.name,
                             s_scheme=scheme)
@@ -99,16 +108,15 @@ class MultiphysicsNernstPlanckSolverTest:
         self.eB.set_value_BC(pores=self.net.pores('back'), values=20)
         self.eB.set_value_BC(pores=self.net.pores('front'), values=10)
 
-        self.pnp = op.algorithms.NernstPlanckMultiphysicsSolver(network=self.net,
-                                                                phase=self.sw,
-                                                                settings=setts2)
-        self.pnp.setup(potential_field=self.p.name,
+        mnp = op.algorithms.NernstPlanckMultiphysicsSolver
+        self.mnp = mnp(network=self.net, phase=self.sw, settings=setts2)
+        self.mnp.setup(potential_field=self.p.name,
                        ions=[self.eA.name, self.eB.name])
 
     def test_run_algs(self):
         self.sf.run()
         self.sw.update(self.sf.results())
-        self.pnp.run()
+        self.mnp.run()
         self.sw.update(self.p.results())
         self.sw.update(self.eA.results())
         self.sw.update(self.eB.results())
