@@ -105,11 +105,10 @@ class MultiphysicsNernstPlanckSolverTest:
         self.pnp.setup(potential_field=self.p.name,
                        ions=[self.eA.name, self.eB.name])
 
-    def run_algs(self):
+    def test_run_algs(self):
         self.sf.run()
         self.sw.update(self.sf.results())
         self.pnp.run()
-        self.sw.update(self.sf.results())
         self.sw.update(self.p.results())
         self.sw.update(self.eA.results())
         self.sw.update(self.eB.results())
@@ -158,7 +157,6 @@ class MultiphysicsNernstPlanckSolverTest:
 if __name__ == '__main__':
     t = MultiphysicsNernstPlanckSolverTest()
     t.setup_class()
-    t.run_algs()
     self = t
     for item in t.__dir__():
         if item.startswith('test'):
