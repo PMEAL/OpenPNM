@@ -75,7 +75,7 @@ class TransientMultiphysicsNernstPlanckSolverTest:
         setts1 = {'solver_max_iter': 5, 'solver_tol': 1e-08,
                   'solver_rtol': 1e-08, 'nlin_max_iter': 10,
                   'cache_A': False, 'cache_b': False}
-        setts2 = {'g_tol': 1e-4, 'g_max_iter': 100, 't_output': 5000,
+        setts2 = {'g_tol': 1e-4, 'g_max_iter': 100, 't_output': 1000,
                   't_step': 500, 't_final': 20000, 't_scheme': 'implicit'}
 
         # algorithms
@@ -153,6 +153,23 @@ class TransientMultiphysicsNernstPlanckSolverTest:
         x = np.around(x, decimals=5)
         y = np.around(self.sw['pore.potential'], decimals=5)
         assert_allclose(actual=y, desired=x)
+
+    def test_times(self):
+        times = [
+            "pore.concentration.Na_mix_01@1000",
+            "pore.concentration.Cl_mix_01@1000",
+            "pore.potential@1000",
+            "pore.concentration.Na_mix_01@2000",
+            "pore.concentration.Cl_mix_01@2000",
+            "pore.potential@2000",
+            "pore.concentration.Na_mix_01@3000",
+            "pore.concentration.Cl_mix_01@3000",
+            "pore.potential@3000",
+            "pore.concentration.Na_mix_01@4000",
+            "pore.concentration.Cl_mix_01@4000",
+            "pore.potential@4000",
+        ]
+        assert set(times).issubset(set(self.sw.keys()))
 
     def teardown_class(self):
         ws = op.Workspace()
