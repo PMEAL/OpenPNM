@@ -117,6 +117,7 @@ def cylinder(target, pore_diameter='pore.diameter'):
     value = _pi/4*diams**2*diams
     return value
 
+
 def effective(target, pore_volume='pore.volume',
               throat_volume='throat.volume'):
     r"""
@@ -145,8 +146,8 @@ def effective(target, pore_volume='pore.volume',
     """
     network = target.project.network
     cn = network['throat.conns']
-    P1 = cn[:,0]
-    P2 = cn[:,1]
+    P1 = cn[:, 0]
+    P2 = cn[:, 1]
     eff_vol = np.copy(target[pore_volume])
     np.add.at(eff_vol, P1, 1/2*target[throat_volume])
     np.add.at(eff_vol, P2, 1/2*target[throat_volume])
