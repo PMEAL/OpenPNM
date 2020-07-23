@@ -149,6 +149,8 @@ class Base(dict):
         super().__init__()
         if project is None:
             project = ws.new_project()
+        if name is None:
+            name = project._generate_name(self)
         project.extend(self)
         self.name = name
         self.update({'pore.all': np.ones(shape=(Np, ), dtype=bool)})
