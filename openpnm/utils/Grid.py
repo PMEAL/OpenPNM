@@ -87,10 +87,10 @@ class Grid():
 
     def drop_col(self, col):
         for row in self._grid.table_data:
-            row.remove(col)
+            row.pop(col)
 
     def drop_row(self, row):
-        self._grid.table_data.remove(row)
+        self._grid.table_data.pop(row)
 
     def __repr__(self):
         return self._grid.table.__str__()
