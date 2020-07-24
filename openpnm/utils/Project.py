@@ -1,4 +1,5 @@
 import time
+import uuid
 import openpnm
 import numpy as np
 from copy import deepcopy
@@ -65,8 +66,10 @@ class Project(list):
     def __init__(self, *args, **kwargs):
         name = kwargs.pop('name', None)
         super().__init__(*args, **kwargs)
+        self._uuid = uuid.uuid4()
         # Register self with workspace
         ws[name] = self
+        ws._add_project(self)
         self.settings = SettingsDict()
         self.comments = 'Using OpenPNM ' + openpnm.__version__
 

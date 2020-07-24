@@ -66,6 +66,14 @@ class Workspace(dict):
 
     def __init__(self):
         super().__init__()
+        self._objects = {}
+        self._projects = {}
+
+    def _add_object(self, obj):
+        self._objects[obj._uuid] = obj
+
+    def _add_project(self, proj):
+        self._projects[proj._uuid] = proj
 
     def __setitem__(self, name, project):
         if name is None:

@@ -1,4 +1,5 @@
 import warnings
+import uuid
 import numpy as np
 import scipy as sp
 from collections import namedtuple
@@ -147,6 +148,8 @@ class Base(dict):
     def __init__(self, Np=0, Nt=0, name=None, project=None):
         self.settings.setdefault('prefix', 'base')
         super().__init__()
+        self._uuid = uuid.uuid4()
+        ws._add_object(self)
         if project is None:
             project = ws.new_project()
         project.extend(self)
