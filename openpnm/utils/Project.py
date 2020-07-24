@@ -66,12 +66,16 @@ class Project(list):
     def __init__(self, *args, **kwargs):
         name = kwargs.pop('name', None)
         super().__init__(*args, **kwargs)
-        self._uuid = uuid.uuid4()
         # Register self with workspace
         ws[name] = self
+        self._uuid = uuid.uuid4()
         ws._add_project(self)
+        self._objects = {}
         self.settings = SettingsDict()
         self.comments = 'Using OpenPNM ' + openpnm.__version__
+
+    def _add_object(self, obj):
+        self._objects[obj._uuid] = obj
 
     def extend(self, obj):
         r"""
@@ -202,6 +206,9 @@ class Project(list):
         if name is None:
             name = ws._gen_name()
         proj = deepcopy(self)
+        for item in proj:
+            item._uuid = uuid.uuid4()
+        self._uuid = uuid.uuid4()
         ws[name] = proj
         return proj
 
@@ -465,6 +472,7 @@ class Project(list):
             for key in list(item.keys()):
                 if key.split('.')[-1] == obj.name:
                     del item[key]
+        self._objects.pop(obj._uuid, None)
         super().remove(obj)
 
     def save_object(self, obj):

@@ -149,9 +149,9 @@ class Base(dict):
         self.settings.setdefault('prefix', 'base')
         super().__init__()
         self._uuid = uuid.uuid4()
-        ws._add_object(self)
         if project is None:
             project = ws.new_project()
+        project._add_object(self)
         project.extend(self)
         self.name = name
         self.update({'pore.all': np.ones(shape=(Np, ), dtype=bool)})
