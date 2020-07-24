@@ -141,8 +141,8 @@ def spherical_pores(target, pore_diameter='pore.diameter',
     # Handle non-colinear pores and throat centroids
     try:
         TC = network[throat_centroid][throats]
-        LP1T = _sp.linalg.norm(TC - xyz[cn[:, 0]], axis=1) + 1e-15
-        LP2T = _sp.linalg.norm(TC - xyz[cn[:, 1]], axis=1) + 1e-15
+        LP1T = _np.linalg.norm(TC - xyz[cn[:, 0]], axis=1) + 1e-15
+        LP2T = _np.linalg.norm(TC - xyz[cn[:, 1]], axis=1) + 1e-15
         unit_vec_P1T = (TC - xyz[cn[:, 0]]) / LP1T[:, None]
         unit_vec_P2T = (TC - xyz[cn[:, 1]]) / LP2T[:, None]
     except KeyError:

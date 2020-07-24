@@ -84,7 +84,7 @@ class iMorph(GenericIO):
             network = GenericNetwork(Np=Np, Nt=0)
 
             # Define expected properies
-            network["pore.volume"] = sp.nan
+            network["pore.volume"] = np.nan
             scrap_lines = [file.readline() for line in range(4)]
             while True:
                 vals = file.readline().split("\t")
@@ -109,12 +109,12 @@ class iMorph(GenericIO):
         # parsing the graph file
         with open(graph_file, "r") as file:
             # Define expected properties
-            network["pore.coords"] = np.zeros((Np, 3)) * sp.nan
-            network["pore.types"] = sp.nan
-            network["pore.color"] = sp.nan
-            network["pore.radius"] = sp.nan
-            network["pore.dmax"] = sp.nan
-            network["pore.node_number"] = sp.nan
+            network["pore.coords"] = np.zeros((Np, 3)) * np.nan
+            network["pore.types"] = np.nan
+            network["pore.color"] = np.nan
+            network["pore.radius"] = np.nan
+            network["pore.dmax"] = np.nan
+            network["pore.node_number"] = np.nan
             # Scan file to get pore coordinate data
             scrap_lines = [file.readline() for line in range(3)]
             line = file.readline()
@@ -164,7 +164,7 @@ class iMorph(GenericIO):
         for item in network.props("pore"):
             item = item.split(".")[1]
             arr = np.ones_like(network["pore." + item])[0]
-            arr = np.tile(A=arr, reps=[network.Nt, 1]) * sp.nan
+            arr = np.tile(A=arr, reps=[network.Nt, 1]) * np.nan
             network["throat." + item] = np.squeeze(arr)
             network["throat." + item][network.throats("new_conns")] = network[
                 "pore." + item
