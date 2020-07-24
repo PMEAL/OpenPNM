@@ -151,8 +151,8 @@ class Base(dict):
         self._uuid = uuid.uuid4()
         if project is None:
             project = ws.new_project()
-        if name is None:
         project._add_object(self)
+        if name is None:
             name = project._generate_name(self)
         project.extend(self)
         self.name = name
