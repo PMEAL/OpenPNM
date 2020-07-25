@@ -77,6 +77,8 @@ class Grid():
         return self.nrows * self.ncols
 
     def get_row(self, row):
+        if not isinstance(row, int):
+            row = self.get_col(0)._grid.table_data.index([row])
         temp = self._grid.table_data[row]
         temp2 = Grid(1, self.ncols)
         for i, item in enumerate(temp):
@@ -84,6 +86,8 @@ class Grid():
         return temp2
 
     def get_col(self, col):
+        if not isinstance(col, int):
+            col = self.get_row(0)._grid.table_data[0].index(col)
         temp = [self._grid.table_data[row][col] for row in range(self.nrows)]
         temp2 = Grid(1, 1)
         for row, item in enumerate(temp):
@@ -118,6 +122,12 @@ class Grid():
 
     def drop_row(self, row):
         self._grid.table_data.pop(row)
+
+    def index(self):
+        return self.get_col(0)
+
+    def header(self):
+        return self.get_row(0)
 
     def __repr__(self):
         return self._grid.table.__str__()
