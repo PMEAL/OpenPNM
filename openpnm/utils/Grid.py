@@ -1,15 +1,15 @@
-from terminaltables import AsciiTable
+import terminaltables as tt
 
 
 class Grid():
 
-    def __init__(self, rows=1, cols=1, blank='---'):
+    def __init__(self, rows=1, cols=1, blank='---', style='single'):
         super().__init__()
         self.blank = blank
         header = [blank for i in range(cols)]
-        self._grid = AsciiTable([])
+        self.style = style
         [self._grid.table_data.append(header.copy()) for _ in range(rows)]
-        self._grid.inner_heading_row_border = False
+        self._grid.inner_heading_row_border = True
         self._grid.padding_left = 3
         self._grid.padding_right = 3
         self._grid.justify_columns = {col: 'center' for col in range(self.ncols)}
@@ -21,6 +21,26 @@ class Grid():
         if len(cols) != self.ncols:
             raise Exception('Must write entire row')
         self._grid.table_data[row] = cols
+
+    def _set_style(self, style):
+        if hasattr(self, '_grid'):
+            data = self._grid.table_data
+        else:
+            data = []
+        if style.lower().startswith('a'):
+            self._grid = tt.AsciiTable(data)
+        elif style.lower().startswith('d'):
+            self._grid = tt.DoubleTable(data)
+        elif style.lower().startswith('s'):
+            self._grid = tt.SingleTable(data)
+        elif style.lower().startswith('g'):
+            self._grid = tt.GithubFlavoredMarkdownTable(data)
+        self._style = style
+
+    def _get_style(self):
+        return self._style
+
+    style = property(fset=_set_style, fget=_get_style)
 
     def _set_blank(self, blank):
         if hasattr(self, '_blank'):
