@@ -28,14 +28,17 @@ class Grid():
         else:
             data = []
         if style.lower().startswith('a'):
+            self._style = 'ascii'
             self._grid = tt.AsciiTable(data)
         elif style.lower().startswith('d'):
+            self._style = 'double'
             self._grid = tt.DoubleTable(data)
         elif style.lower().startswith('s'):
+            self._style = 'single'
             self._grid = tt.SingleTable(data)
-        elif style.lower().startswith('g'):
+        elif style.lower()[0] in ['g', 'm']:
+            self._style = 'markdown'
             self._grid = tt.GithubFlavoredMarkdownTable(data)
-        self._style = style
 
     def _get_style(self):
         return self._style
