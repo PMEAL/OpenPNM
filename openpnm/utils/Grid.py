@@ -91,19 +91,23 @@ class Grid():
                 temp2[row][0] = item
         return temp2
 
-    def add_row(self, row=None):
+    def add_row(self, row=None, num=1):
         header = [self.blank for i in self._grid.table_data[0]]
         if row:
             self._grid.table_data.insert(row, header)
         else:
             self._grid.table_data.append(header)
+        if num > 1:
+            self.add_row(row, num=num-1)
 
-    def add_col(self, col=None):
+    def add_col(self, col=None, num=1):
         for row in self._grid.table_data:
             if col:
-                row.inert(col, self.blank)
+                row.insert(col, self.blank)
             else:
                 row.append(self.blank)
+        if num > 1:
+            self.add_col(col=col, num=num-1)
 
     def drop_col(self, col):
         for row in self._grid.table_data:
