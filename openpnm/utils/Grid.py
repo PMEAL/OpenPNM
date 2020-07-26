@@ -1,26 +1,50 @@
 import terminaltables as tt
 
 
-class Grid():
+class Tableist():
 
     def __init__(self, rows=1, cols=1, blank='---', style='single'):
         super().__init__()
         self.blank = blank
         header = [blank for i in range(cols)]
-        self.style = style
+        self._grid = tt.AsciiTable([])
         [self._grid.table_data.append(header.copy()) for _ in range(rows)]
-        self._grid.inner_heading_row_border = True
-        self._grid.padding_left = 3
-        self._grid.padding_right = 3
-        self._grid.justify_columns = {col: 'center' for col in range(self.ncols)}
+        self.style = style
 
     def __getitem__(self, row):
+        if isinstance(row, slice):
+            start = row.start or 0
+            stop = row.stop or self.nrows
+            step = row.step or 1
+            row = [r for r in range(start, stop, step)]
+        if isinstance(row, list):
+            temp = [self._grid.table_data[r] for r in row]
+            temp2 = Tableist(len(temp), self.ncols, style=self.style)
+            temp2._grid.table_data = temp
+            temp2._grid.inner_heading_row_border = False
+            return temp
         return self._grid.table_data[row]
 
     def __setitem__(self, row, cols):
         if len(cols) != self.ncols:
             raise Exception('Must write entire row')
         self._grid.table_data[row] = cols
+
+    def set_col(self, col, vals):
+        try:
+            len(vals)
+        except TypeError:
+            vals = [vals for r in range(self.nrows)]
+        for r in range(self.nrows):
+            self._grid.table_data[r][col] = vals[r]
+
+    def set_row(self, row, vals):
+        try:
+            len(vals)
+        except TypeError:
+            vals = [vals for c in range(self.ncols)]
+        for c in range(self.ncols):
+            self._grid.table_data[row][c] = vals[c]
 
     def _set_style(self, style):
         if hasattr(self, '_grid'):
@@ -39,6 +63,10 @@ class Grid():
         elif style.lower()[0] in ['g', 'm']:
             self._style = 'markdown'
             self._grid = tt.GithubFlavoredMarkdownTable(data)
+        self._grid.inner_heading_row_border = True
+        self._grid.padding_left = 3
+        self._grid.padding_right = 3
+        self._grid.justify_columns = {col: 'center' for col in range(self.ncols)}
 
     def _get_style(self):
         return self._style
@@ -80,22 +108,18 @@ class Grid():
         if not isinstance(row, int):
             row = self.get_col(0)._grid.table_data.index([row])
         temp = self._grid.table_data[row]
-        temp2 = Grid(1, self.ncols)
-        for i, item in enumerate(temp):
-            temp2[0][i] = item
+        temp2 = Tableist(1, self.ncols)
+        for col, item in enumerate(temp):
+            temp2[0][col] = item
         return temp2
 
     def get_col(self, col):
         if not isinstance(col, int):
-            col = self.get_row(0)._grid.table_data[0].index(col)
+            col = self._grid.table_data[0].index(col)
         temp = [self._grid.table_data[row][col] for row in range(self.nrows)]
-        temp2 = Grid(1, 1)
+        temp2 = Tableist(self.nrows, 1)
         for row, item in enumerate(temp):
-            if row == 0:
-                temp2[0][0] = item
-            else:
-                temp2.add_row()
-                temp2[row][0] = item
+            temp2[row][0] = item
         return temp2
 
     def add_row(self, row=None, num=1):
@@ -123,9 +147,11 @@ class Grid():
     def drop_row(self, row):
         self._grid.table_data.pop(row)
 
+    @property
     def index(self):
         return self.get_col(0)
 
+    @property
     def header(self):
         return self.get_row(0)
 
