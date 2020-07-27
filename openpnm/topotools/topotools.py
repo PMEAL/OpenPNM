@@ -1139,12 +1139,12 @@ def extend(network, pore_coords=[], throat_conns=[], labels=[]):
             # Remove pore or throat from label, if present
             label = label.split('.')[-1]
             if np.size(pore_coords) > 0:
-                Ps = sp.r_[Np_old:Np]
+                Ps = np.r_[Np_old:Np]
                 if 'pore.'+label not in network.labels():
                     network['pore.'+label] = False
                 network['pore.'+label][Ps] = True
             if np.size(throat_conns) > 0:
-                Ts = sp.r_[Nt_old:Nt]
+                Ts = np.r_[Nt_old:Nt]
                 if 'throat.'+label not in network.labels():
                     network['throat.'+label] = False
                 network['throat.'+label][Ts] = True
@@ -1284,7 +1284,7 @@ def find_surface_pores(network, markers=None, label='surface'):
             return
         if sum(dims) == 2:
             r = 0.75
-            theta = np.linspace(0, 2*sp.pi, int(npts), dtype=float)
+            theta = np.linspace(0, 2*np.pi, int(npts), dtype=float)
             x = r*np.cos(theta)
             y = r*np.sin(theta)
             markers = np.vstack((x, y)).T
