@@ -6,7 +6,6 @@ r"""
 
 """
 import numpy as _np
-import scipy as _sp
 from openpnm.utils import logging
 logger = logging.getLogger(__name__)
 
@@ -111,7 +110,7 @@ def poisson(target,
     # Setting g to inf when Li = 0 (ex. boundary pores)
     # INFO: This is needed since area could also be zero, which confuses NumPy
     m1, m2, mt = [Li != 0 for Li in [L1, L2, Lt]]
-    g1[~m1] = g2[~m2] = gt[~mt] = _sp.inf
+    g1[~m1] = g2[~m2] = gt[~mt] = _np.inf
     # Getting shape factors
     try:
         SF1 = phase[conduit_shape_factors+'.pore1'][throats]
@@ -128,7 +127,7 @@ def poisson(target,
     # Preallocating g_inv
     g_inv1, g_inv2, g_invt = _np.zeros((3, len(Lt)))
     f1, f2, ft = [gi != 0 for gi in [g1, g2, gt]]
-    g_inv1[~f1] = g_inv2[~f2] = g_invt[~ft] = _sp.inf
+    g_inv1[~f1] = g_inv2[~f2] = g_invt[~ft] = _np.inf
     g_inv1[f1] = 1/g1[f1]
     g_inv2[f2] = 1/g2[f2]
     g_invt[ft] = 1/gt[ft]
@@ -533,7 +532,7 @@ def electroneutrality(target,
     # Setting g to inf when Li = 0 (ex. boundary pores)
     # INFO: This is needed since area could also be zero, which confuses NumPy
     m1, m2, mt = [Li != 0 for Li in [L1, L2, Lt]]
-    g1[~m1] = g2[~m2] = gt[~mt] = _sp.inf
+    g1[~m1] = g2[~m2] = gt[~mt] = _np.inf
     # Getting shape factors
     try:
         SF1 = phase[conduit_shape_factors+'.pore1'][throats]
@@ -601,7 +600,7 @@ def electroneutrality(target,
     # Preallocating g_inv
     g_inv1, g_inv2, g_invt = _np.zeros((3, len(Lt)))
     f1, f2, ft = [gi != 0 for gi in [g1, g2, gt]]
-    g_inv1[~f1] = g_inv2[~f2] = g_invt[~ft] = _sp.inf
+    g_inv1[~f1] = g_inv2[~f2] = g_invt[~ft] = _np.inf
     g_inv1[f1] = 1/g1[f1]
     g_inv2[f2] = 1/g2[f2]
     g_invt[ft] = 1/gt[ft]
