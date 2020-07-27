@@ -1,6 +1,7 @@
 import os as os
 import numpy as np
 import scipy as sp
+from scipy.sparse import lil_matrix
 from pathlib import Path
 from openpnm.utils import logging
 from openpnm.io import GenericIO
