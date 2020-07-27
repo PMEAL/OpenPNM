@@ -4,7 +4,6 @@ r"""
 
 """
 import numpy as _np
-import scipy as _sp
 
 
 def ad_dif_mig(
@@ -105,7 +104,7 @@ def ad_dif_mig(
     # Setting g to inf when Li = 0 (ex. boundary pores)
     # INFO: This is needed since area could also be zero, which confuses NumPy
     m1, m2, mt = [Li != 0 for Li in [L1, L2, Lt]]
-    g1[~m1] = g2[~m2] = gt[~mt] = _sp.inf
+    g1[~m1] = g2[~m2] = gt[~mt] = _np.inf
     # Getting shape factors
     try:
         SF1 = phase[conduit_shape_factors + ".pore1"][throats]
@@ -135,7 +134,7 @@ def ad_dif_mig(
     gd = phase[throat_diffusive_conductance]
     # .T below is for when gd is (Nt, 2) instead of (Nt, 1)
     gm = (gd.T * (z * F) / (R * T)).T
-    delta_V = _sp.diff(V[cn], axis=1).squeeze()
+    delta_V = _np.diff(V[cn], axis=1).squeeze()
     delta_V = _np.append(delta_V, -delta_V)
 
     # Normal treatment when gd is Nt by 1
@@ -154,7 +153,7 @@ def ad_dif_mig(
     mig = gm * delta_V
 
     # Advection
-    Qij = -gh * _sp.diff(P[cn], axis=1).squeeze()
+    Qij = -gh * _np.diff(P[cn], axis=1).squeeze()
     Qij = _np.append(Qij, -Qij)
 
     # Advection-migration
