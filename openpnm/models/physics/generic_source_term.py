@@ -813,7 +813,7 @@ def general_symbolic(target, eqn=None, arg_map=None):
     >>> water['pore.a'] = 1
     >>> water['pore.b'] = 2
     >>> water['pore.c'] = 3
-    >>> water['pore.x'] = sp.random.random(water.Np)
+    >>> water['pore.x'] = np.random.random(water.Np)
     >>> a, b, c, x = sympy.symbols('a,b,c,x')
     >>> y = a*x**b + c
     >>> arg_map = {'a':'pore.a', 'b':'pore.b', 'c':'pore.c', 'x':'pore.x'}

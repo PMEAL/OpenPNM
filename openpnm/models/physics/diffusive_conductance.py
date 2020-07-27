@@ -96,9 +96,9 @@ def ordinary_diffusion(
     g2 = (D2*A2) / L2
     gt = (Dt*At) / Lt
     # Ensure infinite conductance for elements with zero length
-    g1[L1==0] = _sp.inf
-    g2[L2==0] = _sp.inf
-    gt[Lt==0] = _sp.inf
+    g1[L1==0] = _np.inf
+    g2[L2==0] = _np.inf
+    gt[Lt==0] = _np.inf
     # Apply shape factors and calculate the final conductance
     return (1/gt/SFt + 1/g1/SF1 + 1/g2/SF2)**(-1)
 
@@ -191,9 +191,9 @@ def ordinary_diffusion_2D(
     g2 = (D2*A2) / L2
     gt = (Dt*At) / Lt
     # Ensure infinite conductance for elements with zero length
-    g1[L1==0] = _sp.inf
-    g2[L2==0] = _sp.inf
-    gt[Lt==0] = _sp.inf
+    g1[L1==0] = _np.inf
+    g2[L2==0] = _np.inf
+    gt[Lt==0] = _np.inf
     # Apply shape factors and calculate the final conductance
     return (1/gt/SFt + 1/g1/SF1 + 1/g2/SF2)**(-1)
 
@@ -306,9 +306,9 @@ def mixed_diffusion(
     g2 = (D2e * A2) / L2
     gt = (Dte * At) / Lt
     # Ensure infinite conductance for elements with zero length
-    g1[L1==0] = _sp.inf
-    g2[L2==0] = _sp.inf
-    gt[Lt==0] = _sp.inf
+    g1[L1==0] = _np.inf
+    g2[L2==0] = _np.inf
+    gt[Lt==0] = _np.inf
     # Apply shape factors and calculate the final conductance
     return (1/gt/SFt + 1/g1/SF1 + 1/g2/SF2)**(-1)
 
@@ -407,23 +407,23 @@ def taylor_aris_diffusion(
     # Fetch properties for calculating Peclet
     P = phase[pore_pressure]
     gh = phase[throat_hydraulic_conductance]
-    Qt = -gh*_sp.diff(P[cn], axis=1).squeeze()
+    Qt = -gh*_np.diff(P[cn], axis=1).squeeze()
     # Find fluid velocity in elements
     u1 = Qt / A1
     u2 = Qt / A2
     ut = Qt / At
     # Find Peclet number in elements
-    Pe1 = u1 * ((4 * A1 / _sp.pi)**0.5) / D1
-    Pe2 = u2 * ((4 * A2 / _sp.pi)**0.5) / D2
-    Pet = ut * ((4 * At / _sp.pi)**0.5) / Dt
+    Pe1 = u1 * ((4 * A1 / _np.pi)**0.5) / D1
+    Pe2 = u2 * ((4 * A2 / _np.pi)**0.5) / D2
+    Pet = ut * ((4 * At / _np.pi)**0.5) / Dt
     # Find g for half of pore 1, throat, and half of pore 2
     g1 = D1 * (1 + (Pe1**2)/192) * A1 / L1
     g2 = D2 * (1 + (Pe2**2)/192) * A2 / L2
     gt = Dt * (1 + (Pet**2)/192) * At / Lt
     # Ensure infinite conductance for elements with zero length
-    g1[L1==0] = _sp.inf
-    g2[L2==0] = _sp.inf
-    gt[Lt==0] = _sp.inf
+    g1[L1==0] = _np.inf
+    g2[L2==0] = _np.inf
+    gt[Lt==0] = _np.inf
     # Apply shape factors and calculate the final conductance
     return (1/gt/SFt + 1/g1/SF1 + 1/g2/SF2)**(-1)
 
@@ -465,7 +465,7 @@ def classic_ordinary_diffusion(
     pdia = network[pore_diameter]
     # Get the properties of every throat
     tdia = network[throat_diameter]
-    tarea = _sp.pi * (tdia / 2) ** 2
+    tarea = _np.pi * (tdia / 2) ** 2
     tlen = network[throat_length]
     # Interpolate pore phase property values to throats
     DABt = phase.interpolate_data(propname=pore_diffusivity)[throats]
@@ -478,12 +478,12 @@ def classic_ordinary_diffusion(
     plen2[plen2 <= 1e-12] = 1e-12
     # Find g for half of pore 1
     gp1 = ct * DABt * parea[Ps[:, 0]] / plen1
-    gp1[_np.isnan(gp1)] = _sp.inf
-    gp1[~(gp1 > 0)] = _sp.inf  # Set 0 conductance pores (boundaries) to inf
+    gp1[_np.isnan(gp1)] = _np.inf
+    gp1[~(gp1 > 0)] = _np.inf  # Set 0 conductance pores (boundaries) to inf
     # Find g for half of pore 2
     gp2 = ct * DABt * parea[Ps[:, 1]] / plen2
-    gp2[_np.isnan(gp2)] = _sp.inf
-    gp2[~(gp2 > 0)] = _sp.inf  # Set 0 conductance pores (boundaries) to inf
+    gp2[_np.isnan(gp2)] = _np.inf
+    gp2[~(gp2 > 0)] = _np.inf  # Set 0 conductance pores (boundaries) to inf
     # Find g for full throat, remove any non-positive lengths
     tlen[tlen <= 0] = 1e-12
     # Get shape factor
@@ -494,7 +494,7 @@ def classic_ordinary_diffusion(
     sf[_np.isnan(sf)] = 1.0
     gt = (1 / sf) * ct * DABt * tarea / tlen
     # Set 0 conductance pores (boundaries) to inf
-    gt[~(gt > 0)] = _sp.inf
+    gt[~(gt > 0)] = _np.inf
     value = (1 / gt + 1 / gp1 + 1 / gp2) ** (-1)
     return value
 
@@ -546,9 +546,9 @@ def multiphase_diffusion(
     g2 = (D2*A2) / L2 * SF2
     gt = (Dt*At) / Lt * SFt
     # Ensure infinite conductance for elements with zero length
-    g1[L1==0] = _sp.inf
-    g2[L2==0] = _sp.inf
-    gt[Lt==0] = _sp.inf
+    g1[L1==0] = _np.inf
+    g2[L2==0] = _np.inf
+    gt[Lt==0] = _np.inf
     # Get partition coefficient dictionary key from phase settings
     partition_coef = phase.settings["partition_coef"]
     # Apply Henry's partitioning coefficient
