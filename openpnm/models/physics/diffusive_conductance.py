@@ -8,8 +8,6 @@ r"""
 
 """
 import numpy as _np
-from numpy import pi as _pi
-import scipy as _sp
 import scipy.constants as const
 
 

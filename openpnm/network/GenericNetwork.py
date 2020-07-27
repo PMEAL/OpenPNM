@@ -515,7 +515,7 @@ class GenericNetwork(Base, ModelsMixin):
         -----
         The returned list can be converted to an ND-array, which will convert
         the ``None`` values to ``nan``.  These can then be found using
-        ``scipy.isnan``.
+        ``numpy.isnan``.
 
         Examples
         --------

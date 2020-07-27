@@ -1,4 +1,3 @@
-import scipy as sp
 import numpy as np
 import scipy.sparse as sprs
 import scipy.spatial as sptl

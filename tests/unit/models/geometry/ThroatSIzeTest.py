@@ -1,5 +1,4 @@
 import numpy as np
-import scipy as sp
 import openpnm as op
 import scipy.stats as spst
 import openpnm.models.geometry as gm
