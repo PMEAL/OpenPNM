@@ -133,9 +133,10 @@ def normal(target, seeds, scale, loc):
     be used to find suitable values of 'scale' and 'loc'.
 
     >>> import scipy
+    >>> import numpy
     >>> func = scipy.stats.norm(scale=.0001, loc=0.001)
     >>> import matplotlib.pyplot as plt
-    >>> fig = plt.hist(func.ppf(q=scipy.rand(10000)), bins=50)
+    >>> fig = plt.hist(func.ppf(q=numpy.rand(10000)), bins=50)
 
     """
     import scipy.stats as spts
