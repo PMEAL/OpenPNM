@@ -1,4 +1,3 @@
-import scipy as sp
 import numpy as np
 import scipy.sparse as sprs
 import scipy.spatial as sptl
@@ -158,11 +157,11 @@ class GenericNetwork(Base, ModelsMixin):
         return vals
 
     def _gen_ids(self):
-        IDs = self.get('pore._id', np.array([], ndmin=1, dtype=sp.int64))
+        IDs = self.get('pore._id', np.array([], ndmin=1, dtype=np.int64))
         if len(IDs) < self.Np:
             temp = ws._gen_ids(size=self.Np - len(IDs))
             self['pore._id'] = np.concatenate((IDs, temp))
-        IDs = self.get('throat._id', np.array([], ndmin=1, dtype=sp.int64))
+        IDs = self.get('throat._id', np.array([], ndmin=1, dtype=np.int64))
         if len(IDs) < self.Nt:
             temp = ws._gen_ids(size=self.Nt - len(IDs))
             self['throat._id'] = np.concatenate((IDs, temp))
@@ -846,7 +845,7 @@ class GenericNetwork(Base, ModelsMixin):
         pores = self._parse_indices(pores)
         # Handle an empty array if given
         if np.size(pores) == 0:
-            return np.array([], dtype=sp.int64)
+            return np.array([], dtype=np.int64)
         if r <= 0:
             raise Exception('Provided distances should be greater than 0')
         # Create kdTree objects
@@ -859,21 +858,21 @@ class GenericNetwork(Base, ModelsMixin):
             Ps_within_r[i].remove(pores[i])
         # Convert to flattened list by default
         temp = np.concatenate((Ps_within_r))
-        Pn = np.unique(temp).astype(sp.int64)
+        Pn = np.unique(temp).astype(np.int64)
         # Remove inputs if necessary
         if include_input is False:
             Pn = Pn[~np.in1d(Pn, pores)]
         # Convert list of lists to a list of nd-arrays
         if flatten is False:
             if len(Pn) == 0:  # Deal with no nearby neighbors
-                Pn = [np.array([], dtype=sp.int64) for i in pores]
+                Pn = [np.array([], dtype=np.int64) for i in pores]
             else:
                 mask = np.zeros(shape=np.amax((Pn.max(), pores.max()))+1,
                                 dtype=bool)
                 mask[Pn] = True
                 temp = []
                 for item in Ps_within_r:
-                    temp.append(np.array(item, dtype=sp.int64)[mask[item]])
+                    temp.append(np.array(item, dtype=np.int64)[mask[item]])
                 Pn = temp
         return Pn
 
