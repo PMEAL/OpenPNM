@@ -1434,6 +1434,17 @@ def merge_networks(network, donor=[]):
     else:
         donors = [donor]
 
+    # First fix up geometries
+    main_proj = network.project
+    main_geoms = main_proj.geometries()
+    for donor in donors:
+        proj = donor.project
+        geoms = proj.geometries().values()
+        for geo in geoms:
+            if geo.name in network.project.names:
+                geo.name = network.project._generate_name(geo)
+            network.project.append(geo)
+
     for donor in donors:
         network['pore.coords'] = np.vstack((network['pore.coords'],
                                             donor['pore.coords']))
@@ -1495,7 +1506,7 @@ def stitch(network, donor, P_network, P_donor, method='nearest',
 
     Parameters
     ----------
-    networK : OpenPNM Network Object
+    network : OpenPNM Network Object
         The Network to which to donor Network will be attached
 
     donor : OpenPNM Network Object

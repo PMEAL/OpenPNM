@@ -23,6 +23,10 @@ class TransientReactiveTransportSettings(GenericSettings):
         The name of the pore-scale transport conductance values. These are
         typically calculated by a model attached to a *Physics* object
         associated with the given *Phase*.
+    pore_volume : (str)
+        The name of the pore volume property to use in setting up the transient
+        system. Default is 'pore.volume' but 'pore.volume_effective' could be
+        used if needed.
 
     Other Parameters
     ----------------
@@ -81,6 +85,7 @@ class TransientReactiveTransportSettings(GenericSettings):
     t_tolerance = 1e-06
     t_precision = 12
     t_scheme = 'implicit'
+    pore_volume = 'pore.volume'
 
 
 class TransientReactiveTransport(ReactiveTransport):
@@ -196,7 +201,8 @@ class TransientReactiveTransport(ReactiveTransport):
         A method to update 'A' matrix at each time step according to 't_scheme'
         """
         network = self.project.network
-        Vi = network['pore.volume']
+        pore_volume = self.settings['pore_volume']
+        Vi = network[pore_volume]
         dt = self.settings['t_step']
         f1, f2, _ = self._get_f1_f2_f3()
         # Compute A (operations involve conversion to 'csr')
@@ -216,7 +222,8 @@ class TransientReactiveTransport(ReactiveTransport):
         quantity = self.settings['quantity']
         network = self.project.network
         phase = self.project.phases()[self.settings['phase']]
-        Vi = network['pore.volume']
+        pore_volume = self.settings['pore_volume']
+        Vi = network[pore_volume]
         dt = self.settings['t_step']
         f1, f2, f3 = self._get_f1_f2_f3()
         x_old = self[quantity]
