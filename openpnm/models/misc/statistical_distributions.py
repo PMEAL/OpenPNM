@@ -87,9 +87,10 @@ def weibull(target, seeds, shape, scale, loc):
     'shape' is represented by 'c' in the actual function call.
 
     >>> import scipy
+    >>> import numpy
     >>> func = scipy.stats.weibull_min(c=1.5, scale=0.0001, loc=0)
     >>> import matplotlib.pyplot as plt
-    >>> fig = plt.hist(func.ppf(q=scipy.rand(10000)), bins=50)
+    >>> fig = plt.hist(func.ppf(q=numpy.rand(10000)), bins=50)
 
     """
     import scipy.stats as spts
@@ -179,6 +180,7 @@ def generic_distribution(target, seeds, func):
     stats object and adding it as a model:
 
     >>> import scipy
+    >>> import numpy
     >>> import openpnm as op
     >>> pn = op.network.Cubic(shape=[3, 3, 3])
     >>> geo = op.geometry.GenericGeometry(network=pn, pores=pn.Ps, throats=pn.Ts)
@@ -195,7 +197,7 @@ def generic_distribution(target, seeds, func):
 
 
     >>> import matplotlib.pyplot as plt
-    >>> fig = plt.hist(stats_obj.ppf(q=scipy.rand(1000)), bins=50)
+    >>> fig = plt.hist(stats_obj.ppf(q=numpy.rand(1000)), bins=50)
 
     """
     seeds = target[seeds]
