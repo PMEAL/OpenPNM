@@ -4,6 +4,7 @@ import warnings
 import functools
 import numpy as _np
 import scipy as _sp
+import scipy.sparse
 import time as _time
 from collections import OrderedDict
 from docrep import DocstringProcessor
