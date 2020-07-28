@@ -164,6 +164,19 @@ class TopotoolsTest:
         assert 'pore.test1' not in net2
         assert 'pore.test2' not in net2
 
+    def test_merge_networks_with_active_geometries(self):
+        pn = op.network.Cubic(shape=[3, 3, 3])
+        pn2 = op.network.Cubic(shape=[3, 3, 3])
+        pn2['pore.coords'] += [0, 0, 3]
+        pn2['pore.net_02'] = True
+        pn2['throat.net_02'] = True
+        geo = op.geometry.StickAndBall(network=pn, pores=pn.Ps, throats=pn.Ts)
+        geo2 = op.geometry.StickAndBall(network=pn2, pores=pn2.Ps, throats=pn2.Ts)
+        geo2['pore.test_vals'] = 1.5
+        op.topotools.merge_networks(network=pn, donor=pn2)
+        assert isinstance(pn['pore.test_vals'], np.ndarray)
+        assert ('pore.' + geo2.name) in pn.keys()
+
     def test_subdivide_3D(self):
         net = op.network.Cubic(shape=[3, 3, 3])
         assert net.Np == 27
