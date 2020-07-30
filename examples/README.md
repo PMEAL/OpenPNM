@@ -44,11 +44,12 @@ This page links to examples in the github repo at [github.com/PMEAL/OpenPNM/exam
 
 | Link | Description |
 |:-----|:------------|
+| [Pore-scale Imaging and Modeling](/examples/notebooks/networks/extraction/Pore-scale Imaging and Modeling - MGambier.ipynb) | `Done` |
 | [Benthiemer ICL Benchmark](/examples/notebooks/networks/extraction/benthiemer_ICL_benchmark.ipynb) | `Done` |
 | [Doddington ICL Benchmark](/examples/notebooks/networks/extraction/doddington_ICL_benchmark.ipynb) | `Done` |
 | [Berea ICL Benchmark](/examples/notebooks/networks/extraction/berea_ICL_benchmark.ipynb) | `Done` |
 | [Predicting Permeability of Berea](/examples/notebooks/networks/extraction/predicting_effective_permeability_of_berea.ipynb) | `Done` |
-| [Working with Extracted Networks](/examples/notebooks/networks/extraction/working_with_extracted_networks.ipynb) |`Niloo` |
+| [Working with Extracted Networks](/examples/notebooks/networks/extraction/working_with_extracted_networks.ipynb) |`Done` |
 
 ### [Geometry](/examples/notebooks/geometry)
 
@@ -98,8 +99,8 @@ This page links to examples in the github repo at [github.com/PMEAL/OpenPNM/exam
 
 | Link | Description |
 |:-----|:------------|
-| [Relative Diffusivity](/examples/notebooks/algorithms/multiphase/relative_diffusivity.ipynb) | `Niloo` |
-| [Relative Permeability in 2D](/examples/notebooks/algorithms/multiphase/relative_permeability_2D.ipynb) | `Niloo` |
+| [Relative Diffusivity](/examples/notebooks/algorithms/multiphase/relative_diffusivity.ipynb) | `Done` |
+| [Relative Permeability in 2D](/examples/notebooks/algorithms/multiphase/relative_permeability_2D.ipynb) | `Done` |
 
 #### [Reactive Transport](/examples/notebooks/algorithms/reactive)
 
