@@ -80,6 +80,15 @@ class GraphToolsTest:
         Ps = topotools.find_connected_sites(bonds=[6], am=am, flatten=True)
         assert np.all(Ps == [4, 5])
 
+    def test_find_connected_sites_from_lil_format(self):
+        pn = op.network.Cubic(shape=[5, 1, 1], spacing=1e-4)
+        am = pn.create_adjacency_matrix(weights=pn.Ts, fmt='lil')
+        am = am.tocoo()
+        Ps1 = topotools.find_connected_sites(bonds=[3], am=am, flatten=True)
+        am = pn.create_adjacency_matrix(weights=pn.Ts, fmt='coo')
+        Ps2 = topotools.find_connected_sites(bonds=[3], am=am, flatten=True)
+        assert np.all(Ps1 == Ps2)
+
     def test_find_connected_sites_single(self):
         am = self.net.create_adjacency_matrix(fmt='coo')
         Ps = topotools.find_connected_sites(bonds=0, am=am, flatten=True)
@@ -363,6 +372,15 @@ class GraphToolsTest:
             am = self.net.create_adjacency_matrix(fmt='lil')
             topotools.find_neighbor_sites(sites=[0, 1], am=am, flatten=True,
                                           logic='foobar')
+
+    def test_find_neighbor_sites_include_inputs(self):
+        am = self.net.create_adjacency_matrix(fmt='lil')
+        Ps = topotools.find_neighbor_sites(sites=[0, 1], am=am, flatten=True,
+                                           logic='or', include_input=True)
+        assert (Ps == [0, 1, 2, 3, 4]).all()
+        Ps = topotools.find_neighbor_sites(sites=[0, 1], am=am, flatten=True,
+                                           logic='or', include_input=False)
+        assert (Ps == [2, 3, 4]).all()
 
     def test_istriu(self):
         net = op.network.Cubic(shape=[5, 5, 5])

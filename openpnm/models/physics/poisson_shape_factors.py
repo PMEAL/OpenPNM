@@ -60,7 +60,6 @@ def ball_and_stick(target, pore_area='pore.area',
     than pore radius --> :(
 
     """
-    _np.warnings.filterwarnings('ignore', category=RuntimeWarning)
     network = target.project.network
     throats = network.map_throats(throats=target.Ts, origin=target)
     cn = network['throat.conns'][throats]
@@ -97,7 +96,6 @@ def ball_and_stick(target, pore_area='pore.area',
     SF1[m1] = (L1 / (A1*F1))[m1]
     SF2[m2] = (L2 / (A2*F2))[m2]
     SFt[mt] = (Lt / (At*Ft))[mt]
-    _np.warnings.filterwarnings('default', category=RuntimeWarning)
     return {'pore1': SF1, 'throat': SFt, 'pore2': SF2}
 
 
@@ -146,7 +144,6 @@ def conical_frustum_and_stick(target, pore_area='pore.area',
     This model accounts for the variable cross-section area in spheres.
 
     """
-    _np.warnings.filterwarnings('ignore', category=RuntimeWarning)
     network = target.project.network
     throats = network.map_throats(throats=target.Ts, origin=target)
     cn = network['throat.conns'][throats]
@@ -178,7 +175,6 @@ def conical_frustum_and_stick(target, pore_area='pore.area',
     SF1[m1] = (L1 / (A1*F1))[m1]
     SF2[m2] = (L2 / (A2*F2))[m2]
     SFt[mt] = (Lt / (At*Ft))[mt]
-    _np.warnings.filterwarnings('default', category=RuntimeWarning)
     return {'pore1': SF1, 'throat': SFt, 'pore2': SF2}
 
 
@@ -230,7 +226,6 @@ def ball_and_stick_2D(target, pore_area='pore.area',
     than pore radius --> :(
 
     """
-    _np.warnings.filterwarnings('ignore', category=RuntimeWarning)
     network = target.project.network
     throats = network.map_throats(throats=target.Ts, origin=target)
     cn = network['throat.conns'][throats]
@@ -260,5 +255,4 @@ def ball_and_stick_2D(target, pore_area='pore.area',
     SF1[m1] = (L1 / (A1*F1))[m1]
     SF2[m2] = (L2 / (A2*F2))[m2]
     SFt[mt] = (Lt / (At*Ft))[mt]
-    _np.warnings.filterwarnings('default', category=RuntimeWarning)
     return {'pore1': SF1, 'throat': SFt, 'pore2': SF2}

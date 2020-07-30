@@ -7,7 +7,6 @@ logger = logging.getLogger(__name__)
 class GenericMetric(Base):
     r"""
 
-
     """
 
     def __init__(self, network=None, project=None, settings={}, **kwargs):

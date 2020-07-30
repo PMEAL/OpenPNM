@@ -154,11 +154,8 @@ class ReactiveTransport(GenericTransport):
             Initial guess of unknown variable
         """
         quantity = self.settings['quantity']
-        gvals = self.settings["conductance"]
         logger.info('Running ReactiveTransport')
         x0 = np.zeros(self.Np, dtype=float) if x0 is None else x0
-        if gvals in self._get_iterative_props():
-            self.settings.update({"cache_A": False, "cache_b": False})
         x = self._run_reactive(x0)
         self[quantity] = x
 
@@ -387,8 +384,10 @@ class ReactiveTransport(GenericTransport):
         dg = nx.DiGraph(nx.edge_dfs(dg, source=base_props))
         if len(dg.nodes) == 0:
             return []
-        dg.remove_nodes_from(base_props)
-        return list(nx.dag.lexicographical_topological_sort(dg))
+        iterative_props = list(nx.dag.lexicographical_topological_sort(dg))
+        # "quantity" shouldn't be in the returned list but "variable_props" should
+        iterative_props.remove(self.settings["quantity"])
+        return iterative_props
 
     @docstr.dedent
     def _set_BC(self, pores, bctype, bcvalues=None, mode='merge'):

@@ -149,6 +149,8 @@ class Base(dict):
         super().__init__()
         if project is None:
             project = ws.new_project()
+        if name is None:
+            name = project._generate_name(self)
         project.extend(self)
         self.name = name
         self.update({'pore.all': np.ones(shape=(Np, ), dtype=bool)})
@@ -173,11 +175,17 @@ class Base(dict):
 
         """
         # Check 1: If value is a dictionary, break it into constituent arrays
+        # and recursively call __setitem__ on each
         if hasattr(value, 'keys'):
             for item in value.keys():
                 prop = item.replace('pore.', '').replace('throat.', '')
                 self.__setitem__(key+'.'+prop, value[item])
             return
+
+        # Check 3: Enforce correct dict naming
+        element = key.split('.')[0]
+        if element not in ['pore', 'throat']:
+            raise Exception('All keys must start with either pore or throat')
 
         # Check 2: If adding a new key, make sure it has no conflicts
         if self.project:
@@ -209,10 +217,6 @@ class Base(dict):
         if not isinstance(value, sp.ndarray):
             value = np.array(value, ndmin=1)  # Convert value to an ndarray
 
-        # Check 3: Enforce correct dict naming
-        element = key.split('.')[0]
-        element = self._parse_element(element, single=True)
-
         # Skip checks for 'coords', 'conns'
         if key in ['pore.coords', 'throat.conns']:
             super(Base, self).__setitem__(key, value)
@@ -240,7 +244,7 @@ class Base(dict):
             if self._count(element) == 0:
                 self.update({key: value})
             else:
-                raise Exception('Cannot write array, wrong length: '+key)
+                raise Exception('Provided array is wrong legth for ' + key)
 
     def __getitem__(self, key):
         element, prop = key.split('.', 1)
@@ -473,9 +477,6 @@ class Base(dict):
 
         return temp
 
-    # -------------------------------------------------------------------------
-    """Data Query Methods"""
-    # -------------------------------------------------------------------------
     def props(self, element=None, mode='all', deep=False):
         r"""
         Returns a list containing the names of all defined pore or throat
@@ -1115,7 +1116,7 @@ class Base(dict):
 
         """
         if np.amax(mask) > 1:
-            raise Exception('Received mask is invalid, with values above 1')
+            raise Exception('Received mask does not appear to be boolean')
         mask = np.array(mask, dtype=bool)
         indices = self._parse_indices(mask)
         return indices
@@ -1166,10 +1167,7 @@ class Base(dict):
         >>> print(g1['pore.label'])  # 'pore.label' is defined on pn, not g1
         [False False False False]
         """
-        element = self._parse_element(prop.split('.')[0], single=True)
-        N = self.project.network._count(element)
-
-        # Fetch sources list depending on object type?
+        # Fetch sources list depending on type of self
         proj = self.project
         if self._isa() in ['network', 'geometry']:
             sources = list(proj.geometries().values())
@@ -1180,13 +1178,45 @@ class Base(dict):
         else:
             raise Exception('Unrecognized object type, cannot find dependents')
 
+        # Get generalized element and array length
+        element = self._parse_element(prop.split('.')[0], single=True)
+        N = self.project.network._count(element)
+
         # Attempt to fetch the requested array from each object
-        arrs = [item.get(prop, None) for item in sources]
+        arrs = [obj.get(prop, None) for obj in sources]
+
+        # Check for missing sources, and add None to arrs if necessary
+        if N > sum([obj._count(element) for obj in sources]):
+            arrs.append(None)
+
+        # Obtain list of locations for inserting values
         locs = [self._get_indices(element, item.name) for item in sources]
-        sizes = [np.size(a) for a in arrs]
+
         if np.all([item is None for item in arrs]):  # prop not found anywhere
             raise KeyError(prop)
 
+        # --------------------------------------------------------------------
+        # Let's start by handling the easy cases first
+        if not any([a is None for a in arrs]):
+            # All objs present and array found on all objs
+            shape = list(arrs[0].shape)
+            shape[0] = N
+            types = [a.dtype for a in arrs]
+            if len(set(types)) == 1:
+                # All types are the same
+                temp_arr = np.ones(shape, dtype=types[0])
+                for vals, inds in zip(arrs, locs):
+                    temp_arr[inds] = vals
+                return temp_arr  # Return early because it's just easier
+            elif all([a.dtype in [float, int, bool] for a in arrs]):
+                # All types are numeric, make float
+                temp_arr = np.ones(shape, dtype=float)
+                for vals, inds in zip(arrs, locs):
+                    temp_arr[inds] = vals
+                return temp_arr  # Return early because it's just easier
+
+        # ---------------------------------------------------------------------
+        # Now handle the complicated cases
         # Check the general type of each array
         atype = []
         for a in arrs:
@@ -1212,6 +1242,7 @@ class Base(dict):
                     temp_arr = np.zeros((N, item.shape[1]), dtype=item.dtype)
                 temp_arr.fill(dummy_val[atype[0]])
 
+        sizes = [np.size(a) for a in arrs]
         # Convert int arrays to float IF NaNs are expected
         if temp_arr.dtype.name.startswith('int') and \
            (np.any([i is None for i in arrs]) or np.sum(sizes) != N):
@@ -1229,16 +1260,15 @@ class Base(dict):
         # Importing unyt significantly adds to our import time, we also
         # currently don't use this package extensively, so we're not going
         # to support it for now.
-        """
-        if any([hasattr(a, 'units') for a in arrs]):
-            [a.convert_to_mks() for a in arrs if hasattr(a, 'units')]
-            units = [a.units.__str__() for a in arrs if hasattr(a, 'units')]
-            if len(units) > 0:
-                if len(set(units)) == 1:
-                    temp_arr *= np.array([1]) * getattr(unyt, units[0])
-                else:
-                    raise Exception('Units on the interleaved array are not equal')
-        """
+
+        # if any([hasattr(a, 'units') for a in arrs]):
+        #     [a.convert_to_mks() for a in arrs if hasattr(a, 'units')]
+        #     units = [a.units.__str__() for a in arrs if hasattr(a, 'units')]
+        #     if len(units) > 0:
+        #         if len(set(units)) == 1:
+        #             temp_arr *= np.array([1]) * getattr(unyt, units[0])
+        #         else:
+        #             raise Exception('Units on the interleaved array are not equal')
 
         return temp_arr
 
@@ -1686,9 +1716,9 @@ class Base(dict):
 
         Returns
         -------
-        When ``single`` is False (default) a list contain the element(s) is
-        returned.  When ``single`` is True a bare string containing the element
-        is returned.
+        When ``single`` is ``False`` (default) a list containing the element(s)
+        is returned.  When ``single`` is ``True`` a bare string containing the
+        element is returned.
         """
         if element is None:
             element = ['pore', 'throat']
@@ -1703,7 +1733,7 @@ class Base(dict):
         element = [item.rsplit('s', maxsplit=1)[0] for item in element]
         for item in element:
             if item not in ['pore', 'throat']:
-                raise Exception('Invalid element received: '+item)
+                raise Exception('All keys must start with either pore or throat')
         # Remove duplicates if any
         [element.remove(L) for L in element if element.count(L) > 1]
         if single:
@@ -1795,7 +1825,7 @@ class Base(dict):
         if single:
             if len(mode) > 1:
                 raise Exception('Multiple modes received when only one mode '
-                                + 'allowed')
+                                + 'is allowed by this method')
             else:
                 mode = mode[0]
         return mode

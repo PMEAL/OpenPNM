@@ -5,7 +5,8 @@ on: [push]
 jobs:
   build:
 
-    if: "!contains(github.event.head_commit.message, 'ci min') && !contains(github.event.head_commit.message, 'ci skip')"
+    if: (! contains(github.event.head_commit.message, 'ci min')) &&
+        (! contains(github.event.head_commit.message, 'ci skip'))
 
     runs-on: ${{ matrix.operating-system }}
     strategy:

@@ -87,7 +87,7 @@ class DiffusiveConductanceTest:
         self.geo['throat.conduit_lengths.pore1'] = 0.15
         self.geo['throat.conduit_lengths.throat'] = 0.6
         self.geo['throat.conduit_lengths.pore2'] = 0.25
-        self.phase['pore.pressure'] = sp.linspace(0, 20, self.net.Np)
+        self.phase['pore.pressure'] = np.linspace(0, 20, self.net.Np)
         self.phase['throat.hydraulic_conductance'] = 1
         mod = op.models.physics.diffusive_conductance.taylor_aris_diffusion
         self.phys.add_model(propname='throat.ta_diffusive_conductance',
