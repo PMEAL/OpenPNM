@@ -44,7 +44,7 @@ This page links to examples in the github repo at [github.com/PMEAL/OpenPNM/exam
 
 | Link | Description |
 |:-----|:------------|
-| [Pore-scale Imaging and Modeling](/examples/notebooks/networks/extraction/Pore-scale Imaging and Modeling-MGambier.ipynb) | `Done` |
+| [Pore-scale Imaging and Modeling](/examples/notebooks/networks/extraction/Pore_scale_Imaging_Modeling_MGambier.ipynb) | `Done` |
 | [Benthiemer ICL Benchmark](/examples/notebooks/networks/extraction/benthiemer_ICL_benchmark.ipynb) | `Done` |
 | [Doddington ICL Benchmark](/examples/notebooks/networks/extraction/doddington_ICL_benchmark.ipynb) | `Done` |
 | [Berea ICL Benchmark](/examples/notebooks/networks/extraction/berea_ICL_benchmark.ipynb) | `Done` |
