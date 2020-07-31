@@ -1,6 +1,7 @@
 ## OpenPNM: Gallery of Examples
 
-This page links to examples in the github repo at [github.com/PMEAL/OpenPNM/examples/notebooks](https://www.github.com/PMEAL/OpenPNM/examples/notebooks)
+This page links to examples in the Github repo at [github.com/PMEAL/OpenPNM/examples/notebooks](https://www.github.com/PMEAL/OpenPNM/examples/notebooks)
+
 
 
 [//]: # (This line and the one below are not rendered in the final file, so basically act as comments)
@@ -26,17 +27,17 @@ This page links to examples in the github repo at [github.com/PMEAL/OpenPNM/exam
 
 | Link | Description |
 |:-----|:------------|
-| [Cubic Lattice](/examples/notebooks/networks/generation/cubic_networks.ipynb) | The Cubic lattice is the classic pore network topology, and provides an excellent starting point for any investigation.  The ability to alter the coodination number up to 26, combined with deleting random pores and throats creates an even more realistic topology. |
-| [Dual Cubic Lattice](/examples/notebooks/networks/generation/dual_cubic_lattices.ipynb) | The simultaneous simulation transport in the void and solid, and their interactions, can be done with two interpenetrating cubic networks as illustrated in this tutorial |
-| [Cubic Template](/examples/notebooks/networks/generation/cubic_templates.ipynb) | Cubic lattices do not have to be contrained to cubic shaped domains.  This tutorial explains how arbitrary shaped domains (e.g. a spherical particle) can be created. |
-| [Delaunay and Voronoi Tessellation](/examples/notebooks/networks/generation/random_networks_based_on_delaunay_and_voronoi_tessellations.ipynb) | If truly random topology is necessary then this can be accomplished by performaing a Delaunay tessellation on randomly (or not so randomly) distributed points |
+| [Cubic Lattice](/examples/notebooks/networks/generation/cubic_networks.ipynb) | The Cubic lattice is the classic pore network topology, and provides an excellent starting point for any investigation.  The ability to alter the coordination number up to 26, combined with deleting random pores and throats creates an even more realistic topology. |
+| [Dual Cubic Lattice](/examples/notebooks/networks/generation/dual_cubic_lattices.ipynb) | The simultaneous simulation of transport in the void and solid, and their interactions, can be done with two interpenetrating cubic networks as illustrated in this tutorial |
+| [Cubic Template](/examples/notebooks/networks/generation/cubic_templates.ipynb) | Cubic lattices do not have to be constrained to cubic shaped domains.  This tutorial explains how arbitrary shaped domains (e.g. a spherical particle) can be created, though note the networks would still have a cubic lattice connectivity. |
+| [Delaunay and Voronoi Tessellation](/examples/notebooks/networks/generation/random_networks_based_on_delaunay_and_voronoi_tessellations.ipynb) | If truly random topology is necessary then this can be accomplished by performing a Delaunay tessellation on randomly (or not so randomly) distributed points |
 
 #### [Manipulation](/examples/notebooks/networks/manipulation)
 
 | Link | Description |
 |:-----|:------------|
 | [Adding Boundary Pores](/examples/notebooks/networks/manipulation/adding_boundary_pores.ipynb) | Boundary pores are useful when conducting transport simulations, but they are not added to generated OpenPNM network automatically.  This tutorial explains their importance as well as how to add them to the network. |
-| [Manually Adding and Removing Pores and Throats](/examples/notebooks/networks/manipulation/manually_adding_pores_and_throats.ipynb) | It's possible to alter a pore network by manually adding/removing pores and/or throats.  This tutorial desribes the available tools in OpenPNM and explains what occurs behind the scenes. |
+| [Manually Adding and Removing Pores and Throats](/examples/notebooks/networks/manipulation/manually_adding_pores_and_throats.ipynb) | It's possible to alter a pore network by manually adding/removing pores and/or throats.  This tutorial describes the available tools in OpenPNM and explains what occurs behind the scenes. |
 | [Stitching and Merging Networks](/examples/notebooks/networks/manipulation/stitching_and_merging_networks_together.ipynb) | Given two or more networks, it is necessary to somehow join them into a single domain to perform simulations.  This tutorial explains the difference between merging and stitching, and gives some examples on how to do both. |
 | [Joining Pore Network and Continuum Domains](/examples/notebooks/networks/manipulation/coupling_continuum_regions_with_pore_networks.ipynb) | This is a variation on stitching networks together, where one has much smaller spacing than the other |
 
@@ -55,22 +56,22 @@ This page links to examples in the github repo at [github.com/PMEAL/OpenPNM/exam
 
 | Link | Description |
 |:-----|:------------|
-| [Basic Stick and Ball](/examples/notebooks/geometry/stick_and_ball.ipynb) |  |
+| [Basic Stick and Ball](/examples/notebooks/geometry/stick_and_ball.ipynb) | The StickAndBall contains the standard pore-scale models to describe the geometry of a pore network. |
 | [Defining Continuum Regions](/examples/notebooks/geometry/defining_continuum_regions.ipynb) |  |
 | [Overview of Shape Factors](/examples/notebooks/geometry/overview_of_shape_factors.ipynb) | `Zohaib and/or Amin` |
-| [Adjusting Pore Size Distributions](/examples/notebooks/geometry/adjusting_pore_size_distributions.ipynb) |  |
+| [Adjusting Pore Size Distributions](/examples/notebooks/geometry/adjusting_pore_size_distributions.ipynb) | The basic StickAndBall class is a good place to start since it has all the necessary pore-scale models, but to customize it for a specific material requires adjusting the pore and throat size distribution.  This example illustrates how to change the pore-size distribution function and how to tweak the distributions parameters to get a suitable result. |
 
 ### [Materials](/examples/notebooks/materials)
 
 | Link | Description |
 |:-----|:------------|
-| [Fibrous Media with Voronoi Tessellations](/examples/notebooks/materials/fibrous_media_based_on_voronoi_tessellation.ipynb) | `Done` |
+| [Fibrous Media with Voronoi Tessellations](/examples/notebooks/materials/fibrous_media_based_on_voronoi_tessellation.ipynb) | The Voronoi tessellation has been successfully used to model transport in fibrous media in several papers.  This class generates a VoronoiDelaunay network object, then further creates a geometry object containing all the associated geometrical models. |
 
 ### [Thermophysical Properties](/examples/notebooks/phases)
 
 | Link | Description |
 |:-----|:------------|
-| [Creating a Custom Phase](/examples/notebooks/phases/creating_a_custom_phase.ipynb) | `Done` |
+| [Creating a Custom Phase](/examples/notebooks/phases/creating_a_custom_phase.ipynb) | OpenPNM includes only a few common phases as predefined classes, but it is quite easy to create new phases with custom properties.  This example illustrates how to leverage the library of generic pore-scale models to create phases for any application. |
 | [Working with Mixtures](/examples/notebooks/phases/working_with_mixtures.ipynb) | `Jeff` |
 
 ### [Simulations](/examples/notebooks/algorithms)
@@ -79,21 +80,20 @@ This page links to examples in the github repo at [github.com/PMEAL/OpenPNM/exam
 
 | Link | Description |
 |:-----|:------------|
-| [Ordinary Percolation](/examples/notebooks/algorithms/percolation/A_ordinary_percolation.ipynb) |  |
-| [Invasion Percolation](/examples/notebooks/algorithms/percolation/B_invasion_percolation.ipynb) |  |
-| [Mixed Invasion Percolation](/examples/notebooks/algorithms/percolation/C_mixed_invasion_percolation.ipynb) |  |
-| [Meniscus Model Comparison](/examples/notebooks/algorithms/percolation/D_meniscus_model_comparison.ipynb) |  |
-| [Mercury Intrusion Porosimetry](/examples/notebooks/algorithms/percolation/capillary_pressure_curves.ipynb) |  |
+| [Ordinary Percolation](/examples/notebooks/algorithms/percolation/A_ordinary_percolation.ipynb) | Ordinary percolation corresponds to pressure-based invasion of non-wetting fluid.  The OrdinaryPercolation class is the basis for simulating mercury intrusion and other capillary pressure curve measurements.  This example illustrates its general use. |
+| [Invasion Percolation](/examples/notebooks/algorithms/percolation/B_invasion_percolation.ipynb) | Invasion percolation corresponds to the to volume-based injection of a non-wetting phase.  InvasionPercolation is the preferred approach for estimating multiphase transport properties since all saturations can be obtained, unlike OrdinaryPercolation which only produces saturations at discrete applied pressure steps. |
+| [Mixed Invasion Percolation](/examples/notebooks/algorithms/percolation/C_mixed_invasion_percolation.ipynb) | Mixed invasion percolation is used for simulating imbibition of a wetting fluid.  The *mixed* aspect refers to the fact that both pore bodies and throats are considered during the invasion. |
+| [Meniscus Model Comparison](/examples/notebooks/algorithms/percolation/D_meniscus_model_comparison.ipynb) | More elaborate meniscus models beyond the standard cylindrical tube are discussed in this example. |
+| [Mercury Intrusion Porosimetry](/examples/notebooks/algorithms/percolation/capillary_pressure_curves.ipynb) | The IntrusionPorosimetry class is a subclass of OrdinaryPercolation which is specifically developed for simulating capillary drainage of a non-wetting fluid.  This class illustrates how to compare simulation to experimental data. |
 
 #### [Single Phase Transport](/examples/notebooks/algorithms/single_phase)
 
 | Link | Description |
 |:-----|:------------|
-| [Basic Fickian Diffusion, Tortuosity, and Formation Factor](/examples/notebooks/algorithms/single_phase/fickian_diffusion_and_tortuosity.ipynb) | `Jeff` |
-| [Permeability Tensor](/examples/notebooks/algorithms/single_phase/stokes_flow_and_permeability_tensor.ipynb) | `Jeff` |
+| [Basic Fickian Diffusion, Tortuosity, and Formation Factor](/examples/notebooks/algorithms/single_phase/fickian_diffusion_and_tortuosity.ipynb) | Calculating the rate of diffusion through a network is a primary use of OpenPNM, and this example illustrates how to do it, and how to convert the result into known transport parameters such as tortuosity and formation factor. |
+| [Permeability Tensor](/examples/notebooks/algorithms/single_phase/stokes_flow_and_permeability_tensor.ipynb) | The direct connection between the structure on the transport is one of main benefits of pore networks.  This examples uses a 2-layered network with 3x smaller pores in on layer to illustrate how the permeability coefficient for each direction can be determined. |
 | [Deep Dive into Conductance Models](/examples/notebooks/algorithms/single_phase/deep_dive_into_conductance_models.ipynb) | `Amin and Zohaib` |
 | [Diffusion with Concentration Dependent Diffusivity](/examples/notebooks/algorithms/single_phase/diffusion_with_concentration_dependent_diffusivity.ipynb) | `Amin` |
-| [1D Heat Transfer](/examples/notebooks/algorithms/single_phase/one_dimensional_heat_transfer.ipynb) | `Remove?` |
 
 #### [Multiphase Transport](/examples/notebooks/algorithms/multiphase)
 
