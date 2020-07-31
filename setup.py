@@ -8,12 +8,12 @@ except ImportError:
 
 sys.path.append(os.getcwd())
 
-main_ = {}
-ver_path = convert_path('openpnm/__init__.py')
+about = {}
+ver_path = convert_path('openpnm/__version__.py')
 with open(ver_path) as f:
     for line in f:
         if line.startswith('__version__'):
-            exec(line, main_)
+            exec(line, about)
 
 # Read the contents of README file
 this_directory = os.path.abspath(os.path.dirname(__file__))
@@ -26,7 +26,7 @@ setup(
     + 'of multiphase transport in porous materials',
     long_description=long_description,
     long_description_content_type='text/markdown',
-    version=main_['__version__'],
+    version=about['__version__'],
     zip_safe=False,
     classifiers=[
         'Development Status :: 5 - Production/Stable',

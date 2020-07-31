@@ -24,11 +24,11 @@ def plot_connections(network, throats=None, fig=None, size_by=None,
         If a ``fig`` is supplied, then the topology will be overlaid on this
         plot.  This makes it possible to combine coordinates and connections,
         and to color throats differently
-    size_by : str
-        A dictionary key to a throat property (e.g. 'throat.diameter').  These
-        values are normalized then scaled by ``linewidth``.
-    color_by : str
-        A dictionary key to a throat property (e.g. 'throat.diameter')
+    size_by : array_like
+        An ND-array of throat values (e.g. alg['throat.rate']).  These
+        values are normalized by scaled by ``markersize``.
+    color_by : str or array_like
+        An ND-array of throat values (e.g. alg['throat.rate']).
     cmap : str or cmap object
         The matplotlib colormap to use if specfying a throat property
         for ``color_by``
@@ -102,15 +102,12 @@ def plot_connections(network, throats=None, fig=None, size_by=None,
     color = mcolors.to_rgb(color) + tuple([alpha])
     # Override colors with color_by if given
     if color_by is not None:
-        if not color_by.startswith('throat.'):
-            color_by = 'throat.' + color_by
-        c = network[color_by] / network[color_by].max()
-        color = cm.get_cmap(name=cmap)(c)
+        color = cm.get_cmap(name=cmap)(color_by / color_by.max())
         color[:, 3] = alpha
     if size_by is not None:
         if not size_by.startswith('throat.'):
             size_by = 'throat.' + size_by
-        linewidth = network[size_by] / network[size_by].max() * linewidth
+        linewidth = size_by / size_by.max() * linewidth
 
     if ThreeD:
         lc = Line3DCollection(throat_pos, colors=color, cmap=cmap,
@@ -146,11 +143,11 @@ def plot_coordinates(network, pores=None, fig=None, size_by=None,
         If a ``fig`` is supplied, then the coordinates will be overlaid.  This
         enables the plotting of multiple different sets of pores as well as
         throat connections from ``plot_connections``.
-    size_by : str
-        A dictionary key to a pore property (e.g. 'pore.diameter').  These
+    size_by : str or array_like
+        An ND-array of pore values (e.g. alg['pore.concentration']).  These
         values are normalized by scaled by ``markersize``.
-    color_by : str
-        A dictionary key to a pore property (e.g. 'pore.diameter')
+    color_by : str or array_like
+        An ND-array of pore values (e.g. alg['pore.concentration']).
     cmap : str or cmap object
         The matplotlib colormap to use if specfying a pore property
         for ``color_by``
@@ -221,24 +218,20 @@ def plot_coordinates(network, pores=None, fig=None, size_by=None,
     if 's' in kwargs.keys():
         markersize = kwargs.pop('s')
     if color_by is not None:
-        if not color_by.startswith('pore.'):
-            color_by = 'pore.' + color_by
-        c = network[color_by] / network[color_by].max()
-        color = cm.get_cmap(name=cmap)(c)
+        color = cm.get_cmap(name=cmap)(color_by / color_by.max())
     if size_by is not None:
-        if not size_by.startswith('pore.'):
-            size_by = 'pore.' + size_by
-        markersize = network[size_by] / network[size_by].max() * markersize
+        markersize = size_by / size_by.max() * markersize
 
     if ThreeD:
         ax.scatter(X, Y, Z, c=color, s=markersize,
                    marker=marker, alpha=alpha)
+        _scale_3d_axes(ax=ax, X=X, Y=Y, Z=Z)
     else:
         X_temp, Y_temp = np.column_stack((X, Y, Z))[:, dim].T
         ax.scatter(X_temp, Y_temp, c=color, s=markersize,
                    marker=marker, alpha=alpha)
+        _scale_3d_axes(ax=ax, X=X, Y=Y, Z=np.zeros_like(Y))
 
-    _scale_3d_axes(ax=ax, X=X, Y=Y, Z=Z)
     _label_axes(ax=ax, X=X, Y=Y, Z=Z)
 
     return fig
@@ -266,6 +259,8 @@ def _label_axes(ax, X, Y, Z):
 def _scale_3d_axes(ax, X, Y, Z):
     if not hasattr(ax, '_scaled'):
         ax._scaled = True
+        if not hasattr(ax, "set_zlim"):
+            ax.axis("equal")
         max_range = np.ptp([X, Y, Z]).max() / 2
         mid_x = (X.max() + X.min()) * 0.5
         mid_y = (Y.max() + Y.min()) * 0.5
@@ -274,10 +269,6 @@ def _scale_3d_axes(ax, X, Y, Z):
         ax.set_ylim(mid_y - max_range, mid_y + max_range)
         if hasattr(ax, "set_zlim"):
             ax.set_zlim(mid_z - max_range, mid_z + max_range)
-        else:
-            ax.axis("equal")
-            ax.autoscale()
-            ax.margins(0.15)
 
 
 def plot_networkx(network, plot_throats=True, labels=None, colors=None,

@@ -1,0 +1,72 @@
+name: Bump version
+
+on:
+  push:
+    branches:
+      - release
+
+jobs:
+  build:
+    name: Bump version
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        persist-credentials: false  # otherwise, the token used is the GITHUB_TOKEN, instead of your personal token
+        fetch-depth: 0              # otherwise, you will failed to push refs to dest repo
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.7
+
+    - name: Set env variables
+      run: |
+        git fetch --all --tags
+        # echo ::set-env name=TAG::$(git describe --tags `git rev-list --tags --max-count=1`)
+        echo ::set-env name=TAG::$(git tag | sort -V | tail -1)
+        echo ::set-env name=VER::$(python -c "import sys; sys.path.append('./openpnm'); from __version__ import __version__; print(__version__)")
+
+    - name: Install dependencies
+      run: |
+        pip install bump2version
+        echo $TAG $VER
+
+    - name: Bump version (patch)
+      if: contains(github.event.head_commit.message, '#patch')
+      run: bump2version --current-version $VER patch openpnm/__version__.py
+
+    - name: Bump version (minor)
+      if: contains(github.event.head_commit.message, '#minor')
+      run: bump2version --current-version $VER minor openpnm/__version__.py
+
+    - name: Bump version (major)
+      if: contains(github.event.head_commit.message, '#major')
+      run: bump2version --current-version $VER major openpnm/__version__.py
+
+    - name: Commit files
+      if:
+        contains(github.event.head_commit.message, '#patch') ||
+        contains(github.event.head_commit.message, '#minor') ||
+        contains(github.event.head_commit.message, '#major')
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git commit -m "Bump version number [ci skip]" -a
+
+    - name: Push changes
+      uses: ad-m/github-push-action@master
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        branch: 'release'
+
+    - name: Push new tag
+      uses: anothrNick/github-tag-action@1.22.0
+      env:
+        # If secrets.GITHUB_TOKEN is used, "Publish to PyPI" action will not be triggered
+        WITH_V: true
+        RELEASE_BRANCHES: release
+        GITHUB_TOKEN: ${{ secrets.PUSH_ACTION_TOKEN }}
+        DEFAULT_BUMP: none
+
