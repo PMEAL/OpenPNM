@@ -270,14 +270,14 @@ class RelativePermeability(GenericAlgorithm):
             wp['pore.occupancy'] = 1-pore_mask
         return sat
 
-    def run(self,Snw_num=None):
+    def run(self,Snwp_num=None):
         r"""
         Calculates the saturation of each phase using the invasion sequence
         Notes:
-        Snw_num: Scalar
+        Snwp_num: Scalar
         Number of saturation point to calculate the relative permseability
         values. If not given, the default value is 100. Saturation points will
-        be Snw_num (or 100 by default) equidistant points in range [0,1].
+        be Snwp_num (or 100 by default) equidistant points in range [0,1].
 
         For three directions of flow the absolute permeability values
         will be calculated using _abs_perm_calc.
@@ -288,8 +288,8 @@ class RelativePermeability(GenericAlgorithm):
             calculated. Relative permeability is defined by devision of
             K_eff and K_abs.
         """
-        if Snw_num is None:
-            Snw_num = self.settings['Snwp_num']
+        if Snwp_num is None:
+            Snwp_num = self.settings['Snwp_num']
         net = self.project.network
         K_dir = set(self.settings['flow_inlets'].keys())
         for dim in K_dir:
@@ -315,9 +315,9 @@ class RelativePermeability(GenericAlgorithm):
             max_seq = np.max([np.max(self.settings['pore.invasion_sequence']),
                               np.max(
                               self.settings['throat.invasion_sequence'])])
-            start = max_seq//Snw_num
+            start = max_seq//Snwp_num
             stop = max_seq
-            step = max_seq//Snw_num
+            step = max_seq//Snwp_num
             Snwparr = []
             flow_pores = [net.pores(self.settings['flow_inlets'][dirs]),
                           net.pores(self.settings['flow_outlets'][dirs])]
