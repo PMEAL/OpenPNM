@@ -49,7 +49,7 @@ class RelativePermeability(GenericAlgorithm):
                           'relperm_nwp': dict(),
                           'perm_abs_wp': dict(),
                           'perm_abs_nwp': dict(),
-                          'results': {'sat': [], 'krw': [], 'krnw': []}}
+                          'results': {'sat': [], 'kr_wp': [], 'kr_nwp': []}}
 
     def setup(self, invading_phase=None, defending_phase=None,
               invasion_sequence=None, flow_inlets=None, flow_outlets=None,
@@ -344,14 +344,14 @@ class RelativePermeability(GenericAlgorithm):
             if self.settings['wp'] is not None:
                 plt.plot(self.Kr_values['sat'][inp],
                          self.Kr_values['relperm_wp'][inp],
-                         'o-', label='Krwp'+inp)
+                         'o-', label='Kr_wp'+inp)
                 plt.plot(self.Kr_values['sat'][inp],
                          self.Kr_values['relperm_nwp'][inp],
-                         '*-', label='Krnwp'+inp)
+                         '*-', label='Kr_nwp'+inp)
             else:
                 plt.plot(self.Kr_values['sat'][inp],
                          self.Kr_values['relperm_nwp'][inp],
-                         '*-', label='Krnwp'+inp)
+                         '*-', label='Kr_nwp'+inp)
         plt.xlabel('Snw')
         plt.ylabel('Kr')
         plt.title('Relative Permability Curves')
@@ -366,8 +366,8 @@ class RelativePermeability(GenericAlgorithm):
         """
         self.Kr_values['results']['sat'] = self.Kr_values['sat']
         if self.settings['wp'] is not None:
-            self.Kr_values['results']['krw'] = self.Kr_values['relperm_wp']
+            self.Kr_values['results']['kr_wp'] = self.Kr_values['relperm_wp']
         else:
-            self.Kr_values['results']['krw'] = None
-        self.Kr_values['results']['krnw'] = self.Kr_values['relperm_nwp']
+            self.Kr_values['results']['kr_wp'] = None
+        self.Kr_values['results']['kr_nwp'] = self.Kr_values['relperm_nwp']
         return self.Kr_values['results']

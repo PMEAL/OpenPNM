@@ -75,8 +75,8 @@ class RelativePermeabilityTest:
                  flow_outlets=outlets)
         rp.run(Snwp_num=10)
         results = rp.get_Kr_data()
-        kx = results['relperm_wp']['x']
-        kz = results['relperm_wp']['z']
+        kx = results['kr_wp']['x']
+        kz = results['kr_wp']['z']
         kr = [0.5953556221922877, 0.42713264157774794, 0.3658925423425995,
               0.21493111700350034, 1.2600781827032384e-06, 1.000000000000001e-06,
               1.000000000000001e-06, 1.000000000000001e-06, 1.000000000000001e-06,
@@ -99,8 +99,8 @@ class RelativePermeabilityTest:
                   flow_outlets=outlets)
         rp.run(Snwp_num=10)
         results = rp.get_Kr_data()
-        kx = results['relperm_wp']['x']
-        kz = results['relperm_wp']['z']
+        kx = results['kr_wp']['x']
+        kz = results['kr_wp']['z']
         kr = [0.5953556221922877, 0.42713264157774794, 0.3658925423425995,
               0.21493111700350034, 1.2600781827032384e-06, 1.000000000000001e-06,
               1.000000000000001e-06, 1.000000000000001e-06, 1.000000000000001e-06,
