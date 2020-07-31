@@ -16,7 +16,7 @@ default_settings = {'wp': None,
                     'throat.invasion_sequence': 'throat.invasion_sequence',
                     'flow_inlet': None,
                     'flow_outlet': None,
-                    'snwp_num': None,
+                    'Snwp_num': None,
                     }
 
 
@@ -39,6 +39,7 @@ class RelativePermeability(GenericAlgorithm):
     use the flow rate of the phase of interest in single and multiphase
     permeability calculation.
     """
+
     def __init__(self, settings={}, **kwargs):
         super().__init__(**kwargs)
         self.settings.update(default_settings)
@@ -52,7 +53,7 @@ class RelativePermeability(GenericAlgorithm):
 
     def setup(self, invading_phase=None, defending_phase=None,
               invasion_sequence=None, flow_inlets=None, flow_outlets=None,
-              snwp_num=100):
+              Snwp_num=100):
         r"""
         Assigns values to the algorithms ``settings``
         This part is revised so that it can be applied on either 2D or 3D
@@ -81,7 +82,7 @@ class RelativePermeability(GenericAlgorithm):
            The number of saturation points (equidistant points), at which the
            Kr values will be calculated.
         """
-        self.settings['snwp_num'] = snwp_num
+        self.settings['Snwp_num'] = Snwp_num
         network = self.project.network
         if invading_phase is not None:
             self.settings['nwp'] = invading_phase.name
@@ -269,9 +270,9 @@ class RelativePermeability(GenericAlgorithm):
             wp['pore.occupancy'] = 1-pore_mask
         return sat
 
-    def run(self):
+    def run(self,Snw_num=None):
         r"""
-        Calculates the saturation of each phase using the invasion sequence 
+        Calculates the saturation of each phase using the invasion sequence
         Notes:
         Snw_num: Scalar
         Number of saturation point to calculate the relative permseability
@@ -280,7 +281,6 @@ class RelativePermeability(GenericAlgorithm):
 
         For three directions of flow the absolute permeability values
         will be calculated using _abs_perm_calc.
-        
         For each saturation point:
             the saturation values are calculated by _sat_occ_update.
             This function also updates occupancies of each phase in
@@ -288,7 +288,8 @@ class RelativePermeability(GenericAlgorithm):
             calculated. Relative permeability is defined by devision of
             K_eff and K_abs.
         """
-        Snw_num = self.settings['snwp_num']
+        if Snw_num is None:
+            Snw_num = self.settings['Snwp_num']
         net = self.project.network
         K_dir = set(self.settings['flow_inlets'].keys())
         for dim in K_dir:
@@ -349,8 +350,8 @@ class RelativePermeability(GenericAlgorithm):
                          '*-', label='Krnwp'+inp)
             else:
                 plt.plot(self.Kr_values['sat'][inp],
-                        self.Kr_values['relperm_nwp'][inp],
-                        '*-', label='Krnwp'+inp)
+                         self.Kr_values['relperm_nwp'][inp],
+                         '*-', label='Krnwp'+inp)
         plt.xlabel('Snw')
         plt.ylabel('Kr')
         plt.title('Relative Permability Curves')

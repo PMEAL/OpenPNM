@@ -40,7 +40,7 @@ class RelativePermeabilityTest:
         rp = op.algorithms.metrics.RelativePermeability(network=self.net)
         rp.setup(invading_phase=self.non_wet_phase,
                  invasion_sequence='invasion_sequence')
-        rp.run(Snw_num=10)
+        rp.run(Snwp_num=10)
         results = rp.get_Kr_data()
         assert results['relperm_wp'] == {}
 
@@ -53,7 +53,7 @@ class RelativePermeabilityTest:
                  invasion_sequence='invasion_sequence',
                  flow_inlets=inlets,
                  flow_outlets=outlets)
-        rp.run(Snw_num=10)
+        rp.run(Snwp_num=10)
         results = rp.get_Kr_data()
         kx = results['relperm_wp']['x']
         ky = results['relperm_wp']['y']
@@ -73,7 +73,7 @@ class RelativePermeabilityTest:
                  invasion_sequence='invasion_sequence',
                  flow_inlets=inlets,
                  flow_outlets=outlets)
-        rp.run(Snw_num=10)
+        rp.run(Snwp_num=10)
         results = rp.get_Kr_data()
         kx = results['relperm_wp']['x']
         kz = results['relperm_wp']['z']
@@ -97,7 +97,7 @@ class RelativePermeabilityTest:
                   invasion_sequence='invasion_sequence',
                   flow_inlets=inlets,
                   flow_outlets=outlets)
-        rp.run(Snw_num=10)
+        rp.run(Snwp_num=10)
         results = rp.get_Kr_data()
         kx = results['relperm_wp']['x']
         kz = results['relperm_wp']['z']
