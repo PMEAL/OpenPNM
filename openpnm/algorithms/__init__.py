@@ -42,9 +42,4 @@ from .TransientNernstPlanck import TransientNernstPlanck
 
 from .NernstPlanckMultiphysics import NernstPlanckMultiphysics
 from .TransientNernstPlanckMultiphysics import TransientNernstPlanckMultiphysics
-<<<<<<< HEAD
 from . import metrics
-=======
-
-# from . import metrics
->>>>>>> dev
