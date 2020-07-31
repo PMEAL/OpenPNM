@@ -12,12 +12,12 @@ class Tableist():
         self.style = style
 
     def __getitem__(self, row):
-        if isinstance(row, slice):
+        if isinstance(row, slice):  # If slice, convert to list
             start = row.start or 0
             stop = row.stop or self.nrows
             step = row.step or 1
             row = [r for r in range(start, stop, step)]
-        if isinstance(row, list):
+        if isinstance(row, list):  # If list, process each location
             temp = [self._grid.table_data[r] for r in row]
             temp2 = Tableist(len(temp), self.ncols, style=self.style)
             temp2._grid.table_data = temp
@@ -25,10 +25,16 @@ class Tableist():
             return temp
         return self._grid.table_data[row]
 
-    def __setitem__(self, row, cols):
-        if len(cols) != self.ncols:
-            raise Exception('Must write entire row')
-        self._grid.table_data[row] = cols
+    # def __setitem__(self, row, cols):
+    #     if isinstance(row, int):
+    #         self._grid.table_data[row] = cols
+    #     if isinstance(row, slice):  # If slice, convert to list
+    #         start = row.start or 0
+    #         stop = row.stop or self.nrows
+    #         step = row.step or 1
+    #         row = [r for r in range(start, stop, step)]
+    #     if isinstance(row, list):
+
 
     def set_col(self, col, vals):
         try:

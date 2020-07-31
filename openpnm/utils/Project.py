@@ -4,6 +4,7 @@ import openpnm
 import numpy as np
 from copy import deepcopy
 from openpnm.utils import SettingsDict, HealthDict, Workspace, logging
+from .Grid import Tableist
 logger = logging.getLogger(__name__)
 ws = Workspace()
 
@@ -1045,7 +1046,7 @@ class Project(list):
             else:
                 obj.regenerate_models()
 
-    def get_grid(self, astype='table'):
+    def _generate_grid(self, astype='table'):
         r"""
         """
         from pandas import DataFrame as df
@@ -1081,49 +1082,27 @@ class Project(list):
 
     @property
     def grid(self):
-        grid = self.get_grid(astype='table')
-        obj = ProjectGrid(grid)
-        return obj
+        if hasattr(self, '_grid'):
+            return self._grid
+        else:
+            grid = self._generate_grid(astype='table')
+            obj = ProjectGrid()
+            obj._grid = grid
+            self._grid = obj
+            return obj
 
 
-class Grid():
-
-    def __init__(self, table):
-        self.grid = table
-
-    def index(self):
-        index = [row[0] for row in self.grid.table_data[1:]]
-        return index
-
-    def header(self):
-        columns = self.grid.table_data[0][1:]
-        return columns
+class ProjectGrid(Tableist):
+    r"""
+    This is a subclass of a Tableist grid, which adds the ability to lookup
+    by geometries and phases, as more specific versions of rows and cols
+    """
 
     def row(self, name):
-        for row in self.grid.table_data:
-            if row[0].startswith(name):
-                return row
-        else:
-            raise ValueError(name + 'is not in list')
+        return self.get_row(name)
 
     def col(self, name):
-        # Find column number
-        index = self.grid.table_data[0].index(name)
-        col = []
-        for row in self.grid.table_data:
-            col.append(row[index])
-        return col
-
-    def __str__(self):
-        s = self.grid.table.__str__()
-        return s
-
-
-class ProjectGrid(Grid):
-    r"""
-    This is a subclass of Grid, which adds the ability to lookup by geometries
-    and phases, as more specific versions of rows and cols
-    """
+        return self.get_col(name)
 
     def geometries(self):
         return self.index()
