@@ -42,7 +42,7 @@ class RelativePermeabilityTest:
                  invasion_sequence='invasion_sequence')
         rp.run(Snwp_num=10)
         results = rp.get_Kr_data()
-        assert results['kr_wp'] == {}
+        assert results['kr_wp'] == None
 
     def test_overwriting_boundary_faces(self):
         inlets = {'x': 'left', 'y': 'left', 'z': 'left'}

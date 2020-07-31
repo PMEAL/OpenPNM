@@ -270,7 +270,7 @@ class RelativePermeability(GenericAlgorithm):
             wp['pore.occupancy'] = 1-pore_mask
         return sat
 
-    def run(self,Snwp_num=None):
+    def run(self, Snwp_num=None):
         r"""
         Calculates the saturation of each phase using the invasion sequence
         Notes:
