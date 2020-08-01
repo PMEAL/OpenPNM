@@ -50,7 +50,7 @@ This page links to examples in the Github repo at [github.com/PMEAL/OpenPNM/exam
 | [Doddington ICL Benchmark](/examples/notebooks/networks/extraction/doddington_ICL_benchmark.ipynb) | `Done` |
 | [Berea ICL Benchmark](/examples/notebooks/networks/extraction/berea_ICL_benchmark.ipynb) | `Done` |
 | [Predicting Permeability of Berea](/examples/notebooks/networks/extraction/predicting_effective_permeability_of_berea.ipynb) | `Done` |
-| [Working with Extracted Networks](/examples/notebooks/networks/extraction/working_with_extracted_networks.ipynb) |Network extractions on digital porous media images can be implemented in PoreSpy open source package. PoreSpy output is consistent with OpenPNM input modules. The extracted network can then be easily used for simulation purposes in OpenPNM. This example illustrates this process for a synthetic image of porous medium. |
+| [Working with Extracted Networks](/examples/notebooks/networks/extraction/working_with_extracted_networks.ipynb) |This example illustrates the the steps for extracting networks from synthetic image of porous medium. Network extractions on digital porous media images can be implemented in PoreSpy open source package. PoreSpy output is consistent with OpenPNM input modules. The extracted network can then be easily used for other purposes in OpenPNM. |
 
 ### [Geometry](/examples/notebooks/geometry)
 
