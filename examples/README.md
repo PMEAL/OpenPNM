@@ -45,12 +45,12 @@ This page links to examples in the Github repo at [github.com/PMEAL/OpenPNM/exam
 
 | Link | Description |
 |:-----|:------------|
-| [Pore-scale Imaging and Modeling](/examples/notebooks/networks/extraction/Pore_scale_Imaging_Modeling_MGambier.ipynb) | `Done` |
+| [Pore-scale Imaging and Modeling](/examples/notebooks/networks/extraction/Pore_scale_Imaging_Modeling_MGambier.ipynb) | Pore network modeling of real rocks can be used for characterization of rock samples.  This example includes network extraction of the MountGambier rock sample and its permeability estimation using OpenPNM. |
 | [Benthiemer ICL Benchmark](/examples/notebooks/networks/extraction/benthiemer_ICL_benchmark.ipynb) | `Done` |
 | [Doddington ICL Benchmark](/examples/notebooks/networks/extraction/doddington_ICL_benchmark.ipynb) | `Done` |
 | [Berea ICL Benchmark](/examples/notebooks/networks/extraction/berea_ICL_benchmark.ipynb) | `Done` |
 | [Predicting Permeability of Berea](/examples/notebooks/networks/extraction/predicting_effective_permeability_of_berea.ipynb) | `Done` |
-| [Working with Extracted Networks](/examples/notebooks/networks/extraction/working_with_extracted_networks.ipynb) |`Done` |
+| [Working with Extracted Networks](/examples/notebooks/networks/extraction/working_with_extracted_networks.ipynb) |Network extractions on digital porous media images can be implemented in PoreSpy open source package. PoreSpy output is consistent with OpenPNM input modules. The extracted network can then be easily used for simulation purposes in OpenPNM. This example illustrates this process for a synthetic image of porous medium. |
 
 ### [Geometry](/examples/notebooks/geometry)
 
@@ -99,8 +99,8 @@ This page links to examples in the Github repo at [github.com/PMEAL/OpenPNM/exam
 
 | Link | Description |
 |:-----|:------------|
-| [Relative Diffusivity](/examples/notebooks/algorithms/multiphase/relative_diffusivity.ipynb) | `Done` |
-| [Relative Permeability in 2D](/examples/notebooks/algorithms/multiphase/relative_permeability_2D.ipynb) | `Done` |
+| [Relative Diffusivity](/examples/notebooks/algorithms/multiphase/relative_diffusivity.ipynb) | OpenPNM supports different multiphase transport phenomena. This example shows the procedures for calculation of relative diffusivity of Air and Water phases in a cubic network. For a multiphase diffusive mass transport problem invasion and distribution of phases can be modeled with percolation algorithms. Relative diffusivity of phases can then be calculated implementing Fickian diffusion for each phase considering multiphase pore scale models. |
+| [Relative Permeability in 2D](/examples/notebooks/algorithms/multiphase/relative_permeability_2D.ipynb) | OpenPNM is capable of simulating multiphase transport mechanisms such as drainage and imbibition in porous media. Relative properties of phases can be calculated assigning a related pore scale model and transport algorithm. This example presents the calculation procedures for relative permeability of Air and Water phases for a 2D network. Calculations for 3D networks follow the same steps. |
 
 #### [Reactive Transport](/examples/notebooks/algorithms/reactive)
 
