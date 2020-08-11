@@ -258,8 +258,7 @@ class RelativePermeability(GenericAlgorithm):
         sat_p = np.sum(network['pore.volume'][pore_mask])
         sat_t = np.sum(network['throat.volume'][throat_mask])
         sat1 = sat_p+sat_t
-        bulk = (np.sum(network['pore.volume']) +
-                np.sum(network['throat.volume']))
+        bulk = network['pore.volume'].sum() + network['throat.volume'].sum()
         sat = sat1/bulk
         nwp = self.project[self.settings['nwp']]
         nwp['pore.occupancy'] = pore_mask
@@ -333,7 +332,7 @@ class RelativePermeability(GenericAlgorithm):
             self.Kr_values['relperm_nwp'].update({dirs: relperm_nwp})
             self.Kr_values['sat'].update({dirs: Snwparr})
 
-    def plot_Kr_curves(self, fig=None):
+    def plot_Kr_curves(self, fig=None):  # pragma: no cover
         r"""
         Plot the relative permeability curve of the phase(s) in flow direction(s)
         as Kr vs Saturation points.
