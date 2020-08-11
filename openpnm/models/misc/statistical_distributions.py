@@ -90,7 +90,7 @@ def weibull(target, seeds, shape, scale, loc):
     >>> import numpy
     >>> func = scipy.stats.weibull_min(c=1.5, scale=0.0001, loc=0)
     >>> import matplotlib.pyplot as plt
-    >>> fig = plt.hist(func.ppf(q=numpy.rand(10000)), bins=50)
+    >>> fig = plt.hist(func.ppf(q=numpy.random.rand(10000)), bins=50)
 
     """
     import scipy.stats as spts
@@ -137,7 +137,7 @@ def normal(target, seeds, scale, loc):
     >>> import numpy
     >>> func = scipy.stats.norm(scale=.0001, loc=0.001)
     >>> import matplotlib.pyplot as plt
-    >>> fig = plt.hist(func.ppf(q=numpy.rand(10000)), bins=50)
+    >>> fig = plt.hist(func.ppf(q=numpy.random.rand(10000)), bins=50)
 
     """
     import scipy.stats as spts
@@ -197,7 +197,7 @@ def generic_distribution(target, seeds, func):
 
 
     >>> import matplotlib.pyplot as plt
-    >>> fig = plt.hist(stats_obj.ppf(q=numpy.rand(1000)), bins=50)
+    >>> fig = plt.hist(stats_obj.ppf(q=numpy.random.rand(1000)), bins=50)
 
     """
     seeds = target[seeds]
