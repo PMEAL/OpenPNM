@@ -785,7 +785,7 @@ def site_percolation(ij, occupied_sites):
 
     Notes
     -----
-    The ``connected_components`` function of scipy.csgraph will give ALL
+    The ``connected_components`` function of scipy.sparse.csgraph will give ALL
     sites a cluster number whether they are occupied or not, so this
     function essentially adjusts the cluster numbers to represent a
     percolation process.
@@ -830,7 +830,7 @@ def bond_percolation(ij, occupied_bonds):
 
     Notes
     -----
-    The ``connected_components`` function of scipy.csgraph will give ALL
+    The ``connected_components`` function of scipy.sparse.csgraph will give ALL
     sites a cluster number whether they are occupied or not, so this
     function essentially adjusts the cluster numbers to represent a
     percolation process.
@@ -2427,7 +2427,7 @@ def _site_percolation(network, pmask):
     # Only if both pores are True is the throat set to True
     tmask = np.all(conns, axis=1)
 
-    # Perform the clustering using scipy.csgraph
+    # Perform the clustering using scipy.sparse.csgraph
     csr = network.create_adjacency_matrix(weights=tmask, fmt='csr',
                                           drop_zeros=True)
     clusters = sprs.csgraph.connected_components(csgraph=csr,
@@ -2451,7 +2451,7 @@ def _bond_percolation(network, tmask):
     r"""
     This private method is called by 'find_clusters'
     """
-    # Perform the clustering using scipy.csgraph
+    # Perform the clustering using scipy.sparse.csgraph
     csr = network.create_adjacency_matrix(weights=tmask, fmt='csr',
                                           drop_zeros=True)
     clusters = sprs.csgraph.connected_components(csgraph=csr,
