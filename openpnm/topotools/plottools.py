@@ -81,7 +81,7 @@ def plot_connections(network, throats=None, fig=None, size_by=None,
     ThreeD = True if dim.sum() == 3 else False
     # Add a dummy axis for 1D networks
     if dim.sum() == 1:
-        dim[np.argwhere(dim == False)[0]] = True
+        dim[np.argwhere(~dim)[0]] = True
 
     fig = plt.figure() if fig is None else fig
     ax = fig.gca()
@@ -198,7 +198,7 @@ def plot_coordinates(network, pores=None, fig=None, size_by=None,
     ThreeD = True if dim.sum() == 3 else False
     # Add a dummy axis for 1D networks
     if dim.sum() == 1:
-        dim[np.argwhere(dim == False)[0]] = True
+        dim[np.argwhere(~dim)[0]] = True
     # Add 2 dummy axes for 0D networks (1 pore only)
     if dim.sum() == 0:
         dim[[0, 1]] = True
@@ -245,11 +245,11 @@ def _label_axes(ax, X, Y, Z):
             dim[i] = True
     # Add a dummy axis for 1D networks
     if dim.sum() == 1:
-        dim[np.argwhere(dim == False)[0]] = True
+        dim[np.argwhere(~dim)[0]] = True
     # Add 2 dummy axes for 0D networks (1 pore only)
     if dim.sum() == 0:
         dim[[0, 1]] = True
-    dim_idx = np.argwhere(dim == True).squeeze()
+    dim_idx = np.argwhere(dim).squeeze()
     ax.set_xlabel(labels[dim_idx[0]])
     ax.set_ylabel(labels[dim_idx[1]])
     if hasattr(ax, "set_zlim"):
@@ -323,7 +323,7 @@ def plot_networkx(network, plot_throats=True, labels=None, colors=None,
         if type(colors) is not list:
             colors = [colors]
         if len(labels) != len(colors):
-            raise('len(colors) must be equal to len(labels)!')
+            raise Exception('len(colors) must be equal to len(labels)!')
         for label, color in zip(labels, colors):
             node_color[network.pores(label)] = color
 
