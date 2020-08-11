@@ -4,7 +4,6 @@ r"""
 
 """
 import numpy as _np
-import scipy as _sp
 
 
 def series_resistors(target,
@@ -82,7 +81,7 @@ def series_resistors(target,
     # Setting g to inf when Li = 0 (ex. boundary pores)
     # INFO: This is needed since area could also be zero, which confuses NumPy
     m1, m2, mt = [Li != 0 for Li in [L1, L2, Lt]]
-    g1[~m1] = g2[~m2] = gt[~mt] = _sp.inf
+    g1[~m1] = g2[~m2] = gt[~mt] = _np.inf
     # Getting shape factors
     try:
         SF1 = phase[conduit_shape_factors+'.pore1'][throats]

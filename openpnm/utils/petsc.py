@@ -7,6 +7,7 @@ petsc: A class for solving sparse linear systems using petsc
 import sys
 import numpy as np
 import scipy as sp
+import scipy.sparse
 from openpnm.core import Base
 from openpnm.utils import logging
 logger = logging.getLogger(__name__)

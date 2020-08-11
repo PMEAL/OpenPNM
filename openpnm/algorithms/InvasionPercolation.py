@@ -172,7 +172,7 @@ class InvasionPercolation(GenericAlgorithm):
 
         """
         if n_steps is None:
-            n_steps = sp.inf
+            n_steps = np.inf
 
         if len(self.queue) == 0:
             logger.warn('queue is empty, this network is fully invaded')

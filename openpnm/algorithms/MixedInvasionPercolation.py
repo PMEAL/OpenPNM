@@ -311,7 +311,7 @@ class MixedInvasionPercolation(GenericAlgorithm):
             logger.error("Setup method must be run first")
 
         if max_pressure is None:
-            self.max_pressure = sp.inf
+            self.max_pressure = np.inf
         else:
             self.max_pressure = max_pressure
         if len(self.queue) == 0:

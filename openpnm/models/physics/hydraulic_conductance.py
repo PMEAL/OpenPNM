@@ -5,7 +5,6 @@ r"""
 .. autofunction:: openpnm.models.physics.hydraulic_conductance.hagen_poiseuille_power_law
 
 """
-import scipy as _sp
 import numpy as _np
 
 
@@ -86,7 +85,7 @@ def hagen_poiseuille(
     # Setting g to inf when Li = 0 (ex. boundary pores)
     # INFO: This is needed since area could also be zero, which confuses NumPy
     m1, m2, mt = [Li != 0 for Li in [L1, L2, Lt]]
-    g1[~m1] = g2[~m2] = gt[~mt] = _sp.inf
+    g1[~m1] = g2[~m2] = gt[~mt] = _np.inf
     # Getting shape factors
     try:
         SF1 = phase[conduit_shape_factors + ".pore1"][throats]
@@ -97,9 +96,9 @@ def hagen_poiseuille(
     Dt = phase[throat_viscosity][throats]
     D1, D2 = phase[pore_viscosity][cn].T
     # Find g for half of pore 1, throat, and half of pore 2
-    g1[m1] = A1[m1] ** 2 / (8 * _sp.pi * D1 * L1)[m1]
-    g2[m2] = A2[m2] ** 2 / (8 * _sp.pi * D2 * L2)[m2]
-    gt[mt] = At[mt] ** 2 / (8 * _sp.pi * Dt * Lt)[mt]
+    g1[m1] = A1[m1] ** 2 / (8 * _np.pi * D1 * L1)[m1]
+    g2[m2] = A2[m2] ** 2 / (8 * _np.pi * D2 * L2)[m2]
+    gt[mt] = At[mt] ** 2 / (8 * _np.pi * Dt * Lt)[mt]
     # Apply shape factors and calculate the final conductance
     return (1/gt/SFt + 1/g1/SF1 + 1/g2/SF2) ** (-1)
 
@@ -297,7 +296,7 @@ def hagen_poiseuille_power_law(
     # Setting g to inf when Li = 0 (ex. boundary pores)
     # INFO: This is needed since area could also be zero, which confuses NumPy
     m1, m2, mt = [Li != 0 for Li in [L1, L2, Lt]]
-    g1[~m1] = g2[~m2] = gt[~mt] = _sp.inf
+    g1[~m1] = g2[~m2] = gt[~mt] = _np.inf
     # Getting shape factors
     try:
         SF1 = phase[conduit_shape_factors + ".pore1"][throats]
@@ -305,7 +304,7 @@ def hagen_poiseuille_power_law(
         SF2 = phase[conduit_shape_factors + ".pore2"][throats]
     except KeyError:
         SF1 = SF2 = SFt = 1.0
-    pi = _sp.pi
+    pi = _np.pi
 
     # Check if pressure field exists
     try:
@@ -362,7 +361,7 @@ def hagen_poiseuille_power_law(
     # Pressure differences dP
     dP1 = _np.absolute(P[cn[:, 0]] - Pt)
     dP2 = _np.absolute(P[cn[:, 1]] - Pt)
-    dPt = _np.absolute(_sp.diff(P[cn], axis=1).squeeze())
+    dPt = _np.absolute(_np.diff(P[cn], axis=1).squeeze())
 
     dP1 = dP1.clip(min=1e-20)
     dP2 = dP2.clip(min=1e-20)
@@ -555,14 +554,14 @@ def classic_hagen_poiseuille(
     plen1[plen1 <= 1e-12] = 1e-12
     plen2[plen2 <= 1e-12] = 1e-12
     # Find g for half of pore 1
-    gp1 = _sp.pi * (pdia[Ps[:, 0]]) ** 4 / (128 * plen1 * mut)
-    gp1[_np.isnan(gp1)] = _sp.inf
-    gp1[~(gp1 > 0)] = _sp.inf  # Set 0 conductance pores (boundaries) to inf
+    gp1 = _np.pi * (pdia[Ps[:, 0]]) ** 4 / (128 * plen1 * mut)
+    gp1[_np.isnan(gp1)] = _np.inf
+    gp1[~(gp1 > 0)] = _np.inf  # Set 0 conductance pores (boundaries) to inf
 
     # Find g for half of pore 2
-    gp2 = _sp.pi * (pdia[Ps[:, 1]]) ** 4 / (128 * plen2 * mut)
-    gp2[_np.isnan(gp2)] = _sp.inf
-    gp2[~(gp2 > 0)] = _sp.inf  # Set 0 conductance pores (boundaries) to inf
+    gp2 = _np.pi * (pdia[Ps[:, 1]]) ** 4 / (128 * plen2 * mut)
+    gp2[_np.isnan(gp2)] = _np.inf
+    gp2[~(gp2 > 0)] = _np.inf  # Set 0 conductance pores (boundaries) to inf
     # Find g for full throat
     tdia = network[throat_diameter]
     tlen = network[throat_length]
@@ -574,7 +573,7 @@ def classic_hagen_poiseuille(
     except KeyError:
         sf = _np.ones(network.num_throats())
     sf[_np.isnan(sf)] = 1.0
-    gt = (1 / sf) * _sp.pi * (tdia) ** 4 / (128 * tlen * mut)
-    gt[~(gt > 0)] = _sp.inf  # Set 0 conductance pores (boundaries) to inf
+    gt = (1 / sf) * _np.pi * (tdia) ** 4 / (128 * tlen * mut)
+    gt[~(gt > 0)] = _np.inf  # Set 0 conductance pores (boundaries) to inf
     value = (1 / gt + 1 / gp1 + 1 / gp2) ** (-1)
     return value

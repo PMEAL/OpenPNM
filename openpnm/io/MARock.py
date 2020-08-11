@@ -1,6 +1,5 @@
 import os as os
 import numpy as np
-import scipy as sp
 from pathlib import Path
 from openpnm.utils import logging, Project
 from openpnm.network import GenericNetwork
@@ -66,10 +65,10 @@ class MARock(GenericIO):
 
         with open(np2th_file, mode='rb') as f:
             [Np, Nt] = np.fromfile(file=f, count=2, dtype='u4')
-            net['pore.boundary_type'] = sp.ndarray([Np, ], int)
+            net['pore.boundary_type'] = np.ndarray([Np, ], int)
             net['throat.conns'] = np.ones([Nt, 2], int)*(-1)
-            net['pore.coordination'] = sp.ndarray([Np, ], int)
-            net['pore.ID_number'] = sp.ndarray([Np, ], int)
+            net['pore.coordination'] = np.ndarray([Np, ], int)
+            net['pore.ID_number'] = np.ndarray([Np, ], int)
             for i in range(0, Np):
                 ID = np.fromfile(file=f, count=1, dtype='u4')
                 net['pore.ID_number'][i] = ID
