@@ -5,13 +5,13 @@ docstr = Docorator()
 logger = logging.getLogger(__name__)
 
 
-@docstr.get_sectionsf('NernstPlanckMultiphysicsSettings',
+@docstr.get_sectionsf('NernstPlanckMultiphysicsSolverSettings',
                       sections=['Parameters'])
 @docstr.dedent
-class NernstPlanckMultiphysicsSettings(GenericSettings):
+class NernstPlanckMultiphysicsSolverSettings(GenericSettings):
     r"""
-    The following decribes the settings associated with the IonicTransport
-    algorithm.
+    The following decribes the settings associated with the
+    NernstPlanckMultiphysicsSolver.
 
     Parameters
     ----------
@@ -35,15 +35,21 @@ class NernstPlanckMultiphysicsSettings(GenericSettings):
     g_max_iter = 10
 
 
-class NernstPlanckMultiphysics(GenericAlgorithm):
+class NernstPlanckMultiphysicsSolver(GenericAlgorithm):
     r"""
-    A multiphysics algorithm to solve the Nernst-Planck and Ionic Conduction
-    system
+    A multiphysics solver to solve the Nernst-Planck and Ionic Conduction
+    system.
+
+    Warnings
+    --------
+    This is not a true OpenPNM algorithm. This solver wraps the provided
+    Nernst-Planck and ionic conduction algorithms and solves the associated
+    system of equations.
     """
 
     def __init__(self, phase=None, settings={},  **kwargs):
         super().__init__(**kwargs)
-        c = NernstPlanckMultiphysicsSettings()
+        c = NernstPlanckMultiphysicsSolverSettings()
         self.settings._update_settings_and_docs(c)
         settings['phase'] = phase.name
         self.settings.update(settings)
@@ -55,7 +61,7 @@ class NernstPlanckMultiphysics(GenericAlgorithm):
 
         Parameters
         ----------
-        %(NernstPlanckMultiphysicsSettings.parameters)s
+        %(NernstPlanckMultiphysicsSolverSettings.parameters)s
         """
         if phase:
             self.settings['phase'] = phase.name
@@ -82,6 +88,7 @@ class NernstPlanckMultiphysics(GenericAlgorithm):
         algs.insert(0, p_alg)
         # Define initial conditions (if not defined by the user)
         for alg in algs:
+            alg.settings.update({'cache_A': False, 'cache_b': False})
             try:
                 alg[alg.settings['quantity']]
             except KeyError:
@@ -124,7 +131,8 @@ class NernstPlanckMultiphysics(GenericAlgorithm):
                     phase.update(e.results())
 
                 # Poisson eq
-                phys[0].regenerate_models()
+                for obj in phys:
+                    obj.regenerate_models()
                 g_old[p_alg.name] = p_alg[p_alg.settings['quantity']].copy()
                 p_alg._run_reactive(x0=g_old[p_alg.name])
                 g_new[p_alg.name] = p_alg[p_alg.settings['quantity']].copy()
@@ -133,7 +141,8 @@ class NernstPlanckMultiphysics(GenericAlgorithm):
                     g_old[p_alg.name]**2 - g_new[p_alg.name]**2))
                 # Update phase and physics
                 phase.update(p_alg.results())
-                phys[0].regenerate_models()
+                for obj in phys:
+                    obj.regenerate_models()
 
             if g_convergence:
                 print('Solution converged')
