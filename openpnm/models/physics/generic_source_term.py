@@ -806,7 +806,7 @@ def general_symbolic(target, eqn=None, arg_map=None):
     ----------
     >>> import openpnm as op
     >>> from openpnm.models.physics import generic_source_term as gst
-    >>> import scipy as sp
+    >>> import numpy as np
     >>> import sympy
     >>> pn = op.network.Cubic(shape=[5, 5, 5], spacing=0.0001)
     >>> water = op.phases.Water(network=pn)
