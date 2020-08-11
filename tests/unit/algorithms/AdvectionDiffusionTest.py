@@ -160,7 +160,7 @@ class AdvectionDiffusionTest:
 
             mdot_inlet = ad.rate(pores=self.net.pores("back"))[0]
             mdot_outlet = ad.rate(pores=self.net.pores("front"))[0]
-            temp = sp.random.choice(self.net.pores(["back", "front"],
+            temp = np.random.choice(self.net.pores(["back", "front"],
                                                     mode="not"),
                                     size=3, replace=False)
             mdot_internal = ad.rate(pores=temp)[0]

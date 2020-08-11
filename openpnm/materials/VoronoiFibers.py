@@ -1,5 +1,4 @@
 import math
-import scipy as sp
 import numpy as np
 from scipy import ndimage
 import scipy.spatial as sptl
@@ -307,12 +306,12 @@ class DelaunayGeometry(GenericGeometry):
         v1 = t_cen - p_cen[p1]
         v2 = t_cen - p_cen[p2]
         check_nan = ~np.any(np.isnan(v1 + v2), axis=1)
-        value = np.ones([Nt, 3], dtype=float) * sp.nan
+        value = np.ones([Nt, 3], dtype=float) * np.nan
         for i in range(Nt):
             if check_nan[i]:
-                value[i, 0] = sp.linalg.norm(v1[i]) - self.network.fiber_rad
+                value[i, 0] = np.linalg.norm(v1[i]) - self.network.fiber_rad
                 value[i, 1] = self.network.fiber_rad * 2
-                value[i, 2] = sp.linalg.norm(v2[i]) - self.network.fiber_rad
+                value[i, 2] = np.linalg.norm(v2[i]) - self.network.fiber_rad
         return value[net.throats(self.name)]
 
     def _throat_props(self):
@@ -331,7 +330,7 @@ class DelaunayGeometry(GenericGeometry):
         perimeter = np.zeros(Nt)
         inradius = np.zeros(Nt)
         equiv_diameter = np.zeros(Nt)
-        eroded_verts = sp.ndarray(Nt, dtype=object)
+        eroded_verts = np.ndarray(Nt, dtype=object)
 
         res = 200
         vertices = self["throat.vertices"]

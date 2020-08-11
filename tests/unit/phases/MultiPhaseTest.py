@@ -96,8 +96,8 @@ class MultiPhaseTest:
     def test_multiphase_automatic_throat_occupancy(self):
         m = op.phases.MultiPhase(network=self.net, phases=[self.air,
                                                            self.water])
-        pores = sp.random.choice(self.net.Ps, size=100, replace=False)
-        Pvals = sp.random.random(pores.size)
+        pores = np.random.choice(self.net.Ps, size=100, replace=False)
+        Pvals = np.random.random(pores.size)
         m.set_occupancy(self.water, pores=pores, Pvals=Pvals)
         P1, P2 = self.net["throat.conns"].T
         oc1, oc2 = [m["pore.occupancy.water"][x] for x in (P1, P2)]
