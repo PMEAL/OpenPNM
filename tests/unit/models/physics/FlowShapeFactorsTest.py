@@ -40,6 +40,7 @@ class FlowShapeFactorsTest:
         L1 = self.geo['throat.conduit_lengths.pore1'][cn[:, 0][2]]
         self.geo['pore.diameter'][cn[:, 0][2]] = 0.5*L1
         mod = op.models.physics.flow_shape_factors.ball_and_stick
+        error=False
         try:
             self.phys.add_model(propname='throat.flow_shape_factors',
                                 model=mod)
