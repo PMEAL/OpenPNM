@@ -6,12 +6,13 @@ r"""
 
 """
 import numpy as _np
+import openpnm.models.geometry as geomods
 
 
-def generic_hagen_poiseuille(target,
-                             pore_viscosity='pore.viscosity',
-                             throat_viscosity='throat.viscosity',
-                             flow_coeff='throat.flow_coeff'):
+def stokes_generic(target,
+                   pore_viscosity='pore.viscosity',
+                   throat_viscosity='throat.viscosity',
+                   flow_coeff='throat.flow_coeff'):
     phase = target.project.find_phase(target)
     F = target.network[flow_coeff]
     if isinstance(F, dict):
@@ -25,6 +26,19 @@ def generic_hagen_poiseuille(target,
         mu = phase[throat_viscosity]
         Ft = F
         gh = F/mu
+    mask = phase.throats(target.name)
+    return gh[mask]
+
+
+def stokes_conical_frustrum(target,
+                            pore_viscosity='pore.viscosity',
+                            throat_viscosity='throat.viscosity'):
+    geo = target.project.find_geometry(target)
+    mod = geomods.conduit_flow_coefficients.conical_frustrum
+    geo.add_model(propname='throat.flow_coefficient', model=mod)
+    gh = stokes_generic(target=target, pore_viscosity=pore_viscosity,
+                        throat_viscosity=throat_viscosity,
+                        flow_coeff='throat.flow_coefficient')
     return gh
 
 
