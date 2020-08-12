@@ -108,6 +108,52 @@ class RelativePermeabilityTest:
         nt.assert_allclose(kx, kz)
         nt.assert_allclose(kx, kr)
 
+    def set_for_2D_model(self):
+        self.net = op.network.Cubic(shape=[10, 10, 1], spacing=0.0005)
+        self.geo = op.geometry.StickAndBall(network=self.net,
+                                            pores=self.net.Ps,
+                                            throats=self.net.Ts)
+        self.non_wet_phase = op.phases.Air(network=self.net)
+        self.wet_phase = op.phases.Water(network=self.net)
+        mod = op.models.physics.hydraulic_conductance.hagen_poiseuille
+        self.non_wet_phase.add_model(propname='throat.hydraulic_conductance',
+                                     model=mod)
+        self.wet_phase.add_model(propname='throat.hydraulic_conductance',
+                                 model=mod)
+        mod = op.models.physics.capillary_pressure.washburn
+        self.non_wet_phase.add_model(propname='throat.entry_pressure',
+                                     model=mod)
+        self.wet_phase.add_model(propname='throat.entry_pressure',
+                                 model=mod)
+        self.inlet_pores = self.net.pores('left')
+        ip = op.algorithms.InvasionPercolation(network=self.net,
+                                               phase=self.non_wet_phase)
+        ip.set_inlets(pores=self.inlet_pores)
+        ip.run()
+        self.non_wet_phase.update(ip.results())
+
+    def test_2D_model_one_phase_curve(self):
+        self.set_for_2D_model()
+        rp = op.algorithms.metrics.RelativePermeability(network=self.net)
+        rp.setup(invading_phase=self.non_wet_phase,
+                 invasion_sequence='invasion_sequence')
+        rp.run(Snwp_num=10)
+        results = rp.get_Kr_data()
+        assert results['kr_wp'] is None
+        nt.assert_allclose(len(results['sat']), 2)
+
+    def test_2D_model_two_phase_curve(self):
+        self.set_for_2D_model()
+        rp = op.algorithms.metrics.RelativePermeability(network=self.net)
+        rp.setup(invading_phase=self.non_wet_phase,
+                 defending_phase=self.wet_phase,
+                 invasion_sequence='invasion_sequence')
+        rp.run(Snwp_num=10)
+        results = rp.get_Kr_data()
+        nt.assert_allclose(len(results['kr_wp']), 2)
+        nt.assert_allclose(len(results['kr_nwp']), 2)
+        nt.assert_allclose(len(results['sat']), 2)
+
 
 if __name__ == '__main__':
 
