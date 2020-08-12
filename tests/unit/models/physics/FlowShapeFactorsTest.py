@@ -34,6 +34,20 @@ class FlowShapeFactorsTest:
         assert_allclose(SF2, desired=0.73590413)
         assert_allclose(SFt, desired=1.0)
 
+    def test_ball_and_stick_raise_error_pore_size(self):
+        self.setup_class()
+        cn = self.net['throat.conns']
+        L1 = self.geo['throat.conduit_lengths.pore1'][cn[:, 0][2]]
+        self.geo['pore.diameter'][cn[:, 0][2]] = 0.5*L1
+        mod = op.models.physics.flow_shape_factors.ball_and_stick
+        try:
+            self.phys.add_model(propname='throat.flow_shape_factors',
+                                model=mod)
+            self.phys.regenerate_models()
+        except:
+            error = True
+        assert_allclose(error, True)
+
     def test_ball_and_stick_equal_pore_and_throat_diameter(self):
         self.setup_class()
         self.geo['throat.diameter'] = 0.5
