@@ -890,7 +890,7 @@ class DelaunayGeometry(GenericGeometry):
             coms = self["throat.centroid"][throat_list]
             incentre = self["throat.incenter"][throat_list]
             inradius = 0.5 * self["throat.indiameter"][throat_list]
-            row_col = np.ceil(np.sqrt(len(throat_list)))
+            row_col = int(np.ceil(np.sqrt(len(throat_list))))
             for i in range(len(throat_list)):
                 if fig is None:
                     fig = plt.figure()
