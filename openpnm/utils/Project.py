@@ -642,7 +642,7 @@ class Project(list):
 
         """
         import h5py
-        with h5py.File(self.name + '.hdf5', 'r+') as f:
+        with h5py.File(self.name + '.hdf5') as f:
             for obj in self:
                 for key in list(obj.keys()):
                     tempname = obj.name + '|' + '_'.join(key.split('.'))
@@ -675,7 +675,7 @@ class Project(list):
 
         """
         import h5py
-        with h5py.File(self.name + '.hdf5', 'r+') as f:
+        with h5py.File(self.name + '.hdf5') as f:
             # Reload data into project
             for item in f.keys():
                 obj_name, propname = item.split('|')
