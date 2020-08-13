@@ -204,17 +204,17 @@ class VTK(GenericIO):
     @classmethod
     def _array_to_element(cls, name, array, n=1):
         dtype_map = {
-            "int8": "Int8",
-            "int16": "Int16",
-            "int32": "Int32",
-            "int64": "Int64",
-            "uint8": "UInt8",
-            "uint16": "UInt16",
-            "uint32": "UInt32",
-            "uint64": "UInt64",
-            "float32": "Float32",
-            "float64": "Float64",
-            "str": "String",
+            "int8": "int8",
+            "int16": "int16",
+            "int32": "int32",
+            "int64": "int64",
+            "uint8": "Uint8",
+            "uint16": "Uint16",
+            "uint32": "Uint32",
+            "uint64": "Uint64",
+            "float32": "float32",
+            "float64": "float64",
+            "str": "str",
         }
         element = None
         if str(array.dtype) in dtype_map.keys():
