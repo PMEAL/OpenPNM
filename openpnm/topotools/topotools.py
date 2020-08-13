@@ -2392,10 +2392,10 @@ def find_clusters(network, mask=[], t_labels=False):
     Examples
     --------
     >>> import openpnm as op
-    >>> from scipy import rand
+    >>> import numpy as np
     >>> pn = op.network.Cubic(shape=[25, 25, 1])
-    >>> pn['pore.seed'] = rand(pn.Np)
-    >>> pn['throat.seed'] = rand(pn.Nt)
+    >>> pn['pore.seed'] = np.random.rand(pn.Np)
+    >>> pn['throat.seed'] = np.random.rand(pn.Nt)
 
 
     """
