@@ -15,7 +15,7 @@ class PlotToolsTest:
         pn = op.network.Cubic(shape=[4, 4, 1])
         g = topotools.plot_tutorial(pn)
         plt.close()
-        
+
     def test_plot_networkx_var_spacing(self):
         for i in range(3):
             shape = np.ones(3, dtype=int)
