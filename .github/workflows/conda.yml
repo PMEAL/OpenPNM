@@ -1,3 +1,7 @@
+name: Conda
+
+on: [push]
+
 jobs:
   example-1:
     name: Ex1 (${{ matrix.python-version }}, ${{ matrix.os }})
