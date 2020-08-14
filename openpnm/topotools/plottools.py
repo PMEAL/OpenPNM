@@ -308,7 +308,7 @@ def plot_networkx(network, plot_throats=True, labels=None, colors=None,
     if dims.sum() == 2:
         x, y = temp
     try:
-        node_size = scale * network['pore.diameter'] / max(spacing)
+        node_size = scale * network['pore.diameter']
     except KeyError:
         x = x/spacing[0]
         y = y/spacing[1]
