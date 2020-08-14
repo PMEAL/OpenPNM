@@ -83,7 +83,7 @@ class MultiphysicsNernstPlanckSolverTest:
         # settings for algorithms
         setts1 = {'solver_max_iter': 5, 'solver_tol': 1e-08,
                   'solver_rtol': 1e-08, 'nlin_max_iter': 10,
-                  'cache_A': False, 'cache_b': False}
+                  'cache_A': True, 'cache_b': True}
         setts2 = {'g_tol': 1e-4, 'g_max_iter': 100}
 
         # algorithms
