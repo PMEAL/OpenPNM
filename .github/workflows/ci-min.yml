@@ -13,6 +13,7 @@ jobs:
     defaults:
       run:
         shell: bash -l {0}
+
     strategy:
       max-parallel: 1
       matrix:
