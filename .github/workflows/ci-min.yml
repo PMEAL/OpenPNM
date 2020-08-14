@@ -23,6 +23,18 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
+      - name: Set up conda
+        uses: goanpeca/setup-miniconda@v1
+        with:
+          auto-update-conda: true
+          python-version: ${{ matrix.python-version }}
+          channels: conda-forge
+          allow-softlinks: true
+          channel-priority: flexible
+          show-channel-urls: false
+          use-only-tar-bz2: true
+          auto-activate-base: true
+
       - name: Cache conda
         uses: actions/cache@v1
         env:
