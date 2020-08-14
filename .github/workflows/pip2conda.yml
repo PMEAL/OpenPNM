@@ -38,16 +38,16 @@ jobs:
           use-only-tar-bz2: true
           auto-activate-base: true
 
-      # - name: Install Dependencies
-      #   run: |
-      #     conda install --file requirements/conda_requirements.txt
-      #     conda install --file requirements/test_requirements.txt
-      #     conda install pyamg
-      #     python setup.py install
-      #     # sudo apt update --yes
-      #     # sudo apt-get install mpich --yes
-      #     # conda install mpi4py
-      #     # conda install petsc petsc4py
+      - name: Install Dependencies
+        run: |
+          conda install --file requirements/conda_requirements.txt
+          conda install --file requirements/test_requirements.txt
+          conda install pyamg
+          python setup.py install
+          # sudo apt update --yes
+          # sudo apt-get install mpich --yes
+          # conda install mpi4py
+          # conda install petsc petsc4py
 
       - name: Conda info
         shell: bash -l {0}
