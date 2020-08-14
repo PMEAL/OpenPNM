@@ -88,8 +88,6 @@ def plot_connections(network, throats=None, fig=None, size_by=None,
     if ThreeD and ax.name != '3d':
         fig.delaxes(ax)
         ax = fig.add_subplot(111, projection='3d')
-
-
     # Collect coordinates
     Ps = np.unique(network['throat.conns'][Ts])
     X, Y, Z = network['pore.coords'][Ps].T
