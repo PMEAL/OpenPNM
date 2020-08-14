@@ -43,10 +43,10 @@ jobs:
         run: |
           conda install --file requirements/conda_requirements.txt
           conda install --file requirements/test_requirements.txt
-          # sudo apt update --yes
-          # sudo apt-get install mpich --yes
-          # conda install pyamg mpi4py
-          # conda install petsc petsc4py
+          sudo apt update --yes
+          sudo apt-get install mpich --yes
+          conda install pyamg mpi4py
+          conda install petsc petsc4py
           python setup.py install
 
       # - name: Conda info
