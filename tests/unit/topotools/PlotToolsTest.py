@@ -15,6 +15,22 @@ class PlotToolsTest:
         pn = op.network.Cubic(shape=[4, 4, 1])
         g = topotools.plot_tutorial(pn)
         plt.close()
+        
+    def test_plot_networkx_var_spacing(self):
+        for i in range(3):
+            shape = np.ones(3, dtype=int)
+            shape[np.arange(3) != i] = [5, 8]
+            spacing= np.ones(3, dtype=float)
+            spacing[np.arange(3) != i] = [0.01, 0.6]
+            pn = op.network.Cubic(shape=shape)
+            dims=op.topotools.dimensionality(pn)
+            x, y = pn["pore.coords"].T[dims]
+            fig, ax = plt.subplots()
+            m = op.topotools.plot_networkx(pn, ax=ax)
+            x_plot, y_plot = np.array(m.get_offsets()).T
+            np.testing.assert_allclose(x_plot, x)
+            np.testing.assert_allclose(y_plot, y)
+            plt.close()
 
     def test_plot_networkx(self):
         # 2D networks in XY, YZ, XZ planes
