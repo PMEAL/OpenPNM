@@ -301,18 +301,20 @@ def plot_networkx(network, plot_throats=True, labels=None, colors=None,
     if dims.sum() > 2:
         raise Exception("NetworkX plotting only works for 2D networks.")
     temp = network['pore.coords'].T[dims].squeeze()
+    spacing = network.spacing
     if dims.sum() == 1:
         x = temp
         y = np.zeros_like(x)
     if dims.sum() == 2:
         x, y = temp
-
+    try:
+        node_size = scale * network['pore.diameter'] / max(spacing)
+    except KeyError:
+        x = x/spacing[0]
+        y = y/spacing[1]
+        node_size = np.ones_like(x) * scale * 0.5
     G = Graph()
     pos = {network.Ps[i]: [x[i], y[i]] for i in range(network.Np)}
-    try:
-        node_size = scale * network['pore.diameter']
-    except KeyError:
-        node_size = np.ones_like(x) * scale * 0.5
     if not np.isfinite(node_size).all():
         raise Exception('nan/inf values found in network["pore.diameter"]')
     node_color = np.array(['k'] * len(network.Ps))
