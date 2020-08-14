@@ -4,22 +4,44 @@ on: [push]
 
 jobs:
   build:
+
     name: (${{ matrix.python-version }}, ${{ matrix.os }})
     runs-on: ${{ matrix.os }}
+
     strategy:
-      # max-parallel: 20
       fail-fast: false
       matrix:
-        os: ["ubuntu-latest", "macos-latest", "windows-latest"]
-        python-version: ["3.7", "3.6"]
+        os: ["ubuntu-latest"]
+        python-version: ["3.7"]
+
     steps:
+
+      - uses: actions/checkout@v2
+
+      - name: Cache conda
+        uses: actions/cache@v1
+        env:
+          # Increase this value to reset cache if requirements/conda_requirements.txt has not changed
+          CACHE_NUMBER: 0
+        with:
+          path: ~/conda_pkgs_dir
+          key: ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-${{ hashFiles('requirements/conda_requirements.txt') }}
+
       - uses: goanpeca/setup-miniconda@v1
         with:
           auto-update-conda: true
           python-version: ${{ matrix.python-version }}
+          # condarc-file: requirements/.condarc.yml
+          channels: defaults,conda-forge
+          allow-softlinks: true
+          channel-priority: flexible
+          show-channel-urls: true
+          use-only-tar-bz2: true
+
       - name: Conda info
         shell: bash -l {0}
         run: conda info
+
       - name: Conda list
         shell: pwsh
         run: conda list
