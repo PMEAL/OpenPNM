@@ -46,8 +46,8 @@ phys.add_model(propname='throat.nonNewtonian_hydraulic_conductance',
 nnsf = op.algorithms.NonNewtonianStokesFlow(network=net, phase=phase)
 nnsf.set_value_BC(pores=net.pores('front'), values=1)
 nnsf.set_value_BC(pores=net.pores('back'), values=2)
-nnsf.settings['cache_A'] = False
-nnsf.settings['cache_b'] = False
+nnsf.settings['cache_A'] = True
+nnsf.settings['cache_b'] = True
 nnsf.settings['solver_type'] = 'spsolve'
 nnsf.settings['relaxation_quantity'] = 0.7
 nnsf.settings['max_iter'] = 200

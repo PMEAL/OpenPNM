@@ -25,7 +25,7 @@ class StokesFlowPowerLawTest:
                                               geometry=self.geo)
         self.flow = op.algorithms.NonNewtonianStokesFlow(network=self.net,
                                                          phase=self.phase)
-        settings = {'cache_A': False, 'cache_b': False,
+        settings = {'cache_A': True, 'cache_b': True,
                     'solver_type': 'spsolve', 'relaxation_quantity': 0.7,
                     'max_iter': 200, 'solver_tol': 1e-6,
                     'iterative_props': (
