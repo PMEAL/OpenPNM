@@ -310,8 +310,10 @@ def plot_networkx(network, plot_throats=True, labels=None, colors=None,
     try:
         node_size = scale * network['pore.diameter']
     except KeyError:
-        x = x/spacing[0]
-        y = y/spacing[1]
+        dimsx = np.where(dims)[0][0]
+        dimsy = np.where(dims)[0][1]
+        x = x/spacing[dimsx]
+        y = y/spacing[dimsy]
         node_size = np.ones_like(x) * scale * 0.5
     G = Graph()
     pos = {network.Ps[i]: [x[i], y[i]] for i in range(network.Np)}
