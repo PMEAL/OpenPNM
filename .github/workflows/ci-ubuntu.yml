@@ -40,7 +40,7 @@ jobs:
         with:
           auto-update-conda: true
           python-version: ${{ matrix.python-version }}
-          channels: conda-forge
+          channels: defaults, conda-forge, haasad
           allow-softlinks: true
           channel-priority: flexible
           show-channel-urls: false
