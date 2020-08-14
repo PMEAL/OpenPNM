@@ -10,6 +10,7 @@ sizes.
 """
 import numpy as _np
 import scipy as _sp
+from scipy import special
 from openpnm.models import misc as _misc
 from openpnm.utils import logging as _logging
 _logger = _logging.getLogger(__name__)

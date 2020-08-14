@@ -6,7 +6,6 @@ r"""
 
 """
 import numpy as _np
-import scipy as _sp
 
 
 def compactness(target, throat_perimeter='throat.perimeter',
@@ -49,7 +48,7 @@ def compactness(target, throat_perimeter='throat.perimeter',
     A = target[throat_area]
     C = _np.ones(target.num_throats())
     C[ts] = P[ts]**2/A[ts]
-    alpha = _np.ones_like(C)*8*_sp.pi
+    alpha = _np.ones_like(C)*8*_np.pi
     if 'throat.offset_vertices' in target.props():
         verts = target['throat.offset_vertices']
         for i in ts:
@@ -62,9 +61,9 @@ def compactness(target, throat_perimeter='throat.perimeter',
                     alpha[i] = C[i]*(22/7) - (65/3)
                 elif len(verts[i]) > 4:
                     # Approximate Elliptical Correction
-                    alpha[i] = C[i]*(8/3) - (8*_sp.pi/3)
+                    alpha[i] = C[i]*(8/3) - (8*_np.pi/3)
     # For a perfect circle alpha = 8*pi so normalize by this
-    alpha /= 8*_sp.pi
+    alpha /= 8*_np.pi
     # Very small throats could have values less than one
     alpha[alpha < 1.0] = 1.0
     return alpha
@@ -106,7 +105,7 @@ def mason_morrow(target, throat_perimeter='throat.perimeter',
     P = target[throat_perimeter]
     A = target[throat_area]
     value = A/(P**2)
-    value[ts] = 1/(4*_sp.pi)
+    value[ts] = 1/(4*_np.pi)
     return value
 
 

@@ -1,4 +1,3 @@
-import scipy as sp
 import numpy as np
 from openpnm.network import Cubic
 from openpnm.utils import logging, Project
@@ -122,7 +121,7 @@ class BundleOfTubes(Project):
         geom.add_model(propname='throat.diameter',
                        model=mods.misc.clip,
                        prop='throat.size_distribution',
-                       xmin=1e-12, xmax=sp.inf)
+                       xmin=1e-12, xmax=np.inf)
 
         if self.settings['adjust_psd'] is None:
             if geom['throat.size_distribution'].max() > spacing[0]:

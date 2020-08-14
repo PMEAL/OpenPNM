@@ -1,4 +1,3 @@
-import scipy as sp
 import numpy as np
 from openpnm.io import GenericIO
 from openpnm.utils import logging
@@ -92,15 +91,15 @@ class NetworkX(GenericIO):
                 # Create arrays for subsequent indexing, if not present already
                 if 'pore.'+item not in net.keys():
                     if dtype == str:  # handle strings of arbitrary length
-                        net['pore.'+item] = sp.ndarray((Np,), dtype='object')
+                        net['pore.'+item] = np.ndarray((Np,), dtype='object')
                     elif dtype is list:
                         dtype = type(val[0])
                         if dtype == str:
                             dtype = 'object'
                         cols = len(val)
-                        net['pore.'+item] = sp.ndarray((Np, cols), dtype=dtype)
+                        net['pore.'+item] = np.ndarray((Np, cols), dtype=dtype)
                     else:
-                        net['pore.'+item] = sp.ndarray((Np,), dtype=dtype)
+                        net['pore.'+item] = np.ndarray((Np,), dtype=dtype)
                 net['pore.'+item][n] = val
 
         # Parsing edge data
@@ -129,16 +128,16 @@ class NetworkX(GenericIO):
                 # Create arrays for subsequent indexing, if not present already
                 if 'throat.'+item not in net.keys():
                     if dtype == str:
-                        net['throat.'+item] = sp.ndarray((Nt,), dtype='object')
+                        net['throat.'+item] = np.ndarray((Nt,), dtype='object')
                     if dtype is list:
                         dtype = type(val[0])
                         if dtype == str:
                             dtype = 'object'
                         cols = len(val)
-                        net['throat.'+item] = sp.ndarray((Nt, cols),
+                        net['throat.'+item] = np.ndarray((Nt, cols),
                                                          dtype=dtype)
                     else:
-                        net['throat.'+item] = sp.ndarray((Nt,), dtype=dtype)
+                        net['throat.'+item] = np.ndarray((Nt,), dtype=dtype)
                 net['throat.'+item][i] = val
             i += 1
 
