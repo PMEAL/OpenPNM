@@ -1,6 +1,5 @@
 import pytest
 import numpy as np
-import scipy as sp
 import openpnm as op
 mgr = op.Workspace()
 
@@ -78,19 +77,19 @@ class OrdinaryPercolationTest:
         self.alg = op.algorithms.OrdinaryPercolation(network=self.net)
         self.alg.setup(phase=self.water)
 
-        Ps = sp.random.randint(0, self.net.Np, 10)
+        Ps = np.random.randint(0, self.net.Np, 10)
         Ts = self.net.find_neighbor_pores(pores=Ps)
         self.alg.set_residual(pores=Ps, throats=Ts)
         assert np.sum(self.alg['pore.residual']) == np.size(np.unique(Ps))
         assert np.sum(self.alg['throat.residual']) == np.size(np.unique(Ts))
 
-        Ps = sp.random.randint(0, self.net.Np, 10)
+        Ps = np.random.randint(0, self.net.Np, 10)
         Ts = self.net.find_neighbor_pores(pores=Ps)
         self.alg.set_residual(pores=Ps, throats=Ts)
         assert np.sum(self.alg['pore.residual']) > np.size(np.unique(Ps))
         assert np.sum(self.alg['throat.residual']) > np.size(np.unique(Ts))
 
-        Ps = sp.random.randint(0, self.net.Np, 10)
+        Ps = np.random.randint(0, self.net.Np, 10)
         Ts = self.net.find_neighbor_pores(pores=Ps)
         self.alg.set_residual(pores=Ps, throats=Ts, overwrite=True)
         assert np.sum(self.alg['pore.residual']) == np.size(np.unique(Ps))
@@ -106,14 +105,14 @@ class OrdinaryPercolationTest:
     def test_run_npts(self):
         self.alg = op.algorithms.OrdinaryPercolation(network=self.net)
         self.alg.setup(phase=self.water)
-        Ps = sp.random.randint(0, self.net.Np, 10)
+        Ps = np.random.randint(0, self.net.Np, 10)
         self.alg.set_inlets(pores=Ps)
         self.alg.run(points=20)
 
     def test_run_inv_pressures(self):
         self.alg = op.algorithms.OrdinaryPercolation(network=self.net)
         self.alg.setup(phase=self.water)
-        Ps = sp.random.randint(0, self.net.Np, 10)
+        Ps = np.random.randint(0, self.net.Np, 10)
         self.alg.set_inlets(pores=Ps)
         self.alg.run(points=range(0, 20000, 1000))
 
