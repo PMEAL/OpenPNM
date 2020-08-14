@@ -43,6 +43,7 @@ jobs:
           python setup.py install
 
       - name: Running tests
+        shell: bash -l {0}
         run:
           pytest --pep8 --cov=./ --cov-report=xml --ignore="openpnm/utils/petsc.py"
 
