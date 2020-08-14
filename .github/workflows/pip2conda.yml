@@ -21,7 +21,7 @@ jobs:
       - name: Cache conda
         uses: actions/cache@v1
         env:
-          # Increase this value to reset cache if requirements/conda_requirements.txt has not changed
+          # + value -> force reset cache if requirements.txt hasn't changed
           CACHE_NUMBER: 0
         with:
           path: ~/conda_pkgs_dir
@@ -31,13 +31,12 @@ jobs:
         with:
           auto-update-conda: true
           python-version: ${{ matrix.python-version }}
-          # condarc-file: requirements/.condarc.yml
           channels: defaults,conda-forge
           allow-softlinks: true
           channel-priority: flexible
           show-channel-urls: true
           use-only-tar-bz2: true
-          activate-environment: base
+          auto-activate-base: true
 
       # - name: Install Dependencies
       #   run: |
