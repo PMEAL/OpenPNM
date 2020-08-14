@@ -402,9 +402,9 @@ def hagen_poiseuille_power_law(
         gt[mt] = At[mt] ** 2 / ((8 * pi * Lt) * mut)[mt]
 
     elif shape == "cone":
-        R1 = (A1/_sp.pi)**0.5
-        R2 = (A2/_sp.pi)**0.5
-        Rt_orig = (At/_sp.pi)**0.5
+        R1 = (A1/_np.pi)**0.5
+        R2 = (A2/_np.pi)**0.5
+        Rt_orig = (At/_np.pi)**0.5
 
         Rt = Rt_orig
         mask = R1 == Rt_orig
@@ -418,9 +418,9 @@ def hagen_poiseuille_power_law(
         alpha2 = (R2-Rt)[m2]/L2[m2]
         beta2 = 1 / (1/(Rt**3) - 1/(R2**3))
 
-        g1[m1] = (3 * alpha1 * _sp.pi / (8 * mu1[m1])) * beta1[m1]
-        g2[m2] = (3 * alpha2 * _sp.pi / (8 * mu2[m2])) * beta2[m2]
-        gt[mt] = At[mt] ** 2 / (8 * _sp.pi * mut * Lt)[mt]
+        g1[m1] = (3 * alpha1 * _np.pi / (8 * mu1[m1])) * beta1[m1]
+        g2[m2] = (3 * alpha2 * _np.pi / (8 * mu2[m2])) * beta2[m2]
+        gt[mt] = At[mt] ** 2 / (8 * _np.pi * mut * Lt)[mt]
 
     else:
         raise Exception("'model' can either be 'cylinder' or 'cone'.")
