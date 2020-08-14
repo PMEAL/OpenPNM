@@ -1,13 +1,13 @@
-name: Conda
+name: Pip2Conda
 
 on: [push]
 
 jobs:
-  example-1:
-    name: Ex1 (${{ matrix.python-version }}, ${{ matrix.os }})
+  build:
+    name: (${{ matrix.python-version }}, ${{ matrix.os }})
     runs-on: ${{ matrix.os }}
     strategy:
-      max-parallel: 20
+      # max-parallel: 20
       fail-fast: false
       matrix:
         os: ["ubuntu-latest", "macos-latest", "windows-latest"]
