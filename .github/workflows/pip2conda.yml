@@ -4,6 +4,7 @@ on: [push]
 
 jobs:
   build:
+
     name: (${{ matrix.python-version }}, ${{ matrix.os }})
     runs-on: ${{ matrix.os }}
 
@@ -30,6 +31,7 @@ jobs:
         with:
           auto-update-conda: true
           python-version: ${{ matrix.python-version }}
+          # condarc-file: requirements/.condarc.yml
           channels: defaults,conda-forge
           allow-softlinks: true
           channel-priority: flexible
