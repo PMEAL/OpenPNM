@@ -7,7 +7,6 @@ r"""
 from scipy import pi as _pi
 from numpy import arctanh as _atanh
 import numpy as _np
-import scipy as _sp
 
 
 def ball_and_stick(target, pore_area='pore.area',
@@ -87,6 +86,10 @@ def ball_and_stick(target, pore_area='pore.area',
     # INFO: This is needed since area could also be zero, which confuses NumPy
     m1, m2, mt = [Li != 0 for Li in [L1, L2, Lt]]
     SF1[~m1] = SF2[~m2] = SFt[~mt] = 1
+    if ((_np.sum(D1 <= 2*L1) != 0) or (_np.sum(D2 <= 2*L2) != 0)):
+        raise Exception('Some pores can not be modeled with ball_and_stick'
+                        + 'flow shape factor. Use another model for those pores'
+                        + 'with (D/L)<=2')
     # Handle the case where Dt >= Dp
     M1, M2 = [(Di <= Dt) & mi for Di, mi in zip([D1, D2], [m1, m2])]
     F1[M1] = 16/3 * (L1*(D1**2 + D1*Dt + Dt**2) / (D1**3 * Dt**3 * _pi**2))[M1]
