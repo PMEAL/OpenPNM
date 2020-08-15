@@ -53,7 +53,7 @@ jobs:
           conda install --file requirements/test_requirements.txt
           conda install pyamg
           # Install OpenPNM from the checked-out branch
-          pip install -e --force-reinstall .
+          pip install -e .
 
       - name: Running tests
         run:

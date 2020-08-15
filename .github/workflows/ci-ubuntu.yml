@@ -55,7 +55,7 @@ jobs:
           conda install pyamg mpi4py
           conda install petsc petsc4py
           # Install OpenPNM from the checked-out branch
-          pip install -e --force-reinstall .
+          pip install -e .
 
       - name: Running tests
         run:
