@@ -38,4 +38,4 @@ jobs:
 
     - name: Running tests
       run:
-        pytest --pep8 --ignore=scripts/ --ignore="openpnm/utils/petsc.py"
+        pytest --pycodestyle --ignore=scripts/ --ignore="openpnm/utils/petsc.py"
