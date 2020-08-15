@@ -52,8 +52,6 @@ jobs:
           conda install --file requirements/test_requirements.txt
           conda install pyamg
           conda install porespy  # for notebook testing
-          # Uninstall existing OpenPNM installation
-          conda remove --yes openpnm; pip uninstall --yes openpnm
           # Install OpenPNM from the checked-out branch
           pip install -e .
 
