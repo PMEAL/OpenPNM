@@ -3,7 +3,6 @@ coverage
 pytest
 pytest-cache
 pytest-cov
-pytest-pycodestyle
 pytest-codestyle
 testfixtures
 jupyter

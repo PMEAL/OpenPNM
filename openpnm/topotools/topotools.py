@@ -1435,8 +1435,8 @@ def merge_networks(network, donor=[]):
         donors = [donor]
 
     # First fix up geometries
-    main_proj = network.project
-    main_geoms = main_proj.geometries()
+    # main_proj = network.project
+    # main_geoms = main_proj.geometries()
     for donor in donors:
         proj = donor.project
         geoms = proj.geometries().values()

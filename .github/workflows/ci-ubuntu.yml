@@ -10,6 +10,9 @@ jobs:
         (! contains(github.event.head_commit.message, 'ci examples'))
 
     runs-on: ${{ matrix.operating-system }}
+    defaults:
+      run:
+        shell: bash -l {0}
 
     strategy:
       max-parallel: 4
@@ -18,41 +21,51 @@ jobs:
         operating-system: [ubuntu-latest]
 
     steps:
-    - uses: actions/checkout@v2
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
-      with:
-        python-version: ${{ matrix.python-version }}
+      - uses: actions/checkout@v2
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
 
-    - uses: actions/cache@v2
-      with:
-        path: ~/.cache/pip
-        key: ${{ runner.os }}-pip-${{ hashFiles('**/pip_requirements.txt') }}
-        restore-keys: |
-          ${{ runner.os }}-pip-
+      - name: Cache conda
+        uses: actions/cache@v1
+        env:
+          CACHE_NUMBER: 0  # increase value -> force reset cache
+        with:
+          path: ~/conda_pkgs_dir
+          key: ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-${{ hashFiles('**/conda_requirements.txt') }}
 
-    - name: Install Dependencies
-      run: |
-        pip install -r requirements/pip_requirements.txt
-        pip install -r requirements/test_requirements.txt
-        pip uninstall openpnm --yes
-        python setup.py install
-        pip install pyamg
-        sudo apt update --yes
-        sudo apt-get install mpich --yes
-        pip install mpi4py
-        export PETSC_CONFIGURE_OPTIONS='--download-f2cblaslapack=1 --download-scalapack --download-mumps'
-        pip install petsc petsc4py
+      - name: Set up conda
+        uses: goanpeca/setup-miniconda@v1
+        with:
+          auto-update-conda: true
+          python-version: ${{ matrix.python-version }}
+          channels: defaults, conda-forge, haasad
+          allow-softlinks: true
+          channel-priority: flexible
+          show-channel-urls: false
+          use-only-tar-bz2: true
+          auto-activate-base: true
 
-    - name: Running tests
-      run:
-        pytest --pycodestyle --cov=./ --cov-report=xml --ignore=scripts/
+      - name: Install dependencies (conda)
+        shell: bash -l {0}
+        run: |
+          conda install --file requirements/conda_requirements.txt
+          conda install --file requirements/test_requirements.txt
+          conda install pyamg mpi4py
+          conda install petsc petsc4py
+          # Install OpenPNM from the checked-out branch
+          pip install -e .
 
-    - name: Upload coverage to Codecov
-      if: matrix.python-version == 3.7
-      uses: codecov/codecov-action@v1
-      with:
-        token: ${{ secrets.CODECOV_TOKEN }}
-        file: ./coverage.xml
-        flags: unittests
-        name: codecov-umbrella
+      - name: Running tests
+        run:
+          pytest --pycodestyle --cov=./ --cov-report=xml --ignore=scripts/
+
+      - name: Upload coverage to Codecov
+        if: matrix.python-version == 3.7
+        uses: codecov/codecov-action@v1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          file: ./coverage.xml
+          flags: unittests
+          name: codecov-umbrella
