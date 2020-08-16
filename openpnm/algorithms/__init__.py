@@ -42,5 +42,7 @@ from .TransientNernstPlanck import TransientNernstPlanck
 
 from .NernstPlanckMultiphysicsSolver import NernstPlanckMultiphysicsSolver
 from .TransientNernstPlanckMultiphysicsSolver import (
-    TransientNernstPlanckMultiphysicsSolver)
+    TransientNernstPlanckMultiphysicsSolver
+)
+
 from . import metrics
