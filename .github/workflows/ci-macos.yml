@@ -56,4 +56,4 @@ jobs:
           pip install -e .
 
       - name: Running tests
-        run: pytest --pep8 --ignore=scripts/ --ignore="openpnm/utils/petsc.py"
+        run: pytest --pycodestyle --ignore=scripts/ --ignore="openpnm/utils/petsc.py"
