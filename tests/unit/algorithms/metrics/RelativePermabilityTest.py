@@ -125,7 +125,10 @@ class RelativePermeabilityTest:
                                      model=mod)
         self.wet_phase.add_model(propname='throat.entry_pressure',
                                  model=mod)
-        self.inlet_pores = self.net.pores('left')
+        if shape[1] != 1:
+            self.inlet_pores = self.net.pores('left')
+        else:
+            self.inlet_pores = self.net.pores('front')
         ip = op.algorithms.InvasionPercolation(network=self.net,
                                                phase=self.non_wet_phase)
         ip.set_inlets(pores=self.inlet_pores)
