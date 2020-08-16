@@ -59,6 +59,7 @@ class PoreVolumeTest:
         b = np.unique(net['pore.volume_effective'])
         assert_approx_equal(a, b)
 
+
 if __name__ == '__main__':
 
     t = PoreVolumeTest()
