@@ -336,7 +336,7 @@ def plot_networkx(network, plot_throats=True, labels=None, colors=None,
 
     if ax is None:
         fig, ax = plt.subplots()
-    ax.set_aspect('auto', adjustable='datalim')
+    ax.set_aspect('equal', adjustable='datalim')
     offset = node_size.max() * 0.5
     ax.set_xlim((x.min() - offset, x.max() + offset))
     ax.set_ylim((y.min() - offset, y.max() + offset))
