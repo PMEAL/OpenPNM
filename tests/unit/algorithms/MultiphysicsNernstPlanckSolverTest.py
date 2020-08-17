@@ -10,10 +10,12 @@ class MultiphysicsNernstPlanckSolverTest:
         # network
         np.random.seed(0)
         self.net = op.network.Cubic(shape=[6, 6, 1], spacing=1e-6)
-        prs = (self.net['pore.back'] * self.net['pore.right'] +
-               self.net['pore.back'] * self.net['pore.left'] +
-               self.net['pore.front'] * self.net['pore.right'] +
-               self.net['pore.front'] * self.net['pore.left'])
+        prs = (
+            self.net['pore.back'] * self.net['pore.right']
+            + self.net['pore.back'] * self.net['pore.left']
+            + self.net['pore.front'] * self.net['pore.right']
+            + self.net['pore.front'] * self.net['pore.left']
+        )
         prs = self.net.Ps[prs]
         thrts = self.net['throat.surface']
         thrts = self.net.Ts[thrts]
@@ -49,33 +51,26 @@ class MultiphysicsNernstPlanckSolverTest:
                             ions=[self.Na.name, self.Cl.name],
                             model=self.current, regen_mode='normal')
         self.eA_dif = modphys.diffusive_conductance.ordinary_diffusion
-        self.phys.add_model(propname=('throat.diffusive_conductance.' +
-                                      self.Na.name),
-                            pore_diffusivity=('pore.diffusivity.' +
-                                              self.Na.name),
-                            throat_diffusivity=('throat.diffusivity.' +
-                                                self.Na.name),
+        self.phys.add_model(propname=('throat.diffusive_conductance.' + self.Na.name),
+                            pore_diffusivity=('pore.diffusivity.' + self.Na.name),
+                            throat_diffusivity=('throat.diffusivity.' + self.Na.name),
                             model=self.eA_dif, regen_mode='normal')
         self.eB_dif = modphys.diffusive_conductance.ordinary_diffusion
-        self.phys.add_model(propname=('throat.diffusive_conductance.' +
-                                      self.Cl.name),
-                            pore_diffusivity=('pore.diffusivity.' +
-                                              self.Cl.name),
-                            throat_diffusivity=('throat.diffusivity.' +
-                                                self.Cl.name),
+        self.phys.add_model(propname=('throat.diffusive_conductance.' + self.Cl.name),
+                            pore_diffusivity=('pore.diffusivity.' + self.Cl.name),
+                            throat_diffusivity=('throat.diffusivity.' + self.Cl.name),
                             model=self.eB_dif, regen_mode='normal')
 
         scheme = 'powerlaw'
         self.ad_dif_mig_Na = modphys.ad_dif_mig_conductance.ad_dif_mig
-        self.phys.add_model(propname=('throat.ad_dif_mig_conductance.' +
-                                      self.Na.name),
+        self.phys.add_model(propname=('throat.ad_dif_mig_conductance.' + self.Na.name),
                             pore_pressure='pore.pressure',
                             model=self.ad_dif_mig_Na, ion=self.Na.name,
                             s_scheme=scheme)
 
         self.ad_dif_mig_Cl = modphys.ad_dif_mig_conductance.ad_dif_mig
-        self.phys.add_model(propname=('throat.ad_dif_mig_conductance.' +
-                                      self.Cl.name),
+        self.phys.add_model(propname=('throat.ad_dif_mig_conductance.'
+                                      + self.Cl.name),
                             pore_pressure='pore.pressure',
                             model=self.ad_dif_mig_Cl, ion=self.Cl.name,
                             s_scheme=scheme)
