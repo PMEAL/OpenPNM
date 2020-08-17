@@ -120,7 +120,7 @@ def plot_connections(network, throats=None, fig=None, size_by=None,
 
     _scale_3d_axes(ax=ax, X=X, Y=Y, Z=Z)
     _label_axes(ax=ax, X=X, Y=Y, Z=Z)
-    fig.tight_layout(pad=0.35)
+    plt.autoscale()
 
     return fig
 
