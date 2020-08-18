@@ -120,7 +120,6 @@ def plot_connections(network, throats=None, fig=None, size_by=None,
 
     _scale_3d_axes(ax=ax, X=X, Y=Y, Z=Z)
     _label_axes(ax=ax, X=X, Y=Y, Z=Z)
-    plt.autoscale()
 
     return fig
 
@@ -269,6 +268,7 @@ def _scale_3d_axes(ax, X, Y, Z):
         ax.set_ylim(mid_y - max_range, mid_y + max_range)
         if hasattr(ax, "set_zlim"):
             ax.set_zlim(mid_z - max_range, mid_z + max_range)
+        plt.autoscale()
 
 
 def plot_networkx(network, plot_throats=True, labels=None, colors=None,
@@ -301,7 +301,6 @@ def plot_networkx(network, plot_throats=True, labels=None, colors=None,
     if dims.sum() > 2:
         raise Exception("NetworkX plotting only works for 2D networks.")
     temp = network['pore.coords'].T[dims].squeeze()
-    spacing = network.spacing
     if dims.sum() == 1:
         x = temp
         y = np.zeros_like(x)
@@ -310,13 +309,6 @@ def plot_networkx(network, plot_throats=True, labels=None, colors=None,
     try:
         node_size = scale * network['pore.diameter']
     except KeyError:
-        if dims.sum() == 2:
-            dimsx = np.where(dims)[0][0]
-            dimsy = np.where(dims)[0][1]
-            y = y/spacing[dimsy]
-            x = x/spacing[dimsx]
-        else:
-            x = x/spacing[np.where(dims)[0]]
         node_size = np.ones_like(x) * scale * 0.5
     G = Graph()
     pos = {network.Ps[i]: [x[i], y[i]] for i in range(network.Np)}
