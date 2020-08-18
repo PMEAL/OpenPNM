@@ -583,7 +583,6 @@ class DelaunayGeometry(GenericGeometry):
         Function to count the number of voxels in the pore and fiber space
         Which are assigned to each hull volume
         """
-        from scipy.stats import itemfreq
 
         num_Ps = self.num_pores()
         pore_vox = np.zeros(num_Ps, dtype=int)
@@ -592,9 +591,9 @@ class DelaunayGeometry(GenericGeometry):
         fiber_space = self._hull_image.copy()
         pore_space[self._fiber_image == 0] = -1
         fiber_space[self._fiber_image == 1] = -1
-        freq_pore_vox = itemfreq(pore_space)
+        freq_pore_vox = np.transpose(np.unique(pore_space, return_counts=True))
         freq_pore_vox = freq_pore_vox[freq_pore_vox[:, 0] > -1]
-        freq_fiber_vox = itemfreq(fiber_space)
+        freq_fiber_vox = np.transpose(np.unique(fiber_space, return_counts=True))
         freq_fiber_vox = freq_fiber_vox[freq_fiber_vox[:, 0] > -1]
         pore_vox[freq_pore_vox[:, 0]] = freq_pore_vox[:, 1]
         fiber_vox[freq_fiber_vox[:, 0]] = freq_fiber_vox[:, 1]
@@ -891,7 +890,7 @@ class DelaunayGeometry(GenericGeometry):
             coms = self["throat.centroid"][throat_list]
             incentre = self["throat.incenter"][throat_list]
             inradius = 0.5 * self["throat.indiameter"][throat_list]
-            row_col = np.ceil(np.sqrt(len(throat_list)))
+            row_col = int(np.ceil(np.sqrt(len(throat_list))))
             for i in range(len(throat_list)):
                 if fig is None:
                     fig = plt.figure()
