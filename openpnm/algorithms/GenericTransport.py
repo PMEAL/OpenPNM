@@ -86,7 +86,7 @@ class GenericTransportSettings(GenericSettings):
     phase = None
     conductance = None
     quantity = None
-    solver_family = 'scipy'
+    solver_family = 'pypardiso'
     solver_type = 'spsolve'
     solver_preconditioner = 'jacobi'
     solver_tol = 1e-8
@@ -592,7 +592,7 @@ class GenericTransport(GenericAlgorithm):
 
         # Check solution convergence
         if not self._is_converged(x=x):
-            raise Exception(f"Solver did not converge.")
+            raise Exception("Solver did not converge.")
 
         return x
 
