@@ -38,6 +38,7 @@ jobs:
           show-channel-urls: false
           use-only-tar-bz2: true
           auto-activate-base: true
+          condarc-file: tests/environment.yml
 
       - name: Cache conda
         uses: actions/cache@v1
