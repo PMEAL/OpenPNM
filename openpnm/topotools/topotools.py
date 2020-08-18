@@ -1435,8 +1435,8 @@ def merge_networks(network, donor=[]):
         donors = [donor]
 
     # First fix up geometries
-    main_proj = network.project
-    main_geoms = main_proj.geometries()
+    # main_proj = network.project
+    # main_geoms = main_proj.geometries()
     for donor in donors:
         proj = donor.project
         geoms = proj.geometries().values()
@@ -1835,16 +1835,16 @@ def subdivide(network, pores, shape, labels=[]):
                                  ['left', 'right'],
                                  ['top', 'bottom']])
         non_single_labels = label_groups[np.array([0, 1, 2]) != single_dim]
-    for l in main_labels:
-        new_net['pore.surface_' + l] = False
-        network['pore.surface_' + l] = False
+    for label in main_labels:
+        new_net['pore.surface_' + label] = False
+        network['pore.surface_' + label] = False
         if single_dim is None:
-            new_net['pore.surface_' + l][new_net.pores(labels=l)] = True
+            new_net['pore.surface_' + label][new_net.pores(labels=label)] = True
         else:
             for ind in [0, 1]:
-                loc = (non_single_labels[ind] == l)
+                loc = (non_single_labels[ind] == label)
                 temp_pores = new_net.pores(non_single_labels[ind][loc])
-                new_net['pore.surface_' + l][temp_pores] = True
+                new_net['pore.surface_' + label][temp_pores] = True
 
     old_coords = np.copy(new_net['pore.coords'])
     if labels == []:
@@ -1866,8 +1866,8 @@ def subdivide(network, pores, shape, labels=[]):
                labels=labels, network=network)
 
         # Moving the temporary labels to the big network
-        for l in main_labels:
-            network['pore.surface_'+l][Np1:] = new_net['pore.surface_'+l]
+        for label in main_labels:
+            network['pore.surface_' + label][Np1:] = new_net['pore.surface_' + label]
 
         # Stitching the old pores of the main network to the new extended pores
         surf_pores = network.pores('surface_*')
@@ -1885,7 +1885,7 @@ def subdivide(network, pores, shape, labels=[]):
                 if np.size(new_neighbors) == 0:
                     labels = network.labels(pores=nearest_neighbor,
                                             mode='and')
-                    common_label = [l for l in labels if 'surface_' in l]
+                    common_label = [label for label in labels if 'surface_' in label]
                     new_neighbors = network.pores(common_label)
             elif neighbor in Pn_new_net:
                 new_neighbors = nearest_neighbor
@@ -1893,13 +1893,13 @@ def subdivide(network, pores, shape, labels=[]):
                           pores2=new_neighbors, labels=labels)
 
         # Removing temporary labels
-        for l in main_labels:
-            network['pore.surface_' + l] = False
+        for label in main_labels:
+            network['pore.surface_' + label] = False
         new_net['pore.coords'] = np.copy(old_coords)
 
     label_faces(network=network)
-    for l in main_labels:
-        del network['pore.surface_'+l]
+    for label in main_labels:
+        del network['pore.surface_' + label]
     trim(network=network, pores=pores)
     ws = network.project.workspace
     ws.close_project(new_net.project)
