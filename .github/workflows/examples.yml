@@ -26,18 +26,6 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: Set up conda
-        uses: goanpeca/setup-miniconda@v1
-        with:
-          auto-update-conda: true
-          python-version: ${{ matrix.python-version }}
-          channels: defaults, conda-forge, haasad
-          allow-softlinks: true
-          channel-priority: flexible
-          show-channel-urls: false
-          use-only-tar-bz2: true
-          auto-activate-base: true
-
       - name: Cache conda
         uses: actions/cache@v1
         env:
@@ -45,6 +33,18 @@ jobs:
         with:
           path: ~/conda_pkgs_dir
           key: ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-${{ hashFiles('**/conda_requirements.txt') }}
+
+      - name: Set up conda
+        uses: goanpeca/setup-miniconda@v1
+        with:
+          auto-update-conda: true
+          python-version: ${{ matrix.python-version }}
+          condarc-file: tests/environment.yml
+          allow-softlinks: true
+          channel-priority: flexible
+          show-channel-urls: false
+          use-only-tar-bz2: true
+          auto-activate-base: true
 
       - name: Install dependencies (conda)
         run: |
@@ -57,8 +57,6 @@ jobs:
 
       - name: Running tests
         run:
-          pytest --nbval -p no:python
-          --ignore="tests"
-          --ignore="openpnm/utils/petsc.py"
+          pytest --nbval examples/
           --ignore="examples/paper_recreations/Blunt et al. (2013)"
           --ignore="examples/paper_recreations/Wu et al. (2010)"
