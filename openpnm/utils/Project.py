@@ -404,6 +404,10 @@ class Project(list):
         prefix = obj.settings['prefix']
         num = len(self._get_objects_by_type(obj._isa())) + 1
         name = prefix + '_' + str(num).zfill(2)
+        try:
+            self._validate_name(name)
+        except Exception:
+            name = prefix + '_' + str(np.random.randint(100, 999))
         return name
 
     @property
