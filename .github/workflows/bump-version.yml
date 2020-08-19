@@ -26,7 +26,7 @@ jobs:
         git fetch --all --tags
         echo ::set-env name=TAG::$(git tag | sort -V | tail -1)
         echo ::set-env name=VER::$(python -c "import sys; sys.path.append('./openpnm'); from __version__ import __version__; print(__version__)")
-        # echo ::set-env name=TAG::$(git describe --tags `git rev-list --tags --max-count=1`)
+        # echo ::set-env name=TAG::$(git describe --tags `git rev-list --tags --max-count=1`)   # alternative way of finding the most recent tag
 
     - name: Install dependencies
       run: |
@@ -35,15 +35,18 @@ jobs:
 
     - name: Bump version (patch)
       if: contains(github.event.head_commit.message, '#patch')
-      run: bump2version --current-version $VER patch openpnm/__version__.py
+      run: |
+        echo ::set-env name=TAG_NEW::v$(bump2version --current-version $VER patch openpnm/__version__.py --verbose | grep new_version | cut -d= -f2)
 
     - name: Bump version (minor)
       if: contains(github.event.head_commit.message, '#minor')
-      run: bump2version --current-version $VER minor openpnm/__version__.py
+      run: |
+        echo ::set-env name=TAG_NEW::v$(bump2version --current-version $VER minor openpnm/__version__.py --verbose | grep new_version | cut -d= -f2)
 
     - name: Bump version (major)
       if: contains(github.event.head_commit.message, '#major')
-      run: bump2version --current-version $VER major openpnm/__version__.py
+      run: |
+        echo ::set-env name=TAG_NEW::v$(bump2version --current-version $VER major openpnm/__version__.py --verbose | grep new_version | cut -d= -f2)
 
     - name: Commit files
       if:
@@ -56,7 +59,25 @@ jobs:
         git commit -m "Bump version number [ci skip]" -a
         REPOSITORY=${INPUT_REPOSITORY:-$GITHUB_REPOSITORY}
         remote_repo="https://${GITHUB_ACTOR}:${{ secrets.PUSH_ACTION_TOKEN }}@github.com/${REPOSITORY}.git"
-        git push "${remote_repo}" release:release release:dev --force
+        git push "${remote_repo}" release   # commit version bump to release
+        git checkout dev
+        git cherry-pick release             # this cherry-picks the most recent commit (version bump) on release
+        # git merge release                 # this breaks if dev contains code that release doesn't (e.g. hotfix directly pushed to release)
+        git push "${remote_repo}" dev       # commit version bump to dev
+        git checkout release                # checkout the Action branch (release)
+
+    - name: Create new tag
+      run: |
+        REPOSITORY=${INPUT_REPOSITORY:-$GITHUB_REPOSITORY}
+        remote_repo="https://${GITHUB_ACTOR}:${{ secrets.PUSH_ACTION_TOKEN }}@github.com/${REPOSITORY}.git"
+        if [ -z "$TAG_NEW" ]
+        then
+            echo "New tag not created."
+        else
+            git tag $TAG_NEW
+            git push "${remote_repo}" $TAG_NEW
+            echo "Pushed a new tag: $TAG_NEW"
+        fi
 
     # - name: Push changes
     #   uses: ad-m/github-push-action@master
@@ -64,12 +85,12 @@ jobs:
     #     github_token: ${{ secrets.GITHUB_TOKEN }}
     #     branch: 'release'
 
-    - name: Push new tag
-      uses: anothrNick/github-tag-action@1.22.0
-      env:
-        # If secrets.GITHUB_TOKEN is used, "Publish to PyPI" action will not be triggered
-        WITH_V: true
-        RELEASE_BRANCHES: release
-        GITHUB_TOKEN: ${{ secrets.PUSH_ACTION_TOKEN }}
-        DEFAULT_BUMP: none
+    # - name: Push new tag
+    #   uses: anothrNick/github-tag-action@1.22.0
+    #   env:
+    #     # If secrets.GITHUB_TOKEN is used, "Publish to PyPI" action will not be triggered
+    #     WITH_V: true
+    #     RELEASE_BRANCHES: release
+    #     GITHUB_TOKEN: ${{ secrets.PUSH_ACTION_TOKEN }}
+    #     DEFAULT_BUMP: none
 
