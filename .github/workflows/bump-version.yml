@@ -1,4 +1,4 @@
-name: Bump version
+name: ⏫ Version No.
 
 on:
   push:
@@ -24,9 +24,9 @@ jobs:
     - name: Set env variables
       run: |
         git fetch --all --tags
-        # echo ::set-env name=TAG::$(git describe --tags `git rev-list --tags --max-count=1`)
         echo ::set-env name=TAG::$(git tag | sort -V | tail -1)
         echo ::set-env name=VER::$(python -c "import sys; sys.path.append('./openpnm'); from __version__ import __version__; print(__version__)")
+        # echo ::set-env name=TAG::$(git describe --tags `git rev-list --tags --max-count=1`)
 
     - name: Install dependencies
       run: |
@@ -54,12 +54,15 @@ jobs:
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
         git commit -m "Bump version number [ci skip]" -a
+        REPOSITORY=${INPUT_REPOSITORY:-$GITHUB_REPOSITORY}
+        remote_repo="https://${GITHUB_ACTOR}:${{ secrets.PUSH_ACTION_TOKEN }}@github.com/${REPOSITORY}.git"
+        git push "${remote_repo}" release:release release:dev --force
 
-    - name: Push changes
-      uses: ad-m/github-push-action@master
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        branch: 'release'
+    # - name: Push changes
+    #   uses: ad-m/github-push-action@master
+    #   with:
+    #     github_token: ${{ secrets.GITHUB_TOKEN }}
+    #     branch: 'release'
 
     - name: Push new tag
       uses: anothrNick/github-tag-action@1.22.0

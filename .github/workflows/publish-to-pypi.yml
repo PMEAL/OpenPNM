@@ -1,4 +1,4 @@
-name: Publish 🐍 📦 to PyPI
+name: 🐍 Deploy to PyPI
 
 on:
   push:
@@ -12,6 +12,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+      with:
+        ref: release  # the production branch name (for proper version #)
 
     - name: Set up Python
       uses: actions/setup-python@v2
@@ -51,13 +53,13 @@ jobs:
         password: ${{ secrets.PYPI_TOKEN }}
         skip_existing: true
 
-    - name: Publish distribution 📦 to TestPyPI
-      if: startsWith(github.event.ref, 'refs/tags') && contains(env.TAG_MISMATCH, 'false')
-      uses: pypa/gh-action-pypi-publish@master
-      with:
-        user: __token__
-        password: ${{ secrets.TESTPYPI_TOKEN }}
-        repository_url: https://test.pypi.org/legacy/
+    # - name: Publish distribution 📦 to TestPyPI
+    #   if: startsWith(github.event.ref, 'refs/tags') && contains(env.TAG_MISMATCH, 'false')
+    #   uses: pypa/gh-action-pypi-publish@master
+    #   with:
+    #     user: __token__
+    #     password: ${{ secrets.TESTPYPI_TOKEN }}
+    #     repository_url: https://test.pypi.org/legacy/
 
     - name: Delete tag if doesn't match with version
       if: contains(env.TAG_MISMATCH, 'true')
