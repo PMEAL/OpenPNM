@@ -1,4 +1,3 @@
-import scipy as sp
 import numpy as np
 import scipy.sparse as sprs
 import scipy.spatial as sptl
@@ -335,7 +334,7 @@ class DelaunayVoronoiDual(GenericNetwork):
         for item in labels:
             Ps = self.pores(item)
             coords = np.absolute(self['pore.coords'][Ps])
-            axis = np.count_nonzero(sp.diff(coords, axis=0), axis=0) == 0
+            axis = np.count_nonzero(np.diff(coords, axis=0), axis=0) == 0
             ax_off = np.array(axis, dtype=int)*offset
             if np.amin(coords) == np.amin(coords[:, np.where(axis)[0]]):
                 ax_off = -1*ax_off

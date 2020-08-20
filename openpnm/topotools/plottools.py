@@ -16,28 +16,37 @@ def plot_connections(network, throats=None, fig=None, size_by=None,
     ----------
     network : OpenPNM Network Object
         The network whose topological connections to plot
+
     throats : array_like (optional)
         The list of throats to plot if only a sub-sample is desired.  This is
         useful for inspecting a small region of the network.  If no throats are
         specified then all throats are shown.
+
     fig : Matplotlib figure handle and line property arguments
         If a ``fig`` is supplied, then the topology will be overlaid on this
         plot.  This makes it possible to combine coordinates and connections,
         and to color throats differently
+
     size_by : array_like
         An ND-array of throat values (e.g. alg['throat.rate']).  These
         values are normalized by scaled by ``markersize``.
+
     color_by : str or array_like
         An ND-array of throat values (e.g. alg['throat.rate']).
+
     cmap : str or cmap object
         The matplotlib colormap to use if specfying a throat property
         for ``color_by``
+
     color : str
         A matplotlib named color (e.g. 'r' for red).
+
     alpha : float
         The transparency of the lines, with 1 being solid and 0 being invisible
+
     linestyle : str
         Can be one of {'solid', 'dashed', 'dashdot', 'dotted'}
+
     linewidth : float
         Controls the thickness of drawn lines.  Is used to scale the thickness
         if ``size_by`` is given.
@@ -81,14 +90,13 @@ def plot_connections(network, throats=None, fig=None, size_by=None,
     ThreeD = True if dim.sum() == 3 else False
     # Add a dummy axis for 1D networks
     if dim.sum() == 1:
-        dim[np.argwhere(dim == False)[0]] = True
+        dim[np.argwhere(~dim)[0]] = True
 
     fig = plt.figure() if fig is None else fig
     ax = fig.gca()
     if ThreeD and ax.name != '3d':
         fig.delaxes(ax)
         ax = fig.add_subplot(111, projection='3d')
-
     # Collect coordinates
     Ps = np.unique(network['throat.conns'][Ts])
     X, Y, Z = network['pore.coords'][Ps].T
@@ -135,29 +143,38 @@ def plot_coordinates(network, pores=None, fig=None, size_by=None,
     ----------
     network : OpenPNM Network Object
         The network whose topological connections to plot
+
     pores : array_like (optional)
         The list of pores to plot if only a sub-sample is desired.  This is
         useful for inspecting a small region of the network.  If no pores are
         specified then all are shown.
+
     fig : Matplotlib figure handle
         If a ``fig`` is supplied, then the coordinates will be overlaid.  This
         enables the plotting of multiple different sets of pores as well as
         throat connections from ``plot_connections``.
+
     size_by : str or array_like
         An ND-array of pore values (e.g. alg['pore.concentration']).  These
         values are normalized by scaled by ``markersize``.
+
     color_by : str or array_like
         An ND-array of pore values (e.g. alg['pore.concentration']).
+
     cmap : str or cmap object
         The matplotlib colormap to use if specfying a pore property
         for ``color_by``
+
     color : str
         A matplotlib named color (e.g. 'r' for red).
+
     alpha : float
         The transparency of the lines, with 1 being solid and 0 being invisible
+
     marker : 's'
         The marker to use.  The default is a circle.  Options are explained
         `here <https://matplotlib.org/3.2.1/api/markers_api.html>`_
+
     markersize : scalar
         Controls size of marker, default is 1.0.  This value is used to scale
         the ``size_by`` argument if given.
@@ -198,7 +215,7 @@ def plot_coordinates(network, pores=None, fig=None, size_by=None,
     ThreeD = True if dim.sum() == 3 else False
     # Add a dummy axis for 1D networks
     if dim.sum() == 1:
-        dim[np.argwhere(dim == False)[0]] = True
+        dim[np.argwhere(~dim)[0]] = True
     # Add 2 dummy axes for 0D networks (1 pore only)
     if dim.sum() == 0:
         dim[[0, 1]] = True
@@ -245,11 +262,11 @@ def _label_axes(ax, X, Y, Z):
             dim[i] = True
     # Add a dummy axis for 1D networks
     if dim.sum() == 1:
-        dim[np.argwhere(dim == False)[0]] = True
+        dim[np.argwhere(~dim)[0]] = True
     # Add 2 dummy axes for 0D networks (1 pore only)
     if dim.sum() == 0:
         dim[[0, 1]] = True
-    dim_idx = np.argwhere(dim == True).squeeze()
+    dim_idx = np.argwhere(dim).squeeze()
     ax.set_xlabel(labels[dim_idx[0]])
     ax.set_ylabel(labels[dim_idx[1]])
     if hasattr(ax, "set_zlim"):
@@ -269,6 +286,7 @@ def _scale_3d_axes(ax, X, Y, Z):
         ax.set_ylim(mid_y - max_range, mid_y + max_range)
         if hasattr(ax, "set_zlim"):
             ax.set_zlim(mid_z - max_range, mid_z + max_range)
+        plt.autoscale()
 
 
 def plot_networkx(network, plot_throats=True, labels=None, colors=None,
@@ -280,17 +298,24 @@ def plot_networkx(network, plot_throats=True, labels=None, colors=None,
     ----------
     network : OpenPNM Network object
 
-    plot_throats : boolean
+    plot_throats : boolean, optional
         Plots throats as well as pores, if True.
 
-    labels : list
+    labels : list, optional
         List of OpenPNM labels
 
-    colors : list
+    colors : list, optional
         List of corresponding colors to the given `labels`.
 
-    scale : float
+    scale : float, optional
         Scale factor for size of pores.
+
+    ax : matplotlib.Axes, optional
+        Matplotlib axes object
+
+    alpha: float, optional
+        Transparency value, 1 is opaque and 0 is transparent
+
     """
     from networkx import Graph, draw_networkx_nodes, draw_networkx_edges
     from matplotlib.collections import PathCollection
@@ -306,13 +331,12 @@ def plot_networkx(network, plot_throats=True, labels=None, colors=None,
         y = np.zeros_like(x)
     if dims.sum() == 2:
         x, y = temp
-
-    G = Graph()
-    pos = {network.Ps[i]: [x[i], y[i]] for i in range(network.Np)}
     try:
         node_size = scale * network['pore.diameter']
     except KeyError:
         node_size = np.ones_like(x) * scale * 0.5
+    G = Graph()
+    pos = {network.Ps[i]: [x[i], y[i]] for i in range(network.Np)}
     if not np.isfinite(node_size).all():
         raise Exception('nan/inf values found in network["pore.diameter"]')
     node_color = np.array(['k'] * len(network.Ps))
@@ -323,14 +347,14 @@ def plot_networkx(network, plot_throats=True, labels=None, colors=None,
         if type(colors) is not list:
             colors = [colors]
         if len(labels) != len(colors):
-            raise('len(colors) must be equal to len(labels)!')
+            raise Exception('len(colors) must be equal to len(labels)!')
         for label, color in zip(labels, colors):
             node_color[network.pores(label)] = color
 
     if ax is None:
         fig, ax = plt.subplots()
-    ax.set_aspect('equal', adjustable='box')
-    offset = node_size.max() * 0.25
+    ax.set_aspect('equal', adjustable='datalim')
+    offset = node_size.max() * 0.5
     ax.set_xlim((x.min() - offset, x.max() + offset))
     ax.set_ylim((y.min() - offset, y.max() + offset))
     ax.axis("off")
@@ -374,24 +398,30 @@ def plot_vpython(network,
     ----------
     network : OpenPNM Network Object
         The network to visualize
+
     Psize : string (default = 'pore.diameter')
         The dictionary key pointing to the pore property by which sphere
         diameters should be scaled
+
     Tsize : string (default = 'throat.diameter')
         The dictionary key pointing to the throat property by which cylinder
         diameters should be scaled
+
     Pcolor : string
         The dictionary key pointing to the pore property which will control
         the sphere colors.  The default is None, which results in a bright
         red for all pores.
+
     Tcolor : string
         The dictionary key pointing to the throat property which will control
         the cylinder colors.  The default is None, which results in a unform
         pale blue for all throats.
+
     cmap : string or Matplotlib colormap object (default is 'jet')
         The color map to use when converting pore and throat properties to
         RGB colors.  Can either be a string indicating which color map to
         fetch from matplotlib.cmap, or an actual cmap object.
+
     kwargs : dict
         Any additional kwargs that are received are passed to the VPython
         ``canvas`` object.  Default options are:
@@ -488,14 +518,19 @@ def plot_tutorial(network, font_size=24, line_width=3,
     network : OpenPNM Network object
         The network to plot, should be 2D, since the z-coordinate will be
         ignored.
+
     font_size : int
         Size of font to use for labels
+
     line_width : int
         Thickness of edge lines and node borders
+
     node_color : str
         Color of node border
+
     edge_color : str
         Color of edge lines
+
     node_size : int
         Size of node circle
 

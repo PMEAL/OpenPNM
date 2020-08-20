@@ -79,10 +79,10 @@ setup(
     ],
     author='OpenPNM Team',
     author_email='jgostick@uwaterloo.ca',
-    download_url='https://github.com/pmeal/OpenPNM/',
+    download_url='https://github.com/PMEAL/OpenPNM/',
     url='http://openpnm.org',
     project_urls={
-        'Documentation': 'https://openpnm.readthedocs.io/en/master/',
+        'Documentation': 'https://openpnm.readthedocs.io/en/dev/',
         'Source': 'https://github.com/PMEAL/OpenPNM',
         'Tracker': 'https://github.com/PMEAL/OpenPNM/issues',
     },

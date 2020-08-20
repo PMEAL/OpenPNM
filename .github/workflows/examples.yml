@@ -9,6 +9,10 @@ jobs:
         (! contains(github.event.head_commit.message, 'ci skip'))
 
     runs-on: ${{ matrix.operating-system }}
+    defaults:
+      run:
+        shell: bash -l {0}
+
     strategy:
       max-parallel: 4
       matrix:
@@ -16,31 +20,43 @@ jobs:
         operating-system: [ubuntu-latest]
 
     steps:
-    - uses: actions/checkout@v2
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
-      with:
-        python-version: ${{ matrix.python-version }}
+      - uses: actions/checkout@v2
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
 
-    - uses: actions/cache@v2
-      with:
-        path: ~/.cache/pip
-        key: ${{ runner.os }}-pip-${{ hashFiles('**/pip_requirements.txt') }}
-        restore-keys: |
-          ${{ runner.os }}-pip-
+      - name: Cache conda
+        uses: actions/cache@v1
+        env:
+          CACHE_NUMBER: 0  # increase value -> force reset cache
+        with:
+          path: ~/conda_pkgs_dir
+          key: ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-${{ hashFiles('**/conda_requirements.txt') }}
 
-    - name: Install Dependencies
-      run: |
-        pip install -r requirements/pip_requirements.txt
-        pip install -r requirements/test_requirements.txt
-        pip uninstall openpnm --yes
-        pip install -e .
-        pip install porespy # for ipynb tests
+      - name: Set up conda
+        uses: goanpeca/setup-miniconda@v1
+        with:
+          auto-update-conda: true
+          python-version: ${{ matrix.python-version }}
+          condarc-file: tests/environment.yml
+          allow-softlinks: true
+          channel-priority: flexible
+          show-channel-urls: false
+          use-only-tar-bz2: true
+          auto-activate-base: true
 
-    - name: Running tests
-      run:
-        pytest --nbval -p no:python
-        --ignore="tests"
-        --ignore="openpnm/utils/petsc.py"
-        --ignore="examples/paper_recreations/Blunt et al. (2013)"
-        --ignore="examples/paper_recreations/Wu et al. (2010)"
+      - name: Install dependencies (conda)
+        run: |
+          conda install --file requirements/conda_requirements.txt
+          conda install --file requirements/test_requirements.txt
+          conda install pyamg
+          conda install porespy  # for notebook testing
+          # Install OpenPNM from the checked-out branch
+          pip install -e .
+
+      - name: Running tests
+        run:
+          pytest --nbval examples/
+          --ignore="examples/paper_recreations/Blunt et al. (2013)"
+          --ignore="examples/paper_recreations/Wu et al. (2010)"

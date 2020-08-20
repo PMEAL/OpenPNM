@@ -854,14 +854,14 @@ def general_symbolic(target, eqn=None, arg_map=None):
     ----------
     >>> import openpnm as op
     >>> from openpnm.models.physics import generic_source_term as gst
-    >>> import scipy as sp
+    >>> import numpy as np
     >>> import sympy
     >>> pn = op.network.Cubic(shape=[5, 5, 5], spacing=0.0001)
     >>> water = op.phases.Water(network=pn)
     >>> water['pore.a'] = 1
     >>> water['pore.b'] = 2
     >>> water['pore.c'] = 3
-    >>> water['pore.x'] = sp.random.random(water.Np)
+    >>> water['pore.x'] = np.random.random(water.Np)
     >>> a, b, c, x = sympy.symbols('a,b,c,x')
     >>> y = a*x**b + c
     >>> arg_map = {'a':'pore.a', 'b':'pore.b', 'c':'pore.c', 'x':'pore.x'}

@@ -1,9 +1,9 @@
+name: 📝 Release notes
+
 on:
   push:
     tags:
       - 'v*'
-
-name: Create release notes
 
 jobs:
   build:

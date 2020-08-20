@@ -90,7 +90,7 @@ def find_neighbor_sites(sites, am, flatten=True, include_input=False,
     elif logic in ['and', 'all', 'intersection']:
         neighbors = set(neighbors)
         [neighbors.intersection_update(i) for i in rows]
-        neighbors = np.array(list(neighbors), dtype=sp.int64, ndmin=1)
+        neighbors = np.array(list(neighbors), dtype=np.int64, ndmin=1)
     else:
         raise Exception('Specified logic is not implemented')
     # Deal with removing inputs or not
@@ -104,7 +104,7 @@ def find_neighbor_sites(sites, am, flatten=True, include_input=False,
     else:
         if neighbors.size > 0:
             for i in range(len(rows)):
-                vals = np.array(rows[i], dtype=sp.int64)
+                vals = np.array(rows[i], dtype=np.int64)
                 rows[i] = vals[mask[vals]]
             neighbors = rows
         else:
@@ -181,10 +181,10 @@ def find_neighbor_bonds(sites, im=None, am=None, flatten=True, logic='or'):
     if im is not None:
         if im.format != 'lil':
             im = im.tolil(copy=False)
-        rows = [im.rows[i] for i in np.array(sites, ndmin=1, dtype=sp.int64)]
+        rows = [im.rows[i] for i in np.array(sites, ndmin=1, dtype=np.int64)]
         if len(rows) == 0:
             return []
-        neighbors = np.hstack(rows).astype(sp.int64)
+        neighbors = np.hstack(rows).astype(np.int64)
         n_bonds = int(im.nnz/2)
         if logic in ['or', 'union', 'any']:
             neighbors = np.unique(neighbors)
@@ -203,11 +203,11 @@ def find_neighbor_bonds(sites, im=None, am=None, flatten=True, logic='or'):
                 mask = np.zeros(shape=n_bonds, dtype=bool)
                 mask[neighbors] = True
                 for i in range(len(rows)):
-                    vals = np.array(rows[i], dtype=sp.int64)
+                    vals = np.array(rows[i], dtype=np.int64)
                     rows[i] = vals[mask[vals]]
                 neighbors = rows
             else:
-                neighbors = [np.array([], dtype=sp.int64) for i in range(len(sites))]
+                neighbors = [np.array([], dtype=np.int64) for i in range(len(sites))]
         return neighbors
     elif am is not None:
         if am.format != 'coo':
@@ -297,7 +297,7 @@ def find_connected_sites(bonds, am, flatten=True, logic='or'):
     # is sorted properly first
     if not istriu(am):
         am = sp.sparse.triu(am, k=1)
-    neighbors = np.hstack((am.row[bonds], am.col[bonds])).astype(sp.int64)
+    neighbors = np.hstack((am.row[bonds], am.col[bonds])).astype(np.int64)
     if neighbors.size:
         n_sites = np.amax(neighbors)
     if logic in ['or', 'union', 'any']:
@@ -311,23 +311,23 @@ def find_connected_sites(bonds, am, flatten=True, logic='or'):
         temp = [set(pair) for pair in temp]
         neighbors = temp[0]
         [neighbors.intersection_update(pair) for pair in temp[1:]]
-        neighbors = np.array(list(neighbors), dtype=sp.int64, ndmin=1)
+        neighbors = np.array(list(neighbors), dtype=np.int64, ndmin=1)
     else:
         raise Exception('Specified logic is not implemented')
     if flatten is False:
         if neighbors.size:
             mask = np.zeros(shape=n_sites+1, dtype=bool)
             mask[neighbors] = True
-            temp = np.hstack((am.row[bonds], am.col[bonds])).astype(sp.int64)
+            temp = np.hstack((am.row[bonds], am.col[bonds])).astype(np.int64)
             temp[~mask[temp]] = -1
             inds = np.where(temp == -1)[0]
             if len(inds):
                 temp = temp.astype(float)
-                temp[inds] = sp.nan
+                temp[inds] = np.nan
             temp = np.reshape(a=temp, newshape=[len(bonds), 2], order='F')
             neighbors = temp
         else:
-            neighbors = [np.array([], dtype=sp.int64) for i in range(len(bonds))]
+            neighbors = [np.array([], dtype=np.int64) for i in range(len(bonds))]
     return neighbors
 
 
@@ -355,7 +355,7 @@ def find_connecting_bonds(sites, am):
     -----
     The returned list can be converted to an ND-array, which will convert
     the ``None`` values to ``nan``.  These can then be found using
-    ``scipy.isnan``.
+    ``numpy.isnan``.
 
     """
     if am.format != 'dok':
@@ -785,7 +785,7 @@ def site_percolation(ij, occupied_sites):
 
     Notes
     -----
-    The ``connected_components`` function of scipy.csgraph will give ALL
+    The ``connected_components`` function of scipy.sparse.csgraph will give ALL
     sites a cluster number whether they are occupied or not, so this
     function essentially adjusts the cluster numbers to represent a
     percolation process.
@@ -830,7 +830,7 @@ def bond_percolation(ij, occupied_bonds):
 
     Notes
     -----
-    The ``connected_components`` function of scipy.csgraph will give ALL
+    The ``connected_components`` function of scipy.sparse.csgraph will give ALL
     sites a cluster number whether they are occupied or not, so this
     function essentially adjusts the cluster numbers to represent a
     percolation process.
@@ -1126,7 +1126,7 @@ def extend(network, pore_coords=[], throat_conns=[], labels=[]):
             if arr.dtype == bool:
                 network[item] = np.zeros(shape=(N, *s[1:]), dtype=bool)
             else:
-                network[item] = np.ones(shape=(N, *s[1:]), dtype=float)*sp.nan
+                network[item] = np.ones(shape=(N, *s[1:]), dtype=float)*np.nan
             # This is a temporary work-around until I learn to handle 2+ dims
             network[item][:arr.shape[0]] = arr
 
@@ -1139,12 +1139,12 @@ def extend(network, pore_coords=[], throat_conns=[], labels=[]):
             # Remove pore or throat from label, if present
             label = label.split('.')[-1]
             if np.size(pore_coords) > 0:
-                Ps = sp.r_[Np_old:Np]
+                Ps = np.r_[Np_old:Np]
                 if 'pore.'+label not in network.labels():
                     network['pore.'+label] = False
                 network['pore.'+label][Ps] = True
             if np.size(throat_conns) > 0:
-                Ts = sp.r_[Nt_old:Nt]
+                Ts = np.r_[Nt_old:Nt]
                 if 'throat.'+label not in network.labels():
                     network['throat.'+label] = False
                 network['throat.'+label][Ts] = True
@@ -1170,7 +1170,7 @@ def reduce_coordination(network, z):
     network['throat.mst'][Ts] = True
 
     # Trim throats not on the spanning tree to acheive desired coordination
-    Ts = sp.random.permutation(network.throats('mst', mode='nor'))
+    Ts = np.random.permutation(network.throats('mst', mode='nor'))
     Ts = Ts[:int(network.Nt - network.Np*(z/2))]
     trim(network=network, throats=Ts)
 
@@ -1284,7 +1284,7 @@ def find_surface_pores(network, markers=None, label='surface'):
             return
         if sum(dims) == 2:
             r = 0.75
-            theta = sp.linspace(0, 2*sp.pi, int(npts), dtype=float)
+            theta = np.linspace(0, 2*np.pi, int(npts), dtype=float)
             x = r*np.cos(theta)
             y = r*np.sin(theta)
             markers = np.vstack((x, y)).T
@@ -1292,7 +1292,7 @@ def find_surface_pores(network, markers=None, label='surface'):
             r = 1.00
             indices = np.arange(0, int(npts), dtype=float) + 0.5
             phi = np.arccos(1 - 2*indices/npts)
-            theta = sp.pi * (1 + 5**0.5) * indices
+            theta = np.pi * (1 + 5**0.5) * indices
             x = r*np.cos(theta) * np.sin(phi)
             y = r*np.sin(theta) * np.sin(phi)
             z = r*np.cos(phi)
@@ -1435,8 +1435,8 @@ def merge_networks(network, donor=[]):
         donors = [donor]
 
     # First fix up geometries
-    main_proj = network.project
-    main_geoms = main_proj.geometries()
+    # main_proj = network.project
+    # main_geoms = main_proj.geometries()
     for donor in donors:
         proj = donor.project
         geoms = proj.geometries().values()
@@ -1470,7 +1470,7 @@ def merge_networks(network, donor=[]):
                             shape = list(network[key].shape)
                             N = donor._count(element)
                             shape[0] = N
-                            donor[key] = sp.empty(shape=shape)*sp.nan
+                            donor[key] = np.empty(shape=shape)*np.nan
                         pop_flag = True
                     # Then merge it with existing array on network
                     if len(network[key].shape) == 1:
@@ -1489,7 +1489,7 @@ def merge_networks(network, donor=[]):
                         data_shape = list(donor[key].shape)
                         pore_prop = True if key.split(".")[0] == "pore" else False
                         data_shape[0] = network.Np if pore_prop else network.Nt
-                        network[key] = sp.empty(data_shape) * sp.nan
+                        network[key] = np.empty(data_shape) * np.nan
                     # Then append donor values to network
                     s = np.shape(donor[key])[0]
                     network[key][-s:] = donor[key]
@@ -1500,7 +1500,7 @@ def merge_networks(network, donor=[]):
 
 
 def stitch(network, donor, P_network, P_donor, method='nearest',
-           len_max=sp.inf, label_suffix='', label_stitches='stitched'):
+           len_max=np.inf, label_suffix='', label_stitches='stitched'):
     r'''
     Stitches a second a network to the current network.
 
@@ -1711,7 +1711,7 @@ def connect_pores(network, pores1, pores2, labels=[], add_conns=True):
     for ps1, ps2 in zip(pores1, pores2):
         size1 = np.size(ps1)
         size2 = np.size(ps2)
-        arr1.append(sp.repeat(ps1, size2))
+        arr1.append(np.repeat(ps1, size2))
         arr2.append(np.tile(ps2, size1))
     conns = np.vstack([np.concatenate(arr1), np.concatenate(arr2)]).T
     if add_conns:
@@ -1817,7 +1817,7 @@ def subdivide(network, pores, shape, labels=[]):
         if np.size(shape) == 3:
             div = np.array(shape, ndmin=1)
         else:
-            div = np.zeros(3, dtype=sp.int32)
+            div = np.zeros(3, dtype=np.int32)
             if single_dim is None:
                 dim = 2
             else:
@@ -1835,16 +1835,16 @@ def subdivide(network, pores, shape, labels=[]):
                                  ['left', 'right'],
                                  ['top', 'bottom']])
         non_single_labels = label_groups[np.array([0, 1, 2]) != single_dim]
-    for l in main_labels:
-        new_net['pore.surface_' + l] = False
-        network['pore.surface_' + l] = False
+    for label in main_labels:
+        new_net['pore.surface_' + label] = False
+        network['pore.surface_' + label] = False
         if single_dim is None:
-            new_net['pore.surface_' + l][new_net.pores(labels=l)] = True
+            new_net['pore.surface_' + label][new_net.pores(labels=label)] = True
         else:
             for ind in [0, 1]:
-                loc = (non_single_labels[ind] == l)
+                loc = (non_single_labels[ind] == label)
                 temp_pores = new_net.pores(non_single_labels[ind][loc])
-                new_net['pore.surface_' + l][temp_pores] = True
+                new_net['pore.surface_' + label][temp_pores] = True
 
     old_coords = np.copy(new_net['pore.coords'])
     if labels == []:
@@ -1866,15 +1866,15 @@ def subdivide(network, pores, shape, labels=[]):
                labels=labels, network=network)
 
         # Moving the temporary labels to the big network
-        for l in main_labels:
-            network['pore.surface_'+l][Np1:] = new_net['pore.surface_'+l]
+        for label in main_labels:
+            network['pore.surface_' + label][Np1:] = new_net['pore.surface_' + label]
 
         # Stitching the old pores of the main network to the new extended pores
         surf_pores = network.pores('surface_*')
         surf_coord = network['pore.coords'][surf_pores]
         for neighbor in Pn:
             neighbor_coord = network['pore.coords'][neighbor]
-            dist = [round(sp.inner(neighbor_coord-x, neighbor_coord-x),
+            dist = [round(np.inner(neighbor_coord-x, neighbor_coord-x),
                           20) for x in surf_coord]
             nearest_neighbor = surf_pores[dist == np.amin(dist)]
             if neighbor in Pn_old_net:
@@ -1885,7 +1885,7 @@ def subdivide(network, pores, shape, labels=[]):
                 if np.size(new_neighbors) == 0:
                     labels = network.labels(pores=nearest_neighbor,
                                             mode='and')
-                    common_label = [l for l in labels if 'surface_' in l]
+                    common_label = [label for label in labels if 'surface_' in label]
                     new_neighbors = network.pores(common_label)
             elif neighbor in Pn_new_net:
                 new_neighbors = nearest_neighbor
@@ -1893,13 +1893,13 @@ def subdivide(network, pores, shape, labels=[]):
                           pores2=new_neighbors, labels=labels)
 
         # Removing temporary labels
-        for l in main_labels:
-            network['pore.surface_' + l] = False
+        for label in main_labels:
+            network['pore.surface_' + label] = False
         new_net['pore.coords'] = np.copy(old_coords)
 
     label_faces(network=network)
-    for l in main_labels:
-        del network['pore.surface_'+l]
+    for label in main_labels:
+        del network['pore.surface_' + label]
     trim(network=network, pores=pores)
     ws = network.project.workspace
     ws.close_project(new_net.project)
@@ -2051,7 +2051,7 @@ def _template_sphere_disc(dim, outer_radius, inner_radius):
     rmax = np.array(outer_radius, ndmin=1)
     rmin = np.array(inner_radius, ndmin=1)
     ind = 2 * rmax - 1
-    coord = sp.indices((ind * np.ones(dim, dtype=int)))
+    coord = np.indices((ind * np.ones(dim, dtype=int)))
     coord = coord - (ind - 1)/2
     x = coord[0, :]
     y = coord[1, :]
@@ -2220,10 +2220,10 @@ def generate_base_points(num_points, domain_size, density_map=None,
         base_pts = []
         N = 0
         while N < num_points:
-            pt = sp.random.rand(3)  # Generate a point
+            pt = np.random.rand(3)  # Generate a point
             # Test whether to keep it or not
             [indx, indy, indz] = np.floor(pt*np.shape(prob)).astype(int)
-            if sp.random.rand(1) <= prob[indx][indy][indz]:
+            if np.random.rand(1) <= prob[indx][indy][indz]:
                 base_pts.append(pt)
                 N += 1
         base_pts = np.array(base_pts)
@@ -2392,10 +2392,10 @@ def find_clusters(network, mask=[], t_labels=False):
     Examples
     --------
     >>> import openpnm as op
-    >>> from scipy import rand
+    >>> import numpy as np
     >>> pn = op.network.Cubic(shape=[25, 25, 1])
-    >>> pn['pore.seed'] = rand(pn.Np)
-    >>> pn['throat.seed'] = rand(pn.Nt)
+    >>> pn['pore.seed'] = np.random.rand(pn.Np)
+    >>> pn['throat.seed'] = np.random.rand(pn.Nt)
 
 
     """
@@ -2427,7 +2427,7 @@ def _site_percolation(network, pmask):
     # Only if both pores are True is the throat set to True
     tmask = np.all(conns, axis=1)
 
-    # Perform the clustering using scipy.csgraph
+    # Perform the clustering using scipy.sparse.csgraph
     csr = network.create_adjacency_matrix(weights=tmask, fmt='csr',
                                           drop_zeros=True)
     clusters = sprs.csgraph.connected_components(csgraph=csr,
@@ -2451,7 +2451,7 @@ def _bond_percolation(network, tmask):
     r"""
     This private method is called by 'find_clusters'
     """
-    # Perform the clustering using scipy.csgraph
+    # Perform the clustering using scipy.sparse.csgraph
     csr = network.create_adjacency_matrix(weights=tmask, fmt='csr',
                                           drop_zeros=True)
     clusters = sprs.csgraph.connected_components(csgraph=csr,
@@ -2514,7 +2514,7 @@ def add_boundary_pores(network, pores, offset=None, move_to=None,
     if Ps.dtype is bool:
         Ps = network.toindices(Ps)
     if np.size(pores) == 0:  # Handle an empty array if given
-        return np.array([], dtype=sp.int64)
+        return np.array([], dtype=np.int64)
     # Clone the specifed pores
     clone_pores(network=network, pores=Ps)
     newPs = network.pores('pore.clone')

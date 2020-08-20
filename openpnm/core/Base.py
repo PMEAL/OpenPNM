@@ -214,7 +214,7 @@ class Base(dict):
                                     + ' already defined on a subdomain')
 
         # This check allows subclassed numpy arrays through, eg. with units
-        if not isinstance(value, sp.ndarray):
+        if not isinstance(value, np.ndarray):
             value = np.array(value, ndmin=1)  # Convert value to an ndarray
 
         # Skip checks for 'coords', 'conns'
@@ -756,25 +756,25 @@ class Base(dict):
             xor = np.zeros_like(self[element+'.all'], dtype=int)
             for item in labels:  # Iterate over labels and collect all indices
                 info = self[element+'.'+item.split('.')[-1]]
-                xor = xor + sp.int8(info)
+                xor = xor + np.int8(info)
             ind = (xor == 1)
         elif mode in ['nor', 'not', 'none']:
             nor = np.zeros_like(self[element+'.all'], dtype=int)
             for item in labels:  # Iterate over labels and collect all indices
                 info = self[element+'.'+item.split('.')[-1]]
-                nor = nor + sp.int8(info)
+                nor = nor + np.int8(info)
             ind = (nor == 0)
         elif mode in ['nand']:
             nand = np.zeros_like(self[element+'.all'], dtype=int)
             for item in labels:  # Iterate over labels and collect all indices
                 info = self[element+'.'+item.split('.')[-1]]
-                nand = nand + sp.int8(info)
+                nand = nand + np.int8(info)
             ind = (nand < len(labels)) * (nand > 0)
         elif mode in ['xnor', 'nxor']:
             xnor = np.zeros_like(self[element+'.all'], dtype=int)
             for item in labels:  # Iterate over labels and collect all indices
                 info = self[element+'.'+item.split('.')[-1]]
-                xnor = xnor + sp.int8(info)
+                xnor = xnor + np.int8(info)
             ind = (xnor > 1)
         else:
             raise Exception('Unsupported mode: '+mode)
@@ -950,13 +950,13 @@ class Base(dict):
         return np.arange(0, self.Nt)
 
     def _map(self, ids, element, filtered):
-        ids = np.array(ids, dtype=sp.int64)
+        ids = np.array(ids, dtype=np.int64)
         locations = self._get_indices(element=element)
-        self_in_ids = sp.isin(ids, self[element+'._id'], assume_unique=True)
-        ids_in_self = sp.isin(self[element+'._id'], ids, assume_unique=True)
+        self_in_ids = np.isin(ids, self[element+'._id'], assume_unique=True)
+        ids_in_self = np.isin(self[element+'._id'], ids, assume_unique=True)
         mask = np.zeros(shape=ids.shape, dtype=bool)
         mask[self_in_ids] = True
-        ind = np.ones_like(mask, dtype=sp.int64) * -1
+        ind = np.ones_like(mask, dtype=np.int64) * -1
         ind[self_in_ids] = locations[ids_in_self]
         if filtered:
             return ind[mask]
@@ -1231,7 +1231,7 @@ class Base(dict):
         if not all([item == atype[0] for item in atype]):
             raise Exception('The array types are not compatible')
         else:
-            dummy_val = {'numeric': sp.nan, 'boolean': False, 'other': None}
+            dummy_val = {'numeric': np.nan, 'boolean': False, 'other': None}
 
         # Create an empty array of the right type and shape
         for item in arrs:
@@ -1247,7 +1247,7 @@ class Base(dict):
         if temp_arr.dtype.name.startswith('int') and \
            (np.any([i is None for i in arrs]) or np.sum(sizes) != N):
             temp_arr = temp_arr.astype(float)
-            temp_arr.fill(sp.nan)
+            temp_arr.fill(np.nan)
 
         # Fill new array with values in the corresponding locations
         for vals, inds in zip(arrs, locs):
@@ -1312,10 +1312,10 @@ class Base(dict):
             label = self.name
         if propname.startswith('throat'):
             # Upcast data to full network size
-            temp = np.ones((boss.Nt,))*sp.nan
+            temp = np.ones((boss.Nt,))*np.nan
             temp[Ts] = self[propname]
             data = temp
-            temp = np.ones((boss.Np,))*sp.nan
+            temp = np.ones((boss.Np,))*np.nan
             for pore in Ps:
                 neighborTs = net.find_neighbor_throats(pore)
                 neighborTs = net.filter_by_label(throats=neighborTs,
@@ -1324,7 +1324,7 @@ class Base(dict):
             values = temp[Ps]
         elif propname.startswith('pore'):
             # Upcast data to full network size
-            data = np.ones((net.Np, ))*sp.nan
+            data = np.ones((net.Np, ))*np.nan
             data[Ps] = self[propname]
             Ps12 = net['throat.conns'][Ts]
             values = np.mean(data[Ps12], axis=1)
@@ -1629,6 +1629,7 @@ class Base(dict):
         else:
             r = int(np.ceil(N**0.5))
             c = int(np.floor(N**0.5))
+        plt.figure()
         for i in range(len(props)):
             plt.subplot(r, c, i+1)
             try:

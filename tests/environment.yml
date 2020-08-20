@@ -1,0 +1,4 @@
+channels:
+  - defaults
+  - conda-forge
+  - haasad
