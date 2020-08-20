@@ -42,6 +42,8 @@ class PNM(GenericIO):
 
     @classmethod
     def load_project(cls, filename):
+        loglevel = ws.settings['loglevel']
+        ws.settings['loglevel'] =  50
         with zarr.ZipStore('example.pnm', mode='r') as store:
             root = zarr.group(store=store)
             proj = Project()
@@ -56,6 +58,7 @@ class PNM(GenericIO):
                     obj.settings.update(root[name].attrs['settings'])
                     if hasattr(obj, 'models'):
                         obj.models.update(root[name].attrs['models'])
+        ws.settings['loglevel'] =  loglevel
         return proj
 
 
@@ -66,6 +69,7 @@ def create_obj(root, name, proj):
     mro = mro.split('.')
     mod = getattr(op, mro[1])
     c = [i for i in mod.__dir__() if i.startswith('Generic')][0]
+    c = mro[-1]
     clss = getattr(mod, c)
     obj = clss(project=proj)
     obj._name = name
