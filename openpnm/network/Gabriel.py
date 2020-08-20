@@ -69,19 +69,21 @@ class Gabriel(Delaunay):
         :align: center
 
     """
-    def __init__(self, shape, num_points=None, **kwargs):
+
+    def __init__(self, shape=None, num_points=None, **kwargs):
         # Generate Delaunay tessellation from super class, then trim
         super().__init__(shape=shape, num_points=num_points, **kwargs)
-        points = self['pore.coords']
-        conns = self['throat.conns']
-        # Find centroid of each pair of nodes
-        c = points[conns]
-        m = (c[:, 0, :] + c[:, 1, :])/2
-        # Find radius of circle connecting each pair of nodes
-        r = np.sqrt(np.sum((c[:, 0, :] - c[:, 1, :])**2, axis=1))/2
-        # Use KD-Tree to find distance to nearest neighbors
-        tree = sptl.cKDTree(points)
-        n = tree.query(x=m, k=1)[0]
-        # Identify throats whose centroid is not near an unconnected node
-        g = np.around(n, decimals=5) == np.around(r, decimals=5)
-        trim(self, throats=~g)
+        if 'pore.coords' in self.keys():
+            points = self['pore.coords']
+            conns = self['throat.conns']
+            # Find centroid of each pair of nodes
+            c = points[conns]
+            m = (c[:, 0, :] + c[:, 1, :])/2
+            # Find radius of circle connecting each pair of nodes
+            r = np.sqrt(np.sum((c[:, 0, :] - c[:, 1, :])**2, axis=1))/2
+            # Use KD-Tree to find distance to nearest neighbors
+            tree = sptl.cKDTree(points)
+            n = tree.query(x=m, k=1)[0]
+            # Identify throats whose centroid is not near an unconnected node
+            g = np.around(n, decimals=5) == np.around(r, decimals=5)
+            trim(self, throats=~g)
