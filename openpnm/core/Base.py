@@ -1629,6 +1629,7 @@ class Base(dict):
         else:
             r = int(np.ceil(N**0.5))
             c = int(np.floor(N**0.5))
+        plt.figure()
         for i in range(len(props)):
             plt.subplot(r, c, i+1)
             try:
