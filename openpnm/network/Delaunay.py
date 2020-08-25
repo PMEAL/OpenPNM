@@ -95,7 +95,7 @@ class Delaunay(DelaunayVoronoiDual):
 
     """
 
-    def __init__(self, shape=None, num_points=None, **kwargs):
+    def __init__(self, shape=[1, 1, 1], num_points=None, **kwargs):
         # Clean-up input points
         points = kwargs.pop('points', None)
         if (points is None) and (num_points is None):
@@ -104,7 +104,7 @@ class Delaunay(DelaunayVoronoiDual):
             points = self._parse_points(shape=shape,
                                         num_points=num_points,
                                         points=points)
-            super().__init__(shape=points, points=points, **kwargs)
+            super().__init__(shape=shape, points=points, **kwargs)
             # Initialize network object
             topotools.trim(network=self, pores=self.pores(['voronoi']))
             pop = ['pore.voronoi', 'throat.voronoi', 'throat.interconnect',
