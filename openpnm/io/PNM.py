@@ -1,6 +1,8 @@
 import zarr
 import numpy as np
+import importlib
 from datetime import datetime
+from os import getcwd
 from openpnm.utils import Workspace, Project
 from openpnm.utils import logging
 from openpnm.io import GenericIO
@@ -35,30 +37,42 @@ class PNM(GenericIO):
                 # Store models dict as metadata
                 if hasattr(obj, 'models'):
                     temp = obj.models.copy()
-                    for m in temp:
-                        temp[m].pop('model', None)
+                    for m in temp.keys():
+                        a = temp[m].pop('model', None)
+                        if a is not None:
+                            temp[m]['model'] = a.__module__ + '|' + \
+                                               a.__code__.co_name
                     item.attrs['models'] = temp
                 item.attrs['class'] = str(obj.__class__)
 
     @classmethod
     def load_project(cls, filename):
         loglevel = ws.settings['loglevel']
-        ws.settings['loglevel'] =  50
-        with zarr.ZipStore('example.pnm', mode='r') as store:
+        ws.settings['loglevel'] = 50
+        with zarr.ZipStore(filename, mode='r') as store:
             root = zarr.group(store=store)
             proj = Project()
             for name in root.keys():
                 if 'network' in root[name].attrs['class']:
                     proj, obj = create_obj(root, name, proj)
                     obj.settings.update(root[name].attrs['settings'])
-                    obj.models.update(root[name].attrs['models'])
+                    if hasattr(obj, 'models'):
+                        obj.models.update(root[name].attrs['models'])
+                        for m in obj.models.keys():
+                            md, fn = obj.models[m]['model'].split('|')
+                            md = importlib.import_module(md)
+                            obj.models[m]['model'] = getattr(md, fn)
             for name in root.keys():
                 if 'network' not in root[name].attrs['class']:
                     proj, obj = create_obj(root, name, proj)
                     obj.settings.update(root[name].attrs['settings'])
                     if hasattr(obj, 'models'):
                         obj.models.update(root[name].attrs['models'])
-        ws.settings['loglevel'] =  loglevel
+                        for m in obj.models.keys():
+                            md, fn = obj.models[m]['model'].split('|')
+                            md = importlib.import_module(md)
+                            obj.models[m]['model'] = getattr(md, fn)
+        ws.settings['loglevel'] = loglevel
         return proj
 
 

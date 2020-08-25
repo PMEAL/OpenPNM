@@ -17,6 +17,7 @@ class ModelsDict(PrintableDict):
     ``dependency_graph``, and ``dependency_map``.
 
     """
+
     def dependency_list(self):
         r"""
         Returns a list of dependencies in the order with which they should be
