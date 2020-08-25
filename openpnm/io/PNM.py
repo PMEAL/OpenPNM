@@ -55,29 +55,17 @@ class PNM(GenericIO):
             for name in root.keys():
                 if 'network' in root[name].attrs['class']:
                     proj, obj = create_obj(root, name, proj)
-                    obj.settings.update(root[name].attrs['settings'])
-                    if hasattr(obj, 'models'):
-                        obj.models.update(root[name].attrs['models'])
-                        for m in obj.models.keys():
-                            md, fn = obj.models[m]['model'].split('|')
-                            md = importlib.import_module(md)
-                            obj.models[m]['model'] = getattr(md, fn)
             for name in root.keys():
                 if 'network' not in root[name].attrs['class']:
                     proj, obj = create_obj(root, name, proj)
-                    obj.settings.update(root[name].attrs['settings'])
-                    if hasattr(obj, 'models'):
-                        obj.models.update(root[name].attrs['models'])
-                        for m in obj.models.keys():
-                            md, fn = obj.models[m]['model'].split('|')
-                            md = importlib.import_module(md)
-                            obj.models[m]['model'] = getattr(md, fn)
+
         ws.settings['loglevel'] = loglevel
         return proj
 
 
 def create_obj(root, name, proj):
     import openpnm as op
+    # regenerate object as same class
     mro = root[name].attrs['class']
     mro = mro.split("'")[1]
     mro = mro.split('.')
@@ -87,6 +75,21 @@ def create_obj(root, name, proj):
     clss = getattr(mod, c)
     obj = clss(project=proj)
     obj._name = name
+    # Add data to obj
     for item in root[name]:
         obj.update({item: np.array(root[name][item])})
+    # Add settings to obj
+    obj.settings.update(root[name].attrs['settings'])
+    # Add models to obj
+    if hasattr(obj, 'models'):
+        obj.models.update(root[name].attrs['models'])
+        for m in obj.models.keys():
+            md, fn = obj.models[m]['model'].split('|')
+            md = importlib.import_module(md)
+            try:
+                obj.models[m]['model'] = getattr(md, fn)
+            except:
+                print('Warning: the function \"' + fn +
+                      '\" could not be loaded, adding \"blank\" instead')
+                obj.models[m]['model'] = op.models.misc.basic_math.blank
     return proj, obj
