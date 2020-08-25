@@ -15,3 +15,4 @@ transforms3d
 sympy
 docrep
 pypardiso
+zarr
