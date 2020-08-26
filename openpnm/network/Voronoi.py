@@ -52,6 +52,7 @@ class Voronoi(DelaunayVoronoiDual):
             points = self._parse_points(shape=shape,
                                         num_points=num_points,
                                         points=points)
+            super().__init__(shape=shape, points=points, **kwargs)
             # Initialize network object
             topotools.trim(network=self, pores=self.pores('delaunay'))
             pop = ['pore.delaunay', 'throat.delaunay', 'throat.interconnect']
