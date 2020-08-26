@@ -65,7 +65,7 @@ class CubicTemplate(Cubic):
 
     def __init__(self, template=None, spacing=[1, 1, 1], **kwargs):
         if template is None:
-            super().__init__(shape=None, spacing=spacing, **kwargs)
+            super().__init__(spacing=spacing, **kwargs)
         else:
             template = np.atleast_3d(template)
             super().__init__(shape=template.shape, spacing=spacing, **kwargs)
