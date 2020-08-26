@@ -40,7 +40,7 @@ class PNM(GenericIO):
                         a = temp[m].pop('model', None)
                         if a is not None:
                             temp[m]['model'] = a.__module__ + '|' + \
-                                               a.__code__.co_name
+                                a.__code__.co_name
                     item.attrs['models'] = temp
                 item.attrs['class'] = str(obj.__class__)
 
@@ -89,11 +89,11 @@ def create_obj(root, name, proj):
                 try:
                     obj.models[m]['model'] = getattr(md, fn)
                 except AttributeError:
-                    print('Warning: the function \"' + fn +
-                          '\" could not be loaded, adding \"blank\" instead')
+                    print('Warning: the function \"' + fn
+                          + '\" could not be loaded, adding \"blank\" instead')
                     obj.models[m]['model'] = op.models.misc.basic_math.blank
             except ModuleNotFoundError:
-                print('Warning: the module \"' + md +
-                      '\" could not be found, adding \"blank\" instead')
+                print('Warning: the module \"' + md
+                      + '\" could not be found, adding \"blank\" instead')
                 obj.models[m]['model'] = op.models.misc.basic_math.blank
     return proj, obj
