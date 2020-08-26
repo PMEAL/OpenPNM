@@ -87,9 +87,9 @@ class Cubic(GenericNetwork):
     """
 
     def __init__(self, shape=None, spacing=[1, 1, 1], connectivity=6,
-                 name=None, project=None):
+                 name=None, project=None, **kwargs):
 
-        super().__init__(name=name, project=project)
+        super().__init__(name=name, project=project, **kwargs)
 
         if shape is not None:
             # Take care of 1D/2D networks

@@ -144,8 +144,9 @@ class Base(dict):
         instance.settings = SettingsDict()
         return instance
 
-    def __init__(self, Np=0, Nt=0, name=None, project=None):
+    def __init__(self, Np=0, Nt=0, name=None, project=None, settings={}):
         self.settings.setdefault('prefix', 'base')
+        self.settings.update(settings)
         super().__init__()
         if project is None:
             project = ws.new_project()

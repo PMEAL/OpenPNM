@@ -397,8 +397,6 @@ class ModelsMixin:
                 logger.error(prop + ' was not run since the following '
                              + 'property is missing: ' + e.__str__())
                 self.models[prop]['regen_mode'] = 'deferred'
-            except Exception:
-                self.models[prop]['regen_mode'] = 'deferred'
 
     def remove_model(self, propname=None, mode=['model', 'data']):
         r"""

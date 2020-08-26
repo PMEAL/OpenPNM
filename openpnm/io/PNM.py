@@ -72,7 +72,7 @@ def create_obj(root, name, proj):
     c = [i for i in mod.__dir__() if i.startswith('Generic')][0]
     c = mro[-1]
     clss = getattr(mod, c)
-    obj = clss(project=proj)
+    obj = clss(project=proj, settings={'freeze_models': True})
     obj._name = name
     # Add data to obj
     for item in root[name]:
@@ -96,4 +96,5 @@ def create_obj(root, name, proj):
                 print('Warning: the module \"' + md
                       + '\" could not be found, adding \"blank\" instead')
                 obj.models[m]['model'] = op.models.misc.basic_math.blank
+    del obj.settings['freeze_models']
     return proj, obj
