@@ -175,6 +175,8 @@ class Base(dict):
         'throat.***'.  Also, any scalars are cast into full length vectors.
 
         """
+        if value is None:
+            return
         # Check 1: If value is a dictionary, break it into constituent arrays
         # and recursively call __setitem__ on each
         if hasattr(value, 'keys'):
