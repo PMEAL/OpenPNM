@@ -2,7 +2,6 @@ import zarr
 import numpy as np
 import importlib
 from datetime import datetime
-from os import getcwd
 from openpnm.utils import Workspace, Project
 from openpnm.utils import logging
 from openpnm.io import GenericIO
@@ -85,11 +84,16 @@ def create_obj(root, name, proj):
         obj.models.update(root[name].attrs['models'])
         for m in obj.models.keys():
             md, fn = obj.models[m]['model'].split('|')
-            md = importlib.import_module(md)
             try:
-                obj.models[m]['model'] = getattr(md, fn)
-            except:
-                print('Warning: the function \"' + fn +
-                      '\" could not be loaded, adding \"blank\" instead')
+                md = importlib.import_module(md)
+                try:
+                    obj.models[m]['model'] = getattr(md, fn)
+                except AttributeError:
+                    print('Warning: the function \"' + fn +
+                          '\" could not be loaded, adding \"blank\" instead')
+                    obj.models[m]['model'] = op.models.misc.basic_math.blank
+            except ModuleNotFoundError:
+                print('Warning: the module \"' + md +
+                      '\" could not be found, adding \"blank\" instead')
                 obj.models[m]['model'] = op.models.misc.basic_math.blank
     return proj, obj
