@@ -40,7 +40,7 @@ jobs:
         with:
           auto-update-conda: true
           python-version: ${{ matrix.python-version }}
-          condarc-file: tests/environment.yml
+          condarc-file: requirements/.condarc
           allow-softlinks: true
           channel-priority: flexible
           show-channel-urls: false
