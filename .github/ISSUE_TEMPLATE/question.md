@@ -2,7 +2,7 @@
 name: Question
 about: Ask OpenPNM devs on how the package works
 title: "[Question]: <concise description of your question>"
-labels: Question, Triage
+labels: question, triage
 assignees: ''
 
 ---

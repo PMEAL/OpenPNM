@@ -74,7 +74,8 @@ class Project(list):
         r"""
         This function is used to add objects to the project.  Arguments can
         be single OpenPNM objects, an OpenPNM project list, or a plain list of
-        OpenPNM objects.
+        OpenPNM objects.  Note that if an object has the same name as one
+        already existing on the project, the it will be renamed automatically.
 
         """
         if type(obj) is not list:
@@ -86,6 +87,10 @@ class Project(list):
                         raise Exception('Project already has a network')
                 # Must use append since extend breaks the dicts up into
                 # separate objects, while append keeps it as a single object.
+                if item in self:
+                    raise Exception('Supplied object already part of project')
+                if item.name in self.names:
+                    item.name = self._generate_name(item)
                 super().append(item)
             else:
                 raise Exception('Only OpenPNM objects can be added')
@@ -397,8 +402,8 @@ class Project(list):
 
     def _generate_name(self, obj):
         prefix = obj.settings['prefix']
-        num = str(len([item for item in self if item._isa() == obj._isa()]))
-        name = prefix + '_' + num.zfill(2)
+        num = len(self._get_objects_by_type(obj._isa())) + 1
+        name = prefix + '_' + str(num).zfill(2)
         return name
 
     @property
@@ -637,7 +642,7 @@ class Project(list):
 
         """
         import h5py
-        with h5py.File(self.name + '.hdf5') as f:
+        with h5py.File(self.name + '.hdf5', 'a') as f:
             for obj in self:
                 for key in list(obj.keys()):
                     tempname = obj.name + '|' + '_'.join(key.split('.'))
@@ -670,7 +675,7 @@ class Project(list):
 
         """
         import h5py
-        with h5py.File(self.name + '.hdf5') as f:
+        with h5py.File(self.name + '.hdf5', 'a') as f:
             # Reload data into project
             for item in f.keys():
                 obj_name, propname = item.split('|')
