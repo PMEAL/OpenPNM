@@ -1,5 +1,5 @@
+import numpy as np
 import openpnm as op
-import scipy as sp
 mgr = op.Workspace()
 
 
@@ -24,7 +24,7 @@ class FormationFactorTest:
         FF.set_area(direction='x', area=(15*0.0005)**2)
         FF.run()
         val_2 = FF.results['x']
-        assert val_1 != val_2
+        np.testing.assert_allclose(val_1, val_2)
 
     def test_given_length(self):
         FF = op.algorithms.metrics.FormationFactor(network=self.net)
@@ -45,7 +45,7 @@ class FormationFactorTest:
         FF.set_inlets(direction='x', label='left')
         FF.run()
         val_2 = FF.results['x']
-        assert val_1 == val_2
+        np.testing.assert_allclose(val_1, val_2)
 
 
 if __name__ == '__main__':
