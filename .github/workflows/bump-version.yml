@@ -62,6 +62,10 @@ jobs:
         git push "${remote_repo}" release   # commit version bump to release
         git checkout dev
         git cherry-pick release             # this cherry-picks the most recent commit (version bump) on release
+        # the next couple of lines are necessary in case of merge conflicts
+        git checkout --theirs setup.cfg openpnm/__version__.py
+        git add setup.cfg openpnm/__version__.py
+        git commit -m "Bump version number [ci skip]"
         # git merge release                 # this breaks if dev contains code that release doesn't (e.g. hotfix directly pushed to release)
         git push "${remote_repo}" dev       # commit version bump to dev
         git checkout release                # checkout the Action branch (release)
