@@ -26,7 +26,6 @@ jobs:
         git fetch --all --tags
         echo ::set-env name=TAG::$(git tag | sort -V | tail -1)
         echo ::set-env name=VER::$(python -c "import sys; sys.path.append('./openpnm'); from __version__ import __version__; print(__version__)")
-        # echo ::set-env name=TAG::$(git describe --tags `git rev-list --tags --max-count=1`)   # alternative way of finding the most recent tag
 
     - name: Install dependencies
       run: |
@@ -54,21 +53,29 @@ jobs:
         contains(github.event.head_commit.message, '#minor') ||
         contains(github.event.head_commit.message, '#major')
       run: |
-        git config --local user.email "action@github.com"
-        git config --local user.name "GitHub Action"
-        git commit -m "Bump version number [ci skip]" -a
         REPOSITORY=${INPUT_REPOSITORY:-$GITHUB_REPOSITORY}
         remote_repo="https://${GITHUB_ACTOR}:${{ secrets.PUSH_ACTION_TOKEN }}@github.com/${REPOSITORY}.git"
-        git push "${remote_repo}" release   # commit version bump to release
+
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+
+        # commit version bump to release
+        git commit -m "Bump version number [ci skip]" -a
+        git push "${remote_repo}" release
+
+        # commit the version bump back to the dev branch as well
         git checkout dev
-        git cherry-pick release             # this cherry-picks the most recent commit (version bump) on release
+        # cherry-pick the most recent commit (version bump) on release
+        git cherry-pick release
         # the next couple of lines are necessary in case of merge conflicts
         git checkout --theirs setup.cfg openpnm/__version__.py
         git add setup.cfg openpnm/__version__.py
-        git commit -m "Bump version number [ci skip]"
-        # git merge release                 # this breaks if dev contains code that release doesn't (e.g. hotfix directly pushed to release)
-        git push "${remote_repo}" dev       # commit version bump to dev
-        git checkout release                # checkout the Action branch (release)
+        # the first statement in the next line is to catch commit nothing error
+        git diff-index --quiet HEAD || git commit -m "Bump version number [ci skip]"
+        git push "${remote_repo}" dev
+
+        # checkout the Action branch (release)
+        git checkout release
 
     - name: Create new tag
       run: |
@@ -82,19 +89,3 @@ jobs:
             git push "${remote_repo}" $TAG_NEW
             echo "Pushed a new tag: $TAG_NEW"
         fi
-
-    # - name: Push changes
-    #   uses: ad-m/github-push-action@master
-    #   with:
-    #     github_token: ${{ secrets.GITHUB_TOKEN }}
-    #     branch: 'release'
-
-    # - name: Push new tag
-    #   uses: anothrNick/github-tag-action@1.22.0
-    #   env:
-    #     # If secrets.GITHUB_TOKEN is used, "Publish to PyPI" action will not be triggered
-    #     WITH_V: true
-    #     RELEASE_BRANCHES: release
-    #     GITHUB_TOKEN: ${{ secrets.PUSH_ACTION_TOKEN }}
-    #     DEFAULT_BUMP: none
-
