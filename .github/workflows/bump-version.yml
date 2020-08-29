@@ -65,10 +65,7 @@ jobs:
 
         # commit the version bump back to the dev branch as well
         git checkout dev
-        # cherry-pick the most recent commit (version bump) on release
-        git cherry-pick release
-        # the next couple of lines are necessary in case of merge conflicts
-        git checkout --theirs setup.cfg openpnm/__version__.py
+        git checkout release -- setup.cfg openpnm/__version__.py
         git add setup.cfg openpnm/__version__.py
         # the first statement in the next line is to catch commit nothing error
         git diff-index --quiet HEAD || git commit -m "Bump version number [ci skip]"
