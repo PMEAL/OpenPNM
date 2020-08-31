@@ -291,7 +291,6 @@ def _scale_3d_axes(ax, X, Y, Z):
         ax.relim()
         # update ax.viewLim using the new dataLim
         ax.autoscale_view()
-        #plt.autoscale()
 
 
 def plot_networkx(network, plot_throats=True, labels=None, colors=None,
