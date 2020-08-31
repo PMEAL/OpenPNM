@@ -286,7 +286,12 @@ def _scale_3d_axes(ax, X, Y, Z):
         ax.set_ylim(mid_y - max_range, mid_y + max_range)
         if hasattr(ax, "set_zlim"):
             ax.set_zlim(mid_z - max_range, mid_z + max_range)
-        plt.autoscale()
+        # Changes for the cases where a previous fig is already existed
+        # recompute the ax.dataLim
+        ax.relim()
+        # update ax.viewLim using the new dataLim
+        ax.autoscale_view()
+        #plt.autoscale()
 
 
 def plot_networkx(network, plot_throats=True, labels=None, colors=None,
