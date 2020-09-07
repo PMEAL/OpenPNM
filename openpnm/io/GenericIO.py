@@ -95,7 +95,7 @@ class GenericIO:
         return (project, network, phases)
 
     @classmethod
-    def is_transient(cls, phases):
+    def _is_transient(cls, phases):
         # Check if any of the phases has time series
         transient = False
         if type(phases) == str:

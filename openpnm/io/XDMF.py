@@ -49,7 +49,7 @@ class XDMF(GenericIO):
                                                    phases=phases)
         network = network[0]
         # Check if any of the phases has time series
-        transient = GenericIO.is_transient(phases=phases)
+        transient = GenericIO._is_transient(phases=phases)
 
         if filename == '':
             filename = project.name
