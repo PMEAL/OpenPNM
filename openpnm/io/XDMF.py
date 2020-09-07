@@ -19,6 +19,12 @@ class XDMF(GenericIO):
                  <!DOCTYPE Xdmf SYSTEM "Xdmf.dtd" []>'''
 
     @classmethod
+    def save_project(project):
+        r"""
+        """
+
+
+    @classmethod
     def save(cls, network, phases=[], filename=''):
         r"""
         Saves (transient/steady-state) data from the given objects into the
@@ -35,8 +41,7 @@ class XDMF(GenericIO):
         Notes
         -----
         This method only saves the data, not any of the pore-scale models or
-        other attributes.  To save an actual OpenPNM Project use the
-        ``Workspace`` object.
+        other attributes.
 
         """
         import h5py
@@ -111,10 +116,12 @@ class XDMF(GenericIO):
                     f.create_dataset(name='/'+item.split('@')[0]+'@t',
                                      shape=D[item].shape,
                                      dtype=D[item].dtype,
-                                     data=D[item])
+                                     data=D[item],
+                                     compression="gzip")
                 elif ('@' not in item and t == 0):
                     f.create_dataset(name='/'+item, shape=D[item].shape,
-                                     dtype=D[item].dtype, data=D[item])
+                                     dtype=D[item].dtype, data=D[item],
+                                     compression="gzip")
             # Create a grid
             grid = create_grid(Name=t_steps[t], GridType="Uniform")
             time = create_time(type='Single', Value=t_steps[t])

@@ -92,6 +92,10 @@ class Workspace(dict):
         for item in project:
             __main__.__dict__[item.name] = item
 
+    @property
+    def version(self):
+        return openpnm.__version__
+
     def save_workspace(self, filename=''):
         r"""
         Saves all the current Projects to a 'pnm' file

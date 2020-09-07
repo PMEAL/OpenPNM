@@ -4,7 +4,8 @@ import importlib
 from datetime import datetime
 from openpnm.utils import Workspace, Project
 from openpnm.utils import logging
-from openpnm.io import GenericIO
+from openpnm.io import GenericIO, XDMF
+from h5py import File as hdfFile
 logger = logging.getLogger(__name__)
 ws = Workspace()
 
@@ -21,42 +22,50 @@ class PNM(GenericIO):
         if filename is None:
             filename = project.name + '.pnm'
 
-        with zarr.ZipStore(filename, mode='w') as store:
-            root = zarr.group(store=store)
-
-            # root.attrs['version'] = op.__version__
-            root.attrs['date saved'] = datetime.today().strftime("%Y %h %d %H:%M:%S")
-            root.attrs['comments'] = project.comments
-            for obj in project:
-                item = root.create_group(obj.name)
-                # Store data
-                item.update(obj)
-                # Store settings dict as metadata
-                item.attrs['settings'] = obj.settings
-                # Store models dict as metadata
-                if hasattr(obj, 'models'):
-                    temp = obj.models.copy()
-                    for m in temp.keys():
-                        a = temp[m].pop('model', None)
-                        if a is not None:
-                            temp[m]['model'] = a.__module__ + '|' + \
-                                a.__code__.co_name
-                    item.attrs['models'] = temp
-                item.attrs['class'] = str(obj.__class__)
+        store = zarr.DirectoryStore(filename)
+        root = zarr.group(store=store, overwrite=True)
+        root.attrs['version'] = ws.version
+        date = datetime.today().strftime("%Y %h %d %H:%M:%S")
+        root.attrs['date saved'] = date
+        # root.attrs['comments'] = project.comments
+        for obj in project:
+            item = root.create_group(obj.name, overwrite=True)
+            # Store data
+            item.update(obj)
+            # for arr in obj.keys():
+            #     item.create_dataset(name=arr, data=obj[arr],
+            #                         shape=obj[arr].shape)
+            # Store settings dict as metadata
+            item.attrs['settings'] = obj.settings
+            # Store models dict as metadata
+            if hasattr(obj, 'models'):
+                obj_models = {}
+                for model in obj.models.keys():
+                    temp = {k: v for k, v in obj.models[model].items() if k != 'model'}
+                    if 'model' in obj.models[model].keys():
+                        a = obj.models[model]['model']
+                        temp['model'] = a.__module__ + '|' + \
+                            a.__code__.co_name
+                    obj_models[model] = temp
+                item.attrs['models'] = obj_models
+            item.attrs['class'] = str(obj.__class__)
+        XDMF.save(network=project.network,
+                  phases=list(project.phases().values()),
+                  filename=filename + "/" + 'for_paraview.xmf')
 
     @classmethod
     def load_project(cls, filename):
         loglevel = ws.settings['loglevel']
         ws.settings['loglevel'] = 50
-        with zarr.ZipStore(filename, mode='r') as store:
-            root = zarr.group(store=store)
-            proj = Project()
-            for name in root.keys():
-                if 'network' in root[name].attrs['class']:
-                    proj, obj = create_obj(root, name, proj)
-            for name in root.keys():
-                if 'network' not in root[name].attrs['class']:
-                    proj, obj = create_obj(root, name, proj)
+        store = zarr.DirectoryStore(filename)
+        root = zarr.group(store=store)
+        proj = Project()
+        for name in root.keys():
+            if 'network' in root[name].attrs['class']:
+                proj, obj = create_obj(root, name, proj)
+        for name in root.keys():
+            if 'network' not in root[name].attrs['class']:
+                proj, obj = create_obj(root, name, proj)
 
         ws.settings['loglevel'] = loglevel
         return proj
