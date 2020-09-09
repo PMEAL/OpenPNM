@@ -13,4 +13,4 @@ gitpython
 flatdict
 transforms3d
 sympy
-docrep
+docrep==0.2.7
