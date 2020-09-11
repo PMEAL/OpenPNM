@@ -31,10 +31,11 @@ class PNM(GenericIO):
         for obj in project:
             item = root.create_group(obj.name, overwrite=True)
             # Store data
-            item.update(obj)
-            # for arr in obj.keys():
-            #     item.create_dataset(name=arr, data=obj[arr],
-            #                         shape=obj[arr].shape)
+            # item.update(obj)
+            for arr in obj.keys():
+                item.create_dataset(name=arr, data=obj[arr],
+                                    shape=obj[arr].shape,
+                                      compressor=None)
             # Store settings dict as metadata
             item.attrs['settings'] = obj.settings
             # Store models dict as metadata
