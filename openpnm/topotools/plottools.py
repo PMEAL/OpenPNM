@@ -228,6 +228,9 @@ def plot_coordinates(network, pores=None, fig=None, size_by=None,
 
     # Collect specified coordinates
     X, Y, Z = network['pore.coords'][Ps].T
+    # The bounding box for fig is the entire ntwork (to fix the problem with
+    # overwriting figures' axes lim)
+    Xl, Yl, Zl = network['pore.coords'].T
 
     # Parse formating args
     if 'c' in kwargs.keys():
@@ -242,14 +245,14 @@ def plot_coordinates(network, pores=None, fig=None, size_by=None,
     if ThreeD:
         ax.scatter(X, Y, Z, c=color, s=markersize,
                    marker=marker, alpha=alpha)
-        _scale_3d_axes(ax=ax, X=X, Y=Y, Z=Z)
+        _scale_3d_axes(ax=ax, X=Xl, Y=Yl, Z=Zl)
     else:
         X_temp, Y_temp = np.column_stack((X, Y, Z))[:, dim].T
         ax.scatter(X_temp, Y_temp, c=color, s=markersize,
                    marker=marker, alpha=alpha)
-        _scale_3d_axes(ax=ax, X=X, Y=Y, Z=np.zeros_like(Y))
+        _scale_3d_axes(ax=ax, X=Xl, Y=Yl, Z=np.zeros_like(Yl))
 
-    _label_axes(ax=ax, X=X, Y=Y, Z=Z)
+    _label_axes(ax=ax, X=Xl, Y=Yl, Z=Zl)
 
     return fig
 
