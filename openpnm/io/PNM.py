@@ -1,4 +1,5 @@
-import zarr
+import os
+import json
 import numpy as np
 import importlib
 from datetime import datetime
@@ -22,22 +23,24 @@ class PNM(GenericIO):
         if filename is None:
             filename = project.name + '.pnm'
 
-        store = zarr.DirectoryStore(filename)
-        root = zarr.group(store=store, overwrite=True)
+        # Make a directory using the given file name
+        os.mkdir(filename)
+        f = cls._parse_filename(filename + "/" + 'saved.hdf', 'hdf')
+        root = hdfFile(f, mode='w')
         root.attrs['version'] = ws.version
         date = datetime.today().strftime("%Y %h %d %H:%M:%S")
         root.attrs['date saved'] = date
         # root.attrs['comments'] = project.comments
         for obj in project:
-            item = root.create_group(obj.name, overwrite=True)
+            item = root.create_group(obj.name)
             # Store data
             # item.update(obj)
             for arr in obj.keys():
                 item.create_dataset(name=arr, data=obj[arr],
                                     shape=obj[arr].shape,
-                                      compressor=None)
+                                    compression="gzip")
             # Store settings dict as metadata
-            item.attrs['settings'] = obj.settings
+            item.attrs['settings'] = json.dumps(obj.settings)
             # Store models dict as metadata
             if hasattr(obj, 'models'):
                 obj_models = {}
@@ -48,7 +51,7 @@ class PNM(GenericIO):
                         temp['model'] = a.__module__ + '|' + \
                             a.__code__.co_name
                     obj_models[model] = temp
-                item.attrs['models'] = obj_models
+                item.attrs['models'] = json.dumps(obj_models)
             item.attrs['class'] = str(obj.__class__)
         XDMF.save(network=project.network,
                   phases=list(project.phases().values()),
@@ -58,8 +61,8 @@ class PNM(GenericIO):
     def load_project(cls, filename):
         loglevel = ws.settings['loglevel']
         ws.settings['loglevel'] = 50
-        store = zarr.DirectoryStore(filename)
-        root = zarr.group(store=store)
+        f = cls._parse_filename(filename + "/" + 'saved.hdf', 'hdf')
+        root = hdfFile(f, mode='r')
         proj = Project()
         for name in root.keys():
             if 'network' in root[name].attrs['class']:
@@ -88,10 +91,10 @@ def create_obj(root, name, proj):
     for item in root[name]:
         obj.update({item: np.array(root[name][item])})
     # Add settings to obj
-    obj.settings.update(root[name].attrs['settings'])
+    obj.settings.update(json.loads(root[name].attrs['settings']))
     # Add models to obj
     if hasattr(obj, 'models'):
-        obj.models.update(root[name].attrs['models'])
+        obj.models.update(json.loads(root[name].attrs['models']))
         for m in obj.models.keys():
             md, fn = obj.models[m]['model'].split('|')
             try:
