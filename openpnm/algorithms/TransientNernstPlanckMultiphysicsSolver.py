@@ -1,14 +1,14 @@
 import numpy as np
-from openpnm.algorithms import NernstPlanckMultiphysics
+from openpnm.algorithms import NernstPlanckMultiphysicsSolver
 from openpnm.utils import logging, Docorator, GenericSettings, nbr_to_str
 docstr = Docorator()
 logger = logging.getLogger(__name__)
 
 
-@docstr.get_sectionsf('TransientNernstPlanckMultiphysicsSettings',
+@docstr.get_sectionsf('TransientNernstPlanckMultiphysicsSolverSettings',
                       sections=['Parameters'])
 @docstr.dedent
-class TransientNernstPlanckMultiphysicsSettings(GenericSettings):
+class TransientNernstPlanckMultiphysicsSolverSettings(GenericSettings):
     r"""
     The Parameters section below describes the settings pertaining to the
     running of all transient classes which this algorithm orchestrates.
@@ -22,7 +22,7 @@ class TransientNernstPlanckMultiphysicsSettings(GenericSettings):
     **The following parameters pertain to the steady-state version of this
     class**
 
-    %(NernstPlanckMultiphysicsSettings.parameters)s
+    %(NernstPlanckMultiphysicsSolverSettings.parameters)s
 
     """
     t_initial = 0
@@ -34,16 +34,21 @@ class TransientNernstPlanckMultiphysicsSettings(GenericSettings):
     t_scheme = 'implicit'
 
 
-class TransientNernstPlanckMultiphysics(NernstPlanckMultiphysics):
+class TransientNernstPlanckMultiphysicsSolver(NernstPlanckMultiphysicsSolver):
     r"""
-    A multiphysics algorithm to solve the Nernst-Planck and Ionic Conduction
+    A multiphysics solver to solve the Nernst-Planck and Ionic Conduction
     system *transiently*.
 
+    Warnings
+    --------
+    This is not a true OpenPNM algorithm. This solver wraps the provided
+    Nernst-Planck and ionic conduction algorithms and solves the associated
+    system of equations.
     """
 
     def __init__(self, settings={}, **kwargs):
         super().__init__(**kwargs)
-        c = TransientNernstPlanckMultiphysicsSettings()
+        c = TransientNernstPlanckMultiphysicsSolverSettings()
         self.settings._update_settings_and_docs(c)
         self.settings.update(settings)
 
@@ -55,7 +60,7 @@ class TransientNernstPlanckMultiphysics(NernstPlanckMultiphysics):
 
         Parameters
         ----------
-        %(TransientNernstPlanckMultiphysicsSettings.parameters)s
+        %(TransientNernstPlanckMultiphysicsSolverSettings.parameters)s
 
         """
         if t_initial is not None:
@@ -89,6 +94,7 @@ class TransientNernstPlanckMultiphysics(NernstPlanckMultiphysics):
         algs.insert(0, p_alg)
         # Define initial conditions (if not defined by the user)
         for alg in algs:
+            alg.settings.update({'cache_A': False, 'cache_b': False})
             try:
                 alg[alg.settings['quantity']]
             except KeyError:
@@ -184,6 +190,7 @@ class TransientNernstPlanckMultiphysics(NernstPlanckMultiphysics):
             for alg in algs:
                 quant_init = alg[alg.settings['quantity']]
                 alg[alg.settings['quantity']+'@'+t_str] = quant_init
+            time = t + dt
             for time in np.arange(t+dt, tf+dt, dt):
                 t_r = [float(format(i, '.3g')) for i in t_res.values()]
                 t_r = str(t_r)[1:-1]
@@ -227,7 +234,8 @@ class TransientNernstPlanckMultiphysics(NernstPlanckMultiphysics):
                                 phase.update(e.results())
 
                             # Charge conservation eq
-                            phys[0].regenerate_models()
+                            for obj in phys:
+                                obj.regenerate_models()
                             g_old[p_alg.name] = (
                                 p_alg[p_alg.settings['quantity']].copy())
                             p_alg._run_reactive(x0=g_old[p_alg.name])
@@ -239,7 +247,8 @@ class TransientNernstPlanckMultiphysics(NernstPlanckMultiphysics):
                                 g_old[p_alg.name]**2 - g_new[p_alg.name]**2))
                             # Update phase and physics
                             phase.update(p_alg.results())
-                            phys[0].regenerate_models()
+                            for obj in phys:
+                                obj.regenerate_models()
 
                         elif g_convergence:
                             print('Solution for time step: ' + str(time)

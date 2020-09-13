@@ -1,5 +1,4 @@
 import numpy as np
-import scipy as sp
 from openpnm.topotools import trim
 from openpnm.utils import logging
 from openpnm.io import GenericIO
@@ -96,7 +95,7 @@ class Statoil(GenericIO):
         with open(filename, mode='r') as f:
             row_0 = f.readline().split()
             num_lines = int(row_0[0])
-            array = sp.ndarray([num_lines, 6])
+            array = np.ndarray([num_lines, 6])
             for i in range(num_lines):
                 row = f.readline()\
                        .replace('\t', ' ').replace('\n', ' ').split()

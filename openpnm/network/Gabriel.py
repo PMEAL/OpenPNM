@@ -1,5 +1,4 @@
 import numpy as np
-import scipy as sp
 import scipy.spatial as sptl
 from openpnm.network import Delaunay
 from openpnm.topotools import trim
