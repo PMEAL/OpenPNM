@@ -67,12 +67,12 @@ class Project(list):
     def __init__(self, *args, **kwargs):
         name = kwargs.pop('name', None)
         super().__init__(*args, **kwargs)
+        self.settings = SettingsDict()
         # Register self with workspace
         ws[name] = self
-        self._uuid = uuid.uuid4()
+        self.settings['uuid'] = uuid.uuid4()
         ws._add_project(self)
         self._objects = {}
-        self.settings = SettingsDict()
         self.comments = 'Using OpenPNM ' + openpnm.__version__
 
     def _add_object(self, obj):
@@ -213,8 +213,8 @@ class Project(list):
             name = ws._gen_name()
         proj = deepcopy(self)
         for item in proj:
-            item._uuid = uuid.uuid4()
-        self._uuid = uuid.uuid4()
+            item.settings['uuid'] = uuid.uuid4()
+        self.settings['uuid'] = uuid.uuid4()
         ws[name] = proj
         return proj
 
