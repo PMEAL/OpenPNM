@@ -68,9 +68,6 @@ class Workspace(dict):
         super().__init__()
         self._projects = {}
 
-    def _add_project(self, proj):
-        self._projects[proj.settings['uuid']] = proj
-
     def __setitem__(self, name, project):
         if name is None:
             name = self._gen_name()

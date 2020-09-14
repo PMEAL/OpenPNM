@@ -149,10 +149,9 @@ class Base(dict):
     def __init__(self, Np=0, Nt=0, name=None, project=None):
         self.settings.setdefault('prefix', 'base')
         super().__init__()
-        self.settings['uuid'] = uuid.uuid4()
+        self.settings['uuid'] = str(uuid.uuid4())
         if project is None:
             project = ws.new_project()
-        project._add_object(self)
         if name is None:
             name = project._generate_name(self)
         project.extend(self)

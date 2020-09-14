@@ -68,15 +68,9 @@ class Project(list):
         name = kwargs.pop('name', None)
         super().__init__(*args, **kwargs)
         self.settings = SettingsDict()
-        # Register self with workspace
-        ws[name] = self
-        self.settings['uuid'] = uuid.uuid4()
-        ws._add_project(self)
-        self._objects = {}
+        ws[name] = self  # Register self with workspace
+        self.settings['uuid'] = str(uuid.uuid4())
         self.comments = 'Using OpenPNM ' + openpnm.__version__
-
-    def _add_object(self, obj):
-        self._objects[obj._uuid] = obj
 
     def extend(self, obj):
         r"""
