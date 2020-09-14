@@ -143,19 +143,20 @@ class Base(dict):
         # It is necessary to set the SettingsDict here since some classes
         # use it before calling super.__init__()
         instance.settings = SettingsDict()
+        instance.settings['name'] = None
         return instance
 
     def __init__(self, Np=0, Nt=0, name=None, project=None):
         self.settings.setdefault('prefix', 'base')
         super().__init__()
-        self._uuid = uuid.uuid4()
+        self.settings['uuid'] = uuid.uuid4()
         if project is None:
             project = ws.new_project()
         project._add_object(self)
         if name is None:
             name = project._generate_name(self)
         project.extend(self)
-        self.name = name
+        self.settings['name'] = name
         self.update({'pore.all': np.ones(shape=(Np, ), dtype=bool)})
         self.update({'throat.all': np.ones(shape=(Nt, ), dtype=bool)})
 
@@ -271,7 +272,7 @@ class Base(dict):
                          if k.startswith(key + '.')})
         # The following code, if activated, attempts to run models when
         # missing data is requested from the dictionary.  The works fine,
-        # but breaks the general way openpnm behaviors.
+        # but breaks the general way openpnm behaves.
         # elif hasattr(self, 'models') and key in self.models:
         #     self.regenerate_models(key)
         #     vals = super().__getitem__(key)
@@ -280,29 +281,27 @@ class Base(dict):
         return vals
 
     def _set_name(self, name, validate=True):
-        if not hasattr(self, '_name'):
-            self._name = None
+        old_name = self.settings['name']
         if name is None:
             name = self.project._generate_name(self)
-        if self.name == name:
-            return
         if validate:
             self.project._validate_name(name)
-        if self._name is not None:
-            # Rename any label arrays in other objects
-            for item in self.project:
-                if 'pore.'+self.name in item.keys():
-                    item['pore.'+name] = item.pop('pore.'+self.name)
-                if 'throat.'+self.name in item.keys():
-                    item['throat.'+name] = item.pop('throat.'+self.name)
-        self._name = name
+        self.settings['name'] = name
+        # Rename any label arrays in other objects
+        for item in self.project:
+            if 'pore.' + old_name in item.keys():
+                item['pore.'+name] = item.pop('pore.' + old_name)
+            if 'throat.' + old_name in item.keys():
+                item['throat.' + name] = item.pop('throat.' + old_name)
 
     def _get_name(self):
-        if not hasattr(self, '_name'):
-            self._name = None
-        return self._name
+        return self.settings['name']
 
     name = property(_get_name, _set_name)
+    
+    @property
+    def _uuid(self):
+        return self.settings['uuid']
 
     def _get_project(self):
         for proj in ws.values():
