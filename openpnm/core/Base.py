@@ -144,7 +144,7 @@ class Base(dict):
         # use it before calling super.__init__()
         instance.settings = SettingsDict()
         instance.settings['name'] = None
-        instance.settings['uuid'] = str(uuid.uuid4())
+        instance.settings['_uuid'] = str(uuid.uuid4())
         return instance
 
     def __init__(self, Np=0, Nt=0, name=None, project=None):

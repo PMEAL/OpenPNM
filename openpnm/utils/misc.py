@@ -90,6 +90,8 @@ class PrintableDict(OrderedDict):
         header = "―" * 78
         lines = [header, "{0:<35s} {1}".format(self._key, self._value), header]
         for item in list(self.keys()):
+            if item.startswith('_'):
+                continue
             if type(self[item]) == _np.ndarray:
                 lines.append("{0:<35s} {1}".format(item, _np.shape(self[item])))
             else:
