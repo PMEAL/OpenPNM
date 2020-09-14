@@ -37,6 +37,20 @@ class Tableist():
 
 
     def set_col(self, col, vals):
+        r"""
+        Assign values to a column
+        
+        Parameters
+        ----------
+        col : int or string
+            Either the column index as an integer or the column name as a 
+            string.
+        vals
+            The values to put into each row.  If a single value is given
+            it is placed into each row, otherwise a list of values should be
+            given containing the value for each row.
+        
+        """
         try:
             len(vals)
         except TypeError:
@@ -45,6 +59,20 @@ class Tableist():
             self._grid.table_data[r][col] = vals[r]
 
     def set_row(self, row, vals):
+        r"""
+        Assign values to a row
+        
+        Parameters
+        ----------
+        row : int or string
+            Either the row index as an integer or the row name as a 
+            string.
+        vals
+            The values to put into each column.  If a single value is given
+            it is placed into each column, otherwise a list of values should 
+            be given containing the value for each column.
+        
+        """
         try:
             len(vals)
         except TypeError:
@@ -111,6 +139,21 @@ class Tableist():
         return self.nrows * self.ncols
 
     def get_row(self, row):
+        r"""
+        Fetch all the entries in a single row
+
+        Parameters
+        ----------
+        row : int or string
+            Either the row index as an integer or the row name as a 
+            string.
+
+        Returns
+        -------
+        grid
+            A grid containing only the requested row
+
+        """
         if not isinstance(row, int):
             row = self.get_col(0)._grid.table_data.index([row])
         temp = self._grid.table_data[row]
@@ -120,6 +163,22 @@ class Tableist():
         return temp2
 
     def get_col(self, col):
+        r"""
+        Fetch all the entries in a single column
+
+        Parameters
+        ----------
+        col : int or string
+            Either the column index as an integer or the column name as a 
+            string.
+
+        Returns
+        -------
+        grid
+            A grid containing only the requested column
+            
+        """
+
         if not isinstance(col, int):
             col = self._grid.table_data[0].index(col)
         temp = [self._grid.table_data[row][col] for row in range(self.nrows)]
@@ -129,6 +188,18 @@ class Tableist():
         return temp2
 
     def add_row(self, row=None, num=1):
+        r"""
+        Inserts blank rows below the given location
+
+        Parameters
+        ----------
+        row : int
+            The row below which to insert new row(s).  If not given, then
+            rows are inserted at the bottom
+        num : int
+            The number of rows to insert.  The default is 1.
+
+        """
         header = [self.blank for i in self._grid.table_data[0]]
         if row:
             self._grid.table_data.insert(row, header)
@@ -138,6 +209,18 @@ class Tableist():
             self.add_row(row, num=num-1)
 
     def add_col(self, col=None, num=1):
+        r"""
+        Inserts blank columns beside the given location
+
+        Parameters
+        ----------
+        col : int
+            The column to the left of which to insert new col(s).  If not 
+            given, then columns are inserted on the right
+        num : int
+            The number of columns to insert.  The default is 1.
+
+        """
         for row in self._grid.table_data:
             if col:
                 row.insert(col, self.blank)
@@ -147,10 +230,28 @@ class Tableist():
             self.add_col(col=col, num=num-1)
 
     def drop_col(self, col):
+        r"""
+        Deletes the specified column
+
+        Parameters
+        ----------
+        col : int
+            The column to delete
+
+        """
         for row in self._grid.table_data:
             row.pop(col)
 
     def drop_row(self, row):
+        r"""
+        Deletes the specified row
+
+        Parameters
+        ----------
+        row : int
+            The row to delete
+
+        """
         self._grid.table_data.pop(row)
 
     @property

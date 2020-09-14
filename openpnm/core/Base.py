@@ -298,7 +298,7 @@ class Base(dict):
         return self.settings['name']
 
     name = property(_get_name, _set_name)
-    
+
     @property
     def _uuid(self):
         return self.settings['uuid']

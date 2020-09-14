@@ -1088,6 +1088,22 @@ class Project(list):
             obj._grid = grid
             self._grid = obj
             return obj
+    
+    def get_grid(self, astype):
+        r"""
+        Retrieves a copy of the grid data in the specified format
+        
+        Parameters
+        ----------
+        astype : str
+            Can be 'dict', 'table', or 'pandas'
+            
+        Returns
+        -------
+        grid
+            The grid data in the specified format
+        """
+        return self._generate_grid(astype=astype)
 
 
 class ProjectGrid(Tableist):
@@ -1097,13 +1113,49 @@ class ProjectGrid(Tableist):
     """
 
     def row(self, name):
-        return self.get_row(name)
+        r"""
+        Retrieve a specified row from the table
+        
+        Parameters
+        ----------
+        name : str
+            The row name, specified by the ``geometry`` object name
+            
+        Returns
+        -------
+        table
+            A table object containing only a single row
+        """
+        return self.get_row(name)._grid.table_data[0]
 
     def col(self, name):
-        return self.get_col(name)
-
+        r"""
+        Retrieve a specified column from the table
+        
+        Parameters
+        ----------
+        name : str
+            The column name, specified by the ``phase`` object name
+            
+        Returns
+        -------
+        table
+            A table object containing only a single column
+        """
+        temp = self.get_col(name)._grid.table_data
+        temp = [i[0] for i in temp]
+        return temp
+    
     def geometries(self):
-        return self.index()
+        r"""
+        Retrieve a list of all geometries
+        """
+        temp = self.index[1:]
+        temp = [i[0] for i in temp]
+        return temp
 
     def phases(self):
-        return self.header()
+        r"""
+        Retrieve a list of all phases
+        """
+        return self.header[0][1:]
