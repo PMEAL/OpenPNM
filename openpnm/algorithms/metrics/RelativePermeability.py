@@ -12,8 +12,8 @@ default_settings = {
     'nwp': None,
     'conduit_hydraulic_conductance': 'throat.conduit_hydraulic_conductance',
     'hydraulic_conductance': 'throat.hydraulic_conductance',
-    'pore_invasion_sequence': dict(),
-    'throat_invasion_sequence': dict(),
+    'pore_invasion_sequence': {'pore_inv':[]},
+    'throat_invasion_sequence': {'throat_inv':[]},
     'flow_inlet': None,
     'flow_outlet': None,
     'Snwp_num': None,
@@ -104,9 +104,9 @@ class RelativePermeability(GenericAlgorithm):
         if (invasion_sequence == 'invasion_sequence'):
             nwp = self.project[self.settings['nwp']]
             seq_p = nwp['pore.invasion_sequence']
-            self.settings['pore_invasion_sequence'] = seq_p
+            self.settings['pore_invasion_sequence']['pore_inv'] = seq_p
             seq_t = nwp['throat.invasion_sequence']
-            self.settings['throat_invasion_sequence'] = seq_t
+            self.settings['throat_invasion_sequence']['throat_inv'] = seq_t
             dimension = 0
             x, y, z = False, False, False
             if 'pore.left' in network.keys():
@@ -279,8 +279,8 @@ class RelativePermeability(GenericAlgorithm):
 
         """
         network = self.project.network
-        pore_mask = self.settings['pore_invasion_sequence'] < i
-        throat_mask = self.settings['throat_invasion_sequence'] < i
+        pore_mask = self.settings['pore_invasion_sequence']['pore_inv'] < i
+        throat_mask = self.settings['throat_invasion_sequence']['throat_inv'] < i
         sat_p = np.sum(network['pore.volume'][pore_mask])
         sat_t = np.sum(network['throat.volume'][throat_mask])
         sat1 = sat_p + sat_t
@@ -342,9 +342,9 @@ class RelativePermeability(GenericAlgorithm):
                 relperm_wp = None
                 pass
             relperm_nwp = []
-            max_seq = np.max([np.max(self.settings['pore_invasion_sequence']),
+            max_seq = np.max([np.max(self.settings['pore_invasion_sequence']['pore_inv']),
                               np.max(
-                              self.settings['throat_invasion_sequence'])])
+                              self.settings['throat_invasion_sequence']['throat_inv'])])
             start = max_seq//Snwp_num
             stop = max_seq
             step = max_seq//Snwp_num
