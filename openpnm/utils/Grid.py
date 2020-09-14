@@ -137,6 +137,13 @@ class Tableist():
     @property
     def size(self):
         return self.nrows * self.ncols
+    
+    @property
+    def nnz(self):
+        nnz = 0
+        for i in range(self.nrows):
+            nnz += len([j for j in self.row(i) if j != self.blank])
+        return nnz
 
     def get_row(self, row):
         r"""
