@@ -21,7 +21,7 @@ class Workspace(dict):
 
     This class is a
     `singleton <https://en.wikipedia.org/wiki/Singleton_pattern>`_ so that
-    whenever and where ever a Workspace is instantiated, the same instance is
+    whenever and wherever a Workspace is instantiated, the same instance is
     obtained.  This allows it to maintain a definitive record of all open
     Projects.
 
