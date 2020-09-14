@@ -1045,7 +1045,8 @@ class Project(list):
         from pandas import DataFrame as df
 
         geoms = self.geometries().keys()
-        phases = [p.name for p in self.phases().values() if not hasattr(p, 'mixture')]
+        phases = [p.name for p in self.phases().values()
+                  if not hasattr(p, 'mixture')]
         grid = df(index=geoms, columns=phases)
         for r in grid.index:
             for c in grid.columns:
@@ -1081,16 +1082,16 @@ class Project(list):
             obj._grid = grid
             self._grid = obj
             return obj
-    
+
     def get_grid(self, astype):
         r"""
         Retrieves a copy of the grid data in the specified format
-        
+
         Parameters
         ----------
         astype : str
             Can be 'dict', 'table', or 'pandas'
-            
+
         Returns
         -------
         grid
@@ -1108,12 +1109,12 @@ class ProjectGrid(Tableist):
     def row(self, name):
         r"""
         Retrieve a specified row from the table
-        
+
         Parameters
         ----------
         name : str
             The row name, specified by the ``geometry`` object name
-            
+
         Returns
         -------
         table
@@ -1124,12 +1125,12 @@ class ProjectGrid(Tableist):
     def col(self, name):
         r"""
         Retrieve a specified column from the table
-        
+
         Parameters
         ----------
         name : str
             The column name, specified by the ``phase`` object name
-            
+
         Returns
         -------
         table
@@ -1138,7 +1139,7 @@ class ProjectGrid(Tableist):
         temp = self.get_col(name)._grid.table_data
         temp = [i[0] for i in temp]
         return temp
-    
+
     def geometries(self):
         r"""
         Retrieve a list of all geometries

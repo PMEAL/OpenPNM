@@ -35,21 +35,20 @@ class Tableist():
     #         row = [r for r in range(start, stop, step)]
     #     if isinstance(row, list):
 
-
     def set_col(self, col, vals):
         r"""
         Assign values to a column
-        
+
         Parameters
         ----------
         col : int or string
-            Either the column index as an integer or the column name as a 
+            Either the column index as an integer or the column name as a
             string.
         vals
             The values to put into each row.  If a single value is given
             it is placed into each row, otherwise a list of values should be
             given containing the value for each row.
-        
+
         """
         try:
             len(vals)
@@ -61,17 +60,17 @@ class Tableist():
     def set_row(self, row, vals):
         r"""
         Assign values to a row
-        
+
         Parameters
         ----------
         row : int or string
-            Either the row index as an integer or the row name as a 
+            Either the row index as an integer or the row name as a
             string.
         vals
             The values to put into each column.  If a single value is given
-            it is placed into each column, otherwise a list of values should 
+            it is placed into each column, otherwise a list of values should
             be given containing the value for each column.
-        
+
         """
         try:
             len(vals)
@@ -137,7 +136,7 @@ class Tableist():
     @property
     def size(self):
         return self.nrows * self.ncols
-    
+
     @property
     def nnz(self):
         nnz = 0
@@ -152,7 +151,7 @@ class Tableist():
         Parameters
         ----------
         row : int or string
-            Either the row index as an integer or the row name as a 
+            Either the row index as an integer or the row name as a
             string.
 
         Returns
@@ -176,14 +175,14 @@ class Tableist():
         Parameters
         ----------
         col : int or string
-            Either the column index as an integer or the column name as a 
+            Either the column index as an integer or the column name as a
             string.
 
         Returns
         -------
         grid
             A grid containing only the requested column
-            
+
         """
 
         if not isinstance(col, int):
@@ -222,7 +221,7 @@ class Tableist():
         Parameters
         ----------
         col : int
-            The column to the left of which to insert new col(s).  If not 
+            The column to the left of which to insert new col(s).  If not
             given, then columns are inserted on the right
         num : int
             The number of columns to insert.  The default is 1.
