@@ -472,7 +472,6 @@ class Project(list):
             for key in list(item.keys()):
                 if key.split('.')[-1] == obj.name:
                     del item[key]
-        self._objects.pop(obj._uuid, None)
         super().remove(obj)
 
     def save_object(self, obj):
