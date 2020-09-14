@@ -122,7 +122,7 @@ class SettingsDict(PrintableDict):
 
     def __setitem__(self, key, value):
         try:
-            temp = json.dumps(value)
+            json.dumps(value)
         except TypeError:
             raise Exception('Only serializable objects can be stored in settings')
         super().__setitem__(key, value)

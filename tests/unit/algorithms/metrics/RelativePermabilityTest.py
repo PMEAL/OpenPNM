@@ -38,7 +38,7 @@ class RelativePermeabilityTest:
 
     def test_one_phase_definition(self):
         rp = op.algorithms.metrics.RelativePermeability(network=self.net)
-        rp.setup(invading_phase=self.non_wet_phase,
+        rp.setup(invading_phase=self.non_wet_phase.name,
                  invasion_sequence='invasion_sequence')
         rp.run(Snwp_num=10)
         results = rp.get_Kr_data()
@@ -48,8 +48,8 @@ class RelativePermeabilityTest:
         inlets = {'x': 'left', 'y': 'left', 'z': 'left'}
         outlets = {'x': 'right', 'y': 'right', 'z': 'right'}
         rp = op.algorithms.metrics.RelativePermeability(network=self.net)
-        rp.setup(invading_phase=self.non_wet_phase,
-                 defending_phase=self.wet_phase,
+        rp.setup(invading_phase=self.non_wet_phase.name,
+                 defending_phase=self.wet_phase.name,
                  invasion_sequence='invasion_sequence',
                  flow_inlets=inlets,
                  flow_outlets=outlets)
@@ -68,8 +68,8 @@ class RelativePermeabilityTest:
         inlets = {'x': 'top'}
         outlets = {'x': 'bottom'}
         rp = op.algorithms.metrics.RelativePermeability(network=self.net)
-        rp.setup(invading_phase=self.non_wet_phase,
-                 defending_phase=self.wet_phase,
+        rp.setup(invading_phase=self.non_wet_phase.name,
+                 defending_phase=self.wet_phase.name,
                  invasion_sequence='invasion_sequence',
                  flow_inlets=inlets,
                  flow_outlets=outlets)
@@ -92,11 +92,11 @@ class RelativePermeabilityTest:
         inlets = {'x': 'pore_in'}
         outlets = {'x': 'pore_out'}
         rp = op.algorithms.metrics.RelativePermeability(network=self.net)
-        rp.setup(invading_phase=self.non_wet_phase,
-                  defending_phase=self.wet_phase,
-                  invasion_sequence='invasion_sequence',
-                  flow_inlets=inlets,
-                  flow_outlets=outlets)
+        rp.setup(invading_phase=self.non_wet_phase.name,
+                 defending_phase=self.wet_phase.name,
+                 invasion_sequence='invasion_sequence',
+                 flow_inlets=inlets,
+                 flow_outlets=outlets)
         rp.run(Snwp_num=10)
         results = rp.get_Kr_data()
         kx = results['kr_wp']['x']
@@ -141,7 +141,7 @@ class RelativePermeabilityTest:
             shape[i] = 1
             self.setup_2D_model(shape=shape)
             rp = op.algorithms.metrics.RelativePermeability(network=self.net)
-            rp.setup(invading_phase=self.non_wet_phase,
+            rp.setup(invading_phase=self.non_wet_phase.name,
                      invasion_sequence='invasion_sequence')
             rp.run(Snwp_num=10)
             results = rp.get_Kr_data()
@@ -154,8 +154,8 @@ class RelativePermeabilityTest:
             shape[i] = 1
             self.setup_2D_model(shape=shape)
             rp = op.algorithms.metrics.RelativePermeability(network=self.net)
-            rp.setup(invading_phase=self.non_wet_phase,
-                     defending_phase=self.wet_phase,
+            rp.setup(invading_phase=self.non_wet_phase.name,
+                     defending_phase=self.wet_phase.name,
                      invasion_sequence='invasion_sequence')
             rp.run(Snwp_num=10)
             results = rp.get_Kr_data()
@@ -167,9 +167,9 @@ class RelativePermeabilityTest:
 if __name__ == '__main__':
 
     t = RelativePermeabilityTest()
+    self = t
     t.setup_class()
     for item in t.__dir__():
         if item.startswith('test'):
             print('running test: '+item)
             t.__getattribute__(item)()
-    self = t
