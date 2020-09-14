@@ -1,4 +1,5 @@
 import copy
+import json
 import inspect
 import warnings
 import functools
@@ -120,11 +121,10 @@ class SettingsDict(PrintableDict):
     __doc__ = ''
 
     def __setitem__(self, key, value):
-        if hasattr(value, "Np"):
-            raise Exception(
-                "Cannot store OpenPNM objects in settings, "
-                + "store object's name instead"
-            )
+        try:
+            temp = json.dumps(value)
+        except TypeError:
+            raise Exception('Only serializable objects can be stored in settings')
         super().__setitem__(key, value)
 
     def __missing__(self, key):
