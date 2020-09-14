@@ -202,13 +202,19 @@ class Project(list):
         proj : list
             A new Project object containing copies of all objects
 
+        Notes
+        -----
+        Because they are new objects, they are given a new uuid
+        (``obj.settings['_uuid']``), but the uuid of the original object is
+        also stored (``obj.settings['_uuid_old']``) for reference.
+
         """
         if name is None:
             name = ws._gen_name()
         proj = deepcopy(self)
         for item in proj:
-            item.settings['uuid'] = uuid.uuid4()
-        self.settings['uuid'] = uuid.uuid4()
+            item.settings['_uuid'] = str(uuid.uuid4())
+        self.settings['_uuid'] = str(uuid.uuid4())
         ws[name] = proj
         return proj
 
