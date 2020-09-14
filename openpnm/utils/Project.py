@@ -1076,8 +1076,6 @@ class Project(list):
             grid.padding_left = 3
             grid.padding_right = 3
             grid.justify_columns = {col: 'center' for col in range(len(headings))}
-        elif astype == 'grid':
-            grid = ProjectGrid()
         return grid
 
     @property
