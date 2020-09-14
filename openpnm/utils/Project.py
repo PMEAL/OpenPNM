@@ -405,7 +405,7 @@ class Project(list):
 
     def _validate_name(self, name):
         if name in self.names:
-            raise Exception('An object already exists named '+name)
+            raise Exception('Another object is already named '+name)
         for item in self:
             for key in item.keys():
                 if key.split('.')[1] == name:
@@ -1066,12 +1066,12 @@ class Project(list):
         elif astype == 'dict':
             grid = grid.to_dict()
         elif astype == 'table':
-            from terminaltables import AsciiTable
+            from terminaltables import SingleTable
             headings = [self.network.name] + list(grid.keys())
             g = [headings]
             for row in list(grid.index):
                 g.append([row] + list(grid.loc[row]))
-            grid = AsciiTable(g)
+            grid = SingleTable(g)
             grid.title = 'Project: ' + self.name
             grid.padding_left = 3
             grid.padding_right = 3
