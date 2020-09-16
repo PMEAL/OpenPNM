@@ -74,11 +74,13 @@ def find_neighbor_sites(sites, am, flatten=True, include_input=False,
     """
     if am.format != 'lil':
         am = am.tolil(copy=False)
+    sites = np.array(sites, ndmin=1)
+    am_coo = am.tocoo()
     n_sites = am.shape[0]
-    rows = [am.rows[i] for i in np.array(sites, ndmin=1)]
+    rows = am.rows[sites].tolist()
     if len(rows) == 0:
         return []
-    neighbors = np.hstack(rows).astype(sp.int64)  # Flatten list to apply logic
+    neighbors = am_coo.col[np.in1d(am_coo.row, sites)]
     if logic in ['or', 'union', 'any']:
         neighbors = np.unique(neighbors)
     elif logic in ['xor', 'exclusive_or']:
@@ -88,7 +90,7 @@ def find_neighbor_sites(sites, am, flatten=True, include_input=False,
     elif logic in ['and', 'all', 'intersection']:
         neighbors = set(neighbors)
         [neighbors.intersection_update(i) for i in rows]
-        neighbors = np.array(list(neighbors), dtype=sp.int64, ndmin=1)
+        neighbors = np.array(list(neighbors), dtype=np.int64, ndmin=1)
     else:
         raise Exception('Specified logic is not implemented')
     # Deal with removing inputs or not
@@ -100,9 +102,9 @@ def find_neighbor_sites(sites, am, flatten=True, include_input=False,
     if flatten:
         neighbors = np.where(mask)[0]
     else:
-        if (neighbors.size > 0):
+        if neighbors.size > 0:
             for i in range(len(rows)):
-                vals = np.array(rows[i], dtype=sp.int64)
+                vals = np.array(rows[i], dtype=np.int64)
                 rows[i] = vals[mask[vals]]
             neighbors = rows
         else:
@@ -179,10 +181,10 @@ def find_neighbor_bonds(sites, im=None, am=None, flatten=True, logic='or'):
     if im is not None:
         if im.format != 'lil':
             im = im.tolil(copy=False)
-        rows = [im.rows[i] for i in np.array(sites, ndmin=1, dtype=sp.int64)]
+        rows = [im.rows[i] for i in np.array(sites, ndmin=1, dtype=np.int64)]
         if len(rows) == 0:
             return []
-        neighbors = np.hstack(rows).astype(sp.int64)
+        neighbors = np.hstack(rows).astype(np.int64)
         n_bonds = int(im.nnz/2)
         if logic in ['or', 'union', 'any']:
             neighbors = np.unique(neighbors)
@@ -201,11 +203,11 @@ def find_neighbor_bonds(sites, im=None, am=None, flatten=True, logic='or'):
                 mask = np.zeros(shape=n_bonds, dtype=bool)
                 mask[neighbors] = True
                 for i in range(len(rows)):
-                    vals = np.array(rows[i], dtype=sp.int64)
+                    vals = np.array(rows[i], dtype=np.int64)
                     rows[i] = vals[mask[vals]]
                 neighbors = rows
             else:
-                neighbors = [np.array([], dtype=sp.int64) for i in range(len(sites))]
+                neighbors = [np.array([], dtype=np.int64) for i in range(len(sites))]
         return neighbors
     elif am is not None:
         if am.format != 'coo':
@@ -291,7 +293,11 @@ def find_connected_sites(bonds, am, flatten=True, logic='or'):
     bonds = np.array(bonds, ndmin=1)
     if len(bonds) == 0:
         return []
-    neighbors = np.hstack((am.row[bonds], am.col[bonds])).astype(sp.int64)
+    # This function only uses the upper triangular portion, so make sure it
+    # is sorted properly first
+    if not istriu(am):
+        am = sp.sparse.triu(am, k=1)
+    neighbors = np.hstack((am.row[bonds], am.col[bonds])).astype(np.int64)
     if neighbors.size:
         n_sites = np.amax(neighbors)
     if logic in ['or', 'union', 'any']:
@@ -305,23 +311,23 @@ def find_connected_sites(bonds, am, flatten=True, logic='or'):
         temp = [set(pair) for pair in temp]
         neighbors = temp[0]
         [neighbors.intersection_update(pair) for pair in temp[1:]]
-        neighbors = np.array(list(neighbors), dtype=sp.int64, ndmin=1)
+        neighbors = np.array(list(neighbors), dtype=np.int64, ndmin=1)
     else:
         raise Exception('Specified logic is not implemented')
     if flatten is False:
         if neighbors.size:
             mask = np.zeros(shape=n_sites+1, dtype=bool)
             mask[neighbors] = True
-            temp = np.hstack((am.row[bonds], am.col[bonds])).astype(sp.int64)
+            temp = np.hstack((am.row[bonds], am.col[bonds])).astype(np.int64)
             temp[~mask[temp]] = -1
             inds = np.where(temp == -1)[0]
             if len(inds):
                 temp = temp.astype(float)
-                temp[inds] = sp.nan
+                temp[inds] = np.nan
             temp = np.reshape(a=temp, newshape=[len(bonds), 2], order='F')
             neighbors = temp
         else:
-            neighbors = [np.array([], dtype=sp.int64) for i in range(len(bonds))]
+            neighbors = [np.array([], dtype=np.int64) for i in range(len(bonds))]
     return neighbors
 
 
@@ -349,7 +355,7 @@ def find_connecting_bonds(sites, am):
     -----
     The returned list can be converted to an ND-array, which will convert
     the ``None`` values to ``nan``.  These can then be found using
-    ``scipy.isnan``.
+    ``numpy.isnan``.
 
     """
     if am.format != 'dok':
@@ -779,7 +785,7 @@ def site_percolation(ij, occupied_sites):
 
     Notes
     -----
-    The ``connected_components`` function of scipy.csgraph will give ALL
+    The ``connected_components`` function of scipy.sparse.csgraph will give ALL
     sites a cluster number whether they are occupied or not, so this
     function essentially adjusts the cluster numbers to represent a
     percolation process.
@@ -824,7 +830,7 @@ def bond_percolation(ij, occupied_bonds):
 
     Notes
     -----
-    The ``connected_components`` function of scipy.csgraph will give ALL
+    The ``connected_components`` function of scipy.sparse.csgraph will give ALL
     sites a cluster number whether they are occupied or not, so this
     function essentially adjusts the cluster numbers to represent a
     percolation process.
@@ -1120,7 +1126,7 @@ def extend(network, pore_coords=[], throat_conns=[], labels=[]):
             if arr.dtype == bool:
                 network[item] = np.zeros(shape=(N, *s[1:]), dtype=bool)
             else:
-                network[item] = np.ones(shape=(N, *s[1:]), dtype=float)*sp.nan
+                network[item] = np.ones(shape=(N, *s[1:]), dtype=float)*np.nan
             # This is a temporary work-around until I learn to handle 2+ dims
             network[item][:arr.shape[0]] = arr
 
@@ -1133,12 +1139,12 @@ def extend(network, pore_coords=[], throat_conns=[], labels=[]):
             # Remove pore or throat from label, if present
             label = label.split('.')[-1]
             if np.size(pore_coords) > 0:
-                Ps = sp.r_[Np_old:Np]
+                Ps = np.r_[Np_old:Np]
                 if 'pore.'+label not in network.labels():
                     network['pore.'+label] = False
                 network['pore.'+label][Ps] = True
             if np.size(throat_conns) > 0:
-                Ts = sp.r_[Nt_old:Nt]
+                Ts = np.r_[Nt_old:Nt]
                 if 'throat.'+label not in network.labels():
                     network['throat.'+label] = False
                 network['throat.'+label][Ts] = True
@@ -1164,7 +1170,7 @@ def reduce_coordination(network, z):
     network['throat.mst'][Ts] = True
 
     # Trim throats not on the spanning tree to acheive desired coordination
-    Ts = sp.random.permutation(network.throats('mst', mode='nor'))
+    Ts = np.random.permutation(network.throats('mst', mode='nor'))
     Ts = Ts[:int(network.Nt - network.Np*(z/2))]
     trim(network=network, throats=Ts)
 
@@ -1278,7 +1284,7 @@ def find_surface_pores(network, markers=None, label='surface'):
             return
         if sum(dims) == 2:
             r = 0.75
-            theta = sp.linspace(0, 2*sp.pi, int(npts), dtype=float)
+            theta = np.linspace(0, 2*np.pi, int(npts), dtype=float)
             x = r*np.cos(theta)
             y = r*np.sin(theta)
             markers = np.vstack((x, y)).T
@@ -1286,7 +1292,7 @@ def find_surface_pores(network, markers=None, label='surface'):
             r = 1.00
             indices = np.arange(0, int(npts), dtype=float) + 0.5
             phi = np.arccos(1 - 2*indices/npts)
-            theta = sp.pi * (1 + 5**0.5) * indices
+            theta = np.pi * (1 + 5**0.5) * indices
             x = r*np.cos(theta) * np.sin(phi)
             y = r*np.sin(theta) * np.sin(phi)
             z = r*np.cos(phi)
@@ -1428,6 +1434,17 @@ def merge_networks(network, donor=[]):
     else:
         donors = [donor]
 
+    # First fix up geometries
+    # main_proj = network.project
+    # main_geoms = main_proj.geometries()
+    for donor in donors:
+        proj = donor.project
+        geoms = proj.geometries().values()
+        for geo in geoms:
+            if geo.name in network.project.names:
+                geo.name = network.project._generate_name(geo)
+            network.project.append(geo)
+
     for donor in donors:
         network['pore.coords'] = np.vstack((network['pore.coords'],
                                             donor['pore.coords']))
@@ -1453,7 +1470,7 @@ def merge_networks(network, donor=[]):
                             shape = list(network[key].shape)
                             N = donor._count(element)
                             shape[0] = N
-                            donor[key] = sp.empty(shape=shape)*sp.nan
+                            donor[key] = np.empty(shape=shape)*np.nan
                         pop_flag = True
                     # Then merge it with existing array on network
                     if len(network[key].shape) == 1:
@@ -1472,7 +1489,7 @@ def merge_networks(network, donor=[]):
                         data_shape = list(donor[key].shape)
                         pore_prop = True if key.split(".")[0] == "pore" else False
                         data_shape[0] = network.Np if pore_prop else network.Nt
-                        network[key] = sp.empty(data_shape) * sp.nan
+                        network[key] = np.empty(data_shape) * np.nan
                     # Then append donor values to network
                     s = np.shape(donor[key])[0]
                     network[key][-s:] = donor[key]
@@ -1483,13 +1500,13 @@ def merge_networks(network, donor=[]):
 
 
 def stitch(network, donor, P_network, P_donor, method='nearest',
-           len_max=sp.inf, len_min=0, label_suffix=''):
+           len_max=np.inf, label_suffix='', label_stitches='stitched'):
     r'''
     Stitches a second a network to the current network.
 
     Parameters
     ----------
-    networK : OpenPNM Network Object
+    network : OpenPNM Network Object
         The Network to which to donor Network will be attached
 
     donor : OpenPNM Network Object
@@ -1501,21 +1518,28 @@ def stitch(network, donor, P_network, P_donor, method='nearest',
     P_donor : array_like
         The pores on the donor Network
 
-    label_suffix : string or None
+    label_suffix : str or None
         Some text to append to each label in the donor Network before
         inserting them into the recipient.  The default is to append no
         text, but a common option would be to append the donor Network's
-        name. To insert none of the donor labels, use None.
+        name. To insert none of the donor labels, use ``None``.
+
+    label_stitches : str or list of strings
+        The label to apply to the newly created 'stitch' throats.  The
+        defaul is 'stitched'.  If performing multiple stitches in a row it
+        might be helpful to the throats created during each step uniquely
+        for later identification.
 
     len_max : float
         Set a length limit on length of new throats
 
-    method : string (default = 'delaunay')
+    method : string (default = 'nearest')
         The method to use when making pore to pore connections. Options are:
 
-        - 'delaunay' : Use a Delaunay tessellation
-        - 'nearest' : Connects each pore on the receptor network to its nearest
-                      pore on the donor network
+        - 'radius' : Connects each pore on the recipient network to the
+                     nearest pores on the donor network, within ``len_max``
+        - 'nearest' : Connects each pore on the recipienet network to the
+                      nearest pore on the donor network.
 
     Notes
     -----
@@ -1534,7 +1558,7 @@ def stitch(network, donor, P_network, P_donor, method='nearest',
     [125, 300]
     >>> pn2['pore.coords'][:, 2] += 5.0
     >>> op.topotools.stitch(network=pn, donor=pn2, P_network=pn.pores('top'),
-    ...                     P_donor=pn2.pores('bottom'), method='nearest',
+    ...                     P_donor=pn2.pores('bottom'), method='radius',
     ...                     len_max=1.0)
     >>> [pn.Np, pn.Nt]
     [250, 625]
@@ -1543,12 +1567,24 @@ def stitch(network, donor, P_network, P_donor, method='nearest',
     # Ensure Networks have no associated objects yet
     if (len(network.project) > 1) or (len(donor.project) > 1):
         raise Exception('Cannot stitch a Network with active objects')
-    network['throat.stitched'] = False
+    if isinstance(label_stitches, str):
+        label_stitches = [label_stitches]
+    for s in label_stitches:
+        if s not in network.keys():
+            network['throat.' + s] = False
     # Get the initial number of pores and throats
     N_init = {}
     N_init['pore'] = network.Np
     N_init['throat'] = network.Nt
     if method == 'nearest':
+        P1 = P_network
+        P2 = P_donor + N_init['pore']  # Increment pores on donor
+        C1 = network['pore.coords'][P_network]
+        C2 = donor['pore.coords'][P_donor]
+        D = sp.spatial.distance.cdist(C1, C2)
+        [P1_ind, P2_ind] = np.where(D == D.min(axis=0))
+        conns = np.vstack((P1[P1_ind], P2[P2_ind])).T
+    elif method == 'radius':
         P1 = P_network
         P2 = P_donor + N_init['pore']  # Increment pores on donor
         C1 = network['pore.coords'][P_network]
@@ -1566,10 +1602,10 @@ def stitch(network, donor, P_network, P_donor, method='nearest',
     extend(network=network, throat_conns=donor['throat.conns'] + N_init['pore'])
 
     # Trim throats that are longer then given len_max
-    C1 = network['pore.coords'][conns[:, 0]]
-    C2 = network['pore.coords'][conns[:, 1]]
-    L = np.sum((C1 - C2)**2, axis=1)**0.5
-    conns = conns[L <= len_max]
+    # C1 = network['pore.coords'][conns[:, 0]]
+    # C2 = network['pore.coords'][conns[:, 1]]
+    # L = np.sum((C1 - C2)**2, axis=1)**0.5
+    # conns = conns[L <= len_max]
 
     # Add donor labels to recipient network
     if label_suffix is not None:
@@ -1584,7 +1620,7 @@ def stitch(network, donor, P_network, P_donor, method='nearest',
             network[label+label_suffix][locations] = donor[label]
 
     # Add the new stitch throats to the Network
-    extend(network=network, throat_conns=conns, labels='stitched')
+    extend(network=network, throat_conns=conns, labels=label_stitches)
 
     # Remove donor from Workspace, if present
     # This check allows for the reuse of a donor Network multiple times
@@ -1595,7 +1631,7 @@ def stitch(network, donor, P_network, P_donor, method='nearest',
 
 def connect_pores(network, pores1, pores2, labels=[], add_conns=True):
     r'''
-    Returns the possible connections between two group of pores, and optionally
+    Returns the possible connections between two groups of pores, and optionally
     makes the connections.
 
     See ``Notes`` for advanced usage.
@@ -1675,7 +1711,7 @@ def connect_pores(network, pores1, pores2, labels=[], add_conns=True):
     for ps1, ps2 in zip(pores1, pores2):
         size1 = np.size(ps1)
         size2 = np.size(ps2)
-        arr1.append(sp.repeat(ps1, size2))
+        arr1.append(np.repeat(ps1, size2))
         arr2.append(np.tile(ps2, size1))
     conns = np.vstack([np.concatenate(arr1), np.concatenate(arr2)]).T
     if add_conns:
@@ -1781,7 +1817,7 @@ def subdivide(network, pores, shape, labels=[]):
         if np.size(shape) == 3:
             div = np.array(shape, ndmin=1)
         else:
-            div = np.zeros(3, dtype=sp.int32)
+            div = np.zeros(3, dtype=np.int32)
             if single_dim is None:
                 dim = 2
             else:
@@ -1799,16 +1835,16 @@ def subdivide(network, pores, shape, labels=[]):
                                  ['left', 'right'],
                                  ['top', 'bottom']])
         non_single_labels = label_groups[np.array([0, 1, 2]) != single_dim]
-    for l in main_labels:
-        new_net['pore.surface_' + l] = False
-        network['pore.surface_' + l] = False
+    for label in main_labels:
+        new_net['pore.surface_' + label] = False
+        network['pore.surface_' + label] = False
         if single_dim is None:
-            new_net['pore.surface_' + l][new_net.pores(labels=l)] = True
+            new_net['pore.surface_' + label][new_net.pores(labels=label)] = True
         else:
             for ind in [0, 1]:
-                loc = (non_single_labels[ind] == l)
+                loc = (non_single_labels[ind] == label)
                 temp_pores = new_net.pores(non_single_labels[ind][loc])
-                new_net['pore.surface_' + l][temp_pores] = True
+                new_net['pore.surface_' + label][temp_pores] = True
 
     old_coords = np.copy(new_net['pore.coords'])
     if labels == []:
@@ -1830,15 +1866,15 @@ def subdivide(network, pores, shape, labels=[]):
                labels=labels, network=network)
 
         # Moving the temporary labels to the big network
-        for l in main_labels:
-            network['pore.surface_'+l][Np1:] = new_net['pore.surface_'+l]
+        for label in main_labels:
+            network['pore.surface_' + label][Np1:] = new_net['pore.surface_' + label]
 
         # Stitching the old pores of the main network to the new extended pores
         surf_pores = network.pores('surface_*')
         surf_coord = network['pore.coords'][surf_pores]
         for neighbor in Pn:
             neighbor_coord = network['pore.coords'][neighbor]
-            dist = [round(sp.inner(neighbor_coord-x, neighbor_coord-x),
+            dist = [round(np.inner(neighbor_coord-x, neighbor_coord-x),
                           20) for x in surf_coord]
             nearest_neighbor = surf_pores[dist == np.amin(dist)]
             if neighbor in Pn_old_net:
@@ -1849,7 +1885,7 @@ def subdivide(network, pores, shape, labels=[]):
                 if np.size(new_neighbors) == 0:
                     labels = network.labels(pores=nearest_neighbor,
                                             mode='and')
-                    common_label = [l for l in labels if 'surface_' in l]
+                    common_label = [label for label in labels if 'surface_' in label]
                     new_neighbors = network.pores(common_label)
             elif neighbor in Pn_new_net:
                 new_neighbors = nearest_neighbor
@@ -1857,13 +1893,13 @@ def subdivide(network, pores, shape, labels=[]):
                           pores2=new_neighbors, labels=labels)
 
         # Removing temporary labels
-        for l in main_labels:
-            network['pore.surface_' + l] = False
+        for label in main_labels:
+            network['pore.surface_' + label] = False
         new_net['pore.coords'] = np.copy(old_coords)
 
     label_faces(network=network)
-    for l in main_labels:
-        del network['pore.surface_'+l]
+    for label in main_labels:
+        del network['pore.surface_' + label]
     trim(network=network, pores=pores)
     ws = network.project.workspace
     ws.close_project(new_net.project)
@@ -2015,7 +2051,7 @@ def _template_sphere_disc(dim, outer_radius, inner_radius):
     rmax = np.array(outer_radius, ndmin=1)
     rmin = np.array(inner_radius, ndmin=1)
     ind = 2 * rmax - 1
-    coord = sp.indices((ind * np.ones(dim, dtype=int)))
+    coord = np.indices((ind * np.ones(dim, dtype=int)))
     coord = coord - (ind - 1)/2
     x = coord[0, :]
     y = coord[1, :]
@@ -2092,425 +2128,6 @@ def template_cylinder_annulus(height, outer_radius, inner_radius=0):
                                 inner_radius=inner_radius)
     img = np.tile(np.atleast_3d(img), reps=height)
     return img
-
-
-def plot_connections(network, throats=None, fig=None, **kwargs):
-    r"""
-    Produces a 3D plot of the network topology showing how throats connect
-    for quick visualization without having to export data to veiw in Paraview.
-
-    Parameters
-    ----------
-    network : OpenPNM Network Object
-        The network whose topological connections to plot
-
-    throats : array_like (optional)
-        The list of throats to plot if only a sub-sample is desired.  This is
-        useful for inspecting a small region of the network.  If no throats are
-        specified then all throats are shown.
-
-    fig : Matplotlib figure handle and line property arguments
-        If a ``fig`` is supplied, then the topology will be overlaid on this
-        plot.  This makes it possible to combine coordinates and connections,
-        and to color different throats differently (see ``kwargs``)
-
-    kwargs : other named arguments
-        By also in different line properties such as ``color`` it's possible to
-        plot several different sets of connections with unique colors.
-
-        For information on available line style options, visit the Matplotlib
-        documentation on the `web
-        <http://matplotlib.org/api/lines_api.html#matplotlib.lines.Line2D>`_
-
-    Notes
-    -----
-    The figure handle returned by this method can be passed into
-    ``plot_coordinates`` to create a plot that combines pore coordinates and
-    throat connections, and vice versa.
-
-    See Also
-    --------
-    plot_coordinates
-
-    Examples
-    --------
-    >>> import openpnm as op
-    >>> import matplotlib as mpl
-    >>> mpl.use('Agg')
-    >>> pn = op.network.Cubic(shape=[10, 10, 3])
-    >>> pn.add_boundary_pores()
-    >>> Ts = pn.throats('*boundary', mode='nor')
-    >>> # Create figure showing boundary throats
-    >>> fig = op.topotools.plot_connections(network=pn, throats=Ts)
-    >>> Ts = pn.throats('*boundary')
-    >>> # Pass existing fig back into function to plot additional throats
-    >>> fig = op.topotools.plot_connections(network=pn, throats=Ts,
-    ...                                     fig=fig, color='r')
-
-    """
-    import matplotlib.pyplot as plt
-    from mpl_toolkits.mplot3d import Axes3D
-    from matplotlib.collections import LineCollection
-    from mpl_toolkits.mplot3d.art3d import Line3DCollection
-
-    Ts = network.Ts if throats is None else network._parse_indices(throats)
-    dim = dimensionality(network)
-    ThreeD = True if dim.sum() == 3 else False
-    # Add a dummy axis for 1D networks
-    if dim.sum() == 1:
-        dim[np.argwhere(dim == False)[0]] = True
-
-    fig = plt.figure() if fig is None else fig
-    ax = fig.gca()
-    if ThreeD and ax.name != '3d':
-        fig.delaxes(ax)
-        ax = fig.add_subplot(111, projection='3d')
-
-    # Collect coordinates and scale axes to fit
-    Ps = np.unique(network['throat.conns'][Ts])
-    X, Y, Z = network['pore.coords'][Ps].T
-    xyz = network["pore.coords"][:, dim]
-    P1, P2 = network["throat.conns"][Ts].T
-
-    throat_pos = np.column_stack((xyz[P1], xyz[P2])).reshape((Ts.size, 2, dim.sum()))
-    lc = Line3DCollection(throat_pos) if ThreeD else LineCollection(throat_pos)
-    ax.add_collection(lc)
-
-    _scale_3d_axes(ax=ax, X=X, Y=Y, Z=Z)
-    _label_axes(ax=ax, X=X, Y=Y, Z=Z)
-
-    return fig
-
-
-def plot_coordinates(network, pores=None, fig=None, **kwargs):
-    r"""
-    Produces a 3D plot showing specified pore coordinates as markers
-
-    Parameters
-    ----------
-    network : OpenPNM Network Object
-        The network whose topological connections to plot
-
-    pores : array_like (optional)
-        The list of pores to plot if only a sub-sample is desired.  This is
-        useful for inspecting a small region of the network.  If no pores are
-        specified then all are shown.
-
-    fig : Matplotlib figure handle
-        If a ``fig`` is supplied, then the coordinates will be overlaid.  This
-        enables the plotting of multiple different sets of pores as well as
-        throat connections from ``plot_connections``.
-
-    kwargs : dict
-        By also  in different marker properties such as size (``s``) and color
-        (``c``).
-
-        For information on available marker style options, visit the Matplotlib
-        documentation on the `web
-        <http://matplotlib.org/api/lines_api.html#matplotlib.lines.Line2D>`_
-
-    Notes
-    -----
-    The figure handle returned by this method can be passed into
-    ``plot_topology`` to create a plot that combines pore coordinates and
-    throat connections, and vice versa.
-
-    See Also
-    --------
-    plot_connections
-
-    Examples
-    --------
-    >>> import openpnm as op
-    >>> import matplotlib as mpl
-    >>> mpl.use('Agg')
-    >>> pn = op.network.Cubic(shape=[10, 10, 3])
-    >>> pn.add_boundary_pores()
-    >>> Ps = pn.pores('internal')
-    >>> # Create figure showing internal pores
-    >>> fig = op.topotools.plot_coordinates(pn, pores=Ps, c='b')
-    >>> Ps = pn.pores('*boundary')
-    >>> # Pass existing fig back into function to plot boundary pores
-    >>> fig = op.topotools.plot_coordinates(pn, pores=Ps, fig=fig, c='r')
-
-    """
-    import matplotlib.pyplot as plt
-    from mpl_toolkits.mplot3d import Axes3D
-
-    Ps = network.Ps if pores is None else network._parse_indices(pores)
-
-    dim = dimensionality(network)
-    ThreeD = True if dim.sum() == 3 else False
-    # Add a dummy axis for 1D networks
-    if dim.sum() == 1:
-        dim[np.argwhere(dim == False)[0]] = True
-    # Add 2 dummy axes for 0D networks (1 pore only)
-    if dim.sum() == 0:
-        dim[[0, 1]] = True
-
-    fig = plt.figure() if fig is None else fig
-    ax = fig.gca()
-    if ThreeD and ax.name != '3d':
-        fig.delaxes(ax)
-        ax = fig.add_subplot(111, projection='3d')
-
-    # Collect specified coordinates
-    X, Y, Z = network['pore.coords'][Ps].T
-
-    if ThreeD:
-        ax.scatter(X, Y, Z, **kwargs)
-    else:
-        X_temp, Y_temp = np.column_stack((X, Y, Z))[:, dim].T
-        ax.scatter(X_temp, Y_temp, **kwargs)
-
-    _scale_3d_axes(ax=ax, X=X, Y=Y, Z=Z)
-    _label_axes(ax=ax, X=X, Y=Y, Z=Z)
-
-    return fig
-
-
-def _label_axes(ax, X, Y, Z):
-    labels = ["X", "Y", "Z"]
-    dim = np.zeros(3, dtype=bool)
-    for i, arr in enumerate([X, Y, Z]):
-        if np.unique(arr).size > 1:
-            dim[i] = True
-    # Add a dummy axis for 1D networks
-    if dim.sum() == 1:
-        dim[np.argwhere(dim == False)[0]] = True
-    # Add 2 dummy axes for 0D networks (1 pore only)
-    if dim.sum() == 0:
-        dim[[0, 1]] = True
-    dim_idx = np.argwhere(dim == True).squeeze()
-    ax.set_xlabel(labels[dim_idx[0]])
-    ax.set_ylabel(labels[dim_idx[1]])
-    if hasattr(ax, "set_zlim"):
-        ax.set_zlabel("Z")
-
-
-def _scale_3d_axes(ax, X, Y, Z):
-    if hasattr(ax, '_scaled'):
-        logger.warning('Axes is already scaled to previously plotted data')
-    else:
-        ax._scaled = True
-        max_range = np.ptp([X, Y, Z]).max() / 2
-        mid_x = (X.max() + X.min()) * 0.5
-        mid_y = (Y.max() + Y.min()) * 0.5
-        mid_z = (Z.max() + Z.min()) * 0.5
-        ax.set_xlim(mid_x - max_range, mid_x + max_range)
-        ax.set_ylim(mid_y - max_range, mid_y + max_range)
-        if hasattr(ax, "set_zlim"):
-            ax.set_zlim(mid_z - max_range, mid_z + max_range)
-        else:
-            ax.axis("equal")
-            ax.autoscale()
-            ax.margins(0.15)
-
-
-def plot_networkx(network, plot_throats=True, labels=None, colors=None,
-                  scale=1, ax=None, alpha=1.0):
-    r'''
-    Returns a pretty 2d plot for 2d OpenPNM networks.
-
-    Parameters
-    ----------
-    network : OpenPNM Network object
-
-    plot_throats : boolean
-        Plots throats as well as pores, if True.
-
-    labels : list
-        List of OpenPNM labels
-
-    colors : list
-        List of corresponding colors to the given `labels`.
-
-    scale : float
-        Scale factor for size of pores.
-    '''
-    from networkx import Graph, draw_networkx_nodes, draw_networkx_edges
-    from matplotlib.collections import PathCollection
-    import matplotlib.pyplot as plt
-
-    dims = dimensionality(network)
-    if dims.sum() > 2:
-        raise Exception("NetworkX plotting only works for 2D networks.")
-    temp = network['pore.coords'].T[dims].squeeze()
-    if dims.sum() == 1:
-        x = temp
-        y = np.zeros_like(x)
-    if dims.sum() == 2:
-        x, y = temp
-
-    G = Graph()
-    pos = {network.Ps[i]: [x[i], y[i]] for i in range(network.Np)}
-    try:
-        node_size = scale * network['pore.diameter']
-    except KeyError:
-        node_size = np.ones_like(x) * scale * 0.5
-    if not np.isfinite(node_size).all():
-        raise Exception('nan/inf values found in network["pore.diameter"]')
-    node_color = np.array(['k'] * len(network.Ps))
-
-    if labels:
-        if type(labels) is not list:
-            labels = [labels]
-        if type(colors) is not list:
-            colors = [colors]
-        if len(labels) != len(colors):
-            raise('len(colors) must be equal to len(labels)!')
-        for label, color in zip(labels, colors):
-            node_color[network.pores(label)] = color
-
-    if ax is None:
-        fig, ax = plt.subplots()
-    ax.set_aspect('equal', adjustable='box')
-    offset = node_size.max() * 0.25
-    ax.set_xlim((x.min() - offset, x.max() + offset))
-    ax.set_ylim((y.min() - offset, y.max() + offset))
-    ax.axis("off")
-
-    # Keep track of already plotted nodes
-    temp = [id(item) for item in ax.collections if type(item) == PathCollection]
-
-    # Plot pores
-    gplot = draw_networkx_nodes(G, ax=ax, pos=pos, nodelist=network.Ps.tolist(),
-                                alpha=alpha, node_color="w", edgecolors=node_color,
-                                node_size=node_size)
-    # (Optionally) Plot throats
-    if plot_throats:
-        draw_networkx_edges(G, pos=pos, edge_color='k', alpha=alpha,
-                            edgelist=network['throat.conns'].tolist(), ax=ax)
-
-    spi = 2700  # 1250 was obtained by trial and error
-    figwidth, figheight = ax.get_figure().get_size_inches()
-    figsize_ratio = figheight / figwidth
-    data_ratio = ax.get_data_ratio()
-    corr = min(figsize_ratio / data_ratio, 1)
-    xrange = np.ptp(ax.get_xlim())
-    markersize = sp.atleast_1d((corr*figwidth)**2 / xrange**2 * node_size**2 * spi)
-    for item in ax.collections:
-        if type(item) == PathCollection and id(item) not in temp:
-            item.set_sizes(markersize)
-
-    return gplot
-
-
-def plot_vpython(network,
-                 Psize='pore.diameter',
-                 Tsize='throat.diameter',
-                 Pcolor=None,
-                 Tcolor=None,
-                 cmap='jet', **kwargs):
-    r"""
-    Quickly visualize a network in 3D using VPython
-
-    Parameters
-    ----------
-    network : OpenPNM Network Object
-        The network to visualize
-    Psize : string (default = 'pore.diameter')
-        The dictionary key pointing to the pore property by which sphere
-        diameters should be scaled
-    Tsize : string (default = 'throat.diameter')
-        The dictionary key pointing to the throat property by which cylinder
-        diameters should be scaled
-    Pcolor : string
-        The dictionary key pointing to the pore property which will control
-        the sphere colors.  The default is None, which results in a bright
-        red for all pores.
-    Tcolor : string
-        The dictionary key pointing to the throat property which will control
-        the cylinder colors.  The default is None, which results in a unform
-        pale blue for all throats.
-    cmap : string or Matplotlib colormap object (default is 'jet')
-        The color map to use when converting pore and throat properties to
-        RGB colors.  Can either be a string indicating which color map to
-        fetch from matplotlib.cmap, or an actual cmap object.
-    kwargs : dict
-        Any additional kwargs that are received are passed to the VPython
-        ``canvas`` object.  Default options are:
-
-        *'height' = 500* - Height of canvas
-
-        *'width' = 800* - Width of canvas
-
-        *'background' = [0, 0, 0]* - Sets the background color of canvas
-
-        *'ambient' = [0.2, 0.2, 0.3]* - Sets the brightness of lighting
-
-    Returns
-    -------
-    canvas : VPython Canvas object
-        The canvas object containing the generated scene. The object has
-        several useful methods.
-
-    Notes
-    -----
-    **Important**
-
-    a) This does not work in Spyder.  It should only be called from a Jupyter
-    Notebook.
-
-    b) This is only meant for relatively small networks.  For proper
-    visualization use Paraview.
-
-    """
-    import matplotlib.pyplot as plt
-
-    try:
-        from vpython import canvas, vec, sphere, cylinder
-    except ModuleNotFoundError:
-        raise Exception('VPython must be installed to use this function')
-
-    if type(cmap) == str:
-        cmap = getattr(plt.cm, cmap)
-
-    if Pcolor is None:
-        Pcolor = [vec(230/255, 57/255, 0/255)]*network.Np
-    else:
-        a = cmap(network[Pcolor]/network[Pcolor].max())
-        Pcolor = [vec(row[0], row[1], row[2]) for row in a]
-
-    if Tcolor is None:
-        Tcolor = [vec(51/255, 153/255, 255/255)]*network.Nt
-    else:
-        a = cmap(network[Tcolor]/network[Tcolor].max())
-        Tcolor = [vec(row[0], row[1], row[2]) for row in a]
-
-    # Set default values for canvas properties
-    if 'background' not in kwargs.keys():
-        kwargs['background'] = vec(1.0, 1.0, 1.0)
-    if 'height' not in kwargs.keys():
-        kwargs['height'] = 500
-    if 'width' not in kwargs.keys():
-        kwargs['width'] = 800
-    # Parse any given values for canvas properties
-    for item in kwargs.keys():
-        try:
-            kwargs[item] = vec(*kwargs[item])
-        except TypeError:
-            pass
-    scene = canvas(title=network.name, **kwargs)
-
-    for p in network.Ps:
-        r = network[Psize][p]/2
-        xyz = network['pore.coords'][p]
-        c = Pcolor[p]
-        sphere(pos=vec(*xyz), radius=r, color=c,
-               shininess=.5)
-
-    for t in network.Ts:
-        head = network['throat.endpoints.head'][t]
-        tail = network['throat.endpoints.tail'][t]
-        v = tail - head
-        r = network[Tsize][t]
-        L = np.sqrt(np.sum((head-tail)**2))
-        c = Tcolor[t]
-        cylinder(pos=vec(*head), axis=vec(*v), opacity=1, size=vec(L, r, r),
-                 color=c)
-
-    return scene
 
 
 def generate_base_points(num_points, domain_size, density_map=None,
@@ -2603,10 +2220,10 @@ def generate_base_points(num_points, domain_size, density_map=None,
         base_pts = []
         N = 0
         while N < num_points:
-            pt = sp.random.rand(3)  # Generate a point
+            pt = np.random.rand(3)  # Generate a point
             # Test whether to keep it or not
             [indx, indy, indz] = np.floor(pt*np.shape(prob)).astype(int)
-            if sp.random.rand(1) <= prob[indx][indy][indz]:
+            if np.random.rand(1) <= prob[indx][indy][indz]:
                 base_pts.append(pt)
                 N += 1
         base_pts = np.array(base_pts)
@@ -2775,10 +2392,10 @@ def find_clusters(network, mask=[], t_labels=False):
     Examples
     --------
     >>> import openpnm as op
-    >>> from scipy import rand
+    >>> import numpy as np
     >>> pn = op.network.Cubic(shape=[25, 25, 1])
-    >>> pn['pore.seed'] = rand(pn.Np)
-    >>> pn['throat.seed'] = rand(pn.Nt)
+    >>> pn['pore.seed'] = np.random.rand(pn.Np)
+    >>> pn['throat.seed'] = np.random.rand(pn.Nt)
 
 
     """
@@ -2810,7 +2427,7 @@ def _site_percolation(network, pmask):
     # Only if both pores are True is the throat set to True
     tmask = np.all(conns, axis=1)
 
-    # Perform the clustering using scipy.csgraph
+    # Perform the clustering using scipy.sparse.csgraph
     csr = network.create_adjacency_matrix(weights=tmask, fmt='csr',
                                           drop_zeros=True)
     clusters = sprs.csgraph.connected_components(csgraph=csr,
@@ -2834,7 +2451,7 @@ def _bond_percolation(network, tmask):
     r"""
     This private method is called by 'find_clusters'
     """
-    # Perform the clustering using scipy.csgraph
+    # Perform the clustering using scipy.sparse.csgraph
     csr = network.create_adjacency_matrix(weights=tmask, fmt='csr',
                                           drop_zeros=True)
     clusters = sprs.csgraph.connected_components(csgraph=csr,
@@ -2897,7 +2514,7 @@ def add_boundary_pores(network, pores, offset=None, move_to=None,
     if Ps.dtype is bool:
         Ps = network.toindices(Ps)
     if np.size(pores) == 0:  # Handle an empty array if given
-        return np.array([], dtype=sp.int64)
+        return np.array([], dtype=np.int64)
     # Clone the specifed pores
     clone_pores(network=network, pores=Ps)
     newPs = network.pores('pore.clone')

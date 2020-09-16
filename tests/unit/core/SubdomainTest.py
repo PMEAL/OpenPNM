@@ -1,6 +1,5 @@
 import pytest
 import numpy as np
-import scipy as sp
 import openpnm as op
 
 
@@ -74,6 +73,215 @@ class SubdomainTest:
         assert 'throat.'+self.phys1.name in self.phase1.keys()
         assert self.phase1.num_throats(self.phys1.name) == 0
         self.phys1._add_locations(pores=self.net.Ps, throats=self.net.Ts)
+
+    def test_interleaving_missing_objects(self):
+        pn = op.network.Cubic(shape=[3, 1, 1])
+        geo1 = op.geometry.GenericGeometry(network=pn, pores=[0], throats=[0])
+        geo2 = op.geometry.GenericGeometry(network=pn, pores=[1], throats=[1])
+
+        geo1['pore.test_float'] = 1.0
+        geo2['pore.test_float'] = 2.0
+        assert pn['pore.test_float'].dtype == float
+        assert np.isnan(pn['pore.test_float']).sum() == 1
+
+        geo1['pore.test_int'] = 1
+        geo2['pore.test_int'] = 2
+        assert pn['pore.test_int'].dtype == float
+        assert np.isnan(pn['pore.test_int']).sum() == 1
+
+        geo1['pore.test_bool'] = True
+        geo2['pore.test_bool'] = False
+        assert pn['pore.test_bool'].dtype == bool
+        assert pn['pore.test_bool'].sum() == 1
+
+        geo1['pore.test_int'] = 1.0
+        geo2['pore.test_int'] = 2
+        assert pn['pore.test_int'].dtype == float
+        assert np.isnan(pn['pore.test_int']).sum() == 1
+
+        geo1['pore.test_int'] = 1
+        geo2['pore.test_int'] = 2.0
+        assert pn['pore.test_int'].dtype == float
+        assert np.isnan(pn['pore.test_int']).sum() == 1
+
+    def test_interleaving_mixed_data(self):
+        pn = op.network.Cubic(shape=[3, 1, 1])
+        geo1 = op.geometry.GenericGeometry(network=pn, pores=[0], throats=[0])
+        geo2 = op.geometry.GenericGeometry(network=pn, pores=[1], throats=[1])
+        geo3 = op.geometry.GenericGeometry(network=pn, pores=[2])
+
+        # Test floats with all arrays present
+        geo1['pore.test_float'] = 1.0
+        geo2['pore.test_float'] = 2.0
+        geo3['pore.test_float'] = 3.0
+        assert pn['pore.test_float'].dtype == float
+        assert np.isnan(pn['pore.test_float']).sum() == 0
+
+        # Test mixed datatype with all arrays present
+        # It's not clear that we want this behavior
+        # geo1['pore.test_mixed'] = 1.0
+        # geo2['pore.test_mixed'] = 2
+        # geo3['pore.test_mixed'] = False
+        # assert pn['pore.test_mixed'].dtype == float
+        # assert np.isnan(pn['pore.test_mixed']).sum() == 0
+
+        # Check heterogeneous datatypes
+        geo1['pore.test_mixed'] = 1
+        geo2['pore.test_mixed'] = 2
+        geo3['pore.test_mixed'] = 3.0
+        assert pn['pore.test_mixed'].dtype == float
+
+        # Make sure order doesn't matter
+        geo1['pore.test_mixed'] = 1.0
+        geo2['pore.test_mixed'] = 2
+        geo3['pore.test_mixed'] = 3
+        assert pn['pore.test_mixed'].dtype == float
+
+    def test_interleaving_partial_data(self):
+        pn = op.network.Cubic(shape=[3, 1, 1])
+        geo1 = op.geometry.GenericGeometry(network=pn, pores=[0], throats=[0])
+        geo2 = op.geometry.GenericGeometry(network=pn, pores=[1], throats=[1])
+        geo3 = op.geometry.GenericGeometry(network=pn, pores=[2])
+
+        # Test ints with a missing array
+        geo1['pore.test_int_missing'] = 1
+        geo2['pore.test_int_missing'] = 2
+        assert np.isnan(pn['pore.test_int_missing']).sum() == 1
+        assert pn['pore.test_int_missing'].dtype == float
+
+        # Test ints with all arrays present
+        geo1['pore.test_int'] = 1
+        geo2['pore.test_int'] = 2
+        geo3['pore.test_int'] = 3
+        assert pn['pore.test_int'].dtype == int
+
+        # Test booleans with a missing array
+        geo1['pore.test_bool'] = True
+        geo2['pore.test_bool'] = False
+        assert pn['pore.test_bool'].dtype == bool
+        assert pn['pore.test_bool'].sum() == 1
+
+    def test_interleave_data_bool(self):
+        net = op.network.Cubic(shape=[2, 2, 2])
+        Ps = net.pores('top')
+        geom1 = op.geometry.GenericGeometry(network=net, pores=Ps)
+        Ps = net.pores('bottom')
+        geom2 = op.geometry.GenericGeometry(network=net, pores=Ps)
+        # Ensure Falses return in missing places
+        geom1['pore.blah'] = True
+        assert np.all(~geom2['pore.blah'])
+        assert np.sum(net['pore.blah']) == 4
+        # Ensure all Trues returned now
+        geom2['pore.blah'] = True
+        assert np.all(geom2['pore.blah'])
+        assert np.sum(net['pore.blah']) == 8
+
+    def test_interleave_data_int(self):
+        net = op.network.Cubic(shape=[2, 2, 2])
+        Ps = net.pores('top')
+        geom1 = op.geometry.GenericGeometry(network=net, pores=Ps)
+        Ps = net.pores('bottom')
+        geom2 = op.geometry.GenericGeometry(network=net, pores=Ps)
+        geom1['pore.blah'] = 1
+        # Ensure ints are returned geom1
+        assert 'int' in geom1['pore.blah'].dtype.name
+        # Ensure nans are returned on geom2
+        assert np.all(np.isnan(geom2['pore.blah']))
+        # Ensure interleaved array is float with nans
+        assert 'float' in net['pore.blah'].dtype.name
+        # Ensure missing values are floats
+        assert np.sum(np.isnan(net['pore.blah'])) == 4
+
+    def test_interleave_data_float(self):
+        net = op.network.Cubic(shape=[2, 2, 2])
+        Ps = net.pores('top')
+        geom1 = op.geometry.GenericGeometry(network=net, pores=Ps)
+        Ps = net.pores('bottom')
+        geom2 = op.geometry.GenericGeometry(network=net, pores=Ps)
+        geom1['pore.blah'] = 1.0
+        # Ensure flaots are returned geom1
+        assert 'float' in geom1['pore.blah'].dtype.name
+        # Ensure nans are returned on geom2
+        assert np.all(np.isnan(geom2['pore.blah']))
+        # Ensure interleaved array is float with nans
+        assert 'float' in net['pore.blah'].dtype.name
+        # Ensure missing values are floats
+        assert np.sum(np.isnan(net['pore.blah'])) == 4
+
+    def test_interleave_data_object(self):
+        net = op.network.Cubic(shape=[2, 2, 2])
+        Ps = net.pores('top')
+        geom1 = op.geometry.GenericGeometry(network=net, pores=Ps)
+        Ps = net.pores('bottom')
+        _ = op.geometry.GenericGeometry(network=net, pores=Ps)
+        geom1['pore.blah'] = [[1, 2], [1, 2, 3], [1, 2, 3, 4], [1]]
+        assert 'object' in net['pore.blah'].dtype.name
+        # Ensure missing elements are None
+        assert np.sum([item is None for item in net['pore.blah']]) == 4
+
+    def test_interleave_data_key_error(self):
+        net = op.network.Cubic(shape=[2, 2, 2])
+        Ps = net.pores('top')
+        geom1 = op.geometry.GenericGeometry(network=net, pores=Ps)
+        Ps = net.pores('bottom')
+        geom2 = op.geometry.GenericGeometry(network=net, pores=Ps)
+        with pytest.raises(KeyError):
+            net['pore.blah']
+        with pytest.raises(KeyError):
+            geom1['pore.blah']
+        with pytest.raises(KeyError):
+            geom2['pore.blah']
+
+    def test_interleave_data_float_missing_geometry(self):
+        net = op.network.Cubic(shape=[2, 2, 2])
+        geom = op.geometry.GenericGeometry(network=net, pores=[0, 1, 2])
+        geom['pore.blah'] = 1.0
+        assert np.any(np.isnan(net['pore.blah']))
+
+    def test_interleave_data_int_missing_geometry(self):
+        net = op.network.Cubic(shape=[2, 2, 2])
+        geom = op.geometry.GenericGeometry(network=net, pores=[0, 1, 2])
+        geom['pore.blah'] = 1
+        assert np.any(np.isnan(net['pore.blah']))
+
+    def test_interleave_data_bool_missing_geometry(self):
+        net = op.network.Cubic(shape=[2, 2, 2])
+        geom = op.geometry.GenericGeometry(network=net, pores=[0, 1, 2])
+        geom['pore.blah'] = True
+        assert np.sum(net['pore.blah']) == geom.Np
+
+    def test_interleave_data_float_missing_physics(self):
+        net = op.network.Cubic(shape=[4, 1, 1])
+        geo1 = op.geometry.GenericGeometry(network=net, pores=[0, 1],
+                                           throats=[0, 1])
+        geo2 = op.geometry.GenericGeometry(network=net, pores=[2, 3],
+                                           throats=[2])
+        air = op.phases.Air(network=net)
+        phys = op.physics.GenericPhysics(network=net, phase=air, geometry=geo1)
+        phys['pore.blah'] = 1.0
+        assert np.any(np.isnan(air['pore.blah']))
+
+    def test_interleave_data_int_missing_physics(self):
+        net = op.network.Cubic(shape=[4, 1, 1])
+        geo1 = op.geometry.GenericGeometry(network=net, pores=[0, 1],
+                                           throats=[0, 1])
+        geo2 = op.geometry.GenericGeometry(network=net, pores=[2, 3],
+                                           throats=[2])
+        air = op.phases.Air(network=net)
+        phys = op.physics.GenericPhysics(network=net, phase=air, geometry=geo1)
+        phys['pore.blah'] = 1
+        assert np.any(np.isnan(air['pore.blah']))
+
+    def test_interleave_data_bool_missing_physics(self):
+        net = op.network.Cubic(shape=[4, 1, 1])
+        geo1 = op.geometry.GenericGeometry(network=net, pores=[0, 1],
+                                           throats=[0, 1])
+        geo2 = op.geometry.GenericGeometry(network=net, pores=[2, 3],
+                                           throats=[2])
+        air = op.phases.Air(network=net)
+        phys = op.physics.GenericPhysics(network=net, phase=air, geometry=geo1)
+        phys['pore.blah'] = True
+        assert np.sum(air['pore.blah']) == phys.Np
 
     def test_writting_subdict_names_across_subdomains(self):
         ws = op.Workspace()

@@ -137,7 +137,7 @@ class GenericNetworkTest:
         assert np.all(a == [3, 4])
         a = self.net.num_neighbors(pores=0, flatten=False)
         assert np.all(a == [3])
-        assert isinstance(a, sp.ndarray)
+        assert isinstance(a, np.ndarray)
 
     def test_find_nearby_pores_distance_1(self):
         a = self.net.find_nearby_pores(pores=[0, 1], r=1, flatten=False,
@@ -170,6 +170,16 @@ class GenericNetworkTest:
                                        flatten=True, include_input=True)
         assert np.size(a) == 17
         assert np.all(np.in1d([0, 1], a))
+
+    def test_is_fully_connected(self):
+        assert self.net._is_fully_connected()
+        # Disconnect pore 0 from the network
+        Ps = self.net.find_neighbor_pores(pores=0)
+        Ts = self.net.find_neighbor_throats(pores=0)
+        op.topotools.trim(self.net, throats=Ts)
+        assert not self.net._is_fully_connected()
+        # Reconnect pore 0 to the network
+        op.topotools.connect_pores(self.net, pores1=0, pores2=Ps)
 
 
 if __name__ == '__main__':

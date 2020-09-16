@@ -1,0 +1,75 @@
+name: 🐍 Deploy to PyPI
+
+on:
+  push:
+    tags:
+      - '*'
+
+jobs:
+  deploy:
+    name: Publish 🐍 📦 to PyPI
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        ref: release  # the production branch name (for proper version #)
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.7
+
+    - name: Set env variables
+      run: |
+        git fetch --all --tags
+        echo ::set-env name=TAG::$(git tag | sort -V | tail -1)
+        echo ::set-env name=VER::$(python -c "import sys; sys.path.append('./openpnm'); from __version__ import __version__; print(__version__)")
+
+    - name: Set env variables (for tag mismatch)
+      run: |
+        echo $TAG $VER
+        if [ "${TAG//v}" = "$VER" ]; then
+            echo ::set-env name=TAG_MISMATCH::"false"
+        else
+            echo ::set-env name=TAG_MISMATCH::"true"
+        fi
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install setuptools wheel twine
+        echo ${{ github.event.ref }}
+        echo $TAG_MISMATCH
+
+    - name: Build distribution 📦
+      run: python setup.py sdist bdist_wheel
+
+    - name: Publish distribution 📦 to PyPI
+      if: startsWith(github.event.ref, 'refs/tags') && contains(env.TAG_MISMATCH, 'false')
+      uses: pypa/gh-action-pypi-publish@master
+      with:
+        user: __token__
+        password: ${{ secrets.PYPI_TOKEN }}
+        skip_existing: true
+
+    # - name: Publish distribution 📦 to TestPyPI
+    #   if: startsWith(github.event.ref, 'refs/tags') && contains(env.TAG_MISMATCH, 'false')
+    #   uses: pypa/gh-action-pypi-publish@master
+    #   with:
+    #     user: __token__
+    #     password: ${{ secrets.TESTPYPI_TOKEN }}
+    #     repository_url: https://test.pypi.org/legacy/
+
+    # Not a good idea: if a non-conforming tag is push, e.g. random_tag, it
+    # first gets deleted by cleanup-tags.yml, and then publish-to-pypi.yml gets
+    # tricked and deletes the most recent tag! Ouch!
+
+    # - name: Delete tag if doesn't match with version
+    #   if: contains(env.TAG_MISMATCH, 'true')
+    #   run: |
+    #     git config --local user.email "action@github.com"
+    #     git config --local user.name "GitHub Action"
+    #     REPOSITORY=${INPUT_REPOSITORY:-$GITHUB_REPOSITORY}
+    #     remote_repo="https://${GITHUB_ACTOR}:${{ secrets.GITHUB_TOKEN }}@github.com/${REPOSITORY}.git"
+    #     git push "${remote_repo}" :refs/tags/$TAG

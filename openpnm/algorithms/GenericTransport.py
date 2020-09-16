@@ -86,7 +86,7 @@ class GenericTransportSettings(GenericSettings):
     phase = None
     conductance = None
     quantity = None
-    solver_family = 'scipy'
+    solver_family = 'pypardiso'
     solver_type = 'spsolve'
     solver_preconditioner = 'jacobi'
     solver_tol = 1e-8
@@ -197,8 +197,7 @@ class GenericTransport(GenericAlgorithm):
         self['pore.bc_rate'] = np.nan
         self['pore.bc_value'] = np.nan
 
-    @docstr.get_sectionsf('GenericTransport.setup',
-                          sections=['Parameters'])
+    @docstr.get_sectionsf('GenericTransport.setup', sections=['Parameters'])
     @docstr.dedent
     def setup(self, phase=None, quantity='', conductance='', **kwargs):
         r"""
@@ -207,7 +206,6 @@ class GenericTransport(GenericAlgorithm):
         ----------
         %(GenericTransportSettings.parameters)s
         """
-
         if phase:
             self.settings['phase'] = phase.name
         if quantity:
@@ -217,8 +215,7 @@ class GenericTransport(GenericAlgorithm):
         self.settings.update(**kwargs)
 
     @docstr.get_full_descriptionf(base='GenericTransport.reset')
-    @docstr.get_sectionsf(base='GenericTransport.reset',
-                          sections=['Parameters'])
+    @docstr.get_sectionsf(base='GenericTransport.reset', sections=['Parameters'])
     @docstr.dedent
     def reset(self, bcs=False, results=True):
         r"""
@@ -279,10 +276,8 @@ class GenericTransport(GenericAlgorithm):
         The definition of ``quantity`` is specified in the algorithm's
         ``settings``, e.g. ``alg.settings['quantity'] = 'pore.pressure'``.
         """
-        mode = self._parse_mode(mode, allowed=['merge', 'overwrite'],
-                                single=True)
-        self._set_BC(pores=pores, bctype='value', bcvalues=values,
-                     mode=mode)
+        mode = self._parse_mode(mode, allowed=['merge', 'overwrite'], single=True)
+        self._set_BC(pores=pores, bctype='value', bcvalues=values, mode=mode)
 
     def set_rate_BC(self, pores, values, mode='merge'):
         r"""
@@ -316,12 +311,11 @@ class GenericTransport(GenericAlgorithm):
         The definition of ``quantity`` is specified in the algorithm's
         ``settings``, e.g. ``alg.settings['quantity'] = 'pore.pressure'``.
         """
-        mode = self._parse_mode(mode, allowed=['merge', 'overwrite'],
-                                single=True)
+        mode = self._parse_mode(mode, allowed=['merge', 'overwrite'], single=True)
         self._set_BC(pores=pores, bctype='rate', bcvalues=values, mode=mode)
 
-    @docstr.get_sectionsf(base='GenericTransport._set_BC',
-                          sections=['Parameters', 'Notes'])
+    @docstr.get_sectionsf(
+        base='GenericTransport._set_BC', sections=['Parameters', 'Notes'])
     def _set_BC(self, pores, bctype, bcvalues=None, mode='merge'):
         r"""
         This private method is called by public facing BC methods, to apply
@@ -428,11 +422,17 @@ class GenericTransport(GenericAlgorithm):
         under ``conductance``.  In subclasses (e.g. ``FickianDiffusion``)
         this is set by default, though it can be overwritten.
         """
-        cache_A = self.settings['cache_A']
         gvals = self.settings['conductance']
         if not gvals:
             raise Exception('conductance has not been defined on this algorithm')
-        if not cache_A:
+        # Decide if caching of A and b is allowed
+        # FIXME: this needs to be properly addressed (see issue #1548)
+        try:
+            if gvals in self._get_iterative_props():
+                self.settings.update({"cache_A": False, "cache_b": False})
+        except AttributeError:
+            pass
+        if not self.settings['cache_A']:
             self._pure_A = None
         if self._pure_A is None:
             network = self.project.network
@@ -447,14 +447,6 @@ class GenericTransport(GenericAlgorithm):
         Builds the RHS matrix, without applying any boundary conditions or
         source terms. This method is trivial an basically creates a column
         vector of 0's.
-
-        Parameters
-        ----------
-        force : Boolean (default is ``False``)
-            If set to ``True`` then the b matrix is built from new. If
-            ``False`` (the default), a cached version of b is returned. The
-            cached version is *clean* in the sense that no boundary conditions
-            or sources terms have been added to it.
         """
         cache_b = self.settings['cache_b']
         if not cache_b:
@@ -504,10 +496,8 @@ class GenericTransport(GenericAlgorithm):
             self.b[~ind] -= (self.A * x_BC)[~ind]
             # Update A
             P_bc = self.toindices(ind)
-            indrow = np.isin(self.A.row, P_bc)
-            indcol = np.isin(self.A.col, P_bc)
-            self.A.data[indrow] = 0  # Remove entries from A for all BC rows
-            self.A.data[indcol] = 0  # Remove entries from A for all BC cols
+            mask = np.isin(self.A.row, P_bc) | np.isin(self.A.col, P_bc)
+            self.A.data[mask] = 0  # Remove entries from A for all BC rows/cols
             datadiag = self.A.diagonal()  # Add diagonal entries back into A
             datadiag[P_bc] = np.ones_like(P_bc, dtype=float) * f
             self.A.setdiag(datadiag)
@@ -583,7 +573,7 @@ class GenericTransport(GenericAlgorithm):
         A = A.tocsr()
 
         # Check if A and b are well-defined
-        self._check_for_nans()
+        self._validate_data_health()
 
         # Check if A is symmetric
         if self.settings['solver_type'] == 'cg':
@@ -602,7 +592,7 @@ class GenericTransport(GenericAlgorithm):
 
         # Check solution convergence
         if not self._is_converged(x=x):
-            raise Exception(f"Solver did not converge.")
+            raise Exception("Solver did not converge.")
 
         return x
 
@@ -720,15 +710,10 @@ class GenericTransport(GenericAlgorithm):
         flag_converged = True if res <= res_tol else False
         return flag_converged
 
-    def _check_for_nans(self):
+    def _validate_data_health(self):
         r"""
         Check whether A and b are well-defined, i.e. doesn't contain nans.
         """
-        # Return if everything looks good
-        if not np.isnan(self.A.data).any():
-            if not np.isnan(self.b).any():
-                return
-
         import networkx as nx
         from pandas import unique
 
@@ -737,6 +722,19 @@ class GenericTransport(GenericAlgorithm):
         phase = prj.find_phase(self)
         geometries = prj.geometries().values()
         physics = prj.physics().values()
+
+        # Validate network topology health
+        if not prj.network._is_fully_connected():
+            msg = (
+                "Your network is clustered. Run h = net.check_network_health()"
+                " followed by op.topotools.trim(net, pores=h['trim_pores'])"
+                " to make your network fully connected."
+            )
+            raise Exception(msg)
+
+        # Short-circuit subsequent checks if data are healthy
+        if np.isfinite(self.A.data).all() and np.isfinite(self.b).all():
+            return True
 
         # Locate the root of NaNs
         unaccounted_nans = []
@@ -762,17 +760,27 @@ class GenericTransport(GenericAlgorithm):
             # Throw error with helpful info on how to resolve the issue
             if root_props:
                 msg = (
-                    f"Found NaNs in A matrix, possibly caused by NaNs in "
-                    f"{', '.join(root_props)}. The issue might get "
-                    f"resolved if you call regenerate_models on the following "
-                    f"object(s): {', '.join(root_objs)}"
+                    r"Found NaNs in A matrix, possibly caused by NaNs in"
+                    f" {', '.join(root_props)}. The issue might get"
+                    r" resolved if you call regenerate_models on the following"
+                    f" object(s): {', '.join(root_objs)}"
                 )
                 raise Exception(msg)
 
-        # Raise Exception otherwise
+        # Raise Exception for unaccounted properties
         if unaccounted_nans:
-            raise Exception(f"Found NaNs in A matrix, possibly caused by NaNs in "
-                            f"{', '.join(unaccounted_nans)}.")
+            raise Exception(
+                r"Found NaNs in A matrix, possibly caused by NaNs in"
+                f" {', '.join(unaccounted_nans)}."
+            )
+
+        # Raise Exception otherwise if root cannot be found
+        raise Exception(
+            "Found NaNs in A matrix but couldn't locate the root object(s)"
+            " that might have caused it. It's likely that disabling caching"
+            " of A matrix via alg.settings['cache_A'] = False after"
+            " instantiating the algorithm object fixes the problem."
+        )
 
     def results(self):
         r"""

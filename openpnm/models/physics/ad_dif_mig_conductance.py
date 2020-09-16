@@ -4,7 +4,6 @@ r"""
 
 """
 import numpy as _np
-import scipy as _sp
 
 
 def ad_dif_mig(
@@ -105,7 +104,7 @@ def ad_dif_mig(
     # Setting g to inf when Li = 0 (ex. boundary pores)
     # INFO: This is needed since area could also be zero, which confuses NumPy
     m1, m2, mt = [Li != 0 for Li in [L1, L2, Lt]]
-    g1[~m1] = g2[~m2] = gt[~mt] = _sp.inf
+    g1[~m1] = g2[~m2] = gt[~mt] = _np.inf
     # Getting shape factors
     try:
         SF1 = phase[conduit_shape_factors + ".pore1"][throats]
@@ -133,17 +132,29 @@ def ad_dif_mig(
     R = 8.3145
     gh = phase[throat_hydraulic_conductance]
     gd = phase[throat_diffusive_conductance]
-    gm = (z * F * gd) / (R * T)
-    gd = _np.tile(gd, 2)
+    # .T below is for when gd is (Nt, 2) instead of (Nt, 1)
+    gm = (gd.T * (z * F) / (R * T)).T
+    delta_V = _np.diff(V[cn], axis=1).squeeze()
+    delta_V = _np.append(delta_V, -delta_V)
 
-    # Advection
-    Qij = -gh * _sp.diff(P[cn], axis=1).squeeze()
-    Qij = _np.append(Qij, -Qij)
+    # Normal treatment when gd is Nt by 1
+    if gd.size == throats.size:
+        gd = _np.tile(gd, 2)
+        gm = _np.tile(gm, 2)
+    # Special treatment when gd is not Nt by 1 (ex. mass partitioning)
+    elif gd.size == 2 * throats.size:
+        gd = gd.reshape(throats.size * 2, order="F")
+        gm = gm.reshape(throats.size * 2, order="F")
+    else:
+        raise Exception(f"Shape of {throat_diffusive_conductance} must either"
+                        r" be (Nt,1) or (Nt,2)")
 
     # Migration
-    delta_V = _sp.diff(V[cn], axis=1).squeeze()
     mig = gm * delta_V
-    mig = _np.append(mig, -mig)
+
+    # Advection
+    Qij = -gh * _np.diff(P[cn], axis=1).squeeze()
+    Qij = _np.append(Qij, -Qij)
 
     # Advection-migration
     adv_mig = Qij - mig
@@ -185,7 +196,7 @@ def ad_dif_mig(
         w = -adv_mig / (1 - _np.exp(Peij_adv_mig))
     else:
         raise Exception("Unrecognized discretization scheme: " + s_scheme)
-    w = _np.reshape(w, (network.Nt, 2), order="F")
+    w = w.reshape(throats.size, 2, order="F")
     return w
 
     # Apply shape factors and calculate the final conductance

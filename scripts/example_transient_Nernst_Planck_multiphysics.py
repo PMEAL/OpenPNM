@@ -6,6 +6,16 @@ proj = ws.new_project()
 # ws.settings['loglevel'] = 20
 
 
+"""
+    Details about the continum and numerical model equations can be found on:
+    Agnaou, M., Sadeghi, M. A., Tranter, T. G., & Gostick, J. (2020).
+    Modeling transport of charged species in pore networks: solution of the
+    Nernst-Planck equations coupled with fluid flow and charge conservation
+    equations.
+    Computers & Geosciences, 104505.
+"""
+
+
 # network, geometry, phase
 np.random.seed(0)
 
@@ -55,9 +65,20 @@ phys.add_model(propname='throat.diffusive_conductance.' + Cl.name,
                throat_diffusivity='throat.diffusivity.' + Cl.name,
                model=eB_dif, regen_mode='normal')
 
+s_scheme = 'powerlaw'
+ad_dif_mig_Na = op.models.physics.ad_dif_mig_conductance.ad_dif_mig
+phys.add_model(propname='throat.ad_dif_mig_conductance.' + Na.name,
+               pore_pressure='pore.pressure', model=ad_dif_mig_Na,
+               ion=Na.name, s_scheme=s_scheme)
+
+ad_dif_mig_Cl = op.models.physics.ad_dif_mig_conductance.ad_dif_mig
+phys.add_model(propname='throat.ad_dif_mig_conductance.' + Cl.name,
+               pore_pressure='pore.pressure', model=ad_dif_mig_Cl,
+               ion=Cl.name, s_scheme=s_scheme)
+
 # settings for algorithms
 setts1 = {'solver_max_iter': 5, 'solver_tol': 1e-08, 'solver_rtol': 1e-08,
-          'nlin_max_iter': 10}
+          'nlin_max_iter': 10, 'cache_A': False, 'cache_b': False}
 setts2 = {'g_tol': 1e-4, 'g_max_iter': 4, 't_output': 5000, 't_step': 500,
           't_final': 20000, 't_scheme': 'implicit'}
 
@@ -84,20 +105,9 @@ eB = op.algorithms.TransientNernstPlanck(network=net, phase=sw, ion=Cl.name,
 eB.set_value_BC(pores=net.pores('back'), values=100)
 eB.set_value_BC(pores=net.pores('front'), values=90)
 
-ad_dif_mig_Na = op.models.physics.ad_dif_mig_conductance.ad_dif_mig
-phys.add_model(propname='throat.ad_dif_mig_conductance.' + Na.name,
-               pore_pressure=sf.settings['quantity'],
-               model=ad_dif_mig_Na, ion=Na.name,
-               s_scheme='powerlaw')
-
-ad_dif_mig_Cl = op.models.physics.ad_dif_mig_conductance.ad_dif_mig
-phys.add_model(propname='throat.ad_dif_mig_conductance.' + Cl.name,
-               pore_pressure=sf.settings['quantity'],
-               model=ad_dif_mig_Cl, ion=Cl.name,
-               s_scheme='powerlaw')
-
-it = op.algorithms.TransientNernstPlanckMultiphysics(network=net, phase=sw,
-                                                     settings=setts2)
+it = op.algorithms.TransientNernstPlanckMultiphysicsSolver(network=net,
+                                                           phase=sw,
+                                                           settings=setts2)
 it.setup(potential_field=p.name, ions=[eA.name, eB.name])
 it.run()
 
@@ -106,5 +116,5 @@ sw.update(p.results())
 sw.update(eA.results())
 sw.update(eB.results())
 
-# output results to a vtk file
+# output results to a vtk file for visualization on Paraview
 # proj.export_data(phases=[sw], filename='OUT', filetype='xdmf')

@@ -6,7 +6,6 @@ Cubic: Generate lattice-like networks
 
 """
 import numpy as np
-import scipy as sp
 from openpnm.network import GenericNetwork
 from openpnm import topotools
 from openpnm.utils import logging
@@ -102,7 +101,7 @@ class Cubic(GenericNetwork):
         # Store original network shape
         self._shape = np.shape(arr)
         # Store network spacing
-        spacing = sp.float64(spacing)
+        spacing = np.float64(spacing)
         if spacing.size == 2:
             spacing = np.concatenate((spacing, [1]))
         self._spacing = np.ones(3, dtype=float) * np.array(spacing, ndmin=1)
@@ -138,21 +137,17 @@ class Cubic(GenericNetwork):
 
         if connectivity == 6:
             joints = face_joints
-        elif connectivity == 8:
-            joints = corner_joints
-        elif connectivity == 12:
-            joints = edge_joints
-        elif connectivity == 14:
+        elif connectivity == 6 + 8:
             joints = face_joints + corner_joints
-        elif connectivity == 18:
+        elif connectivity == 6 + 12:
             joints = face_joints + edge_joints
-        elif connectivity == 20:
+        elif connectivity == 12 + 8:
             joints = edge_joints + corner_joints
-        elif connectivity == 26:
+        elif connectivity == 6 + 8 + 12:
             joints = face_joints + corner_joints + edge_joints
         else:
             raise Exception(
-                "Invalid connectivity receieved. Must be 6, 8, " "12, 14, 18, 20 or 26"
+                "Invalid connectivity receieved. Must be 6, 14, 18, 20 or 26"
             )
 
         tails, heads = np.array([], dtype=int), np.array([], dtype=int)
@@ -266,7 +261,7 @@ class Cubic(GenericNetwork):
                 "Spacing is undefined when throats point in "
                 + "more directions than network has dimensions"
             )
-        mag = sp.float64(mag.squeeze())
+        mag = np.float64(mag.squeeze())
         for ax in [0, 1, 2]:
             if dims[ax]:
                 inds = np.where(unit_vec[:, ax] == unit_vec[:, ax].max())[0]
@@ -309,7 +304,7 @@ class Cubic(GenericNetwork):
         if np.shape(values)[0] > self.num_pores("internal"):
             raise Exception("The array shape does not match the network")
         Ps = np.array(self["pore.index"][self.pores("internal")], dtype=int)
-        arr = np.ones(self._shape) * sp.nan
+        arr = np.ones(self._shape) * np.nan
         ind = np.unravel_index(Ps, self._shape)
         arr[ind[0], ind[1], ind[2]] = values
         return arr
@@ -335,5 +330,5 @@ class Cubic(GenericNetwork):
         temp = array.flatten()
         Ps = np.array(self["pore.index"][self.pores("internal")], dtype=int)
         propname = "pore." + propname.split(".")[-1]
-        self[propname] = sp.nan
+        self[propname] = np.nan
         self[propname][self.pores("internal")] = temp[Ps]

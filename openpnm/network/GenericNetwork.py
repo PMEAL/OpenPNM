@@ -1,4 +1,3 @@
-import scipy as sp
 import numpy as np
 import scipy.sparse as sprs
 import scipy.spatial as sptl
@@ -8,6 +7,8 @@ from openpnm.utils import Workspace, logging
 import openpnm.models.topology as tm
 logger = logging.getLogger(__name__)
 ws = Workspace()
+
+from openpnm.utils import tic, toc
 
 
 class GenericNetwork(Base, ModelsMixin):
@@ -156,11 +157,11 @@ class GenericNetwork(Base, ModelsMixin):
         return vals
 
     def _gen_ids(self):
-        IDs = self.get('pore._id', np.array([], ndmin=1, dtype=sp.int64))
+        IDs = self.get('pore._id', np.array([], ndmin=1, dtype=np.int64))
         if len(IDs) < self.Np:
             temp = ws._gen_ids(size=self.Np - len(IDs))
             self['pore._id'] = np.concatenate((IDs, temp))
-        IDs = self.get('throat._id', np.array([], ndmin=1, dtype=sp.int64))
+        IDs = self.get('throat._id', np.array([], ndmin=1, dtype=np.int64))
         if len(IDs) < self.Nt:
             temp = ws._gen_ids(size=self.Nt - len(IDs))
             self['throat._id'] = np.concatenate((IDs, temp))
@@ -200,11 +201,6 @@ class GenericNetwork(Base, ModelsMixin):
         # Retrieve existing matrix if available
         if fmt in self._am.keys():
             am = self._am[fmt]
-        elif self._am.keys():
-            am = self._am[list(self._am.keys())[0]]
-            tofmt = getattr(am, 'to'+fmt)
-            am = tofmt()
-            self._am[fmt] = am
         else:
             am = self.create_adjacency_matrix(weights=self.Ts, fmt=fmt)
             self._am[fmt] = am
@@ -519,7 +515,7 @@ class GenericNetwork(Base, ModelsMixin):
         -----
         The returned list can be converted to an ND-array, which will convert
         the ``None`` values to ``nan``.  These can then be found using
-        ``scipy.isnan``.
+        ``numpy.isnan``.
 
         Examples
         --------
@@ -786,13 +782,14 @@ class GenericNetwork(Base, ModelsMixin):
         1
         """
         pores = self._parse_indices(pores)
-        # Count number of neighbors
-        num = self.find_neighbor_pores(pores, flatten=flatten,
-                                       mode=mode, include_input=True)
         if flatten:
+            # Count number of neighbors
+            num = self.find_neighbor_pores(pores, flatten=flatten,
+                                           mode=mode, include_input=True)
             num = np.size(num)
-        else:
-            num = np.array([np.size(i) for i in num], dtype=int)
+        else:   # Could be done much faster if flatten == False
+            am = self.create_adjacency_matrix(fmt="csr")
+            num = am[pores].sum(axis=1).A1
         return num
 
     def find_nearby_pores(self, pores, r, flatten=False, include_input=False):
@@ -848,7 +845,7 @@ class GenericNetwork(Base, ModelsMixin):
         pores = self._parse_indices(pores)
         # Handle an empty array if given
         if np.size(pores) == 0:
-            return np.array([], dtype=sp.int64)
+            return np.array([], dtype=np.int64)
         if r <= 0:
             raise Exception('Provided distances should be greater than 0')
         # Create kdTree objects
@@ -861,23 +858,31 @@ class GenericNetwork(Base, ModelsMixin):
             Ps_within_r[i].remove(pores[i])
         # Convert to flattened list by default
         temp = np.concatenate((Ps_within_r))
-        Pn = np.unique(temp).astype(sp.int64)
+        Pn = np.unique(temp).astype(np.int64)
         # Remove inputs if necessary
         if include_input is False:
             Pn = Pn[~np.in1d(Pn, pores)]
         # Convert list of lists to a list of nd-arrays
         if flatten is False:
             if len(Pn) == 0:  # Deal with no nearby neighbors
-                Pn = [np.array([], dtype=sp.int64) for i in pores]
+                Pn = [np.array([], dtype=np.int64) for i in pores]
             else:
                 mask = np.zeros(shape=np.amax((Pn.max(), pores.max()))+1,
                                 dtype=bool)
                 mask[Pn] = True
                 temp = []
                 for item in Ps_within_r:
-                    temp.append(np.array(item, dtype=sp.int64)[mask[item]])
+                    temp.append(np.array(item, dtype=np.int64)[mask[item]])
                 Pn = temp
         return Pn
+
+    @property
+    def conns(self):
+        return self['throat.conns']
+
+    @property
+    def coords(self):
+        return self['pore.coords']
 
     def check_network_health(self):
         r"""
@@ -908,3 +913,13 @@ class GenericNetwork(Base, ModelsMixin):
         health = self.project.check_network_health()
 
         return health
+
+    def _is_fully_connected(self):
+        r"""
+        Checks whether network is fully connected, i.e. not clustered.
+        """
+        import scipy.sparse.csgraph as csgraph
+
+        am = self.get_adjacency_matrix(fmt='coo')
+        temp = csgraph.connected_components(am, directed=False)[1]
+        return False if np.unique(temp).size > 1 else True

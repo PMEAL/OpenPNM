@@ -8,12 +8,12 @@ except ImportError:
 
 sys.path.append(os.getcwd())
 
-main_ = {}
-ver_path = convert_path('openpnm/__init__.py')
+about = {}
+ver_path = convert_path('openpnm/__version__.py')
 with open(ver_path) as f:
     for line in f:
         if line.startswith('__version__'):
-            exec(line, main_)
+            exec(line, about)
 
 # Read the contents of README file
 this_directory = os.path.abspath(os.path.dirname(__file__))
@@ -26,7 +26,7 @@ setup(
     + 'of multiphase transport in porous materials',
     long_description=long_description,
     long_description_content_type='text/markdown',
-    version=main_['__version__'],
+    version=about['__version__'],
     zip_safe=False,
     classifiers=[
         'Development Status :: 5 - Production/Stable',
@@ -75,14 +75,14 @@ setup(
         'jsonschema',
         'unyt',
         'terminaltables',
-        'docrep',
+        'docrep==0.2.7',
     ],
     author='OpenPNM Team',
     author_email='jgostick@uwaterloo.ca',
-    download_url='https://github.com/pmeal/OpenPNM/',
+    download_url='https://github.com/PMEAL/OpenPNM/',
     url='http://openpnm.org',
     project_urls={
-        'Documentation': 'https://openpnm.readthedocs.io/en/master/',
+        'Documentation': 'https://openpnm.readthedocs.io/en/dev/',
         'Source': 'https://github.com/PMEAL/OpenPNM',
         'Tracker': 'https://github.com/PMEAL/OpenPNM/issues',
     },
