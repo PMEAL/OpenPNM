@@ -98,15 +98,15 @@ class RelativePermeability(GenericAlgorithm):
         self.settings['Snwp_num'] = Snwp_num
         network = self.project.network
         if invading_phase is not None:
-            self.settings['nwp'] = invading_phase.name
+            self.settings['nwp'] = invading_phase
         if defending_phase is not None:
-            self.settings['wp'] = defending_phase.name
+            self.settings['wp'] = defending_phase
         if (invasion_sequence == 'invasion_sequence'):
             nwp = self.project[self.settings['nwp']]
             seq_p = nwp['pore.invasion_sequence']
-            self.settings['pore.invasion_sequence'] = seq_p
+            self['pore.invasion_sequence'] = seq_p
             seq_t = nwp['throat.invasion_sequence']
-            self.settings['throat.invasion_sequence'] = seq_t
+            self['throat.invasion_sequence'] = seq_t
             dimension = 0
             x, y, z = False, False, False
             if 'pore.left' in network.keys():
@@ -279,8 +279,8 @@ class RelativePermeability(GenericAlgorithm):
 
         """
         network = self.project.network
-        pore_mask = self.settings['pore.invasion_sequence'] < i
-        throat_mask = self.settings['throat.invasion_sequence'] < i
+        pore_mask = self['pore.invasion_sequence'] < i
+        throat_mask = self['throat.invasion_sequence'] < i
         sat_p = np.sum(network['pore.volume'][pore_mask])
         sat_t = np.sum(network['throat.volume'][throat_mask])
         sat1 = sat_p + sat_t
@@ -342,9 +342,9 @@ class RelativePermeability(GenericAlgorithm):
                 relperm_wp = None
                 pass
             relperm_nwp = []
-            max_seq = np.max([np.max(self.settings['pore.invasion_sequence']),
+            max_seq = np.max([np.max(self['pore.invasion_sequence']),
                               np.max(
-                              self.settings['throat.invasion_sequence'])])
+                              self['throat.invasion_sequence'])])
             start = max_seq//Snwp_num
             stop = max_seq
             step = max_seq//Snwp_num
