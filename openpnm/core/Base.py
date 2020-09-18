@@ -1780,7 +1780,7 @@ class Base(dict):
             parsed_labels.extend(temp)
             # Remove duplicates if any
             _ = [parsed_labels.remove(L) for L in parsed_labels
-             if parsed_labels.count(L) > 1]
+                 if parsed_labels.count(L) > 1]
         return parsed_labels
 
     def _parse_mode(self, mode, allowed=None, single=False):

@@ -1003,7 +1003,7 @@ class Project(list):
                             obj['throat.conns'][indices].T
                 _ = [props.update({obj.name+'.'+item: d[item]}) for item in d.keys()]
         df = DataFrame(props)
-        df = df.rename(index={k: indices[k] for k in enumerate(indices)})
+        df = df.rename(index={k: indices[k] for k, _ in enumerate(indices)})
         return df.T
 
     def _regenerate_models(self, objs=[], propnames=[]):
@@ -1080,10 +1080,10 @@ class Project(list):
 
     @property
     def grid(self):
-            grid = self._generate_grid(astype='table')
-            obj = ProjectGrid()
-            obj._grid = grid
-            return obj
+        grid = self._generate_grid(astype='table')
+        obj = ProjectGrid()
+        obj._grid = grid
+        return obj
 
     def get_grid(self, astype):
         r"""
