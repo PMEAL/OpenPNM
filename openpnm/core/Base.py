@@ -1624,7 +1624,7 @@ class Base(dict):
             r = int(np.ceil(N**0.5))
             c = int(np.floor(N**0.5))
         plt.figure()
-        for i in enumerate(props):
+        for i, _ in enumerate(props):
             plt.subplot(r, c, i+1)
             try:
                 # Update kwargs with some default values

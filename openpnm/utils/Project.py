@@ -930,7 +930,7 @@ class Project(list):
                 temp.append(np.where(Cs == i)[0])
             b = np.array([len(item) for item in temp])
             c = np.argsort(b)[::-1]
-            for i in enumerate(c):
+            for i, j in enumerate(c):
                 health['disconnected_clusters'].append(temp[c[i]])
                 if i > 0:
                     health['trim_pores'].extend(temp[c[i]])
@@ -986,9 +986,9 @@ class Project(list):
         """
         from pandas import DataFrame
         props = {}
-        if isinstance(objs, list):
+        if not isinstance(objs, list):
             objs = [objs]
-        if not objs:
+        if len(objs) == 0:
             objs = self
         for obj in objs:
             d = {k: obj[k][indices] for k in obj.keys(element=element, mode=mode)}
