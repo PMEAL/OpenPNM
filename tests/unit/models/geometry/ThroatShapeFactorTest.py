@@ -15,8 +15,8 @@ class ThroatShapeFactorTest:
                                               phase=self.air,
                                               geometry=self.geo)
         self.geo['throat.area'] = 1.0
-        self.geo['throat.perimeter'] = sp.pi
-        self.geo['throat.diameter'] = (4/sp.pi)**(1/2)
+        self.geo['throat.perimeter'] = np.pi
+        self.geo['throat.diameter'] = (4/np.pi)**(1/2)
 
     def test_compactness(self):
         pass

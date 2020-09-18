@@ -150,7 +150,7 @@ class CubicDual(GenericNetwork):
         for item in labels:
             Ps = self.pores(item)
             coords = np.absolute(self['pore.coords'][Ps])
-            axis = np.count_nonzero(sp.diff(coords, axis=0), axis=0) == 0
+            axis = np.count_nonzero(np.diff(coords, axis=0), axis=0) == 0
             offset = np.array(axis, dtype=int)*spacing/2
             if np.amin(coords) == np.amin(coords[:, np.where(axis)[0]]):
                 offset = -1*offset

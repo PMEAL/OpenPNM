@@ -1,9 +1,9 @@
 [![](https://github.com/PMEAL/OpenPNM/workflows/Ubuntu/badge.svg)](https://github.com/PMEAL/OpenPNM/actions)
 [![](https://github.com/PMEAL/OpenPNM/workflows/macOS/badge.svg)](https://github.com/PMEAL/OpenPNM/actions)
 [![](https://github.com/PMEAL/OpenPNM/workflows/Windows/badge.svg)](https://github.com/PMEAL/OpenPNM/actions)
-[![](https://github.com/PMEAL/OpenPNM/workflows/Examples/badge.svg)](https://github.com/PMEAL/OpenPNM/actions)<br/>
-[![](https://codecov.io/gh/PMEAL/OpenPNM/branch/master/graph/badge.svg)](https://codecov.io/gh/PMEAL/OpenPNM)
-[![](https://img.shields.io/badge/ReadTheDocs-GO-blue.svg)](http://openpnm.readthedocs.io/en/master/)
+[![](https://github.com/PMEAL/OpenPNM/workflows/Examples/badge.svg)](https://github.com/PMEAL/OpenPNM/actions) <br>
+[![](https://codecov.io/gh/PMEAL/OpenPNM/branch/dev/graph/badge.svg)](https://codecov.io/gh/PMEAL/OpenPNM)
+[![](https://img.shields.io/badge/ReadTheDocs-GO-blue.svg)](http://openpnm.readthedocs.io/en/dev/)
 [![](https://badge.fury.io/py/openpnm.svg)](https://pypi.python.org/pypi/openpnm)
 [![](https://anaconda.org/conda-forge/openpnm/badges/installer/conda.svg)](https://anaconda.org/conda-forge/openpnm)
 
@@ -18,25 +18,30 @@
 
 *OpenPNM* is a comprehensive framework for performing pore network simulations of porous materials.
 
-For more details about the package can be found in the [on-line documentation](https://openpnm.readthedocs.io/en/master/index.html)
+For more details about the package can be found in the [on-line documentation](https://openpnm.readthedocs.io/en/dev/index.html)
 
 To be notified of new releases click the `Watch` button on the Github repo page.  To show your support for this project click the `Star` button, as we use this as a proxy for the size of our userbase when applying for funding.
 
 ## Installation and Requirements
 
-OpenPNM can be installed from the [Python Package Index](https://pypi.org/project/openpnm/) using:
-
-```
-pip install openpnm
-```
-
-or from [Anaconda Cloud](https://anaconda.org/conda-forge/openpnm) using:
+### Preferred method
+The preferred way of installing OpenPNM is via [Anaconda Cloud](https://anaconda.org/conda-forge/openpnm) using:
 
 ```
 conda install -c conda-forge openpnm
 ```
 
-or the source code can be downloaded from [Github](https://github.com/pmeal/OpenPNM/) and installed by running:
+### Alternative method
+OpenPNM can also be installed from the [Python Package Index](https://pypi.org/project/openpnm/) using:
+
+```
+pip install openpnm
+```
+
+However, we don't recommend installing using `pip` since `pypardiso`, which is a blazing fast direct solver, is not available for Windows users who use Python 3.7+.
+
+### For developers
+For developers who intend to change the source code or contribute to OpenPNM, the source code can be downloaded from [Github](https://github.com/pmeal/OpenPNM/) and installed by running:
 
 ```
 pip install -e 'path/to/downloaded/files'
@@ -76,7 +81,7 @@ The drainage curve can be visualized with `mip.plot_intrusion_curve()` giving so
   <img src="https://user-images.githubusercontent.com/14086031/77930201-96363b80-7278-11ea-95fd-4a55fb1d6148.png" width="60%"></img>
 </p>
 
-A collection of examples is available in the *examples* folder of this repository: [Examples](https://www.github.com/PMEAL/OpenPNM/tree/master/examples)
+A collection of examples is available in the *examples* folder of this repository: [Examples](https://www.github.com/PMEAL/OpenPNM/tree/dev/examples)
 
 ## Contact
 

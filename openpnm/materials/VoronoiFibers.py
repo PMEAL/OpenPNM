@@ -1,5 +1,4 @@
 import math
-import scipy as sp
 import numpy as np
 from scipy import ndimage
 import scipy.spatial as sptl
@@ -307,12 +306,12 @@ class DelaunayGeometry(GenericGeometry):
         v1 = t_cen - p_cen[p1]
         v2 = t_cen - p_cen[p2]
         check_nan = ~np.any(np.isnan(v1 + v2), axis=1)
-        value = np.ones([Nt, 3], dtype=float) * sp.nan
+        value = np.ones([Nt, 3], dtype=float) * np.nan
         for i in range(Nt):
             if check_nan[i]:
-                value[i, 0] = sp.linalg.norm(v1[i]) - self.network.fiber_rad
+                value[i, 0] = np.linalg.norm(v1[i]) - self.network.fiber_rad
                 value[i, 1] = self.network.fiber_rad * 2
-                value[i, 2] = sp.linalg.norm(v2[i]) - self.network.fiber_rad
+                value[i, 2] = np.linalg.norm(v2[i]) - self.network.fiber_rad
         return value[net.throats(self.name)]
 
     def _throat_props(self):
@@ -331,7 +330,7 @@ class DelaunayGeometry(GenericGeometry):
         perimeter = np.zeros(Nt)
         inradius = np.zeros(Nt)
         equiv_diameter = np.zeros(Nt)
-        eroded_verts = sp.ndarray(Nt, dtype=object)
+        eroded_verts = np.ndarray(Nt, dtype=object)
 
         res = 200
         vertices = self["throat.vertices"]
@@ -584,7 +583,6 @@ class DelaunayGeometry(GenericGeometry):
         Function to count the number of voxels in the pore and fiber space
         Which are assigned to each hull volume
         """
-        from scipy.stats import itemfreq
 
         num_Ps = self.num_pores()
         pore_vox = np.zeros(num_Ps, dtype=int)
@@ -593,9 +591,9 @@ class DelaunayGeometry(GenericGeometry):
         fiber_space = self._hull_image.copy()
         pore_space[self._fiber_image == 0] = -1
         fiber_space[self._fiber_image == 1] = -1
-        freq_pore_vox = itemfreq(pore_space)
+        freq_pore_vox = np.transpose(np.unique(pore_space, return_counts=True))
         freq_pore_vox = freq_pore_vox[freq_pore_vox[:, 0] > -1]
-        freq_fiber_vox = itemfreq(fiber_space)
+        freq_fiber_vox = np.transpose(np.unique(fiber_space, return_counts=True))
         freq_fiber_vox = freq_fiber_vox[freq_fiber_vox[:, 0] > -1]
         pore_vox[freq_pore_vox[:, 0]] = freq_pore_vox[:, 1]
         fiber_vox[freq_fiber_vox[:, 0]] = freq_fiber_vox[:, 1]
@@ -892,7 +890,7 @@ class DelaunayGeometry(GenericGeometry):
             coms = self["throat.centroid"][throat_list]
             incentre = self["throat.incenter"][throat_list]
             inradius = 0.5 * self["throat.indiameter"][throat_list]
-            row_col = np.ceil(np.sqrt(len(throat_list)))
+            row_col = int(np.ceil(np.sqrt(len(throat_list))))
             for i in range(len(throat_list)):
                 if fig is None:
                     fig = plt.figure()

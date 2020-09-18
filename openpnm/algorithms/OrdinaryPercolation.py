@@ -213,7 +213,7 @@ class OrdinaryPercolation(GenericAlgorithm):
         if overwrite:
             self['pore.inlets'] = False
         self['pore.inlets'][Ps] = True
-        self['pore.invasion_pressure'][Ps] = sp.inf
+        self['pore.invasion_pressure'][Ps] = np.inf
         self['pore.invasion_sequence'][Ps] = -1
 
     def set_outlets(self, pores=[], overwrite=False):
@@ -410,11 +410,11 @@ class OrdinaryPercolation(GenericAlgorithm):
                                                   inlets=Pin)
 
             # Store current applied pressure in newly invaded pores
-            pinds = (self['pore.invasion_pressure'] == sp.inf) * \
+            pinds = (self['pore.invasion_pressure'] == np.inf) * \
                     (labels.sites >= 0)
             self['pore.invasion_pressure'][pinds] = inv_val
             # Store current applied pressure in newly invaded throats
-            tinds = (self['throat.invasion_pressure'] == sp.inf) * \
+            tinds = (self['throat.invasion_pressure'] == np.inf) * \
                     (labels.bonds >= 0)
             self['throat.invasion_pressure'][tinds] = inv_val
 
