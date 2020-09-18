@@ -298,10 +298,6 @@ class Base(dict):
 
     name = property(_get_name, _set_name)
 
-    @property
-    def _uuid(self):
-        return self.settings['uuid']
-
     def _get_project(self):
         for proj in ws.values():
             if self in proj:
