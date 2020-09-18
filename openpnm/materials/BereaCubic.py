@@ -1,7 +1,8 @@
+import scipy as sp
 from openpnm.utils import logging, Project
 from openpnm.network import Cubic
 from openpnm.geometry import GenericGeometry
-import openpnm.models.geometry as gm
+import openpnm.models as mods
 logger = logging.getLogger(__name__)
 
 
@@ -38,28 +39,98 @@ class BereaCubic(Project):
 
     """
 
-    def __init__(self, shape, name=None, **kwargs):
-        super().__init__(name=name)
+    def __init__(self, shape=[10, 10, 10], Lc=0.000126, family='berea',
+                 **kwargs):
+        super().__init__(**kwargs)
+        settings = {'berea': {'shapepore': 1.18, 'shapethroat': 0.536,
+                              'scalepore': 6.08e-6, 'scalethroat': 1.904,
+                              'locpore': 24.6e-6, 'locthroat': 0.7e-6}}
+        pn = Cubic(shape=shape, spacing=Lc, connectivity=6, project=self)
+        geom = GenericGeometry(network=pn, pores=pn.Ps, throats=pn.Ts)
+        geom['pore.seed'] = sp.rand(pn.Np)
+        geom.add_model(propname='throat.seed',
+                       model=mods.misc.neighbor_lookups.from_neighbor_pores,
+                       pore_prop='pore.seed')
 
-        net = Cubic(shape=shape, spacing=1e-4, connectivity=26,
-                    project=self, **kwargs)
+        # Pore throat and pore body characteristic dimensions follow
+        # respective Weibull distribution, taking location parameters for
+        # Berea 108 sample from table 5.
+        geom.add_model(propname='pore.size_z',
+                       model=mods.geometry.pore_size.weibull,
+                       shape=settings[family['shapepore']],
+                       loc=settings[family['locpore']],
+                       scale=settings[family['scalepore']],
+                       seeds='pore.seed')
+        geom.add_model(propname='throat.size',
+                       model=mods.geometry.throat_size.weibull,
+                       shape=settings[family['shapethroat']],
+                       loc=settings[family['locthroat']],
+                       scale=settings[family['scalethroat']],
+                       seeds='throat.seed')
 
-        geom = GenericGeometry(network=net, pores=net.Ps, throats=net.Ts)
+        # All pores in this model are of square x-section
+        # All throats are of slit shape x-section
+        geom['pore.size_x'] = sp.copy(geom['pore.size_z'])
+        geom['pore.size_y'] = geom['pore.size_z']*1.5
 
-        geom.add_model(propname='pore.seed',
-                       model=gm.pore_seed.spatially_correlated,
-                       weights=[1, 1, 1])
-        geom.add_model(propname='pore.diameter',
-                       model=gm.pore_size.weibull,
-                       shape=2.2, scale=2e-5, loc=1e-6)
-        geom.add_model(propname='pore.volume',
-                       model=gm.pore_volume.sphere)
-        geom.add_model(propname='throat.length',
-                       model=gm.throat_length.piecewise)
-        geom.add_model(propname='throat.diameter',
-                       model=gm.throat_size.from_neighbor_pores,
-                       pore_prop='pore.diameter', mode='min')
+        # Fetch copies of conns and coords for subsequent size calcs
+        conns = pn['throat.conns']
+        coords = pn['pore.coords']
+        # Create Nt by 2 array of pore coords
+        temp = coords[conns]
+        temp = sp.absolute(temp[:, 0] - temp[:, 1])
+        # Find orientation of each throat and create a label
+        pn['throat.dir_x'] = temp[:, 0] > 0
+        pn['throat.dir_y'] = temp[:, 1] > 0
+        pn['throat.dir_z'] = temp[:, 2] > 0
+
+        # Find width and length of each throat based on it's orientation
+        # Start by initializing arrays with 0's
+        geom['throat.size_x'] = 0.0
+        geom['throat.size_y'] = 0.0
+        geom['throat.size_z'] = 0.0
+        geom['throat.length'] = 0.0
+        geom['throat.width'] = 0.0
+        geom['throat.height'] = 0.0
+
+        # Start with x-directional throats
+        Ts = pn.throats('dir_x')
+        geom['throat.size_z'][Ts] = geom['throat.size'][Ts]
+        geom['throat.size_y'][Ts] = geom['throat.size'][Ts]*6
+        geom['throat.size_x'][Ts] = Lc - geom['pore.size_x'][conns[Ts, 0]] \
+            - geom['pore.size_x'][conns[Ts, 1]]/2
+        geom['throat.length'][Ts] = geom['throat.size_x'][Ts]
+        geom['throat.width'][Ts] = geom['throat.size_y'][Ts]
+        geom['throat.height'][Ts] = geom['throat.size_z'][Ts]
+
+        # Start with y-directional throats
+        Ts = pn.throats('dir_y')
+        geom['throat.size_z'][Ts] = geom['throat.size'][Ts]
+        geom['throat.size_x'][Ts] = geom['throat.size'][Ts]*6
+        geom['throat.size_y'][Ts] = Lc - geom['pore.size_y'][conns[Ts, 0]]/2 \
+            - geom['pore.size_y'][conns[Ts, 1]]/2
+        geom['throat.length'][Ts] = geom['throat.size_y'][Ts]
+        geom['throat.width'][Ts] = geom['throat.size_x'][Ts]
+        geom['throat.height'][Ts] = geom['throat.size_z'][Ts]
+
+        # Start with z-directional throats
+        Ts = pn.throats('dir_z')
+        geom['throat.size_x'][Ts] = geom['throat.size'][Ts]
+        geom['throat.size_y'][Ts] = geom['throat.size'][Ts]*6
+        geom['throat.size_z'][Ts] = Lc - geom['pore.size_z'][conns[Ts, 0]]/2 \
+            - geom['pore.size_z'][conns[Ts, 1]]/2
+        geom['throat.length'][Ts] = geom['throat.size_z'][Ts]
+        geom['throat.width'][Ts] = geom['throat.size_y'][Ts]
+        geom['throat.height'][Ts] = geom['throat.size_x'][Ts]
+
+        geom.add_model(propname='throat.area',
+                       model=mods.misc.basic_math.product,
+                       prop1='throat.height', prop2='throat.width')
         geom.add_model(propname='throat.volume',
-                       model=gm.throat_volume.cylinder)
-
-        geom.regenerate_models()
+                       model=mods.misc.basic_math.product,
+                       prop1='throat.area',
+                       prop2='throat.length')
+        geom.add_model(propname='pore.volume',
+                       model=mods.misc.basic_math.product,
+                       prop1='pore.size_x', prop2='pore.size_y',
+                       prop3='pore.size_z')

@@ -1,12 +1,44 @@
 import numpy as np
 from openpnm.network import Cubic
-from openpnm.utils import logging, Project
+from openpnm.utils import logging, Project, GenericSettings
 from openpnm.geometry import GenericGeometry
-from openpnm.phases import GenericPhase
 from openpnm.topotools import trim
 import openpnm.models as mods
 logger = logging.getLogger(__name__)
 defsets = {'adjust_psd': 'clip'}
+
+
+class BundleOfTubesSettings(GenericSettings):
+    r"""
+    The following parameters as used when generating the network and geometry
+
+    Parameters
+    ----------
+    distribution : str
+        The type of statistical distriubtion to use.  Must correspond to one
+        of the Scipy.stats options.
+    loc : float
+        The loc to pass to the distribution used, so refer to its help for
+        more information
+    scale : float
+        The scale to pass to the distribution used, so refer to its help for
+        more information
+    scale : float
+        The scale to pass to the distribution used, so refer to its help for
+        more information
+    adjust_psd : string {'normalize' (default), 'clip'}
+        How the statistical distribution should be adjust in the event that
+        it produces values larger than the spacing.
+    seed : int (default is ``None``)
+        The seed value to use in the random number generator. Setting this to
+        a constant value should reproduce the same model on each run.
+    """
+    distribution = "norm"
+    loc = 0.0
+    scale = 0.4
+    shape = 2.2
+    adjust_psd = 'normalize'
+    seed = None
 
 
 class BundleOfTubes(Project):
@@ -15,53 +47,31 @@ class BundleOfTubes(Project):
 
     An OpenPNM project object is returned that contain a network with a
     bundle-of-tubes topology, and geometry object with the necessary pore
-    size information, and a phase object with pre-defined pore-scale physics
-    models attached.  Note that this phase object does not have any actual
-    thermophysical properties which must be added by the user.
+    size information.
 
     Parameters
     ----------
     shape : array_like or int
         The number of pores in the X and Y direction of the domain.  It will
         be 2 pores thick in the Z direction, as required to be a bundle of
-        tubes model.  If an ``int`` is given it will be applied to both the
-        X and Y directions.
-
+        tubes model (1 pore on each end of each throat makes a tube).  If an
+        ``int`` is given it will be applied to both the X and Y directions.
     spacing : array_like or float
         The spacing between the tubes in the X and Y direction.  If a ``float``
         is given it will be applied to both the X and Y directions.
-
     length : float
         The length of the tubes or thickness of the domain in the z-direction.
-
-    psd_params : dictionary
-        The parameters of the statistical distribution of the pore sizes.
-        The dictionary must contain the type of distribution to use (specified
-        as 'distribution'), selected from the ``scipy.stats`` module, and the
-        parameters corresponding to the chosen distribution.
-        The default is: ``{'distribution': 'norm', 'loc': 0.5, 'scale': 0.11}.
-        Note that ``scipy.stats`` uses *loc* and *scale* to be consistent
-        between different distribution types, instead of things like *mean*
-        and *stddev*.
-
     name : string, optional
         The name to give the Project
 
     """
-    def __init__(
-        self,
-        shape,
-        spacing=1.0,
-        length=1.0,
-        psd_params={"distribution": "norm", "loc": None, "scale": None},
-        name=None,
-        settings={},
-        **kwargs
-    ):
+
+    def __init__(self, shape, spacing=1.0, length=1.0, settings={},
+                 name=None, **kwargs):
         import scipy.stats as spst
 
-        super().__init__(name=name)
-        self.settings.update(defsets)
+        super().__init__()
+        self.settings._update_settings_and_docs(BundleOfTubesSettings())
         self.settings.update(settings)
 
         if isinstance(shape, int):
@@ -90,24 +100,25 @@ class BundleOfTubes(Project):
 
         geom.add_model(propname='throat.seed',
                        model=mods.geometry.throat_seed.random)
-        if psd_params['loc'] is None:
-            psd_params['loc'] = spacing[0]/2
-        if psd_params['scale'] is None:
-            psd_params['scale'] = spacing[0]/10
-        if psd_params['distribution'] in ['norm', 'normal', 'gaussian']:
+        if self.settings['loc'] is None:
+            self.settings['loc'] = spacing[0]/2
+        if self.settings['scale'] is None:
+            self.settings['scale'] = spacing[0]/10
+        if self.settings['distribution'] in ['norm', 'normal', 'gaussian']:
             geom.add_model(propname='throat.size_distribution',
                            seeds='throat.seed',
                            model=mods.geometry.throat_size.normal,
-                           loc=psd_params['loc'], scale=psd_params['scale'])
-        elif psd_params['distribution'] in ['weibull']:
+                           loc=self.settings['loc'],
+                           scale=self.settings['scale'])
+        elif self.settings['distribution'] in ['weibull']:
             geom.add_model(propname='throat.size_distribution',
                            seeds='throat.seed',
                            model=mods.geometry.throat_size.weibull,
-                           loc=psd_params['loc'],
-                           scale=psd_params['scale'],
-                           shape=psd_params['shape'])
+                           loc=self.settings['loc'],
+                           scale=self.settings['scale'],
+                           shape=self.settings['shape'])
         else:
-            temp = psd_params.copy()
+            temp = self.settings.copy()
             func = getattr(spst, temp.pop('distribution'))
             psd = func.freeze(**temp)
             geom.add_model(propname='throat.size_distribution',
@@ -117,7 +128,7 @@ class BundleOfTubes(Project):
 
         if np.any(geom['throat.size_distribution'] < 0):
             logger.warning('Given size distribution produced negative '
-                           + 'throat diameters...these will be set to 0')
+                           + 'tube diameters...these will be set to 0')
         geom.add_model(propname='throat.diameter',
                        model=mods.misc.clip,
                        prop='throat.size_distribution',
@@ -125,7 +136,7 @@ class BundleOfTubes(Project):
 
         if self.settings['adjust_psd'] is None:
             if geom['throat.size_distribution'].max() > spacing[0]:
-                logger.warning('Given size distribution produced throats '
+                logger.warning('Given size distribution produced tubes '
                                + 'larger than the spacing.')
 
         elif self.settings['adjust_psd'] == 'clip':
@@ -134,7 +145,7 @@ class BundleOfTubes(Project):
                            prop='throat.size_distribution',
                            xmin=1e-12, xmax=spacing[0])
             if geom['throat.size_distribution'].max() > spacing[0]:
-                logger.warning('Given size distribution produced throats '
+                logger.warning('Given size distribution produced tubes '
                                + 'larger than the spacing...tube diameters '
                                + 'will be clipped between 0 and given spacing')
 
@@ -145,7 +156,7 @@ class BundleOfTubes(Project):
                            prop='throat.size_distribution',
                            xmin=tmin, xmax=spacing[0])
             if geom['throat.size_distribution'].max() > spacing[0]:
-                logger.warning('Given size distribution produced throats '
+                logger.warning('Given size distribution produced tubes '
                                + 'larger than the spacing...tube diameters '
                                + 'will be normalized to fit given spacing')
         else:
@@ -169,15 +180,3 @@ class BundleOfTubes(Project):
                        model=mods.geometry.throat_volume.cylinder)
 
         geom.regenerate_models()
-
-        # Now create a generic phase with physics models on it
-        phase = GenericPhase(network=net)
-        m = mods.physics.hydraulic_conductance.classic_hagen_poiseuille
-        phase.add_model(propname='throat.hydraulic_conductance',
-                        model=m, regen_mode='deferred')
-        m = mods.physics.diffusive_conductance.classic_ordinary_diffusion
-        phase.add_model(propname='throat.diffusive_conductance',
-                        model=m, regen_mode='deferred')
-        m = mods.physics.diffusive_conductance.classic_ordinary_diffusion
-        phase.add_model(propname='throat.entry_pressure',
-                        model=m, regen_mode='deferred')

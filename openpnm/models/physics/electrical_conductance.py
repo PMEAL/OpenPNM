@@ -1,6 +1,6 @@
 r"""
 
-.. autofunction:: openpnm.models.physics.electrical_conductance.series_resistors
+.. autofunction::openpnm.models.physics.electrical_conductance.series_resistors
 
 """
 import numpy as _np
@@ -106,3 +106,89 @@ def series_resistors(target,
     gt[mt] = (Dt*At)[mt] / Lt[mt]
     # Apply shape factors and calculate the final conductance
     return (1/gt/SFt + 1/g1/SF1 + 1/g2/SF2)**(-1)
+
+
+def slit(target, throat_height='throat.height',
+         throat_width='throat.width',
+         throat_length='throat.length',
+         pore_height='pore.size_z',
+         pore_width='pore.size_y',
+         pore_length='pore.size_x',
+         throat_electrical_conductivity='throat.electrical_conductivity',
+         pore_electrical_conductivity='pore.electrical_conductivity'):
+    r"""
+    Calculates the electrical conductances of a slit-shaped geometry.
+
+    """
+    def get_T_and_P_dims(network, throats,
+                         throat_height='throat.height',
+                         throat_width='throat.width',
+                         throat_length='throat.length',
+                         pore_height=None, pore_width=None,
+                         pore_length=None):
+
+        Ht = _sp.reshape(network[throat_height][Ts]/2, (Ts.size, 1))
+        Wt = network[throat_width][throats]/2
+        Lt = network[throat_length][throats]
+        conns = network['throat.conns']
+        Hp = network[pore_height][conns][Ts]/2
+        Wp = _sp.copy(Hp)
+        Lp = network[pore_length][conns][Ts]/2
+        return(Ht, Wt, Lt, Hp, Wp, Lp)
+
+    project = target.project
+    net = project.network
+    conns = net['throat.conns']
+    phase = project.find_phase(target)
+    ge = _sp.zeros((net.Nt, 3), dtype=float)
+    # phase['throat.electrical_conductivity'] =100
+
+    # Start with x-directional throats
+    Ts = net.throats('dir_x')
+    Ht, Wt, Lt, Hp, Wp, Lp = get_T_and_P_dims(network=net, throats=Ts,
+                                              throat_height='throat.height',
+                                              throat_width='throat.width',
+                                              throat_length='throat.length',
+                                              pore_height='pore.size_z',
+                                              pore_width='pore.size_y',
+                                              pore_length='pore.size_x')
+    gte = ((Ht.T*Wt)*4/(Lt))
+    gpe1, gpe2 = ((2*_sp.pi*Wp)/(1-_sp.log10(_sp.arcsin(Ht/Hp)))).T
+    # gpe1, gpe2 = ((4.0*Hp*Wp)/(Lp)).T
+    # gpe1, gpe2 = (((Wp)/(Lp)).T + ((Ht*Wp)/(Lp)).T)/2
+    ge[Ts, :] = _sp.vstack((gpe1, gte, gpe2)).T
+    # y-directional throats
+    Ts = net.throats('dir_y')
+    Ht, Wt, Lt, Hp, Wp, Lp = get_T_and_P_dims(network=net, throats=Ts,
+                                              throat_height='throat.height',
+                                              throat_width='throat.width',
+                                              throat_length='throat.length',
+                                              pore_height='pore.size_z',
+                                              pore_width='pore.size_x',
+                                              pore_length='pore.size_y')
+    Ht = _sp.reshape(net[throat_height][Ts], (Ts.size, 1))
+    gte = (Ht.T*Wt)*4/(Lt)
+    Hp = net['pore.size_z'][conns][Ts]
+    # Lp = net['pore.size_y'][conns][Ts]/2
+    Wp = net['pore.size_x'][conns][Ts]
+    gpe1, gpe2 = ((2*_sp.pi*(Wp))/(1-_sp.log10(_sp.arcsin(Ht/Hp)))).T
+    # gpe1, gpe2 = ((4.0*Hp*Wp)/(Lp)).T
+    # gpe1, gpe2 = (((Wp)/(Lp)).T + ((Ht*Wp)/(Lp)).T)/2
+    ge[Ts, :] = _sp.vstack((gpe1, gte, gpe2)).T
+    # z-directional throats
+    Ts = net.throats('dir_z')
+    Ht, Wt, Lt, Hp, Wp, Lp = get_T_and_P_dims(network=net, throats=Ts,
+                                              throat_height='throat.height',
+                                              throat_width='throat.width',
+                                              throat_length='throat.length',
+                                              pore_height='pore.size_x',
+                                              pore_width='pore.size_y',
+                                              pore_length='pore.size_z')
+    Ht = _sp.reshape(net[throat_height][Ts], (Ts.size, 1))
+    gte = (Ht.T*Wt)*4/(Lt)
+    gpe1, gpe2 = ((2*_sp.pi*(Wp))/(1-_sp.log10(_sp.arcsin(Ht/Hp)))).T
+    # gpe1, gpe2 = ((4.0*Hp*Wp)/(Lp)).T
+    # gpe1, gpe2 = (((Wp)/(Lp)).T + ((Ht*Wp)/(Lp)).T)/2
+    ge[Ts, :] = _sp.vstack((gpe1, gte, gpe2)).T
+    getotal = 1/(_sp.sum(1/ge, axis=1))
+    return getotal[phase.throats(target.name)]
