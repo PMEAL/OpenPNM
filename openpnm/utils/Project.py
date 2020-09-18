@@ -1080,13 +1080,9 @@ class Project(list):
 
     @property
     def grid(self):
-        if hasattr(self, '_grid'):
-            return self._grid
-        else:
             grid = self._generate_grid(astype='table')
             obj = ProjectGrid()
             obj._grid = grid
-            self._grid = obj
             return obj
 
     def get_grid(self, astype):
