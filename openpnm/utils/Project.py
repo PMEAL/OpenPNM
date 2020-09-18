@@ -80,7 +80,7 @@ class Project(list):
         already existing on the project, the it will be renamed automatically.
 
         """
-        if type(obj) is not list:
+        if not isinstance(obj, list):
             obj = [obj]
         for item in obj:
             if hasattr(item, '_mro'):
@@ -235,7 +235,7 @@ class Project(list):
     name = property(fget=_get_name, fset=_set_name)
 
     def __getitem__(self, key):
-        if type(key) == str:
+        if isinstance(key, str):
             obj = None
             for item in self:
                 if item.name == key:
@@ -452,7 +452,7 @@ class Project(list):
         a Phase is like removing a column.
 
         """
-        if type(obj) == list:
+        if isinstance(obj, list):
             for item in obj:
                 self.purge_object(obj=item, deep=deep)
             return
@@ -776,7 +776,7 @@ class Project(list):
         health['overlapping_throats'] = []
         health['undefined_throats'] = []
         geoms = self.geometries().keys()
-        if len(geoms):
+        if len(geoms) > 0:
             net = self.network
             Ptemp = np.zeros((net.Np,))
             Ttemp = np.zeros((net.Nt,))
@@ -814,7 +814,7 @@ class Project(list):
         health['overlapping_throats'] = []
         health['undefined_throats'] = []
         geoms = self.geometries().keys()
-        if len(geoms):
+        if len(geoms) > 0:
             phys = self.find_physics(phase=phase)
             if len(phys) == 0:
                 raise Exception(str(len(geoms))+' geometries were found, but'
@@ -930,7 +930,7 @@ class Project(list):
                 temp.append(np.where(Cs == i)[0])
             b = np.array([len(item) for item in temp])
             c = np.argsort(b)[::-1]
-            for i in range(0, len(c)):
+            for i in enumerate(c):
                 health['disconnected_clusters'].append(temp[c[i]])
                 if i > 0:
                     health['trim_pores'].extend(temp[c[i]])
@@ -938,7 +938,7 @@ class Project(list):
         # Check for duplicate throats
         am = net.create_adjacency_matrix(fmt='csr', triu=True).tocoo()
         hits = np.where(am.data > 1)[0]
-        if len(hits):
+        if len(hits) > 0:
             mergeTs = []
             hits = np.vstack((am.row[hits], am.col[hits])).T
             ihits = hits[:, 0] + 1j*hits[:, 1]
@@ -986,7 +986,7 @@ class Project(list):
         """
         from pandas import DataFrame
         props = {}
-        if type(objs) is not list:
+        if isinstance(objs, list):
             objs = [objs]
         if not objs:
             objs = self
@@ -1003,7 +1003,7 @@ class Project(list):
                             obj['throat.conns'][indices].T
                 _ = [props.update({obj.name+'.'+item: d[item]}) for item in d.keys()]
         df = DataFrame(props)
-        df = df.rename(index={k: indices[k] for k in range(len(indices))})
+        df = df.rename(index={k: indices[k] for k in enumerate(indices)})
         return df.T
 
     def _regenerate_models(self, objs=[], propnames=[]):
@@ -1029,7 +1029,7 @@ class Project(list):
         objs = list(objs)
         if objs == []:
             objs = self
-        if type(propnames) is str:
+        if isinstance(propnames, str):
             propnames = [propnames]
         # Sort objs in the correct order (geom, phase, phys)
         net = [i for i in objs if i is self.network]
@@ -1038,7 +1038,7 @@ class Project(list):
         phys = [i for i in objs if i in self.physics().values()]
         objs = net + geoms + phases + phys
         for obj in objs:
-            if len(propnames):
+            if len(propnames) > 0:
                 for model in propnames:
                     if model in obj.models.keys():
                         obj.regenerate_models(propnames=model)
@@ -1075,7 +1075,7 @@ class Project(list):
             grid.title = 'Project: ' + self.name
             grid.padding_left = 3
             grid.padding_right = 3
-            grid.justify_columns = {col: 'center' for col in range(len(headings))}
+            grid.justify_columns = {col: 'center' for col in enumerate(headings)}
         return grid
 
     @property

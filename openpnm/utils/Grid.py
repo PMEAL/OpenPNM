@@ -8,7 +8,7 @@ class Tableist():
         self.blank = blank
         header = [blank for i in range(cols)]
         self._grid = tt.AsciiTable([])
-        [self._grid.table_data.append(header.copy()) for _ in range(rows)]
+        _ = [self._grid.table_data.append(header.copy()) for _ in range(rows)]
         self.style = style
 
     def __getitem__(self, row):

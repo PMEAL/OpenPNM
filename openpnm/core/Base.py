@@ -163,10 +163,7 @@ class Base(dict):
         return '<%s object at %s>' % (self.__class__.__module__, hex(id(self)))
 
     def __eq__(self, other):
-        if hex(id(self)) == hex(id(other)):
-            return True
-        else:
-            return False
+        return hex(id(self)) == hex(id(other))
 
     def __setitem__(self, key, value):
         r"""
@@ -1613,7 +1610,7 @@ class Base(dict):
         import matplotlib.pyplot as plt
         temp = plt.rcParams['font.size']
         plt.rcParams['font.size'] = fontsize
-        if type(props) is str:
+        if isinstance(props, str):
             props = [props]
         N = len(props)
         color = plt.cm.tab10(range(10))
@@ -1627,7 +1624,7 @@ class Base(dict):
             r = int(np.ceil(N**0.5))
             c = int(np.floor(N**0.5))
         plt.figure()
-        for i in range(len(props)):
+        for i in enumerate(props):
             plt.subplot(r, c, i+1)
             try:
                 # Update kwargs with some default values
@@ -1721,7 +1718,7 @@ class Base(dict):
         if element is None:
             element = ['pore', 'throat']
         # Convert element to a list for subsequent processing
-        if type(element) is str:
+        if isinstance(element, str):
             element = [element]
         # Convert 'pore.prop' and 'throat.prop' into just 'pore' and 'throat'
         element = [item.split('.')[0] for item in element]
@@ -1733,7 +1730,7 @@ class Base(dict):
             if item not in ['pore', 'throat']:
                 raise Exception('All keys must start with either pore or throat')
         # Remove duplicates if any
-        [element.remove(L) for L in element if element.count(L) > 1]
+        _ = [element.remove(L) for L in element if element.count(L) > 1]
         if single:
             if len(element) > 1:
                 raise Exception('Both elements recieved when single element '
@@ -1760,7 +1757,7 @@ class Base(dict):
         """
         if labels is None:
             raise Exception('Labels cannot be None')
-        if type(labels) is str:
+        if isinstance(labels, str):
             labels = [labels]
         # Parse the labels list
         parsed_labels = []
@@ -1782,7 +1779,7 @@ class Base(dict):
                 temp = [element+'.'+label]
             parsed_labels.extend(temp)
             # Remove duplicates if any
-            [parsed_labels.remove(L) for L in parsed_labels
+            _ = [parsed_labels.remove(L) for L in parsed_labels
              if parsed_labels.count(L) > 1]
         return parsed_labels
 
@@ -1812,14 +1809,14 @@ class Base(dict):
         are all within the allowed set (if provoided).  Also, if the ``single``
         argument was True, then a string is returned.
         """
-        if type(mode) is str:
+        if isinstance(mode, str):
             mode = [mode]
         for item in mode:
             if (allowed is not None) and (item not in allowed):
                 raise Exception('\'mode\' must be one of the following: '
                                 + allowed.__str__())
         # Remove duplicates, if any
-        [mode.remove(L) for L in mode if mode.count(L) > 1]
+        _ = [mode.remove(L) for L in mode if mode.count(L) > 1]
         if single:
             if len(mode) > 1:
                 raise Exception('Multiple modes received when only one mode '
