@@ -80,7 +80,7 @@ class CSV(GenericIO):
         df.to_csv(fname, index=False)
 
     @classmethod
-    def save(cls, *args, **kwargs):
+    def load(cls, *args, **kwargs):
         r"""
         This method will be deprecated.  Use ``import_data`` instead.
         """

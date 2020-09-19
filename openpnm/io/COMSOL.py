@@ -16,12 +16,12 @@ class COMSOL(GenericIO):
     @classmethod
     def save(cls, *args, **kwargs):
         r"""
-        This method is being deprecated.  Use ``export`` instead.
+        This method is being deprecated.  Use ``export_data`` instead.
         """
-        cls.export(*args, **kwargs)
+        cls.export_data(*args, **kwargs)
 
     @classmethod
-    def export(cls, network, phases=[], filename=''):
+    def export_data(cls, network, phases=[], filename=''):
         r"""
         Saves the network and geometry data from the given objects into the
         specified file. This exports in 2D only where throats and pores have
