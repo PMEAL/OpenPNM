@@ -8,17 +8,6 @@ logger = logging.getLogger(__name__)
 
 
 class GenericIO:
-    @classmethod
-    def save(cls):
-        raise NotImplementedError(
-            "The 'save' method for this class " + "does not exist yet"
-        )
-
-    @classmethod
-    def load(cls):
-        raise NotImplementedError(
-            "The 'load' method for this class " + "does not exist yet"
-        )
 
     @classmethod
     def _convert_data(cls, project):
