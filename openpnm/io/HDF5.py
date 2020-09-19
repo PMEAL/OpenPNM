@@ -11,8 +11,16 @@ class HDF5(GenericIO):
     """
 
     @classmethod
-    def to_hdf5(cls, network=None, phases=[], element=['pore', 'throat'],
-                filename='', interleave=True, flatten=False, categorize_by=[]):
+    def to_hdf5(cls, *args, **kwargs):
+        """
+        This method is being deprecated.  Use ``export_data`` instead.
+
+        """
+        cls.export_data(*args, **kwargs)
+
+    @classmethod
+    def export_data(cls, network=None, phases=[], element=['pore', 'throat'],
+                    filename='', interleave=True, flatten=False, categorize_by=[]):
         r"""
         Creates an HDF5 file containing data from the specified objects,
         and categorized according to the given arguments.
@@ -88,12 +96,6 @@ class HDF5(GenericIO):
                 f.create_dataset(name='/'+tempname, shape=arr.shape,
                                  dtype=arr.dtype, data=arr)
         return f
-
-    @classmethod
-    def from_hdf5(cls):
-        r'''
-        '''
-        raise NotImplementedError()
 
     def print_levels(f):
         def print_level(f, p='', indent='-'):
