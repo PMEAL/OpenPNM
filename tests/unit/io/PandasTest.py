@@ -70,14 +70,6 @@ class PandasTest:
                                  join=True)
         assert len(df.keys()) == 35
 
-    def test_save(self):
-        with pytest.raises(NotImplementedError):
-            Pandas.save()
-
-    def test_load(self):
-        with pytest.raises(NotImplementedError):
-            Pandas.load()
-
 
 if __name__ == '__main__':
     # All the tests in this file can be run with 'playing' this file
