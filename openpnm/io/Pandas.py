@@ -26,7 +26,14 @@ class Pandas(GenericIO):
 
     """
     @classmethod
-    def to_dataframe(cls, network=None, phases=[], join=False, delim=' | '):
+    def to_dataframe(cls, *args, **kwargs):
+        r"""
+        This method is being deprecated.  Use ``export_data`` instead.
+        """
+        cls.export_data(*args, **kwargs)
+
+    @classmethod
+    def export_data(cls, network=None, phases=[], join=False, delim=' | '):
         r"""
         Convert the Network (and optionally Phase) data to Pandas DataFrames.
 
@@ -97,9 +104,3 @@ class Pandas(GenericIO):
             data = nt(pore=pdata, throat=tdata)
 
         return data
-
-    @classmethod
-    def from_dataframe(cls):
-        r"""
-        """
-        raise NotImplementedError()
