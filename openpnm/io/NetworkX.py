@@ -39,7 +39,14 @@ class NetworkX(GenericIO):
 
     """
     @classmethod
-    def from_networkx(cls, G, project=None):
+    def from_networkx(cls, *args, **kwargs):
+        r"""
+        This method is being deprecated.  Use ``import_data`` instead.
+        """
+        cls.import_data(*args, **kwargs)
+
+    @classmethod
+    def import_data(cls, G, project=None):
         r"""
         Add data to an OpenPNM Network from a undirected NetworkX graph object.
 
@@ -146,7 +153,14 @@ class NetworkX(GenericIO):
         return network.project
 
     @classmethod
-    def to_networkx(cls, network):
+    def to_networkx(cls, *args, **kwargs):
+        r"""
+        This method is being deprecated.  Use ``export_data`` instead.
+        """
+        cls.export_data(*args, **kwargs)
+
+    @classmethod
+    def export_data(cls, network):
         r"""
         Write OpenPNM Network to a NetworkX object.
 
