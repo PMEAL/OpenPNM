@@ -30,7 +30,8 @@ class Pandas(GenericIO):
         r"""
         This method is being deprecated.  Use ``export_data`` instead.
         """
-        cls.export_data(*args, **kwargs)
+        data = cls.export_data(*args, **kwargs)
+        return data
 
     @classmethod
     def export_data(cls, network=None, phases=[], join=False, delim=' | '):

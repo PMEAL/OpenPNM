@@ -43,7 +43,7 @@ class NetworkX(GenericIO):
         r"""
         This method is being deprecated.  Use ``import_data`` instead.
         """
-        cls.import_data(*args, **kwargs)
+        return cls.import_data(*args, **kwargs)
 
     @classmethod
     def import_data(cls, G, project=None):
@@ -75,15 +75,15 @@ class NetworkX(GenericIO):
         # Ensure G is an undirected networkX graph with numerically numbered
         # nodes for which numbering starts at 0 and does not contain any gaps
         if not isinstance(G, nx.Graph):
-            raise ('Provided object is not a NetworkX graph.')
+            raise Exception('Provided object is not a NetworkX graph.')
         if nx.is_directed(G):
-            raise ('Provided graph is directed. Convert to undirected graph.')
+            raise Exception('Provided graph is directed. Convert to undirected graph.')
         if not all(isinstance(n, int) for n in G.nodes()):
-            raise ('Node numbering is not numeric. Convert to int.')
+            raise Exception('Node numbering is not numeric. Convert to int.')
         if min(G.nodes()) != 0:
-            raise ('Node numbering does not start at zero.')
+            raise Exception('Node numbering does not start at zero.')
         if max(G.nodes()) + 1 != len(G.nodes()):
-            raise ('Node numbering contains gaps. Map nodes to remove gaps.')
+            raise Exception('Node numbering contains gaps. Map nodes to remove gaps.')
 
         # Parsing node data
         Np = len(G)
@@ -157,7 +157,7 @@ class NetworkX(GenericIO):
         r"""
         This method is being deprecated.  Use ``export_data`` instead.
         """
-        cls.export_data(*args, **kwargs)
+        return cls.export_data(*args, **kwargs)
 
     @classmethod
     def export_data(cls, network):

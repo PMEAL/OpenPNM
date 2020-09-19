@@ -15,7 +15,7 @@ class PoreSpy(GenericIO):
         r"""
         This method is being deprecated.  Use ``import_data`` instead.
         """
-        cls.import_data(*args, **kwargs)
+        return cls.import_data(*args, **kwargs)
 
     @classmethod
     def import_data(cls, filename, project=None, settings={}):

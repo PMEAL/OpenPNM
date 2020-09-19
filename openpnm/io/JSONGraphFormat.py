@@ -122,7 +122,7 @@ class JSONGraphFormat(GenericIO):
         r"""
         This method will be deprecated.  Use ``import_data`` instead
         """
-        cls.import_data(*args, **kwargs)
+        return cls.import_data(*args, **kwargs)
 
     @classmethod
     def import_data(cls, filename, project=None):

@@ -23,14 +23,14 @@ class iMorph(GenericIO):
     """
 
     @classmethod
-    def save(cls, *args, **kwargs):
+    def load(cls, *args, **kwargs):
         r"""
-        This method is being deprecated.  Use ``export_data`` instead.
+        This method is being deprecated.  Use ``import_data`` instead.
         """
-        cls.export_data(*args, **kwargs)
+        return cls.import_data(*args, **kwargs)
 
     @classmethod
-    def export_data(cls, path, node_file="throats_cellsThroatsGraph_Nodes.txt",
+    def import_data(cls, path, node_file="throats_cellsThroatsGraph_Nodes.txt",
                     graph_file="throats_cellsThroatsGraph.txt",
                     voxel_size=None):
         r"""
@@ -197,7 +197,5 @@ class iMorph(GenericIO):
         network["throat.radius"] = network["throat.radius"] * 1e-6
         network["throat.dmax"] = network["throat.dmax"] * 1e-6
         network["throat.volume"] = network["throat.volume"] * voxel_size ** 3
-
-        geometry = Imported(network=pn)
 
         return network.project

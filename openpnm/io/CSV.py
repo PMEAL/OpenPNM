@@ -84,7 +84,8 @@ class CSV(GenericIO):
         r"""
         This method will be deprecated.  Use ``import_data`` instead.
         """
-        cls.import_data(*args, **kwargs)
+        proj = cls.import_data(*args, **kwargs)
+        return proj
 
     @classmethod
     def import_data(cls, filename, project=None, delim=' | '):

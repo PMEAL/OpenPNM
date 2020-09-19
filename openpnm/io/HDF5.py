@@ -16,7 +16,7 @@ class HDF5(GenericIO):
         This method is being deprecated.  Use ``export_data`` instead.
 
         """
-        cls.export_data(*args, **kwargs)
+        return cls.export_data(*args, **kwargs)
 
     @classmethod
     def export_data(cls, network=None, phases=[], element=['pore', 'throat'],
