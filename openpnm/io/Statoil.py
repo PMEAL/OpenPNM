@@ -21,8 +21,16 @@ class Statoil(GenericIO):
     specific property.  Headers are not provided in the files, so one must
     refer to various theses and documents to interpret their meaning.
     """
+
     @classmethod
-    def load(cls, path, prefix, network=None):
+    def load(cls, *args, **kwargs):
+        r"""
+        This method is being deprecated.  Use ``import_data`` instead.
+        """
+        cls.import_data(*args, **kwargs)
+
+    @classmethod
+    def import_data(cls, path, prefix, network=None):
         r"""
         Load data from the \'dat\' files located in specified folder.
 
@@ -53,11 +61,11 @@ class Statoil(GenericIO):
         filename = Path(path.resolve(), prefix+'_link1.dat')
         with open(filename, mode='r') as f:
             link1 = read_table(filepath_or_buffer=f,
-                                  header=None,
-                                  skiprows=1,
-                                  sep=' ',
-                                  skipinitialspace=True,
-                                  index_col=0)
+                               header=None,
+                               skiprows=1,
+                               sep=' ',
+                               skipinitialspace=True,
+                               index_col=0)
         link1.columns = ['throat.pore1', 'throat.pore2', 'throat.radius',
                          'throat.shape_factor', 'throat.total_length']
         # Add link1 props to net
@@ -71,10 +79,10 @@ class Statoil(GenericIO):
         filename = Path(path.resolve(), prefix+'_link2.dat')
         with open(filename, mode='r') as f:
             link2 = read_table(filepath_or_buffer=f,
-                                  header=None,
-                                  sep=' ',
-                                  skipinitialspace=True,
-                                  index_col=0)
+                               header=None,
+                               sep=' ',
+                               skipinitialspace=True,
+                               index_col=0)
         link2.columns = ['throat.pore1', 'throat.pore2',
                          'throat.pore1_length', 'throat.pore2_length',
                          'throat.length', 'throat.volume',
@@ -112,10 +120,10 @@ class Statoil(GenericIO):
         filename = Path(path.resolve(), prefix+'_node2.dat')
         with open(filename, mode='r') as f:
             node2 = read_table(filepath_or_buffer=f,
-                                  header=None,
-                                  sep=' ',
-                                  skipinitialspace=True,
-                                  index_col=0)
+                               header=None,
+                               sep=' ',
+                               skipinitialspace=True,
+                               index_col=0)
         node2.columns = ['pore.volume', 'pore.radius', 'pore.shape_factor',
                          'pore.clay_volume']
         # Add node2 props to net
