@@ -15,8 +15,9 @@ class OpenpnmIO(GenericIO):
     Notes
     -----
     The methods in this class use the ``pickle`` module from the standard
-    library, which have known security issues.  Do not open '.pnm' files
-    from untrusted sources.
+    library.  Aside from the security issues, these files can only be loaded
+    by the exact same OpenPNM version used to save them.  They are meant for
+    temporary storage.
 
     """
 
