@@ -39,8 +39,9 @@ class Dict(GenericIO):
 
         Returns
         -------
-        An OpenPNM Project containing the objects created to store the given
-        data.
+        project : list
+            An OpenPNM Project containing the objects created to store the
+            given data.
 
         Notes
         -----
@@ -252,7 +253,11 @@ class Dict(GenericIO):
         return d
 
     @classmethod
-    def save(cls, dct, filename):
+    def save(cls, *args, **kwargs):
+        cls.export_data(*args, **kwargs)
+
+    @classmethod
+    def export_data(cls, dct, filename):
         r"""
         Saves data from the given dictionary into the specified file.
 
@@ -265,6 +270,10 @@ class Dict(GenericIO):
         filename : string or path object
             The filename to store the dictionary.
 
+        Notes
+        -----
+        This method uses the pickle module to save the dictionary.
+
         """
         fname = cls._parse_filename(filename=filename, ext='dct')
         dct = sanitize_dict(dct)
@@ -272,9 +281,16 @@ class Dict(GenericIO):
             pickle.dump(dct, f)
 
     @classmethod
-    def load(cls, filename):
+    def load(cls, *args, **kwargs):
         r"""
-        Load data from the specified file into a Python dictionary
+        This method is being deprecated.  Use ``import_data`` instead.
+        """
+        cls.import_data(*args, **kwargs)
+
+    @classmethod
+    def import_data(cls, filename):
+        r"""
+        Load data from the specified pickle file into a Python dictionary
 
         Parameters
         ----------
