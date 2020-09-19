@@ -3,6 +3,7 @@ import numpy as np
 import scipy as sp
 import scipy.sparse
 from pathlib import Path
+from openpnm.geometry import Imported
 from openpnm.utils import logging
 from openpnm.io import GenericIO
 from openpnm.network import GenericNetwork
@@ -22,15 +23,13 @@ class iMorph(GenericIO):
     """
 
     @classmethod
-    def load(
-        cls,
-        path,
-        node_file="throats_cellsThroatsGraph_Nodes.txt",
-        graph_file="throats_cellsThroatsGraph.txt",
-        network=None,
-        voxel_size=None,
-        return_geometry=False,
-    ):
+    def load(cls, *args, **kwargs):
+        cls.export_data(*args, **kwargs)
+
+    @classmethod
+    def export_data(cls, path, node_file="throats_cellsThroatsGraph_Nodes.txt",
+                    graph_file="throats_cellsThroatsGraph.txt",
+                    voxel_size=None):
         r"""
         Loads network data from an iMorph processed image stack
 
@@ -47,30 +46,16 @@ class iMorph(GenericIO):
             The file that describes the connectivity of the network, the
             default iMorph name is: throats_cellsThroatsGraph.txt
 
-        network : OpenPNM Network Object
-            The OpenPNM Network onto which the data should be loaded.  If no
-            network is supplied then an empty import network is created and
-            returned.
-
         voxel_size : float
             Allows the user to define a voxel size different than what is
             contained in the node_file. The value must be in meters.
 
-        return_geometry : Boolean
-            If True, then all geometrical related properties are removed from
-            the Network object and added to a GenericGeometry object.  In this
-            case the method returns a tuple containing (network, geometry). If
-            False (default) then the returned Network will contain all
-            properties that were in the original file.  In this case, the user
-            can call the ```split_geometry``` method explicitly to perform the
-            separation.
-
         Returns
         -------
-        If no Network object is supplied then one will be created and returned.
-
-        If return_geometry is True, then a tuple is returned containing both
-        the network and a geometry object.
+        project : list
+            An OpenPNM project object containing a network and a geometry
+            object.  The geometry-related data are automatically placed on the
+            geometry object using the ``Imported`` geometry class.
         """
         #
         path = Path(path)
@@ -100,12 +85,8 @@ class iMorph(GenericIO):
             voxel_size = vox_size * 1.0e-6  # file stores value in microns
 
         if voxel_size < 0:
-            raise (
-                Exception(
-                    "Error - Voxel size must be specfied in "
-                    + "the Nodes file or as a keyword argument."
-                )
-            )
+            raise Exception("Error - Voxel size must be specfied in "
+                            + "the Nodes file or as a keyword argument.")
 
         # parsing the graph file
         with open(graph_file, "r") as file:
@@ -213,5 +194,7 @@ class iMorph(GenericIO):
         network["throat.radius"] = network["throat.radius"] * 1e-6
         network["throat.dmax"] = network["throat.dmax"] * 1e-6
         network["throat.volume"] = network["throat.volume"] * voxel_size ** 3
+
+        geometry = Imported(network=pn)
 
         return network.project
