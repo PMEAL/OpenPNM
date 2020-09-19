@@ -4,17 +4,24 @@ from openpnm.io import GenericIO
 
 class COMSOL(GenericIO):
     r"""
-    Writes files containing pores and throats of the considered network in a
-    COMSOL object format.
+    Writes a file containing pores and throats of the network in a format that
+    can be opened in COMSOL.
 
     Notes
     -----
-    The exported files contain COMSOL geometry objects, not meshes.
-    This class exports in 2D only.
+    - The exported files contain COMSOL geometry objects, not meshes.
+    - This class exports in 2D only.
 
     """
     @classmethod
-    def save(cls, network, phases=[], filename=''):
+    def save(cls, *args, **kwargs):
+        r"""
+        This method is being deprecated.  Use ``export`` instead.
+        """
+        cls.export(*args, **kwargs)
+
+    @classmethod
+    def export(cls, network, phases=[], filename=''):
         r"""
         Saves the network and geometry data from the given objects into the
         specified file. This exports in 2D only where throats and pores have
