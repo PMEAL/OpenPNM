@@ -29,8 +29,6 @@ def from_neighbor_throats(target, prop=None, throat_prop='pore.seed',
     mode : string
         Controls how the pore property is calculated.  Options are 'min',
         'max' and 'mean'.
-    ignore_nans : boolean (default is ``True``)
-        If ``True`` the result will ignore ``nans`` in the neighbors
 
     Returns
     -------
@@ -44,8 +42,10 @@ def from_neighbor_throats(target, prop=None, throat_prop='pore.seed',
     if prop is not None:
         throat_prop = prop
     data = boss[throat_prop]
-    if ignore_nans:
-        data = np.ma.MaskedArray(data=data, mask=np.isnan(data))
+    # This functionality needs to be removed since masked arrays don't seem
+    # to support the 'at' method, which is essential for speed.
+    # if ignore_nans:
+    #     data = np.ma.MaskedArray(data=data, mask=np.isnan(data))
     im = network.create_incidence_matrix()
     if mode == 'min':
         values = np.ones((network.Np, ))*np.inf

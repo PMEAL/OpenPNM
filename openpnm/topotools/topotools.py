@@ -475,6 +475,10 @@ def am_to_im(am):
         raise Exception('Adjacency matrices must be square')
     if am.format != 'coo':
         am = am.tocoo(copy=False)
+    # This little snippet also works
+    # row1 = am.row[:int(am.nnz/2)]
+    # row2 = am.row[int(am.nnz/2):]
+    # im = np.vstack((np.hstack((row1, row2)), am.data)).T
     conn = np.vstack((am.row, am.col)).T
     row = conn[:, 0]
     data = am.data
