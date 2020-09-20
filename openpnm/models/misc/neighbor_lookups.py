@@ -40,27 +40,27 @@ def from_neighbor_throats(target, prop=None, throat_prop='pore.seed',
     """
     prj = target.project
     network = prj.network
-    lookup = prj.find_full_domain(target)
-    Ps = lookup.map_pores(target.pores(), target)
+    boss = prj.find_full_domain(target)
     if prop is not None:
         throat_prop = prop
-    data = lookup[throat_prop]
+    data = boss[throat_prop]
     if ignore_nans:
         data = np.ma.MaskedArray(data=data, mask=np.isnan(data))
-    neighborTs = network.find_neighbor_throats(pores=Ps,
-                                               flatten=False,
-                                               mode='or')
-    values = np.ones((np.shape(Ps)[0],))*np.nan
+    im = network.create_incidence_matrix()
     if mode == 'min':
-        for pore in range(len(Ps)):
-            values[pore] = np.amin(data[neighborTs[pore]])
+        values = np.ones((network.Np, ))*np.inf
+        np.minimum.at(values, im.row, data[im.col])
     if mode == 'max':
-        for pore in range(len(Ps)):
-            values[pore] = np.amax(data[neighborTs[pore]])
+        values = np.ones((network.Np, ))*-np.inf
+        np.maximum.at(values, im.row, data[im.col])
     if mode == 'mean':
-        for pore in range(len(Ps)):
-            values[pore] = np.mean(data[neighborTs[pore]])
-    return np.array(values)
+        values = np.zeros((network.Np, ))
+        np.add.at(values, im.row, data[im.col])
+        counts = np.zeros((network.Np, ))
+        np.add.at(counts, im.row, np.ones((network.Nt, ))[im.col])
+        values = values/counts
+    Ps = boss.map_pores(target.pores(), target)
+    return np.array(values)[Ps]
 
 
 def from_neighbor_pores(target, prop=None, pore_prop='pore.seed', mode='min',

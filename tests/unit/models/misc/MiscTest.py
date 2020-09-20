@@ -107,43 +107,39 @@ class MiscTest:
         self.geo.pop('pore.seed', None)
         self.geo.models.pop('pore.seed', None)
         self.geo.models.pop('throat.seed', None)
-        self.geo['throat.seed'] = np.random.rand(self.net.Nt,)
+        self.geo['throat.seed'] = np.linspace(0, 1, self.net.Nt)
         self.geo.add_model(model=mods.from_neighbor_throats,
                            propname='pore.seed',
                            throat_prop='throat.seed',
                            mode='min')
         assert np.all(np.in1d(self.geo['pore.seed'], self.geo['throat.seed']))
-        pmax = np.amax(self.geo['pore.seed'])
-        tmax = np.amax(self.geo['throat.seed'])
-        assert pmax <= tmax
+        assert np.isclose(self.geo['throat.seed'].mean(), 0.5)
+        assert np.isclose(self.geo['pore.seed'].mean(), 0.16454849498327762)
 
     def test_from_neighbor_throats_max(self):
         self.geo.pop('pore.seed', None)
         self.geo.models.pop('pore.seed', None)
         self.geo.models.pop('throat.seed', None)
-        self.geo['throat.seed'] = np.random.rand(self.net.Nt,)
+        self.geo['throat.seed'] = np.linspace(0, 1, self.net.Nt)
         self.geo.add_model(model=mods.from_neighbor_throats,
                            propname='pore.seed',
                            throat_prop='throat.seed',
                            mode='max')
         assert np.all(np.in1d(self.geo['pore.seed'], self.geo['throat.seed']))
-        pmin = np.amin(self.geo['pore.seed'])
-        tmin = np.amin(self.geo['throat.seed'])
-        assert pmin >= tmin
+        assert np.isclose(self.geo['throat.seed'].mean(), 0.5)
+        assert np.isclose(self.geo['pore.seed'].mean(), 0.8595317725752508)
 
     def test_from_neighbor_throats_mean(self):
         self.geo.pop('pore.seed', None)
         self.geo.models.pop('pore.seed', None)
         self.geo.models.pop('throat.seed', None)
-        self.geo['throat.seed'] = np.random.rand(self.net.Nt,)
+        self.geo['throat.seed'] = np.linspace(0, 1, self.net.Nt)
         self.geo.add_model(model=mods.from_neighbor_throats,
                            propname='pore.seed',
                            throat_prop='throat.seed',
                            mode='mean')
-        tmax = np.amax(self.geo['throat.seed'])
-        tmin = np.amin(self.geo['throat.seed'])
-        assert np.all(self.geo['pore.seed'] > tmin)
-        assert np.all(self.geo['pore.seed'] < tmax)
+        assert np.isclose(self.geo['throat.seed'].mean(), 0.5)
+        assert np.isclose(self.geo['pore.seed'].mean(), 0.5)
 
     def test_neighbor_pores_with_nans(self):
         net = op.network.Cubic(shape=[2, 2, 2])
