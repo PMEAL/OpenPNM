@@ -717,10 +717,14 @@ class BaseTest:
             self.geo['pore.blah']
 
     def test_interpolate_data(self):
-        a = self.geo.interpolate_data(propname='throat.diameter')
+        self.geo['throat.tester'] = np.linspace(0, 1.0, self.geo.network.Nt)
+        self.geo['pore.tester'] = np.linspace(0, 1.0, self.geo.network.Np)
+        a = self.geo.interpolate_data(propname='throat.tester')
         assert a.size == self.geo.Np
-        a = self.geo.interpolate_data(propname='pore.diameter')
+        assert np.isclose(a.mean(), 0.5)
+        a = self.geo.interpolate_data(propname='pore.tester')
         assert a.size == self.geo.Nt
+        assert np.isclose(a.mean(), 0.5)
 
     def test_get_no_matches(self):
         self.geo.pop('pore.blah', None)
