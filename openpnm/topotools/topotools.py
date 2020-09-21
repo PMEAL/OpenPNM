@@ -593,24 +593,25 @@ def clone_pores(network, pores, labels=['clone'], mode='parents'):
     pnew = np.concatenate((pcurrent, pclone), axis=0)
     Npnew = np.shape(pnew)[0]
     clones = np.arange(Np, Npnew)
-    # Add clone labels to network
+    # Create cloned pores first
+    extend(network=network, pore_coords=pclone)
+    # Apply provided labels to cloned pores
     for item in labels:
-        network['pore.'+item] = False
-        network['throat.'+item] = False
+        network.set_label(label=item, pores=pclone)
     # Add connections between parents and clones
     if mode == 'parents':
         tclone = np.vstack((parents, clones)).T
-        extend(network=network, pore_coords=pclone, throat_conns=tclone)
+        extend(network=network, conns=tclone)
+        for item in labels:
+            network.set_label(label=item, throats=tclone)
     if mode == 'siblings':
         ts = network.find_neighbor_throats(pores=pores, mode='xnor')
-        tclone = network['throat.conns'][ts] + network.num_pores()
-        extend(network=network, pore_coords=pclone, throat_conns=tclone)
-    if mode == 'isolated':
-        extend(network=network, pore_coords=pclone)
-    # Apply provided labels to cloned pores
-    for item in labels:
-        network['pore.'+item][network.pores('all') >= Np] = True
-        network['throat.'+item][network.throats('all') >= Nt] = True
+        mapping = np.zeros([network.Np, ], dtype=int)
+        mapping[pores] = np.arange(Np, network.Np)
+        tclone = mapping[network['throat.conns'][ts]]
+        extend(network=network, throat_conns=tclone)
+        for item in labels:
+            network.set_label(label=item, throats=tclone)
 
     # Clear adjacency and incidence matrices which will be out of date now
     network._am.clear()
