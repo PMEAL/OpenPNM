@@ -1,4 +1,3 @@
-import scipy as sp
 import numpy as np
 import openpnm as op
 import openpnm.models.misc as mods
@@ -149,7 +148,7 @@ class MiscTest:
     def test_neighbor_pores_with_nans(self):
         net = op.network.Cubic(shape=[2, 2, 2])
         net['pore.values'] = 1.0
-        net['pore.values'][0] = sp.nan
+        net['pore.values'][0] = np.nan
         f = mods.from_neighbor_pores
         with_nans = f(target=net, pore_prop='pore.values',
                       ignore_nans=False, mode='min')
@@ -173,7 +172,7 @@ class MiscTest:
     def test_neighbor_throats_with_nans(self):
         net = op.network.Cubic(shape=[2, 2, 2])
         net['throat.values'] = 1.0
-        net['throat.values'][0] = sp.nan
+        net['throat.values'][0] = np.nan
         f = mods.from_neighbor_throats
         with_nans = f(target=net, throat_prop='throat.values',
                       ignore_nans=False, mode='min')
@@ -240,16 +239,16 @@ class MiscTest:
         geo2 = op.geometry.GenericGeometry(network=net,
                                            pores=Ps2,
                                            throats=Ts2)
-        geo1['pore.rand1'] = sp.random.random(geo1.Np)
-        geo2['pore.rand1'] = sp.random.random(geo2.Np)
+        geo1['pore.rand1'] = np.random.random(geo1.Np)
+        geo2['pore.rand1'] = np.random.random(geo2.Np)
         geo1.add_model(model=mods.from_neighbor_pores,
                        propname='throat.rand1',
                        pore_prop='pore.rand1',
                        mode='min')
         test = np.amin(net['pore.rand1'][net['throat.conns']], axis=1)[Ts1]
         assert np.all(test == geo1['throat.rand1'])
-        geo1['throat.rand2'] = sp.random.random(geo1.Nt)
-        geo2['throat.rand2'] = sp.random.random(geo2.Nt)
+        geo1['throat.rand2'] = np.random.random(geo1.Nt)
+        geo2['throat.rand2'] = np.random.random(geo2.Nt)
         geo2.add_model(model=mods.from_neighbor_throats,
                        propname='pore.rand2',
                        throat_prop='throat.rand2',

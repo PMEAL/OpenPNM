@@ -6,7 +6,6 @@ r"""
 
 """
 import numpy as np
-import scipy as sp
 
 
 def standard(target, mol_weight='pore.molecular_weight',
@@ -123,6 +122,6 @@ def vanderwaals(target, pressure='pore.pressure',
     a3 = -P/(a*b)
     a0 = np.ones(np.shape(a1))
     coeffs = np.vstack((a0, a1, a2, a3)).T
-    density = np.array([sp.roots(C) for C in coeffs])
-    value = sp.real(density[:, 2])*1e6  # Convert it to mol/m3
+    density = np.array([np.roots(C) for C in coeffs])
+    value = np.real(density[:, 2])*1e6  # Convert it to mol/m3
     return value

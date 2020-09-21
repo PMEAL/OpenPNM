@@ -1,5 +1,4 @@
 import numpy as np
-from numpy.linalg import norm
 from openpnm.algorithms import GenericTransport
 # Uncomment this line when we stop supporting Python 3.6
 # from dataclasses import dataclass, field

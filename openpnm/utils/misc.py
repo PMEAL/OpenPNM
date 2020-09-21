@@ -1,9 +1,11 @@
 import copy
+import json
 import inspect
 import warnings
 import functools
 import numpy as _np
 import scipy as _sp
+import scipy.sparse
 import time as _time
 from collections import OrderedDict
 from docrep import DocstringProcessor
@@ -89,7 +91,9 @@ class PrintableDict(OrderedDict):
         header = "―" * 78
         lines = [header, "{0:<35s} {1}".format(self._key, self._value), header]
         for item in list(self.keys()):
-            if type(self[item]) == _sp.ndarray:
+            if item.startswith('_'):
+                continue
+            if isinstance(self[item], _np.ndarray):
                 lines.append("{0:<35s} {1}".format(item, _np.shape(self[item])))
             else:
                 lines.append("{0:<35s} {1}".format(item, self[item]))
@@ -117,11 +121,10 @@ class SettingsDict(PrintableDict):
     __doc__ = ''
 
     def __setitem__(self, key, value):
-        if hasattr(value, "Np"):
-            raise Exception(
-                "Cannot store OpenPNM objects in settings, "
-                + "store object's name instead"
-            )
+        try:
+            json.dumps(value)
+        except TypeError:
+            raise Exception('Only serializable objects can be stored in settings')
         super().__setitem__(key, value)
 
     def __missing__(self, key):
@@ -497,11 +500,11 @@ def conduit_lengths(network, throats=None, mode="pore"):
                 mode = "pore"
             else:
                 plen1 = (
-                    _np.sqrt(_np.sum(_sp.square(pcentroids[Ps[:, 0]] - tcentroids), 1))
+                    _np.sqrt(_np.sum(_np.square(pcentroids[Ps[:, 0]] - tcentroids), 1))
                     - Lt / 2
                 )
                 plen2 = (
-                    _np.sqrt(_np.sum(_sp.square(pcentroids[Ps[:, 1]] - tcentroids), 1))
+                    _np.sqrt(_np.sum(_np.square(pcentroids[Ps[:, 1]] - tcentroids), 1))
                     - Lt / 2
                 )
         except KeyError:
@@ -511,7 +514,7 @@ def conduit_lengths(network, throats=None, mode="pore"):
         pcoords = network["pore.coords"]
         # Find the pore-to-pore distance, minus the throat length
         lengths = (
-            _np.sqrt(_np.sum(_sp.square(pcoords[Ps[:, 0]] - pcoords[Ps[:, 1]]), 1)) - Lt
+            _np.sqrt(_np.sum(_np.square(pcoords[Ps[:, 0]] - pcoords[Ps[:, 1]]), 1)) - Lt
         )
         lengths[lengths < 0.0] = 2e-9
         # Calculate the fraction of that distance from the first pore
@@ -547,7 +550,7 @@ def is_symmetric(a, rtol=1e-10):
         ``True`` if ``a`` is a symmetric matrix, ``False`` otherwise.
 
     """
-    if type(a) != _sp.ndarray and not _sp.sparse.issparse(a):
+    if not isinstance(a, _np.ndarray) and not _sp.sparse.issparse(a):
         raise Exception("'a' must be either a sparse matrix or an ndarray.")
     if a.shape[0] != a.shape[1]:
         raise Exception("'a' must be a square matrix.")
@@ -555,7 +558,7 @@ def is_symmetric(a, rtol=1e-10):
     atol = _np.amin(_np.absolute(a.data)) * rtol
     if _sp.sparse.issparse(a):
         issym = False if ((a - a.T) > atol).nnz else True
-    elif type(a) == _sp.ndarray:
+    elif isinstance(a, _np.ndarray):
         issym = False if _np.any((a - a.T) > atol) else True
 
     return issym
@@ -577,7 +580,7 @@ def is_valid_propname(propname):
         Whether or not ``propname`` is a valid name
 
     """
-    if type(propname) is not str:
+    if not isinstance(propname, str):
         return False
     temp = propname.split(".")
     if temp[0] not in ["pore", "throat"]:
