@@ -314,7 +314,7 @@ class TopotoolsTest:
         pn['pore.test_float'] = 1.0
         pn['pore.test_int'] = 1
         pn['pore.test_bool'] = True
-        op.topotools.extend(network=pn, pore_coords=[[3, 3, 3], [3, 3, 4]])
+        op.topotools.extend(network=pn, coords=[[3, 3, 3], [3, 3, 4]])
         assert np.any(np.isnan(pn['pore.test_float']))
         assert np.any(np.isnan(pn['pore.test_int']))
         assert pn['pore.test_bool'].sum() < pn['pore.test_bool'].size
@@ -336,8 +336,12 @@ class TopotoolsTest:
         air['pore.test_float'] = 1.0
         air['pore.test_int'] = 1
         air['pore.test_bool'] = True
-        with pytest.raises(Exception):
-            op.topotools.extend(network=pn, pore_coords=[[3, 3, 3], [3, 3, 4]])
+        Np = air.Np
+        Nt = air.Nt
+        op.topotools.extend(network=pn, coords=[[3, 3, 3], [3, 3, 4]])
+        assert air.Np == (Np + 2)
+        op.topotools.extend(network=pn, conns=[[0, 4], [1, 5]])
+        assert air.Nt == (Nt + 2)
 
     def test_stitch_radius_no_connections(self):
         Nx, Ny, Nz = (10, 10, 1)

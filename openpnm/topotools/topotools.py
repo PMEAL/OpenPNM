@@ -307,7 +307,7 @@ def extend(network, coords=[], conns=[], labels=[], **kwargs):
     if 'throat_conns' in kwargs.keys():
         conns = kwargs['throat_conns']
     if 'pore_coords' in kwargs.keys():
-        conns = kwargs['pore_coords']
+        coords = kwargs['pore_coords']
     coords = np.array(coords)
     conns = np.array(conns)
     Np_old = network.num_pores()
@@ -326,8 +326,10 @@ def extend(network, coords=[], conns=[], labels=[], **kwargs):
         conns = np.vstack((network['throat.conns'], conns))
         network['throat.conns'] = conns
 
-    # Increase size of any prop or label arrays already on phases
-    for obj in network.project.phases().values():
+    # Increase size of any prop or label arrays already on network and phases
+    objs = list(network.project.phases().values())
+    objs.append(network)
+    for obj in objs:
         obj.update({'pore.all': np.ones([Np, ], dtype=bool),
                     'throat.all': np.ones([Nt, ], dtype=bool)})
         for item in list(obj.keys()):
@@ -579,12 +581,6 @@ def clone_pores(network, pores, labels=['clone'], mode='parents'):
                       manner as parents were connected
         - 'isolated': No connections between parents or siblings
     """
-    if len(network.project.geometries()) > 0:
-        logger.warning('Network has active Geometries, new pores must be '
-                       'assigned a Geometry')
-    if len(network.project.phases()) > 0:
-        raise Exception('Network has active Phases, cannot proceed')
-
     if type(labels) == str:
         labels = [labels]
     network._parse_indices(pores)
