@@ -178,22 +178,20 @@ def shear_coords(network, ay=0, az=0, bx=0, bz=0, cx=0, cy=0, S=None):
 
 def trim(network, pores=[], throats=[]):
     '''
-    Remove pores or throats from the network.
+    Remove pores or throats from the network
 
     Parameters
     ----------
     network : OpenPNM Network Object
         The Network from which pores or throats should be removed
-
     pores (or throats) : array_like
         The indices of the of the pores or throats to be removed from the
         network.
 
     Notes
     -----
-    This is an in-place operation, meaning the received Network object will
-    be altered directly.
-
+    This is an in-place operation, meaning the received network object will
+    be altered directly, and ``None`` is returned.
 
     Examples
     --------
@@ -274,21 +272,24 @@ def trim(network, pores=[], throats=[]):
     network._im.clear()
 
 
-def extend(network, pore_coords=[], throat_conns=[], labels=[]):
+def extend(network, coords=[], conns=[], labels=[], **kwargs):
     r'''
-    Add individual pores and/or throats to the network from a list of coords
-    or conns.
+    Add pores or throats to the network from a list of coords or conns.
 
     Parameters
     ----------
     network : OpenPNM Network Object
-        The Network to which pores or throats should be added
+        The network to which pores or throats should be added
 
-    pore_coords : array_like
-        The coordinates of the pores to add
+    coords : array_like
+        The coordinates of the pores to add.  These will be appended to the
+        'pore.coords' array so should be of shape N-by-3, where N is the
+        number of pores in the list.
 
-    throat_conns : array_like
-        The throat connections to add
+    conns : array_like
+        The throat connections to add.  These will be appended to the
+        'throat.conns' array so should be of shape N-by-2.  Note that the
+        numbering must point to existing pores.
 
     labels : string, or list of strings, optional
         A list of labels to apply to the new pores and throats
@@ -296,45 +297,54 @@ def extend(network, pore_coords=[], throat_conns=[], labels=[]):
     Notes
     -----
     This needs to be enhanced so that it increases the size of all pore
-    and throat props and labels on ALL associated Phase objects.  At the
-    moment it throws an error is there are any associated Phases.
+    and throat props and labels on ALL associated phase objects.  At the
+    moment it throws an error is there are any associated phases.
 
-    This is an in-place operation, meaning the received Network object will
-    be altered directly.
+    This is an in-place operation, meaning the received network object will
+    be altered directly, and ``None`` is returned.
 
     '''
-    if len(network.project.phases()) > 0:
-        raise Exception('Project has active Phases, copy network to a new '
-                        + 'project and try again')
-
+    if 'throat_conns' in kwargs.keys():
+        conns = kwargs['throat_conns']
+    if 'pore_coords' in kwargs.keys():
+        conns = kwargs['pore_coords']
+    coords = np.array(coords)
+    conns = np.array(conns)
     Np_old = network.num_pores()
     Nt_old = network.num_throats()
-    Np = Np_old + int(np.size(pore_coords)/3)
-    Nt = Nt_old + int(np.size(throat_conns)/2)
-    # Adjust 'all' labels
-    del network['pore.all'], network['throat.all']
-    network['pore.all'] = np.ones((Np,), dtype=bool)
-    network['throat.all'] = np.ones((Nt,), dtype=bool)
+    Np = Np_old + coords.shape[0]
+    Nt = Nt_old + conns.shape[0]
+    network.update({'pore.all': np.ones([Np, ], dtype=bool),
+                    'throat.all': np.ones([Nt, ], dtype=bool)})
     # Add coords and conns
-    if np.size(pore_coords) > 0:
-        coords = np.vstack((network['pore.coords'], pore_coords))
+    if np.size(coords) > 0:
+        coords = np.vstack((network['pore.coords'], coords))
         network['pore.coords'] = coords
-    if np.size(throat_conns) > 0:
-        conns = np.vstack((network['throat.conns'], throat_conns))
+    if np.size(conns) > 0:
+        if np.any(conns > Np):
+            raise Exception('Some throat conns point to non-existent pores')
+        conns = np.vstack((network['throat.conns'], conns))
         network['throat.conns'] = conns
 
-    # Increase size of any prop or label arrays aready on Network
-    for item in list(network.keys()):
-        if item.split('.')[1] not in ['coords', 'conns', 'all', '_id']:
-            N = network._count(element=item.split('.')[0])
-            arr = network.pop(item)
-            s = arr.shape
-            if arr.dtype == bool:
-                network[item] = np.zeros(shape=(N, *s[1:]), dtype=bool)
-            else:
-                network[item] = np.ones(shape=(N, *s[1:]), dtype=float)*np.nan
-            # This is a temporary work-around until I learn to handle 2+ dims
-            network[item][:arr.shape[0]] = arr
+    # Increase size of any prop or label arrays already on phases
+    for obj in network.project.phases().values():
+        obj.update({'pore.all': np.ones([Np, ], dtype=bool),
+                    'throat.all': np.ones([Nt, ], dtype=bool)})
+        for item in list(obj.keys()):
+            N = obj._count(element=item.split('.')[0])
+            if obj[item].shape[0] < N:
+                arr = obj.pop(item)
+                s = arr.shape
+                if arr.dtype == bool:
+                    obj[item] = np.zeros(shape=(N, *s[1:]), dtype=bool)
+                else:
+                    obj[item] = np.ones(shape=(N, *s[1:]), dtype=float)*np.nan
+                obj[item][:arr.shape[0]] = arr
+
+    # Regenerate models on all objects to fill new elements
+    for obj in network.project.phases().values():
+        if hasattr(obj, 'models'):
+            obj.regenerate_models()
 
     # Apply labels, if supplied
     if labels != []:
@@ -344,12 +354,12 @@ def extend(network, pore_coords=[], throat_conns=[], labels=[]):
         for label in labels:
             # Remove pore or throat from label, if present
             label = label.split('.')[-1]
-            if np.size(pore_coords) > 0:
+            if np.size(coords) > 0:
                 Ps = np.r_[Np_old:Np]
                 if 'pore.'+label not in network.labels():
                     network['pore.'+label] = False
                 network['pore.'+label][Ps] = True
-            if np.size(throat_conns) > 0:
+            if np.size(conns) > 0:
                 Ts = np.r_[Nt_old:Nt]
                 if 'throat.'+label not in network.labels():
                     network['throat.'+label] = False
