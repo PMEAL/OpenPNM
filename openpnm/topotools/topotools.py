@@ -597,7 +597,7 @@ def clone_pores(network, pores, labels=['clone'], mode='parents'):
     extend(network=network, pore_coords=pclone)
     # Apply provided labels to cloned pores
     for item in labels:
-        network.set_label(label=item, pores=pclone)
+        network.set_label(label=item, pores=range(Np, Npnew))
     # Add connections between parents and clones
     if mode == 'parents':
         tclone = np.vstack((parents, clones)).T
@@ -809,16 +809,10 @@ def stitch(network, donor, P_network, P_donor, method='nearest',
         raise Exception('<{}> method not supported'.format(method))
 
     # Enter donor's pores into the Network
-    extend(network=network, pore_coords=donor['pore.coords'])
+    extend(network=network, coords=donor['pore.coords'])
 
     # Enter donor's throats into the Network
-    extend(network=network, throat_conns=donor['throat.conns'] + N_init['pore'])
-
-    # Trim throats that are longer then given len_max
-    # C1 = network['pore.coords'][conns[:, 0]]
-    # C2 = network['pore.coords'][conns[:, 1]]
-    # L = np.sum((C1 - C2)**2, axis=1)**0.5
-    # conns = conns[L <= len_max]
+    extend(network=network, conns=donor['throat.conns'] + N_init['pore'])
 
     # Add donor labels to recipient network
     if label_suffix is not None:
