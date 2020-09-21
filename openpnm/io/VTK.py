@@ -230,7 +230,7 @@ class VTK(GenericIO):
         string = element.text
         dtype = element.get("type")
         array = np.fromstring(string, sep="\t")
-        array = array.astype(dtype)
+        array = array.astype(dtype.lower())
         if n != 1:
             array = array.reshape(array.size // n, n)
         return array
