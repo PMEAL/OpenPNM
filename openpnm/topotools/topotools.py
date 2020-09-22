@@ -1,10 +1,9 @@
 import numpy as np
 import scipy as sp
-import scipy.sparse as sprs
 import scipy.ndimage as spim
 from scipy.sparse import csgraph
 from scipy.spatial import ConvexHull
-from openpnm.utils import PrintableDict, logging, Workspace
+from openpnm.utils import logging, Workspace
 logger = logging.getLogger(__name__)
 ws = Workspace()
 
@@ -314,6 +313,8 @@ def extend(network, coords=[], conns=[], labels=[], **kwargs):
     Nt_old = network.num_throats()
     Np = Np_old + coords.shape[0]
     Nt = Nt_old + conns.shape[0]
+    if np.any(conns > Np):
+        raise Exception('Some throat conns point to non-existent pores')
     network.update({'pore.all': np.ones([Np, ], dtype=bool),
                     'throat.all': np.ones([Nt, ], dtype=bool)})
     # Add coords and conns
@@ -321,8 +322,6 @@ def extend(network, coords=[], conns=[], labels=[], **kwargs):
         coords = np.vstack((network['pore.coords'], coords))
         network['pore.coords'] = coords
     if np.size(conns) > 0:
-        if np.any(conns > Np):
-            raise Exception('Some throat conns point to non-existent pores')
         conns = np.vstack((network['throat.conns'], conns))
         network['throat.conns'] = conns
 
@@ -602,16 +601,17 @@ def clone_pores(network, pores, labels=['clone'], mode='parents'):
     if mode == 'parents':
         tclone = np.vstack((parents, clones)).T
         extend(network=network, conns=tclone)
-        for item in labels:
-            network.set_label(label=item, throats=tclone)
-    if mode == 'siblings':
+    elif mode == 'siblings':
         ts = network.find_neighbor_throats(pores=pores, mode='xnor')
         mapping = np.zeros([network.Np, ], dtype=int)
         mapping[pores] = np.arange(Np, network.Np)
         tclone = mapping[network['throat.conns'][ts]]
         extend(network=network, throat_conns=tclone)
-        for item in labels:
-            network.set_label(label=item, throats=tclone)
+    elif mode == 'isolated':
+        pass
+    Ntnew = network.Nt
+    for item in labels:
+        network.set_label(label=item, throats=range(Nt, Ntnew))
 
     # Clear adjacency and incidence matrices which will be out of date now
     network._am.clear()
@@ -1570,9 +1570,6 @@ def reflect_base_points(base_pts, domain_size):
                                   [1, 1, -1] * orig_pts + [0, 0, 2.0 * Nz]))
             base_pts = np.vstack((base_pts, [1, 1, -1] * orig_pts))
     return base_pts
-
-
-
 
 
 def add_boundary_pores(network, pores, offset=None, move_to=None,

@@ -147,6 +147,13 @@ class TopotoolsTest:
         assert net.Np == 150
         assert net.Nt == 300
 
+    def test_clone_pores_with_labels(self):
+        net = op.network.Cubic(shape=[5, 5, 5])
+        topotools.clone_pores(network=net, pores=net.pores('left'),
+                              labels=['test1', 'test2'])
+        assert net.num_pores('test1') == 25
+        assert net.num_pores('test2') == 25
+
     def test_merge_networks(self):
         net1 = op.network.Cubic(shape=[3, 3, 3])
         net2 = op.network.Cubic(shape=[3, 3, 3])
