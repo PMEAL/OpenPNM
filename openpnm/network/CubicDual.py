@@ -69,10 +69,8 @@ class CubicDual(GenericNetwork):
     .. image:: /../docs/static/images/cubic_dual_network.png
         :align: center
 
-    For larger networks and more control over presentation use `Paraview
-    <http://www.paraview.org>`_.
-
     """
+
     def __init__(self, shape, spacing=1, label_1='primary',
                  label_2='secondary', **kwargs):
         super().__init__(**kwargs)
