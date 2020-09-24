@@ -1,4 +1,5 @@
 *.pyc
+*.orig
 .idea/
 .spyproject/
 .pytest_cache/
