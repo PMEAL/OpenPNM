@@ -21,7 +21,7 @@ class Workspace(dict):
 
     This class is a
     `singleton <https://en.wikipedia.org/wiki/Singleton_pattern>`_ so that
-    whenever and where ever a Workspace is instantiated, the same instance is
+    whenever and wherever a Workspace is instantiated, the same instance is
     obtained.  This allows it to maintain a definitive record of all open
     Projects.
 
@@ -32,26 +32,7 @@ class Workspace(dict):
     Notes
     -----
     The Workspace object contains a variety of functions that one might expect
-    from the 'file-menu' in a typical GUI.  The table below provides a list
-    along with a brief description.
-
-    +------------------+-------------------------------------------------+
-    | Method           | Description                                     |
-    +==================+=================================================+
-    | load_workspace   | Loads all saved Projects in a 'pnm' file int... |
-    +------------------+-------------------------------------------------+
-    | save_workspace   | Saves all the current Projects to a 'pnm' file  |
-    +------------------+-------------------------------------------------+
-    | new_project      | Creates a new empty Project object              |
-    +------------------+-------------------------------------------------+
-    | load_project     | Loads a Project from the specified 'pnm' file   |
-    +------------------+-------------------------------------------------+
-    | save_project     | Saves given Project to a 'pnm' file             |
-    +------------------+-------------------------------------------------+
-    | close_project    | Removes the specified Project from the Works... |
-    +------------------+-------------------------------------------------+
-    | copy_project     | Make a copy of an existing Project              |
-    +------------------+-------------------------------------------------+
+    from the 'file-menu' in a typical GUI.s
 
     """
 
@@ -96,67 +77,6 @@ class Workspace(dict):
     def version(self):
         return openpnm.__version__
 
-    def save_workspace(self, filename=''):
-        r"""
-        Saves all the current Projects to a 'pnm' file
-
-        Parameters
-        ----------
-        filename : string, optional
-            If no filename is given, a name is genrated using the current
-            time and date. See Notes for more information on valid file names.
-
-        See Also
-        --------
-        save_project
-
-        Notes
-        -----
-        The filename can be a string such as 'saved_file.pnm'.  The string can
-        include absolute path such as 'C:\networks\saved_file.pnm', or can
-        be a relative path such as '..\..\saved_file.pnm', which will look
-        2 directories above the current working directory.  It can also be a
-        path object object such as that produced by ``pathlib`` or
-        ``os.path`` in the Python standard library.
-
-        """
-        from openpnm.io import OpenpnmIO
-        OpenpnmIO.save_workspace(filename)
-
-    def load_workspace(self, filename, overwrite=False):
-        r"""
-        Loads a saved Workspace from 'pnm' file into the current Workspace.
-        Any Projects present in the current Workspace will be deleted.
-
-        Parameters
-        ----------
-        filename : string, optional
-            The name of the file to open.  See Notes for more information.
-        overwrite : boolean
-            A flag to indicate if the current Workspace should be
-            overwritten when loading the new one.  The default is ``False``,
-            meaning the loaded file will be added to the existing data.  Note
-            that in this case Project names may clash, in which case the
-            newly loaded Projects are given new names.
-
-        See Also
-        --------
-        load_project
-
-        Notes
-        -----
-        The filename can be a string such as 'saved_file.pnm'.  The string can
-        include absolute path such as 'C:\networks\saved_file.pnm', or can
-        be a relative path such as '..\..\saved_file.pnm', which will look
-        2 directories above the current working directory.  Can also be a
-        path object object such as that produced by ``pathlib`` or
-        ``os.path`` in the Python standard library.
-
-        """
-        from openpnm.io import OpenpnmIO
-        self.clear()
-        OpenpnmIO.load_workspace(filename=filename, overwrite=overwrite)
-
     def save_project(self, project, filename=''):
         r"""
         Saves given Project to a 'pnm' file
@@ -186,8 +106,8 @@ class Workspace(dict):
         ``os.path`` in the Python standard library.
 
         """
-        from openpnm.io import OpenpnmIO
-        OpenpnmIO.save_project(project=project, filename=filename)
+        from openpnm.io import PNM
+        PNM.save_project(project=project, filename=filename)
 
     def load_project(self, filename, overwrite=False):
         r"""
@@ -216,8 +136,8 @@ class Workspace(dict):
         ``os.path`` in the Python standard library.
 
         """
-        from openpnm.io import OpenpnmIO
-        OpenpnmIO.load_project(filename=filename)
+        from openpnm.io import PNM
+        PNM.load_project(filename=filename)
 
     def close_project(self, project):
         r"""
