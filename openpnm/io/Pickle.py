@@ -7,17 +7,17 @@ logger = logging.getLogger(__name__)
 ws = Workspace()
 
 
-class OpenpnmIO(GenericIO):
+class Pickle(GenericIO):
     r"""
     This class contains methods used for saving and loading OpenPNM Workspaces,
-    Projects, and objects.
+    Projects, and objects as Pickles.
 
     Notes
     -----
     The methods in this class use the ``pickle`` module from the standard
     library.  Aside from the security issues, these files can only be loaded
     by the exact same OpenPNM version used to save them.  They are meant for
-    temporary storage.
+    **temporary storage**.
 
     """
 
