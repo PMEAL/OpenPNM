@@ -202,10 +202,10 @@ class Base(dict):
             raise Exception('Cannot create ' + key + ' when '
                             + key_root + ' is already defined')
         # Prevent 'pore.foo' when 'pore.foo.bar' is present
-        if (key.count('.') == 1) and any([i.startswith(key) for i in long_keys]):
-            hit = [i for i in keys if i.startswith(key)][0]
-            raise Exception('Cannot create ' + key + ' when '
-                            + hit + ' is already defined')
+        if (key.count('.') == 1) and any([i.startswith(key + '.') for i in long_keys]):
+            hit = list(set([key]).intersection(self.keys()))
+            raise Exception('Cannot ', key, ' when '
+                            , hit, ' is already defined')
         # Prevent writing pore.foo on boss when present on subdomain
         if boss:
             if boss is self and (key not in ['pore.all', 'throat.all']):
