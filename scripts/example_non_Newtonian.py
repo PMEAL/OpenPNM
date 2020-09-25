@@ -20,6 +20,8 @@ phase['pore.consistency'] = 4.2e-2  # Pa.s^n
 phase['pore.flow_index'] = 0.52
 phase['pore.viscosity_min'] = 0.001
 phase['pore.viscosity_max'] = 100
+phase.add_model(propname='throat.viscosity_powerlaw',
+                model=op.models.phases.viscosity.powerlaw_fluid)
 
 # physics
 phys = op.physics.GenericPhysics(network=net,
@@ -38,8 +40,9 @@ sf.run()
 phase.update(sf.results())
 phase['pore.pressure_sf'] = phase['pore.pressure']
 
-mod2 = op.models.physics.hydraulic_conductance.hagen_poiseuille_power_law
+mod2 = op.models.physics.hydraulic_conductance.conical_frustrum
 phys.add_model(propname='throat.nonNewtonian_hydraulic_conductance',
+               conduit_viscosity='throat.viscosity_powerlaw',
                model=mod2, regen_mode='normal')
 
 # algorithms: Non Newtonian Stokes flow
