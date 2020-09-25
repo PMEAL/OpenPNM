@@ -5,7 +5,7 @@ import os
 import pickle
 
 
-class OpenpnmIOTest:
+class PickleTest:
 
     def setup_class(self):
         pass
@@ -15,24 +15,24 @@ class OpenpnmIOTest:
         ws.clear()
         pn = op.network.Cubic(shape=[3, 3, 3])
         assert len(ws) == 1
-        op.io.OpenpnmIO.save_workspace('test.pnm')
-        ws = op.io.OpenpnmIO.load_workspace('test.pnm', overwrite=False)
+        op.io.Pickle.save_workspace('test.pkl')
+        ws = op.io.Pickle.load_workspace('test.pkl', overwrite=False)
         assert isinstance(ws, dict)
         assert len(ws) == 2
-        ws = op.io.OpenpnmIO.load_workspace('test.pnm', overwrite=True)
+        ws = op.io.Pickle.load_workspace('test.pkl', overwrite=True)
         assert len(ws) == 1
-        os.remove('test.pnm')
+        os.remove('test.pkl')
 
     def test_create_save_and_load_project(self, tmpdir=None):
         ws = op.Workspace()
         ws.clear()
         pn = op.network.Cubic(shape=[3, 3, 3])
         assert len(ws) == 1
-        op.io.OpenpnmIO.save_project(project=pn.project, filename='proj.pnm')
-        proj = op.io.OpenpnmIO.load_project('proj.pnm')
+        op.io.Pickle.save_project(project=pn.project, filename='proj.pkl')
+        proj = op.io.Pickle.load_project('proj.pkl')
         assert isinstance(proj, list)
         assert len(ws) == 2
-        os.remove('proj.pnm')
+        os.remove('proj.pkl')
 
     def test_load_project_with_multiple_projects(self, tmpdir=None):
         ws = op.Workspace()
@@ -40,38 +40,38 @@ class OpenpnmIOTest:
         pn1 = op.network.Cubic(shape=[3, 3, 3])
         pn2 = op.network.Cubic(shape=[3, 3, 3])
         assert len(ws) == 2
-        op.io.OpenpnmIO.save_workspace(filename='proj.pnm')
+        op.io.Pickle.save_workspace(filename='proj.pkl')
         with pytest.raises(Exception):
-            proj = op.io.OpenpnmIO.load_project('proj.pnm')
-        os.remove('proj.pnm')
+            proj = op.io.Pickle.load_project('proj.pkl')
+        os.remove('proj.pkl')
 
     def test_load_handmade_project(self, tmpdir=None):
         ws = op.Workspace()
         ws.clear()
         pn = op.network.Cubic(shape=[3, 3, 3])
         new_proj = [pn]
-        pickle.dump(new_proj, open('proj.pnm', 'wb'))
-        proj = op.io.OpenpnmIO.load_project('proj.pnm')
+        pickle.dump(new_proj, open('proj.pkl', 'wb'))
+        proj = op.io.Pickle.load_project('proj.pkl')
         assert isinstance(proj, op.Project)
         assert len(ws.keys()) == 2
-        os.remove('proj.pnm')
+        os.remove('proj.pkl')
 
     def test_load_poorly_made_project(self, tmpdir=None):
         proj = 5
-        pickle.dump(proj, open('proj.pnm', 'wb'))
+        pickle.dump(proj, open('proj.pkl', 'wb'))
         with pytest.raises(Exception):
-            proj = op.io.OpenpnmIO.load_project('proj.pnm')
-        os.remove('proj.pnm')
+            proj = op.io.Pickle.load_project('proj.pkl')
+        os.remove('proj.pkl')
 
     def test_load_from_saved_dict(self, tmpdir=None):
         ws = op.Workspace()
         ws.clear()
         pn = op.network.Cubic(shape=[3, 3, 3])
-        op.io.OpenpnmIO.save_workspace(filename='test.pnm')
-        ws = op.io.OpenpnmIO.load_workspace(filename='test.pnm',
+        op.io.Pickle.save_workspace(filename='test.pkl')
+        ws = op.io.Pickle.load_workspace(filename='test.pkl',
                                             overwrite=True)
         assert len(ws.keys()) == 1
-        ws = op.io.OpenpnmIO.load_workspace(filename='test.pnm',
+        ws = op.io.Pickle.load_workspace(filename='test.pkl',
                                             overwrite=False)
         assert len(ws.keys()) == 2
         assert isinstance(ws, op.Workspace)
@@ -80,14 +80,14 @@ class OpenpnmIOTest:
         ws = op.Workspace()
         ws.clear()
         pn = op.network.Cubic(shape=[3, 3, 3])
-        pickle.dump(pn, open('pn.pnm', 'wb'))
+        pickle.dump(pn, open('pn.pkl', 'wb'))
         with pytest.raises(Exception):
-            ws = op.io.OpenpnmIO.load_workspace('pn.pnm')
+            ws = op.io.Pickle.load_workspace('pn.pkl')
 
 
 if __name__ == '__main__':
     # All the tests in this file can be run with 'playing' this file
-    t = OpenpnmIOTest()
+    t = PickleTest()
     self = t  # For interacting with the tests at the command line
     t.setup_class()
     for item in t.__dir__():

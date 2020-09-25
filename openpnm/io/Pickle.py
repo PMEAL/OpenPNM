@@ -43,7 +43,7 @@ class Pickle(GenericIO):
     @classmethod
     def load_object_from_file(cls, filename, project=None):
         r"""
-        Loads an OpenPNM object from a file
+        Loads an OpenPNM object from a file on disk
 
         Parameters
         ----------
@@ -73,38 +73,6 @@ class Pickle(GenericIO):
         return project
 
     @classmethod
-    def load_object_from_dict(cls, obj, objname='', objtype='', project=None):
-        r"""
-        Loads a dictionary currently in memory into an OpenPNM Project
-
-        Parameters
-        ----------
-        obj : dict handle
-            The dictionary to load
-        objname : string
-            The name to give the object upon loading into the Project. If
-            none is specified one will be generated.
-        objtype : string
-            The type of object being loaded. If not specified, than a generic
-            Base class will be used.  The options are 'network', 'geometry',
-            'physics', 'phase', 'algorithm'.
-        project : OpenPNM Project
-            A project to load the given dict into (optional)
-
-        Returns
-        -------
-        project : OpenPNM Project
-            If no Project object is specified then one is created. A handle to
-            the Project is returned.
-
-        """
-        if project is None:
-            project = Project()
-        new_obj = project._new_object(objtype=objtype, name=objname)
-        new_obj.update(obj)
-        return new_obj
-
-    @classmethod
     def save_project(cls, project, filename=''):
         r"""
         Save an OpenPNM Project to a file on disk
@@ -118,7 +86,7 @@ class Pickle(GenericIO):
         """
         if filename == '':
             filename = project.name
-        filename = cls._parse_filename(filename=filename, ext='pnm')
+        filename = cls._parse_filename(filename=filename, ext='pkl')
 
         # Save dictionary as pickle
         d = {project.name: project}
@@ -137,7 +105,7 @@ class Pickle(GenericIO):
         """
         if filename == '':
             filename = 'workspace' + '_' + time.strftime('%Y%b%d_%H%M%p')
-        filename = cls._parse_filename(filename=filename, ext='pnm')
+        filename = cls._parse_filename(filename=filename, ext='pkl')
         # Create a normal dict to store objects to prevent name errors upon
         # reopening
         d = {}
@@ -167,7 +135,7 @@ class Pickle(GenericIO):
         workspace : OpenPNM Workspace Object
             A handle to the Workspace, with the newly loaded Projects added
         """
-        fname = cls._parse_filename(filename=filename, ext='pnm')
+        fname = cls._parse_filename(filename=filename, ext='pkl')
         temp = {}  # Read file into temporary dict
         if overwrite:
             ws.clear()
@@ -209,7 +177,7 @@ class Pickle(GenericIO):
         project : OpenPNM Project
             A handle to the loaded Project is returned.
         """
-        filename = cls._parse_filename(filename=filename, ext='pnm')
+        filename = cls._parse_filename(filename=filename, ext='pkl')
         projname = filename.name.split('.')[0]
         with open(filename, 'rb') as f:
             d = pickle.load(f)
