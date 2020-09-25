@@ -1050,16 +1050,22 @@ class Project(list):
         """
         from pandas import DataFrame as df
 
-        geoms = self.geometries().keys()
+        geoms = list(self.geometries().keys())
         phases = [p.name for p in self.phases().values()
                   if not hasattr(p, 'mixture')]
+        h = self.check_geometry_health()
+        if len(h['undefined_pores']) > 0:
+            geoms.append('---')
         grid = df(index=geoms, columns=phases)
         for r in grid.index:
             for c in grid.columns:
-                phys = self.find_physics(phase=self[c], geometry=self[r])
-                if phys is not None:
-                    grid.loc[r][c] = phys.name
-                else:
+                try:
+                    phys = self.find_physics(phase=self[c], geometry=self[r])
+                    if phys is not None:
+                        grid.loc[r][c] = phys.name
+                    else:
+                        grid.loc[r][c] = '---'
+                except KeyError or TypeError:
                     grid.loc[r][c] = '---'
         if astype == 'pandas':
             pass
