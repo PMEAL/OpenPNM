@@ -24,8 +24,7 @@ class PNM(GenericIO):
             filename = project.name + '.pnm'
 
         # Make a directory using the given file name
-        os.mkdir(filename)
-        f = cls._parse_filename(filename + "/" + 'saved.hdf', 'hdf')
+        f = cls._parse_filename(filename, 'pnm')
         root = hdfFile(f, mode='w')
         root.attrs['version'] = ws.version
         date = datetime.today().strftime("%Y %h %d %H:%M:%S")
@@ -53,15 +52,12 @@ class PNM(GenericIO):
                     obj_models[model] = temp
                 item.attrs['models'] = json.dumps(obj_models)
             item.attrs['class'] = str(obj.__class__)
-        XDMF.save(network=project.network,
-                  phases=list(project.phases().values()),
-                  filename=filename + "/" + 'for_paraview.xmf')
 
     @classmethod
     def load_project(cls, filename):
         loglevel = ws.settings['loglevel']
         ws.settings['loglevel'] = 50
-        f = cls._parse_filename(filename + "/" + 'saved.hdf', 'hdf')
+        f = cls._parse_filename(filename, 'pnm')
         root = hdfFile(f, mode='r')
         proj = Project()
         for name in root.keys():
