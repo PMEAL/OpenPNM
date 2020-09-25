@@ -42,22 +42,27 @@ def from_neighbor_throats(target, prop=None, throat_prop='pore.seed',
     if prop is not None:
         throat_prop = prop
     data = boss[throat_prop]
-    # This functionality needs to be removed since masked arrays don't seem
-    # to support the 'at' method, which is essential for speed.
-    # if ignore_nans:
-    #     data = np.ma.MaskedArray(data=data, mask=np.isnan(data))
+    nans = np.isnan(data)
     im = network.create_incidence_matrix()
     if mode == 'min':
+        if ignore_nans:
+            data[nans] = np.inf
         values = np.ones((network.Np, ))*np.inf
         np.minimum.at(values, im.row, data[im.col])
     if mode == 'max':
+        if ignore_nans:
+            data[nans] = -np.inf
         values = np.ones((network.Np, ))*-np.inf
         np.maximum.at(values, im.row, data[im.col])
     if mode == 'mean':
+        if ignore_nans:
+            data[nans] = 0
         values = np.zeros((network.Np, ))
         np.add.at(values, im.row, data[im.col])
         counts = np.zeros((network.Np, ))
         np.add.at(counts, im.row, np.ones((network.Nt, ))[im.col])
+        if ignore_nans:
+            np.subtract.at(counts, im.row, nans[im.col])
         values = values/counts
     Ps = boss.map_pores(target.pores(), target)
     return np.array(values)[Ps]
