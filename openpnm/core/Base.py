@@ -648,7 +648,7 @@ class Base(dict):
         >>> import openpnm as op
         >>> pn = op.network.Cubic(shape=[5, 5, 5])
         >>> pn.labels(pores=[11, 12])
-        ['pore.all', 'pore.front', 'pore.internal', 'pore.surface']
+        ['pore.all', 'pore.internal', 'pore.left', 'pore.surface']
         """
         # Short-circuit query when no pores or throats are given
         if (np.size(pores) == 0) and (np.size(throats) == 0):
@@ -844,7 +844,7 @@ class Base(dict):
         >>> pn = op.network.Cubic(shape=[5, 5, 5])
         >>> Ps = pn.pores(labels=['top', 'front'], mode='union')
         >>> Ps[:5]  # Look at first 5 pore indices
-        array([0, 1, 2, 3, 4])
+        array([ 4,  9, 14, 19, 20])
         >>> pn.pores(labels=['top', 'front'], mode='xnor')
         array([ 4,  9, 14, 19, 24])
         """
@@ -1376,12 +1376,12 @@ class Base(dict):
         --------
         >>> import openpnm as op
         >>> pn = op.network.Cubic(shape=[5, 5, 5])
-        >>> pn.filter_by_label(pores=[0, 1, 5, 6], labels='left')
+        >>> pn.filter_by_label(pores=[0, 1, 25, 32], labels='left')
         array([0, 1])
         >>> Ps = pn.pores(['top', 'bottom', 'front'], mode='or')
         >>> pn.filter_by_label(pores=Ps, labels=['top', 'front'],
         ...                    mode='and')
-        array([ 4,  9, 14, 19, 24])
+        array([ 24,  49,  74,  99, 124])
         """
         # Convert inputs to locations and element
         if (np.size(throats) > 0) and (np.size(pores) > 0):
