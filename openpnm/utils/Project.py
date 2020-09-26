@@ -546,7 +546,7 @@ class Project(list):
             the property name, including the type and name of the object to
             which they belonged, all separated by the pipe character.
 
-            **'xmf'** : The extensible data markup format, is a very efficient
+            **'xdmf'** : The extensible data markup format, is a very efficient
             format for large data sets.  This actually results in the creation
             of two files, the *xmf* file and an associated *hdf* file.  The
             *xmf* file contains instructions for looking into the *hdf* file
@@ -571,6 +571,15 @@ class Project(list):
         if filetype is None:
             if '.' in filename:
                 filetype = filename.split('.')[-1]
+                # Convert file type to io class name
+                if filetype == 'hdf':
+                    filetype = 'hdf5'
+                if filetype == 'xmf':
+                    filetype = 'xdmf'
+                if filetype == 'vtp':
+                    filetype = 'vtk'
+                if filetype == 'pkl':
+                    filetype = 'pickle'
             else:
                 raise Exception('File type not given')
 

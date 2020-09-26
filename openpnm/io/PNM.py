@@ -1,11 +1,10 @@
-import os
 import json
 import numpy as np
 import importlib
 from datetime import datetime
 from openpnm.utils import Workspace, Project
 from openpnm.utils import logging
-from openpnm.io import GenericIO, XDMF
+from openpnm.io import GenericIO
 from h5py import File as hdfFile
 logger = logging.getLogger(__name__)
 ws = Workspace()
@@ -45,7 +44,8 @@ class PNM(GenericIO):
             if hasattr(obj, 'models'):
                 obj_models = {}
                 for model in obj.models.keys():
-                    temp = {k: v for k, v in obj.models[model].items() if k != 'model'}
+                    temp = {k: v for k, v in obj.models[model].items()
+                            if k != 'model'}
                     if 'model' in obj.models[model].keys():
                         a = obj.models[model]['model']
                         temp['model'] = a.__module__ + '|' + \
@@ -65,8 +65,8 @@ class PNM(GenericIO):
             print('Loading ' + proj.name)
         except Exception:
             proj = Project()
-            print('A project named ' + root.attrs['name'] +
-                  ' already exists, renaming to ' + proj.name)
+            print('A project named ' + root.attrs['name']
+                  + ' already exists, renaming to ' + proj.name)
         print('Created using OpenPNM version ' + root.attrs['version'])
         print('Saved on ' + root.attrs['date saved'])
         for name in root.keys():

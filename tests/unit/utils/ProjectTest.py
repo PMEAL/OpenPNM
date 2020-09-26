@@ -386,19 +386,19 @@ class ProjectTest:
     def test_export_data(self):
         fname = 'export_data_tests'
         self.proj.export_data(phases=self.phase1, filename=fname,
-                              filetype='vtp')
+                              filetype='vtk')
         os.remove(fname+'.vtp')
-        self.proj.export_data(phases=self.phase1, filename=fname+'.vtp')
+        self.proj.export_data(phases=self.phase1, filename=fname+'.vtk')
         os.remove(fname+'.vtp')
         self.proj.export_data(phases=self.phase1, filename=fname,
                               filetype='csv')
         os.remove(fname+'.csv')
         self.proj.export_data(phases=self.phase1, filename=fname,
-                              filetype='xmf')
+                              filetype='xdmf')
         os.remove(fname+'.xmf')
         os.remove(fname+'.hdf')
         self.proj.export_data(phases=self.phase1, filename=fname,
-                              filetype='hdf')
+                              filetype='hdf5')
         os.remove(fname+'.hdf')
         self.proj.export_data(phases=self.phase1, filename=fname,
                               filetype='mat')
