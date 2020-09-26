@@ -370,7 +370,10 @@ class ProjectTest:
         new_proj = self.ws.new_project()
         new_proj.load_object(name+'.net')
         assert new_proj.network.name == name
-        os.remove(name+'.net')
+        try:
+            os.remove(name+'.net')
+        except PermissionError:
+            print('Could not delete ' + name + '.net')
 
     def test_load_object_from_fixture(self):
         path = Path(os.path.realpath(__file__),
@@ -380,15 +383,6 @@ class ProjectTest:
         new_proj.load_object(filename)
         assert len(new_proj) == 1
         assert new_proj.network._isa('network')
-
-    def test_dump_and_fetch_data(self):
-        proj = self.ws.copy_project(self.proj)
-        proj._dump_data()
-        # Ensure only pore.coords and throat.conns are found
-        assert sum([len(item.props()) for item in proj]) == 2
-        proj._fetch_data()
-        assert np.any([len(item.props()) for item in proj])
-        os.remove(proj.name+'.hdf5')
 
     def test_export_data(self):
         fname = 'export_data_tests'
