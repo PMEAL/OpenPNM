@@ -77,7 +77,7 @@ class Workspace(dict):
     def version(self):
         return openpnm.__version__
 
-    def save_project(self, project, filename=''):
+    def save_project(self, project, filename=None):
         r"""
         Saves given Project to a 'pnm' file
 

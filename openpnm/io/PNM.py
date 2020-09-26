@@ -29,6 +29,7 @@ class PNM(GenericIO):
         root.attrs['version'] = ws.version
         date = datetime.today().strftime("%Y %h %d %H:%M:%S")
         root.attrs['date saved'] = date
+        root.attrs['name'] = project.name
         # root.attrs['comments'] = project.comments
         for obj in project:
             item = root.create_group(obj.name)
@@ -59,7 +60,15 @@ class PNM(GenericIO):
         ws.settings['loglevel'] = 50
         f = cls._parse_filename(filename, 'pnm')
         root = hdfFile(f, mode='r')
-        proj = Project()
+        try:
+            proj = Project(name=root.attrs['name'])
+            print('Loading ' + proj.name)
+        except Exception:
+            proj = Project()
+            print('A project named ' + root.attrs['name'] +
+                  ' already exists, renaming to ' + proj.name)
+        print('Created using OpenPNM version ' + root.attrs['version'])
+        print('Saved on ' + root.attrs['date saved'])
         for name in root.keys():
             if 'network' in root[name].attrs['class']:
                 proj, obj = create_obj(root, name, proj)

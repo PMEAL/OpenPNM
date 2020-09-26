@@ -473,7 +473,7 @@ class Project(list):
         from openpnm.io import Pickle
         Pickle.load_object_from_file(filename=filename, project=self)
 
-    def save_project(self, filename=''):
+    def save_project(self, filename=None):
         r"""
         Save the current project to a ``pnm`` file.
 
