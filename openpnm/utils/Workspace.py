@@ -47,6 +47,7 @@ class Workspace(dict):
 
     def __init__(self):
         super().__init__()
+        self._projects = {}
 
     def __setitem__(self, name, project):
         if name is None:

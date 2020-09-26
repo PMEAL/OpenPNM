@@ -127,7 +127,7 @@ def plot_connections(network, throats=None, fig=None, size_by=None,
                             antialiaseds=np.ones_like(network.Ts))
     ax.add_collection(lc)
 
-    _scale_3d_axes(ax=ax, X=X, Y=Y, Z=Z)
+    _scale_3d_axes(ax=ax, X=X, Y=Y, Z=Z, dimen=ThreeD)
     _label_axes(ax=ax, X=X, Y=Y, Z=Z)
 
     return fig
@@ -228,6 +228,9 @@ def plot_coordinates(network, pores=None, fig=None, size_by=None,
 
     # Collect specified coordinates
     X, Y, Z = network['pore.coords'][Ps].T
+    # The bounding box for fig is the entire ntwork (to fix the problem with
+    # overwriting figures' axes lim)
+    Xl, Yl, Zl = network['pore.coords'].T
 
     # Parse formating args
     if 'c' in kwargs.keys():
@@ -242,14 +245,14 @@ def plot_coordinates(network, pores=None, fig=None, size_by=None,
     if ThreeD:
         ax.scatter(X, Y, Z, c=color, s=markersize,
                    marker=marker, alpha=alpha)
-        _scale_3d_axes(ax=ax, X=X, Y=Y, Z=Z)
+        _scale_3d_axes(ax=ax, X=Xl, Y=Yl, Z=Zl, dimen=ThreeD)
     else:
         X_temp, Y_temp = np.column_stack((X, Y, Z))[:, dim].T
         ax.scatter(X_temp, Y_temp, c=color, s=markersize,
                    marker=marker, alpha=alpha)
-        _scale_3d_axes(ax=ax, X=X, Y=Y, Z=np.zeros_like(Y))
+        _scale_3d_axes(ax=ax, X=Xl, Y=Yl, Z=np.zeros_like(Yl), dimen=ThreeD)
 
-    _label_axes(ax=ax, X=X, Y=Y, Z=Z)
+    _label_axes(ax=ax, X=Xl, Y=Yl, Z=Zl)
 
     return fig
 
@@ -273,7 +276,7 @@ def _label_axes(ax, X, Y, Z):
         ax.set_zlabel("Z")
 
 
-def _scale_3d_axes(ax, X, Y, Z):
+def _scale_3d_axes(ax, X, Y, Z, dimen):
     if not hasattr(ax, '_scaled'):
         ax._scaled = True
         if not hasattr(ax, "set_zlim"):
@@ -286,7 +289,14 @@ def _scale_3d_axes(ax, X, Y, Z):
         ax.set_ylim(mid_y - max_range, mid_y + max_range)
         if hasattr(ax, "set_zlim"):
             ax.set_zlim(mid_z - max_range, mid_z + max_range)
-        plt.autoscale()
+        # Changes for the cases where a previous fig is already existed
+        # recompute the ax.dataLim
+        if (dimen is True):
+            ax.relim()
+            # update ax.viewLim using the new dataLim
+            ax.autoscale_view()
+        else:
+            ax.autoscale()
 
 
 def plot_networkx(network, plot_throats=True, labels=None, colors=None,

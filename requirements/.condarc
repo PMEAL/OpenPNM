@@ -2,7 +2,6 @@ ssl_verify: true
 channels:
   - defaults
   - conda-forge
-  - haasad
 channel_priority: flexible
 auto_update_conda: true
 pip_interop_enabled: true

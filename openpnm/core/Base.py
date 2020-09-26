@@ -1,4 +1,5 @@
 import warnings
+import uuid
 import numpy as np
 import scipy as sp
 from collections import namedtuple
@@ -142,6 +143,8 @@ class Base(dict):
         # It is necessary to set the SettingsDict here since some classes
         # use it before calling super.__init__()
         instance.settings = SettingsDict()
+        instance.settings['name'] = None
+        instance.settings['_uuid'] = str(uuid.uuid4())
         return instance
 
     def __init__(self, Np=0, Nt=0, name=None, project=None, settings={}):
@@ -153,7 +156,7 @@ class Base(dict):
         if name is None:
             name = project._generate_name(self)
         project.extend(self)
-        self.name = name
+        self.settings['name'] = name
         self.update({'pore.all': np.ones(shape=(Np, ), dtype=bool)})
         self.update({'throat.all': np.ones(shape=(Nt, ), dtype=bool)})
 
@@ -161,10 +164,7 @@ class Base(dict):
         return '<%s object at %s>' % (self.__class__.__module__, hex(id(self)))
 
     def __eq__(self, other):
-        if hex(id(self)) == hex(id(other)):
-            return True
-        else:
-            return False
+        return hex(id(self)) == hex(id(other))
 
     def __setitem__(self, key, value):
         r"""
@@ -271,7 +271,7 @@ class Base(dict):
                          if k.startswith(key + '.')})
         # The following code, if activated, attempts to run models when
         # missing data is requested from the dictionary.  The works fine,
-        # but breaks the general way openpnm behaviors.
+        # but breaks the general way openpnm behaves.
         # elif hasattr(self, 'models') and key in self.models:
         #     self.regenerate_models(key)
         #     vals = super().__getitem__(key)
@@ -280,27 +280,21 @@ class Base(dict):
         return vals
 
     def _set_name(self, name, validate=True):
-        if not hasattr(self, '_name'):
-            self._name = None
+        old_name = self.settings['name']
         if name is None:
             name = self.project._generate_name(self)
-        if self.name == name:
-            return
         if validate:
             self.project._validate_name(name)
-        if self._name is not None:
-            # Rename any label arrays in other objects
-            for item in self.project:
-                if 'pore.'+self.name in item.keys():
-                    item['pore.'+name] = item.pop('pore.'+self.name)
-                if 'throat.'+self.name in item.keys():
-                    item['throat.'+name] = item.pop('throat.'+self.name)
-        self._name = name
+        self.settings['name'] = name
+        # Rename any label arrays in other objects
+        for item in self.project:
+            if 'pore.' + old_name in item.keys():
+                item['pore.'+name] = item.pop('pore.' + old_name)
+            if 'throat.' + old_name in item.keys():
+                item['throat.' + name] = item.pop('throat.' + old_name)
 
     def _get_name(self):
-        if not hasattr(self, '_name'):
-            self._name = None
-        return self._name
+        return self.settings['name']
 
     name = property(_get_name, _set_name)
 
@@ -1619,7 +1613,7 @@ class Base(dict):
         import matplotlib.pyplot as plt
         temp = plt.rcParams['font.size']
         plt.rcParams['font.size'] = fontsize
-        if type(props) is str:
+        if isinstance(props, str):
             props = [props]
         N = len(props)
         color = plt.cm.tab10(range(10))
@@ -1633,7 +1627,7 @@ class Base(dict):
             r = int(np.ceil(N**0.5))
             c = int(np.floor(N**0.5))
         plt.figure()
-        for i in range(len(props)):
+        for i, _ in enumerate(props):
             plt.subplot(r, c, i+1)
             try:
                 # Update kwargs with some default values
@@ -1653,9 +1647,10 @@ class Base(dict):
 
         Returns
         -------
-        Returns a HealthDict object which a basic dictionary with an added
-        ``health`` attribute that is True is all entries in the dict are
-        deemed healthy (empty lists), or False otherwise.
+        health: HealthDict object
+            A  basic dictionary with an added ``health`` attribute that is
+            ``True`` if all entries in the dict are deemed healthy
+            (empty lists), or ``False`` otherwise.
 
         Examples
         --------
@@ -1727,7 +1722,7 @@ class Base(dict):
         if element is None:
             element = ['pore', 'throat']
         # Convert element to a list for subsequent processing
-        if type(element) is str:
+        if isinstance(element, str):
             element = [element]
         # Convert 'pore.prop' and 'throat.prop' into just 'pore' and 'throat'
         element = [item.split('.')[0] for item in element]
@@ -1739,7 +1734,7 @@ class Base(dict):
             if item not in ['pore', 'throat']:
                 raise Exception('All keys must start with either pore or throat')
         # Remove duplicates if any
-        [element.remove(L) for L in element if element.count(L) > 1]
+        _ = [element.remove(L) for L in element if element.count(L) > 1]
         if single:
             if len(element) > 1:
                 raise Exception('Both elements recieved when single element '
@@ -1766,7 +1761,7 @@ class Base(dict):
         """
         if labels is None:
             raise Exception('Labels cannot be None')
-        if type(labels) is str:
+        if isinstance(labels, str):
             labels = [labels]
         # Parse the labels list
         parsed_labels = []
@@ -1788,8 +1783,8 @@ class Base(dict):
                 temp = [element+'.'+label]
             parsed_labels.extend(temp)
             # Remove duplicates if any
-            [parsed_labels.remove(L) for L in parsed_labels
-             if parsed_labels.count(L) > 1]
+            _ = [parsed_labels.remove(L) for L in parsed_labels
+                 if parsed_labels.count(L) > 1]
         return parsed_labels
 
     def _parse_mode(self, mode, allowed=None, single=False):
@@ -1818,14 +1813,14 @@ class Base(dict):
         are all within the allowed set (if provoided).  Also, if the ``single``
         argument was True, then a string is returned.
         """
-        if type(mode) is str:
+        if isinstance(mode, str):
             mode = [mode]
         for item in mode:
             if (allowed is not None) and (item not in allowed):
                 raise Exception('\'mode\' must be one of the following: '
                                 + allowed.__str__())
         # Remove duplicates, if any
-        [mode.remove(L) for L in mode if mode.count(L) > 1]
+        _ = [mode.remove(L) for L in mode if mode.count(L) > 1]
         if single:
             if len(mode) > 1:
                 raise Exception('Multiple modes received when only one mode '

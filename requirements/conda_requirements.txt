@@ -14,5 +14,4 @@ flatdict
 transforms3d
 sympy
 docrep==0.2.7
-pypardiso
-zarr
+pardiso4py

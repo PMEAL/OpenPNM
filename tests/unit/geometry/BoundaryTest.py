@@ -68,8 +68,8 @@ class BoundaryTest:
                                 model=odiff)
         phys_air_boun.regenerate_models()
         phys_air_geo.regenerate_models()
-        checks = phys_air_geo.check_data_health().values()
-        for check in checks:
+        health = phys_air_geo.check_data_health()
+        for check in health.values():
             assert len(check) == 0
         checks = phys_air_boun.check_data_health().values()
         for check in checks:

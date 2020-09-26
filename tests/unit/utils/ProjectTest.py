@@ -1,6 +1,5 @@
 import os
 import pytest
-import scipy as sp
 import numpy as np
 import openpnm as op
 from pathlib import Path

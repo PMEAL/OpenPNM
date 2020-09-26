@@ -51,9 +51,9 @@ jobs:
           conda install --file requirements/conda_requirements.txt
           conda install --file requirements/test_requirements.txt
           conda install pyamg
-          conda install porespy  # for notebook testing
           # Install OpenPNM from the checked-out branch
           pip install -e .
+          conda install porespy  # for notebook testing
 
       - name: Running tests
         run:
