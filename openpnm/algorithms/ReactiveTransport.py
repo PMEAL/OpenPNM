@@ -142,6 +142,7 @@ class ReactiveTransport(GenericTransport):
             self.settings['relaxation_quantity'] = relaxation_quantity
         super().setup(**kwargs)
 
+
     def run(self, x0=None):
         r"""
         Builds the A and b matrices, and calls the solver specified in the
@@ -155,6 +156,7 @@ class ReactiveTransport(GenericTransport):
         quantity = self.settings['quantity']
         logger.info('Running ReactiveTransport')
         x0 = np.zeros(self.Np, dtype=float) if x0 is None else x0
+        self["pore.initial_guess"] = x0
         x = self._run_reactive(x0)
         self[quantity] = x
 
