@@ -1,4 +1,5 @@
 import json
+import json_tricks as jsont
 import numpy as np
 import importlib
 from datetime import datetime
@@ -24,59 +25,69 @@ class PNM(GenericIO):
 
         # Make a directory using the given file name
         f = cls._parse_filename(filename, 'pnm')
-        root = hdfFile(f, mode='w')
-        root.attrs['version'] = ws.version
-        date = datetime.today().strftime("%Y %h %d %H:%M:%S")
-        root.attrs['date saved'] = date
-        root.attrs['name'] = project.name
-        # root.attrs['comments'] = project.comments
-        for obj in project:
-            item = root.create_group(obj.name)
-            # Store data
-            # item.update(obj)
-            for arr in obj.keys():
-                item.create_dataset(name=arr, data=obj[arr],
-                                    shape=obj[arr].shape,
-                                    compression="gzip")
-            # Store settings dict as metadata
-            item.attrs['settings'] = json.dumps(obj.settings)
-            # Store models dict as metadata
-            if hasattr(obj, 'models'):
-                obj_models = {}
-                for model in obj.models.keys():
-                    temp = {k: v for k, v in obj.models[model].items()
-                            if k != 'model'}
-                    if 'model' in obj.models[model].keys():
-                        a = obj.models[model]['model']
-                        temp['model'] = a.__module__ + '|' + \
-                            a.__code__.co_name
-                    obj_models[model] = temp
-                item.attrs['models'] = json.dumps(obj_models)
-            item.attrs['class'] = str(obj.__class__)
+        with hdfFile(f, mode='w') as root:
+            # root = hdfFile(f, mode='w')
+            root.attrs['version'] = ws.version
+            date = datetime.today().strftime("%Y %h %d %H:%M:%S")
+            root.attrs['date saved'] = date
+            root.attrs['name'] = project.name
+            # root.attrs['comments'] = project.comments
+            for obj in project:
+                item = root.create_group(obj.name)
+                for arr in obj.keys():  # Store data
+                    try:
+                        item.create_dataset(name=arr, data=obj[arr],
+                                            shape=obj[arr].shape,
+                                            compression="gzip")
+                    except TypeError:  # Deal with 'object' arrays
+                        logger.warning(arr + ' is being converted to a string')
+                        b = jsont.dumps(obj[arr])
+                        c = b.encode()
+                        d = np.void(c)
+                        item.create_dataset(name=arr, data=d)
+                # Store settings dict as metadata
+                item.attrs['settings'] = json.dumps(obj.settings)
+                # Store models dict as metadata
+                if hasattr(obj, 'models'):
+                    obj_models = {}
+                    for model in obj.models.keys():
+                        temp = {k: v for k, v in obj.models[model].items()
+                                if k != 'model'}
+                        if 'model' in obj.models[model].keys():
+                            a = obj.models[model]['model']
+                            temp['model'] = a.__module__ + '|' + \
+                                a.__code__.co_name
+                        obj_models[model] = temp
+                    item.attrs['models'] = json.dumps(obj_models)
+                item.attrs['class'] = str(obj.__class__)
 
     @classmethod
     def load_project(cls, filename):
         loglevel = ws.settings['loglevel']
         ws.settings['loglevel'] = 50
         f = cls._parse_filename(filename, 'pnm')
-        root = hdfFile(f, mode='r')
-        try:
-            proj = Project(name=root.attrs['name'])
-            print('Loading ' + proj.name)
-        except Exception:
-            proj = Project()
-            print('A project named ' + root.attrs['name']
-                  + ' already exists, renaming to ' + proj.name)
-        print('Created using OpenPNM version ' + root.attrs['version'])
-        print('Saved on ' + root.attrs['date saved'])
-        for name in root.keys():
-            if 'network' in root[name].attrs['class']:
-                proj, obj = create_obj(root, name, proj)
-        for name in root.keys():
-            if 'network' not in root[name].attrs['class']:
-                proj, obj = create_obj(root, name, proj)
+        with hdfFile(f, mode='r') as root:
+            try:  # Create an empty project with old name
+                proj = Project(name=root.attrs['name'])
+                print('Loading ' + proj.name)
+            except Exception:  # Generate a new name if collision occurs
+                proj = Project()
+                print('A project named ' + root.attrs['name']
+                      + ' already exists, renaming to ' + proj.name)
+            print('Created using OpenPNM version ' + root.attrs['version'])
+            print('Saved on ' + root.attrs['date saved'])
+            for name in root.keys():
+                print('='*60)
+                print(name)
+                if 'network' in root[name].attrs['class']:
+                    proj, obj = create_obj(root, name, proj)
+            for name in root.keys():
+                print('='*60)
+                print(name)
+                if 'network' not in root[name].attrs['class']:
+                    proj, obj = create_obj(root, name, proj)
 
-        ws.settings['loglevel'] = loglevel
+            ws.settings['loglevel'] = loglevel
         return proj
 
 
@@ -93,8 +104,14 @@ def create_obj(root, name, proj):
     obj = clss(project=proj, settings={'freeze_models': True})
     obj._name = name
     # Add data to obj
-    for item in root[name]:
-        obj.update({item: np.array(root[name][item])})
+    for arr in root[name].keys():
+        a = np.array(root[name][arr])
+        if str(a.dtype).startswith("|V"):
+            logger.warning(arr + ' is being converted from string')
+            b = np.string_(a)
+            c = b.astype(str)
+            a = jsont.loads(c)
+        obj.update({arr: a})
     # Add settings to obj
     obj.settings.update(json.loads(root[name].attrs['settings']))
     # Add models to obj

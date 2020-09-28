@@ -137,8 +137,16 @@ class Workspace(dict):
         ``os.path`` in the Python standard library.
 
         """
-        from openpnm.io import PNM
-        PNM.load_project(filename=filename)
+        try:
+            from openpnm.io import PNM
+            PNM.load_project(filename=filename)
+        except:
+            try:
+                import pickle
+                f = open(filename, 'rb')
+                proj = pickle.load(f)
+            except:
+                print('neither worked')
 
     def close_project(self, project):
         r"""
