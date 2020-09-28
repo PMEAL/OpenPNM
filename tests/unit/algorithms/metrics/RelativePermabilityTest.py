@@ -60,8 +60,8 @@ class RelativePermeabilityTest:
         kr = [7.003833e-01, 4.675499e-01, 4.675499e-01, 2.371033e-06,
               1.216706e-06, 1.000000e-06, 1.000000e-06, 1.000000e-06,
               1.000000e-06, 1.000000e-06]
-        nt.assert_allclose(kx, ky)
-        nt.assert_allclose(kx, kr)
+        nt.assert_allclose(kx, ky,rtol=1e-6)
+        nt.assert_allclose(kx, kr,rtol=1e-6)
 
     def test_lacking_boundary_faces(self):
         inlets = {'x': 'top'}
@@ -76,12 +76,11 @@ class RelativePermeabilityTest:
         results = rp.get_Kr_data()
         kx = results['kr_wp']['x']
         kz = results['kr_wp']['z']
-        kr = [0.5953556221922879, 0.42713264157774755, 0.3658925423425991,
-              0.21493111700350034, 1.2600781827032377e-06, 1.0000000000000004e-06,
-              1.0000000000000004e-06, 1.0000000000000004e-06, 1.0000000000000004e-06,
-              1.0000000000000004e-06]
-        nt.assert_allclose(kx, kz)
-        nt.assert_allclose(kx, kr)
+        kr = [5.982845e-01, 4.060000e-01, 4.060000e-01, 2.046288e-01,
+              1.065283e-06, 1.000000e-06, 1.000000e-06, 1.000000e-06,
+              1.000000e-06, 1.000000e-06]
+        nt.assert_allclose(kx, kz, rtol=1e-6)
+        nt.assert_allclose(kx, kr, rtol=1e-6)
 
     def test_user_defined_boundary_face(self):
         pores_in = self.net.pores('top')
@@ -100,12 +99,11 @@ class RelativePermeabilityTest:
         results = rp.get_Kr_data()
         kx = results['kr_wp']['x']
         kz = results['kr_wp']['z']
-        kr = [0.5953556221922879, 0.42713264157774755, 0.3658925423425991,
-              0.21493111700350034, 1.2600781827032377e-06, 1.0000000000000004e-06,
-              1.0000000000000004e-06, 1.0000000000000004e-06, 1.0000000000000004e-06,
-              1.0000000000000004e-06]
-        nt.assert_allclose(kx, kz)
-        nt.assert_allclose(kx, kr)
+        kr = [5.982845e-01, 4.060000e-01, 4.060000e-01, 2.046288e-01,
+              1.065283e-06, 1.000000e-06, 1.000000e-06, 1.000000e-06,
+              1.000000e-06, 1.000000e-06]
+        nt.assert_allclose(kx, kz, rtol=1e-6)
+        nt.assert_allclose(kx, kr, rtol=1e-6)
 
     def setup_2D_model(self, shape):
         self.net = op.network.Cubic(shape=shape, spacing=0.0005)
@@ -125,9 +123,9 @@ class RelativePermeabilityTest:
         self.wet_phase.add_model(propname='throat.entry_pressure',
                                  model=mod)
         if shape[1] != 1:
-            self.inlet_pores = self.net.pores('left')
-        else:
             self.inlet_pores = self.net.pores('front')
+        else:
+            self.inlet_pores = self.net.pores('left')
         ip = op.algorithms.InvasionPercolation(network=self.net,
                                                phase=self.non_wet_phase)
         ip.set_inlets(pores=self.inlet_pores)
