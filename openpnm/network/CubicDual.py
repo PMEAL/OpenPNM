@@ -85,7 +85,7 @@ class CubicDual(GenericNetwork):
         single_dim = shape == 1
         shape[single_dim] = 2
         dual = Cubic(shape=shape-1, spacing=1)
-        faces = [['front', 'back'], ['left', 'right'], ['top', 'bottom']]
+        faces = [['left', 'right'],['front', 'back'], ['top', 'bottom']]
         faces = [faces[i] for i in np.where(~single_dim)[0]]
         faces = np.array(faces).flatten().tolist()
         dual.add_boundary_pores(faces)
