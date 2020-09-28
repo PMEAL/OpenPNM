@@ -9,10 +9,15 @@ import numpy as _np
 import openpnm.models.geometry as geomods
 
 
-def stokes_generic(target,
-                   pore_viscosity='pore.viscosity',
-                   throat_viscosity='throat.viscosity',
-                   flow_coeff='throat.flow_coeff'):
+def stokes_generic(
+    target,
+    pore_viscosity='pore.viscosity',
+    throat_viscosity='throat.viscosity',
+    flow_coeff='throat.flow_coeff',
+):
+    r"""
+
+    """
     phase = target.project.find_phase(target)
     F = target.network[flow_coeff]
     if isinstance(F, dict):
@@ -42,15 +47,13 @@ def stokes_conical_frustrum(target,
     return gh
 
 
-def hagen_poiseuille(
-    target,
-    pore_area="pore.area",
-    throat_area="throat.area",
-    pore_viscosity="pore.viscosity",
-    throat_viscosity="throat.viscosity",
-    conduit_lengths="throat.conduit_lengths",
-    conduit_shape_factors="throat.flow_shape_factors"
-):
+def hagen_poiseuille(target,
+                     pore_area="pore.area",
+                     throat_area="throat.area",
+                     pore_viscosity="pore.viscosity",
+                     throat_viscosity="throat.viscosity",
+                     conduit_lengths="throat.conduit_lengths",
+                     conduit_shape_factors="throat.flow_shape_factors"):
     r"""
     Calculate the hydraulic conductance of conduits in network, where a
     conduit is ( 1/2 pore - full throat - 1/2 pore ). See the notes section.
@@ -137,15 +140,13 @@ def hagen_poiseuille(
     return (1/gt/SFt + 1/g1/SF1 + 1/g2/SF2) ** (-1)
 
 
-def hagen_poiseuille_2D(
-    target,
-    pore_diameter="pore.diameter",
-    throat_diameter="throat.diameter",
-    pore_viscosity="pore.viscosity",
-    throat_viscosity="throat.viscosity",
-    conduit_lengths="throat.conduit_lengths",
-    conduit_shape_factors="throat.flow_shape_factors",
-):
+def hagen_poiseuille_2D(target,
+                        pore_diameter="pore.diameter",
+                        throat_diameter="throat.diameter",
+                        pore_viscosity="pore.viscosity",
+                        throat_viscosity="throat.viscosity",
+                        conduit_lengths="throat.conduit_lengths",
+                        conduit_shape_factors="throat.flow_shape_factors"):
     r"""
     Calculate the hydraulic conductance of conduits in a 2D network, where a
     conduit is ( 1/2 pore - full throat - 1/2 pore ). See the notes section.

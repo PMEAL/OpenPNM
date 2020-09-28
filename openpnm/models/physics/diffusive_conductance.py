@@ -11,6 +11,17 @@ import numpy as _np
 import scipy.constants as const
 
 
+def poisson_generic(target,
+                    pore_diffusivity='pore.diffusivity',
+                    throat_diffusivity='throat.diffusivity',
+                    flow_coeff='throat.flow_coeff'):
+    r"""
+
+    """
+    network = target.network
+    g_d = S*D_AB
+
+
 def ordinary_diffusion(
     target,
     pore_area='pore.area',
@@ -94,9 +105,9 @@ def ordinary_diffusion(
     g2 = (D2*A2) / L2
     gt = (Dt*At) / Lt
     # Ensure infinite conductance for elements with zero length
-    g1[L1==0] = _np.inf
-    g2[L2==0] = _np.inf
-    gt[Lt==0] = _np.inf
+    g1[L1 == 0] = _np.inf
+    g2[L2 == 0] = _np.inf
+    gt[Lt == 0] = _np.inf
     # Apply shape factors and calculate the final conductance
     return (1/gt/SFt + 1/g1/SF1 + 1/g2/SF2)**(-1)
 
@@ -108,7 +119,7 @@ def ordinary_diffusion_2D(
     pore_diffusivity='pore.diffusivity',
     throat_diffusivity='throat.diffusivity',
     conduit_lengths='throat.conduit_lengths',
-    conduit_shape_factors='throat.poisson_shape_factors'
+    conduit_shape_factors='throat.poisson_shape_factors',
 ):
     r"""
     Calculate the diffusive conductance of conduits in network, where a
@@ -189,9 +200,9 @@ def ordinary_diffusion_2D(
     g2 = (D2*A2) / L2
     gt = (Dt*At) / Lt
     # Ensure infinite conductance for elements with zero length
-    g1[L1==0] = _np.inf
-    g2[L2==0] = _np.inf
-    gt[Lt==0] = _np.inf
+    g1[L1 == 0] = _np.inf
+    g2[L2 == 0] = _np.inf
+    gt[Lt == 0] = _np.inf
     # Apply shape factors and calculate the final conductance
     return (1/gt/SFt + 1/g1/SF1 + 1/g2/SF2)**(-1)
 
@@ -304,9 +315,9 @@ def mixed_diffusion(
     g2 = (D2e * A2) / L2
     gt = (Dte * At) / Lt
     # Ensure infinite conductance for elements with zero length
-    g1[L1==0] = _np.inf
-    g2[L2==0] = _np.inf
-    gt[Lt==0] = _np.inf
+    g1[L1 == 0] = _np.inf
+    g2[L2 == 0] = _np.inf
+    gt[Lt == 0] = _np.inf
     # Apply shape factors and calculate the final conductance
     return (1/gt/SFt + 1/g1/SF1 + 1/g2/SF2)**(-1)
 
@@ -419,9 +430,9 @@ def taylor_aris_diffusion(
     g2 = D2 * (1 + (Pe2**2)/192) * A2 / L2
     gt = Dt * (1 + (Pet**2)/192) * At / Lt
     # Ensure infinite conductance for elements with zero length
-    g1[L1==0] = _np.inf
-    g2[L2==0] = _np.inf
-    gt[Lt==0] = _np.inf
+    g1[L1 == 0] = _np.inf
+    g2[L2 == 0] = _np.inf
+    gt[Lt == 0] = _np.inf
     # Apply shape factors and calculate the final conductance
     return (1/gt/SFt + 1/g1/SF1 + 1/g2/SF2)**(-1)
 
@@ -544,9 +555,9 @@ def multiphase_diffusion(
     g2 = (D2*A2) / L2 * SF2
     gt = (Dt*At) / Lt * SFt
     # Ensure infinite conductance for elements with zero length
-    g1[L1==0] = _np.inf
-    g2[L2==0] = _np.inf
-    gt[Lt==0] = _np.inf
+    g1[L1 == 0] = _np.inf
+    g2[L2 == 0] = _np.inf
+    gt[Lt == 0] = _np.inf
     # Get partition coefficient dictionary key from phase settings
     partition_coef = phase.settings["partition_coef"]
     # Apply Henry's partitioning coefficient
