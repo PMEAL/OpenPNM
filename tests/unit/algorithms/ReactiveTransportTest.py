@@ -175,6 +175,19 @@ class ReactiveTransportTest:
         with pytest.raises(Exception):
             self.alg.run()
 
+    def test_check_divergence_if_maxiter_reached(self):
+        self.alg.reset(bcs=True, source_terms=True)
+        self.alg.setup(nlin_max_iter=2)
+        self.alg.settings.update({'conductance': 'throat.diffusive_conductance',
+                                  'quantity': 'pore.concentration'})
+        self.alg.set_source(pores=self.net.pores('bottom'), propname='pore.reaction')
+        self.alg.set_value_BC(pores=self.net.pores('top'), values=1.0)
+        self.alg.settings['relaxation_quantity'] = 1.0
+        self.alg.settings['relaxation_source'] = 1.0
+        with pytest.raises(Exception):
+            self.alg.run()
+        self.alg.setup(nlin_max_iter=5000)
+
     def test_variable_conductance(self):
         self.alg.reset(bcs=True, source_terms=True, variable_props=True)
 
