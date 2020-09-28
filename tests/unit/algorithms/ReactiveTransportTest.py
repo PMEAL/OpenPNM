@@ -26,6 +26,21 @@ class ReactiveTransportTest:
         self.alg = op.algorithms.ReactiveTransport(network=self.net,
                                                    phase=self.phase)
 
+    def test_setup(self):
+        self.alg.setup(
+            conductance="throat.cond",
+            quantity="pore.test",
+            nlin_max_iter=123,
+            relaxation_source=1.23,
+            relaxation_quantity=3.21
+        )
+        assert self.alg.settings["conductance"] == "throat.cond"
+        assert self.alg.settings["quantity"] == "pore.test"
+        assert self.alg.settings["nlin_max_iter"] == 123
+        assert self.alg.settings["relaxation_source"] == 1.23
+        assert self.alg.settings["relaxation_quantity"] == 3.21
+        self.setup_class()
+
     def test_set_variable_props(self):
         assert len(self.alg.settings["variable_props"]) == 0
         self.alg._set_variable_props(propnames="pore.pressure")
