@@ -135,7 +135,7 @@ class ReactiveTransport(GenericTransport):
         if conductance:
             self.settings['conductance'] = conductance
         if nlin_max_iter:
-            self.settings['max_iter'] = nlin_max_iter
+            self.settings['nlin_max_iter'] = nlin_max_iter
         if relaxation_source:
             self.settings['relaxation_source'] = relaxation_source
         if relaxation_quantity:
