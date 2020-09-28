@@ -142,7 +142,6 @@ class ReactiveTransport(GenericTransport):
             self.settings['relaxation_quantity'] = relaxation_quantity
         super().setup(**kwargs)
 
-
     def run(self, x0=None):
         r"""
         Builds the A and b matrices, and calls the solver specified in the
