@@ -60,8 +60,8 @@ class RelativePermeabilityTest:
         kr = [7.003833e-01, 4.675499e-01, 4.675499e-01, 2.371033e-06,
               1.216706e-06, 1.000000e-06, 1.000000e-06, 1.000000e-06,
               1.000000e-06, 1.000000e-06]
-        nt.assert_allclose(kx, ky,rtol=1e-6)
-        nt.assert_allclose(kx, kr,rtol=1e-6)
+        nt.assert_allclose(kx, ky, rtol=1e-6)
+        nt.assert_allclose(kx, kr, rtol=1e-6)
 
     def test_lacking_boundary_faces(self):
         inlets = {'x': 'top'}
