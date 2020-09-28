@@ -24,5 +24,5 @@ from . import throat_volume
 from . import throat_capillary_shape_factor
 from . import throat_centroid
 from . import throat_vector
-from . import conduit_stokes_coefficient
-from . import conduit_poisson_coefficient
+from . import conduit_hydraulic_coefficient
+from . import conduit_diffusive_coefficient

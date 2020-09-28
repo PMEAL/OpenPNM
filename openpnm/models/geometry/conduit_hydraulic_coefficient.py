@@ -13,7 +13,7 @@ def cylinders_in_series(target,
     network = target.network
 
 
-def spheres_and_cylinder(target,
+def spheres_and_cylinders(target,
                          pore_diameter='pore.diameter',
                          throat_diameter='throat.diameter',
                          throat_length=None,
@@ -24,7 +24,7 @@ def spheres_and_cylinder(target,
     network = target.network
 
 
-def pyramids_and_cuboid(target,
+def pyramids_and_cuboids(target,
                         pore_diameter='pore.diameter',
                         throat_diameter='throat.diameter',
                         throat_length=None,
@@ -37,7 +37,7 @@ def pyramids_and_cuboid(target,
     Rt = target[throat_diameter]/2
 
 
-def cones_and_cylinder(target,
+def cones_and_cylinders(target,
                        pore_diameter='pore.diameter',
                        throat_diameter='throat.diameter',
                        throat_length='throat.length',
