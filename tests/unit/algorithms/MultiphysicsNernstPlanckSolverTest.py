@@ -84,24 +84,24 @@ class MultiphysicsNernstPlanckSolverTest:
         # algorithms
         self.sf = op.algorithms.StokesFlow(network=self.net, phase=self.sw,
                                            settings=setts1)
-        self.sf.set_value_BC(pores=self.net.pores('back'), values=11)
-        self.sf.set_value_BC(pores=self.net.pores('front'), values=10)
+        self.sf.set_value_BC(pores=self.net.pores('right'), values=11)
+        self.sf.set_value_BC(pores=self.net.pores('left'), values=10)
 
         self.p = op.algorithms.IonicConduction(network=self.net, phase=self.sw,
                                                settings=setts1)
-        self.p.set_value_BC(pores=self.net.pores('left'), values=0.02)
-        self.p.set_value_BC(pores=self.net.pores('right'), values=0.01)
+        self.p.set_value_BC(pores=self.net.pores('front'), values=0.02)
+        self.p.set_value_BC(pores=self.net.pores('back'), values=0.01)
         self.p.settings['charge_conservation'] = 'electroneutrality'
 
         self.eA = op.algorithms.NernstPlanck(network=self.net, phase=self.sw,
                                              ion=self.Na.name, settings=setts1)
-        self.eA.set_value_BC(pores=self.net.pores('back'), values=20)
-        self.eA.set_value_BC(pores=self.net.pores('front'), values=10)
+        self.eA.set_value_BC(pores=self.net.pores('right'), values=20)
+        self.eA.set_value_BC(pores=self.net.pores('left'), values=10)
 
         self.eB = op.algorithms.NernstPlanck(network=self.net, phase=self.sw,
                                              ion=self.Cl.name, settings=setts1)
-        self.eB.set_value_BC(pores=self.net.pores('back'), values=20)
-        self.eB.set_value_BC(pores=self.net.pores('front'), values=10)
+        self.eB.set_value_BC(pores=self.net.pores('right'), values=20)
+        self.eB.set_value_BC(pores=self.net.pores('left'), values=10)
 
         mnp = op.algorithms.NernstPlanckMultiphysicsSolver
         self.mnp = mnp(network=self.net, phase=self.sw, settings=setts2)
@@ -117,25 +117,25 @@ class MultiphysicsNernstPlanckSolverTest:
         self.sw.update(self.eB.results())
 
     def test_concentration_Na(self):
-        x = [16.75211024, 12.05078194, 11.35129692, 10.82954036, 20.,
-             17.88816818, 12.87093078, 12.13946951, 11.38196949, 10.,
-             20.,         17.48986699, 14.6700871,  13.11729069, 11.69505888,
-             10.,         20.,         17.22150424, 15.25067879, 13.45710103,
-             11.86509361, 10.,         20.,         18.72761149, 16.68478905,
-             14.26063817, 12.41025969, 10.,         20.97223212, 18.7905309,
-             16.52426576, 14.01925674]
+        x = [10.,         10.,         10.,         10.,         10.53517114,
+             11.08046064, 11.71018632, 11.96714113, 11.72777708, 12.86695077,
+             11.58746158, 12.65040345, 13.25574649, 13.47731388, 14.06090075,
+             15.27217686, 13.05944438, 14.69280374, 14.62286844, 15.10186986,
+             16.15146162, 17.35993123, 14.90573687, 16.25298948, 16.74426472,
+             16.63951847, 17.98769641, 19.21709326, 20.,         20.,
+             20.,         20.]
         x = np.around(x, decimals=5)
         y = np.around(self.sw['pore.concentration.Na_mix_01'], decimals=5)
         assert_allclose(actual=y, desired=x)
 
     def test_concentration_Cl(self):
-        x = [20.83282456, 16.07633318, 14.93737703, 13.77151411, 20.,
-             19.50975474, 15.05193283, 13.96754625, 13.10310732, 10.,
-             20.,         17.80316316, 15.26570525, 13.86995902, 12.31635857,
-             10.,         20.,         16.34464455, 14.825669,   13.18827827,
-             11.65941891, 10.,         20.,         16.55949282, 14.15386805,
-             12.49365792, 10.91545082, 10.,         14.78715982, 12.56772913,
-             10.7821756,  9.66267911]
+        x = [10.,         10.,         10.,         10.,         13.06578514,
+             12.42279423, 11.58371717, 11.40980409, 10.79147327,  9.83605168,
+             15.77521525, 14.44971313, 13.47980971, 12.80209187, 12.07204557,
+             11.11458021, 17.92765688, 15.93468763, 14.72209168, 13.95745968,
+             13.35854227, 12.42861968, 19.45846835, 17.84550525, 17.00086559,
+             15.76790954, 15.91290826, 14.89489377, 20.,         20.,
+             20.,         20.]
         x = np.around(x, decimals=5)
         y = np.around(self.sw['pore.concentration.Cl_mix_01'], decimals=5)
         assert_allclose(actual=y, desired=x)
