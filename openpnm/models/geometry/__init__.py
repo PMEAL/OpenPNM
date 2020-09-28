@@ -21,7 +21,8 @@ from . import throat_length
 from . import throat_perimeter
 from . import throat_surface_area
 from . import throat_volume
-from . import throat_shape_factor
+from . import throat_capillary_shape_factor
 from . import throat_centroid
 from . import throat_vector
-from . import conduit_flow_coefficients
+from . import conduit_stokes_coefficient
+from . import conduit_poisson_coefficient
