@@ -1036,10 +1036,10 @@ def subdivide(network, pores, shape, labels=[]):
     networkspacing = network.spacing
     new_netspacing = networkspacing/div
     new_net = Cubic(shape=div, spacing=new_netspacing)
-    main_labels = ['left', 'right', 'front', 'back', 'top', 'bottom']
+    main_labels = [ 'front', 'back', 'left', 'right','top', 'bottom']
     if single_dim is not None:
-        label_groups = np.array([['front', 'back'],
-                                 ['left', 'right'],
+        label_groups = np.array([['left', 'right'],
+                                 ['front', 'back'],
                                  ['top', 'bottom']])
         non_single_labels = label_groups[np.array([0, 1, 2]) != single_dim]
     for label in main_labels:
