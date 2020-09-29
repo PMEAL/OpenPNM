@@ -349,9 +349,9 @@ class ReactiveTransport(GenericTransport):
                 logger.info(f'Solution converged: {self._get_residual():.4e}')
                 return x
             logger.info(f'Tolerance not met: {self._get_residual():.4e}')
-        else:
-            if not self._is_converged():
-                raise Exception(f"Not converged after {max_it} iterations.")
+
+        if not self._is_converged():
+            raise Exception(f"Not converged after {max_it} iterations.")
 
     def _update_A_and_b(self):
         r"""
