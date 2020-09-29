@@ -522,6 +522,8 @@ class GenericTransport(GenericAlgorithm):
         """
         logger.info('―' * 80)
         logger.info('Running GenericTransport')
+        x0 = np.zeros_like(self.b) if x0 is None else x0
+        self["pore.initial_guess"] = x0
         self._run_generic(x0)
 
     def _run_generic(self, x0):
@@ -530,7 +532,6 @@ class GenericTransport(GenericAlgorithm):
         self._build_A()
         self._build_b()
         self._apply_BCs()
-        x0 = np.zeros_like(self.b) if x0 is None else x0
         x_new = self._solve(x0=x0)
         quantity = self.settings['quantity']
         if not quantity:

@@ -155,6 +155,7 @@ class ReactiveTransport(GenericTransport):
         quantity = self.settings['quantity']
         logger.info('Running ReactiveTransport')
         x0 = np.zeros(self.Np, dtype=float) if x0 is None else x0
+        self["pore.initial_guess"] = x0
         x = self._run_reactive(x0)
         self[quantity] = x
 
