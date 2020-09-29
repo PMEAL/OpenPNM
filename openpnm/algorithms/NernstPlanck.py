@@ -82,6 +82,51 @@ class NernstPlanck(ReactiveTransport):
             self.settings['quantity'] = quantity  # Add full value to settings
         if conductance:
             self.settings['conductance'] = conductance
+        if diffusive_conductance:
+            self.settings['diffusive_conductance'] = diffusive_conductance
         if ion:
             self.settings['quantity'] = quantity
         super().setup(**kwargs)
+
+    def set_outflow_BC(self, pores, mode='merge'):
+        r"""
+        Adds outflow boundary condition to the selected pores.
+
+        Outflow condition simply means that the gradient of the solved
+        quantity does not change, i.e. is 0.
+
+        """
+        # Hijack the parse_mode function to verify mode/pores argument
+        mode = self._parse_mode(mode, allowed=['merge', 'overwrite', 'remove'],
+                                single=True)
+        pores = self._parse_indices(pores)
+        # Calculating A[i,i] values to ensure the outflow condition
+        network = self.project.network
+        phase = self.project.phases()[self.settings['phase']]
+        throats = network.find_neighbor_throats(pores=pores)
+        C12 = network['throat.conns'][throats]
+        gd = phase[self.settings['diffusive_conductance']]
+        gd = gd[throats]
+        gt = phase[self.settings['conductance']][:, 0]
+        gt = gt[throats]
+        # remove the diffusive contribution (only keep adv and mig)
+        Q12 = gd-gt
+        Qp = np.zeros(self.Np)
+        np.add.at(Qp, C12[:, 0], -Q12)
+        np.add.at(Qp, C12[:, 1], Q12)
+
+        # Store boundary values
+        if ('pore.bc_outflow' not in self.keys()) or (mode == 'overwrite'):
+            self['pore.bc_outflow'] = np.nan
+        self['pore.bc_outflow'][pores] = Qp[pores]
+
+    def _apply_BCs(self):
+        # Apply Dirichlet and rate BCs
+        ReactiveTransport._apply_BCs(self)
+        if 'pore.bc_outflow' not in self.keys():
+            return
+        # Apply outflow BC
+        diag = self.A.diagonal()
+        ind = np.isfinite(self['pore.bc_outflow'])
+        diag[ind] += self['pore.bc_outflow'][ind]
+        self.A.setdiag(diag)
