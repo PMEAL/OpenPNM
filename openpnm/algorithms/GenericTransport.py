@@ -81,6 +81,7 @@ class GenericTransportSettings(GenericSettings):
         If ``True``, A matrix is cached and reused rather than getting rebuilt.
     cache_b : bool
         If ``True``, b vector is cached and reused rather than getting rebuilt.
+
     """
 
     phase = None
@@ -176,7 +177,6 @@ class GenericTransport(GenericAlgorithm):
     |                       | user                                            |
     +-----------------------+-------------------------------------------------+
 
-
     """
 
     def __init__(self, project=None, network=None, phase=None, settings={},
@@ -201,10 +201,13 @@ class GenericTransport(GenericAlgorithm):
     @docstr.dedent
     def setup(self, phase=None, quantity='', conductance='', **kwargs):
         r"""
+        Customize algorithm settings, e.g. assign phase, set quantity to be
+        solved, set conductance dict key, etc.
 
         Parameters
         ----------
         %(GenericTransportSettings.parameters)s
+
         """
         if phase:
             self.settings['phase'] = phase.name
@@ -233,6 +236,7 @@ class GenericTransport(GenericAlgorithm):
             to results of the algorithm are removed.
         bcs : boolean (default = ``False``)
             If ``True`` all previous boundary conditions are removed.
+
         """
         self._pure_b = None
         self._b = None
@@ -270,11 +274,11 @@ class GenericTransport(GenericAlgorithm):
             |             | adds the given ones                              |
             +-------------+--------------------------------------------------+
 
-
         Notes
         -----
         The definition of ``quantity`` is specified in the algorithm's
         ``settings``, e.g. ``alg.settings['quantity'] = 'pore.pressure'``.
+
         """
         mode = self._parse_mode(mode, allowed=['merge', 'overwrite'], single=True)
         self._set_BC(pores=pores, bctype='value', bcvalues=values, mode=mode)
@@ -310,12 +314,13 @@ class GenericTransport(GenericAlgorithm):
         -----
         The definition of ``quantity`` is specified in the algorithm's
         ``settings``, e.g. ``alg.settings['quantity'] = 'pore.pressure'``.
+
         """
         mode = self._parse_mode(mode, allowed=['merge', 'overwrite'], single=True)
         self._set_BC(pores=pores, bctype='rate', bcvalues=values, mode=mode)
 
-    @docstr.get_sectionsf(
-        base='GenericTransport._set_BC', sections=['Parameters', 'Notes'])
+    @docstr.get_sectionsf(base='GenericTransport._set_BC',
+                          sections=['Parameters', 'Notes'])
     def _set_BC(self, pores, bctype, bcvalues=None, mode='merge'):
         r"""
         This private method is called by public facing BC methods, to apply
@@ -395,9 +400,8 @@ class GenericTransport(GenericAlgorithm):
             The pores from which boundary conditions are to be removed.  If no
             pores are specified, then BCs are removed from all pores. No error
             is thrown if the provided pores do not have any BCs assigned.
-
         bctype : string, or list of strings
-            Specifies which type of boundary condition to remove.  Options are:
+            Specifies which type of boundary condition to remove. Options are:
 
             -*'all'*: (default) Removes all boundary conditions
             -*'value'*: Removes only value conditions
@@ -550,11 +554,9 @@ class GenericTransport(GenericAlgorithm):
         A : sparse matrix
             The coefficient matrix in sparse format. If not specified, then
             it uses  the ``A`` matrix attached to the object.
-
         b : ND-array
             The RHS matrix in any format.  If not specified, then it uses
             the ``b`` matrix attached to the object.
-
         x0 : ND-array
             The initial guess for the solution of Ax = b
 
@@ -601,7 +603,10 @@ class GenericTransport(GenericAlgorithm):
         r"""
         Fetch solver object based on solver settings stored in settings dict.
 
+        Notes
+        -----
         The returned object can be called via ``obj.solve(A, b, x0[optional])``
+
         """
         # SciPy
         if self.settings['solver_family'] == 'scipy':
@@ -660,8 +665,11 @@ class GenericTransport(GenericAlgorithm):
         Fetches absolute tolerance for the solver if not ``None``, otherwise
         calculates it in a way that meets the given ``tol`` requirements.
 
+        Notes
+        -----
         ``atol`` is defined such to satisfy the following stopping criterion:
             ``norm(A*x-b)`` <= ``atol``
+
         """
         atol = self.settings["solver_atol"]
         if atol is None:
@@ -801,17 +809,13 @@ class GenericTransport(GenericAlgorithm):
         ----------
         pores : array_like
             The pores for which the rate should be calculated
-
         throats : array_like
             The throats through which the rate should be calculated
-
         mode : string, optional
-            Controls how to return the rate.  Options are:
-
-            *'group'*: (default) Returns the cumulative rate of material
+            Controls how to return the rate. Options are:
+            - *'group'*: (default) Returns the cumulative rate of material
             moving into the given set of pores
-
-            *'single'* : Calculates the rate for each pore individually
+            - *'single'* : Calculates the rate for each pore individually
 
         Returns
         -------
@@ -881,32 +885,26 @@ class GenericTransport(GenericAlgorithm):
         ----------
         solver_family : string, optional
             Solver family, could be "scipy", "petsc", and "pyamg".
-
         solver_type : string, optional
             Solver type, could be "spsolve", "cg", "gmres", etc.
-
         preconditioner : string, optional
             Preconditioner for iterative solvers. The default is "jacobi".
-
         tol : float, optional
             Tolerance for iterative solvers, loosely related to number of
             significant digits in data.
-
         atol : float, optional
             Absolute tolerance for iterative solvers, such that
             norm(Ax-b) <= atol holds.
-
         rtol : float, optional
             Relative tolerance for iterative solvers, loosely related to how
             many orders of magnitude reduction in residual is desired, compared
             to its value at initial guess.
-
         max_iter : int, optional
             Maximum number of iterations
 
         Returns
         -------
-        None.
+        None
 
         """
         settings = self.settings
@@ -948,14 +946,11 @@ class GenericTransport(GenericAlgorithm):
         inlets : array_like
             The pores where the inlet boundary conditions were applied.  If
             not given an attempt is made to infer them from the algorithm.
-
         outlets : array_like
             The pores where the outlet boundary conditions were applied.  If
             not given an attempt is made to infer them from the algorithm.
-
         domain_area : scalar
             The area of the inlet and/or outlet face (which shold match)
-
         domain_length : scalar
             The length of the domain between the inlet and outlet faces
 

@@ -44,8 +44,8 @@ class TransientNernstPlanckMultiphysicsSolver(NernstPlanckMultiphysicsSolver):
     This is not a true OpenPNM algorithm. This solver wraps the provided
     Nernst-Planck and ionic conduction algorithms and solves the associated
     system of equations.
-    """
 
+    """
     def __init__(self, settings={}, **kwargs):
         super().__init__(**kwargs)
         c = TransientNernstPlanckMultiphysicsSolverSettings()
@@ -82,6 +82,7 @@ class TransientNernstPlanckMultiphysicsSolver(NernstPlanckMultiphysicsSolver):
 
     def run(self, t=None):
         r"""
+
         """
         print('―'*80)
         print('Running TransientIonicTransport')
@@ -136,7 +137,8 @@ class TransientNernstPlanckMultiphysicsSolver(NernstPlanckMultiphysicsSolver):
         self._run_transient(t=t)
 
     def _run_transient(self, t):
-        """r
+        r"""
+
         """
         # Phase, potential and ions algorithms
         phase = self.project.phases()[self.settings['phase']]
