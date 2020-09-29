@@ -279,7 +279,7 @@ class GenericTransport(GenericAlgorithm):
         mode = self._parse_mode(mode, allowed=['merge', 'overwrite'], single=True)
         self._set_BC(pores=pores, bctype='value', bcvalues=values, mode=mode)
 
-    def set_rate_BC(self, pores, rates, mode='merge'):
+    def set_rate_BC(self, pores, rates, mode='merge', bctype='rate'):
         r"""
         Apply constant rate boundary conditons to the specified locations.
 
@@ -289,9 +289,8 @@ class GenericTransport(GenericAlgorithm):
             The pore indices where the condition should be applied
         rates : scalar or array_like
             The rates to apply in each pore.  If a scalar is supplied
-            that rate is divided evenly among all locations, and if a vector
-            is supplied it must be the same size as the indices given in
-            ``pores`.
+            that rate is assigned to all locations, and if a vector is
+            supplied it must be the same size as the indices given in ``pores`.
         mode : string, optional
             Controls how the boundary conditions are applied.  Options are:
 
@@ -302,14 +301,27 @@ class GenericTransport(GenericAlgorithm):
             | 'overwrite' | Deletes all boundary condition on object then    |
             |             | adds the given ones                              |
             +-------------+--------------------------------------------------+
+        bctype : string, optional
+            Controls the type of boundary condition to be applied. Options are:
+
+            +-------------+--------------------------------------------------+
+            | 'rate'      | (Default) The rate specified is the flow rate    |
+            |             | into each location                               |
+            +-------------+--------------------------------------------------+
+            | 'total_rate'| The rate specified is the total flow rate divided|
+            |             | evenly among all locations. Accepts scalar only! |
+            +-------------+--------------------------------------------------+
 
         Notes
         -----
         The definition of ``quantity`` is specified in the algorithm's
         ``settings``, e.g. ``alg.settings['quantity'] = 'pore.pressure'``.
         """
-        rates = np.array(rates)
-        bctype = 'total_rate' if rates.size == 1 else 'rate'
+        bctype = self._parse_mode(bctype, allowed=['rate', 'total_rate'],
+                                  single=True)
+        if bctype == 'total_rate' and np.array(rates).size != 1:
+            raise Exception('total_rate boundary condition type accepts '
+                            + 'scalar only!')
         mode = self._parse_mode(mode, allowed=['merge', 'overwrite'], single=True)
         self._set_BC(pores=pores, bctype=bctype, bcvalues=rates, mode=mode)
 
