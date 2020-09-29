@@ -279,7 +279,7 @@ class GenericTransport(GenericAlgorithm):
         mode = self._parse_mode(mode, allowed=['merge', 'overwrite'], single=True)
         self._set_BC(pores=pores, bctype='value', bcvalues=values, mode=mode)
 
-    def set_rate_BC(self, pores, rates, mode='merge', bctype='rate'):
+    def set_rate_BC(self, pores, rates, mode='merge', total_rate=False):
         r"""
         Apply constant rate boundary conditons to the specified locations.
 
@@ -301,29 +301,24 @@ class GenericTransport(GenericAlgorithm):
             | 'overwrite' | Deletes all boundary condition on object then    |
             |             | adds the given ones                              |
             +-------------+--------------------------------------------------+
-        bctype : string, optional
-            Controls the type of boundary condition to be applied. Options are:
-
-            +-------------+--------------------------------------------------+
-            | 'rate'      | (Default) The rate specified is the flow rate    |
-            |             | into each location                               |
-            +-------------+--------------------------------------------------+
-            | 'total_rate'| The rate specified is the total flow rate divided|
-            |             | evenly among all locations. Accepts scalar only! |
-            +-------------+--------------------------------------------------+
+        total_rate : boolean, optional
+            If total_rate is set to True, then the rate specified is the total
+            rate and only scalars are accepted. The total rate gets divided
+            evenly among all locations. False is the default argument.
 
         Notes
         -----
         The definition of ``quantity`` is specified in the algorithm's
         ``settings``, e.g. ``alg.settings['quantity'] = 'pore.pressure'``.
         """
-        bctype = self._parse_mode(bctype, allowed=['rate', 'total_rate'],
-                                  single=True)
-        if bctype == 'total_rate' and np.array(rates).size != 1:
-            raise Exception('total_rate boundary condition type accepts '
-                            + 'scalar only!')
+        if total_rate is True:
+            pores = self._parse_indices(pores)
+            rates = rates/pores.size
+            if np.array(rates).size != 1:
+                raise Exception('total_rate boundary condition type accepts '
+                                + 'scalar only!')
         mode = self._parse_mode(mode, allowed=['merge', 'overwrite'], single=True)
-        self._set_BC(pores=pores, bctype=bctype, bcvalues=rates, mode=mode)
+        self._set_BC(pores=pores, bctype='rate', bcvalues=rates, mode=mode)
 
     @docstr.get_sectionsf(
         base='GenericTransport._set_BC', sections=['Parameters', 'Notes'])
@@ -346,9 +341,7 @@ class GenericTransport(GenericAlgorithm):
             +-------------+--------------------------------------------------+
             | 'rate'      | Specify the flow rate into each location         |
             +-------------+--------------------------------------------------+
-            | 'total_rate'| Specify the total flow rate to be divided evenly |
-            |             | among all locations                              |
-            +-------------+--------------------------------------------------+
+
         bcvalues : int or array_like
             The boundary value to apply, such as concentration or rate.  If
             a single value is given, it's assumed to apply to all locations
@@ -376,8 +369,7 @@ class GenericTransport(GenericAlgorithm):
 
         """
         # Hijack the parse_mode function to verify bctype argument
-        bctype = self._parse_mode(bctype,
-                                  allowed=['value', 'rate', 'total_rate'],
+        bctype = self._parse_mode(bctype, allowed=['value', 'rate'],
                                   single=True)
         mode = self._parse_mode(mode, allowed=['merge', 'overwrite'],
                                 single=True)
@@ -400,8 +392,6 @@ class GenericTransport(GenericAlgorithm):
             self['pore.bc_' + bctype] = np.nan
 
         # Store boundary values
-        if bctype == 'total_rate':
-            values = values/pores.size
         self['pore.bc_' + bctype][pores] = values
 
     def remove_BC(self, pores=None, bctype='all'):
