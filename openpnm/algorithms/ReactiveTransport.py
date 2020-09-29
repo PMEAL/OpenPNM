@@ -223,7 +223,7 @@ class ReactiveTransport(GenericTransport):
             the algorithm.
 
         """
-        if type(propnames) is str:  # Convert string to list if necessary
+        if isinstance(propnames, str):  # Convert string to list if necessary
             propnames = [propnames]
         d = self.settings["variable_props"]
         self.settings["variable_props"] = list(set(d) | set(propnames))
