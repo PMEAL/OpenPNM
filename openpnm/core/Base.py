@@ -846,7 +846,7 @@ class Base(dict):
         >>> Ps[:5]  # Look at first 5 pore indices
         array([ 4,  9, 14, 19, 20])
         >>> pn.pores(labels=['top', 'front'], mode='xnor')
-        array([ 4,  9, 14, 19, 24])
+        array([ 24,  49,  74,  99, 124])
         """
         ind = self._get_indices(element='pore', labels=labels, mode=mode)
         if target is not None:
