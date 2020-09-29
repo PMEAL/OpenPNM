@@ -184,9 +184,9 @@ class Cubic(GenericNetwork):
                 hits += self["pore.coords"][:, ax] >= mx[ax]
         self["pore.surface"] = hits
 
-    def add_boundary_pores(
-        self, labels=["top", "bottom", "front", "back", "left", "right"], spacing=None
-    ):
+    def add_boundary_pores(self, labels=["top", "bottom", "front",
+                                         "back", "left", "right"],
+                           spacing=None):
         r"""
         Add pores to the faces of the network for use as boundary pores.
 
@@ -230,21 +230,17 @@ class Cubic(GenericNetwork):
         for label in labels:
             try:
                 Ps = self.pores(label)
-                topotools.clone_pores(
-                    network=self, pores=Ps, labels=label + "_boundary"
-                )
+                topotools.clone_pores(network=self, pores=Ps,
+                                      labels=label + "_boundary",
+                                      mode='parents')
                 # Translate cloned pores
                 ind = self.pores(label + "_boundary")
                 coords = self["pore.coords"][ind]
                 coords = coords * scale[label] + offset[label]
                 self["pore.coords"][ind] = coords
             except KeyError:
-                logger.warning(
-                    "No pores labelled "
-                    + label
-                    + " were found, "
-                    + "skipping boundary addition"
-                )
+                logger.warning("No pores labelled " + label
+                               + " were found, skipping boundary addition")
 
     def _get_spacing(self):
         # Find Network spacing
