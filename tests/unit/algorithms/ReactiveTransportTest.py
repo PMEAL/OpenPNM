@@ -27,6 +27,7 @@ class ReactiveTransportTest:
                                                    phase=self.phase)
 
     def test_setup(self):
+        temp = self.alg.settings.copy()
         self.alg.setup(
             conductance="throat.cond",
             quantity="pore.test",
@@ -39,7 +40,7 @@ class ReactiveTransportTest:
         assert self.alg.settings["nlin_max_iter"] == 123
         assert self.alg.settings["relaxation_source"] == 1.23
         assert self.alg.settings["relaxation_quantity"] == 3.21
-        self.setup_class()
+        self.alg.settings = temp
 
     def test_set_variable_props(self):
         assert len(self.alg.settings["variable_props"]) == 0
