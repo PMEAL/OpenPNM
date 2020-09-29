@@ -89,7 +89,8 @@ def find_neighbor_sites(sites, am, flatten=True, include_input=False,
         neighbors = np.unique(np.where(np.bincount(neighbors) > 1)[0])
     elif logic in ['and', 'all', 'intersection']:
         neighbors = set(neighbors)
-        [neighbors.intersection_update(i) for i in rows]
+        for i in rows:
+            neighbors.intersection_update(i)
         neighbors = np.array(list(neighbors), dtype=np.int64, ndmin=1)
     else:
         raise Exception('Specified logic is not implemented')
@@ -103,8 +104,8 @@ def find_neighbor_sites(sites, am, flatten=True, include_input=False,
         neighbors = np.where(mask)[0]
     else:
         if neighbors.size > 0:
-            for i in range(len(rows)):
-                vals = np.array(rows[i], dtype=np.int64)
+            for i, row in enumerate(rows):
+                vals = np.array(row, dtype=np.int64)
                 rows[i] = vals[mask[vals]]
             neighbors = rows
         else:
@@ -194,7 +195,8 @@ def find_neighbor_bonds(sites, im=None, am=None, flatten=True, logic='or'):
             neighbors = np.unique(np.where(np.bincount(neighbors) > 1)[0])
         elif logic in ['and', 'all', 'intersection']:
             neighbors = set(neighbors)
-            [neighbors.intersection_update(i) for i in rows]
+            for i in rows:
+                neighbors.intersection_update(i)
             neighbors = np.array(list(neighbors), dtype=int, ndmin=1)
         else:
             raise Exception('Specified logic is not implemented')
@@ -202,14 +204,15 @@ def find_neighbor_bonds(sites, im=None, am=None, flatten=True, logic='or'):
             if (neighbors.size > 0):
                 mask = np.zeros(shape=n_bonds, dtype=bool)
                 mask[neighbors] = True
-                for i in range(len(rows)):
-                    vals = np.array(rows[i], dtype=np.int64)
+                for i, row in enumerate(rows):
+                    vals = np.array(row, dtype=np.int64)
                     rows[i] = vals[mask[vals]]
                 neighbors = rows
             else:
                 neighbors = [np.array([], dtype=np.int64) for i in range(len(sites))]
         return neighbors
-    elif am is not None:
+
+    if am is not None:
         if am.format != 'coo':
             am = am.tocoo(copy=False)
         if not istriu(am):
@@ -231,9 +234,9 @@ def find_neighbor_bonds(sites, im=None, am=None, flatten=True, logic='or'):
             raise Exception('Specified logic is not implemented')
         neighbors = np.where(neighbors)[0]
         return neighbors
-    else:
-        raise Exception('Either the incidence or the adjacency matrix must '
-                        + 'must be specified')
+
+    raise Exception('Either the incidence or the adjacency matrix must '
+                    + 'must be specified')
 
 
 def find_connected_sites(bonds, am, flatten=True, logic='or'):
@@ -310,7 +313,8 @@ def find_connected_sites(bonds, am, flatten=True, logic='or'):
         temp = np.vstack((am.row[bonds], am.col[bonds])).T.tolist()
         temp = [set(pair) for pair in temp]
         neighbors = temp[0]
-        [neighbors.intersection_update(pair) for pair in temp[1:]]
+        for pair in temp[1:]:
+            neighbors.intersection_update(pair)
         neighbors = np.array(list(neighbors), dtype=np.int64, ndmin=1)
     else:
         raise Exception('Specified logic is not implemented')
@@ -321,7 +325,7 @@ def find_connected_sites(bonds, am, flatten=True, logic='or'):
             temp = np.hstack((am.row[bonds], am.col[bonds])).astype(np.int64)
             temp[~mask[temp]] = -1
             inds = np.where(temp == -1)[0]
-            if len(inds):
+            if inds:
                 temp = temp.astype(float)
                 temp[inds] = np.nan
             temp = np.reshape(a=temp, newshape=[len(bonds), 2], order='F')
@@ -412,8 +416,7 @@ def find_complement(am, sites=None, bonds=None, asmask=False):
     mask[inds] = False
     if asmask:
         return mask
-    else:
-        return np.arange(N)[mask]
+    return np.arange(N)[mask]
 
 
 def istriu(am):
@@ -1137,7 +1140,7 @@ def extend(network, pore_coords=[], throat_conns=[], labels=[]):
     # Apply labels, if supplied
     if labels != []:
         # Convert labels to list if necessary
-        if type(labels) is str:
+        if isinstance(labels, str):
             labels = [labels]
         for label in labels:
             # Remove pore or throat from label, if present
@@ -1373,7 +1376,7 @@ def clone_pores(network, pores, labels=['clone'], mode='parents'):
     if len(network.project.phases()) > 0:
         raise Exception('Network has active Phases, cannot proceed')
 
-    if type(labels) == str:
+    if isinstance(labels, str):
         labels = [labels]
     network._parse_indices(pores)
     Np = network.Np
@@ -1433,7 +1436,7 @@ def merge_networks(network, donor=[]):
     stitch
 
     """
-    if type(donor) == list:
+    if isinstance(donor, list):
         donors = donor
     else:
         donors = [donor]
@@ -2243,7 +2246,7 @@ def generate_base_points(num_points, domain_size, density_map=None,
             density_map = spim.distance_transform_edt(density_map) < 20
         base_pts = _try_points(num_points, density_map)
         # Convert to spherical coordinates
-        [X, Y, Z] = np.array(base_pts - [0.5, 0.5, 0.5]).T
+        X, Y, Z = np.array(base_pts - [0.5, 0.5, 0.5]).T
         r = 2*np.sqrt(X**2 + Y**2 + Z**2)*domain_size[0]
         theta = 2*np.arctan(Y/X)
         phi = 2*np.arctan(np.sqrt(X**2 + Y**2)/Z)
@@ -2270,7 +2273,7 @@ def generate_base_points(num_points, domain_size, density_map=None,
             density_map = spim.distance_transform_edt(density_map) < 20
         base_pts = _try_points(num_points, density_map)
         # Convert to cylindrical coordinates
-        [X, Y, Z] = np.array(base_pts - [0.5, 0.5, 0]).T  # Center on z-axis
+        X, Y, Z = np.array(base_pts - [0.5, 0.5, 0]).T  # Center on z-axis
         r = 2*np.sqrt(X**2 + Y**2)*domain_size[0]
         theta = 2*np.arctan(Y/X)
         z = Z*domain_size[1]
@@ -2659,7 +2662,4 @@ def iscoplanar(coords):
     # Ensure they all lie on the same plane
     n_dot = np.dot(n, r)
 
-    if np.sum(np.absolute(n_dot)) == 0:
-        return True
-    else:
-        return False
+    return bool(np.sum(np.absolute(n_dot)) == 0)

@@ -512,12 +512,12 @@ class BaseTest:
 
     def test_parse_indices_int(self):
         a = self.net._parse_indices(indices=0)
-        assert type(a) == np.ndarray
+        assert isinstance(a, np.ndarray)
         assert np.all(a == 0)
 
     def test_parse_indices_list(self):
         a = self.net._parse_indices(indices=[0, 1])
-        assert type(a) == np.ndarray
+        assert isinstance(a, np.ndarray)
         assert np.all(a == [0, 1])
 
     def test_parse_element_None(self):
