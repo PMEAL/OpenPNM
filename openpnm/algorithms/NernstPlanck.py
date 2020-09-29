@@ -1,3 +1,4 @@
+import numpy as np
 from openpnm.algorithms import ReactiveTransport
 from openpnm.utils import logging, Docorator, GenericSettings
 docstr = Docorator()
@@ -38,6 +39,7 @@ class NernstPlanckSettings(GenericSettings):
     ion = ''
     quantity = 'pore.concentration'
     conductance = 'throat.ad_dif_mig_conductance'
+    diffusive_conductance = 'throat.diffusive_conductance'
 
 
 class NernstPlanck(ReactiveTransport):
@@ -67,8 +69,15 @@ class NernstPlanck(ReactiveTransport):
             conductance = '.'.join(conductance.split('.')[:2])
             conductance += ('.' + ion)  # Re-add ion name
             self.settings['conductance'] = conductance
+        diffusive_conductance = self.settings['diffusive_conductance']
+        if not diffusive_conductance.endswith(ion):
+            diffusive_conductance = '.'.join(
+                    diffusive_conductance.split('.')[:2])
+            diffusive_conductance += ('.' + ion)  # Re-add ion name
+            self.settings['diffusive_conductance'] = diffusive_conductance
 
-    def setup(self, phase=None, quantity='', conductance='', ion='', **kwargs):
+    def setup(self, phase=None, quantity='', conductance='',
+              diffusive_conductance='', ion='', **kwargs):
         r"""
 
         Parameters
