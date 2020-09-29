@@ -168,9 +168,9 @@ class TransientMultiphysicsNernstPlanckSolverTest:
             "pore.concentration.Na_mix_01@3000",
             "pore.concentration.Cl_mix_01@3000",
             "pore.potential@3000",
-            "pore.concentration.Na_mix_01@4000",
-            "pore.concentration.Cl_mix_01@4000",
-            "pore.potential@4000",
+            "pore.concentration.Na_mix_01@3500",
+            "pore.concentration.Cl_mix_01@3500",
+            "pore.potential@3500",
         ]
         assert set(times).issubset(set(self.sw.keys()))
 
