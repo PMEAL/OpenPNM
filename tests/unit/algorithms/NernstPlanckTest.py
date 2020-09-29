@@ -38,8 +38,8 @@ class NernstPlanckTest:
                                                phase=self.phase)
         self.p.settings['conductance'] = 'throat.ionic_conductance'
         self.p.settings['quantity'] = 'pore.potential'
-        self.p.set_value_BC(pores=self.net.pores('front'), values=0.05)
-        self.p.set_value_BC(pores=self.net.pores('back'), values=0.00)
+        self.p.set_value_BC(pores=self.net.pores('back'), values=0.05)
+        self.p.set_value_BC(pores=self.net.pores('front'), values=0.00)
         self.p.run()
 
         self.phase.update(self.p.results())
