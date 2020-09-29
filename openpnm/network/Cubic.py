@@ -184,7 +184,8 @@ class Cubic(GenericNetwork):
                 hits += self["pore.coords"][:, ax] >= mx[ax]
         self["pore.surface"] = hits
 
-    def add_boundary_pores(self, labels=["top", "bottom", "left", "right"],
+    def add_boundary_pores(self, labels=["top", "bottom", "front",
+                                         "back", "left", "right"],
                            spacing=None):
         r"""
         Add pores to the faces of the network for use as boundary pores.
