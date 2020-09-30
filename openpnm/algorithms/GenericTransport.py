@@ -279,8 +279,8 @@ class GenericTransport(GenericAlgorithm):
         mode = self._parse_mode(mode, allowed=['merge', 'overwrite'], single=True)
         self._set_BC(pores=pores, bctype='value', bcvalues=values, mode=mode)
 
-    def set_rate_BC(self, pores, rates, mode='merge',
-                    total_rate=False, **kwargs):
+    def set_rate_BC(self, pores, rates=None, total_rate=None, mode='merge',
+                    **kwargs):
         r"""
         Apply constant rate boundary conditons to the specified locations.
 
@@ -288,10 +288,14 @@ class GenericTransport(GenericAlgorithm):
         ----------
         pores : array_like
             The pore indices where the condition should be applied
-        rates : scalar or array_like
+        rates : scalar or array_like, optional
             The rates to apply in each pore.  If a scalar is supplied
             that rate is assigned to all locations, and if a vector is
             supplied it must be the same size as the indices given in ``pores`.
+        total_rate : scalar, optional
+            The total rate supplied to all pores.  The rate supplied by this
+            argument is divided evenly among all pores. A scalar must be
+            supplied! Total_rate cannot be specified if rate is specified.
         mode : string, optional
             Controls how the boundary conditions are applied.  Options are:
 
@@ -302,24 +306,24 @@ class GenericTransport(GenericAlgorithm):
             | 'overwrite' | Deletes all boundary condition on object then    |
             |             | adds the given ones                              |
             +-------------+--------------------------------------------------+
-        total_rate : boolean, optional
-            If total_rate is set to True, then the rate specified is the total
-            rate and only scalars are accepted. The total rate gets divided
-            evenly among all locations. False is the default argument.
 
         Notes
         -----
         The definition of ``quantity`` is specified in the algorithm's
         ``settings``, e.g. ``alg.settings['quantity'] = 'pore.pressure'``.
         """
+        # support 'values' keyword
         if 'values' in kwargs.keys():
             rates = kwargs.pop("values")
-        if total_rate is True:
+        # handle total_rate feature
+        if total_rate is not None:
+            if np.array(total_rate).size != 1:
+                raise Exception('total_rate argument accepts scalar only!')
+            if rates is not None:
+                raise Exception('Cannot specify both arguments: rate and '
+                                + 'total_rate')
             pores = self._parse_indices(pores)
-            rates = rates/pores.size
-            if np.array(rates).size != 1:
-                raise Exception('total_rate boundary condition type accepts '
-                                + 'scalar only!')
+            rates = total_rate/pores.size
         mode = self._parse_mode(mode, allowed=['merge', 'overwrite'], single=True)
         self._set_BC(pores=pores, bctype='rate', bcvalues=rates, mode=mode)
 
