@@ -1,9 +1,9 @@
-from openpnm.algorithms import TransientReactiveTransport
+from openpnm.algorithms import TransientReactiveTransport, NernstPlanck
 from openpnm.utils import logging
 logger = logging.getLogger(__name__)
 
 
-class TransientNernstPlanck(TransientReactiveTransport):
+class TransientNernstPlanck(TransientReactiveTransport, NernstPlanck):
     r"""
     A subclass of GenericTransport to perform steady and transient simulations
     of pure diffusion, advection-diffusion and advection-diffusion with
