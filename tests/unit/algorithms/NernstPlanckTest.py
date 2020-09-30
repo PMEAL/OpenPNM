@@ -112,7 +112,8 @@ class NernstPlanckTest:
         mod = op.models.physics.ad_dif_mig_conductance.ad_dif_mig
         with pytest.raises(Exception):
             self.phys.add_model(propname='throat.ad_dif_mig_conductance_exp',
-                                model=mod, s_scheme='unsupported_scheme', ion='ionX')
+                                model=mod, s_scheme='unsupported_scheme',
+                                ion='ionX')
 
     def test_ad_dif_mig_cond_w_Nt_by_2_dif_cond(self):
         gd = self.phase["throat.diffusive_conductance.ionX"]
@@ -131,9 +132,10 @@ class NernstPlanckTest:
         self.phys["throat.Nt_by_3.ionX"] = np.vstack((gd, gd, gd)).T
         mod = op.models.physics.ad_dif_mig_conductance.ad_dif_mig
         with pytest.raises(Exception):
-            self.phys.add_model(propname='throat.ad_dif_mig_conductance_Nt_by_2',
-                                model=mod, s_scheme='upwind', ion='ionX',
-                                throat_diffusive_conductance="throat.Nt_by_3")
+            self.phys.add_model(
+                    propname='throat.ad_dif_mig_conductance_Nt_by_2',
+                    model=mod, s_scheme='upwind', ion='ionX',
+                    throat_diffusive_conductance="throat.Nt_by_3")
 
     def teardown_class(self):
         ws = op.Workspace()
