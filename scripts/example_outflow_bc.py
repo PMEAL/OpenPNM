@@ -139,4 +139,4 @@ eC.run()
 sw['pore.val3'] = eC['pore.concentration']
 
 # output data to Paraview
-proj.export_data(phases=[sw], filename='OUT', filetype='vtp')
+# proj.export_data(phases=[sw], filename='OUT', filetype='vtp')
