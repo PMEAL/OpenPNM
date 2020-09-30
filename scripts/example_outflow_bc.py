@@ -1,5 +1,3 @@
-import sys
-sys.path.insert(1, '/home/mehrez/repositories/OpenPNM/')
 import openpnm as op
 from openpnm.phases import mixtures
 import numpy as np
