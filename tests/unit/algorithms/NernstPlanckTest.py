@@ -153,9 +153,9 @@ class NernstPlanckTest:
         mod = op.models.physics.ad_dif_mig_conductance.ad_dif_mig
         with pytest.raises(Exception):
             self.phys.add_model(
-                    propname='throat.ad_dif_mig_conductance_Nt_by_2',
-                    model=mod, s_scheme='upwind', ion='ionX',
-                    throat_diffusive_conductance="throat.Nt_by_3")
+                propname='throat.ad_dif_mig_conductance_Nt_by_2',
+                model=mod, s_scheme='upwind', ion='ionX',
+                throat_diffusive_conductance="throat.Nt_by_3")
 
     def teardown_class(self):
         ws = op.Workspace()
