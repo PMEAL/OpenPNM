@@ -110,6 +110,26 @@ class NernstPlanckTest:
         y = np.around(self.adm['pore.concentration.ionX'], decimals=5)
         assert_allclose(actual=y, desired=x)
 
+    def test_outflow_BC(self):
+        mod = op.models.physics.ad_dif_mig_conductance.ad_dif_mig
+        self.phys.add_model(propname='throat.ad_dif_mig_conductance',
+                            model=mod, s_scheme='powerlaw', ion='ionX')
+        self.phys.regenerate_models()
+        adm = self.adm
+        adm.setup(conductance='throat.ad_dif_mig_conductance')
+        adm.remove_BC()
+        adm.set_value_BC(pores=self.net.pores('back'), values=1)
+        adm.set_outflow_BC(pores=self.net.pores('front'))
+        adm.set_value_BC(pores=self.net.pores('left'), values=0.1)
+        adm.set_value_BC(pores=self.net.pores('right'), values=0.1)
+        adm.run()
+        x = [0.06676, 0.36184, 0.05913,
+             0.1,     0.43529, 0.1,
+             0.1,     0.64825, 0.1,
+             0.1,     1.,      0.1]
+        y = np.around(self.adm['pore.concentration.ionX'], decimals=5)
+        assert_allclose(actual=y, desired=x)
+
     def test_unsupported_scheme_NernstPlanck(self):
         mod = op.models.physics.ad_dif_mig_conductance.ad_dif_mig
         with pytest.raises(Exception):
@@ -138,34 +158,6 @@ class NernstPlanckTest:
                     propname='throat.ad_dif_mig_conductance_Nt_by_2',
                     model=mod, s_scheme='upwind', ion='ionX',
                     throat_diffusive_conductance="throat.Nt_by_3")
-
-    def test_outflow_BC(self):
-        for s_scheme in ['upwind', 'hybrid', 'powerlaw', 'exponential']:
-            mod = op.models.physics.ad_dif_mig_conductance.ad_dif_mig
-            self.phys.add_model(propname='throat.ad_dif_mig_conductance_powerlaw',
-                                model=mod, s_scheme='powerlaw', ion='ionX')
-            self.phys.regenerate_models()
-            self.adm.setup(conductance='throat.ad_dif_mig_conductance_powerlaw')
-            self.adm.run()
-            x = [0.,      0.,      0.,
-                 1.27816, 1.79057, 2.70356,
-                 1.59724, 1.93331, 2.46112,
-                 2.,      2.,      2.]
-            y = np.around(self.adm['pore.concentration.ionX'], decimals=5)
-            assert_allclose(actual=y, desired=x)
-
-
-            np = op.algorithms.AdvectionDiffusion(network=self.net,
-                                                  phase=self.phase)
-            ad.setup(quantity='pore.concentration',
-                     conductance='throat.ad_dif_conductance_'+s_scheme)
-
-            ad.set_value_BC(pores=self.net.pores('back'), values=2)
-            ad.set_outflow_BC(pores=self.net.pores('front'))
-            ad.run()
-
-            y = ad[ad.settings['quantity']].mean()
-            assert_allclose(actual=y, desired=2.0)
 
     def teardown_class(self):
         ws = op.Workspace()
