@@ -1,5 +1,3 @@
-import sys
-sys.path.insert(1, '/home/mehrez/repositories/OpenPNM/')
 import pytest
 import numpy as np
 import openpnm as op
