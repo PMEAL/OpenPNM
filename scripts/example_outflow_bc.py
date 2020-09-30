@@ -125,10 +125,12 @@ sw['pore.val2'] = eB['pore.concentration.Na_mix_01']
 
 
 eC = op.algorithms.AdvectionDiffusion(network=net, phase=sw, settings=setts1)
-setts3 = (setts1.copy()).update(
+setts3 = setts1.copy()
+setts3.update(
         {'conductance': 'throat.ad_dif_conductance.' + Na.name,
          'diffusive_conductance': 'throat.diffusive_conductance.' + Na.name,
          'hydraulic_conductance': 'throat.hydraulic_conductance'})
+eC.settings.update(setts3)
 eC.set_value_BC(pores=net.pores('back'), values=1)
 eC.set_value_BC(pores=net.pores('left'), values=0.1)
 eC.set_value_BC(pores=net.pores('right'), values=0.1)
