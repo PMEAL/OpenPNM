@@ -72,7 +72,7 @@ class NernstPlanck(ReactiveTransport):
         diffusive_conductance = self.settings['diffusive_conductance']
         if not diffusive_conductance.endswith(ion):
             diffusive_conductance = '.'.join(
-                    diffusive_conductance.split('.')[:2])
+                diffusive_conductance.split('.')[:2])
             diffusive_conductance += ('.' + ion)  # Re-add ion name
             self.settings['diffusive_conductance'] = diffusive_conductance
 
