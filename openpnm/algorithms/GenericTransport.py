@@ -1,6 +1,7 @@
 import numpy as np
 import openpnm as op
 import scipy.sparse.linalg
+import warnings
 from numpy.linalg import norm
 import scipy.sparse.csgraph as spgr
 from scipy.spatial import ConvexHull
@@ -315,6 +316,8 @@ class GenericTransport(GenericAlgorithm):
         # support 'values' keyword
         if 'values' in kwargs.keys():
             rates = kwargs.pop("values")
+            warnings.warn("'values' has been deprecated, use 'rates' instead.",
+                          DeprecationWarning)
         # handle total_rate feature
         if total_rate is not None:
             if np.array(total_rate).size != 1:
