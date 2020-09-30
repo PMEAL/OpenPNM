@@ -102,6 +102,8 @@ This page links to examples in the Github repo at [github.com/PMEAL/OpenPNM/exam
 | [Relative Diffusivity](/examples/notebooks/algorithms/multiphase/relative_diffusivity.ipynb) | OpenPNM supports different multiphase transport phenomena. This example shows the procedures for calculation of relative diffusivity of Air and Water phases in a cubic network. For a multiphase diffusive mass transport problem invasion and distribution of phases can be modeled with percolation algorithms. Relative diffusivity of phases can then be calculated implementing Fickian diffusion for each phase considering multiphase pore scale models. |
 | [Relative Permeability in 2D](/examples/notebooks/algorithms/multiphase/relative_permeability_2D.ipynb) | OpenPNM is capable of simulating multiphase transport mechanisms such as drainage and imbibition in porous media. Relative properties of phases can be calculated assigning a related pore scale model and transport algorithm. This example presents the calculation procedures for relative permeability of Air and Water phases for a 2D network. Calculations for 3D networks follow the same steps. |
 
+| [Relative Permeability Metrics](/examples/notebooks/algorithms/multiphase/relative_permeability_metrics.ipynb) | This example illustrates the steps to use the metrics algorithm to find the relative permeability of a cubic network. The calculation of the relative permeability for an arbitrary network is automated in the metrics relative permeability algorithm.  |
+
 #### [Reactive Transport](/examples/notebooks/algorithms/reactive)
 
 | Link | Description |
