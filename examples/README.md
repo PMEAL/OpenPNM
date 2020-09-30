@@ -91,10 +91,9 @@ This page links to examples in the Github repo at [github.com/PMEAL/OpenPNM/exam
 | Link | Description |
 |:-----|:------------|
 | [Basic Fickian Diffusion, Tortuosity, and Formation Factor](/examples/notebooks/algorithms/single_phase/fickian_diffusion_and_tortuosity.ipynb) | Calculating the rate of diffusion through a network is a primary use of OpenPNM, and this example illustrates how to do it, and how to convert the result into known transport parameters such as tortuosity and formation factor. |
-| [Diffusion_with_concentration_dependent_diffusivity](/examples/notebooks/algorithms/single_phase/diffusion_with_concentration_dependent_diffusivity.ipynb) | This example illustrates how to define a costum diffusivity model and assign to the phase object. A Fickian diffusion on a cubic network with a variable diffusivity is implemented. |
+| [Diffusion with Concentration Dependent Diffusivity](/examples/notebooks/algorithms/single_phase/diffusion_with_concentration_dependent_diffusivity.ipynb) | This example illustrates how to define a costum diffusivity model and assign to the phase object. A Fickian diffusion on a cubic network with a variable diffusivity is implemented. |
 | [Permeability Tensor](/examples/notebooks/algorithms/single_phase/stokes_flow_and_permeability_tensor.ipynb) | The direct connection between the structure on the transport is one of main benefits of pore networks.  This examples uses a 2-layered network with 3x smaller pores in on layer to illustrate how the permeability coefficient for each direction can be determined. |
 | [Deep Dive into Conductance Models](/examples/notebooks/algorithms/single_phase/deep_dive_into_conductance_models.ipynb) | `Amin and Zohaib` |
-| [Diffusion with Concentration Dependent Diffusivity](/examples/notebooks/algorithms/single_phase/diffusion_with_concentration_dependent_diffusivity.ipynb) | `Amin` |
 
 #### [Multiphase Transport](/examples/notebooks/algorithms/multiphase)
 
