@@ -279,7 +279,8 @@ class GenericTransport(GenericAlgorithm):
         mode = self._parse_mode(mode, allowed=['merge', 'overwrite'], single=True)
         self._set_BC(pores=pores, bctype='value', bcvalues=values, mode=mode)
 
-    def set_rate_BC(self, pores, rates, mode='merge', total_rate=False):
+    def set_rate_BC(self, pores, rates, mode='merge',
+                    total_rate=False, **kwargs):
         r"""
         Apply constant rate boundary conditons to the specified locations.
 
@@ -311,6 +312,8 @@ class GenericTransport(GenericAlgorithm):
         The definition of ``quantity`` is specified in the algorithm's
         ``settings``, e.g. ``alg.settings['quantity'] = 'pore.pressure'``.
         """
+        if 'values' in kwargs.keys():
+            rates = kwargs.pop("values")
         if total_rate is True:
             pores = self._parse_indices(pores)
             rates = rates/pores.size
