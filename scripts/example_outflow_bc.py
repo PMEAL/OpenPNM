@@ -139,4 +139,5 @@ eC.run()
 sw['pore.val3'] = eC['pore.concentration']
 
 # output data to Paraview
+# sw['pore.val2'] should be equal to sw['pore.val3']
 # proj.export_data(phases=[sw], filename='OUT', filetype='vtp')
