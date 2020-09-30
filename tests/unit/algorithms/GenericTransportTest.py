@@ -91,7 +91,7 @@ class GenericTransportTest:
                                              phase=self.phase)
         alg.settings['conductance'] = 'throat.diffusive_conductance'
         alg.settings['quantity'] = 'pore.mole_fraction'
-        alg.set_rate_BC(pores=self.net.pores('bottom'), rates=1)
+        alg.set_rate_BC(pores=self.net.pores('bottom'), values=1)
         alg.set_value_BC(pores=self.net.pores('top'), values=0)
         alg.run()
         x = [0., 1., 2., 3., 4., 5., 6., 7., 8.]
@@ -103,7 +103,7 @@ class GenericTransportTest:
                                              phase=self.phase)
         alg.settings['conductance'] = 'throat.diffusive_conductance'
         alg.settings['quantity'] = 'pore.mole_fraction'
-        alg.set_rate_BC(pores=self.net.pores('bottom'), rates=1)
+        alg.set_rate_BC(pores=self.net.pores('bottom'), values=1)
         alg.set_value_BC(pores=self.net.pores('top'), values=0)
         alg.settings["cache_A"] = True
         alg.run()
@@ -127,7 +127,7 @@ class GenericTransportTest:
         alg.settings['conductance'] = 'throat.diffusive_conductance'
         alg.settings['quantity'] = 'pore.mole_fraction'
         pores = self.net.pores("left")
-        alg.set_rate_BC(pores=pores, rates=1.235*np.ones(pores.size))
+        alg.set_rate_BC(pores=pores, values=1.235*np.ones(pores.size))
         alg.set_value_BC(pores=self.net.pores("right"), values=0.0)
         alg.run()
         rate = alg.rate(pores=self.net.pores("right"))[0]
@@ -140,8 +140,8 @@ class GenericTransportTest:
                                              phase=self.phase)
         alg.settings['conductance'] = 'throat.diffusive_conductance'
         alg.settings['quantity'] = 'pore.mole_fraction'
-        alg.set_rate_BC(pores=[0, 1, 2, 3], rates=1.235)
-        alg.set_rate_BC(pores=[5, 6, 19, 35, 0], rates=3.455)
+        alg.set_rate_BC(pores=[0, 1, 2, 3], values=1.235)
+        alg.set_rate_BC(pores=[5, 6, 19, 35, 0], values=3.455)
         # Pore 0 is assigned two rate BCs, only the most recent will be kept
         alg.set_value_BC(pores=[50, 51, 52, 53], values=0.0)
         alg.run()
@@ -156,7 +156,7 @@ class GenericTransportTest:
                                              phase=self.phase)
         alg.settings['conductance'] = 'throat.diffusive_conductance'
         alg.settings['quantity'] = 'pore.mole_fraction'
-        alg.set_rate_BC(pores=[0, 1, 2, 3], rates=[0, 3.5, 0.4, -12])
+        alg.set_rate_BC(pores=[0, 1, 2, 3], values=[0, 3.5, 0.4, -12])
         alg.set_value_BC(pores=[50, 51, 52, 53], values=0.0)
         alg.run()
         rate_individual = alg.rate(pores=[0, 1, 2, 3], mode='single')
@@ -182,7 +182,7 @@ class GenericTransportTest:
         alg = op.algorithms.GenericTransport(network=net, phase=m)
         alg.settings['conductance'] = 'throat.diffusive_conductance'
         alg.settings['quantity'] = 'pore.mole_fraction'
-        alg.set_rate_BC(pores=0, rates=1.235)
+        alg.set_rate_BC(pores=0, values=1.235)
         alg.set_value_BC(pores=5, values=0.0)
         alg.run()
         rate = alg.rate(pores=5)[0]
@@ -203,7 +203,7 @@ class GenericTransportTest:
                                              phase=self.phase)
         alg.settings['conductance'] = 'throat.diffusive_conductance'
         alg.settings['quantity'] = 'pore.mole_fraction'
-        alg.set_rate_BC(pores=self.net.pores('bottom'), rates=1)
+        alg.set_rate_BC(pores=self.net.pores('bottom'), values=1)
         alg.set_value_BC(pores=self.net.pores('top'), values=0)
         alg.run()
         assert ~np.all(np.isnan(alg['pore.bc_value']))
@@ -215,7 +215,7 @@ class GenericTransportTest:
         assert 'pore.mole_fraction' in alg.keys()
         alg.reset(bcs=True, results=True)
         assert 'pore.mole_fraction' not in alg.keys()
-        alg.set_rate_BC(pores=self.net.pores('bottom'), rates=1)
+        alg.set_rate_BC(pores=self.net.pores('bottom'), values=1)
         alg.set_value_BC(pores=self.net.pores('top'), values=0)
         alg.run()
 
@@ -281,7 +281,7 @@ class GenericTransportTest:
                                              phase=self.phase)
         alg.settings['conductance'] = 'throat.diffusive_conductance'
         alg.settings['quantity'] = 'pore.mole_fraction'
-        alg.set_rate_BC(pores=[0, 1, 2, 3], rates=1, total_rate=True)
+        alg.set_rate_BC(pores=[0, 1, 2, 3], total_rate=1)
         alg.set_value_BC(pores=[50, 51, 52, 53], values=0.0)
         alg.run()
         rate_individual = alg.rate(pores=[0, 1, 2, 3], mode='single')
