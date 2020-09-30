@@ -56,7 +56,7 @@ class NernstPlanck(ReactiveTransport):
         self.settings.update(settings)
         # Parse the given ion and append name to quantity and conductance
         if ion:
-            if not type(ion) is str:  # Convert ion object to str
+            if isinstance(ion, str):  # Convert ion object to str
                 ion = ion.name
             self.settings['ion'] = ion
         quantity = self.settings['quantity']
