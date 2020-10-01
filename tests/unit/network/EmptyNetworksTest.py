@@ -1,4 +1,5 @@
 import openpnm as op
+import importlib
 
 
 class EmptyNetworksTest:
@@ -9,18 +10,13 @@ class EmptyNetworksTest:
         pass
 
     def test_each(self):
-        pn = op.network.Cubic()
-        pn = op.network.Bravais()
-        pn = op.network.CubicDual()
-        pn = op.network.CubicTemplate()
-        pn = op.network.Delaunay()
-        pn = op.network.DelaunayVoronoiDual()
-        pn = op.network.Gabriel()
-        pn = op.network.Voronoi()
+        nets = importlib.import_module('openpnm.network')
+        for item in nets.__dict__.keys():
+            if not item.startswith('__'):
+                getattr(op.network, item)()
 
 
 if __name__ == '__main__':
-
     t = EmptyNetworksTest()
     t.setup_class()
     self = t

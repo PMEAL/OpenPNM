@@ -46,15 +46,15 @@ class Voronoi(DelaunayVoronoiDual):
     def __init__(self, shape=None, num_points=None, **kwargs):
         # Clean-up input points
         points = kwargs.pop('points', None)
+        super().__init__(shape=shape, points=points, **kwargs)
         if (points is None) and (num_points is None):
-            super().__init__(shape=None, points=None, **kwargs)
-        else:
-            points = self._parse_points(shape=shape,
-                                        num_points=num_points,
-                                        points=points)
-            super().__init__(shape=shape, points=points, **kwargs)
-            # Initialize network object
-            topotools.trim(network=self, pores=self.pores('delaunay'))
-            pop = ['pore.delaunay', 'throat.delaunay', 'throat.interconnect']
-            for item in pop:
-                del self[item]
+            return
+        points = self._parse_points(shape=shape,
+                                    num_points=num_points,
+                                    points=points)
+        super().__init__(shape=shape, points=points, **kwargs)
+        # Initialize network object
+        topotools.trim(network=self, pores=self.pores('delaunay'))
+        pop = ['pore.delaunay', 'throat.delaunay', 'throat.interconnect']
+        for item in pop:
+            del self[item]

@@ -64,19 +64,19 @@ class CubicTemplate(Cubic):
     """
 
     def __init__(self, template=None, spacing=[1, 1, 1], **kwargs):
+        super().__init__(**kwargs)
         if template is None:
-            super().__init__(spacing=spacing, **kwargs)
-        else:
-            template = np.atleast_3d(template)
-            super().__init__(shape=template.shape, spacing=spacing, **kwargs)
-            coords = np.unravel_index(range(template.size), template.shape)
-            self['pore.template_coords'] = np.vstack(coords).T
-            self['pore.template_indices'] = self.Ps
-            topotools.trim(network=self, pores=template.flatten() == 0)
-            # Add "internal_surface" label to "fake" surface pores!
-            ndims = topotools.dimensionality(self).sum()
-            max_neighbors = 6 if ndims == 3 else 4
-            num_neighbors = np.diff(self.get_adjacency_matrix(fmt="csr").indptr)
-            mask_surface = self["pore.surface"]
-            mask_internal_surface = (num_neighbors < max_neighbors) & ~mask_surface
-            self.set_label("pore.internal_surface", pores=mask_internal_surface)
+            return
+        template = np.atleast_3d(template)
+        super().__init__(shape=template.shape, spacing=spacing, **kwargs)
+        coords = np.unravel_index(range(template.size), template.shape)
+        self['pore.template_coords'] = np.vstack(coords).T
+        self['pore.template_indices'] = self.Ps
+        topotools.trim(network=self, pores=template.flatten() == 0)
+        # Add "internal_surface" label to "fake" surface pores!
+        ndims = topotools.dimensionality(self).sum()
+        max_neighbors = 6 if ndims == 3 else 4
+        num_neighbors = np.diff(self.get_adjacency_matrix(fmt="csr").indptr)
+        mask_surface = self["pore.surface"]
+        mask_internal_surface = (num_neighbors < max_neighbors) & ~mask_surface
+        self.set_label("pore.internal_surface", pores=mask_internal_surface)

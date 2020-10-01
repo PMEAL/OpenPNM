@@ -91,83 +91,78 @@ class Cubic(GenericNetwork):
 
         super().__init__(name=name, project=project, **kwargs)
 
-        if shape is not None:
-            # Take care of 1D/2D networks
-            shape = np.array(shape, ndmin=1)
-            shape = np.concatenate((shape, [1] * (3 - shape.size))).astype(int)
+        if shape is None:
+            return
+        # Take care of 1D/2D networks
+        shape = np.array(shape, ndmin=1)
+        shape = np.concatenate((shape, [1] * (3 - shape.size))).astype(int)
 
-            arr = np.atleast_3d(np.empty(shape))
+        arr = np.atleast_3d(np.empty(shape))
 
-            # Store original network shape
-            self._shape = np.shape(arr)
-            # Store network spacing
-            spacing = np.float64(spacing)
-            if spacing.size == 2:
-                spacing = np.concatenate((spacing, [1]))
-            self._spacing = np.ones(3, dtype=float) * np.array(spacing, ndmin=1)
+        # Store original network shape
+        self._shape = np.shape(arr)
+        # Store network spacing
+        spacing = np.float64(spacing)
+        if spacing.size == 2:
+            spacing = np.concatenate((spacing, [1]))
+        self._spacing = np.ones(3, dtype=float) * np.array(spacing, ndmin=1)
 
-            z = np.tile(np.arange(shape[2]), shape[0] * shape[1])
-            y = np.tile(np.repeat(np.arange(shape[1]), shape[2]), shape[0])
-            x = np.repeat(np.arange(shape[0]), shape[1] * shape[2])
-            points = (np.vstack([x, y, z]).T).astype(float) + 0.5
+        z = np.tile(np.arange(shape[2]), shape[0] * shape[1])
+        y = np.tile(np.repeat(np.arange(shape[1]), shape[2]), shape[0])
+        x = np.repeat(np.arange(shape[0]), shape[1] * shape[2])
+        points = (np.vstack([x, y, z]).T).astype(float) + 0.5
 
-            idx = np.arange(arr.size).reshape(arr.shape)
+        idx = np.arange(arr.size).reshape(arr.shape)
 
-            face_joints = [
-                (idx[:, :, :-1], idx[:, :, 1:]),
-                (idx[:, :-1], idx[:, 1:]),
-                (idx[:-1], idx[1:]),
-            ]
+        face_joints = [(idx[:, :, :-1], idx[:, :, 1:]),
+                       (idx[:, :-1], idx[:, 1:]),
+                       (idx[:-1], idx[1:])]
 
-            corner_joints = [
-                (idx[:-1, :-1, :-1], idx[1:, 1:, 1:]),
-                (idx[:-1, :-1, 1:], idx[1:, 1:, :-1]),
-                (idx[:-1, 1:, :-1], idx[1:, :-1, 1:]),
-                (idx[1:, :-1, :-1], idx[:-1, 1:, 1:]),
-            ]
+        corner_joints = [(idx[:-1, :-1, :-1], idx[1:, 1:, 1:]),
+                         (idx[:-1, :-1, 1:], idx[1:, 1:, :-1]),
+                         (idx[:-1, 1:, :-1], idx[1:, :-1, 1:]),
+                         (idx[1:, :-1, :-1], idx[:-1, 1:, 1:])]
 
-            edge_joints = [
-                (idx[:, :-1, :-1], idx[:, 1:, 1:]),
-                (idx[:, :-1, 1:], idx[:, 1:, :-1]),
-                (idx[:-1, :, :-1], idx[1:, :, 1:]),
-                (idx[1:, :, :-1], idx[:-1, :, 1:]),
-                (idx[1:, 1:, :], idx[:-1, :-1, :]),
-                (idx[1:, :-1, :], idx[:-1, 1:, :]),
-            ]
+        edge_joints = [(idx[:, :-1, :-1], idx[:, 1:, 1:]),
+                       (idx[:, :-1, 1:], idx[:, 1:, :-1]),
+                       (idx[:-1, :, :-1], idx[1:, :, 1:]),
+                       (idx[1:, :, :-1], idx[:-1, :, 1:]),
+                       (idx[1:, 1:, :], idx[:-1, :-1, :]),
+                       (idx[1:, :-1, :], idx[:-1, 1:, :])]
 
-            if connectivity == 6:
-                joints = face_joints
-            elif connectivity == 6 + 8:
-                joints = face_joints + corner_joints
-            elif connectivity == 6 + 12:
-                joints = face_joints + edge_joints
-            elif connectivity == 12 + 8:
-                joints = edge_joints + corner_joints
-            elif connectivity == 6 + 8 + 12:
-                joints = face_joints + corner_joints + edge_joints
-            else:
-                raise Exception(
-                    "Invalid connectivity receieved. Must be 6, 14, 18, 20 or 26"
-                )
+        if connectivity == 6:
+            joints = face_joints
+        elif connectivity == 6 + 8:
+            joints = face_joints + corner_joints
+        elif connectivity == 6 + 12:
+            joints = face_joints + edge_joints
+        elif connectivity == 12 + 8:
+            joints = edge_joints + corner_joints
+        elif connectivity == 6 + 8 + 12:
+            joints = face_joints + corner_joints + edge_joints
+        else:
+            raise Exception(
+                "Invalid connectivity receieved. Must be 6, 14, 18, 20 or 26"
+            )
 
-            tails, heads = np.array([], dtype=int), np.array([], dtype=int)
-            for T, H in joints:
-                tails = np.concatenate((tails, T.flatten()))
-                heads = np.concatenate((heads, H.flatten()))
-            pairs = np.vstack([tails, heads]).T
+        tails, heads = np.array([], dtype=int), np.array([], dtype=int)
+        for T, H in joints:
+            tails = np.concatenate((tails, T.flatten()))
+            heads = np.concatenate((heads, H.flatten()))
+        pairs = np.vstack([tails, heads]).T
 
-            self["pore.all"] = np.ones([points.shape[0], ], dtype=bool)
-            self["throat.all"] = np.ones([pairs.shape[0], ], dtype=bool)
-            self["pore.coords"] = points
-            self["throat.conns"] = pairs
-            self["pore.internal"] = True
-            self["throat.internal"] = True
-            self._label_surface_pores()
-            topotools.label_faces(network=self)
-            Ps = self["pore.surface"]
-            self["throat.surface"] = np.all(Ps[self["throat.conns"]], axis=1)
-            # Scale network to requested spacing
-            self["pore.coords"] *= spacing
+        self["pore.all"] = np.ones([points.shape[0], ], dtype=bool)
+        self["throat.all"] = np.ones([pairs.shape[0], ], dtype=bool)
+        self["pore.coords"] = points
+        self["throat.conns"] = pairs
+        self["pore.internal"] = True
+        self["throat.internal"] = True
+        self._label_surface_pores()
+        topotools.label_faces(network=self)
+        Ps = self["pore.surface"]
+        self["throat.surface"] = np.all(Ps[self["throat.conns"]], axis=1)
+        # Scale network to requested spacing
+        self["pore.coords"] *= spacing
 
     def _label_surface_pores(self):
         r"""
