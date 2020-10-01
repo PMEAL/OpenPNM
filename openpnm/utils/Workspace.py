@@ -45,9 +45,9 @@ class Workspace(dict):
 
     def __init__(self):
         super().__init__()
+        self._projects = {}
         self.settings = SettingsDict()
         self.settings['loglevel'] = 30
-        self._projects = {}
 
     def __setitem__(self, name, project):
         if name is None:
@@ -121,6 +121,7 @@ class Workspace(dict):
         """
         from zipfile import ZipFile
         with ZipFile(filename, 'r') as z:
+            logger.info('Loading projects contained in ' + filename)
             files = z.filelist
             for f in files:
                 self.load_project(f.orig_filename)
@@ -185,8 +186,7 @@ class Workspace(dict):
 
         """
         from openpnm.io import PNM
-        proj = PNM.load_project(filename=filename)
-        return proj
+        PNM.load_project(filename=filename)
 
     def close_project(self, project):
         r"""
