@@ -76,7 +76,8 @@ setup(
         'unyt',
         'terminaltables',
         'docrep==0.2.7',
-        'zarr'
+        'zarr',
+        'json-tricks',
     ],
     author='OpenPNM Team',
     author_email='jgostick@uwaterloo.ca',
