@@ -141,14 +141,15 @@ class Workspace(dict):
             from openpnm.io import PNM
             proj = PNM.load_project(filename=filename)
             return proj
-        except:
+        except OSError:
             try:
                 import pickle
                 f = open(filename, 'rb')
                 proj = pickle.load(f)
                 return proj
-            except:
-                print('neither worked')
+            except Exception:
+                pass
+            print('neither worked')
 
     def close_project(self, project):
         r"""
