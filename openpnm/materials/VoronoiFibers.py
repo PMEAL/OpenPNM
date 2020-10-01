@@ -210,23 +210,18 @@ class DelaunayGeometry(GenericGeometry):
             self["throat.conduit_lengths.throat"] = cen_lens[:, 1]
             self["throat.conduit_lengths.pore2"] = cen_lens[:, 2]
             # Configurable Models
-            self.add_model(
-                propname="throat.shape_factor", model=gm.throat_shape_factor.compactness
-            )
-            self.add_model(propname="pore.diameter", model=gm.pore_size.equivalent_diameter)
-            self.add_model(
-                propname="pore.area",
-                model=gm.pore_area.sphere,
-                pore_diameter="pore.diameter",
-            )
-            self.add_model(
-                propname="throat.surface_area", model=gm.throat_surface_area.extrusion
-            )
-            self.add_model(
-                propname="throat.endpoints",
-                model=gm.throat_endpoints.straight_throat,
-                throat_vector="throat.normal",
-            )
+            mod = gm.throat_shape_factor.compactness
+            self.add_model(propname="throat.shape_factor", model=mod)
+            mod = gm.pore_size.equivalent_diameter
+            self.add_model(propname="pore.diameter", model=mod)
+            self.add_model(propname="pore.area",
+                           model=gm.pore_area.sphere,
+                           pore_diameter="pore.diameter")
+            mod = gm.throat_surface_area.extrusion
+            self.add_model(propname="throat.surface_area", model=mod)
+            self.add_model(propname="throat.endpoints",
+                           model=gm.throat_endpoints.straight_throat,
+                           throat_vector="throat.normal")
             self.regenerate_models()
 
     def _t_normals(self):
@@ -381,7 +376,7 @@ class DelaunayGeometry(GenericGeometry):
                     img[pt[0]][pt[1]] = 1
                 # Pad with zeros all the way around the edges
                 img_pad = np.zeros([np.shape(img)[0] + 2, np.shape(img)[1] + 2])
-                img_pad[1 : np.shape(img)[0] + 1, 1 : np.shape(img)[1] + 1] = img
+                img_pad[1: np.shape(img)[0] + 1, 1: np.shape(img)[1] + 1] = img
                 # All points should lie on this plane but could be some
                 # rounding errors so use the order parameter
                 z_plane = np.unique(np.around(z.astype(float), order + 1))
@@ -402,9 +397,8 @@ class DelaunayGeometry(GenericGeometry):
                 # throat is fully occluded
                 if np.sum(eroded) >= 3:
                     # Do some image analysis to extract the key properties
-                    cropped = eroded[
-                        1 : np.shape(img)[0] + 1, 1 : np.shape(img)[1] + 1
-                    ].astype(int)
+                    cropped = eroded[1: np.shape(img)[0] + 1,
+                                     1: np.shape(img)[1] + 1].astype(int)
                     regions = regionprops(cropped)
                     # Change this to cope with genuine multi-region throats
                     if len(regions) == 1:
@@ -539,9 +533,9 @@ class DelaunayGeometry(GenericGeometry):
         dom[dom == len(a)] = 1
         ds = np.shape(dom)
         temp_arr = np.zeros_like(self._hull_image, dtype=bool)
-        temp_arr[
-            si[0] : si[0] + ds[0], si[1] : si[1] + ds[1], si[2] : si[2] + ds[2]
-        ] = dom
+        temp_arr[si[0]: si[0] + ds[0],
+                 si[1]: si[1] + ds[1],
+                 si[2]: si[2] + ds[2]] = dom
         self._hull_image[temp_arr] = pore
         del temp_arr
 
@@ -850,9 +844,12 @@ class DelaunayGeometry(GenericGeometry):
             fig = plt.figure()
         ax = fig.gca()
         plots = []
-        plots.append(plt.plot(np.arange(im_shape[0]) / im_shape[0], px, "r", label="x"))
-        plots.append(plt.plot(np.arange(im_shape[1]) / im_shape[1], py, "g", label="y"))
-        plots.append(plt.plot(np.arange(im_shape[2]) / im_shape[2], pz, "b", label="z"))
+        plots.append(plt.plot(np.arange(im_shape[0]) / im_shape[0],
+                              px, "r", label="x"))
+        plots.append(plt.plot(np.arange(im_shape[1]) / im_shape[1],
+                              py, "g", label="y"))
+        plots.append(plt.plot(np.arange(im_shape[2]) / im_shape[2],
+                              pz, "b", label="z"))
         plt.xlabel("Normalized Distance")
         plt.ylabel("Porosity")
         handles, labels = ax.get_legend_handles_labels()
@@ -900,9 +897,9 @@ class DelaunayGeometry(GenericGeometry):
                 offset_2D = self._rotate_and_chop(offsets[i], normals[i], [0, 0, 1])
                 offset_hull = ConvexHull(offset_2D, qhull_options="QJ Pp")
                 for simplex in offset_hull.simplices:
-                    plt.plot(
-                        offset_2D[simplex, 0], offset_2D[simplex, 1], "g-", linewidth=2
-                    )
+                    plt.plot(offset_2D[simplex, 0],
+                             offset_2D[simplex, 1],
+                             "g-", linewidth=2)
                 plt.scatter(offset_2D[:, 0], offset_2D[:, 1])
                 # Make sure the plot looks nice by finding the greatest
                 # range of points and setting the plot to look square
@@ -920,7 +917,8 @@ class DelaunayGeometry(GenericGeometry):
                 upper_bound_x = xmin + my_range * 1.5
                 lower_bound_y = ymin - my_range * 0.5
                 upper_bound_y = ymin + my_range * 1.5
-                plt.axis((lower_bound_x, upper_bound_x, lower_bound_y, upper_bound_y))
+                plt.axis((lower_bound_x, upper_bound_x,
+                          lower_bound_y, upper_bound_y))
                 plt.grid(b=True, which="major", color="b", linestyle="-")
                 centroid = self._rotate_and_chop(coms[i], normals[i], [0, 0, 1])
                 incent = self._rotate_and_chop(incentre[i], normals[i], [0, 0, 1])
@@ -976,7 +974,9 @@ class DelaunayGeometry(GenericGeometry):
                 offsets = self["throat.offset_vertices"][throats]
                 ordered_offs = []
                 for i in range(len(offsets)):
-                    offs_2D = self._rotate_and_chop(offsets[i], normals[i], [0, 0, 1])
+                    offs_2D = self._rotate_and_chop(offsets[i],
+                                                    normals[i],
+                                                    [0, 0, 1])
                     offs_hull = ConvexHull(offs_2D, qhull_options="QJ Pp")
                     ordered_offs.append(offsets[i][offs_hull.vertices])
                 # Get domain extents for setting axis
@@ -1005,10 +1005,14 @@ class DelaunayGeometry(GenericGeometry):
                 ax.set_ylim(ymin, ymax)
                 ax.set_zlim(zmin, zmax)
                 if include_points:
-                    ax.scatter(centroids[:, 0], centroids[:, 1], centroids[:, 2], c="y")
-                    ax.scatter(
-                        tcentroids[:, 0], tcentroids[:, 1], tcentroids[:, 2], c="r"
-                    )
+                    ax.scatter(centroids[:, 0],
+                               centroids[:, 1],
+                               centroids[:, 2],
+                               c="y")
+                    ax.scatter(tcentroids[:, 0],
+                               tcentroids[:, 1],
+                               tcentroids[:, 2],
+                               c="r")
                     ax.scatter(coords[:, 0], coords[:, 1], coords[:, 2], c="b")
                 ax.ticklabel_format(style="sci", scilimits=(0, 0))
             else:
@@ -1033,9 +1037,8 @@ class DelaunayGeometry(GenericGeometry):
             # We are already aligned
             facet = verts
         else:
-            M = tr.rotation_matrix(
-                tr.angle_between_vectors(normal, axis), tr.vector_product(normal, axis)
-            )
+            M = tr.rotation_matrix(tr.angle_between_vectors(normal, axis),
+                                   tr.vector_product(normal, axis))
             try:
                 facet = np.dot(verts, M[:3, :3].T)
             except ValueError:
@@ -1166,42 +1169,35 @@ class VoronoiGeometry(GenericGeometry):
             self.add_model(
                 propname="pore.volume", model=gm.pore_volume.sphere, regen_mode=rm
             )
-            self.add_model(propname="pore.area", model=gm.pore_area.sphere, regen_mode=rm)
+            self.add_model(propname="pore.area",
+                           model=gm.pore_area.sphere,
+                           regen_mode=rm)
             self["throat.diameter"] = np.ones(self.Nt) * network.fiber_rad * 2
             self["throat.indiameter"] = self["throat.diameter"]
-            self.add_model(
-                propname="throat.endpoints",
-                model=gm.throat_endpoints.spherical_pores,
-                regen_mode=rm,
-            )
-            self.add_model(
-                propname="throat.area", model=gm.throat_area.cylinder, regen_mode=rm
-            )
-            self.add_model(
-                propname="throat.length", model=gm.throat_length.piecewise, regen_mode=rm
-            )
+            self.add_model(propname="throat.endpoints",
+                           model=gm.throat_endpoints.spherical_pores,
+                           regen_mode=rm)
+            self.add_model(propname="throat.area",
+                           model=gm.throat_area.cylinder,
+                           regen_mode=rm)
+            self.add_model(propname="throat.length",
+                           model=gm.throat_length.piecewise,
+                           regen_mode=rm)
             self["throat.c2c"] = self["throat.length"] + network.fiber_rad * 2
-            self.add_model(
-                propname="throat.volume", model=gm.throat_volume.cylinder, regen_mode=rm
-            )
-            self.add_model(
-                propname="throat.perimeter",
-                model=gm.throat_perimeter.cylinder,
-                regen_mode=rm,
-            )
-            self.add_model(
-                propname="throat.surface_area",
-                model=gm.throat_surface_area.cylinder,
-                regen_mode=rm,
-            )
-            self.add_model(
-                propname="throat.shape_factor",
-                model=gm.throat_shape_factor.compactness,
-                regen_mode=rm,
-            )
-            self.add_model(
-                propname="throat.conduit_lengths", model=gm.throat_length.conduit_lengths
-            )
+            self.add_model(propname="throat.volume",
+                           model=gm.throat_volume.cylinder,
+                           regen_mode=rm)
+            self.add_model(propname="throat.perimeter",
+                           model=gm.throat_perimeter.cylinder,
+                           regen_mode=rm)
+            self.add_model(propname="throat.surface_area",
+                           model=gm.throat_surface_area.cylinder,
+                           regen_mode=rm)
+            self.add_model(propname="throat.shape_factor",
+                           model=gm.throat_shape_factor.compactness,
+                           regen_mode=rm)
+            self.add_model(propname="throat.conduit_lengths",
+                           model=gm.throat_length.conduit_lengths)
 
     def _throat_props(self):
         r"""
