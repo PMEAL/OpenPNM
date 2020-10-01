@@ -139,12 +139,14 @@ class Workspace(dict):
         """
         try:
             from openpnm.io import PNM
-            PNM.load_project(filename=filename)
+            proj = PNM.load_project(filename=filename)
+            return proj
         except:
             try:
                 import pickle
                 f = open(filename, 'rb')
                 proj = pickle.load(f)
+                return proj
             except:
                 print('neither worked')
 

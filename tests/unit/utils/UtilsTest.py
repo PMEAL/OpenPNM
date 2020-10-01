@@ -56,7 +56,9 @@ class UtilsTest:
 
     def test_is_symmetric_FickianDiffusion_must_be_symmetric(self):
         net = op.network.Cubic(shape=[5, 5, 5])
-        geom = op.geometry.StickAndBall(network=net)
+        geom = op.geometry.StickAndBall(network=net,
+                                        pores=net.Ps,
+                                        throats=net.Ts)
         air = op.phases.Air(network=net)
         _ = op.physics.Standard(network=net, phase=air, geometry=geom)
         fd = op.algorithms.FickianDiffusion(network=net, phase=air)
@@ -66,7 +68,9 @@ class UtilsTest:
 
     def test_is_symmetric_AdvectionDiffusion_must_be_nonsymmetric(self):
         net = op.network.Cubic(shape=[5, 5, 5])
-        geom = op.geometry.StickAndBall(network=net)
+        geom = op.geometry.StickAndBall(network=net,
+                                        pores=net.Ps,
+                                        throats=net.Ts)
         air = op.phases.Air(network=net)
         phys = op.physics.Standard(network=net, phase=air, geometry=geom)
         ad = op.algorithms.AdvectionDiffusion(network=net, phase=air)

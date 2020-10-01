@@ -7,7 +7,9 @@ class RelativePermeabilityTest:
 
     def setup_class(self):
         self.net = op.network.Cubic(shape=[5, 5, 5], spacing=1)
-        self.geo = op.geometry.GenericGeometry(network=self.net)
+        self.geo = op.geometry.GenericGeometry(network=self.net,
+                                               pores=self.net.Ps,
+                                               throats=self.net.Ts)
         self.geo["pore.diameter"] = 0.5
         self.geo["pore.area"] = 0.5**2
         self.geo["pore.volume"] = 0.5**3

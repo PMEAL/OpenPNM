@@ -7,7 +7,9 @@ from numpy.testing import assert_allclose
 class DispersiveConductanceTest:
     def setup_class(self):
         self.net = op.network.Cubic(shape=[2, 2, 2])
-        self.geo = op.geometry.GenericGeometry(network=self.net)
+        self.geo = op.geometry.GenericGeometry(network=self.net,
+                                               pores=self.net.Ps,
+                                               throats=self.net.Ts)
         self.geo['throat.conduit_lengths.pore1'] = 0.15
         self.geo['throat.conduit_lengths.throat'] = 0.6
         self.geo['throat.conduit_lengths.pore2'] = 0.25
