@@ -320,7 +320,7 @@ class GenericTransport(GenericAlgorithm):
                           DeprecationWarning)
         # handle total_rate feature
         if total_rate is not None:
-            if np.size(total_rate) != 1:
+            if np.isscalar(total_rate):
                 raise Exception('total_rate argument accepts scalar only!')
             if rates is not None:
                 raise Exception('Cannot specify both arguments: rate and '
