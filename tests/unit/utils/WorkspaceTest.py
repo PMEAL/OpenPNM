@@ -77,18 +77,18 @@ class WorkspaceTest:
     #     self.ws.clear()
     #     os.remove('test.pnm')
 
-    def test_save_and_load_project_from_pickled_object(self):
-        a = np.ones((10, ))
-        pickle.dump(a, open('single_object.pnm', 'wb'))
-        self.ws.clear()
-        with pytest.raises(Exception):
-            self.ws.load_project('single_object.pnm')
-        b = {'test': a}
-        pickle.dump(b, open('single_object.pnm', 'wb'))
-        self.ws.clear()
-        with pytest.raises(Exception):
-            self.ws.load_project('single_object.pnm')
-        os.remove('single_object.pnm')
+    # def test_save_and_load_project_from_pickled_object(self):
+    #     a = np.ones((10, ))
+    #     pickle.dump(a, open('single_object.pnm', 'wb'))
+    #     self.ws.clear()
+    #     with pytest.raises(Exception):
+    #         self.ws.load_project('single_object.pnm')
+    #     b = {'test': a}
+    #     pickle.dump(b, open('single_object.pnm', 'wb'))
+    #     self.ws.clear()
+    #     with pytest.raises(Exception):
+    #         self.ws.load_project('single_object.pnm')
+    #     os.remove('single_object.pnm')
 
     def test_load_project_with_name_conflict(self):
         self.ws.clear()
