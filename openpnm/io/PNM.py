@@ -77,30 +77,26 @@ class PNM(GenericIO):
             print('Created using OpenPNM version ' + root.attrs['version'])
             print('Saved on ' + root.attrs['date saved'])
             for name in root.keys():
-                print('='*60)
-                print(name)
                 if 'network' in root[name].attrs['class']:
                     proj, obj = create_obj(root, name, proj)
             for name in root.keys():
-                print('='*60)
-                print(name)
                 if 'network' not in root[name].attrs['class']:
                     proj, obj = create_obj(root, name, proj)
-
             ws.settings['loglevel'] = loglevel
         return proj
 
 
 def create_obj(root, name, proj):
+    r"""
+    Reproduces an OpenPNM object, given the hdf5 file and name
+    """
     import openpnm as op
     # regenerate object as same class
     mro = root[name].attrs['class']
     mro = mro.split("'")[1]
     mro = mro.split('.')
-    mod = getattr(op, mro[1])
-    c = [i for i in mod.__dir__() if i.startswith('Generic')][0]
-    c = mro[-1]
-    clss = getattr(mod, c)
+    mod = importlib.import_module('.'.join(mro[:-1]))
+    clss = getattr(mod, mro[-1])
     obj = clss(project=proj, settings={'freeze_models': True})
     obj._name = name
     # Add data to obj
