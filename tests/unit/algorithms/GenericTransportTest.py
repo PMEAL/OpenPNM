@@ -294,7 +294,7 @@ class GenericTransportTest:
             alg.set_rate_BC(pores=[0, 1, 2, 3],
                             total_rate=[0.25, 0.25, 0.25, 0.25])
         with pytest.raises(Exception):
-            alg.set_rate_BC(pores=[0, 1, 2, 3], rates= 1, total_rate=1)
+            alg.set_rate_BC(pores=[0, 1, 2, 3], rates=1, total_rate=1)
 
     def teardown_class(self):
         ws = op.Workspace()
