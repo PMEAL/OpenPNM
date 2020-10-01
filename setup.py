@@ -76,7 +76,6 @@ setup(
         'unyt',
         'terminaltables',
         'docrep==0.2.7',
-        'zarr',
         'json-tricks',
     ],
     author='OpenPNM Team',
