@@ -84,24 +84,24 @@ class MultiphysicsNernstPlanckSolverTest:
         # algorithms
         self.sf = op.algorithms.StokesFlow(network=self.net, phase=self.sw,
                                            settings=setts1)
-        self.sf.set_value_BC(pores=self.net.pores('back'), values=11)
-        self.sf.set_value_BC(pores=self.net.pores('front'), values=10)
+        self.sf.set_value_BC(pores=self.net.pores('right'), values=11)
+        self.sf.set_value_BC(pores=self.net.pores('left'), values=10)
 
         self.p = op.algorithms.IonicConduction(network=self.net, phase=self.sw,
                                                settings=setts1)
-        self.p.set_value_BC(pores=self.net.pores('left'), values=0.02)
-        self.p.set_value_BC(pores=self.net.pores('right'), values=0.01)
+        self.p.set_value_BC(pores=self.net.pores('back'), values=0.02)
+        self.p.set_value_BC(pores=self.net.pores('front'), values=0.01)
         self.p.settings['charge_conservation'] = 'electroneutrality'
 
         self.eA = op.algorithms.NernstPlanck(network=self.net, phase=self.sw,
                                              ion=self.Na.name, settings=setts1)
-        self.eA.set_value_BC(pores=self.net.pores('back'), values=20)
-        self.eA.set_value_BC(pores=self.net.pores('front'), values=10)
+        self.eA.set_value_BC(pores=self.net.pores('right'), values=20)
+        self.eA.set_value_BC(pores=self.net.pores('left'), values=10)
 
         self.eB = op.algorithms.NernstPlanck(network=self.net, phase=self.sw,
                                              ion=self.Cl.name, settings=setts1)
-        self.eB.set_value_BC(pores=self.net.pores('back'), values=20)
-        self.eB.set_value_BC(pores=self.net.pores('front'), values=10)
+        self.eB.set_value_BC(pores=self.net.pores('right'), values=20)
+        self.eB.set_value_BC(pores=self.net.pores('left'), values=10)
 
         mnp = op.algorithms.NernstPlanckMultiphysicsSolver
         self.mnp = mnp(network=self.net, phase=self.sw, settings=setts2)
