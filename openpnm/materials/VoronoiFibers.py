@@ -94,17 +94,16 @@ class VoronoiFibers(Project):
     ...                                  resolution=2e-6)
     """
 
-    def __init__(
-        self,
-        num_points=None,
-        points=None,
-        shape=[1, 1, 1],
-        fiber_rad=None,
-        resolution=1e-2,
-        name=None,
-        linear_scale=None,
-        **kwargs
-    ):
+    def __init__(self,
+                 num_points=None,
+                 points=None,
+                 fiber_rad=10,
+                 resolution=1e-2,
+                 shape=[1, 1, 1],
+                 linear_scale=None,
+                 name=None,
+                 **kwargs):
+
         super().__init__(name=name)
         shape = np.array(shape)
         scale_applied = False
@@ -123,33 +122,28 @@ class VoronoiFibers(Project):
         if fiber_rad is None:
             logger.exception(msg="Please initialize class with a fiber_rad")
 
-        net = DelaunayVoronoiDual(
-            project=self,
-            num_points=num_points,
-            points=points,
-            shape=shape,
-            name=self.name + "_net",
-            **kwargs
-        )
+        net = DelaunayVoronoiDual(project=self,
+                                  num_points=num_points,
+                                  points=points,
+                                  shape=shape,
+                                  name=self.name + "_net",
+                                  **kwargs)
         if scale_applied:
             net["pore.coords"] /= ls
         net.fiber_rad = fiber_rad
         net.resolution = resolution
-        del_geom = DelaunayGeometry(
-            project=self,
-            network=net,
-            pores=net.pores("delaunay"),
-            throats=net.throats("delaunay"),
-            name=self.name + "_del",
-        )
+        del_geom = DelaunayGeometry(project=self,
+                                    network=net,
+                                    pores=net.pores("delaunay"),
+                                    throats=net.throats("delaunay"),
+                                    name=self.name + "_del")
 
-        VoronoiGeometry(
-            project=self,
-            network=net,
-            pores=net.pores("voronoi"),
-            throats=net.throats("voronoi"),
-            name=self.name + "_vor",
-        )
+        VoronoiGeometry(project=self,
+                        network=net,
+                        pores=net.pores("voronoi"),
+                        throats=net.throats("voronoi"),
+                        name=self.name + "_vor")
+
         # Tidy up network
         h = net.check_network_health()
         if len(h["trim_pores"]) > 0:
@@ -181,58 +175,59 @@ class DelaunayGeometry(GenericGeometry):
         A unique name for the network
     """
 
-    def __init__(self, network, **kwargs):
+    def __init__(self, network=None, **kwargs):
         super().__init__(network=network, **kwargs)
-        # Set all the required models
-        vertices = network.find_pore_hulls()
-        p_coords = np.array(
-            [network["pore.coords"][list(p)] for p in vertices], dtype=object
-        )
-        self["pore.vertices"] = p_coords
-        vertices = network.find_throat_facets()
-        t_coords = np.array(
-            [network["pore.coords"][list(t)] for t in vertices], dtype=object
-        )
-        self["throat.vertices"] = t_coords
+        if network is not None:
+            # Set all the required models
+            vertices = network.find_pore_hulls()
+            p_coords = np.array(
+                [network["pore.coords"][list(p)] for p in vertices], dtype=object
+            )
+            self["pore.vertices"] = p_coords
+            vertices = network.find_throat_facets()
+            t_coords = np.array(
+                [network["pore.coords"][list(t)] for t in vertices], dtype=object
+            )
+            self["throat.vertices"] = t_coords
 
-        self.in_hull_volume()
-        self["throat.normal"] = self._t_normals()
-        self["throat.centroid"] = self._centroids(verts=t_coords)
-        self["pore.centroid"] = self._centroids(verts=p_coords)
-        (
-            self["pore.indiameter"],
-            self["pore.incenter"],
-        ) = self._indiameter_from_fibers()
-        self._throat_props()
-        topotools.trim_occluded_throats(network=network, mask=self.name)
-        self["throat.volume"] = np.zeros(1, dtype=float)
-        self["throat.length"] = np.ones(1, dtype=float)
-        self["throat.length"] *= self.network.fiber_rad * 2
-        cen_lens = self._throat_c2c()
-        self["throat.c2c"] = np.sum(cen_lens, axis=1)
-        cen_lens[cen_lens <= 0.0] = 1e-12
-        self["throat.conduit_lengths.pore1"] = cen_lens[:, 0]
-        self["throat.conduit_lengths.throat"] = cen_lens[:, 1]
-        self["throat.conduit_lengths.pore2"] = cen_lens[:, 2]
-        # Configurable Models
-        self.add_model(
-            propname="throat.shape_factor", model=gm.throat_shape_factor.compactness
-        )
-        self.add_model(propname="pore.diameter", model=gm.pore_size.equivalent_diameter)
-        self.add_model(
-            propname="pore.area",
-            model=gm.pore_area.sphere,
-            pore_diameter="pore.diameter",
-        )
-        self.add_model(
-            propname="throat.surface_area", model=gm.throat_surface_area.extrusion
-        )
-        self.add_model(
-            propname="throat.endpoints",
-            model=gm.throat_endpoints.straight_throat,
-            throat_vector="throat.normal",
-        )
-        self.regenerate_models()
+            self.in_hull_volume()
+            self["throat.normal"] = self._t_normals()
+            self["throat.centroid"] = self._centroids(verts=t_coords)
+            self["pore.centroid"] = self._centroids(verts=p_coords)
+            (
+                self["pore.indiameter"],
+                self["pore.incenter"],
+            ) = self._indiameter_from_fibers()
+            self._throat_props()
+            topotools.trim_occluded_throats(network=network, mask=self.name)
+            self["throat.volume"] = np.zeros(1, dtype=float)
+            self["throat.length"] = np.ones(1, dtype=float)
+            self["throat.length"] *= self.network.fiber_rad * 2
+            cen_lens = self._throat_c2c()
+            self["throat.c2c"] = np.sum(cen_lens, axis=1)
+            cen_lens[cen_lens <= 0.0] = 1e-12
+            self["throat.conduit_lengths.pore1"] = cen_lens[:, 0]
+            self["throat.conduit_lengths.throat"] = cen_lens[:, 1]
+            self["throat.conduit_lengths.pore2"] = cen_lens[:, 2]
+            # Configurable Models
+            self.add_model(
+                propname="throat.shape_factor", model=gm.throat_shape_factor.compactness
+            )
+            self.add_model(propname="pore.diameter", model=gm.pore_size.equivalent_diameter)
+            self.add_model(
+                propname="pore.area",
+                model=gm.pore_area.sphere,
+                pore_diameter="pore.diameter",
+            )
+            self.add_model(
+                propname="throat.surface_area", model=gm.throat_surface_area.extrusion
+            )
+            self.add_model(
+                propname="throat.endpoints",
+                model=gm.throat_endpoints.straight_throat,
+                throat_vector="throat.normal",
+            )
+            self.regenerate_models()
 
     def _t_normals(self):
         r"""
@@ -1158,54 +1153,55 @@ class VoronoiGeometry(GenericGeometry):
         A unique name for the network
     """
 
-    def __init__(self, network, **kwargs):
+    def __init__(self, network=None, **kwargs):
         super().__init__(network=network, **kwargs)
-        rm = "normal"
-        net_Ps = network.pores(self.name)
-        self["pore.diameter"] = np.ones(self.Np) * network.fiber_rad * 2
-        self["pore.indiameter"] = self["pore.diameter"]
-        self["pore.incenter"] = network["pore.coords"][net_Ps]
-        self["pore.centroid"] = network["pore.coords"][net_Ps]
-        self._throat_props()
-        self.add_model(
-            propname="pore.volume", model=gm.pore_volume.sphere, regen_mode=rm
-        )
-        self.add_model(propname="pore.area", model=gm.pore_area.sphere, regen_mode=rm)
-        self["throat.diameter"] = np.ones(self.Nt) * network.fiber_rad * 2
-        self["throat.indiameter"] = self["throat.diameter"]
-        self.add_model(
-            propname="throat.endpoints",
-            model=gm.throat_endpoints.spherical_pores,
-            regen_mode=rm,
-        )
-        self.add_model(
-            propname="throat.area", model=gm.throat_area.cylinder, regen_mode=rm
-        )
-        self.add_model(
-            propname="throat.length", model=gm.throat_length.piecewise, regen_mode=rm
-        )
-        self["throat.c2c"] = self["throat.length"] + network.fiber_rad * 2
-        self.add_model(
-            propname="throat.volume", model=gm.throat_volume.cylinder, regen_mode=rm
-        )
-        self.add_model(
-            propname="throat.perimeter",
-            model=gm.throat_perimeter.cylinder,
-            regen_mode=rm,
-        )
-        self.add_model(
-            propname="throat.surface_area",
-            model=gm.throat_surface_area.cylinder,
-            regen_mode=rm,
-        )
-        self.add_model(
-            propname="throat.shape_factor",
-            model=gm.throat_shape_factor.compactness,
-            regen_mode=rm,
-        )
-        self.add_model(
-            propname="throat.conduit_lengths", model=gm.throat_length.conduit_lengths
-        )
+        if network is not None:
+            rm = "normal"
+            net_Ps = network.pores(self.name)
+            self["pore.diameter"] = np.ones(self.Np) * network.fiber_rad * 2
+            self["pore.indiameter"] = self["pore.diameter"]
+            self["pore.incenter"] = network["pore.coords"][net_Ps]
+            self["pore.centroid"] = network["pore.coords"][net_Ps]
+            self._throat_props()
+            self.add_model(
+                propname="pore.volume", model=gm.pore_volume.sphere, regen_mode=rm
+            )
+            self.add_model(propname="pore.area", model=gm.pore_area.sphere, regen_mode=rm)
+            self["throat.diameter"] = np.ones(self.Nt) * network.fiber_rad * 2
+            self["throat.indiameter"] = self["throat.diameter"]
+            self.add_model(
+                propname="throat.endpoints",
+                model=gm.throat_endpoints.spherical_pores,
+                regen_mode=rm,
+            )
+            self.add_model(
+                propname="throat.area", model=gm.throat_area.cylinder, regen_mode=rm
+            )
+            self.add_model(
+                propname="throat.length", model=gm.throat_length.piecewise, regen_mode=rm
+            )
+            self["throat.c2c"] = self["throat.length"] + network.fiber_rad * 2
+            self.add_model(
+                propname="throat.volume", model=gm.throat_volume.cylinder, regen_mode=rm
+            )
+            self.add_model(
+                propname="throat.perimeter",
+                model=gm.throat_perimeter.cylinder,
+                regen_mode=rm,
+            )
+            self.add_model(
+                propname="throat.surface_area",
+                model=gm.throat_surface_area.cylinder,
+                regen_mode=rm,
+            )
+            self.add_model(
+                propname="throat.shape_factor",
+                model=gm.throat_shape_factor.compactness,
+                regen_mode=rm,
+            )
+            self.add_model(
+                propname="throat.conduit_lengths", model=gm.throat_length.conduit_lengths
+            )
 
     def _throat_props(self):
         r"""
