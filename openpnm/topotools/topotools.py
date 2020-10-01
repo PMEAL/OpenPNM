@@ -428,11 +428,11 @@ def label_faces(network, tol=0.0, label='surface'):
     zspan = zmax - zmin
     dims = dimensionality(network)
     if dims[0]:
-        network['pore.front'] = (crds[:, 0] <= (xmin + tol*xspan)) * Psurf
-        network['pore.back'] = (crds[:, 0] >= (xmax - tol*xspan)) * Psurf
+        network['pore.left'] = (crds[:, 0] <= (xmin + tol*xspan)) * Psurf
+        network['pore.right'] = (crds[:, 0] >= (xmax - tol*xspan)) * Psurf
     if dims[1]:
-        network['pore.left'] = (crds[:, 1] <= (ymin + tol*yspan)) * Psurf
-        network['pore.right'] = (crds[:, 1] >= (ymax - tol*yspan)) * Psurf
+        network['pore.back'] = (crds[:, 1] <= (ymin + tol*yspan)) * Psurf
+        network['pore.front'] = (crds[:, 1] >= (ymax - tol*yspan)) * Psurf
     if dims[2]:
         network['pore.top'] = (crds[:, 2] >= (zmax - tol*zspan)) * Psurf
         network['pore.bottom'] = (crds[:, 2] <= (zmin + tol*zspan)) * Psurf
@@ -1036,10 +1036,10 @@ def subdivide(network, pores, shape, labels=[]):
     networkspacing = network.spacing
     new_netspacing = networkspacing/div
     new_net = Cubic(shape=div, spacing=new_netspacing)
-    main_labels = ['left', 'right', 'front', 'back', 'top', 'bottom']
+    main_labels = ['front', 'back', 'left', 'right', 'top', 'bottom']
     if single_dim is not None:
-        label_groups = np.array([['front', 'back'],
-                                 ['left', 'right'],
+        label_groups = np.array([['left', 'right'],
+                                 ['front', 'back'],
                                  ['top', 'bottom']])
         non_single_labels = label_groups[np.array([0, 1, 2]) != single_dim]
     for label in main_labels:
