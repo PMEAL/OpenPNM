@@ -350,7 +350,7 @@ def extend(network, coords=[], conns=[], labels=[], **kwargs):
     # Apply labels, if supplied
     if labels != []:
         # Convert labels to list if necessary
-        if type(labels) is str:
+        if isinstance(labels, str):
             labels = [labels]
         for label in labels:
             # Remove pore or throat from label, if present
@@ -580,7 +580,7 @@ def clone_pores(network, pores, labels=['clone'], mode='parents'):
                       manner as parents were connected
         - 'isolated': No connections between parents or siblings
     """
-    if type(labels) == str:
+    if isinstance(labels, str):
         labels = [labels]
     network._parse_indices(pores)
     Np = network.Np
@@ -642,7 +642,7 @@ def merge_networks(network, donor=[]):
     stitch
 
     """
-    if type(donor) == list:
+    if isinstance(donor, list):
         donors = donor
     else:
         donors = [donor]
@@ -1446,7 +1446,7 @@ def generate_base_points(num_points, domain_size, density_map=None,
             density_map = spim.distance_transform_edt(density_map) < 20
         base_pts = _try_points(num_points, density_map)
         # Convert to spherical coordinates
-        [X, Y, Z] = np.array(base_pts - [0.5, 0.5, 0.5]).T
+        X, Y, Z = np.array(base_pts - [0.5, 0.5, 0.5]).T
         r = 2*np.sqrt(X**2 + Y**2 + Z**2)*domain_size[0]
         theta = 2*np.arctan(Y/X)
         phi = 2*np.arctan(np.sqrt(X**2 + Y**2)/Z)
@@ -1473,7 +1473,7 @@ def generate_base_points(num_points, domain_size, density_map=None,
             density_map = spim.distance_transform_edt(density_map) < 20
         base_pts = _try_points(num_points, density_map)
         # Convert to cylindrical coordinates
-        [X, Y, Z] = np.array(base_pts - [0.5, 0.5, 0]).T  # Center on z-axis
+        X, Y, Z = np.array(base_pts - [0.5, 0.5, 0]).T  # Center on z-axis
         r = 2*np.sqrt(X**2 + Y**2)*domain_size[0]
         theta = 2*np.arctan(Y/X)
         z = Z*domain_size[1]
@@ -1690,7 +1690,4 @@ def iscoplanar(coords):
     # Ensure they all lie on the same plane
     n_dot = np.dot(n, r)
 
-    if np.sum(np.absolute(n_dot)) == 0:
-        return True
-    else:
-        return False
+    return bool(np.sum(np.absolute(n_dot)) == 0)

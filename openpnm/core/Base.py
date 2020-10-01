@@ -3,6 +3,7 @@ import uuid
 import numpy as np
 import scipy as sp
 from collections import namedtuple
+from openpnm.models.misc import from_neighbor_throats, from_neighbor_pores
 from openpnm.utils import Workspace, logging
 from openpnm.utils.misc import PrintableList, SettingsDict, Docorator
 docstr = Docorator()
@@ -1297,34 +1298,10 @@ class Base(dict):
         array([1.5, 2.5])
 
         """
-        boss = self.project.find_full_domain(self)
-        net = self.project.network
-        if boss is self:
-            Ts = boss.throats()
-            Ps = boss.pores()
-            label = 'all'
-        else:
-            Ts = boss.throats(self.name)
-            Ps = boss.pores(self.name)
-            label = self.name
         if propname.startswith('throat'):
-            # Upcast data to full network size
-            temp = np.ones((boss.Nt,))*np.nan
-            temp[Ts] = self[propname]
-            data = temp
-            temp = np.ones((boss.Np,))*np.nan
-            for pore in Ps:
-                neighborTs = net.find_neighbor_throats(pore)
-                neighborTs = net.filter_by_label(throats=neighborTs,
-                                                 labels=label)
-                temp[pore] = np.mean(data[neighborTs])
-            values = temp[Ps]
+            values = from_neighbor_throats(target=self, prop=propname, mode='mean')
         elif propname.startswith('pore'):
-            # Upcast data to full network size
-            data = np.ones((net.Np, ))*np.nan
-            data[Ps] = self[propname]
-            Ps12 = net['throat.conns'][Ts]
-            values = np.mean(data[Ps12], axis=1)
+            values = from_neighbor_pores(target=self, prop=propname, mode='mean')
         if hasattr(self[propname], 'units'):
             values *= self[propname].units
         return values

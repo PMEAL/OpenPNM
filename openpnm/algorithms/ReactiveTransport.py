@@ -135,7 +135,7 @@ class ReactiveTransport(GenericTransport):
         if conductance:
             self.settings['conductance'] = conductance
         if nlin_max_iter:
-            self.settings['max_iter'] = nlin_max_iter
+            self.settings['nlin_max_iter'] = nlin_max_iter
         if relaxation_source:
             self.settings['relaxation_source'] = relaxation_source
         if relaxation_quantity:
@@ -155,6 +155,7 @@ class ReactiveTransport(GenericTransport):
         quantity = self.settings['quantity']
         logger.info('Running ReactiveTransport')
         x0 = np.zeros(self.Np, dtype=float) if x0 is None else x0
+        self["pore.initial_guess"] = x0
         x = self._run_reactive(x0)
         self[quantity] = x
 
@@ -223,7 +224,7 @@ class ReactiveTransport(GenericTransport):
             the algorithm.
 
         """
-        if type(propnames) is str:  # Convert string to list if necessary
+        if isinstance(propnames, str):  # Convert string to list if necessary
             propnames = [propnames]
         d = self.settings["variable_props"]
         self.settings["variable_props"] = list(set(d) | set(propnames))
@@ -333,27 +334,37 @@ class ReactiveTransport(GenericTransport):
         max_it = self.settings['nlin_max_iter']
         # Write initial guess to algorithm obj (for _update_iterative_props to work)
         self[quantity] = x = x0
+        # Update A and b based on self[quantity]
+        self._update_A_and_b()
+        # Just in case you got a lucky guess, i.e. x0!
+        if self._is_converged():
+            logger.info(f'Solution converged: {self._get_residual():.4e}')
+            return x
 
         for itr in range(max_it):
-            # Update iterative properties on phase, geometries, and physics
-            self._update_iterative_props()
-            # Build A and b, apply BCs/source terms
-            self._build_A()
-            self._build_b()
-            self._apply_BCs()
-            self._apply_sources()
-            # Check solution convergence
-            res = self._get_residual()
-            if itr >= 1 and self._is_converged():
-                logger.info(f'Solution converged: {res:.4e}')
-                return x
-            logger.info(f'Tolerance not met: {res:.4e}')
             # Solve, use relaxation, and update solution on algorithm obj
             self[quantity] = x = self._solve(x0=x) * w + x * (1 - w)
+            self._update_A_and_b()
+            # Check solution convergence
+            if self._is_converged():
+                logger.info(f'Solution converged: {self._get_residual():.4e}')
+                return x
+            logger.info(f'Tolerance not met: {self._get_residual():.4e}')
 
-        # Check solution convergence after max_it iterations
         if not self._is_converged():
             raise Exception(f"Not converged after {max_it} iterations.")
+
+    def _update_A_and_b(self):
+        r"""
+        Updates A and b based on the most recent solution stored on algorithm object.
+        """
+        # Update iterative properties on phase, geometries, and physics
+        self._update_iterative_props()
+        # Build A and b, apply BCs/source terms
+        self._build_A()
+        self._build_b()
+        self._apply_BCs()
+        self._apply_sources()
 
     def _get_iterative_props(self):
         r"""

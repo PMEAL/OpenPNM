@@ -107,43 +107,39 @@ class MiscTest:
         self.geo.pop('pore.seed', None)
         self.geo.models.pop('pore.seed', None)
         self.geo.models.pop('throat.seed', None)
-        self.geo['throat.seed'] = np.random.rand(self.net.Nt,)
+        self.geo['throat.seed'] = np.linspace(0, 1, self.net.Nt)
         self.geo.add_model(model=mods.from_neighbor_throats,
                            propname='pore.seed',
                            throat_prop='throat.seed',
                            mode='min')
         assert np.all(np.in1d(self.geo['pore.seed'], self.geo['throat.seed']))
-        pmax = np.amax(self.geo['pore.seed'])
-        tmax = np.amax(self.geo['throat.seed'])
-        assert pmax <= tmax
+        assert np.isclose(self.geo['throat.seed'].mean(), 0.5)
+        assert np.isclose(self.geo['pore.seed'].mean(), 0.16454849498327762)
 
     def test_from_neighbor_throats_max(self):
         self.geo.pop('pore.seed', None)
         self.geo.models.pop('pore.seed', None)
         self.geo.models.pop('throat.seed', None)
-        self.geo['throat.seed'] = np.random.rand(self.net.Nt,)
+        self.geo['throat.seed'] = np.linspace(0, 1, self.net.Nt)
         self.geo.add_model(model=mods.from_neighbor_throats,
                            propname='pore.seed',
                            throat_prop='throat.seed',
                            mode='max')
         assert np.all(np.in1d(self.geo['pore.seed'], self.geo['throat.seed']))
-        pmin = np.amin(self.geo['pore.seed'])
-        tmin = np.amin(self.geo['throat.seed'])
-        assert pmin >= tmin
+        assert np.isclose(self.geo['throat.seed'].mean(), 0.5)
+        assert np.isclose(self.geo['pore.seed'].mean(), 0.8595317725752508)
 
     def test_from_neighbor_throats_mean(self):
         self.geo.pop('pore.seed', None)
         self.geo.models.pop('pore.seed', None)
         self.geo.models.pop('throat.seed', None)
-        self.geo['throat.seed'] = np.random.rand(self.net.Nt,)
+        self.geo['throat.seed'] = np.linspace(0, 1, self.net.Nt)
         self.geo.add_model(model=mods.from_neighbor_throats,
                            propname='pore.seed',
                            throat_prop='throat.seed',
                            mode='mean')
-        tmax = np.amax(self.geo['throat.seed'])
-        tmin = np.amin(self.geo['throat.seed'])
-        assert np.all(self.geo['pore.seed'] > tmin)
-        assert np.all(self.geo['pore.seed'] < tmax)
+        assert np.isclose(self.geo['throat.seed'].mean(), 0.5)
+        assert np.isclose(self.geo['pore.seed'].mean(), 0.5)
 
     def test_neighbor_pores_with_nans(self):
         net = op.network.Cubic(shape=[2, 2, 2])
@@ -169,9 +165,9 @@ class MiscTest:
                     ignore_nans=True, mode='mean')
         assert np.all(~np.isnan(no_nans))
 
-    def test_neighbor_throats_with_nans(self):
+    def test_neighbor_throats_mode_min_with_nans(self):
         net = op.network.Cubic(shape=[2, 2, 2])
-        net['throat.values'] = 1.0
+        net['throat.values'] = np.linspace(0, 1, net.Nt)
         net['throat.values'][0] = np.nan
         f = mods.from_neighbor_throats
         with_nans = f(target=net, throat_prop='throat.values',
@@ -180,18 +176,45 @@ class MiscTest:
         no_nans = f(target=net, throat_prop='throat.values',
                     ignore_nans=True, mode='min')
         assert np.all(~np.isnan(no_nans))
+        assert np.all(~np.isinf(no_nans))
+        assert np.allclose(no_nans, np.array([0.36363636, 0.45454545,
+                                              0.09090909, 0.09090909,
+                                              0.18181818, 0.18181818,
+                                              0.27272727, 0.27272727]))
+
+    def test_neighbor_throats_mode_max_with_nans(self):
+        net = op.network.Cubic(shape=[2, 2, 2])
+        net['throat.values'] = np.linspace(0, 1, net.Nt)
+        net['throat.values'][0] = np.nan
+        f = mods.from_neighbor_throats
         with_nans = f(target=net, throat_prop='throat.values',
                       ignore_nans=False, mode='max')
         assert np.any(np.isnan(with_nans))
         no_nans = f(target=net, throat_prop='throat.values',
                     ignore_nans=True, mode='max')
         assert np.all(~np.isnan(no_nans))
+        assert np.all(~np.isinf(no_nans))
+        assert np.allclose(no_nans, np.array([0.72727273, 0.81818182,
+                                              0.90909091, 1.00000000,
+                                              0.72727273, 0.81818182,
+                                              0.90909091, 1.00000000]))
+
+    def test_neighbor_throats_mode_mean_with_nans(self):
+        net = op.network.Cubic(shape=[2, 2, 2])
+        net['throat.values'] = np.linspace(0, 1, net.Nt)
+        net['throat.values'][0] = np.nan
+        f = mods.from_neighbor_throats
         with_nans = f(target=net, throat_prop='throat.values',
                       ignore_nans=False, mode='mean')
         assert np.any(np.isnan(with_nans))
         no_nans = f(target=net, throat_prop='throat.values',
                     ignore_nans=True, mode='mean')
         assert np.all(~np.isnan(no_nans))
+        assert np.all(~np.isinf(no_nans))
+        assert np.allclose(no_nans, np.array([0.54545455, 0.63636364,
+                                              0.45454545, 0.51515152,
+                                              0.48484848, 0.54545455,
+                                              0.57575758, 0.63636364]))
 
     def test_from_neighbor_pores_min(self):
         self.geo.remove_model('throat.seed')
