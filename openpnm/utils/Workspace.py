@@ -226,7 +226,7 @@ class Workspace(dict):
         ----------
         name : string (optional)
             The unique name to give to the project.  If none is given, one
-            will be automatically generated (e.g. 'sim_01`)
+            will be automatically generated (e.g. 'proj_01`)
 
         Returns
         -------
@@ -244,9 +244,9 @@ class Workspace(dict):
         """
         n = [0]
         for item in self.keys():
-            if item.startswith('sim_'):
-                n.append(int(item.split('sim_')[1]))
-        name = 'sim_'+str(max(n)+1).zfill(2)
+            if item.startswith('proj_'):
+                n.append(int(item.split('proj_')[1]))
+        name = 'proj_'+str(max(n)+1).zfill(2)
         return name
 
     def _gen_ids(self, size):

@@ -442,7 +442,7 @@ class DictTest:
         D = Dict.to_dict(network=self.net, phases=[self.phase_1, self.phase_2],
                          flatten=False, interleave=True,
                          categorize_by=['project'])
-        assert 'sim_01' in D.keys()
+        assert 'proj_01' in D.keys()
 
     def test_from_dict_interleaved_categorized_by_object(self):
         D = Dict.to_dict(network=self.net, phases=[self.phase_1],

@@ -57,7 +57,7 @@ class ProjectTest:
             'phase_01': {'geo_01': 'phys_01', 'geo_02': 'phys_02'},
             'phase_02': {'geo_01': 'phys_03', 'geo_02': 'phys_04'}}
 
-        s = '┌Project: sim_01────────────┬──────────────┐\n' \
+        s = '┌Project: proj_01───────────┬──────────────┐\n' \
             '│   net_01   │   phase_01   │   phase_02   │\n' \
             '├────────────┼──────────────┼──────────────┤\n' \
             '│   geo_01   │   phys_01    │   phys_03    │\n' \

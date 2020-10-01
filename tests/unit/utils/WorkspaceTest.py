@@ -97,7 +97,7 @@ class WorkspaceTest:
         op.phases.Air(network=pn)
         self.ws.save_project(proj, filename='test.pnm')
         self.ws.load_project('test.pnm')
-        assert set(self.ws.keys()) == set(['test', 'sim_01'])
+        assert set(self.ws.keys()) == set(['test', 'proj_01'])
         os.remove('test.pnm')
 
     # def test_save_and_load_workspace(self):
