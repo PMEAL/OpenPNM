@@ -32,7 +32,7 @@ class Workspace(dict):
     Notes
     -----
     The Workspace object contains a variety of functions that one might expect
-    from the 'file-menu' in a typical GUI.s
+    from the 'file-menu' in a typical GUI.
 
     """
 
@@ -41,12 +41,12 @@ class Workspace(dict):
     def __new__(cls, *args, **kwargs):
         if Workspace.__instance__ is None:
             Workspace.__instance__ = dict.__new__(cls)
-            cls.settings = SettingsDict()
-            cls.settings['loglevel'] = 30
         return Workspace.__instance__
 
     def __init__(self):
         super().__init__()
+        self.settings = SettingsDict()
+        self.settings['loglevel'] = 30
         self._projects = {}
 
     def __setitem__(self, name, project):
@@ -78,9 +78,56 @@ class Workspace(dict):
     def version(self):
         return openpnm.__version__
 
+    def save_workspace(self, filename=None):
+        r"""
+        Save all projects in the current workspace as a single file
+
+        Parameters
+        ----------
+        filename : str
+            The filename to use when saving.  If not provided, the present
+            date and time are used.
+
+        Notes
+        -----
+        The file is actually zip archive containing ``pnm`` files, one for
+        each project in the workspace. This archive can be extracted and each
+        ``pnm`` file can be loaded manually using ``load_project`` or the
+        ``openpnm.io.PNM`` class.
+        """
+        from datetime import datetime
+        if filename is None:
+            dt = datetime.now()
+            filename = dt.strftime("%Y_%m_%d_%H_%M_%S")
+        from zipfile import ZipFile
+        with ZipFile(filename + '.wrk', 'w') as z:
+            for prj in self.values():
+                prj.save_project()
+                z.write(prj.name + '.pnm')
+
+    def load_workspace(self, filename):
+        r"""
+        Load project(s) from a saved workspace into current workspace
+
+        Parameters
+        ----------
+        filename : str or path object
+            The filename containing the saved workspace
+
+        Notes
+        -----
+        ??
+
+        """
+        from zipfile import ZipFile
+        with ZipFile(filename, 'r') as z:
+            files = z.filelist
+            for f in files:
+                self.load_project(f.orig_filename)
+
     def save_project(self, project, filename=None):
         r"""
-        Saves given Project to a 'pnm' file
+        Saves given Project to a ``pnm`` file
 
         This will include all of associated objects, including algorithms.
 
@@ -137,19 +184,9 @@ class Workspace(dict):
         ``os.path`` in the Python standard library.
 
         """
-        try:
-            from openpnm.io import PNM
-            proj = PNM.load_project(filename=filename)
-            return proj
-        except OSError:
-            try:
-                import pickle
-                f = open(filename, 'rb')
-                proj = pickle.load(f)
-                return proj
-            except Exception:
-                pass
-            print('neither worked')
+        from openpnm.io import PNM
+        proj = PNM.load_project(filename=filename)
+        return proj
 
     def close_project(self, project):
         r"""

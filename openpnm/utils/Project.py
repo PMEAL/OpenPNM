@@ -457,7 +457,7 @@ class Project(list):
 
     def save_object(self, obj):
         r"""
-        Saves the given object or list of objects to a file
+        Saves the given object or list of objects to a pickle file
 
         Parameters
         ----------
@@ -470,7 +470,7 @@ class Project(list):
 
     def load_object(self, filename):
         r"""
-        Loads a single object from a file
+        Loads a single object from a pickle file
 
         Parameters
         ----------
