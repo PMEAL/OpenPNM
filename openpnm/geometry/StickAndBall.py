@@ -113,8 +113,12 @@ class StickAndBall(GenericGeometry):
                        model=mods.geometry.throat_area.cylinder,
                        throat_diameter='throat.diameter')
 
+        self.add_model(propname='throat.conduit_lengths',
+                       model=mods.geometry.throat_length.conduit_lengths)
+
         f = mods.geometry.conduit_diffusive_coefficient.spheres_and_cylinders
         self.add_model(propname='throat.diffusive_shape_coefficient',
                        model=f,
                        pore_diameter='pore.diameter',
-                       throat_diameter='throat.diameter')
+                       throat_diameter='throat.diameter',
+                       conduit_lengths='throat.conduit_lengths')
