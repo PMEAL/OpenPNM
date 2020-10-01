@@ -63,19 +63,20 @@ class PNM(GenericIO):
 
     @classmethod
     def load_project(cls, filename):
-        loglevel = ws.settings['loglevel']
-        ws.settings['loglevel'] = 50
         f = cls._parse_filename(filename, 'pnm')
         with hdfFile(f, mode='r') as root:
+            logger.info('Loading project from file ' + f.name)
             try:  # Create an empty project with old name
                 proj = Project(name=root.attrs['name'])
-                print('Loading ' + proj.name)
+                logger.info('Loading ' + proj.name)
             except Exception:  # Generate a new name if collision occurs
                 proj = Project()
-                print('A project named ' + root.attrs['name']
-                      + ' already exists, renaming to ' + proj.name)
-            print('Created using OpenPNM version ' + root.attrs['version'])
-            print('Saved on ' + root.attrs['date saved'])
+                logger.warning('A project named ' + root.attrs['name']
+                               + ' already exists, renaming to ' + proj.name)
+            logger.info('Created using OpenPNM version ' + root.attrs['version'])
+            logger.info('Saved on ' + root.attrs['date saved'])
+            loglevel = ws.settings['loglevel']
+            ws.settings['loglevel'] = 50
             for name in root.keys():
                 if 'network' in root[name].attrs['class']:
                     proj, obj = create_obj(root, name, proj)
@@ -120,12 +121,14 @@ def create_obj(root, name, proj):
                 try:
                     obj.models[m]['model'] = getattr(md, fn)
                 except AttributeError:
-                    print('Warning: the function \"' + fn
-                          + '\" could not be loaded, adding \"blank\" instead')
+                    logger.warning('Warning: the function \"' + fn
+                                   + '\" could not be loaded, '
+                                   + 'adding \"blank\" instead')
                     obj.models[m]['model'] = op.models.misc.basic_math.blank
             except ModuleNotFoundError:
-                print('Warning: the module \"' + md
-                      + '\" could not be found, adding \"blank\" instead')
+                logger.warning('Warning: the module \"' + md
+                                + '\" could not be found, '
+                                + 'adding \"blank\" instead')
                 obj.models[m]['model'] = op.models.misc.basic_math.blank
     del obj.settings['freeze_models']
     return proj, obj
