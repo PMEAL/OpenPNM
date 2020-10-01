@@ -41,8 +41,9 @@ def spheres_and_cylinders(target,
     A2 = (pi/4*D2**2)
     At = (pi/4*Dt**2)
     if conduit_lengths is not None:
-        vals = target[conduit_lengths]
-        L1, L2, Lt = vals['pore1'], vals['pore2'], vals['throat']
+        L1 = network[conduit_lengths + '.pore1'][throats]
+        L2 = network[conduit_lengths + '.pore2'][throats]
+        Lt = network[conduit_lengths + '.throat'][throats]
     else:
         a = target[throat_diameter][throats]
         r = target[pore_diameter][cn]
