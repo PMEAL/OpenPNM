@@ -11,16 +11,20 @@ class VoronoiTest:
 
     def test_voronoi_num_points(self):
         net = op.network.Voronoi(num_points=30, shape=[1, 1, 1])
+        assert net.Np > 30
 
     def test_voronoi_points(self):
         points = np.random.rand(30, 3)
         net = op.network.Voronoi(points=points, shape=[1, 1, 1])
+        assert net.Np > 30
 
     def test_voronoi_empty(self):
         net = op.network.Voronoi()
+        assert net.Np == 0
 
     def test_voronoi_2D(self):
         net = op.network.Voronoi(num_points=30, shape=[1, 1, 0])
+        assert net.Np > 30
 
 
 if __name__ == '__main__':
