@@ -1,5 +1,6 @@
 import numpy as _np
 from numpy import pi
+from numpy import arctanh as _atanh
 
 
 def spheres_and_cylinders(target,
@@ -32,10 +33,13 @@ def spheres_and_cylinders(target,
     network = target.project.network
     throats = network.map_throats(throats=target.Ts, origin=target)
     cn = network['throat.conns'][throats]
+    D1 = network[pore_diameter][cn[:, 0]]
+    D2 = network[pore_diameter][cn[:, 1]]
+    Dt = network[throat_diameter][throats]
     # Getting areas
-    A1 = (pi/4*network[pore_diameter]**2)[cn[:, 0]]
-    A2 = (pi/4*network[pore_diameter]**2)[cn[:, 1]]
-    At = (pi/4*network[throat_diameter]**2)[throats]
+    A1 = (pi/4*D1**2)
+    A2 = (pi/4*D2**2)
+    At = (pi/4*Dt**2)
     if conduit_lengths is not None:
         vals = target[conduit_lengths]
         L1, L2, Lt = vals['pore1'], vals['pore2'], vals['throat']
@@ -53,7 +57,34 @@ def spheres_and_cylinders(target,
             Lt = L - L1 - L2
     # Find g for half of pore 1, the throat, and half of pore 2
     g1, g2, gt = A1/L1, A2/L2, At/Lt
-    # Apply shape factors and calculate the final conductance
+    # Calculate Shape factors
+    # Preallocating F, SF
+    # F is INTEGRAL(1/A) dx , x : 0 --> L
+    F1, F2, Ft = _np.zeros((3, len(Lt)))
+    SF1, SF2, SFt = _np.ones((3, len(Lt)))
+    # Setting SF to 1 when Li = 0 (ex. boundary pores)
+    # INFO: This is needed since area could also be zero, which confuses NumPy
+    m1, m2, mt = [Li != 0 for Li in [L1, L2, Lt]]
+    SF1[~m1] = SF2[~m2] = SFt[~mt] = 1
+    if ((_np.sum(D1 <= 2*L1) != 0) or (_np.sum(D2 <= 2*L2) != 0)):
+        raise Exception('Some pores can not be modeled with ball_and_stick'
+                        + 'flow shape factor. Use another model for those pores'
+                        + 'with (D/L)<=2')
+    # Handle the case where Dt >= Dp
+    M1, M2 = [(Di <= Dt) & mi for Di, mi in zip([D1, D2], [m1, m2])]
+    F1[M1] = (4*L1/(D1*Dt*pi))[M1]
+    F2[M2] = (4*L2/(D2*Dt*pi))[M2]
+    # Handle the rest (true balls and sticks)
+    N1, N2 = [(Di > Dt) & mi for Di, mi in zip([D1, D2], [m1, m2])]
+    F1[N1] = (2/(D1*pi) * _atanh(2*L1/D1))[N1]
+    F2[N2] = (2/(D2*pi) * _atanh(2*L2/D2))[N2]
+    Ft[mt] = (Lt/At)[mt]
+    # Calculate conduit shape factors
+    SF1[m1] = (L1 / (A1*F1))[m1]
+    SF2[m2] = (L2 / (A2*F2))[m2]
+    SFt[mt] = (Lt / (At*Ft))[mt]
+    # Apply shape factors to individual g
+    g1, g2, gt = g1*SF1, g2*SF2, gt*SFt
     if return_elements:
         vals = {'pore1': g1, 'throat': gt, 'pore2': g2}
     else:
