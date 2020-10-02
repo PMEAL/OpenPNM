@@ -56,4 +56,4 @@ jobs:
 
       - name: Running tests
         run:
-          pytest --pycodestyle --ignore=scripts/ --ignore="openpnm/utils/petsc.py"
+          pytest --ignore=scripts/ --ignore="openpnm/utils/petsc.py"

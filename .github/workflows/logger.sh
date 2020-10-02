@@ -27,7 +27,7 @@ function filter_commits_by_label {
     local temp
     local commits=$1    # fetch the first argument
     shift               # removes first arg from list of input args
-    temp=$(echo "$commits" | grep -E $(parse_args "$@"))
+    temp=$(echo "$commits" | grep -E --ignore-case $(parse_args "$@"))
     temp=$(echo "${temp}" | sed 's/^[ \t]*//; s/[ \t]*$//')
     temp=$(echo "${temp}" | sed -e 's/^/- /')
     echo "$temp"
@@ -59,10 +59,11 @@ tag_date=$(git show "$tag_new" --format="%cs")
 merge_commits=$(filter_commits_by_tag_interval $tag_old $tag_new)
 
 # Fetching new features/changed API/bugfixes
-features=$(filter_commits_by_label "$merge_commits" "Added" "NEW")
-enhancements=$(filter_commits_by_label "$merge_commits" "Enhanced" "Optimized" "ENH")
-changes=$(filter_commits_by_label "$merge_commits" "Changed" "Removed" "API")
-fixes=$(filter_commits_by_label "$merge_commits" "Bugfix" "Hotfix" "Fixed" "BUG")
+features=$(filter_commits_by_label "$merge_commits" "feature" "added" "new")
+enhancements=$(filter_commits_by_label "$merge_commits" "improved" "enhanced" "optimized" "enh")
+maintenance=$(filter_commits_by_label "$merge_commits" "backend" "maint")
+changes=$(filter_commits_by_label "$merge_commits" "deprecated" "changed" "removed" "modified" "api")
+fixes=$(filter_commits_by_label "$merge_commits" "bugfix" "hotfix" "fixed" "bug")
 
 # Delete "entry" file if already exists
 if test -f entry; then
@@ -78,6 +79,7 @@ fi
 echo -e "## ${tag_new}\n" >> entry
 append_to_entry_with_label "$features" entry ":rocket: New features"
 append_to_entry_with_label "$enhancements" entry ":cake: Enhancements"
+append_to_entry_with_label "$maintenance" entry ":wrench: Maintenace"
 append_to_entry_with_label "$changes" entry ":warning: API changes"
 append_to_entry_with_label "$fixes" entry ":bug: Bugfixes"
 
