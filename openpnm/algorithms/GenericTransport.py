@@ -867,21 +867,19 @@ class GenericTransport(GenericAlgorithm):
         g = np.flip(g, axis=1)
         Qt = np.diff(g*X12, axis=1).squeeze()
 
-        if len(throats) and len(pores):
-            raise Exception('Must specify either pores or throats, not both')
-        if len(throats) == 0 and len(pores) == 0:
-            raise Exception('Must specify either pores or throats')
-        elif len(throats):
+        if throats.size:
             R = np.absolute(Qt[throats])
             if mode == 'group':
                 R = np.sum(R)
-        elif len(pores):
+
+        if pores.size:
             Qp = np.zeros((self.Np, ))
             np.add.at(Qp, P12[:, 0], -Qt)
             np.add.at(Qp, P12[:, 1], Qt)
             R = Qp[pores]
             if mode == 'group':
                 R = np.sum(R)
+
         return np.array(R, ndmin=1)
 
     def set_solver(
