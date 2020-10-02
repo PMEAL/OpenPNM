@@ -27,7 +27,7 @@ function filter_commits_by_label {
     local temp
     local commits=$1    # fetch the first argument
     shift               # removes first arg from list of input args
-    temp=$(echo "$commits" | grep -E $(parse_args "$@"))
+    temp=$(echo "$commits" | grep -E --ignore-case $(parse_args "$@"))
     temp=$(echo "${temp}" | sed 's/^[ \t]*//; s/[ \t]*$//')
     temp=$(echo "${temp}" | sed -e 's/^/- /')
     echo "$temp"
