@@ -849,6 +849,11 @@ class GenericTransport(GenericAlgorithm):
         pores = self._parse_indices(pores)
         throats = self._parse_indices(throats)
 
+        if throats.size > 0 and pores.size > 0:
+            raise Exception('Must specify either pores or throats, not both')
+        if throats.size == pores.size == 0:
+            raise Exception('Must specify either pores or throats')
+
         network = self.project.network
         phase = self.project.phases()[self.settings['phase']]
         g = phase[self.settings['conductance']]
