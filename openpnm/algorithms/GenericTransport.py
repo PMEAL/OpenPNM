@@ -15,12 +15,6 @@ from openpnm.utils import logging, Docorator, GenericSettings
 docstr = Docorator()
 logger = logging.getLogger(__name__)
 
-use_umfpack = True
-try:
-    import scikits.umfpack as umfpack
-except ImportError:
-    use_umfpack = False
-
 
 @docstr.get_sectionsf('GenericTransportSettings',
                       sections=['Parameters', 'Other Parameters'])
@@ -617,9 +611,6 @@ class GenericTransport(GenericAlgorithm):
                 r"""
                 Wrapper method for scipy sparse linear solvers.
                 """
-                if use_umfpack:
-                    A.indices = A.indices.astype(np.int64)
-                    A.indptr = A.indptr.astype(np.int64)
                 ls = getattr(scipy.sparse.linalg, self.settings['solver_type'])
                 if self.settings["solver_type"] == "spsolve":
                     x = ls(A=A, b=b)

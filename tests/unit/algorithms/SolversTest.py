@@ -22,7 +22,7 @@ class SolversTest:
         self.alg.settings.update(quantity='pore.x',
                                  conductance='throat.conductance')
         self.alg.setup(phase=self.phase)
-        self.alg.set_value_BC(pores=self.net.pores('left'), values=1.0)
+        self.alg.set_value_BC(pores=self.net.pores('back'), values=1.0)
         self.alg.set_value_BC(pores=self.net.pores('bottom'), values=0.0)
 
     def test_solver_not_available(self):

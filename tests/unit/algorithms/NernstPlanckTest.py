@@ -28,8 +28,8 @@ class NernstPlanckTest:
         self.phys['throat.ionic_conductance'] = 1e-15
 
         self.sf = op.algorithms.StokesFlow(network=self.net, phase=self.phase)
-        self.sf.set_value_BC(pores=self.net.pores('back'), values=1)
-        self.sf.set_value_BC(pores=self.net.pores('front'), values=0)
+        self.sf.set_value_BC(pores=self.net.pores('right'), values=1)
+        self.sf.set_value_BC(pores=self.net.pores('left'), values=0)
         self.sf.run()
 
         self.phase.update(self.sf.results())
@@ -38,8 +38,8 @@ class NernstPlanckTest:
                                                phase=self.phase)
         self.p.settings['conductance'] = 'throat.ionic_conductance'
         self.p.settings['quantity'] = 'pore.potential'
-        self.p.set_value_BC(pores=self.net.pores('left'), values=0.05)
-        self.p.set_value_BC(pores=self.net.pores('right'), values=0.00)
+        self.p.set_value_BC(pores=self.net.pores('back'), values=0.05)
+        self.p.set_value_BC(pores=self.net.pores('front'), values=0.00)
         self.p.run()
 
         self.phase.update(self.p.results())
@@ -47,8 +47,8 @@ class NernstPlanckTest:
         self.adm = op.algorithms.NernstPlanck(network=self.net,
                                               phase=self.phase, ion='ionX')
         self.adm.settings.update({"cache_A": False, "cache_b": False})
-        self.adm.set_value_BC(pores=self.net.pores('back'), values=2)
-        self.adm.set_value_BC(pores=self.net.pores('front'), values=0)
+        self.adm.set_value_BC(pores=self.net.pores('right'), values=2)
+        self.adm.set_value_BC(pores=self.net.pores('left'), values=0)
 
     def test_powerlaw_NernstPlanck(self):
         mod = op.models.physics.ad_dif_mig_conductance.ad_dif_mig
