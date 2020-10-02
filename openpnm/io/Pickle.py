@@ -193,20 +193,18 @@ class Pickle(GenericIO):
                     proj = list(set(temp.keys()).difference(projects))[0]
                     # Return Project handle to user and exit
                     return ws[proj]
-                else:
-                    raise Exception(filename.name + ' contains multiple '
-                                    + 'projects, use load_workspace instead')
+                raise Exception(filename.name + ' contains multiple'
+                                + ' projects, use load_workspace instead')
             # If pickle contains a single list
             elif isinstance(d, list):
                 if projname not in ws.keys():
                     ws[projname] = d
                     return ws[projname]
-                else:
-                    newname = ws._gen_name()
-                    logger.warning('Project named ' + projname
-                                   + ' already present in Workspace,'
-                                   + ' renaming to ' + newname)
-                    ws[newname] = d
-                    return ws[newname]
+                newname = ws._gen_name()
+                logger.warning('Project named ' + projname
+                               + ' already present in Workspace,'
+                               + ' renaming to ' + newname)
+                ws[newname] = d
+                return ws[newname]
             else:
                 raise Exception('File contents are not understood')

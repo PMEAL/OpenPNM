@@ -239,12 +239,11 @@ class Project(list):
             return obj
         # If phase happens to be in settings (i.e. algorithm), look it up
         if 'phase' in obj.settings.keys():
-            phase = self.phases()[obj.settings['phase']]
-            return phase
+            return self.phases()[obj.settings['phase']]
         # Otherwise find it using bottom-up approach (i.e. look in phase keys)
-        for phase in self.phases().values():
-            if ('pore.'+obj.name in phase) or ('throat.'+obj.name in phase):
-                return phase
+        for item in self.phases().values():
+            if ('pore.' + obj.name in item) or ('throat.' + obj.name in item):
+                return item
         # If all else fails, throw an exception
         raise Exception('Cannot find a phase associated with '+obj.name)
 

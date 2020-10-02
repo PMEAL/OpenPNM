@@ -958,9 +958,8 @@ class Base(dict):
         ind[self_in_ids] = locations[ids_in_self]
         if filtered:
             return ind[mask]
-        else:
-            t = namedtuple('index_map', ('indices', 'mask'))
-            return t(ind, mask)
+        t = namedtuple('index_map', ('indices', 'mask'))
+        return t(ind, mask)
 
     def map_pores(self, pores, origin, filtered=True):
         r"""
@@ -1193,7 +1192,6 @@ class Base(dict):
         if np.all([item is None for item in arrs]):  # prop not found anywhere
             raise KeyError(prop)
 
-        # --------------------------------------------------------------------
         # Let's start by handling the easy cases first
         if not any([a is None for a in arrs]):
             # All objs present and array found on all objs
@@ -1206,14 +1204,13 @@ class Base(dict):
                 for vals, inds in zip(arrs, locs):
                     temp_arr[inds] = vals
                 return temp_arr  # Return early because it's just easier
-            elif all([a.dtype in [float, int, bool] for a in arrs]):
+            if all([a.dtype in [float, int, bool] for a in arrs]):
                 # All types are numeric, make float
                 temp_arr = np.ones(shape, dtype=float)
                 for vals, inds in zip(arrs, locs):
                     temp_arr[inds] = vals
                 return temp_arr  # Return early because it's just easier
 
-        # ---------------------------------------------------------------------
         # Now handle the complicated cases
         # Check the general type of each array
         atype = []
@@ -1228,8 +1225,7 @@ class Base(dict):
                     atype.append('other')
         if not all([item == atype[0] for item in atype]):
             raise Exception('The array types are not compatible')
-        else:
-            dummy_val = {'numeric': np.nan, 'boolean': False, 'other': None}
+        dummy_val = {'numeric': np.nan, 'boolean': False, 'other': None}
 
         # Create an empty array of the right type and shape
         for item in arrs:
@@ -1716,8 +1712,7 @@ class Base(dict):
             if len(element) > 1:
                 raise Exception('Both elements recieved when single element '
                                 + 'allowed')
-            else:
-                element = element[0]
+            element = element[0]
         return element
 
     def _parse_labels(self, labels, element):
@@ -1802,8 +1797,7 @@ class Base(dict):
             if len(mode) > 1:
                 raise Exception('Multiple modes received when only one mode '
                                 + 'is allowed by this method')
-            else:
-                mode = mode[0]
+            mode = mode[0]
         return mode
 
     def _parse_prop(self, propname, element):
@@ -1873,12 +1867,11 @@ class Base(dict):
             elif 'GenericAlgorithm' in self._mro():
                 prefix = 'algorithm'
             return prefix
-        else:
-            mro = [s.lower() for s in self._mro()]
-            temp = [s.replace('generic', '') for s in mro
-                    if s.startswith('generic')]
-            mro.extend(temp)
-            flag = False
-            if obj_type.lower() in mro:
-                flag = True
-            return flag
+        mro = [s.lower() for s in self._mro()]
+        temp = [s.replace('generic', '') for s in mro
+                if s.startswith('generic')]
+        mro.extend(temp)
+        flag = False
+        if obj_type.lower() in mro:
+            flag = True
+        return flag

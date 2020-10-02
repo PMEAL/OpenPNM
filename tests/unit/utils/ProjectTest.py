@@ -354,7 +354,6 @@ class ProjectTest:
         proj = self.proj
         proj.comments = 'test comment'
         assert 'test comment' in proj._comments.values()
-        proj.comments
 
     def test_print(self):
         proj = self.proj

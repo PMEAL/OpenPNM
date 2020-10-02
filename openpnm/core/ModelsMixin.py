@@ -336,9 +336,9 @@ class ModelsMixin:
 
         """
         # If empty list of propnames was given, do nothing and return
-        if type(propnames) is list and len(propnames) == 0:
+        if isinstance(propnames, list) and len(propnames) == 0:
             return
-        if type(propnames) is str:  # Convert string to list if necessary
+        if isinstance(propnames, str):  # Convert string to list if necessary
             propnames = [propnames]
         if propnames is None:  # If no props given, then regenerate them all
             propnames = self.models.dependency_list()
@@ -418,7 +418,7 @@ class ModelsMixin:
         The default is both.
 
         """
-        if type(propname) is str:
+        if isinstance(propname, str):
             propname = [propname]
         for item in propname:
             if 'model' in mode:

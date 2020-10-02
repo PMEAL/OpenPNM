@@ -72,8 +72,7 @@ class GenericIO:
         if len(network) == 0:
             if len(phases) == 0:
                 raise Exception("Must specify one of network or phase")
-            else:
-                project = phases[0].project
+            project = phases[0].project
         else:
             project = network[0].project
         return (project, network, phases)

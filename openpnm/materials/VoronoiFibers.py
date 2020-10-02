@@ -230,7 +230,7 @@ class DelaunayGeometry(GenericGeometry):
         """
         verts = self["throat.vertices"]
         value = np.zeros([len(verts), 3])
-        for i in range(len(verts)):
+        for i, _ in enumerate(verts):
             if len(np.unique(verts[i][:, 0])) == 1:
                 verts_2d = np.vstack((verts[i][:, 1], verts[i][:, 2])).T
             elif len(np.unique(verts[i][:, 1])) == 1:
@@ -385,7 +385,7 @@ class DelaunayGeometry(GenericGeometry):
                     temp_arr = np.ones(1)
                     temp_arr.fill(np.mean(z_plane))
                     z_plane = temp_arr
-                "Fill in the convex hull polygon"
+                # Fill in the convex hull polygon
                 convhullimg = convex_hull_image(img_pad)
                 # Perform a Distance Transform and black out points less than r
                 # to create binary erosion. This is faster than performing an
@@ -523,7 +523,7 @@ class DelaunayGeometry(GenericGeometry):
         nrmls[k] = -nrmls[k]
         # Now we want to test whether dot(x,N) >= dot(a,N)
         aN = np.sum(nrmls * a, axis=-1)
-        for plane_index in range(len(a)):
+        for plane_index, _ in enumerate(a):
             eqx = nrmls[plane_index][0] * (indx)
             eqy = nrmls[plane_index][1] * (indy)
             eqz = nrmls[plane_index][2] * (indz)
@@ -609,7 +609,7 @@ class DelaunayGeometry(GenericGeometry):
                 f2d = np.vstack((fx, fy)).T
             hull = sptl.ConvexHull(f2d, qhull_options="QJ Pp")
             face = np.around(face[hull.vertices].astype(float), 6)
-            for i in range(len(face)):
+            for i, _ in enumerate(face):
                 vec = face[i] - face[i - 1]
                 vec_length = np.linalg.norm(vec)
                 increments = np.int(np.ceil(vec_length / dx))
@@ -636,7 +636,7 @@ class DelaunayGeometry(GenericGeometry):
             face1=self.pores(), parm="minmax"
         )
         # Translate vertices so that minimum occurs at the origin
-        for index in range(len(verts)):
+        for index, _ in enumerate(verts):
             verts[index] -= np.array([vxmin, vymin, vzmin])
         # Find new size of image array
         cdomain = np.around(
@@ -883,7 +883,7 @@ class DelaunayGeometry(GenericGeometry):
             incentre = self["throat.incenter"][throat_list]
             inradius = 0.5 * self["throat.indiameter"][throat_list]
             row_col = int(np.ceil(np.sqrt(len(throat_list))))
-            for i in range(len(throat_list)):
+            for i, _ in enumerate(throat_list):
                 if fig is None:
                     fig = plt.figure()
                 ax = fig.add_subplot(row_col, row_col, i + 1)
@@ -967,13 +967,13 @@ class DelaunayGeometry(GenericGeometry):
                 normals = self["throat.normal"][throats]
                 # Get verts in hull order
                 ordered_verts = []
-                for i in range(len(verts)):
+                for i, _ in enumerate(verts):
                     vert_2D = self._rotate_and_chop(verts[i], normals[i], [0, 0, 1])
                     hull = ConvexHull(vert_2D, qhull_options="QJ Pp")
                     ordered_verts.append(verts[i][hull.vertices])
                 offsets = self["throat.offset_vertices"][throats]
                 ordered_offs = []
-                for i in range(len(offsets)):
+                for i, _ in enumerate(offsets):
                     offs_2D = self._rotate_and_chop(offsets[i],
                                                     normals[i],
                                                     [0, 0, 1])

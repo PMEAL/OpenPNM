@@ -93,16 +93,19 @@ class DelaunayVoronoiDual(GenericNetwork):
         am = sprs.lil_matrix((Nall, Nall))
         for ridge in vor.ridge_dict.keys():
             # Make Delaunay-to-Delauny connections
-            [am.rows[i].extend([ridge[0], ridge[1]]) for i in ridge]
+            for i in ridge:
+                am.rows[i].extend([ridge[0], ridge[1]])
             # Get voronoi vertices for current ridge
             row = vor.ridge_dict[ridge].copy()
             # Index Voronoi vertex numbers by number of delaunay points
             row = [i + vor.npoints for i in row if i > -1]
             # Make Voronoi-to-Delaunay connections
-            [am.rows[i].extend(row) for i in ridge]
+            for i in ridge:
+                am.rows[i].extend(row)
             # Make Voronoi-to-Voronoi connections
             row.append(row[0])
-            [am.rows[row[i]].append(row[i+1]) for i in range(len(row)-1)]
+            for i in range(len(row)-1):
+                am.rows[row[i]].append(row[i+1])
 
         # Finalize adjacency matrix by assigning data values
         am.data = am.rows  # Values don't matter, only shape, so use 'rows'

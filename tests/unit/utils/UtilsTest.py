@@ -1,5 +1,4 @@
 import pytest
-import scipy as sp
 import numpy as np
 import openpnm as op
 
@@ -32,7 +31,7 @@ class UtilsTest:
         s = d.__str__()
         assert s == '-top\n--middle\n---bottom\n'
         a = d.to_dict()
-        assert type(a) is dict
+        assert isinstance(a, dict)
 
     def test_printable_list(self):
         L = op.utils.PrintableList(['item1', 'item2', 'item2'])

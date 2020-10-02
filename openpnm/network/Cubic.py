@@ -198,7 +198,7 @@ class Cubic(GenericNetwork):
             instance if boundary pores have already added to other faces.
 
         """
-        if type(labels) == str:
+        if isinstance(labels, str):
             labels = [labels]
         x, y, z = self["pore.coords"].T
         if spacing is None:
@@ -257,8 +257,7 @@ class Cubic(GenericNetwork):
                 temp = np.unique(mag[inds])
                 if not np.allclose(temp, temp[0]):
                     raise Exception("A unique value of spacing could not be found")
-                else:
-                    spacing[ax] = temp[0]
+                spacing[ax] = temp[0]
         return np.array(spacing)
 
     spacing = property(fget=_get_spacing)
