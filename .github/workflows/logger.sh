@@ -59,11 +59,11 @@ tag_date=$(git show "$tag_new" --format="%cs")
 merge_commits=$(filter_commits_by_tag_interval $tag_old $tag_new)
 
 # Fetching new features/changed API/bugfixes
-features=$(filter_commits_by_label "$merge_commits" "Added" "NEW" "new")
-enhancements=$(filter_commits_by_label "$merge_commits" "Enhanced" "Optimized" "ENH" "enh")
-maintenance=$(filter_commits_by_label "$merge_commits" "Enhanced" "MAINT" "maint")
-changes=$(filter_commits_by_label "$merge_commits" "Changed" "Removed" "API" "api")
-fixes=$(filter_commits_by_label "$merge_commits" "Bugfix" "Hotfix" "Fixed" "BUG" "bug")
+features=$(filter_commits_by_label "$merge_commits" "feature" "added" "new")
+enhancements=$(filter_commits_by_label "$merge_commits" "improved" "enhanced" "optimized" "enh")
+maintenance=$(filter_commits_by_label "$merge_commits" "backend" "maint")
+changes=$(filter_commits_by_label "$merge_commits" "deprecated" "changed" "removed" "modified" "api")
+fixes=$(filter_commits_by_label "$merge_commits" "bugfix" "hotfix" "fixed" "bug")
 
 # Delete "entry" file if already exists
 if test -f entry; then
