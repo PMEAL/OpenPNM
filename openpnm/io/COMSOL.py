@@ -102,8 +102,6 @@ def header(file, Nr, Nc):
 
     f.write('\n')
 
-    return
-
 
 def rectangles(file, pores1, pores2, alphas, widths):
     f = file
@@ -193,8 +191,6 @@ def rectangles(file, pores1, pores2, alphas, widths):
 
         f.write('# Attributes'+'\n')
         f.write('0 # nof attributes'+2*'\n')
-
-    return
 
 
 def circles(file, centers, radii):
@@ -305,5 +301,3 @@ def circles(file, centers, radii):
 
         f.write('# Attributes'+'\n')
         f.write('0 # nof attributes'+2*'\n')
-
-    return

@@ -1,6 +1,4 @@
 import numpy as np
-import scipy as sp
-import openpnm as op
 from pathlib import Path
 from openpnm.utils import flat_list, logging
 
@@ -32,13 +30,10 @@ class GenericIO:
                         net.pop(el + ".all", None)
                     else:
                         raise Exception(
-                            "Length of "
-                            + el
-                            + " data in file"
-                            + " does not match network"
+                            f"Length of {el} data in file does not match network"
                         )
                 else:
-                    raise Exception(el + " data in file have inconsistent" + " lengths")
+                    raise Exception(f"{el} data in file have inconsistent lengths")
         # Add data on dummy net to actual network
         for item in net.keys():
             # Try to infer array types and change if necessary
@@ -87,9 +82,9 @@ class GenericIO:
     def _is_transient(cls, phases):
         # Check if any of the phases has time series
         transient = False
-        if type(phases) == str:
+        if isinstance(phases, str):
             transient = True in ["@" in k for k in phases.keys()]
-        elif type(phases) == list:
+        elif isinstance(phases, list):
             for phase in phases:
                 transient = True in ["@" in k for k in phase.keys()]
                 if transient:

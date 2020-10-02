@@ -182,7 +182,7 @@ class Pickle(GenericIO):
         with open(filename, 'rb') as f:
             d = pickle.load(f)
             # A normal pnm file is a dict of lists (projects), so check first
-            if type(d) is dict:
+            if isinstance(d, dict):
                 if len(d) == 1:  # If only one project in dict
                     # Store existing keys found in Workspace
                     projects = set(ws.keys())

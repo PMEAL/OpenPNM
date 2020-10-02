@@ -76,12 +76,12 @@ class XDMF(GenericIO):
         root = create_root('Xdmf')
         domain = create_domain()
         # Iterate over time steps present
-        for t in range(len(t_steps)):
+        for i, t_step in enumerate(t_steps):
             # Define the hdf file
             if not transient:
                 fname_hdf = path.stem+".hdf"
             else:
-                fname_hdf = path.stem+'@'+t_steps[t]+".hdf"
+                fname_hdf = path.stem+'@'+t_step+".hdf"
             path_p = path.parent
             f = h5py.File(path_p.joinpath(fname_hdf), "w")
             # Add coordinate and connection information to top of HDF5 file
@@ -113,24 +113,24 @@ class XDMF(GenericIO):
                     del D[item]
                 elif 'U' in str(D[item][0].dtype):
                     pass
-                elif ('@' in item and t_steps[t] == item.split('@')[1]):
+                elif ('@' in item and t_step == item.split('@')[1]):
                     f.create_dataset(name='/'+item.split('@')[0]+'@t',
                                      shape=D[item].shape,
                                      dtype=D[item].dtype,
                                      data=D[item],
                                      compression="gzip")
-                elif ('@' not in item and t == 0):
+                elif ('@' not in item and i == 0):
                     f.create_dataset(name='/'+item, shape=D[item].shape,
                                      dtype=D[item].dtype, data=D[item],
                                      compression="gzip")
             # Create a grid
-            grid = create_grid(Name=t_steps[t], GridType="Uniform")
-            time = create_time(type='Single', Value=t_steps[t])
+            grid = create_grid(Name=t_step, GridType="Uniform")
+            time = create_time(mode='Single', Value=t_step)
             grid.append(time)
             # Add pore and throat properties
             for item in D.keys():
                 if item not in ['coordinates', 'connections']:
-                    if ("@" in item and t_steps[t] == item.split("@")[1]) or (
+                    if ("@" in item and t_step == item.split("@")[1]) or (
                         "@" not in item
                     ):
                         attr_type = 'Scalar'
@@ -139,9 +139,9 @@ class XDMF(GenericIO):
                         if '@' in item:
                             item = item.split('@')[0]+'@t'
                             hdf_loc = fname_hdf + ":" + item
-                        elif ('@' not in item and t == 0):
+                        elif ('@' not in item and i == 0):
                             hdf_loc = fname_hdf + ":" + item
-                        elif ('@' not in item and t > 0):
+                        elif ('@' not in item and i > 0):
                             hdf_loc = path.stem + '@' + t_steps[0] + ".hdf" + ":" + item
                         attr = create_data_item(value=hdf_loc,
                                                 Dimensions=dims,
@@ -204,9 +204,9 @@ def create_attribute(Name, **attribs):
     return element
 
 
-def create_time(type='Single', Value=None):
+def create_time(mode='Single', Value=None):
     element = ET.Element('Time')
-    if type == 'Single' and Value:
+    if mode == 'Single' and Value:
         element.attrib['Value'] = Value
     return element
 

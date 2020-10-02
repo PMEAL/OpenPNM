@@ -137,7 +137,9 @@ class CSV(GenericIO):
                 # Merge arrays into multi-column array and store in DataFrame
                 dct[pname] = np.vstack(merge_cols).T
                 # Remove key from list of keys
-                [keys.pop(keys.index(k)) for k in keys if k.startswith(pname)]
+                for k in keys:
+                    if k.startswith(pname):
+                        keys.pop(keys.index(k))
             else:
                 dct[item] = np.array(a.pop(item))
 

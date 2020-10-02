@@ -319,7 +319,8 @@ class Project(list):
             phases = list(self.phases().values())
             phys = physics[phases.index(phase)]
             return phys
-        elif geometry:
+
+        if geometry:
             result = []
             net = self.network
             geoPs = net['pore.'+geometry.name]
@@ -336,15 +337,16 @@ class Project(list):
                         temp = phys
                 result.append(temp)
             return result
-        elif phase:
+
+        if phase:
             names = set(self.physics().keys())
             keys = set([item.split('.')[-1] for item in phase.keys()])
             hits = names.intersection(keys)
             phys = [self.physics().get(i, None) for i in hits]
             return phys
-        else:
-            phys = list(self.physics().values())
-            return phys
+
+        phys = list(self.physics().values())
+        return phys
 
     def find_full_domain(self, obj):
         r"""
@@ -364,15 +366,13 @@ class Project(list):
 
         """
         if 'Subdomain' not in obj._mro():
-            # Network, Phase, Alg
+            # Network, Phase, Algorithm
             return obj
-        else:
-            if obj._isa() == 'geometry':
-                # Geom
-                return self.network
-            else:
-                # Phys
-                return self.find_phase(obj)
+        if obj._isa() == 'geometry':
+            # Geometry
+            return self.network
+        # Physics
+        return self.find_phase(obj)
 
     def _validate_name(self, name):
         if name in self.names:
@@ -572,14 +572,9 @@ class Project(list):
             if '.' in filename:
                 filetype = filename.split('.')[-1]
                 # Convert file type to io class name
-                if filetype == 'hdf':
-                    filetype = 'hdf5'
-                if filetype == 'xmf':
-                    filetype = 'xdmf'
-                if filetype == 'vtp':
-                    filetype = 'vtk'
-                if filetype == 'pkl':
-                    filetype = 'pickle'
+                temp = {"hdf": "hdf5", "xmf": "xdmf", "vtp": "vtk", "pkl": "pickle"}
+                if filetype in temp.keys():
+                    filetype = temp[filetype]
             else:
                 raise Exception('File type not given')
 
@@ -596,35 +591,28 @@ class Project(list):
     @property
     def network(self):
         net = list(self._get_objects_by_type('network').values())
-        if len(net) > 0:
-            net = net[0]
-        else:
-            net = None
+        net = net[0] if len(net) > 0 else None
         return net
 
     def geometries(self, name=None):
         if name:
             return self._get_object_by_name(name)
-        else:
-            return self._get_objects_by_type('geometry')
+        return self._get_objects_by_type('geometry')
 
     def phases(self, name=None):
         if name:
             return self._get_object_by_name(name)
-        else:
-            return self._get_objects_by_type('phase')
+        return self._get_objects_by_type('phase')
 
     def physics(self, name=None):
         if name:
             return self._get_object_by_name(name)
-        else:
-            return self._get_objects_by_type('physics')
+        return self._get_objects_by_type('physics')
 
     def algorithms(self, name=None):
         if name:
             return self._get_object_by_name(name)
-        else:
-            return self._get_objects_by_type('algorithm')
+        return self._get_objects_by_type('algorithm')
 
     def _get_object_by_name(self, name):
         for item in self:
