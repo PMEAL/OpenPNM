@@ -1,6 +1,7 @@
 import numpy as np
 import openpnm as op
 import scipy.sparse.linalg
+import warnings
 from numpy.linalg import norm
 import scipy.sparse.csgraph as spgr
 from scipy.spatial import ConvexHull
@@ -277,22 +278,23 @@ class GenericTransport(GenericAlgorithm):
         mode = self._parse_mode(mode, allowed=['merge', 'overwrite'], single=True)
         self._set_BC(pores=pores, bctype='value', bcvalues=values, mode=mode)
 
-    def set_rate_BC(self, pores, values, mode='merge'):
+    def set_rate_BC(self, pores, rates=None, total_rate=None, mode='merge',
+                    **kwargs):
         r"""
         Apply constant rate boundary conditons to the specified locations.
-
-        This is similar to a Neumann boundary condition, but is
-        slightly different since it's the conductance multiplied by the
-        gradient, while Neumann conditions specify just the gradient.
 
         Parameters
         ----------
         pores : array_like
             The pore indices where the condition should be applied
-        values : scalar or array_like
-            The values of rate to apply in each pore.  If a scalar is supplied
-            it is assigned to all locations, and if a vector is applied it
-            must be the same size as the indices given in ``pores``.
+        rates : scalar or array_like, optional
+            The rates to apply in each pore.  If a scalar is supplied
+            that rate is assigned to all locations, and if a vector is
+            supplied it must be the same size as the indices given in ``pores`.
+        total_rate : scalar, optional
+            The total rate supplied to all pores.  The rate supplied by this
+            argument is divided evenly among all pores. A scalar must be
+            supplied! Total_rate cannot be specified if rate is specified.
         mode : string, optional
             Controls how the boundary conditions are applied.  Options are:
 
@@ -310,8 +312,22 @@ class GenericTransport(GenericAlgorithm):
         ``settings``, e.g. ``alg.settings['quantity'] = 'pore.pressure'``.
 
         """
+        # support 'values' keyword
+        if 'values' in kwargs.keys():
+            rates = kwargs.pop("values")
+            warnings.warn("'values' has been deprecated, use 'rates' instead.",
+                          DeprecationWarning)
+        # handle total_rate feature
+        if total_rate is not None:
+            if not np.isscalar(total_rate):
+                raise Exception('total_rate argument accepts scalar only!')
+            if rates is not None:
+                raise Exception('Cannot specify both arguments: rate and '
+                                + 'total_rate')
+            pores = self._parse_indices(pores)
+            rates = total_rate/pores.size
         mode = self._parse_mode(mode, allowed=['merge', 'overwrite'], single=True)
-        self._set_BC(pores=pores, bctype='rate', bcvalues=values, mode=mode)
+        self._set_BC(pores=pores, bctype='rate', bcvalues=rates, mode=mode)
 
     @docstr.get_sectionsf(base='GenericTransport._set_BC',
                           sections=['Parameters', 'Notes'])
@@ -334,11 +350,14 @@ class GenericTransport(GenericAlgorithm):
             +-------------+--------------------------------------------------+
             | 'rate'      | Specify the flow rate into each location         |
             +-------------+--------------------------------------------------+
+
         bcvalues : int or array_like
             The boundary value to apply, such as concentration or rate.  If
-            a single value is given, it's assumed to apply to all locations.
-            Different values can be applied to all pores in the form of an
-            array of the same length as ``pores``.
+            a single value is given, it's assumed to apply to all locations
+            unless the 'total_rate' bc_type is supplied whereby a single value
+            corresponds to a total rate to be divded evenly among all pores.
+            Otherwise, different values can be applied to all pores in the form
+            of an array of the same length as ``pores``.
         mode : string, optional
             Controls how the boundary conditions are applied.  Options are:
 
@@ -826,6 +845,11 @@ class GenericTransport(GenericAlgorithm):
         pores = self._parse_indices(pores)
         throats = self._parse_indices(throats)
 
+        if throats.size > 0 and pores.size > 0:
+            raise Exception('Must specify either pores or throats, not both')
+        if throats.size == pores.size == 0:
+            raise Exception('Must specify either pores or throats')
+
         network = self.project.network
         phase = self.project.phases()[self.settings['phase']]
         g = phase[self.settings['conductance']]
@@ -839,21 +863,19 @@ class GenericTransport(GenericAlgorithm):
         g = np.flip(g, axis=1)
         Qt = np.diff(g*X12, axis=1).squeeze()
 
-        if len(throats) and len(pores):
-            raise Exception('Must specify either pores or throats, not both')
-        if len(throats) == 0 and len(pores) == 0:
-            raise Exception('Must specify either pores or throats')
-        elif len(throats):
+        if throats.size:
             R = np.absolute(Qt[throats])
             if mode == 'group':
                 R = np.sum(R)
-        elif len(pores):
+
+        if pores.size:
             Qp = np.zeros((self.Np, ))
             np.add.at(Qp, P12[:, 0], -Qt)
             np.add.at(Qp, P12[:, 1], Qt)
             R = Qp[pores]
             if mode == 'group':
                 R = np.sum(R)
+
         return np.array(R, ndmin=1)
 
     def set_solver(
