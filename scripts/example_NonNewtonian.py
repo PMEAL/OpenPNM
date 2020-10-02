@@ -5,14 +5,10 @@ import numpy as np
 ws = op.Workspace()
 proj = ws.new_project()
 
-# network
+# network and geometry
 np.random.seed(7)
-net = op.network.Cubic(shape=[20, 1, 1], spacing=1e-4, project=proj)
-
-# geometry
-geo = op.geometry.StickAndBall(network=net,
-                               pores=net.Ps,
-                               throats=net.Ts)
+net = op.network.Cubic(shape=[20, 3, 3], spacing=1e-4, project=proj)
+geo = op.geometry.StickAndBall(network=net, pores=net.Ps, throats=net.Ts)
 
 # phase
 phase = op.phases.Water(network=net)
