@@ -166,7 +166,9 @@ class GenericTransportTest:
 
     def test_rate_Nt_by_2_conductance(self):
         net = op.network.Cubic(shape=[1, 6, 1])
-        geom = op.geometry.StickAndBall(network=net)
+        geom = op.geometry.StickAndBall(network=net,
+                                        pores=net.Ps,
+                                        throats=net.Ts)
         air = op.phases.Air(network=net)
         water = op.phases.Water(network=net)
         m = op.phases.MultiPhase(phases=[air, water], project=net.project)

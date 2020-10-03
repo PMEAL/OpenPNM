@@ -35,15 +35,15 @@ class VTK(GenericIO):
     """.strip()
 
     @classmethod
-    def save(
-        cls,
-        network,
-        phases=[],
-        filename="",
-        delim=" | ",
-        fill_nans=None,
-        fill_infs=None,
-    ):
+    def save(cls, *args, **kwargs):
+        r"""
+        This method is being deprecated.  Use ``export_data`` instead.
+        """
+        cls.export_data(*args, **kwargs)
+
+    @classmethod
+    def export_data(cls, network, phases=[], filename="", delim=" | ",
+                    fill_nans=None, fill_infs=None):
         r"""
         Save network and phase data to a single vtp file for visualizing in
         Paraview
@@ -75,7 +75,7 @@ class VTK(GenericIO):
         """
         project, network, phases = cls._parse_args(network=network, phases=phases)
         # Check if any of the phases has time series
-        transient = GenericIO.is_transient(phases=phases)
+        transient = GenericIO._is_transient(phases=phases)
         if transient:
             logger.warning(
                 "vtp format does not support transient data, " + "use xdmf instead"
@@ -150,7 +150,14 @@ class VTK(GenericIO):
             f.write(string)
 
     @classmethod
-    def load(cls, filename, project=None, delim=" | "):
+    def load(cls, *args, **kwargs):
+        r"""
+        This method is being deprecated.  Use ``import_data`` instead.
+        """
+        return cls.import_data(*args, **kwargs)
+
+    @classmethod
+    def import_data(cls, filename, project=None, delim=" | "):
         r"""
         Read in pore and throat data from a saved VTK file.
         Parameters

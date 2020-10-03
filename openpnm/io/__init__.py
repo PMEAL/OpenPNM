@@ -24,7 +24,7 @@ parameters.
 +----------+------------------------------------------------------------------+
 | Pandas   | Combines all data arrays into a Pandas DataFrame object          |
 +----------+------------------------------------------------------------------+
-| OpenpnmIO| Reads and write the normal OpenPNM formats                       |
+| Pickle   | Read and write OpenPNM Workspaces, Projects, objects as Pickles  |
 +----------+------------------------------------------------------------------+
 | CSV      | Reads and writes CSV (comma-separated-value files) containing    |
 |          | pore and throat data                                             |
@@ -68,7 +68,7 @@ no plans to implement writing such files.
 
 """
 from .GenericIO import GenericIO
-from .OpenpnmIO import OpenpnmIO
+from .Pickle import Pickle
 from .Dict import Dict
 from .VTK import VTK
 from .CSV import CSV
@@ -86,3 +86,4 @@ from .JSONGraphFormat import JSONGraphFormat
 from .STL import STL
 from .COMSOL import COMSOL
 from .Salome import Salome
+from .PNM import PNM
