@@ -966,26 +966,17 @@ class Project(list):
 
     @property
     def grid(self):
-        grid = self._generate_grid(astype='table')
-        obj = ProjectGrid()
-        obj._grid = grid
-        return obj
-
-    def get_grid(self, astype):
-        r"""
-        Retrieves a copy of the grid data in the specified format
-
-        Parameters
-        ----------
-        astype : str
-            Can be 'dict', 'table', or 'pandas'
-
-        Returns
-        -------
-        grid
-            The grid data in the specified format
-        """
-        return self._generate_grid(astype=astype)
+        if not hasattr(self, '_grid'):
+            grid = self._generate_grid(astype='table')
+            obj = ProjectGrid()
+            obj._grid = grid
+            self._grid = obj
+        else:
+            grid = self._generate_grid(astype='table')
+            grid.style = self._grid.style
+            grid.blank = self._grid.blank
+            self._grid._grid = grid
+        return self._grid
 
 
 class ProjectGrid(Tableist):
