@@ -100,16 +100,25 @@ class ExtrasTest:
         ws.settings['loglevel'] = 50
         classes = [c for c in dir(op.physics) if not c.startswith('__')]
         mod = importlib.import_module('openpnm.physics')
+        print(mod)
         for c in classes:
             clss = getattr(mod, c)
             net = op.network.Cubic(shape=[2, 2, 2])
             # Eventually we want to create physics objects without a phase
             # but for now this is necessary.
             phase = op.phases.GenericPhase(network=net)
-            clss(project=net.project, phase=phase)
+            try:
+                clss(project=net.project, phase=phase)
+            except TypeError:
+                clss = getattr(clss, c)
+                clss(project=net.project, phase=phase)
             net = op.network.Cubic(shape=[2, 2, 2])
             phase = op.phases.GenericPhase(network=net)
-            clss(network=net, phase=phase)
+            try:
+                clss(network=net, phase=phase)
+            except TypeError:
+                clss = getattr(clss, c)
+                clss(network=net, phase=phase)
 
     def test_init_algorithm_with_either_network_or_project(self):
         ws.clear()
