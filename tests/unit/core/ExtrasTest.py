@@ -1,7 +1,9 @@
 import openpnm as op
 import scipy as sp
 import pytest
-
+import importlib
+from openpnm import Workspace
+ws = Workspace()
 
 class ExtrasTest:
 
@@ -63,12 +65,70 @@ class ExtrasTest:
         assert len(obj.models) > 0
 
     def test_init_phases_without_args(self):
-        obj = op.phases.Water(settings={'freeze_models': True})
-        assert len(obj.models) > 0
-        obj = op.phases.Air(settings={'freeze_models': True})
-        assert len(obj.models) > 0
-        obj = op.phases.Mercury(settings={'freeze_models': True})
-        assert len(obj.models) > 0
+        phases = [p for p in dir(op.phases) if not p.startswith('__')]
+        mod = importlib.import_module('openpnm.phases')
+        for p in phases:
+            clss = getattr(mod, p)
+            clss(settings={'freeze_models': True})
+
+    def test_init_geometry_with_either_network_or_project(self):
+        ws.clear()
+        ws.settings['loglevel'] = 50
+        classes = [c for c in dir(op.geometry) if not c.startswith('__')]
+        mod = importlib.import_module('openpnm.geometry')
+        for c in classes:
+            clss = getattr(mod, c)
+            net = op.network.Cubic(shape=[2, 2, 2])
+            clss(project=net.project)
+            net = op.network.Cubic(shape=[2, 2, 2])
+            clss(network=net)
+
+    def test_init_phase_with_either_network_or_project(self):
+        ws.clear()
+        ws.settings['loglevel'] = 50
+        classes = [c for c in dir(op.phases) if not c.startswith('__')]
+        mod = importlib.import_module('openpnm.phases')
+        for c in classes:
+            clss = getattr(mod, c)
+            net = op.network.Cubic(shape=[2, 2, 2])
+            clss(project=net.project)
+            net = op.network.Cubic(shape=[2, 2, 2])
+            clss(network=net)
+
+    def test_init_physics_with_either_network_or_project(self):
+        ws.clear()
+        ws.settings['loglevel'] = 50
+        classes = [c for c in dir(op.physics) if not c.startswith('__')]
+        mod = importlib.import_module('openpnm.physics')
+        for c in classes:
+            clss = getattr(mod, c)
+            net = op.network.Cubic(shape=[2, 2, 2])
+            # Eventually we want to create physics objects without a phase
+            # but for now this is necessary.
+            phase = op.phases.GenericPhase(network=net)
+            clss(project=net.project, phase=phase)
+            net = op.network.Cubic(shape=[2, 2, 2])
+            phase = op.phases.GenericPhase(network=net)
+            clss(network=net, phase=phase)
+
+    def test_init_algorithm_with_either_network_or_project(self):
+        ws.clear()
+        ws.settings['loglevel'] = 50
+        classes = [c for c in dir(op.algorithms) if not c.startswith('__')]
+        mod = importlib.import_module('openpnm.algorithms')
+        # The following 3 should be fixed to accept no phase arguments
+        classes.pop(classes.index('NernstPlanck'))
+        classes.pop(classes.index('NernstPlanckMultiphysicsSolver'))
+        classes.pop(classes.index('TransientNernstPlanckMultiphysicsSolver'))
+        # metrics should be ignored
+        classes.pop(classes.index('metrics'))
+        for c in classes:
+            clss = getattr(mod, c)
+            net = op.network.Cubic(shape=[2, 2, 2])
+            clss(project=net.project)
+            net = op.network.Cubic(shape=[2, 2, 2])
+            clss(network=net)
+
 
 
 if __name__ == '__main__':
