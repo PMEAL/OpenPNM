@@ -24,9 +24,8 @@ class GenericPhysics(Subdomain, ModelsMixin):
         should be applied.
 
     name : str, optional
-        A unique string name to identify the Physics object, typically same as
-        instance name but can be anything.  If left blank, and name will be
-        generated that include the class name and a random string.
+        A unique string name to identify the Physics object. If not given
+        a name will be generated automatically.
 
     """
 
@@ -51,16 +50,16 @@ class GenericPhysics(Subdomain, ModelsMixin):
         if network:
             if phase is None:
                 logger.warning('No Phase provided, ' + self.name
-                               + ' will not be associated with a phase')
+                                + ' will not be associated with a phase')
             else:
                 self.set_phase(phase=phase)
             if geometry is None:
                 logger.warning('No Geometry provided, ' + self.name
-                               + ' will not be associated with any locations')
+                                + ' will not be associated with any locations')
             else:
                 if (phase is None):
                     logger.warning('Cannot associate with a geometry unless '
-                                   + 'a phase is also given')
+                                    + 'a phase is also given')
                 else:
                     self.set_geometry(geometry=geometry)
 
