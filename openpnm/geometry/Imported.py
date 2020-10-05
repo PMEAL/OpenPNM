@@ -75,10 +75,12 @@ class Imported(GenericGeometry):
         self.settings._update_settings_and_docs(ImportedSettings())
         self.settings.update(settings)
         if 'network' in kwargs.keys():
-            network = kwargs['network']
+            network = kwargs.pop('network')
         elif 'project' in kwargs.keys():
-            network = kwargs['project'].network
-        super().__init__(pores=network.Ps, throats=network.Ts, **kwargs)
+            project = kwargs.pop('project')
+            network = project.network
+        super().__init__(network=network, pores=network.Ps, throats=network.Ts,
+                         **kwargs)
         # Transfer all geometrical properties off of network
         exclude.extend(['pore.coords', 'throat.conns'])
         for item in network.props():
