@@ -2,6 +2,7 @@ import openpnm as op
 import scipy as sp
 import pytest
 import importlib
+from types import ModuleType
 from openpnm import Workspace
 ws = Workspace()
 
@@ -78,10 +79,11 @@ class ExtrasTest:
         mod = importlib.import_module('openpnm.geometry')
         for c in classes:
             clss = getattr(mod, c)
-            net = op.network.Cubic(shape=[2, 2, 2])
-            clss(project=net.project)
-            net = op.network.Cubic(shape=[2, 2, 2])
-            clss(network=net)
+            if not isinstance(clss, ModuleType):
+                net = op.network.Cubic(shape=[2, 2, 2])
+                clss(project=net.project)
+                net = op.network.Cubic(shape=[2, 2, 2])
+                clss(network=net)
 
     def test_init_phase_with_either_network_or_project(self):
         ws.clear()
@@ -90,26 +92,27 @@ class ExtrasTest:
         mod = importlib.import_module('openpnm.phases')
         for c in classes:
             clss = getattr(mod, c)
-            net = op.network.Cubic(shape=[2, 2, 2])
-            clss(project=net.project)
-            net = op.network.Cubic(shape=[2, 2, 2])
-            clss(network=net)
+            if not isinstance(clss, ModuleType):
+                net = op.network.Cubic(shape=[2, 2, 2])
+                clss(project=net.project)
+                net = op.network.Cubic(shape=[2, 2, 2])
+                clss(network=net)
 
     def test_init_physics_with_either_network_or_project(self):
         ws.clear()
         ws.settings['loglevel'] = 50
         classes = [c for c in dir(op.physics) if not c.startswith('__')]
-        print(classes)
+        mod = importlib.import_module('openpnm.physics')
         for c in classes:
-            clss = getattr(importlib.import_module('openpnm.physics'), c)
-            print(clss)
-            net = op.network.Cubic(shape=[2, 2, 2])
-            # Eventually we want to create physics objects without a phase
-            # but for now this is necessary.
-            phase = op.phases.GenericPhase(network=net)
-            clss(project=net.project, phase=phase)
-            phase = op.phases.GenericPhase(network=net)
-            clss(network=net, phase=phase)
+            clss = getattr(mod, c)
+            if not isinstance(clss, ModuleType):
+                net = op.network.Cubic(shape=[2, 2, 2])
+                # Eventually we want to create physics objects without a phase
+                # but for now this is necessary.
+                phase = op.phases.GenericPhase(network=net)
+                clss(project=net.project, phase=phase)
+                phase = op.phases.GenericPhase(network=net)
+                clss(network=net, phase=phase)
 
     def test_init_algorithm_with_either_network_or_project(self):
         ws.clear()
@@ -124,10 +127,11 @@ class ExtrasTest:
         classes.pop(classes.index('metrics'))
         for c in classes:
             clss = getattr(mod, c)
-            net = op.network.Cubic(shape=[2, 2, 2])
-            clss(project=net.project)
-            net = op.network.Cubic(shape=[2, 2, 2])
-            clss(network=net)
+            if not isinstance(clss, ModuleType):
+                net = op.network.Cubic(shape=[2, 2, 2])
+                clss(project=net.project)
+                net = op.network.Cubic(shape=[2, 2, 2])
+                clss(network=net)
 
 
 
