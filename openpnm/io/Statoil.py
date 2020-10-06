@@ -34,7 +34,7 @@ class Statoil(GenericIO):
         d = 'network.' + network.name +  '.throat.shape_factor'
         e = 'network.' + network.name +  '.throat.length'
         dft_temp = dft_ind.join(dft[[a, b, c, e]])
-        dft_temp.to_csv(filename, sep='\t', header=False, index=False)
+        dft_temp.to_csv(filename + '_link1.dat', sep='\t', header=True, index=False)
 
 
     @classmethod
