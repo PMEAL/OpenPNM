@@ -1,9 +1,10 @@
 import numpy as np
 from openpnm.topotools import trim
 from openpnm.utils import logging
-from openpnm.io import GenericIO
+from openpnm.io import GenericIO, Pandas
 from openpnm.network import GenericNetwork
 from pathlib import Path
+from pandas import DataFrame
 logger = logging.getLogger(__name__)
 
 
@@ -21,6 +22,20 @@ class Statoil(GenericIO):
     specific property.  Headers are not provided in the files, so one must
     refer to various theses and documents to interpret their meaning.
     """
+
+    @classmethod
+    def export_data(cls, filename, network):
+        dfp, dft = Pandas.to_dataframe(network=network, delim='.')
+        dft_ind = DataFrame()
+        dft_ind[0] = network.Ts + 1
+        a = 'network.' + network.name +  '.throat.conns[0]'
+        b = 'network.' + network.name +  '.throat.conns[1]'
+        c = 'network.' + network.name +  '.throat.diameter'
+        d = 'network.' + network.name +  '.throat.shape_factor'
+        e = 'network.' + network.name +  '.throat.length'
+        dft_temp = dft_ind.join(dft[[a, b, c, e]])
+        dft_temp.to_csv(filename, sep='\t', header=False, index=False)
+
 
     @classmethod
     def load(cls, *args, **kwargs):
