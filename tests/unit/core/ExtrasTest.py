@@ -99,9 +99,9 @@ class ExtrasTest:
         ws.clear()
         ws.settings['loglevel'] = 50
         classes = [c for c in dir(op.physics) if not c.startswith('__')]
-        mod = importlib.import_module('openpnm.physics')
+        print(classes)
         for c in classes:
-            clss = getattr(mod, c)
+            clss = getattr(importlib.import_module('openpnm.physics'), c)
             print(clss)
             net = op.network.Cubic(shape=[2, 2, 2])
             # Eventually we want to create physics objects without a phase
