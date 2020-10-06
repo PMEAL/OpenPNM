@@ -70,7 +70,8 @@ class ExtrasTest:
         mod = importlib.import_module('openpnm.phases')
         for p in phases:
             clss = getattr(mod, p)
-            clss(settings={'freeze_models': True})
+            if not isinstance(clss, ModuleType):
+                clss(settings={'freeze_models': True})
 
     def test_init_geometry_with_either_network_or_project(self):
         ws.clear()
