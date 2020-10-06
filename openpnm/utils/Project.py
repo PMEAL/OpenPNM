@@ -33,35 +33,6 @@ class Project(list):
     --------
     Workspace
 
-    Notes
-    -----
-    The following table shows all the methods that are available on the Project
-    objects along with a very brief description:
-
-    +------------------+-------------------------------------------------+
-    | Method           | Description                                     |
-    +==================+=================================================+
-    | export_data      | Export the pore and throat data from the giv... |
-    +------------------+-------------------------------------------------+
-    | import_data      |                                                 |
-    +------------------+-------------------------------------------------+
-    | purge_object     | Remove an object from the Project.  This rem... |
-    +------------------+-------------------------------------------------+
-    | load_object      | Loads a single object from a file               |
-    +------------------+-------------------------------------------------+
-    | save_object      | Saves the given object to a file                |
-    +------------------+-------------------------------------------------+
-    | find_physics     | Find the Physics object(s) associated with a... |
-    +------------------+-------------------------------------------------+
-    | find_geometry    | Find the Geometry associated with a given Ph... |
-    +------------------+-------------------------------------------------+
-    | find_phase       | Find the Phase associated with a given object.  |
-    +------------------+-------------------------------------------------+
-    | check_geometr... | Perform a check to find pores with overlappi... |
-    +------------------+-------------------------------------------------+
-    | check_physics... | Perform a check to find pores which have ove... |
-    +------------------+-------------------------------------------------+
-
     """
 
     def __init__(self, *args, **kwargs):
@@ -268,12 +239,11 @@ class Project(list):
             return obj
         # If phase happens to be in settings (i.e. algorithm), look it up
         if 'phase' in obj.settings.keys():
-            phase = self.phases()[obj.settings['phase']]
-            return phase
+            return self.phases()[obj.settings['phase']]
         # Otherwise find it using bottom-up approach (i.e. look in phase keys)
-        for phase in self.phases().values():
-            if ('pore.'+obj.name in phase) or ('throat.'+obj.name in phase):
-                return phase
+        for item in self.phases().values():
+            if ('pore.' + obj.name in item) or ('throat.' + obj.name in item):
+                return item
         # If all else fails, throw an exception
         raise Exception('Cannot find a phase associated with '+obj.name)
 
@@ -348,7 +318,8 @@ class Project(list):
             phases = list(self.phases().values())
             phys = physics[phases.index(phase)]
             return phys
-        elif geometry:
+
+        if geometry:
             result = []
             net = self.network
             geoPs = net['pore.'+geometry.name]
@@ -365,15 +336,16 @@ class Project(list):
                         temp = phys
                 result.append(temp)
             return result
-        elif phase:
+
+        if phase:
             names = set(self.physics().keys())
             keys = set([item.split('.')[-1] for item in phase.keys()])
             hits = names.intersection(keys)
             phys = [self.physics().get(i, None) for i in hits]
             return phys
-        else:
-            phys = list(self.physics().values())
-            return phys
+
+        phys = list(self.physics().values())
+        return phys
 
     def find_full_domain(self, obj):
         r"""
@@ -393,15 +365,13 @@ class Project(list):
 
         """
         if 'Subdomain' not in obj._mro():
-            # Network, Phase, Alg
+            # Network, Phase, Algorithm
             return obj
-        else:
-            if obj._isa() == 'geometry':
-                # Geom
-                return self.network
-            else:
-                # Phys
-                return self.find_phase(obj)
+        if obj._isa() == 'geometry':
+            # Geometry
+            return self.network
+        # Physics
+        return self.find_phase(obj)
 
     def _validate_name(self, name):
         if name in self.names:
@@ -415,6 +385,10 @@ class Project(list):
         prefix = obj.settings['prefix']
         num = len(self._get_objects_by_type(obj._isa())) + 1
         name = prefix + '_' + str(num).zfill(2)
+        try:
+            self._validate_name(name)
+        except Exception:
+            name = prefix + '_' + str(np.random.randint(100, 999))
         return name
 
     @property
@@ -482,7 +456,7 @@ class Project(list):
 
     def save_object(self, obj):
         r"""
-        Saves the given object or list of objects to a file
+        Saves the given object or list of objects to a pickle file
 
         Parameters
         ----------
@@ -490,12 +464,12 @@ class Project(list):
             The objects to be saved.  Depending on the object type, the file
             extension will be one of 'net', 'geo', 'phase', 'phys' or 'alg'.
         """
-        from openpnm.io import OpenpnmIO
-        OpenpnmIO.save_object_to_file(objs=obj)
+        from openpnm.io import Pickle
+        Pickle.save_object_to_file(objs=obj)
 
     def load_object(self, filename):
         r"""
-        Loads a single object from a file
+        Loads a single object from a pickle file
 
         Parameters
         ----------
@@ -506,10 +480,10 @@ class Project(list):
             object type is inferred from
 
         """
-        from openpnm.io import OpenpnmIO
-        OpenpnmIO.load_object_from_file(filename=filename, project=self)
+        from openpnm.io import Pickle
+        Pickle.load_object_from_file(filename=filename, project=self)
 
-    def save_project(self, filename=''):
+    def save_project(self, filename=None):
         r"""
         Save the current project to a ``pnm`` file.
 
@@ -541,12 +515,7 @@ class Project(list):
             obj = openpnm.core.Base(project=self, name=name)
         return obj
 
-    def import_data(self, filename):
-        r"""
-        """
-        raise NotImplementedError('Use the io module to import data')
-
-    def export_data(self, phases=[], filename=None, filetype='vtp'):
+    def export_data(self, phases=[], filename=None, filetype=None):
         r"""
         Export the pore and throat data from the given object(s) into the
         specified file and format.
@@ -576,7 +545,7 @@ class Project(list):
             the property name, including the type and name of the object to
             which they belonged, all separated by the pipe character.
 
-            **'xmf'** : The extensible data markup format, is a very efficient
+            **'xdmf'** : The extensible data markup format, is a very efficient
             format for large data sets.  This actually results in the creation
             of two files, the *xmf* file and an associated *hdf* file.  The
             *xmf* file contains instructions for looking into the *hdf* file
@@ -587,145 +556,62 @@ class Project(list):
 
         Notes
         -----
-        This is a helper function for the actual functions in the IO module.
-        For more control over the format of the output, and more information
-        about the format refer to ``openpnm.io``.
+        This is a helper function for the actual functions in the ``io``
+        module. For more control over the format of the output, and more
+        information about the format refer to ``openpnm.io``.
 
         """
+        import builtins
+
         project = self
         network = self.network
         if filename is None:
             filename = project.name + '_' + time.strftime('%Y%b%d_%H%M%p')
-        # Infer filetype from extension on file name...if given
-        if '.' in filename:
-            exts = ['vtk', 'vtp', 'vtu', 'csv', 'xmf', 'xdmf', 'hdf', 'hdf5',
-                    'h5', 'mat']
-            if filename.split('.')[-1] in exts:
-                filename, filetype = filename.rsplit('.', 1)
-        if filetype.lower() in ['vtk', 'vtp', 'vtu']:
-            openpnm.io.VTK.save(network=network, phases=phases,
-                                filename=filename)
-        if filetype.lower() == 'csv':
-            openpnm.io.CSV.save(network=network, phases=phases,
-                                filename=filename)
-        if filetype.lower() in ['xmf', 'xdmf']:
-            openpnm.io.XDMF.save(network=network, phases=phases,
-                                 filename=filename)
-        if filetype.lower() in ['hdf5', 'hdf', 'h5']:
-            f = openpnm.io.HDF5.to_hdf5(network=network, phases=phases,
-                                        filename=filename)
-            f.close()
-        if filetype.lower() == 'mat':
-            openpnm.io.MAT.save(network=network, phases=phases,
-                                filename=filename)
-        if filetype == 'COMSOL':
-            openpnm.io.COMSOL.save(network=network, phases=phases,
-                                   filename=filename)
+        if filetype is None:
+            if '.' in filename:
+                filetype = filename.split('.')[-1]
+                # Convert file type to io class name
+                temp = {"hdf": "hdf5", "xmf": "xdmf", "vtp": "vtk", "pkl": "pickle"}
+                if filetype in temp.keys():
+                    filetype = temp[filetype]
+            else:
+                raise Exception('File type not given')
 
-    def _dump_data(self, mode=['props']):
-        r"""
-        Dump data from all objects in project to an HDF5 file.  Note that
-        'pore.coords', 'throat.conns', 'pore.all', 'throat.all', and all
-        labels pertaining to the linking of objects are kept.
+        # Fetch correct io class, using case insensitive look-up
+        def igetattr(obj, attr):
+            for a in dir(obj):
+                if a.lower() == attr.lower():
+                    return orig_getattr(obj, a)
+        orig_getattr = builtins.getattr
 
-        Parameters
-        ----------
-        mode : string or list of strings
-            The type of data to be dumped to the HDF5 file.  Options are:
-
-            **'props'** : Numerical data such as 'pore.diameter'.  The default
-            is only 'props'.
-
-            **'labels'** : Boolean data that are used as labels.  Since this
-            is boolean data it does not consume large amounts of memory and
-            probably does not need to be dumped.
-
-        See Also
-        --------
-        _fetch_data
-
-        Notes
-        -----
-        In principle, after data is fetched from an HDF5 file, it should
-        physically stay there until it's called upon.  This let users manage
-        the data as if it's in memory, even though it isn't.  This behavior
-        has not been confirmed yet, which is why these functions are hidden.
-
-        """
-        import h5py
-        with h5py.File(self.name + '.hdf5', 'a') as f:
-            for obj in self:
-                for key in list(obj.keys()):
-                    tempname = obj.name + '|' + '_'.join(key.split('.'))
-                    arr = obj[key]
-                    if 'U' in str(obj[key][0].dtype):
-                        pass
-                    elif 'all' in key.split('.'):
-                        pass
-                    else:
-                        f.create_dataset(name='/'+tempname, shape=arr.shape,
-                                         dtype=arr.dtype, data=arr)
-            for obj in self:
-                obj.clear(mode=mode)
-
-    def _fetch_data(self):
-        r"""
-        Retrieve data from an HDF5 file and place onto correct objects in the
-        project
-
-        See Also
-        --------
-        _dump_data
-
-        Notes
-        -----
-        In principle, after data is fetched from and HDF5 file, it should
-        physically stay there until it's called upon.  This let users manage
-        the data as if it's in memory, even though it isn't.  This behavior
-        has not been confirmed yet, which is why these functions are hidden.
-
-        """
-        import h5py
-        with h5py.File(self.name + '.hdf5', 'a') as f:
-            # Reload data into project
-            for item in f.keys():
-                obj_name, propname = item.split('|')
-                propname = propname.split('_')
-                propname = propname[0] + '.' + '_'.join(propname[1:])
-                self[obj_name][propname] = f[item]
+        fmt = igetattr(openpnm.io, filetype)
+        fmt.export_data(network=network, phases=phases, filename=filename)
 
     @property
     def network(self):
         net = list(self._get_objects_by_type('network').values())
-        if len(net) > 0:
-            net = net[0]
-        else:
-            net = None
+        net = net[0] if len(net) > 0 else None
         return net
 
     def geometries(self, name=None):
         if name:
             return self._get_object_by_name(name)
-        else:
-            return self._get_objects_by_type('geometry')
+        return self._get_objects_by_type('geometry')
 
     def phases(self, name=None):
         if name:
             return self._get_object_by_name(name)
-        else:
-            return self._get_objects_by_type('phase')
+        return self._get_objects_by_type('phase')
 
     def physics(self, name=None):
         if name:
             return self._get_object_by_name(name)
-        else:
-            return self._get_objects_by_type('physics')
+        return self._get_objects_by_type('physics')
 
     def algorithms(self, name=None):
         if name:
             return self._get_object_by_name(name)
-        else:
-            return self._get_objects_by_type('algorithm')
+        return self._get_objects_by_type('algorithm')
 
     def _get_object_by_name(self, name):
         for item in self:

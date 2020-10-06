@@ -58,7 +58,7 @@ jobs:
 
       - name: Running tests
         run:
-          pytest --pycodestyle --cov=./ --cov-report=xml --ignore="openpnm/utils/petsc.py"
+          pytest --cov=./ --cov-report=xml --ignore="openpnm/utils/petsc.py"
 
       - name: Upload coverage to Codecov
         if: matrix.python-version == 3.7

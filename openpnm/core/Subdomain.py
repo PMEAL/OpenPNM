@@ -40,7 +40,7 @@ class Subdomain(Base):
             inds = boss._get_indices(element=element, labels=self.name)
             try:  # Will invoke interleave data if necessary
                 vals = boss[key]  # Will return nested dict if present
-                if type(vals) is dict:  # Index into each array in nested dict
+                if isinstance(vals, dict):  # Index into each array in nested dict
                     for item in vals:
                         vals[item] = vals[item][inds]
                 else:  # Otherwise index into single array

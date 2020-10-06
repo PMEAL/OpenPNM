@@ -382,7 +382,7 @@ class OrdinaryPercolation(GenericAlgorithm):
                 stop = np.amax(self['pore.entry_pressure'])*2.0
         else:
             raise Exception('Percolation type has not been set')
-        if type(points) is int:
+        if isinstance(points, int):
             points = np.logspace(start=np.log10(max(1, start)),
                                  stop=np.log10(stop), num=points)
         self._points = points

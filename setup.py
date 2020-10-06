@@ -1,5 +1,7 @@
 import os
 import sys
+import codecs
+import os.path
 from distutils.util import convert_path
 try:
     from setuptools import setup
@@ -7,13 +9,23 @@ except ImportError:
     from distutils.core import setup
 
 sys.path.append(os.getcwd())
-
-about = {}
 ver_path = convert_path('openpnm/__version__.py')
-with open(ver_path) as f:
-    for line in f:
+
+
+def read(rel_path):
+    here = os.path.abspath(os.path.dirname(__file__))
+    with codecs.open(os.path.join(here, rel_path), 'r') as fp:
+        return fp.read()
+
+
+def get_version(rel_path):
+    for line in read(rel_path).splitlines():
         if line.startswith('__version__'):
-            exec(line, about)
+            delim = '"' if '"' in line else "'"
+            return line.split(delim)[1]
+    else:
+        raise RuntimeError("Unable to find version string.")
+
 
 # Read the contents of README file
 this_directory = os.path.abspath(os.path.dirname(__file__))
@@ -26,7 +38,7 @@ setup(
     + 'of multiphase transport in porous materials',
     long_description=long_description,
     long_description_content_type='text/markdown',
-    version=about['__version__'],
+    version=get_version(ver_path),
     zip_safe=False,
     classifiers=[
         'Development Status :: 5 - Production/Stable',
@@ -76,6 +88,7 @@ setup(
         'unyt',
         'terminaltables',
         'docrep==0.2.7',
+        'json-tricks',
     ],
     author='OpenPNM Team',
     author_email='jgostick@uwaterloo.ca',

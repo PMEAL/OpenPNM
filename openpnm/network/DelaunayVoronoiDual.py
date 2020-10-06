@@ -70,6 +70,9 @@ class DelaunayVoronoiDual(GenericNetwork):
 
     def __init__(self, shape=[1, 1, 1], num_points=None, **kwargs):
         points = kwargs.pop('points', None)
+        super().__init__(**kwargs)
+        if (points is None) and (num_points is None):
+            return
         points = self._parse_points(shape=shape,
                                     num_points=num_points,
                                     points=points)
@@ -90,16 +93,19 @@ class DelaunayVoronoiDual(GenericNetwork):
         am = sprs.lil_matrix((Nall, Nall))
         for ridge in vor.ridge_dict.keys():
             # Make Delaunay-to-Delauny connections
-            [am.rows[i].extend([ridge[0], ridge[1]]) for i in ridge]
+            for i in ridge:
+                am.rows[i].extend([ridge[0], ridge[1]])
             # Get voronoi vertices for current ridge
             row = vor.ridge_dict[ridge].copy()
             # Index Voronoi vertex numbers by number of delaunay points
             row = [i + vor.npoints for i in row if i > -1]
             # Make Voronoi-to-Delaunay connections
-            [am.rows[i].extend(row) for i in ridge]
+            for i in ridge:
+                am.rows[i].extend(row)
             # Make Voronoi-to-Voronoi connections
             row.append(row[0])
-            [am.rows[row[i]].append(row[i+1]) for i in range(len(row)-1)]
+            for i in range(len(row)-1):
+                am.rows[row[i]].append(row[i+1])
 
         # Finalize adjacency matrix by assigning data values
         am.data = am.rows  # Values don't matter, only shape, so use 'rows'
@@ -117,8 +123,11 @@ class DelaunayVoronoiDual(GenericNetwork):
         coords = np.around(pts_all, decimals=10)
         if coords.shape[1] == 2:  # Make points back into 3D if necessary
             coords = np.vstack((coords.T, np.zeros((coords.shape[0], )))).T
-        super().__init__(conns=conns, coords=coords, **kwargs)
 
+        self['pore.all'] = np.ones([coords.shape[0]], dtype=bool)
+        self['throat.all'] = np.ones([conns.shape[0]], dtype=bool)
+        self['pore.coords'] = coords
+        self['throat.conns'] = conns
         # Label all pores and throats by type
         self['pore.delaunay'] = False
         self['pore.delaunay'][0:vor.npoints] = True
