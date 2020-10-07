@@ -3,6 +3,7 @@ import uuid
 import numpy as np
 import scipy as sp
 from collections import namedtuple
+from openpnm.models.misc import from_neighbor_throats, from_neighbor_pores
 from openpnm.utils import Workspace, logging
 from openpnm.utils.misc import PrintableList, SettingsDict, Docorator
 docstr = Docorator()
@@ -147,8 +148,9 @@ class Base(dict):
         instance.settings['_uuid'] = str(uuid.uuid4())
         return instance
 
-    def __init__(self, Np=0, Nt=0, name=None, project=None):
+    def __init__(self, Np=0, Nt=0, name=None, project=None, settings={}):
         self.settings.setdefault('prefix', 'base')
+        self.settings.update(settings)
         super().__init__()
         if project is None:
             project = ws.new_project()
@@ -174,6 +176,8 @@ class Base(dict):
         'throat.***'.  Also, any scalars are cast into full length vectors.
 
         """
+        if value is None:
+            return
         # Check 1: If value is a dictionary, break it into constituent arrays
         # and recursively call __setitem__ on each
         if hasattr(value, 'keys'):
@@ -648,7 +652,7 @@ class Base(dict):
         >>> import openpnm as op
         >>> pn = op.network.Cubic(shape=[5, 5, 5])
         >>> pn.labels(pores=[11, 12])
-        ['pore.all', 'pore.front', 'pore.internal', 'pore.surface']
+        ['pore.all', 'pore.internal', 'pore.left', 'pore.surface']
         """
         # Short-circuit query when no pores or throats are given
         if (np.size(pores) == 0) and (np.size(throats) == 0):
@@ -844,9 +848,9 @@ class Base(dict):
         >>> pn = op.network.Cubic(shape=[5, 5, 5])
         >>> Ps = pn.pores(labels=['top', 'front'], mode='union')
         >>> Ps[:5]  # Look at first 5 pore indices
-        array([0, 1, 2, 3, 4])
+        array([ 4,  9, 14, 19, 20])
         >>> pn.pores(labels=['top', 'front'], mode='xnor')
-        array([ 4,  9, 14, 19, 24])
+        array([ 24,  49,  74,  99, 124])
         """
         ind = self._get_indices(element='pore', labels=labels, mode=mode)
         if target is not None:
@@ -954,9 +958,8 @@ class Base(dict):
         ind[self_in_ids] = locations[ids_in_self]
         if filtered:
             return ind[mask]
-        else:
-            t = namedtuple('index_map', ('indices', 'mask'))
-            return t(ind, mask)
+        t = namedtuple('index_map', ('indices', 'mask'))
+        return t(ind, mask)
 
     def map_pores(self, pores, origin, filtered=True):
         r"""
@@ -1189,7 +1192,6 @@ class Base(dict):
         if np.all([item is None for item in arrs]):  # prop not found anywhere
             raise KeyError(prop)
 
-        # --------------------------------------------------------------------
         # Let's start by handling the easy cases first
         if not any([a is None for a in arrs]):
             # All objs present and array found on all objs
@@ -1202,14 +1204,13 @@ class Base(dict):
                 for vals, inds in zip(arrs, locs):
                     temp_arr[inds] = vals
                 return temp_arr  # Return early because it's just easier
-            elif all([a.dtype in [float, int, bool] for a in arrs]):
+            if all([a.dtype in [float, int, bool] for a in arrs]):
                 # All types are numeric, make float
                 temp_arr = np.ones(shape, dtype=float)
                 for vals, inds in zip(arrs, locs):
                     temp_arr[inds] = vals
                 return temp_arr  # Return early because it's just easier
 
-        # ---------------------------------------------------------------------
         # Now handle the complicated cases
         # Check the general type of each array
         atype = []
@@ -1224,8 +1225,7 @@ class Base(dict):
                     atype.append('other')
         if not all([item == atype[0] for item in atype]):
             raise Exception('The array types are not compatible')
-        else:
-            dummy_val = {'numeric': np.nan, 'boolean': False, 'other': None}
+        dummy_val = {'numeric': np.nan, 'boolean': False, 'other': None}
 
         # Create an empty array of the right type and shape
         for item in arrs:
@@ -1294,34 +1294,10 @@ class Base(dict):
         array([1.5, 2.5])
 
         """
-        boss = self.project.find_full_domain(self)
-        net = self.project.network
-        if boss is self:
-            Ts = boss.throats()
-            Ps = boss.pores()
-            label = 'all'
-        else:
-            Ts = boss.throats(self.name)
-            Ps = boss.pores(self.name)
-            label = self.name
         if propname.startswith('throat'):
-            # Upcast data to full network size
-            temp = np.ones((boss.Nt,))*np.nan
-            temp[Ts] = self[propname]
-            data = temp
-            temp = np.ones((boss.Np,))*np.nan
-            for pore in Ps:
-                neighborTs = net.find_neighbor_throats(pore)
-                neighborTs = net.filter_by_label(throats=neighborTs,
-                                                 labels=label)
-                temp[pore] = np.mean(data[neighborTs])
-            values = temp[Ps]
+            values = from_neighbor_throats(target=self, prop=propname, mode='mean')
         elif propname.startswith('pore'):
-            # Upcast data to full network size
-            data = np.ones((net.Np, ))*np.nan
-            data[Ps] = self[propname]
-            Ps12 = net['throat.conns'][Ts]
-            values = np.mean(data[Ps12], axis=1)
+            values = from_neighbor_pores(target=self, prop=propname, mode='mean')
         if hasattr(self[propname], 'units'):
             values *= self[propname].units
         return values
@@ -1376,12 +1352,12 @@ class Base(dict):
         --------
         >>> import openpnm as op
         >>> pn = op.network.Cubic(shape=[5, 5, 5])
-        >>> pn.filter_by_label(pores=[0, 1, 5, 6], labels='left')
+        >>> pn.filter_by_label(pores=[0, 1, 25, 32], labels='left')
         array([0, 1])
         >>> Ps = pn.pores(['top', 'bottom', 'front'], mode='or')
         >>> pn.filter_by_label(pores=Ps, labels=['top', 'front'],
         ...                    mode='and')
-        array([ 4,  9, 14, 19, 24])
+        array([ 24,  49,  74,  99, 124])
         """
         # Convert inputs to locations and element
         if (np.size(throats) > 0) and (np.size(pores) > 0):
@@ -1644,9 +1620,10 @@ class Base(dict):
 
         Returns
         -------
-        Returns a HealthDict object which a basic dictionary with an added
-        ``health`` attribute that is True is all entries in the dict are
-        deemed healthy (empty lists), or False otherwise.
+        health: HealthDict object
+            A  basic dictionary with an added ``health`` attribute that is
+            ``True`` if all entries in the dict are deemed healthy
+            (empty lists), or ``False`` otherwise.
 
         Examples
         --------
@@ -1735,8 +1712,7 @@ class Base(dict):
             if len(element) > 1:
                 raise Exception('Both elements recieved when single element '
                                 + 'allowed')
-            else:
-                element = element[0]
+            element = element[0]
         return element
 
     def _parse_labels(self, labels, element):
@@ -1821,8 +1797,7 @@ class Base(dict):
             if len(mode) > 1:
                 raise Exception('Multiple modes received when only one mode '
                                 + 'is allowed by this method')
-            else:
-                mode = mode[0]
+            mode = mode[0]
         return mode
 
     def _parse_prop(self, propname, element):
@@ -1892,12 +1867,11 @@ class Base(dict):
             elif 'GenericAlgorithm' in self._mro():
                 prefix = 'algorithm'
             return prefix
-        else:
-            mro = [s.lower() for s in self._mro()]
-            temp = [s.replace('generic', '') for s in mro
-                    if s.startswith('generic')]
-            mro.extend(temp)
-            flag = False
-            if obj_type.lower() in mro:
-                flag = True
-            return flag
+        mro = [s.lower() for s in self._mro()]
+        temp = [s.replace('generic', '') for s in mro
+                if s.startswith('generic')]
+        mro.extend(temp)
+        flag = False
+        if obj_type.lower() in mro:
+            flag = True
+        return flag

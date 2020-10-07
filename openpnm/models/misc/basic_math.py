@@ -5,11 +5,16 @@ r"""
 .. autofunction:: openpnm.models.misc.basic_math.scaled
 .. autofunction:: openpnm.models.misc.basic_math.clip
 .. autofunction:: openpnm.models.misc.basic_math.normalize
+.. autofunction:: openpnm.models.misc.basic_math.blank
 
 """
 import numpy as np
 from openpnm.utils import logging
 logger = logging.getLogger(__name__)
+
+
+def blank(target):
+    pass
 
 
 def invert(target, prop):

@@ -1,10 +1,7 @@
 import py
 import os
-import pytest
 import numpy as np
-import scipy as sp
 import openpnm as op
-from pathlib import Path
 
 
 class XDMFTest:

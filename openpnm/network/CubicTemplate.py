@@ -62,18 +62,17 @@ class CubicTemplate(Cubic):
     <http://www.paraview.org>`_.
 
     """
-    def __init__(self, template, spacing=[1, 1, 1], **kwargs):
 
+    def __init__(self, template=None, spacing=[1, 1, 1], **kwargs):
+        super().__init__(**kwargs)
+        if template is None:
+            return
         template = np.atleast_3d(template)
-        if 'shape' in kwargs:
-            del kwargs['shape']
-            logger.warning('"shape" argument ignored, inferred from template')
         super().__init__(shape=template.shape, spacing=spacing, **kwargs)
-
         coords = np.unravel_index(range(template.size), template.shape)
         self['pore.template_coords'] = np.vstack(coords).T
         self['pore.template_indices'] = self.Ps
-        topotools.trim(network=self, pores=template.flatten()==0)
+        topotools.trim(network=self, pores=template.flatten() == 0)
         # Add "internal_surface" label to "fake" surface pores!
         ndims = topotools.dimensionality(self).sum()
         max_neighbors = 6 if ndims == 3 else 4
