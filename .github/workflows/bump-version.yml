@@ -24,8 +24,8 @@ jobs:
     - name: Set env variables
       run: |
         git fetch --all --tags
-        echo ::set-env name=TAG::$(git tag | sort -V | tail -1)
-        echo ::set-env name=VER::$(python -c "import sys; sys.path.append('./openpnm'); from __version__ import __version__; print(__version__)")
+        echo "TAG=$(git tag | sort -V | tail -1)" >> $GITHUB_ENV
+        echo "VER=$(python -c "import sys; sys.path.append('./openpnm'); from __version__ import __version__; print(__version__)")" >> $GITHUB_ENV
 
     - name: Install dependencies
       run: |
@@ -35,17 +35,17 @@ jobs:
     - name: Bump version (patch)
       if: contains(github.event.head_commit.message, '#patch')
       run: |
-        echo ::set-env name=TAG_NEW::v$(bump2version --current-version $VER patch openpnm/__version__.py --verbose | grep new_version | cut -d= -f2)
+        echo "TAG_NEW=v$(bump2version --current-version $VER patch openpnm/__version__.py --verbose | grep new_version | cut -d= -f2)" >> $GITHUB_ENV
 
     - name: Bump version (minor)
       if: contains(github.event.head_commit.message, '#minor')
       run: |
-        echo ::set-env name=TAG_NEW::v$(bump2version --current-version $VER minor openpnm/__version__.py --verbose | grep new_version | cut -d= -f2)
+        echo "TAG_NEW=v$(bump2version --current-version $VER minor openpnm/__version__.py --verbose | grep new_version | cut -d= -f2)" >> $GITHUB_ENV
 
     - name: Bump version (major)
       if: contains(github.event.head_commit.message, '#major')
       run: |
-        echo ::set-env name=TAG_NEW::v$(bump2version --current-version $VER major openpnm/__version__.py --verbose | grep new_version | cut -d= -f2)
+        echo "TAG_NEW=v$(bump2version --current-version $VER major openpnm/__version__.py --verbose | grep new_version | cut -d= -f2)" >> $GITHUB_ENV
 
     - name: Commit files
       if:

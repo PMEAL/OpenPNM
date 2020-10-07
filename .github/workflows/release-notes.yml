@@ -21,7 +21,7 @@ jobs:
           git fetch --all --tags
           chmod +x .github/workflows/logger.sh
           bash .github/workflows/logger.sh
-          echo ::set-env name=TAG::$(git tag | sort -V | tail -1)
+          echo "TAG=$(git tag | sort -V | tail -1)" >> $GITHUB_ENV
 
       - name: Create GitHub release
         uses: Roang-zero1/github-create-release-action@master
