@@ -24,7 +24,14 @@ class MARock(GenericIO):
     """
 
     @classmethod
-    def load(cls, path, voxel_size=1, project=None):
+    def load(cls, *args, **kwargs):
+        r"""
+        This method is being deprecated.  Use ``import_data`` instead.
+        """
+        return cls.import_data(*args, **kwargs)
+
+    @classmethod
+    def import_data(cls, path, voxel_size=1, project=None):
         r"""
         Load data from a 3DMA-Rock extracted network.  This format consists of
         two files: 'rockname.np2th' and 'rockname.th2pn'.  They should be

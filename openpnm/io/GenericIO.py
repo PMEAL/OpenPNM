@@ -1,6 +1,4 @@
 import numpy as np
-import scipy as sp
-import openpnm as op
 from pathlib import Path
 from openpnm.utils import flat_list, logging
 
@@ -8,17 +6,6 @@ logger = logging.getLogger(__name__)
 
 
 class GenericIO:
-    @classmethod
-    def save(cls):
-        raise NotImplementedError(
-            "The 'save' method for this class " + "does not exist yet"
-        )
-
-    @classmethod
-    def load(cls):
-        raise NotImplementedError(
-            "The 'load' method for this class " + "does not exist yet"
-        )
 
     @classmethod
     def _convert_data(cls, project):
@@ -43,13 +30,10 @@ class GenericIO:
                         net.pop(el + ".all", None)
                     else:
                         raise Exception(
-                            "Length of "
-                            + el
-                            + " data in file"
-                            + " does not match network"
+                            f"Length of {el} data in file does not match network"
                         )
                 else:
-                    raise Exception(el + " data in file have inconsistent" + " lengths")
+                    raise Exception(f"{el} data in file have inconsistent lengths")
         # Add data on dummy net to actual network
         for item in net.keys():
             # Try to infer array types and change if necessary
@@ -88,19 +72,18 @@ class GenericIO:
         if len(network) == 0:
             if len(phases) == 0:
                 raise Exception("Must specify one of network or phase")
-            else:
-                project = phases[0].project
+            project = phases[0].project
         else:
             project = network[0].project
         return (project, network, phases)
 
     @classmethod
-    def is_transient(cls, phases):
+    def _is_transient(cls, phases):
         # Check if any of the phases has time series
         transient = False
-        if type(phases) == str:
+        if isinstance(phases, str):
             transient = True in ["@" in k for k in phases.keys()]
-        elif type(phases) == list:
+        elif isinstance(phases, list):
             for phase in phases:
                 transient = True in ["@" in k for k in phase.keys()]
                 if transient:

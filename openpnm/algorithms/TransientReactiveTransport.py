@@ -306,14 +306,14 @@ class TransientReactiveTransport(ReactiveTransport):
         s = self.settings['t_scheme']
         res_t = 1e+06  # Initialize the residual
 
-        if type(to) in [float, int]:
+        if isinstance(to, (float, int)):
             # Make sure 'tf' and 'to' are multiples of 'dt'
             tf = tf + (dt-(tf % dt))*((tf % dt) != 0)
             to = to + (dt-(to % dt))*((to % dt) != 0)
             self.settings['t_final'] = tf
             self.settings['t_output'] = to
             out = np.arange(t+to, tf, to)
-        elif type(to) in [np.ndarray, list]:
+        elif isinstance(to, (np.ndarray, list)):
             out = np.array(to)
         out = np.append(out, tf)
         out = np.unique(out)
@@ -450,7 +450,7 @@ class TransientReactiveTransport(ReactiveTransport):
             t = q
         elif times in ['final', 'actual']:
             t = [quantity]
-        elif type(times) in [np.ndarray, list, float, int]:
+        elif isinstance(times, (np.ndarray, list, float, int)):
             out = np.array(times)
             out = np.unique(out)
             out = np.around(out, decimals=t_pre)

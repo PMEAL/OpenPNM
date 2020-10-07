@@ -352,9 +352,9 @@ def plot_networkx(network, plot_throats=True, labels=None, colors=None,
     node_color = np.array(['k'] * len(network.Ps))
 
     if labels:
-        if type(labels) is not list:
+        if not isinstance(labels, list):
             labels = [labels]
-        if type(colors) is not list:
+        if not isinstance(colors, list):
             colors = [colors]
         if len(labels) != len(colors):
             raise Exception('len(colors) must be equal to len(labels)!')
@@ -370,7 +370,7 @@ def plot_networkx(network, plot_throats=True, labels=None, colors=None,
     ax.axis("off")
 
     # Keep track of already plotted nodes
-    temp = [id(item) for item in ax.collections if type(item) == PathCollection]
+    temp = [id(item) for item in ax.collections if isinstance(item, PathCollection)]
 
     # Plot pores
     gplot = draw_networkx_nodes(G, ax=ax, pos=pos, nodelist=network.Ps.tolist(),
@@ -389,7 +389,7 @@ def plot_networkx(network, plot_throats=True, labels=None, colors=None,
     xrange = np.ptp(ax.get_xlim())
     markersize = np.atleast_1d((corr*figwidth)**2 / xrange**2 * node_size**2 * spi)
     for item in ax.collections:
-        if type(item) == PathCollection and id(item) not in temp:
+        if isinstance(item, PathCollection) and id(item) not in temp:
             item.set_sizes(markersize)
 
     return gplot
@@ -468,7 +468,7 @@ def plot_vpython(network,
     except ModuleNotFoundError:
         raise Exception('VPython must be installed to use this function')
 
-    if type(cmap) == str:
+    if isinstance(cmap, str):
         cmap = getattr(plt.cm, cmap)
 
     if Pcolor is None:
