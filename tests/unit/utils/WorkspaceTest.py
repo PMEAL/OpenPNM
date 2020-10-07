@@ -31,7 +31,7 @@ class WorkspaceTest:
     def test_assign_project(self):
         proj = self.ws.new_project()
         with pytest.raises(Exception):
-            self.ws[proj.name] = proj
+            self.ws.new_project(name=proj.name)
         old_name = proj.name
         new_name = self.ws._gen_name()
         self.ws[new_name] = proj
