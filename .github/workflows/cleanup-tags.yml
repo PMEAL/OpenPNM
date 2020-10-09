@@ -19,11 +19,8 @@ jobs:
         echo $q
         echo "qvar=$q" >> $GITHUB_ENV
 
-        test=$(get_nth_recent_tag 2)
-        echo $test
+        echo "ver=$(get_version openpnm)" >> $GITHUB_ENV
 
-        # w=$(get_most_recent_tag)
-        # echo $w
         # echo "wvar=$w" >> $GITHUB_ENV
 
     - name: Clean up tags
