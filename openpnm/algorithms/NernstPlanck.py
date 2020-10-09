@@ -60,17 +60,17 @@ class NernstPlanck(ReactiveTransport):
                 ion = ion.name
             self.settings['ion'] = ion
         quantity = self.settings['quantity']
-        if not quantity.endswith(ion):
+        if (ion is not None and not quantity.endswith(ion)):
             quantity = '.'.join(quantity.split('.')[:2])
             quantity += ('.' + ion)  # Re-add ion name
             self.settings['quantity'] = quantity  # Add full value to settings
         conductance = self.settings['conductance']
-        if not conductance.endswith(ion):
+        if (ion is not None and not conductance.endswith(ion)):
             conductance = '.'.join(conductance.split('.')[:2])
             conductance += ('.' + ion)  # Re-add ion name
             self.settings['conductance'] = conductance
         diffusive_conductance = self.settings['diffusive_conductance']
-        if not diffusive_conductance.endswith(ion):
+        if (ion is not None and not diffusive_conductance.endswith(ion)):
             diffusive_conductance = '.'.join(
                 diffusive_conductance.split('.')[:2])
             diffusive_conductance += ('.' + ion)  # Re-add ion name
