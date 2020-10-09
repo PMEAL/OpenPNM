@@ -22,8 +22,8 @@ jobs:
         tempvar3=$(test_func)
         echo $tempvar3
         echo $tempvar2
-        # echo "z=$tempvar" >> $GITHUB_ENV
-        echo "x=$(get_most_recent_tag)" >> $GITHUB_ENV
+        echo "z=$tempvar3" >> $GITHUB_ENV
+        # echo "x=$(get_most_recent_tag)" >> $GITHUB_ENV
 
     - name: Clean up tags
       run: |
