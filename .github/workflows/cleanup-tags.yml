@@ -19,8 +19,11 @@ jobs:
         echo $q
         echo "qvar=$q" >> $GITHUB_ENV
 
-        w=$(get_most_recent_tag)
-        echo $w
+        get_most_recent_tag
+        get_nth_recent_tag 2
+
+        # w=$(get_most_recent_tag)
+        # echo $w
         # echo "wvar=$w" >> $GITHUB_ENV
 
     - name: Clean up tags
