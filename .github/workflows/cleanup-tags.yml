@@ -15,9 +15,10 @@ jobs:
         chmod +x .github/workflows/utils.sh
         source .github/workflows/utils.sh
         tempvar=$(get_most_recent_tag)
-        echo "x=$(get_most_recent_tag)" >> $GITHUB_ENV
         echo "z=$tempvar" >> $GITHUB_ENV
+        echo "x=$(get_most_recent_tag)" >> $GITHUB_ENV
         echo "y=1234" >> $GITHUB_ENV
+        echo 1234001
 
     - name: Clean up tags
       run: |
