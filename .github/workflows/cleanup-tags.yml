@@ -18,6 +18,8 @@ jobs:
         get_version openpnm
         tempvar=$(get_most_recent_tag)
         echo $tempvar
+        tempvar2=2
+        echo $tempvar2
         # echo "z=$tempvar" >> $GITHUB_ENV
         # echo "x=$(get_most_recent_tag)" >> $GITHUB_ENV
 
