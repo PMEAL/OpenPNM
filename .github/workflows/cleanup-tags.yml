@@ -19,6 +19,7 @@ jobs:
         echo "x=$(get_most_recent_tag)" >> $GITHUB_ENV
         echo "y=1234" >> $GITHUB_ENV
         echo 1234001
+        echo $tempvar
 
     - name: Clean up tags
       run: |
