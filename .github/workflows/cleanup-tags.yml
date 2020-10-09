@@ -13,7 +13,7 @@ jobs:
     - name: Test GitHub Actions new set-env API
       run: |
         echo 'JSON_RESPONSE<<EOF' >> $GITHUB_ENV
-        curl https://httpbin.org/json >> $GITHUB_ENV
+        git tag | sort -V | tail -1 >> $GITHUB_ENV
         echo 'EOF' >> $GITHUB_ENV
         echo "x=1234" >> $GITHUB_ENV
         # echo "x<<EOF" >> $GITHUB_ENV
@@ -22,9 +22,6 @@ jobs:
 
     - name: Clean up tags
       run: |
-        echo $x
-        echo $y
-        echo $z
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
         REPOSITORY=${INPUT_REPOSITORY:-$GITHUB_REPOSITORY}
