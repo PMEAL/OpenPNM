@@ -14,17 +14,14 @@ jobs:
       run: |
         chmod +x .github/workflows/utils.sh
         source .github/workflows/utils.sh
-        q=$(get_most_recent_tag)
+
+        q=$(get_version openpnm)
         echo $q
-        get_version openpnm
-        tempvar=$(get_most_recent_tag)
-        echo $tempvar
-        tempvar2=2
+        echo "qvar=$q" >> $GITHUB_ENV
+
         tempvar3=$(test_func)
         echo $tempvar3
-        echo $tempvar2
         echo "z=$tempvar3" >> $GITHUB_ENV
-        # echo "x=$(get_most_recent_tag)" >> $GITHUB_ENV
 
     - name: Clean up tags
       run: |

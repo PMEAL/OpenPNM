@@ -5,21 +5,8 @@ function get_most_recent_tag {
 
 function get_version {
     version_loc=$1
-#-- Python code starts here --#
-PYTHON_CODE=$(cat <<EOF
-import sys
-sys.path.append("$version_loc")
-from __version__ import __version__
-print(__version__)
-EOF
-)
-#--- Python code ends here ---#
-    python -c "$PYTHON_CODE"
-}
-
-
-function test_func {
-    echo 0123
+    temp=$(egrep -o "([0-9]{1,}\.)+[0-9]{1,}" $version_loc/__version__.py)
+    echo "$temp"
 }
 
 
