@@ -14,7 +14,8 @@ jobs:
       run: |
         chmod +x .github/workflows/utils.sh
         source .github/workflows/utils.sh
-        get_most_recent_tag
+        q=$(get_most_recent_tag)
+        echo $q
         get_version openpnm
         tempvar=$(get_most_recent_tag)
         echo $tempvar
