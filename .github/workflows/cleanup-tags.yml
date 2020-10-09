@@ -10,19 +10,6 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - name: Test GitHub Actions new set-env API
-      run: |
-        chmod +x .github/workflows/utils.sh
-        source .github/workflows/utils.sh
-
-        q=$(get_version openpnm)
-        echo $q
-        echo "qvar=$q" >> $GITHUB_ENV
-
-        echo "ver=$(get_version openpnm)" >> $GITHUB_ENV
-
-        # echo "wvar=$w" >> $GITHUB_ENV
-
     - name: Clean up tags
       run: |
         git config --local user.email "action@github.com"

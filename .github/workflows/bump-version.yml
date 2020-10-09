@@ -23,29 +23,34 @@ jobs:
 
     - name: Set env variables
       run: |
-        git fetch --all --tags
-        echo "TAG=$(git tag | sort -V | tail -1)" >> $GITHUB_ENV
-        echo "VER=$(python -c "import sys; sys.path.append('./openpnm'); from __version__ import __version__; print(__version__)")" >> $GITHUB_ENV
+        chmod +x .github/workflows/utils.sh
+        source .github/workflows/utils.h
+        echo "VERSION_LOC=openpnm/__version__.py" >> $GITHUB_ENV
 
     - name: Install dependencies
       run: |
         pip install bump2version
-        echo $TAG $VER
 
     - name: Bump version (patch)
       if: contains(github.event.head_commit.message, '#patch')
       run: |
-        echo "TAG_NEW=v$(bump2version --current-version $VER patch openpnm/__version__.py --verbose | grep new_version | cut -d= -f2)" >> $GITHUB_ENV
+        source .github/workflows/utils.sh
+        bump_version patch $VERSION_LOC
+        echo "TAG_NEW=v$(get_version $VERSION_LOC)" >> $GITHUB_ENV
 
     - name: Bump version (minor)
       if: contains(github.event.head_commit.message, '#minor')
       run: |
-        echo "TAG_NEW=v$(bump2version --current-version $VER minor openpnm/__version__.py --verbose | grep new_version | cut -d= -f2)" >> $GITHUB_ENV
+        source .github/workflows/utils.sh
+        bump_version minor $VERSION_LOC
+        echo "TAG_NEW=v$(get_version $VERSION_LOC)" >> $GITHUB_ENV
 
     - name: Bump version (major)
       if: contains(github.event.head_commit.message, '#major')
       run: |
-        echo "TAG_NEW=v$(bump2version --current-version $VER major openpnm/__version__.py --verbose | grep new_version | cut -d= -f2)" >> $GITHUB_ENV
+        source .github/workflows/utils.sh
+        bump_version major $VERSION_LOC
+        echo "TAG_NEW=v$(get_version $VERSION_LOC)" >> $GITHUB_ENV
 
     - name: Commit files
       if:
