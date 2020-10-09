@@ -98,7 +98,7 @@ def create_obj(root, name, proj):
     mro = mro.split('.')
     mod = importlib.import_module('.'.join(mro[:-1]))
     clss = getattr(mod, mro[-1])
-    obj = clss(project=proj, settings={'freeze_models': True})
+    obj = clss.__new__(cls=clss)
     obj._name = name
     # Add data to obj
     for arr in root[name].keys():
@@ -130,5 +130,5 @@ def create_obj(root, name, proj):
                                 + '\" could not be found, '
                                 + 'adding \"blank\" instead')
                 obj.models[m]['model'] = op.models.misc.basic_math.blank
-    del obj.settings['freeze_models']
+    proj.append(obj)
     return proj, obj
