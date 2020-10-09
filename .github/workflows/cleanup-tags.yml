@@ -14,12 +14,8 @@ jobs:
       run: |
         chmod +x .github/workflows/utils.sh
         source .github/workflows/utils.sh
-        get_most_recent_tag
-        git tag | sort -V | tail -1
-        echo "x<<EOF" >> $GITHUB_ENV
-        get_most_recent_tag >> $GITHUB_ENV
-        echo "EOF" >> $GITHUB_ENV
-        tempvar=123456
+        tempvar=$(get_most_recent_tag)
+        echo "x=$(get_most_recent_tag)" >> $GITHUB_ENV
         echo "z=$tempvar" >> $GITHUB_ENV
         echo "y=1234" >> $GITHUB_ENV
 
