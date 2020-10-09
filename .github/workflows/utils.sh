@@ -18,6 +18,11 @@ EOF
 }
 
 
+function test_func {
+    echo 0123
+}
+
+
 function get_nth_recent_tag {
     git fetch --all --tags
     tags=($(git for-each-ref --sort=-creatordate --format '%(refname:strip=2)' refs/tags --count=$1))
