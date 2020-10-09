@@ -49,14 +49,14 @@ class NernstPlanck(ReactiveTransport):
 
     """
 
-    def __init__(self, ion, settings={}, **kwargs):
+    def __init__(self, ion=None, settings={}, **kwargs):
         super().__init__(**kwargs)
         # self.name = electrolyte  # This interfers with component name
         self.settings._update_settings_and_docs(NernstPlanckSettings())
         self.settings.update(settings)
         # Parse the given ion and append name to quantity and conductance
         if ion:
-            if isinstance(ion, str):  # Convert ion object to str
+            if not isinstance(ion, str):  # Convert ion object to str
                 ion = ion.name
             self.settings['ion'] = ion
         quantity = self.settings['quantity']
