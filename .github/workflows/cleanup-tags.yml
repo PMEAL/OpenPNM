@@ -12,7 +12,9 @@ jobs:
 
     - name: Test GitHub Actions new set-env API
       run: |
-        echo "TEST_VARIABLE=123" >> $GITHUB_ENV
+        echo "TEST_VARIABLE<<EOF" >> $GITHUB_ENV
+        git tag | sort -V | tail -1 >> $GITHUB_ENV
+        echo "EOF" >> $GITHUB_ENV
 
     - name: Clean up tags
       run: |
