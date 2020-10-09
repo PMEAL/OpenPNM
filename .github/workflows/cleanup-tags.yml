@@ -12,7 +12,8 @@ jobs:
 
     - name: Test GitHub Actions new set-env API
       run: |
-        source utils.sh
+        chmod +x .github/workflows/utils.sh
+        source .github/workflows/utils.sh
         get_most_recent_tag
         git tag | sort -V | tail -1
         echo "x<<EOF" >> $GITHUB_ENV
