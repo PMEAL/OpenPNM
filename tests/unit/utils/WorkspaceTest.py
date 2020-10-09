@@ -1,8 +1,5 @@
 import os
 import pytest
-import pickle
-import numpy as np
-import scipy as sp
 import openpnm as op
 
 
