@@ -10,8 +10,13 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
+    - name: Test GitHub Actions new set-env API
+      run: |
+        echo "TEST_VARIABLE=$(git tag | sort -V | tail -1)" >> $GITHUB_ENV
+
     - name: Clean up tags
       run: |
+        echo $TEST_VARIABLE
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
         REPOSITORY=${INPUT_REPOSITORY:-$GITHUB_REPOSITORY}
