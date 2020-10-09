@@ -17,7 +17,7 @@ jobs:
         get_most_recent_tag
         get_version openpnm
         tempvar=$(get_most_recent_tag)
-        echo "z=$tempvar" >> $GITHUB_ENV
+        # echo "z=$tempvar" >> $GITHUB_ENV
         # echo "x=$(get_most_recent_tag)" >> $GITHUB_ENV
 
     - name: Clean up tags
