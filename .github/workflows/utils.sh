@@ -12,7 +12,7 @@ function get_version {
 
 
 function get_nth_recent_tag {
-    git fetch --all --tags
+    git fetch --all --tags >/dev/null
     tags=($(git for-each-ref --sort=-creatordate --format '%(refname:strip=2)' refs/tags --count=$1))
     echo "${tags[$(($1-1))]}"
 }
