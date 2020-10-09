@@ -5,7 +5,7 @@ function get_nth_recent_tag {
 
 
 function get_most_recent_tag {
-    echo $(git tag | sort -V | tail -1)
+    echo "$(git tag | sort -V | tail -1)"
 }
 
 
