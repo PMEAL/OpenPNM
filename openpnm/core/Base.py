@@ -1,7 +1,6 @@
 import warnings
 import uuid
 import numpy as np
-import scipy as sp
 from collections import namedtuple
 from openpnm.models.misc import from_neighbor_throats, from_neighbor_pores
 from openpnm.utils import Workspace, logging
@@ -282,6 +281,8 @@ class Base(dict):
 
     def _set_name(self, name, validate=True):
         old_name = self.settings['name']
+        if name == old_name:
+            return
         if name is None:
             name = self.project._generate_name(self)
         if validate:
