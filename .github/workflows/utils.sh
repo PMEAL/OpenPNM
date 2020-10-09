@@ -9,6 +9,11 @@ function get_most_recent_tag {
 }
 
 
+function test_func {
+    echo 09231
+}
+
+
 function get_version {
     version_loc=$1
 
