@@ -16,6 +16,7 @@ jobs:
         source .github/workflows/utils.sh
         get_most_recent_tag
         test_func
+        get_version openpnm
         echo $(get_most_recent_tag)
         echo $(test_func)
         tempvar=$(get_most_recent_tag)
