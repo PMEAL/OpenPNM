@@ -19,8 +19,8 @@ jobs:
         echo $q
         echo "qvar=$q" >> $GITHUB_ENV
 
-        get_most_recent_tag
-        get_nth_recent_tag 2
+        test=$(get_nth_recent_tag 2)
+        echo $test
 
         # w=$(get_most_recent_tag)
         # echo $w
