@@ -1,5 +1,6 @@
 function get_most_recent_tag {
-    echo "$(get_nth_recent_tag 1)"
+    temp=$(get_nth_recent_tag 1)
+    echo "$temp"
 }
 
 
