@@ -113,6 +113,13 @@ class GenericNetwork(Base, ModelsMixin):
     future use to save construction time.
 
     """
+    def __new__(cls, *args, **kwargs):
+        instance = super(Base, cls).__new__(cls, *args, **kwargs)
+        # Initialize adjacency and incidence matrix dictionaries
+        instance._im = {}
+        instance._am = {}
+        return instance
+
     def __init__(self, conns=None, coords=None, project=None, settings={},
                  **kwargs):
         self.settings.setdefault('prefix', 'net')
@@ -126,9 +133,6 @@ class GenericNetwork(Base, ModelsMixin):
             Nt = np.shape(conns)[0]
             self['throat.all'] = np.ones(Nt, dtype=bool)
             self['throat.conns'] = np.array(conns)
-        # Initialize adjacency and incidence matrix dictionaries
-        self._im = {}
-        self._am = {}
         self.add_model(propname='pore.coordination_number',
                        model=tm.coordination_number,
                        regen_mode='explicit')
