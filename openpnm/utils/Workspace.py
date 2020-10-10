@@ -53,7 +53,7 @@ class Workspace(dict):
         if name is None:
             name = self._gen_name()
         if name in self.keys():
-            # To ensures renaming a Project to its current name is allowed
+            # To ensure renaming a Project to its current name is allowed
             if self.__instance__[name] is not project:
                 raise Exception(f"A project named {name} already exists")
         if project in self.values():
