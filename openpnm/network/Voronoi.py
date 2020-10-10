@@ -43,12 +43,8 @@ class Voronoi(DelaunayVoronoiDual):
 
     """
 
-    def __init__(self, shape=None, num_points=None, **kwargs):
+    def __init__(self, shape=None, num_points=None, points=None, **kwargs):
         # Clean-up input points
-        points = kwargs.pop('points', None)
-        super().__init__(shape=shape, points=points, **kwargs)
-        if (points is None) and (num_points is None):
-            return
         points = self._parse_points(shape=shape,
                                     num_points=num_points,
                                     points=points)
