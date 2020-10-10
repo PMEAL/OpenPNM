@@ -23,9 +23,13 @@ jobs:
 
     - name: Set env variables
       run: |
+        # The next line is very important, otherwise the line after triggers
+        # git to track the permission change, which breaks bump2version API (needs clean git folder)
+        git config core.filemode false
         chmod +x .github/workflows/utils.sh
-        source .github/workflows/utils.h
-        echo "VERSION_LOC=openpnm/__version__.py" >> $GITHUB_ENV
+        echo "VERSION_FILE=openpnm/__version__.py" >> $GITHUB_ENV
+        echo "SETUP_CFG_FILE=setup.cfg" >> $GITHUB_ENV
+        echo ${{ github.event.head_commit.message }}
 
     - name: Install dependencies
       run: |
@@ -35,22 +39,22 @@ jobs:
       if: contains(github.event.head_commit.message, '#patch')
       run: |
         source .github/workflows/utils.sh
-        bump_version patch $VERSION_LOC
-        echo "TAG_NEW=v$(get_version $VERSION_LOC)" >> $GITHUB_ENV
+        bump_version patch $VERSION_FILE
+        echo "TAG_NEW=v$(get_version $VERSION_FILE)" >> $GITHUB_ENV
 
     - name: Bump version (minor)
       if: contains(github.event.head_commit.message, '#minor')
       run: |
         source .github/workflows/utils.sh
-        bump_version minor $VERSION_LOC
-        echo "TAG_NEW=v$(get_version $VERSION_LOC)" >> $GITHUB_ENV
+        bump_version minor $VERSION_FILE
+        echo "TAG_NEW=v$(get_version $VERSION_FILE)" >> $GITHUB_ENV
 
     - name: Bump version (major)
       if: contains(github.event.head_commit.message, '#major')
       run: |
         source .github/workflows/utils.sh
-        bump_version major $VERSION_LOC
-        echo "TAG_NEW=v$(get_version $VERSION_LOC)" >> $GITHUB_ENV
+        bump_version major $VERSION_FILE
+        echo "TAG_NEW=v$(get_version $VERSION_FILE)" >> $GITHUB_ENV
 
     - name: Commit files
       if:
@@ -70,8 +74,8 @@ jobs:
 
         # commit the version bump back to the dev branch as well
         git checkout dev
-        git checkout release -- setup.cfg openpnm/__version__.py
-        git add setup.cfg openpnm/__version__.py
+        git checkout release -- $SETUP_CFG_FILE $VERSION_FILE
+        git add $SETUP_CFG_FILE $VERSION_FILE
         # the first statement in the next line is to catch commit nothing error
         git diff-index --quiet HEAD || git commit -m "Bump version number [ci skip]"
         git push "${remote_repo}" dev

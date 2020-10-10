@@ -23,10 +23,10 @@ jobs:
     - name: Set env variables
       run: |
         chmod +x .github/workflows/utils.sh
-        source .github/workflows/utils.h
-        VERSION_LOC=openpnm/__version__.py
+        source .github/workflows/utils.sh
+        VERSION_FILE=openpnm/__version__.py
         echo "TAG=$(get_most_recent_tag)" >> $GITHUB_ENV
-        echo "VERSION=$(get_version $VERSION_LOC)" >> $GITHUB_ENV
+        echo "VERSION=$(get_version $VERSION_FILE)" >> $GITHUB_ENV
 
     - name: Set env variables (for tag mismatch)
       run: |
@@ -47,21 +47,21 @@ jobs:
     - name: Build distribution 📦
       run: python setup.py sdist bdist_wheel
 
-    # - name: Publish distribution 📦 to PyPI
-    #   if: startsWith(github.event.ref, 'refs/tags') && contains(env.TAG_MISMATCH, 'false')
-    #   uses: pypa/gh-action-pypi-publish@master
-    #   with:
-    #     user: __token__
-    #     password: ${{ secrets.PYPI_TOKEN }}
-    #     skip_existing: true
-
-    - name: Publish distribution 📦 to TestPyPI
+    - name: Publish distribution 📦 to PyPI
       if: startsWith(github.event.ref, 'refs/tags') && contains(env.TAG_MISMATCH, 'false')
       uses: pypa/gh-action-pypi-publish@master
       with:
         user: __token__
-        password: ${{ secrets.TESTPYPI_TOKEN }}
-        repository_url: https://test.pypi.org/legacy/
+        password: ${{ secrets.PYPI_TOKEN }}
+        skip_existing: true
+
+    # - name: Publish distribution 📦 to TestPyPI
+    #   if: startsWith(github.event.ref, 'refs/tags') && contains(env.TAG_MISMATCH, 'false')
+    #   uses: pypa/gh-action-pypi-publish@master
+    #   with:
+    #     user: __token__
+    #     password: ${{ secrets.TESTPYPI_TOKEN }}
+    #     repository_url: https://test.pypi.org/legacy/
 
     # Not a good idea: if a non-conforming tag is push, e.g. random_tag, it
     # first gets deleted by cleanup-tags.yml, and then publish-to-pypi.yml gets

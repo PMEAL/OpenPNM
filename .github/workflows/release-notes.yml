@@ -21,7 +21,7 @@ jobs:
           git fetch --all --tags
           chmod +x .github/workflows/logger.sh
           chmod +x .github/workflows/utils.sh
-          source .github/workflows/utils.h
+          source .github/workflows/utils.sh
           bash .github/workflows/logger.sh
           echo "TAG=$(get_most_recent_tag)" >> $GITHUB_ENV
 
