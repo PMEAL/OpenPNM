@@ -274,6 +274,10 @@ class Cubic(GenericNetwork):
 
     shape = property(fget=_get_shape)
 
+    _shape = property(fget=_get_shape)
+
+    _spacing = property(fget=_get_spacing)
+
     def to_array(self, values):
         r"""
         Converts the values to a rectangular array with the same shape as the
