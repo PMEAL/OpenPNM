@@ -114,7 +114,7 @@ class GenericNetwork(Base, ModelsMixin):
 
     """
     def __new__(cls, *args, **kwargs):
-        instance = super(Base, cls).__new__(cls, *args, **kwargs)
+        instance = super(GenericNetwork, cls).__new__(cls, *args, **kwargs)
         # Initialize adjacency and incidence matrix dictionaries
         instance._im = {}
         instance._am = {}

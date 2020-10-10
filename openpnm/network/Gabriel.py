@@ -70,9 +70,9 @@ class Gabriel(Delaunay):
 
     """
 
-    def __init__(self, shape=None, num_points=None, **kwargs):
+    def __init__(self, shape=None, num_points=None, points=None, **kwargs):
         # Generate Delaunay tessellation from super class, then trim
-        super().__init__(shape=shape, num_points=num_points, **kwargs)
+        super().__init__(shape=shape, num_points=num_points, points=points, **kwargs)
         if 'pore.coords' in self.keys():
             points = self['pore.coords']
             conns = self['throat.conns']
