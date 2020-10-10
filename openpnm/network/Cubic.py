@@ -274,9 +274,13 @@ class Cubic(GenericNetwork):
 
     shape = property(fget=_get_shape)
 
-    _shape = property(fget=_get_shape)
+    @property
+    def _shape(self):
+        return self.settings['shape']
 
-    _spacing = property(fget=_get_spacing)
+    @property
+    def _spacing(self):
+        return self.settings['spacing']
 
     def to_array(self, values):
         r"""
