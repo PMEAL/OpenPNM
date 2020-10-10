@@ -858,7 +858,7 @@ class GenericNetwork(Base, ModelsMixin):
         # Perform search
         Ps_within_r = kd_pores.query_ball_tree(kd, r=r)
         # Remove self from each list
-        for i in range(len(Ps_within_r)):
+        for i, P in enumerate(Ps_within_r):
             Ps_within_r[i].remove(pores[i])
         # Convert to flattened list by default
         temp = np.concatenate((Ps_within_r))
