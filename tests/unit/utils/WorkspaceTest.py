@@ -1,5 +1,8 @@
 import os
 import pytest
+import pickle
+import numpy as np
+import scipy as sp
 import openpnm as op
 
 
@@ -31,7 +34,7 @@ class WorkspaceTest:
     def test_assign_project(self):
         proj = self.ws.new_project()
         with pytest.raises(Exception):
-            self.ws.new_project(name=proj.name)
+            self.ws[proj.name] = proj
         old_name = proj.name
         new_name = self.ws._gen_name()
         self.ws[new_name] = proj
