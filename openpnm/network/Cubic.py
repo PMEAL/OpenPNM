@@ -280,7 +280,7 @@ class Cubic(GenericNetwork):
 
     @property
     def _spacing(self):
-        return self.settings['spacing']
+        return np.array(self.settings['spacing'])
 
     def to_array(self, values):
         r"""
