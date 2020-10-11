@@ -22,17 +22,19 @@ jobs:
 
     - name: Set env variables
       run: |
-        git fetch --all --tags
-        echo ::set-env name=TAG::$(git tag | sort -V | tail -1)
-        echo ::set-env name=VER::$(python -c "import sys; sys.path.append('./openpnm'); from __version__ import __version__; print(__version__)")
+        chmod +x .github/workflows/utils.sh
+        source .github/workflows/utils.sh
+        VERSION_FILE=openpnm/__version__.py
+        echo "TAG=$(get_most_recent_tag)" >> $GITHUB_ENV
+        echo "VERSION=$(get_version $VERSION_FILE)" >> $GITHUB_ENV
 
     - name: Set env variables (for tag mismatch)
       run: |
-        echo $TAG $VER
-        if [ "${TAG//v}" = "$VER" ]; then
-            echo ::set-env name=TAG_MISMATCH::"false"
+        echo "Tag: $TAG, Version: $VERSION"
+        if [ "${TAG//v}" = "$VERSION" ]; then
+            echo "TAG_MISMATCH=false" >> $GITHUB_ENV
         else
-            echo ::set-env name=TAG_MISMATCH::"true"
+            echo "TAG_MISMATCH=true" >> $GITHUB_ENV
         fi
 
     - name: Install dependencies
@@ -40,7 +42,7 @@ jobs:
         python -m pip install --upgrade pip
         pip install setuptools wheel twine
         echo ${{ github.event.ref }}
-        echo $TAG_MISMATCH
+        echo "Tag/version mismatch: $TAG_MISMATCH"
 
     - name: Build distribution 📦
       run: python setup.py sdist bdist_wheel
