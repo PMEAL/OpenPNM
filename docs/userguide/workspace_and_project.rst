@@ -72,10 +72,10 @@ in the Workspace:
 .. code-block:: python
 
     >>> print(ws.keys())
-    dict_keys(['one', 'sim_01'])
+    dict_keys(['one', 'proj_01'])
 
 The second Project was created automatically, and given a default name of
-'sim_01'.
+'proj_01'.
 
 When adding other objects, either the Network or the Project can be specified,
 which is possible since there is only one Network per Project:
@@ -90,7 +90,7 @@ desired:
 
 .. code-block:: python
 
-    >>> proj2 = ws['sim_01']
+    >>> proj2 = ws['proj_01']
     >>> proj2.name = 'two'
     >>> print(ws.keys())
     dict_keys(['one', 'two'])
@@ -120,7 +120,7 @@ The Workspace object possesses methods for working dealing with Project objects,
 
 Projects are saved with a `.pnm` file format, and this is done using the Python `pickle <https://pymotw.com/3/pickle/index.html>`_ library for serializing objects.  The saved file is actually a `dictionary` that represents a subset of the Workspace, so loading a `.pnm` file is equivalent to unpickling the file then using the Workspace's `update` method to add the contents.  If the contents of the `.pnm` file are a list rather than a dictionary, this also works, so if you manually save a Project as a list (rather then using `save_project`) its still possible to load it using `load_project`.
 
-Another important function of the Workspace is `clone_project`.  As the name suggests, this creates an exact duplicate of a Project and all its objects, but they are unique in memory.  This is useful for creating sub-networks of a master Network to perform small, quick calculations on.  
+Another important function of the Workspace is `clone_project`.  As the name suggests, this creates an exact duplicate of a Project and all its objects, but they are unique in memory.  This is useful for creating sub-networks of a master Network to perform small, quick calculations on.
 
 
 

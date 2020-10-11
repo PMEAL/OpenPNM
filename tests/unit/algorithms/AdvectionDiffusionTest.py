@@ -24,8 +24,8 @@ class AdvectionDiffusionTest:
         self.phys['throat.hydraulic_conductance'] = 1e-15
 
         self.sf = op.algorithms.StokesFlow(network=self.net, phase=self.phase)
-        self.sf.set_value_BC(pores=self.net.pores('back'), values=1)
-        self.sf.set_value_BC(pores=self.net.pores('front'), values=0)
+        self.sf.set_value_BC(pores=self.net.pores('right'), values=1)
+        self.sf.set_value_BC(pores=self.net.pores('left'), values=0)
         self.sf.run()
 
         self.phase.update(self.sf.results())
@@ -33,8 +33,8 @@ class AdvectionDiffusionTest:
         self.ad = op.algorithms.AdvectionDiffusion(network=self.net,
                                                    phase=self.phase)
         self.ad.settings.update({"cache_A": False, "cache_b": False})
-        self.ad.set_value_BC(pores=self.net.pores('back'), values=2)
-        self.ad.set_value_BC(pores=self.net.pores('front'), values=0)
+        self.ad.set_value_BC(pores=self.net.pores('right'), values=2)
+        self.ad.set_value_BC(pores=self.net.pores('left'), values=0)
 
     def test_AdvectionDiffusion_setup(self):
         self.ad.setup(quantity="pore.blah",
@@ -60,7 +60,7 @@ class AdvectionDiffusionTest:
                             model=mod, s_scheme='powerlaw')
         g_old = self.phys["throat.ad_dif_conductance"]
         # Run StokesFlow with a different BC to change pressure field
-        self.sf.set_value_BC(pores=self.net.pores('back'), values=1.5)
+        self.sf.set_value_BC(pores=self.net.pores('right'), values=1.5)
         # Running the next line should update "throat.ad_dif_conductance"
         self.sf.run()
         self.phase.update(self.sf.results())
@@ -71,7 +71,7 @@ class AdvectionDiffusionTest:
         assert g_old.mean() != g_updated.mean()
         assert_allclose(g_updated.mean(), 1.01258990e-15)
         # Reset BCs for other tests to run properly
-        self.sf.set_value_BC(pores=self.net.pores('back'), values=1)
+        self.sf.set_value_BC(pores=self.net.pores('right'), values=1)
         self.sf.run()
 
     def test_powerlaw_advection_diffusion(self):
@@ -139,8 +139,8 @@ class AdvectionDiffusionTest:
             ad.setup(quantity='pore.concentration',
                       conductance='throat.ad_dif_conductance_'+s_scheme)
 
-            ad.set_value_BC(pores=self.net.pores('back'), values=2)
-            ad.set_outflow_BC(pores=self.net.pores('front'))
+            ad.set_value_BC(pores=self.net.pores('right'), values=2)
+            ad.set_outflow_BC(pores=self.net.pores('left'))
             ad.run()
 
             y = ad[ad.settings['quantity']].mean()
@@ -154,13 +154,13 @@ class AdvectionDiffusionTest:
                       conductance='throat.ad_dif_conductance_'+s_scheme,
                       s_scheme=s_scheme)
 
-            ad.set_value_BC(pores=self.net.pores('back'), values=2)
-            ad.set_value_BC(pores=self.net.pores('front'), values=0)
+            ad.set_value_BC(pores=self.net.pores('right'), values=2)
+            ad.set_value_BC(pores=self.net.pores('left'), values=0)
             ad.run()
 
-            mdot_inlet = ad.rate(pores=self.net.pores("back"))[0]
-            mdot_outlet = ad.rate(pores=self.net.pores("front"))[0]
-            temp = np.random.choice(self.net.pores(["back", "front"],
+            mdot_inlet = ad.rate(pores=self.net.pores("right"))[0]
+            mdot_outlet = ad.rate(pores=self.net.pores("left"))[0]
+            temp = np.random.choice(self.net.pores(["right", "left"],
                                                     mode="not"),
                                     size=3, replace=False)
             mdot_internal = ad.rate(pores=temp)[0]

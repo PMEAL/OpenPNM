@@ -332,8 +332,8 @@ class MixedPercolationTest:
         np.random.seed(1)
         phys['throat.entry_pressure']=0.0
         phys['pore.entry_pressure']=np.random.random(net.Np)*net.Np
-        self.inlets = net.pores('left')
-        self.outlets = net.pores('right')
+        self.inlets = net.pores('back')
+        self.outlets = net.pores('front')
         np.random.seed(1)
         self.phase['pore.occupancy'] = False
         self.phase['throat.occupancy'] = False

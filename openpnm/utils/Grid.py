@@ -9,6 +9,7 @@ class Tableist():
         header = [blank for i in range(cols)]
         self._grid = tt.AsciiTable([])
         _ = [self._grid.table_data.append(header.copy()) for _ in range(rows)]
+        print('being initialized')
         self.style = style
 
     def __getitem__(self, row):
@@ -85,14 +86,20 @@ class Tableist():
         else:
             data = []
         if style.lower().startswith('a'):
+            print('changing style to ascii')
             self._style = 'ascii'
             self._grid = tt.AsciiTable(data)
+            print(self._grid)
         elif style.lower().startswith('d'):
+            print('changing style to double')
             self._style = 'double'
             self._grid = tt.DoubleTable(data)
+            print(self._grid)
         elif style.lower().startswith('s'):
+            print('changing style to single')
             self._style = 'single'
             self._grid = tt.SingleTable(data)
+            print(self._grid)
         elif style.lower()[0] in ['g', 'm']:
             self._style = 'markdown'
             self._grid = tt.GithubFlavoredMarkdownTable(data)

@@ -20,7 +20,7 @@ np.random.seed(10)
 
 # Define network, geometry and constituent phases
 net = op.network.Cubic(shape=[100, 100, 1])
-geom = op.geometry.StickAndBall(network=net)
+geom = op.geometry.StickAndBall(network=net, pores=net.Ps, throats=net.Ts)
 air = op.phases.Air(network=net, name="air")
 water = op.phases.Water(network=net, name="water")
 water["pore.diffusivity"] = air["pore.diffusivity"] * 0.05
