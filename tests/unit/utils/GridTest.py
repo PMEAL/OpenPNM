@@ -49,6 +49,14 @@ class GridTest:
         g.drop_row(3)
         assert g.shape == (3, 3)
 
+    def test_add_row_and_col_at_given_positions(self):
+        self.setup_class()
+        g = self.proj.grid
+        g.add_row(1)
+        assert g[1] == ['---', '---', '---']
+        g.add_col(1)
+        assert g[:][1] == ['---', '---', '---', '---']
+
     def test_nrows_ncols(self):
         self.setup_class()
         g = self.proj.grid
@@ -108,6 +116,14 @@ class GridTest:
         a = g.get_row(1)
         b = g.get_row('geo_01')
         assert a._grid.table_data == b._grid.table_data
+
+    def test_set_row_and_col(self):
+        self.setup_class()
+        g = self.proj.grid
+        g.set_row_and_col(row='x', col='z', val='z')
+        assert g[-1][-1] == 'z'
+        g.set_row_and_col(row='x', col='z', val='zz')
+        assert g[-1][-1] == 'zz'
 
 
 if __name__ == '__main__':

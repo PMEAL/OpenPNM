@@ -929,7 +929,7 @@ class Project(list):
         cols = list(self.phases().keys())
         grid.add_col(num=len(cols))
         grid.set_row(0, vals=[self.network.name] + cols)
-        # Now add physics objects to grid, adding new columns as needed.
+        # Now add physics objects to grid, adding new columns/rows as needed.
         miss = 0
         for p in self.physics().values():
             try:
@@ -948,6 +948,7 @@ class Project(list):
                 except Exception:
                     miss += 1
                     grid.set_row_and_col(row='?'*miss, col='?'*miss, val=p.name)
+        # See if any pores/throats are not assigned and add blank row
         if len(self.geometries()) > 0:
             h = self.check_geometry_health()
             if (len(h['undefined_pores']) > 0) or (len(h['undefined_throats']) > 0):
