@@ -79,6 +79,26 @@ class Tableist():
         for c in range(self.ncols):
             self._grid.table_data[row][c] = vals[c]
 
+    def set_row_and_col(self, row, col, val):
+        r"""
+
+        """
+        header = self.get_row(0)
+        index = self.get_col(0)
+        try:
+            col_num = header._grid.table_data[0].index(col)
+        except:
+            self.add_col()
+            self[0][-1] = col
+            col_num = -1
+        try:
+            row_num = index._grid.table_data.index([row])
+        except:
+            self.add_row()
+            self[-1][0] = row
+            row_num = -1
+        self[row_num][col_num] = val
+
     def _set_style(self, style):
         if hasattr(self, '_grid'):
             data = self._grid.table_data
