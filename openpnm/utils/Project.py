@@ -41,7 +41,6 @@ class Project(list):
         self.settings = SettingsDict()
         ws[name] = self  # Register self with workspace
         self.settings['_uuid'] = str(uuid.uuid4())
-        self.comments = 'Using OpenPNM ' + openpnm.__version__
 
     def extend(self, obj):
         r"""
@@ -622,19 +621,6 @@ class Project(list):
     def _get_objects_by_type(self, objtype):
         return {item.name: item for item in self if item._isa(objtype)}
 
-    def _set_comments(self, string):
-        if hasattr(self, '_comments') is False:
-            self._comments = {}
-        self._comments[time.strftime('%c')] = string
-
-    def _get_comments(self):
-        if hasattr(self, '_comments') is False:
-            self._comments = {}
-        for key in list(self._comments.keys()):
-            print(key, ': ', self._comments[key])
-
-    comments = property(fget=_get_comments, fset=_set_comments)
-
     def __str__(self):
         s = []
         hr = '―'*78
@@ -931,7 +917,7 @@ class Project(list):
             else:
                 obj.regenerate_models()
 
-    def _generate_grid(self, astype='table'):
+    def regenerate_grid(self, astype='table'):
         r"""
         """
         from pandas import DataFrame as df
@@ -939,9 +925,10 @@ class Project(list):
         geoms = list(self.geometries().keys())
         phases = [p.name for p in self.phases().values()
                   if not hasattr(p, 'mixture')]
-        h = self.check_geometry_health()
-        if len(h['undefined_pores']) > 0:
-            geoms.append('---')
+        if len(self.geometries()) > 0:
+            h = self.check_geometry_health()
+            if len(h['undefined_pores']) > 0:
+                geoms.append('---')
         grid = df(index=geoms, columns=phases)
         for r in grid.index:
             for c in grid.columns:
@@ -958,31 +945,31 @@ class Project(list):
         elif astype == 'dict':
             grid = grid.to_dict()
         elif astype == 'table':
-            from terminaltables import SingleTable
+            from terminaltables import AsciiTable
             headings = [self.network.name] + list(grid.keys())
             g = [headings]
             for row in list(grid.index):
                 g.append([row] + list(grid.loc[row]))
-            grid = SingleTable(g)
+            grid = AsciiTable(g)
             grid.title = 'Project: ' + self.name
             grid.padding_left = 3
             grid.padding_right = 3
             grid.justify_columns = {col: 'center' for col in enumerate(headings)}
+            temp = ProjectGrid()
+            temp._grid = grid
+            grid = temp
         return grid
 
-    @property
-    def grid(self):
+    def _get_grid(self):
         if not hasattr(self, '_grid'):
-            grid = self._generate_grid(astype='table')
-            obj = ProjectGrid()
-            obj._grid = grid
-            self._grid = obj
-        else:
-            grid = self._generate_grid(astype='table')
-            grid.style = self._grid.style
-            grid.blank = self._grid.blank
-            self._grid._grid = grid
+            temp = self.regenerate_grid()
+            self._grid = temp
         return self._grid
+
+    def _set_grid(self, grid):
+        self._grid = grid
+
+    grid = property(fget=_get_grid, fset=_set_grid)
 
 
 class ProjectGrid(Tableist):
