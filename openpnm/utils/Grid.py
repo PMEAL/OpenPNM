@@ -3,7 +3,7 @@ import terminaltables as tt
 
 class Tableist():
 
-    def __init__(self, rows=1, cols=1, blank='---', style='single'):
+    def __init__(self, rows=1, cols=1, blank='---', style='ascii'):
         super().__init__()
         self.blank = blank
         header = [blank for i in range(cols)]

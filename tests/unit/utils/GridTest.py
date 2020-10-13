@@ -125,6 +125,13 @@ class GridTest:
         g.set_row_and_col(row='x', col='z', val='zz')
         assert g[-1][-1] == 'zz'
 
+    def test_style_change(self):
+        self.setup_class()
+        g = self.proj.grid
+        assert g.style == 'ascii'
+        g.style = 'double'
+        assert g.style == 'double'
+
 
 if __name__ == '__main__':
 

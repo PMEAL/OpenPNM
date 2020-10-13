@@ -959,9 +959,7 @@ class Project(list):
         if not hasattr(self, '_grid'):
             grid = self._generate_grid()
             self._grid = grid
-        # See if grid needs updating
-        if self._grid.nnz != len(set(self.names).difference(set(self.algorithms().keys()))):
-            logger.info('Grid is out of date with project, updating automatically')
+        else:  # Update current grid with new data, to save formats and settings
             grid = self._generate_grid()
             self._grid._grid.table_data = grid._grid.table_data
         return self._grid
