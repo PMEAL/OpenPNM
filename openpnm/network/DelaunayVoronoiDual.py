@@ -68,11 +68,8 @@ class DelaunayVoronoiDual(GenericNetwork):
 
     """
 
-    def __init__(self, shape=[1, 1, 1], num_points=None, **kwargs):
-        points = kwargs.pop('points', None)
+    def __init__(self, shape=[1, 1, 1], num_points=None, points=None, **kwargs):
         super().__init__(**kwargs)
-        if (points is None) and (num_points is None):
-            return
         points = self._parse_points(shape=shape,
                                     num_points=num_points,
                                     points=points)

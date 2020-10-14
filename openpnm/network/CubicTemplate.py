@@ -63,10 +63,7 @@ class CubicTemplate(Cubic):
 
     """
 
-    def __init__(self, template=None, spacing=[1, 1, 1], **kwargs):
-        super().__init__(**kwargs)
-        if template is None:
-            return
+    def __init__(self, template, spacing=[1, 1, 1], **kwargs):
         template = np.atleast_3d(template)
         super().__init__(shape=template.shape, spacing=spacing, **kwargs)
         coords = np.unravel_index(range(template.size), template.shape)
