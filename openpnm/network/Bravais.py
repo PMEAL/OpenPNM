@@ -102,10 +102,8 @@ class Bravais(GenericNetwork):
 
     """
 
-    def __init__(self, shape=None, mode='sc', spacing=1, **kwargs):
+    def __init__(self, shape, mode='sc', spacing=1, **kwargs):
         super().__init__(**kwargs)
-        if shape is None:
-            return
         shape = np.array(shape)
         if np.any(shape < 2):
             raise Exception('Bravais lattice networks must have at least 2 '
