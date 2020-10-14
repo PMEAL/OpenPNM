@@ -966,6 +966,7 @@ class BaseTest:
         phase.settings['freeze_models'] = False
         a = phase['pore.viscosity']
         assert isinstance(a, np.ndarray)
+
     def test_renaming_to_current_name_is_allowed(self):
         obj = op.core.Base(name="temp")
         obj.name = "temp"
