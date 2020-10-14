@@ -33,6 +33,16 @@ class PNM(GenericIO):
             root.attrs['name'] = project.name
             # root.attrs['comments'] = project.comments
             for obj in project:
+                found_attrs = set(obj.__dict__.keys())
+                known_attrs = set(['settings', '_models_dict',
+                                   '_am', '_im',
+                                   '_spacing', '_shape'])
+                foreign_attrs = found_attrs.difference(known_attrs)
+                if len(foreign_attrs) > 0:
+                    logger.warning(obj.name + ' has the following ' +
+                                   'attributes that will not be saved: ' +
+                                   str([i for i in foreign_attrs]) +
+                                   '\n\t\t\tConsider using Pickle instead')
                 item = root.create_group(obj.name)
                 for arr in obj.keys():  # Store data
                     try:
