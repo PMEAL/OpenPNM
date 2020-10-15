@@ -18,10 +18,6 @@ class VoronoiTest:
         net = op.network.Voronoi(points=points, shape=[1, 1, 1])
         assert net.Np > 30
 
-    def test_voronoi_empty(self):
-        net = op.network.Voronoi()
-        assert net.Np == 0
-
     def test_voronoi_2D(self):
         net = op.network.Voronoi(num_points=30, shape=[1, 1, 0])
         assert net.Np > 30

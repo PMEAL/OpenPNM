@@ -41,7 +41,6 @@ class Project(list):
         self.settings = SettingsDict()
         ws[name] = self  # Register self with workspace
         self.settings['_uuid'] = str(uuid.uuid4())
-        self.comments = 'Using OpenPNM ' + openpnm.__version__
 
     def extend(self, obj):
         r"""
@@ -622,19 +621,6 @@ class Project(list):
     def _get_objects_by_type(self, objtype):
         return {item.name: item for item in self if item._isa(objtype)}
 
-    def _set_comments(self, string):
-        if hasattr(self, '_comments') is False:
-            self._comments = {}
-        self._comments[time.strftime('%c')] = string
-
-    def _get_comments(self):
-        if hasattr(self, '_comments') is False:
-            self._comments = {}
-        for key in list(self._comments.keys()):
-            print(key, ': ', self._comments[key])
-
-    comments = property(fget=_get_comments, fset=_set_comments)
-
     def __str__(self):
         s = []
         hr = '―'*78
@@ -931,61 +917,57 @@ class Project(list):
             else:
                 obj.regenerate_models()
 
-    def _generate_grid(self, astype='table'):
+    def _generate_grid(self):
         r"""
         """
-        from pandas import DataFrame as df
-
-        geoms = self.geometries().keys()
-        phases = [p.name for p in self.phases().values()
-                  if not hasattr(p, 'mixture')]
-        grid = df(index=geoms, columns=phases)
-        for r in grid.index:
-            for c in grid.columns:
-                phys = self.find_physics(phase=self[c], geometry=self[r])
-                if phys is not None:
-                    grid.loc[r][c] = phys.name
-                else:
-                    grid.loc[r][c] = '---'
-        if astype == 'pandas':
-            pass
-        elif astype == 'dict':
-            grid = grid.to_dict()
-        elif astype == 'table':
-            from terminaltables import SingleTable
-            headings = [self.network.name] + list(grid.keys())
-            g = [headings]
-            for row in list(grid.index):
-                g.append([row] + list(grid.loc[row]))
-            grid = SingleTable(g)
-            grid.title = 'Project: ' + self.name
-            grid.padding_left = 3
-            grid.padding_right = 3
-            grid.justify_columns = {col: 'center' for col in enumerate(headings)}
+        grid = ProjectGrid()
+        # Create first/index column of grid
+        rows = [self.network.name] + list(self.geometries().keys())
+        grid.add_row(num=len(rows) - 1)
+        grid.set_col(0, rows)
+        # Creatle first/header row of grid
+        cols = list(self.phases().keys())
+        grid.add_col(num=len(cols))
+        grid.set_row(0, vals=[self.network.name] + cols)
+        # Now add physics objects to grid, adding new columns/rows as needed.
+        miss = 0
+        for p in self.physics().values():
+            try:
+                row = self.find_geometry(p)
+                try:
+                    col = self.find_phase(p)
+                    grid.set_row_and_col(row=row.name, col=col.name, val=p.name)
+                except Exception:
+                    miss += 1
+                    grid.set_row_and_col(row=row.name, col='?'*miss, val=p.name)
+            except:
+                try:
+                    col = self.find_phase(p)
+                    miss += 1
+                    grid.set_row_and_col(row='?'*miss, col=col.name, val=p.name)
+                except Exception:
+                    miss += 1
+                    grid.set_row_and_col(row='?'*miss, col='?'*miss, val=p.name)
+        # See if any pores/throats are not assigned and add blank row
+        if len(self.geometries()) > 0:
+            h = self.check_geometry_health()
+            if (len(h['undefined_pores']) > 0) or (len(h['undefined_throats']) > 0):
+                grid.add_row()
         return grid
 
-    @property
-    def grid(self):
-        grid = self._generate_grid(astype='table')
-        obj = ProjectGrid()
-        obj._grid = grid
-        return obj
+    def _get_grid(self):
+        if not hasattr(self, '_grid'):
+            grid = self._generate_grid()
+            self._grid = grid
+        else:  # Update current grid with new data, to save formats and settings
+            grid = self._generate_grid()
+            self._grid._grid.table_data = grid._grid.table_data
+        return self._grid
 
-    def get_grid(self, astype):
-        r"""
-        Retrieves a copy of the grid data in the specified format
+    def _set_grid(self, grid):
+        self._grid = grid
 
-        Parameters
-        ----------
-        astype : str
-            Can be 'dict', 'table', or 'pandas'
-
-        Returns
-        -------
-        grid
-            The grid data in the specified format
-        """
-        return self._generate_grid(astype=astype)
+    grid = property(fget=_get_grid, fset=_set_grid)
 
 
 class ProjectGrid(Tableist):

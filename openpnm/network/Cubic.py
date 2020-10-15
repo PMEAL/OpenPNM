@@ -86,13 +86,11 @@ class Cubic(GenericNetwork):
     <http://www.paraview.org>`_.
     """
 
-    def __init__(self, shape=None, spacing=[1, 1, 1], connectivity=6,
+    def __init__(self, shape, spacing=[1, 1, 1], connectivity=6,
                  name=None, project=None, **kwargs):
 
         super().__init__(name=name, project=project, **kwargs)
 
-        if shape is None:
-            return
         # Take care of 1D/2D networks
         shape = np.array(shape, ndmin=1)
         shape = np.concatenate((shape, [1] * (3 - shape.size))).astype(int)
@@ -100,12 +98,13 @@ class Cubic(GenericNetwork):
         arr = np.atleast_3d(np.empty(shape))
 
         # Store original network shape
-        self._shape = np.shape(arr)
+        self.settings['shape'] = np.shape(arr)
         # Store network spacing
         spacing = np.float64(spacing)
         if spacing.size == 2:
             spacing = np.concatenate((spacing, [1]))
-        self._spacing = np.ones(3, dtype=float) * np.array(spacing, ndmin=1)
+        spacing = np.ones(3, dtype=float) * np.array(spacing, ndmin=1)
+        self.settings['spacing'] = spacing.tolist()
 
         z = np.tile(np.arange(shape[2]), shape[0] * shape[1])
         y = np.tile(np.repeat(np.arange(shape[1]), shape[2]), shape[0])
@@ -210,10 +209,11 @@ class Cubic(GenericNetwork):
         Lcx, Lcy, Lcz = spacing
 
         offset = {}
+        shape = self.settings['shape']
         offset["back"] = offset["left"] = offset["bottom"] = [0, 0, 0]
-        offset["right"] = [Lcx * self._shape[0], 0, 0]
-        offset["front"] = [0, Lcy * self._shape[1], 0]
-        offset["top"] = [0, 0, Lcz * self._shape[2]]
+        offset["right"] = [Lcx * shape[0], 0, 0]
+        offset["front"] = [0, Lcy * shape[1], 0]
+        offset["top"] = [0, 0, Lcz * shape[2]]
 
         scale = {}
         scale["left"] = scale["right"] = [0, 1, 1]
@@ -258,6 +258,7 @@ class Cubic(GenericNetwork):
                 if not np.allclose(temp, temp[0]):
                     raise Exception("A unique value of spacing could not be found")
                 spacing[ax] = temp[0]
+        self.settings['spacing'] = spacing
         return np.array(spacing)
 
     spacing = property(fget=_get_spacing)
@@ -268,9 +269,18 @@ class Cubic(GenericNetwork):
         S = self.spacing
         shape = np.array([1, 1, 1], int)
         shape[mask] = L[mask] / S[mask] + 1
+        self.settings['shape'] = shape.tolist()
         return shape
 
     shape = property(fget=_get_shape)
+
+    @property
+    def _shape(self):
+        return self.settings['shape']
+
+    @property
+    def _spacing(self):
+        return np.array(self.settings['spacing'])
 
     def to_array(self, values):
         r"""
@@ -292,8 +302,8 @@ class Cubic(GenericNetwork):
         if np.shape(values)[0] > self.num_pores("internal"):
             raise Exception("The array shape does not match the network")
         Ps = np.array(self["pore.index"][self.pores("internal")], dtype=int)
-        arr = np.ones(self._shape) * np.nan
-        ind = np.unravel_index(Ps, self._shape)
+        arr = np.ones(self.settings['shape']) * np.nan
+        ind = np.unravel_index(Ps, self.settings['shape'])
         arr[ind[0], ind[1], ind[2]] = values
         return arr
 

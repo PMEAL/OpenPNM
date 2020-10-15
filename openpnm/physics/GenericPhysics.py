@@ -37,6 +37,8 @@ class GenericPhysics(Subdomain, ModelsMixin):
         self.settings.update({'prefix': 'phys'})
         # Overwrite with user supplied settings, if any
         self.settings.update(settings)
+        if phase is None:
+            self.settings['freeze_models'] = True
 
         # Deal with network or project arguments
         if network is not None:
