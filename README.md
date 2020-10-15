@@ -20,6 +20,8 @@
 
 For more details about the package can be found in the [on-line documentation](https://openpnm.readthedocs.io/en/dev/index.html)
 
+To be notified of new releases click the `Watch` button on the Github repo page.  To show your support for this project click the `Star` button, as we use this as a proxy for the size of our userbase when applying for funding.
+
 ## Installation and Requirements
 
 ### Preferred method
