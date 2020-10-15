@@ -270,12 +270,10 @@ class Base(dict):
             keys = self.keys(mode='all', deep=True)
             vals.update({k: self.interleave_data(k) for k in keys
                          if k.startswith(key + '.')})
-        # The following code, if activated, attempts to run models when
-        # missing data is requested from the dictionary.  The works fine,
-        # but breaks the general way openpnm behaves.
-        # elif hasattr(self, 'models') and key in self.models:
-        #     self.regenerate_models(key)
-        #     vals = super().__getitem__(key)
+        # Attempt to run model when missing data.
+        elif hasattr(self, 'models') and key in self.models:
+            self.regenerate_models(key)
+            vals = super().__getitem__(key)
         else:
             raise KeyError(key)
         return vals

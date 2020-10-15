@@ -385,7 +385,8 @@ class ModelsMixin:
         # Only regenerate model if regen_mode is correct
         if self.settings['freeze_models']:
             # Don't run ANY models if freeze_models is set to True
-            pass
+            logger.warning(prop + ' was not run since freeze_models ' +
+                           'is set to True in object settings')
         elif regen_mode == 'constant':
             # Only regenerate if data not already in dictionary
             if prop not in self.keys():
