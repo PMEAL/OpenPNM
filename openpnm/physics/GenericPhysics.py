@@ -1,3 +1,4 @@
+import numpy as np
 from openpnm.core import Subdomain, ModelsMixin
 from openpnm.utils import Workspace, logging
 logger = logging.getLogger(__name__)
@@ -66,27 +67,74 @@ class GenericPhysics(Subdomain, ModelsMixin):
                 else:
                     self.set_geometry(geometry=geometry)
 
-    def set_phase(self, phase, mode='add'):
+    def set_phase(self, phase=None, mode='swap'):
         r"""
+        Sets the association between this physics and a phase.
+
+        Parameters
+        ----------
+        phase : OpenPNM Phase object
+            If mode is 'add' or 'swap', this must be specified so that
+            associations can be recorded in the phase dictionary.  If the
+            mode is 'drop', this is not needed since the existing association
+            can be used to find it.
+        mode : str
+            Option are:
+
+            'swap' - Associations will be made with the new phase, and
+            the pore and throat locations from the current phase will be
+            transferred to the new one.
+
+            'drop' - Associations with the existing phase will be removed.
+
+            'add' - If the physics does not presently have an associated
+            phase, this will create associations, but no pore or throat
+            locations will assigned.  This must be done using the
+            ``set_geometry`` method.
+
+        Notes
+        -----
+        In all cases the property data will be deleted since it will not
+        be relevant to the new phase, so the ``regenerate_models`` method
+        must be run.
+
         """
-        if phase not in self.project:
-            raise Exception(self.name + ' not in same project as given phase')
-        if mode == 'add':
-            phase['pore.'+self.name] = False
-            phase['throat.'+self.name] = False
-        elif mode == 'remove':
+        if mode in ['add', 'swap']:
+            if phase not in self.project:
+                raise Exception(self.name + ' not in same project as given phase')
+            try:
+                old_phase = self.project.find_phase(self)
+                phase['pore.'+self.name] = old_phase['pore.'+self.name]
+                phase['throat.'+self.name] = old_phase['throat.'+self.name]
+                old_phase.pop('pore.'+self.name, None)
+                old_phase.pop('throat.'+self.name, None)
+                self.clear()
+            except:
+                phase['pore.'+self.name] = False
+                phase['throat.'+self.name] = False
+        elif mode in ['remove', 'drop']:
+            self.update({'pore.all': np.array([], dtype=bool)})
+            self.update({'throat.all': np.array([], dtype=bool)})
+            phase = self.project.find_phase(self)
             phase.pop('pore.'+self.name, None)
             phase.pop('throat.'+self.name, None)
+            self.clear()
         else:
             raise Exception('mode ' + mode + ' not understood')
 
-    def set_geometry(self, geometry):
+    def set_geometry(self, geometry=None, mode='add'):
         r"""
         """
-        if geometry not in self.project:
-            raise Exception(self.name + ' not in same project as given geometry')
-        network = self.network
-        Ps = network.pores(geometry.name)
-        Ts = network.throats(geometry.name)
-        self._set_locations(element='pore', indices=Ps, mode='add')
-        self._set_locations(element='throat', indices=Ts, mode='add')
+        if mode in ['add', 'swap']:
+            if geometry not in self.project:
+                raise Exception(self.name + ' not in same project as given geometry')
+            try:
+                old_geometry = proj.find_geometry(self)
+                Ps = self.network.pores(old_geometry.name)
+                Ts = self.network.throats(old_geometry.name)
+            self._set_locations(element='pore', indices=Ps, mode='add')
+            self._set_locations(element='throat', indices=Ts, mode='add')
+        if mode in ['remove', 'drop']:
+            self.update({'pore.all': np.array([], dtype=bool)})
+            self.update({'throat.all': np.array([], dtype=bool)})
+            self.clear()
