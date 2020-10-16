@@ -127,14 +127,6 @@ class ModelsTest:
         with pytest.raises(Exception):
             pn.models.dependency_list()
 
-    def test_missing_dependencies_message(self):
-        pn = op.network.Cubic(shape=[5, 5, 5])
-        geo = op.geometry.StickAndBall(network=pn, pores=pn.Ps, throats=pn.Ts)
-        geo.clear()
-        with LogCapture() as log:
-            geo.regenerate_models(propnames=['pore.diameter'])
-        assert "'pore.max_size'" in log.actual()[0][2]
-
     def test_regenerate_models_on_phase_with_deep(self):
         pn = op.network.Cubic(shape=[5, 5, 5])
         geo = op.geometry.StickAndBall(network=pn, pores=pn.Ps, throats=pn.Ts)
@@ -162,7 +154,7 @@ class ModelsTest:
         assert len(phys) == 2
         assert len(phase) == 14
         phys.regenerate_models(propnames=None, deep=False)
-        assert len(phys) == 10
+        assert len(phys) == 14
         # Note that 2 new models were added to the phase during interpolation
         assert len(phase) < len_phase
         phase.clear(mode='model_data')
@@ -192,6 +184,14 @@ class ModelsTest:
         assert len(geo.props()) == 0
         geo.regenerate_models()
         assert len(geo.props()) == 16
+
+    def test_automatic_running_on_models_when_missing_data(self):
+        pn = op.network.Cubic(shape=[3, 3, 3], spacing=1e-4)
+        geo = op.geometry.StickAndBall(network=pn, pores=pn.Ps, throats=pn.Ts,
+                                        settings={'regen_mode': 'deferred'})
+        assert len(geo) == 2
+        _ = geo['pore.seed']
+        assert len(geo) == 3
 
 
 if __name__ == '__main__':

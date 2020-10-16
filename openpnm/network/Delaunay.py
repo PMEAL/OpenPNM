@@ -95,23 +95,19 @@ class Delaunay(DelaunayVoronoiDual):
 
     """
 
-    def __init__(self, shape=[1, 1, 1], num_points=None, **kwargs):
+    def __init__(self, shape=[1, 1, 1], num_points=None, points=None, **kwargs):
         # Clean-up input points
-        points = kwargs.pop('points', None)
-        if (points is None) and (num_points is None):
-            super().__init__(shape=None, points=None, **kwargs)
-        else:
-            points = self._parse_points(shape=shape,
-                                        num_points=num_points,
-                                        points=points)
-            super().__init__(shape=shape, points=points, **kwargs)
-            # Initialize network object
-            topotools.trim(network=self, pores=self.pores(['voronoi']))
-            pop = ['pore.voronoi', 'throat.voronoi', 'throat.interconnect',
-                   'pore.delaunay', 'throat.delaunay']
-            for item in pop:
-                del self[item]
+        points = self._parse_points(shape=shape,
+                                    num_points=num_points,
+                                    points=points)
+        super().__init__(shape=shape, points=points, **kwargs)
+        # Initialize network object
+        topotools.trim(network=self, pores=self.pores(['voronoi']))
+        pop = ['pore.voronoi', 'throat.voronoi', 'throat.interconnect',
+               'pore.delaunay', 'throat.delaunay']
+        for item in pop:
+            del self[item]
 
-            # Trim additional pores that are missed by the parent class's trimming
-            Ps = topotools.isoutside(coords=self['pore.coords'], shape=shape)
-            topotools.trim(network=self, pores=Ps)
+        # Trim additional pores that are missed by the parent class's trimming
+        Ps = topotools.isoutside(coords=self['pore.coords'], shape=shape)
+        topotools.trim(network=self, pores=Ps)

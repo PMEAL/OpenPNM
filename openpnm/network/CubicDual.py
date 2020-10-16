@@ -72,11 +72,9 @@ class CubicDual(GenericNetwork):
     <http://www.paraview.org>`_.
 
     """
-    def __init__(self, shape=None, spacing=1, label_1='primary',
+    def __init__(self, shape, spacing=1, label_1='primary',
                  label_2='secondary', **kwargs):
         super().__init__(**kwargs)
-        if shape is None:
-            return
         spacing = np.array(spacing)
         shape = np.array(shape)
         # Deal with non-3D shape arguments

@@ -51,20 +51,6 @@ class ProjectTest:
         assert proj.name in self.ws.keys()
         assert old_name not in self.ws.keys()
 
-    def test_grid_printing(self):
-        d = self.proj.get_grid(astype='dict')
-        assert d == {
-            'phase_01': {'geo_01': 'phys_01', 'geo_02': 'phys_02'},
-            'phase_02': {'geo_01': 'phys_03', 'geo_02': 'phys_04'}}
-
-        s = '┌Project: proj_01───────────┬──────────────┐\n' \
-            '│   net_01   │   phase_01   │   phase_02   │\n' \
-            '├────────────┼──────────────┼──────────────┤\n' \
-            '│   geo_01   │   phys_01    │   phys_03    │\n' \
-            '│   geo_02   │   phys_02    │   phys_04    │\n' \
-            '└────────────┴──────────────┴──────────────┘\n'
-        assert print(self.proj.grid) == print(s)
-
     def test_grid_access(self):
         g = self.proj.grid
         with pytest.raises(ValueError):
@@ -349,11 +335,6 @@ class ProjectTest:
         a = self.proj[0]
         b = self.proj[a.name]
         assert a is b
-
-    def test_comments(self):
-        proj = self.proj
-        proj.comments = 'test comment'
-        assert 'test comment' in proj._comments.values()
 
     def test_print(self):
         proj = self.proj
