@@ -88,4 +88,5 @@ class GenericPhysics(Subdomain, ModelsMixin):
         network = self.network
         Ps = network.pores(geometry.name)
         Ts = network.throats(geometry.name)
-        self._add_locations(pores=Ps, throats=Ts)
+        self._set_locations(element='pore', indices=Ps, mode='add')
+        self._set_locations(element='throat', indices=Ts, mode='add')
