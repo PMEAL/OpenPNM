@@ -16,4 +16,5 @@ geo = op.geometry.StickAndBall(network=net, pores=net.Ps, throats=net.Ts)
 # phase
 phase = op.phases.Water(network=net)
 
+# export the network
 proj.export_data(phases=[phase], filename='OUT', filetype='Salome')
