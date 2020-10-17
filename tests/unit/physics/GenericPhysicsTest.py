@@ -76,6 +76,54 @@ class GenericPhysicsTest:
         with pytest.raises(Exception):
             phys.set_geometry(geometry=geo2)
 
+    def test_swap_phase(self):
+        net = op.network.Cubic(shape=[3, 3, 3])
+        geo = op.geometry.GenericGeometry(network=net, pores=net.Ps,
+                                          throats=net.Ts)
+        phase1 = op.phases.GenericPhase(network=net)
+        phase2 = op.phases.GenericPhase(network=net)
+        phys = op.physics.GenericPhysics(network=net, phase=phase1,
+                                         geometry=geo)
+        phys.set_phase(phase=phase2, mode='swap')
+        assert phys.Np == 27
+        assert phys.Nt == 54
+
+    def test_drop_add_phase(self):
+        net = op.network.Cubic(shape=[3, 3, 3])
+        geo = op.geometry.GenericGeometry(network=net, pores=net.Ps,
+                                          throats=net.Ts)
+        phase1 = op.phases.GenericPhase(network=net)
+        phase2 = op.phases.GenericPhase(network=net)
+        phys = op.physics.GenericPhysics(network=net, phase=phase1,
+                                         geometry=geo)
+        phys.set_phase(mode='drop')
+        assert phys.Np == 0
+        assert phys.Nt == 0
+        phys.set_phase(phase=phase2, mode='add')
+        assert phys.Np == 0
+        assert phys.Nt == 0
+
+    def test_drop_add_geometry(self):
+        net = op.network.Cubic(shape=[3, 3, 3])
+        geo = op.geometry.GenericGeometry(network=net, pores=net.Ps,
+                                           throats=net.Ts)
+        phase = op.phases.GenericPhase(network=net)
+        phys = op.physics.GenericPhysics(network=net, phase=phase,
+                                         geometry=geo)
+        assert phys.Np == 27
+        assert phys.Nt == 54
+        phys.set_geometry(mode='drop')
+        assert phys.Np == 0
+        assert phys.Nt == 0
+        phys.set_geometry(geometry=geo, mode='add')
+        assert phys.Np == 27
+        assert phys.Nt == 54
+        phys.set_phase(mode='drop')
+        assert phys.Np == 0
+        assert phys.Nt == 0
+        with pytest.raises(Exception):
+            phys.set_geometry(geometry=geo, mode='add')
+
 
 if __name__ == '__main__':
 
