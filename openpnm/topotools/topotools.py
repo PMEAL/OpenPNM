@@ -551,10 +551,12 @@ def dimensionality(network):
     Returns an 3-by-1 array containing ``True`` for each axis that contains
     multiple values, indicating that the pores are spatially distributed
     in that direction.
+
     """
     xyz = network["pore.coords"]
-    xyz_unique = [np.unique(xyz[:, i]) for i in range(3)]
-    return np.array([elem.size != 1 for elem in xyz_unique])
+    eps = np.finfo(float).resolution
+    dims_unique = [not np.allclose(xk, xk.mean(), atol=0, rtol=eps) for xk in xyz.T]
+    return np.array(dims_unique)
 
 
 def clone_pores(network, pores, labels=['clone'], mode='parents'):
