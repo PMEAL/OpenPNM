@@ -1,3 +1,4 @@
+import numpy as np
 import scipy as sp
 from flatdict import FlatDict
 from collections import namedtuple
@@ -25,7 +26,15 @@ class Pandas(GenericIO):
 
     """
     @classmethod
-    def to_dataframe(cls, network=None, phases=[], join=False, delim=' | '):
+    def to_dataframe(cls, *args, **kwargs):
+        r"""
+        This method is being deprecated.  Use ``export_data`` instead.
+        """
+        data = cls.export_data(*args, **kwargs)
+        return data
+
+    @classmethod
+    def export_data(cls, network=None, phases=[], join=False, delim=' | '):
         r"""
         Convert the Network (and optionally Phase) data to Pandas DataFrames.
 
@@ -70,16 +79,16 @@ class Pandas(GenericIO):
 
         # Scan data and convert non-1d arrays to multiple columns
         for key in list(pdata.keys()):
-            if sp.shape(pdata[key]) != (network[0].Np,):
+            if np.shape(pdata[key]) != (network[0].Np,):
                 arr = pdata.pop(key)
-                tmp = sp.split(arr, arr.shape[1], axis=1)
+                tmp = np.split(arr, arr.shape[1], axis=1)
                 cols = range(len(tmp))
                 pdata.update({key+'['+str(i)+']': tmp[i].squeeze()
                               for i in cols})
         for key in list(tdata.keys()):
-            if sp.shape(tdata[key]) != (network[0].Nt,):
+            if np.shape(tdata[key]) != (network[0].Nt,):
                 arr = tdata.pop(key)
-                tmp = sp.split(arr, arr.shape[1], axis=1)
+                tmp = np.split(arr, arr.shape[1], axis=1)
                 cols = range(len(tmp))
                 tdata.update({key+'['+str(i)+']': tmp[i].squeeze()
                               for i in cols})
@@ -96,9 +105,3 @@ class Pandas(GenericIO):
             data = nt(pore=pdata, throat=tdata)
 
         return data
-
-    @classmethod
-    def from_dataframe(cls):
-        r"""
-        """
-        raise NotImplementedError()

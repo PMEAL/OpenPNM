@@ -1,4 +1,4 @@
-import scipy as sp
+import numpy as np
 from openpnm.network import GenericNetwork, Cubic
 from openpnm import topotools
 from openpnm.utils import logging, Workspace
@@ -75,10 +75,10 @@ class CubicDual(GenericNetwork):
     def __init__(self, shape, spacing=1, label_1='primary',
                  label_2='secondary', **kwargs):
         super().__init__(**kwargs)
-        spacing = sp.array(spacing)
-        shape = sp.array(shape)
+        spacing = np.array(spacing)
+        shape = np.array(shape)
         # Deal with non-3D shape arguments
-        shape = sp.pad(shape, [0, 3-shape.size], mode='constant',
+        shape = np.pad(shape, [0, 3-shape.size], mode='constant',
                        constant_values=1)
         net = Cubic(shape=shape, spacing=1)
         net['throat.'+label_1] = True
@@ -86,9 +86,9 @@ class CubicDual(GenericNetwork):
         single_dim = shape == 1
         shape[single_dim] = 2
         dual = Cubic(shape=shape-1, spacing=1)
-        faces = [['front', 'back'], ['left', 'right'], ['top', 'bottom']]
-        faces = [faces[i] for i in sp.where(~single_dim)[0]]
-        faces = sp.array(faces).flatten().tolist()
+        faces = [['left', 'right'], ['front', 'back'], ['top', 'bottom']]
+        faces = [faces[i] for i in np.where(~single_dim)[0]]
+        faces = np.array(faces).flatten().tolist()
         dual.add_boundary_pores(faces)
         # Add secondary network name as a label
         dual['pore.'+label_2] = True
@@ -113,12 +113,15 @@ class CubicDual(GenericNetwork):
             Ts = net.find_neighbor_throats(pores=Ps, mode='xnor')
             net['throat.surface'][Ts] = True
             net['throat.'+face] = net.tomask(throats=Ts)
-        [net.pop(item) for item in net.labels() if 'boundary' in item]
+        for item in net.labels():
+            if 'boundary' in item:
+                net.pop(item)
         # Label non-surface pores and throats as internal
         net['pore.internal'] = True
         net['throat.internal'] = True
         # Transfer all dictionary items from 'net' to 'self'
-        [self.update({item: net[item]}) for item in net]
+        for item in net:
+            self.update({item: net[item]})
         ws.close_project(net.project)
         # Finally, scale network to requested spacing
         net['pore.coords'] *= spacing
@@ -143,15 +146,15 @@ class CubicDual(GenericNetwork):
             for instance if boundary pores have already added to other faces.
 
         """
-        spacing = sp.array(spacing)
+        spacing = np.array(spacing)
         if spacing.size == 1:
-            spacing = sp.ones(3)*spacing
+            spacing = np.ones(3)*spacing
         for item in labels:
             Ps = self.pores(item)
-            coords = sp.absolute(self['pore.coords'][Ps])
-            axis = sp.count_nonzero(sp.diff(coords, axis=0), axis=0) == 0
-            offset = sp.array(axis, dtype=int)*spacing/2
-            if sp.amin(coords) == sp.amin(coords[:, sp.where(axis)[0]]):
+            coords = np.absolute(self['pore.coords'][Ps])
+            axis = np.count_nonzero(np.diff(coords, axis=0), axis=0) == 0
+            offset = np.array(axis, dtype=int)*spacing/2
+            if np.amin(coords) == np.amin(coords[:, np.where(axis)[0]]):
                 offset = -1*offset
             topotools.add_boundary_pores(network=self, pores=Ps, offset=offset,
                                          apply_label=item + '_boundary')

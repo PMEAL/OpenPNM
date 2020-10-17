@@ -1,3 +1,4 @@
+import numpy as np
 import scipy as sp
 import openpnm as op
 
@@ -14,8 +15,8 @@ class ThroatShapeFactorTest:
                                               phase=self.air,
                                               geometry=self.geo)
         self.geo['throat.area'] = 1.0
-        self.geo['throat.perimeter'] = sp.pi
-        self.geo['throat.diameter'] = (4/sp.pi)**(1/2)
+        self.geo['throat.perimeter'] = np.pi
+        self.geo['throat.diameter'] = (4/np.pi)**(1/2)
 
     def test_compactness(self):
         pass
@@ -27,9 +28,9 @@ class ThroatShapeFactorTest:
                            throat_perimeter='throat.perimeter',
                            throat_area='throat.area',
                            regen_mode='normal')
-        a = sp.unique(self.geo['throat.shape_factor'])
-        b = sp.array(0.10132118, ndmin=1)
-        assert sp.allclose(a, b)
+        a = np.unique(self.geo['throat.shape_factor'])
+        b = np.array(0.10132118, ndmin=1)
+        assert np.allclose(a, b)
 
     def test_jenkins_rao(self):
         mod = op.models.geometry.throat_shape_factor.jenkins_rao
@@ -39,9 +40,9 @@ class ThroatShapeFactorTest:
                            throat_area='throat.area',
                            throat_diameter='throat.diameter',
                            regen_mode='normal')
-        a = sp.unique(self.geo['throat.shape_factor'])
-        b = sp.array(0.88622693, ndmin=1)
-        assert sp.allclose(a, b)
+        a = np.unique(self.geo['throat.shape_factor'])
+        b = np.array(0.88622693, ndmin=1)
+        assert np.allclose(a, b)
 
 
 if __name__ == '__main__':

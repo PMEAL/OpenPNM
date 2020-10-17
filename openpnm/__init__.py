@@ -52,20 +52,21 @@ It consists of the following submodules:
 
 """
 
-__version__ = '2.2.0'
+from .__version__ import __version__
 
-import numpy as np
-np.seterr(divide='ignore', invalid='ignore')
-
-from . import utils
-from .utils import Workspace, Project
 from . import core
+from . import utils
 from . import models
 from . import network
-from . import topotools
 from . import geometry
 from . import phases
 from . import physics
 from . import algorithms
-from . import io
 from . import materials
+from . import topotools
+from . import io
+
+from .utils import Workspace, Project
+
+import numpy
+numpy.seterr(divide='ignore', invalid='ignore')

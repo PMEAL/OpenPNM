@@ -5,8 +5,7 @@ r"""
 .. autofunction:: openpnm.models.phases.molar_density.vanderwaals
 
 """
-
-import scipy as sp
+import numpy as np
 
 
 def standard(target, mol_weight='pore.molecular_weight',
@@ -121,8 +120,8 @@ def vanderwaals(target, pressure='pore.pressure',
     a1 = -1/b
     a2 = (R*T+b*P)/(a*b)
     a3 = -P/(a*b)
-    a0 = sp.ones(sp.shape(a1))
-    coeffs = sp.vstack((a0, a1, a2, a3)).T
-    density = sp.array([sp.roots(C) for C in coeffs])
-    value = sp.real(density[:, 2])*1e6  # Convert it to mol/m3
+    a0 = np.ones(np.shape(a1))
+    coeffs = np.vstack((a0, a1, a2, a3)).T
+    density = np.array([np.roots(C) for C in coeffs])
+    value = np.real(density[:, 2])*1e6  # Convert it to mol/m3
     return value

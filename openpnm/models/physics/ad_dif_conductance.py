@@ -3,13 +3,12 @@ r"""
 .. autofunction:: openpnm.models.physics.ad_dif_conductance.ad_dif
 
 """
-
-import scipy as _sp
+import numpy as _np
 
 
 def ad_dif(target,
-           conduit_lengths='throat.conduit_lengths',
            pore_pressure='pore.pressure',
+           conduit_lengths='throat.conduit_lengths',
            throat_hydraulic_conductance='throat.hydraulic_conductance',
            throat_diffusive_conductance='throat.diffusive_conductance',
            s_scheme='powerlaw'):
@@ -71,41 +70,48 @@ def ad_dif(target,
     Lt = network[conduit_lengths + '.throat'][throats]
     L2 = network[conduit_lengths + '.pore2'][throats]
     # Preallocating g
-    g1, g2, gt = _sp.zeros((3, len(Lt)))
+    g1, g2, gt = _np.zeros((3, len(Lt)))
     # Setting g to inf when Li = 0 (ex. boundary pores)
     # INFO: This is needed since area could also be zero, which confuses NumPy
     m1, m2, mt = [Li != 0 for Li in [L1, L2, Lt]]
-    g1[~m1] = g2[~m2] = gt[~mt] = _sp.inf
+    g1[~m1] = g2[~m2] = gt[~mt] = _np.inf
     # Find g for half of pore 1, throat, and half of pore 2
     P = phase[pore_pressure]
     gh = phase[throat_hydraulic_conductance][throats]
     gd = phase[throat_diffusive_conductance][throats]
-    gd = _sp.tile(gd, 2)
+    if gd.size == throats.size:
+        gd = _np.tile(gd, 2)
+    # Special treatment when gd is not Nt by 1 (ex. mass partitioning)
+    elif gd.size == 2 * throats.size:
+        gd = gd.reshape(throats.size * 2, order='F')
+    else:
+        raise Exception(f"Shape of {throat_diffusive_conductance} must either"
+                        r" be (Nt,1) or (Nt,2)")
 
-    Qij = -gh*_sp.diff(P[cn], axis=1).squeeze()
-    Qij = _sp.append(Qij, -Qij)
+    Qij = -gh*_np.diff(P[cn], axis=1).squeeze()
+    Qij = _np.append(Qij, -Qij)
 
     Peij = Qij / gd
     Peij[(Peij < 1e-10) & (Peij >= 0)] = 1e-10
     Peij[(Peij > -1e-10) & (Peij <= 0)] = -1e-10
 
     # Export Peclet values (half only since Peij = -Peji)
-    phase['throat.peclet.ad'] = _sp.nan
-    phase['throat.peclet.ad'][throats] = _sp.absolute(Peij[0:len(Lt)])
+    phase['throat.peclet.ad'] = _np.nan
+    phase['throat.peclet.ad'][throats] = _np.absolute(Peij[0:len(Lt)])
 
     # Correct the flow rate
     Qij = Peij * gd
 
     if s_scheme == 'upwind':
-        w = gd + _sp.maximum(0, -Qij)
+        w = gd + _np.maximum(0, -Qij)
     elif s_scheme == 'hybrid':
-        w = _sp.maximum(0, _sp.maximum(-Qij, gd-Qij/2))
+        w = _np.maximum(0, _np.maximum(-Qij, gd-Qij/2))
     elif s_scheme == 'powerlaw':
-        w = gd * _sp.maximum(0, (1 - 0.1*_sp.absolute(Peij))**5) + \
-            _sp.maximum(0, -Qij)
+        w = gd * _np.maximum(0, (1 - 0.1*_np.absolute(Peij))**5) + \
+            _np.maximum(0, -Qij)
     elif s_scheme == 'exponential':
-        w = -Qij / (1 - _sp.exp(Peij))
+        w = -Qij / (1 - _np.exp(Peij))
     else:
         raise Exception('Unrecognized discretization scheme: ' + s_scheme)
-    w = _sp.reshape(w, (throats.size, 2), order='F')
+    w = w.reshape(throats.size, 2, order='F')
     return w

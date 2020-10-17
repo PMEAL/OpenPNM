@@ -36,13 +36,14 @@ class LabelTest:
         assert 'pore.bottom' not in net.labels()
         assert net.num_pores('surface') == 16
         net = op.network.Cubic(shape=[5, 1, 5])
-        assert 'pore.left' not in net.labels()
-        assert 'pore.right' not in net.labels()
-        assert net.num_pores('surface') == 16
-        net = op.network.Cubic(shape=[1, 5, 5])
         assert 'pore.front' not in net.labels()
         assert 'pore.back' not in net.labels()
         assert net.num_pores('surface') == 16
+        net = op.network.Cubic(shape=[1, 5, 5])
+        assert 'pore.left' not in net.labels()
+        assert 'pore.right' not in net.labels()
+        assert net.num_pores('surface') == 16
+
 
 if __name__ == '__main__':
 

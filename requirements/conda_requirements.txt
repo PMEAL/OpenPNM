@@ -7,3 +7,12 @@ numba
 networkx
 h5py
 jsonschema
+terminaltables
+unyt
+gitpython
+flatdict
+transforms3d
+sympy
+docrep==0.2.7
+pardiso4py
+zarr

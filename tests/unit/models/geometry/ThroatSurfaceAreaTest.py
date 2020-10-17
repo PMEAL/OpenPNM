@@ -1,7 +1,8 @@
-import openpnm as op
-import openpnm.models.geometry.throat_surface_area as tsa
-from numpy.testing import assert_allclose
+import numpy as np
 import scipy as sp
+import openpnm as op
+from numpy.testing import assert_allclose
+import openpnm.models.geometry.throat_surface_area as tsa
 
 
 class ThroatSurfaceAreaTest:
@@ -10,14 +11,14 @@ class ThroatSurfaceAreaTest:
         self.geo = op.geometry.GenericGeometry(network=self.net,
                                                pores=self.net.Ps,
                                                throats=self.net.Ts)
-        self.geo['throat.diameter'] = sp.ones((self.geo.Nt, ))
-        self.geo['throat.length'] = sp.ones((self.geo.Nt, ))
-        self.geo['throat.perimeter'] = sp.ones((self.geo.Nt, ))
+        self.geo['throat.diameter'] = np.ones((self.geo.Nt, ))
+        self.geo['throat.length'] = np.ones((self.geo.Nt, ))
+        self.geo['throat.perimeter'] = np.ones((self.geo.Nt, ))
 
     def test_cylinder(self):
         self.geo.add_model(propname='throat.surface_area',
                            model=tsa.cylinder, regen_mode="normal")
-        assert_allclose(self.geo['throat.surface_area'].mean(), sp.pi)
+        assert_allclose(self.geo['throat.surface_area'].mean(), np.pi)
 
     def test_cuboid(self):
         self.geo.add_model(propname='throat.surface_area',

@@ -1,4 +1,3 @@
-from h5py import File as hdfFile
 from flatdict import FlatDict
 from openpnm.io import Dict, GenericIO
 from openpnm.utils import logging
@@ -12,8 +11,16 @@ class HDF5(GenericIO):
     """
 
     @classmethod
-    def to_hdf5(cls, network=None, phases=[], element=['pore', 'throat'],
-                filename='', interleave=True, flatten=False, categorize_by=[]):
+    def to_hdf5(cls, *args, **kwargs):
+        """
+        This method is being deprecated.  Use ``export_data`` instead.
+
+        """
+        return cls.export_data(*args, **kwargs)
+
+    @classmethod
+    def export_data(cls, network=None, phases=[], element=['pore', 'throat'],
+                    filename='', interleave=True, flatten=False, categorize_by=[]):
         r"""
         Creates an HDF5 file containing data from the specified objects,
         and categorized according to the given arguments.
@@ -64,6 +71,7 @@ class HDF5(GenericIO):
             are no longer prepended by a 'pore.' or 'throat.'
 
         """
+        from h5py import File as hdfFile
         project, network, phases = cls._parse_args(network=network,
                                                    phases=phases)
         if filename == '':
@@ -80,8 +88,7 @@ class HDF5(GenericIO):
             tempname = '_'.join(item.split('.'))
             arr = d[item]
             if d[item].dtype == 'O':
-                logger.warning(item + ' has dtype object,' +
-                               ' will not write to file')
+                logger.warning(item + ' has dtype object, will not write to file')
                 del d[item]
             elif 'U' in str(arr[0].dtype):
                 pass
@@ -89,12 +96,6 @@ class HDF5(GenericIO):
                 f.create_dataset(name='/'+tempname, shape=arr.shape,
                                  dtype=arr.dtype, data=arr)
         return f
-
-    @classmethod
-    def from_hdf5(cls):
-        r'''
-        '''
-        raise NotImplementedError()
 
     def print_levels(f):
         def print_level(f, p='', indent='-'):

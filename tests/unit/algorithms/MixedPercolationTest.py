@@ -1,19 +1,19 @@
-import openpnm as op
 import numpy as np
+import openpnm as op
+import openpnm.models.geometry as gm
 from openpnm.algorithms import MixedInvasionPercolation as mp
 import matplotlib.pyplot as plt
-import openpnm.models.geometry as gm
 
 
 plt.close('all')
-wrk = op.Workspace()
-wrk.loglevel = 50
+ws = op.Workspace()
+ws.loglevel = 50
 
 
 class MixedPercolationTest:
 
     def setup_class(self, Np=5):
-        wrk.clear()
+        ws.clear()
         # Create Topological Network object
         self.net = op.network.Cubic([Np, Np, 1], spacing=1)
         self.geo = op.geometry.GenericGeometry(network=self.net,
@@ -222,8 +222,7 @@ class MixedPercolationTest:
         IP_1.setup(phase=self.phase)
         inv_points = np.arange(0, 100, 1, dtype=float)
         sat = np.zeros_like(inv_points)
-        tot_vol = (np.sum(self.net['pore.volume']) +
-                   np.sum(self.net['throat.volume']))
+        tot_vol = self.net['pore.volume'].sum() + self.net['throat.volume'].sum()
         for i, Pc in enumerate(inv_points):
             IP_1.reset()
             IP_1.set_inlets(pores=self.inlets)
@@ -333,8 +332,8 @@ class MixedPercolationTest:
         np.random.seed(1)
         phys['throat.entry_pressure']=0.0
         phys['pore.entry_pressure']=np.random.random(net.Np)*net.Np
-        self.inlets = net.pores('left')
-        self.outlets = net.pores('right')
+        self.inlets = net.pores('back')
+        self.outlets = net.pores('front')
         np.random.seed(1)
         self.phase['pore.occupancy'] = False
         self.phase['throat.occupancy'] = False
@@ -387,7 +386,7 @@ class MixedPercolationTest:
         assert np.any(IP_1['throat.invasion_sequence']==-1)
 
     def test_late_filling(self):
-        self.setup_class(Np=100)
+        self.setup_class(Np=10)
         net = self.net
         phys = self.phys
         np.random.seed(1)

@@ -1,5 +1,6 @@
 import inspect
 from openpnm.utils import PrintableDict, logging, Workspace
+from openpnm.utils.misc import is_valid_propname
 logger = logging.getLogger(__name__)
 ws = Workspace()
 
@@ -16,8 +17,9 @@ class ModelsDict(PrintableDict):
     ``dependency_graph``, and ``dependency_map``.
 
     """
+
     def dependency_list(self):
-        r'''
+        r"""
         Returns a list of dependencies in the order with which they should be
         called to ensure data is calculated by one model before it's asked for
         by another.
@@ -34,7 +36,7 @@ class ModelsDict(PrintableDict):
         dependency_graph
         dependency_map
 
-        '''
+        """
         import networkx as nx
 
         dtree = self.dependency_graph()
@@ -45,9 +47,15 @@ class ModelsDict(PrintableDict):
         d = nx.algorithms.dag.lexicographical_topological_sort(dtree, sorted)
         return list(d)
 
-    def dependency_graph(self):
+    def dependency_graph(self, deep=False):
         r"""
         Returns a NetworkX graph object of the dependencies
+
+        Parameters
+        ----------
+        deep : bool, optional
+            Defines whether intra- or inter-object dependency graph is desired.
+            Default is False, i.e. only returns dependencies within the object.
 
         See Also
         --------
@@ -59,24 +67,51 @@ class ModelsDict(PrintableDict):
         To visualize the dependencies, the following NetworkX function and
         settings is helpful:
 
-        nx.draw_spectral(d, arrowsize=50, font_size=32, with_labels=True,
-                         node_size=2000, width=3.0, edge_color='lightgrey',
-                         font_weight='bold')
+        nx.draw_spectral(
+            dtree,
+            arrowsize=50,
+            font_size=32,
+            with_labels=True,
+            node_size=2000,
+            width=3.0,
+            edge_color='lightgrey',
+            font_weight='bold'
+        )
 
         """
         import networkx as nx
 
         dtree = nx.DiGraph()
-        for propname in self.keys():
-            dtree.add_node(propname)
-            for dependency in self[propname].values():
-                if dependency in list(self.keys()):
-                    dtree.add_edge(dependency, propname)
+        models = list(self.keys())
+
+        for model in models:
+            dtree.add_node(model)
+            # Filter pore/throat props only
+            dependencies = set()
+            for param in self[model].values():
+                if is_valid_propname(param):
+                    dependencies.add(param)
+            # Add depenency from model's parameters
+            for d in dependencies:
+                if not deep:
+                    if d in models:
+                        dtree.add_edge(d, model)
+                else:
+                    dtree.add_edge(d, model)
+
         return dtree
 
-    def dependency_map(self):
+    def dependency_map(self, ax=None, figsize=None):
         r"""
         Create a graph of the dependency graph in a decent format
+
+        Parameters
+        ----------
+        ax : matplotlib.axis, optional
+            Matplotlib axis object on which dependency map is to be drawn
+
+        figsize : tuple, optional
+            Tuple containing frame size
 
         See Also
         --------
@@ -85,17 +120,34 @@ class ModelsDict(PrintableDict):
 
         """
         import networkx as nx
+        import matplotlib.pyplot as plt
 
         dtree = self.dependency_graph()
-        fig = nx.draw_spectral(dtree,
-                               with_labels=True,
-                               arrowsize=50,
-                               node_size=2000,
-                               edge_color='lightgrey',
-                               width=3.0,
-                               font_size=32,
-                               font_weight='bold')
-        return fig
+        labels = {}
+        for node in dtree.nodes:
+            if node.startswith("pore."):
+                value = node.replace("pore.", "[P] ")
+            elif node.startswith("throat."):
+                value = node.replace("throat.", "[T] ")
+            labels[node] = value
+
+        if ax is None:
+            fig, ax = plt.subplots()
+        fig.set_size_inches(figsize)
+
+        nx.draw_shell(
+            dtree,
+            labels=labels,
+            with_labels=True,
+            edge_color='lightgrey',
+            font_size=12,
+            width=3.0,
+        )
+
+        ax = plt.gca()
+        ax.margins(x=0.2, y=0.02)
+
+        # return ax.figure
 
     def __str__(self):
         horizontal_rule = '―' * 85
@@ -132,7 +184,7 @@ class ModelWrapper(dict):
     def __str__(self):
         horizontal_rule = '―' * 78
         lines = [horizontal_rule]
-        strg = '{0:<25s} {2:<25s} {2}'
+        strg = '{0:<25s} {1:<25s} {2}'
         lines.append(strg.format('Property Name', 'Parameter', 'Value'))
         lines.append(horizontal_rule)
         temp = self.copy()
@@ -146,7 +198,7 @@ class ModelWrapper(dict):
         return '\n'.join(lines)
 
 
-class ModelsMixin():
+class ModelsMixin:
     r"""
     This class is meant to be combined by the Base class in multiple
     inheritence.  This approach is used since Network and Algorithm do not
@@ -284,9 +336,9 @@ class ModelsMixin():
 
         """
         # If empty list of propnames was given, do nothing and return
-        if type(propnames) is list and len(propnames) == 0:
+        if isinstance(propnames, list) and len(propnames) == 0:
             return
-        if type(propnames) is str:  # Convert string to list if necessary
+        if isinstance(propnames, str):  # Convert string to list if necessary
             propnames = [propnames]
         if propnames is None:  # If no props given, then regenerate them all
             propnames = self.models.dependency_list()
@@ -333,7 +385,8 @@ class ModelsMixin():
         # Only regenerate model if regen_mode is correct
         if self.settings['freeze_models']:
             # Don't run ANY models if freeze_models is set to True
-            pass
+            logger.warning(prop + ' was not run since freeze_models ' +
+                           'is set to True in object settings')
         elif regen_mode == 'constant':
             # Only regenerate if data not already in dictionary
             if prop not in self.keys():
@@ -366,7 +419,7 @@ class ModelsMixin():
         The default is both.
 
         """
-        if type(propname) is str:
+        if isinstance(propname, str):
             propname = [propname]
         for item in propname:
             if 'model' in mode:

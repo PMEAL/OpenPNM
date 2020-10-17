@@ -1,5 +1,5 @@
 import os as os
-import scipy as sp
+import numpy as np
 from pathlib import Path
 from openpnm.utils import logging, Project
 from openpnm.network import GenericNetwork
@@ -24,7 +24,14 @@ class MARock(GenericIO):
     """
 
     @classmethod
-    def load(cls, path, voxel_size=1, project=None):
+    def load(cls, *args, **kwargs):
+        r"""
+        This method is being deprecated.  Use ``import_data`` instead.
+        """
+        return cls.import_data(*args, **kwargs)
+
+    @classmethod
+    def import_data(cls, path, voxel_size=1, project=None):
         r"""
         Load data from a 3DMA-Rock extracted network.  This format consists of
         two files: 'rockname.np2th' and 'rockname.th2pn'.  They should be
@@ -64,52 +71,52 @@ class MARock(GenericIO):
                 th2np_file = os.path.join(path, file)
 
         with open(np2th_file, mode='rb') as f:
-            [Np, Nt] = sp.fromfile(file=f, count=2, dtype='u4')
-            net['pore.boundary_type'] = sp.ndarray([Np, ], int)
-            net['throat.conns'] = sp.ones([Nt, 2], int)*(-1)
-            net['pore.coordination'] = sp.ndarray([Np, ], int)
-            net['pore.ID_number'] = sp.ndarray([Np, ], int)
+            [Np, Nt] = np.fromfile(file=f, count=2, dtype='u4')
+            net['pore.boundary_type'] = np.ndarray([Np, ], int)
+            net['throat.conns'] = np.ones([Nt, 2], int)*(-1)
+            net['pore.coordination'] = np.ndarray([Np, ], int)
+            net['pore.ID_number'] = np.ndarray([Np, ], int)
             for i in range(0, Np):
-                ID = sp.fromfile(file=f, count=1, dtype='u4')
+                ID = np.fromfile(file=f, count=1, dtype='u4')
                 net['pore.ID_number'][i] = ID
-                net['pore.boundary_type'][i] = sp.fromfile(file=f, count=1,
+                net['pore.boundary_type'][i] = np.fromfile(file=f, count=1,
                                                            dtype='u1')
-                z = sp.fromfile(file=f, count=1, dtype='u4')[0]
+                z = np.fromfile(file=f, count=1, dtype='u4')[0]
                 net['pore.coordination'][i] = z
-                att_pores = sp.fromfile(file=f, count=z, dtype='u4')
-                att_throats = sp.fromfile(file=f, count=z, dtype='u4')
+                att_pores = np.fromfile(file=f, count=z, dtype='u4')
+                att_throats = np.fromfile(file=f, count=z, dtype='u4')
                 for j in range(0, len(att_throats)):
                     t = att_throats[j] - 1
                     p = att_pores[j] - 1
                     net['throat.conns'][t] = [i, p]
-            net['throat.conns'] = sp.sort(net['throat.conns'], axis=1)
-            net['pore.volume'] = sp.fromfile(file=f, count=Np, dtype='u4')
-            nx = sp.fromfile(file=f, count=1, dtype='u4')
-            nxy = sp.fromfile(file=f, count=1, dtype='u4')
-            pos = sp.fromfile(file=f, count=Np, dtype='u4')
+            net['throat.conns'] = np.sort(net['throat.conns'], axis=1)
+            net['pore.volume'] = np.fromfile(file=f, count=Np, dtype='u4')
+            nx = np.fromfile(file=f, count=1, dtype='u4')
+            nxy = np.fromfile(file=f, count=1, dtype='u4')
+            pos = np.fromfile(file=f, count=Np, dtype='u4')
             ny = nxy/nx
-            ni = sp.mod(pos, nx)
-            nj = sp.mod(sp.floor(pos/nx), ny)
-            nk = sp.floor(sp.floor(pos/nx)/ny)
-            net['pore.coords'] = sp.array([ni, nj, nk]).T
+            ni = np.mod(pos, nx)
+            nj = np.mod(np.floor(pos/nx), ny)
+            nk = np.floor(np.floor(pos/nx)/ny)
+            net['pore.coords'] = np.array([ni, nj, nk]).T
 
         with open(th2np_file, mode='rb') as f:
-            Nt = sp.fromfile(file=f, count=1, dtype='u4')[0]
-            net['throat.area'] = sp.ones([Nt, ], dtype=int)*(-1)
+            Nt = np.fromfile(file=f, count=1, dtype='u4')[0]
+            net['throat.area'] = np.ones([Nt, ], dtype=int)*(-1)
             for i in range(0, Nt):
-                ID = sp.fromfile(file=f, count=1, dtype='u4')
-                net['throat.area'][i] = sp.fromfile(file=f, count=1,
+                ID = np.fromfile(file=f, count=1, dtype='u4')
+                net['throat.area'][i] = np.fromfile(file=f, count=1,
                                                     dtype='f4')
-                numvox = sp.fromfile(file=f, count=1, dtype='u4')
-                att_pores = sp.fromfile(file=f, count=2, dtype='u4')
-            nx = sp.fromfile(file=f, count=1, dtype='u4')
-            nxy = sp.fromfile(file=f, count=1, dtype='u4')
-            pos = sp.fromfile(file=f, count=Nt, dtype='u4')
+                # numvox = np.fromfile(file=f, count=1, dtype='u4')
+                att_pores = np.fromfile(file=f, count=2, dtype='u4')
+            nx = np.fromfile(file=f, count=1, dtype='u4')
+            nxy = np.fromfile(file=f, count=1, dtype='u4')
+            pos = np.fromfile(file=f, count=Nt, dtype='u4')
             ny = nxy/nx
-            ni = sp.mod(pos, nx)
-            nj = sp.mod(sp.floor(pos/nx), ny)
-            nk = sp.floor(sp.floor(pos/nx)/ny)
-            net['throat.coords'] = sp.array([ni, nj, nk]).T
+            ni = np.mod(pos, nx)
+            nj = np.mod(np.floor(pos/nx), ny)
+            nk = np.floor(np.floor(pos/nx)/ny)
+            net['throat.coords'] = np.array([ni, nj, nk]).T
             net['pore.internal'] = net['pore.boundary_type'] == 0
 
         # Convert voxel area and volume to actual dimensions
@@ -122,7 +129,7 @@ class MARock(GenericIO):
         network = cls._update_network(network=network, net=net)
 
         # Trim headless throats before returning
-        ind = sp.where(network['throat.conns'][:, 0] == -1)[0]
+        ind = np.where(network['throat.conns'][:, 0] == -1)[0]
         trim(network=network, throats=ind)
 
         return project

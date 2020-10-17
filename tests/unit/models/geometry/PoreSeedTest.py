@@ -1,5 +1,6 @@
-import openpnm as op
+import numpy as np
 import scipy as sp
+import openpnm as op
 import openpnm.models.geometry.pore_seed as mods
 
 
@@ -16,8 +17,8 @@ class PoreSeedTest:
                            model=f,
                            seed=0,
                            num_range=[0.1, 2])
-        assert sp.amax(self.geo['pore.seed']) > 1
-        assert sp.amin(self.geo['pore.seed']) < 1
+        assert np.amax(self.geo['pore.seed']) > 1
+        assert np.amin(self.geo['pore.seed']) < 1
 
     def test_spatially_correlated(self):
         f = mods.spatially_correlated
@@ -25,8 +26,8 @@ class PoreSeedTest:
                            model=f,
                            weights=[2, 2, 2],
                            regen_mode='normal')
-        assert sp.amin(self.geo['pore.seed'] > 0)
-        assert sp.amax(self.geo['pore.seed'] < 1)
+        assert np.amin(self.geo['pore.seed'] > 0)
+        assert np.amax(self.geo['pore.seed'] < 1)
 
     def test_spatially_correlated_zero_weights(self):
         f = mods.spatially_correlated
@@ -34,8 +35,8 @@ class PoreSeedTest:
                            model=f,
                            weights=[0, 0, 0],
                            regen_mode='normal')
-        assert sp.amin(self.geo['pore.seed'] > 0)
-        assert sp.amax(self.geo['pore.seed'] < 1)
+        assert np.amin(self.geo['pore.seed'] > 0)
+        assert np.amax(self.geo['pore.seed'] < 1)
 
 
 if __name__ == '__main__':

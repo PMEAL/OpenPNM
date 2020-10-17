@@ -1,6 +1,5 @@
-import h5py
-import xml.etree.cElementTree as ET
 from flatdict import FlatDict
+import xml.etree.cElementTree as ET
 from openpnm.io import Dict, GenericIO
 from openpnm.utils import logging
 logger = logging.getLogger(__name__)
@@ -20,7 +19,14 @@ class XDMF(GenericIO):
                  <!DOCTYPE Xdmf SYSTEM "Xdmf.dtd" []>'''
 
     @classmethod
-    def save(cls, network, phases=[], filename=''):
+    def save(cls, *args, **kwargs):
+        r"""
+        This method is being deprecated.  Use ``export_data`` instead.
+        """
+        cls.export_data(*args, **kwargs)
+
+    @classmethod
+    def export_data(cls, network, phases=[], filename=''):
         r"""
         Saves (transient/steady-state) data from the given objects into the
         specified file.
@@ -36,15 +42,15 @@ class XDMF(GenericIO):
         Notes
         -----
         This method only saves the data, not any of the pore-scale models or
-        other attributes.  To save an actual OpenPNM Project use the
-        ``Workspace`` object.
+        other attributes.
 
         """
+        import h5py
         project, network, phases = cls._parse_args(network=network,
                                                    phases=phases)
         network = network[0]
         # Check if any of the phases has time series
-        transient = GenericIO.is_transient(phases=phases)
+        transient = GenericIO._is_transient(phases=phases)
 
         if filename == '':
             filename = project.name
@@ -70,12 +76,12 @@ class XDMF(GenericIO):
         root = create_root('Xdmf')
         domain = create_domain()
         # Iterate over time steps present
-        for t in range(len(t_steps)):
+        for i, t_step in enumerate(t_steps):
             # Define the hdf file
             if not transient:
                 fname_hdf = path.stem+".hdf"
             else:
-                fname_hdf = path.stem+'@'+t_steps[t]+".hdf"
+                fname_hdf = path.stem+'@'+t_step+".hdf"
             path_p = path.parent
             f = h5py.File(path_p.joinpath(fname_hdf), "w")
             # Add coordinate and connection information to top of HDF5 file
@@ -102,40 +108,41 @@ class XDMF(GenericIO):
             # Make HDF5 file with all datasets, and no groups
             for item in D.keys():
                 if D[item].dtype == 'O':
-                    logger.warning(item + ' has dtype object,' +
-                                   ' will not write to file')
+                    logger.warning(item + ' has dtype object,'
+                                   + ' will not write to file')
                     del D[item]
                 elif 'U' in str(D[item][0].dtype):
                     pass
-                elif ('@' in item and t_steps[t] == item.split('@')[1]):
+                elif ('@' in item and t_step == item.split('@')[1]):
                     f.create_dataset(name='/'+item.split('@')[0]+'@t',
                                      shape=D[item].shape,
                                      dtype=D[item].dtype,
-                                     data=D[item])
-                elif ('@' not in item and t == 0):
+                                     data=D[item],
+                                     compression="gzip")
+                elif ('@' not in item and i == 0):
                     f.create_dataset(name='/'+item, shape=D[item].shape,
-                                     dtype=D[item].dtype, data=D[item])
+                                     dtype=D[item].dtype, data=D[item],
+                                     compression="gzip")
             # Create a grid
-            grid = create_grid(Name=t_steps[t], GridType="Uniform")
-            time = create_time(type='Single', Value=t_steps[t])
+            grid = create_grid(Name=t_step, GridType="Uniform")
+            time = create_time(mode='Single', Value=t_step)
             grid.append(time)
             # Add pore and throat properties
             for item in D.keys():
                 if item not in ['coordinates', 'connections']:
-                    if (('@' in item and t_steps[t] == item.split('@')[1]) or
-                            ('@' not in item)):
+                    if ("@" in item and t_step == item.split("@")[1]) or (
+                        "@" not in item
+                    ):
                         attr_type = 'Scalar'
                         shape = D[item].shape
-                        dims = (''.join([str(i) +
-                                         ' ' for i in list(shape)[::-1]]))
+                        dims = (''.join([str(i) + ' ' for i in list(shape)[::-1]]))
                         if '@' in item:
                             item = item.split('@')[0]+'@t'
                             hdf_loc = fname_hdf + ":" + item
-                        elif ('@' not in item and t == 0):
+                        elif ('@' not in item and i == 0):
                             hdf_loc = fname_hdf + ":" + item
-                        elif ('@' not in item and t > 0):
-                            hdf_loc = (path.stem+'@'+t_steps[0]+".hdf" +
-                                       ":" + item)
+                        elif ('@' not in item and i > 0):
+                            hdf_loc = path.stem + '@' + t_steps[0] + ".hdf" + ":" + item
                         attr = create_data_item(value=hdf_loc,
                                                 Dimensions=dims,
                                                 Format='HDF',
@@ -197,9 +204,9 @@ def create_attribute(Name, **attribs):
     return element
 
 
-def create_time(type='Single', Value=None):
+def create_time(mode='Single', Value=None):
     element = ET.Element('Time')
-    if type == 'Single' and Value:
+    if mode == 'Single' and Value:
         element.attrib['Value'] = Value
     return element
 

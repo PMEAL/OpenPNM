@@ -1,4 +1,4 @@
-import scipy as sp
+import numpy as np
 from openpnm.topotools import trim
 from openpnm.utils import logging
 from openpnm.io import GenericIO
@@ -21,8 +21,16 @@ class Statoil(GenericIO):
     specific property.  Headers are not provided in the files, so one must
     refer to various theses and documents to interpret their meaning.
     """
+
     @classmethod
-    def load(cls, path, prefix, network=None):
+    def load(cls, *args, **kwargs):
+        r"""
+        This method is being deprecated.  Use ``import_data`` instead.
+        """
+        return cls.import_data(*args, **kwargs)
+
+    @classmethod
+    def import_data(cls, path, prefix, network=None):
         r"""
         Load data from the \'dat\' files located in specified folder.
 
@@ -53,49 +61,49 @@ class Statoil(GenericIO):
         filename = Path(path.resolve(), prefix+'_link1.dat')
         with open(filename, mode='r') as f:
             link1 = read_table(filepath_or_buffer=f,
-                                  header=None,
-                                  skiprows=1,
-                                  sep=' ',
-                                  skipinitialspace=True,
-                                  index_col=0)
+                               header=None,
+                               skiprows=1,
+                               sep=' ',
+                               skipinitialspace=True,
+                               index_col=0)
         link1.columns = ['throat.pore1', 'throat.pore2', 'throat.radius',
                          'throat.shape_factor', 'throat.total_length']
         # Add link1 props to net
-        net['throat.conns'] = sp.vstack((link1['throat.pore1']-1,
+        net['throat.conns'] = np.vstack((link1['throat.pore1']-1,
                                          link1['throat.pore2']-1)).T
-        net['throat.conns'] = sp.sort(net['throat.conns'], axis=1)
-        net['throat.radius'] = sp.array(link1['throat.radius'])
-        net['throat.shape_factor'] = sp.array(link1['throat.shape_factor'])
-        net['throat.total_length'] = sp.array(link1['throat.total_length'])
+        net['throat.conns'] = np.sort(net['throat.conns'], axis=1)
+        net['throat.radius'] = np.array(link1['throat.radius'])
+        net['throat.shape_factor'] = np.array(link1['throat.shape_factor'])
+        net['throat.total_length'] = np.array(link1['throat.total_length'])
 
         filename = Path(path.resolve(), prefix+'_link2.dat')
         with open(filename, mode='r') as f:
             link2 = read_table(filepath_or_buffer=f,
-                                  header=None,
-                                  sep=' ',
-                                  skipinitialspace=True,
-                                  index_col=0)
+                               header=None,
+                               sep=' ',
+                               skipinitialspace=True,
+                               index_col=0)
         link2.columns = ['throat.pore1', 'throat.pore2',
                          'throat.pore1_length', 'throat.pore2_length',
                          'throat.length', 'throat.volume',
                          'throat.clay_volume']
         # Add link2 props to net
-        cl_t = sp.array(link2['throat.length'])
+        cl_t = np.array(link2['throat.length'])
         net['throat.length'] = cl_t
         net['throat.conduit_lengths.throat'] = cl_t
-        net['throat.volume'] = sp.array(link2['throat.volume'])
-        cl_p1 = sp.array(link2['throat.pore1_length'])
+        net['throat.volume'] = np.array(link2['throat.volume'])
+        cl_p1 = np.array(link2['throat.pore1_length'])
         net['throat.conduit_lengths.pore1'] = cl_p1
-        cl_p2 = sp.array(link2['throat.pore2_length'])
+        cl_p2 = np.array(link2['throat.pore2_length'])
         net['throat.conduit_lengths.pore2'] = cl_p2
-        net['throat.clay_volume'] = sp.array(link2['throat.clay_volume'])
+        net['throat.clay_volume'] = np.array(link2['throat.clay_volume'])
         # ---------------------------------------------------------------------
         # Parse the node1 file
         filename = Path(path.resolve(), prefix+'_node1.dat')
         with open(filename, mode='r') as f:
             row_0 = f.readline().split()
             num_lines = int(row_0[0])
-            array = sp.ndarray([num_lines, 6])
+            array = np.ndarray([num_lines, 6])
             for i in range(num_lines):
                 row = f.readline()\
                        .replace('\t', ' ').replace('\n', ' ').split()
@@ -104,7 +112,7 @@ class Statoil(GenericIO):
         node1.columns = ['pore.x_coord', 'pore.y_coord', 'pore.z_coord',
                          'pore.coordination_number']
         # Add node1 props to net
-        net['pore.coords'] = sp.vstack((node1['pore.x_coord'],
+        net['pore.coords'] = np.vstack((node1['pore.x_coord'],
                                         node1['pore.y_coord'],
                                         node1['pore.z_coord'])).T
         # ---------------------------------------------------------------------
@@ -112,17 +120,17 @@ class Statoil(GenericIO):
         filename = Path(path.resolve(), prefix+'_node2.dat')
         with open(filename, mode='r') as f:
             node2 = read_table(filepath_or_buffer=f,
-                                  header=None,
-                                  sep=' ',
-                                  skipinitialspace=True,
-                                  index_col=0)
+                               header=None,
+                               sep=' ',
+                               skipinitialspace=True,
+                               index_col=0)
         node2.columns = ['pore.volume', 'pore.radius', 'pore.shape_factor',
                          'pore.clay_volume']
         # Add node2 props to net
-        net['pore.volume'] = sp.array(node2['pore.volume'])
-        net['pore.radius'] = sp.array(node2['pore.radius'])
-        net['pore.shape_factor'] = sp.array(node2['pore.shape_factor'])
-        net['pore.clay_volume'] = sp.array(node2['pore.clay_volume'])
+        net['pore.volume'] = np.array(node2['pore.volume'])
+        net['pore.radius'] = np.array(node2['pore.radius'])
+        net['pore.shape_factor'] = np.array(node2['pore.shape_factor'])
+        net['pore.clay_volume'] = np.array(node2['pore.clay_volume'])
         net['throat.area'] = ((net['throat.radius']**2)
                               / (4.0*net['throat.shape_factor']))
         net['pore.area'] = ((net['pore.radius']**2)
@@ -134,18 +142,18 @@ class Statoil(GenericIO):
 
         # Use OpenPNM Tools to clean up network
         # Trim throats connected to 'inlet' or 'outlet' reservoirs
-        trim1 = sp.where(sp.any(net['throat.conns'] == -1, axis=1))[0]
+        trim1 = np.where(np.any(net['throat.conns'] == -1, axis=1))[0]
         # Apply 'outlet' label to these pores
         outlets = network['throat.conns'][trim1, 1]
         network['pore.outlets'] = False
         network['pore.outlets'][outlets] = True
-        trim2 = sp.where(sp.any(net['throat.conns'] == -2, axis=1))[0]
+        trim2 = np.where(np.any(net['throat.conns'] == -2, axis=1))[0]
         # Apply 'inlet' label to these pores
         inlets = network['throat.conns'][trim2, 1]
         network['pore.inlets'] = False
         network['pore.inlets'][inlets] = True
         # Now trim the throats
-        to_trim = sp.hstack([trim1, trim2])
+        to_trim = np.hstack([trim1, trim2])
         trim(network=network, throats=to_trim)
 
         return network.project

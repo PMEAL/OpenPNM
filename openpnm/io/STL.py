@@ -14,8 +14,15 @@ class STL(GenericIO):
     """
 
     @classmethod
-    def save(cls, network, phases=[], filename='', maxsize='auto',
-             fileformat='STL Format', logger_level=0):
+    def save(cls, *args, **kwargs):
+        r"""
+        This method is being deprecated.  Use ``export_data`` instead.
+        """
+        cls.export_data(*args, **kwargs)
+
+    @classmethod
+    def export_data(cls, network, phases=[], filename='', maxsize='auto',
+                    fileformat='STL Format', logger_level=0):
         r"""
         Saves (transient/steady-state) data from the given objects into the
         specified file.
@@ -58,8 +65,8 @@ class STL(GenericIO):
             from netgen.meshing import SetMessageImportance as log
             log(logger_level)
         except ModuleNotFoundError:
-            logger.warning('Module "netgen.meshing" not found. ' +
-                           'The "logger_level" ignored.')
+            logger.warning('Module "netgen.meshing" not found. '
+                           + 'The "logger_level" ignored.')
 
         project, network, phases = cls._parse_args(network=network,
                                                    phases=phases)

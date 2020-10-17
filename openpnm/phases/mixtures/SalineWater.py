@@ -5,8 +5,7 @@ logger = logging.getLogger(__name__)
 
 
 class SalineWater(GenericMixture):
-    r"""
-    """
+
     def __init__(self, network, components=None, **kwargs):
         if components is not None:
             logger.warn('Ignoring received components')
@@ -15,10 +14,11 @@ class SalineWater(GenericMixture):
         Cl = species.ions.Cl(network=network, name='Cl_'+self.name)
         Na = species.ions.Na(network=network, name='Na_'+self.name)
         W = species.liquids.H2O(network=network, name='H2O_'+self.name)
-        self.settings['components'] = [Cl.name, Na.name, W.name]
+        self.set_component([Cl, Na, W])
         self.set_concentration(component=W, values=998/0.018)
         self.set_concentration(component=Na, values=0.0)
         self.set_concentration(component=Cl, values=0.0)
+        self.update_mole_fractions()
         self.add_model(propname='pore.salt_concentration',
                        model=mods.misc.summation,
                        props=['pore.concentration.Na_'+self.name,
@@ -34,4 +34,3 @@ class SalineWater(GenericMixture):
                        salinity='pore.salinity')
         self.add_model(propname='pore.permittivity',
                        model=mods.phases.permittivity.water)
-        self.update_mole_fractions()

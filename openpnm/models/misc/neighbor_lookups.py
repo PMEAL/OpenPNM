@@ -29,8 +29,6 @@ def from_neighbor_throats(target, prop=None, throat_prop='pore.seed',
     mode : string
         Controls how the pore property is calculated.  Options are 'min',
         'max' and 'mean'.
-    ignore_nans : boolean (default is ``True``)
-        If ``True`` the result will ignore ``nans`` in the neighbors
 
     Returns
     -------
@@ -40,27 +38,34 @@ def from_neighbor_throats(target, prop=None, throat_prop='pore.seed',
     """
     prj = target.project
     network = prj.network
-    lookup = prj.find_full_domain(target)
-    Ps = lookup.map_pores(target.pores(), target)
+    boss = prj.find_full_domain(target)
     if prop is not None:
         throat_prop = prop
-    data = lookup[throat_prop]
-    if ignore_nans:
-        data = np.ma.MaskedArray(data=data, mask=np.isnan(data))
-    neighborTs = network.find_neighbor_throats(pores=Ps,
-                                               flatten=False,
-                                               mode='or')
-    values = np.ones((np.shape(Ps)[0],))*np.nan
+    data = boss[throat_prop]
+    nans = np.isnan(data)
+    im = network.create_incidence_matrix()
     if mode == 'min':
-        for pore in range(len(Ps)):
-            values[pore] = np.amin(data[neighborTs[pore]])
+        if ignore_nans:
+            data[nans] = np.inf
+        values = np.ones((network.Np, ))*np.inf
+        np.minimum.at(values, im.row, data[im.col])
     if mode == 'max':
-        for pore in range(len(Ps)):
-            values[pore] = np.amax(data[neighborTs[pore]])
+        if ignore_nans:
+            data[nans] = -np.inf
+        values = np.ones((network.Np, ))*-np.inf
+        np.maximum.at(values, im.row, data[im.col])
     if mode == 'mean':
-        for pore in range(len(Ps)):
-            values[pore] = np.mean(data[neighborTs[pore]])
-    return np.array(values)
+        if ignore_nans:
+            data[nans] = 0
+        values = np.zeros((network.Np, ))
+        np.add.at(values, im.row, data[im.col])
+        counts = np.zeros((network.Np, ))
+        np.add.at(counts, im.row, np.ones((network.Nt, ))[im.col])
+        if ignore_nans:
+            np.subtract.at(counts, im.row, nans[im.col])
+        values = values/counts
+    Ps = boss.map_pores(target.pores(), target)
+    return np.array(values)[Ps]
 
 
 def from_neighbor_pores(target, prop=None, pore_prop='pore.seed', mode='min',
@@ -92,19 +97,22 @@ def from_neighbor_pores(target, prop=None, pore_prop='pore.seed', mode='min',
 
     """
     prj = target.project
+    lookup = prj.find_full_domain(target)
     network = prj.network
     throats = network.map_throats(target.throats(), target)
     P12 = network.find_connected_pores(throats)
-    lookup = prj.find_full_domain(target)
     if prop is not None:
         pore_prop = prop
     pvalues = lookup[pore_prop][P12]
     if ignore_nans:
         pvalues = np.ma.MaskedArray(data=pvalues, mask=np.isnan(pvalues))
-    if mode == 'min':
-        value = np.amin(pvalues, axis=1)
-    if mode == 'max':
-        value = np.amax(pvalues, axis=1)
-    if mode == 'mean':
-        value = np.mean(pvalues, axis=1)
+    try:  # If pvalues is not empty
+        if mode == 'min':
+            value = np.amin(pvalues, axis=1)
+        if mode == 'max':
+            value = np.amax(pvalues, axis=1)
+        if mode == 'mean':
+            value = np.mean(pvalues, axis=1)
+    except np.AxisError:  # Handle case of empty pvalues
+        value = []
     return np.array(value)

@@ -1,6 +1,20 @@
 [run]
+
+source =
+    openpnm
+
+[report]
+
 omit =
-    *__init__*
-    test/*
+    tests/*
+    scripts/*
+    examples/*
+    */__init__.py
+    openpnm/__version__.py
+    example.py
     setup.py
-    example_script.py
+
+exclude_lines =
+    pragma: no cover
+    raise NotImplementedError
+    if __name__ == .__main__.:

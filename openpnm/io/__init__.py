@@ -24,7 +24,7 @@ parameters.
 +----------+------------------------------------------------------------------+
 | Pandas   | Combines all data arrays into a Pandas DataFrame object          |
 +----------+------------------------------------------------------------------+
-| OpenpnmIO| Reads and write the normal OpenPNM formats                       |
+| Pickle   | Read and write OpenPNM Workspaces, Projects, objects as Pickles  |
 +----------+------------------------------------------------------------------+
 | CSV      | Reads and writes CSV (comma-separated-value files) containing    |
 |          | pore and throat data                                             |
@@ -52,6 +52,8 @@ parameters.
 +----------+------------------------------------------------------------------+
 | PerGeos  | The PerGeos format is used by the commercial software Avizo      |
 +----------+------------------------------------------------------------------+
+| PoreSpy  | PoreSpy contains the snow extraction algorithm                   |
++----------+------------------------------------------------------------------+
 | iMorph   | iMorph is a graphical interface program that provides some image |
 |          | analysis tools for porous media                                  |
 +----------+------------------------------------------------------------------+
@@ -66,7 +68,7 @@ no plans to implement writing such files.
 
 """
 from .GenericIO import GenericIO
-from .OpenpnmIO import OpenpnmIO
+from .Pickle import Pickle
 from .Dict import Dict
 from .VTK import VTK
 from .CSV import CSV
@@ -76,6 +78,7 @@ from .iMorph import iMorph
 from .MARock import MARock
 from .Statoil import Statoil
 from .PerGeos import PerGeos
+from .PoreSpy import PoreSpy
 from .Pandas import Pandas
 from .HDF5 import HDF5
 from .XDMF import XDMF
@@ -83,3 +86,4 @@ from .JSONGraphFormat import JSONGraphFormat
 from .STL import STL
 from .COMSOL import COMSOL
 from .Salome import Salome
+from .PNM import PNM

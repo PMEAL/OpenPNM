@@ -1,10 +1,11 @@
 import os
 import json
 import pickle
-import scipy as sp
+import numpy as np
 from pathlib import Path
 from openpnm.utils import logging
 from openpnm.io import GenericIO
+from openpnm.geometry import Imported
 import openpnm.models.geometry as gmods
 from openpnm.network import GenericNetwork
 logger = logging.getLogger(__name__)
@@ -43,9 +44,16 @@ class JSONGraphFormat(GenericIO):
             return False
 
     @classmethod
-    def save(self, network, filename=''):
+    def save(cls, *args, **kwargs):
         r"""
-        Write the wetwork to disk as a JGF file.
+        This method will be deprecated. Use ``export_data`` instead.
+        """
+        cls.export_data(*args, **kwargs)
+
+    @classmethod
+    def export_data(cls, network, filename=''):
+        r"""
+        Write the network to disk as a JGF file.
 
         Parameters
         ----------
@@ -56,7 +64,7 @@ class JSONGraphFormat(GenericIO):
         """
 
         # Ensure output file is valid
-        filename = self._parse_filename(filename=filename, ext='json')
+        filename = cls._parse_filename(filename=filename, ext='json')
 
         # Ensure network contains the required properties
         try:
@@ -110,7 +118,14 @@ class JSONGraphFormat(GenericIO):
             json.dump(json_obj, file, indent=2)
 
     @classmethod
-    def load(self, filename, project=None):
+    def load(cls, *args, **kwargs):
+        r"""
+        This method will be deprecated.  Use ``import_data`` instead
+        """
+        return cls.import_data(*args, **kwargs)
+
+    @classmethod
+    def import_data(cls, filename, project=None):
         r"""
         Loads the JGF file onto the given project.
 
@@ -131,12 +146,12 @@ class JSONGraphFormat(GenericIO):
         """
 
         # Ensure input file is valid
-        filename = self._parse_filename(filename=filename, ext='json')
+        filename = cls._parse_filename(filename=filename, ext='json')
 
         # Load and validate input JSON
         with open(filename, 'r') as file:
             json_file = json.load(file)
-            if not self.__validate_json__(json_file):
+            if not cls.__validate_json__(json_file):
                 raise Exception('FIle is not in the JSON Graph Format')
 
         # Extract graph metadata from JSON
@@ -145,16 +160,16 @@ class JSONGraphFormat(GenericIO):
 
         # Extract node properties from JSON
         nodes = sorted(json_file['graph']['nodes'], key=lambda node: int(node['id']))
-        x = sp.array([node['metadata']['node_coordinates']['x'] for node in nodes])
-        y = sp.array([node['metadata']['node_coordinates']['y'] for node in nodes])
-        z = sp.array([node['metadata']['node_coordinates']['z'] for node in nodes])
+        x = np.array([node['metadata']['node_coordinates']['x'] for node in nodes])
+        y = np.array([node['metadata']['node_coordinates']['y'] for node in nodes])
+        z = np.array([node['metadata']['node_coordinates']['z'] for node in nodes])
 
         # Extract link properties from JSON
         edges = sorted(json_file['graph']['edges'], key=lambda edge: int(edge['id']))
-        source = sp.array([int(edge['source']) for edge in edges])
-        target = sp.array([int(edge['target']) for edge in edges])
-        link_length = sp.array([edge['metadata']['link_length'] for edge in edges])
-        link_squared_radius = sp.array(
+        source = np.array([int(edge['source']) for edge in edges])
+        target = np.array([int(edge['target']) for edge in edges])
+        link_length = np.array([edge['metadata']['link_length'] for edge in edges])
+        link_squared_radius = np.array(
             [edge['metadata']['link_squared_radius'] for edge in edges])
 
         # Generate network object
@@ -162,22 +177,30 @@ class JSONGraphFormat(GenericIO):
 
         # Define primitive throat properties
         network['throat.length'] = link_length
-        network['throat.conns'] = sp.column_stack([source, target])
-        network['throat.diameter'] = 2.0 * sp.sqrt(link_squared_radius)
-
-        # Define derived throat properties
-        network['throat.area'] = gmods.throat_area.cylinder(network)
-        network['throat.volume'] = gmods.throat_volume.cylinder(network)
-        network['throat.perimeter'] = gmods.throat_perimeter.cylinder(network)
-        network['throat.surface_area'] = gmods.throat_surface_area.cylinder(network)
+        network['throat.conns'] = np.column_stack([source, target])
+        network['throat.diameter'] = 2.0 * np.sqrt(link_squared_radius)
 
         # Define primitive pore properties
-        network['pore.index'] = sp.arange(number_of_nodes)
-        network['pore.coords'] = sp.column_stack([x, y, z])
-        network['pore.diameter'] = sp.zeros(number_of_nodes)
+        network['pore.index'] = np.arange(number_of_nodes)
+        network['pore.coords'] = np.column_stack([x, y, z])
+        network['pore.diameter'] = np.zeros(number_of_nodes)
+
+        geom = Imported(network=network)
+
+        # Define derived throat properties
+        geom.add_model(propname='throat.area',
+                       model=gmods.throat_area.cylinder)
+        geom.add_model(propname='throat.volume',
+                       model=gmods.throat_volume.cylinder)
+        geom.add_model(propname='throat.perimeter',
+                       model=gmods.throat_perimeter.cylinder)
+        geom.add_model(propname='throat.surface_area',
+                       model=gmods.throat_surface_area.cylinder)
 
         # Define derived pore properties
-        network['pore.area'] = gmods.pore_area.sphere(network)
-        network['pore.volume'] = gmods.pore_volume.sphere(network)
+        geom.add_model(propname='pore.area',
+                       model=gmods.pore_area.sphere)
+        geom.add_model(propname='pore.volume',
+                       model=gmods.pore_volume.sphere)
 
         return network.project

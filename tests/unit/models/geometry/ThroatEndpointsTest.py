@@ -61,6 +61,23 @@ class ThroatEndpointsTest:
         assert_allclose(EP2, desired=EP2d)
         del self.geo['throat.centroid']
 
+    def test_spherical_pores_with_throat_centroid_and_overlap(self):
+        self.geo['throat.centroid'] = np.array([[0, 0.5, 1],
+                                                [0, 1.5, 0]]) + self.base
+        self.geo['pore.diameter'] = [1.5, 1.0, 0.5]
+        self.geo['throat.diameter'] = 0.25
+        self.geo.add_model(propname='throat.endpoints',
+                            model=mods.spherical_pores,
+                            regen_mode='normal')
+        # Only check throat 1->2, 2->3 is already tested (no-overlap)
+        EP12_head = self.geo['throat.endpoints.head'][0]
+        EP12_tail = self.geo['throat.endpoints.tail'][0]
+        EP12_head_desired = np.array([0, 0.29348392, 0.58696784]) + self.base
+        EP12_tail_desired = np.array([0, 0.84627033, 0.30745935]) + self.base
+        assert_allclose(EP12_head, desired=EP12_head_desired)
+        assert_allclose(EP12_tail, desired=EP12_tail_desired)
+        del self.geo["throat.centroid"]
+
     def test_cubic_pores(self):
         self.geo['pore.diameter'] = 0.5
         self.geo['throat.diameter'] = 0.25
@@ -322,15 +339,14 @@ class ThroatEndpointsTest:
 
         def throat_vector(network):
             cn = network['throat.conns']
-            vec = (network['pore.coords'][cn[:, 1]] -
-                   network['pore.coords'][cn[:, 0]])
+            vec = network['pore.coords'][cn[:, 1]] - network['pore.coords'][cn[:, 0]]
             return vec/np.linalg.norm(vec, axis=1)[:, np.newaxis]
 
         conds = []
         for n in N:
             lc = length/n
             net = op.network.Cubic(shape=[n, 1, 1], spacing=lc)
-            net.add_boundary_pores(labels=['front', 'back'])
+            net.add_boundary_pores(labels=['left', 'right'])
 
             Ps = net.pores('*boundary', mode='not')
             Ts = net.throats('*boundary', mode='not')
@@ -364,8 +380,8 @@ class ThroatEndpointsTest:
                             model=pm.diffusive_conductance.ordinary_diffusion)
             FD = op.algorithms.FickianDiffusion(network=net)
             FD.setup(phase=air)
-            FD.set_value_BC(pores=net.pores('front_boundary'), values=1.0)
-            FD.set_value_BC(pores=net.pores('back_boundary'), values=0.0)
+            FD.set_value_BC(pores=net.pores('left_boundary'), values=1.0)
+            FD.set_value_BC(pores=net.pores('right_boundary'), values=0.0)
             FD.run()
             D = FD.calc_effective_diffusivity(domain_area=area,
                                               domain_length=length)

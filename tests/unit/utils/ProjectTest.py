@@ -1,8 +1,8 @@
-import openpnm as op
-import scipy as sp
-import pytest
-from pathlib import Path
 import os
+import pytest
+import numpy as np
+import openpnm as op
+from pathlib import Path
 
 
 class ProjectTest:
@@ -50,20 +50,6 @@ class ProjectTest:
         assert proj.name == new_name
         assert proj.name in self.ws.keys()
         assert old_name not in self.ws.keys()
-
-    def test_grid_printing(self):
-        d = self.proj.get_grid(astype='dict')
-        assert d == {
-            'phase_01': {'geo_01': 'phys_01', 'geo_02': 'phys_02'},
-            'phase_02': {'geo_01': 'phys_03', 'geo_02': 'phys_04'}}
-
-        s = '┌Project: sim_01────────────┬──────────────┐\n' \
-            '│   net_01   │   phase_01   │   phase_02   │\n' \
-            '├────────────┼──────────────┼──────────────┤\n' \
-            '│   geo_01   │   phys_01    │   phys_03    │\n' \
-            '│   geo_02   │   phys_02    │   phys_04    │\n' \
-            '└────────────┴──────────────┴──────────────┘\n'
-        assert print(self.proj.grid) == print(s)
 
     def test_grid_access(self):
         g = self.proj.grid
@@ -283,13 +269,13 @@ class ProjectTest:
         assert len(physics1) == 2
         assert len(physics2) == 2
         # Make sure lists are mutually exclusive
-        assert ~sp.all([item in physics2 for item in physics1])
+        assert ~np.all([item in physics2 for item in physics1])
 
     def test_find_physics_no_phase_or_geometry(self):
         proj = self.proj
         a = proj.find_physics()
         b = proj.physics().values()
-        assert sp.all([item in b for item in a])
+        assert np.all([item in b for item in a])
 
     def test_find_full_domain_geometry(self):
         proj = self.proj
@@ -350,12 +336,6 @@ class ProjectTest:
         b = self.proj[a.name]
         assert a is b
 
-    def test_comments(self):
-        proj = self.proj
-        proj.comments = 'test comment'
-        assert 'test comment' in proj._comments.values()
-        proj.comments
-
     def test_print(self):
         proj = self.proj
         s = proj.__str__()
@@ -369,7 +349,10 @@ class ProjectTest:
         new_proj = self.ws.new_project()
         new_proj.load_object(name+'.net')
         assert new_proj.network.name == name
-        os.remove(name+'.net')
+        try:
+            os.remove(name+'.net')
+        except PermissionError:
+            print('Could not delete ' + name + '.net')
 
     def test_load_object_from_fixture(self):
         path = Path(os.path.realpath(__file__),
@@ -380,35 +363,34 @@ class ProjectTest:
         assert len(new_proj) == 1
         assert new_proj.network._isa('network')
 
-    def test_dump_and_fetch_data(self):
-        proj = self.ws.copy_project(self.proj)
-        proj._dump_data()
-        # Ensure only pore.coords and throat.conns are found
-        assert sum([len(item.props()) for item in proj]) == 2
-        proj._fetch_data()
-        assert sp.any([len(item.props()) for item in proj])
-        os.remove(proj.name+'.hdf5')
-
     def test_export_data(self):
         fname = 'export_data_tests'
         self.proj.export_data(phases=self.phase1, filename=fname,
-                              filetype='vtp')
+                              filetype='vtk')
         os.remove(fname+'.vtp')
-        self.proj.export_data(phases=self.phase1, filename=fname+'.vtp')
+        self.proj.export_data(phases=self.phase1, filename=fname+'.vtk')
         os.remove(fname+'.vtp')
         self.proj.export_data(phases=self.phase1, filename=fname,
                               filetype='csv')
         os.remove(fname+'.csv')
         self.proj.export_data(phases=self.phase1, filename=fname,
-                              filetype='xmf')
+                              filetype='xdmf')
         os.remove(fname+'.xmf')
         os.remove(fname+'.hdf')
         self.proj.export_data(phases=self.phase1, filename=fname,
-                              filetype='hdf')
+                              filetype='hdf5')
         os.remove(fname+'.hdf')
         self.proj.export_data(phases=self.phase1, filename=fname,
                               filetype='mat')
         os.remove(fname+'.mat')
+
+    def test_inspect_pores_and_throats(self):
+        df = self.proj.inspect_locations(element='pores', indices=[0, 2, 3])
+        assert df.shape[1] == 3
+        assert self.net.name + '.pore.coords_X' in df.index
+        df = self.proj.inspect_locations(element='throats', indices=[0, 1, 3])
+        assert df.shape[1] == 3
+        assert self.net.name + '.throat.conns_head' in df.index
 
 
 if __name__ == '__main__':

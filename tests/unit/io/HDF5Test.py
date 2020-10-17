@@ -1,8 +1,9 @@
-import openpnm as op
-import scipy as sp
-import pytest
 import py
 import os
+import pytest
+import numpy as np
+import scipy as sp
+import openpnm as op
 
 
 class HDF5Test:
@@ -55,7 +56,7 @@ class HDF5Test:
         self.phys_4['pore.baz'] = 22
         self.phys_4['throat.baz'] = 22
 
-        self.net['pore.object'] = sp.ones(self.net.Np, dtype=object)
+        self.net['pore.object'] = np.ones(self.net.Np, dtype=object)
 
     def teardown_class(self):
         ws = op.Workspace()
@@ -70,10 +71,6 @@ class HDF5Test:
         filename = f.filename
         f.close()
         os.remove(filename)
-
-    def test_from_hdf5(self):
-        with pytest.raises(NotImplementedError):
-            op.io.HDF5.from_hdf5()
 
     def test_print(self, tmpdir):
         fname = tmpdir.join(self.net.project.name)

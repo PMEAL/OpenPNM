@@ -1,9 +1,10 @@
 import time
-import h5py
-import numpy as np
+import uuid
 import openpnm
+import numpy as np
 from copy import deepcopy
 from openpnm.utils import SettingsDict, HealthDict, Workspace, logging
+from .Grid import Tableist
 logger = logging.getLogger(__name__)
 ws = Workspace()
 
@@ -32,53 +33,24 @@ class Project(list):
     --------
     Workspace
 
-    Notes
-    -----
-    The following table shows all the methods that are available on the Project
-    objects along with a very brief description:
-
-    +------------------+-------------------------------------------------+
-    | Method           | Description                                     |
-    +==================+=================================================+
-    | export_data      | Export the pore and throat data from the giv... |
-    +------------------+-------------------------------------------------+
-    | import_data      |                                                 |
-    +------------------+-------------------------------------------------+
-    | purge_object     | Remove an object from the Project.  This rem... |
-    +------------------+-------------------------------------------------+
-    | load_object      | Loads a single object from a file               |
-    +------------------+-------------------------------------------------+
-    | save_object      | Saves the given object to a file                |
-    +------------------+-------------------------------------------------+
-    | find_physics     | Find the Physics object(s) associated with a... |
-    +------------------+-------------------------------------------------+
-    | find_geometry    | Find the Geometry associated with a given Ph... |
-    +------------------+-------------------------------------------------+
-    | find_phase       | Find the Phase associated with a given object.  |
-    +------------------+-------------------------------------------------+
-    | check_geometr... | Perform a check to find pores with overlappi... |
-    +------------------+-------------------------------------------------+
-    | check_physics... | Perform a check to find pores which have ove... |
-    +------------------+-------------------------------------------------+
-
     """
 
     def __init__(self, *args, **kwargs):
         name = kwargs.pop('name', None)
         super().__init__(*args, **kwargs)
-        # Register self with workspace
-        ws[name] = self
         self.settings = SettingsDict()
-        self.comments = 'Using OpenPNM ' + openpnm.__version__
+        ws[name] = self  # Register self with workspace
+        self.settings['_uuid'] = str(uuid.uuid4())
 
     def extend(self, obj):
         r"""
         This function is used to add objects to the project.  Arguments can
         be single OpenPNM objects, an OpenPNM project list, or a plain list of
-        OpenPNM objects.
+        OpenPNM objects.  Note that if an object has the same name as one
+        already existing on the project, the it will be renamed automatically.
 
         """
-        if type(obj) is not list:
+        if not isinstance(obj, list):
             obj = [obj]
         for item in obj:
             if hasattr(item, '_mro'):
@@ -87,6 +59,10 @@ class Project(list):
                         raise Exception('Project already has a network')
                 # Must use append since extend breaks the dicts up into
                 # separate objects, while append keeps it as a single object.
+                if item in self:
+                    raise Exception('Supplied object already part of project')
+                if item.name in self.names:
+                    item.name = self._generate_name(item)
                 super().append(item)
             else:
                 raise Exception('Only OpenPNM objects can be added')
@@ -196,10 +172,19 @@ class Project(list):
         proj : list
             A new Project object containing copies of all objects
 
+        Notes
+        -----
+        Because they are new objects, they are given a new uuid
+        (``obj.settings['_uuid']``), but the uuid of the original object is
+        also stored (``obj.settings['_uuid_old']``) for reference.
+
         """
         if name is None:
             name = ws._gen_name()
         proj = deepcopy(self)
+        for item in proj:
+            item.settings['_uuid'] = str(uuid.uuid4())
+        self.settings['_uuid'] = str(uuid.uuid4())
         ws[name] = proj
         return proj
 
@@ -220,7 +205,7 @@ class Project(list):
     name = property(fget=_get_name, fset=_set_name)
 
     def __getitem__(self, key):
-        if type(key) == str:
+        if isinstance(key, str):
             obj = None
             for item in self:
                 if item.name == key:
@@ -253,12 +238,11 @@ class Project(list):
             return obj
         # If phase happens to be in settings (i.e. algorithm), look it up
         if 'phase' in obj.settings.keys():
-            phase = self.phases()[obj.settings['phase']]
-            return phase
+            return self.phases()[obj.settings['phase']]
         # Otherwise find it using bottom-up approach (i.e. look in phase keys)
-        for phase in self.phases().values():
-            if ('pore.'+obj.name in phase) or ('throat.'+obj.name in phase):
-                return phase
+        for item in self.phases().values():
+            if ('pore.' + obj.name in item) or ('throat.' + obj.name in item):
+                return item
         # If all else fails, throw an exception
         raise Exception('Cannot find a phase associated with '+obj.name)
 
@@ -333,7 +317,8 @@ class Project(list):
             phases = list(self.phases().values())
             phys = physics[phases.index(phase)]
             return phys
-        elif geometry:
+
+        if geometry:
             result = []
             net = self.network
             geoPs = net['pore.'+geometry.name]
@@ -350,15 +335,16 @@ class Project(list):
                         temp = phys
                 result.append(temp)
             return result
-        elif phase:
+
+        if phase:
             names = set(self.physics().keys())
             keys = set([item.split('.')[-1] for item in phase.keys()])
             hits = names.intersection(keys)
             phys = [self.physics().get(i, None) for i in hits]
             return phys
-        else:
-            phys = list(self.physics().values())
-            return phys
+
+        phys = list(self.physics().values())
+        return phys
 
     def find_full_domain(self, obj):
         r"""
@@ -378,19 +364,17 @@ class Project(list):
 
         """
         if 'Subdomain' not in obj._mro():
-            # Network, Phase, Alg
+            # Network, Phase, Algorithm
             return obj
-        else:
-            if obj._isa() == 'geometry':
-                # Geom
-                return self.network
-            else:
-                # Phys
-                return self.find_phase(obj)
+        if obj._isa() == 'geometry':
+            # Geometry
+            return self.network
+        # Physics
+        return self.find_phase(obj)
 
     def _validate_name(self, name):
         if name in self.names:
-            raise Exception('An object already exists named '+name)
+            raise Exception('Another object is already named '+name)
         for item in self:
             for key in item.keys():
                 if key.split('.')[1] == name:
@@ -398,8 +382,12 @@ class Project(list):
 
     def _generate_name(self, obj):
         prefix = obj.settings['prefix']
-        num = str(len([item for item in self if item._isa() == obj._isa()]))
-        name = prefix + '_' + num.zfill(2)
+        num = len(self._get_objects_by_type(obj._isa())) + 1
+        name = prefix + '_' + str(num).zfill(2)
+        try:
+            self._validate_name(name)
+        except Exception:
+            name = prefix + '_' + str(np.random.randint(100, 999))
         return name
 
     @property
@@ -437,7 +425,7 @@ class Project(list):
         a Phase is like removing a column.
 
         """
-        if type(obj) == list:
+        if isinstance(obj, list):
             for item in obj:
                 self.purge_object(obj=item, deep=deep)
             return
@@ -467,7 +455,7 @@ class Project(list):
 
     def save_object(self, obj):
         r"""
-        Saves the given object or list of objects to a file
+        Saves the given object or list of objects to a pickle file
 
         Parameters
         ----------
@@ -475,12 +463,12 @@ class Project(list):
             The objects to be saved.  Depending on the object type, the file
             extension will be one of 'net', 'geo', 'phase', 'phys' or 'alg'.
         """
-        from openpnm.io import OpenpnmIO
-        OpenpnmIO.save_object_to_file(objs=obj)
+        from openpnm.io import Pickle
+        Pickle.save_object_to_file(objs=obj)
 
     def load_object(self, filename):
         r"""
-        Loads a single object from a file
+        Loads a single object from a pickle file
 
         Parameters
         ----------
@@ -491,10 +479,10 @@ class Project(list):
             object type is inferred from
 
         """
-        from openpnm.io import OpenpnmIO
-        OpenpnmIO.load_object_from_file(filename=filename, project=self)
+        from openpnm.io import Pickle
+        Pickle.load_object_from_file(filename=filename, project=self)
 
-    def save_project(self, filename=''):
+    def save_project(self, filename=None):
         r"""
         Save the current project to a ``pnm`` file.
 
@@ -521,17 +509,12 @@ class Project(list):
         elif objtype.startswith('phy'):
             obj = openpnm.physics.GenericPhysics(project=self, name=name)
         elif objtype.startswith('alg'):
-            obj = openpnm.algorithm.GenericAlgorithm(project=self, name=name)
+            obj = openpnm.algorithms.GenericAlgorithm(project=self, name=name)
         else:
             obj = openpnm.core.Base(project=self, name=name)
         return obj
 
-    def import_data(self, filename):
-        r"""
-        """
-        raise NotImplementedError('Use the io module to import data')
-
-    def export_data(self, phases=[], filename=None, filetype='vtp'):
+    def export_data(self, phases=[], filename=None, filetype=None):
         r"""
         Export the pore and throat data from the given object(s) into the
         specified file and format.
@@ -561,7 +544,7 @@ class Project(list):
             the property name, including the type and name of the object to
             which they belonged, all separated by the pipe character.
 
-            **'xmf'** : The extensible data markup format, is a very efficient
+            **'xdmf'** : The extensible data markup format, is a very efficient
             format for large data sets.  This actually results in the creation
             of two files, the *xmf* file and an associated *hdf* file.  The
             *xmf* file contains instructions for looking into the *hdf* file
@@ -572,143 +555,62 @@ class Project(list):
 
         Notes
         -----
-        This is a helper function for the actual functions in the IO module.
-        For more control over the format of the output, and more information
-        about the format refer to ``openpnm.io``.
+        This is a helper function for the actual functions in the ``io``
+        module. For more control over the format of the output, and more
+        information about the format refer to ``openpnm.io``.
 
         """
+        import builtins
+
         project = self
         network = self.network
         if filename is None:
             filename = project.name + '_' + time.strftime('%Y%b%d_%H%M%p')
-        # Infer filetype from extension on file name...if given
-        if '.' in filename:
-            exts = ['vtk', 'vtp', 'vtu', 'csv', 'xmf', 'xdmf', 'hdf', 'hdf5',
-                    'h5', 'mat']
-            if filename.split('.')[-1] in exts:
-                filename, filetype = filename.rsplit('.', 1)
-        if filetype.lower() in ['vtk', 'vtp', 'vtu']:
-            openpnm.io.VTK.save(network=network, phases=phases,
-                                filename=filename)
-        if filetype.lower() == 'csv':
-            openpnm.io.CSV.save(network=network, phases=phases,
-                                filename=filename)
-        if filetype.lower() in ['xmf', 'xdmf']:
-            openpnm.io.XDMF.save(network=network, phases=phases,
-                                 filename=filename)
-        if filetype.lower() in ['hdf5', 'hdf', 'h5']:
-            f = openpnm.io.HDF5.to_hdf5(network=network, phases=phases,
-                                        filename=filename)
-            f.close()
-        if filetype.lower() == 'mat':
-            openpnm.io.MAT.save(network=network, phases=phases,
-                                filename=filename)
-        if filetype == 'COMSOL':
-            openpnm.io.COMSOL.save(network=network, phases=phases,
-                                   filename=filename)
+        if filetype is None:
+            if '.' in filename:
+                filetype = filename.split('.')[-1]
+                # Convert file type to io class name
+                temp = {"hdf": "hdf5", "xmf": "xdmf", "vtp": "vtk", "pkl": "pickle"}
+                if filetype in temp.keys():
+                    filetype = temp[filetype]
+            else:
+                raise Exception('File type not given')
 
-    def _dump_data(self, mode=['props']):
-        r"""
-        Dump data from all objects in project to an HDF5 file.  Note that
-        'pore.coords', 'throat.conns', 'pore.all', 'throat.all', and all
-        labels pertaining to the linking of objects are kept.
+        # Fetch correct io class, using case insensitive look-up
+        def igetattr(obj, attr):
+            for a in dir(obj):
+                if a.lower() == attr.lower():
+                    return orig_getattr(obj, a)
+        orig_getattr = builtins.getattr
 
-        Parameters
-        ----------
-        mode : string or list of strings
-            The type of data to be dumped to the HDF5 file.  Options are:
-
-            **'props'** : Numerical data such as 'pore.diameter'.  The default
-            is only 'props'.
-
-            **'labels'** : Boolean data that are used as labels.  Since this
-            is boolean data it does not consume large amounts of memory and
-            probably does not need to be dumped.
-
-        See Also
-        --------
-        _fetch_data
-
-        Notes
-        -----
-        In principle, after data is fetched from an HDF5 file, it should
-        physically stay there until it's called upon.  This let users manage
-        the data as if it's in memory, even though it isn't.  This behavior
-        has not been confirmed yet, which is why these functions are hidden.
-
-        """
-        with h5py.File(self.name + '.hdf5') as f:
-            for obj in self:
-                for key in list(obj.keys()):
-                    tempname = obj.name + '|' + '_'.join(key.split('.'))
-                    arr = obj[key]
-                    if 'U' in str(obj[key][0].dtype):
-                        pass
-                    elif 'all' in key.split('.'):
-                        pass
-                    else:
-                        f.create_dataset(name='/'+tempname, shape=arr.shape,
-                                         dtype=arr.dtype, data=arr)
-            for obj in self:
-                obj.clear(mode=mode)
-
-    def _fetch_data(self):
-        r"""
-        Retrieve data from an HDF5 file and place onto correct objects in the
-        project
-
-        See Also
-        --------
-        _dump_data
-
-        Notes
-        -----
-        In principle, after data is fetched from and HDF5 file, it should
-        physically stay there until it's called upon.  This let users manage
-        the data as if it's in memory, even though it isn't.  This behavior
-        has not been confirmed yet, which is why these functions are hidden.
-
-        """
-        with h5py.File(self.name + '.hdf5') as f:
-            # Reload data into project
-            for item in f.keys():
-                obj_name, propname = item.split('|')
-                propname = propname.split('_')
-                propname = propname[0] + '.' + '_'.join(propname[1:])
-                self[obj_name][propname] = f[item]
+        fmt = igetattr(openpnm.io, filetype)
+        fmt.export_data(network=network, phases=phases, filename=filename)
 
     @property
     def network(self):
         net = list(self._get_objects_by_type('network').values())
-        if len(net) > 0:
-            net = net[0]
-        else:
-            net = None
+        net = net[0] if len(net) > 0 else None
         return net
 
     def geometries(self, name=None):
         if name:
             return self._get_object_by_name(name)
-        else:
-            return self._get_objects_by_type('geometry')
+        return self._get_objects_by_type('geometry')
 
     def phases(self, name=None):
         if name:
             return self._get_object_by_name(name)
-        else:
-            return self._get_objects_by_type('phase')
+        return self._get_objects_by_type('phase')
 
     def physics(self, name=None):
         if name:
             return self._get_object_by_name(name)
-        else:
-            return self._get_objects_by_type('physics')
+        return self._get_objects_by_type('physics')
 
     def algorithms(self, name=None):
         if name:
             return self._get_object_by_name(name)
-        else:
-            return self._get_objects_by_type('algorithm')
+        return self._get_objects_by_type('algorithm')
 
     def _get_object_by_name(self, name):
         for item in self:
@@ -718,19 +620,6 @@ class Project(list):
 
     def _get_objects_by_type(self, objtype):
         return {item.name: item for item in self if item._isa(objtype)}
-
-    def _set_comments(self, string):
-        if hasattr(self, '_comments') is False:
-            self._comments = {}
-        self._comments[time.strftime('%c')] = string
-
-    def _get_comments(self):
-        if hasattr(self, '_comments') is False:
-            self._comments = {}
-        for key in list(self._comments.keys()):
-            print(key, ': ', self._comments[key])
-
-    comments = property(fget=_get_comments, fset=_set_comments)
 
     def __str__(self):
         s = []
@@ -759,7 +648,7 @@ class Project(list):
         health['overlapping_throats'] = []
         health['undefined_throats'] = []
         geoms = self.geometries().keys()
-        if len(geoms):
+        if len(geoms) > 0:
             net = self.network
             Ptemp = np.zeros((net.Np,))
             Ttemp = np.zeros((net.Nt,))
@@ -797,7 +686,7 @@ class Project(list):
         health['overlapping_throats'] = []
         health['undefined_throats'] = []
         geoms = self.geometries().keys()
-        if len(geoms):
+        if len(geoms) > 0:
             phys = self.find_physics(phase=phase)
             if len(phys) == 0:
                 raise Exception(str(len(geoms))+' geometries were found, but'
@@ -913,7 +802,7 @@ class Project(list):
                 temp.append(np.where(Cs == i)[0])
             b = np.array([len(item) for item in temp])
             c = np.argsort(b)[::-1]
-            for i in range(0, len(c)):
+            for i, j in enumerate(c):
                 health['disconnected_clusters'].append(temp[c[i]])
                 if i > 0:
                     health['trim_pores'].extend(temp[c[i]])
@@ -921,7 +810,7 @@ class Project(list):
         # Check for duplicate throats
         am = net.create_adjacency_matrix(fmt='csr', triu=True).tocoo()
         hits = np.where(am.data > 1)[0]
-        if len(hits):
+        if len(hits) > 0:
             mergeTs = []
             hits = np.vstack((am.row[hits], am.col[hits])).T
             ihits = hits[:, 0] + 1j*hits[:, 1]
@@ -942,6 +831,52 @@ class Project(list):
             health['bidirectional_throats'] = biTs.tolist()
 
         return health
+
+    def inspect_locations(self, element, indices, objs=[], mode='all'):
+        r"""
+        Shows the values of all props and/or labels for a given subset of
+        pores or throats.
+
+        Parameters
+        ----------
+        element : str
+            The type of locations to inspect, either 'pores', or 'throats'
+        indices : array_like
+            The pore or throat indices to inspect
+        objs : list of OpenPNM Objects
+            If given, then only the properties on the recieved object are
+            inspected.  If not given, then all objects are inspected (default).
+        mode : list of strings
+            Indicates whether to inspect 'props', 'labels', or 'all'.  The
+            default is all
+
+        Returns
+        -------
+        df : Pandas DataFrame
+            A data frame object with each location as a column and each row
+            as a property and/or label.
+        """
+        from pandas import DataFrame
+        props = {}
+        if not isinstance(objs, list):
+            objs = [objs]
+        if len(objs) == 0:
+            objs = self
+        for obj in objs:
+            d = {k: obj[k][indices] for k in obj.keys(element=element, mode=mode)}
+            for item in list(d.keys()):
+                if d[item].ndim > 1:
+                    d.pop(item)
+                    if item == 'pore.coords':
+                        d['pore.coords_X'], d['pore.coords_Y'], \
+                            d['pore.coords_Z'] = obj['pore.coords'][indices].T
+                    if item == 'throat.conns':
+                        d['throat.conns_head'], d['throat.conns_tail'] = \
+                            obj['throat.conns'][indices].T
+                _ = [props.update({obj.name+'.'+item: d[item]}) for item in d.keys()]
+        df = DataFrame(props)
+        df = df.rename(index={k: indices[k] for k, _ in enumerate(indices)})
+        return df.T
 
     def _regenerate_models(self, objs=[], propnames=[]):
         r"""
@@ -966,7 +901,7 @@ class Project(list):
         objs = list(objs)
         if objs == []:
             objs = self
-        if type(propnames) is str:
+        if isinstance(propnames, str):
             propnames = [propnames]
         # Sort objs in the correct order (geom, phase, phys)
         net = [i for i in objs if i is self.network]
@@ -975,95 +910,116 @@ class Project(list):
         phys = [i for i in objs if i in self.physics().values()]
         objs = net + geoms + phases + phys
         for obj in objs:
-            if len(propnames):
+            if len(propnames) > 0:
                 for model in propnames:
                     if model in obj.models.keys():
                         obj.regenerate_models(propnames=model)
             else:
                 obj.regenerate_models()
 
-    def get_grid(self, astype='table'):
+    def _generate_grid(self):
         r"""
         """
-        from pandas import DataFrame as df
-
-        geoms = self.geometries().keys()
-        phases = [p.name for p in self.phases().values() if not hasattr(p, 'mixture')]
-        grid = df(index=geoms, columns=phases)
-        for r in grid.index:
-            for c in grid.columns:
-                phys = self.find_physics(phase=self[c], geometry=self[r])
-                if phys is not None:
-                    grid.loc[r][c] = phys.name
-                else:
-                    grid.loc[r][c] = '---'
-        if astype == 'pandas':
-            pass
-        elif astype == 'dict':
-            grid = grid.to_dict()
-        elif astype == 'table':
-            from terminaltables import SingleTable
-            headings = [self.network.name] + list(grid.keys())
-            g = [headings]
-            for row in list(grid.index):
-                g.append([row] + list(grid.loc[row]))
-            grid = SingleTable(g)
-            grid.title = 'Project: ' + self.name
-            grid.padding_left = 3
-            grid.padding_right = 3
-            grid.justify_columns = {col: 'center' for col in range(len(headings))}
-        elif astype == 'grid':
-            grid = ProjectGrid()
+        grid = ProjectGrid()
+        # Create first/index column of grid
+        rows = [self.network.name] + list(self.geometries().keys())
+        grid.add_row(num=len(rows) - 1)
+        grid.set_col(0, rows)
+        # Creatle first/header row of grid
+        cols = list(self.phases().keys())
+        grid.add_col(num=len(cols))
+        grid.set_row(0, vals=[self.network.name] + cols)
+        # Now add physics objects to grid, adding new columns/rows as needed.
+        miss = 0
+        for p in self.physics().values():
+            try:
+                row = self.find_geometry(p)
+                try:
+                    col = self.find_phase(p)
+                    grid.set_row_and_col(row=row.name, col=col.name, val=p.name)
+                except Exception:
+                    miss += 1
+                    grid.set_row_and_col(row=row.name, col='?'*miss, val=p.name)
+            except:
+                try:
+                    col = self.find_phase(p)
+                    miss += 1
+                    grid.set_row_and_col(row='?'*miss, col=col.name, val=p.name)
+                except Exception:
+                    miss += 1
+                    grid.set_row_and_col(row='?'*miss, col='?'*miss, val=p.name)
+        # See if any pores/throats are not assigned and add blank row
+        if len(self.geometries()) > 0:
+            h = self.check_geometry_health()
+            if (len(h['undefined_pores']) > 0) or (len(h['undefined_throats']) > 0):
+                grid.add_row()
         return grid
 
-    @property
-    def grid(self):
-        grid = self.get_grid(astype='table')
-        obj = ProjectGrid(grid)
-        return obj
+    def _get_grid(self):
+        if not hasattr(self, '_grid'):
+            grid = self._generate_grid()
+            self._grid = grid
+        else:  # Update current grid with new data, to save formats and settings
+            grid = self._generate_grid()
+            self._grid._grid.table_data = grid._grid.table_data
+        return self._grid
+
+    def _set_grid(self, grid):
+        self._grid = grid
+
+    grid = property(fget=_get_grid, fset=_set_grid)
 
 
-class Grid():
-
-    def __init__(self, table):
-        self.grid = table
-
-    def index(self):
-        index = [row[0] for row in self.grid.table_data[1:]]
-        return index
-
-    def header(self):
-        columns = self.grid.table_data[0][1:]
-        return columns
-
-    def row(self, name):
-        for row in self.grid.table_data:
-            if row[0].startswith(name):
-                return row
-        else:
-            raise ValueError(name + 'is not in list')
-
-    def col(self, name):
-        # Find column number
-        index = self.grid.table_data[0].index(name)
-        col = []
-        for row in self.grid.table_data:
-            col.append(row[index])
-        return col
-
-    def __str__(self):
-        s = self.grid.table.__str__()
-        return s
-
-
-class ProjectGrid(Grid):
+class ProjectGrid(Tableist):
     r"""
-    This is a subclass of Grid, which adds the ability to lookup by geometries
-    and phases, as more specific versions of rows and cols
+    This is a subclass of a Tableist grid, which adds the ability to lookup
+    by geometries and phases, as more specific versions of rows and cols
     """
 
+    def row(self, name):
+        r"""
+        Retrieve a specified row from the table
+
+        Parameters
+        ----------
+        name : str
+            The row name, specified by the ``geometry`` object name
+
+        Returns
+        -------
+        table
+            A table object containing only a single row
+        """
+        return self.get_row(name)._grid.table_data[0]
+
+    def col(self, name):
+        r"""
+        Retrieve a specified column from the table
+
+        Parameters
+        ----------
+        name : str
+            The column name, specified by the ``phase`` object name
+
+        Returns
+        -------
+        table
+            A table object containing only a single column
+        """
+        temp = self.get_col(name)._grid.table_data
+        temp = [i[0] for i in temp]
+        return temp
+
     def geometries(self):
-        return self.index()
+        r"""
+        Retrieve a list of all geometries
+        """
+        temp = self.index[1:]
+        temp = [i[0] for i in temp]
+        return temp
 
     def phases(self):
-        return self.header()
+        r"""
+        Retrieve a list of all phases
+        """
+        return self.header[0][1:]

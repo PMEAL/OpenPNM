@@ -6,10 +6,10 @@ Cubic: Generate lattice-like networks
 
 """
 import numpy as np
-import scipy as sp
 from openpnm.network import GenericNetwork
 from openpnm import topotools
 from openpnm.utils import logging
+
 logger = logging.getLogger(__name__)
 
 
@@ -37,8 +37,6 @@ class Cubic(GenericNetwork):
         The default is 6 to create a simple cubic structure, but options are:
 
         - 6: Faces only
-        - 8: Corners only
-        - 12: Edges only
         - 14: Faces and Corners
         - 18: Faces and Edges
         - 20: Edges and Corners
@@ -87,63 +85,64 @@ class Cubic(GenericNetwork):
     For larger networks and more control over presentation use `Paraview
     <http://www.paraview.org>`_.
     """
-    def __init__(self, shape, spacing=[1, 1, 1], connectivity=6, name=None,
-                 project=None):
+
+    def __init__(self, shape, spacing=[1, 1, 1], connectivity=6,
+                 name=None, project=None, **kwargs):
+
+        super().__init__(name=name, project=project, **kwargs)
 
         # Take care of 1D/2D networks
-        shape = sp.array(shape, ndmin=1)
-        shape = np.concatenate((shape, [1]*(3-shape.size))).astype(int)
+        shape = np.array(shape, ndmin=1)
+        shape = np.concatenate((shape, [1] * (3 - shape.size))).astype(int)
 
         arr = np.atleast_3d(np.empty(shape))
 
         # Store original network shape
-        self._shape = sp.shape(arr)
+        self.settings['shape'] = np.shape(arr)
         # Store network spacing
-        spacing = sp.float64(spacing)
+        spacing = np.float64(spacing)
         if spacing.size == 2:
-            spacing = sp.concatenate((spacing, [1]))
-        self._spacing = sp.ones(3, dtype=float)*sp.array(spacing, ndmin=1)
+            spacing = np.concatenate((spacing, [1]))
+        spacing = np.ones(3, dtype=float) * np.array(spacing, ndmin=1)
+        self.settings['spacing'] = spacing.tolist()
 
-        z = np.tile(np.arange(shape[2]), shape[0]*shape[1])
+        z = np.tile(np.arange(shape[2]), shape[0] * shape[1])
         y = np.tile(np.repeat(np.arange(shape[1]), shape[2]), shape[0])
-        x = np.repeat(np.arange(shape[0]), shape[1]*shape[2])
+        x = np.repeat(np.arange(shape[0]), shape[1] * shape[2])
         points = (np.vstack([x, y, z]).T).astype(float) + 0.5
 
-        I = np.arange(arr.size).reshape(arr.shape)
+        idx = np.arange(arr.size).reshape(arr.shape)
 
-        face_joints = [(I[:, :, :-1], I[:, :, 1:]),
-                       (I[:, :-1], I[:, 1:]),
-                       (I[:-1], I[1:])]
+        face_joints = [(idx[:, :, :-1], idx[:, :, 1:]),
+                       (idx[:, :-1], idx[:, 1:]),
+                       (idx[:-1], idx[1:])]
 
-        corner_joints = [(I[:-1, :-1, :-1], I[1:, 1:, 1:]),
-                         (I[:-1, :-1, 1:], I[1:, 1:, :-1]),
-                         (I[:-1, 1:, :-1], I[1:, :-1, 1:]),
-                         (I[1:, :-1, :-1], I[:-1, 1:, 1:])]
+        corner_joints = [(idx[:-1, :-1, :-1], idx[1:, 1:, 1:]),
+                         (idx[:-1, :-1, 1:], idx[1:, 1:, :-1]),
+                         (idx[:-1, 1:, :-1], idx[1:, :-1, 1:]),
+                         (idx[1:, :-1, :-1], idx[:-1, 1:, 1:])]
 
-        edge_joints = [(I[:, :-1, :-1], I[:, 1:, 1:]),
-                       (I[:, :-1, 1:], I[:, 1:, :-1]),
-                       (I[:-1, :, :-1], I[1:, :, 1:]),
-                       (I[1:, :, :-1], I[:-1, :, 1:]),
-                       (I[1:, 1:, :], I[:-1, :-1, :]),
-                       (I[1:, :-1, :], I[:-1, 1:, :])]
+        edge_joints = [(idx[:, :-1, :-1], idx[:, 1:, 1:]),
+                       (idx[:, :-1, 1:], idx[:, 1:, :-1]),
+                       (idx[:-1, :, :-1], idx[1:, :, 1:]),
+                       (idx[1:, :, :-1], idx[:-1, :, 1:]),
+                       (idx[1:, 1:, :], idx[:-1, :-1, :]),
+                       (idx[1:, :-1, :], idx[:-1, 1:, :])]
 
         if connectivity == 6:
             joints = face_joints
-        elif connectivity == 8:
-            joints = corner_joints
-        elif connectivity == 12:
-            joints = edge_joints
-        elif connectivity == 14:
+        elif connectivity == 6 + 8:
             joints = face_joints + corner_joints
-        elif connectivity == 18:
+        elif connectivity == 6 + 12:
             joints = face_joints + edge_joints
-        elif connectivity == 20:
+        elif connectivity == 12 + 8:
             joints = edge_joints + corner_joints
-        elif connectivity == 26:
+        elif connectivity == 6 + 8 + 12:
             joints = face_joints + corner_joints + edge_joints
         else:
-            raise Exception('Invalid connectivity receieved. Must be 6, 8, '
-                            '12, 14, 18, 20 or 26')
+            raise Exception(
+                "Invalid connectivity receieved. Must be 6, 14, 18, 20 or 26"
+            )
 
         tails, heads = np.array([], dtype=int), np.array([], dtype=int)
         for T, H in joints:
@@ -151,35 +150,35 @@ class Cubic(GenericNetwork):
             heads = np.concatenate((heads, H.flatten()))
         pairs = np.vstack([tails, heads]).T
 
-        super().__init__(Np=points.shape[0], Nt=pairs.shape[0], name=name,
-                         project=project)
-
-        self['pore.coords'] = points
-        self['throat.conns'] = pairs
-        self['pore.internal'] = True
-        self['throat.internal'] = True
+        self["pore.all"] = np.ones([points.shape[0], ], dtype=bool)
+        self["throat.all"] = np.ones([pairs.shape[0], ], dtype=bool)
+        self["pore.coords"] = points
+        self["throat.conns"] = pairs
+        self["pore.internal"] = True
+        self["throat.internal"] = True
         self._label_surface_pores()
         topotools.label_faces(network=self)
-        Ps = self['pore.surface']
-        self['throat.surface'] = sp.all(Ps[self['throat.conns']], axis=1)
+        Ps = self["pore.surface"]
+        self["throat.surface"] = np.all(Ps[self["throat.conns"]], axis=1)
         # Scale network to requested spacing
-        self['pore.coords'] *= spacing
+        self["pore.coords"] *= spacing
 
     def _label_surface_pores(self):
         r"""
         """
-        hits = sp.zeros_like(self.Ps, dtype=bool)
+        hits = np.zeros_like(self.Ps, dtype=bool)
         dims = topotools.dimensionality(self)
-        mn = sp.amin(self['pore.coords'], axis=0)
-        mx = sp.amax(self['pore.coords'], axis=0)
+        mn = np.amin(self["pore.coords"], axis=0)
+        mx = np.amax(self["pore.coords"], axis=0)
         for ax in [0, 1, 2]:
             if dims[ax]:
-                hits += self['pore.coords'][:, ax] <= mn[ax]
-                hits += self['pore.coords'][:, ax] >= mx[ax]
-        self['pore.surface'] = hits
+                hits += self["pore.coords"][:, ax] <= mn[ax]
+                hits += self["pore.coords"][:, ax] >= mx[ax]
+        self["pore.surface"] = hits
 
-    def add_boundary_pores(self, labels=['top', 'bottom', 'front', 'back',
-                                         'left', 'right'], spacing=None):
+    def add_boundary_pores(self, labels=["top", "bottom", "front",
+                                         "back", "left", "right"],
+                           spacing=None):
         r"""
         Add pores to the faces of the network for use as boundary pores.
 
@@ -198,77 +197,90 @@ class Cubic(GenericNetwork):
             instance if boundary pores have already added to other faces.
 
         """
-        if type(labels) == str:
+        if isinstance(labels, str):
             labels = [labels]
-        x, y, z = self['pore.coords'].T
+        x, y, z = self["pore.coords"].T
         if spacing is None:
             spacing = self._get_spacing()
         else:
-            spacing = sp.array(spacing)
+            spacing = np.array(spacing)
             if spacing.size == 1:
-                spacing = sp.ones(3)*spacing
+                spacing = np.ones(3) * spacing
         Lcx, Lcy, Lcz = spacing
 
         offset = {}
-        offset['front'] = offset['left'] = offset['bottom'] = [0, 0, 0]
-        offset['back'] = [Lcx*self._shape[0], 0, 0]
-        offset['right'] = [0, Lcy*self._shape[1], 0]
-        offset['top'] = [0, 0, Lcz*self._shape[2]]
+        shape = self.settings['shape']
+        offset["back"] = offset["left"] = offset["bottom"] = [0, 0, 0]
+        offset["right"] = [Lcx * shape[0], 0, 0]
+        offset["front"] = [0, Lcy * shape[1], 0]
+        offset["top"] = [0, 0, Lcz * shape[2]]
 
         scale = {}
-        scale['front'] = scale['back'] = [0, 1, 1]
-        scale['left'] = scale['right'] = [1, 0, 1]
-        scale['bottom'] = scale['top'] = [1, 1, 0]
+        scale["left"] = scale["right"] = [0, 1, 1]
+        scale["back"] = scale["front"] = [1, 0, 1]
+        scale["bottom"] = scale["top"] = [1, 1, 0]
 
         for label in labels:
             try:
                 Ps = self.pores(label)
                 topotools.clone_pores(network=self, pores=Ps,
-                                      labels=label+'_boundary')
+                                      labels=label + "_boundary",
+                                      mode='parents')
                 # Translate cloned pores
-                ind = self.pores(label+'_boundary')
-                coords = self['pore.coords'][ind]
-                coords = coords*scale[label] + offset[label]
-                self['pore.coords'][ind] = coords
+                ind = self.pores(label + "_boundary")
+                coords = self["pore.coords"][ind]
+                coords = coords * scale[label] + offset[label]
+                self["pore.coords"][ind] = coords
             except KeyError:
-                logger.warning('No pores labelled ' + label + ' were found, ' +
-                               'skipping boundary addition')
+                logger.warning("No pores labelled " + label
+                               + " were found, skipping boundary addition")
 
     def _get_spacing(self):
         # Find Network spacing
-        P12 = self['throat.conns']
-        C12 = self['pore.coords'][P12]
+        P12 = self["throat.conns"]
+        C12 = self["pore.coords"][P12]
         mag = np.linalg.norm(np.diff(C12, axis=1), axis=2)
-        unit_vec = sp.around(sp.squeeze(np.diff(C12, axis=1))/mag, decimals=14)
+        unit_vec = np.around(np.squeeze(np.diff(C12, axis=1)) / mag, decimals=14)
         spacing = [0, 0, 0]
         dims = topotools.dimensionality(self)
         # Ensure vectors point in n-dims unique directions
         c = {tuple(row): 1 for row in unit_vec}
         if len(c.keys()) > sum(dims):
-            raise Exception('Spacing is undefined when throats point in ' +
-                            'more directions than network has dimensions')
-        mag = sp.float64(mag.squeeze())
+            raise Exception(
+                "Spacing is undefined when throats point in "
+                + "more directions than network has dimensions"
+            )
+        mag = np.float64(mag.squeeze())
         for ax in [0, 1, 2]:
             if dims[ax]:
-                inds = sp.where(unit_vec[:, ax] == unit_vec[:, ax].max())[0]
-                temp = sp.unique(mag[inds])
-                if not sp.allclose(temp, temp[0]):
-                    raise Exception('A unique value of spacing could not be found')
-                else:
-                    spacing[ax] = temp[0]
-        return sp.array(spacing)
+                inds = np.where(unit_vec[:, ax] == unit_vec[:, ax].max())[0]
+                temp = np.unique(mag[inds])
+                if not np.allclose(temp, temp[0]):
+                    raise Exception("A unique value of spacing could not be found")
+                spacing[ax] = temp[0]
+        self.settings['spacing'] = spacing
+        return np.array(spacing)
 
     spacing = property(fget=_get_spacing)
 
     def _get_shape(self):
-        L = np.ptp(self['pore.coords'], axis=0)
+        L = np.ptp(self["pore.coords"], axis=0)
         mask = L.astype(bool)
         S = self.spacing
-        shape = sp.array([1, 1, 1], int)
-        shape[mask] = L[mask]/S[mask] + 1
+        shape = np.array([1, 1, 1], int)
+        shape[mask] = L[mask] / S[mask] + 1
+        self.settings['shape'] = shape.tolist()
         return shape
 
     shape = property(fget=_get_shape)
+
+    @property
+    def _shape(self):
+        return self.settings['shape']
+
+    @property
+    def _spacing(self):
+        return np.array(self.settings['spacing'])
 
     def to_array(self, values):
         r"""
@@ -287,11 +299,11 @@ class Cubic(GenericNetwork):
         pores.
 
         """
-        if sp.shape(values)[0] > self.num_pores('internal'):
-            raise Exception('The array shape does not match the network')
-        Ps = sp.array(self['pore.index'][self.pores('internal')], dtype=int)
-        arr = sp.ones(self._shape)*sp.nan
-        ind = sp.unravel_index(Ps, self._shape)
+        if np.shape(values)[0] > self.num_pores("internal"):
+            raise Exception("The array shape does not match the network")
+        Ps = np.array(self["pore.index"][self.pores("internal")], dtype=int)
+        arr = np.ones(self.settings['shape']) * np.nan
+        ind = np.unravel_index(Ps, self.settings['shape'])
         arr[ind[0], ind[1], ind[2]] = values
         return arr
 
@@ -310,11 +322,11 @@ class Cubic(GenericNetwork):
             The name of the pore property being added.
 
         """
-        array = sp.atleast_3d(array)
-        if sp.shape(array) != self._shape:
-            raise Exception('The array shape does not match the network')
+        array = np.atleast_3d(array)
+        if np.shape(array) != self._shape:
+            raise Exception("The array shape does not match the network")
         temp = array.flatten()
-        Ps = sp.array(self['pore.index'][self.pores('internal')], dtype=int)
-        propname = 'pore.' + propname.split('.')[-1]
-        self[propname] = sp.nan
-        self[propname][self.pores('internal')] = temp[Ps]
+        Ps = np.array(self["pore.index"][self.pores("internal")], dtype=int)
+        propname = "pore." + propname.split(".")[-1]
+        self[propname] = np.nan
+        self[propname][self.pores("internal")] = temp[Ps]

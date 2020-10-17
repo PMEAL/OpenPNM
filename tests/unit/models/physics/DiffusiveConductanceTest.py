@@ -1,7 +1,8 @@
-import openpnm as op
+import numpy as np
 import scipy as sp
-from numpy.testing import assert_approx_equal
+import openpnm as op
 from numpy.testing import assert_allclose
+from numpy.testing import assert_approx_equal
 
 
 class DiffusiveConductanceTest:
@@ -56,9 +57,10 @@ class DiffusiveConductanceTest:
         assert_approx_equal(actual, desired=0.9905265161584661)
 
     def test_multiphase_diffusion(self):
-        sp.random.seed(50)
+        np.random.seed(50)
         net = op.network.Cubic(shape=[1, 6, 1])
-        geom = op.geometry.StickAndBall(network=net)
+        geom = op.geometry.StickAndBall(network=net,
+                                        pores=net.Ps, throats=net.Ts)
         air = op.phases.Air(network=net)
         water = op.phases.Water(network=net)
         m = op.phases.MultiPhase(phases=[air, water], project=net.project)
@@ -86,18 +88,18 @@ class DiffusiveConductanceTest:
         self.geo['throat.conduit_lengths.pore1'] = 0.15
         self.geo['throat.conduit_lengths.throat'] = 0.6
         self.geo['throat.conduit_lengths.pore2'] = 0.25
-        self.phase['pore.pressure'] = sp.linspace(0, 20, self.net.Np)
+        self.phase['pore.pressure'] = np.linspace(0, 20, self.net.Np)
         self.phase['throat.hydraulic_conductance'] = 1
         mod = op.models.physics.diffusive_conductance.taylor_aris_diffusion
         self.phys.add_model(propname='throat.ta_diffusive_conductance',
                             model=mod)
         self.phys.regenerate_models()
-        actual = sp.array([
+        actual = np.array([
             self.phys['throat.ta_diffusive_conductance'].mean(),
             self.phys['throat.ta_diffusive_conductance'].max(),
             self.phys['throat.ta_diffusive_conductance'].min()])
-        desired = sp.array([1.03744, 1.10782, 1.00017])
-        actual = sp.around(actual, decimals=5)
+        desired = np.array([1.03744, 1.10782, 1.00017])
+        actual = np.around(actual, decimals=5)
         assert_allclose(actual, desired)
 
     def test_classic_ordinary_diffusion(self):
@@ -110,7 +112,7 @@ class DiffusiveConductanceTest:
                                               geometry=self.geo)
         mod = op.models.physics.diffusive_conductance.classic_ordinary_diffusion
         self.phys.add_model(propname='throat.conductance', model=mod)
-        assert sp.allclose(a=self.phys['throat.conductance'][0],
+        assert np.allclose(a=self.phys['throat.conductance'][0],
                            b=0.00084552)
 
     def test_classic_ordinary_diffusion_with_zero_length_throats(self):
@@ -123,7 +125,7 @@ class DiffusiveConductanceTest:
                                               geometry=self.geo)
         mod = op.models.physics.diffusive_conductance.classic_ordinary_diffusion
         self.phys.add_model(propname='throat.conductance', model=mod)
-        assert sp.allclose(a=self.phys['throat.conductance'][0],
+        assert np.allclose(a=self.phys['throat.conductance'][0],
                            b=0.00084552)
 
 

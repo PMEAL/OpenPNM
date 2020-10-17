@@ -1,7 +1,7 @@
+import numpy as np
 import openpnm as op
-import openpnm.models.geometry as gm
-import scipy as sp
 import scipy.stats as spst
+import openpnm.models.geometry as gm
 
 
 class ThroatSizeTest:
@@ -14,8 +14,8 @@ class ThroatSizeTest:
         self.geo = op.geometry.GenericGeometry(network=self.net,
                                                pores=Ps,
                                                throats=Ts)
-        sp.random.RandomState(seed=0)
-        self.geo['throat.seed'] = sp.rand(self.geo.Nt)
+        np.random.RandomState(seed=0)
+        self.geo['throat.seed'] = np.random.rand(self.geo.Nt)
         BPs = self.net.pores('*boundary')
         BTs = self.net.throats('*boundary')
         self.boun = op.geometry.GenericGeometry(network=self.net,
@@ -28,7 +28,7 @@ class ThroatSizeTest:
                            scale=0.01,
                            loc=0.5,
                            seeds='throat.seed')
-        assert 0.45 < sp.mean(self.geo['throat.diameter']) < 0.55
+        assert 0.45 < np.mean(self.geo['throat.diameter']) < 0.55
         del self.geo['throat.diameter']
 
     def test_weibull(self):
@@ -38,7 +38,7 @@ class ThroatSizeTest:
                            scale=0.0001,
                            loc=0.001,
                            seeds='throat.seed')
-        assert sp.amin(self.geo['throat.diameter']) > 0.001
+        assert np.amin(self.geo['throat.diameter']) > 0.001
         del self.geo['throat.diameter']
 
     def test_generic_distribution(self):
@@ -47,7 +47,7 @@ class ThroatSizeTest:
                            model=gm.throat_size.generic_distribution,
                            func=func,
                            seeds='throat.seed')
-        assert sp.amin(self.geo['throat.diameter']) > 0.001
+        assert np.amin(self.geo['throat.diameter']) > 0.001
         del self.geo['throat.diameter']
 
     def test_from_neighbor_pores(self):
@@ -55,9 +55,9 @@ class ThroatSizeTest:
         self.geo.add_model(propname='throat.diameter',
                            model=gm.throat_size.from_neighbor_pores,
                            pore_prop='pore.diameter')
-        a = sp.unique(self.geo['throat.diameter'])
-        b = sp.array(0.1, ndmin=1)
-        assert sp.allclose(a, b)
+        a = np.unique(self.geo['throat.diameter'])
+        b = np.array(0.1, ndmin=1)
+        assert np.allclose(a, b)
         del self.geo['throat.diameter'], self.geo.models['throat.diameter']
 
     def test_equivalent_diameter(self):
@@ -66,17 +66,17 @@ class ThroatSizeTest:
                            model=gm.throat_size.equivalent_diameter,
                            throat_area='throat.area',
                            throat_shape='circle')
-        a = sp.unique(self.geo['throat.diameter'])
-        b = sp.array(1.12837917, ndmin=1)
-        assert sp.allclose(a, b)
+        a = np.unique(self.geo['throat.diameter'])
+        b = np.array(1.12837917, ndmin=1)
+        assert np.allclose(a, b)
         del self.geo['throat.diameter'], self.geo.models['throat.diameter']
         self.geo.add_model(propname='throat.diameter',
                            model=gm.throat_size.equivalent_diameter,
                            throat_area='throat.area',
                            throat_shape='square')
-        a = sp.unique(self.geo['throat.diameter'])
-        b = sp.array(1.0, ndmin=1)
-        assert sp.allclose(a, b)
+        a = np.unique(self.geo['throat.diameter'])
+        b = np.array(1.0, ndmin=1)
+        assert np.allclose(a, b)
         del self.geo['throat.diameter'], self.geo.models['throat.diameter']
 
 

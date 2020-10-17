@@ -49,6 +49,16 @@ class PoreVolumeTest:
         b = np.unique(self.geo['pore.volume'])
         assert_approx_equal(a, b)
 
+    def test_effective(self):
+        net = op.network.Cubic(shape=[2, 2, 1])
+        net['pore.volume'] = 0.5
+        net['throat.volume'] = 0.25
+        net.add_model(propname='pore.volume_effective',
+                      model=mods.effective)
+        a = np.array([0.5 + 0.25])
+        b = np.unique(net['pore.volume_effective'])
+        assert_approx_equal(a, b)
+
 
 if __name__ == '__main__':
 

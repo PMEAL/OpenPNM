@@ -1,9 +1,7 @@
-import openpnm as op
-import scipy as sp
-import pytest
-from pathlib import Path
 import py
 import os
+import numpy as np
+import openpnm as op
 
 
 class XDMFTest:
@@ -56,7 +54,7 @@ class XDMFTest:
         self.phys_4['pore.baz'] = 22
         self.phys_4['throat.baz'] = 22
 
-        self.net['pore.object'] = sp.ones(self.net.Np, dtype=object)
+        self.net['pore.object'] = np.ones(self.net.Np, dtype=object)
 
     def teardown_class(self):
         ws = op.Workspace()

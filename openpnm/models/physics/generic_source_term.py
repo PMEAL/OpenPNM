@@ -11,9 +11,7 @@ r"""
 .. autofunction:: openpnm.models.physics.generic_source_term.general_symbolic
 
 """
-
-import scipy as _sp
-import scipy.sparse.csgraph as _spgr
+import numpy as _np
 
 
 def charge_conservation(target, phase, p_alg, e_alg, assumption):
@@ -55,8 +53,10 @@ def charge_conservation(target, phase, p_alg, e_alg, assumption):
     "laplace".
 
     """
+    import scipy.sparse.csgraph as _spgr
+
     F = 96485.3321233100184
-    rhs = _sp.zeros(shape=(p_alg.Np, ), dtype=float)
+    rhs = _np.zeros(shape=(p_alg.Np, ), dtype=float)
     network = p_alg.project.network
     if assumption == 'poisson':
         v = network['pore.volume']
@@ -73,7 +73,7 @@ def charge_conservation(target, phase, p_alg, e_alg, assumption):
             try:
                 c = e[e.settings['quantity']]
             except KeyError:
-                c = _sp.zeros(shape=(e.Np, ), dtype=float)
+                c = _np.zeros(shape=(e.Np, ), dtype=float)
             network = e.project.network
             g = phase['throat.diffusive_conductance.'+e.settings['ion']]
             am = network.create_adjacency_matrix(weights=g, fmt='coo')
@@ -86,7 +86,7 @@ def charge_conservation(target, phase, p_alg, e_alg, assumption):
                         + 'only be "poisson", "poisson_2D", "laplace", '
                         + '"laplace_2D", "electroneutrality" or '
                         + "electroneutrality_2D")
-    S1 = _sp.zeros(shape=(p_alg.Np, ), dtype=float)
+    S1 = _np.zeros(shape=(p_alg.Np, ), dtype=float)
     values = {'S1': S1, 'S2': rhs, 'rate': rhs}
     return values
 
@@ -282,8 +282,8 @@ def exponential(target, X, A1='', A2='', A3='', A4='', A5='', A6=''):
     X = target[X]
 
     r = A * B ** (C * X ** D + E) + F
-    S1 = A * C * D * X ** (D - 1) * _sp.log(B) * B ** (C * X ** D + E)
-    S2 = A * B ** (C * X ** D + E) * (1 - C * D * _sp.log(B) * X ** D) + F
+    S1 = A * C * D * X ** (D - 1) * _np.log(B) * B ** (C * X ** D + E)
+    S2 = A * B ** (C * X ** D + E) * (1 - C * D * _np.log(B) * X ** D) + F
     values = {'S1': S1, 'S2': S2, 'rate': r}
     return values
 
@@ -330,9 +330,9 @@ def natural_exponential(target, X, A1='', A2='', A3='', A4='', A5=''):
     E = _parse_args(target=target, key=A5, default=0.0)
     X = target[X]
 
-    r = A * _sp.exp(B * X ** C + D) + E
-    S1 = A * B * C * X ** (C - 1) * _sp.exp(B * X ** C + D)
-    S2 = A * (1 - B * C * X ** C) * _sp.exp(B * X ** C + D) + E
+    r = A * _np.exp(B * X ** C + D) + E
+    S1 = A * B * C * X ** (C - 1) * _np.exp(B * X ** C + D)
+    S2 = A * (1 - B * C * X ** C) * _np.exp(B * X ** C + D) + E
     values = {'pore.S1': S1, 'pore.S2': S2, 'pore.rate': r}
     return values
 
@@ -380,10 +380,10 @@ def logarithm(target, X, A1='', A2='', A3='', A4='', A5='', A6=''):
     F = _parse_args(target=target, key=A6, default=0.0)
     X = target[X]
 
-    r = (A * _sp.log(C * X ** D + E)/_sp.log(B) + F)
-    S1 = A * C * D * X ** (D - 1) / (_sp.log(B) * (C * X ** D + E))
-    S2 = A * _sp.log(C * X ** D + E) / _sp.log(B) + F - A * C * D * X ** D / \
-        (_sp.log(B) * (C * X ** D + E))
+    r = (A * _np.log(C * X ** D + E)/_np.log(B) + F)
+    S1 = A * C * D * X ** (D - 1) / (_np.log(B) * (C * X ** D + E))
+    S2 = A * _np.log(C * X ** D + E) / _np.log(B) + F - A * C * D * X ** D / \
+        (_np.log(B) * (C * X ** D + E))
     values = {'S1': S1, 'S2': S2, 'rate': r}
     return values
 
@@ -430,9 +430,9 @@ def natural_logarithm(target, X, A1='', A2='', A3='', A4='', A5=''):
     E = _parse_args(target=target, key=A5, default=0.0)
     X = target[X]
 
-    r = A*_sp.log(B*X**C + D) + E
+    r = A*_np.log(B*X**C + D) + E
     S1 = A*B*C*X**(C - 1) / (B * X ** C + D)
-    S2 = A*_sp.log(B*X**C + D) + E - A*B*C*X**C / (B*X**C + D)
+    S2 = A*_np.log(B*X**C + D) + E - A*B*C*X**C / (B*X**C + D)
     values = {'pore.S1': S1, 'pore.S2': S2, 'pore.rate': r}
     return values
 
@@ -806,14 +806,14 @@ def general_symbolic(target, eqn=None, arg_map=None):
     ----------
     >>> import openpnm as op
     >>> from openpnm.models.physics import generic_source_term as gst
-    >>> import scipy as sp
+    >>> import numpy as np
     >>> import sympy
     >>> pn = op.network.Cubic(shape=[5, 5, 5], spacing=0.0001)
     >>> water = op.phases.Water(network=pn)
     >>> water['pore.a'] = 1
     >>> water['pore.b'] = 2
     >>> water['pore.c'] = 3
-    >>> water['pore.x'] = sp.random.random(water.Np)
+    >>> water['pore.x'] = np.random.random(water.Np)
     >>> a, b, c, x = sympy.symbols('a,b,c,x')
     >>> y = a*x**b + c
     >>> arg_map = {'a':'pore.a', 'b':'pore.b', 'c':'pore.c', 'x':'pore.x'}

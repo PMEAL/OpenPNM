@@ -5,8 +5,7 @@ r"""
 .. autofunction:: openpnm.models.physics.ionic_conductance.electroneutrality
 
 """
-
-import scipy as _sp
+import numpy as _np
 from openpnm.utils import logging
 logger = logging.getLogger(__name__)
 
@@ -107,11 +106,11 @@ def poisson(target,
     Lt = network[conduit_lengths + '.throat'][throats]
     L2 = network[conduit_lengths + '.pore2'][throats]
     # Preallocating g
-    g1, g2, gt = _sp.zeros((3, len(Lt)))
+    g1, g2, gt = _np.zeros((3, len(Lt)))
     # Setting g to inf when Li = 0 (ex. boundary pores)
     # INFO: This is needed since area could also be zero, which confuses NumPy
     m1, m2, mt = [Li != 0 for Li in [L1, L2, Lt]]
-    g1[~m1] = g2[~m2] = gt[~mt] = _sp.inf
+    g1[~m1] = g2[~m2] = gt[~mt] = _np.inf
     # Getting shape factors
     try:
         SF1 = phase[conduit_shape_factors+'.pore1'][throats]
@@ -126,9 +125,9 @@ def poisson(target,
     g2[m2] = epsilon0 * epsilonr * (A2)[m2] / L2[m2]
     gt[mt] = epsilon0 * epsilonr * (At)[mt] / Lt[mt]
     # Preallocating g_inv
-    g_inv1, g_inv2, g_invt = _sp.zeros((3, len(Lt)))
+    g_inv1, g_inv2, g_invt = _np.zeros((3, len(Lt)))
     f1, f2, ft = [gi != 0 for gi in [g1, g2, gt]]
-    g_inv1[~f1] = g_inv2[~f2] = g_invt[~ft] = _sp.inf
+    g_inv1[~f1] = g_inv2[~f2] = g_invt[~ft] = _np.inf
     g_inv1[f1] = 1/g1[f1]
     g_inv2[f2] = 1/g2[f2]
     g_invt[ft] = 1/gt[ft]
@@ -529,11 +528,11 @@ def electroneutrality(target,
     Lt = network[conduit_lengths + '.throat'][throats]
     L2 = network[conduit_lengths + '.pore2'][throats]
     # Preallocating g
-    g1, g2, gt = _sp.zeros((3, len(Lt)))
+    g1, g2, gt = _np.zeros((3, len(Lt)))
     # Setting g to inf when Li = 0 (ex. boundary pores)
     # INFO: This is needed since area could also be zero, which confuses NumPy
     m1, m2, mt = [Li != 0 for Li in [L1, L2, Lt]]
-    g1[~m1] = g2[~m2] = gt[~mt] = _sp.inf
+    g1[~m1] = g2[~m2] = gt[~mt] = _np.inf
     # Getting shape factors
     try:
         SF1 = phase[conduit_shape_factors+'.pore1'][throats]
@@ -568,8 +567,8 @@ def electroneutrality(target,
             c1 = phase[pore_concentration+i][cn[:, 0]]
             c2 = phase[pore_concentration+i][cn[:, 1]]
         except KeyError:
-            c1 = _sp.zeros((network.Nt))[cn[:, 0]]
-            c2 = _sp.zeros((network.Nt))[cn[:, 1]]
+            c1 = _np.zeros((network.Nt))[cn[:, 0]]
+            c2 = _np.zeros((network.Nt))[cn[:, 1]]
         ct = (c1*Vol1 + c2*Vol2)/(Vol1 + Vol2)
         # Interpolate pore phase property values to throats
         try:
@@ -599,9 +598,9 @@ def electroneutrality(target,
         g2[m2] += F**2 * V2**2 * (D2*A2*c2)[m1] / (R * T2 * L2[m2])
         gt[mt] += F**2 * Vt**2 * (Dt*At*ct)[mt] / (R * Tt * Lt[mt])
     # Preallocating g_inv
-    g_inv1, g_inv2, g_invt = _sp.zeros((3, len(Lt)))
+    g_inv1, g_inv2, g_invt = _np.zeros((3, len(Lt)))
     f1, f2, ft = [gi != 0 for gi in [g1, g2, gt]]
-    g_inv1[~f1] = g_inv2[~f2] = g_invt[~ft] = _sp.inf
+    g_inv1[~f1] = g_inv2[~f2] = g_invt[~ft] = _np.inf
     g_inv1[f1] = 1/g1[f1]
     g_inv2[f2] = 1/g2[f2]
     g_invt[ft] = 1/gt[ft]

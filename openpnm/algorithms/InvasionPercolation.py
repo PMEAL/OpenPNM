@@ -40,7 +40,7 @@ class InvasionPercolation(GenericAlgorithm):
 
     Create 2D cubic network for easier visualizaiton:
 
-    >>> S = sp.array([100, 100, 1])
+    >>> S = np.array([100, 100, 1])
     >>> pn = op.network.Cubic(shape=S, spacing=0.0001, name='pn11')
 
     Add a basic geometry:
@@ -76,11 +76,11 @@ class InvasionPercolation(GenericAlgorithm):
 
         ``plt.subplot(1, 2, 1)``
 
-        ``plt.imshow(sp.reshape(ip['pore.invasion_sequence'], newshape=S[S > 1]))``
+        ``plt.imshow(np.reshape(ip['pore.invasion_sequence'], newshape=S[S > 1]))``
 
         ``plt.subplot(1, 2, 2)``
 
-        ``plt.imshow(sp.reshape(water['pore.occupancy'], newshape=S[S > 1]))``
+        ``plt.imshow(np.reshape(water['pore.occupancy'], newshape=S[S > 1]))``
 
     """
     def __init__(self, settings={}, phase=None, **kwargs):
@@ -138,9 +138,9 @@ class InvasionPercolation(GenericAlgorithm):
         # Setup arrays and info
         self['throat.entry_pressure'] = phase[self.settings['entry_pressure']]
         # Indices into t_entry giving a sorted list
-        self['throat.sorted'] = sp.argsort(self['throat.entry_pressure'], axis=0)
+        self['throat.sorted'] = np.argsort(self['throat.entry_pressure'], axis=0)
         self['throat.order'] = 0
-        self['throat.order'][self['throat.sorted']] = sp.arange(0, self.Nt)
+        self['throat.order'][self['throat.sorted']] = np.arange(0, self.Nt)
         self['throat.invasion_sequence'] = -1
         self['pore.invasion_sequence'] = -1
 
@@ -172,7 +172,7 @@ class InvasionPercolation(GenericAlgorithm):
 
         """
         if n_steps is None:
-            n_steps = sp.inf
+            n_steps = np.inf
 
         if len(self.queue) == 0:
             logger.warn('queue is empty, this network is fully invaded')
@@ -238,17 +238,17 @@ class InvasionPercolation(GenericAlgorithm):
             # Create Nt-long mask of which pores were filled when throat was filled
             Pinv = (Np[P12].T == Nt).T
             # If a pore and throat filled together, find combined volume
-            Vinv = sp.vstack(((Pinv*Vp[P12]).T, Vt)).T
-            Vinv = sp.sum(Vinv, axis=1)
+            Vinv = np.vstack(((Pinv*Vp[P12]).T, Vt)).T
+            Vinv = np.sum(Vinv, axis=1)
             # Convert to cumulative volume filled as each throat is invaded
-            x = sp.argsort(Nt)  # Find order throats were invaded
+            x = np.argsort(Nt)  # Find order throats were invaded
             Vinv_cum = np.cumsum(Vinv[x])
             # Normalized cumulative volume filled into saturation
             S = Vinv_cum/(Vp.sum() + Vt.sum())
             # Find throat invasion step where Snwp was reached
             try:
-                N = sp.where(S < Snwp)[0][-1]
-            except:
+                N = np.where(S < Snwp)[0][-1]
+            except Exception:
                 N = -np.inf
             data = {'pore.occupancy': Np <= N, 'throat.occupancy': Nt <= N}
         return data
@@ -314,7 +314,7 @@ class InvasionPercolation(GenericAlgorithm):
             # -1 is the invaded fluid
             # -2 is the defender fluid able to escape
             # All others now trapped clusters which grow as invasion is reversed
-            out_clusters = sp.unique(clusters[outlets])
+            out_clusters = np.unique(clusters[outlets])
             for c in out_clusters:
                 if c >= 0:
                     clusters[clusters == c] = -2
@@ -469,7 +469,10 @@ class InvasionPercolation(GenericAlgorithm):
 
         """
         from numba import njit
-        from numba.errors import NumbaPendingDeprecationWarning
+        try:
+            from numba.core.errors import NumbaPendingDeprecationWarning
+        except ModuleNotFoundError:
+            from numba.errors import NumbaPendingDeprecationWarning
         warnings.simplefilter('ignore', category=NumbaPendingDeprecationWarning)
 
         @njit

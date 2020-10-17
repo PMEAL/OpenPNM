@@ -1,11 +1,12 @@
-import openpnm as op
+import numpy as np
 import scipy as sp
+import openpnm as op
 
 
 class TransientAdvectionDiffusionTest:
 
     def setup_class(self):
-        sp.random.seed(0)
+        np.random.seed(0)
         self.net = op.network.Cubic(shape=[4, 3, 1], spacing=1.0)
         self.geo = op.geometry.GenericGeometry(network=self.net,
                                                pores=self.net.Ps,
@@ -26,8 +27,8 @@ class TransientAdvectionDiffusionTest:
         sf = op.algorithms.StokesFlow(network=self.net, phase=self.phase)
         sf.setup(quantity='pore.pressure',
                  conductance='throat.hydraulic_conductance')
-        sf.set_value_BC(pores=self.net.pores('back'), values=1)
-        sf.set_value_BC(pores=self.net.pores('front'), values=0)
+        sf.set_value_BC(pores=self.net.pores('right'), values=1)
+        sf.set_value_BC(pores=self.net.pores('left'), values=0)
         sf.run()
         self.phase[sf.settings['quantity']] = sf[sf.settings['quantity']]
 
@@ -46,16 +47,16 @@ class TransientAdvectionDiffusionTest:
                  t_output=50, t_tolerance=1e-20, t_precision=12,
                  s_scheme='implicit')
         ad.set_IC(0)
-        ad.set_value_BC(pores=self.net.pores('back'), values=2)
-        ad.set_value_BC(pores=self.net.pores('front'), values=0)
+        ad.set_value_BC(pores=self.net.pores('right'), values=2)
+        ad.set_value_BC(pores=self.net.pores('left'), values=0)
         ad.run()
 
         x = [0., 0., 0.,
              0.89653, 0.89653, 0.89653,
              1.53924, 1.53924, 1.53924,
              2., 2., 2.]
-        y = sp.around(ad[ad.settings['quantity']], decimals=5)
-        assert sp.all(x == y)
+        y = np.around(ad[ad.settings['quantity']], decimals=5)
+        assert np.all(x == y)
 
     def teardown_class(self):
         ws = op.Workspace()
