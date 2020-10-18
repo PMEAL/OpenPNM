@@ -72,9 +72,8 @@ class PandasTest:
 
 
 if __name__ == '__main__':
-    # All the tests in this file can be run with 'playing' this file
     t = PandasTest()
-    self = t  # For interacting with the tests at the command line
+    self = t
     t.setup_class()
     for item in t.__dir__():
         if item.startswith('test'):
