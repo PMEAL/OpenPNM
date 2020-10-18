@@ -44,9 +44,9 @@ class GenericPhysicsTest:
         phys = op.physics.GenericPhysics(network=self.net)
         assert phys.project is not None
         with pytest.raises(Exception):
-            phys.project.find_phase(phys) is phase
+            _ = phys.project.find_phase(phys) is phase
         with pytest.raises(Exception):
-            phys.project.find_geometry(phys)
+            _ = phys.project.find_geometry(phys)
 
     def test_set_phase_afer_instantiation(self):
         phys = op.physics.GenericPhysics(network=self.net)
@@ -71,10 +71,10 @@ class GenericPhysicsTest:
         phase = op.phases.GenericPhase(network=self.net)
         phys = op.physics.GenericPhysics(network=self.net)
         with pytest.raises(Exception):
-            phys.set_phase(phase=phase2)
+            _ = phys.set_phase(phase=phase2)
         phys.set_phase(phase=phase)
         with pytest.raises(Exception):
-            phys.set_geometry(geometry=geo2)
+            _ = phys.set_geometry(geometry=geo2)
 
     def test_swap_phase(self):
         net = op.network.Cubic(shape=[3, 3, 3])

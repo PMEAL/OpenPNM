@@ -199,11 +199,11 @@ class SubdomainTest:
         Ps = net.pores('bottom')
         geom2 = op.geometry.GenericGeometry(network=net, pores=Ps)
         with pytest.raises(KeyError):
-            net['pore.blah']
+            _ = net['pore.blah']
         with pytest.raises(KeyError):
-            geom1['pore.blah']
+            _ = geom1['pore.blah']
         with pytest.raises(KeyError):
-            geom2['pore.blah']
+            _ = geom2['pore.blah']
 
     def test_interleave_data_float_missing_geometry(self):
         net = op.network.Cubic(shape=[2, 2, 2])

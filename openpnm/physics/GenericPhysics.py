@@ -109,7 +109,8 @@ class GenericPhysics(Subdomain, ModelsMixin):
                 old_phase.pop('pore.'+self.name, None)
                 old_phase.pop('throat.'+self.name, None)
                 self.clear()
-            except:
+            except Exception as e:
+                logger.debug(e)
                 phase['pore.'+self.name] = False
                 phase['throat.'+self.name] = False
         elif mode in ['remove', 'drop']:
@@ -154,8 +155,8 @@ class GenericPhysics(Subdomain, ModelsMixin):
                 Ts = self.network.throats(old_geometry.name)
                 self._set_locations(element='pore', indices=Ps, mode='drop')
                 self._set_locations(element='throat', indices=Ts, mode='drop')
-            except Exception:
-                pass
+            except Exception as e:
+                logger.debug(e)
             Ps = self.network.pores(geometry.name)
             Ts = self.network.throats(geometry.name)
             self._set_locations(element='pore', indices=Ps, mode='add')
