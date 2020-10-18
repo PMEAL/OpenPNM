@@ -27,7 +27,7 @@ class GenericPhysics(Subdomain, ModelsMixin):
     name : str, optional
         A unique string name to identify the Physics object, typically same as
         instance name but can be anything.  If left blank, and name will be
-        generated that include the class name and a random string.
+        generated that includes the class name and an integer index.
 
     """
 
