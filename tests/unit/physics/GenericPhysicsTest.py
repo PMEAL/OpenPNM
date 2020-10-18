@@ -19,6 +19,8 @@ class GenericPhysicsTest:
         phys = op.physics.GenericPhysics(network=self.net,
                                          phase=phase,
                                          geometry=self.geo)
+        assert phys.Np == self.geo.Np
+        assert phys.Nt == self.geo.Nt
 
     def test_instantiate_with_phase_only(self):
         phase = op.phases.GenericPhase(network=self.net)
@@ -27,7 +29,7 @@ class GenericPhysicsTest:
         assert phys.project is not None
         assert phys.project.find_phase(phys) is phase
         with pytest.raises(Exception):
-            phys.project.find_geometry(phys)
+            _ = phys.project.find_geometry(phys)
 
     def test_instantiate_with_geometry_only(self):
         phase = op.phases.GenericPhase(network=self.net)
