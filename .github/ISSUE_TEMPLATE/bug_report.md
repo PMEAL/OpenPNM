@@ -7,13 +7,15 @@ assignees: ''
 
 ---
 
+_(Note, you don't have to fill out every section here. They're just here for guidance. That said, nicely detailed feature requests are more likely to get dev attention sooner)_
+
 **Describe the bug**
 A clear and concise description of what the bug is.
 
 **To Reproduce**
 Steps to reproduce the behavior, ideally a code snippet that only reproduces the bug:
 ```python
-<paste the code snippet here>
+paste the code snippet here
 ```
 
 **Expected behavior**
