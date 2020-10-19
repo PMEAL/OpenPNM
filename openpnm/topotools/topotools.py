@@ -779,9 +779,7 @@ def stitch(network, donor, P_network, P_donor, method='nearest',
     [250, 625]
 
     '''
-    # Ensure Networks have no associated objects yet
-    # if (len(network.project) > 1) or (len(donor.project) > 1):
-        # raise Exception('Cannot stitch a Network with active objects')
+    # Parse inputs
     if isinstance(label_stitches, str):
         label_stitches = [label_stitches]
     for s in label_stitches:
