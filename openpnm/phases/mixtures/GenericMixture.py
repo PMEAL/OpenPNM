@@ -234,7 +234,7 @@ class GenericMixture(GenericPhase):
         set_mole_fraction
 
         """
-        if type(component) == str:
+        if isinstance(component, str):
             component = self.components[component]
         Pvals = np.array(values, ndmin=1)
         if component not in self.components.values():
@@ -259,7 +259,7 @@ class GenericMixture(GenericPhase):
 
         """
         # Parse the input args
-        if type(component) == str:
+        if isinstance(component, str):
             component = self.components[component]
         Pvals = np.array(values, ndmin=1)
         # If given component not part of mixture, set it

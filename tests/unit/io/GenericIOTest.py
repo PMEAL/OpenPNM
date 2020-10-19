@@ -88,14 +88,6 @@ class GenericIOTest:
         assert net1 == net2
         assert phases1 == phases2
 
-    def test_save(self):
-        with pytest.raises(NotImplementedError):
-            op.io.GenericIO.save()
-
-    def test_load(self):
-        with pytest.raises(NotImplementedError):
-            op.io.GenericIO.load()
-
 
 if __name__ == '__main__':
     # All the tests in this file can be run with 'playing' this file

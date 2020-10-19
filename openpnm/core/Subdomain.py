@@ -32,15 +32,15 @@ class Subdomain(Base):
 
     def __getitem__(self, key):
         element = key.split('.')[0]
-        # Find boss object (either phase or network)
-        boss = self.project.find_full_domain(self)
         # Try to get vals directly first
         vals = self.get(key)
         if vals is None:  # Otherwise invoke search
+            # Find boss object (either phase or network)
+            boss = self.project.find_full_domain(self)
             inds = boss._get_indices(element=element, labels=self.name)
             try:  # Will invoke interleave data if necessary
                 vals = boss[key]  # Will return nested dict if present
-                if type(vals) is dict:  # Index into each array in nested dict
+                if isinstance(vals, dict):  # Index into each array in nested dict
                     for item in vals:
                         vals[item] = vals[item][inds]
                 else:  # Otherwise index into single array

@@ -90,19 +90,18 @@ class Delaunay(DelaunayVoronoiDual):
     .. image:: /../docs/static/images/delaunay_network_w_trimmed_points.png
         :align: center
 
-    If a domain random base points, but truly flat faces is needed use
+    If a domain with random base points but flat faces is needed use
     ``Voronoi``.
 
     """
 
-    def __init__(self, shape=None, num_points=None, **kwargs):
+    def __init__(self, shape=[1, 1, 1], num_points=None, points=None, **kwargs):
         # Clean-up input points
-        points = kwargs.pop('points', None)
         points = self._parse_points(shape=shape,
                                     num_points=num_points,
                                     points=points)
-        # Initialize network object
         super().__init__(shape=shape, points=points, **kwargs)
+        # Initialize network object
         topotools.trim(network=self, pores=self.pores(['voronoi']))
         pop = ['pore.voronoi', 'throat.voronoi', 'throat.interconnect',
                'pore.delaunay', 'throat.delaunay']

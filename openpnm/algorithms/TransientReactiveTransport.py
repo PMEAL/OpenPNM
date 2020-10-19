@@ -96,18 +96,17 @@ class TransientReactiveTransport(ReactiveTransport):
     ----------
     network : OpenPNM Network object
         The Network with which this algorithm is associated.
-
     project : OpenPNM Project object
         Either a Network or a Project must be specified.
 
     Notes
     -----
-
     This subclass performs steady and transient simulations of transport
     phenomena with reactions when source terms are added. It supports 3 time
     discretization schemes; 'steady' to perform a steady-state simulation, and
     'implicit' (fast, 1st order accurate) and 'cranknicolson' (slow, 2nd order
     accurate) both for transient simulations.
+
     """
 
     def __init__(self, settings={}, phase=None, **kwargs):
@@ -250,6 +249,7 @@ class TransientReactiveTransport(ReactiveTransport):
         t : scalar
             The time to start the simulation from. If no time is specified, the
             simulation starts from 't_initial' defined in the settings.
+
         """
         logger.info('―' * 80)
         logger.info('Running TransientTransport')
@@ -295,6 +295,7 @@ class TransientReactiveTransport(ReactiveTransport):
         ``pore.quantity_initial``. Steady-state solution (if reached) is stored
         as ``pore.quantity_steady``. Current solution is stored as
         ``pore.quantity``.
+
         """
         tf = self.settings['t_final']
         dt = self.settings['t_step']
@@ -305,14 +306,14 @@ class TransientReactiveTransport(ReactiveTransport):
         s = self.settings['t_scheme']
         res_t = 1e+06  # Initialize the residual
 
-        if type(to) in [float, int]:
+        if isinstance(to, (float, int)):
             # Make sure 'tf' and 'to' are multiples of 'dt'
             tf = tf + (dt-(tf % dt))*((tf % dt) != 0)
             to = to + (dt-(to % dt))*((to % dt) != 0)
             self.settings['t_final'] = tf
             self.settings['t_output'] = to
             out = np.arange(t+to, tf, to)
-        elif type(to) in [np.ndarray, list]:
+        elif isinstance(to, (np.ndarray, list)):
             out = np.array(to)
         out = np.append(out, tf)
         out = np.unique(out)
@@ -438,6 +439,7 @@ class TransientReactiveTransport(ReactiveTransport):
         Notes
         -----
         The keyword steps is interpreted in the same way as times.
+
         """
         if 'steps' in kwargs.keys():
             times = kwargs['steps']
@@ -448,7 +450,7 @@ class TransientReactiveTransport(ReactiveTransport):
             t = q
         elif times in ['final', 'actual']:
             t = [quantity]
-        elif type(times) in [np.ndarray, list, float, int]:
+        elif isinstance(times, (np.ndarray, list, float, int)):
             out = np.array(times)
             out = np.unique(out)
             out = np.around(out, decimals=t_pre)
@@ -477,9 +479,9 @@ class TransientReactiveTransport(ReactiveTransport):
         ----------
         nbr : scalar
             The number to be converted into a scalar.
-
         t_precision : integer
             The time precision (number of decimal places). Default value is 12.
+
         """
         if t_pre is None:
             t_pre = self.settings['t_precision']
@@ -496,6 +498,7 @@ class TransientReactiveTransport(ReactiveTransport):
         Notes
         -----
         Correction (built for transient simulations) depends on the time scheme
+
         """
         if self.settings['t_scheme'] == 'cranknicolson':
             f1 = 0.5

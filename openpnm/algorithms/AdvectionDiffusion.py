@@ -60,9 +60,7 @@ class AdvectionDiffusionSettings(GenericSettings):
 class AdvectionDiffusion(ReactiveTransport):
     r"""
     A subclass of GenericTransport to simulate advection-diffusion
-
     """
-
     def __init__(self, settings={}, **kwargs):
         super().__init__(**kwargs)
         self.settings._update_settings_and_docs(AdvectionDiffusionSettings())
@@ -94,6 +92,8 @@ class AdvectionDiffusion(ReactiveTransport):
         r"""
         Adds outflow boundary condition to the selected pores.
 
+        Notes
+        -----
         Outflow condition simply means that the gradient of the solved
         quantity does not change, i.e. is 0.
 
@@ -119,6 +119,9 @@ class AdvectionDiffusion(ReactiveTransport):
         self['pore.bc_outflow'][pores] = Qp[pores]
 
     def _apply_BCs(self):
+        r"""
+        Applies Dirichlet, Neumann, and outflow BCs in order
+        """
         # Apply Dirichlet and rate BCs
         ReactiveTransport._apply_BCs(self)
         if 'pore.bc_outflow' not in self.keys():

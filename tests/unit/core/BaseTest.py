@@ -75,26 +75,26 @@ class BaseTest:
         assert np.all(a == [2, 5, 8, 11, 14, 17, 20, 23, 26])
 
     def test_pores_two_labels_or(self):
-        a = self.net.pores(labels=['top', 'front'], mode='or')
+        a = self.net.pores(labels=['top', 'left'], mode='or')
         assert np.all(a == [0, 1, 2, 3, 4, 5, 6, 7, 8, 11, 14, 17, 20, 23, 26])
 
     def test_pores_two_labels_xnor(self):
-        a = self.net.pores(labels=['top', 'front'], mode='xnor')
+        a = self.net.pores(labels=['top', 'left'], mode='xnor')
         assert np.all(a == [2, 5, 8])
 
     def test_pores_two_labels_not_xor(self):
-        a = self.net.pores(labels=['top', 'front'], mode='xor')
+        a = self.net.pores(labels=['top', 'left'], mode='xor')
         assert np.all(a == [0, 1, 3, 4, 6, 7, 11, 14, 17, 20, 23, 26])
 
     def test_pores_two_labels_nor(self):
-        a = self.net.pores(labels=['top', 'front'], mode='nor')
+        a = self.net.pores(labels=['top', 'left'], mode='nor')
         assert np.all(a == [9, 10, 12, 13, 15, 16, 18, 19, 21, 22, 24, 25])
-        b = self.net.pores(labels=['top', 'front'], mode='or')
+        b = self.net.pores(labels=['top', 'left'], mode='or')
         c = self.net.tomask(pores=a)*self.net.tomask(pores=b)
         assert c.sum() == 0
 
     def test_pores_two_labels_nand(self):
-        a = self.net.pores(labels=['top', 'front'], mode='nand')
+        a = self.net.pores(labels=['top', 'left'], mode='nand')
         assert np.all(a == [0, 1, 3, 4, 6, 7, 11, 14, 17, 20, 23, 26])
 
     def test_pores_bad_mode(self):
@@ -192,29 +192,29 @@ class BaseTest:
         assert np.all(a == b)
 
     def test_filter_by_label_pores_two_labels_xnor(self):
-        Ps = self.net.pores(['top', 'bottom', 'front'])
-        a = self.net.filter_by_label(pores=Ps, labels=['top', 'front'],
+        Ps = self.net.pores(['top', 'bottom', 'left'])
+        a = self.net.filter_by_label(pores=Ps, labels=['top', 'left'],
                                      mode='xnor')
         b = [2, 5, 8]
         assert np.all(a == b)
 
     def test_filter_by_label_pores_two_labels_xnor_empty(self):
-        Ps = self.net.pores(['top', 'bottom', 'front'])
+        Ps = self.net.pores(['top', 'bottom', 'left'])
         a = self.net.filter_by_label(pores=Ps, labels=['top', 'bottom'],
                                      mode='xnor')
         b = []
         assert np.all(a == b)
 
     def test_filter_by_label_pores_two_labels_xor(self):
-        Ps = self.net.pores(['top', 'bottom', 'front'])
-        a = self.net.filter_by_label(pores=Ps, labels=['top', 'front'],
+        Ps = self.net.pores(['top', 'bottom', 'left'])
+        a = self.net.filter_by_label(pores=Ps, labels=['top', 'left'],
                                      mode='xor')
         b = [0, 1, 3, 4, 6, 7, 11, 14, 17, 20, 23, 26]
         assert np.all(a == b)
 
     def test_filter_by_label_pores_two_labels_nor(self):
-        Ps = self.net.pores(['top', 'bottom', 'front'])
-        a = self.net.filter_by_label(pores=Ps, labels=['top', 'front'],
+        Ps = self.net.pores(['top', 'bottom', 'left'])
+        a = self.net.filter_by_label(pores=Ps, labels=['top', 'left'],
                                      mode='nor')
         b = [9, 12, 15, 18, 21, 24]
         assert np.all(a == b)
@@ -433,14 +433,14 @@ class BaseTest:
 
     def test_labels_on_one_pore(self):
         a = self.net.labels(pores=0)
-        b = ['pore.all', 'pore.bottom', 'pore.front',
+        b = ['pore.all', 'pore.bottom', 'pore.back',
              'pore.internal', 'pore.surface',
              'pore.left', 'pore.'+self.geo.name]
         assert sorted(a) == sorted(b)
 
     def test_labels_on_list_of_pores(self):
         a = self.net.labels(pores=[0, 1])
-        b = ['pore.all', 'pore.bottom', 'pore.front',
+        b = ['pore.all', 'pore.bottom', 'pore.back',
              'pore.internal', 'pore.surface',
              'pore.left', 'pore.'+self.geo.name]
         assert sorted(a) == sorted(b)
@@ -449,21 +449,21 @@ class BaseTest:
         ind = np.zeros((self.net.Np), dtype=bool)
         ind[[0, 1]] = True
         a = self.net.labels(pores=ind)
-        b = ['pore.all', 'pore.bottom', 'pore.front',
+        b = ['pore.all', 'pore.bottom', 'pore.back',
              'pore.internal', 'pore.surface',
              'pore.left', 'pore.'+self.geo.name]
         assert sorted(a) == sorted(b)
 
     def test_labels_pores_mode_or(self):
         a = self.net.labels(pores=[0, 1, 2], mode='or')
-        b = ['pore.all', 'pore.bottom', 'pore.front',
+        b = ['pore.all', 'pore.bottom', 'pore.back',
              'pore.internal', 'pore.surface',
              'pore.left', 'pore.'+self.geo.name, 'pore.top']
         assert sorted(a) == sorted(b)
 
     def test_labels_pores_mode_and(self):
         a = self.net.labels(pores=[0, 1, 2], mode='and')
-        b = ['pore.all', 'pore.front', 'pore.geo_01',
+        b = ['pore.all', 'pore.back', 'pore.geo_01',
              'pore.internal', 'pore.left', 'pore.surface']
         assert sorted(a) == sorted(b)
 
@@ -479,13 +479,13 @@ class BaseTest:
 
     def test_labels_pores_mode_xnor(self):
         a = self.net.labels(pores=[0, 1, 2], mode='xnor')
-        b = ['pore.all', 'pore.front', 'pore.internal',
+        b = ['pore.all', 'pore.back', 'pore.internal',
              'pore.surface', 'pore.left', 'pore.'+self.geo.name]
         assert sorted(a) == sorted(b)
 
     def test_labels_pores_mode_nor(self):
         a = self.net.labels(pores=[0, 1, 2], mode='nor')
-        b = ['pore.back', 'pore.right']
+        b = ['pore.front', 'pore.right']
         assert sorted(a) == sorted(b)
 
     def test_labels_pores_mode_foo(self):
@@ -512,12 +512,12 @@ class BaseTest:
 
     def test_parse_indices_int(self):
         a = self.net._parse_indices(indices=0)
-        assert type(a) == np.ndarray
+        assert isinstance(a, np.ndarray)
         assert np.all(a == 0)
 
     def test_parse_indices_list(self):
         a = self.net._parse_indices(indices=[0, 1])
-        assert type(a) == np.ndarray
+        assert isinstance(a, np.ndarray)
         assert np.all(a == [0, 1])
 
     def test_parse_element_None(self):
@@ -657,9 +657,9 @@ class BaseTest:
         self.net.update({'pore.all': temp})
 
     def test_get_indices_wildcard(self):
-        a = self.net._get_indices(element='pore', labels='ri*')
+        a = self.net._get_indices(element='pore', labels='fr*')
         assert np.all(a == [6, 7, 8, 15, 16, 17, 24, 25, 26])
-        b = self.net._get_indices(element='pore', labels='*ght')
+        b = self.net._get_indices(element='pore', labels='*ont')
         assert np.all(a == b)
 
     def test_write_dict(self):
@@ -717,10 +717,14 @@ class BaseTest:
             self.geo['pore.blah']
 
     def test_interpolate_data(self):
-        a = self.geo.interpolate_data(propname='throat.diameter')
+        self.geo['throat.tester'] = np.linspace(0, 1.0, self.geo.network.Nt)
+        self.geo['pore.tester'] = np.linspace(0, 1.0, self.geo.network.Np)
+        a = self.geo.interpolate_data(propname='throat.tester')
         assert a.size == self.geo.Np
-        a = self.geo.interpolate_data(propname='pore.diameter')
+        assert np.isclose(a.mean(), 0.5)
+        a = self.geo.interpolate_data(propname='pore.tester')
         assert a.size == self.geo.Nt
+        assert np.isclose(a.mean(), 0.5)
 
     def test_get_no_matches(self):
         self.geo.pop('pore.blah', None)
@@ -953,6 +957,24 @@ class BaseTest:
         pn = op.network.Cubic(shape=[5, 5, 5])
         pn.set_label(label='tester', mode='purge')
         # Should only issue warning
+
+    def test_model_run_when_data_missing(self):
+        pn = op.network.Cubic(shape=[3, 3, 3])
+        phase = op.phases.Air(network=pn, settings={'freeze_models': True})
+        with pytest.raises(KeyError):
+            a = phase['pore.viscosity']
+        phase.settings['freeze_models'] = False
+        a = phase['pore.viscosity']
+        assert isinstance(a, np.ndarray)
+
+    def test_renaming_to_current_name_is_allowed(self):
+        obj = op.core.Base(name="temp")
+        obj.name = "temp"
+
+    def test_object_names_must_be_unique_within_project(self):
+        obj = op.core.Base(name="temp")
+        with pytest.raises(Exception):
+            op.core.Base(name="temp", project=obj.project)
 
 
 if __name__ == '__main__':

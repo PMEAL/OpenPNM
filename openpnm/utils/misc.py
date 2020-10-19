@@ -132,7 +132,7 @@ class SettingsDict(PrintableDict):
         return self[key]
 
     def _update_settings_and_docs(self, dc):
-        if type(dc) is type:  # If dc is class then instantiate it
+        if isinstance(dc, type):  # If dc is class then instantiate it
             dc = dc()
         self.__doc__ = dc.__doc__
         # if dc is a dataclass object.  This step is only necessary to support

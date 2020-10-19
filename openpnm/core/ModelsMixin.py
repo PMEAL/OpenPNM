@@ -17,6 +17,7 @@ class ModelsDict(PrintableDict):
     ``dependency_graph``, and ``dependency_map``.
 
     """
+
     def dependency_list(self):
         r"""
         Returns a list of dependencies in the order with which they should be
@@ -183,7 +184,7 @@ class ModelWrapper(dict):
     def __str__(self):
         horizontal_rule = '―' * 78
         lines = [horizontal_rule]
-        strg = '{0:<25s} {2:<25s} {2}'
+        strg = '{0:<25s} {1:<25s} {2}'
         lines.append(strg.format('Property Name', 'Parameter', 'Value'))
         lines.append(horizontal_rule)
         temp = self.copy()
@@ -335,9 +336,9 @@ class ModelsMixin:
 
         """
         # If empty list of propnames was given, do nothing and return
-        if type(propnames) is list and len(propnames) == 0:
+        if isinstance(propnames, list) and len(propnames) == 0:
             return
-        if type(propnames) is str:  # Convert string to list if necessary
+        if isinstance(propnames, str):  # Convert string to list if necessary
             propnames = [propnames]
         if propnames is None:  # If no props given, then regenerate them all
             propnames = self.models.dependency_list()
@@ -384,7 +385,8 @@ class ModelsMixin:
         # Only regenerate model if regen_mode is correct
         if self.settings['freeze_models']:
             # Don't run ANY models if freeze_models is set to True
-            pass
+            logger.warning(prop + ' was not run since freeze_models ' +
+                           'is set to True in object settings')
         elif regen_mode == 'constant':
             # Only regenerate if data not already in dictionary
             if prop not in self.keys():
@@ -417,7 +419,7 @@ class ModelsMixin:
         The default is both.
 
         """
-        if type(propname) is str:
+        if isinstance(propname, str):
             propname = [propname]
         for item in propname:
             if 'model' in mode:
