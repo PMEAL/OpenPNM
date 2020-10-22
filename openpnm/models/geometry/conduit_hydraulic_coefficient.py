@@ -67,16 +67,18 @@ def spheres_and_cylinders(target,
             C2 = network['pore.coords'][cn[:, 1]]
             L = _np.sqrt(_np.sum((C1 - C2)**2, axis=1))
             Lt = L - L1 - L2
-    # Find g for half of pore 1, the throat, and half of pore 2
-    g1, g2, gt = A1/L1, A2/L2, At/Lt
+    # Preallocating g
+    g1, g2, gt = _np.zeros((3, len(Lt)))
+    # Setting g to inf when Li = 0 (ex. boundary pores)
+    # INFO: This is needed since area could also be zero, which confuses NumPy
+    m1, m2, mt = [Li != 0 for Li in [L1, L2, Lt]]
+    g1[~m1] = g2[~m2] = gt[~mt] = _np.inf
     # Calculate Shape factors
     # Preallocating F, SF
     # F is INTEGRAL(1/A^2) dx , x : 0 --> L
     F1, F2, Ft = _np.zeros((3, len(Lt)))
     SF1, SF2, SFt = _np.ones((3, len(Lt)))
     # Setting SF to 1 when Li = 0 (ex. boundary pores)
-    # INFO: This is needed since area could also be zero, which confuses NumPy
-    m1, m2, mt = [Li != 0 for Li in [L1, L2, Lt]]
     SF1[~m1] = SF2[~m2] = SFt[~mt] = 1
     if ((_np.sum(D1 <= 2*L1) != 0) or (_np.sum(D2 <= 2*L2) != 0)):
         raise Exception('Some pores can not be modeled with ball_and_stick'
@@ -95,7 +97,11 @@ def spheres_and_cylinders(target,
     SF1[m1] = (L1 / (A1**2 * F1))[m1]
     SF2[m2] = (L2 / (A2**2 * F2))[m2]
     SFt[mt] = (Lt / (At**2 * Ft))[mt]
-    # Apply shape factors to individual g
+    # Calculate the g values
+    g1[m1] = A1[m1] ** 2 / (8 * _np.pi * L1)[m1]
+    g2[m2] = A2[m2] ** 2 / (8 * _np.pi * L2)[m2]
+    gt[mt] = At[mt] ** 2 / (8 * _np.pi * Lt)[mt]
+    # Apply shape factors and calculate the final conductance
     g1, g2, gt = g1*SF1, g2*SF2, gt*SFt
     if return_elements:
         vals = {'pore1': g1, 'throat': gt, 'pore2': g2}
