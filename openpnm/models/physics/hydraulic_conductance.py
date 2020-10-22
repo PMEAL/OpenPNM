@@ -13,8 +13,7 @@ def stokes_generic(
     target,
     pore_viscosity='pore.viscosity',
     throat_viscosity='throat.viscosity',
-    flow_coeff='throat.flow_coeff',
-):
+    flow_coeff='throat.hydraulic_shape_coefficient'):
     r"""
 
     """
@@ -23,13 +22,12 @@ def stokes_generic(
     if isinstance(F, dict):
         mut = phase[throat_viscosity]
         mu1, mu2 = (phase[pore_viscosity][target.network.conns]).T
-        F1 = F[flow_coeff + '.pore1']
-        F2 = F[flow_coeff + '.pore2']
-        Ft = F[flow_coeff + '.throat']
+        F1 = F['pore1']
+        F2 = F['pore2']
+        Ft = F['throat']
         gh = (mu1/F1 + mut/Ft + mu2/F2)**-1
     else:
         mu = phase[throat_viscosity]
-        Ft = F
         gh = F/mu
     mask = phase.throats(target.name)
     return gh[mask]
