@@ -9,6 +9,7 @@ r"""
 """
 import numpy as _np
 import scipy.constants as const
+import openpnm.models.geometry as geomods
 
 
 def poisson_generic(target,
@@ -34,6 +35,44 @@ def poisson_generic(target,
         gd = Dt*F
     mask = phase.throats(target.name)
     return gd[mask]
+
+
+def poisson_spheres_and_cylinders(target,
+                                  pore_diffusivity='pore.diffusivity',
+                                  throat_diffusivity='throat.diffusivity'):
+    geo = target.project.find_geometry(target)
+    mod = geomods.conduit_diffusive_coefficients.spheres_and_cylinders
+    geo.add_model(propname='throat.diffusive_shape_coefficient', model=mod)
+    gd = poisson_generic(target=target, pore_diffusivity=pore_diffusivity,
+                         throat_diffusivity=throat_diffusivity,
+                         diff_coeff='throat.diffusive_shape_coefficient')
+    return gd
+
+
+def poisson_spheres_and_cylinders_2D(target,
+                                     pore_diffusivity='pore.diffusivity',
+                                     throat_diffusivity='throat.diffusivity'):
+    geo = target.project.find_geometry(target)
+    mod = geomods.conduit_diffusive_coefficients.spheres_and_cylinders_2D
+    geo.add_model(propname='throat.diffusive_shape_coefficient', model=mod)
+    gd = poisson_generic(target=target, pore_diffusivity=pore_diffusivity,
+                         throat_diffusivity=throat_diffusivity,
+                         diff_coeff='throat.diffusive_shape_coefficient')
+    return gd
+
+
+def poisson_conical_frustrum(target,
+                             pore_diffusivity='pore.diffusivity',
+                             throat_diffusivity='throat.diffusivity'):
+    geo = target.project.find_geometry(target)
+    mod = geomods.conduit_diffusive_coefficients.conical_frustrum
+    geo.add_model(propname='throat.diffusive_shape_coefficient', model=mod)
+    gd = poisson_generic(target=target, pore_diffusivity=pore_diffusivity,
+                         throat_diffusivity=throat_diffusivity,
+                         diff_coeff='throat.diffusive_shape_coefficient')
+    return gd
+
+
 
 
 
