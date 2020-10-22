@@ -37,7 +37,8 @@ def ordinary_diffusion_generic(target,
     Dt = phase.interpolate_data(propname=pore_diffusivity)[throats]
     # Find g for half of pore 1, throat, and half of pore 2
     # check for the dimension of the diff_coeff Nt*3 or Nt
-    if (_np.shape(diff_coeff)==(len(cn),3)):
+    # if (len(diff_coeff) == 3):
+    if (type(diff_coeff) == dict):
         g1 = D1*geom[diff_coeff]['pore1']
         g2 = D2*geom[diff_coeff]['pore2']
         gt = Dt*geom[diff_coeff]['throat']
@@ -45,7 +46,9 @@ def ordinary_diffusion_generic(target,
     else:
         g_sum = _np.mean(D1, D2, Dt)*geom[diff_coeff]
     return g_sum
-    
+
+
+
 def ordinary_diffusion(
     target,
     pore_area='pore.area',
