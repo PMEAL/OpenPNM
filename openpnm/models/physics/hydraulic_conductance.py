@@ -32,12 +32,35 @@ def stokes_generic(
     mask = phase.throats(target.name)
     return gh[mask]
 
+def spheres_and_cylinders(target,
+                          pore_viscosity='pore.viscosity',
+                          throat_viscosity='throat.viscosity'):
+    geo = target.project.find_geometry(target)
+    mod = geomods.conduit_hydraulic_coefficients.spheres_and_cylinders
+    geo.add_model(propname='throat.flow_coefficient', model=mod)
+    gh = stokes_generic(target=target, pore_viscosity=pore_viscosity,
+                        throat_viscosity=throat_viscosity,
+                        flow_coeff='throat.flow_coefficient')
+    return gh
+
+
+def spheres_and_cylinders_2D(target,
+                             pore_viscosity='pore.viscosity',
+                             throat_viscosity='throat.viscosity'):
+    geo = target.project.find_geometry(target)
+    mod = geomods.conduit_hydraulic_coefficients.spheres_and_cylinders_2D
+    geo.add_model(propname='throat.flow_coefficient', model=mod)
+    gh = stokes_generic(target=target, pore_viscosity=pore_viscosity,
+                        throat_viscosity=throat_viscosity,
+                        flow_coeff='throat.flow_coefficient')
+    return gh
+
 
 def stokes_conical_frustrum(target,
                             pore_viscosity='pore.viscosity',
                             throat_viscosity='throat.viscosity'):
     geo = target.project.find_geometry(target)
-    mod = geomods.conduit_flow_coefficients.conical_frustrum
+    mod = geomods.conduit_hydraulic_coefficients.conical_frustrum
     geo.add_model(propname='throat.flow_coefficient', model=mod)
     gh = stokes_generic(target=target, pore_viscosity=pore_viscosity,
                         throat_viscosity=throat_viscosity,
