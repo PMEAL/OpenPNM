@@ -18,23 +18,22 @@ def poisson_generic(target,
     # As there are different Diffusivity for pore and throat elements,
     # the diff_coeff should be a 3-element array instead of a final value
     network = target.project.network
-    throats = network.map_throats(throats=target.Ts, origin=target)
     phase = target.project.find_phase(target)
-    cn = network['throat.conns'][throats]
-    # Interpolate pore phase property values to throats
-    D1, D2 = phase[pore_diffusivity][cn].T
-    Dt = phase.interpolate_data(propname=pore_diffusivity)[throats]
-    # Find g for half of pore 1, throat, and half of pore 2
+    F = network[diff_coeff]
+    # Find g
     # check for the dimension of the diff_coeff Nt*3 or Nt
-    # if (len(diff_coeff) == 3):
-    if (type(diff_coeff) == dict):
-        g1 = D1*network[diff_coeff]['pore1']
-        g2 = D2*network[diff_coeff]['pore2']
-        gt = Dt*network[diff_coeff]['throat']
-        g_sum = (1/gt + 1/g1 + 1/g2)**(-1)
+    if isinstance(F, dict):
+        Dt = phase[throat_diffusivity]
+        D1, D2 = (phase[pore_diffusivity][network.conns]).T
+        g1 = D1*F['pore1']
+        g2 = D2*F['pore2']
+        gt = Dt*F['throat']
+        gd = (1/gt + 1/g1 + 1/g2)**(-1)
     else:
-        g_sum = _np.mean(D1, D2, Dt)*network[diff_coeff]
-    return g_sum
+        Dt = phase[throat_diffusivity]
+        gd = Dt*F
+    mask = phase.throats(target.name)
+    return gd[mask]
 
 
 
