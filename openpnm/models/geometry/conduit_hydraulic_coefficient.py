@@ -4,11 +4,11 @@ from numpy import arctanh as _atanh
 
 
 def spheres_and_cylinders(target,
-                         pore_diameter='pore.diameter',
-                         throat_diameter='throat.diameter',
-                         conduit_lengths=None,
-                         throat_length=None,
-                         return_elements=False):
+                          pore_diameter='pore.diameter',
+                          throat_diameter='throat.diameter',
+                          conduit_lengths=None,
+                          throat_length=None,
+                          return_elements=False):
     r"""
     Compute hydraulic shape coefficient for conduits of spheres and cylinders
 
