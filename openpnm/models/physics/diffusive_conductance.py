@@ -14,23 +14,12 @@ import scipy.constants as const
 def poisson_generic(target,
                     pore_diffusivity='pore.diffusivity',
                     throat_diffusivity='throat.diffusivity',
-                    flow_coeff='throat.flow_coeff'):
-    r"""
-
-    """
-    network = target.network
-    g_d = S*D_AB
-
-def ordinary_diffusion_generic(target,
-                      pore_diffusivity='pore.diffusivity',
-                      throat_diffusivity='throat.diffusivity',
-                      diff_coeff='throat.diffusive_shape_coefficient'):
-    # As there are different Diffusivity for pore and throat elements, 
+                    diff_coeff='throat.diffusive_shape_coefficient'):
+    # As there are different Diffusivity for pore and throat elements,
     # the diff_coeff should be a 3-element array instead of a final value
     network = target.project.network
     throats = network.map_throats(throats=target.Ts, origin=target)
     phase = target.project.find_phase(target)
-    geom = target.project.find_geometry(target)
     cn = network['throat.conns'][throats]
     # Interpolate pore phase property values to throats
     D1, D2 = phase[pore_diffusivity][cn].T
@@ -39,12 +28,12 @@ def ordinary_diffusion_generic(target,
     # check for the dimension of the diff_coeff Nt*3 or Nt
     # if (len(diff_coeff) == 3):
     if (type(diff_coeff) == dict):
-        g1 = D1*geom[diff_coeff]['pore1']
-        g2 = D2*geom[diff_coeff]['pore2']
-        gt = Dt*geom[diff_coeff]['throat']
+        g1 = D1*network[diff_coeff]['pore1']
+        g2 = D2*network[diff_coeff]['pore2']
+        gt = Dt*network[diff_coeff]['throat']
         g_sum = (1/gt + 1/g1 + 1/g2)**(-1)
     else:
-        g_sum = _np.mean(D1, D2, Dt)*geom[diff_coeff]
+        g_sum = _np.mean(D1, D2, Dt)*network[diff_coeff]
     return g_sum
 
 
