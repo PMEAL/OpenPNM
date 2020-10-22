@@ -86,6 +86,10 @@ def spheres_and_cylinders(target,
     SFt[mt] = (Lt / (At*Ft))[mt]
     # Apply shape factors to individual g
     g1, g2, gt = g1*SF1, g2*SF2, gt*SFt
+    # Ensure infinite conductance for elements with zero length
+    g1[L1 == 0] = _np.inf
+    g2[L2 == 0] = _np.inf
+    gt[Lt == 0] = _np.inf
     if return_elements:
         vals = {'pore1': g1, 'throat': gt, 'pore2': g2}
     else:
