@@ -56,8 +56,11 @@ class WorkspaceTest:
         self.ws.close_project(proj)
         assert 'test_proj' not in self.ws.keys()
         assert proj.workspace == {}
-        self.ws.load_project(filename='test_proj.pnm')
+        proj = self.ws.load_project(filename = 'test_proj.pnm')
         assert 'test_proj' in self.ws.keys()
+        net = proj.network
+        comp = net.shape == [3, 3, 3]
+        assert comp[0] == True
         self.ws.clear()
         try:
             os.remove('test_proj.pnm')
