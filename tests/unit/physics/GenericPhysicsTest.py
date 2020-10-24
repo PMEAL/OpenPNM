@@ -108,7 +108,7 @@ class GenericPhysicsTest:
     def test_drop_add_geometry(self):
         net = op.network.Cubic(shape=[3, 3, 3])
         geo = op.geometry.GenericGeometry(network=net, pores=net.Ps,
-                                           throats=net.Ts)
+                                          throats=net.Ts)
         phase = op.phases.GenericPhase(network=net)
         phys = op.physics.GenericPhysics(network=net, phase=phase,
                                          geometry=geo)
@@ -125,6 +125,22 @@ class GenericPhysicsTest:
         assert phys.Nt == 0
         with pytest.raises(Exception):
             phys.set_geometry(geometry=geo, mode='add')
+
+    def test_drop_geo_add_phys(self):
+        net = op.network.Cubic(shape=[3, 3, 3])
+        geo = op.geometry.GenericGeometry(network=net, pores=net.Ps,
+                                          throats=net.Ts)
+        phase = op.phases.GenericPhase(network=net)
+        phys = op.physics.GenericPhysics(network=net, phase=phase,
+                                         geometry=geo)
+        geo.drop_locations(pores=[0])
+        geo2 = op.geometry.GenericGeometry(network=net, pores=[0])
+        phys2 = op.physics.GenericPhysics(network=net, phase=phase,
+                                          geometry=geo2)
+        assert geo.Np == 26
+        assert phys.Np == 26
+        assert geo2.Np == 1
+        assert phys2.Np == 1
 
 
 if __name__ == '__main__':

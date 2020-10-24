@@ -312,39 +312,35 @@ class Project(list):
 
         """
 
-        if geometry and phase:
+        if geometry is not None and phase is not None:
             physics = self.find_physics(geometry=geometry)
             phases = list(self.phases().values())
             phys = physics[phases.index(phase)]
             return phys
-
-        if geometry:
+        elif geometry is not None and phase is None:
             result = []
             net = self.network
             geoPs = net['pore.'+geometry.name]
             geoTs = net['throat.'+geometry.name]
             for phase in self.phases().values():
                 physics = self.find_physics(phase=phase)
-                temp = None
                 for phys in physics:
                     Ps = phase.map_pores(pores=phys.Ps, origin=phys)
                     physPs = phase.tomask(pores=Ps)
                     Ts = phase.map_throats(throats=phys.Ts, origin=phys)
                     physTs = phase.tomask(throats=Ts)
                     if np.all(geoPs == physPs) and np.all(geoTs == physTs):
-                        temp = phys
-                result.append(temp)
+                        result.append(phys)
             return result
-
-        if phase:
+        elif geometry is None and phase is not None:
             names = set(self.physics().keys())
             keys = set([item.split('.')[-1] for item in phase.keys()])
             hits = names.intersection(keys)
             phys = [self.physics().get(i, None) for i in hits]
             return phys
-
-        phys = list(self.physics().values())
-        return phys
+        else:
+            phys = list(self.physics().values())
+            return phys
 
     def find_full_domain(self, obj):
         r"""
