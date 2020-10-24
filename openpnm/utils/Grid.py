@@ -226,6 +226,8 @@ class Tableist():
             The number of rows to insert.  The default is 1.
 
         """
+        if num == 0:
+            return
         header = [self.blank for i in self._grid.table_data[0]]
         if row:
             self._grid.table_data.insert(row, header)
@@ -247,6 +249,8 @@ class Tableist():
             The number of columns to insert.  The default is 1.
 
         """
+        if num == 0:
+            return
         for row in self._grid.table_data:
             if col:
                 row.insert(col, self.blank)
