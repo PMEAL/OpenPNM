@@ -7,6 +7,7 @@ logger = logging.getLogger(__name__)
 class Salome(GenericIO):
     r"""
     Write a Salome (salome-platform.org) py script to generate a geometry.
+    The exported py file should be loaded from Salome with "load script".
     """
     _header = '''
 import numpy as np
