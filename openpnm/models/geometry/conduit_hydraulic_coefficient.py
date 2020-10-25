@@ -1,5 +1,5 @@
 import numpy as _np
-from numpy import pi
+from numpy import pi as _pi
 from numpy import arctanh as _atanh
 
 
@@ -37,9 +37,9 @@ def spheres_and_cylinders(target,
     D2 = network[pore_diameter][cn[:, 1]]
     Dt = network[throat_diameter][throats]
     # Getting areas
-    A1 = (pi/4*D1**2)
-    A2 = (pi/4*D2**2)
-    At = (pi/4*Dt**2)
+    A1 = (_pi/4*D1**2)
+    A2 = (_pi/4*D2**2)
+    At = (_pi/4*Dt**2)
     if conduit_lengths is not None:
         L1 = network[conduit_lengths + '.pore1'][throats]
         L2 = network[conduit_lengths + '.pore2'][throats]
@@ -77,12 +77,12 @@ def spheres_and_cylinders(target,
                         + 'with (D/L)<=2')
     # Handle the case where Dt >= Dp
     M1, M2 = [(Di <= Dt) & mi for Di, mi in zip([D1, D2], [m1, m2])]
-    F1[M1] = 16/3 * (L1*(D1**2 + D1*Dt + Dt**2) / (D1**3 * Dt**3 * pi**2))[M1]
-    F2[M2] = 16/3 * (L2*(D2**2 + D2*Dt + Dt**2) / (D2**3 * Dt**3 * pi**2))[M2]
+    F1[M1] = 16/3 * (L1*(D1**2 + D1*Dt + Dt**2) / (D1**3 * Dt**3 * _pi**2))[M1]
+    F2[M2] = 16/3 * (L2*(D2**2 + D2*Dt + Dt**2) / (D2**3 * Dt**3 * _pi**2))[M2]
     # Handle the rest (true balls and sticks)
     N1, N2 = [(Di > Dt) & mi for Di, mi in zip([D1, D2], [m1, m2])]
-    F1[N1] = (4/(D1**3*pi**2) * ((2*D1*L1) / (D1**2-4*L1**2) + _atanh(2*L1/D1)))[N1]
-    F2[N2] = (4/(D2**3*pi**2) * ((2*D2*L2) / (D2**2-4*L2**2) + _atanh(2*L2/D2)))[N2]
+    F1[N1] = (4/(D1**3*_pi**2) * ((2*D1*L1) / (D1**2-4*L1**2) + _atanh(2*L1/D1)))[N1]
+    F2[N2] = (4/(D2**3*_pi**2) * ((2*D2*L2) / (D2**2-4*L2**2) + _atanh(2*L2/D2)))[N2]
     Ft[mt] = (Lt / At**2)[mt]
     # Calculate conduit shape factors
     SF1[m1] = (L1 / (A1**2 * F1))[m1]
@@ -174,31 +174,6 @@ def spheres_and_cylinders_2D(target,
     return vals
 
 
-def cylinders_in_series(target,
-                        pore_diameter='pore.diameter',
-                        throat_diameter='throat.diameter',
-                        n_cylinders=5,
-                        throat_length=None,
-                        return_elements=False):
-    r"""
-
-    """
-    network = target.network
-
-
-def pyramids_and_cuboids(target,
-                        pore_diameter='pore.diameter',
-                        throat_diameter='throat.diameter',
-                        throat_length=None,
-                        return_elements=False):
-    r"""
-
-    """
-    network = target.network
-    R1, R2 = (target[pore_diameter][network.conns]/2).T
-    Rt = target[throat_diameter]/2
-
-
 def conical_frustum_and_stick(target,
                               pore_diameter='pore.diameter',
                               throat_diameter='throat.diameter',
@@ -273,8 +248,8 @@ def conical_frustum_and_stick(target,
     # INFO: This is needed since area could also be zero, which confuses NumPy
     SF1[~m1] = SF2[~m2] = SFt[~mt] = 1
     # Calculate integral of 1/A^2
-    F1[m1] = 16/3 * (L1*(D1**2 + D1*Dt + Dt**2) / (D1**3 * Dt**3 * pi**2))[m1]
-    F2[m2] = 16/3 * (L2*(D2**2 + D2*Dt + Dt**2) / (D2**3 * Dt**3 * pi**2))[m2]
+    F1[m1] = 16/3 * (L1*(D1**2 + D1*Dt + Dt**2) / (D1**3 * Dt**3 * _pi**2))[m1]
+    F2[m2] = 16/3 * (L2*(D2**2 + D2*Dt + Dt**2) / (D2**3 * Dt**3 * _pi**2))[m2]
     Ft[mt] = (Lt/At**2)[mt]
     # Calculate conduit shape factors
     SF1[m1] = (L1 / (A1**2 * F1))[m1]
@@ -294,10 +269,10 @@ def conical_frustum_and_stick(target,
 
 
 def cones_and_cylinders(target,
-                       pore_diameter='pore.diameter',
-                       throat_diameter='throat.diameter',
-                       throat_length='throat.length',
-                       return_elements=False):
+                        pore_diameter='pore.diameter',
+                        throat_diameter='throat.diameter',
+                        throat_length='throat.length',
+                        return_elements=False):
     r"""
 
     """
@@ -312,12 +287,47 @@ def cones_and_cylinders(target,
     beta1 = 1 / (1/(Rt**3) - 1/(R1**3))
     alpha2 = (R2-Rt)/L2
     beta2 = 1 / (1/(Rt**3) - 1/(R2**3))
-    g1 = (3*alpha1*pi/8) * beta1
-    g2 = (3*alpha2*pi/8) * beta2
-    gt = pi*Rt**4/(8*Lt)
+    g1 = (3*alpha1*_pi/8) * beta1
+    g2 = (3*alpha2*_pi/8) * beta2
+    gt = _pi*Rt**4/(8*Lt)
 
     if return_elements:
         g = {'pore1': g1, 'throat': gt, 'pore2': g2}
     else:
         g = (1/g1 + 1/gt + 1/g2)**-1
     return g
+
+
+def ncylinders_in_series(target,
+                         pore_diameter='pore.equivalent_diameter',
+                         throat_diameter='throat.equivalent_diameter',
+                         throat_length='throat.length',
+                         throat_viscosity='throat.viscosity',
+                         pore_viscosity='pore.viscosity',
+                         n=5):
+    r"""
+    """
+    project = target.project
+    network = project.network
+    phase = project.find_phase(target)
+    P12 = network['throat.conns']
+    Tmu = phase[throat_viscosity]
+    Pmu1, Pmu2 = phase[pore_viscosity][P12].T
+    Pdia1, Pdia2 = network[pore_diameter][P12].T
+    Tdia = network[throat_diameter]
+    # Ensure throats are never bigger than connected pores
+    Tdia = _np.minimum(Tdia, 0.99*_np.minimum(Pdia1, Pdia2))
+    Plen1 = Pdia1/2*(_np.cos(_np.arcsin(Tdia/Pdia1)))
+    Plen2 = Pdia2/2*(_np.cos(_np.arcsin(Tdia/Pdia2)))
+    Lcyl1 = _np.linspace(0, Plen1, num=n, endpoint=False)
+    Lcyl2 = _np.linspace(0, Plen2, num=n, endpoint=False)
+    Rcyl1 = Pdia1/2*_np.sin(_np.arccos(Lcyl1/(Pdia1/2)))
+    Rcyl2 = Pdia2/2*_np.sin(_np.arccos(Lcyl2/(Pdia2/2)))
+    gtemp = (_pi*Rcyl1**4/(8*Pmu1*Plen1/n)).T
+    g1 = 1/_np.sum(1/gtemp, axis=1)
+    gtemp = (_pi*Rcyl2**4/(8*Pmu2*Plen2/n)).T
+    g2 = 1/_np.sum(1/gtemp, axis=1)
+    Tlen = network[throat_length]
+    gt = (_pi*(Tdia/2)**4/(8*Tmu*Tlen)).T
+    result = 1/(1/g1 + 1/gt + 1/g2)
+    return result

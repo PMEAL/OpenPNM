@@ -580,37 +580,3 @@ def multiphase_diffusion(
     G12 = K12 * (1.0/g1 + 0.5/gt + K12*(1.0/g2 + 0.5/gt)) ** (-1)
     G21 = 1.0/K12 * (1.0/g2 + 0.5/gt + 1.0/K12*(1.0/g1 + 0.5/gt)) ** (-1)
     return _np.vstack((G12, G21)).T
-
-
-def ncylinders_in_series(
-        target,
-        pore_diameter='pore.equivalent_diameter',
-        throat_diameter='throat.equivalent_diameter',
-        throat_length='throat.length',
-        throat_diffusivity='throat.diffusivity',
-        pore_diffusivity='pore.diffusivity',
-        n=5):
-    project = target.project
-    network = project.network
-    phase = project.find_phase(target)
-    P12 = network['throat.conns']
-    TDab = phase[throat_diffusivity]
-    PDab1, PDab2 = phase[pore_diffusivity][P12].T
-    Pdia1, Pdia2 = network[pore_diameter][P12].T
-    Tdia = network[throat_diameter]
-    # Ensure throats are never bigger than connected pores
-    Tdia = _np.minimum(Tdia, 0.99*_np.minimum(Pdia1, Pdia2))
-    Plen1 = Pdia1/2*(_np.cos(_np.arcsin(Tdia/Pdia1)))
-    Plen2 = Pdia2/2*(_np.cos(_np.arcsin(Tdia/Pdia2)))
-    Lcyl1 = _np.linspace(0, Plen1, num=n, endpoint=False)
-    Lcyl2 = _np.linspace(0, Plen2, num=n, endpoint=False)
-    Rcyl1 = Pdia1/2*_np.sin(_np.arccos(Lcyl1/(Pdia1/2)))
-    Rcyl2 = Pdia2/2*_np.sin(_np.arccos(Lcyl2/(Pdia2/2)))
-    gtemp = (PDab1*_pi*Rcyl1**2/(Plen1/n)).T
-    g1 = 1/_np.sum(1/gtemp, axis=1)
-    gtemp = (PDab2*_pi*Rcyl2**2/(Plen2/n)).T
-    g2 = 1/_np.sum(1/gtemp, axis=1)
-    Tlen = network[throat_length]
-    gt = (TDab*_pi*(Tdia/2)**2/(Tlen)).T
-    result = 1/(1/g1 + 1/gt + 1/g2)
-    return result
