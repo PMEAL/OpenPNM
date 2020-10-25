@@ -274,6 +274,12 @@ class Base(dict):
         elif hasattr(self, 'models') and key in self.models:
             self.regenerate_models(key)
             vals = super().__getitem__(key)
+        # The following is probably a bad idea, but just trying it for fun
+        # elif self.settings['interpolation_mode'] is not None:
+        #     temp = list(set(['pore', 'throat']).difference(set([element])))[0]
+        #     vals = self.interpolate_data(temp + '.' + prop,
+        #                                  mode=self.settings['interpolation_mode'])
+        #     self[element + '.' + prop] = vals
         else:
             raise KeyError(key)
         return vals
@@ -1266,7 +1272,7 @@ class Base(dict):
 
         return temp_arr
 
-    def interpolate_data(self, propname):
+    def interpolate_data(self, propname, mode='mean'):
         r"""
         Determines a pore (or throat) property as the average of it's
         neighboring throats (or pores)
@@ -1275,15 +1281,14 @@ class Base(dict):
         ----------
         propname: string
             The dictionary key to the values to be interpolated.
+        mode : string
+            The method used for interpolation.  Options are 'mean' (default),
+            'min', and 'max'.
 
         Returns
         -------
-        An array containing interpolated pore (or throat) data
-
-        Notes
-        -----
-        This uses an unweighted average, without attempting to account for
-        distances or sizes of pores and throats.
+        vals : ND-array
+            An array containing interpolated pore (or throat) data
 
         Examples
         --------
@@ -1295,9 +1300,9 @@ class Base(dict):
 
         """
         if propname.startswith('throat'):
-            values = from_neighbor_throats(target=self, prop=propname, mode='mean')
+            values = from_neighbor_throats(target=self, prop=propname, mode=mode)
         elif propname.startswith('pore'):
-            values = from_neighbor_pores(target=self, prop=propname, mode='mean')
+            values = from_neighbor_pores(target=self, prop=propname, mode=mode)
         if hasattr(self[propname], 'units'):
             values *= self[propname].units
         return values
@@ -1305,7 +1310,7 @@ class Base(dict):
     def filter_by_label(self, pores=[], throats=[], labels=None, mode='or'):
         r"""
         Returns which of the supplied pores (or throats) has the specified
-        label
+        label(s)
 
         Parameters
         ----------
