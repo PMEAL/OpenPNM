@@ -2,7 +2,7 @@
 
 ## How to submit an [issue](https://github.com/PMEAL/OpenPNM/issues)
 
-In case any of the following apply, go ahead and create an [issue](https://github.com/PMEAL/OpenPNM/issues) *.
+In case any of the following applies, go ahead and create an [issue](https://github.com/PMEAL/OpenPNM/issues) *.
 
 - You have a general question such as "how to do X in `OpenPNM`" **
 - You have found a bug or even a typo in our documentation or in the dosctrings
