@@ -9,11 +9,10 @@ import numpy as _np
 import openpnm.models.geometry as geomods
 
 
-def stokes_generic(
-    target,
-    pore_viscosity='pore.viscosity',
-    throat_viscosity='throat.viscosity',
-    flow_coeff='throat.hydraulic_shape_coefficient'):
+def generic_hydraulic(target,
+                      pore_viscosity='pore.viscosity',
+                      throat_viscosity='throat.viscosity',
+                      flow_coeff='throat.hydraulic_shape_coefficient'):
     r"""
 
     """

@@ -12,10 +12,10 @@ import scipy.constants as const
 import openpnm.models.geometry as geomods
 
 
-def poisson_generic(target,
-                    pore_diffusivity='pore.diffusivity',
-                    throat_diffusivity='throat.diffusivity',
-                    diff_coeff='throat.diffusive_shape_coefficient'):
+def generic_diffusive(target,
+                      pore_diffusivity='pore.diffusivity',
+                      throat_diffusivity='throat.diffusivity',
+                      diff_coeff='throat.diffusive_shape_coefficient'):
     # As there are different Diffusivity for pore and throat elements,
     # the diff_coeff should be a 3-element array instead of a final value
     network = target.project.network

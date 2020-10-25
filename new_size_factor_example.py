@@ -37,7 +37,7 @@ air = op.phases.Air(network=pn, name='air')
 water = op.phases.Water(network=pn, name='h2o')
 
 phys = op.physics.GenericPhysics(network=pn, phase=air, geometry=geo)
-mod = op.models.physics.hydraulic_conductance.stokes_generic
+mod = op.models.physics.hydraulic_conductance.generic_hydraulic
 phys.add_model(propname='throat.hydraulic_conductance_new',
                model=mod, flow_coeff='throat.flow_coeff')
 
