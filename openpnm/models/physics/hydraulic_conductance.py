@@ -33,42 +33,6 @@ def stokes_generic(
     return gh[mask]
 
 
-def stokes_spheres_and_cylinders(target,
-                                 pore_viscosity='pore.viscosity',
-                                 throat_viscosity='throat.viscosity'):
-    geo = target.project.find_geometry(target)
-    mod = geomods.conduit_hydraulic_coefficients.spheres_and_cylinders
-    geo.add_model(propname='throat.hydraulic_shape_coefficient', model=mod)
-    gh = stokes_generic(target=target, pore_viscosity=pore_viscosity,
-                        throat_viscosity=throat_viscosity,
-                        flow_coeff='throat.hydraulic_shape_coefficient')
-    return gh
-
-
-def stokes_spheres_and_cylinders_2D(target,
-                                    pore_viscosity='pore.viscosity',
-                                    throat_viscosity='throat.viscosity'):
-    geo = target.project.find_geometry(target)
-    mod = geomods.conduit_hydraulic_coefficients.spheres_and_cylinders_2D
-    geo.add_model(propname='throat.hydraulic_shape_coefficient', model=mod)
-    gh = stokes_generic(target=target, pore_viscosity=pore_viscosity,
-                        throat_viscosity=throat_viscosity,
-                        flow_coeff='throat.hydraulic_shape_coefficient')
-    return gh
-
-
-def stokes_conical_frustrum(target,
-                            pore_viscosity='pore.viscosity',
-                            throat_viscosity='throat.viscosity'):
-    geo = target.project.find_geometry(target)
-    mod = geomods.conduit_hydraulic_coefficients.conical_frustrum
-    geo.add_model(propname='throat.hydraulic_shape_coefficient', model=mod)
-    gh = stokes_generic(target=target, pore_viscosity=pore_viscosity,
-                        throat_viscosity=throat_viscosity,
-                        flow_coeff='throat.hydraulic_shape_coefficient')
-    return gh
-
-
 def hagen_poiseuille(target,
                      pore_area="pore.area",
                      throat_area="throat.area",

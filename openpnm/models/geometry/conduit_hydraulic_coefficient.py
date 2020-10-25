@@ -6,7 +6,7 @@ from numpy import arctanh as _atanh
 def spheres_and_cylinders(target,
                           pore_diameter='pore.diameter',
                           throat_diameter='throat.diameter',
-                          conduit_lengths=None,
+                          conduit_lengths='throat.conduit_lengths',
                           throat_length=None,
                           return_elements=False):
     r"""
@@ -23,6 +23,7 @@ def spheres_and_cylinders(target,
 
     .. math::
 
+        Q = \frac{A^2}{\mu} \frac{\Delta P}{L} = \frac{S_{hydraulic}}{\mu} \cdot \Delta P
 
     Thus :math:`S_{hydraulic}` represents the combined effect of the area and
     length of the *conduit*, which consists of a throat and 1/2 of the pore
@@ -44,6 +45,8 @@ def spheres_and_cylinders(target,
         L2 = network[conduit_lengths + '.pore2'][throats]
         Lt = network[conduit_lengths + '.throat'][throats]
     else:
+        # Should we offer this option? Why not just go all the way and make
+        # it conduit_lengths only?
         a = target[throat_diameter][throats]
         r = target[pore_diameter][cn]
         theta = _np.arcsin(_np.atleast_2d(a).T/r)
