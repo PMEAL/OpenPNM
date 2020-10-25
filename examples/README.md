@@ -12,14 +12,14 @@ This page links to examples in the Github repo at [github.com/PMEAL/OpenPNM/exam
 
 | Link | Description |
 |:-----|:------------|
-| [Tutorial 1 - Basic](/examples/notebooks/tutorials/intro_to_openpnm_basic.ipynb) | An overview of OpenPNM in terms of basic manual calculations |
-| [Tutorial 2 - Intermediate](/examples/notebooks/tutorials/intro_to_openpnm_intermediate.ipynb) | A repeat of Tutorial 1, but using the features of OpenPNM correctly |
-| [Concise but Detailed Overview](/examples/notebooks/tutorials/concise_overview_of_openpnm.ipynb)  | This notebook goes over most of the key aspects OpenPNM with minimal description, favoring links to other relevant notebooks and resources instead for further reading |
-| [Storage of Network Data and Topology](/examples/notebooks/tutorials/data_and_topology_storage.ipynb) | Provides a explanation of how numerical data is stored in OpenPNM, including the storage of the topological information using sparse adjacency matrices |
-| [Querying the Topology to Find Neighbors](/examples/notebooks/tutorials/finding_neighbor_pores_and_throats.ipynb) | Illustrates how to find neighboring pores and throats using topological and spatial information |
-| [Using and Creating Labels](/examples/notebooks/tutorials/using_and_creating_labels.ipynb) | Labels are used to mark pores and throats for easier selection elsewhere in the simulation, such as applying boundary conditions.  This tutorial illustrates how to use the labels that are automatically included on generated networks and how to add new user-defined labels. |
-| [Defining Multiple Subdomains](/examples/notebooks/tutorials/defining_multiple_subdomains.ipynb) | One of the "power" features of OpenPNM is the ability to define multiple subdomains, enabling the simulation of layered or hierarchical materials with different pore sizes.  This tutorial provides an explanation of this feature. |
-| [The Workspace and Projects](/examples/notebooks/tutorials/overview_of_workspace_and_projects.ipynb) | OpenPNM simulations called Projects and several Projects can be open within a single Workspace.  This tutorial illustrates the relationship between these to constructs and their features. |
+| [Tutorial 1 - Basic](/examples/tutorials/intro_to_openpnm_basic.ipynb) | An overview of OpenPNM in terms of basic manual calculations |
+| [Tutorial 2 - Intermediate](/examples/tutorials/intro_to_openpnm_intermediate.ipynb) | A repeat of Tutorial 1, but using the features of OpenPNM correctly |
+| [Concise but Detailed Overview](/examples/tutorials/concise_overview_of_openpnm.ipynb)  | This notebook goes over most of the key aspects OpenPNM with minimal description, favoring links to other relevant notebooks and resources instead for further reading |
+| [Storage of Network Data and Topology](/examples/tutorials/data_and_topology_storage.ipynb) | Provides a explanation of how numerical data is stored in OpenPNM, including the storage of the topological information using sparse adjacency matrices |
+| [Querying the Topology to Find Neighbors](/examples/tutorials/finding_neighbor_pores_and_throats.ipynb) | Illustrates how to find neighboring pores and throats using topological and spatial information |
+| [Using and Creating Labels](/examples/notebooks/using_and_creating_labels.ipynb) | Labels are used to mark pores and throats for easier selection elsewhere in the simulation, such as applying boundary conditions.  This tutorial illustrates how to use the labels that are automatically included on generated networks and how to add new user-defined labels. |
+| [Defining Multiple Subdomains](/examples/tutorials/defining_multiple_subdomains.ipynb) | One of the "power" features of OpenPNM is the ability to define multiple subdomains, enabling the simulation of layered or hierarchical materials with different pore sizes.  This tutorial provides an explanation of this feature. |
+| [The Workspace and Projects](/examples/tutorials/overview_of_workspace_and_projects.ipynb) | OpenPNM simulations called Projects and several Projects can be open within a single Workspace.  This tutorial illustrates the relationship between these to constructs and their features. |
 
 ### [Network](/examples/notebooks/networks)
 
