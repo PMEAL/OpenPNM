@@ -45,7 +45,6 @@ This page links to examples in the Github repo at [github.com/PMEAL/OpenPNM/exam
 
 | Link | Description |
 |:-----|:------------|
-| [Pore-scale Imaging and Modeling](/examples/notebooks/networks/extraction/Pore_scale_Imaging_Modeling_MGambier.ipynb) | Pore network modeling of real rocks can be used for characterization of rock samples.  This example includes network extraction of the MountGambier rock sample and its permeability estimation using OpenPNM. |
 | [Benthiemer ICL Benchmark](/examples/notebooks/networks/extraction/benthiemer_ICL_benchmark.ipynb) | This example is one of the benchmark examples to illustrate the capability of OpenPNM for fast and accurate prediction of permeability.  A network model for Benthiemer rock sample were extracted using PoreSpy. Permeability and of the network and effective diffusivity of air was then calculated implementing Stokes flow and Fickian diffusion in OpenPNM. Methods for calculation of permeability and diffusivity (effective properties) are included in generic transports in OpenPNM. |
 | [Doddington ICL Benchmark](/examples/notebooks/networks/extraction/doddington_ICL_benchmark.ipynb) | This example is a benchmark example to calculate the permeability of a Doddignton rock sample. The extracted network is loaded in OpenPNM for implementing Stokes flow. |
 | [Berea ICL Benchmark](/examples/notebooks/networks/extraction/berea_ICL_benchmark.ipynb) | This example is a benchmark example to calculate the permeability of a Berea rock sample. The extracted network is loaded in OpenPNM for implementing Stokes flow and Fickian diffusion for effective properties calculation. |
@@ -57,8 +56,8 @@ This page links to examples in the Github repo at [github.com/PMEAL/OpenPNM/exam
 | Link | Description |
 |:-----|:------------|
 | [Basic Stick and Ball](/examples/notebooks/geometry/stick_and_ball.ipynb) | The StickAndBall contains the standard pore-scale models to describe the geometry of a pore network. |
-| [Defining Continuum Regions](/examples/notebooks/geometry/defining_continuum_regions.ipynb) |  |
-| [Overview of Shape Factors](/examples/notebooks/geometry/overview_of_shape_factors.ipynb) | `Zohaib and/or Amin` |
+| [Defining Continuum Regions](/examples/notebooks/geometry/defining_continuum_regions.ipynb) | `in progress` |
+| [Overview of Shape Factors](/examples/notebooks/geometry/overview_of_shape_factors.ipynb) | `in progress` |
 | [Adjusting Pore Size Distributions](/examples/notebooks/geometry/adjusting_pore_size_distributions.ipynb) | The basic StickAndBall class is a good place to start since it has all the necessary pore-scale models, but to customize it for a specific material requires adjusting the pore and throat size distribution.  This example illustrates how to change the pore-size distribution function and how to tweak the distributions parameters to get a suitable result. |
 
 ### [Materials](/examples/notebooks/materials)
@@ -72,7 +71,7 @@ This page links to examples in the Github repo at [github.com/PMEAL/OpenPNM/exam
 | Link | Description |
 |:-----|:------------|
 | [Creating a Custom Phase](/examples/notebooks/phases/creating_a_custom_phase.ipynb) | OpenPNM includes only a few common phases as predefined classes, but it is quite easy to create new phases with custom properties.  This example illustrates how to leverage the library of generic pore-scale models to create phases for any application. |
-| [Working with Mixtures](/examples/notebooks/phases/working_with_mixtures.ipynb) | `Jeff` |
+| [Working with Mixtures](/examples/notebooks/phases/working_with_mixtures.ipynb) | `in progress` |
 
 ### [Simulations](/examples/notebooks/algorithms)
 
@@ -93,7 +92,7 @@ This page links to examples in the Github repo at [github.com/PMEAL/OpenPNM/exam
 | [Basic Fickian Diffusion, Tortuosity, and Formation Factor](/examples/notebooks/algorithms/single_phase/fickian_diffusion_and_tortuosity.ipynb) | Calculating the rate of diffusion through a network is a primary use of OpenPNM, and this example illustrates how to do it, and how to convert the result into known transport parameters such as tortuosity and formation factor. |
 | [Diffusion with Concentration Dependent Diffusivity](/examples/notebooks/algorithms/single_phase/diffusion_with_concentration_dependent_diffusivity.ipynb) | This example illustrates how to define a costum diffusivity model and assign to the phase object. A Fickian diffusion on a cubic network with a variable diffusivity is implemented. |
 | [Permeability Tensor](/examples/notebooks/algorithms/single_phase/stokes_flow_and_permeability_tensor.ipynb) | The direct connection between the structure on the transport is one of main benefits of pore networks.  This examples uses a 2-layered network with 3x smaller pores in on layer to illustrate how the permeability coefficient for each direction can be determined. |
-| [Deep Dive into Conductance Models](/examples/notebooks/algorithms/single_phase/deep_dive_into_conductance_models.ipynb) | `Amin and Zohaib` |
+| [Deep Dive into Conductance Models](/examples/notebooks/algorithms/single_phase/deep_dive_into_conductance_models.ipynb) | `in progress` |
 
 #### [Multiphase Transport](/examples/notebooks/algorithms/multiphase)
 
@@ -110,35 +109,35 @@ This page links to examples in the Github repo at [github.com/PMEAL/OpenPNM/exam
 | [Diffusion with Source and Sink Terms](/examples/notebooks/algorithms/reactive/diffusion_with_source_and_sink_terms.ipynb) | OpenPNM is capable of simulating chemical reactions in pores by adding source and sink terms. This example shows how to add source and sink terms to a steady state fickian diffusion simulation. |
 | [Heat Transfer with Source Terms](/examples/notebooks/algorithms/reactive/one_dimensional_continuum_heat_transfer_with_source_term.ipynb) | `Done` |
 
+#### [Multiphysics](/examples/notebooks/algorithms/multiphysics)
+
+| Link | Description |
+|:-----|:------------|
+| [Advection-Diffusion](/examples/notebooks/algorithms/multiphysics/advection_diffusion.ipynb) | `in progress` |
+| [Nernst-Planck-Poisson](/examples/notebooks/algorithms/multiphysics/nernst_planck_poisson.ipynb) | `in progress` |
+
 #### [Transient Transport](/examples/notebooks/algorithms/transient)
 
 | Link | Description |
 |:-----|:------------|
 | [Transient Fickian Diffusion](/examples/notebooks/algorithms/transient/transient_fickian_diffusion.ipynb) | The package OpenPNM allows for the simulation of many transport phenomena in porous media such as Stokes flow, Fickian diffusion, advection-diffusion, transport of charged species, etc. Transient and steady-state simulations are both supported. An example of a transient Fickian diffusion simulation through a Cubic pore network is shown here. |
 | [Transient Fickian Diffusion with Reaction](/examples/notebooks/algorithms/transient/transient_fickian_diffusion_with_reaction.ipynb) | OpenPNM supports adding reaction terms to both steady state and transient simulations. OpenPNM already includes many different source term models that can be added to simulate a reaction. In this example, we show how to add a powerlaw source term model to a transient fickian diffusion simulation. |
-| [Transient Advection-Diffusion](/examples/notebooks/algorithms/transient/transient_advection_diffusion.ipynb) | `Stephen` |
-
-#### [Multiphysics](/examples/notebooks/algorithms/multiphysics)
-
-| Link | Description |
-|:-----|:------------|
-| [Advection-Diffusion](/examples/notebooks/algorithms/multiphysics/advection_diffusion.ipynb) | `Amin` |
-| [Nernst-Planck-Poisson](/examples/notebooks/algorithms/multiphysics/nernst_planck_poisson.ipynb) | `Mehrez` |
+| [Transient Advection-Diffusion](/examples/notebooks/algorithms/transient/transient_advection_diffusion.ipynb) | Transient advection-diffusion simulations can be used to model elution curves.  This example shows how to fit the concentration profile at the outlet to determine the dispersion coefficient of a network. |
 
 #### [Solvers and Settings](/examples/notebooks/algorithms/general)
 
 | Link | Description |
 |:-----|:------------|
-| [Understanding Basic Solver Settings](/examples/notebooks/algorithms/general/understanding_basic_transport_settings.ipynb) | `Mehrez` |
-| [Understanding Reactive Solver Settings](/examples/notebooks/algorithms/general/understanding_reactive_transport_settings.ipynb) | `Mehrez` |
-| [Understanding Transient Solver Settings](/examples/notebooks/algorithms/general/understanding_transient_transport_settings.ipynb) | `Mehrez` |
-| [Comparison of Available Matrix Solvers](/examples/notebooks/algorithms/general/available_matrix_solvers.ipynb) | `Amin` |
-| [Overview of Inheritance](/examples/notebooks/algorithms/general/overview_of_inheritance.ipynb) | `Amin` |
+| [Understanding Basic Solver Settings](/examples/notebooks/algorithms/general/understanding_basic_transport_settings.ipynb) | `in progress` |
+| [Understanding Reactive Solver Settings](/examples/notebooks/algorithms/general/understanding_reactive_transport_settings.ipynb) | `in progress` |
+| [Understanding Transient Solver Settings](/examples/notebooks/algorithms/general/understanding_transient_transport_settings.ipynb) | `in progress` |
+| [Comparison of Available Matrix Solvers](/examples/notebooks/algorithms/general/available_matrix_solvers.ipynb) | `in progress` |
+| [Overview of Algorithm Inheritance](/examples/notebooks/algorithms/general/overview_of_inheritance.ipynb) | `in progress` |
 
 ### [Import, Export and Visualization](/examples/notebooks/io)
 
 | Link | Description |
 |:-----|:------------|
-| [Quick Plotting Networks](/examples/notebooks/io/quick_plotting_networks.ipynb) |  |
-| [Rendering in Paraview](/examples/notebooks/io/rendering_in_paraview.ipynb) |  |
-| [Loading a Statoil File and Calculating K](/examples/notebooks/io/loading_statoil_finding_permeability.ipynb) |  |
+| [Quick Plotting Networks](/examples/notebooks/io/quick_plotting_networks.ipynb) | There are several functions built into OpenPNM for generating quick and dirty plots of network topology.  These are useful for ensuring topological manipulations are working as expected, for example. |
+| [Rendering in Paraview](/examples/notebooks/io/rendering_in_paraview.ipynb) | Paraview is the recommended visualization software to use in conjuction with OpenPNM. This example is still `in progress` |
+| [Loading a Statoil File and Calculating K](/examples/notebooks/io/loading_statoil_finding_permeability.ipynb) | The Statoil format is used by the group at Imperial College, who have pioneered the principle of sharing code.  Their maximal ball network extraction code outputs 4 files, which can be imported into OpenPNM, as outlined in this example. |
