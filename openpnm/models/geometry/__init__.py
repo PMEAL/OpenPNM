@@ -26,3 +26,5 @@ from . import throat_centroid
 from . import throat_vector
 from . import conduit_hydraulic_coefficient
 from . import conduit_diffusive_coefficient
+from . import hydraulic_shape_factors
+from . import diffusive_shape_factors

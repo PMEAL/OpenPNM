@@ -1,7 +1,7 @@
 r"""
 
-.. autofunction:: openpnm.models.physics.diffusive_shape_factors.ball_and_stick
-.. autofunction:: openpnm.models.physics.diffusive_shape_factors.conical_frustum_and_stick
+.. autofunction:: openpnm.models.geometry.diffusive_shape_factors.ball_and_stick
+.. autofunction:: openpnm.models.geometry.diffusive_shape_factors.conical_frustum_and_stick
 
 """
 import numpy as _np

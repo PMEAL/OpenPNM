@@ -18,8 +18,6 @@ from . import hydraulic_conductance
 from . import dispersive_conductance
 from . import multiphase
 from . import generic_source_term
-from . import hydraulic_shape_factors
-from . import diffusive_shape_factors
 from . import meniscus
 from . import ionic_conductance
 from . import ad_dif_mig_conductance
