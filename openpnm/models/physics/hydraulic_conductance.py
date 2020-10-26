@@ -42,7 +42,7 @@ def hagen_poiseuille_power_law(
     pore_viscosity_max="pore.viscosity_max",
     throat_viscosity_max="throat.viscosity_max",
     conduit_lengths="throat.conduit_lengths",
-    conduit_shape_factors="throat.flow_shape_factors",
+    conduit_shape_factors="throat.hydraulic_shape_factors",
     pore_consistency="pore.consistency",
     throat_consistency="throat.consistency",
     pore_flow_index="pore.flow_index",
