@@ -23,7 +23,8 @@ def spheres_and_cylinders(target,
 
     .. math::
 
-        Q = \frac{A^2}{\mu} \frac{\Delta P}{L} = \frac{S_{hydraulic}}{\mu} \cdot \Delta P
+        Q = \frac{A^2}{\mu} \frac{\Delta P}{L} =
+            \frac{S_{hydraulic}}{\mu} \cdot \Delta P
 
     Thus :math:`S_{hydraulic}` represents the combined effect of the area and
     length of the *conduit*, which consists of a throat and 1/2 of the pore
@@ -174,13 +175,13 @@ def spheres_and_cylinders_2D(target,
     return vals
 
 
-def conical_frustum_and_stick(target,
-                              pore_diameter='pore.diameter',
-                              throat_diameter='throat.diameter',
-                              pore_area='pore.area',
-                              throat_area='throat.area',
-                              conduit_lengths='throat.conduit_lengths',
-                              return_elements=False):
+def cones_and_cylinders(target,
+                        pore_diameter='pore.diameter',
+                        throat_diameter='throat.diameter',
+                        pore_area='pore.area',
+                        throat_area='throat.area',
+                        conduit_lengths='throat.conduit_lengths',
+                        return_elements=False):
     r"""
     Compute hydraulic shape coefficient for conduits of spheres and cylinders
     assuming pores and throats are truncated pyramids (frustums) and constant
@@ -268,51 +269,58 @@ def conical_frustum_and_stick(target,
     return vals
 
 
-def cones_and_cylinders(target,
-                        pore_diameter='pore.diameter',
-                        throat_diameter='throat.diameter',
-                        throat_length='throat.length',
-                        return_elements=False):
+def pyramids_and_cuboids(target,
+                         ):
     r"""
 
     """
-    network = target.network
-    R1, R2 = (target[pore_diameter][network.conns]/2).T
-    Rt = target[throat_diameter]/2
-    Lt = target[throat_length]
-    L1 = Lt - R1
-    L2 = Lt - R2
+    pass
 
-    alpha1 = (R1 - Rt)/L1
-    beta1 = 1 / (1/(Rt**3) - 1/(R1**3))
-    alpha2 = (R2-Rt)/L2
-    beta2 = 1 / (1/(Rt**3) - 1/(R2**3))
-    g1 = (3*alpha1*_pi/8) * beta1
-    g2 = (3*alpha2*_pi/8) * beta2
-    gt = _pi*Rt**4/(8*Lt)
 
-    if return_elements:
-        g = {'pore1': g1, 'throat': gt, 'pore2': g2}
-    else:
-        g = (1/g1 + 1/gt + 1/g2)**-1
-    return g
+def cubes_and_cuboids(target,
+                      pore_diameter='pore.diameter',
+                      throat_diameter='throat.diameter',
+                      pore_aspect=[1, 1, 1],
+                      throat_aspect=[1, 1, 1],
+                      ):
+    r"""
+
+    """
+    pass
+
+
+def intersection_cones(target,
+                       pore_diameter='pore.diameter',
+                       throat_diameter='throat.diameter',
+                       midpoint=None,
+                       ):
+    r"""
+
+    """
+    pass
+
+
+def intersecting_pyramids(target,
+                          pore_diameter='pore.diameter',
+                          throat_diameter='throat.diameter',
+                          midpoint=None,
+                          ):
+    r"""
+
+    """
+    pass
 
 
 def ncylinders_in_series(target,
                          pore_diameter='pore.equivalent_diameter',
                          throat_diameter='throat.equivalent_diameter',
                          throat_length='throat.length',
-                         throat_viscosity='throat.viscosity',
-                         pore_viscosity='pore.viscosity',
                          n=5):
     r"""
     """
     project = target.project
     network = project.network
-    phase = project.find_phase(target)
     P12 = network['throat.conns']
-    Tmu = phase[throat_viscosity]
-    Pmu1, Pmu2 = phase[pore_viscosity][P12].T
     Pdia1, Pdia2 = network[pore_diameter][P12].T
     Tdia = network[throat_diameter]
     # Ensure throats are never bigger than connected pores
@@ -323,11 +331,11 @@ def ncylinders_in_series(target,
     Lcyl2 = _np.linspace(0, Plen2, num=n, endpoint=False)
     Rcyl1 = Pdia1/2*_np.sin(_np.arccos(Lcyl1/(Pdia1/2)))
     Rcyl2 = Pdia2/2*_np.sin(_np.arccos(Lcyl2/(Pdia2/2)))
-    gtemp = (_pi*Rcyl1**4/(8*Pmu1*Plen1/n)).T
+    gtemp = (_pi*Rcyl1**4/(8*Plen1/n)).T
     g1 = 1/_np.sum(1/gtemp, axis=1)
-    gtemp = (_pi*Rcyl2**4/(8*Pmu2*Plen2/n)).T
+    gtemp = (_pi*Rcyl2**4/(8*Plen2/n)).T
     g2 = 1/_np.sum(1/gtemp, axis=1)
     Tlen = network[throat_length]
-    gt = (_pi*(Tdia/2)**4/(8*Tmu*Tlen)).T
+    gt = (_pi*(Tdia/2)**4/(8*Tlen)).T
     result = 1/(1/g1 + 1/gt + 1/g2)
     return result

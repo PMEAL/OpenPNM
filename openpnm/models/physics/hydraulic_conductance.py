@@ -13,12 +13,12 @@ import openpnm.models.geometry as geomods
 def generic_hydraulic(target,
                       pore_viscosity='pore.viscosity',
                       throat_viscosity='throat.viscosity',
-                      flow_coeff='throat.hydraulic_shape_coefficient'):
+                      shape_coeff='throat.hydraulic_shape_coefficient'):
     r"""
 
     """
     phase = target.project.find_phase(target)
-    F = target.network[flow_coeff]
+    F = target.network[shape_coeff]
     if isinstance(F, dict):
         mut = phase[throat_viscosity]
         mu1, mu2 = (phase[pore_viscosity][target.network.conns]).T

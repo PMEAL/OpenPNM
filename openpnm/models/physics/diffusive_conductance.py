@@ -15,12 +15,12 @@ import openpnm.models.geometry as geomods
 def generic_diffusive(target,
                       pore_diffusivity='pore.diffusivity',
                       throat_diffusivity='throat.diffusivity',
-                      diff_coeff='throat.diffusive_shape_coefficient'):
+                      shape_coeff='throat.diffusive_shape_coefficient'):
     # As there are different Diffusivity for pore and throat elements,
     # the diff_coeff should be a 3-element array instead of a final value
     network = target.project.network
     phase = target.project.find_phase(target)
-    F = network[diff_coeff]
+    F = network[shape_coeff]
     # Find g
     # check for the dimension of the diff_coeff Nt*3 or Nt
     if isinstance(F, dict):

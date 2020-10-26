@@ -1,5 +1,5 @@
 import numpy as _np
-from numpy import _pi
+from numpy import pi as _pi
 from numpy import arctanh as _atanh
 from numpy import sqrt as _sqrt
 
@@ -15,7 +15,8 @@ def spheres_and_cylinders(target,
 
     Parameter
     ---------
-    target: OpenPNM object
+    target: OpenPNM Geometry object
+
 
     Notes
     -----
@@ -170,17 +171,16 @@ def spheres_and_cylinders_2D(target,
     return vals
 
 
-def conical_frustum_and_stick(target,
-                              pore_diameter='pore.diameter',
-                              throat_diameter='throat.diameter',
-                              pore_area='pore.area',
-                              throat_area='throat.area',
-                              conduit_lengths='throat.conduit_lengths',
-                              return_elements=False):
+def cones_and_cylinders(target,
+                        pore_diameter='pore.diameter',
+                        throat_diameter='throat.diameter',
+                        pore_area='pore.area',
+                        throat_area='throat.area',
+                        conduit_lengths='throat.conduit_lengths',
+                        return_elements=False):
     r"""
-    Compute diffusive shape coefficient for conduits of spheres and cylinders
-    assuming pores and throats are truncated pyramids (frustums) and constant
-    cross-section cylinders (sticks).
+    Compute diffusive shape coefficient assuming pores are truncated pyramids
+    and throats are cylinders.
 
     Parameters
     ----------
@@ -261,18 +261,43 @@ def conical_frustum_and_stick(target,
     return vals
 
 
-def cones_and_cylinders(target,
-                        pore_diameter='pore.diameter',
-                        throat_diameter='throat.diameter',
-                        throat_length='throat.length',
-                        return_elements=False):
+def pyramids_and_cuboids(target,
+                         pore_diameter='pore.diameter',
+                         throat_diameter='throat.diameter',
+                         return_elements=False,
+                         ):
+    r"""
+
+    """
+    pass
+
+
+def cubes_and_cuboids(target,
+                      pore_diameter='pore.diameter',
+                      throat_diameter='throat.diameter',
+                      pore_aspect=[1, 1, 1],
+                      throat_aspect=[1, 1, 1],
+                      return_elements=False
+                      ):
+    r"""
+
+    """
+    pass
+
+
+def intersecting_cones(target,
+                       pore_diameter='pore.diameter',
+                       throat_diameter='throat.diameter',
+                       midpoint=None,
+                       return_elements=False
+                       ):
     r"""
 
     """
     network = target.network
     R1, R2 = (target[pore_diameter][network.conns]/2).T
     Rt = target[throat_diameter]/2
-    Lt = target[throat_length]
+    Lt = 0
     L1 = Lt - R1
     L2 = Lt - R2
 
@@ -291,21 +316,37 @@ def cones_and_cylinders(target,
     return g
 
 
+def intersecting_pyramids(target,
+                          pore_diameter='pore.diameter',
+                          throat_diameter='throat.diameter',
+                          midpoint=None,
+                          return_elements=False):
+    r"""
+    """
+    pass
+
+
 def ncylinders_in_series(target,
                          pore_diameter='pore.equivalent_diameter',
                          throat_diameter='throat.equivalent_diameter',
                          throat_length='throat.length',
-                         throat_diffusivity='throat.diffusivity',
-                         pore_diffusivity='pore.diffusivity',
-                         n=5):
+                         n=5, return_elements=True):
     r"""
+    Computes the shape coefficient of pores as N cylinders in series
+
+    Parameters
+    ----------
+    target : OpenPNM Geometry object
+        The object to which this model applies
+    pore_diameter : str
+        Dictionary key pointing to the pore diameter values
+    throat_diameter : str
+        Dictionary key pointing to the throat diameter values
+    throat_length : str
     """
     project = target.project
     network = project.network
-    phase = project.find_phase(target)
     P12 = network['throat.conns']
-    TDab = phase[throat_diffusivity]
-    PDab1, PDab2 = phase[pore_diffusivity][P12].T
     Pdia1, Pdia2 = network[pore_diameter][P12].T
     Tdia = network[throat_diameter]
     # Ensure throats are never bigger than connected pores
@@ -316,11 +357,14 @@ def ncylinders_in_series(target,
     Lcyl2 = _np.linspace(0, Plen2, num=n, endpoint=False)
     Rcyl1 = Pdia1/2*_np.sin(_np.arccos(Lcyl1/(Pdia1/2)))
     Rcyl2 = Pdia2/2*_np.sin(_np.arccos(Lcyl2/(Pdia2/2)))
-    gtemp = (PDab1*_pi*Rcyl1**2/(Plen1/n)).T
+    gtemp = (_pi*Rcyl1**2/(Plen1/n)).T
     g1 = 1/_np.sum(1/gtemp, axis=1)
-    gtemp = (PDab2*_pi*Rcyl2**2/(Plen2/n)).T
+    gtemp = (_pi*Rcyl2**2/(Plen2/n)).T
     g2 = 1/_np.sum(1/gtemp, axis=1)
     Tlen = network[throat_length]
-    gt = (TDab*_pi*(Tdia/2)**2/(Tlen)).T
-    result = 1/(1/g1 + 1/gt + 1/g2)
+    gt = (_pi*(Tdia/2)**2/(Tlen)).T
+    if return_elements:
+        result = {'pore1': g1, 'throat': gt, 'pore2': g2}
+    else:
+        result = 1/(1/g1 + 1/gt + 1/g2)
     return result
