@@ -3,6 +3,74 @@ from numpy import pi as _pi
 from numpy import arctanh as _atanh
 
 
+def _SF_spheres_and_cylinders(L1, L2, Lt, D1, D2, Dt, A1, A2, At):
+    # Calculate Shape factors
+    # Preallocating F, SF
+    # F is INTEGRAL(1/A^2) dx , x : 0 --> L
+    F1, F2, Ft = _np.zeros((3, len(Lt)))
+    SF1, SF2, SFt = _np.ones((3, len(Lt)))
+    # Setting SF to 1 when Li = 0 (ex. boundary pores)
+    m1, m2, mt = [Li != 0 for Li in [L1, L2, Lt]]
+    SF1[~m1] = SF2[~m2] = SFt[~mt] = 1
+    if ((_np.sum(D1 <= 2*L1) != 0) or (_np.sum(D2 <= 2*L2) != 0)):
+        raise Exception('Some pores can not be modeled with ball_and_stick'
+                        + 'flow shape factor. Use another model for those pores'
+                        + 'with (D/L)<=2')
+    # Handle the case where Dt >= Dp
+    M1, M2 = [(Di <= Dt) & mi for Di, mi in zip([D1, D2], [m1, m2])]
+    F1[M1] = 16/3 * (L1*(D1**2 + D1*Dt + Dt**2) / (D1**3 * Dt**3 * _pi**2))[M1]
+    F2[M2] = 16/3 * (L2*(D2**2 + D2*Dt + Dt**2) / (D2**3 * Dt**3 * _pi**2))[M2]
+    # Handle the rest (true balls and sticks)
+    N1, N2 = [(Di > Dt) & mi for Di, mi in zip([D1, D2], [m1, m2])]
+    F1[N1] = (4/(D1**3*_pi**2) * ((2*D1*L1) / (D1**2-4*L1**2) + _atanh(2*L1/D1)))[N1]
+    F2[N2] = (4/(D2**3*_pi**2) * ((2*D2*L2) / (D2**2-4*L2**2) + _atanh(2*L2/D2)))[N2]
+    Ft[mt] = (Lt / At**2)[mt]
+    # Calculate conduit shape factors
+    SF1[m1] = (L1 / (A1**2 * F1))[m1]
+    SF2[m2] = (L2 / (A2**2 * F2))[m2]
+    SFt[mt] = (Lt / (At**2 * Ft))[mt]
+    return {'pore1': SF1, 'throat': SFt, 'pore2': SF2}
+
+
+def _SF_spheres_and_cylinders_2D(L1, L2, Lt, D1, D2, A1, A2, At):
+    # Preallocating F, SF
+    # F is INTEGRAL(1/A^2) dx , x : 0 --> L
+    F1, F2, Ft = _np.zeros((3, len(Lt)))
+    SF1, SF2, SFt = _np.ones((3, len(Lt)))
+    # Setting SF to 1 when Li = 0 (ex. boundary pores)
+    # INFO: This is needed since area could also be zero, which confuses NumPy
+    m1, m2, mt = [Li != 0 for Li in [L1, L2, Lt]]
+    SF1[~m1] = SF2[~m2] = SFt[~mt] = 1
+    F1[m1] = (_atanh(2*L1/D1) / (2*D1))[m1]
+    F2[m2] = (_atanh(2*L2/D2) / (2*D2))[m2]
+    Ft[mt] = (Lt / At**2)[mt]
+    # Calculate conduit shape factors
+    SF1[m1] = (L1 / (A1**2 * F1))[m1]
+    SF2[m2] = (L2 / (A2**2 * F2))[m2]
+    SFt[mt] = (Lt / (At**2 * Ft))[mt]
+    return {'pore1': SF1, 'throat': SFt, 'pore2': SF2}
+
+
+def _SF_cones_and_cylinders(L1, L2, Lt, D1, D2, Dt, A1, A2, At):
+    # Preallocating F, SF
+    # F is INTEGRAL(1/A^2) dx , x : 0 --> L
+    F1, F2, Ft = _np.zeros((3, len(Lt)))
+    SF1, SF2, SFt = _np.ones((3, len(Lt)))
+    # Setting SF to 1 when Li = 0 (ex. boundary pores)
+    # INFO: This is needed since area could also be zero, which confuses NumPy
+    m1, m2, mt = [Li != 0 for Li in [L1, L2, Lt]]
+    SF1[~m1] = SF2[~m2] = SFt[~mt] = 1
+    # Calculate integral of 1/A^2
+    F1[m1] = 16/3 * (L1*(D1**2 + D1*Dt + Dt**2) / (D1**3 * Dt**3 * _pi**2))[m1]
+    F2[m2] = 16/3 * (L2*(D2**2 + D2*Dt + Dt**2) / (D2**3 * Dt**3 * _pi**2))[m2]
+    Ft[mt] = (Lt/At**2)[mt]
+    # Calculate conduit shape factors
+    SF1[m1] = (L1 / (A1**2 * F1))[m1]
+    SF2[m2] = (L2 / (A2**2 * F2))[m2]
+    SFt[mt] = (Lt / (At**2 * Ft))[mt]
+    return {'pore1': SF1, 'throat': SFt, 'pore2': SF2}
+
+
 def spheres_and_cylinders(target,
                           pore_diameter='pore.diameter',
                           throat_diameter='throat.diameter',
@@ -65,35 +133,13 @@ def spheres_and_cylinders(target,
     # INFO: This is needed since area could also be zero, which confuses NumPy
     m1, m2, mt = [Li != 0 for Li in [L1, L2, Lt]]
     g1[~m1] = g2[~m2] = gt[~mt] = _np.inf
-    # Calculate Shape factors
-    # Preallocating F, SF
-    # F is INTEGRAL(1/A^2) dx , x : 0 --> L
-    F1, F2, Ft = _np.zeros((3, len(Lt)))
-    SF1, SF2, SFt = _np.ones((3, len(Lt)))
-    # Setting SF to 1 when Li = 0 (ex. boundary pores)
-    SF1[~m1] = SF2[~m2] = SFt[~mt] = 1
-    if ((_np.sum(D1 <= 2*L1) != 0) or (_np.sum(D2 <= 2*L2) != 0)):
-        raise Exception('Some pores can not be modeled with ball_and_stick'
-                        + 'flow shape factor. Use another model for those pores'
-                        + 'with (D/L)<=2')
-    # Handle the case where Dt >= Dp
-    M1, M2 = [(Di <= Dt) & mi for Di, mi in zip([D1, D2], [m1, m2])]
-    F1[M1] = 16/3 * (L1*(D1**2 + D1*Dt + Dt**2) / (D1**3 * Dt**3 * _pi**2))[M1]
-    F2[M2] = 16/3 * (L2*(D2**2 + D2*Dt + Dt**2) / (D2**3 * Dt**3 * _pi**2))[M2]
-    # Handle the rest (true balls and sticks)
-    N1, N2 = [(Di > Dt) & mi for Di, mi in zip([D1, D2], [m1, m2])]
-    F1[N1] = (4/(D1**3*_pi**2) * ((2*D1*L1) / (D1**2-4*L1**2) + _atanh(2*L1/D1)))[N1]
-    F2[N2] = (4/(D2**3*_pi**2) * ((2*D2*L2) / (D2**2-4*L2**2) + _atanh(2*L2/D2)))[N2]
-    Ft[mt] = (Lt / At**2)[mt]
-    # Calculate conduit shape factors
-    SF1[m1] = (L1 / (A1**2 * F1))[m1]
-    SF2[m2] = (L2 / (A2**2 * F2))[m2]
-    SFt[mt] = (Lt / (At**2 * Ft))[mt]
     # Calculate the g values
     g1[m1] = A1[m1] ** 2 / (8 * _np.pi * L1)[m1]
     g2[m2] = A2[m2] ** 2 / (8 * _np.pi * L2)[m2]
     gt[mt] = At[mt] ** 2 / (8 * _np.pi * Lt)[mt]
     # Apply shape factors and calculate the final conductance
+    SF = _SF_spheres_and_cylinders(L1, L2, Lt, D1, D2, Dt, A1, A2, At)
+    SF1, SF2, SFt = SF['pore1'], SF['pore2'], SF['throat']
     g1, g2, gt = g1*SF1, g2*SF2, gt*SFt
     if return_elements:
         vals = {'pore1': g1, 'throat': gt, 'pore2': g2}
@@ -143,26 +189,13 @@ def spheres_and_cylinders_2D(target,
     A1 = D1
     A2 = D2
     At = network[throat_diameter][throats]
-    # Preallocating F, SF
-    # F is INTEGRAL(1/A^2) dx , x : 0 --> L
-    F1, F2, Ft = _np.zeros((3, len(Lt)))
-    SF1, SF2, SFt = _np.ones((3, len(Lt)))
-    # Setting SF to 1 when Li = 0 (ex. boundary pores)
-    # INFO: This is needed since area could also be zero, which confuses NumPy
-    m1, m2, mt = [Li != 0 for Li in [L1, L2, Lt]]
-    SF1[~m1] = SF2[~m2] = SFt[~mt] = 1
-    F1[m1] = (_atanh(2*L1/D1) / (2*D1))[m1]
-    F2[m2] = (_atanh(2*L2/D2) / (2*D2))[m2]
-    Ft[mt] = (Lt / At**2)[mt]
-    # Calculate conduit shape factors
-    SF1[m1] = (L1 / (A1**2 * F1))[m1]
-    SF2[m2] = (L2 / (A2**2 * F2))[m2]
-    SFt[mt] = (Lt / (At**2 * Ft))[mt]
     # Find g for half of pore 1, throat, and half of pore 2
     g1 = D1 ** 3 / (12 * L1)
     g2 = D2 ** 3 / (12 * L2)
     gt = Dt ** 3 / (12 * Lt)
     # Apply shape factors to individual g
+    SF = _SF_spheres_and_cylinders_2D(L1, L2, Lt, D1, D2, A1, A2, At)
+    SF1, SF2, SFt = SF['pore1'], SF['pore2'], SF['throat']
     g1, g2, gt = g1*SF1, g2*SF2, gt*SFt
     # Ensure infinite conductance for elements with zero length
     g1[L1 == 0] = _np.inf
@@ -241,26 +274,13 @@ def cones_and_cylinders(target,
     # INFO: This is needed since area could also be zero, which confuses NumPy
     m1, m2, mt = [Li != 0 for Li in [L1, L2, Lt]]
     g1[~m1] = g2[~m2] = gt[~mt] = _np.inf
-    # Preallocating F, SF
-    # F is INTEGRAL(1/A^2) dx , x : 0 --> L
-    F1, F2, Ft = _np.zeros((3, len(Lt)))
-    SF1, SF2, SFt = _np.ones((3, len(Lt)))
-    # Setting SF to 1 when Li = 0 (ex. boundary pores)
-    # INFO: This is needed since area could also be zero, which confuses NumPy
-    SF1[~m1] = SF2[~m2] = SFt[~mt] = 1
-    # Calculate integral of 1/A^2
-    F1[m1] = 16/3 * (L1*(D1**2 + D1*Dt + Dt**2) / (D1**3 * Dt**3 * _pi**2))[m1]
-    F2[m2] = 16/3 * (L2*(D2**2 + D2*Dt + Dt**2) / (D2**3 * Dt**3 * _pi**2))[m2]
-    Ft[mt] = (Lt/At**2)[mt]
-    # Calculate conduit shape factors
-    SF1[m1] = (L1 / (A1**2 * F1))[m1]
-    SF2[m2] = (L2 / (A2**2 * F2))[m2]
-    SFt[mt] = (Lt / (At**2 * Ft))[mt]
     # Calculate the g values
     g1[m1] = A1[m1] ** 2 / (8 * _np.pi * L1)[m1]
     g2[m2] = A2[m2] ** 2 / (8 * _np.pi * L2)[m2]
     gt[mt] = At[mt] ** 2 / (8 * _np.pi * Lt)[mt]
     # Apply shape factors and calculate the final conductance
+    SF = _SF_cones_and_cylinders(L1, L2, Lt, D1, D2, Dt, A1, A2, At)
+    SF1, SF2, SFt = SF['pore1'], SF['pore2'], SF['throat']
     g1, g2, gt = g1*SF1, g2*SF2, gt*SFt
     if return_elements:
         vals = {'pore1': g1, 'throat': gt, 'pore2': g2}
