@@ -29,7 +29,7 @@ geo.add_model(propname='throat.conduit_length',
               model=op.models.geometry.throat_length.conduit_lengths)
 
 mod = op.models.geometry.conduit_hydraulic_coefficient.spheres_and_cylinders
-geo.add_model(propname='throat.flow_coeff',
+geo.add_model(propname='throat.flow_coeff', # shouldn't it be hydraulic_shape_coefficent?
               model=mod,
               conduit_lengths='throat.conduit_length')
 
