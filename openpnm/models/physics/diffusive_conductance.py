@@ -48,7 +48,7 @@ def mixed_diffusion(
     molecular_weight='pore.molecular_weight',
     throat_diffusivity='throat.diffusivity',
     conduit_lengths='throat.conduit_lengths',
-    conduit_shape_factors='throat.poisson_shape_factors',
+    conduit_shape_factors='throat.diffusive_shape_factors',
 ):
     r"""
     Calculate the diffusive conductance of conduits in network, where a
@@ -161,7 +161,7 @@ def taylor_aris_diffusion(
     throat_hydraulic_conductance='throat.hydraulic_conductance',
     throat_diffusivity='throat.diffusivity',
     conduit_lengths='throat.conduit_lengths',
-    conduit_shape_factors='throat.poisson_shape_factors'
+    conduit_shape_factors='throat.diffusive_shape_factors'
 ):
     r"""
     Calculate the diffusive conductance of conduits in network considering the
@@ -345,7 +345,7 @@ def multiphase_diffusion(
     pore_diffusivity='pore.diffusivity',
     throat_diffusivity='throat.diffusivity',
     conduit_lengths='throat.conduit_lengths',
-    conduit_shape_factors='throat.poisson_shape_factors'
+    conduit_shape_factors='throat.diffusive_shape_factors'
 ):
     r"""
     Similar to ordinary_diffusion, except it also accounts for Henry's law
