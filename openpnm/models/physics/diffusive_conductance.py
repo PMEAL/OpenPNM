@@ -26,9 +26,9 @@ def generic_diffusive(target,
     if isinstance(F, dict):
         Dt = phase[throat_diffusivity]
         D1, D2 = (phase[pore_diffusivity][network.conns]).T
-        g1 = D1*F['pore1']
-        g2 = D2*F['pore2']
-        gt = Dt*F['throat']
+        g1 = D1*F[f"{shape_coeff}.pore1"]
+        g2 = D2*F[f"{shape_coeff}.pore2"]
+        gt = Dt*F[f"{shape_coeff}.throat"]
         gd = (1/gt + 1/g1 + 1/g2)**(-1)
     else:
         Dt = phase[throat_diffusivity]

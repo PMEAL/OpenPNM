@@ -5,13 +5,11 @@ from numpy import arctanh as _atanh
 from numpy import sqrt as _sqrt
 
 
-    
 def spheres_and_cylinders(target,
                           pore_diameter='pore.diameter',
                           throat_diameter='throat.diameter',
                           throat_length=None,
-                          conduit_lengths=None,
-                          return_elements=False):
+                          conduit_lengths=None):
     r"""
     Compute diffusive shape coefficient for conduits of spheres and cylinders
 
@@ -34,51 +32,25 @@ def spheres_and_cylinders(target,
     on each end.
 
     """
-
     network = target.project.network
     throats = network.map_throats(throats=target.Ts, origin=target)
     cn = network['throat.conns'][throats]
     D1 = network[pore_diameter][cn[:, 0]]
     D2 = network[pore_diameter][cn[:, 1]]
     Dt = network[throat_diameter][throats]
-    # Getting areas
-    A1 = (_pi/4*D1**2)
-    A2 = (_pi/4*D2**2)
-    At = (_pi/4*Dt**2)
-    if conduit_lengths is not None:
-        L1 = network[conduit_lengths + '.pore1'][throats]
-        L2 = network[conduit_lengths + '.pore2'][throats]
-        Lt = network[conduit_lengths + '.throat'][throats]
-    else:
-        a = target[throat_diameter][throats]
-        r = target[pore_diameter][cn]
-        theta = _np.arcsin(_np.atleast_2d(a).T/r)
-        L1, L2 = (r*_np.cos(theta)).T
-        if throat_length is not None:
-            Lt = target[throat_length][throats]
-        else:
-            C1 = network['pore.coords'][cn[:, 0]]
-            C2 = network['pore.coords'][cn[:, 1]]
-            L = _np.sqrt(_np.sum((C1 - C2)**2, axis=1))
-            Lt = L - L1 - L2
-    # Find g for half of pore 1, the throat, and half of pore 2
-    g1, g2, gt = A1/L1, A2/L2, At/Lt
-    # Apply shape factors to individual g
-    SF = _SF_spheres_and_cylinders(L1, L2, Lt, D1, D2, Dt, A1, A2, At)
-    SF1, SF2, SFt = SF['pore1'], SF['pore2'], SF['throat']
-    g1, g2, gt = g1*SF1, g2*SF2, gt*SFt
-    # Ensure infinite conductance for elements with zero length
-    g1[L1 == 0] = _np.inf
-    g2[L2 == 0] = _np.inf
-    gt[Lt == 0] = _np.inf
-    if return_elements:
-        vals = {'pore1': g1, 'throat': gt, 'pore2': g2}
-    else:
-        vals = (1/gt + 1/g1 + 1/g2)**(-1)
+    L1 = network[conduit_lengths + '.pore1'][throats]
+    L2 = network[conduit_lengths + '.pore2'][throats]
+    Lt = network[conduit_lengths + '.throat'][throats]
+
+    # F is Integral(1/A) dx , x : 0 --> L
+    if ((_np.sum(D1 <= 2*L1) != 0) or (_np.sum(D2 <= 2*L2) != 0)):
+        raise Exception('Some throats are too short, add spherical_pores endpoint model')
+    F1 = 2/(D1*_pi) * _atanh(2*L1/D1)
+    F2 = 2/(D2*_pi) * _atanh(2*L2/D2)
+    Ft = Lt / (_pi/4*Dt**2)
+    g1, g2, gt = 1/F1, 1/F2, 1/Ft
+    vals = {'pore1': g1, 'throat': gt, 'pore2': g2}
     return vals
-
-
-
 
 
 def spheres_and_cylinders_2D(target,
