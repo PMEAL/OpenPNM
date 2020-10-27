@@ -1,3 +1,4 @@
+import openpnm.models as mods
 import numpy as _np
 from numpy import pi as _pi
 from numpy import arctanh as _atanh
@@ -279,7 +280,13 @@ def cones_and_cylinders(target,
     g2[m2] = A2[m2] ** 2 / (8 * _np.pi * L2)[m2]
     gt[mt] = At[mt] ** 2 / (8 * _np.pi * Lt)[mt]
     # Apply shape factors and calculate the final conductance
-    SF = _SF_cones_and_cylinders(L1, L2, Lt, D1, D2, Dt, A1, A2, At)
+    # SF = _SF_cones_and_cylinders(L1, L2, Lt, D1, D2, Dt, A1, A2, At)
+    mod = mods.geometry.hydraulic_shape_factors.conical_frustum_and_stick
+    SF = mod(target=target, pore_area=pore_area,
+             throat_area=throat_area,
+             pore_diameter=pore_diameter,
+             throat_diameter=throat_diameter,
+             conduit_lengths=conduit_lengths)
     SF1, SF2, SFt = SF['pore1'], SF['pore2'], SF['throat']
     g1, g2, gt = g1*SF1, g2*SF2, gt*SFt
     if return_elements:

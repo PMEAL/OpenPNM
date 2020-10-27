@@ -202,7 +202,13 @@ def cones_and_cylinders(target,
     # Find g for half of pore 1, the throat, and half of pore 2
     g1, g2, gt = A1/L1, A2/L2, At/Lt
     # Apply shape factors to individual g
-    SF = _SF_cones_and_cylinders(L1, L2, Lt, D1, D2, Dt, A1, A2, At)
+    mod = mods.geometry.diffusive_shape_factors.conical_frustum_and_stick
+    SF = mod(target=target, pore_area=pore_area,
+             throat_area=throat_area,
+             pore_diameter=pore_diameter,
+             throat_diameter=throat_diameter,
+             conduit_lengths=conduit_lengths)
+    # SF = _SF_cones_and_cylinders(L1, L2, Lt, D1, D2, Dt, A1, A2, At)
     SF1, SF2, SFt = SF['pore1'], SF['pore2'], SF['throat']
     g1, g2, gt = g1*SF1, g2*SF2, gt*SFt
     # Ensure infinite conductance for elements with zero length
