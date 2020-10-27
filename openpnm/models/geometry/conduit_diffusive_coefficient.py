@@ -56,9 +56,7 @@ def spheres_and_cylinders(target,
 def spheres_and_cylinders_2D(target,
                              pore_diameter='pore.diameter',
                              throat_diameter='throat.diameter',
-                             throat_length=None,
-                             conduit_lengths=None,
-                             return_elements=False):
+                             conduit_lengths=None):
     r"""
     Compute diffusive shape coefficient for conduits of spheres and cylinders
     in 2D
@@ -84,31 +82,18 @@ def spheres_and_cylinders_2D(target,
     network = target.project.network
     throats = network.map_throats(throats=target.Ts, origin=target)
     cn = network['throat.conns'][throats]
-    # Get pore diameter
     D1 = network[pore_diameter][cn[:, 0]]
     D2 = network[pore_diameter][cn[:, 1]]
-    # Get conduit lengths
+    Dt = network[throat_diameter][throats]
     L1 = network[conduit_lengths + '.pore1'][throats]
     L2 = network[conduit_lengths + '.pore2'][throats]
     Lt = network[conduit_lengths + '.throat'][throats]
-    # Get pore/throat baseline areas (the one used in generic conductance)
-    A1 = D1
-    A2 = D2
-    At = network[throat_diameter][throats]
-    # Find g for half of pore 1, the throat, and half of pore 2
-    g1, g2, gt = A1/L1, A2/L2, At/Lt
-    # Apply shape factors to individual g
-    SF = _SF_spheres_and_cylinders_2D(L1, L2, Lt, D1, D2, A1, A2, At)
-    SF1, SF2, SFt = SF['pore1'], SF['pore2'], SF['throat']
-    g1, g2, gt = g1*SF1, g2*SF2, gt*SFt
-    # Ensure infinite conductance for elements with zero length
-    g1[L1 == 0] = _np.inf
-    g2[L2 == 0] = _np.inf
-    gt[Lt == 0] = _np.inf
-    if return_elements:
-        vals = {'pore1': g1, 'throat': gt, 'pore2': g2}
-    else:
-        vals = (1/gt + 1/g1 + 1/g2)**(-1)
+    # F is INTEGRAL(1/A) dx , x : 0 --> L
+    F1 = (0.5 * _atanh(2*L1/_sqrt(D1**2 - 4*L1**2)))
+    F2 = (0.5 * _atanh(2*L2/_sqrt(D2**2 - 4*L2**2)))
+    Ft = (Lt/Dt)
+    g1, g2, gt = 1/F1, 1/F2, 1/Ft
+    vals = {'pore1': g1, 'throat': gt, 'pore2': g2}
     return vals
 
 
@@ -117,8 +102,7 @@ def cones_and_cylinders(target,
                         throat_diameter='throat.diameter',
                         pore_area='pore.area',
                         throat_area='throat.area',
-                        conduit_lengths='throat.conduit_lengths',
-                        return_elements=False):
+                        conduit_lengths='throat.conduit_lengths'):
     r"""
     Compute diffusive shape coefficient assuming pores are truncated pyramids
     and throats are cylinders.
@@ -145,10 +129,6 @@ def cones_and_cylinders(target,
     conduit_lengths : string
         Dictionary key of the conduit lengths' values
 
-    return_elements : Bool
-        A boolean variable to whether return the values elementwise for
-        pores and throat or return the final value for the conduit.
-
     Returns
     -------
     Either an array of diffusive_shape_coefficient or a dictionary containing the
@@ -159,38 +139,19 @@ def cones_and_cylinders(target,
     network = target.project.network
     throats = network.map_throats(throats=target.Ts, origin=target)
     cn = network['throat.conns'][throats]
-    # Get pore diameter
     D1 = network[pore_diameter][cn[:, 0]]
     D2 = network[pore_diameter][cn[:, 1]]
     Dt = network[throat_diameter][throats]
-    # Get pore/throat baseline areas (the one used in generic conductance)
-    A1 = network[pore_area][cn[:, 0]]
-    A2 = network[pore_area][cn[:, 1]]
     At = network[throat_area][throats]
-    # Get conduit lengths
     L1 = network[conduit_lengths + '.pore1'][throats]
     L2 = network[conduit_lengths + '.pore2'][throats]
     Lt = network[conduit_lengths + '.throat'][throats]
-    # Find g for half of pore 1, the throat, and half of pore 2
-    g1, g2, gt = A1/L1, A2/L2, At/Lt
-    # Apply shape factors to individual g
-    mod = mods.geometry.diffusive_shape_factors.conical_frustum_and_stick
-    SF = mod(target=target, pore_area=pore_area,
-             throat_area=throat_area,
-             pore_diameter=pore_diameter,
-             throat_diameter=throat_diameter,
-             conduit_lengths=conduit_lengths)
-    # SF = _SF_cones_and_cylinders(L1, L2, Lt, D1, D2, Dt, A1, A2, At)
-    SF1, SF2, SFt = SF['pore1'], SF['pore2'], SF['throat']
-    g1, g2, gt = g1*SF1, g2*SF2, gt*SFt
-    # Ensure infinite conductance for elements with zero length
-    g1[L1 == 0] = _np.inf
-    g2[L2 == 0] = _np.inf
-    gt[Lt == 0] = _np.inf
-    if return_elements:
-        vals = {'pore1': g1, 'throat': gt, 'pore2': g2}
-    else:
-        vals = (1/gt + 1/g1 + 1/g2)**(-1)
+    # F is INTEGRAL(1/A) dx , x : 0 --> L
+    F1 = (4*L1/(D1*Dt*_pi))
+    F2 = (4*L2/(D2*Dt*_pi))
+    Ft = (Lt/At)
+    g1, g2, gt = 1/F1, 1/F2, 1/Ft
+    vals = {'pore1': g1, 'throat': gt, 'pore2': g2}
     return vals
 
 
@@ -301,72 +262,3 @@ def ncylinders_in_series(target,
     else:
         result = 1/(1/g1 + 1/gt + 1/g2)
     return result
-
-
-def _SF_spheres_and_cylinders(L1, L2, Lt, D1, D2, Dt, A1, A2, At):
-    # Calculate Shape factors
-    # Preallocating F, SF
-    # F is INTEGRAL(1/A) dx , x : 0 --> L
-    F1, F2, Ft = _np.zeros((3, len(Lt)))
-    SF1, SF2, SFt = _np.ones((3, len(Lt)))
-    # Setting SF to 1 when Li = 0 (ex. boundary pores)
-    # INFO: This is needed since area could also be zero, which confuses NumPy
-    m1, m2, mt = [Li != 0 for Li in [L1, L2, Lt]]
-    SF1[~m1] = SF2[~m2] = SFt[~mt] = 1
-    if ((_np.sum(D1 <= 2*L1) != 0) or (_np.sum(D2 <= 2*L2) != 0)):
-        raise Exception('Some pores can not be modeled with ball_and_stick'
-                        + 'flow shape factor. Use another model for those pores'
-                        + 'with (D/L)<=2')
-    # Handle the case where Dt >= Dp
-    M1, M2 = [(Di <= Dt) & mi for Di, mi in zip([D1, D2], [m1, m2])]
-    F1[M1] = (4*L1/(D1*Dt*_pi))[M1]
-    F2[M2] = (4*L2/(D2*Dt*_pi))[M2]
-    # Handle the rest (true balls and sticks)
-    N1, N2 = [(Di > Dt) & mi for Di, mi in zip([D1, D2], [m1, m2])]
-    F1[N1] = (2/(D1*_pi) * _atanh(2*L1/D1))[N1]
-    F2[N2] = (2/(D2*_pi) * _atanh(2*L2/D2))[N2]
-    Ft[mt] = (Lt/At)[mt]
-    # Calculate conduit shape factors
-    SF1[m1] = (L1 / (A1*F1))[m1]
-    SF2[m2] = (L2 / (A2*F2))[m2]
-    SFt[mt] = (Lt / (At*Ft))[mt]
-    return {'pore1': SF1, 'throat': SFt, 'pore2': SF2}
-
-
-def _SF_spheres_and_cylinders_2D(L1, L2, Lt, D1, D2, A1, A2, At):
-    # Preallocating F, SF
-    # F is INTEGRAL(1/A) dx , x : 0 --> L
-    F1, F2, Ft = _np.zeros((3, len(Lt)))
-    SF1, SF2, SFt = _np.ones((3, len(Lt)))
-    # Setting SF to 1 when Li = 0 (ex. boundary pores)
-    # INFO: This is needed since area could also be zero, which confuses NumPy
-    m1, m2, mt = [Li != 0 for Li in [L1, L2, Lt]]
-    SF1[~m1] = SF2[~m2] = SFt[~mt] = 1
-    F1[m1] = (0.5 * _atanh(2*L1/_sqrt(D1**2 - 4*L1**2)))[m1]
-    F2[m2] = (0.5 * _atanh(2*L2/_sqrt(D2**2 - 4*L2**2)))[m2]
-    Ft[mt] = (Lt/At)[mt]
-    # Calculate conduit shape factors
-    SF1[m1] = (L1 / (A1*F1))[m1]
-    SF2[m2] = (L2 / (A2*F2))[m2]
-    SFt[mt] = (Lt / (At*Ft))[mt]
-    return {'pore1': SF1, 'throat': SFt, 'pore2': SF2}
-
-
-def _SF_cones_and_cylinders(L1, L2, Lt, D1, D2, Dt, A1, A2, At):
-    # Preallocating F, SF
-    # F is INTEGRAL(1/A) dx , x : 0 --> L
-    F1, F2, Ft = _np.zeros((3, len(Lt)))
-    SF1, SF2, SFt = _np.ones((3, len(Lt)))
-    # Setting SF to 1 when Li = 0 (ex. boundary pores)
-    # INFO: This is needed since area could also be zero, which confuses NumPy
-    m1, m2, mt = [Li != 0 for Li in [L1, L2, Lt]]
-    SF1[~m1] = SF2[~m2] = SFt[~mt] = 1
-    # Handle the rest (non-zero-length conduits)
-    F1[m1] = (4*L1/(D1*Dt*_pi))[m1]
-    F2[m2] = (4*L2/(D2*Dt*_pi))[m2]
-    Ft[mt] = (Lt/At)[mt]
-    # Calculate conduit shape factors
-    SF1[m1] = (L1 / (A1*F1))[m1]
-    SF2[m2] = (L2 / (A2*F2))[m2]
-    SFt[mt] = (Lt / (At*Ft))[mt]
-    return {'pore1': SF1, 'throat': SFt, 'pore2': SF2}
