@@ -455,8 +455,6 @@ def view_dependencies(deps, port=8008):
     # Launch browser
     webbrowser.open(f"http://localhost:{port}")
 
-    server.shutdown()
-
 
 def catch_module_not_found(function):
     r"""
