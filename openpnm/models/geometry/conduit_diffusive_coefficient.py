@@ -6,15 +6,15 @@ from numpy import sqrt as _sqrt
 from numpy.linalg import norm as _norm
 
 
-def _calc_conduit_ep_cylinders_spheres_2D(target, 
+def _calc_conduit_length_spheres_cylinders_2D(target,
                                           pore_diameter='pore.diameter',
                                           throat_diameter='throat.diameter'):
-        return _calc_conduit_length_cylinders_spheres(target, 
+        return _calc_conduit_length_spheres_cylinders(target,
                                                       pore_diameter=pore_diameter,
                                                       throat_diameter=throat_diameter)
 
 
-def _calc_conduit_length_cylinders_spheres(target, pore_diameter='pore.diameter',
+def _calc_conduit_length_spheres_cylinders(target, pore_diameter='pore.diameter',
                                         throat_diameter='throat.diameter'):
      network = target.project.network
      throats = network.map_throats(throats=target.Ts, origin=target)
@@ -96,7 +96,7 @@ def spheres_and_cylinders(target,
         L2 = network[conduit_lengths + '.pore2'][throats]
         Lt = network[conduit_lengths + '.throat'][throats]
     else:
-        L1, L2, Lt = _calc_conduit_length_cylinders_spheres(target,
+        L1, L2, Lt = _calc_conduit_length_spheres_cylinders(target,
                                                             pore_diameter=pore_diameter,
                                                             throat_diameter=throat_diameter)
     # F is Integral(1/A) dx , x : 0 --> L
@@ -147,7 +147,7 @@ def spheres_and_cylinders_2D(target,
         L2 = network[conduit_lengths + '.pore2'][throats]
         Lt = network[conduit_lengths + '.throat'][throats]
     else:
-        L1, L2, Lt = _calc_conduit_length_cylinders_spheres(target,
+        L1, L2, Lt = _calc_conduit_length_spheres_cylinders_2D(target,
                                                             pore_diameter=pore_diameter,
                                                             throat_diameter=throat_diameter)
     # F is INTEGRAL(1/A) dx , x : 0 --> L
