@@ -437,8 +437,29 @@ def deps_to_jsongraph(children, name=None, parent=None):
     return tree
 
 
+def view_dependencies(deps, port=8008):
+    import json
+    import webbrowser
+    import threading
+    from http.server import HTTPServer, SimpleHTTPRequestHandler
+    server = HTTPServer(server_address=('', port),
+                        RequestHandlerClass=SimpleHTTPRequestHandler)
+    thread = threading.Thread(target=server.serve_forever)
+    thread.daemon = True
+    thread.start()
+
+    data = deps_to_jsongraph(deps)
+    with open('tree.json', 'w') as outfile:
+        json.dump(data, outfile)
+
+    # Launch browser
+    webbrowser.open(f"http://localhost:{port}")
+
+    server.shutdown()
+
+
 def catch_module_not_found(function):
-    """
+    r"""
     A decorator that wraps the passed in function and catches
     ModuleNotFound exception.
     """
