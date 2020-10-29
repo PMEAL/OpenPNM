@@ -1,6 +1,7 @@
 import os
 import pytest
 import openpnm as op
+from numpy.testing import assert_allclose
 
 
 class WorkspaceTest:
@@ -56,16 +57,25 @@ class WorkspaceTest:
         self.ws.close_project(proj)
         assert 'test_proj' not in self.ws.keys()
         assert proj.workspace == {}
-        proj = self.ws.load_project(filename = 'test_proj.pnm')
+        proj = self.ws.load_project(filename='test_proj.pnm')
         assert 'test_proj' in self.ws.keys()
-        net = proj.network
-        comp = net.shape == [3, 3, 3]
-        assert comp[0] == True
+        assert isinstance(proj, op.Project)
+        assert_allclose(proj.network.shape, [3, 3, 3])
         self.ws.clear()
         try:
             os.remove('test_proj.pnm')
         except PermissionError:
             print('Could not delete test_proj.pnm')
+
+    def test_load_project_with_name_conflict(self):
+        self.ws.clear()
+        proj = self.ws.new_project(name='test')
+        pn = op.network.Cubic(shape=[3, 3, 3], project=proj)
+        op.phases.Air(network=pn)
+        self.ws.save_project(proj, filename='test.pnm')
+        self.ws.load_project('test.pnm')
+        assert set(self.ws.keys()) == set(['test', 'proj_01'])
+        os.remove('test.pnm')
 
     # def test_save_and_load_project_from_pickled_list(self):
     #     proj = self.ws.new_project()
@@ -89,16 +99,6 @@ class WorkspaceTest:
     #     with pytest.raises(Exception):
     #         self.ws.load_project('single_object.pnm')
     #     os.remove('single_object.pnm')
-
-    def test_load_project_with_name_conflict(self):
-        self.ws.clear()
-        proj = self.ws.new_project(name='test')
-        pn = op.network.Cubic(shape=[3, 3, 3], project=proj)
-        op.phases.Air(network=pn)
-        self.ws.save_project(proj, filename='test.pnm')
-        self.ws.load_project('test.pnm')
-        assert set(self.ws.keys()) == set(['test', 'proj_01'])
-        os.remove('test.pnm')
 
     # def test_save_and_load_workspace(self):
     #     self.ws.clear()
@@ -124,5 +124,5 @@ if __name__ == '__main__':
     t.setup_class()
     for item in t.__dir__():
         if item.startswith('test'):
-            print('running test: '+item)
+            print(f"Running test {item}")
             t.__getattribute__(item)()
