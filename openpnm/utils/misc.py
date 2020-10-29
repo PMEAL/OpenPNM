@@ -422,40 +422,6 @@ def models_to_table(obj, params=True):
     return "\n".join(lines)
 
 
-def deps_to_jsongraph(children, name=None, parent=None):
-    if parent is None:
-        parent = "null"
-    if name is None:
-        name = list(children.keys())[0]
-    tree = {"name": name,
-            "parent": parent,
-            "children": []}
-    for item in children[name].keys():
-        sub_tree = deps_to_jsongraph(parent=name, name=item,
-                                     children=children[name])
-        tree["children"].append(sub_tree)
-    return tree
-
-
-def view_dependencies(deps, port=8008):
-    import json
-    import webbrowser
-    import threading
-    from http.server import HTTPServer, SimpleHTTPRequestHandler
-    server = HTTPServer(server_address=('', port),
-                        RequestHandlerClass=SimpleHTTPRequestHandler)
-    thread = threading.Thread(target=server.serve_forever)
-    thread.daemon = True
-    thread.start()
-
-    data = deps_to_jsongraph(deps)
-    with open('tree.json', 'w') as outfile:
-        json.dump(data, outfile)
-
-    # Launch browser
-    webbrowser.open(f"http://localhost:{port}")
-
-
 def catch_module_not_found(function):
     r"""
     A decorator that wraps the passed in function and catches

@@ -87,7 +87,8 @@ d3.json("tree.json", function(error, treeData) {
       return "translate(" + d.y/2 + "," + d.x + ")"; });
 
   node.append("path")
-    .style("fill", function(d){if ((d.data.name).startsWith("pore")) {return "red"} else {return "blue"}})
+    //.style("fill", function(d){if ((d.data.name).startsWith("pore")) {return "red"} else {return "blue"}})
+    .style("fill", function(d){return "#" + d.data.color})
     .style("stroke", "black")
     .style("stroke-width", 3)
     .attr("d", d3.symbol()

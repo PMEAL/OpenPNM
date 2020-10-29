@@ -442,30 +442,3 @@ class ModelsMixin:
             self.add_model(propname=model, **dict_[model])
 
     models = property(fget=_get_models, fset=_set_models)
-
-    def get_dependencies(self, prop):
-        r"""
-        """
-        return {prop: self._get_deps(prop)}
-
-    def _get_deps(self, prop):
-
-        deps = {}
-        try:
-            model = self.models[prop]
-            for item in model.values():
-                if isinstance(item, str):
-                    if item.startswith('pore.') or item.startswith('throat.'):
-                        upstream = self._get_deps(item)
-                        deps.update({item: upstream})
-        except KeyError:
-            if self._isa('physics'):
-                phase = self.project.find_phase(self)
-                geom = self.project.find_geometry(self)
-                if prop in phase.models.keys():
-                    deps.update(phase._get_deps(prop))
-                elif prop in geom.models.keys():
-                    deps.update(geom._get_deps(prop))
-                else:
-                    pass
-        return deps

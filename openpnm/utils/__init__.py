@@ -24,7 +24,6 @@ from .misc import unique_list
 from .misc import tic, toc
 from .misc import is_symmetric
 from .misc import nbr_to_str
-from .misc import deps_to_jsongraph
 from .Workspace import Workspace
 from .Project import Project
 
