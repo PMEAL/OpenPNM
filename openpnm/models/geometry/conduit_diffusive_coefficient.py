@@ -3,12 +3,65 @@ import numpy as _np
 from numpy import pi as _pi
 from numpy import arctanh as _atanh
 from numpy import sqrt as _sqrt
+from numpy.linalg import norm as _norm
+
+
+def _calc_conduit_ep_cylinders_spheres_2D(target, 
+                                          pore_diameter='pore.diameter',
+                                          throat_diameter='throat.diameter'):
+        return _calc_conduit_length_cylinders_spheres(target, 
+                                                      pore_diameter=pore_diameter,
+                                                      throat_diameter=throat_diameter)
+
+
+def _calc_conduit_length_cylinders_spheres(target, pore_diameter='pore.diameter',
+                                        throat_diameter='throat.diameter'):
+     network = target.project.network
+     throats = network.map_throats(throats=target.Ts, origin=target)
+     cn = network['throat.conns'][throats]
+     coords = network['pore.coords']
+     # throat centroid
+     TC = _np.mean(coords[cn], axis=1)
+     # throat endpoints
+     C1 = coords[cn[:, 0]]
+     C2 = coords[cn[:, 1]]
+     ctc = _norm(C1 - C2, axis=1)
+     L = ctc + 1e-15
+     Dt = network[throat_diameter][throats]
+     D1 = network[pore_diameter][cn[:, 0]]
+     D2 = network[pore_diameter][cn[:, 1]]
+     L1 = _np.zeros_like(L)
+     L2 = _np.zeros_like(L)
+     # Handle the case where Dt > Dp
+     mask = Dt > D1
+     L1[mask] = 0.5 * D1[mask]
+     L1[~mask] = _np.sqrt(D1[~mask]**2 - Dt[~mask]**2) / 2
+     mask = Dt > D2
+     L2[mask] = 0.5 * D2[mask]
+     L2[~mask] = _np.sqrt(D2[~mask]**2 - Dt[~mask]**2) / 2
+     unit_vec_P1T = (coords[cn[:, 1]] - coords[cn[:, 0]]) / L[:, None]
+     unit_vec_P2T = -1 * unit_vec_P1T
+     # Find throat endpoints
+     EP1 = coords[cn[:, 0]] + L1[:, None] * unit_vec_P1T
+     EP2 = coords[cn[:, 1]] + L2[:, None] * unit_vec_P2T
+     # Handle throats w/ overlapping pores
+     L1 = (4*L**2 + D1**2 - D2**2) / (8*L)
+     L2 = (4*L**2 + D2**2 - D1**2) / (8*L)
+     h = (2*_np.sqrt(D1**2/4 - L1**2)).real
+     overlap = L - 0.5 * (D1+D2) < 0
+     mask = overlap & (Dt < h)
+     EP1[mask] = (coords[cn[:, 0]] + L1[:, None] * unit_vec_P1T)[mask]
+     EP2[mask] = (coords[cn[:, 1]] + L2[:, None] * unit_vec_P2T)[mask]
+     # Calculate conduit lengths
+     Lt = _norm(EP1 - EP2, axis=1)
+     L1 = _norm(C1 - EP1, axis=1)
+     L2 = _norm(C2 - EP2, axis=1)
+     return L1, L2, Lt
 
 
 def spheres_and_cylinders(target,
                           pore_diameter='pore.diameter',
                           throat_diameter='throat.diameter',
-                          throat_length=None,
                           conduit_lengths=None):
     r"""
     Compute diffusive shape coefficient for conduits of spheres and cylinders
@@ -38,10 +91,14 @@ def spheres_and_cylinders(target,
     D1 = network[pore_diameter][cn[:, 0]]
     D2 = network[pore_diameter][cn[:, 1]]
     Dt = network[throat_diameter][throats]
-    L1 = network[conduit_lengths + '.pore1'][throats]
-    L2 = network[conduit_lengths + '.pore2'][throats]
-    Lt = network[conduit_lengths + '.throat'][throats]
-
+    if conduit_lengths is not None:
+        L1 = network[conduit_lengths + '.pore1'][throats]
+        L2 = network[conduit_lengths + '.pore2'][throats]
+        Lt = network[conduit_lengths + '.throat'][throats]
+    else:
+        L1, L2, Lt = _calc_conduit_length_cylinders_spheres(target,
+                                                            pore_diameter=pore_diameter,
+                                                            throat_diameter=throat_diameter)
     # F is Integral(1/A) dx , x : 0 --> L
     if ((_np.sum(D1 <= 2*L1) != 0) or (_np.sum(D2 <= 2*L2) != 0)):
         raise Exception('Some throats are too short, add spherical_pores endpoint model')
@@ -85,9 +142,14 @@ def spheres_and_cylinders_2D(target,
     D1 = network[pore_diameter][cn[:, 0]]
     D2 = network[pore_diameter][cn[:, 1]]
     Dt = network[throat_diameter][throats]
-    L1 = network[conduit_lengths + '.pore1'][throats]
-    L2 = network[conduit_lengths + '.pore2'][throats]
-    Lt = network[conduit_lengths + '.throat'][throats]
+    if conduit_lengths is not None:
+        L1 = network[conduit_lengths + '.pore1'][throats]
+        L2 = network[conduit_lengths + '.pore2'][throats]
+        Lt = network[conduit_lengths + '.throat'][throats]
+    else:
+        L1, L2, Lt = _calc_conduit_length_cylinders_spheres(target,
+                                                            pore_diameter=pore_diameter,
+                                                            throat_diameter=throat_diameter)
     # F is INTEGRAL(1/A) dx , x : 0 --> L
     F1 = (0.5 * _atanh(2*L1/_sqrt(D1**2 - 4*L1**2)))
     F2 = (0.5 * _atanh(2*L2/_sqrt(D2**2 - 4*L2**2)))
@@ -131,8 +193,7 @@ def cones_and_cylinders(target,
 
     Returns
     -------
-    Either an array of diffusive_shape_coefficient or a dictionary containing the
-    diffusive_shape_coefficient, which can be accessed via the dict keys 'pore1',
+    A dictionary containing the diffusive_shape_coefficient, which can be accessed via the dict keys 'pore1',
     'pore2', and 'throat'.
 
     """
