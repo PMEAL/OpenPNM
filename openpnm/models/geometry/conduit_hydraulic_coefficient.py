@@ -105,7 +105,7 @@ def spheres_and_cylinders(target,
     F1 = (4/(D1**3*_pi**2) * ((2*D1*L1) / (D1**2-4*L1**2) + _atanh(2*L1/D1)))
     F2 = (4/(D2**3*_pi**2) * ((2*D2*L2) / (D2**2-4*L2**2) + _atanh(2*L2/D2)))
     Ft = Lt / ((_pi/4*Dt**2)**2)
-    g1, g2, gt = 1/F1, 1/F2, 1/Ft
+    g1, g2, gt = 1/(F1*(8 * _np.pi )), 1/(F2*(8 * _np.pi )), 1/(Ft*(8 * _np.pi ))
     vals = {'pore1': g1, 'throat': gt, 'pore2': g2}
     return vals
 
