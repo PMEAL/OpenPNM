@@ -83,6 +83,10 @@ class StickAndBall(GenericGeometry):
                        prop1='pore.max_size',
                        prop2='pore.seed')
 
+        self.add_model(propname='pore.area',
+                       model=mods.geometry.pore_area.sphere,
+                       pore_diameter='pore.diameter')
+
         self.add_model(propname='pore.volume',
                        model=mods.geometry.pore_volume.sphere,
                        pore_diameter='pore.diameter')
@@ -98,33 +102,29 @@ class StickAndBall(GenericGeometry):
                        prop='throat.max_size')
 
         self.add_model(propname='throat.endpoints',
-                       model=mods.geometry.throat_endpoints.spherical_pores)
+                       model=mods.geometry.throat_endpoints.spherical_pores,
+                       pore_diameter='pore.diameter',
+                       throat_diameter='throat.diameter')
 
         self.add_model(propname='throat.length',
                        model=mods.geometry.throat_length.piecewise,
                        throat_endpoints='throat.endpoints')
+
+        self.add_model(propname='throat.surface_area',
+                       model=mods.geometry.throat_surface_area.cylinder,
+                       throat_diameter='throat.diameter',
+                       throat_length='throat.length')
 
         self.add_model(propname='throat.volume',
                        model=mods.geometry.throat_volume.cylinder,
                        throat_diameter='throat.diameter',
                        throat_length='throat.length')
 
-        self.add_model(propname='throat.cross_sectional_area',
+        self.add_model(propname='throat.area',
                        model=mods.geometry.throat_area.cylinder,
                        throat_diameter='throat.diameter')
 
         self.add_model(propname='throat.conduit_lengths',
-                       model=mods.geometry.throat_length.conduit_lengths)
-
-        f_d = mods.geometry.conduit_diffusive_coefficient.spheres_and_cylinders
-        self.add_model(propname='throat.diffusive_shape_coefficient',
-                       model=f_d,
-                       pore_diameter='pore.diameter',
-                       throat_diameter='throat.diameter',
-                       conduit_lengths='throat.conduit_lengths')
-        f_h = mods.geometry.conduit_hydraulic_coefficient.spheres_and_cylinders
-        self.add_model(propname='throat.hydraulic_shape_coefficient',
-                       model=f_h,
-                       pore_diameter='pore.diameter',
-                       throat_diameter='throat.diameter',
-                       conduit_lengths='throat.conduit_lengths')
+                       model=mods.geometry.throat_length.conduit_lengths,
+                       throat_endpoints='throat.endpoints',
+                       throat_length='throat.length')
