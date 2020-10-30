@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 ===============================================================================
 Boundary -- Subclass of GenericGeometry for Boundary Pores
@@ -11,7 +10,7 @@ from openpnm.models import misc as mm
 from openpnm.geometry import GenericGeometry
 
 
-class Boundary_2D(GenericGeometry):
+class Boundary2D(GenericGeometry):
     r"""
     Boundary subclass of GenericGeometry.
 
