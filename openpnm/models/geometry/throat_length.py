@@ -5,7 +5,6 @@ r"""
 .. autofunction:: openpnm.models.geometry.throat_length.conduit_lengths
 
 """
-import numpy as _np
 from numpy.linalg import norm as _norm
 from openpnm.utils import logging as _logging
 _logger = _logging.getLogger(__name__)
@@ -157,5 +156,5 @@ def classic(target, pore_diameter='pore.diameter'):
     throats = network.map_throats(throats=target.Ts, origin=target)
     cn = network['throat.conns'][throats]
     ctc_dist = ctc(target)
-    value = ctc_dist - network[pore_diameter][cn].sum(axis=1)/2
+    value = ctc_dist - network[pore_diameter][cn].sum(axis=1) / 2
     return value
