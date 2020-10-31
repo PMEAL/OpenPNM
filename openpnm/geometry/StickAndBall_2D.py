@@ -198,7 +198,7 @@ class StickAndBall_2D(GenericGeometry):
         self.add_model(propname='throat.max_size',
                        model=mods.misc.from_neighbor_pores,
                        mode='min',
-                       pore_prop='pore.diameter')
+                       prop='pore.diameter')
 
         self.add_model(propname='throat.diameter',
                        model=mods.misc.scaled,

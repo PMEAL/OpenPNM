@@ -76,7 +76,7 @@ class Boundary(GenericGeometry):
 
         self.add_model(propname='throat.diameter',
                        model=mm.from_neighbor_pores,
-                       pore_prop='pore.diameter', mode='max')
+                       prop='pore.diameter', mode='max')
 
         self.add_model(propname='throat.endpoints',
                        model=gm.throat_endpoints.spherical_pores)

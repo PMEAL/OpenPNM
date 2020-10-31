@@ -146,22 +146,22 @@ class MiscTest:
         net['pore.values'] = 1.0
         net['pore.values'][0] = np.nan
         f = mods.from_neighbor_pores
-        with_nans = f(target=net, pore_prop='pore.values',
+        with_nans = f(target=net, prop='pore.values',
                       ignore_nans=False, mode='min')
         assert np.any(np.isnan(with_nans))
-        no_nans = f(target=net, pore_prop='pore.values',
+        no_nans = f(target=net, prop='pore.values',
                     ignore_nans=True, mode='min')
         assert np.all(~np.isnan(no_nans))
-        with_nans = f(target=net, pore_prop='pore.values',
+        with_nans = f(target=net, prop='pore.values',
                       ignore_nans=False, mode='max')
         assert np.any(np.isnan(with_nans))
-        no_nans = f(target=net, pore_prop='pore.values',
+        no_nans = f(target=net, prop='pore.values',
                     ignore_nans=True, mode='max')
         assert np.all(~np.isnan(no_nans))
-        with_nans = f(target=net, pore_prop='pore.values',
+        with_nans = f(target=net, prop='pore.values',
                       ignore_nans=False, mode='mean')
         assert np.any(np.isnan(with_nans))
-        no_nans = f(target=net, pore_prop='pore.values',
+        no_nans = f(target=net, prop='pore.values',
                     ignore_nans=True, mode='mean')
         assert np.all(~np.isnan(no_nans))
 
@@ -221,7 +221,7 @@ class MiscTest:
         self.geo['pore.seed'] = np.random.rand(self.net.Np,)
         self.geo.add_model(model=mods.from_neighbor_pores,
                            propname='throat.seed',
-                           pore_prop='pore.seed',
+                           prop='pore.seed',
                            mode='min')
         P12 = self.net['throat.conns']
         tseed = np.amin(self.geo['pore.seed'][P12], axis=1)
@@ -232,7 +232,7 @@ class MiscTest:
         self.geo['pore.seed'] = np.random.rand(self.net.Np,)
         self.geo.add_model(model=mods.from_neighbor_pores,
                            propname='throat.seed',
-                           pore_prop='pore.seed',
+                           prop='pore.seed',
                            mode='max')
         P12 = self.net['throat.conns']
         tseed = np.amax(self.geo['pore.seed'][P12], axis=1)
@@ -243,7 +243,7 @@ class MiscTest:
         self.geo['pore.seed'] = np.random.rand(self.net.Np,)
         self.geo.add_model(model=mods.from_neighbor_pores,
                            propname='throat.seed',
-                           pore_prop='pore.seed',
+                           prop='pore.seed',
                            mode='mean')
         P12 = self.net['throat.conns']
         tseed = np.mean(self.geo['pore.seed'][P12], axis=1)
@@ -266,7 +266,7 @@ class MiscTest:
         geo2['pore.rand1'] = np.random.random(geo2.Np)
         geo1.add_model(model=mods.from_neighbor_pores,
                        propname='throat.rand1',
-                       pore_prop='pore.rand1',
+                       prop='pore.rand1',
                        mode='min')
         test = np.amin(net['pore.rand1'][net['throat.conns']], axis=1)[Ts1]
         assert np.all(test == geo1['throat.rand1'])
