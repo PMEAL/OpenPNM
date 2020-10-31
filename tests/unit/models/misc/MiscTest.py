@@ -110,7 +110,7 @@ class MiscTest:
         self.geo['throat.seed'] = np.linspace(0, 1, self.net.Nt)
         self.geo.add_model(model=mods.from_neighbor_throats,
                            propname='pore.seed',
-                           throat_prop='throat.seed',
+                           prop='throat.seed',
                            mode='min')
         assert np.all(np.in1d(self.geo['pore.seed'], self.geo['throat.seed']))
         assert np.isclose(self.geo['throat.seed'].mean(), 0.5)
@@ -123,7 +123,7 @@ class MiscTest:
         self.geo['throat.seed'] = np.linspace(0, 1, self.net.Nt)
         self.geo.add_model(model=mods.from_neighbor_throats,
                            propname='pore.seed',
-                           throat_prop='throat.seed',
+                           prop='throat.seed',
                            mode='max')
         assert np.all(np.in1d(self.geo['pore.seed'], self.geo['throat.seed']))
         assert np.isclose(self.geo['throat.seed'].mean(), 0.5)
@@ -136,7 +136,7 @@ class MiscTest:
         self.geo['throat.seed'] = np.linspace(0, 1, self.net.Nt)
         self.geo.add_model(model=mods.from_neighbor_throats,
                            propname='pore.seed',
-                           throat_prop='throat.seed',
+                           prop='throat.seed',
                            mode='mean')
         assert np.isclose(self.geo['throat.seed'].mean(), 0.5)
         assert np.isclose(self.geo['pore.seed'].mean(), 0.5)
@@ -170,10 +170,10 @@ class MiscTest:
         net['throat.values'] = np.linspace(0, 1, net.Nt)
         net['throat.values'][0] = np.nan
         f = mods.from_neighbor_throats
-        with_nans = f(target=net, throat_prop='throat.values',
+        with_nans = f(target=net, prop='throat.values',
                       ignore_nans=False, mode='min')
         assert np.any(np.isnan(with_nans))
-        no_nans = f(target=net, throat_prop='throat.values',
+        no_nans = f(target=net, prop='throat.values',
                     ignore_nans=True, mode='min')
         assert np.all(~np.isnan(no_nans))
         assert np.all(~np.isinf(no_nans))
@@ -187,10 +187,10 @@ class MiscTest:
         net['throat.values'] = np.linspace(0, 1, net.Nt)
         net['throat.values'][0] = np.nan
         f = mods.from_neighbor_throats
-        with_nans = f(target=net, throat_prop='throat.values',
+        with_nans = f(target=net, prop='throat.values',
                       ignore_nans=False, mode='max')
         assert np.any(np.isnan(with_nans))
-        no_nans = f(target=net, throat_prop='throat.values',
+        no_nans = f(target=net, prop='throat.values',
                     ignore_nans=True, mode='max')
         assert np.all(~np.isnan(no_nans))
         assert np.all(~np.isinf(no_nans))
@@ -204,10 +204,10 @@ class MiscTest:
         net['throat.values'] = np.linspace(0, 1, net.Nt)
         net['throat.values'][0] = np.nan
         f = mods.from_neighbor_throats
-        with_nans = f(target=net, throat_prop='throat.values',
+        with_nans = f(target=net, prop='throat.values',
                       ignore_nans=False, mode='mean')
         assert np.any(np.isnan(with_nans))
-        no_nans = f(target=net, throat_prop='throat.values',
+        no_nans = f(target=net, prop='throat.values',
                     ignore_nans=True, mode='mean')
         assert np.all(~np.isnan(no_nans))
         assert np.all(~np.isinf(no_nans))
@@ -274,7 +274,7 @@ class MiscTest:
         geo2['throat.rand2'] = np.random.random(geo2.Nt)
         geo2.add_model(model=mods.from_neighbor_throats,
                        propname='pore.rand2',
-                       throat_prop='throat.rand2',
+                       prop='throat.rand2',
                        mode='max')
         test = np.zeros(geo2.Np).astype(bool)
         for i, pore in enumerate(net.pores(geo2.name)):

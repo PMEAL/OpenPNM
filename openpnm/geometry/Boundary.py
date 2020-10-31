@@ -92,7 +92,7 @@ class Boundary(GenericGeometry):
 
         self.add_model(propname='pore.area',
                        model=mm.from_neighbor_throats,
-                       throat_prop='throat.area', mode='max')
+                       prop='throat.area', mode='max')
 
         self.add_model(propname='throat.surface_area',
                        model=gm.throat_surface_area.cylinder)
