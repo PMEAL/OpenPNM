@@ -880,7 +880,7 @@ class Project(list):
         import webbrowser
         import threading
         import os
-        web_dir = os.path.join(os.path.dirname(__file__), '../../web')
+        web_dir = os.path.join(os.path.dirname(__file__), '../../public')
         os.chdir(web_dir)
         from http.server import HTTPServer, SimpleHTTPRequestHandler
         server = HTTPServer(server_address=('', port),
@@ -890,7 +890,7 @@ class Project(list):
         thread.start()
 
         data = self._deps_to_jsongraph(deps)
-        with open('tree.json', 'w') as outfile:
+        with open('data/tree.json', 'w') as outfile:
             json.dump(data, outfile)
 
         # Launch browser

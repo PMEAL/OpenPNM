@@ -49,7 +49,7 @@ var file = window.location.search.substring(1).split("=")[1]
 
 
 // load the external data
-d3.json("http://localhost:8008/tree.json", function(error, treeData) {
+d3.json("http://localhost:8008/data/tree.json", function(error, treeData) {
   if (error) throw error;
 
   //  assigns the data to a hierarchy using parent-child relationships
