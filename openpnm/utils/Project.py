@@ -879,6 +879,9 @@ class Project(list):
         import json
         import webbrowser
         import threading
+        import os
+        from pathlib import Path
+        p = Path(os.getcwd())
         from http.server import HTTPServer, SimpleHTTPRequestHandler
         server = HTTPServer(server_address=('', port),
                             RequestHandlerClass=SimpleHTTPRequestHandler)
@@ -887,11 +890,13 @@ class Project(list):
         thread.start()
 
         data = self._deps_to_jsongraph(deps)
-        with open('tree.json', 'w') as outfile:
+        p = p.joinpath("tree.json")
+        with open(p, 'w') as outfile:
             json.dump(data, outfile)
 
         # Launch browser
-        webbrowser.open(f"http://localhost:{port}")
+        webbrowser.open(f"http://localhost:{port}/openpnm/utils/dep_map.html?file="
+                        + str(p.absolute()))
 
     def inspect_locations(self, element, indices, objs=[], mode='all'):
         r"""

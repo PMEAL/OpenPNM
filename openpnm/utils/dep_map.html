@@ -28,6 +28,7 @@
 
 <!-- load the d3.js library -->
 <script src="https://d3js.org/d3.v4.min.js"></script>
+
 <script>
 
 // set the dimensions and margins of the diagram
@@ -42,8 +43,13 @@ var treemap = d3.tree()
 var clusterLayout = d3.cluster()
     .size([height, width])
 
+// parse the file name provided in the url
+var GET = {};
+var file = window.location.search.substring(1).split("=")[1]
+
+
 // load the external data
-d3.json("tree.json", function(error, treeData) {
+d3.json("../../tree.json", function(error, treeData) {
   if (error) throw error;
 
   //  assigns the data to a hierarchy using parent-child relationships
