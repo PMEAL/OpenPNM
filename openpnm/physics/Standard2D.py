@@ -5,7 +5,7 @@ logger = logging.getLogger(__name__)
 ws = Workspace()
 
 
-class Standard_2D(GenericPhysics):
+class Standard2D(GenericPhysics):
     r"""
     Generic class to generate Physics objects for true 2D simulations.
 
