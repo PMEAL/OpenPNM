@@ -144,8 +144,11 @@ class DelaunayVoronoiDual(GenericNetwork):
         self['throat.interconnect'][Ts] = True
 
         # Trim all pores that lie outside of the specified domain
-        self._trim_external_pores(shape=shape)
-        self._label_faces()
+        if self.settings['trim'] == False:
+            pass
+        else:
+            self._trim_external_pores(shape=shape)
+            self._label_faces()
 
     @property
     def tri(self):

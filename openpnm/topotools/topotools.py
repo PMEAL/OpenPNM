@@ -2,7 +2,7 @@ import numpy as np
 import scipy as sp
 import scipy.ndimage as spim
 from scipy.sparse import csgraph
-from scipy.spatial import ConvexHull
+from scipy.spatial import ConvexHull, delaunay_plot_2d
 from openpnm.utils import logging, Workspace
 logger = logging.getLogger(__name__)
 ws = Workspace()
@@ -834,6 +834,46 @@ def stitch(network, donor, P_network, P_donor, method='nearest',
     for sim in list(ws.values()):
         if donor in sim:
             del ws[sim.name]
+
+
+def stitch_pores(network, pores1, pores2, mode='gabriel'):
+    r"""
+    Stitches together pores in a network with disconnected clusters
+
+    Parameter
+    ---------
+    network : OpenPNM Network
+        The network to operate upon
+    pores1 and pores2: array_like
+        The pore indices of the disconnected clusters to be joined
+    mode : str
+        Dictates which tesselation method is used to identify which pores to
+        stitch together.  Options are 'gabriel' (default) or 'delaunay'.
+
+    Returns
+    -------
+    None
+        The network is operated on 'in-place' so nothing is returned.
+
+    """
+    from openpnm.network import Delaunay, Gabriel
+    pores1 = network._parse_indices(pores1)
+    pores2 = network._parse_indices(pores2)
+    C1 = network.coords[pores1, :]
+    C2 = network.coords[pores2, :]
+    crds = np.vstack((C1, C2))
+    if mode == 'delaunay':
+        net = Delaunay(points=crds, settings={'trim': False})
+    if mode == 'gabriel':
+        net = Gabriel(points=crds, settings={'trim': False})
+    net.set_label(pores=range(len(pores1)), label='pore.one')
+    net.set_label(pores=range(len(pores2)), label='pore.two')
+    Ts = net.find_neighbor_throats(pores=net.pores('one'), mode='xor')
+    conns = net.conns[Ts]
+    mapped_conns = np.vstack((pores1[conns[:, 0]],
+                              pores2[conns[:, 1] - len(pores1)])).T
+    mapped_conns = np.sort(mapped_conns, axis=1)
+    extend(network=network, conns=mapped_conns, labels='stitched')
 
 
 def connect_pores(network, pores1, pores2, labels=[], add_conns=True):
