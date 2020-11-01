@@ -2,7 +2,6 @@ import warnings
 import uuid
 import numpy as np
 from collections import namedtuple
-from openpnm.models.misc import from_neighbor_throats, from_neighbor_pores
 from openpnm.utils import Workspace, logging
 from openpnm.utils.misc import PrintableList, SettingsDict, Docorator
 docstr = Docorator()
@@ -1299,6 +1298,7 @@ class Base(dict):
         array([1.5, 2.5])
 
         """
+        from openpnm.models.misc import from_neighbor_throats, from_neighbor_pores
         if propname.startswith('throat'):
             values = from_neighbor_throats(target=self, prop=propname, mode=mode)
         elif propname.startswith('pore'):
