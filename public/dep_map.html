@@ -2,18 +2,8 @@
 <meta charset="utf-8">
 <style> /* set the CSS */
 
-.node circle {
-  fill: #fff;
-  stroke: steelblue;
-  stroke-width: 9px;
-}
-
 .node text {
   font: 14px sans-serif;
-}
-
-.node--internal text {
-  text-shadow: 0 1px 0 #fff, 0 -1px 0 #fff, 1px 0 0 #fff, -1px 0 0 #fff;
 }
 
 .link {
@@ -47,6 +37,14 @@ var clusterLayout = d3.cluster()
 var GET = {};
 var file = window.location.search.substring(1).split("=")[1]
 
+// append the svg object to the body of the page
+// appends a 'group' element to 'svg'
+// moves the 'group' element to the top left margin
+var svg = d3.select("body").append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom),
+  g = svg.append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
 // load the external data
 d3.json("http://localhost:8008/data/tree.json", function(error, treeData) {
@@ -61,15 +59,6 @@ d3.json("http://localhost:8008/data/tree.json", function(error, treeData) {
   //nodes = clusterLayout(nodes)
   nodes = treemap(nodes);
 
-  // append the svg object to the body of the page
-  // appends a 'group' element to 'svg'
-  // moves the 'group' element to the top left margin
-  var svg = d3.select("body").append("svg")
-      .attr("width", width + margin.left + margin.right)
-      .attr("height", height + margin.top + margin.bottom),
-    g = svg.append("g")
-      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
   // adds the links between the nodes
   var link = g.selectAll(".link")
     .data(nodes.descendants().slice(1))
@@ -79,8 +68,7 @@ d3.json("http://localhost:8008/data/tree.json", function(error, treeData) {
        return "M" + d.y/2 + "," + d.x
        + "C" + (d.y/2 + d.parent.y/2) / 2 + "," + d.x
        + " " + (d.y/2 + d.parent.y/2) / 2 + "," + d.parent.x
-       + " " + d.parent.y/2 + "," + d.parent.x;
-       });
+       + " " + d.parent.y/2 + "," + d.parent.x;});
 
   // adds each node as a group
   var node = g.selectAll(".node")
@@ -102,8 +90,7 @@ d3.json("http://localhost:8008/data/tree.json", function(error, treeData) {
           .type(function(d) {if ((d.data.name).startsWith("pore")) {
                               return d3.symbolCircle; }
                             else if ((d.data.name).startsWith("throat")) {
-                              return d3.symbolSquare; }
-                             }));
+                              return d3.symbolSquare; }}));
 
   // adds the text to the node
   node.append("text")
