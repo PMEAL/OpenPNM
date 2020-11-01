@@ -5,7 +5,7 @@
 .vscode/
 *.egg-info
 docs/_build/
-
+public/
 
 build/
 dist/
