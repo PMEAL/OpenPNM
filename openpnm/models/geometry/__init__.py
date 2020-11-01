@@ -24,7 +24,8 @@ from . import throat_volume
 from . import throat_capillary_shape_factor
 from . import throat_centroid
 from . import throat_vector
-from . import conduit_hydraulic_size_factors
-from . import conduit_diffusive_size_factors
+from . import hydraulic_size_factors
+from . import diffusive_size_factors
 from . import hydraulic_shape_factors
 from . import diffusive_shape_factors
+from . import conduit_lengths

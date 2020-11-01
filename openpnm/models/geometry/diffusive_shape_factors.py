@@ -5,7 +5,6 @@ r"""
 
 """
 import numpy as _np
-import scipy as _sp
 from scipy import pi as _pi
 from numpy import arctanh as _atanh
 from numpy import sqrt as _sqrt
