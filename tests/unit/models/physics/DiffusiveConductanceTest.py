@@ -1,5 +1,4 @@
 import numpy as np
-import scipy as sp
 import openpnm as op
 from numpy.testing import assert_allclose
 from numpy.testing import assert_approx_equal
