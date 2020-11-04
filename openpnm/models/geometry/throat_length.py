@@ -5,6 +5,7 @@ r"""
 .. autofunction:: openpnm.models.geometry.throat_length.conduit_lengths
 
 """
+import numpy as _np
 from numpy.linalg import norm as _norm
 from openpnm.utils import logging as _logging
 import openpnm.geometry.GenericGeometry as _GenericGeometry
@@ -138,6 +139,7 @@ def conduit_lengths(
     # Calculate conduit lengths for pore 1 and pore 2
     L1 = _norm(C1 - EP1, axis=1)
     L2 = _norm(C2 - EP2, axis=1)
+    Lt = _np.maximum(Lt, 1e-15)
 
     return {'pore1': L1, 'throat': Lt, 'pore2': L2}
 
