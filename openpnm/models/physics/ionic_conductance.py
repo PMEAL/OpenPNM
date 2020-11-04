@@ -137,7 +137,7 @@ def poisson(target,
     return g
 
 
-def poisson_2D(target,
+def poisson_2d(target,
                pore_diameter='pore.diameter',
                throat_diameter='throat.diameter',
                pore_diffusivity='pore.diffusivity',
@@ -333,7 +333,7 @@ def laplace(target,
                    conduit_shape_factors=conduit_shape_factors)
 
 
-def laplace_2D(target,
+def laplace_2d(target,
                pore_diameter='pore.diameter',
                throat_diameter='throat.diameter',
                pore_diffusivity='pore.diffusivity',
@@ -610,7 +610,7 @@ def electroneutrality(target,
     return g
 
 
-def electroneutrality_2D(target,
+def electroneutrality_2d(target,
                          pore_diameter='pore.diameter',
                          throat_diameter='throat.diameter',
                          pore_diffusivity='pore.diffusivity',

@@ -1,12 +1,12 @@
 r"""
 
 .. autofunction:: openpnm.models.geometry.hydraulic_shape_factors.ball_and_stick
-.. autofunction:: openpnm.models.geometry.hydraulic_shape_factors.circle_and_rectangle
+.. autofunction:: openpnm.models.geometry.hydraulic_shape_factors.ball_and_stick_2d
 
 """
 import numpy as _np
 
-__all__ = ["ball_and_stick", "circle_and_rectangle", "conical_frustum_and_stick"]
+__all__ = ["ball_and_stick", "ball_and_stick_2d", "conical_frustum_and_stick"]
 
 
 def ball_and_stick(
@@ -206,7 +206,7 @@ def conical_frustum_and_stick(
     return {"pore1": SF1, "throat": SFt, "pore2": SF2}
 
 
-def circle_and_rectangle(
+def ball_and_stick_2d(
     target,
     pore_area="pore.area",
     throat_area="throat.area",

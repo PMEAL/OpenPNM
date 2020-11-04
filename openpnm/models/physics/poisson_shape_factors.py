@@ -3,13 +3,14 @@ r"""
 Blah blah
 
 .. autofunction:: openpnm.models.geometry.diffusive_shape_factors.ball_and_stick
+.. autofunction:: openpnm.models.geometry.diffusive_shape_factors.ball_and_stick_2d
 .. autofunction:: openpnm.models.geometry.diffusive_shape_factors.circle_and_rectangle
 
 """
 import numpy as _np
 import openpnm.geometry.GenericGeometry as _GenericGeometry
 
-__all__ = ["ball_and_stick", "circle_and_rectangle", "conical_frustum_and_stick"]
+__all__ = ["ball_and_stick", "ball_and_stick_2d", "conical_frustum_and_stick"]
 
 
 def ball_and_stick(
@@ -185,7 +186,7 @@ def conical_frustum_and_stick(
     return {"pore1": SF1, "throat": SFt, "pore2": SF2}
 
 
-def circle_and_rectangle(
+def ball_and_stick_2d(
     target: _GenericGeometry,
     pore_area="pore.area",
     throat_area="throat.area",
@@ -254,8 +255,8 @@ def circle_and_rectangle(
     # INFO: This is needed since area could also be zero, which confuses NumPy
     m1, m2, mt = [Li != 0 for Li in [L1, L2, Lt]]
     SF1[~m1] = SF2[~m2] = SFt[~mt] = 1
-    F1[m1] = (0.5 * _np.arctanh(2 * L1 / _np.sqrt(D1 ** 2 - 4 * L1 ** 2)))[m1]
-    F2[m2] = (0.5 * _np.arctanh(2 * L2 / _np.sqrt(D2 ** 2 - 4 * L2 ** 2)))[m2]
+    F1[m1] = (0.5 * _np.arcsin(2 * L1 / D1))[m1]
+    F2[m2] = (0.5 * _np.arcsin(2 * L2 / D2))[m2]
     Ft[mt] = (Lt / At)[mt]
     # Calculate conduit shape factors
     SF1[m1] = (L1 / (A1 * F1))[m1]

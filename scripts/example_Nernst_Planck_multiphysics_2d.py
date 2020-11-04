@@ -46,23 +46,23 @@ H2O = sw.components['H2O_' + sw.name]
 # physics
 phys = op.physics.GenericPhysics(network=net, phase=sw, geometry=geo)
 
-flow = op.models.physics.hydraulic_conductance.hagen_poiseuille_2D
+flow = op.models.physics.hydraulic_conductance.hagen_poiseuille_2d
 phys.add_model(propname='throat.hydraulic_conductance',
                pore_viscosity='pore.viscosity',
                throat_viscosity='throat.viscosity',
                model=flow, regen_mode='normal')
 
-current = op.models.physics.ionic_conductance.electroneutrality_2D
+current = op.models.physics.ionic_conductance.electroneutrality_2d
 phys.add_model(propname='throat.ionic_conductance', ions=[Na.name, Cl.name],
                model=current, regen_mode='normal')
 
-eA_dif = op.models.physics.diffusive_conductance.ordinary_diffusion_2D
+eA_dif = op.models.physics.diffusive_conductance.ordinary_diffusion_2d
 phys.add_model(propname='throat.diffusive_conductance.' + Na.name,
                pore_diffusivity='pore.diffusivity.' + Na.name,
                throat_diffusivity='throat.diffusivity.' + Na.name,
                model=eA_dif, regen_mode='normal')
 
-eB_dif = op.models.physics.diffusive_conductance.ordinary_diffusion_2D
+eB_dif = op.models.physics.diffusive_conductance.ordinary_diffusion_2d
 phys.add_model(propname='throat.diffusive_conductance.' + Cl.name,
                pore_diffusivity='pore.diffusivity.' + Cl.name,
                throat_diffusivity='throat.diffusivity.' + Cl.name,
