@@ -1,186 +1,155 @@
-import openpnm.models as mods
 import numpy as _np
-from numpy import pi as _pi
-from numpy import arctanh as _atanh
-from numpy.linalg import norm as _norm
+import openpnm.models.geometry.conduit_lengths as _conduit_lengths
+import openpnm.geometry.GenericGeometry as _GenericGeometry
+from .misc import _get_conduit_diameters
 
-
-def _calc_conduit_length_spheres_cylinders_2D(
-    target, pore_diameter="pore.diameter", throat_diameter="throat.diameter"
-):
-    return _calc_conduit_length_spheres_cylinders(
-        target, pore_diameter=pore_diameter, throat_diameter=throat_diameter
-    )
-
-
-def _calc_conduit_length_spheres_cylinders(
-    target, pore_diameter="pore.diameter", throat_diameter="throat.diameter"
-):
-    network = target.project.network
-    throats = network.map_throats(throats=target.Ts, origin=target)
-    cn = network["throat.conns"][throats]
-    coords = network["pore.coords"]
-    # throat endpoints
-    C1 = coords[cn[:, 0]]
-    C2 = coords[cn[:, 1]]
-    ctc = _norm(C1 - C2, axis=1)
-    L = ctc + 1e-15
-    Dt = network[throat_diameter][throats]
-    D1 = network[pore_diameter][cn[:, 0]]
-    D2 = network[pore_diameter][cn[:, 1]]
-    L1 = _np.zeros_like(L)
-    L2 = _np.zeros_like(L)
-    # Handle the case where Dt > Dp
-    mask = Dt > D1
-    L1[mask] = 0.5 * D1[mask]
-    L1[~mask] = _np.sqrt(D1[~mask] ** 2 - Dt[~mask] ** 2) / 2
-    mask = Dt > D2
-    L2[mask] = 0.5 * D2[mask]
-    L2[~mask] = _np.sqrt(D2[~mask] ** 2 - Dt[~mask] ** 2) / 2
-    unit_vec_P1T = (coords[cn[:, 1]] - coords[cn[:, 0]]) / L[:, None]
-    unit_vec_P2T = -1 * unit_vec_P1T
-    # Find throat endpoints
-    EP1 = coords[cn[:, 0]] + L1[:, None] * unit_vec_P1T
-    EP2 = coords[cn[:, 1]] + L2[:, None] * unit_vec_P2T
-    # Handle throats w/ overlapping pores
-    L1 = (4 * L ** 2 + D1 ** 2 - D2 ** 2) / (8 * L)
-    L2 = (4 * L ** 2 + D2 ** 2 - D1 ** 2) / (8 * L)
-    h = (2 * _np.sqrt(D1 ** 2 / 4 - L1 ** 2)).real
-    overlap = L - 0.5 * (D1 + D2) < 0
-    mask = overlap & (Dt < h)
-    EP1[mask] = (coords[cn[:, 0]] + L1[:, None] * unit_vec_P1T)[mask]
-    EP2[mask] = (coords[cn[:, 1]] + L2[:, None] * unit_vec_P2T)[mask]
-    # Calculate conduit lengths
-    Lt = _norm(EP1 - EP2, axis=1)
-    L1 = _norm(C1 - EP1, axis=1)
-    L2 = _norm(C2 - EP2, axis=1)
-    return L1, L2, Lt
+__all__ = [
+    "spheres_and_cylinders",
+    "circles_and_rectangles",
+    "cones_and_cylinders",
+    "pyramids_and_cuboids",
+    "cubes_and_cuboids",
+    "squares_and_rectangles",
+    "intersecting_cones",
+    "intersecting_pyramids",
+    "ncylinders_in_series"
+]
 
 
 def spheres_and_cylinders(
-    target,
+    target: _GenericGeometry,
     pore_diameter="pore.diameter",
     throat_diameter="throat.diameter",
-    conduit_lengths=None,
 ):
     r"""
-    Compute hydraulic shape coefficient for conduits of spheres and cylinders
+    Computes hydraulic size factors for conduits assuming pores are
+    spheres and throats are cylinders.
 
-    Parameter
-    ---------
-    target: OpenPNM object
+    Parameters
+    ----------
+    target : GenericGeometry
+        Geometry object which this model is associated with. This controls
+        the length of the calculated array, and also provides access to
+        other necessary properties.
+    pore_diameter : str
+        Dictionary key of the pore diameter values.
+    throat_diameter : str
+        Dictionary key of the throat diameter values.
+
+    Returns
+    -------
+    dict
+        Dictionary containing conduit size factors. Size factors are
+        accessible via the keys: 'pore1', 'throat', and 'pore2'.
 
     Notes
     -----
-    The hydraulic shape coefficient is the geometrical part of the pre-factor
-    in Stoke's flow:
+    The hydraulic size factor is the geometrical part of the pre-factor in
+    Stoke's flow:
 
     .. math::
 
-        Q = \frac{A^2}{\mu} \frac{\Delta P}{L} =
-            \frac{S_{hydraulic}}{\mu} \cdot \Delta P
+        Q = \frac{A^2}{8 \mu L} \Delta P
+          = \frac{S_{hydraulic}}{\mu} \Delta P
 
     Thus :math:`S_{hydraulic}` represents the combined effect of the area and
-    length of the *conduit*, which consists of a throat and 1/2 of the pore
+    length of the *conduit*, which consists of a throat and 1/2 of the pores
     on each end.
 
     """
-    network = target.project.network
-    throats = network.map_throats(throats=target.Ts, origin=target)
-    cn = network["throat.conns"][throats]
-    D1 = network[pore_diameter][cn[:, 0]]
-    D2 = network[pore_diameter][cn[:, 1]]
-    Dt = network[throat_diameter][throats]
+    D1, Dt, D2 = _get_conduit_diameters(target, pore_diameter, throat_diameter)
+    L1, Lt, L2 = _conduit_lengths.spheres_and_cylinders(
+        target, pore_diameter=pore_diameter, throat_diameter=throat_diameter
+    ).T
 
-    if conduit_lengths is not None:
-        L1 = network[conduit_lengths + ".pore1"][throats]
-        L2 = network[conduit_lengths + ".pore2"][throats]
-        Lt = network[conduit_lengths + ".throat"][throats]
-    else:
-        L1, L2, Lt = _calc_conduit_length_spheres_cylinders(
-            target, pore_diameter=pore_diameter, throat_diameter=throat_diameter
-        )
-    # F is INTEGRAL(1/A^2) dx , x : 0 --> L
-    if (_np.sum(D1 <= 2 * L1) != 0) or (_np.sum(D2 <= 2 * L2) != 0):
-        raise Exception("Some throats are too short, add spherical_pores endpoint model")
-    F1 = (
-        4
-        / (D1 ** 3 * _pi ** 2)
-        * ((2 * D1 * L1) / (D1 ** 2 - 4 * L1 ** 2) + _atanh(2 * L1 / D1))
-    )
-    F2 = (
-        4
-        / (D2 ** 3 * _pi ** 2)
-        * ((2 * D2 * L2) / (D2 ** 2 - 4 * L2 ** 2) + _atanh(2 * L2 / D2))
-    )
-    Ft = Lt / ((_pi / 4 * Dt ** 2) ** 2)
-    g1, g2, gt = 1 / (F1 * (8 * _np.pi)), 1 / (F2 * (8 * _np.pi)), 1 / (Ft * (8 * _np.pi))
-    vals = {"pore1": g1, "throat": gt, "pore2": g2}
-    return vals
+    # Fi is the integral of (1/A^2) dx, x = [0, Li]
+    a = 4 / (D1**3 * _np.pi**2)
+    b = 2 * D1 * L1 / (D1**2 - 4 * L1**2) + _np.arctanh(2 * L1 / D1)
+    F1 = a * b
+    a = 4 / (D2**3 * _np.pi**2)
+    b = 2 * D2 * L2 / (D2**2 - 4 * L2**2) + _np.arctanh(2 * L2 / D2)
+    F2 = a * b
+    Ft = Lt / (_np.pi / 4 * Dt**2)**2
+
+    # I is the integral of (y^2 + z^2) dA, divided by A^2
+    I1 = I2 = It = 1 / (2 * _np.pi)
+
+    # S is 1 / (16 * pi^2 * I * F)
+    S1 = 1 / (16 * _np.pi**2 * I1 * F1)
+    St = 1 / (16 * _np.pi**2 * It * Ft)
+    S2 = 1 / (16 * _np.pi**2 * I2 * F2)
+
+    return {"pore1": S1, "throat": St, "pore2": S2}
 
 
-def spheres_and_cylinders_2D(
-    target,
+def circles_and_rectangles(
+    target: _GenericGeometry,
     pore_diameter="pore.diameter",
     throat_diameter="throat.diameter",
-    conduit_lengths=None,
-    throat_length=None,
-    return_elements=False,
 ):
     r"""
-    Compute hydraulic shape coefficient for conduits of spheres and cylinders
+    Computes hydraulic size factors for conduits assuming pores are
+    circles and throats are rectangles.
 
-    Parameter
-    ---------
-    target: OpenPNM object
+    Parameters
+    ----------
+    target : GenericGeometry
+        Geometry object which this model is associated with. This controls
+        the length of the calculated array, and also provides access to
+        other necessary properties.
+    pore_diameter : str
+        Dictionary key of the pore diameter values.
+    throat_diameter : str
+        Dictionary key of the throat diameter values.
+
+    Returns
+    -------
+    dict
+        Dictionary containing conduit size factors. Size factors are
+        accessible via the keys: 'pore1', 'throat', and 'pore2'.
 
     Notes
     -----
-    The hydraulic shape coefficient is the geometrical part of the pre-factor
-    in Stoke's flow:
+    The hydraulic size factor is the geometrical part of the pre-factor in
+    Stoke's flow:
 
     .. math::
 
+        Q = \frac{A^2}{8 \mu L} \Delta P
+          = \frac{S_{hydraulic}}{\mu} \Delta P
 
     Thus :math:`S_{hydraulic}` represents the combined effect of the area and
-    length of the *conduit*, which consists of a throat and 1/2 of the pore
+    length of the *conduit*, which consists of a throat and 1/2 of the pores
     on each end.
 
+    This model should only be used for true 2D networks, i.e. with planar
+    symmetry.
+
     """
-    network = target.project.network
-    throats = network.map_throats(throats=target.Ts, origin=target)
-    cn = network["throat.conns"][throats]
-    D1 = network[pore_diameter][cn[:, 0]]
-    D2 = network[pore_diameter][cn[:, 1]]
-    Dt = network[throat_diameter][throats]
-    if conduit_lengths is not None:
-        L1 = network[conduit_lengths + ".pore1"][throats]
-        L2 = network[conduit_lengths + ".pore2"][throats]
-        Lt = network[conduit_lengths + ".throat"][throats]
-    else:
-        L1, L2, Lt = _calc_conduit_length_spheres_cylinders_2D(
-            target, pore_diameter=pore_diameter, throat_diameter=throat_diameter
-        )
-    # F is INTEGRAL(1/A^2) dx , x : 0 --> L
-    F1 = _atanh(2 * L1 / D1) / (2 * D1)
-    F2 = _atanh(2 * L2 / D2) / (2 * D2)
-    Ft = Lt / Dt ** 2
-    g1, g2, gt = 1 / F1, 1 / F2, 1 / Ft
-    vals = {"pore1": g1, "throat": gt, "pore2": g2}
-    return vals
+    D1, Dt, D2 = _get_conduit_diameters(target, pore_diameter, throat_diameter)
+    L1, Lt, L2 = _conduit_lengths.circles_and_rectangles(
+        target, pore_diameter=pore_diameter, throat_diameter=throat_diameter
+    ).T
+
+    # Fi is the integral of (1/A^3) dx, x = [0, Li]
+    F1 = L1 / (D1**2 * _np.sqrt(D1**2 - 4 * L1**2))
+    F2 = L2 / (D2**2 * _np.sqrt(D2**2 - 4 * L2**2))
+    Ft = Lt / Dt**3
+
+    # S is 1 / (12 * F)
+    S1, St, S2 = [1 / (Fi * 12) for Fi in [F1, Ft, F2]]
+
+    return {"pore1": S1, "throat": St, "pore2": S2}
 
 
 def cones_and_cylinders(
-    target,
+    target: _GenericGeometry,
     pore_diameter="pore.diameter",
     throat_diameter="throat.diameter",
-    throat_area="throat.area",
-    conduit_lengths="throat.conduit_lengths",
 ):
     r"""
-    Compute hydraulic shape coefficient for conduits of spheres and cylinders
-    assuming pores and throats are truncated pyramids (frustums) and constant
-    cross-section cylinders (sticks).
+    Computes hydraulic size factors for conduits assuming pores are
+    truncated cones and throats are cylinders.
 
     Parameters
     ----------
@@ -188,124 +157,397 @@ def cones_and_cylinders(
         The object which this model is associated with. This controls the
         length of the calculated array, and also provides access to other
         necessary properties.
-
-    pore_diameter : string
-        Dictionary key of the pore diameter values
-
-    throat_diameter : string
-        Dictionary key of the throat diameter values
-
-    pore_area : string
-        Dictionary key of the pore area values
-
-    throat_area : string
-        Dictionary key of the throat area values
-
-    conduit_lengths : string
-        Dictionary key of the conduit lengths' values
-
-    return_elements : Bool
-        A boolean variable to whether return the values elementwise for
-        pores and throat or return the final value for the conduit.
+    pore_diameter : str
+        Dictionary key of the pore diameter values.
+    throat_diameter : str
+        Dictionary key of the throat diameter values.
 
     Returns
     -------
-    A dictionary containing the diffusive_shape_coefficient, which can be
-    accessed via the dict keys 'pore1', 'pore2', and 'throat'.
+    dict
+        Dictionary containing conduit size factors. Size factors are
+        accessible via the keys: 'pore1', 'throat', and 'pore2'.
+
+    Notes
+    -----
+    The hydraulic size factor is the geometrical part of the pre-factor in
+    Stoke's flow:
+
+    .. math::
+
+        Q = \frac{A^2}{8 \mu L} \Delta P
+          = \frac{S_{hydraulic}}{\mu} \Delta P
+
+    Thus :math:`S_{hydraulic}` represents the combined effect of the area and
+    length of the *conduit*, which consists of a throat and 1/2 of the pores
+    on each end.
 
     """
-    network = target.project.network
-    throats = network.map_throats(throats=target.Ts, origin=target)
-    cn = network["throat.conns"][throats]
-    # Get pore diameter
-    D1 = network[pore_diameter][cn[:, 0]]
-    D2 = network[pore_diameter][cn[:, 1]]
-    Dt = network[throat_diameter][throats]
-    At = network[throat_area][throats]
-    # Get conduit lengths
-    L1 = network[conduit_lengths + ".pore1"][throats]
-    L2 = network[conduit_lengths + ".pore2"][throats]
-    Lt = network[conduit_lengths + ".throat"][throats]
-    # F is INTEGRAL(1/A^2) dx , x : 0 --> L
-    F1 = 16 / 3 * (L1 * (D1 ** 2 + D1 * Dt + Dt ** 2) / (D1 ** 3 * Dt ** 3 * _pi ** 2))
-    F2 = 16 / 3 * (L2 * (D2 ** 2 + D2 * Dt + Dt ** 2) / (D2 ** 3 * Dt ** 3 * _pi ** 2))
-    Ft = Lt / At ** 2
-    g1, g2, gt = 1 / F1, 1 / F2, 1 / Ft
-    vals = {"pore1": g1, "throat": gt, "pore2": g2}
-    return vals
+    D1, Dt, D2 = _get_conduit_diameters(target, pore_diameter, throat_diameter)
+    L1, Lt, L2 = _conduit_lengths.cones_and_cylinders(
+        target, pore_diameter=pore_diameter, throat_diameter=throat_diameter
+    ).T
+
+    # Fi is the integral of (1/A^2) dx, x = [0, Li]
+    F1 = 16 / 3 * (L1 * (D1**2 + D1 * Dt + Dt**2) / (D1**3 * Dt**3 * _np.pi**2))
+    F2 = 16 / 3 * (L2 * (D2**2 + D2 * Dt + Dt**2) / (D2**3 * Dt**3 * _np.pi**2))
+    Ft = Lt / (_np.pi * Dt**2 / 4) ** 2
+
+    # I is the integral of (y^2 + z^2) dA, divided by A^2
+    I1 = I2 = It = 1 / (2 * _np.pi)
+
+    # S is 1 / (16 * pi^2 * I * F)
+    S1 = 1 / (16 * _np.pi**2 * I1 * F1)
+    St = 1 / (16 * _np.pi**2 * It * Ft)
+    S2 = 1 / (16 * _np.pi**2 * I2 * F2)
+
+    return {"pore1": S1, "throat": St, "pore2": S2}
 
 
-def pyramids_and_cuboids(target,):
+def pyramids_and_cuboids(
+    target,
+    pore_diameter="pore.diameter",
+    throat_diameter="throat.diameter",
+):
     r"""
+    Computes hydraulic size factors for conduits assuming pores are
+    truncated pyramids and throats are cuboids.
+
+    Parameters
+    ----------
+    target : GenericGeometry
+        Geometry object which this model is associated with. This controls
+        the length of the calculated array, and also provides access to
+        other necessary properties.
+    pore_diameter : str
+        Dictionary key pointing to the pore diameter values.
+    throat_diameter : str
+        Dictionary key pointing to the throat diameter values.
+
+    Returns
+    -------
+    dict
+        Dictionary containing conduit size factors. Size factors are
+        accessible via the keys: 'pore1', 'throat', and 'pore2'.
+
+    Notes
+    -----
+    The hydraulic size factor is the geometrical part of the pre-factor in
+    Stoke's flow:
+
+    .. math::
+
+        Q = \frac{A^2}{8 \mu L} \Delta P
+          = \frac{S_{hydraulic}}{\mu} \Delta P
+
+    Thus :math:`S_{hydraulic}` represents the combined effect of the area and
+    length of the *conduit*, which consists of a throat and 1/2 of the pores
+    on each end.
 
     """
-    pass
+    D1, Dt, D2 = _get_conduit_diameters(target, pore_diameter, throat_diameter)
+    L1, Lt, L2 = _conduit_lengths.pyramids_and_cuboids(
+        target, pore_diameter=pore_diameter, throat_diameter=throat_diameter
+    ).T
+
+    # Fi is the integral of (1/A^2) dx, x = [0, Li]
+    F1 = 1 / 3 * (L1 * (D1**2 + D1 * Dt + Dt**2) / (D1**3 * Dt**3))
+    F2 = 1 / 3 * (L2 * (D2**2 + D2 * Dt + Dt**2) / (D2**3 * Dt**3))
+    Ft = Lt / Dt**4
+
+    # I is the integral of (y^2 + z^2) dA, divided by A^2
+    I1 = I2 = It = 1 / 6
+
+    # S is 1 / (16 * pi^2 * I * F)
+    S1 = 1 / (16 * _np.pi**2 * I1 * F1)
+    St = 1 / (16 * _np.pi**2 * It * Ft)
+    S2 = 1 / (16 * _np.pi**2 * I2 * F2)
+
+    return {"pore1": S1, "throat": St, "pore2": S2}
 
 
 def cubes_and_cuboids(
-    target,
+    target: _GenericGeometry,
     pore_diameter="pore.diameter",
     throat_diameter="throat.diameter",
     pore_aspect=[1, 1, 1],
     throat_aspect=[1, 1, 1],
 ):
     r"""
+    Computes hydraulic size factors for conduits assuming pores are cubes
+    and throats are cuboids.
+
+    Parameters
+    ----------
+    target : GenericGeometry
+        Geometry object which this model is associated with. This controls
+        the length of the calculated array, and also provides access to
+        other necessary properties.
+    pore_diameter : str
+        Dictionary key pointing to the pore diameter values.
+    throat_diameter : str
+        Dictionary key pointing to the throat diameter values.
+    pore_aspect : list
+        Aspect ratio of the pores
+    throat_aspect : list
+        Aspect ratio of the throats
+
+    Returns
+    -------
+    dict
+        Dictionary containing conduit size factors. Size factors are
+        accessible via the keys: 'pore1', 'throat', and 'pore2'.
+
+    Notes
+    -----
+    The hydraulic size factor is the geometrical part of the pre-factor in
+    Stoke's flow:
+
+    .. math::
+
+        Q = \frac{A^2}{8 \mu L} \Delta P
+          = \frac{S_{hydraulic}}{\mu} \Delta P
+
+    Thus :math:`S_{hydraulic}` represents the combined effect of the area and
+    length of the *conduit*, which consists of a throat and 1/2 of the pores
+    on each end.
 
     """
-    pass
+    D1, Dt, D2 = _get_conduit_diameters(target, pore_diameter, throat_diameter)
+    L1, Lt, L2 = _conduit_lengths.cubes_and_cuboids(
+        target, pore_diameter=pore_diameter, throat_diameter=throat_diameter
+    ).T
+
+    # Fi is the integral of (1/A^2) dx, x = [0, Li]
+    F1 = L1 / D1**4
+    F2 = L2 / D2**4
+    Ft = Lt / Dt**4
+
+    # I is the integral of (y^2 + z^2) dA, divided by A^2
+    I1 = I2 = It = 1 / 6
+
+    # S is 1 / (16 * pi^2 * I * F)
+    S1 = 1 / (16 * _np.pi**2 * I1 * F1)
+    St = 1 / (16 * _np.pi**2 * It * Ft)
+    S2 = 1 / (16 * _np.pi**2 * I2 * F2)
+
+    return {"pore1": S1, "throat": St, "pore2": S2}
 
 
-def intersection_cones(
-    target,
+def squares_and_rectangles(
+    target: _GenericGeometry,
+    pore_diameter="pore.diameter",
+    throat_diameter="throat.diameter",
+    pore_aspect=[1, 1],
+    throat_aspect=[1, 1],
+):
+    r"""
+    Computes hydraulic size factors for conduits assuming pores are
+    squares and throats are rectangles.
+
+    Parameters
+    ----------
+    target : GenericGeometry
+        Geometry object which this model is associated with. This controls
+        the length of the calculated array, and also provides access to
+        other necessary properties.
+    pore_diameter : str
+        Dictionary key pointing to the pore diameter values.
+    throat_diameter : str
+        Dictionary key pointing to the throat diameter values.
+    pore_aspect : list
+        Aspect ratio of the pores
+    throat_aspect : list
+        Aspect ratio of the throats
+
+    Returns
+    -------
+    dict
+        Dictionary containing conduit size factors. Size factors are
+        accessible via the keys: 'pore1', 'throat', and 'pore2'.
+
+    Notes
+    -----
+    The hydraulic size factor is the geometrical part of the pre-factor in
+    Stoke's flow:
+
+    .. math::
+
+        Q = \frac{A^2}{8 \mu L} \Delta P
+          = \frac{S_{hydraulic}}{\mu} \Delta P
+
+    Thus :math:`S_{hydraulic}` represents the combined effect of the area and
+    length of the *conduit*, which consists of a throat and 1/2 of the pores
+    on each end.
+
+    """
+    D1, Dt, D2 = _get_conduit_diameters(target, pore_diameter, throat_diameter)
+    L1, Lt, L2 = _conduit_lengths.squares_and_rectangles(
+        target, pore_diameter=pore_diameter, throat_diameter=throat_diameter
+    ).T
+
+    # Fi is the integral of (1/A^3) dx, x = [0, Li]
+    F1 = L1 / D1**3
+    F2 = L2 / D2**3
+    Ft = Lt / Dt**3
+
+    # S is 1 / (12 * F)
+    S1, St, S2 = [1 / (Fi * 12) for Fi in [F1, Ft, F2]]
+
+    return {"pore1": S1, "throat": St, "pore2": S2}
+
+
+def intersecting_cones(
+    target: _GenericGeometry,
     pore_diameter="pore.diameter",
     throat_diameter="throat.diameter",
     midpoint=None,
 ):
     r"""
+    Computes hydraulic size factors for conduits of intersecting cones.
+
+    Parameters
+    ----------
+    target : GenericGeometry
+        Geometry object which this model is associated with. This controls
+        the length of the calculated array, and also provides access to
+        other necessary properties.
+    pore_diameter : str
+        Dictionary key pointing to the pore diameter values.
+    throat_diameter : str
+        Dictionary key pointing to the throat diameter values.
+    midpoint : str, optional
+        Dictionary key of the midpoint values.
+
+    Returns
+    -------
+    dict
+        Dictionary containing conduit size factors. Size factors are
+        accessible via the keys: 'pore1', 'throat', and 'pore2'.
+
+    Notes
+    -----
+    The hydraulic size factor is the geometrical part of the pre-factor in
+    Stoke's flow:
+
+    .. math::
+
+        Q = \frac{A^2}{8 \mu L} \Delta P
+          = \frac{S_{hydraulic}}{\mu} \Delta P
+
+    Thus :math:`S_{hydraulic}` represents the combined effect of the area and
+    length of the *conduit*, which consists of a throat and 1/2 of the pores
+    on each end.
 
     """
-    pass
+    raise NotImplementedError
 
 
 def intersecting_pyramids(
-    target,
+    target: _GenericGeometry,
     pore_diameter="pore.diameter",
     throat_diameter="throat.diameter",
     midpoint=None,
 ):
     r"""
+    Computes hydraulic size factors for conduits of intersecting pyramids.
+
+    Parameters
+    ----------
+    target : GenericGeometry
+        Geometry object which this model is associated with. This controls
+        the length of the calculated array, and also provides access to
+        other necessary properties.
+    pore_diameter : str
+        Dictionary key pointing to the pore diameter values.
+    throat_diameter : str
+        Dictionary key pointing to the throat diameter values.
+    midpoint : str, optional
+        Dictionary key of the midpoint values.
+
+    Returns
+    -------
+    dict
+        Dictionary containing conduit size factors. Size factors are
+        accessible via the keys: 'pore1', 'throat', and 'pore2'.
+
+    Notes
+    -----
+    The hydraulic size factor is the geometrical part of the pre-factor in
+    Stoke's flow:
+
+    .. math::
+
+        Q = \frac{A^2}{8 \mu L} \Delta P
+          = \frac{S_{hydraulic}}{\mu} \Delta P
+
+    Thus :math:`S_{hydraulic}` represents the combined effect of the area and
+    length of the *conduit*, which consists of a throat and 1/2 of the pores
+    on each end.
 
     """
-    pass
+    raise NotImplementedError
 
 
 def ncylinders_in_series(
-    target,
-    pore_diameter="pore.equivalent_diameter",
-    throat_diameter="throat.equivalent_diameter",
-    throat_length="throat.length",
+    target: _GenericGeometry,
+    pore_diameter="pore.diameter",
+    throat_diameter="throat.diameter",
     n=5,
 ):
     r"""
+    Computes hydraulic size factors for conduits of spheres and cylinders
+    with the spheres approximated as N cylinders in series.
+
+    Parameters
+    ----------
+    target : GenericGeometry
+        Geometry object which this model is associated with. This controls
+        the length of the calculated array, and also provides access to
+        other necessary properties.
+    pore_diameter : str
+        Dictionary key pointing to the pore diameter values.
+    throat_diameter : str
+        Dictionary key pointing to the throat diameter values.
+    n : int
+        Number of cylindrical divisions for each pore
+
+    Returns
+    -------
+    dict
+        Dictionary containing conduit size factors. Size factors are
+        accessible via the keys: 'pore1', 'throat', and 'pore2'.
+
+    Notes
+    -----
+    The hydraulic size factor is the geometrical part of the pre-factor in
+    Stoke's flow:
+
+    .. math::
+
+        Q = \frac{A^2}{8 \mu L} \Delta P
+          = \frac{S_{hydraulic}}{\mu} \Delta P
+
+    Thus :math:`S_{hydraulic}` represents the combined effect of the area and
+    length of the *conduit*, which consists of a throat and 1/2 of the pores
+    on each end.
+
     """
-    project = target.project
-    network = project.network
-    P12 = network["throat.conns"]
-    Pdia1, Pdia2 = network[pore_diameter][P12].T
-    Tdia = network[throat_diameter]
+    D1, Dt, D2 = _get_conduit_diameters(target, pore_diameter, throat_diameter)
     # Ensure throats are never bigger than connected pores
-    Tdia = _np.minimum(Tdia, 0.99 * _np.minimum(Pdia1, Pdia2))
-    Plen1 = Pdia1 / 2 * (_np.cos(_np.arcsin(Tdia / Pdia1)))
-    Plen2 = Pdia2 / 2 * (_np.cos(_np.arcsin(Tdia / Pdia2)))
-    Lcyl1 = _np.linspace(0, Plen1, num=n, endpoint=False)
-    Lcyl2 = _np.linspace(0, Plen2, num=n, endpoint=False)
-    Rcyl1 = Pdia1 / 2 * _np.sin(_np.arccos(Lcyl1 / (Pdia1 / 2)))
-    Rcyl2 = Pdia2 / 2 * _np.sin(_np.arccos(Lcyl2 / (Pdia2 / 2)))
-    gtemp = (_pi * Rcyl1 ** 4 / (8 * Plen1 / n)).T
-    g1 = 1 / _np.sum(1 / gtemp, axis=1)
-    gtemp = (_pi * Rcyl2 ** 4 / (8 * Plen2 / n)).T
-    g2 = 1 / _np.sum(1 / gtemp, axis=1)
-    Tlen = network[throat_length]
-    gt = (_pi * (Tdia / 2) ** 4 / (8 * Tlen)).T
-    result = 1 / (1 / g1 + 1 / gt + 1 / g2)
-    return result
+    Dt = _np.minimum(Dt, 0.99 * _np.minimum(D1, D2))
+    L1, Lt, L2 = _conduit_lengths.spheres_and_cylinders(
+        target, pore_diameter=pore_diameter, throat_diameter=throat_diameter
+    ).T
+    dL1 = _np.linspace(0, L1, num=n)
+    dL2 = _np.linspace(0, L2, num=n)
+    r1 = D1 / 2 * _np.sin(_np.arccos(dL1 / (D1 / 2)))
+    r2 = D2 / 2 * _np.sin(_np.arccos(dL2 / (D2 / 2)))
+
+    gtemp = (_np.pi * r1 ** 4 / (8 * L1 / n)).T
+    F1 = 1 / _np.sum(1 / gtemp, axis=1)
+    gtemp = (_np.pi * r2 ** 4 / (8 * L2 / n)).T
+    F2 = 1 / _np.sum(1 / gtemp, axis=1)
+    Ft = (_np.pi * (Dt / 2) ** 4 / (8 * Lt)).T
+
+    return {"pore1": F1, "throat": Ft, "pore2": F2}
