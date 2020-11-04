@@ -32,11 +32,11 @@ class HydraulicConductanceTest:
         actual = self.phys['throat.hydraulic_conductance'].mean()
         assert_approx_equal(actual, desired=1421.0262776)
 
-    def test_hagen_poiseuille_2D(self):
+    def test_hagen_poiseuille_2d(self):
         self.geo['throat.conduit_lengths.pore1'] = 0.25
         self.geo['throat.conduit_lengths.throat'] = 0.6
         self.geo['throat.conduit_lengths.pore2'] = 0.15
-        mod = op.models.physics.hydraulic_conductance.hagen_poiseuille_2D
+        mod = op.models.physics.hydraulic_conductance.hagen_poiseuille_2d
         self.phys.add_model(propname='throat.hydraulic_conductance', model=mod)
         actual = self.phys['throat.hydraulic_conductance'].mean()
         assert_approx_equal(actual, desired=1602.564)
@@ -89,5 +89,5 @@ if __name__ == '__main__':
     t.setup_class()
     for item in t.__dir__():
         if item.startswith('test'):
-            print('running test: '+item)
+            print(f'Running test: {item}')
             t.__getattribute__(item)()
