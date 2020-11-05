@@ -2,6 +2,7 @@ import numpy as np
 import openpnm as op
 import matplotlib.pyplot as plt
 from openpnm.topotools import reflect_base_points
+from openpnm.materials import VoronoiFibers
 
 
 class VoronoiTest:
@@ -14,11 +15,13 @@ class VoronoiTest:
         scale = 1e-4
         bp = reflect_base_points(bp, [1, 1, 1]) * scale
         self.wrk = op.Workspace()
-        self.prj = op.materials.VoronoiFibers(fiber_rad=2e-6,
-                                              resolution=1e-6,
-                                              shape=[scale]*3,
-                                              points=bp,
-                                              name='test')
+        self.prj = VoronoiFibers(
+            fiber_rad=2e-6,
+            resolution=1e-6,
+            shape=[scale] * 3,
+            points=bp,
+            name='test'
+        )
         self.net = self.prj.network
         self.del_geom = self.prj.geometries()['test_del']
         self.vor_geom = self.prj.geometries()['test_vor']
@@ -65,11 +68,13 @@ class VoronoiTest:
         plt.close('all')
 
     def test_vertex_dimension(self):
-        prj = op.materials.VoronoiFibers(num_points=10,
-                                         fiber_rad=0.2,
-                                         resolution=0.1,
-                                         shape=[3, 2, 1],
-                                         name='test2')
+        prj = VoronoiFibers(
+            num_points=10,
+            fiber_rad=0.2,
+            resolution=0.1,
+            shape=[3, 2, 1],
+            name='test2'
+        )
         net = prj.network
         del_geom = prj.geometries()['test2_del']
         B1 = net.pores(['left', 'delaunay'], mode='xnor')
@@ -118,6 +123,6 @@ if __name__ == '__main__':
     t.setup_class()
     for item in t.__dir__():
         if item.startswith('test'):
-            print('running test: '+item)
+            print(f'Running test: {item}')
             t.__getattribute__(item)()
     self = t

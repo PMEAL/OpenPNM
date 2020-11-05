@@ -18,7 +18,7 @@ class VoronoiTest:
         net = op.network.Voronoi(points=points, shape=[1, 1, 1])
         assert net.Np > 30
 
-    def test_voronoi_2D(self):
+    def test_voronoi_2d(self):
         net = op.network.Voronoi(num_points=30, shape=[1, 1, 0])
         assert net.Np > 30
 
@@ -30,5 +30,5 @@ if __name__ == '__main__':
     self = t
     for item in t.__dir__():
         if item.startswith('test'):
-            print('running test: '+item)
+            print(f'Running test: {item}')
             t.__getattribute__(item)()
