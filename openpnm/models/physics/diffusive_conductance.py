@@ -224,7 +224,7 @@ def mixed_diffusion(
     pore_temperature="pore.temperature",
     molecular_weight="pore.molecular_weight",
     conduit_lengths="throat.conduit_lengths",
-    conduit_shape_factors="throat.diffusive_shape_factors",
+    conduit_shape_factors="throat.poisson_shape_factors",
 ):
     r"""
     Calculates the diffusive conductance of conduits in network with
@@ -340,7 +340,7 @@ def taylor_aris_diffusion(
     throat_hydraulic_conductance="throat.hydraulic_conductance",
     throat_diffusivity="throat.diffusivity",
     conduit_lengths="throat.conduit_lengths",
-    conduit_shape_factors="throat.diffusive_shape_factors",
+    conduit_shape_factors="throat.poisson_shape_factors",
 ):
     r"""
     Calculates the diffusive conductance of conduits in network
@@ -542,7 +542,7 @@ def multiphase_diffusion(
     pore_diffusivity="pore.diffusivity",
     throat_diffusivity="throat.diffusivity",
     conduit_lengths="throat.conduit_lengths",
-    conduit_shape_factors="throat.diffusive_shape_factors",
+    conduit_shape_factors="throat.poisson_shape_factors",
 ):
     r"""
     Calculates the diffusive conductance of conduits in network.

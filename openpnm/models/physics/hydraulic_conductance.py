@@ -162,7 +162,7 @@ def hagen_poiseuille_2d(
     pore_viscosity="pore.viscosity",
     throat_viscosity="throat.viscosity",
     conduit_lengths="throat.conduit_lengths",
-    conduit_shape_factors="throat.hydraulic_shape_factors",
+    conduit_shape_factors="throat.flow_shape_factors",
 ):
     r"""
     Calculates the hydraulic conductance of conduits in network.
