@@ -28,14 +28,14 @@ class Statoil(GenericIO):
         dfp, dft = Pandas.to_dataframe(network=network, delim='.')
         dft_ind = DataFrame()
         dft_ind[0] = network.Ts + 1
-        a = 'network.' + network.name +  '.throat.conns[0]'
-        b = 'network.' + network.name +  '.throat.conns[1]'
-        c = 'network.' + network.name +  '.throat.diameter'
-        d = 'network.' + network.name +  '.throat.shape_factor'
-        e = 'network.' + network.name +  '.throat.length'
+        a = 'network.' + network.name + '.throat.conns[0]'
+        b = 'network.' + network.name + '.throat.conns[1]'
+        c = 'network.' + network.name + '.throat.diameter'
+        d = 'network.' + network.name + '.throat.shape_factor'
+        e = 'network.' + network.name + '.throat.length'
         dft_temp = dft_ind.join(dft[[a, b, c, e]])
-        dft_temp.to_csv(filename + '_link1.dat', sep='\t', header=True, index=False)
-
+        dft_temp.to_csv(filename + '_link1.dat', sep='\t',
+                        header=True, index=False)
 
     @classmethod
     def load(cls, *args, **kwargs):
