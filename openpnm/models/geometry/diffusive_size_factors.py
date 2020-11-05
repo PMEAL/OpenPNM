@@ -1,3 +1,18 @@
+r"""
+The diffusive size factor is the geometrical part of the pre-factor in
+Fick's law:
+
+.. math::
+
+    n_A = \frac{A}{L} \Delta C_A
+        = S_{diffusive} D_{AB} \Delta C_A
+
+Thus :math:`S_{diffusive}` represents the combined effect of the area and
+length of the *conduit*, which consists of a throat and 1/2 of the pore
+on each end.
+
+"""
+
 import numpy as _np
 import openpnm.models.geometry.conduit_lengths as _conduit_lengths
 import openpnm.geometry.GenericGeometry as _GenericGeometry
@@ -7,10 +22,12 @@ __all__ = [
     "spheres_and_cylinders",
     "circles_and_rectangles",
     "cones_and_cylinders",
+    "trapezoids_and_rectangles",
     "pyramids_and_cuboids",
     "cubes_and_cuboids",
     "squares_and_rectangles",
     "intersecting_cones",
+    "intersecting_trapezoids",
     "intersecting_pyramids",
     "ncylinders_in_series"
 ]
@@ -22,7 +39,8 @@ def spheres_and_cylinders(
     throat_diameter="throat.diameter",
 ):
     r"""
-    Computes diffusive size factor for conduits of spheres and cylinders.
+    Computes diffusive shape coefficient for conduits assuming pores are
+    spheres and throats are cylinders.
 
     Parameters
     ----------
@@ -69,7 +87,8 @@ def circles_and_rectangles(
     throat_diameter="throat.diameter",
 ):
     r"""
-    Compute diffusive shape coefficient for conduits of circles and rectangles
+    Computes diffusive shape coefficient for conduits assuming pores are
+    circles and throats are rectangles.
 
     Parameters
     ----------
@@ -166,6 +185,63 @@ def cones_and_cylinders(
     return {"pore1": 1 / F1, "throat": 1 / Ft, "pore2": 1 / F2}
 
 
+def trapezoids_and_rectangles(
+    target,
+    pore_diameter="pore.diameter",
+    throat_diameter="throat.diameter",
+):
+    r"""
+    Compute diffusive shape coefficient for conduits assuming pores are
+    trapezoids and throats are rectangles.
+
+    Parameters
+    ----------
+    target : GenericGeometry
+        Geometry object which this model is associated with. This controls
+        the length of the calculated array, and also provides access to
+        other necessary properties.
+    pore_diameter : str
+        Dictionary key of the pore diameter values.
+    throat_diameter : str
+        Dictionary key of the throat diameter values.
+
+    Notes
+    -----
+    The diffusive size factor is the geometrical part of the pre-factor in
+    Fick's law:
+
+    .. math::
+
+        n_A = \frac{A}{L} \Delta C_A
+            = S_{diffusive} D_{AB} \Delta C_A
+
+    Thus :math:`S_{diffusive}` represents the combined effect of the area and
+    length of the *conduit*, which consists of a throat and 1/2 of the pore
+    on each end.
+
+    This model should only be used for true 2D networks, i.e. with planar
+    symmetry.
+
+    """
+    D1, Dt, D2 = _get_conduit_diameters(target, pore_diameter, throat_diameter)
+    L1, Lt, L2 = _conduit_lengths.trapezoids_and_rectangles(
+        target, pore_diameter=pore_diameter, throat_diameter=throat_diameter
+    ).T
+
+    # Fi is the integral of (1/A) dx, x = [0, Li]
+    F1 = L1 * _np.log(Dt / D1) / (Dt - D1)
+    F2 = L2 * _np.log(Dt / D2) / (Dt - D2)
+    Ft = Lt / Dt
+
+    # Edge case where Di = Dt
+    mask = _np.isclose(D1, Dt)
+    F1[mask] = (L1 / D1)[mask]
+    mask = _np.isclose(D2, Dt)
+    F2[mask] = (L2 / D2)[mask]
+
+    return {"pore1": 1 / F1, "throat": 1 / Ft, "pore2": 1 / F2}
+
+
 def pyramids_and_cuboids(
     target,
     pore_diameter="pore.diameter",
@@ -222,7 +298,8 @@ def cubes_and_cuboids(
     throat_aspect=[1, 1, 1],
 ):
     r"""
-    Computes diffusive size factor for conduits of cubes and cuboids.
+    Computes diffusive shape coefficient for conduits assuming pores are
+    cubes and throats are cuboids.
 
     Parameters
     ----------
@@ -381,6 +458,47 @@ def intersecting_cones(
     Ft = _np.pi * Rt ** 4 / (8 * Lt)
 
     return {"pore1": F1, "throat": Ft, "pore2": F2}
+
+
+def intersecting_trapezoids(
+    target,
+    pore_diameter="pore.diameter",
+    throat_diameter="throat.diameter",
+):
+    r"""
+    Computes diffusive shape coefficient for conduits of intersecting
+    trapezoids.
+
+    Parameters
+    ----------
+    target : GenericGeometry
+        Geometry object which this model is associated with. This controls
+        the length of the calculated array, and also provides access to
+        other necessary properties.
+    pore_diameter : str
+        Dictionary key of the pore diameter values.
+    throat_diameter : str
+        Dictionary key of the throat diameter values.
+
+    Notes
+    -----
+    The diffusive size factor is the geometrical part of the pre-factor in
+    Fick's law:
+
+    .. math::
+
+        n_A = \frac{A}{L} \Delta C_A
+            = S_{diffusive} D_{AB} \Delta C_A
+
+    Thus :math:`S_{diffusive}` represents the combined effect of the area and
+    length of the *conduit*, which consists of a throat and 1/2 of the pore
+    on each end.
+
+    This model should only be used for true 2D networks, i.e. with planar
+    symmetry.
+
+    """
+    raise NotImplementedError
 
 
 def intersecting_pyramids(
