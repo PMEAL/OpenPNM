@@ -3,13 +3,13 @@ import terminaltables as tt
 
 class Tableist():
 
-    def __init__(self, rows=1, cols=1, blank='---', style='single'):
+    def __init__(self, rows=1, cols=1, blank='---', style='ascii'):
         super().__init__()
         self.blank = blank
         header = [blank for i in range(cols)]
         self._grid = tt.AsciiTable([])
         _ = [self._grid.table_data.append(header.copy()) for _ in range(rows)]
-        self.style = style
+        self._style = style
 
     def __getitem__(self, row):
         if isinstance(row, slice):  # If slice, convert to list
@@ -78,6 +78,26 @@ class Tableist():
             vals = [vals for c in range(self.ncols)]
         for c in range(self.ncols):
             self._grid.table_data[row][c] = vals[c]
+
+    def set_row_and_col(self, row, col, val):
+        r"""
+
+        """
+        header = self.get_row(0)
+        index = self.get_col(0)
+        try:
+            col_num = header._grid.table_data[0].index(col)
+        except:
+            self.add_col()
+            self[0][-1] = col
+            col_num = -1
+        try:
+            row_num = index._grid.table_data.index([row])
+        except:
+            self.add_row()
+            self[-1][0] = row
+            row_num = -1
+        self[row_num][col_num] = val
 
     def _set_style(self, style):
         if hasattr(self, '_grid'):
@@ -206,6 +226,8 @@ class Tableist():
             The number of rows to insert.  The default is 1.
 
         """
+        if num == 0:
+            return
         header = [self.blank for i in self._grid.table_data[0]]
         if row:
             self._grid.table_data.insert(row, header)
@@ -227,6 +249,8 @@ class Tableist():
             The number of columns to insert.  The default is 1.
 
         """
+        if num == 0:
+            return
         for row in self._grid.table_data:
             if col:
                 row.insert(col, self.blank)

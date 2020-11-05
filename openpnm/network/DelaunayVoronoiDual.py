@@ -68,11 +68,8 @@ class DelaunayVoronoiDual(GenericNetwork):
 
     """
 
-    def __init__(self, shape=[1, 1, 1], num_points=None, **kwargs):
-        points = kwargs.pop('points', None)
+    def __init__(self, shape=[1, 1, 1], num_points=None, points=None, **kwargs):
         super().__init__(**kwargs)
-        if (points is None) and (num_points is None):
-            return
         points = self._parse_points(shape=shape,
                                     num_points=num_points,
                                     points=points)
@@ -147,8 +144,11 @@ class DelaunayVoronoiDual(GenericNetwork):
         self['throat.interconnect'][Ts] = True
 
         # Trim all pores that lie outside of the specified domain
-        self._trim_external_pores(shape=shape)
-        self._label_faces()
+        if self.settings['trim'] == False:
+            pass
+        else:
+            self._trim_external_pores(shape=shape)
+            self._label_faces()
 
     @property
     def tri(self):

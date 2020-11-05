@@ -1,7 +1,6 @@
 import warnings
 import uuid
 import numpy as np
-import scipy as sp
 from collections import namedtuple
 from openpnm.models.misc import from_neighbor_throats, from_neighbor_pores
 from openpnm.utils import Workspace, logging
@@ -156,6 +155,7 @@ class Base(dict):
             project = ws.new_project()
         if name is None:
             name = project._generate_name(self)
+        project._validate_name(name)
         project.extend(self)
         self.settings['name'] = name
         self.update({'pore.all': np.ones(shape=(Np, ), dtype=bool)})
@@ -270,18 +270,18 @@ class Base(dict):
             keys = self.keys(mode='all', deep=True)
             vals.update({k: self.interleave_data(k) for k in keys
                          if k.startswith(key + '.')})
-        # The following code, if activated, attempts to run models when
-        # missing data is requested from the dictionary.  The works fine,
-        # but breaks the general way openpnm behaves.
-        # elif hasattr(self, 'models') and key in self.models:
-        #     self.regenerate_models(key)
-        #     vals = super().__getitem__(key)
+        # Attempt to run model when missing data.
+        elif hasattr(self, 'models') and key in self.models:
+            self.regenerate_models(key)
+            vals = super().__getitem__(key)
         else:
             raise KeyError(key)
         return vals
 
     def _set_name(self, name, validate=True):
         old_name = self.settings['name']
+        if name == old_name:
+            return
         if name is None:
             name = self.project._generate_name(self)
         if validate:
@@ -395,7 +395,7 @@ class Base(dict):
     def keys(self, element=None, mode=None, deep=False):
         r"""
         This subclass works exactly like ``keys`` when no arguments are passed,
-        but optionally accepts an ``element`` and/or a ``mode``, which filters
+        but optionally accepts an ``element`` and a ``mode``, which filters
         the output to only the requested keys.
 
         The default behavior is exactly equivalent to the normal ``keys``
