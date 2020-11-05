@@ -813,7 +813,9 @@ def stitch(network, donor, P_network, P_donor, method='nearest',
     # Add the new stitch throats to the Network
     extend(network=network, throat_conns=conns, labels=label_stitches)
 
-    logger.warning(str(conns.shape[0]) + ' throats are not assigned to a geometry')
+    if len(network.project.geometries()) > 0:
+        logger.warning(str(conns.shape[0]) + ' newly created throats are not '
+                       + 'assigned to a geometry')
 
     # Remove donor from Workspace, if present
     # This check allows for the reuse of a donor Network multiple times
