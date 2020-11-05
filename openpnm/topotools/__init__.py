@@ -28,6 +28,7 @@ from .topotools import reflect_base_points
 from .topotools import rotate_coords
 from .topotools import shear_coords
 from .topotools import stitch
+from .topotools import stitch_pores
 from .topotools import subdivide
 from .topotools import template_cylinder_annulus
 from .topotools import template_sphere_shell
