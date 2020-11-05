@@ -395,7 +395,7 @@ class Base(dict):
     def keys(self, element=None, mode=None, deep=False):
         r"""
         This subclass works exactly like ``keys`` when no arguments are passed,
-        but optionally accepts an ``element`` and/or a ``mode``, which filters
+        but optionally accepts an ``element`` and a ``mode``, which filters
         the output to only the requested keys.
 
         The default behavior is exactly equivalent to the normal ``keys``
