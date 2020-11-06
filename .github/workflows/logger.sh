@@ -60,7 +60,7 @@ merge_commits=$(filter_commits_by_tag_interval $tag_old $tag_new)
 
 # Fetching new features/changed API/bugfixes
 features=$(filter_commits_by_label "$merge_commits" "feature" "added" "new")
-enhancements=$(filter_commits_by_label "$merge_commits" "improved" "enhanced" "optimized" "enh")
+enhancements=$(filter_commits_by_label "$merge_commits" "revamped" "improved" "enhanced" "optimized" "enh")
 maintenance=$(filter_commits_by_label "$merge_commits" "backend" "maint")
 changes=$(filter_commits_by_label "$merge_commits" "deprecated" "changed" "removed" "modified" "api")
 fixes=$(filter_commits_by_label "$merge_commits" "bugfix" "hotfix" "fixed" "bug")

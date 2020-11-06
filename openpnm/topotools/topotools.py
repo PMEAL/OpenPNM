@@ -2,7 +2,7 @@ import numpy as np
 import scipy as sp
 import scipy.ndimage as spim
 from scipy.sparse import csgraph
-from scipy.spatial import ConvexHull
+from scipy.spatial import ConvexHull, delaunay_plot_2d
 from openpnm.utils import logging, Workspace
 logger = logging.getLogger(__name__)
 ws = Workspace()
@@ -10,13 +10,15 @@ ws = Workspace()
 
 def isoutside(coords, shape):
     r"""
-    Identifies points that lie outside the specified region.
+    Identifies points that lie outside the specified shape
 
     Parameters
     ----------
-    domain_size : array_like
-        The size and shape of the domain beyond which points should be
-        trimmed. The argument is treated as follows:
+    coords : array_like
+        The coordinates which are to be checked
+    shape : array_like
+        The shape of the domain beyond which points should be trimmed.
+        The argument is treated as follows:
 
         **sphere** : If a scalar or single element list is received, it's
         treated as the radius [r] of a sphere centered on [0, 0, 0].
@@ -31,7 +33,7 @@ def isoutside(coords, shape):
 
     Returns
     -------
-    An Np-long mask of True values indicating pores that lie outside the
+    An Np-long mask of ``True`` values indicating pores that lie outside the
     domain.
 
     """
@@ -89,7 +91,7 @@ def rotate_coords(network, a=0, b=0, c=0, R=None):
 
     Notes
     -----
-    It is possible to rotate about anyof the three axes by specifying ``a``,
+    It is possible to rotate about any of the three axes by specifying ``a``,
     ``b``, and/or ``c``.  In this case each rotation is applied in sequence.
 
     """
@@ -140,7 +142,7 @@ def shear_coords(network, ay=0, az=0, bx=0, bz=0, cx=0, cy=0, S=None):
     S : array_like
         The shear matrix.  Must be a 3-by-3 matrix since pore coordinates are
         always in 3D.  If this is given then the other individual arguments
-        are ingnored.
+        are ignored.
 
     See Also
     --------
@@ -186,11 +188,6 @@ def trim(network, pores=[], throats=[]):
     pores (or throats) : array_like
         The indices of the of the pores or throats to be removed from the
         network.
-
-    Notes
-    -----
-    This is an in-place operation, meaning the received network object will
-    be altered directly, and ``None`` is returned.
 
     Examples
     --------
@@ -279,28 +276,16 @@ def extend(network, coords=[], conns=[], labels=[], **kwargs):
     ----------
     network : OpenPNM Network Object
         The network to which pores or throats should be added
-
     coords : array_like
         The coordinates of the pores to add.  These will be appended to the
         'pore.coords' array so should be of shape N-by-3, where N is the
         number of pores in the list.
-
     conns : array_like
         The throat connections to add.  These will be appended to the
         'throat.conns' array so should be of shape N-by-2.  Note that the
         numbering must point to existing pores.
-
     labels : string, or list of strings, optional
         A list of labels to apply to the new pores and throats
-
-    Notes
-    -----
-    This needs to be enhanced so that it increases the size of all pore
-    and throat props and labels on ALL associated phase objects.  At the
-    moment it throws an error is there are any associated phases.
-
-    This is an in-place operation, meaning the received network object will
-    be altered directly, and ``None`` is returned.
 
     '''
     if 'throat_conns' in kwargs.keys():
@@ -373,6 +358,22 @@ def extend(network, coords=[], conns=[], labels=[], **kwargs):
 
 def reduce_coordination(network, z):
     r"""
+    Deletes throats on network to match specified average coordination number
+
+    Parameters
+    ----------
+    network : OpenPNM Network object
+        The network whose throats are to be trimmed
+    z : scalar
+        The desire average coordination number.  It is not possible to specify
+        the distribution of the coordination, only the mean value.
+
+    Notes
+    -----
+    This method first finds the minimum spanning tree of the network using
+    random weights on each throat, the assures that these throats are *not*
+    deleted, in order to maintain network connectivity.
+
     """
     # Find minimum spanning tree using random weights
     am = network.create_adjacency_matrix(weights=np.random.rand(network.Nt),
@@ -548,13 +549,16 @@ def dimensionality(network):
 
     Returns
     -------
-    Returns an 3-by-1 array containing ``True`` for each axis that contains
-    multiple values, indicating that the pores are spatially distributed
-    in that direction.
+    dims : list
+        A  3-by-1 array containing ``True`` for each axis that contains
+        multiple values, indicating that the pores are spatially distributed
+        in that direction.
+
     """
     xyz = network["pore.coords"]
-    xyz_unique = [np.unique(xyz[:, i]) for i in range(3)]
-    return np.array([elem.size != 1 for elem in xyz_unique])
+    eps = np.finfo(float).resolution
+    dims_unique = [not np.allclose(xk, xk.mean(), atol=0, rtol=eps) for xk in xyz.T]
+    return np.array(dims_unique)
 
 
 def clone_pores(network, pores, labels=['clone'], mode='parents'):
@@ -620,8 +624,10 @@ def clone_pores(network, pores, labels=['clone'], mode='parents'):
 
 def merge_networks(network, donor=[]):
     r"""
-    Combine multiple networks into one without doing any topological
-    manipulations (such as stiching nearby pores to each other).
+    Combine multiple networks into one
+
+    This does not attempt any topological manipulations (such as stiching
+    nearby pores to each other).
 
     Parameters
     ----------
@@ -630,10 +636,6 @@ def merge_networks(network, donor=[]):
 
     donor : OpenPNM Network Object or list of Objects
         The network object(s) to add to the given network
-
-    Notes
-    -----
-    This methods does *not* attempt to stitch the networks topologically.
 
     See Also
     --------
@@ -758,7 +760,7 @@ def stitch(network, donor, P_network, P_donor, method='nearest',
     -----
     Before stitching it is necessary to translate the pore coordinates of
     one of the Networks so that it is positioned correctly relative to the
-    other.
+    other.  This is illustrated in the example below.
 
     Examples
     --------
@@ -777,9 +779,7 @@ def stitch(network, donor, P_network, P_donor, method='nearest',
     [250, 625]
 
     '''
-    # Ensure Networks have no associated objects yet
-    if (len(network.project) > 1) or (len(donor.project) > 1):
-        raise Exception('Cannot stitch a Network with active objects')
+    # Parse inputs
     if isinstance(label_stitches, str):
         label_stitches = [label_stitches]
     for s in label_stitches:
@@ -808,32 +808,60 @@ def stitch(network, donor, P_network, P_donor, method='nearest',
     else:
         raise Exception('<{}> method not supported'.format(method))
 
-    # Enter donor's pores into the Network
-    extend(network=network, coords=donor['pore.coords'])
-
-    # Enter donor's throats into the Network
-    extend(network=network, conns=donor['throat.conns'] + N_init['pore'])
-
-    # Add donor labels to recipient network
-    if label_suffix is not None:
-        if label_suffix != '':
-            label_suffix = '_'+label_suffix
-        for label in donor.labels():
-            element = label.split('.')[0]
-            locations = np.where(network._get_indices(element)
-                                 >= N_init[element])[0]
-            if label + label_suffix not in network.keys():
-                network[label + label_suffix] = False
-            network[label+label_suffix][locations] = donor[label]
+    merge_networks(network, donor)
 
     # Add the new stitch throats to the Network
     extend(network=network, throat_conns=conns, labels=label_stitches)
+
+    if len(network.project.geometries()) > 0:
+        logger.warning(str(conns.shape[0]) + ' newly created throats are not '
+                       + 'assigned to a geometry')
 
     # Remove donor from Workspace, if present
     # This check allows for the reuse of a donor Network multiple times
     for sim in list(ws.values()):
         if donor in sim:
             del ws[sim.name]
+
+
+def stitch_pores(network, pores1, pores2, mode='gabriel'):
+    r"""
+    Stitches together pores in a network with disconnected clusters
+
+    Parameter
+    ---------
+    network : OpenPNM Network
+        The network to operate upon
+    pores1 and pores2: array_like
+        The pore indices of the disconnected clusters to be joined
+    mode : str
+        Dictates which tesselation method is used to identify which pores to
+        stitch together.  Options are 'gabriel' (default) or 'delaunay'.
+
+    Returns
+    -------
+    None
+        The network is operated on 'in-place' so nothing is returned.
+
+    """
+    from openpnm.network import Delaunay, Gabriel
+    pores1 = network._parse_indices(pores1)
+    pores2 = network._parse_indices(pores2)
+    C1 = network.coords[pores1, :]
+    C2 = network.coords[pores2, :]
+    crds = np.vstack((C1, C2))
+    if mode == 'delaunay':
+        net = Delaunay(points=crds, settings={'trim': False})
+    if mode == 'gabriel':
+        net = Gabriel(points=crds, settings={'trim': False})
+    net.set_label(pores=range(len(pores1)), label='pore.one')
+    net.set_label(pores=range(len(pores2)), label='pore.two')
+    Ts = net.find_neighbor_throats(pores=net.pores('one'), mode='xor')
+    conns = net.conns[Ts]
+    mapped_conns = np.vstack((pores1[conns[:, 0]],
+                              pores2[conns[:, 1] - len(pores1)])).T
+    mapped_conns = np.sort(mapped_conns, axis=1)
+    extend(network=network, conns=mapped_conns, labels='stitched')
 
 
 def connect_pores(network, pores1, pores2, labels=[], add_conns=True):
@@ -945,9 +973,10 @@ def find_pore_to_pore_distance(network, pores1=None, pores2=None):
 
     Returns
     -------
-    A distance matrix with ``len(pores1)`` rows and ``len(pores2)`` columns.
-    The distance between pore *i* in ``pores1`` and *j* in ``pores2`` is
-    located at *(i, j)* and *(j, i)* in the distance matrix.
+    dist : array_like
+        A distance matrix with ``len(pores1)`` rows and ``len(pores2)`` columns.
+        The distance between pore *i* in ``pores1`` and *j* in ``pores2`` is
+        located at *(i, j)* and *(j, i)* in the distance matrix.
 
     Notes
     -----
@@ -980,7 +1009,8 @@ def subdivide(network, pores, shape, labels=[]):
 
     Notes
     -----
-    - It works only for cubic networks.
+    It works only for cubic networks, and a check is performed to ensure this
+    is the case.
 
     Examples
     --------
@@ -1221,7 +1251,8 @@ def hull_centroid(points):
 
     Returns
     -------
-    A 3 by 1 Numpy array containing coordinates of the centroid.
+    centroid : array
+        A 3 by 1 Numpy array containing coordinates of the centroid.
 
     """
     dim = [np.unique(points[:, i]).size != 1 for i in range(3)]
@@ -1235,6 +1266,7 @@ def hull_centroid(points):
 def _template_sphere_disc(dim, outer_radius, inner_radius):
     r"""
     This private method generates an image array of a sphere/shell-disc/ring.
+
     It is useful for passing to Cubic networks as a ``template`` to make
     networks with desired shapes.
 
@@ -1251,8 +1283,9 @@ def _template_sphere_disc(dim, outer_radius, inner_radius):
 
     Returns
     -------
-    A Numpy array containing 1's to demarcate the desired shape, and 0's
-    elsewhere.
+    im : array_like
+        A Numpy array containing 1's to demarcate the desired shape, and 0's
+        elsewhere.
 
     """
     rmax = np.array(outer_radius, ndmin=1)
@@ -1278,9 +1311,10 @@ def _template_sphere_disc(dim, outer_radius, inner_radius):
 
 def template_sphere_shell(outer_radius, inner_radius=0, dim=3):
     r"""
-    This method generates an image array of a sphere-shell. It is useful for
-    passing to Cubic networks as a ``template`` to make spherical shaped
-    networks.
+    This method generates an image array of a sphere-shell.
+
+    It is useful for passing to Cubic networks as a ``template`` to make
+    spherical shaped networks.
 
     Parameters
     ----------
@@ -1297,8 +1331,9 @@ def template_sphere_shell(outer_radius, inner_radius=0, dim=3):
 
     Returns
     -------
-    A Numpy array containing 1's to demarcate the sphere-shell, and 0's
-    elsewhere.
+    im : array_like
+        A Numpy array containing 1's to demarcate the sphere-shell, and 0's
+        elsewhere.
 
     """
     img = _template_sphere_disc(dim=dim, outer_radius=outer_radius,
@@ -1308,9 +1343,10 @@ def template_sphere_shell(outer_radius, inner_radius=0, dim=3):
 
 def template_cylinder_annulus(height, outer_radius, inner_radius=0):
     r"""
-    This method generates an image array of a disc-ring.  It is useful for
-    passing to Cubic networks as a ``template`` to make circular-shaped 2D
-    networks.
+    This method generates an image array of a disc-ring.
+
+    It is useful for passing to Cubic networks as a ``template`` to make
+    circular-shaped 2D networks.
 
     Parameters
     ----------
@@ -1326,8 +1362,9 @@ def template_cylinder_annulus(height, outer_radius, inner_radius=0):
 
     Returns
     -------
-    A Numpy array containing 1's to demarcate the disc-ring, and 0's
-    elsewhere.
+    im : array_like
+        A Numpy array containing 1's to demarcate the disc-ring, and 0's
+        elsewhere.
 
     """
 
@@ -1653,7 +1690,9 @@ def iscoplanar(coords):
 
     Returns
     -------
-    A boolean value of whether given points are coplanar (True) or not (False)
+    results : bool
+        A boolean value of whether given points are coplanar (``True``) or
+        not (``False``)
     '''
     coords = np.array(coords, ndmin=1)
     if np.shape(coords)[0] < 3:

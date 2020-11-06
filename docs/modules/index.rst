@@ -16,6 +16,7 @@ Contents:
    physics/index.rst
    materials/index.rst
    algorithms/index.rst
+   algorithms/metrics/index.rst
    topotools/index.rst
    models/index.rst
    io/index.rst

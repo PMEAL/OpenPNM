@@ -173,6 +173,14 @@ class GenericTransport(GenericAlgorithm):
     +-----------------------+-------------------------------------------------+
 
     """
+    def __new__(cls, *args, **kwargs):
+        instance = super(GenericTransport, cls).__new__(cls, *args, **kwargs)
+        # Create some instance attributes
+        instance._A = None
+        instance._b = None
+        instance._pure_A = None
+        instance._pure_b = None
+        return instance
 
     def __init__(self, project=None, network=None, phase=None, settings={},
                  **kwargs):
@@ -186,9 +194,6 @@ class GenericTransport(GenericAlgorithm):
         if network is not None:
             project = network.project
         super().__init__(project=project, **kwargs)
-        # Create some instance attributes
-        self._A = self._pure_A = None
-        self._b = self._pure_b = None
         self['pore.bc_rate'] = np.nan
         self['pore.bc_value'] = np.nan
 

@@ -101,7 +101,7 @@ class ModelsDict(PrintableDict):
 
         return dtree
 
-    def dependency_map(self, ax=None, figsize=None):
+    def dependency_map(self, ax=None, figsize=None, deep=False, style='shell'):
         r"""
         Create a graph of the dependency graph in a decent format
 
@@ -122,7 +122,7 @@ class ModelsDict(PrintableDict):
         import networkx as nx
         import matplotlib.pyplot as plt
 
-        dtree = self.dependency_graph()
+        dtree = self.dependency_graph(deep=deep)
         labels = {}
         for node in dtree.nodes:
             if node.startswith("pore."):
@@ -133,16 +133,17 @@ class ModelsDict(PrintableDict):
 
         if ax is None:
             fig, ax = plt.subplots()
-        fig.set_size_inches(figsize)
+        if figsize is not None:
+            fig.set_size_inches(figsize)
 
-        nx.draw_shell(
-            dtree,
-            labels=labels,
-            with_labels=True,
-            edge_color='lightgrey',
-            font_size=12,
-            width=3.0,
-        )
+        style = style.replace('draw_', '')
+        method = getattr(nx, 'draw_' + style)
+        method(dtree,
+               labels=labels,
+               with_labels=True,
+               edge_color='lightgrey',
+               font_size=12,
+               width=3.0)
 
         ax = plt.gca()
         ax.margins(x=0.2, y=0.02)
@@ -184,7 +185,7 @@ class ModelWrapper(dict):
     def __str__(self):
         horizontal_rule = '―' * 78
         lines = [horizontal_rule]
-        strg = '{0:<25s} {2:<25s} {2}'
+        strg = '{0:<25s} {1:<25s} {2}'
         lines.append(strg.format('Property Name', 'Parameter', 'Value'))
         lines.append(horizontal_rule)
         temp = self.copy()
@@ -385,7 +386,8 @@ class ModelsMixin:
         # Only regenerate model if regen_mode is correct
         if self.settings['freeze_models']:
             # Don't run ANY models if freeze_models is set to True
-            pass
+            logger.warning(prop + ' was not run since freeze_models ' +
+                           'is set to True in object settings')
         elif regen_mode == 'constant':
             # Only regenerate if data not already in dictionary
             if prop not in self.keys():
