@@ -439,25 +439,6 @@ def intersecting_cones(
 
     """
     raise NotImplementedError
-    network = target.network
-    throats = target.throats(target=network)
-    P12 = network.conns[throats]
-
-    R1, R2 = 0.5 * target[pore_diameter][P12].T
-    Rt = 0.5 * target[throat_diameter][throats]
-    Lt = 0.
-    L1 = Lt - R1
-    L2 = Lt - R2
-    alpha1 = (R1 - Rt) / L1
-    beta1 = 1 / (1 / (Rt ** 3) - 1 / (R1 ** 3))
-    alpha2 = (R2 - Rt) / L2
-    beta2 = 1 / (1 / (Rt ** 3) - 1 / (R2 ** 3))
-
-    F1 = (3 * alpha1 * _np.pi / 8) * beta1
-    F2 = (3 * alpha2 * _np.pi / 8) * beta2
-    Ft = _np.pi * Rt ** 4 / (8 * Lt)
-
-    return {"pore1": F1, "throat": Ft, "pore2": F2}
 
 
 def intersecting_trapezoids(
