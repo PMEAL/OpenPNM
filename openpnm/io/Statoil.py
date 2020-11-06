@@ -13,13 +13,13 @@ class Statoil(GenericIO):
     The StatOil format is used by the Maximal Ball network extraction code of
     the Imperial College London group
 
-    This class can be used to load and work with those networks.  Numerous
+    This class can be used to load and work with those networks. Numerous
     datasets are available for download from the group's
     `website <http://tinyurl.com/zurko4q>`_.
 
     The so-called 'Statoil' format consists of 4 different files in a single
-    folder.  The data is stored in columns with each corresponding to a
-    specific property.  Headers are not provided in the files, so one must
+    folder. The data is stored in columns with each corresponding to a
+    specific property. Headers are not provided in the files, so one must
     refer to various theses and documents to interpret their meaning.
     """
 
@@ -34,8 +34,14 @@ class Statoil(GenericIO):
         d = 'network.' + network.name + '.throat.shape_factor'
         e = 'network.' + network.name + '.throat.length'
         dft_temp = dft_ind.join(dft[[a, b, c, e]])
+        temp = dft_temp.T
+        temp.insert(0, 'top row', network.Nt)
+        dft_temp = temp.T
+        dft_temp = dft_temp.astype({a: int, b: int, 0: int})
         dft_temp.to_csv(filename + '_link1.dat', sep='\t',
-                        header=True, index=False)
+                        header=False, index=False)
+
+        f = open(filename + '_link1.dat')
 
     @classmethod
     def load(cls, *args, **kwargs):
