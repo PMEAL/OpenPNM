@@ -1,0 +1,300 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Workspace Manager and Project Container &mdash; OpenPNM</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> OpenPNM
+          
+
+          
+            
+            <img src="../_static/logo.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installing OpenPNM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quick_start.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../userguide.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/index.html"><strong>Module Reference</strong></a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">OpenPNM</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Workspace Manager and Project Container</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="workspace-manager-and-project-container">
+<span id="workspace"></span><h1><a class="toc-backref" href="#id1">Workspace Manager and Project Container</a><a class="headerlink" href="#workspace-manager-and-project-container" title="Permalink to this headline">¶</a></h1>
+<div class="contents topic" id="page-contents">
+<p class="topic-title">Page Contents</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#workspace-manager-and-project-container" id="id1">Workspace Manager and Project Container</a></p>
+<ul>
+<li><p><a class="reference internal" href="#the-workspace" id="id2">The Workspace</a></p></li>
+<li><p><a class="reference internal" href="#the-project" id="id3">The Project</a></p></li>
+<li><p><a class="reference internal" href="#using-workspace-and-project-objects" id="id4">Using Workspace and Project Objects</a></p>
+<ul>
+<li><p><a class="reference internal" href="#managing-objects-within-a-project" id="id5">Managing Objects Within a Project</a></p></li>
+<li><p><a class="reference internal" href="#managing-projects-within-a-workspace" id="id6">Managing Projects Within a Workspace</a></p></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="the-workspace">
+<h2><a class="toc-backref" href="#id2">The Workspace</a><a class="headerlink" href="#the-workspace" title="Permalink to this headline">¶</a></h2>
+<p>OpenPNM includes a <strong>Workspace</strong> Manager object that performs many of the functions found in the <em>menu bar</em> of a typical application’s GUI, such as saving and loading sessions.</p>
+<p>The <strong>Workspace</strong> class is a <a class="reference external" href="https://en.wikipedia.org/wiki/Singleton_pattern">Singleton</a> in Object Oriented Programming jargon, meaning that only ONE instance can exist at any given time.  In other words, each time a Singleton is instantiated it returns the already existing object if one already exists.  This behavior is handy since it means you can instantiate the <strong>Workspace</strong> at any time, from anywhere in your workflow, and you’ll have access to the one and only Workspace object.</p>
+</div>
+<div class="section" id="the-project">
+<h2><a class="toc-backref" href="#id3">The Project</a><a class="headerlink" href="#the-project" title="Permalink to this headline">¶</a></h2>
+<p>Another workflow management tool is the Project object.  A Project defines a single simulation, which would contain a network, some geometry, phase and physics objects, and any simulations.  The main roles of the Project is to group related objects together and to provide additional administrative tools.</p>
+<p>The Project object is a Python <code class="docutils literal notranslate"><span class="pre">list</span></code> that has been subclassed to have many additional methods and functions, purging an object or finding a list of all phase object in the current project.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Each Project can contain one and only one Network.  Since every other object must be associated with a single network, so it follows that there is only one network per project.  All object initializations can accept either a Network or a Project.</p>
+</div>
+</div>
+<div class="section" id="using-workspace-and-project-objects">
+<h2><a class="toc-backref" href="#id4">Using Workspace and Project Objects</a><a class="headerlink" href="#using-workspace-and-project-objects" title="Permalink to this headline">¶</a></h2>
+<p>The Workspace and the Project work together.  The Workspace is the highest level and it tracks all of the open Projects.  Projects provide a lower level of oversight, with each Project keeping of track of the specific OpenPNM objects for each simulation.</p>
+<p>The following illustrates the usage of the Workspace and Project objects.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">openpnm</span> <span class="k">as</span> <span class="nn">op</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ws</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">Workspace</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ws</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>  <span class="c1"># Clear workspace of any pre-existing objects</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ws</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+<span class="go">dict_keys([])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Create an empty Project</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">proj1</span> <span class="o">=</span> <span class="n">ws</span><span class="o">.</span><span class="n">new_project</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;one&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Ensure Project is empty</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">proj1</span>
+<span class="go">[]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Now create a network and associate it with proj1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pn1</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Cubic</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="n">project</span><span class="o">=</span><span class="n">proj1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pn1</span> <span class="ow">in</span> <span class="n">proj1</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<p>Each Project can only have <em>one</em> Network.  If you try to create a second
+Network with the same Project, OpenPNM will complain.</p>
+<p>Conversely, since each Network <em>must</em> be associated with a Project, one is
+automatically created if <em>not</em> specified:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">pn2</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Cubic</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">proj2</span> <span class="o">=</span> <span class="n">pn2</span><span class="o">.</span><span class="n">project</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">proj1</span> <span class="o">==</span> <span class="n">proj2</span>
+<span class="go">False</span>
+</pre></div>
+</div>
+<p>Now that we’ve successfully created 2 Networks, there will be 2 Projects open
+in the Workspace:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">ws</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+<span class="go">dict_keys([&#39;one&#39;, &#39;proj_01&#39;])</span>
+</pre></div>
+</div>
+<p>The second Project was created automatically, and given a default name of
+‘proj_01’.</p>
+<p>When adding other objects, either the Network or the Project can be specified,
+which is possible since there is only one Network per Project:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">geo1</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">GenericGeometry</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn1</span><span class="p">,</span> <span class="n">pores</span><span class="o">=</span><span class="n">pn1</span><span class="o">.</span><span class="n">Ps</span><span class="p">,</span> <span class="n">throats</span><span class="o">=</span><span class="n">pn1</span><span class="o">.</span><span class="n">Ts</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;geo_01&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">geo2</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">GenericGeometry</span><span class="p">(</span><span class="n">project</span><span class="o">=</span><span class="n">proj2</span><span class="p">,</span> <span class="n">pores</span><span class="o">=</span><span class="n">pn2</span><span class="o">.</span><span class="n">Ps</span><span class="p">,</span> <span class="n">throats</span><span class="o">=</span><span class="n">pn2</span><span class="o">.</span><span class="n">Ts</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;geo_02&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Projects can fetched from the Workspace by name, and renamed if
+desired:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">proj2</span> <span class="o">=</span> <span class="n">ws</span><span class="p">[</span><span class="s1">&#39;proj_01&#39;</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">proj2</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;two&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">ws</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+<span class="go">dict_keys([&#39;one&#39;, &#39;two&#39;])</span>
+</pre></div>
+</div>
+<div class="section" id="managing-objects-within-a-project">
+<h3><a class="toc-backref" href="#id5">Managing Objects Within a Project</a><a class="headerlink" href="#managing-objects-within-a-project" title="Permalink to this headline">¶</a></h3>
+<p>The Project object possesses several methods for dealing with the OpenPNM objects it contains.  One of the main uses of the Project is to lookup associated objects.  For instance, given a Physics object (<cite>phys</cite>), you can find which Phase it was associated with using:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">proj</span> <span class="o">=</span> <span class="n">phys</span><span class="o">.</span><span class="n">project</span>
+<span class="n">phase</span> <span class="o">=</span> <span class="n">proj</span><span class="o">.</span><span class="n">find_phase</span><span class="p">(</span><span class="n">physics</span><span class="o">=</span><span class="n">phys</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Note that the Project with which each object is associated can be reached from its <cite>project</cite> attribute.</p>
+<p>In addition to these lookup methods (others are <cite>find_physics</cite> and <cite>find_geometry</cite>) the project also has the ability to save and load single objects, as well removing objects from the Project.  This latter ability is worth explaining in more detail.  Consider the Grid introduced when explaining <span class="xref std std-ref">overall_design</span>.  When removing an object, it can either result in an empty space on the Grid, or it may be desirable to remove the entire associated row or column, respectively.  The <cite>purge_object</cite> method, therefore, has the ability to remove an isolated object or all of its associated objects.</p>
+<p>When an object is purged, not only is it removed from the Project list, but all references to it in other objects in the form of labels (e.g. net[‘pore.geo_01’]) will be removed.</p>
+</div>
+<div class="section" id="managing-projects-within-a-workspace">
+<h3><a class="toc-backref" href="#id6">Managing Projects Within a Workspace</a><a class="headerlink" href="#managing-projects-within-a-workspace" title="Permalink to this headline">¶</a></h3>
+<p>The Workspace object possesses methods for working dealing with Project objects, such as saving, loading, closing, and copying them.</p>
+<p>Projects are saved with a <cite>.pnm</cite> file format, and this is done using the Python <a class="reference external" href="https://pymotw.com/3/pickle/index.html">pickle</a> library for serializing objects.  The saved file is actually a <cite>dictionary</cite> that represents a subset of the Workspace, so loading a <cite>.pnm</cite> file is equivalent to unpickling the file then using the Workspace’s <cite>update</cite> method to add the contents.  If the contents of the <cite>.pnm</cite> file are a list rather than a dictionary, this also works, so if you manually save a Project as a list (rather then using <cite>save_project</cite>) its still possible to load it using <cite>load_project</cite>.</p>
+<p>Another important function of the Workspace is <cite>clone_project</cite>.  As the name suggests, this creates an exact duplicate of a Project and all its objects, but they are unique in memory.  This is useful for creating sub-networks of a master Network to perform small, quick calculations on.</p>
+<p>.</p>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020 OpenPNM Team
+
+    </p>
+  </div> 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

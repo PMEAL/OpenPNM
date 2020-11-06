@@ -1,0 +1,283 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>GenericPhase &mdash; OpenPNM</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Air" href="air.html" />
+    <link rel="prev" title="Phases" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home" alt="Documentation Home"> OpenPNM
+          
+
+          
+            
+            <img src="../../_static/logo.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installing OpenPNM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quick_start.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../userguide.html">Examples</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html"><strong>Module Reference</strong></a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../core/index.html">Core</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../network/index.html">Network</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../geometry/index.html">Geometry</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">Phases</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="index.html#module-openpnm.phases">Overview of Module</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="index.html#links-to-detailed-class-documentation">Links to Detailed Class Documentation</a><ul class="current">
+<li class="toctree-l4 current"><a class="current reference internal" href="#">GenericPhase</a></li>
+<li class="toctree-l4"><a class="reference internal" href="air.html">Air</a></li>
+<li class="toctree-l4"><a class="reference internal" href="water.html">Water</a></li>
+<li class="toctree-l4"><a class="reference internal" href="mercury.html">Mercury</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../physics/index.html">Physics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../materials/index.html">Materials</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../algorithms/index.html">Algorithms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../algorithms/metrics/index.html">Metrics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../topotools/index.html">Topotools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../models/index.html">Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../io/index.html">IO</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../utils/index.html">Utilities</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">OpenPNM</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html"><strong>Module Reference</strong></a> &raquo;</li>
+        
+          <li><a href="index.html">Phases</a> &raquo;</li>
+        
+      <li>GenericPhase</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="genericphase">
+<span id="generic-phase-api"></span><h1>GenericPhase<a class="headerlink" href="#genericphase" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt id="openpnm.phases.GenericPhase">
+<em class="property">class </em><code class="sig-prename descclassname">openpnm.phases.</code><code class="sig-name descname">GenericPhase</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/phases/GenericPhase.html#GenericPhase"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.phases.GenericPhase" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">openpnm.core.Base.Base</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">openpnm.core.ModelsMixin.ModelsMixin</span></code></p>
+<p>This generic class is meant as a starter for custom Phase objects</p>
+<p>This class produces a blank-slate object with no pore-scale models for
+calculating any thermophysical properties.  Users must add models and
+specify parameters for all the properties they require.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>network</strong> (<em>OpenPNM network object</em>) – The network with which this object is associated</p></li>
+<li><p><strong>project</strong> (<em>OpenPNM Project object</em><em>, </em><em>optional</em>) – The Project with which the object should be assigned.  If not supplied
+then a new Project is created</p></li>
+<li><p><strong>name</strong> (<em>string</em><em>, </em><em>optional</em>) – The unique name of the object.  If not given one will be generated.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<p>Create a new empty phase:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">openpnm</span> <span class="k">as</span> <span class="nn">op</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pn</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Cubic</span><span class="p">([</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">phase</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">phases</span><span class="o">.</span><span class="n">GenericPhase</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>And add a model:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">phase</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;pore.molar_density&#39;</span><span class="p">,</span>
+<span class="gp">... </span>                <span class="n">model</span><span class="o">=</span><span class="n">op</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">phases</span><span class="o">.</span><span class="n">molar_density</span><span class="o">.</span><span class="n">ideal_gas</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Now confirm that the model was added and data was calculated.  The
+<code class="docutils literal notranslate"><span class="pre">models</span></code> attribute can be printed:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">phase</span><span class="o">.</span><span class="n">models</span><span class="p">)</span>
+<span class="go">―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――</span>
+<span class="go">#   Property Name                       Parameter                 Value</span>
+<span class="go">―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――</span>
+<span class="go">1   pore.molar_density                  model:                    ideal_gas</span>
+<span class="go">                                        pressure:                 pore.pressure</span>
+<span class="go">                                        temperature:              pore.temperature</span>
+<span class="go">                                        regeneration mode:        normal</span>
+<span class="go">―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――</span>
+</pre></div>
+</div>
+<p>And the Phase itself has a nice printout using <code class="docutils literal notranslate"><span class="pre">print(phase)</span></code>.</p>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="air.html" class="btn btn-neutral float-right" title="Air" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="index.html" class="btn btn-neutral float-left" title="Phases" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020 OpenPNM Team
+
+    </p>
+  </div> 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

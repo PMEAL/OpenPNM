@@ -1,0 +1,275 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>openpnm.network.CubicTemplate &mdash; OpenPNM</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home" alt="Documentation Home"> OpenPNM
+          
+
+          
+            
+            <img src="../../../_static/logo.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installing OpenPNM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quick_start.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../userguide.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/index.html"><strong>Module Reference</strong></a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">OpenPNM</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>openpnm.network.CubicTemplate</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for openpnm.network.CubicTemplate</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">openpnm.network</span> <span class="kn">import</span> <span class="n">Cubic</span>
+<span class="kn">from</span> <span class="nn">openpnm</span> <span class="kn">import</span> <span class="n">topotools</span>
+<span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">logging</span>
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="CubicTemplate"><a class="viewcode-back" href="../../../modules/network/cubic_template.html#openpnm.network.CubicTemplate">[docs]</a><span class="k">class</span> <span class="nc">CubicTemplate</span><span class="p">(</span><span class="n">Cubic</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Simple cubic lattice with arbitrary domain shape specified by a template</span>
+<span class="sd">    image</span>
+
+<span class="sd">    The class creates a standard Cubic network the same shape as the provided</span>
+<span class="sd">    image, then trims pores from the network that are not in the mask.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    template : array_like</span>
+<span class="sd">        The array (image) describing the desired shape of the domain.  All</span>
+<span class="sd">        locations in the image that are marked as ``True`` are kept while the</span>
+<span class="sd">        rest of trimmed to yeild the shape.</span>
+
+<span class="sd">    spacing : array_like, optional</span>
+<span class="sd">        The spacing between pore centers in each direction. If not given, then</span>
+<span class="sd">        [1, 1, 1] is assumed.</span>
+
+<span class="sd">    name : string</span>
+<span class="sd">        An optional name for the object to help identify it.  If not given,</span>
+<span class="sd">        one will be generated.</span>
+
+<span class="sd">    project : OpenPNM Project object, optional</span>
+<span class="sd">        Each OpenPNM object must be part of a *Project*.  If none is supplied</span>
+<span class="sd">        then one will be created and this Network will be automatically</span>
+<span class="sd">        assigned to it.  To create a *Project* use ``openpnm.Project()``.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The other arguments are the same as ``Cubic`` except that ``shape`` is</span>
+<span class="sd">    inferred from the ``template`` image.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    The following methods in ``topotools`` can help generate template images:</span>
+
+<span class="sd">    template_cylinder_annulus</span>
+<span class="sd">    template_sphere_shell</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import openpnm as op</span>
+<span class="sd">    &gt;&gt;&gt; im = op.topotools.template_cylinder_annulus(15, 10, 5)</span>
+<span class="sd">    &gt;&gt;&gt; pn = op.network.CubicTemplate(template=im)</span>
+
+<span class="sd">    And it can be plotted for quick visualization using:</span>
+
+<span class="sd">    &gt;&gt;&gt; fig = op.topotools.plot_connections(network=pn)</span>
+
+<span class="sd">    .. image:: /../docs/static/images/cubic_template_network.png</span>
+<span class="sd">        :align: center</span>
+
+<span class="sd">    For larger networks and more control over presentation use `Paraview</span>
+<span class="sd">    &lt;http://www.paraview.org&gt;`_.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">template</span><span class="p">,</span> <span class="n">spacing</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">template</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_3d</span><span class="p">(</span><span class="n">template</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">template</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">spacing</span><span class="o">=</span><span class="n">spacing</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">coords</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unravel_index</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">template</span><span class="o">.</span><span class="n">size</span><span class="p">),</span> <span class="n">template</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+        <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.template_coords&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span><span class="n">coords</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
+        <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.template_indices&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Ps</span>
+        <span class="n">topotools</span><span class="o">.</span><span class="n">trim</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">pores</span><span class="o">=</span><span class="n">template</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="c1"># Add &quot;internal_surface&quot; label to &quot;fake&quot; surface pores!</span>
+        <span class="n">ndims</span> <span class="o">=</span> <span class="n">topotools</span><span class="o">.</span><span class="n">dimensionality</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+        <span class="n">max_neighbors</span> <span class="o">=</span> <span class="mi">6</span> <span class="k">if</span> <span class="n">ndims</span> <span class="o">==</span> <span class="mi">3</span> <span class="k">else</span> <span class="mi">4</span>
+        <span class="n">num_neighbors</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_adjacency_matrix</span><span class="p">(</span><span class="n">fmt</span><span class="o">=</span><span class="s2">&quot;csr&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">indptr</span><span class="p">)</span>
+        <span class="n">mask_surface</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="s2">&quot;pore.surface&quot;</span><span class="p">]</span>
+        <span class="n">mask_internal_surface</span> <span class="o">=</span> <span class="p">(</span><span class="n">num_neighbors</span> <span class="o">&lt;</span> <span class="n">max_neighbors</span><span class="p">)</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">mask_surface</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_label</span><span class="p">(</span><span class="s2">&quot;pore.internal_surface&quot;</span><span class="p">,</span> <span class="n">pores</span><span class="o">=</span><span class="n">mask_internal_surface</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020 OpenPNM Team
+
+    </p>
+  </div> 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

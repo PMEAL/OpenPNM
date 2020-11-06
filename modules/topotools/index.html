@@ -1,0 +1,1259 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Topotools &mdash; OpenPNM</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Models" href="../models/index.html" />
+    <link rel="prev" title="RelativePermeability" href="../algorithms/metrics/relative_permeability.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home" alt="Documentation Home"> OpenPNM
+          
+
+          
+            
+            <img src="../../_static/logo.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installing OpenPNM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quick_start.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../userguide.html">Examples</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html"><strong>Module Reference</strong></a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../core/index.html">Core</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../network/index.html">Network</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../geometry/index.html">Geometry</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../phases/index.html">Phases</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../physics/index.html">Physics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../materials/index.html">Materials</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../algorithms/index.html">Algorithms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../algorithms/metrics/index.html">Metrics</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Topotools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../models/index.html">Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../io/index.html">IO</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../utils/index.html">Utilities</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">OpenPNM</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html"><strong>Module Reference</strong></a> &raquo;</li>
+        
+      <li>Topotools</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-openpnm.topotools">
+<span id="topotools"></span><span id="topotools-index"></span><h1>Topotools<a class="headerlink" href="#module-openpnm.topotools" title="Permalink to this headline">¶</a></h1>
+<p><strong>openpnm.topotools</strong></p>
+<hr class="docutils" />
+<p>This module contains a selection of functions that deal specifically with
+network topology.</p>
+<dl class="py function">
+<dt id="openpnm.topotools.add_boundary_pores">
+<code class="sig-prename descclassname">openpnm.topotools.</code><code class="sig-name descname">add_boundary_pores</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">network</span></em>, <em class="sig-param"><span class="n">pores</span></em>, <em class="sig-param"><span class="n">offset</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">move_to</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">apply_label</span><span class="o">=</span><span class="default_value">'boundary'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/topotools/topotools.html#add_boundary_pores"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.topotools.add_boundary_pores" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method uses <code class="docutils literal notranslate"><span class="pre">clone_pores</span></code> to clone the input pores, then shifts
+them the specified amount and direction, then applies the given label.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pores</strong> (<em>array_like</em>) – List of pores to offset.  If no pores are specified, then it
+assumes that all surface pores are to be cloned.</p></li>
+<li><p><strong>offset</strong> (<em>3 x 1 array</em>) – The distance in vector form which the cloned boundary pores should
+be offset.  Either this, or <code class="docutils literal notranslate"><span class="pre">move_to</span></code> must be specified.</p></li>
+<li><p><strong>move_to</strong> (<em>3 x 1 array</em>) – The location to move the boundary pores to.  A value of <code class="docutils literal notranslate"><span class="pre">None</span></code>
+indicates that no translation should be applied in that axis.  For
+instance, <code class="docutils literal notranslate"><span class="pre">[None,</span> <span class="pre">None,</span> <span class="pre">0]</span></code> indicates that the boundary pores should
+moved along the z-axis to the specified location.  Either this or
+<code class="docutils literal notranslate"><span class="pre">offset</span></code> must be specified.</p></li>
+<li><p><strong>apply_label</strong> (<em>string</em>) – This label is applied to the boundary pores.  Default is
+‘boundary’.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">openpnm</span> <span class="k">as</span> <span class="nn">op</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pn</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Cubic</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">pn</span><span class="o">.</span><span class="n">Np</span><span class="p">)</span>  <span class="c1"># Confirm initial Network size</span>
+<span class="go">125</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Ps</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;top&#39;</span><span class="p">)</span>  <span class="c1"># Select pores on top face</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pn</span><span class="o">.</span><span class="n">add_boundary_pores</span><span class="p">(</span><span class="n">labels</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;top&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">pn</span><span class="o">.</span><span class="n">Np</span><span class="p">)</span>  <span class="c1"># Confirm addition of 25 new pores</span>
+<span class="go">150</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt id="id0">
+<code class="sig-prename descclassname">openpnm.topotools.</code><code class="sig-name descname">add_boundary_pores</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">network</span></em>, <em class="sig-param"><span class="n">pores</span></em>, <em class="sig-param"><span class="n">offset</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">move_to</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">apply_label</span><span class="o">=</span><span class="default_value">'boundary'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/topotools/topotools.html#add_boundary_pores"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#id0" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method uses <code class="docutils literal notranslate"><span class="pre">clone_pores</span></code> to clone the input pores, then shifts
+them the specified amount and direction, then applies the given label.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pores</strong> (<em>array_like</em>) – List of pores to offset.  If no pores are specified, then it
+assumes that all surface pores are to be cloned.</p></li>
+<li><p><strong>offset</strong> (<em>3 x 1 array</em>) – The distance in vector form which the cloned boundary pores should
+be offset.  Either this, or <code class="docutils literal notranslate"><span class="pre">move_to</span></code> must be specified.</p></li>
+<li><p><strong>move_to</strong> (<em>3 x 1 array</em>) – The location to move the boundary pores to.  A value of <code class="docutils literal notranslate"><span class="pre">None</span></code>
+indicates that no translation should be applied in that axis.  For
+instance, <code class="docutils literal notranslate"><span class="pre">[None,</span> <span class="pre">None,</span> <span class="pre">0]</span></code> indicates that the boundary pores should
+moved along the z-axis to the specified location.  Either this or
+<code class="docutils literal notranslate"><span class="pre">offset</span></code> must be specified.</p></li>
+<li><p><strong>apply_label</strong> (<em>string</em>) – This label is applied to the boundary pores.  Default is
+‘boundary’.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">openpnm</span> <span class="k">as</span> <span class="nn">op</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pn</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Cubic</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">pn</span><span class="o">.</span><span class="n">Np</span><span class="p">)</span>  <span class="c1"># Confirm initial Network size</span>
+<span class="go">125</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Ps</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;top&#39;</span><span class="p">)</span>  <span class="c1"># Select pores on top face</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pn</span><span class="o">.</span><span class="n">add_boundary_pores</span><span class="p">(</span><span class="n">labels</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;top&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">pn</span><span class="o">.</span><span class="n">Np</span><span class="p">)</span>  <span class="c1"># Confirm addition of 25 new pores</span>
+<span class="go">150</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt id="openpnm.topotools.clone_pores">
+<code class="sig-prename descclassname">openpnm.topotools.</code><code class="sig-name descname">clone_pores</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">network</span></em>, <em class="sig-param"><span class="n">pores</span></em>, <em class="sig-param"><span class="n">labels</span><span class="o">=</span><span class="default_value">['clone']</span></em>, <em class="sig-param"><span class="n">mode</span><span class="o">=</span><span class="default_value">'parents'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/topotools/topotools.html#clone_pores"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.topotools.clone_pores" title="Permalink to this definition">¶</a></dt>
+<dd><p>Clones the specified pores and adds them to the network</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>network</strong> (<em>OpenPNM Network Object</em>) – The Network object to which the new pores are to be added</p></li>
+<li><p><strong>pores</strong> (<em>array_like</em>) – List of pores to clone</p></li>
+<li><p><strong>labels</strong> (<em>string</em><em>, or </em><em>list of strings</em>) – The labels to apply to the clones, default is ‘clone’</p></li>
+<li><p><strong>mode</strong> (<em>string</em>) – <p>Controls the connections between parents and clones.  Options are:</p>
+<ul>
+<li><p>’parents’: (Default) Each clone is connected only to its parent</p></li>
+<li><dl class="simple">
+<dt>’siblings’: Clones are only connected to each other in the same</dt><dd><p>manner as parents were connected</p>
+</dd>
+</dl>
+</li>
+<li><p>’isolated’: No connections between parents or siblings</p></li>
+</ul>
+</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="openpnm.topotools.connect_pores">
+<code class="sig-prename descclassname">openpnm.topotools.</code><code class="sig-name descname">connect_pores</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">network</span></em>, <em class="sig-param"><span class="n">pores1</span></em>, <em class="sig-param"><span class="n">pores2</span></em>, <em class="sig-param"><span class="n">labels</span><span class="o">=</span><span class="default_value">[]</span></em>, <em class="sig-param"><span class="n">add_conns</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/topotools/topotools.html#connect_pores"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.topotools.connect_pores" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the possible connections between two groups of pores, and optionally
+makes the connections.</p>
+<p>See <code class="docutils literal notranslate"><span class="pre">Notes</span></code> for advanced usage.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>network</strong> (<em>OpenPNM Network Object</em>) – </p></li>
+<li><p><strong>pores1</strong> (<em>array_like</em>) – The first group of pores on the network</p></li>
+<li><p><strong>pores2</strong> (<em>array_like</em>) – The second group of pores on the network</p></li>
+<li><p><strong>labels</strong> (<em>list of strings</em>) – The labels to apply to the new throats.  This argument is only needed
+if <code class="docutils literal notranslate"><span class="pre">add_conns</span></code> is True.</p></li>
+<li><p><strong>add_conns</strong> (<em>bool</em>) – Indicates whether the connections should be added to the supplied
+network (default is True).  Otherwise, the connections are returned
+as an Nt x 2 array that can be passed directly to <code class="docutils literal notranslate"><span class="pre">extend</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>(1) The method also works if <code class="docutils literal notranslate"><span class="pre">pores1</span></code> and <code class="docutils literal notranslate"><span class="pre">pores2</span></code> are list of lists,
+in which case it consecutively connects corresponding members of the two
+lists in a 1-to-1 fashion. Example: pores1 = [[0, 1], [2, 3]] and
+pores2 = [[5], [7, 9]] leads to creation of the following connections:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">0</span> <span class="o">--&gt;</span> <span class="mi">5</span>     <span class="mi">2</span> <span class="o">--&gt;</span> <span class="mi">7</span>     <span class="mi">3</span> <span class="o">--&gt;</span> <span class="mi">7</span>
+<span class="mi">1</span> <span class="o">--&gt;</span> <span class="mi">5</span>     <span class="mi">2</span> <span class="o">--&gt;</span> <span class="mi">9</span>     <span class="mi">3</span> <span class="o">--&gt;</span> <span class="mi">9</span>
+</pre></div>
+</div>
+<p>(2) If you want to use the batch functionality, make sure that each element
+within <code class="docutils literal notranslate"><span class="pre">pores1</span></code> and <code class="docutils literal notranslate"><span class="pre">pores2</span></code> are of type list or ndarray.</p>
+<p>(3) It creates the connections in a format which is acceptable by
+the default OpenPNM connections (‘throat.conns’) and either adds them to
+the network or returns them.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">openpnm</span> <span class="k">as</span> <span class="nn">op</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pn</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Cubic</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pn</span><span class="o">.</span><span class="n">Nt</span>
+<span class="go">300</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">op</span><span class="o">.</span><span class="n">topotools</span><span class="o">.</span><span class="n">connect_pores</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">,</span> <span class="n">pores1</span><span class="o">=</span><span class="p">[</span><span class="mi">22</span><span class="p">,</span> <span class="mi">32</span><span class="p">],</span>
+<span class="gp">... </span>                           <span class="n">pores2</span><span class="o">=</span><span class="p">[</span><span class="mi">16</span><span class="p">,</span> <span class="mi">80</span><span class="p">,</span> <span class="mi">68</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pn</span><span class="o">.</span><span class="n">Nt</span>
+<span class="go">306</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pn</span><span class="p">[</span><span class="s1">&#39;throat.conns&#39;</span><span class="p">][</span><span class="mi">300</span><span class="p">:</span><span class="mi">306</span><span class="p">]</span>
+<span class="go">array([[16, 22],</span>
+<span class="go">       [22, 80],</span>
+<span class="go">       [22, 68],</span>
+<span class="go">       [16, 32],</span>
+<span class="go">       [32, 80],</span>
+<span class="go">       [32, 68]])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt id="openpnm.topotools.extend">
+<code class="sig-prename descclassname">openpnm.topotools.</code><code class="sig-name descname">extend</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">network</span></em>, <em class="sig-param"><span class="n">coords</span><span class="o">=</span><span class="default_value">[]</span></em>, <em class="sig-param"><span class="n">conns</span><span class="o">=</span><span class="default_value">[]</span></em>, <em class="sig-param"><span class="n">labels</span><span class="o">=</span><span class="default_value">[]</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/topotools/topotools.html#extend"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.topotools.extend" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add pores or throats to the network from a list of coords or conns.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>network</strong> (<em>OpenPNM Network Object</em>) – The network to which pores or throats should be added</p></li>
+<li><p><strong>coords</strong> (<em>array_like</em>) – The coordinates of the pores to add.  These will be appended to the
+‘pore.coords’ array so should be of shape N-by-3, where N is the
+number of pores in the list.</p></li>
+<li><p><strong>conns</strong> (<em>array_like</em>) – The throat connections to add.  These will be appended to the
+‘throat.conns’ array so should be of shape N-by-2.  Note that the
+numbering must point to existing pores.</p></li>
+<li><p><strong>labels</strong> (<em>string</em><em>, or </em><em>list of strings</em><em>, </em><em>optional</em>) – A list of labels to apply to the new pores and throats</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="openpnm.topotools.find_path">
+<code class="sig-prename descclassname">openpnm.topotools.</code><code class="sig-name descname">find_path</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">network</span></em>, <em class="sig-param"><span class="n">pore_pairs</span></em>, <em class="sig-param"><span class="n">weights</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/topotools/perctools.html#find_path"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.topotools.find_path" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find the shortest path between pairs of pores.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>network</strong> (<em>OpenPNM Network Object</em>) – The Network object on which the search should be performed</p></li>
+<li><p><strong>pore_pairs</strong> (<em>array_like</em>) – An N x 2 array containing N pairs of pores for which the shortest
+path is sought.</p></li>
+<li><p><strong>weights</strong> (<em>array_like</em><em>, </em><em>optional</em>) – An Nt-long list of throat weights for the search.  Typically this
+would be the throat lengths, but could also be used to represent
+the phase configuration.  If no weights are given then the
+standard topological connections of the Network are used.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><em>A dictionary containing both the pores and throats that define the</em></p></li>
+<li><p><em>shortest path connecting each pair of input pores.</em></p></li>
+</ul>
+</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The shortest path is found using Dijkstra’s algorithm included in the
+scipy.sparse.csgraph module</p>
+<p>TODO: The returned throat path contains the correct values, but not
+necessarily in the true order</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">openpnm</span> <span class="k">as</span> <span class="nn">op</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pn</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Cubic</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">topotools</span><span class="o">.</span><span class="n">find_path</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">,</span> <span class="n">pore_pairs</span><span class="o">=</span><span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="p">[</span><span class="s1">&#39;pores&#39;</span><span class="p">]</span>
+<span class="go">[array([0, 1, 4]), array([ 0,  1, 10])]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="p">[</span><span class="s1">&#39;throats&#39;</span><span class="p">]</span>
+<span class="go">[array([ 0, 19]), array([ 0, 37])]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt id="openpnm.topotools.find_surface_pores">
+<code class="sig-prename descclassname">openpnm.topotools.</code><code class="sig-name descname">find_surface_pores</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">network</span></em>, <em class="sig-param"><span class="n">markers</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">label</span><span class="o">=</span><span class="default_value">'surface'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/topotools/topotools.html#find_surface_pores"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.topotools.find_surface_pores" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find the pores on the surface of the domain by performing a Delaunay
+triangulation between the network pores and some external <code class="docutils literal notranslate"><span class="pre">markers</span></code>. All
+pores connected to these external marker points are considered surface
+pores.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>network</strong> (<em>OpenPNM Network Object</em>) – The network for which the surface pores are to be found</p></li>
+<li><p><strong>markers</strong> (<em>array_like</em>) – <p>3 x N array of the marker coordinates to use in the triangulation.  The
+labeling is performed in one step, so all points are added, and then
+any pores connected to at least one marker is given the provided label.
+By default, this function will automatically generate 6 points outside
+each axis of the network domain.</p>
+<p>Users may wish to specify a single external marker point and provide an
+appropriate label in order to identify specific faces.  For instance,
+the marker may be <em>above</em> the domain, and the label might be
+‘top_surface’.</p>
+</p></li>
+<li><p><strong>label</strong> (<em>string</em>) – The label to apply to the pores.  The default is ‘surface’.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This function does not check whether the given markers actually lie outside
+the domain, allowing the labeling of <em>internal</em> sufaces.</p>
+<p>If this method fails to mark some surface pores, consider sending more
+markers on each face.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">openpnm</span> <span class="k">as</span> <span class="nn">op</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">net</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Cubic</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">op</span><span class="o">.</span><span class="n">topotools</span><span class="o">.</span><span class="n">find_surface_pores</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">net</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">net</span><span class="o">.</span><span class="n">num_pores</span><span class="p">(</span><span class="s1">&#39;surface&#39;</span><span class="p">)</span>
+<span class="go">98</span>
+</pre></div>
+</div>
+<p>When cubic networks are created, the surfaces are already labeled:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">net</span><span class="o">.</span><span class="n">num_pores</span><span class="p">([</span><span class="s1">&#39;top&#39;</span><span class="p">,</span><span class="s1">&#39;bottom&#39;</span><span class="p">,</span> <span class="s1">&#39;left&#39;</span><span class="p">,</span> <span class="s1">&#39;right&#39;</span><span class="p">,</span> <span class="s1">&#39;front&#39;</span><span class="p">,</span><span class="s1">&#39;back&#39;</span><span class="p">])</span>
+<span class="go">98</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt id="openpnm.topotools.find_neighbor_sites">
+<code class="sig-prename descclassname">openpnm.topotools.</code><code class="sig-name descname">find_neighbor_sites</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sites</span></em>, <em class="sig-param"><span class="n">am</span></em>, <em class="sig-param"><span class="n">flatten</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">include_input</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">logic</span><span class="o">=</span><span class="default_value">'or'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/topotools/graphtools.html#find_neighbor_sites"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.topotools.find_neighbor_sites" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a symmetric adjacency matrix, finds all sites that are connected
+to the input sites.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>am</strong> (<em>scipy.sparse matrix</em>) – The adjacency matrix of the network.  Must be symmetrical such that if
+sites <em>i</em> and <em>j</em> are connected, the matrix contains non-zero values
+at locations (i, j) and (j, i).</p></li>
+<li><p><strong>flatten</strong> (<em>boolean</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code> (default) the returned result is a compressed array of all
+neighbors, or a list of lists with each sub-list containing the
+neighbors for each input site.  Note that an <em>unflattened</em> list might
+be slow to generate since it is a Python <code class="docutils literal notranslate"><span class="pre">list</span></code> rather than a Numpy
+array.</p></li>
+<li><p><strong>include_input</strong> (<em>boolean</em>) – If <code class="docutils literal notranslate"><span class="pre">False</span></code> (default) the input sites will be removed from the result.</p></li>
+<li><p><strong>logic</strong> (<em>string</em>) – <p>Specifies logic to filter the resulting list.  Options are:</p>
+<p><strong>’or’</strong> : (default) All neighbors of the input sites.  This is also
+known as the ‘union’ in set theory or ‘any’ in boolean logic.  Both
+keywords are accepted and treated as ‘or’.</p>
+<p><strong>’xor’</strong> : Only neighbors of one and only one input site.  This is
+useful for finding the sites that are not shared by any of the input
+sites.  ‘exclusive_or’ is also accepted.</p>
+<p><strong>’xnor’</strong> : Neighbors that are shared by two or more input sites. This
+is equivalent to finding all neighbors with ‘or’, minus those found
+with ‘xor’, and is useful for finding neighbors that the inputs have
+in common.  ‘nxor’ is also accepted.</p>
+<p><strong>’and’</strong> : Only neighbors shared by all input sites.  This is also
+known as ‘intersection’ in set theory and (somtimes) as ‘all’ in
+boolean logic.  Both keywords are accepted and treated as ‘and’.</p>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><em>An array containing the neighboring sites filtered by the given logic.  If</em></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">flatten</span></code> is <code class="docutils literal notranslate"><span class="pre">False</span></code> then the result is a list of lists containing the</p></li>
+<li><p><em>neighbors of each input site.</em></p></li>
+</ul>
+</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_complement</span></code></p>
+</div>
+<p class="rubric">Notes</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">logic</span></code> options are applied to neighboring sites only, thus it is not
+possible to obtain sites that are part of the global set but not neighbors.
+This is because (a) the list global sites might be very large, and (b) it
+is not possible to return a list of neighbors for each input site if global
+sites are considered.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="openpnm.topotools.find_neighbor_bonds">
+<code class="sig-prename descclassname">openpnm.topotools.</code><code class="sig-name descname">find_neighbor_bonds</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sites</span></em>, <em class="sig-param"><span class="n">im</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">am</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">flatten</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">logic</span><span class="o">=</span><span class="default_value">'or'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/topotools/graphtools.html#find_neighbor_bonds"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.topotools.find_neighbor_bonds" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given an incidence matrix, finds all sites that are connected to the
+input sites.</p>
+<p>This function accepts either an incidence or adjacency matrix.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>im</strong> (<em>scipy.sparse matrix</em>) – The incidence matrix of the network.  Must be shaped as (N-sites,
+N-bonds), with non-zeros indicating which sites are connected. Either
+<code class="docutils literal notranslate"><span class="pre">am</span></code> or <code class="docutils literal notranslate"><span class="pre">im</span></code> must be given.  Passing in <code class="docutils literal notranslate"><span class="pre">im</span></code> is slower, but more
+powerful as it allows for an unflattened list of neighbors.</p></li>
+<li><p><strong>am</strong> (<em>scipy.sparse matrix</em><em> (</em><em>optional</em><em>)</em>) – The adjacency matrix of the network. Either <code class="docutils literal notranslate"><span class="pre">am</span></code> or <code class="docutils literal notranslate"><span class="pre">im</span></code> must be
+given.  Passing in <code class="docutils literal notranslate"><span class="pre">am</span></code> is faster, but does not allow for an
+unflattened list.</p></li>
+<li><p><strong>flatten</strong> (boolean (default is <code class="docutils literal notranslate"><span class="pre">True</span></code>)) – Indicates whether the returned result is a compressed array of all
+neighbors, or a list of lists with each sub-list containing the
+neighbors for each input site.  Note that an <em>unflattened</em> list might
+be slow to generate since it is a Python <code class="docutils literal notranslate"><span class="pre">list</span></code> rather than a Numpy
+array.</p></li>
+<li><p><strong>logic</strong> (<em>string</em>) – <p>Specifies logic to filter the resulting list.  Options are:</p>
+<p><strong>’or’</strong> : (default) All neighbors of the input sites.  This is also
+known as the ‘union’ in set theory or ‘any’ in boolean logic.  Both
+keywords are accepted and treated as ‘or’.</p>
+<p><strong>’xor’</strong> : Only neighbors of one and only one input site.  This is
+useful for finding the sites that are not shared by any of the input
+sites.  ‘exclusive_or’ is also accepted’.</p>
+<p><strong>’xnor’</strong> : Neighbors that are shared by two or more input sites. This
+is equivalent to finding all neighbors with ‘or’, minus those found
+with ‘xor’, and is useful for finding neighbors that the inputs have
+in common.  ‘nxor’ is also accepted.</p>
+<p><strong>’and’</strong> : Only neighbors shared by all input sites.  This is also
+known as ‘intersection’ in set theory and (somtimes) as ‘all’ in
+boolean logic.  Both keywords are accepted and treated as ‘and’.</p>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><em>An array containing the neighboring bonds filtered by the given logic.  If</em></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">flatten</span></code> is <code class="docutils literal notranslate"><span class="pre">False</span></code> then the result is a list of lists containing the</p></li>
+<li><p><em>neighbors of each given input site.</em></p></li>
+</ul>
+</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_complement</span></code></p>
+</div>
+<p class="rubric">Notes</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">logic</span></code> options are applied to neighboring bonds only, thus it is not
+possible to obtain bonds that are part of the global set but not neighbors.
+This is because (a) the list of global bonds might be very large, and
+(b) it is not possible to return a list of neighbors for each input site
+if global sites are considered.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="openpnm.topotools.find_connected_sites">
+<code class="sig-prename descclassname">openpnm.topotools.</code><code class="sig-name descname">find_connected_sites</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">bonds</span></em>, <em class="sig-param"><span class="n">am</span></em>, <em class="sig-param"><span class="n">flatten</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">logic</span><span class="o">=</span><span class="default_value">'or'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/topotools/graphtools.html#find_connected_sites"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.topotools.find_connected_sites" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given an adjacency matrix, finds which sites are connected to the input
+bonds.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>am</strong> (<em>scipy.sparse matrix</em>) – The adjacency matrix of the network.  Must be symmetrical such that if
+sites <em>i</em> and <em>j</em> are connected, the matrix contains non-zero values
+at locations (i, j) and (j, i).</p></li>
+<li><p><strong>flatten</strong> (boolean (default is <code class="docutils literal notranslate"><span class="pre">True</span></code>)) – Indicates whether the returned result is a compressed array of all
+neighbors, or a list of lists with each sub-list containing the
+neighbors for each input site.  Note that an <em>unflattened</em> list might
+be slow to generate since it is a Python <code class="docutils literal notranslate"><span class="pre">list</span></code> rather than a Numpy
+array.</p></li>
+<li><p><strong>logic</strong> (<em>string</em>) – <p>Specifies logic to filter the resulting list.  Options are:</p>
+<p><strong>’or’</strong> : (default) All neighbors of the input bonds.  This is also
+known as the ‘union’ in set theory or (sometimes) ‘any’ in boolean
+logic.  Both keywords are accepted and treated as ‘or’.</p>
+<p><strong>’xor’</strong> : Only neighbors of one and only one input bond.  This is
+useful for finding the sites that are not shared by any of the input
+bonds.  ‘exclusive_or’ is also accepted.</p>
+<p><strong>’xnor’</strong> : Neighbors that are shared by two or more input bonds. This
+is equivalent to finding all neighbors with ‘or’, minus those found
+with ‘xor’, and is useful for finding neighbors that the inputs have
+in common.  ‘nxor’ is also accepted.</p>
+<p><strong>’and’</strong> : Only neighbors shared by all input bonds.  This is also
+known as ‘intersection’ in set theory and (somtimes) as ‘all’ in
+boolean logic.  Both keywords are accepted and treated as ‘and’.</p>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><em>An array containing the connected sites, filtered by the given logic.  If</em></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">flatten</span></code> is <code class="docutils literal notranslate"><span class="pre">False</span></code> then the result is a list of lists containing the</p></li>
+<li><p><em>neighbors of each given input bond.  In this latter case, sites that</em></p></li>
+<li><p>have been removed by the given logic are indicated by <code class="docutils literal notranslate"><span class="pre">nans</span></code>, thus the</p></li>
+<li><p>array is of type <code class="docutils literal notranslate"><span class="pre">float</span></code> and is not suitable for indexing.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_complement</span></code></p>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt id="openpnm.topotools.find_connecting_bonds">
+<code class="sig-prename descclassname">openpnm.topotools.</code><code class="sig-name descname">find_connecting_bonds</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sites</span></em>, <em class="sig-param"><span class="n">am</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/topotools/graphtools.html#find_connecting_bonds"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.topotools.find_connecting_bonds" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given pairs of sites, finds the bonds which connects each pair.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sites</strong> (<em>array_like</em>) – A 2-column vector containing pairs of site indices on each row.</p></li>
+<li><p><strong>am</strong> (<em>scipy.sparse matrix</em>) – The adjacency matrix of the network.  Must be symmetrical such that if
+sites <em>i</em> and <em>j</em> are connected, the matrix contains non-zero values
+at locations (i, j) and (j, i).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><em>Returns a list the same length as P1 (and P2) with each element</em></p></li>
+<li><p><em>containing the throat number that connects the corresponding pores,</em></p></li>
+<li><p>or <cite>None`</cite> if pores are not connected.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The returned list can be converted to an ND-array, which will convert
+the <code class="docutils literal notranslate"><span class="pre">None</span></code> values to <code class="docutils literal notranslate"><span class="pre">nan</span></code>.  These can then be found using
+<code class="docutils literal notranslate"><span class="pre">numpy.isnan</span></code>.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="openpnm.topotools.find_pore_to_pore_distance">
+<code class="sig-prename descclassname">openpnm.topotools.</code><code class="sig-name descname">find_pore_to_pore_distance</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">network</span></em>, <em class="sig-param"><span class="n">pores1</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">pores2</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/topotools/topotools.html#find_pore_to_pore_distance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.topotools.find_pore_to_pore_distance" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find the distance between all pores on set 1 to each pore in set 2</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>network</strong> (<em>OpenPNM Network Object</em>) – The network object containing the pore coordinates</p></li>
+<li><p><strong>pores1</strong> (<em>array_like</em>) – The pore indices of the first set</p></li>
+<li><p><strong>pores2</strong> (<em>array_Like</em>) – The pore indices of the second set.  It’s OK if these indices are
+partially or completely duplicating <code class="docutils literal notranslate"><span class="pre">pores</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>dist</strong> – A distance matrix with <code class="docutils literal notranslate"><span class="pre">len(pores1)</span></code> rows and <code class="docutils literal notranslate"><span class="pre">len(pores2)</span></code> columns.
+The distance between pore <em>i</em> in <code class="docutils literal notranslate"><span class="pre">pores1</span></code> and <em>j</em> in <code class="docutils literal notranslate"><span class="pre">pores2</span></code> is
+located at <em>(i, j)</em> and <em>(j, i)</em> in the distance matrix.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>array_like</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This function computes and returns a distance matrix, which is a dense
+matrix of size Np_1 by Np_2, so can get large.  For distances between
+larger sets a KD-tree approach would be better, which is available in
+<code class="docutils literal notranslate"><span class="pre">scipy.spatial</span></code>.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="openpnm.topotools.find_clusters">
+<code class="sig-prename descclassname">openpnm.topotools.</code><code class="sig-name descname">find_clusters</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">network</span></em>, <em class="sig-param"><span class="n">mask</span><span class="o">=</span><span class="default_value">[]</span></em>, <em class="sig-param"><span class="n">t_labels</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/topotools/perctools.html#find_clusters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.topotools.find_clusters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Identify connected clusters of pores in the network.  This method can
+also return a list of throat cluster numbers, which correspond to the
+cluster numbers of the pores to which the throat is connected.  Either
+site and bond percolation can be considered, see description of input
+arguments for details.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>network</strong> (<em>OpenPNM Network Object</em>) – The network</p></li>
+<li><p><strong>mask</strong> (<em>array_like</em><em>, </em><em>boolean</em>) – A list of active bonds or sites (throats or pores).  If the mask is
+Np long, then the method will perform a site percolation, and if
+the mask is Nt long bond percolation will be performed.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><em>A tuple containing an Np long list of pore cluster labels, and an Nt-long</em></p></li>
+<li><p><em>list of throat cluster labels.  The label numbers correspond such that</em></p></li>
+<li><p><em>pores and throats with the same label are part of the same cluster.</em></p></li>
+</ul>
+</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">openpnm</span> <span class="k">as</span> <span class="nn">op</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pn</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Cubic</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">25</span><span class="p">,</span> <span class="mi">25</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pn</span><span class="p">[</span><span class="s1">&#39;pore.seed&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">pn</span><span class="o">.</span><span class="n">Np</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pn</span><span class="p">[</span><span class="s1">&#39;throat.seed&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">pn</span><span class="o">.</span><span class="n">Nt</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt id="openpnm.topotools.generate_base_points">
+<code class="sig-prename descclassname">openpnm.topotools.</code><code class="sig-name descname">generate_base_points</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">num_points</span></em>, <em class="sig-param"><span class="n">domain_size</span></em>, <em class="sig-param"><span class="n">density_map</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">reflect</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/topotools/topotools.html#generate_base_points"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.topotools.generate_base_points" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates a set of base points for passing into the Tessellation-based
+Network classes.  The points can be distributed in spherical, cylindrical,
+or rectilinear patterns, as well as 2D and 3D (disks and squares).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>num_points</strong> (<em>scalar</em>) – The number of base points that lie within the domain.  Note that the
+actual number of points returned will be larger, with the extra points
+lying outside the domain.</p></li>
+<li><p><strong>domain_size</strong> (<em>list</em><em> or </em><em>array</em>) – <p>Controls the size and shape of the domain, as follows:</p>
+<p><strong>sphere</strong> : If a single value is received, its treated as the radius
+[r] of a sphere centered on [0, 0, 0].</p>
+<p><strong>cylinder</strong> : If a two-element list is received it’s treated as the
+radius and height of a cylinder [r, z] positioned at [0, 0, 0] and
+extending in the positive z-direction.  If the z dimension is 0, a
+disk of radius r is created.</p>
+<p><strong>rectangle</strong> : If a three element list is received, it’s treated
+as the outer corner of rectangle [x, y, z] whose opposite corner lies
+at [0, 0, 0].  If the z dimension is 0, a rectangle of size X-by-Y is
+created.</p>
+</p></li>
+<li><p><strong>density_map</strong> (<em>array</em><em>, </em><em>optional</em>) – <p>A an array that contains fractional values (0 &lt; i &lt; 1) indicating the
+liklihood that a point in that region should be kept.  The size of this
+array can be anything, but the shape must match the <code class="docutils literal notranslate"><span class="pre">domain_size</span></code>;
+that is for a 3D network the shape of the <code class="docutils literal notranslate"><span class="pre">density_map</span></code> can be
+[10, 10, 10] or [50, 50, 50], depending on how important the resolution
+of the density distribution is.  For a 2D network the <code class="docutils literal notranslate"><span class="pre">density_map</span></code>
+should be [10, 10].</p>
+<p>When specifying a custom probabiliy map is it recommended to also set
+values outside the given domain to zero.  If not, then the correct
+shape will still be returned, but with too few points in it.</p>
+</p></li>
+<li><p><strong>reflect</strong> (<em>boolean</em>) – If True, the the base points are generated as specified, the reflected
+about each face of the domain.  This essentially tricks the
+tessellation functions into creating smooth flat faces at the
+boundaries once these excess pores are trimmed.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The reflection approach tends to create larger pores near the surfaces, so
+it might be necessary to use the <code class="docutils literal notranslate"><span class="pre">density_map</span></code> argument to specify a
+slightly higher density of points near the surfaces.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">Voronoi</span></code>, <code class="docutils literal notranslate"><span class="pre">Delaunay</span></code>, <code class="docutils literal notranslate"><span class="pre">Gabriel</span></code>, and <code class="docutils literal notranslate"><span class="pre">DelunayVoronoiDual</span></code>
+classes can <em>techncially</em> handle base points with spherical or cylindrical
+domains, but the reflection across round surfaces does not create perfect
+Voronoi cells so the surfaces will not be smooth.</p>
+<p class="rubric">Examples</p>
+<p>The following generates a spherical array with higher values near the core.
+It uses a distance transform to create a sphere of radius 10, then a
+second distance transform to create larger values in the center away from
+the sphere surface.  These distance values could be further skewed by
+applying a power, with values higher than 1 resulting in higher values in
+the core, and fractional values smoothinging them out a bit.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">openpnm</span> <span class="k">as</span> <span class="nn">op</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">scipy</span> <span class="k">as</span> <span class="nn">sp</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">scipy.ndimage</span> <span class="k">as</span> <span class="nn">spim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">im</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">([</span><span class="mi">21</span><span class="p">,</span> <span class="mi">21</span><span class="p">,</span> <span class="mi">21</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">im</span><span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">im</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">distance_transform_edt</span><span class="p">(</span><span class="n">im</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">20</span>  <span class="c1"># Create sphere of 1&#39;s</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">prob</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">distance_transform_edt</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">prob</span> <span class="o">=</span> <span class="n">prob</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">amax</span><span class="p">(</span><span class="n">prob</span><span class="p">)</span>  <span class="c1"># Normalize between 0 and 1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pts</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">topotools</span><span class="o">.</span><span class="n">generate_base_points</span><span class="p">(</span><span class="n">num_points</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>
+<span class="gp">... </span>                                        <span class="n">domain_size</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+<span class="gp">... </span>                                        <span class="n">density_map</span><span class="o">=</span><span class="n">prob</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">net</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">DelaunayVoronoiDual</span><span class="p">(</span><span class="n">points</span><span class="o">=</span><span class="n">pts</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt id="openpnm.topotools.iscoplanar">
+<code class="sig-prename descclassname">openpnm.topotools.</code><code class="sig-name descname">iscoplanar</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">coords</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/topotools/topotools.html#iscoplanar"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.topotools.iscoplanar" title="Permalink to this definition">¶</a></dt>
+<dd><p>Determines if given pores are coplanar with each other</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>coords</strong> (<em>array_like</em>) – List of pore coords to check for coplanarity.  At least 3 pores are
+required.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>results</strong> – A boolean value of whether given points are coplanar (<code class="docutils literal notranslate"><span class="pre">True</span></code>) or
+not (<code class="docutils literal notranslate"><span class="pre">False</span></code>)</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="openpnm.topotools.issymmetric">
+<code class="sig-prename descclassname">openpnm.topotools.</code><code class="sig-name descname">issymmetric</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">am</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/topotools/graphtools.html#issymmetric"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.topotools.issymmetric" title="Permalink to this definition">¶</a></dt>
+<dd><p>A method to check if a square matrix is symmetric
+Returns <code class="docutils literal notranslate"><span class="pre">True</span></code> if the sparse adjacency matrix is symmetric</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="openpnm.topotools.istriu">
+<code class="sig-prename descclassname">openpnm.topotools.</code><code class="sig-name descname">istriu</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">am</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/topotools/graphtools.html#istriu"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.topotools.istriu" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns <code class="docutils literal notranslate"><span class="pre">True</span></code> is the sparse adjacency matrix is upper triangular</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="openpnm.topotools.istril">
+<code class="sig-prename descclassname">openpnm.topotools.</code><code class="sig-name descname">istril</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">am</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/topotools/graphtools.html#istril"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.topotools.istril" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns <code class="docutils literal notranslate"><span class="pre">True</span></code> is the sparse adjacency matrix is lower triangular</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="openpnm.topotools.istriangular">
+<code class="sig-prename descclassname">openpnm.topotools.</code><code class="sig-name descname">istriangular</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">am</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/topotools/graphtools.html#istriangular"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.topotools.istriangular" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns <code class="docutils literal notranslate"><span class="pre">True</span></code> if the sparse adjacency matrix is either upper or lower
+triangular</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="openpnm.topotools.label_faces">
+<code class="sig-prename descclassname">openpnm.topotools.</code><code class="sig-name descname">label_faces</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">network</span></em>, <em class="sig-param"><span class="n">tol</span><span class="o">=</span><span class="default_value">0.0</span></em>, <em class="sig-param"><span class="n">label</span><span class="o">=</span><span class="default_value">'surface'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/topotools/topotools.html#label_faces"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.topotools.label_faces" title="Permalink to this definition">¶</a></dt>
+<dd><p>Finds pores on the surface of the network and labels them according to
+whether they are on the <em>top</em>, <em>bottom</em>, etc.  This function assumes the
+network is cubic in shape (i.e. with six flat sides)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>network</strong> (<em>OpenPNM Network object</em>) – The network to apply the labels</p></li>
+<li><p><strong>tol</strong> (<em>scalar</em>) – The tolerance for defining what counts as a surface pore, which is
+specifically meant for random networks.  All pores with <code class="docutils literal notranslate"><span class="pre">tol</span></code> of
+the maximum or minimum along each axis are counts as pores.  The
+default is 0.</p></li>
+<li><p><strong>label</strong> (<em>string</em>) – An identifying label to isolate the pores on the faces of the network.
+The default is ‘surface’.  Surface pores can be found using
+<code class="docutils literal notranslate"><span class="pre">find_surface_pores</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="openpnm.topotools.merge_pores">
+<code class="sig-prename descclassname">openpnm.topotools.</code><code class="sig-name descname">merge_pores</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">network</span></em>, <em class="sig-param"><span class="n">pores</span></em>, <em class="sig-param"><span class="n">labels</span><span class="o">=</span><span class="default_value">['merged']</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/topotools/topotools.html#merge_pores"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.topotools.merge_pores" title="Permalink to this definition">¶</a></dt>
+<dd><p>Combines a selection of pores into a new single pore located at the
+centroid of the selected pores and connected to all of their neighbors.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>network</strong> (<em>OpenPNM Network Object</em>) – </p></li>
+<li><p><strong>pores</strong> (<em>array_like</em>) – The list of pores which are to be combined into a new single pore</p></li>
+<li><p><strong>labels</strong> (<em>string</em><em> or </em><em>list of strings</em>) – The labels to apply to the new pore and new throat connections</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>(1) The method also works if a list of lists is passed, in which case
+it consecutively merges the given selections of pores.</p>
+<p>(2) The selection of pores should be chosen carefully, preferrable so that
+they all form a continuous cluster.  For instance, it is recommended
+to use the <code class="docutils literal notranslate"><span class="pre">find_nearby_pores</span></code> method to find all pores within a
+certain distance of a given pore, and these can then be merged without
+causing any abnormal connections.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">openpnm</span> <span class="k">as</span> <span class="nn">op</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pn</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Cubic</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">20</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Ps</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">find_nearby_pores</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="mi">111</span><span class="p">,</span> <span class="n">r</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">flatten</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">op</span><span class="o">.</span><span class="n">topotools</span><span class="o">.</span><span class="n">merge_pores</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">,</span> <span class="n">pores</span><span class="o">=</span><span class="n">Ps</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;merged&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">pn</span><span class="o">.</span><span class="n">Np</span><span class="p">)</span>
+<span class="go">321</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pn</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;merged&#39;</span><span class="p">)</span>
+<span class="go">array([320])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pn</span><span class="o">.</span><span class="n">num_throats</span><span class="p">(</span><span class="s1">&#39;merged&#39;</span><span class="p">)</span>
+<span class="go">32</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt id="openpnm.topotools.plot_connections">
+<code class="sig-prename descclassname">openpnm.topotools.</code><code class="sig-name descname">plot_connections</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">network</span></em>, <em class="sig-param"><span class="n">throats</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">fig</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">size_by</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">color_by</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">cmap</span><span class="o">=</span><span class="default_value">'jet'</span></em>, <em class="sig-param"><span class="n">color</span><span class="o">=</span><span class="default_value">'b'</span></em>, <em class="sig-param"><span class="n">alpha</span><span class="o">=</span><span class="default_value">1.0</span></em>, <em class="sig-param"><span class="n">linestyle</span><span class="o">=</span><span class="default_value">'solid'</span></em>, <em class="sig-param"><span class="n">linewidth</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/topotools/plottools.html#plot_connections"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.topotools.plot_connections" title="Permalink to this definition">¶</a></dt>
+<dd><p>Produce a 3D plot of the network topology.</p>
+<p>This shows how throats connect for quick visualization without having
+to export data to veiw in Paraview.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>network</strong> (<em>OpenPNM Network Object</em>) – The network whose topological connections to plot</p></li>
+<li><p><strong>throats</strong> (<em>array_like</em><em> (</em><em>optional</em><em>)</em>) – The list of throats to plot if only a sub-sample is desired.  This is
+useful for inspecting a small region of the network.  If no throats are
+specified then all throats are shown.</p></li>
+<li><p><strong>fig</strong> (<em>Matplotlib figure handle and line property arguments</em>) – If a <code class="docutils literal notranslate"><span class="pre">fig</span></code> is supplied, then the topology will be overlaid on this
+plot.  This makes it possible to combine coordinates and connections,
+and to color throats differently</p></li>
+<li><p><strong>size_by</strong> (<em>array_like</em>) – An ND-array of throat values (e.g. alg[‘throat.rate’]).  These
+values are normalized by scaled by <code class="docutils literal notranslate"><span class="pre">markersize</span></code>.</p></li>
+<li><p><strong>color_by</strong> (<em>str</em><em> or </em><em>array_like</em>) – An ND-array of throat values (e.g. alg[‘throat.rate’]).</p></li>
+<li><p><strong>cmap</strong> (<em>str</em><em> or </em><em>cmap object</em>) – The matplotlib colormap to use if specfying a throat property
+for <code class="docutils literal notranslate"><span class="pre">color_by</span></code></p></li>
+<li><p><strong>color</strong> (<em>str</em>) – A matplotlib named color (e.g. ‘r’ for red).</p></li>
+<li><p><strong>alpha</strong> (<em>float</em>) – The transparency of the lines, with 1 being solid and 0 being invisible</p></li>
+<li><p><strong>linestyle</strong> (<em>str</em>) – Can be one of {‘solid’, ‘dashed’, ‘dashdot’, ‘dotted’}</p></li>
+<li><p><strong>linewidth</strong> (<em>float</em>) – Controls the thickness of drawn lines.  Is used to scale the thickness
+if <code class="docutils literal notranslate"><span class="pre">size_by</span></code> is given.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The figure handle returned by this method can be passed into
+<code class="docutils literal notranslate"><span class="pre">plot_coordinates</span></code> to create a plot that combines pore coordinates and
+throat connections, and vice versa.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#openpnm.topotools.plot_coordinates" title="openpnm.topotools.plot_coordinates"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_coordinates</span></code></a></p>
+</div>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">openpnm</span> <span class="k">as</span> <span class="nn">op</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">matplotlib</span> <span class="k">as</span> <span class="nn">mpl</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mpl</span><span class="o">.</span><span class="n">use</span><span class="p">(</span><span class="s1">&#39;Agg&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pn</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Cubic</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pn</span><span class="o">.</span><span class="n">add_boundary_pores</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Ts</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">throats</span><span class="p">(</span><span class="s1">&#39;*boundary&#39;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;nor&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Create figure showing boundary throats</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fig</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">topotools</span><span class="o">.</span><span class="n">plot_connections</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">,</span> <span class="n">throats</span><span class="o">=</span><span class="n">Ts</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Ts</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">throats</span><span class="p">(</span><span class="s1">&#39;*boundary&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Pass existing fig back into function to plot additional throats</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fig</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">topotools</span><span class="o">.</span><span class="n">plot_connections</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">,</span> <span class="n">throats</span><span class="o">=</span><span class="n">Ts</span><span class="p">,</span>
+<span class="gp">... </span>                                    <span class="n">fig</span><span class="o">=</span><span class="n">fig</span><span class="p">,</span> <span class="n">colors</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt id="openpnm.topotools.plot_coordinates">
+<code class="sig-prename descclassname">openpnm.topotools.</code><code class="sig-name descname">plot_coordinates</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">network</span></em>, <em class="sig-param"><span class="n">pores</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">fig</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">size_by</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">color_by</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">cmap</span><span class="o">=</span><span class="default_value">'jet'</span></em>, <em class="sig-param"><span class="n">color</span><span class="o">=</span><span class="default_value">'r'</span></em>, <em class="sig-param"><span class="n">alpha</span><span class="o">=</span><span class="default_value">1.0</span></em>, <em class="sig-param"><span class="n">marker</span><span class="o">=</span><span class="default_value">'o'</span></em>, <em class="sig-param"><span class="n">markersize</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/topotools/plottools.html#plot_coordinates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.topotools.plot_coordinates" title="Permalink to this definition">¶</a></dt>
+<dd><p>Produce a 3D plot showing specified pore coordinates as markers.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>network</strong> (<em>OpenPNM Network Object</em>) – The network whose topological connections to plot</p></li>
+<li><p><strong>pores</strong> (<em>array_like</em><em> (</em><em>optional</em><em>)</em>) – The list of pores to plot if only a sub-sample is desired.  This is
+useful for inspecting a small region of the network.  If no pores are
+specified then all are shown.</p></li>
+<li><p><strong>fig</strong> (<em>Matplotlib figure handle</em>) – If a <code class="docutils literal notranslate"><span class="pre">fig</span></code> is supplied, then the coordinates will be overlaid.  This
+enables the plotting of multiple different sets of pores as well as
+throat connections from <code class="docutils literal notranslate"><span class="pre">plot_connections</span></code>.</p></li>
+<li><p><strong>size_by</strong> (<em>str</em><em> or </em><em>array_like</em>) – An ND-array of pore values (e.g. alg[‘pore.concentration’]).  These
+values are normalized by scaled by <code class="docutils literal notranslate"><span class="pre">markersize</span></code>.</p></li>
+<li><p><strong>color_by</strong> (<em>str</em><em> or </em><em>array_like</em>) – An ND-array of pore values (e.g. alg[‘pore.concentration’]).</p></li>
+<li><p><strong>cmap</strong> (<em>str</em><em> or </em><em>cmap object</em>) – The matplotlib colormap to use if specfying a pore property
+for <code class="docutils literal notranslate"><span class="pre">color_by</span></code></p></li>
+<li><p><strong>color</strong> (<em>str</em>) – A matplotlib named color (e.g. ‘r’ for red).</p></li>
+<li><p><strong>alpha</strong> (<em>float</em>) – The transparency of the lines, with 1 being solid and 0 being invisible</p></li>
+<li><p><strong>marker</strong> (<em>'s'</em>) – The marker to use.  The default is a circle.  Options are explained
+<a class="reference external" href="https://matplotlib.org/3.2.1/api/markers_api.html">here</a></p></li>
+<li><p><strong>markersize</strong> (<em>scalar</em>) – Controls size of marker, default is 1.0.  This value is used to scale
+the <code class="docutils literal notranslate"><span class="pre">size_by</span></code> argument if given.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The figure handle returned by this method can be passed into
+<code class="docutils literal notranslate"><span class="pre">plot_connections</span></code> to create a plot that combines pore coordinates and
+throat connections, and vice versa.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#openpnm.topotools.plot_connections" title="openpnm.topotools.plot_connections"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_connections</span></code></a></p>
+</div>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">openpnm</span> <span class="k">as</span> <span class="nn">op</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">matplotlib</span> <span class="k">as</span> <span class="nn">mpl</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mpl</span><span class="o">.</span><span class="n">use</span><span class="p">(</span><span class="s1">&#39;Agg&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pn</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Cubic</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pn</span><span class="o">.</span><span class="n">add_boundary_pores</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Ps</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;internal&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Create figure showing internal pores</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fig</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">topotools</span><span class="o">.</span><span class="n">plot_coordinates</span><span class="p">(</span><span class="n">pn</span><span class="p">,</span> <span class="n">pores</span><span class="o">=</span><span class="n">Ps</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;b&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Ps</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;*boundary&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Pass existing fig back into function to plot boundary pores</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fig</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">topotools</span><span class="o">.</span><span class="n">plot_coordinates</span><span class="p">(</span><span class="n">pn</span><span class="p">,</span> <span class="n">pores</span><span class="o">=</span><span class="n">Ps</span><span class="p">,</span> <span class="n">fig</span><span class="o">=</span><span class="n">fig</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt id="openpnm.topotools.reduce_coordination">
+<code class="sig-prename descclassname">openpnm.topotools.</code><code class="sig-name descname">reduce_coordination</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">network</span></em>, <em class="sig-param"><span class="n">z</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/topotools/topotools.html#reduce_coordination"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.topotools.reduce_coordination" title="Permalink to this definition">¶</a></dt>
+<dd><p>Deletes throats on network to match specified average coordination number</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>network</strong> (<em>OpenPNM Network object</em>) – The network whose throats are to be trimmed</p></li>
+<li><p><strong>z</strong> (<em>scalar</em>) – The desire average coordination number.  It is not possible to specify
+the distribution of the coordination, only the mean value.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This method first finds the minimum spanning tree of the network using
+random weights on each throat, the assures that these throats are <em>not</em>
+deleted, in order to maintain network connectivity.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="openpnm.topotools.reflect_base_points">
+<code class="sig-prename descclassname">openpnm.topotools.</code><code class="sig-name descname">reflect_base_points</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">base_pts</span></em>, <em class="sig-param"><span class="n">domain_size</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/topotools/topotools.html#reflect_base_points"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.topotools.reflect_base_points" title="Permalink to this definition">¶</a></dt>
+<dd><p>Helper function for relecting a set of points about the faces of a
+given domain.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>base_pts</strong> (<em>array_like</em>) – <p>The coordinates of the base_pts to be reflected in the coordinate
+system corresponding to the the domain as follows:</p>
+<p><strong>spherical</strong> : [r, theta, phi]
+<strong>cylindrical</strong> or <strong>circular</strong> : [r, theta, z]
+<strong>rectangular</strong> or <strong>square</strong> : [x, y, z]</p>
+</p></li>
+<li><p><strong>domain_size</strong> (<em>list</em><em> or </em><em>array</em>) – <p>Controls the size and shape of the domain, as follows:</p>
+<p><strong>sphere</strong> : If a single value is received, its treated as the radius
+[r] of a sphere centered on [0, 0, 0].</p>
+<p><strong>cylinder</strong> : If a two-element list is received it’s treated as the
+radius and height of a cylinder [r, z] positioned at [0, 0, 0] and
+extending in the positive z-direction.  If the z dimension is 0, a
+disk of radius r is created.</p>
+<p><strong>rectangle</strong> : If a three element list is received, it’s treated
+as the outer corner of rectangle [x, y, z] whose opposite corner lies
+at [0, 0, 0].  If the z dimension is 0, a rectangle of size X-by-Y is
+created.</p>
+</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="openpnm.topotools.stitch">
+<code class="sig-prename descclassname">openpnm.topotools.</code><code class="sig-name descname">stitch</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">network</span></em>, <em class="sig-param"><span class="n">donor</span></em>, <em class="sig-param"><span class="n">P_network</span></em>, <em class="sig-param"><span class="n">P_donor</span></em>, <em class="sig-param"><span class="n">method</span><span class="o">=</span><span class="default_value">'nearest'</span></em>, <em class="sig-param"><span class="n">len_max</span><span class="o">=</span><span class="default_value">inf</span></em>, <em class="sig-param"><span class="n">label_suffix</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">label_stitches</span><span class="o">=</span><span class="default_value">'stitched'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/topotools/topotools.html#stitch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.topotools.stitch" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stitches a second a network to the current network.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>network</strong> (<em>OpenPNM Network Object</em>) – The Network to which to donor Network will be attached</p></li>
+<li><p><strong>donor</strong> (<em>OpenPNM Network Object</em>) – The Network to stitch on to the current Network</p></li>
+<li><p><strong>P_network</strong> (<em>array_like</em>) – The pores on the current Network</p></li>
+<li><p><strong>P_donor</strong> (<em>array_like</em>) – The pores on the donor Network</p></li>
+<li><p><strong>label_suffix</strong> (<em>str</em><em> or </em><em>None</em>) – Some text to append to each label in the donor Network before
+inserting them into the recipient.  The default is to append no
+text, but a common option would be to append the donor Network’s
+name. To insert none of the donor labels, use <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
+<li><p><strong>label_stitches</strong> (<em>str</em><em> or </em><em>list of strings</em>) – The label to apply to the newly created ‘stitch’ throats.  The
+defaul is ‘stitched’.  If performing multiple stitches in a row it
+might be helpful to the throats created during each step uniquely
+for later identification.</p></li>
+<li><p><strong>len_max</strong> (<em>float</em>) – Set a length limit on length of new throats</p></li>
+<li><p><strong>method</strong> (<em>string</em><em> (</em><em>default = 'nearest'</em><em>)</em>) – <p>The method to use when making pore to pore connections. Options are:</p>
+<ul>
+<li><dl class="simple">
+<dt>’radius’<span class="classifier">Connects each pore on the recipient network to the</span></dt><dd><p>nearest pores on the donor network, within <code class="docutils literal notranslate"><span class="pre">len_max</span></code></p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>’nearest’<span class="classifier">Connects each pore on the recipienet network to the</span></dt><dd><p>nearest pore on the donor network.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Before stitching it is necessary to translate the pore coordinates of
+one of the Networks so that it is positioned correctly relative to the
+other.  This is illustrated in the example below.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">openpnm</span> <span class="k">as</span> <span class="nn">op</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pn</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Cubic</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pn2</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Cubic</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="n">pn</span><span class="o">.</span><span class="n">Np</span><span class="p">,</span> <span class="n">pn</span><span class="o">.</span><span class="n">Nt</span><span class="p">]</span>
+<span class="go">[125, 300]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="n">pn2</span><span class="o">.</span><span class="n">Np</span><span class="p">,</span> <span class="n">pn2</span><span class="o">.</span><span class="n">Nt</span><span class="p">]</span>
+<span class="go">[125, 300]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pn2</span><span class="p">[</span><span class="s1">&#39;pore.coords&#39;</span><span class="p">][:,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">+=</span> <span class="mf">5.0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">op</span><span class="o">.</span><span class="n">topotools</span><span class="o">.</span><span class="n">stitch</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">,</span> <span class="n">donor</span><span class="o">=</span><span class="n">pn2</span><span class="p">,</span> <span class="n">P_network</span><span class="o">=</span><span class="n">pn</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;top&#39;</span><span class="p">),</span>
+<span class="gp">... </span>                    <span class="n">P_donor</span><span class="o">=</span><span class="n">pn2</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;bottom&#39;</span><span class="p">),</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;radius&#39;</span><span class="p">,</span>
+<span class="gp">... </span>                    <span class="n">len_max</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="n">pn</span><span class="o">.</span><span class="n">Np</span><span class="p">,</span> <span class="n">pn</span><span class="o">.</span><span class="n">Nt</span><span class="p">]</span>
+<span class="go">[250, 625]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt id="openpnm.topotools.subdivide">
+<code class="sig-prename descclassname">openpnm.topotools.</code><code class="sig-name descname">subdivide</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">network</span></em>, <em class="sig-param"><span class="n">pores</span></em>, <em class="sig-param"><span class="n">shape</span></em>, <em class="sig-param"><span class="n">labels</span><span class="o">=</span><span class="default_value">[]</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/topotools/topotools.html#subdivide"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.topotools.subdivide" title="Permalink to this definition">¶</a></dt>
+<dd><p>It trim the pores and replace them by cubic networks with the sent shape.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>network</strong> (<em>OpenPNM Network Object</em>) – </p></li>
+<li><p><strong>pores</strong> (<em>array_like</em>) – The first group of pores to be replaced</p></li>
+<li><p><strong>shape</strong> (<em>array_like</em>) – The shape of cubic networks in the target locations</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>It works only for cubic networks, and a check is performed to ensure this
+is the case.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">openpnm</span> <span class="k">as</span> <span class="nn">op</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pn</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Cubic</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">5</span><span class="p">],</span> <span class="n">spacing</span><span class="o">=</span><span class="mf">0.001</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pn</span><span class="o">.</span><span class="n">Np</span>
+<span class="go">150</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">nano_pores</span> <span class="o">=</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">13</span><span class="p">,</span> <span class="mi">14</span><span class="p">,</span> <span class="mi">15</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">op</span><span class="o">.</span><span class="n">topotools</span><span class="o">.</span><span class="n">subdivide</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">,</span> <span class="n">pores</span><span class="o">=</span><span class="n">nano_pores</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span>
+<span class="gp">... </span>                       <span class="n">labels</span><span class="o">=</span><span class="s1">&#39;nano&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pn</span><span class="o">.</span><span class="n">Np</span>
+<span class="go">482</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt id="openpnm.topotools.template_cylinder_annulus">
+<code class="sig-prename descclassname">openpnm.topotools.</code><code class="sig-name descname">template_cylinder_annulus</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">height</span></em>, <em class="sig-param"><span class="n">outer_radius</span></em>, <em class="sig-param"><span class="n">inner_radius</span><span class="o">=</span><span class="default_value">0</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/topotools/topotools.html#template_cylinder_annulus"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.topotools.template_cylinder_annulus" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method generates an image array of a disc-ring.</p>
+<p>It is useful for passing to Cubic networks as a <code class="docutils literal notranslate"><span class="pre">template</span></code> to make
+circular-shaped 2D networks.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>height</strong> (<em>int</em>) – The height of the cylinder</p></li>
+<li><p><strong>outer_radius</strong> (<em>int</em>) – Number of nodes in the outer radius of the cylinder</p></li>
+<li><p><strong>inner_radius</strong> (<em>int</em>) – Number of the nodes in the inner radius of the annulus.  A value of 0
+will result in a solid cylinder.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>im</strong> – A Numpy array containing 1’s to demarcate the disc-ring, and 0’s
+elsewhere.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>array_like</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="openpnm.topotools.template_sphere_shell">
+<code class="sig-prename descclassname">openpnm.topotools.</code><code class="sig-name descname">template_sphere_shell</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">outer_radius</span></em>, <em class="sig-param"><span class="n">inner_radius</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">dim</span><span class="o">=</span><span class="default_value">3</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/topotools/topotools.html#template_sphere_shell"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.topotools.template_sphere_shell" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method generates an image array of a sphere-shell.</p>
+<p>It is useful for passing to Cubic networks as a <code class="docutils literal notranslate"><span class="pre">template</span></code> to make
+spherical shaped networks.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>outer_radius</strong> (<em>int</em>) – Number of nodes in the outer radius of the sphere.</p></li>
+<li><p><strong>inner_radius</strong> (<em>int</em>) – Number of nodes in the inner radius of the shell.  a value of 0 will
+result in a solid sphere.</p></li>
+<li><p><strong>dim</strong> (<em>scalar</em>) – Controls the number of dimensions of the result.  3 returns a sphere,
+while 2 returns a disk.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>im</strong> – A Numpy array containing 1’s to demarcate the sphere-shell, and 0’s
+elsewhere.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>array_like</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="openpnm.topotools.trim">
+<code class="sig-prename descclassname">openpnm.topotools.</code><code class="sig-name descname">trim</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">network</span></em>, <em class="sig-param"><span class="n">pores</span><span class="o">=</span><span class="default_value">[]</span></em>, <em class="sig-param"><span class="n">throats</span><span class="o">=</span><span class="default_value">[]</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/topotools/topotools.html#trim"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.topotools.trim" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove pores or throats from the network</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>network</strong> (<em>OpenPNM Network Object</em>) – The Network from which pores or throats should be removed</p></li>
+<li><p><strong>(or </strong><strong>throats</strong><strong>)</strong> (<em>pores</em>) – The indices of the of the pores or throats to be removed from the
+network.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">openpnm</span> <span class="k">as</span> <span class="nn">op</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pn</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Cubic</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pn</span><span class="o">.</span><span class="n">Np</span>
+<span class="go">125</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pn</span><span class="o">.</span><span class="n">Nt</span>
+<span class="go">300</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">op</span><span class="o">.</span><span class="n">topotools</span><span class="o">.</span><span class="n">trim</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">,</span> <span class="n">pores</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pn</span><span class="o">.</span><span class="n">Np</span>
+<span class="go">124</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pn</span><span class="o">.</span><span class="n">Nt</span>
+<span class="go">296</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt id="openpnm.topotools.trim_occluded_throats">
+<code class="sig-prename descclassname">openpnm.topotools.</code><code class="sig-name descname">trim_occluded_throats</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">network</span></em>, <em class="sig-param"><span class="n">mask</span><span class="o">=</span><span class="default_value">'all'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/topotools/topotools.html#trim_occluded_throats"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.topotools.trim_occluded_throats" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove throats with zero area from the network and also remove
+pores that are isolated (as a result or otherwise)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>network</strong> (<em>OpenPNM Network Object</em>) – </p></li>
+<li><p><strong>mask</strong> (<em>string</em>) – Applies routine only to pores and throats with this label</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../models/index.html" class="btn btn-neutral float-right" title="Models" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="../algorithms/metrics/relative_permeability.html" class="btn btn-neutral float-left" title="RelativePermeability" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020 OpenPNM Team
+
+    </p>
+  </div> 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

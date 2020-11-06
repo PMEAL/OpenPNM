@@ -1,0 +1,397 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>openpnm.io.iMorph &mdash; OpenPNM</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home" alt="Documentation Home"> OpenPNM
+          
+
+          
+            
+            <img src="../../../_static/logo.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installing OpenPNM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quick_start.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../userguide.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/index.html"><strong>Module Reference</strong></a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">OpenPNM</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>openpnm.io.iMorph</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for openpnm.io.iMorph</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">os</span> <span class="k">as</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">scipy</span> <span class="k">as</span> <span class="nn">sp</span>
+<span class="kn">import</span> <span class="nn">scipy.sparse</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">openpnm.geometry</span> <span class="kn">import</span> <span class="n">Imported</span>
+<span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">logging</span>
+<span class="kn">from</span> <span class="nn">openpnm.io</span> <span class="kn">import</span> <span class="n">GenericIO</span>
+<span class="kn">from</span> <span class="nn">openpnm.network</span> <span class="kn">import</span> <span class="n">GenericNetwork</span>
+<span class="kn">from</span> <span class="nn">openpnm.topotools</span> <span class="kn">import</span> <span class="n">extend</span><span class="p">,</span> <span class="n">trim</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="iMorph"><a class="viewcode-back" href="../../../modules/io/imorph.html#openpnm.io.iMorph">[docs]</a><span class="k">class</span> <span class="nc">iMorph</span><span class="p">(</span><span class="n">GenericIO</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    iMorph is a graphical interface program that provides some image analysis</span>
+<span class="sd">    tools for porous media</span>
+
+<span class="sd">    Combines two output files from the iMorph program to build a pore network.</span>
+<span class="sd">    throats_cellsThroatsGraph_Nodes.txt - stores node shape and type</span>
+<span class="sd">    information throats_cellsThroatsGraph.txt - stores node connectivity</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="iMorph.load"><a class="viewcode-back" href="../../../modules/io/imorph.html#openpnm.io.iMorph.load">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method is being deprecated.  Use ``import_data`` instead.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">import_data</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="iMorph.import_data"><a class="viewcode-back" href="../../../modules/io/imorph.html#openpnm.io.iMorph.import_data">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">import_data</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">node_file</span><span class="o">=</span><span class="s2">&quot;throats_cellsThroatsGraph_Nodes.txt&quot;</span><span class="p">,</span>
+                    <span class="n">graph_file</span><span class="o">=</span><span class="s2">&quot;throats_cellsThroatsGraph.txt&quot;</span><span class="p">,</span>
+                    <span class="n">voxel_size</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Loads network data from an iMorph processed image stack</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        path : string</span>
+<span class="sd">            The path of the folder where the subfiles are held</span>
+
+<span class="sd">        node_file : string</span>
+<span class="sd">            The file that describes the pores and throats, the</span>
+<span class="sd">            default iMorph name is: throats_cellsThroatsGraph_Nodes.txt</span>
+
+<span class="sd">        graph_file : string</span>
+<span class="sd">            The file that describes the connectivity of the network, the</span>
+<span class="sd">            default iMorph name is: throats_cellsThroatsGraph.txt</span>
+
+<span class="sd">        voxel_size : float</span>
+<span class="sd">            Allows the user to define a voxel size different than what is</span>
+<span class="sd">            contained in the node_file. The value must be in meters.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        project : list</span>
+<span class="sd">            An OpenPNM project object containing a network and a geometry</span>
+<span class="sd">            object.  The geometry-related data are automatically placed on the</span>
+<span class="sd">            geometry object using the ``Imported`` geometry class.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1">#</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="n">node_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">resolve</span><span class="p">(),</span> <span class="n">node_file</span><span class="p">)</span>
+        <span class="n">graph_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">resolve</span><span class="p">(),</span> <span class="n">graph_file</span><span class="p">)</span>
+        <span class="c1"># parsing the nodes file</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">node_file</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+            <span class="n">Np</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fromstring</span><span class="p">(</span><span class="n">file</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s2">&quot;=&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">],</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">vox_size</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fromstring</span><span class="p">(</span><span class="n">file</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s2">&quot;)&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">],</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">,)[</span><span class="mi">0</span><span class="p">]</span>
+
+            <span class="c1"># network always recreated to prevent errors</span>
+            <span class="n">network</span> <span class="o">=</span> <span class="n">GenericNetwork</span><span class="p">(</span><span class="n">Np</span><span class="o">=</span><span class="n">Np</span><span class="p">,</span> <span class="n">Nt</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+            <span class="c1"># Define expected properies</span>
+            <span class="n">network</span><span class="p">[</span><span class="s2">&quot;pore.volume&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+            <span class="n">scrap_lines</span> <span class="o">=</span> <span class="p">[</span><span class="n">file</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">)]</span>
+            <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+                <span class="n">vals</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">vals</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="k">break</span>
+                <span class="n">network</span><span class="p">[</span><span class="s2">&quot;pore.volume&quot;</span><span class="p">][</span><span class="nb">int</span><span class="p">(</span><span class="n">vals</span><span class="p">[</span><span class="mi">0</span><span class="p">])]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">vals</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>
+                <span class="k">if</span> <span class="s2">&quot;pore.&quot;</span> <span class="o">+</span> <span class="n">vals</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">network</span><span class="o">.</span><span class="n">labels</span><span class="p">():</span>
+                    <span class="n">network</span><span class="p">[</span><span class="s2">&quot;pore.&quot;</span> <span class="o">+</span> <span class="n">vals</span><span class="p">[</span><span class="mi">2</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="n">network</span><span class="p">[</span><span class="s2">&quot;pore.&quot;</span> <span class="o">+</span> <span class="n">vals</span><span class="p">[</span><span class="mi">2</span><span class="p">]][</span><span class="nb">int</span><span class="p">(</span><span class="n">vals</span><span class="p">[</span><span class="mi">0</span><span class="p">])]</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="k">if</span> <span class="n">voxel_size</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">voxel_size</span> <span class="o">=</span> <span class="n">vox_size</span> <span class="o">*</span> <span class="mf">1.0e-6</span>  <span class="c1"># file stores value in microns</span>
+
+        <span class="k">if</span> <span class="n">voxel_size</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Error - Voxel size must be specfied in &quot;</span>
+                            <span class="o">+</span> <span class="s2">&quot;the Nodes file or as a keyword argument.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># parsing the graph file</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">graph_file</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+            <span class="c1"># Define expected properties</span>
+            <span class="n">network</span><span class="p">[</span><span class="s2">&quot;pore.coords&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">Np</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+            <span class="n">network</span><span class="p">[</span><span class="s2">&quot;pore.types&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+            <span class="n">network</span><span class="p">[</span><span class="s2">&quot;pore.color&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+            <span class="n">network</span><span class="p">[</span><span class="s2">&quot;pore.radius&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+            <span class="n">network</span><span class="p">[</span><span class="s2">&quot;pore.dmax&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+            <span class="n">network</span><span class="p">[</span><span class="s2">&quot;pore.node_number&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+            <span class="c1"># Scan file to get pore coordinate data</span>
+            <span class="n">scrap_lines</span> <span class="o">=</span> <span class="p">[</span><span class="n">file</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">)]</span>
+            <span class="n">line</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
+            <span class="n">xmax</span> <span class="o">=</span> <span class="mf">0.0</span>
+            <span class="n">ymax</span> <span class="o">=</span> <span class="mf">0.0</span>
+            <span class="n">zmax</span> <span class="o">=</span> <span class="mf">0.0</span>
+            <span class="n">node_num</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">while</span> <span class="n">line</span> <span class="o">!=</span> <span class="s2">&quot;connectivity table</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">:</span>
+                <span class="n">vals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fromstring</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">xmax</span> <span class="o">=</span> <span class="n">vals</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="n">vals</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">xmax</span> <span class="k">else</span> <span class="n">xmax</span>
+                <span class="n">ymax</span> <span class="o">=</span> <span class="n">vals</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="k">if</span> <span class="n">vals</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">ymax</span> <span class="k">else</span> <span class="n">ymax</span>
+                <span class="n">zmax</span> <span class="o">=</span> <span class="n">vals</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="k">if</span> <span class="n">vals</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">zmax</span> <span class="k">else</span> <span class="n">zmax</span>
+                <span class="n">network</span><span class="p">[</span><span class="s2">&quot;pore.coords&quot;</span><span class="p">][</span><span class="nb">int</span><span class="p">(</span><span class="n">vals</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">vals</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span>
+                <span class="n">network</span><span class="p">[</span><span class="s2">&quot;pore.types&quot;</span><span class="p">][</span><span class="nb">int</span><span class="p">(</span><span class="n">vals</span><span class="p">[</span><span class="mi">0</span><span class="p">])]</span> <span class="o">=</span> <span class="n">vals</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span>
+                <span class="n">network</span><span class="p">[</span><span class="s2">&quot;pore.color&quot;</span><span class="p">][</span><span class="nb">int</span><span class="p">(</span><span class="n">vals</span><span class="p">[</span><span class="mi">0</span><span class="p">])]</span> <span class="o">=</span> <span class="n">vals</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span>
+                <span class="n">network</span><span class="p">[</span><span class="s2">&quot;pore.radius&quot;</span><span class="p">][</span><span class="nb">int</span><span class="p">(</span><span class="n">vals</span><span class="p">[</span><span class="mi">0</span><span class="p">])]</span> <span class="o">=</span> <span class="n">vals</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span>
+                <span class="n">network</span><span class="p">[</span><span class="s2">&quot;pore.dmax&quot;</span><span class="p">][</span><span class="nb">int</span><span class="p">(</span><span class="n">vals</span><span class="p">[</span><span class="mi">0</span><span class="p">])]</span> <span class="o">=</span> <span class="n">vals</span><span class="p">[</span><span class="mi">7</span><span class="p">]</span>
+                <span class="n">network</span><span class="p">[</span><span class="s2">&quot;pore.node_number&quot;</span><span class="p">][</span><span class="nb">int</span><span class="p">(</span><span class="n">vals</span><span class="p">[</span><span class="mi">0</span><span class="p">])]</span> <span class="o">=</span> <span class="n">node_num</span>
+                <span class="n">node_num</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="n">line</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
+            <span class="c1"># Scan file to get to connectivity data</span>
+            <span class="n">scrap_lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">file</span><span class="o">.</span><span class="n">readline</span><span class="p">())</span>  <span class="c1"># Skip line</span>
+            <span class="c1"># Create sparse lil array incrementally build adjacency matrix</span>
+            <span class="n">lil</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">sparse</span><span class="o">.</span><span class="n">lil_matrix</span><span class="p">((</span><span class="n">Np</span><span class="p">,</span> <span class="n">Np</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+            <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+                <span class="n">vals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fromstring</span><span class="p">(</span><span class="n">file</span><span class="o">.</span><span class="n">readline</span><span class="p">(),</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">vals</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="k">break</span>
+                <span class="n">lil</span><span class="o">.</span><span class="n">rows</span><span class="p">[</span><span class="n">vals</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="n">vals</span><span class="p">[</span><span class="mi">2</span><span class="p">:]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+                <span class="n">lil</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">vals</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">vals</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+
+        <span class="c1"># fixing any negative volumes or distances so they are 1 voxel/micron</span>
+        <span class="n">network</span><span class="p">[</span><span class="s2">&quot;pore.volume&quot;</span><span class="p">][</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">network</span><span class="p">[</span><span class="s2">&quot;pore.volume&quot;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="mf">1.0</span>
+        <span class="n">network</span><span class="p">[</span><span class="s2">&quot;pore.radius&quot;</span><span class="p">][</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">network</span><span class="p">[</span><span class="s2">&quot;pore.radius&quot;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="mf">1.0</span>
+        <span class="n">network</span><span class="p">[</span><span class="s2">&quot;pore.dmax&quot;</span><span class="p">][</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">network</span><span class="p">[</span><span class="s2">&quot;pore.dmax&quot;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="mf">1.0</span>
+
+        <span class="c1"># Add adjacency matrix to OpenPNM network</span>
+        <span class="n">conns</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">sparse</span><span class="o">.</span><span class="n">triu</span><span class="p">(</span><span class="n">lil</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;coo&quot;</span><span class="p">)</span>
+        <span class="n">network</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;throat.all&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">conns</span><span class="o">.</span><span class="n">col</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)})</span>
+        <span class="n">network</span><span class="p">[</span><span class="s2">&quot;throat.conns&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="n">conns</span><span class="o">.</span><span class="n">row</span><span class="p">,</span> <span class="n">conns</span><span class="o">.</span><span class="n">col</span><span class="p">])</span><span class="o">.</span><span class="n">T</span>
+
+        <span class="n">network</span><span class="p">[</span><span class="s2">&quot;pore.to_trim&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">network</span><span class="p">[</span><span class="s2">&quot;pore.to_trim&quot;</span><span class="p">][</span><span class="n">network</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s2">&quot;*throat&quot;</span><span class="p">)]</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">Ts</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s2">&quot;to_trim&quot;</span><span class="p">)</span>
+        <span class="n">new_conns</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">find_neighbor_pores</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">Ts</span><span class="p">,</span> <span class="n">flatten</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">extend</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">network</span><span class="p">,</span> <span class="n">throat_conns</span><span class="o">=</span><span class="n">new_conns</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="s2">&quot;new_conns&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">network</span><span class="o">.</span><span class="n">props</span><span class="p">(</span><span class="s2">&quot;pore&quot;</span><span class="p">):</span>
+            <span class="n">item</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">network</span><span class="p">[</span><span class="s2">&quot;pore.&quot;</span> <span class="o">+</span> <span class="n">item</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">A</span><span class="o">=</span><span class="n">arr</span><span class="p">,</span> <span class="n">reps</span><span class="o">=</span><span class="p">[</span><span class="n">network</span><span class="o">.</span><span class="n">Nt</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+            <span class="n">network</span><span class="p">[</span><span class="s2">&quot;throat.&quot;</span> <span class="o">+</span> <span class="n">item</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">arr</span><span class="p">)</span>
+            <span class="n">network</span><span class="p">[</span><span class="s2">&quot;throat.&quot;</span> <span class="o">+</span> <span class="n">item</span><span class="p">][</span><span class="n">network</span><span class="o">.</span><span class="n">throats</span><span class="p">(</span><span class="s2">&quot;new_conns&quot;</span><span class="p">)]</span> <span class="o">=</span> <span class="n">network</span><span class="p">[</span>
+                <span class="s2">&quot;pore.&quot;</span> <span class="o">+</span> <span class="n">item</span>
+            <span class="p">][</span><span class="n">Ts</span><span class="p">]</span>
+        <span class="n">trim</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">network</span><span class="p">,</span> <span class="n">pores</span><span class="o">=</span><span class="n">Ts</span><span class="p">)</span>
+
+        <span class="c1"># setting up boundary pores</span>
+        <span class="n">x_coord</span><span class="p">,</span> <span class="n">y_coord</span><span class="p">,</span> <span class="n">z_coord</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hsplit</span><span class="p">(</span><span class="n">network</span><span class="p">[</span><span class="s2">&quot;pore.coords&quot;</span><span class="p">],</span> <span class="mi">3</span><span class="p">)</span>
+        <span class="n">network</span><span class="p">[</span><span class="s2">&quot;pore.front_boundary&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ravel</span><span class="p">(</span><span class="n">x_coord</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">network</span><span class="p">[</span><span class="s2">&quot;pore.back_boundary&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ravel</span><span class="p">(</span><span class="n">x_coord</span> <span class="o">==</span> <span class="n">xmax</span><span class="p">)</span>
+        <span class="n">network</span><span class="p">[</span><span class="s2">&quot;pore.left_boundary&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ravel</span><span class="p">(</span><span class="n">y_coord</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">network</span><span class="p">[</span><span class="s2">&quot;pore.right_boundary&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ravel</span><span class="p">(</span><span class="n">y_coord</span> <span class="o">==</span> <span class="n">ymax</span><span class="p">)</span>
+        <span class="n">network</span><span class="p">[</span><span class="s2">&quot;pore.bottom_boundary&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ravel</span><span class="p">(</span><span class="n">z_coord</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">network</span><span class="p">[</span><span class="s2">&quot;pore.top_boundary&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ravel</span><span class="p">(</span><span class="n">z_coord</span> <span class="o">==</span> <span class="n">zmax</span><span class="p">)</span>
+
+        <span class="c1"># removing any pores that got classified as a boundary pore but</span>
+        <span class="c1"># weren&#39;t labled a border_cell_face</span>
+        <span class="n">ps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span>
+            <span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">in1d</span><span class="p">(</span><span class="n">network</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s2">&quot;*_boundary&quot;</span><span class="p">),</span> <span class="n">network</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s2">&quot;border_cell_face&quot;</span><span class="p">))</span>
+        <span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">ps</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s2">&quot;*_boundary&quot;</span><span class="p">)[</span><span class="n">ps</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">side</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;front&quot;</span><span class="p">,</span> <span class="s2">&quot;back&quot;</span><span class="p">,</span> <span class="s2">&quot;left&quot;</span><span class="p">,</span> <span class="s2">&quot;right&quot;</span><span class="p">,</span> <span class="s2">&quot;top&quot;</span><span class="p">,</span> <span class="s2">&quot;bottom&quot;</span><span class="p">]:</span>
+            <span class="n">network</span><span class="p">[</span><span class="s2">&quot;pore.&quot;</span> <span class="o">+</span> <span class="n">side</span> <span class="o">+</span> <span class="s2">&quot;_boundary&quot;</span><span class="p">][</span><span class="n">ps</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="c1"># setting internal label</span>
+        <span class="n">network</span><span class="p">[</span><span class="s2">&quot;pore.internal&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">network</span><span class="p">[</span><span class="s2">&quot;pore.internal&quot;</span><span class="p">][</span><span class="n">network</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s2">&quot;*_boundary&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;not&quot;</span><span class="p">)]</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="c1"># adding props to border cell face throats and from pores</span>
+        <span class="n">Ts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span>
+            <span class="n">network</span><span class="p">[</span><span class="s2">&quot;throat.conns&quot;</span><span class="p">][:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">network</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s2">&quot;border_cell_face&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">faces</span> <span class="o">=</span> <span class="n">network</span><span class="p">[</span><span class="s2">&quot;throat.conns&quot;</span><span class="p">][</span><span class="n">Ts</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">network</span><span class="o">.</span><span class="n">props</span><span class="p">(</span><span class="s2">&quot;pore&quot;</span><span class="p">):</span>
+            <span class="n">item</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">network</span><span class="p">[</span><span class="s2">&quot;throat.&quot;</span> <span class="o">+</span> <span class="n">item</span><span class="p">][</span><span class="n">Ts</span><span class="p">]</span> <span class="o">=</span> <span class="n">network</span><span class="p">[</span><span class="s2">&quot;pore.&quot;</span> <span class="o">+</span> <span class="n">item</span><span class="p">][</span><span class="n">faces</span><span class="p">]</span>
+        <span class="n">network</span><span class="p">[</span><span class="s2">&quot;pore.volume&quot;</span><span class="p">][</span><span class="n">faces</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+        <span class="c1"># applying unit conversions</span>
+        <span class="c1"># TODO: Determine if radius and dmax are indeed microns and not voxels</span>
+        <span class="n">network</span><span class="p">[</span><span class="s2">&quot;pore.coords&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">network</span><span class="p">[</span><span class="s2">&quot;pore.coords&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="mf">1e-6</span>
+        <span class="n">network</span><span class="p">[</span><span class="s2">&quot;pore.radius&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">network</span><span class="p">[</span><span class="s2">&quot;pore.radius&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="mf">1e-6</span>
+        <span class="n">network</span><span class="p">[</span><span class="s2">&quot;pore.dmax&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">network</span><span class="p">[</span><span class="s2">&quot;pore.dmax&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="mf">1e-6</span>
+        <span class="n">network</span><span class="p">[</span><span class="s2">&quot;pore.volume&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">network</span><span class="p">[</span><span class="s2">&quot;pore.volume&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="n">voxel_size</span> <span class="o">**</span> <span class="mi">3</span>
+        <span class="n">network</span><span class="p">[</span><span class="s2">&quot;throat.coords&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">network</span><span class="p">[</span><span class="s2">&quot;throat.coords&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="mf">1e-6</span>
+        <span class="n">network</span><span class="p">[</span><span class="s2">&quot;throat.radius&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">network</span><span class="p">[</span><span class="s2">&quot;throat.radius&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="mf">1e-6</span>
+        <span class="n">network</span><span class="p">[</span><span class="s2">&quot;throat.dmax&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">network</span><span class="p">[</span><span class="s2">&quot;throat.dmax&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="mf">1e-6</span>
+        <span class="n">network</span><span class="p">[</span><span class="s2">&quot;throat.volume&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">network</span><span class="p">[</span><span class="s2">&quot;throat.volume&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="n">voxel_size</span> <span class="o">**</span> <span class="mi">3</span>
+
+        <span class="k">return</span> <span class="n">network</span><span class="o">.</span><span class="n">project</span></div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020 OpenPNM Team
+
+    </p>
+  </div> 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -1,0 +1,339 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>ReactiveTransport &mdash; OpenPNM</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="TransientReactiveTransport" href="transient_reactive_transport.html" />
+    <link rel="prev" title="GenericTransport" href="generic_transport.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home" alt="Documentation Home"> OpenPNM
+          
+
+          
+            
+            <img src="../../_static/logo.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installing OpenPNM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quick_start.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../userguide.html">Examples</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html"><strong>Module Reference</strong></a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../core/index.html">Core</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../network/index.html">Network</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../geometry/index.html">Geometry</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../phases/index.html">Phases</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../physics/index.html">Physics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../materials/index.html">Materials</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">Algorithms</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="index.html#module-openpnm.algorithms">Overview of Module</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="index.html#generic-classes">Generic Classes</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="generic_algorithm.html">GenericAlgorithm</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generic_transport.html">GenericTransport</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">ReactiveTransport</a></li>
+<li class="toctree-l4"><a class="reference internal" href="transient_reactive_transport.html">TransientReactiveTransport</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="index.html#percolation-classes">Percolation Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="index.html#transport-classes">Transport Classes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="metrics/index.html">Metrics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../topotools/index.html">Topotools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../models/index.html">Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../io/index.html">IO</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../utils/index.html">Utilities</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">OpenPNM</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html"><strong>Module Reference</strong></a> &raquo;</li>
+        
+          <li><a href="index.html">Algorithms</a> &raquo;</li>
+        
+      <li>ReactiveTransport</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="reactivetransport">
+<span id="reactive-transport-api"></span><h1>ReactiveTransport<a class="headerlink" href="#reactivetransport" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt id="openpnm.algorithms.ReactiveTransport">
+<em class="property">class </em><code class="sig-prename descclassname">openpnm.algorithms.</code><code class="sig-name descname">ReactiveTransport</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/ReactiveTransport.html#ReactiveTransport"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.algorithms.ReactiveTransport" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">openpnm.algorithms.GenericTransport.GenericTransport</span></code></p>
+<p>A subclass for steady-state simulations with (optionally) source terms</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>network</strong> (<em>(</em><em>OpenPNM Network object</em><em>)</em>) – The network object to which this algorithm will apply.</p></li>
+<li><p><strong>name</strong> (<em>(</em><em>string</em><em>, </em><em>optional</em><em>)</em>) – Name of the algorithm</p></li>
+<li><p><strong>project</strong> (<em>(</em><em>OpenPNM Project object</em><em>, </em><em>optional</em><em>)</em>) – Either a Network or a Project must be supplied</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This subclass performs steady simulations of transport phenomena with
+reactions when source terms are added.</p>
+<dl class="py method">
+<dt id="openpnm.algorithms.ReactiveTransport.reset">
+<code class="sig-name descname">reset</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">source_terms</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">variable_props</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/ReactiveTransport.html#ReactiveTransport.reset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.algorithms.ReactiveTransport.reset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Resets the algorithm to enable re-use.</p>
+<p>This allows the reuse of an algorithm inside a for-loop for parametric
+studies.  The default behavior means that only <code class="docutils literal notranslate"><span class="pre">alg.reset()</span></code> and
+<code class="docutils literal notranslate"><span class="pre">alg.run()</span></code> must be called inside a loop.  To reset the algorithm
+more completely requires overriding the default arguments.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>results</strong> (<em>boolean</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code> (default) all previously calculated values pertaining
+to results of the algorithm are removed.</p></li>
+<li><p><strong>bcs</strong> (boolean (default = <code class="docutils literal notranslate"><span class="pre">False</span></code>)) – If <code class="docutils literal notranslate"><span class="pre">True</span></code> all previous boundary conditions are removed.</p></li>
+<li><p><strong>source_terms</strong> (<em>boolean</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code> removes source terms. The default is <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+<li><p><strong>variable_props</strong> (<em>boolean</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code> removes variable properties. The default is <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="openpnm.algorithms.ReactiveTransport.run">
+<code class="sig-name descname">run</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x0</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/ReactiveTransport.html#ReactiveTransport.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.algorithms.ReactiveTransport.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Builds the A and b matrices, and calls the solver specified in the
+<code class="docutils literal notranslate"><span class="pre">settings</span></code> attribute.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>x0</strong> (<em>ND-array</em>) – Initial guess of unknown variable</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="openpnm.algorithms.ReactiveTransport.set_source">
+<code class="sig-name descname">set_source</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">propname</span></em>, <em class="sig-param"><span class="n">pores</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/ReactiveTransport.html#ReactiveTransport.set_source"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.algorithms.ReactiveTransport.set_source" title="Permalink to this definition">¶</a></dt>
+<dd><p>Applies a given source term to the specified pores</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>propname</strong> (<em>string</em>) – The property name of the source term model to be applied</p></li>
+<li><p><strong>pores</strong> (<em>array_like</em>) – The pore indices where the source term should be applied</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Source terms cannot be applied in pores where boundary conditions have
+already been set. Attempting to do so will result in an error being
+raised.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="openpnm.algorithms.ReactiveTransport.setup">
+<code class="sig-name descname">setup</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">phase</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">quantity</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">conductance</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">nlin_max_iter</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">relaxation_source</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">relaxation_quantity</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/ReactiveTransport.html#ReactiveTransport.setup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.algorithms.ReactiveTransport.setup" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method takes several arguments that are essential to running the
+algorithm and adds them to the settings</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>phase</strong> (<em>str</em>) – The name of the phase on which the algorithm acts</p></li>
+<li><p><strong>quantity</strong> (<em>str</em>) – The name of the physical quantity to be calculated</p></li>
+<li><p><strong>conductance</strong> (<em>str</em>) – The name of the pore-scale transport conductance values. These are
+typically calculated by a model attached to a <em>Physics</em> object
+associated with the given <em>Phase</em>.</p></li>
+<li><p><strong>phase</strong> – The name of the phase on which the algorithm acts</p></li>
+<li><p><strong>quantity</strong> – The name of the physical quantity to be calculated</p></li>
+<li><p><strong>conductance</strong> – The name of the pore-scale transport conductance values. These are
+typically calculated by a model attached to a <em>Physics</em> object
+associated with the given <em>Phase</em>.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Under-relaxation is a technique used for improving stability of a
+computation, particularly in the presence of highly non-linear terms.
+Under-relaxation used here limits the change in a variable from one
+iteration to the next. An optimum choice of the relaxation factor is
+one that is small enough to ensure stable simulation and large enough
+to speed up the computation.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="transient_reactive_transport.html" class="btn btn-neutral float-right" title="TransientReactiveTransport" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="generic_transport.html" class="btn btn-neutral float-left" title="GenericTransport" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020 OpenPNM Team
+
+    </p>
+  </div> 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

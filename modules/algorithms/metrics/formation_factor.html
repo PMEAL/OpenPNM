@@ -1,0 +1,364 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>FormationFactor &mdash; OpenPNM</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="RelativePermeability" href="relative_permeability.html" />
+    <link rel="prev" title="MercuryIntrusion" href="mercury_intrusion.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home" alt="Documentation Home"> OpenPNM
+          
+
+          
+            
+            <img src="../../../_static/logo.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installing OpenPNM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quick_start.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../userguide.html">Examples</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../index.html"><strong>Module Reference</strong></a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../core/index.html">Core</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../network/index.html">Network</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../geometry/index.html">Geometry</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../phases/index.html">Phases</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../physics/index.html">Physics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../materials/index.html">Materials</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html">Algorithms</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">Metrics</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="index.html#module-openpnm.algorithms.metrics">Overview of Module</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="index.html#transport-properties">Transport Properties</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="mercury_intrusion.html">MercuryIntrusion</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">FormationFactor</a></li>
+<li class="toctree-l4"><a class="reference internal" href="relative_permeability.html">RelativePermeability</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../topotools/index.html">Topotools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../models/index.html">Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../io/index.html">IO</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../utils/index.html">Utilities</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">OpenPNM</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html"><strong>Module Reference</strong></a> &raquo;</li>
+        
+          <li><a href="index.html">Metrics</a> &raquo;</li>
+        
+      <li>FormationFactor</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="formationfactor">
+<span id="formation-factor-api"></span><h1>FormationFactor<a class="headerlink" href="#formationfactor" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt id="openpnm.algorithms.metrics.FormationFactor">
+<em class="property">class </em><code class="sig-prename descclassname">openpnm.algorithms.metrics.</code><code class="sig-name descname">FormationFactor</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/openpnm/algorithms/metrics/FormationFactor.html#FormationFactor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.algorithms.metrics.FormationFactor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">openpnm.algorithms.metrics.GenericMetric.GenericMetric</span></code></p>
+<p>This class works by applying ‘value’ boundary conditions across the
+domain to find molar flow, then using Fick’s law to back-calculate
+the effective diffusivity of the domain.  The formation factor is
+defined as:</p>
+<div class="math notranslate nohighlight">
+\[F = \frac{D_{AB}}{D_{eff}} &gt; 1\]</div>
+<p>where</p>
+<div class="math notranslate nohighlight">
+\[D_{eff} = \frac{n_{A} L }{\Delta C_{A} A }\]</div>
+<p>and</p>
+<div class="math notranslate nohighlight">
+\[D_{eff} = D_{AB} \frac{\varepsilon}{\tau}\]</div>
+<p>The formation factor is a convenient metric to compare diffusion in
+different pore networks since it does not require knowledge of the network
+porosity, unlike tortuosity. The porosity of a pore network is difficult
+to determine, mainly because the bulk volume of a network is not
+well known.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">openpnm</span> <span class="k">as</span> <span class="nn">op</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pn</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Cubic</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">],</span> <span class="n">spacing</span><span class="o">=</span><span class="mf">1e-5</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">geo</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">StickAndBall</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">,</span> <span class="n">pores</span><span class="o">=</span><span class="n">pn</span><span class="o">.</span><span class="n">Ps</span><span class="p">,</span> <span class="n">throats</span><span class="o">=</span><span class="n">pn</span><span class="o">.</span><span class="n">Ts</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Now find the formation factor of the network:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">F</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">algorithms</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">FormationFactor</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">F</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">F</span><span class="o">.</span><span class="n">results</span><span class="p">)</span>
+<span class="go">――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――</span>
+<span class="go">Direction                           Formation Factor</span>
+<span class="go">――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――</span>
+<span class="go">x                                   ...</span>
+<span class="go">y                                   ...</span>
+<span class="go">z                                   ...</span>
+<span class="go">――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt id="openpnm.algorithms.metrics.FormationFactor.run">
+<code class="sig-name descname">run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/openpnm/algorithms/metrics/FormationFactor.html#FormationFactor.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.algorithms.metrics.FormationFactor.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Execute the diffusion simulations in the principle directions.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="openpnm.algorithms.metrics.FormationFactor.set_area">
+<code class="sig-name descname">set_area</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">direction</span></em>, <em class="sig-param"><span class="n">area</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/openpnm/algorithms/metrics/FormationFactor.html#FormationFactor.set_area"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.algorithms.metrics.FormationFactor.set_area" title="Permalink to this definition">¶</a></dt>
+<dd><p>Specifies the area of the inlet faces normal to the given direction</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>direction</strong> (<em>string</em>) – Either ‘x’, ‘y’, or ‘z’, indicating the principle direction</p></li>
+<li><p><strong>area</strong> (<em>scalar</em>) – The numerical value of the inlet face area</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>If this value is not provided then an attempt is made to calculate it
+automatically, though this estimate is not perfectly accurate,
+especially for small networks.  This value is placed into the object’s
+setting dictionary under ‘areas’.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="openpnm.algorithms.metrics.FormationFactor.set_inlets">
+<code class="sig-name descname">set_inlets</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">direction</span></em>, <em class="sig-param"><span class="n">label</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/openpnm/algorithms/metrics/FormationFactor.html#FormationFactor.set_inlets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.algorithms.metrics.FormationFactor.set_inlets" title="Permalink to this definition">¶</a></dt>
+<dd><p>Specifies which pore labels indicate the inlet face for a given
+direction</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>direction</strong> (<em>string</em>) – Either ‘x’, ‘y’, or ‘z’, indicating the principle direction</p></li>
+<li><p><strong>label</strong> (<em>string</em>) – The pore label indicating which pores define the inlet face</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>By default inlets are taken as pores labelled ‘left’, ‘top’ and
+‘front’. If your network does not have these labels you should
+either add them, or change which labels this algorithm looks for
+using this function, or manual changing the values in the
+<code class="docutils literal notranslate"><span class="pre">settings['inlets']</span></code>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="openpnm.algorithms.metrics.FormationFactor.set_length">
+<code class="sig-name descname">set_length</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">direction</span></em>, <em class="sig-param"><span class="n">length</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/openpnm/algorithms/metrics/FormationFactor.html#FormationFactor.set_length"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.algorithms.metrics.FormationFactor.set_length" title="Permalink to this definition">¶</a></dt>
+<dd><p>Specifies the length of the domain along the given direction</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>direction</strong> (<em>string</em>) – Either ‘x’, ‘y’, or ‘z’, indicating the principle direction</p></li>
+<li><p><strong>area</strong> (<em>scalar</em>) – The numerical value of the domain length</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>If this value is not provided then an attempt is made to calculate it
+automatically, though this estimate is not perfectly accurate,
+especially for small networks.  This value is placed into the object’s
+setting dictionary under ‘lengths’.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="openpnm.algorithms.metrics.FormationFactor.set_outlets">
+<code class="sig-name descname">set_outlets</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">direction</span></em>, <em class="sig-param"><span class="n">label</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/openpnm/algorithms/metrics/FormationFactor.html#FormationFactor.set_outlets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.algorithms.metrics.FormationFactor.set_outlets" title="Permalink to this definition">¶</a></dt>
+<dd><p>Specifies which pore labels indicate the outlet face for a given
+direction</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>direction</strong> (<em>string</em>) – Either ‘x’, ‘y’, or ‘z’, indicating the principle direction</p></li>
+<li><p><strong>label</strong> (<em>string</em>) – The pore label indicating which pores define the outlet face</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>By default outlets are taken as pores labelled ‘right’, ‘bottom’ and
+‘back’. If your network does not have these labels you should
+either add them, or change which labels this algorithm looks for
+using this function, or manual changing the values in the
+<code class="docutils literal notranslate"><span class="pre">settings['outlets']</span></code>.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="relative_permeability.html" class="btn btn-neutral float-right" title="RelativePermeability" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="mercury_intrusion.html" class="btn btn-neutral float-left" title="MercuryIntrusion" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020 OpenPNM Team
+
+    </p>
+  </div> 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

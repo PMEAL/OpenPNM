@@ -1,0 +1,326 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>CSV &mdash; OpenPNM</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="VTK" href="VTK.html" />
+    <link rel="prev" title="Dict" href="dict.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home" alt="Documentation Home"> OpenPNM
+          
+
+          
+            
+            <img src="../../_static/logo.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installing OpenPNM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quick_start.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../userguide.html">Examples</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html"><strong>Module Reference</strong></a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../core/index.html">Core</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../network/index.html">Network</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../geometry/index.html">Geometry</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../phases/index.html">Phases</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../physics/index.html">Physics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../materials/index.html">Materials</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../algorithms/index.html">Algorithms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../algorithms/metrics/index.html">Metrics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../topotools/index.html">Topotools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../models/index.html">Models</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">IO</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="index.html#module-openpnm.io">Overview of Module</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="index.html#links-to-detailed-class-documentation">Links to Detailed Class Documentation</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="dict.html">Dict</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">CSV</a></li>
+<li class="toctree-l4"><a class="reference internal" href="VTK.html">VTK</a></li>
+<li class="toctree-l4"><a class="reference internal" href="HDF5.html">HDF5</a></li>
+<li class="toctree-l4"><a class="reference internal" href="XDMF.html">XDMF</a></li>
+<li class="toctree-l4"><a class="reference internal" href="mat.html">VTK</a></li>
+<li class="toctree-l4"><a class="reference internal" href="networkx.html">NetworkX</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pandas.html">Pandas</a></li>
+<li class="toctree-l4"><a class="reference internal" href="statoil.html">Statoil</a></li>
+<li class="toctree-l4"><a class="reference internal" href="marock.html">MARock</a></li>
+<li class="toctree-l4"><a class="reference internal" href="imorph.html">iMorph</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../utils/index.html">Utilities</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">OpenPNM</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html"><strong>Module Reference</strong></a> &raquo;</li>
+        
+          <li><a href="index.html">IO</a> &raquo;</li>
+        
+      <li>CSV</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="csv">
+<span id="csv-api"></span><h1>CSV<a class="headerlink" href="#csv" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt id="openpnm.io.CSV">
+<em class="property">class </em><code class="sig-prename descclassname">openpnm.io.</code><code class="sig-name descname">CSV</code><a class="reference internal" href="../../_modules/openpnm/io/CSV.html#CSV"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.io.CSV" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">openpnm.io.GenericIO.GenericIO</span></code></p>
+<p>Reads and writes CSV (comma-separated-value files) containing pore and
+throat data</p>
+<p class="rubric">Notes</p>
+<p>There are a few rules governing how the data is be stored:</p>
+<p>1. The first row of the file (column headers) must contain the
+property names. The subsequent rows contain the data.</p>
+<p>2. The property names should be in the usual OpenPNM format, such as
+of <code class="docutils literal notranslate"><span class="pre">pore.volume</span></code> or <code class="docutils literal notranslate"><span class="pre">throat.surface_area</span></code>.</p>
+<p>3. Each column represents a specific property.  For Np x 1 or Nt x 1
+data such as <em>pore.volume</em> this is straightforward.  For Np x <em>m</em> or
+Nt x <em>m</em> data, each of the <em>m</em> columns should have their own column in
+in the CSV file, with a numpy-style index indicating which axis it
+corresponds to.  For instance, the <em>pore.coords</em> values should be stored
+as three separate columns with the headings: <em>pore.coords[0]</em>,
+<em>pore.coords[1]</em>, and <em>pore.coords[2]</em>.  OpenPNM will convert that back
+into an Np x <em>m</em> array upon loading.</p>
+<ol class="arabic simple" start="4">
+<li><p>The file can contain both or either pore and throat data.</p></li>
+</ol>
+<p>5. Labels can be imported by placing the characters TRUE and FALSE
+in a column corresponding to the label name (i.e. <em>pore.front</em>).  TRUE
+indicates where the label applies and FALSE otherwise.</p>
+<dl class="py method">
+<dt id="openpnm.io.CSV.export_data">
+<em class="property">classmethod </em><code class="sig-name descname">export_data</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">network</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">phases</span><span class="o">=</span><span class="default_value">[]</span></em>, <em class="sig-param"><span class="n">filename</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">delim</span><span class="o">=</span><span class="default_value">' | '</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/io/CSV.html#CSV.export_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.io.CSV.export_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save all the pore and throat property data on the Network (and
+optionally on any Phases objects) to CSV files.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>network</strong> (<em>OpenPNM Network</em>) – The Network containing the data to be stored</p></li>
+<li><p><strong>phases</strong> (<em>list of OpenPNM Phases</em><em> (</em><em>optional</em><em>)</em>) – The Phases whose data should be stored.</p></li>
+<li><p><strong>filename</strong> (<em>string</em><em> or </em><em>path object</em>) – The name of the file to store the data</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The data from all Geometry objects is added to the file automatically.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="openpnm.io.CSV.import_data">
+<em class="property">classmethod </em><code class="sig-name descname">import_data</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">filename</span></em>, <em class="sig-param"><span class="n">project</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">delim</span><span class="o">=</span><span class="default_value">' | '</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/io/CSV.html#CSV.import_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.io.CSV.import_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Opens a ‘csv’ file, reads in the data, and adds it to the <strong>Network</strong></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filename</strong> (<em>string</em><em> (</em><em>optional</em><em>)</em>) – The name of the file containing the data to import.  The formatting
+of this file is outlined below.</p></li>
+<li><p><strong>project</strong> (<em>OpenPNM Project object</em>) – A GenericNetwork is created and added to the specified Project.
+If no Project object is supplied then one will be created and
+returned.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>project</strong> – An OpenPNM project containing the data assigned to Generic
+versions of the objects from which it was exported.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="openpnm.io.CSV.load">
+<em class="property">classmethod </em><code class="sig-name descname">load</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/io/CSV.html#CSV.load"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.io.CSV.load" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method will be deprecated.  Use <code class="docutils literal notranslate"><span class="pre">import_data</span></code> instead.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="openpnm.io.CSV.save">
+<em class="property">classmethod </em><code class="sig-name descname">save</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/io/CSV.html#CSV.save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.io.CSV.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method is to be deprecated. Use <code class="docutils literal notranslate"><span class="pre">export_data</span></code> instead.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="VTK.html" class="btn btn-neutral float-right" title="VTK" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="dict.html" class="btn btn-neutral float-left" title="Dict" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020 OpenPNM Team
+
+    </p>
+  </div> 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

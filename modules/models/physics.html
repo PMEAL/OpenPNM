@@ -1,0 +1,1427 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Physics Models &mdash; OpenPNM</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="IO" href="../io/index.html" />
+    <link rel="prev" title="Phase Models" href="phase.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home" alt="Documentation Home"> OpenPNM
+          
+
+          
+            
+            <img src="../../_static/logo.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installing OpenPNM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quick_start.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../userguide.html">Examples</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html"><strong>Module Reference</strong></a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../core/index.html">Core</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../network/index.html">Network</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../geometry/index.html">Geometry</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../phases/index.html">Phases</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../physics/index.html">Physics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../materials/index.html">Materials</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../algorithms/index.html">Algorithms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../algorithms/metrics/index.html">Metrics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../topotools/index.html">Topotools</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">Models</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="index.html#module-openpnm.models">Overview of Module</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="index.html#links-to-detailed-submodule-documentation">Links to Detailed Submodule Documentation</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="misc.html">Miscellaneous Models</a></li>
+<li class="toctree-l4"><a class="reference internal" href="geometry.html">Geometry Models</a></li>
+<li class="toctree-l4"><a class="reference internal" href="phase.html">Phase Models</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">Physics Models</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../io/index.html">IO</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../utils/index.html">Utilities</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">OpenPNM</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html"><strong>Module Reference</strong></a> &raquo;</li>
+        
+          <li><a href="index.html">Models</a> &raquo;</li>
+        
+      <li>Physics Models</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="physics-models">
+<span id="phys-models-api"></span><h1><a class="toc-backref" href="#id9">Physics Models</a><a class="headerlink" href="#physics-models" title="Permalink to this headline">¶</a></h1>
+<div class="contents topic" id="contents-of-this-page">
+<p class="topic-title">Contents of this Page</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#physics-models" id="id9">Physics Models</a></p>
+<ul>
+<li><p><a class="reference internal" href="#module-openpnm.models.physics" id="id10">Overview of Submodule</a></p></li>
+<li><p><a class="reference internal" href="#detailed-model-documentation" id="id11">Detailed Model Documentation</a></p>
+<ul>
+<li><p><a class="reference internal" href="#module-openpnm.models.physics.capillary_pressure" id="id12">Capillary Pressure</a></p></li>
+<li><p><a class="reference internal" href="#module-openpnm.models.physics.diffusive_conductance" id="id13">Diffusive Conductance</a></p></li>
+<li><p><a class="reference internal" href="#module-openpnm.models.physics.electrical_conductance" id="id14">Electrical Conductance</a></p></li>
+<li><p><a class="reference internal" href="#module-openpnm.models.physics.hydraulic_conductance" id="id15">Hydraulic Conductance</a></p></li>
+<li><p><a class="reference internal" href="#module-openpnm.models.physics.thermal_conductance" id="id16">Thermal Conductance</a></p></li>
+<li><p><a class="reference internal" href="#module-openpnm.models.physics.multiphase" id="id17">Multiphase</a></p></li>
+<li><p><a class="reference internal" href="#module-openpnm.models.physics.poisson_shape_factors" id="id18">Poisson Shape Factors</a></p></li>
+<li><p><a class="reference internal" href="#module-openpnm.models.physics.flow_shape_factors" id="id19">Flow Shape Factors</a></p></li>
+<li><p><a class="reference internal" href="#module-openpnm.models.physics.generic_source_term" id="id20">Source Terms</a></p></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="module-openpnm.models.physics">
+<span id="overview-of-submodule"></span><h2><a class="toc-backref" href="#id10">Overview of Submodule</a><a class="headerlink" href="#module-openpnm.models.physics" title="Permalink to this headline">¶</a></h2>
+<p><strong>openpnm.models.physics</strong></p>
+<hr class="docutils" />
+<p>This submodule contains models for calculating properties related to physical
+transport processes, including conductances, reaction rates, and capillary
+effects</p>
+</div>
+<div class="section" id="detailed-model-documentation">
+<h2><a class="toc-backref" href="#id11">Detailed Model Documentation</a><a class="headerlink" href="#detailed-model-documentation" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-openpnm.models.physics.capillary_pressure">
+<span id="capillary-pressure"></span><h3><a class="toc-backref" href="#id12">Capillary Pressure</a><a class="headerlink" href="#module-openpnm.models.physics.capillary_pressure" title="Permalink to this headline">¶</a></h3>
+<dl class="py function">
+<dt id="openpnm.models.physics.capillary_pressure.washburn">
+<code class="sig-prename descclassname">openpnm.models.physics.capillary_pressure.</code><code class="sig-name descname">washburn</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">target</span></em>, <em class="sig-param"><span class="n">surface_tension</span><span class="o">=</span><span class="default_value">'pore.surface_tension'</span></em>, <em class="sig-param"><span class="n">contact_angle</span><span class="o">=</span><span class="default_value">'pore.contact_angle'</span></em>, <em class="sig-param"><span class="n">diameter</span><span class="o">=</span><span class="default_value">'throat.diameter'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/physics/capillary_pressure.html#washburn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.models.physics.capillary_pressure.washburn" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the capillary entry pressure assuming the throat in a cylindrical
+tube.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>target</strong> (<em>OpenPNM Object</em>) – The object for which these values are being calculated.  This
+controls the length of the calculated array, and also provides
+access to other necessary thermofluid properties.</p></li>
+<li><p><strong>surface_tension</strong> (<em>string</em>) – The dictionary key containing the surface tension values to be used. If
+a pore property is given, it is interpolated to a throat list.</p></li>
+<li><p><strong>contact_angle</strong> (<em>string</em>) – The dictionary key containing the contact angle values to be used. If
+a pore property is given, it is interpolated to a throat list.</p></li>
+<li><p><strong>diameter</strong> (<em>string</em>) – The dictionary key containing the throat diameter values to be used.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>value</strong> – Array containing pore/throat capillary entry pressure values.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>NumPy ndarray</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The Washburn equation is:</p>
+<div class="math notranslate nohighlight">
+\[P_c = -\frac{2\sigma(cos(\theta))}{r}\]</div>
+<p>This is the most basic approach to calculating entry pressure and is
+suitable for highly non-wetting invading phases in most materials.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="openpnm.models.physics.capillary_pressure.purcell">
+<code class="sig-prename descclassname">openpnm.models.physics.capillary_pressure.</code><code class="sig-name descname">purcell</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">target</span></em>, <em class="sig-param"><span class="n">r_toroid</span></em>, <em class="sig-param"><span class="n">surface_tension</span><span class="o">=</span><span class="default_value">'pore.surface_tension'</span></em>, <em class="sig-param"><span class="n">contact_angle</span><span class="o">=</span><span class="default_value">'pore.contact_angle'</span></em>, <em class="sig-param"><span class="n">diameter</span><span class="o">=</span><span class="default_value">'throat.diameter'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/physics/capillary_pressure.html#purcell"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.models.physics.capillary_pressure.purcell" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the throat capillary entry pressure assuming the throat is a
+toroid.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>target</strong> (<em>OpenPNM Object</em>) – The object for which these values are being calculated.  This
+controls the length of the calculated array, and also provides
+access to other necessary thermofluid properties.</p></li>
+<li><p><strong>r_toroid</strong> (<em>float</em><em> or </em><em>array_like</em>) – The radius of the toroid surrounding the pore</p></li>
+<li><p><strong>surface_tension</strong> (<em>dict key</em><em> (</em><em>string</em><em>)</em>) – The dictionary key containing the surface tension values to be used.
+If a pore property is given, it is interpolated to a throat list.</p></li>
+<li><p><strong>contact_angle</strong> (<em>dict key</em><em> (</em><em>string</em><em>)</em>) – The dictionary key containing the contact angle values to be used.
+If a pore property is given, it is interpolated to a throat list.</p></li>
+<li><p><strong>diameter</strong> (<em>dict key</em><em> (</em><em>string</em><em>)</em>) – The dictionary key containing the throat diameter values to be used.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>value</strong> – Array containing pore/throat capillary entry pressure values.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>NumPy ndarray</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This approach accounts for the converging-diverging nature of many throat
+types.  Advancing the meniscus beyond the apex of the toroid requires an
+increase in capillary pressure beyond that for a cylindical tube of the
+same radius. The details of this equation are described by Mason and
+Morrow <a class="footnote-reference brackets" href="#id3" id="id1">1</a>, and explored by Gostick <a class="footnote-reference brackets" href="#id4" id="id2">2</a> in the context of a pore network
+model.</p>
+<p class="rubric">References</p>
+<dl class="footnote brackets">
+<dt class="label" id="id3"><span class="brackets"><a class="fn-backref" href="#id1">1</a></span></dt>
+<dd><p>G. Mason, N. R. Morrow, Effect of contact angle on capillary
+displacement curvatures in pore throats formed by spheres. J.
+Colloid Interface Sci. 168, 130 (1994).</p>
+</dd>
+<dt class="label" id="id4"><span class="brackets"><a class="fn-backref" href="#id2">2</a></span></dt>
+<dd><p>J. Gostick, Random pore network modeling of fibrous PEMFC gas
+diffusion media using Voronoi and Delaunay tessellations. J.
+Electrochem. Soc. 160, F731 (2013).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="openpnm.models.physics.capillary_pressure.purcell_bidirectional">
+<code class="sig-prename descclassname">openpnm.models.physics.capillary_pressure.</code><code class="sig-name descname">purcell_bidirectional</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">target</span></em>, <em class="sig-param"><span class="n">r_toroid</span><span class="o">=</span><span class="default_value">5e-06</span></em>, <em class="sig-param"><span class="n">num_points</span><span class="o">=</span><span class="default_value">1000.0</span></em>, <em class="sig-param"><span class="n">surface_tension</span><span class="o">=</span><span class="default_value">'pore.surface_tension'</span></em>, <em class="sig-param"><span class="n">contact_angle</span><span class="o">=</span><span class="default_value">'pore.contact_angle'</span></em>, <em class="sig-param"><span class="n">throat_diameter</span><span class="o">=</span><span class="default_value">'throat.diameter'</span></em>, <em class="sig-param"><span class="n">pore_diameter</span><span class="o">=</span><span class="default_value">'pore.diameter'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/physics/capillary_pressure.html#purcell_bidirectional"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.models.physics.capillary_pressure.purcell_bidirectional" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the throat capillary entry pressure assuming the throat is a
+toroid. Makes use of the toroidal meniscus model with mode touch.
+This model accounts for mensicus protrusion into adjacent pores and
+touching solid features.
+It is bidirectional becauase the connected pores generally have different
+sizes and this determines how far the meniscus can protrude.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>target</strong> (<em>OpenPNM Object</em>) – The object for which these values are being calculated.  This
+controls the length of the calculated array, and also provides
+access to other necessary thermofluid properties.</p></li>
+<li><p><strong>r_toroid</strong> (<em>float</em><em> or </em><em>array_like</em>) – The radius of the toroid surrounding the pore</p></li>
+<li><p><strong>num_points</strong> (<em>float</em><em> (</em><em>Default 100</em><em>)</em>) – The number of divisions to make along the profile length to assess the
+meniscus properties in order to find the touch length.</p></li>
+<li><p><strong>surface_tension</strong> (<em>dict key</em><em> (</em><em>string</em><em>)</em>) – The dictionary key containing the surface tension values to be used.
+If a pore property is given, it is interpolated to a throat list.</p></li>
+<li><p><strong>contact_angle</strong> (<em>dict key</em><em> (</em><em>string</em><em>)</em>) – The dictionary key containing the contact angle values to be used.
+If a pore property is given, it is interpolated to a throat list.</p></li>
+<li><p><strong>throat_diameter</strong> (<em>dict key</em><em> (</em><em>string</em><em>)</em>) – The dictionary key containing the throat diameter values to be used.</p></li>
+<li><p><strong>pore_diameter</strong> (<em>dict key</em><em> (</em><em>string</em><em>)</em>) – The dictionary key containing the pore diameter values to be used.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>value</strong> – Array containing throat capillary entry pressure values.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>NumPy ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="openpnm.models.physics.capillary_pressure.ransohoff_snap_off">
+<code class="sig-prename descclassname">openpnm.models.physics.capillary_pressure.</code><code class="sig-name descname">ransohoff_snap_off</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">target</span></em>, <em class="sig-param"><span class="n">shape_factor</span><span class="o">=</span><span class="default_value">2.0</span></em>, <em class="sig-param"><span class="n">wavelength</span><span class="o">=</span><span class="default_value">5e-06</span></em>, <em class="sig-param"><span class="n">require_pair</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">surface_tension</span><span class="o">=</span><span class="default_value">'pore.surface_tension'</span></em>, <em class="sig-param"><span class="n">contact_angle</span><span class="o">=</span><span class="default_value">'pore.contact_angle'</span></em>, <em class="sig-param"><span class="n">diameter</span><span class="o">=</span><span class="default_value">'throat.diameter'</span></em>, <em class="sig-param"><span class="n">vertices</span><span class="o">=</span><span class="default_value">'throat.offset_vertices'</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/physics/capillary_pressure.html#ransohoff_snap_off"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.models.physics.capillary_pressure.ransohoff_snap_off" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the capillary snap-off pressure assuming the throat is cylindrical
+with converging-diverging change in diamater - like the Purcell model.
+The wavelength of the change in diamater is the fiber radius.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>target</strong> (<em>OpenPNM Object</em>) – The object for which these values are being calculated.  This
+controls the length of the calculated array, and also provides
+access to other necessary thermofluid properties.</p></li>
+<li><p><strong>shape_factor</strong> – constant dependent on the shape of throat cross-section 1.75 - 2.0, see
+Ref</p></li>
+<li><p><strong>wavelength</strong> (<em>float</em><em> or </em><em>array like</em>) – The transverse interfacial radius of curvature at the neck
+(fiber radius in fibrous media)</p></li>
+<li><p><strong>require_pair</strong> (<em>bool</em>) – Controls whether snap-off requires a pair of arc meniscii to occur.</p></li>
+<li><p><strong>surface_tension</strong> (<em>dict key</em><em> (</em><em>string</em><em>)</em>) – The dictionary key containing the surface tension values to be used.
+If a pore property is given, it is interpolated to a throat list.</p></li>
+<li><p><strong>contact_angle</strong> (<em>dict key</em><em> (</em><em>string</em><em>)</em>) – The dictionary key containing the contact angle values to be used.
+If a pore property is given, it is interpolated to a throat list.</p></li>
+<li><p><strong>throat_diameter</strong> (<em>dict key</em><em> (</em><em>string</em><em>)</em>) – The dictionary key containing the throat diameter values to be used.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>value</strong> – Array containing throat capillary snap-off pressure values.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>NumPy ndarray</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This equation should be used to calculate the snap off capillary pressure
+in fribrous media</p>
+<p class="rubric">References</p>
+<p>[1]: Ransohoff, T.C., Gauglitz, P.A. and Radke, C.J., 1987. Snap‐off of gas
+bubbles in smoothly constricted noncircular capillaries. AIChE Journal,
+33(5), pp.753-765.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="openpnm.models.physics.capillary_pressure.sinusoidal_bidirectional">
+<code class="sig-prename descclassname">openpnm.models.physics.capillary_pressure.</code><code class="sig-name descname">sinusoidal_bidirectional</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">target</span></em>, <em class="sig-param"><span class="n">r_toroid</span><span class="o">=</span><span class="default_value">5e-06</span></em>, <em class="sig-param"><span class="n">num_points</span><span class="o">=</span><span class="default_value">1000.0</span></em>, <em class="sig-param"><span class="n">surface_tension</span><span class="o">=</span><span class="default_value">'pore.surface_tension'</span></em>, <em class="sig-param"><span class="n">contact_angle</span><span class="o">=</span><span class="default_value">'pore.contact_angle'</span></em>, <em class="sig-param"><span class="n">throat_diameter</span><span class="o">=</span><span class="default_value">'throat.diameter'</span></em>, <em class="sig-param"><span class="n">pore_diameter</span><span class="o">=</span><span class="default_value">'pore.diameter'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/physics/capillary_pressure.html#sinusoidal_bidirectional"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.models.physics.capillary_pressure.sinusoidal_bidirectional" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the throat capillary entry pressure assuming the throat has a
+sinusoisal profile.
+Makes use of the toroidal meniscus model with mode touch.
+This model accounts for mensicus protrusion into adjacent pores and
+touching solid features.
+It is bidirectional becauase the connected pores generally have different
+sizes and this determines how far the meniscus can protrude.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>target</strong> (<em>OpenPNM Object</em>) – The object for which these values are being calculated.  This
+controls the length of the calculated array, and also provides
+access to other necessary thermofluid properties</p></li>
+<li><p><strong>r_toroid</strong> (<em>float</em><em> or </em><em>array_like</em>) – The radius of the toroid surrounding the pore</p></li>
+<li><p><strong>num_points</strong> (<em>float</em><em> (</em><em>Default 100</em><em>)</em>) – The number of divisions to make along the profile length to assess the
+meniscus properties in order to find the touch length.</p></li>
+<li><p><strong>surface_tension</strong> (<em>dict key</em><em> (</em><em>string</em><em>)</em>) – The dictionary key containing the surface tension values to be used.
+If a pore property is given, it is interpolated to a throat list.</p></li>
+<li><p><strong>contact_angle</strong> (<em>dict key</em><em> (</em><em>string</em><em>)</em>) – The dictionary key containing the contact angle values to be used.
+If a pore property is given, it is interpolated to a throat list.</p></li>
+<li><p><strong>throat_diameter</strong> (<em>dict key</em><em> (</em><em>string</em><em>)</em>) – The dictionary key containing the throat diameter values to be used.</p></li>
+<li><p><strong>pore_diameter</strong> (<em>dict key</em><em> (</em><em>string</em><em>)</em>) – The dictionary key containing the pore diameter values to be used.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>value</strong> – Array containing throat capillary entry pressure values.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>NumPy ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<hr class="docutils" />
+<div class="section" id="module-openpnm.models.physics.diffusive_conductance">
+<span id="diffusive-conductance"></span><h3><a class="toc-backref" href="#id13">Diffusive Conductance</a><a class="headerlink" href="#module-openpnm.models.physics.diffusive_conductance" title="Permalink to this headline">¶</a></h3>
+<dl class="py function">
+<dt id="openpnm.models.physics.diffusive_conductance.ordinary_diffusion">
+<code class="sig-prename descclassname">openpnm.models.physics.diffusive_conductance.</code><code class="sig-name descname">ordinary_diffusion</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">target</span></em>, <em class="sig-param"><span class="n">pore_area</span><span class="o">=</span><span class="default_value">'pore.area'</span></em>, <em class="sig-param"><span class="n">throat_area</span><span class="o">=</span><span class="default_value">'throat.area'</span></em>, <em class="sig-param"><span class="n">pore_diffusivity</span><span class="o">=</span><span class="default_value">'pore.diffusivity'</span></em>, <em class="sig-param"><span class="n">throat_diffusivity</span><span class="o">=</span><span class="default_value">'throat.diffusivity'</span></em>, <em class="sig-param"><span class="n">conduit_lengths</span><span class="o">=</span><span class="default_value">'throat.conduit_lengths'</span></em>, <em class="sig-param"><span class="n">conduit_shape_factors</span><span class="o">=</span><span class="default_value">'throat.poisson_shape_factors'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/physics/diffusive_conductance.html#ordinary_diffusion"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.models.physics.diffusive_conductance.ordinary_diffusion" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the diffusive conductance of conduits in network, where a
+conduit is ( 1/2 pore - full throat - 1/2 pore ). See the notes section.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>target</strong> (<em>OpenPNM Object</em>) – The object which this model is associated with. This controls the
+length of the calculated array, and also provides access to other
+necessary properties.</p></li>
+<li><p><strong>pore_area</strong> (<em>string</em>) – Dictionary key of the pore area values</p></li>
+<li><p><strong>throat_area</strong> (<em>string</em>) – Dictionary key of the throat area values</p></li>
+<li><p><strong>pore_diffusivity</strong> (<em>string</em>) – Dictionary key of the pore diffusivity values</p></li>
+<li><p><strong>throat_diffusivity</strong> (<em>string</em>) – Dictionary key of the throat diffusivity values</p></li>
+<li><p><strong>conduit_lengths</strong> (<em>string</em>) – Dictionary key of the conduit length values</p></li>
+<li><p><strong>conduit_shape_factors</strong> (<em>string</em>) – Dictionary key of the conduit DIFFUSION shape factor values</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>g</strong> – Array containing diffusive conductance values for conduits in the
+geometry attached to the given physics object.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>ndarray</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>This function assumes cylindrical throats with constant cross-section</p></li>
+</ul>
+<p>area, and the pore area corresponds to the cross-sectional area at the
+largest opening of the pore. Corrections for different shapes and variable
+cross-section area can be imposed by passing the proper
+<code class="docutils literal notranslate"><span class="pre">conduit_shape_factors</span></code> argument.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">conduit_shape_factor</span></code> depends on the physics of the problem,</p></li>
+</ul>
+<p>i.e. diffusion-like processes and fluid flow need different shape factors.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="openpnm.models.physics.diffusive_conductance.ordinary_diffusion_2D">
+<code class="sig-prename descclassname">openpnm.models.physics.diffusive_conductance.</code><code class="sig-name descname">ordinary_diffusion_2D</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">target</span></em>, <em class="sig-param"><span class="n">pore_diameter</span><span class="o">=</span><span class="default_value">'pore.diameter'</span></em>, <em class="sig-param"><span class="n">throat_diameter</span><span class="o">=</span><span class="default_value">'throat.diameter'</span></em>, <em class="sig-param"><span class="n">pore_diffusivity</span><span class="o">=</span><span class="default_value">'pore.diffusivity'</span></em>, <em class="sig-param"><span class="n">throat_diffusivity</span><span class="o">=</span><span class="default_value">'throat.diffusivity'</span></em>, <em class="sig-param"><span class="n">conduit_lengths</span><span class="o">=</span><span class="default_value">'throat.conduit_lengths'</span></em>, <em class="sig-param"><span class="n">conduit_shape_factors</span><span class="o">=</span><span class="default_value">'throat.poisson_shape_factors'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/physics/diffusive_conductance.html#ordinary_diffusion_2D"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.models.physics.diffusive_conductance.ordinary_diffusion_2D" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the diffusive conductance of conduits in network, where a
+conduit is ( 1/2 pore - full throat - 1/2 pore ). The conduit consists of 2
+flate parallel plates. See the notes section.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>target</strong> (<em>OpenPNM Object</em>) – The object which this model is associated with. This controls the
+length of the calculated array, and also provides access to other
+necessary properties.</p></li>
+<li><p><strong>pore_diameter</strong> (<em>string</em>) – Dictionary key of the pore diameter values</p></li>
+<li><p><strong>throat_diameter</strong> (<em>string</em>) – Dictionary key of the throat diameter values</p></li>
+<li><p><strong>pore_diffusivity</strong> (<em>string</em>) – Dictionary key of the pore diffusivity values</p></li>
+<li><p><strong>throat_diffusivity</strong> (<em>string</em>) – Dictionary key of the throat diffusivity values</p></li>
+<li><p><strong>conduit_lengths</strong> (<em>string</em>) – Dictionary key of the conduit length values</p></li>
+<li><p><strong>conduit_shape_factors</strong> (<em>string</em>) – Dictionary key of the conduit DIFFUSION shape factor values</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>g</strong> – Array containing diffusive conductance values for conduits in the
+geometry attached to the given physics object.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>ndarray</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>(1) This function requires that all the necessary phase properties already
+be calculated.</p>
+<p>(2) This function calculates the specified property for the <em>entire</em>
+network then extracts the values for the appropriate throats at the end.</p>
+<p>(3) This function assumes cylindrical throats with constant cross-section
+area. Corrections for different shapes and variable cross-section area can
+be imposed by passing the proper conduit_shape_factors argument.</p>
+<p>(4) shape_factor depends on the physics of the problem, i.e. diffusion-like
+processes and fluid flow need different shape factors.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="openpnm.models.physics.diffusive_conductance.mixed_diffusion">
+<code class="sig-prename descclassname">openpnm.models.physics.diffusive_conductance.</code><code class="sig-name descname">mixed_diffusion</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">target</span></em>, <em class="sig-param"><span class="n">pore_area</span><span class="o">=</span><span class="default_value">'pore.area'</span></em>, <em class="sig-param"><span class="n">throat_area</span><span class="o">=</span><span class="default_value">'throat.area'</span></em>, <em class="sig-param"><span class="n">pore_diameter</span><span class="o">=</span><span class="default_value">'pore.diameter'</span></em>, <em class="sig-param"><span class="n">throat_diameter</span><span class="o">=</span><span class="default_value">'throat.diameter'</span></em>, <em class="sig-param"><span class="n">pore_diffusivity</span><span class="o">=</span><span class="default_value">'pore.diffusivity'</span></em>, <em class="sig-param"><span class="n">pore_temperature</span><span class="o">=</span><span class="default_value">'pore.temperature'</span></em>, <em class="sig-param"><span class="n">molecular_weight</span><span class="o">=</span><span class="default_value">'pore.molecular_weight'</span></em>, <em class="sig-param"><span class="n">throat_diffusivity</span><span class="o">=</span><span class="default_value">'throat.diffusivity'</span></em>, <em class="sig-param"><span class="n">conduit_lengths</span><span class="o">=</span><span class="default_value">'throat.conduit_lengths'</span></em>, <em class="sig-param"><span class="n">conduit_shape_factors</span><span class="o">=</span><span class="default_value">'throat.poisson_shape_factors'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/physics/diffusive_conductance.html#mixed_diffusion"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.models.physics.diffusive_conductance.mixed_diffusion" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the diffusive conductance of conduits in network, where a
+conduit is ( 1/2 pore - full throat - 1/2 pore ), assuming Knudsen
+diffusivity. See the notes section.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>target</strong> (<em>OpenPNM Object</em>) – The object which this model is associated with. This controls the
+length of the calculated array, and also provides access to other
+necessary properties.</p></li>
+<li><p><strong>pore_area</strong> (<em>string</em>) – Dictionary key of the pore area values</p></li>
+<li><p><strong>throat_area</strong> (<em>string</em>) – Dictionary key of the throat area values</p></li>
+<li><p><strong>pore_diffusivity</strong> (<em>string</em>) – Dictionary key of the pore diffusivity values</p></li>
+<li><p><strong>throat_diffusivity</strong> (<em>string</em>) – Dictionary key of the throat diffusivity values</p></li>
+<li><p><strong>conduit_lengths</strong> (<em>string</em>) – Dictionary key of the conduit length values</p></li>
+<li><p><strong>conduit_shape_factors</strong> (<em>string</em>) – Dictionary key of the conduit DIFFUSION shape factor values</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>g</strong> – Array containing diffusive conductance values for conduits in the
+geometry attached to the given physics object.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>ndarray</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>(0) This function is ONLY suitable for dilute mixtures and NOT those with
+concentrated species.</p>
+<p>(1) This function requires that all the necessary phase properties already
+be calculated.</p>
+<p>(2) This function calculates the specified property for the <em>entire</em>
+network then extracts the values for the appropriate throats at the end.</p>
+<p>(3) This function assumes cylindrical throats with constant cross-section
+area. Corrections for different shapes and variable cross-section area can
+be imposed by passing the proper conduit_shape_factors argument.</p>
+<p>(4) shape_factor depends on the physics of the problem, i.e. diffusion-like
+processes and fluid flow need different shape factors.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="openpnm.models.physics.diffusive_conductance.taylor_aris_diffusion">
+<code class="sig-prename descclassname">openpnm.models.physics.diffusive_conductance.</code><code class="sig-name descname">taylor_aris_diffusion</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">target</span></em>, <em class="sig-param"><span class="n">pore_area</span><span class="o">=</span><span class="default_value">'pore.area'</span></em>, <em class="sig-param"><span class="n">throat_area</span><span class="o">=</span><span class="default_value">'throat.area'</span></em>, <em class="sig-param"><span class="n">pore_diffusivity</span><span class="o">=</span><span class="default_value">'pore.diffusivity'</span></em>, <em class="sig-param"><span class="n">pore_pressure</span><span class="o">=</span><span class="default_value">'pore.pressure'</span></em>, <em class="sig-param"><span class="n">throat_hydraulic_conductance</span><span class="o">=</span><span class="default_value">'throat.hydraulic_conductance'</span></em>, <em class="sig-param"><span class="n">throat_diffusivity</span><span class="o">=</span><span class="default_value">'throat.diffusivity'</span></em>, <em class="sig-param"><span class="n">conduit_lengths</span><span class="o">=</span><span class="default_value">'throat.conduit_lengths'</span></em>, <em class="sig-param"><span class="n">conduit_shape_factors</span><span class="o">=</span><span class="default_value">'throat.poisson_shape_factors'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/physics/diffusive_conductance.html#taylor_aris_diffusion"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.models.physics.diffusive_conductance.taylor_aris_diffusion" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the diffusive conductance of conduits in network considering the
+Taylor-Aris effect (effect of fluid flow on diffusion), where a
+conduit is ( 1/2 pore - full throat - 1/2 pore ). See the notes section.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>target</strong> (<em>OpenPNM Object</em>) – The object which this model is associated with. This controls the
+length of the calculated array, and also provides access to other
+necessary properties.</p></li>
+<li><p><strong>pore_area</strong> (<em>string</em>) – Dictionary key of the pore area values</p></li>
+<li><p><strong>throat_area</strong> (<em>string</em>) – Dictionary key of the throat area values</p></li>
+<li><p><strong>pore_diffusivity</strong> (<em>string</em>) – Dictionary key of the pore diffusivity values</p></li>
+<li><p><strong>pore_pressure</strong> (<em>string</em>) – Dictionary key of the pore pressure values</p></li>
+<li><p><strong>throat_hydraulic_conductance</strong> (<em>string</em>) – Dictionary key of the throat hydraulic_conductance values</p></li>
+<li><p><strong>throat_diffusivity</strong> (<em>string</em>) – Dictionary key of the throat diffusivity values</p></li>
+<li><p><strong>conduit_lengths</strong> (<em>string</em>) – Dictionary key of the conduit length values</p></li>
+<li><p><strong>conduit_shape_factors</strong> (<em>string</em>) – Dictionary key of the conduit DIFFUSION shape factor values</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>g</strong> – Array containing diffusive conductance values (with Taylor-Aris effect)
+for conduits in the geometry attached to the given physics object.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>ndarray</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>(1) This function requires that all the necessary phase properties are
+already calculated.</p>
+<p>(2) This function calculates the specified property for the <em>entire</em>
+network then extracts the values for the appropriate throats at the end.</p>
+<p>(3) This function assumes cylindrical throats with constant cross-section
+area. Corrections for different shapes and variable cross-section area can
+be imposed by passing the proper conduit_shape_factors argument.</p>
+<p>(4) shape_factor depends on the physics of the problem, i.e. diffusion-like
+processes and fluid flow need different shape factors.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="openpnm.models.physics.diffusive_conductance.classic_ordinary_diffusion">
+<code class="sig-prename descclassname">openpnm.models.physics.diffusive_conductance.</code><code class="sig-name descname">classic_ordinary_diffusion</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">target</span></em>, <em class="sig-param"><span class="n">pore_molar_density</span><span class="o">=</span><span class="default_value">'pore.molar_density'</span></em>, <em class="sig-param"><span class="n">pore_diffusivity</span><span class="o">=</span><span class="default_value">'pore.diffusivity'</span></em>, <em class="sig-param"><span class="n">pore_area</span><span class="o">=</span><span class="default_value">'pore.area'</span></em>, <em class="sig-param"><span class="n">pore_diameter</span><span class="o">=</span><span class="default_value">'pore.diameter'</span></em>, <em class="sig-param"><span class="n">throat_area</span><span class="o">=</span><span class="default_value">'throat.area'</span></em>, <em class="sig-param"><span class="n">throat_length</span><span class="o">=</span><span class="default_value">'throat.length'</span></em>, <em class="sig-param"><span class="n">throat_diameter</span><span class="o">=</span><span class="default_value">'throat.diameter'</span></em>, <em class="sig-param"><span class="n">shape_factor</span><span class="o">=</span><span class="default_value">'throat.shape_factor'</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/physics/diffusive_conductance.html#classic_ordinary_diffusion"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.models.physics.diffusive_conductance.classic_ordinary_diffusion" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the diffusive conductance of conduits in network, where a
+conduit is ( 1/2 pore - full throat - 1/2 pore ) based on the areas
+:param network:
+:type network: OpenPNM Network Object
+:param phase: The phase of interest
+:type phase: OpenPNM Phase Object</p>
+<p class="rubric">Notes</p>
+<p>(1) This function requires that all the necessary phase properties already
+be calculated.
+(2) This function calculates the specified property for the <em>entire</em>
+network then extracts the values for the appropriate throats at the end.</p>
+</dd></dl>
+
+</div>
+<hr class="docutils" />
+<div class="section" id="module-openpnm.models.physics.electrical_conductance">
+<span id="electrical-conductance"></span><h3><a class="toc-backref" href="#id14">Electrical Conductance</a><a class="headerlink" href="#module-openpnm.models.physics.electrical_conductance" title="Permalink to this headline">¶</a></h3>
+<dl class="py function">
+<dt id="openpnm.models.physics.electrical_conductance.series_resistors">
+<code class="sig-prename descclassname">openpnm.models.physics.electrical_conductance.</code><code class="sig-name descname">series_resistors</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">target</span></em>, <em class="sig-param"><span class="n">pore_area</span><span class="o">=</span><span class="default_value">'pore.area'</span></em>, <em class="sig-param"><span class="n">throat_area</span><span class="o">=</span><span class="default_value">'throat.area'</span></em>, <em class="sig-param"><span class="n">pore_conductivity</span><span class="o">=</span><span class="default_value">'pore.electrical_conductivity'</span></em>, <em class="sig-param"><span class="n">throat_conductivity</span><span class="o">=</span><span class="default_value">'throat.electrical_conductivity'</span></em>, <em class="sig-param"><span class="n">conduit_lengths</span><span class="o">=</span><span class="default_value">'throat.conduit_lengths'</span></em>, <em class="sig-param"><span class="n">conduit_shape_factors</span><span class="o">=</span><span class="default_value">'throat.poisson_shape_factors'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/physics/electrical_conductance.html#series_resistors"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.models.physics.electrical_conductance.series_resistors" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the electrical conductance of conduits in network, where a
+conduit is ( 1/2 pore - full throat - 1/2 pore ). See the notes section.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>target</strong> (<em>OpenPNM Object</em>) – The object which this model is associated with. This controls the
+length of the calculated array, and also provides access to other
+necessary properties.</p></li>
+<li><p><strong>pore_area</strong> (<em>string</em>) – Dictionary key of the pore area values</p></li>
+<li><p><strong>throat_area</strong> (<em>string</em>) – Dictionary key of the throat area values</p></li>
+<li><p><strong>pore_conductivity</strong> (<em>string</em>) – Dictionary key of the pore thermal conductivity values</p></li>
+<li><p><strong>throat_conductivity</strong> (<em>string</em>) – Dictionary key of the throat thermal conductivity values</p></li>
+<li><p><strong>conduit_lengths</strong> (<em>string</em>) – Dictionary key of the conduit length values</p></li>
+<li><p><strong>conduit_shape_factors</strong> (<em>string</em>) – Dictionary key of the conduit DIFFUSION shape factor values</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>g</strong> – Array containing electrical conductance values for conduits in the
+geometry attached to the given physics object.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>ndarray</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>(1) This function requires that all the necessary phase properties already
+be calculated.</p>
+<p>(2) This function calculates the specified property for the <em>entire</em>
+network then extracts the values for the appropriate throats at the end.</p>
+<p>(3) This function assumes cylindrical throats with constant cross-section
+area. Corrections for different shapes and variable cross-section area can
+be imposed by passing the proper conduit_shape_factors argument.</p>
+<p>(4) shape_factor depends on the physics of the problem, i.e. diffusion-like
+processes and fluid flow need different shape factors.</p>
+</dd></dl>
+
+</div>
+<hr class="docutils" />
+<div class="section" id="module-openpnm.models.physics.hydraulic_conductance">
+<span id="hydraulic-conductance"></span><h3><a class="toc-backref" href="#id15">Hydraulic Conductance</a><a class="headerlink" href="#module-openpnm.models.physics.hydraulic_conductance" title="Permalink to this headline">¶</a></h3>
+<dl class="py function">
+<dt id="openpnm.models.physics.hydraulic_conductance.hagen_poiseuille">
+<code class="sig-prename descclassname">openpnm.models.physics.hydraulic_conductance.</code><code class="sig-name descname">hagen_poiseuille</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">target</span></em>, <em class="sig-param"><span class="n">pore_area</span><span class="o">=</span><span class="default_value">'pore.area'</span></em>, <em class="sig-param"><span class="n">throat_area</span><span class="o">=</span><span class="default_value">'throat.area'</span></em>, <em class="sig-param"><span class="n">pore_viscosity</span><span class="o">=</span><span class="default_value">'pore.viscosity'</span></em>, <em class="sig-param"><span class="n">throat_viscosity</span><span class="o">=</span><span class="default_value">'throat.viscosity'</span></em>, <em class="sig-param"><span class="n">conduit_lengths</span><span class="o">=</span><span class="default_value">'throat.conduit_lengths'</span></em>, <em class="sig-param"><span class="n">conduit_shape_factors</span><span class="o">=</span><span class="default_value">'throat.flow_shape_factors'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/physics/hydraulic_conductance.html#hagen_poiseuille"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.models.physics.hydraulic_conductance.hagen_poiseuille" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the hydraulic conductance of conduits in network, where a
+conduit is ( 1/2 pore - full throat - 1/2 pore ). See the notes section.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>target</strong> (<em>OpenPNM Object</em>) – The object which this model is associated with. This controls the
+length of the calculated array, and also provides access to other
+necessary properties.</p></li>
+<li><p><strong>pore_area</strong> (<em>string</em>) – Dictionary key of the pore area values</p></li>
+<li><p><strong>throat_area</strong> (<em>string</em>) – Dictionary key of the throat area values</p></li>
+<li><p><strong>pore_viscosity</strong> (<em>string</em>) – Dictionary key of the pore viscosity values</p></li>
+<li><p><strong>throat_viscosity</strong> (<em>string</em>) – Dictionary key of the throat viscosity values</p></li>
+<li><p><strong>conduit_lengths</strong> (<em>string</em>) – Dictionary key of the conduit length values</p></li>
+<li><p><strong>conduit_shape_factors</strong> (<em>string</em>) – Dictionary key of the conduit DIFFUSION shape factor values</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>g</strong> – Array containing hydraulic conductance values for conduits in the
+geometry attached to the given physics object.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>ndarray</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>(1) This function requires that all the necessary phase properties already
+be calculated.</p>
+<p>(2) This function calculates the specified property for the <em>entire</em>
+network then extracts the values for the appropriate throats at the end.</p>
+<p>(3) This function assumes cylindrical throats with constant cross-section
+area. Corrections for different shapes and variable cross-section area can
+be imposed by passing the proper conduit_shape_factors argument.</p>
+<p>(4) shape_factor depends on the physics of the problem, i.e. diffusion-like
+processes and fluid flow need different shape factors.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="openpnm.models.physics.hydraulic_conductance.hagen_poiseuille_2D">
+<code class="sig-prename descclassname">openpnm.models.physics.hydraulic_conductance.</code><code class="sig-name descname">hagen_poiseuille_2D</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">target</span></em>, <em class="sig-param"><span class="n">pore_diameter</span><span class="o">=</span><span class="default_value">'pore.diameter'</span></em>, <em class="sig-param"><span class="n">throat_diameter</span><span class="o">=</span><span class="default_value">'throat.diameter'</span></em>, <em class="sig-param"><span class="n">pore_viscosity</span><span class="o">=</span><span class="default_value">'pore.viscosity'</span></em>, <em class="sig-param"><span class="n">throat_viscosity</span><span class="o">=</span><span class="default_value">'throat.viscosity'</span></em>, <em class="sig-param"><span class="n">conduit_lengths</span><span class="o">=</span><span class="default_value">'throat.conduit_lengths'</span></em>, <em class="sig-param"><span class="n">conduit_shape_factors</span><span class="o">=</span><span class="default_value">'throat.flow_shape_factors'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/physics/hydraulic_conductance.html#hagen_poiseuille_2D"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.models.physics.hydraulic_conductance.hagen_poiseuille_2D" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the hydraulic conductance of conduits in a 2D network, where a
+conduit is ( 1/2 pore - full throat - 1/2 pore ). See the notes section.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>target</strong> (<em>OpenPNM Object</em>) – The object which this model is associated with. This controls the
+length of the calculated array, and also provides access to other
+necessary properties.</p></li>
+<li><p><strong>pore_area</strong> (<em>string</em>) – Dictionary key of the pore area values</p></li>
+<li><p><strong>throat_area</strong> (<em>string</em>) – Dictionary key of the throat area values</p></li>
+<li><p><strong>pore_viscosity</strong> (<em>string</em>) – Dictionary key of the pore viscosity values</p></li>
+<li><p><strong>throat_viscosity</strong> (<em>string</em>) – Dictionary key of the throat viscosity values</p></li>
+<li><p><strong>conduit_lengths</strong> (<em>string</em>) – Dictionary key of the conduit length values</p></li>
+<li><p><strong>conduit_shape_factors</strong> (<em>string</em>) – Dictionary key of the conduit flow shape factor values</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>g</strong> – Array containing hydraulic conductance values for conduits in the
+geometry attached to the given physics object.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>ndarray</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>(1) This function requires that all the necessary phase properties already
+be calculated.</p>
+<p>(2) This function calculates the specified property for the <em>entire</em>
+network then extracts the values for the appropriate throats at the end.</p>
+<p>(3) This function assumes rectangular (2D) throats. Corrections for
+different shapes and variable cross-section area can be imposed by passing
+the proper flow_shape_factor argument.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="openpnm.models.physics.hydraulic_conductance.hagen_poiseuille_power_law">
+<code class="sig-prename descclassname">openpnm.models.physics.hydraulic_conductance.</code><code class="sig-name descname">hagen_poiseuille_power_law</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">target</span></em>, <em class="sig-param"><span class="n">pore_area</span><span class="o">=</span><span class="default_value">'pore.area'</span></em>, <em class="sig-param"><span class="n">throat_area</span><span class="o">=</span><span class="default_value">'throat.area'</span></em>, <em class="sig-param"><span class="n">pore_viscosity_min</span><span class="o">=</span><span class="default_value">'pore.viscosity_min'</span></em>, <em class="sig-param"><span class="n">throat_viscosity_min</span><span class="o">=</span><span class="default_value">'throat.viscosity_min'</span></em>, <em class="sig-param"><span class="n">pore_viscosity_max</span><span class="o">=</span><span class="default_value">'pore.viscosity_max'</span></em>, <em class="sig-param"><span class="n">throat_viscosity_max</span><span class="o">=</span><span class="default_value">'throat.viscosity_max'</span></em>, <em class="sig-param"><span class="n">conduit_lengths</span><span class="o">=</span><span class="default_value">'throat.conduit_lengths'</span></em>, <em class="sig-param"><span class="n">conduit_shape_factors</span><span class="o">=</span><span class="default_value">'throat.flow_shape_factors'</span></em>, <em class="sig-param"><span class="n">pore_consistency</span><span class="o">=</span><span class="default_value">'pore.consistency'</span></em>, <em class="sig-param"><span class="n">throat_consistency</span><span class="o">=</span><span class="default_value">'throat.consistency'</span></em>, <em class="sig-param"><span class="n">pore_flow_index</span><span class="o">=</span><span class="default_value">'pore.flow_index'</span></em>, <em class="sig-param"><span class="n">throat_flow_index</span><span class="o">=</span><span class="default_value">'throat.flow_index'</span></em>, <em class="sig-param"><span class="n">pore_pressure</span><span class="o">=</span><span class="default_value">'pore.pressure'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/physics/hydraulic_conductance.html#hagen_poiseuille_power_law"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.models.physics.hydraulic_conductance.hagen_poiseuille_power_law" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the hydraulic conductance of conduits in network (assuming a non
+Newtonian fluid whose viscosity obeys a power law), where a
+conduit is ( 1/2 pore - full throat - 1/2 pore ). See the notes section.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>target</strong> (<em>OpenPNM Object</em>) – The object which this model is associated with. This controls the
+length of the calculated array, and also provides access to other
+necessary properties.</p></li>
+<li><p><strong>pore_area</strong> (<em>string</em>) – Dictionary key of the pore area values</p></li>
+<li><p><strong>throat_area</strong> (<em>string</em>) – Dictionary key of the throat area values</p></li>
+<li><p><strong>pore_viscosity_min</strong> (<em>string</em>) – Dictionary key of the pore minimum viscosity values</p></li>
+<li><p><strong>throat_viscosity_min</strong> (<em>string</em>) – Dictionary key of the throat minimum viscosity values</p></li>
+<li><p><strong>pore_viscosity_max</strong> (<em>string</em>) – Dictionary key of the pore maximum viscosity values</p></li>
+<li><p><strong>throat_viscosity_max</strong> (<em>string</em>) – Dictionary key of the throat maximum viscosity values</p></li>
+<li><p><strong>conduit_lengths</strong> (<em>string</em>) – Dictionary key of the conduit length values</p></li>
+<li><p><strong>conduit_shape_factors</strong> (<em>string</em>) – Dictionary key of the conduit DIFFUSION shape factor values</p></li>
+<li><p><strong>pore_consistency</strong> (<em>string</em>) – Dictionary key of the pore fluid consistency values</p></li>
+<li><p><strong>throat_consistency</strong> (<em>string</em>) – Dictionary key of the throat fluid consistency values</p></li>
+<li><p><strong>pore_flow_index</strong> (<em>string</em>) – Dictionary key of the pore fluid flow index values</p></li>
+<li><p><strong>throat_flow_index</strong> (<em>string</em>) – Dictionary key of the throat fluid flow index values</p></li>
+<li><p><strong>pore_pressure</strong> (<em>string</em>) – Dictionary key of the pore pressure values</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>g</strong> – Array containing hydraulic conductance values for conduits in the
+geometry attached to the given physics object.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>ndarray</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>(1) This function requires that all the necessary phase properties already
+be calculated.</p>
+<p>(2) This function calculates the specified property for the <em>entire</em>
+network then extracts the values for the appropriate throats at the end.</p>
+<p>(3) This function assumes cylindrical throats with constant cross-section
+area. Corrections for different shapes and variable cross-section area can
+be imposed by passing the proper conduit_shape_factors argument.</p>
+<p>(4) shape_factor depends on the physics of the problem, i.e. diffusion-like
+processes and fluid flow need different shape factors.</p>
+</dd></dl>
+
+</div>
+<hr class="docutils" />
+<div class="section" id="module-openpnm.models.physics.thermal_conductance">
+<span id="thermal-conductance"></span><h3><a class="toc-backref" href="#id16">Thermal Conductance</a><a class="headerlink" href="#module-openpnm.models.physics.thermal_conductance" title="Permalink to this headline">¶</a></h3>
+<dl class="py function">
+<dt id="openpnm.models.physics.thermal_conductance.series_resistors">
+<code class="sig-prename descclassname">openpnm.models.physics.thermal_conductance.</code><code class="sig-name descname">series_resistors</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">target</span></em>, <em class="sig-param"><span class="n">pore_area</span><span class="o">=</span><span class="default_value">'pore.area'</span></em>, <em class="sig-param"><span class="n">throat_area</span><span class="o">=</span><span class="default_value">'throat.area'</span></em>, <em class="sig-param"><span class="n">pore_thermal_conductivity</span><span class="o">=</span><span class="default_value">'pore.thermal_conductivity'</span></em>, <em class="sig-param"><span class="n">throat_thermal_conductivity</span><span class="o">=</span><span class="default_value">'throat.thermal_conductivity'</span></em>, <em class="sig-param"><span class="n">conduit_lengths</span><span class="o">=</span><span class="default_value">'throat.conduit_lengths'</span></em>, <em class="sig-param"><span class="n">conduit_shape_factors</span><span class="o">=</span><span class="default_value">'throat.poisson_shape_factors'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/physics/thermal_conductance.html#series_resistors"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.models.physics.thermal_conductance.series_resistors" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the thermal conductance of conduits in network, where a
+conduit is ( 1/2 pore - full throat - 1/2 pore ). See the notes section.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>target</strong> (<em>OpenPNM Object</em>) – The object which this model is associated with. This controls the
+length of the calculated array, and also provides access to other
+necessary properties.</p></li>
+<li><p><strong>pore_area</strong> (<em>string</em>) – Dictionary key of the pore area values</p></li>
+<li><p><strong>throat_area</strong> (<em>string</em>) – Dictionary key of the throat area values</p></li>
+<li><p><strong>pore_thermal_conductivity</strong> (<em>string</em>) – Dictionary key of the pore thermal conductivity values</p></li>
+<li><p><strong>throat_thermal_conductivity</strong> (<em>string</em>) – Dictionary key of the throat thermal conductivity values</p></li>
+<li><p><strong>conduit_lengths</strong> (<em>string</em>) – Dictionary key of the conduit length values</p></li>
+<li><p><strong>conduit_shape_factors</strong> (<em>string</em>) – Dictionary key of the conduit DIFFUSION shape factor values</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>g</strong> – Array containing thermal conductance values for conduits in the
+geometry attached to the given physics object.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>ndarray</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>(1) This function requires that all the necessary phase properties already
+be calculated.</p>
+<p>(2) This function calculates the specified property for the <em>entire</em>
+network then extracts the values for the appropriate throats at the end.</p>
+<p>(3) This function assumes cylindrical throats with constant cross-section
+area. Corrections for different shapes and variable cross-section area can
+be imposed by passing the proper conduit_shape_factors argument.</p>
+<p>(4) shape_factor depends on the physics of the problem, i.e. diffusion-like
+processes and fluid flow need different shape factors.</p>
+</dd></dl>
+
+</div>
+<hr class="docutils" />
+<div class="section" id="module-openpnm.models.physics.multiphase">
+<span id="multiphase"></span><h3><a class="toc-backref" href="#id17">Multiphase</a><a class="headerlink" href="#module-openpnm.models.physics.multiphase" title="Permalink to this headline">¶</a></h3>
+<dl class="py function">
+<dt id="openpnm.models.physics.multiphase.conduit_conductance">
+<code class="sig-prename descclassname">openpnm.models.physics.multiphase.</code><code class="sig-name descname">conduit_conductance</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">target</span></em>, <em class="sig-param"><span class="n">throat_conductance</span></em>, <em class="sig-param"><span class="n">throat_occupancy</span><span class="o">=</span><span class="default_value">'throat.occupancy'</span></em>, <em class="sig-param"><span class="n">pore_occupancy</span><span class="o">=</span><span class="default_value">'pore.occupancy'</span></em>, <em class="sig-param"><span class="n">mode</span><span class="o">=</span><span class="default_value">'strict'</span></em>, <em class="sig-param"><span class="n">factor</span><span class="o">=</span><span class="default_value">1e-06</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/physics/multiphase.html#conduit_conductance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.models.physics.multiphase.conduit_conductance" title="Permalink to this definition">¶</a></dt>
+<dd><p>Determines the conductance of a pore-throat-pore conduit based on the
+invaded state of each element.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>target</strong> (<em>OpenPNM Object</em>) – The OpenPNM object where the model is attached.  Should either be a
+Physics or a Phase.</p></li>
+<li><p><strong>throat_conductance</strong> (<em>string</em>) – The transport conductance of the phase associated with the <code class="docutils literal notranslate"><span class="pre">target</span></code>
+object at single-phase conditions.</p></li>
+<li><p><strong>pore_occupancy</strong> (<em>string</em>) – The property name containing the occupancy of the phase associated
+with the <code class="docutils literal notranslate"><span class="pre">target</span></code> object.  An occupancy of 1 means the pore
+is completely filled with the phase and it fully conducts.</p></li>
+<li><p><strong>throat_occupancy</strong> (<em>string</em>) – The property name containing the occupancy of the phase associated
+with the <code class="docutils literal notranslate"><span class="pre">target</span></code> object.  An occupancy of 1 means the throat
+is completely filled with the phase and it fully conducts.</p></li>
+<li><p><strong>mode</strong> (<em>'strict'</em><em> or </em><em>'medium'</em><em> or </em><em>'loose'</em>) – <p>How agressive the method should be when determining if a conduit is
+closed.</p>
+<dl class="simple">
+<dt><strong>’strict’</strong><span class="classifier">If any pore or throat in the conduit is unoccupied by</span></dt><dd><p>the given phase, the conduit is closed.</p>
+</dd>
+</dl>
+<p><strong>’medium’</strong> : If either the throat or both pores are unoccupied, the
+conduit is closed</p>
+<p><strong>’loose’</strong> : Only close the conduit if the throat is unoccupied</p>
+</p></li>
+<li><p><strong>factor</strong> (<em>float</em><em> (</em><em>default is 1e-6</em><em>)</em>) – The factor which becomes multiplied to the original conduit’s
+conductance to severely limit transport, but not set it to zero.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>value</strong> – Array containing conduit conductance values.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>NumPy ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="openpnm.models.physics.multiphase.late_filling">
+<code class="sig-prename descclassname">openpnm.models.physics.multiphase.</code><code class="sig-name descname">late_filling</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">target</span></em>, <em class="sig-param"><span class="n">pressure</span><span class="o">=</span><span class="default_value">'pore.pressure'</span></em>, <em class="sig-param"><span class="n">Pc_star</span><span class="o">=</span><span class="default_value">'pore.pc_star'</span></em>, <em class="sig-param"><span class="n">Swp_star</span><span class="o">=</span><span class="default_value">0.2</span></em>, <em class="sig-param"><span class="n">eta</span><span class="o">=</span><span class="default_value">3</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/physics/multiphase.html#late_filling"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.models.physics.multiphase.late_filling" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates the fraction of a pore or throat filled with invading fluid
+based on the capillary pressure in the invading phase.  The invading phase
+volume is calculated from:</p>
+<blockquote>
+<div><div class="math notranslate nohighlight">
+\[S_{nwp} = 1 - S_{wp}^{*} (P^{*}/P_{c})^{\eta}\]</div>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pressure</strong> (<em>string</em>) – The capillary pressure in the non-wetting phase (Pc &gt; 0).</p></li>
+<li><p><strong>Pc_star</strong> (<em>string</em>) – The minimum pressure required to create an interface within the pore
+body or throat.  Typically this would be calculated using the Washburn
+equation.</p></li>
+<li><p><strong>Swp_star</strong> (<em>float</em>) – The residual wetting phase in an invaded pore or throat at a pressure
+of <code class="docutils literal notranslate"><span class="pre">pc_star</span></code>.</p></li>
+<li><p><strong>eta</strong> (<em>float</em>) – Exponent controlling the rate at which wetting phase is displaced with
+increasing pressure.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><em>An array containing the fraction of each pore or throat that would be</em></p></li>
+<li><p><em>filled with non-wetting phase at the given phase pressure.  This does not</em></p></li>
+<li><p><em>account for whether or not the element is actually invaded, which requires</em></p></li>
+<li><p><em>a percolation algorithm of some sort.</em></p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p>—</p>
+</div>
+<div class="section" id="module-openpnm.models.physics.poisson_shape_factors">
+<span id="poisson-shape-factors"></span><h3><a class="toc-backref" href="#id18">Poisson Shape Factors</a><a class="headerlink" href="#module-openpnm.models.physics.poisson_shape_factors" title="Permalink to this headline">¶</a></h3>
+<dl class="py function">
+<dt id="openpnm.models.physics.poisson_shape_factors.ball_and_stick">
+<code class="sig-prename descclassname">openpnm.models.physics.poisson_shape_factors.</code><code class="sig-name descname">ball_and_stick</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">target</span></em>, <em class="sig-param"><span class="n">pore_area</span><span class="o">=</span><span class="default_value">'pore.area'</span></em>, <em class="sig-param"><span class="n">throat_area</span><span class="o">=</span><span class="default_value">'throat.area'</span></em>, <em class="sig-param"><span class="n">pore_diameter</span><span class="o">=</span><span class="default_value">'pore.diameter'</span></em>, <em class="sig-param"><span class="n">throat_diameter</span><span class="o">=</span><span class="default_value">'throat.diameter'</span></em>, <em class="sig-param"><span class="n">conduit_lengths</span><span class="o">=</span><span class="default_value">'throat.conduit_lengths'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/physics/poisson_shape_factors.html#ball_and_stick"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.models.physics.poisson_shape_factors.ball_and_stick" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate conduit shape factors for throat conductance associated with
+diffusion-like physics (ex. thermal/diffusive/electrical conductance),
+assuming pores and throats are spheres (balls) and constant cross-section
+cylinders (sticks).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>target</strong> (<em>OpenPNM Object</em>) – The object which this model is associated with. This controls the
+length of the calculated array, and also provides access to other
+necessary properties.</p></li>
+<li><p><strong>pore_area</strong> (<em>string</em>) – Dictionary key of the pore area values</p></li>
+<li><p><strong>throat_area</strong> (<em>string</em>) – Dictionary key of the throat area values</p></li>
+<li><p><strong>pore_diameter</strong> (<em>string</em>) – Dictionary key of the pore diameter values</p></li>
+<li><p><strong>throat_diameter</strong> (<em>string</em>) – Dictionary key of the throat diameter values</p></li>
+<li><p><strong>conduit_lengths</strong> (<em>string</em>) – Dictionary key of the conduit lengths’ values</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>SF</strong> – Dictionary containing conduit shape factors to be used in conductance
+models associated with diffusion-like physics. Shape factors are
+accessible via the keys: ‘pore1’, ‘pore2’ and ‘throat’.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dictionary</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<ol class="arabic simple">
+<li><p>This model accounts for the variable cross-section area in spheres.</p></li>
+</ol>
+<p>(2) WARNING: This model could break if <cite>conduit_lengths</cite> does not
+correspond to an actual ball and stick! Example: pore length is greater
+than pore radius –&gt; :(</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="openpnm.models.physics.poisson_shape_factors.conical_frustum_and_stick">
+<code class="sig-prename descclassname">openpnm.models.physics.poisson_shape_factors.</code><code class="sig-name descname">conical_frustum_and_stick</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">target</span></em>, <em class="sig-param"><span class="n">pore_area</span><span class="o">=</span><span class="default_value">'pore.area'</span></em>, <em class="sig-param"><span class="n">throat_area</span><span class="o">=</span><span class="default_value">'throat.area'</span></em>, <em class="sig-param"><span class="n">pore_diameter</span><span class="o">=</span><span class="default_value">'pore.diameter'</span></em>, <em class="sig-param"><span class="n">throat_diameter</span><span class="o">=</span><span class="default_value">'throat.diameter'</span></em>, <em class="sig-param"><span class="n">conduit_lengths</span><span class="o">=</span><span class="default_value">'throat.conduit_lengths'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/physics/poisson_shape_factors.html#conical_frustum_and_stick"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.models.physics.poisson_shape_factors.conical_frustum_and_stick" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate conduit shape factors for throat conductance associated with
+diffusion-like physics (ex. thermal/diffusive/electrical conductance),
+assuming pores and throats are truncated pyramids (frustums) and constant
+cross-section cylinders (sticks).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>target</strong> (<em>OpenPNM Object</em>) – The object which this model is associated with. This controls the
+length of the calculated array, and also provides access to other
+necessary properties.</p></li>
+<li><p><strong>pore_area</strong> (<em>string</em>) – Dictionary key of the pore area values</p></li>
+<li><p><strong>throat_area</strong> (<em>string</em>) – Dictionary key of the throat area values</p></li>
+<li><p><strong>pore_diameter</strong> (<em>string</em>) – Dictionary key of the pore diameter values</p></li>
+<li><p><strong>throat_diameter</strong> (<em>string</em>) – Dictionary key of the throat diameter values</p></li>
+<li><p><strong>conduit_lengths</strong> (<em>string</em>) – Dictionary key of the conduit lengths’ values</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>SF</strong> – Dictionary containing conduit shape factors to be used in conductance
+models associated with diffusion-like physics. Shape factors are
+accessible via the keys: ‘pore1’, ‘pore2’ and ‘throat’.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dictionary</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This model accounts for the variable cross-section area in spheres.</p>
+</dd></dl>
+
+<p>—</p>
+</div>
+<div class="section" id="module-openpnm.models.physics.flow_shape_factors">
+<span id="flow-shape-factors"></span><h3><a class="toc-backref" href="#id19">Flow Shape Factors</a><a class="headerlink" href="#module-openpnm.models.physics.flow_shape_factors" title="Permalink to this headline">¶</a></h3>
+<dl class="py function">
+<dt id="openpnm.models.physics.flow_shape_factors.ball_and_stick">
+<code class="sig-prename descclassname">openpnm.models.physics.flow_shape_factors.</code><code class="sig-name descname">ball_and_stick</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">target</span></em>, <em class="sig-param"><span class="n">pore_area</span><span class="o">=</span><span class="default_value">'pore.area'</span></em>, <em class="sig-param"><span class="n">throat_area</span><span class="o">=</span><span class="default_value">'throat.area'</span></em>, <em class="sig-param"><span class="n">pore_diameter</span><span class="o">=</span><span class="default_value">'pore.diameter'</span></em>, <em class="sig-param"><span class="n">throat_diameter</span><span class="o">=</span><span class="default_value">'throat.diameter'</span></em>, <em class="sig-param"><span class="n">conduit_lengths</span><span class="o">=</span><span class="default_value">'throat.conduit_lengths'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/physics/flow_shape_factors.html#ball_and_stick"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.models.physics.flow_shape_factors.ball_and_stick" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate conduit shape factors for hydraulic conductance, assuming
+pores and throats are spheres (balls) and constant cross-section
+cylinders (sticks).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>target</strong> (<em>OpenPNM Object</em>) – The object which this model is associated with. This controls the
+length of the calculated array, and also provides access to other
+necessary properties.</p></li>
+<li><p><strong>pore_area</strong> (<em>string</em>) – Dictionary key of the pore area values</p></li>
+<li><p><strong>throat_area</strong> (<em>string</em>) – Dictionary key of the throat area values</p></li>
+<li><p><strong>pore_diameter</strong> (<em>string</em>) – Dictionary key of the pore diameter values</p></li>
+<li><p><strong>throat_diameter</strong> (<em>string</em>) – Dictionary key of the throat diameter values</p></li>
+<li><p><strong>conduit_lengths</strong> (<em>string</em>) – Dictionary key of the conduit lengths’ values</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>SF</strong> – Dictionary containing conduit shape factors to be used in hagen-
+poiseuille hydraulic conductance model. Shape factors are accessible
+via the keys: ‘pore1’, ‘pore2’ and ‘throat’.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dictionary</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<ol class="arabic simple">
+<li><p>This model accounts for the variable cross-section area in spheres.</p></li>
+</ol>
+<p>(2) WARNING: This model could break if <cite>conduit_lengths</cite> does not
+correspond to an actual ball and stick! Example: pore length is greater
+than pore radius –&gt; :(</p>
+<p class="rubric">References</p>
+<p>Akbari, M., Sinton, D., &amp; Bahrami, M. (2011). Viscous flow in variable
+cross-section microchannels of arbitrary shapes. International Journal of
+Heat and Mass Transfer, 54(17-18), 3970-3978.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="openpnm.models.physics.flow_shape_factors.conical_frustum_and_stick">
+<code class="sig-prename descclassname">openpnm.models.physics.flow_shape_factors.</code><code class="sig-name descname">conical_frustum_and_stick</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">target</span></em>, <em class="sig-param"><span class="n">pore_area</span><span class="o">=</span><span class="default_value">'pore.area'</span></em>, <em class="sig-param"><span class="n">throat_area</span><span class="o">=</span><span class="default_value">'throat.area'</span></em>, <em class="sig-param"><span class="n">pore_diameter</span><span class="o">=</span><span class="default_value">'pore.diameter'</span></em>, <em class="sig-param"><span class="n">throat_diameter</span><span class="o">=</span><span class="default_value">'throat.diameter'</span></em>, <em class="sig-param"><span class="n">conduit_lengths</span><span class="o">=</span><span class="default_value">'throat.conduit_lengths'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/physics/flow_shape_factors.html#conical_frustum_and_stick"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.models.physics.flow_shape_factors.conical_frustum_and_stick" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate conduit shape factors for hydraulic conductance, assuming
+pores and throats are truncated pyramids (frustums) and constant
+cross-section cylinders (sticks).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>target</strong> (<em>OpenPNM Object</em>) – The object which this model is associated with. This controls the
+length of the calculated array, and also provides access to other
+necessary properties.</p></li>
+<li><p><strong>pore_area</strong> (<em>string</em>) – Dictionary key of the pore area values</p></li>
+<li><p><strong>throat_area</strong> (<em>string</em>) – Dictionary key of the throat area values</p></li>
+<li><p><strong>pore_diameter</strong> (<em>string</em>) – Dictionary key of the pore diameter values</p></li>
+<li><p><strong>throat_diameter</strong> (<em>string</em>) – Dictionary key of the throat diameter values</p></li>
+<li><p><strong>conduit_lengths</strong> (<em>string</em>) – Dictionary key of the conduit lengths’ values</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>SF</strong> – Dictionary containing conduit shape factors to be used in hagen-
+poiseuille hydraulic conductance model. Shape factors are accessible
+via the keys: ‘pore1’, ‘pore2’ and ‘throat’.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dictionary</p>
+</dd>
+</dl>
+<p class="rubric">References</p>
+<p>Akbari, M., Sinton, D., &amp; Bahrami, M. (2011). Viscous flow in variable
+cross-section microchannels of arbitrary shapes. International Journal of
+Heat and Mass Transfer, 54(17-18), 3970-3978.</p>
+</dd></dl>
+
+<p>—</p>
+</div>
+<div class="section" id="module-openpnm.models.physics.generic_source_term">
+<span id="source-terms"></span><h3><a class="toc-backref" href="#id20">Source Terms</a><a class="headerlink" href="#module-openpnm.models.physics.generic_source_term" title="Permalink to this headline">¶</a></h3>
+<dl class="py function">
+<dt id="openpnm.models.physics.generic_source_term.charge_conservation">
+<code class="sig-prename descclassname">openpnm.models.physics.generic_source_term.</code><code class="sig-name descname">charge_conservation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">target</span></em>, <em class="sig-param"><span class="n">phase</span></em>, <em class="sig-param"><span class="n">p_alg</span></em>, <em class="sig-param"><span class="n">e_alg</span></em>, <em class="sig-param"><span class="n">assumption</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/physics/generic_source_term.html#charge_conservation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.models.physics.generic_source_term.charge_conservation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Applies the source term on the charge conservation equation when solving
+for ions transport.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>phase</strong> (<em>OpenPNM Phase object</em>) – The phase on which the charge conservation equation is applied.</p></li>
+<li><p><strong>p_alg</strong> (<em>OpenPNM Algorithm object</em>) – The algorithm used to enforce charge conservation.</p></li>
+<li><p><strong>e_alg</strong> (<em>list of OpenPNM algorithms</em>) – The list of algorithms used to solve for transport of different
+ionic species of the mixture phase.</p></li>
+<li><p><strong>assumption</strong> (<em>string</em>) – A string correponding to the assumption adopted to enforce charge
+conservation.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><dl class="simple">
+<dt><strong>‘rate’</strong> - The value of the source term function for the given list</dt><dd><p>of algortihms under the provided assumption.</p>
+</dd>
+</dl>
+<p><strong>’S1’</strong> - A placeholder (zero array).</p>
+<dl class="simple">
+<dt><strong>’S2’</strong> - The value of the source term function for the given list of</dt><dd><p>algortihms under the provided assumption (same as ‘rate’).</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>A dictionary containing the following three items</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Three assumptions are supported; “poisson”, “electroneutrality” and
+“laplace”.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="openpnm.models.physics.generic_source_term.standard_kinetics">
+<code class="sig-prename descclassname">openpnm.models.physics.generic_source_term.</code><code class="sig-name descname">standard_kinetics</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">target</span></em>, <em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">prefactor</span></em>, <em class="sig-param"><span class="n">exponent</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/physics/generic_source_term.html#standard_kinetics"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.models.physics.generic_source_term.standard_kinetics" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates the rate, as well as slope and intercept of the following
+function at the given value of <cite>X</cite>:</p>
+<blockquote>
+<div><div class="math notranslate nohighlight">
+\[r = A X^b\]</div>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>``prefactor</strong> – <p>The dictionary keys on the target object containing the coefficients
+values to be used in the source term model</p>
+</p></li>
+<li><p><strong>exponent``</strong> (<em>{string}</em>) – The dictionary keys on the target object containing the coefficients
+values to be used in the source term model</p></li>
+<li><p><strong>quantity</strong> (<em>{string}</em>) – The dictionary key on the target object containing the the quantity
+of interest</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul>
+<li><p><em>A dictionary containing the following three items</em> – <strong>‘rate’</strong> - The value of the source term function at the given X.</p>
+<p><strong>’S1’</strong> - The slope of the source term function at the given X.</p>
+<p><strong>’S2’</strong> - The intercept of the source term function at the given X.</p>
+</li>
+<li><p><em>The slope and intercept provide a linearized source term equation about the</em></p></li>
+<li><p><em>current value of X as follow</em> –</p>
+<div class="math notranslate nohighlight">
+\[rate = S_{1} X + S_{2}\]</div>
+</li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="openpnm.models.physics.generic_source_term.linear">
+<code class="sig-prename descclassname">openpnm.models.physics.generic_source_term.</code><code class="sig-name descname">linear</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">target</span></em>, <em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">A1</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">A2</span><span class="o">=</span><span class="default_value">''</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/physics/generic_source_term.html#linear"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.models.physics.generic_source_term.linear" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates the rate, as well as slope and intercept of the following
+function at the given value of <cite>X</cite>:</p>
+<blockquote>
+<div><div class="math notranslate nohighlight">
+\[r = A_{1}   X  +  A_{2}\]</div>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>-&gt; A2</strong> (<em>A1</em>) – The dictionary keys on the target object containing the coefficients
+values to be used in the source term model</p></li>
+<li><p><strong>X</strong> (<em>string</em>) – The dictionary key on the target objecxt containing the the quantity
+of interest</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul>
+<li><p><em>A dictionary containing the following three items</em> – <strong>‘rate’</strong> - The value of the source term function at the given X.</p>
+<p><strong>’S1’</strong> - The slope of the source term function at the given X.</p>
+<p><strong>’S2’</strong> - The intercept of the source term function at the given X.</p>
+</li>
+<li><p><em>The slope and intercept provide a linearized source term equation about the</em></p></li>
+<li><p><em>current value of X as follow</em> –</p>
+<div class="math notranslate nohighlight">
+\[rate = S_{1}   X  +  S_{2}\]</div>
+</li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="openpnm.models.physics.generic_source_term.power_law">
+<code class="sig-prename descclassname">openpnm.models.physics.generic_source_term.</code><code class="sig-name descname">power_law</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">target</span></em>, <em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">A1</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">A2</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">A3</span><span class="o">=</span><span class="default_value">''</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/physics/generic_source_term.html#power_law"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.models.physics.generic_source_term.power_law" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates the rate, as well as slope and intercept of the following
+function at the given value of <em>X</em>:</p>
+<blockquote>
+<div><div class="math notranslate nohighlight">
+\[r = A_{1} x^{A_{2}} + A_{3}\]</div>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>-&gt; A3</strong> (<em>A1</em>) – The dictionary keys on the target object containing the coefficients
+values to be used in the source term model</p></li>
+<li><p><strong>X</strong> (<em>string</em>) – The dictionary key on the target objecxt containing the the quantity
+of interest</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul>
+<li><p><em>A dictionary containing the following three items</em> – <strong>‘rate’</strong> - The value of the source term function at the given X.</p>
+<p><strong>’S1’</strong> - The slope of the source term function at the given X.</p>
+<p><strong>’S2’</strong> - The intercept of the source term function at the given X.</p>
+</li>
+<li><p><em>The slope and intercept provide a linearized source term equation about the</em></p></li>
+<li><p><em>current value of X as follow</em> –</p>
+<div class="math notranslate nohighlight">
+\[rate = S_{1}   X  +  S_{2}\]</div>
+</li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="openpnm.models.physics.generic_source_term.exponential">
+<code class="sig-prename descclassname">openpnm.models.physics.generic_source_term.</code><code class="sig-name descname">exponential</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">target</span></em>, <em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">A1</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">A2</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">A3</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">A4</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">A5</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">A6</span><span class="o">=</span><span class="default_value">''</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/physics/generic_source_term.html#exponential"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.models.physics.generic_source_term.exponential" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates the rate, as well as slope and intercept of the following
+function at the given value of <cite>X</cite>:</p>
+<blockquote>
+<div><div class="math notranslate nohighlight">
+\[r =  A_{1} A_{2}^{( A_{3} x^{ A_{4} } + A_{5})} + A_{6}\]</div>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>-&gt; A6</strong> (<em>A1</em>) – The dictionary keys on the target object containing the coefficients
+values to be used in the source term model</p></li>
+<li><p><strong>X</strong> (<em>string</em>) – The dictionary key on the target objecxt containing the the quantity
+of interest</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul>
+<li><p><em>A dictionary containing the following three items</em> – <strong>‘rate’</strong> - The value of the source term function at the given X.</p>
+<p><strong>’S1’</strong> - The slope of the source term function at the given X.</p>
+<p><strong>’S2’</strong> - The intercept of the source term function at the given X.</p>
+</li>
+<li><p><em>The slope and intercept provide a linearized source term equation about the</em></p></li>
+<li><p><em>current value of X as follow</em> –</p>
+<div class="math notranslate nohighlight">
+\[rate = S_{1}   X  +  S_{2}\]</div>
+</li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="openpnm.models.physics.generic_source_term.natural_exponential">
+<code class="sig-prename descclassname">openpnm.models.physics.generic_source_term.</code><code class="sig-name descname">natural_exponential</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">target</span></em>, <em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">A1</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">A2</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">A3</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">A4</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">A5</span><span class="o">=</span><span class="default_value">''</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/physics/generic_source_term.html#natural_exponential"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.models.physics.generic_source_term.natural_exponential" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates the rate, as well as slope and intercept of the following
+function at the given value of <cite>X</cite>:</p>
+<blockquote>
+<div><div class="math notranslate nohighlight">
+\[r =   A_{1} exp( A_{2}  x^{ A_{3} } + A_{4} )+ A_{5}\]</div>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>-&gt; A5</strong> (<em>A1</em>) – The dictionary keys on the target object containing the coefficients
+values to be used in the source term model</p></li>
+<li><p><strong>X</strong> (<em>string</em>) – The dictionary key on the target objecxt containing the the quantity
+of interest</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul>
+<li><p><em>A dictionary containing the following three items</em> – <strong>‘rate’</strong> - The value of the source term function at the given X.</p>
+<p><strong>’S1’</strong> - The slope of the source term function at the given X.</p>
+<p><strong>’S2’</strong> - The intercept of the source term function at the given X.</p>
+</li>
+<li><p><em>The slope and intercept provide a linearized source term equation about the</em></p></li>
+<li><p><em>current value of X as follow</em> –</p>
+<div class="math notranslate nohighlight">
+\[rate = S_{1}   X  +  S_{2}\]</div>
+</li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="openpnm.models.physics.generic_source_term.logarithm">
+<code class="sig-prename descclassname">openpnm.models.physics.generic_source_term.</code><code class="sig-name descname">logarithm</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">target</span></em>, <em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">A1</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">A2</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">A3</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">A4</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">A5</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">A6</span><span class="o">=</span><span class="default_value">''</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/physics/generic_source_term.html#logarithm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.models.physics.generic_source_term.logarithm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates the rate, as well as slope and intercept of the following
+function at the given value of <cite>X</cite>:</p>
+<blockquote>
+<div><div class="math notranslate nohighlight">
+\[r =  A_{1}   Log_{ A_{2} }( A_{3} x^{ A_{4} }+ A_{5})+ A_{6}\]</div>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>-&gt; A6</strong> (<em>A1</em>) – The dictionary keys on the target object containing the coefficients
+values to be used in the source term model</p></li>
+<li><p><strong>X</strong> (<em>string</em>) – The dictionary key on the target objecxt containing the the quantity
+of interest</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul>
+<li><p><em>A dictionary containing the following three items</em> – <strong>‘rate’</strong> - The value of the source term function at the given X.</p>
+<p><strong>’S1’</strong> - The slope of the source term function at the given X.</p>
+<p><strong>’S2’</strong> - The intercept of the source term function at the given X.</p>
+</li>
+<li><p><em>The slope and intercept provide a linearized source term equation about the</em></p></li>
+<li><p><em>current value of X as follow</em> –</p>
+<div class="math notranslate nohighlight">
+\[rate = S_{1}   X  +  S_{2}\]</div>
+</li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="openpnm.models.physics.generic_source_term.natural_logarithm">
+<code class="sig-prename descclassname">openpnm.models.physics.generic_source_term.</code><code class="sig-name descname">natural_logarithm</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">target</span></em>, <em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">A1</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">A2</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">A3</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">A4</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">A5</span><span class="o">=</span><span class="default_value">''</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/physics/generic_source_term.html#natural_logarithm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.models.physics.generic_source_term.natural_logarithm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates the rate, as well as slope and intercept of the following
+function at the given value of <cite>X</cite>:</p>
+<blockquote>
+<div><div class="math notranslate nohighlight">
+\[r =   A_{1}  Ln( A_{2} x^{ A_{3} }+ A_{4})+ A_{5}\]</div>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>-&gt; A5</strong> (<em>A1</em>) – The dictionary keys on the target object containing the coefficients
+values to be used in the source term model</p></li>
+<li><p><strong>X</strong> (<em>string</em>) – The dictionary key on the target objecxt containing the the quantity
+of interest</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul>
+<li><p><em>A dictionary containing the following three items</em> – <strong>‘rate’</strong> - The value of the source term function at the given X.</p>
+<p><strong>’S1’</strong> - The slope of the source term function at the given X.</p>
+<p><strong>’S2’</strong> - The intercept of the source term function at the given X.</p>
+</li>
+<li><p><em>The slope and intercept provide a linearized source term equation about the</em></p></li>
+<li><p><em>current value of X as follow</em> –</p>
+<div class="math notranslate nohighlight">
+\[rate = S_{1}   X  +  S_{2}\]</div>
+</li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="openpnm.models.physics.generic_source_term.general_symbolic">
+<code class="sig-prename descclassname">openpnm.models.physics.generic_source_term.</code><code class="sig-name descname">general_symbolic</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">target</span></em>, <em class="sig-param"><span class="n">eqn</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">arg_map</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/physics/generic_source_term.html#general_symbolic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.models.physics.generic_source_term.general_symbolic" title="Permalink to this definition">¶</a></dt>
+<dd><p>A general function to interpret a sympy equation and evaluate the linear
+components of the source term.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>target</strong> (<em>OpenPNM object</em>) – The OpenPNM object where the result will be applied.</p></li>
+<li><p><strong>eqn</strong> (<em>sympy symbolic expression for the source terms</em>) – e.g. y = a*x**b + c</p></li>
+<li><p><strong>arg_map</strong> (<em>Dict mapping the symbols in the expression to OpenPNM data</em>) – on the target. Must contain ‘x’ which is the independent variable.
+e.g. arg_map={‘a’:’pore.a’, ‘b’:’pore.b’, ‘c’:’pore.c’, ‘x’:’pore.x’}</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">openpnm</span> <span class="k">as</span> <span class="nn">op</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">openpnm.models.physics</span> <span class="kn">import</span> <span class="n">generic_source_term</span> <span class="k">as</span> <span class="n">gst</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">sympy</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pn</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Cubic</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">],</span> <span class="n">spacing</span><span class="o">=</span><span class="mf">0.0001</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">water</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">phases</span><span class="o">.</span><span class="n">Water</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">water</span><span class="p">[</span><span class="s1">&#39;pore.a&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">water</span><span class="p">[</span><span class="s1">&#39;pore.b&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">water</span><span class="p">[</span><span class="s1">&#39;pore.c&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">water</span><span class="p">[</span><span class="s1">&#39;pore.x&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">(</span><span class="n">water</span><span class="o">.</span><span class="n">Np</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">x</span> <span class="o">=</span> <span class="n">sympy</span><span class="o">.</span><span class="n">symbols</span><span class="p">(</span><span class="s1">&#39;a,b,c,x&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">y</span> <span class="o">=</span> <span class="n">a</span><span class="o">*</span><span class="n">x</span><span class="o">**</span><span class="n">b</span> <span class="o">+</span> <span class="n">c</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">arg_map</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;a&#39;</span><span class="p">:</span><span class="s1">&#39;pore.a&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">:</span><span class="s1">&#39;pore.b&#39;</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span><span class="p">:</span><span class="s1">&#39;pore.c&#39;</span><span class="p">,</span> <span class="s1">&#39;x&#39;</span><span class="p">:</span><span class="s1">&#39;pore.x&#39;</span><span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">water</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;pore.general&#39;</span><span class="p">,</span>
+<span class="gp">... </span>                <span class="n">model</span><span class="o">=</span><span class="n">gst</span><span class="o">.</span><span class="n">general_symbolic</span><span class="p">,</span>
+<span class="gp">... </span>                <span class="n">eqn</span><span class="o">=</span><span class="n">y</span><span class="p">,</span> <span class="n">arg_map</span><span class="o">=</span><span class="n">arg_map</span><span class="p">,</span>
+<span class="gp">... </span>                <span class="n">regen_mode</span><span class="o">=</span><span class="s1">&#39;normal&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">assert</span> <span class="s1">&#39;pore.general.rate&#39;</span> <span class="ow">in</span> <span class="n">water</span><span class="o">.</span><span class="n">props</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">assert</span> <span class="s1">&#39;pore.general.S1&#39;</span> <span class="ow">in</span> <span class="n">water</span><span class="o">.</span><span class="n">props</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">assert</span> <span class="s1">&#39;pore.general.S1&#39;</span> <span class="ow">in</span> <span class="n">water</span><span class="o">.</span><span class="n">props</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../io/index.html" class="btn btn-neutral float-right" title="IO" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="phase.html" class="btn btn-neutral float-left" title="Phase Models" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020 OpenPNM Team
+
+    </p>
+  </div> 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

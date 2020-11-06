@@ -1,0 +1,345 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>DelaunayVoronoiDual &mdash; OpenPNM</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Geometry" href="../geometry/index.html" />
+    <link rel="prev" title="Gabriel" href="gabriel.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home" alt="Documentation Home"> OpenPNM
+          
+
+          
+            
+            <img src="../../_static/logo.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installing OpenPNM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quick_start.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../userguide.html">Examples</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html"><strong>Module Reference</strong></a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../core/index.html">Core</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">Network</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="index.html#module-openpnm.network">Overview of Module</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="index.html#links-to-detailed-class-documentation">Links to Detailed Class Documentation</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="generic.html">GenericNetwork</a></li>
+<li class="toctree-l4"><a class="reference internal" href="cubic.html">Cubic</a></li>
+<li class="toctree-l4"><a class="reference internal" href="cubic_dual.html">CubicDual</a></li>
+<li class="toctree-l4"><a class="reference internal" href="cubic_template.html">CubicTemplate</a></li>
+<li class="toctree-l4"><a class="reference internal" href="bravais.html">Bravais</a></li>
+<li class="toctree-l4"><a class="reference internal" href="voronoi.html">Voronoi</a></li>
+<li class="toctree-l4"><a class="reference internal" href="delaunay.html">Delaunay</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gabriel.html">Gabriel</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">DelaunayVoronoiDual</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../geometry/index.html">Geometry</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../phases/index.html">Phases</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../physics/index.html">Physics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../materials/index.html">Materials</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../algorithms/index.html">Algorithms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../algorithms/metrics/index.html">Metrics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../topotools/index.html">Topotools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../models/index.html">Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../io/index.html">IO</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../utils/index.html">Utilities</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">OpenPNM</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html"><strong>Module Reference</strong></a> &raquo;</li>
+        
+          <li><a href="index.html">Network</a> &raquo;</li>
+        
+      <li>DelaunayVoronoiDual</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="delaunayvoronoidual">
+<span id="delaunay-voronoi-dual-api"></span><h1>DelaunayVoronoiDual<a class="headerlink" href="#delaunayvoronoidual" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt id="openpnm.network.DelaunayVoronoiDual">
+<em class="property">class </em><code class="sig-prename descclassname">openpnm.network.</code><code class="sig-name descname">DelaunayVoronoiDual</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/network/DelaunayVoronoiDual.html#DelaunayVoronoiDual"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.network.DelaunayVoronoiDual" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">openpnm.network.GenericNetwork.GenericNetwork</span></code></p>
+<p>Combined and interconnected Voronoi and Delaunay tessellations</p>
+<p>A Delaunay tessellation is performed on a set of base points then the
+corresponding Voronoi diagram is generated.  Finally, each Delaunay node
+is connected to it’s neighboring Voronoi vertices to create interaction
+between the two networks.</p>
+<p>All pores and throats are labelled according to their network (i.e.
+‘pore.delaunay’), so they can be each assigned to a different Geometry.</p>
+<p>The dual-nature of this network is meant for modeling transport in the void
+and solid space simultaneously by treating one network (i.e. Delaunay) as
+voids and the other (i.e. Voronoi) as solid.  Interaction such as heat
+transfer between the solid and void can be accomplished via the
+interconnections between the Delaunay and Voronoi nodes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>num_points</strong> (<em>integer</em>) – The number of random base points to distribute inside the domain.
+These points will become connected by the Delaunay triangulation.  The
+points will be generated by calling <code class="docutils literal notranslate"><span class="pre">generate_base_points</span></code> in
+<code class="docutils literal notranslate"><span class="pre">topotools</span></code>.</p></li>
+<li><p><strong>points</strong> (<em>array_like</em><em> (</em><em>num_points x 3</em><em>)</em>) – A list of coordinates for pre-generated points, typically produced
+using <code class="docutils literal notranslate"><span class="pre">generate_base_points</span></code> in topotools.  Note that base points
+should extend beyond the domain so that degenerate Voronoi points
+can be trimmed.</p></li>
+<li><p><strong>shape</strong> (<em>array_like</em>) – <p>The size and shape of the domain used for generating and trimming
+excess points. The coordinates are treated as the outer corner of a
+rectangle [x, y, z] whose opposite corner lies at [0, 0, 0].</p>
+<p>By default, a domain size of [1, 1, 1] is used.  To create a 2D network
+set the Z-dimension to 0.</p>
+</p></li>
+<li><p><strong>name</strong> (<em>string</em>) – An optional name for the object to help identify it.  If not given,
+one will be generated.</p></li>
+<li><p><strong>project</strong> (<em>OpenPNM Project object</em><em>, </em><em>optional</em>) – Each OpenPNM object must be part of a <em>Project</em>.  If none is supplied
+then one will be created and this Network will be automatically
+assigned to it.  To create a <em>Project</em> use <code class="docutils literal notranslate"><span class="pre">openpnm.Project()</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<p>Points will be automatically generated if none are given:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">openpnm</span> <span class="k">as</span> <span class="nn">op</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">net</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">DelaunayVoronoiDual</span><span class="p">(</span><span class="n">num_points</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>The resulting network can be quickly visualized using
+<code class="docutils literal notranslate"><span class="pre">opnepnm.topotools.plot_connections</span></code>.</p>
+<dl class="py method">
+<dt id="openpnm.network.DelaunayVoronoiDual.add_boundary_pores">
+<code class="sig-name descname">add_boundary_pores</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">labels</span><span class="o">=</span><span class="default_value">['top', 'bottom', 'front', 'back', 'left', 'right']</span></em>, <em class="sig-param"><span class="n">offset</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/network/DelaunayVoronoiDual.html#DelaunayVoronoiDual.add_boundary_pores"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.network.DelaunayVoronoiDual.add_boundary_pores" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add boundary pores to the specified faces of the network</p>
+<p>Pores are offset from the faces of the domain.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>labels</strong> (<em>string</em><em> or </em><em>list of strings</em>) – The labels indicating the pores defining each face where boundary
+pores are to be added (e.g. ‘left’ or [‘left’, ‘right’])</p></li>
+<li><p><strong>offset</strong> (<em>scalar</em><em> or </em><em>array_like</em>) – The spacing of the network (e.g. [1, 1, 1]).  This must be given
+since it can be quite difficult to infer from the network,
+for instance if boundary pores have already added to other faces.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="openpnm.network.DelaunayVoronoiDual.find_pore_hulls">
+<code class="sig-name descname">find_pore_hulls</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pores</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/network/DelaunayVoronoiDual.html#DelaunayVoronoiDual.find_pore_hulls"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.network.DelaunayVoronoiDual.find_pore_hulls" title="Permalink to this definition">¶</a></dt>
+<dd><p>Finds the indices of the Voronoi nodes that define the convex hull
+around the given Delaunay nodes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>pores</strong> (<em>array_like</em>) – The pores whose convex hull are sought.  The given pores should be
+from the ‘delaunay’ network.  If no pores are given, then the hull
+is found for all ‘delaunay’ pores.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This metod is not fully optimized as it scans through each pore in a
+for-loop, so could be slow for large networks.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="openpnm.network.DelaunayVoronoiDual.find_throat_facets">
+<code class="sig-name descname">find_throat_facets</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">throats</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/network/DelaunayVoronoiDual.html#DelaunayVoronoiDual.find_throat_facets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.network.DelaunayVoronoiDual.find_throat_facets" title="Permalink to this definition">¶</a></dt>
+<dd><p>Finds the indicies of the Voronoi nodes that define the facet or
+ridge between the Delaunay nodes connected by the given throat.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>throats</strong> (<em>array_like</em>) – The throats whose facets are sought.  The given throats should be
+from the ‘delaunay’ network. If no throats are specified, all
+‘delaunay’ throats are assumed.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The method is not well optimized as it scans through each given throat
+inside a for-loop, so it could be slow for large networks.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../geometry/index.html" class="btn btn-neutral float-right" title="Geometry" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="gabriel.html" class="btn btn-neutral float-left" title="Gabriel" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020 OpenPNM Team
+
+    </p>
+  </div> 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

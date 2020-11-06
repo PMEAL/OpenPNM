@@ -1,0 +1,310 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>GenericPhysics &mdash; OpenPNM</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Standard" href="standard.html" />
+    <link rel="prev" title="Physics" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home" alt="Documentation Home"> OpenPNM
+          
+
+          
+            
+            <img src="../../_static/logo.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installing OpenPNM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quick_start.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../userguide.html">Examples</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html"><strong>Module Reference</strong></a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../core/index.html">Core</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../network/index.html">Network</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../geometry/index.html">Geometry</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../phases/index.html">Phases</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">Physics</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="index.html#module-openpnm.physics">Overview of Module</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="index.html#links-to-detailed-class-documentation">Links to Detailed Class Documentation</a><ul class="current">
+<li class="toctree-l4 current"><a class="current reference internal" href="#">GenericPhysics</a></li>
+<li class="toctree-l4"><a class="reference internal" href="standard.html">Standard</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../materials/index.html">Materials</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../algorithms/index.html">Algorithms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../algorithms/metrics/index.html">Metrics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../topotools/index.html">Topotools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../models/index.html">Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../io/index.html">IO</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../utils/index.html">Utilities</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">OpenPNM</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html"><strong>Module Reference</strong></a> &raquo;</li>
+        
+          <li><a href="index.html">Physics</a> &raquo;</li>
+        
+      <li>GenericPhysics</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="genericphysics">
+<span id="generic-physics-api"></span><h1>GenericPhysics<a class="headerlink" href="#genericphysics" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt id="openpnm.physics.GenericPhysics">
+<em class="property">class </em><code class="sig-prename descclassname">openpnm.physics.</code><code class="sig-name descname">GenericPhysics</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/physics/GenericPhysics.html#GenericPhysics"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.physics.GenericPhysics" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">openpnm.core.Subdomain.Subdomain</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">openpnm.core.ModelsMixin.ModelsMixin</span></code></p>
+<p>This generic class is meant as a starter for custom Physics objects</p>
+<p>It produces a blank object with no pore-scale models attached.  Users can
+add models from the <code class="docutils literal notranslate"><span class="pre">models</span></code> module (or create their own).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>network</strong> (<em>OpenPNM Network object</em>) – The network to which this Physics should be attached</p></li>
+<li><p><strong>phase</strong> (<em>OpenPNM Phase object</em>) – The Phase object to which this Physics applies</p></li>
+<li><p><strong>geometry</strong> (<em>OpenPNM Geometry object</em>) – The Geometry object that defines the pores/throats where this Physics
+should be applied.</p></li>
+<li><p><strong>name</strong> (<em>str</em><em>, </em><em>optional</em>) – A unique string name to identify the Physics object, typically same as
+instance name but can be anything.  If left blank, and name will be
+generated that includes the class name and an integer index.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="openpnm.physics.GenericPhysics.set_geometry">
+<code class="sig-name descname">set_geometry</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">geometry</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">mode</span><span class="o">=</span><span class="default_value">'add'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/physics/GenericPhysics.html#GenericPhysics.set_geometry"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.physics.GenericPhysics.set_geometry" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the association between this physics and a geometry (i.e. a
+set of pores and throats that define a subdomain)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>geometry</strong> (<em>OpenPNM Geometry object</em>) – The geometry defining the pores and throats to which this physics
+should be attached</p></li>
+<li><p><strong>mode</strong> (<em>str</em>) – <p>Options are:</p>
+<p>’swap’ - Associations will be made with the new geometry, and
+the pore and throat locations from the current geometry will be
+transferred to the new one.</p>
+<p>’drop’ - Associations with the current geometry will be removed.</p>
+<p>’add’ - If the physics does not presently have an associated
+geometry, this will create associations.</p>
+</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="openpnm.physics.GenericPhysics.set_phase">
+<code class="sig-name descname">set_phase</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">phase</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">mode</span><span class="o">=</span><span class="default_value">'swap'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/physics/GenericPhysics.html#GenericPhysics.set_phase"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.physics.GenericPhysics.set_phase" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the association between this physics and a phase.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>phase</strong> (<em>OpenPNM Phase object</em>) – If mode is ‘add’ or ‘swap’, this must be specified so that
+associations can be recorded in the phase dictionary.  If the
+mode is ‘drop’, this is not needed since the existing association
+can be used to find it.</p></li>
+<li><p><strong>mode</strong> (<em>str</em>) – <p>Options are:</p>
+<p>’swap’ - Associations will be made with the new phase, and
+the pore and throat locations from the current phase will be
+transferred to the new one.</p>
+<p>’drop’ - Associations with the existing phase will be removed.</p>
+<p>’add’ - If the physics does not presently have an associated
+phase, this will create associations, but no pore or throat
+locations will assigned.  This must be done using the
+<code class="docutils literal notranslate"><span class="pre">set_geometry</span></code> method.</p>
+</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>In all cases the property data will be deleted since it will not
+be relevant to the new phase, so the <code class="docutils literal notranslate"><span class="pre">regenerate_models</span></code> method
+must be run.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="standard.html" class="btn btn-neutral float-right" title="Standard" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="index.html" class="btn btn-neutral float-left" title="Physics" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020 OpenPNM Team
+
+    </p>
+  </div> 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

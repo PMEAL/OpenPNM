@@ -1,0 +1,355 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>openpnm.io.Statoil &mdash; OpenPNM</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home" alt="Documentation Home"> OpenPNM
+          
+
+          
+            
+            <img src="../../../_static/logo.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installing OpenPNM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quick_start.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../userguide.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/index.html"><strong>Module Reference</strong></a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">OpenPNM</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>openpnm.io.Statoil</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for openpnm.io.Statoil</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">openpnm.topotools</span> <span class="kn">import</span> <span class="n">trim</span>
+<span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">logging</span>
+<span class="kn">from</span> <span class="nn">openpnm.io</span> <span class="kn">import</span> <span class="n">GenericIO</span>
+<span class="kn">from</span> <span class="nn">openpnm.network</span> <span class="kn">import</span> <span class="n">GenericNetwork</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="Statoil"><a class="viewcode-back" href="../../../modules/io/statoil.html#openpnm.io.Statoil">[docs]</a><span class="k">class</span> <span class="nc">Statoil</span><span class="p">(</span><span class="n">GenericIO</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The StatOil format is used by the Maximal Ball network extraction code of</span>
+<span class="sd">    the Imperial College London group</span>
+
+<span class="sd">    This class can be used to load and work with those networks.  Numerous</span>
+<span class="sd">    datasets are available for download from the group&#39;s</span>
+<span class="sd">    `website &lt;http://tinyurl.com/zurko4q&gt;`_.</span>
+
+<span class="sd">    The so-called &#39;Statoil&#39; format consists of 4 different files in a single</span>
+<span class="sd">    folder.  The data is stored in columns with each corresponding to a</span>
+<span class="sd">    specific property.  Headers are not provided in the files, so one must</span>
+<span class="sd">    refer to various theses and documents to interpret their meaning.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Statoil.load"><a class="viewcode-back" href="../../../modules/io/statoil.html#openpnm.io.Statoil.load">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method is being deprecated.  Use ``import_data`` instead.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">import_data</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Statoil.import_data"><a class="viewcode-back" href="../../../modules/io/statoil.html#openpnm.io.Statoil.import_data">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">import_data</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">prefix</span><span class="p">,</span> <span class="n">network</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Load data from the \&#39;dat\&#39; files located in specified folder.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        path : string</span>
+<span class="sd">            The full path to the folder containing the set of \&#39;dat\&#39; files.</span>
+
+<span class="sd">        prefix : string</span>
+<span class="sd">            The file name prefix on each file. The data files are stored</span>
+<span class="sd">            as \&lt;prefix\&gt;_node1.dat.</span>
+
+<span class="sd">        network : OpenPNM Network Object</span>
+<span class="sd">            If given then the data will be loaded on it and returned.  If not</span>
+<span class="sd">            given, a Network will be created and returned.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        An OpenPNM Project containing a GenericNetwork holding all the data</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span> <span class="nn">pandas</span> <span class="kn">import</span> <span class="n">read_table</span><span class="p">,</span> <span class="n">DataFrame</span>
+
+        <span class="n">net</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="c1"># Parse the link1 file</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="n">filename</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">resolve</span><span class="p">(),</span> <span class="n">prefix</span><span class="o">+</span><span class="s1">&#39;_link1.dat&#39;</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">link1</span> <span class="o">=</span> <span class="n">read_table</span><span class="p">(</span><span class="n">filepath_or_buffer</span><span class="o">=</span><span class="n">f</span><span class="p">,</span>
+                               <span class="n">header</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                               <span class="n">skiprows</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                               <span class="n">sep</span><span class="o">=</span><span class="s1">&#39; &#39;</span><span class="p">,</span>
+                               <span class="n">skipinitialspace</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                               <span class="n">index_col</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">link1</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;throat.pore1&#39;</span><span class="p">,</span> <span class="s1">&#39;throat.pore2&#39;</span><span class="p">,</span> <span class="s1">&#39;throat.radius&#39;</span><span class="p">,</span>
+                         <span class="s1">&#39;throat.shape_factor&#39;</span><span class="p">,</span> <span class="s1">&#39;throat.total_length&#39;</span><span class="p">]</span>
+        <span class="c1"># Add link1 props to net</span>
+        <span class="n">net</span><span class="p">[</span><span class="s1">&#39;throat.conns&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">link1</span><span class="p">[</span><span class="s1">&#39;throat.pore1&#39;</span><span class="p">]</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+                                         <span class="n">link1</span><span class="p">[</span><span class="s1">&#39;throat.pore2&#39;</span><span class="p">]</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span><span class="o">.</span><span class="n">T</span>
+        <span class="n">net</span><span class="p">[</span><span class="s1">&#39;throat.conns&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">net</span><span class="p">[</span><span class="s1">&#39;throat.conns&#39;</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">net</span><span class="p">[</span><span class="s1">&#39;throat.radius&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">link1</span><span class="p">[</span><span class="s1">&#39;throat.radius&#39;</span><span class="p">])</span>
+        <span class="n">net</span><span class="p">[</span><span class="s1">&#39;throat.shape_factor&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">link1</span><span class="p">[</span><span class="s1">&#39;throat.shape_factor&#39;</span><span class="p">])</span>
+        <span class="n">net</span><span class="p">[</span><span class="s1">&#39;throat.total_length&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">link1</span><span class="p">[</span><span class="s1">&#39;throat.total_length&#39;</span><span class="p">])</span>
+
+        <span class="n">filename</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">resolve</span><span class="p">(),</span> <span class="n">prefix</span><span class="o">+</span><span class="s1">&#39;_link2.dat&#39;</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">link2</span> <span class="o">=</span> <span class="n">read_table</span><span class="p">(</span><span class="n">filepath_or_buffer</span><span class="o">=</span><span class="n">f</span><span class="p">,</span>
+                               <span class="n">header</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                               <span class="n">sep</span><span class="o">=</span><span class="s1">&#39; &#39;</span><span class="p">,</span>
+                               <span class="n">skipinitialspace</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                               <span class="n">index_col</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">link2</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;throat.pore1&#39;</span><span class="p">,</span> <span class="s1">&#39;throat.pore2&#39;</span><span class="p">,</span>
+                         <span class="s1">&#39;throat.pore1_length&#39;</span><span class="p">,</span> <span class="s1">&#39;throat.pore2_length&#39;</span><span class="p">,</span>
+                         <span class="s1">&#39;throat.length&#39;</span><span class="p">,</span> <span class="s1">&#39;throat.volume&#39;</span><span class="p">,</span>
+                         <span class="s1">&#39;throat.clay_volume&#39;</span><span class="p">]</span>
+        <span class="c1"># Add link2 props to net</span>
+        <span class="n">cl_t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">link2</span><span class="p">[</span><span class="s1">&#39;throat.length&#39;</span><span class="p">])</span>
+        <span class="n">net</span><span class="p">[</span><span class="s1">&#39;throat.length&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cl_t</span>
+        <span class="n">net</span><span class="p">[</span><span class="s1">&#39;throat.conduit_lengths.throat&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cl_t</span>
+        <span class="n">net</span><span class="p">[</span><span class="s1">&#39;throat.volume&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">link2</span><span class="p">[</span><span class="s1">&#39;throat.volume&#39;</span><span class="p">])</span>
+        <span class="n">cl_p1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">link2</span><span class="p">[</span><span class="s1">&#39;throat.pore1_length&#39;</span><span class="p">])</span>
+        <span class="n">net</span><span class="p">[</span><span class="s1">&#39;throat.conduit_lengths.pore1&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cl_p1</span>
+        <span class="n">cl_p2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">link2</span><span class="p">[</span><span class="s1">&#39;throat.pore2_length&#39;</span><span class="p">])</span>
+        <span class="n">net</span><span class="p">[</span><span class="s1">&#39;throat.conduit_lengths.pore2&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cl_p2</span>
+        <span class="n">net</span><span class="p">[</span><span class="s1">&#39;throat.clay_volume&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">link2</span><span class="p">[</span><span class="s1">&#39;throat.clay_volume&#39;</span><span class="p">])</span>
+        <span class="c1"># ---------------------------------------------------------------------</span>
+        <span class="c1"># Parse the node1 file</span>
+        <span class="n">filename</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">resolve</span><span class="p">(),</span> <span class="n">prefix</span><span class="o">+</span><span class="s1">&#39;_node1.dat&#39;</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">row_0</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+            <span class="n">num_lines</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">row_0</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">([</span><span class="n">num_lines</span><span class="p">,</span> <span class="mi">6</span><span class="p">])</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_lines</span><span class="p">):</span>
+                <span class="n">row</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>\
+                       <span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39; &#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39; &#39;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+                <span class="n">array</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">6</span><span class="p">]</span>
+        <span class="n">node1</span> <span class="o">=</span> <span class="n">DataFrame</span><span class="p">(</span><span class="n">array</span><span class="p">[:,</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">]])</span>
+        <span class="n">node1</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;pore.x_coord&#39;</span><span class="p">,</span> <span class="s1">&#39;pore.y_coord&#39;</span><span class="p">,</span> <span class="s1">&#39;pore.z_coord&#39;</span><span class="p">,</span>
+                         <span class="s1">&#39;pore.coordination_number&#39;</span><span class="p">]</span>
+        <span class="c1"># Add node1 props to net</span>
+        <span class="n">net</span><span class="p">[</span><span class="s1">&#39;pore.coords&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">node1</span><span class="p">[</span><span class="s1">&#39;pore.x_coord&#39;</span><span class="p">],</span>
+                                        <span class="n">node1</span><span class="p">[</span><span class="s1">&#39;pore.y_coord&#39;</span><span class="p">],</span>
+                                        <span class="n">node1</span><span class="p">[</span><span class="s1">&#39;pore.z_coord&#39;</span><span class="p">]))</span><span class="o">.</span><span class="n">T</span>
+        <span class="c1"># ---------------------------------------------------------------------</span>
+        <span class="c1"># Parse the node1 file</span>
+        <span class="n">filename</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">resolve</span><span class="p">(),</span> <span class="n">prefix</span><span class="o">+</span><span class="s1">&#39;_node2.dat&#39;</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">node2</span> <span class="o">=</span> <span class="n">read_table</span><span class="p">(</span><span class="n">filepath_or_buffer</span><span class="o">=</span><span class="n">f</span><span class="p">,</span>
+                               <span class="n">header</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                               <span class="n">sep</span><span class="o">=</span><span class="s1">&#39; &#39;</span><span class="p">,</span>
+                               <span class="n">skipinitialspace</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                               <span class="n">index_col</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">node2</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;pore.volume&#39;</span><span class="p">,</span> <span class="s1">&#39;pore.radius&#39;</span><span class="p">,</span> <span class="s1">&#39;pore.shape_factor&#39;</span><span class="p">,</span>
+                         <span class="s1">&#39;pore.clay_volume&#39;</span><span class="p">]</span>
+        <span class="c1"># Add node2 props to net</span>
+        <span class="n">net</span><span class="p">[</span><span class="s1">&#39;pore.volume&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">node2</span><span class="p">[</span><span class="s1">&#39;pore.volume&#39;</span><span class="p">])</span>
+        <span class="n">net</span><span class="p">[</span><span class="s1">&#39;pore.radius&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">node2</span><span class="p">[</span><span class="s1">&#39;pore.radius&#39;</span><span class="p">])</span>
+        <span class="n">net</span><span class="p">[</span><span class="s1">&#39;pore.shape_factor&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">node2</span><span class="p">[</span><span class="s1">&#39;pore.shape_factor&#39;</span><span class="p">])</span>
+        <span class="n">net</span><span class="p">[</span><span class="s1">&#39;pore.clay_volume&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">node2</span><span class="p">[</span><span class="s1">&#39;pore.clay_volume&#39;</span><span class="p">])</span>
+        <span class="n">net</span><span class="p">[</span><span class="s1">&#39;throat.area&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">((</span><span class="n">net</span><span class="p">[</span><span class="s1">&#39;throat.radius&#39;</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+                              <span class="o">/</span> <span class="p">(</span><span class="mf">4.0</span><span class="o">*</span><span class="n">net</span><span class="p">[</span><span class="s1">&#39;throat.shape_factor&#39;</span><span class="p">]))</span>
+        <span class="n">net</span><span class="p">[</span><span class="s1">&#39;pore.area&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">((</span><span class="n">net</span><span class="p">[</span><span class="s1">&#39;pore.radius&#39;</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+                            <span class="o">/</span> <span class="p">(</span><span class="mf">4.0</span><span class="o">*</span><span class="n">net</span><span class="p">[</span><span class="s1">&#39;pore.shape_factor&#39;</span><span class="p">]))</span>
+
+        <span class="k">if</span> <span class="n">network</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">network</span> <span class="o">=</span> <span class="n">GenericNetwork</span><span class="p">()</span>
+        <span class="n">network</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_update_network</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">network</span><span class="p">,</span> <span class="n">net</span><span class="o">=</span><span class="n">net</span><span class="p">)</span>
+
+        <span class="c1"># Use OpenPNM Tools to clean up network</span>
+        <span class="c1"># Trim throats connected to &#39;inlet&#39; or &#39;outlet&#39; reservoirs</span>
+        <span class="n">trim1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">net</span><span class="p">[</span><span class="s1">&#39;throat.conns&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="c1"># Apply &#39;outlet&#39; label to these pores</span>
+        <span class="n">outlets</span> <span class="o">=</span> <span class="n">network</span><span class="p">[</span><span class="s1">&#39;throat.conns&#39;</span><span class="p">][</span><span class="n">trim1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+        <span class="n">network</span><span class="p">[</span><span class="s1">&#39;pore.outlets&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">network</span><span class="p">[</span><span class="s1">&#39;pore.outlets&#39;</span><span class="p">][</span><span class="n">outlets</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">trim2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">net</span><span class="p">[</span><span class="s1">&#39;throat.conns&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="c1"># Apply &#39;inlet&#39; label to these pores</span>
+        <span class="n">inlets</span> <span class="o">=</span> <span class="n">network</span><span class="p">[</span><span class="s1">&#39;throat.conns&#39;</span><span class="p">][</span><span class="n">trim2</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+        <span class="n">network</span><span class="p">[</span><span class="s1">&#39;pore.inlets&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">network</span><span class="p">[</span><span class="s1">&#39;pore.inlets&#39;</span><span class="p">][</span><span class="n">inlets</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="c1"># Now trim the throats</span>
+        <span class="n">to_trim</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">([</span><span class="n">trim1</span><span class="p">,</span> <span class="n">trim2</span><span class="p">])</span>
+        <span class="n">trim</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">network</span><span class="p">,</span> <span class="n">throats</span><span class="o">=</span><span class="n">to_trim</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">network</span><span class="o">.</span><span class="n">project</span></div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020 OpenPNM Team
+
+    </p>
+  </div> 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -1,0 +1,330 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>openpnm.models.physics.multiphase &mdash; OpenPNM</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+        <script src="../../../../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../../index.html" class="icon icon-home" alt="Documentation Home"> OpenPNM
+          
+
+          
+            
+            <img src="../../../../_static/logo.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installing OpenPNM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../quick_start.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../userguide.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../modules/index.html"><strong>Module Reference</strong></a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">OpenPNM</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../../index.html">Module code</a> &raquo;</li>
+        
+      <li>openpnm.models.physics.multiphase</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for openpnm.models.physics.multiphase</h1><div class="highlight"><pre>
+<span></span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">.. autofunction:: openpnm.models.physics.multiphase.conduit_conductance</span>
+<span class="sd">.. autofunction:: openpnm.models.physics.multiphase.late_filling</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">scipy</span> <span class="k">as</span> <span class="nn">sp</span>
+
+
+<div class="viewcode-block" id="conduit_conductance"><a class="viewcode-back" href="../../../../modules/models/physics.html#openpnm.models.physics.multiphase.conduit_conductance">[docs]</a><span class="k">def</span> <span class="nf">conduit_conductance</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">throat_conductance</span><span class="p">,</span>
+                        <span class="n">throat_occupancy</span><span class="o">=</span><span class="s1">&#39;throat.occupancy&#39;</span><span class="p">,</span>
+                        <span class="n">pore_occupancy</span><span class="o">=</span><span class="s1">&#39;pore.occupancy&#39;</span><span class="p">,</span>
+                        <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;strict&#39;</span><span class="p">,</span> <span class="n">factor</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Determines the conductance of a pore-throat-pore conduit based on the</span>
+<span class="sd">    invaded state of each element.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    target : OpenPNM Object</span>
+<span class="sd">        The OpenPNM object where the model is attached.  Should either be a</span>
+<span class="sd">        Physics or a Phase.</span>
+
+<span class="sd">    throat_conductance : string</span>
+<span class="sd">        The transport conductance of the phase associated with the ``target``</span>
+<span class="sd">        object at single-phase conditions.</span>
+
+<span class="sd">    pore_occupancy : string</span>
+<span class="sd">        The property name containing the occupancy of the phase associated</span>
+<span class="sd">        with the ``target`` object.  An occupancy of 1 means the pore</span>
+<span class="sd">        is completely filled with the phase and it fully conducts.</span>
+
+<span class="sd">    throat_occupancy : string</span>
+<span class="sd">        The property name containing the occupancy of the phase associated</span>
+<span class="sd">        with the ``target`` object.  An occupancy of 1 means the throat</span>
+<span class="sd">        is completely filled with the phase and it fully conducts.</span>
+
+<span class="sd">    mode : &#39;strict&#39; or &#39;medium&#39; or &#39;loose&#39;</span>
+<span class="sd">        How agressive the method should be when determining if a conduit is</span>
+<span class="sd">        closed.</span>
+
+<span class="sd">        **&#39;strict&#39;** :  If any pore or throat in the conduit is unoccupied by</span>
+<span class="sd">         the given phase, the conduit is closed.</span>
+
+<span class="sd">        **&#39;medium&#39;** : If either the throat or both pores are unoccupied, the</span>
+<span class="sd">        conduit is closed</span>
+
+<span class="sd">        **&#39;loose&#39;** : Only close the conduit if the throat is unoccupied</span>
+
+<span class="sd">    factor : float (default is 1e-6)</span>
+<span class="sd">        The factor which becomes multiplied to the original conduit&#39;s</span>
+<span class="sd">        conductance to severely limit transport, but not set it to zero.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    value : NumPy ndarray</span>
+<span class="sd">        Array containing conduit conductance values.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">network</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">network</span>
+    <span class="n">phase</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">find_phase</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
+    <span class="n">Tinv</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">throat_occupancy</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mf">0.5</span>
+    <span class="n">P12</span> <span class="o">=</span> <span class="n">network</span><span class="p">[</span><span class="s1">&#39;throat.conns&#39;</span><span class="p">]</span>
+    <span class="n">Pinv</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">pore_occupancy</span><span class="p">][</span><span class="n">P12</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mf">0.5</span>
+    <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;loose&#39;</span><span class="p">:</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">Tinv</span>
+    <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;medium&#39;</span><span class="p">:</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">Tinv</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">Pinv</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;strict&#39;</span><span class="p">:</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">Tinv</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">Pinv</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Unrecongnized mode &#39;</span><span class="o">+</span><span class="n">mode</span><span class="p">)</span>
+    <span class="n">value</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">throat_conductance</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">value</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span><span class="o">*</span><span class="n">factor</span>
+    <span class="c1"># Now map throats onto target object</span>
+    <span class="n">Ts</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">map_throats</span><span class="p">(</span><span class="n">throats</span><span class="o">=</span><span class="n">target</span><span class="o">.</span><span class="n">Ts</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="n">target</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">value</span><span class="p">[</span><span class="n">Ts</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="late_filling"><a class="viewcode-back" href="../../../../modules/models/physics.html#openpnm.models.physics.multiphase.late_filling">[docs]</a><span class="k">def</span> <span class="nf">late_filling</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">pressure</span><span class="o">=</span><span class="s1">&#39;pore.pressure&#39;</span><span class="p">,</span>
+                 <span class="n">Pc_star</span><span class="o">=</span><span class="s1">&#39;pore.pc_star&#39;</span><span class="p">,</span>
+                 <span class="n">Swp_star</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">eta</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates the fraction of a pore or throat filled with invading fluid</span>
+<span class="sd">    based on the capillary pressure in the invading phase.  The invading phase</span>
+<span class="sd">    volume is calculated from:</span>
+
+<span class="sd">        .. math::</span>
+<span class="sd">            S_{nwp} = 1 - S_{wp}^{*} (P^{*}/P_{c})^{\eta}</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    pressure : string</span>
+<span class="sd">        The capillary pressure in the non-wetting phase (Pc &gt; 0).</span>
+
+<span class="sd">    Pc_star : string</span>
+<span class="sd">        The minimum pressure required to create an interface within the pore</span>
+<span class="sd">        body or throat.  Typically this would be calculated using the Washburn</span>
+<span class="sd">        equation.</span>
+
+<span class="sd">    Swp_star : float</span>
+<span class="sd">        The residual wetting phase in an invaded pore or throat at a pressure</span>
+<span class="sd">        of ``pc_star``.</span>
+
+<span class="sd">    eta : float</span>
+<span class="sd">        Exponent controlling the rate at which wetting phase is displaced with</span>
+<span class="sd">        increasing pressure.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    An array containing the fraction of each pore or throat that would be</span>
+<span class="sd">    filled with non-wetting phase at the given phase pressure.  This does not</span>
+<span class="sd">    account for whether or not the element is actually invaded, which requires</span>
+<span class="sd">    a percolation algorithm of some sort.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">element</span> <span class="o">=</span> <span class="n">pressure</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">network</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">network</span>
+    <span class="n">phase</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">find_phase</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
+    <span class="n">pc_star</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">Pc_star</span><span class="p">]</span>
+    <span class="n">Pc</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">pressure</span><span class="p">]</span>
+    <span class="c1"># Remove any 0&#39;s from the Pc array to prevent numpy div by 0 warning</span>
+    <span class="n">Pc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">Pc</span><span class="p">,</span> <span class="mf">1e-9</span><span class="p">)</span>
+    <span class="n">Swp</span> <span class="o">=</span> <span class="n">Swp_star</span><span class="o">*</span><span class="p">((</span><span class="n">pc_star</span><span class="o">/</span><span class="n">Pc</span><span class="p">)</span><span class="o">**</span><span class="n">eta</span><span class="p">)</span>
+    <span class="n">values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">Swp</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+    <span class="c1"># Now map element onto target object</span>
+    <span class="k">if</span> <span class="n">element</span> <span class="o">==</span> <span class="s1">&#39;throat&#39;</span><span class="p">:</span>
+        <span class="n">Ts</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">map_throats</span><span class="p">(</span><span class="n">throats</span><span class="o">=</span><span class="n">target</span><span class="o">.</span><span class="n">Ts</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="n">target</span><span class="p">)</span>
+        <span class="n">values</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="n">Ts</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">Ps</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">map_pores</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">target</span><span class="o">.</span><span class="n">Ps</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="n">target</span><span class="p">)</span>
+        <span class="n">values</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="n">Ps</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">values</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020 OpenPNM Team
+
+    </p>
+  </div> 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

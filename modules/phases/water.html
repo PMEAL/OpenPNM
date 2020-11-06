@@ -1,0 +1,386 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Water &mdash; OpenPNM</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Mercury" href="mercury.html" />
+    <link rel="prev" title="Air" href="air.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home" alt="Documentation Home"> OpenPNM
+          
+
+          
+            
+            <img src="../../_static/logo.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installing OpenPNM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quick_start.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../userguide.html">Examples</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html"><strong>Module Reference</strong></a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../core/index.html">Core</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../network/index.html">Network</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../geometry/index.html">Geometry</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">Phases</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="index.html#module-openpnm.phases">Overview of Module</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="index.html#links-to-detailed-class-documentation">Links to Detailed Class Documentation</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="generic_phase.html">GenericPhase</a></li>
+<li class="toctree-l4"><a class="reference internal" href="air.html">Air</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">Water</a></li>
+<li class="toctree-l4"><a class="reference internal" href="mercury.html">Mercury</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../physics/index.html">Physics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../materials/index.html">Materials</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../algorithms/index.html">Algorithms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../algorithms/metrics/index.html">Metrics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../topotools/index.html">Topotools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../models/index.html">Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../io/index.html">IO</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../utils/index.html">Utilities</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">OpenPNM</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html"><strong>Module Reference</strong></a> &raquo;</li>
+        
+          <li><a href="index.html">Phases</a> &raquo;</li>
+        
+      <li>Water</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="water">
+<span id="water-api"></span><h1>Water<a class="headerlink" href="#water" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt id="openpnm.phases.Water">
+<em class="property">class </em><code class="sig-prename descclassname">openpnm.phases.</code><code class="sig-name descname">Water</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/phases/Water.html#Water"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.phases.Water" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">openpnm.phases.GenericPhase.GenericPhase</span></code></p>
+<p>Creates Phase object with preset values for Water</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>network</strong> (<em>OpenPNM Network object</em>) – The Network to which this phase object will be associated.</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">openpnm</span> <span class="k">as</span> <span class="nn">op</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pn</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Cubic</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">water</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">phases</span><span class="o">.</span><span class="n">Water</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">)</span>
+</pre></div>
+</div>
+<p class="rubric">Notes</p>
+<p>The table below shows all of the pore-scale models that are included with
+this class to calculate the physical properties of this fluid as functions
+of the relevant state variables.</p>
+<p>This object is initialized at standard conditions of 298 K and 101325 Pa.
+If these conditions are changed the dependent properties can be
+recalculated by calling <code class="docutils literal notranslate"><span class="pre">regenerate_models</span></code>.</p>
+<p>All of these parameters can be adjusted manually by editing the entries in
+the <strong>ModelsDict</strong> stored in the <code class="docutils literal notranslate"><span class="pre">models</span></code> attribute of the object.</p>
+<p>For a full listing of models and their parameters use <code class="docutils literal notranslate"><span class="pre">print(obj.models)</span></code>
+where <code class="docutils literal notranslate"><span class="pre">obj</span></code> is the handle to the object.</p>
+<p>In addition to these models, this class also has a number of constant
+values assigned to it which can be found by running
+<code class="docutils literal notranslate"><span class="pre">props(mode='constants')</span></code>.</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 4%" />
+<col style="width: 32%" />
+<col style="width: 26%" />
+<col style="width: 38%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Property Name</p></th>
+<th class="head"><p>Parameter</p></th>
+<th class="head"><p>Value</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>1</p></td>
+<td><p>pore.density</p></td>
+<td><p>model:</p></td>
+<td><p>water</p></td>
+</tr>
+<tr class="row-odd"><td></td>
+<td></td>
+<td><p>temperature</p></td>
+<td><p>pore.temperature</p></td>
+</tr>
+<tr class="row-even"><td></td>
+<td></td>
+<td><p>salinity</p></td>
+<td><p>pore.salinity</p></td>
+</tr>
+<tr class="row-odd"><td><p>2</p></td>
+<td><p>pore.molar_density</p></td>
+<td><p>model:</p></td>
+<td><p>standard</p></td>
+</tr>
+<tr class="row-even"><td></td>
+<td></td>
+<td><p>mol_weight</p></td>
+<td><p>pore.molecular_weight</p></td>
+</tr>
+<tr class="row-odd"><td></td>
+<td></td>
+<td><p>density</p></td>
+<td><p>pore.density</p></td>
+</tr>
+<tr class="row-even"><td><p>3</p></td>
+<td><p>pore.surface_tension</p></td>
+<td><p>model:</p></td>
+<td><p>water</p></td>
+</tr>
+<tr class="row-odd"><td></td>
+<td></td>
+<td><p>temperature</p></td>
+<td><p>pore.temperature</p></td>
+</tr>
+<tr class="row-even"><td></td>
+<td></td>
+<td><p>salinity</p></td>
+<td><p>pore.salinity</p></td>
+</tr>
+<tr class="row-odd"><td><p>4</p></td>
+<td><p>pore.thermal_cond…</p></td>
+<td><p>model:</p></td>
+<td><p>water</p></td>
+</tr>
+<tr class="row-even"><td></td>
+<td></td>
+<td><p>temperature</p></td>
+<td><p>pore.temperature</p></td>
+</tr>
+<tr class="row-odd"><td></td>
+<td></td>
+<td><p>salinity</p></td>
+<td><p>pore.salinity</p></td>
+</tr>
+<tr class="row-even"><td><p>5</p></td>
+<td><p>pore.vapor_pressure</p></td>
+<td><p>model:</p></td>
+<td><p>antoine</p></td>
+</tr>
+<tr class="row-odd"><td></td>
+<td></td>
+<td><p>A</p></td>
+<td><p>8.088</p></td>
+</tr>
+<tr class="row-even"><td></td>
+<td></td>
+<td><p>B</p></td>
+<td><p>1750.71</p></td>
+</tr>
+<tr class="row-odd"><td></td>
+<td></td>
+<td><p>C</p></td>
+<td><p>236.191</p></td>
+</tr>
+<tr class="row-even"><td></td>
+<td></td>
+<td><p>temperature</p></td>
+<td><p>pore.temperature</p></td>
+</tr>
+<tr class="row-odd"><td><p>6</p></td>
+<td><p>pore.viscosity</p></td>
+<td><p>model:</p></td>
+<td><p>water</p></td>
+</tr>
+<tr class="row-even"><td></td>
+<td></td>
+<td><p>temperature</p></td>
+<td><p>pore.temperature</p></td>
+</tr>
+<tr class="row-odd"><td></td>
+<td></td>
+<td><p>salinity</p></td>
+<td><p>pore.salinity</p></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="mercury.html" class="btn btn-neutral float-right" title="Mercury" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="air.html" class="btn btn-neutral float-left" title="Air" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020 OpenPNM Team
+
+    </p>
+  </div> 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

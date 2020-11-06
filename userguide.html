@@ -1,0 +1,336 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Examples &mdash; OpenPNM</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Module Reference" href="modules/index.html" />
+    <link rel="prev" title="Getting Started" href="quick_start.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> OpenPNM
+          
+
+          
+            
+            <img src="_static/logo.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installing OpenPNM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quick_start.html">Getting Started</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Examples</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#how-openpnm-works">How OpenPNM Works</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#working-with-networks">Working with Networks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#generating-geometrical-properties">Generating Geometrical Properties</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#computing-thermophysical-properties">Computing Thermophysical Properties</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#performing-simulations">Performing Simulations</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="modules/index.html"><strong>Module Reference</strong></a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">OpenPNM</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Examples</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="examples">
+<span id="user-guide"></span><h1>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h1>
+<p>The best way to learn how to use OpenPNM, like anything, is by example.</p>
+<div class="section" id="how-openpnm-works">
+<h2>How OpenPNM Works<a class="headerlink" href="#how-openpnm-works" title="Permalink to this headline">¶</a></h2>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 23%" />
+<col style="width: 77%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"></th>
+<th class="head"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><a class="reference internal" href="_images/chalkboard.jpg"><img alt="chalkboard" src="_images/chalkboard.jpg" style="width: 300px;" /></a></p></td>
+<td><p><a class="reference external" href="https://github.com/PMEAL/OpenPNM/tree/dev/examples/tutorials">A Series of Tutorials</a> in the form of Jupyter Notebooks</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="working-with-networks">
+<h2>Working with Networks<a class="headerlink" href="#working-with-networks" title="Permalink to this headline">¶</a></h2>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 23%" />
+<col style="width: 77%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"></th>
+<th class="head"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><a class="reference internal" href="_images/bravais_networks1.png"><img alt="netgen" src="_images/bravais_networks1.png" style="width: 300px;" /></a></p></td>
+<td><p><a class="reference external" href="https://github.com/PMEAL/OpenPNM/tree/dev/examples/networks/generation">How to Generate Various Networks</a></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="_images/gabriel_network1.png"><img alt="netman" src="_images/gabriel_network1.png" style="width: 300px;" /></a></p></td>
+<td><p><a class="reference external" href="https://github.com/PMEAL/OpenPNM/tree/dev/examples/networks/manipulation">Manipulating and Altering Networks</a></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="_images/extracted_berea.png"><img alt="netimp" src="_images/extracted_berea.png" style="width: 300px;" /></a></p></td>
+<td><p><a class="reference external" href="https://github.com/PMEAL/OpenPNM/tree/dev/examples/networks/extraction">Working with Extracted Networks</a></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="generating-geometrical-properties">
+<h2>Generating Geometrical Properties<a class="headerlink" href="#generating-geometrical-properties" title="Permalink to this headline">¶</a></h2>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 23%" />
+<col style="width: 77%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"></th>
+<th class="head"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><a class="reference internal" href="_images/histogram.jpg"><img alt="histogram" src="_images/histogram.jpg" style="width: 300px;" /></a></p></td>
+<td><p><a class="reference external" href="https://github.com/PMEAL/OpenPNM/tree/dev/examples/geometry">Creating and Adjusting Geometry</a></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="computing-thermophysical-properties">
+<h2>Computing Thermophysical Properties<a class="headerlink" href="#computing-thermophysical-properties" title="Permalink to this headline">¶</a></h2>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 23%" />
+<col style="width: 77%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"></th>
+<th class="head"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><a class="reference internal" href="_images/droplet.jpg"><img alt="droplet" src="_images/droplet.jpg" style="width: 300px;" /></a></p></td>
+<td><p><a class="reference external" href="https://github.com/PMEAL/OpenPNM/tree/dev/examples/phases">Defining Phases and Computing Properties</a></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="performing-simulations">
+<h2>Performing Simulations<a class="headerlink" href="#performing-simulations" title="Permalink to this headline">¶</a></h2>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 23%" />
+<col style="width: 77%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"></th>
+<th class="head"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><a class="reference internal" href="_images/quick_start_drainage_curve.png"><img alt="drainage" src="_images/quick_start_drainage_curve.png" style="width: 300px;" /></a></p></td>
+<td><p><a class="reference external" href="https://github.com/PMEAL/OpenPNM/tree/dev/examples/algorithms/percolation">Percolation</a></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="_images/conc_dist.png"><img alt="concdist" src="_images/conc_dist.png" style="width: 300px;" /></a></p></td>
+<td><p><a class="reference external" href="https://github.com/PMEAL/OpenPNM/tree/dev/examples/algorithms/singlephase">Single Phase Transport</a></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="_images/rel_diff.png"><img alt="reldiff" src="_images/rel_diff.png" style="width: 300px;" /></a></p></td>
+<td><p><a class="reference external" href="https://github.com/PMEAL/OpenPNM/tree/dev/examples/algorithms/multiphase">Multiphase Transport</a></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="_images/reactive_diffusion.png"><img alt="reactdiff" src="_images/reactive_diffusion.png" style="width: 300px;" /></a></p></td>
+<td><p><a class="reference external" href="https://github.com/PMEAL/OpenPNM/tree/dev/examples/algorithms/reactive">Reactive Transport</a></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="_images/logo.png"><img alt="logo" src="_images/logo.png" style="width: 300px;" /></a></p></td>
+<td><p><a class="reference external" href="https://github.com/PMEAL/OpenPNM/tree/dev/examples/algorithms/transient">Transient Transport</a></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="_images/dispersion.png"><img alt="dispersion" src="_images/dispersion.png" style="width: 300px;" /></a></p></td>
+<td><p><a class="reference external" href="https://github.com/PMEAL/OpenPNM/tree/dev/examples/algorithms/multiphysics">Multiphysics</a></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="_images/gears.png"><img alt="gears" src="_images/gears.png" style="width: 300px;" /></a></p></td>
+<td><p><a class="reference external" href="https://github.com/PMEAL/OpenPNM/tree/dev/examples/algorithms/general">Solvers and Settings</a></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="modules/index.html" class="btn btn-neutral float-right" title="Module Reference" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="quick_start.html" class="btn btn-neutral float-left" title="Getting Started" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020 OpenPNM Team
+
+    </p>
+  </div> 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -1,0 +1,323 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>openpnm.models.phases.molar_density &mdash; OpenPNM</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+        <script src="../../../../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../../index.html" class="icon icon-home" alt="Documentation Home"> OpenPNM
+          
+
+          
+            
+            <img src="../../../../_static/logo.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installing OpenPNM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../quick_start.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../userguide.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../modules/index.html"><strong>Module Reference</strong></a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">OpenPNM</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../../index.html">Module code</a> &raquo;</li>
+        
+      <li>openpnm.models.phases.molar_density</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for openpnm.models.phases.molar_density</h1><div class="highlight"><pre>
+<span></span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">.. autofunction:: openpnm.models.phases.molar_density.standard</span>
+<span class="sd">.. autofunction:: openpnm.models.phases.molar_density.ideal_gas</span>
+<span class="sd">.. autofunction:: openpnm.models.phases.molar_density.vanderwaals</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+
+<div class="viewcode-block" id="standard"><a class="viewcode-back" href="../../../../modules/models/phase.html#openpnm.models.phases.molar_density.standard">[docs]</a><span class="k">def</span> <span class="nf">standard</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">mol_weight</span><span class="o">=</span><span class="s1">&#39;pore.molecular_weight&#39;</span><span class="p">,</span>
+             <span class="n">density</span><span class="o">=</span><span class="s1">&#39;pore.density&#39;</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates the molar density from the molecular weight and mass density</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    target : OpenPNM Object</span>
+<span class="sd">        The object for which these values are being calculated.  This</span>
+<span class="sd">        controls the length of the calculated array, and also provides</span>
+<span class="sd">        access to other necessary thermofluid properties.</span>
+
+<span class="sd">    mol_weight : string</span>
+<span class="sd">        The dictionary key containing the molecular weight in kg/mol</span>
+
+<span class="sd">    density : string</span>
+<span class="sd">        The dictionary key containing the density in kg/m3</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    value : NumPy ndarray</span>
+<span class="sd">        Array containing molar density values [mol/m3]</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">MW</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="n">mol_weight</span><span class="p">]</span>
+    <span class="n">rho</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="n">density</span><span class="p">]</span>
+    <span class="n">value</span> <span class="o">=</span> <span class="n">rho</span><span class="o">/</span><span class="n">MW</span>
+    <span class="k">return</span> <span class="n">value</span></div>
+
+
+<div class="viewcode-block" id="ideal_gas"><a class="viewcode-back" href="../../../../modules/models/phase.html#openpnm.models.phases.molar_density.ideal_gas">[docs]</a><span class="k">def</span> <span class="nf">ideal_gas</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">pressure</span><span class="o">=</span><span class="s1">&#39;pore.pressure&#39;</span><span class="p">,</span>
+              <span class="n">temperature</span><span class="o">=</span><span class="s1">&#39;pore.temperature&#39;</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Uses ideal gas law to calculate the molar density of an ideal gas</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    target : OpenPNM Object</span>
+<span class="sd">        The object for which these values are being calculated.  This</span>
+<span class="sd">        controls the length of the calculated array, and also provides</span>
+<span class="sd">        access to other necessary thermofluid properties.</span>
+
+<span class="sd">    temperature : string</span>
+<span class="sd">        The dictionary key containing the density in kg/m3</span>
+
+<span class="sd">    pressure : string</span>
+<span class="sd">        The dictionary key containing the pressure values in Pascals (Pa)</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    value : NumPy ndarray</span>
+<span class="sd">        Array containing molar density values [mol/m3]</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This method uses the SI value for the ideal gas constant, hence the need to</span>
+<span class="sd">    provide the temperature and pressure in SI.  In general, OpenPNM use SI</span>
+<span class="sd">    throughout for consistency.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">R</span> <span class="o">=</span> <span class="mf">8.31447</span>
+    <span class="n">P</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="n">pressure</span><span class="p">]</span>
+    <span class="n">T</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="n">temperature</span><span class="p">]</span>
+    <span class="n">value</span> <span class="o">=</span> <span class="n">P</span><span class="o">/</span><span class="p">(</span><span class="n">R</span><span class="o">*</span><span class="n">T</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">value</span></div>
+
+
+<div class="viewcode-block" id="vanderwaals"><a class="viewcode-back" href="../../../../modules/models/phase.html#openpnm.models.phases.molar_density.vanderwaals">[docs]</a><span class="k">def</span> <span class="nf">vanderwaals</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">pressure</span><span class="o">=</span><span class="s1">&#39;pore.pressure&#39;</span><span class="p">,</span>
+                <span class="n">temperature</span><span class="o">=</span><span class="s1">&#39;pore.temperature&#39;</span><span class="p">,</span>
+                <span class="n">critical_pressure</span><span class="o">=</span><span class="s1">&#39;pore.critical_pressure&#39;</span><span class="p">,</span>
+                <span class="n">critical_temperature</span><span class="o">=</span><span class="s1">&#39;pore.critical_temperature&#39;</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Uses Van der Waals equation of state to calculate the density of a real gas</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    target : OpenPNM Object</span>
+<span class="sd">        The object for which these values are being calculated.  This</span>
+<span class="sd">        controls the length of the calculated array, and also provides</span>
+<span class="sd">        access to other necessary thermofluid properties.</span>
+
+<span class="sd">    pressure : string</span>
+<span class="sd">        The dictionary key containing the pressure values in Pascals (Pa)</span>
+
+<span class="sd">    temperature : string</span>
+<span class="sd">        The dictionary key containing the temperature values in Kelvin (K)</span>
+
+<span class="sd">    critical_pressure : string</span>
+<span class="sd">        The dictionary key containing the critical pressure values in Pascals</span>
+<span class="sd">        (Pa)</span>
+
+<span class="sd">    critical_temperature : string</span>
+<span class="sd">        The dictionary key containing the critical temperature values in Kelvin</span>
+<span class="sd">        (K)</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    value : NumPy ndarray</span>
+<span class="sd">        Array containing molar density values [mol/m3]</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">P</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="n">pressure</span><span class="p">]</span><span class="o">/</span><span class="mi">100000</span>
+    <span class="n">T</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="n">temperature</span><span class="p">]</span>
+    <span class="n">Pc</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="n">critical_pressure</span><span class="p">]</span><span class="o">/</span><span class="mi">100000</span>  <span class="c1"># convert to bars</span>
+    <span class="n">Tc</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="n">critical_temperature</span><span class="p">]</span>
+    <span class="n">R</span> <span class="o">=</span> <span class="mf">83.1447</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="mi">27</span><span class="o">*</span><span class="p">(</span><span class="n">R</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">Tc</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="mi">64</span><span class="o">*</span><span class="n">Pc</span><span class="p">)</span>
+    <span class="n">b</span> <span class="o">=</span> <span class="n">R</span><span class="o">*</span><span class="n">Tc</span><span class="o">/</span><span class="p">(</span><span class="mi">8</span><span class="o">*</span><span class="n">Pc</span><span class="p">)</span>
+    <span class="n">a1</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="o">/</span><span class="n">b</span>
+    <span class="n">a2</span> <span class="o">=</span> <span class="p">(</span><span class="n">R</span><span class="o">*</span><span class="n">T</span><span class="o">+</span><span class="n">b</span><span class="o">*</span><span class="n">P</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">a</span><span class="o">*</span><span class="n">b</span><span class="p">)</span>
+    <span class="n">a3</span> <span class="o">=</span> <span class="o">-</span><span class="n">P</span><span class="o">/</span><span class="p">(</span><span class="n">a</span><span class="o">*</span><span class="n">b</span><span class="p">)</span>
+    <span class="n">a0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">a1</span><span class="p">))</span>
+    <span class="n">coeffs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">a0</span><span class="p">,</span> <span class="n">a1</span><span class="p">,</span> <span class="n">a2</span><span class="p">,</span> <span class="n">a3</span><span class="p">))</span><span class="o">.</span><span class="n">T</span>
+    <span class="n">density</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">roots</span><span class="p">(</span><span class="n">C</span><span class="p">)</span> <span class="k">for</span> <span class="n">C</span> <span class="ow">in</span> <span class="n">coeffs</span><span class="p">])</span>
+    <span class="n">value</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">real</span><span class="p">(</span><span class="n">density</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">])</span><span class="o">*</span><span class="mf">1e6</span>  <span class="c1"># Convert it to mol/m3</span>
+    <span class="k">return</span> <span class="n">value</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020 OpenPNM Team
+
+    </p>
+  </div> 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -1,0 +1,352 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>openpnm.models.geometry.pore_volume &mdash; OpenPNM</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+        <script src="../../../../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../../index.html" class="icon icon-home" alt="Documentation Home"> OpenPNM
+          
+
+          
+            
+            <img src="../../../../_static/logo.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installing OpenPNM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../quick_start.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../userguide.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../modules/index.html"><strong>Module Reference</strong></a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">OpenPNM</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../../index.html">Module code</a> &raquo;</li>
+        
+      <li>openpnm.models.geometry.pore_volume</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for openpnm.models.geometry.pore_volume</h1><div class="highlight"><pre>
+<span></span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">These models calculate pore volumes depending on the specified shape</span>
+
+<span class="sd">.. autofunction:: openpnm.models.geometry.pore_volume.sphere</span>
+<span class="sd">.. autofunction:: openpnm.models.geometry.pore_volume.cube</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">pi</span> <span class="k">as</span> <span class="n">_pi</span>
+
+
+<div class="viewcode-block" id="sphere"><a class="viewcode-back" href="../../../../modules/models/geometry.html#openpnm.models.geometry.pore_volume.sphere">[docs]</a><span class="k">def</span> <span class="nf">sphere</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">pore_diameter</span><span class="o">=</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate pore volume from diameter assuming a spherical pore body</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    target : OpenPNM Object</span>
+<span class="sd">        The object which this model is associated with. This controls</span>
+<span class="sd">        the length of the calculated array, and also provides access to other</span>
+<span class="sd">        necessary geometric properties.</span>
+
+<span class="sd">    pore_diameter : string</span>
+<span class="sd">        The dictionary key of the pore diameter values</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    value : NumPy ndarray</span>
+<span class="sd">        Array containing pore volume values.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">_pi</span><span class="o">/</span><span class="mi">6</span><span class="o">*</span><span class="n">target</span><span class="p">[</span><span class="n">pore_diameter</span><span class="p">]</span><span class="o">**</span><span class="mi">3</span></div>
+
+
+<div class="viewcode-block" id="cube"><a class="viewcode-back" href="../../../../modules/models/geometry.html#openpnm.models.geometry.pore_volume.cube">[docs]</a><span class="k">def</span> <span class="nf">cube</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">pore_diameter</span><span class="o">=</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate pore volume from diameter assuming a cubic pore body</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    target : OpenPNM Object</span>
+<span class="sd">        The object which this model is associated with. This controls</span>
+<span class="sd">        the length of the calculated array, and also provides access to other</span>
+<span class="sd">        necessary geometric properties.</span>
+
+<span class="sd">    pore_diameter : string</span>
+<span class="sd">        The dictionary key of the pore diameter values</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    value : NumPy ndarray</span>
+<span class="sd">        Array containing pore volume values.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">target</span><span class="p">[</span><span class="n">pore_diameter</span><span class="p">]</span><span class="o">**</span><span class="mi">3</span></div>
+
+
+<span class="k">def</span> <span class="nf">circle</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">pore_diameter</span><span class="o">=</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate pore volume from diameter assuming a spherical pore body</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    target : OpenPNM Object</span>
+<span class="sd">        The object which this model is associated with. This controls</span>
+<span class="sd">        the length of the calculated array, and also provides access to other</span>
+<span class="sd">        necessary geometric properties.</span>
+
+<span class="sd">    pore_diameter : string</span>
+<span class="sd">        The dictionary key of the pore diameter values</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">_pi</span><span class="o">/</span><span class="mi">4</span> <span class="o">*</span> <span class="n">target</span><span class="p">[</span><span class="n">pore_diameter</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span>
+
+
+<span class="k">def</span> <span class="nf">square</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">pore_diameter</span><span class="o">=</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate pore volume from diameter assuming a cubic pore body</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    target : OpenPNM Object</span>
+<span class="sd">        The object which this model is associated with. This controls</span>
+<span class="sd">        the length of the calculated array, and also provides access to other</span>
+<span class="sd">        necessary geometric properties.</span>
+
+<span class="sd">    pore_diameter : string</span>
+<span class="sd">        The dictionary key of the pore diameter values</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">target</span><span class="p">[</span><span class="n">pore_diameter</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span>
+
+
+<span class="k">def</span> <span class="nf">cylinder</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">pore_diameter</span><span class="o">=</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate pore volume from diameter assuming a cylindrical pore body</span>
+<span class="sd">    with a height equal to its diameter.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    target : OpenPNM Object</span>
+<span class="sd">        The object which this model is associated with. This controls</span>
+<span class="sd">        the length of the calculated array, and also provides access to other</span>
+<span class="sd">        necessary geometric properties.</span>
+
+<span class="sd">    pore_diameter : string</span>
+<span class="sd">        The dictionary key of the pore diameter values</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    value : NumPy ndarray</span>
+<span class="sd">        Array containing pore volume values.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">diams</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="n">pore_diameter</span><span class="p">]</span>
+    <span class="n">value</span> <span class="o">=</span> <span class="n">_pi</span><span class="o">/</span><span class="mi">4</span><span class="o">*</span><span class="n">diams</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="n">diams</span>
+    <span class="k">return</span> <span class="n">value</span>
+
+
+<span class="k">def</span> <span class="nf">effective</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">pore_volume</span><span class="o">=</span><span class="s1">&#39;pore.volume&#39;</span><span class="p">,</span>
+              <span class="n">throat_volume</span><span class="o">=</span><span class="s1">&#39;throat.volume&#39;</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate the effective pore volume for optional use in transient</span>
+<span class="sd">    simulations. The effective pore volume is calculated by adding half the</span>
+<span class="sd">    volume of all neighbouring throats to the pore volume.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    target : OpenPNM Object</span>
+<span class="sd">        The object which this model is associated with. This controls</span>
+<span class="sd">        the length of the calculated array, and also provides access to other</span>
+<span class="sd">        necessary geometric properties.</span>
+
+<span class="sd">    pore_volume : string</span>
+<span class="sd">        The dictionary key of the pore volume values</span>
+
+<span class="sd">    throat_volume : string</span>
+<span class="sd">        The dictionary key of the throat volume values</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    value : NumPy ndarray</span>
+<span class="sd">        Array containing pore volume values.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">network</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">network</span>
+    <span class="n">cn</span> <span class="o">=</span> <span class="n">network</span><span class="p">[</span><span class="s1">&#39;throat.conns&#39;</span><span class="p">]</span>
+    <span class="n">P1</span> <span class="o">=</span> <span class="n">cn</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>
+    <span class="n">P2</span> <span class="o">=</span> <span class="n">cn</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span>
+    <span class="n">eff_vol</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">network</span><span class="p">[</span><span class="n">pore_volume</span><span class="p">])</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">add</span><span class="o">.</span><span class="n">at</span><span class="p">(</span><span class="n">eff_vol</span><span class="p">,</span> <span class="n">P1</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="o">*</span><span class="n">network</span><span class="p">[</span><span class="n">throat_volume</span><span class="p">])</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">add</span><span class="o">.</span><span class="n">at</span><span class="p">(</span><span class="n">eff_vol</span><span class="p">,</span> <span class="n">P2</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="o">*</span><span class="n">network</span><span class="p">[</span><span class="n">throat_volume</span><span class="p">])</span>
+    <span class="n">pores</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">map_pores</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">target</span><span class="o">.</span><span class="n">Ps</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="n">target</span><span class="p">)</span>
+    <span class="n">value</span> <span class="o">=</span> <span class="n">eff_vol</span><span class="p">[</span><span class="n">pores</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">value</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020 OpenPNM Team
+
+    </p>
+  </div> 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

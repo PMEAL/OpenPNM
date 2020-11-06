@@ -1,0 +1,304 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Algorithms &mdash; OpenPNM</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="GenericAlgorithm" href="generic_algorithm.html" />
+    <link rel="prev" title="VoronoiFibers" href="../materials/voronoi_fibers.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home" alt="Documentation Home"> OpenPNM
+          
+
+          
+            
+            <img src="../../_static/logo.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installing OpenPNM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quick_start.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../userguide.html">Examples</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html"><strong>Module Reference</strong></a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../core/index.html">Core</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../network/index.html">Network</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../geometry/index.html">Geometry</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../phases/index.html">Phases</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../physics/index.html">Physics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../materials/index.html">Materials</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Algorithms</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#module-openpnm.algorithms">Overview of Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#generic-classes">Generic Classes</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="generic_algorithm.html">GenericAlgorithm</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generic_transport.html">GenericTransport</a></li>
+<li class="toctree-l4"><a class="reference internal" href="reactive_transport.html">ReactiveTransport</a></li>
+<li class="toctree-l4"><a class="reference internal" href="transient_reactive_transport.html">TransientReactiveTransport</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#percolation-classes">Percolation Classes</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="ordinary_percolation.html">OrdinaryPercolation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="porosimetry.html">Porosimetry</a></li>
+<li class="toctree-l4"><a class="reference internal" href="invasion_percolation.html">InvasionPercolation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="mixed_percolation.html">MixedInvasionPercolation</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#transport-classes">Transport Classes</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="fickian_diffusion.html">FickianDiffusion</a></li>
+<li class="toctree-l4"><a class="reference internal" href="fourier_conduction.html">FourierConduction</a></li>
+<li class="toctree-l4"><a class="reference internal" href="ohmic_conduction.html">OhmicConduction</a></li>
+<li class="toctree-l4"><a class="reference internal" href="stokes_flow.html">StokesFlow</a></li>
+<li class="toctree-l4"><a class="reference internal" href="advection_diffusion.html">AdvectionDiffusion</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="metrics/index.html">Metrics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../topotools/index.html">Topotools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../models/index.html">Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../io/index.html">IO</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../utils/index.html">Utilities</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">OpenPNM</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html"><strong>Module Reference</strong></a> &raquo;</li>
+        
+      <li>Algorithms</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="algorithms">
+<span id="algorithms-index"></span><h1><a class="toc-backref" href="#id1">Algorithms</a><a class="headerlink" href="#algorithms" title="Permalink to this headline">¶</a></h1>
+<div class="contents topic" id="page-contents">
+<p class="topic-title">Page Contents</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#algorithms" id="id1">Algorithms</a></p>
+<ul>
+<li><p><a class="reference internal" href="#module-openpnm.algorithms" id="id2">Overview of Module</a></p></li>
+<li><p><a class="reference internal" href="#generic-classes" id="id3">Generic Classes</a></p></li>
+<li><p><a class="reference internal" href="#percolation-classes" id="id4">Percolation Classes</a></p></li>
+<li><p><a class="reference internal" href="#transport-classes" id="id5">Transport Classes</a></p></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="module-openpnm.algorithms">
+<span id="overview-of-module"></span><h2><a class="toc-backref" href="#id2">Overview of Module</a><a class="headerlink" href="#module-openpnm.algorithms" title="Permalink to this headline">¶</a></h2>
+<p><strong>openpnm.algorithms</strong></p>
+<hr class="docutils" />
+<p>The <code class="docutils literal notranslate"><span class="pre">algorithms</span></code> module contains classes for conducting transport simulations
+on pore networks.</p>
+</div>
+<div class="section" id="generic-classes">
+<h2><a class="toc-backref" href="#id3">Generic Classes</a><a class="headerlink" href="#generic-classes" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="generic_algorithm.html">GenericAlgorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="generic_transport.html">GenericTransport</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reactive_transport.html">ReactiveTransport</a></li>
+<li class="toctree-l1"><a class="reference internal" href="transient_reactive_transport.html">TransientReactiveTransport</a></li>
+</ul>
+</div>
+</div>
+<div class="section" id="percolation-classes">
+<h2><a class="toc-backref" href="#id4">Percolation Classes</a><a class="headerlink" href="#percolation-classes" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="ordinary_percolation.html">OrdinaryPercolation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="porosimetry.html">Porosimetry</a></li>
+<li class="toctree-l1"><a class="reference internal" href="invasion_percolation.html">InvasionPercolation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mixed_percolation.html">MixedInvasionPercolation</a></li>
+</ul>
+</div>
+</div>
+<div class="section" id="transport-classes">
+<h2><a class="toc-backref" href="#id5">Transport Classes</a><a class="headerlink" href="#transport-classes" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="fickian_diffusion.html">FickianDiffusion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fourier_conduction.html">FourierConduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ohmic_conduction.html">OhmicConduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="stokes_flow.html">StokesFlow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="advection_diffusion.html">AdvectionDiffusion</a></li>
+</ul>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="generic_algorithm.html" class="btn btn-neutral float-right" title="GenericAlgorithm" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="../materials/voronoi_fibers.html" class="btn btn-neutral float-left" title="VoronoiFibers" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020 OpenPNM Team
+
+    </p>
+  </div> 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

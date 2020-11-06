@@ -1,0 +1,525 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>OrdinaryPercolation &mdash; OpenPNM</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Porosimetry" href="porosimetry.html" />
+    <link rel="prev" title="TransientReactiveTransport" href="transient_reactive_transport.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home" alt="Documentation Home"> OpenPNM
+          
+
+          
+            
+            <img src="../../_static/logo.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installing OpenPNM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quick_start.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../userguide.html">Examples</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html"><strong>Module Reference</strong></a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../core/index.html">Core</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../network/index.html">Network</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../geometry/index.html">Geometry</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../phases/index.html">Phases</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../physics/index.html">Physics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../materials/index.html">Materials</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">Algorithms</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="index.html#module-openpnm.algorithms">Overview of Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="index.html#generic-classes">Generic Classes</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="index.html#percolation-classes">Percolation Classes</a><ul class="current">
+<li class="toctree-l4 current"><a class="current reference internal" href="#">OrdinaryPercolation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="porosimetry.html">Porosimetry</a></li>
+<li class="toctree-l4"><a class="reference internal" href="invasion_percolation.html">InvasionPercolation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="mixed_percolation.html">MixedInvasionPercolation</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="index.html#transport-classes">Transport Classes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="metrics/index.html">Metrics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../topotools/index.html">Topotools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../models/index.html">Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../io/index.html">IO</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../utils/index.html">Utilities</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">OpenPNM</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html"><strong>Module Reference</strong></a> &raquo;</li>
+        
+          <li><a href="index.html">Algorithms</a> &raquo;</li>
+        
+      <li>OrdinaryPercolation</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="ordinarypercolation">
+<span id="ordinary-percolation-api"></span><h1>OrdinaryPercolation<a class="headerlink" href="#ordinarypercolation" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt id="openpnm.algorithms.OrdinaryPercolation">
+<em class="property">class </em><code class="sig-prename descclassname">openpnm.algorithms.</code><code class="sig-name descname">OrdinaryPercolation</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/OrdinaryPercolation.html#OrdinaryPercolation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.algorithms.OrdinaryPercolation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">openpnm.algorithms.GenericAlgorithm.GenericAlgorithm</span></code></p>
+<p>Ordinary percolation simulation with or without access limitations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>network</strong> (<em>OpenPNM Network object</em>) – The Network upon which this simulation should be run</p></li>
+<li><p><strong>name</strong> (<em>string</em><em>, </em><em>optional</em>) – An identifying name for the object.  If none is given then one is
+generated.</p></li>
+<li><p><strong>project</strong> (<em>OpenPNM Project object</em>) – Either a Network or a Project must be specified</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Ordinary percolation refers the process of finding all bonds or sites in
+the network that can be invaded at a given threshold, then setting them
+all to invaded in a single step.</p>
+<p>Optionally, it is possible to then find the clusters of invaded bonds or
+sites that are NOT connected to the inlets and setting them back to
+an uninvaded state.</p>
+<p>An overview of percolation theory can be found on <a class="reference external" href="https://en.wikipedia.org/wiki/Percolation_theory">Wikipedia</a></p>
+<p>If the simulation is repeated for increasing threshold values until the
+entire domain is invaded, then a percoaltion curve is obtained.  The
+threshold at which each site and bond was invaded is recorded, so it is
+possible to find invading configurations easily using Boolean logic.</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 31%" />
+<col style="width: 69%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Method</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>reset</p></td>
+<td><p>Resets the various data arrays on the object…</p></td>
+</tr>
+<tr class="row-odd"><td><p>setup</p></td>
+<td><p>Used to specify necessary arguments to the s…</p></td>
+</tr>
+<tr class="row-even"><td><p>set_inlets</p></td>
+<td><p>Set the locations from which the invader ent…</p></td>
+</tr>
+<tr class="row-odd"><td><p>set_outlets</p></td>
+<td><p>Set the locations through which defender exi…</p></td>
+</tr>
+<tr class="row-even"><td><p>set_residual</p></td>
+<td><p>Specify locations of any residual invader.  …</p></td>
+</tr>
+<tr class="row-odd"><td><p>run</p></td>
+<td><p>Runs the percolation algorithm to determine …</p></td>
+</tr>
+<tr class="row-even"><td><p>get_percolation_t…</p></td>
+<td><p>Finds the threshold value where a percolating…</p></td>
+</tr>
+<tr class="row-odd"><td><p>is_percolating</p></td>
+<td><p>Returns a True or False value to indicate if…</p></td>
+</tr>
+<tr class="row-even"><td><p>get_intrusion_data</p></td>
+<td><p>Obtain the numerical values of the calculate…</p></td>
+</tr>
+<tr class="row-odd"><td><p>plot_intrusion_curve</p></td>
+<td><p>Plot the percolation curve as the invader vo…</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt id="openpnm.algorithms.OrdinaryPercolation.get_intrusion_data">
+<code class="sig-name descname">get_intrusion_data</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">Pc</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/OrdinaryPercolation.html#OrdinaryPercolation.get_intrusion_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.algorithms.OrdinaryPercolation.get_intrusion_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Obtain the numerical values of the calculated intrusion curve</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><ul class="simple">
+<li><p><em>A named-tuple containing arrays of applied capillary pressures and</em></p></li>
+<li><p><em>invading phase saturation.</em></p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="openpnm.algorithms.OrdinaryPercolation.get_percolation_threshold">
+<code class="sig-name descname">get_percolation_threshold</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/OrdinaryPercolation.html#OrdinaryPercolation.get_percolation_threshold"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.algorithms.OrdinaryPercolation.get_percolation_threshold" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find the invasion threshold at which a cluster spans from the inlet to
+the outlet sites</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="openpnm.algorithms.OrdinaryPercolation.is_percolating">
+<code class="sig-name descname">is_percolating</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">applied_pressure</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/OrdinaryPercolation.html#OrdinaryPercolation.is_percolating"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.algorithms.OrdinaryPercolation.is_percolating" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a True or False value to indicate if a percolating cluster
+spans between the inlet and outlet pores that were specified at the
+given applied pressure.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>applied_pressure</strong> (<em>scalar</em><em>, </em><em>float</em>) – The pressure at which percolation should be checked</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>A simple boolean True or False if percolation has occured or not.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="openpnm.algorithms.OrdinaryPercolation.plot_intrusion_curve">
+<code class="sig-name descname">plot_intrusion_curve</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">fig</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/OrdinaryPercolation.html#OrdinaryPercolation.plot_intrusion_curve"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.algorithms.OrdinaryPercolation.plot_intrusion_curve" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot the percolation curve as the invader volume or number fraction vs
+the applied capillary pressure.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="openpnm.algorithms.OrdinaryPercolation.reset">
+<code class="sig-name descname">reset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/OrdinaryPercolation.html#OrdinaryPercolation.reset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.algorithms.OrdinaryPercolation.reset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Resets the various data arrays on the object back to their original
+state. This is useful for repeating a simulation at different inlet
+conditions, or invasion points for instance.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="openpnm.algorithms.OrdinaryPercolation.results">
+<code class="sig-name descname">results</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">Pc</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/OrdinaryPercolation.html#OrdinaryPercolation.results"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.algorithms.OrdinaryPercolation.results" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method determines which pores and throats are filled with invading
+phase at the specified capillary pressure, and creates several arrays
+indicating the occupancy status of each pore and throat for the given
+pressure.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>Pc</strong> (<em>scalar</em>) – The capillary pressure for which an invading phase configuration
+is desired.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><em>A dictionary containing an assortment of data about distribution</em></p></li>
+<li><p><em>of the invading phase at the specified capillary pressure.  The data</em></p></li>
+<li><p><em>include</em></p></li>
+<li><p><strong>**’pore.occupancy’**</strong> (<em>A value between 0 and 1 indicating the</em>)</p></li>
+<li><p><em>fractional volume of each pore that is invaded.  If no late pore</em></p></li>
+<li><p><em>filling model was applied, then this will only be integer values</em></p></li>
+<li><p><em>(either filled or not).</em></p></li>
+<li><p><strong>**’throat.occupancy’**</strong> (<em>The same as ‘pore.occupancy’ but for throats.</em>)</p></li>
+<li><p>This dictionary can be passed directly to the <code class="docutils literal notranslate"><span class="pre">update</span></code> method of</p></li>
+<li><p><em>the *Phase</em> object. These values can then be accessed by models*</p></li>
+<li><p><em>or algorithms.</em></p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="openpnm.algorithms.OrdinaryPercolation.run">
+<code class="sig-name descname">run</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">points</span><span class="o">=</span><span class="default_value">25</span></em>, <em class="sig-param"><span class="n">start</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">stop</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/OrdinaryPercolation.html#OrdinaryPercolation.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.algorithms.OrdinaryPercolation.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Runs the percolation algorithm to determine which pores and throats
+will be invaded at each given pressure point.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>points</strong> (<em>int</em><em> or </em><em>array_like</em>) – An array containing the pressure points to apply.  If a scalar is
+given then an array will be generated with the given number of
+points spaced between the lowest and highest values of
+throat entry pressures using logarithmic spacing.  To specify low
+and high pressure points use the <code class="docutils literal notranslate"><span class="pre">start</span></code> and <code class="docutils literal notranslate"><span class="pre">stop</span></code> arguments.</p></li>
+<li><p><strong>start</strong> (<em>int</em>) – The optional starting point to use when generating pressure points.
+If not given the half the lowest capillary entry pressure in the
+network is used.</p></li>
+<li><p><strong>stop</strong> (<em>int</em>) – The optional stopping point to use when generating pressure points.
+If not given, then twice the highest capillary entry pressure in
+the network is used.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The inlet sites are set to invaded to start the simulation.  This means
+that if ‘internal’ pores are used as inlets the capillary pressure
+curve will begin at a non-zero invading phase saturation.  To avoid
+this either set the inlet pore volumes to zero or add boundary pores
+to the inlet face, and set their volumes to zero.</p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="openpnm.algorithms.OrdinaryPercolation.set_inlets">
+<code class="sig-name descname">set_inlets</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pores</span><span class="o">=</span><span class="default_value">[]</span></em>, <em class="sig-param"><span class="n">overwrite</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/OrdinaryPercolation.html#OrdinaryPercolation.set_inlets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.algorithms.OrdinaryPercolation.set_inlets" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the locations from which the invader enters the network</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pores</strong> (<em>array_like</em>) – Locations that are initially filled with invader, from which
+clusters grow and invade into the network</p></li>
+<li><p><strong>overwrite</strong> (<em>boolean</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code> then all existing inlet locations will be removed and
+then the supplied locations will be added.  If <code class="docutils literal notranslate"><span class="pre">False</span></code> (default),
+then supplied locations are added to any already existing inlet
+locations.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="openpnm.algorithms.OrdinaryPercolation.set_outlets">
+<code class="sig-name descname">set_outlets</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pores</span><span class="o">=</span><span class="default_value">[]</span></em>, <em class="sig-param"><span class="n">overwrite</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/OrdinaryPercolation.html#OrdinaryPercolation.set_outlets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.algorithms.OrdinaryPercolation.set_outlets" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the locations through which defender exits the network.</p>
+<p>This is only necessary for calculating the percolation threshold.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pores</strong> (<em>array_like</em>) – Locations where the defender can exit the network.  Any defender
+that does not have access to these sites will be trapped.</p></li>
+<li><p><strong>overwrite</strong> (<em>boolean</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code> then all existing outlet locations will be removed and
+then the supplied locations will be added.  If <code class="docutils literal notranslate"><span class="pre">False</span></code> (default),
+then supplied locations are added to any already existing outlet
+locations.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="openpnm.algorithms.OrdinaryPercolation.set_residual">
+<code class="sig-name descname">set_residual</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pores</span><span class="o">=</span><span class="default_value">[]</span></em>, <em class="sig-param"><span class="n">throats</span><span class="o">=</span><span class="default_value">[]</span></em>, <em class="sig-param"><span class="n">overwrite</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/OrdinaryPercolation.html#OrdinaryPercolation.set_residual"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.algorithms.OrdinaryPercolation.set_residual" title="Permalink to this definition">¶</a></dt>
+<dd><p>Specify locations of any residual invader.  These locations are set
+to invaded at the start of the simulation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pores</strong> (<em>array_like</em>) – The pores locations that are to be filled with invader at the
+beginning of the simulation.</p></li>
+<li><p><strong>throats</strong> (<em>array_like</em>) – The throat locations that are to be filled with invader at the
+beginning of the simulation.</p></li>
+<li><p><strong>overwrite</strong> (<em>boolean</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code> then all existing inlet locations will be removed and
+then the supplied locations will be added.  If <code class="docutils literal notranslate"><span class="pre">False</span></code>, then
+supplied locations are added to any already existing locations.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="openpnm.algorithms.OrdinaryPercolation.setup">
+<code class="sig-name descname">setup</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">phase</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">access_limited</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">mode</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">throat_entry_pressure</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">pore_entry_pressure</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">pore_volume</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">throat_volume</span><span class="o">=</span><span class="default_value">''</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/OrdinaryPercolation.html#OrdinaryPercolation.setup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.algorithms.OrdinaryPercolation.setup" title="Permalink to this definition">¶</a></dt>
+<dd><p>Used to specify necessary arguments to the simulation.  This method is
+useful for resetting the algorithm or applying more explicit control.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>phase</strong> (<em>OpenPNM Phase object</em>) – The Phase object containing the physical properties of the invading
+fluid.</p></li>
+<li><p><strong>access_limited</strong> (<em>boolean</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code> the invading phase can only enter the network from the
+invasion sites specified with <code class="docutils literal notranslate"><span class="pre">set_inlets</span></code>.  Otherwise, invading
+clusters can appear anywhere in the network.  This second case is
+the normal <em>ordinary percolation</em> in the traditional sense, while
+the first case is more physically representative of invading
+fluids.</p></li>
+<li><p><strong>mode</strong> (<em>string</em>) – <p>Specifies the type of percolation process to simulate.  Options
+are:</p>
+<p><strong>’bond’</strong> - The percolation process is controlled by bond entry
+thresholds.</p>
+<p><strong>’site’</strong> - The percolation process is controlled by site entry
+thresholds.</p>
+</p></li>
+<li><p><strong>pore_entry_pressure</strong> (<em>string</em>) – The dictionary key on the Phase object where the pore entry
+pressure values are stored.  The default is
+‘pore.capillary_pressure’.  This is only accessed if the <code class="docutils literal notranslate"><span class="pre">mode</span></code>
+is set to site percolation.</p></li>
+<li><p><strong>throat_entry_pressure</strong> (<em>string</em>) – The dictionary key on the Phase object where the throat entry
+pressure values are stored.  The default is
+‘throat.capillary_pressure’.  This is only accessed if the <code class="docutils literal notranslate"><span class="pre">mode</span></code>
+is set to bond percolation.</p></li>
+<li><p><strong>'pore_volume'</strong> (<em>string</em>) – The dictionary key containing the pore volume information.</p></li>
+<li><p><strong>'throat_volume'</strong> (<em>string</em>) – The dictionary key containing the pore volume information.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="porosimetry.html" class="btn btn-neutral float-right" title="Porosimetry" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="transient_reactive_transport.html" class="btn btn-neutral float-left" title="TransientReactiveTransport" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020 OpenPNM Team
+
+    </p>
+  </div> 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
