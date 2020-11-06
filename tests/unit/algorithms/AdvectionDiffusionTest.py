@@ -145,9 +145,39 @@ class AdvectionDiffusionTest:
                 conductance=f'throat.ad_dif_conductance_{s_scheme}'
             )
             ad.run()
-
             y = ad[ad.settings['quantity']].mean()
             assert_allclose(actual=y, desired=2, rtol=1e-5)
+
+    def test_outflow_BC_rigorous(self):
+        ad = AdvectionDiffusion(network=self.net, phase=self.phase)
+        ad.settings["cache_A"] = False
+        # Add source term so we get a non-uniform concentration profile
+        self.phys["pore.A1"] = -5e-16
+        linear = op.models.physics.generic_source_term.linear
+        self.phys.add_model(
+            propname="pore.rxn", model=linear, A1="pore.A1", X="pore.concentration"
+        )
+        internal_pores = self.net.pores(["left", "right"], mode="not")
+        ad.set_source("pore.rxn", pores=internal_pores)
+        ad.set_value_BC(pores=self.net.pores('right'), values=2)
+        ad.set_outflow_BC(pores=self.net.pores('left'))
+
+        for s_scheme in ['upwind', 'hybrid', 'powerlaw', 'exponential']:
+            ad.setup(
+                quantity='pore.concentration',
+                conductance=f'throat.ad_dif_conductance_{s_scheme}'
+            )
+            ad.run()
+            y = ad[ad.settings['quantity']].reshape(4, 3).mean(axis=1)
+            # Calculate grad_c @ face on which outflow BC was imposed
+            dydx_left_mean = (y[1] - y[0]) / (1 - 0)
+            # Calculate grad_c across the entire network as reference
+            dydx_total_mean = (y[1] - y[-1]) / (3 - 0)
+            # Make sure that grad_c @ outflow BC face is "numerically" ~ 0
+            assert_allclose(
+                actual=dydx_total_mean + dydx_left_mean,
+                desired=dydx_total_mean
+            )
 
     def test_rate(self):
         ad = AdvectionDiffusion(network=self.net, phase=self.phase)
