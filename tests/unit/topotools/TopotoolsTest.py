@@ -414,6 +414,28 @@ class TopotoolsTest:
         dims = op.topotools.dimensionality(pn)
         assert np.allclose(dims, np.array([False, False, True]))
 
+    def test_stitch_pores(self):
+        np.random.seed(0)
+        pts = np.random.rand(100, 3)
+        pn = op.network.Delaunay(points=pts)
+        Ps = (pn.coords[:, 0] > 0.3) * (pn.coords[:, 0] < 0.6)
+        assert pn.Np == 100
+        op.topotools.trim(network=pn, pores=Ps)
+        assert pn.Np == 73
+        pores1 = pn.coords[:, 0] < 0.3
+        pores2 = pn.coords[:, 0] > 0.6
+        assert pn.Nt == 352
+        op.topotools.stitch_pores(network=pn,
+                                  pores1=pores1,
+                                  pores2=pores2, mode='gabriel')
+        assert pn.Nt == 373
+        op.topotools.trim(network=pn, throats=pn.throats('stitched'))
+        assert pn.Nt == 352
+        op.topotools.stitch_pores(network=pn,
+                                  pores1=pores1,
+                                  pores2=pores2, mode='delaunay')
+        assert pn.Nt == 436
+
 
 if __name__ == '__main__':
 

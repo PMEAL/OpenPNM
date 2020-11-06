@@ -265,7 +265,7 @@ class GenericTransportTest:
         mod = op.models.misc.from_neighbor_pores
         self.phase["pore.seed"] = np.nan
         self.phys.add_model(propname="throat.diffusive_conductance", model=mod,
-                            pore_prop="pore.seed", ignore_nans=False)
+                            prop="pore.seed", ignore_nans=False)
         with pytest.raises(Exception):
             alg.run()
         self.phase["pore.seed"] = 1

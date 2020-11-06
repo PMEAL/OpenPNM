@@ -51,9 +51,9 @@ def generic_distribution(target, func, seeds='pore.seed'):
 generic_distribution.__doc__ = _misc.generic_distribution.__doc__
 
 
-def from_neighbor_throats(target, throat_prop, mode='max'):
+def from_neighbor_throats(target, prop, mode='max'):
     return _misc.from_neighbor_throats(target=target,
-                                       throat_prop=throat_prop,
+                                       prop=prop,
                                        mode=mode)
 
 

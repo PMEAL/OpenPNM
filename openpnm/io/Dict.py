@@ -254,6 +254,9 @@ class Dict(GenericIO):
 
     @classmethod
     def save(cls, *args, **kwargs):
+        r"""
+        This method is being deprecated.  Use ``export_data`` instead.
+        """
         cls.export_data(*args, **kwargs)
 
     @classmethod

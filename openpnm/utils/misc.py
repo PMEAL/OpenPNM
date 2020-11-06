@@ -423,7 +423,7 @@ def models_to_table(obj, params=True):
 
 
 def catch_module_not_found(function):
-    """
+    r"""
     A decorator that wraps the passed in function and catches
     ModuleNotFound exception.
     """
