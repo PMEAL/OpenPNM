@@ -101,7 +101,7 @@ class ModelsDict(PrintableDict):
 
         return dtree
 
-    def dependency_map(self, ax=None, figsize=None):
+    def dependency_map(self, ax=None, figsize=None, deep=False, style='shell'):
         r"""
         Create a graph of the dependency graph in a decent format
 
@@ -122,7 +122,7 @@ class ModelsDict(PrintableDict):
         import networkx as nx
         import matplotlib.pyplot as plt
 
-        dtree = self.dependency_graph()
+        dtree = self.dependency_graph(deep=deep)
         labels = {}
         for node in dtree.nodes:
             if node.startswith("pore."):
@@ -133,16 +133,17 @@ class ModelsDict(PrintableDict):
 
         if ax is None:
             fig, ax = plt.subplots()
-        fig.set_size_inches(figsize)
+        if figsize is not None:
+            fig.set_size_inches(figsize)
 
-        nx.draw_shell(
-            dtree,
-            labels=labels,
-            with_labels=True,
-            edge_color='lightgrey',
-            font_size=12,
-            width=3.0,
-        )
+        style = style.replace('draw_', '')
+        method = getattr(nx, 'draw_' + style)
+        method(dtree,
+               labels=labels,
+               with_labels=True,
+               edge_color='lightgrey',
+               font_size=12,
+               width=3.0)
 
         ax = plt.gca()
         ax.margins(x=0.2, y=0.02)

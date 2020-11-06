@@ -2,7 +2,7 @@ import numpy as np
 import scipy as sp
 import scipy.ndimage as spim
 from scipy.sparse import csgraph
-from scipy.spatial import ConvexHull
+from scipy.spatial import ConvexHull, delaunay_plot_2d
 from openpnm.utils import logging, Workspace
 logger = logging.getLogger(__name__)
 ws = Workspace()
@@ -808,32 +808,60 @@ def stitch(network, donor, P_network, P_donor, method='nearest',
     else:
         raise Exception('<{}> method not supported'.format(method))
 
-    # Enter donor's pores into the Network
-    extend(network=network, coords=donor['pore.coords'])
-
-    # Enter donor's throats into the Network
-    extend(network=network, conns=donor['throat.conns'] + N_init['pore'])
-
-    # Add donor labels to recipient network
-    if label_suffix is not None:
-        if label_suffix != '':
-            label_suffix = '_'+label_suffix
-        for label in donor.labels():
-            element = label.split('.')[0]
-            locations = np.where(network._get_indices(element)
-                                 >= N_init[element])[0]
-            if label + label_suffix not in network.keys():
-                network[label + label_suffix] = False
-            network[label+label_suffix][locations] = donor[label]
+    merge_networks(network, donor)
 
     # Add the new stitch throats to the Network
     extend(network=network, throat_conns=conns, labels=label_stitches)
+
+    if len(network.project.geometries()) > 0:
+        logger.warning(str(conns.shape[0]) + ' newly created throats are not '
+                       + 'assigned to a geometry')
 
     # Remove donor from Workspace, if present
     # This check allows for the reuse of a donor Network multiple times
     for sim in list(ws.values()):
         if donor in sim:
             del ws[sim.name]
+
+
+def stitch_pores(network, pores1, pores2, mode='gabriel'):
+    r"""
+    Stitches together pores in a network with disconnected clusters
+
+    Parameter
+    ---------
+    network : OpenPNM Network
+        The network to operate upon
+    pores1 and pores2: array_like
+        The pore indices of the disconnected clusters to be joined
+    mode : str
+        Dictates which tesselation method is used to identify which pores to
+        stitch together.  Options are 'gabriel' (default) or 'delaunay'.
+
+    Returns
+    -------
+    None
+        The network is operated on 'in-place' so nothing is returned.
+
+    """
+    from openpnm.network import Delaunay, Gabriel
+    pores1 = network._parse_indices(pores1)
+    pores2 = network._parse_indices(pores2)
+    C1 = network.coords[pores1, :]
+    C2 = network.coords[pores2, :]
+    crds = np.vstack((C1, C2))
+    if mode == 'delaunay':
+        net = Delaunay(points=crds, settings={'trim': False})
+    if mode == 'gabriel':
+        net = Gabriel(points=crds, settings={'trim': False})
+    net.set_label(pores=range(len(pores1)), label='pore.one')
+    net.set_label(pores=range(len(pores2)), label='pore.two')
+    Ts = net.find_neighbor_throats(pores=net.pores('one'), mode='xor')
+    conns = net.conns[Ts]
+    mapped_conns = np.vstack((pores1[conns[:, 0]],
+                              pores2[conns[:, 1] - len(pores1)])).T
+    mapped_conns = np.sort(mapped_conns, axis=1)
+    extend(network=network, conns=mapped_conns, labels='stitched')
 
 
 def connect_pores(network, pores1, pores2, labels=[], add_conns=True):

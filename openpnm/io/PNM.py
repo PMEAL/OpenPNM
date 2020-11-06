@@ -14,10 +14,7 @@ ws = Workspace()
 class PNM(GenericIO):
     r"""
     This is the official way to save and load OpenPNM projects
-
-
     """
-
     @classmethod
     def save_project(cls, project, filename=None):
         if filename is None:
@@ -39,10 +36,10 @@ class PNM(GenericIO):
                                    '_spacing', '_shape'])
                 foreign_attrs = found_attrs.difference(known_attrs)
                 if len(foreign_attrs) > 0:
-                    logger.warning(obj.name + ' has the following ' +
-                                   'attributes that will not be saved: ' +
-                                   str([i for i in foreign_attrs]) +
-                                   '\n\t\t\tConsider using Pickle instead')
+                    line_break = f"\n{'':13}"
+                    logger.warning(f"{obj.name} has the following attributes that will"
+                                   + f" not be saved: {[i for i in foreign_attrs]}"
+                                   + f"{line_break}Consider using Pickle instead")
                 item = root.create_group(obj.name)
                 for arr in obj.keys():  # Store data
                     try:
@@ -131,14 +128,12 @@ def create_obj(root, name, proj):
                 try:
                     obj.models[m]['model'] = getattr(md, fn)
                 except AttributeError:
-                    logger.warning('Warning: the function \"' + fn
-                                   + '\" could not be loaded, '
-                                   + 'adding \"blank\" instead')
+                    logger.warning(f"The function {fn} could not be loaded, adding"
+                                   + " 'blank' instead")
                     obj.models[m]['model'] = op.models.misc.basic_math.blank
             except ModuleNotFoundError:
-                logger.warning('Warning: the module \"' + md
-                                + '\" could not be found, '
-                                + 'adding \"blank\" instead')
+                logger.warning(f"The module {md} could not be loaded, adding"
+                               + " 'blank' instead")
                 obj.models[m]['model'] = op.models.misc.basic_math.blank
     proj.append(obj)
     return proj, obj

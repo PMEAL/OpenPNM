@@ -75,7 +75,7 @@ class Boundary2D(GenericGeometry):
 
         self.add_model(propname='throat.diameter',
                        model=mm.from_neighbor_pores,
-                       pore_prop='pore.diameter', mode='max')
+                       prop='pore.diameter', mode='max')
 
         self.add_model(propname='throat.endpoints',
                        model=gm.throat_endpoints.circular_pores)
@@ -91,7 +91,7 @@ class Boundary2D(GenericGeometry):
 
         self.add_model(propname='pore.area',
                        model=mm.from_neighbor_throats,
-                       throat_prop='throat.area', mode='max')
+                       prop='throat.area', mode='max')
 
         self.add_model(propname='throat.surface_area',
                        model=gm.throat_surface_area.rectangle)
