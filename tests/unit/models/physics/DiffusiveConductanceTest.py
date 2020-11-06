@@ -21,15 +21,6 @@ class DiffusiveConductanceTest:
                                               phase=self.phase,
                                               geometry=self.geo)
 
-    def test_ordinary_diffusion(self):
-        self.geo['throat.conduit_lengths.pore1'] = 0.15
-        self.geo['throat.conduit_lengths.throat'] = 0.6
-        self.geo['throat.conduit_lengths.pore2'] = 0.25
-        mod = op.models.physics.diffusive_conductance.ordinary_diffusion
-        self.phys.add_model(propname='throat.o_diffusive_conductance', model=mod)
-        actual = self.phys['throat.o_diffusive_conductance'].mean()
-        assert_allclose(actual, desired=1.3)
-
     def test_generic_diffusive(self):
         # Pass size factors as dict
         self.geo['throat.diffusive_size_factors'] = {
@@ -47,6 +38,24 @@ class DiffusiveConductanceTest:
         self.phys.regenerate_models("throat.g_diffusive_conductance")
         actual = self.phys['throat.g_diffusive_conductance'].mean()
         assert_allclose(actual, desired=0.896 * 1.3)
+
+    def test_ordinary_diffusion(self):
+        self.geo['throat.conduit_lengths.pore1'] = 0.15
+        self.geo['throat.conduit_lengths.throat'] = 0.6
+        self.geo['throat.conduit_lengths.pore2'] = 0.25
+        mod = op.models.physics.diffusive_conductance.ordinary_diffusion
+        self.phys.add_model(propname='throat.o_diffusive_conductance', model=mod)
+        actual = self.phys['throat.o_diffusive_conductance'].mean()
+        assert_allclose(actual, desired=1.3)
+
+    def test_ordinary_diffusion_2d(self):
+        self.geo['throat.conduit_lengths.pore1'] = 0.15
+        self.geo['throat.conduit_lengths.throat'] = 0.6
+        self.geo['throat.conduit_lengths.pore2'] = 0.25
+        mod = op.models.physics.diffusive_conductance.ordinary_diffusion_2d
+        self.phys.add_model(propname='throat.o_diffusive_conductance', model=mod)
+        actual = self.phys['throat.o_diffusive_conductance'].mean()
+        assert_allclose(actual, desired=0.8125)
 
     def test_ordinary_diffusion_with_zero_length_throats(self):
         self.geo['throat.conduit_lengths.pore1'] = 0.15
