@@ -99,20 +99,22 @@ class AdvectionDiffusion(ReactiveTransport):
 
         """
         # Hijack the parse_mode function to verify mode/pores argument
-        mode = self._parse_mode(mode, allowed=['merge', 'overwrite', 'remove'],
-                                single=True)
+        allowed_modes = ['merge', 'overwrite', 'remove']
+        mode = self._parse_mode(mode, allowed=allowed_modes, single=True)
         pores = self._parse_indices(pores)
+
         # Calculating A[i,i] values to ensure the outflow condition
         network = self.project.network
         phase = self.project.phases()[self.settings['phase']]
         throats = network.find_neighbor_throats(pores=pores)
-        C12 = network['throat.conns'][throats]
+        C12 = network.conns[throats]
         P12 = phase[self.settings['pressure']][C12]
         gh = phase[self.settings['hydraulic_conductance']][throats]
         Q12 = -gh * np.diff(P12, axis=1).squeeze()
         Qp = np.zeros(self.Np)
         np.add.at(Qp, C12[:, 0], -Q12)
         np.add.at(Qp, C12[:, 1], Q12)
+
         # Store boundary values
         if ('pore.bc_outflow' not in self.keys()) or (mode == 'overwrite'):
             self['pore.bc_outflow'] = np.nan
