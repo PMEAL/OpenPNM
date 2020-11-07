@@ -492,9 +492,7 @@ def _build_func(eq, **args):
     return EQ, S1, S2
 
 
-
-
-def general_symbolic(target, eqn=None, arg_map=None):
+def general_symbolic(target, eqn, x, **kwargs):
     r'''
     A general function to interpret a sympy equation and evaluate the linear
     components of the source term.
@@ -504,12 +502,18 @@ def general_symbolic(target, eqn=None, arg_map=None):
     target : OpenPNM object
         The OpenPNM object where the result will be applied.
 
-    eqn : sympy symbolic expression for the source terms
-        e.g. y = a*x**b + c
-
-    arg_map : Dict mapping the symbols in the expression to OpenPNM data
-        on the target. Must contain 'x' which is the independent variable.
-        e.g. arg_map={'a':'pore.a', 'b':'pore.b', 'c':'pore.c', 'x':'pore.x'}
+    eqn : str
+        The string representation of the equation to use.  This will be
+        passed to sympy's ``sympify`` function to make a *live* sympy object.
+    x : str
+        The dictionary key of the independent variable
+    kwargs
+        All additional keyword arguments are converted to sympy variables
+        using the ``symbols`` function.  Note that IF the arguments are
+        strings, it is assumed they are dictionary keys pointing to arrays
+        on the ``target`` object.  If they are numerical values they are
+        used 'as is'.  Numpy arrays are not accepted.  These must be stored
+        in the ``target`` dictionary and referenced by key.
 
     Example
     ----------
@@ -523,33 +527,23 @@ def general_symbolic(target, eqn=None, arg_map=None):
     >>> water['pore.b'] = 2
     >>> water['pore.c'] = 3
     >>> water['pore.x'] = np.random.random(water.Np)
-    >>> a, b, c, x = sympy.symbols('a,b,c,x')
-    >>> y = a*x**b + c
-    >>> arg_map = {'a':'pore.a', 'b':'pore.b', 'c':'pore.c', 'x':'pore.x'}
+    >>> y = 'a*x**b + c'
+    >>> arg_map = {'a':'pore.a', 'b':'pore.b', 'c':'pore.c'}
     >>> water.add_model(propname='pore.general',
     ...                 model=gst.general_symbolic,
-    ...                 eqn=y, arg_map=arg_map,
-    ...                 regen_mode='normal')
-    >>> assert 'pore.general.rate' in water.props()
-    >>> assert 'pore.general.S1' in water.props()
-    >>> assert 'pore.general.S1' in water.props()
+    ...                 eqn=y, x='pore.x', **arg_map)
+
     '''
-    from sympy import postorder_traversal, srepr, symbols
-    # First make sure all the symbols have been allocated dict items
-    for arg in postorder_traversal(eqn):
-        if srepr(arg)[:6] == 'Symbol':
-            key = srepr(arg)[7:].strip('(').strip(')').strip("'")
-            if key not in arg_map.keys():
-                raise Exception('argument mapping incomplete, missing '+key)
-    if 'x' not in arg_map.keys():
-        raise Exception('argument mapping must contain "x" for the '
-                        + 'independent variable')
+    from sympy import symbols, sympify
+    eqn = sympify(eqn)
     # Get the data
-    data = {}
-    args = {}
-    for key in arg_map.keys():
-        data[key] = target[arg_map[key]]
-        # Callable functions
+    data = {'x': target[x]}
+    args = {'x': symbols('x')}
+    for key in kwargs.keys():
+        if isinstance(kwargs[key], str):
+            data[key] = target[kwargs[key]]
+        else:
+            data[key] = kwargs[key]
         args[key] = symbols(key)
     r, s1, s2 = _build_func(eqn, **args)
     r_val = r(*data.values())
