@@ -105,7 +105,7 @@ class Imported(GenericGeometry):
 
         if 'pore.area' not in self.keys():
             pore_shape = self.settings['pore_shape']
-            m = getattr(mods.geometry.pore_area, pore_shape)
+            m = getattr(mods.geometry.pore_cross_sectional_area, pore_shape)
             self.add_model(propname='pore.area',
                            model=m)
 
