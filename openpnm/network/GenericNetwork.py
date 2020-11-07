@@ -321,21 +321,25 @@ class GenericNetwork(Base, ModelsMixin):
         # Check if provided data is valid
         if weights is None:
             weights = np.ones((self.Nt,), dtype=int)
-        elif np.shape(weights)[0] not in [self.Nt, 2*self.Nt, (self.Nt, 2)]:
+        elif np.shape(weights) not in [self.Nt, 2 * self.Nt, (self.Nt, 2)]:
             raise Exception('Received weights are of incorrect length')
+        weights = np.array(weights)
 
         # Append row & col to each other, and data to itself
         conn = self['throat.conns']
         row = conn[:, 0]
         col = conn[:, 1]
-        if weights.shape == (2*self.Nt,):
+        if weights.shape == (2 * self.Nt):
+            # The flip is necessary since we want [conns.T, reverse(conns).T].T
             row = np.append(row, conn[:, 1])
             col = np.append(col, conn[:, 0])
         elif weights.shape == (self.Nt, 2):
+            # The flip is necessary since we want [conns.T, reverse(conns).T].T
             row = np.append(row, conn[:, 1])
             col = np.append(col, conn[:, 0])
             weights = weights.flatten(order='F')
         elif not triu:
+            # The flip is necessary since we want [conns.T, reverse(conns).T].T
             row = np.append(row, conn[:, 1])
             col = np.append(col, conn[:, 0])
             weights = np.append(weights, weights)
