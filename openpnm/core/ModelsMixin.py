@@ -1,6 +1,7 @@
 import inspect
 from openpnm.utils import PrintableDict, logging, Workspace
 from openpnm.utils.misc import is_valid_propname
+import json
 logger = logging.getLogger(__name__)
 ws = Workspace()
 
@@ -173,6 +174,18 @@ class ModelWrapper(dict):
     This class is used to hold individual models and provide some extra
     functionality, such as pretty-printing.
     """
+
+    def __init__(self, d):
+        super().__init__(d)
+        for arg in d.keys():
+            if arg != 'model':
+                try:
+                    print(d[arg])
+                    json.dumps(d[arg])
+                except TypeError:
+                    raise Exception('The value provided for argument ' + arg +
+                                    ' is not serializable')
+
     @property
     def propname(self):
         for proj in ws.values():
