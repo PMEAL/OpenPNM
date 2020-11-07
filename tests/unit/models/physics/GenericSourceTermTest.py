@@ -52,12 +52,6 @@ class GenericSourceTermTest:
                             A2='pore.item2',
                             X='pore.mole_fraction',
                             regen_mode='normal')
-        self.phys.add_model(propname='pore.source2',
-                            model=pm.source_terms.linear_sym,
-                            A1='pore.item1',
-                            A2='pore.item2',
-                            X='pore.mole_fraction',
-                            regen_mode='normal')
         self.alg = op.algorithms.ReactiveTransport(network=self.net,
                                                    phase=self.phase)
         self.alg.settings.update({'conductance': 'throat.diffusive_conductance',
@@ -68,13 +62,10 @@ class GenericSourceTermTest:
         self.alg.run()
         self.phase.update(self.alg.results())
         self.phys.regenerate_models(propnames='pore.source1')
-        self.phys.regenerate_models(propnames='pore.source2')
         X = self.phase['pore.mole_fraction']
         r1 = np.round(np.sum(0.5e-11 * X[self.source_pores] + 1.5e-12), 20)
         r2 = np.round(np.sum(self.phys['pore.source1.rate'][self.source_pores]), 20)
-        rs = np.round(np.sum(self.phys['pore.source2.rate'][self.source_pores]), 20)
         assert r1 == r2
-        assert r1 == rs
 
     def test_power_law(self):
         self.phys['pore.item1'] = 0.5e-12
@@ -87,13 +78,6 @@ class GenericSourceTermTest:
                             A3='pore.item3',
                             X='pore.mole_fraction',
                             regen_mode='normal')
-        self.phys.add_model(propname='pore.source2',
-                            model=pm.source_terms.power_law_sym,
-                            A1='pore.item1',
-                            A2='pore.item2',
-                            A3='pore.item3',
-                            X='pore.mole_fraction',
-                            regen_mode='normal')
         self.alg = op.algorithms.ReactiveTransport(network=self.net,
                                                    phase=self.phase)
         self.alg.set_value_BC(values=0.4, pores=self.BC_pores)
@@ -104,13 +88,10 @@ class GenericSourceTermTest:
         self.alg.run()
         self.phase.update(self.alg.results())
         self.phys.regenerate_models(propnames='pore.source1')
-        self.phys.regenerate_models(propnames='pore.source2')
         X = self.phase['pore.mole_fraction']
         r1 = np.sum(0.5e-12 * X[self.source_pores]**2.5 - 1.4e-11)
         r2 = np.sum(self.phys['pore.source1.rate'][self.source_pores])
-        rs = np.sum(self.phys['pore.source2.rate'][self.source_pores])
         assert r1 == r2
-        assert r1 == rs
 
     def test_exponential(self):
         self.phys['pore.item1'] = 0.8e-11
@@ -129,16 +110,6 @@ class GenericSourceTermTest:
                             A6='pore.item6',
                             X='pore.mole_fraction',
                             regen_mode='normal')
-        self.phys.add_model(propname='pore.source2',
-                            model=pm.source_terms.exponential_sym,
-                            A1='pore.item1',
-                            A2='pore.item2',
-                            A3='pore.item3',
-                            A4='pore.item4',
-                            A5='pore.item5',
-                            A6='pore.item6',
-                            X='pore.mole_fraction',
-                            regen_mode='normal')
         self.alg = op.algorithms.ReactiveTransport(network=self.net,
                                                    phase=self.phase)
         self.alg.set_value_BC(values=0.4, pores=self.BC_pores)
@@ -149,13 +120,10 @@ class GenericSourceTermTest:
         self.alg.run()
         self.phase.update(self.alg.results())
         self.phys.regenerate_models(propnames='pore.source1')
-        self.phys.regenerate_models(propnames='pore.source2')
         X = self.phase['pore.mole_fraction']
         r1 = np.sum(0.8e-11 * 3 ** (0.5 * X[self.source_pores]**2 - 0.34) + 2e-14)
         r2 = np.sum(self.phys['pore.source1.rate'][self.source_pores])
-        rs = np.sum(self.phys['pore.source2.rate'][self.source_pores])
         assert_allclose(actual=r2, desired=r1, rtol=1e-7)
-        assert_allclose(actual=rs, desired=r1, rtol=1e-7)
 
     def test_natural_exponential(self):
         self.phys['pore.item1'] = 0.8e-11
@@ -172,15 +140,6 @@ class GenericSourceTermTest:
                             A5='pore.item5',
                             X='pore.mole_fraction',
                             regen_mode='normal')
-        self.phys.add_model(propname='pore.source2',
-                            model=pm.source_terms.natural_exponential_sym,
-                            A1='pore.item1',
-                            A2='pore.item2',
-                            A3='pore.item3',
-                            A4='pore.item4',
-                            A5='pore.item5',
-                            X='pore.mole_fraction',
-                            regen_mode='normal')
         self.alg = op.algorithms.ReactiveTransport(network=self.net,
                                                    phase=self.phase)
         self.alg.set_value_BC(values=0.4, pores=self.BC_pores)
@@ -191,13 +150,10 @@ class GenericSourceTermTest:
         self.alg.run()
         self.phase.update(self.alg.results())
         self.phys.regenerate_models(propnames='pore.source1')
-        self.phys.regenerate_models(propnames='pore.source2')
         X = self.phase['pore.mole_fraction']
         r1 = np.sum(0.8e-11 * np.exp(0.5 * X[self.source_pores]**2 - 0.34) + 2e-14)
         r2 = np.sum(self.phys['pore.source1.rate'][self.source_pores])
-        rs = np.sum(self.phys['pore.source1.rate'][self.source_pores])
         assert_allclose(actual=r2, desired=r1)
-        assert_allclose(actual=rs, desired=r1)
 
     def test_logarithm(self):
         self.phys['pore.item1'] = 0.16e-13
@@ -216,16 +172,6 @@ class GenericSourceTermTest:
                             A6='pore.item6',
                             X='pore.mole_fraction',
                             regen_mode='normal')
-        self.phys.add_model(propname='pore.source2',
-                            model=pm.source_terms.logarithm_sym,
-                            A1='pore.item1',
-                            A2='pore.item2',
-                            A3='pore.item3',
-                            A4='pore.item4',
-                            A5='pore.item5',
-                            A6='pore.item6',
-                            X='pore.mole_fraction',
-                            regen_mode='normal')
         self.alg = op.algorithms.ReactiveTransport(network=self.net,
                                                    phase=self.phase)
         self.alg.set_value_BC(values=0.4, pores=self.BC_pores)
@@ -236,14 +182,11 @@ class GenericSourceTermTest:
         self.alg.run()
         self.phase.update(self.alg.results())
         self.phys.regenerate_models(propnames='pore.source1')
-        self.phys.regenerate_models(propnames='pore.source2')
         X = self.phase['pore.mole_fraction']
         r1 = np.sum(0.16e-13 * np.log(4*X[self.source_pores]**(1.4) + 0.133)
                     / np.log(10) - 5.1e-13)
         r2 = np.sum(self.phys['pore.source1.rate'][self.source_pores])
-        rs = np.sum(self.phys['pore.source2.rate'][self.source_pores])
         assert_allclose(actual=r2, desired=r1)
-        assert_allclose(actual=rs, desired=r1)
 
     def test_natural_logarithm(self):
         self.phys['pore.item1'] = 0.16e-14
@@ -260,15 +203,6 @@ class GenericSourceTermTest:
                             A5='pore.item5',
                             X='pore.mole_fraction',
                             regen_mode='on_demand')
-        self.phys.add_model(propname='pore.source2',
-                            model=pm.source_terms.natural_logarithm_sym,
-                            A1='pore.item1',
-                            A2='pore.item2',
-                            A3='pore.item3',
-                            A4='pore.item4',
-                            A5='pore.item5',
-                            X='pore.mole_fraction',
-                            regen_mode='normal')
         self.alg = op.algorithms.ReactiveTransport(network=self.net,
                                                    phase=self.phase)
         self.alg.set_value_BC(values=0.4, pores=self.BC_pores)
@@ -279,18 +213,14 @@ class GenericSourceTermTest:
         self.alg.run()
         self.phase.update(self.alg.results())
         self.phys.regenerate_models(propnames='pore.source1')
-        self.phys.regenerate_models(propnames='pore.source2')
         X = self.phase['pore.mole_fraction']
         r1 = np.sum(0.16e-14*np.log(4*X[self.source_pores]**1.4 + 0.133) - 5.1e-14)
         r2 = np.sum(self.phys['pore.source1.rate'][self.source_pores])
-        rs = np.sum(self.phys['pore.source1.rate'][self.source_pores])
         assert r1 == r2
-        assert r1 == rs
 
     def test_general_symbolic(self):
-        a, b, c, d, e, x = symbols('a,b,c,d,e,x')
         # natural log function
-        y =  a*sym_ln(b*x**c + d)+e
+        y = "a*ln(b*x**c + d)+e"
         phys = self.phys
         phys['pore.item1'] = 0.16e-14
         phys['pore.item2'] = 4
@@ -306,16 +236,14 @@ class GenericSourceTermTest:
                        A5='pore.item5',
                        X='pore.mole_fraction',
                        regen_mode='normal')
-        arg_map=collections.OrderedDict([('a', 'pore.item1'),
-                                         ('b', 'pore.item2'),
-                                         ('c', 'pore.item3'),
-                                         ('d', 'pore.item4'),
-                                         ('e', 'pore.item5'),
-                                         ('x', 'pore.mole_fraction')])
+        arg_map = {'a': 'pore.item1',
+                   'b': 'pore.item2',
+                   'c': 'pore.item3',
+                   'd': 'pore.item4',
+                   'e': 'pore.item5'}
         phys.add_model(propname='pore.general',
-                       model=op.models.physics.source_terms.general_symbolic,
-                       eqn=y, arg_map=arg_map,
-                       regen_mode='normal')
+                       model=op.models.physics.generic_source_term.general_symbolic,
+                       eqn=y, x='pore.mole_fraction', **arg_map)
         assert np.allclose(phys['pore.source1.rate'], phys['pore.general.rate'])
         assert np.allclose(phys['pore.source1.S1'], phys['pore.general.S1'])
         assert np.allclose(phys['pore.source1.S2'], phys['pore.general.S2'])
