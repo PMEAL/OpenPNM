@@ -59,8 +59,9 @@ class AdvectionDiffusionSettings(GenericSettings):
 
 class AdvectionDiffusion(ReactiveTransport):
     r"""
-    A subclass of GenericTransport to simulate advection-diffusion
+    A subclass of ReactiveTransport to simulate advection-diffusion
     """
+
     def __init__(self, settings={}, **kwargs):
         super().__init__(**kwargs)
         self.settings._update_settings_and_docs(AdvectionDiffusionSettings())
@@ -70,7 +71,7 @@ class AdvectionDiffusion(ReactiveTransport):
               diffusive_conductance='', hydraulic_conductance='', pressure='',
               s_scheme='', **kwargs):
         r"""
-
+        Setup method for setting/modifying algorithm settings.
         """
         if phase:
             self.settings['phase'] = phase.name
