@@ -46,18 +46,18 @@ def ad_dif(target,
 
     Notes
     -----
-    (1) This function requires that all the necessary phase properties already
+    This function requires that all the necessary phase properties already
     be calculated.
 
-    (2) This function calculates the specified property for the *entire*
+    This function calculates the specified property for the *entire*
     network then extracts the values for the appropriate throats at the end.
 
-    (3) This function assumes cylindrical throats with constant cross-section
+    This function assumes cylindrical throats with constant cross-section
     area. Corrections for different shapes and variable cross-section area can
     be imposed by passing the proper conduit_shape_factors argument when
     computig the diffusive and hydraulic conductances.
 
-    (4) shape_factor depends on the physics of the problem, i.e. diffusion-like
+    shape_factor depends on the physics of the problem, i.e. diffusion-like
     processes and fluid flow need different shape factors.
 
     """
@@ -88,7 +88,7 @@ def ad_dif(target,
         raise Exception(f"Shape of {throat_diffusive_conductance} must either"
                         r" be (Nt,1) or (Nt,2)")
 
-    Qij = -gh*_np.diff(P[cn], axis=1).squeeze()
+    Qij = -gh * _np.diff(P[cn], axis=1).squeeze()
     Qij = _np.append(Qij, -Qij)
 
     Peij = Qij / gd
@@ -105,9 +105,9 @@ def ad_dif(target,
     if s_scheme == 'upwind':
         w = gd + _np.maximum(0, -Qij)
     elif s_scheme == 'hybrid':
-        w = _np.maximum(0, _np.maximum(-Qij, gd-Qij/2))
+        w = _np.maximum(0, _np.maximum(-Qij, gd - Qij / 2))
     elif s_scheme == 'powerlaw':
-        w = gd * _np.maximum(0, (1 - 0.1*_np.absolute(Peij))**5) + \
+        w = gd * _np.maximum(0, (1 - 0.1 * _np.absolute(Peij))**5) + \
             _np.maximum(0, -Qij)
     elif s_scheme == 'exponential':
         w = -Qij / (1 - _np.exp(Peij))

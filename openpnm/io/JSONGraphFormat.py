@@ -189,7 +189,7 @@ class JSONGraphFormat(GenericIO):
 
         # Define derived throat properties
         geom.add_model(propname='throat.area',
-                       model=gmods.throat_area.cylinder)
+                       model=gmods.throat_cross_sectional_area.cylinder)
         geom.add_model(propname='throat.volume',
                        model=gmods.throat_volume.cylinder)
         geom.add_model(propname='throat.perimeter',
@@ -199,7 +199,7 @@ class JSONGraphFormat(GenericIO):
 
         # Define derived pore properties
         geom.add_model(propname='pore.area',
-                       model=gmods.pore_area.sphere)
+                       model=gmods.pore_cross_sectional_area.sphere)
         geom.add_model(propname='pore.volume',
                        model=gmods.pore_volume.sphere)
 

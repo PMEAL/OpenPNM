@@ -188,7 +188,7 @@ class StickAndBall2D(GenericGeometry):
                        prop2='pore.seed')
 
         self.add_model(propname='pore.area',
-                       model=mods.geometry.pore_area.circle,
+                       model=mods.geometry.pore_cross_sectional_area.circle,
                        pore_diameter='pore.diameter')
 
         self.add_model(propname='pore.volume',
@@ -224,7 +224,7 @@ class StickAndBall2D(GenericGeometry):
                        throat_length='throat.length')
 
         self.add_model(propname='throat.area',
-                       model=mods.geometry.throat_area.rectangle,
+                       model=mods.geometry.throat_cross_sectional_area.rectangle,
                        throat_diameter='throat.diameter')
 
         self.add_model(propname='throat.conduit_lengths',

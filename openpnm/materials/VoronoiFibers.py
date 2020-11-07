@@ -215,7 +215,7 @@ class DelaunayGeometry(GenericGeometry):
             mod = gm.pore_size.equivalent_diameter
             self.add_model(propname="pore.diameter", model=mod)
             self.add_model(propname="pore.area",
-                           model=gm.pore_area.sphere,
+                           model=gm.pore_cross_sectional_area.sphere,
                            pore_diameter="pore.diameter")
             mod = gm.throat_surface_area.extrusion
             self.add_model(propname="throat.surface_area", model=mod)
@@ -1170,7 +1170,7 @@ class VoronoiGeometry(GenericGeometry):
                 propname="pore.volume", model=gm.pore_volume.sphere, regen_mode=rm
             )
             self.add_model(propname="pore.area",
-                           model=gm.pore_area.sphere,
+                           model=gm.pore_cross_sectional_area.sphere,
                            regen_mode=rm)
             self["throat.diameter"] = np.ones(self.Nt) * network.fiber_rad * 2
             self["throat.indiameter"] = self["throat.diameter"]
@@ -1178,7 +1178,7 @@ class VoronoiGeometry(GenericGeometry):
                            model=gm.throat_endpoints.spherical_pores,
                            regen_mode=rm)
             self.add_model(propname="throat.area",
-                           model=gm.throat_area.cylinder,
+                           model=gm.throat_cross_sectional_area.cylinder,
                            regen_mode=rm)
             self.add_model(propname="throat.length",
                            model=gm.throat_length.piecewise,

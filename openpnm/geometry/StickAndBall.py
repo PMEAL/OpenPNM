@@ -53,7 +53,7 @@ class StickAndBall(GenericGeometry):
     Now override the 'pore.diameter' values on the ``geo2`` object:
 
     >>> geo2.remove_model('pore.diameter')  # Remove model and data
-    >>> geo2['pore.diameter'] = np.random.rand(geo2.Np)*0.05
+    >>> geo2['pore.diameter'] = np.random.rand(geo2.Np) * 0.05
 
     Look at the 'pore.diameter' distributions on each object:
 
@@ -84,7 +84,7 @@ class StickAndBall(GenericGeometry):
                        prop2='pore.seed')
 
         self.add_model(propname='pore.area',
-                       model=mods.geometry.pore_area.sphere,
+                       model=mods.geometry.pore_cross_sectional_area.sphere,
                        pore_diameter='pore.diameter')
 
         self.add_model(propname='pore.volume',
@@ -121,7 +121,7 @@ class StickAndBall(GenericGeometry):
                        throat_length='throat.length')
 
         self.add_model(propname='throat.area',
-                       model=mods.geometry.throat_area.cylinder,
+                       model=mods.geometry.throat_cross_sectional_area.cylinder,
                        throat_diameter='throat.diameter')
 
         self.add_model(propname='throat.conduit_lengths',
