@@ -193,6 +193,16 @@ class ModelsTest:
         _ = geo['pore.seed']
         assert len(geo) == 3
 
+    def test_nonserializable_model_arguments(self):
+        pn = op.network.Cubic(shape=[3, 3, 3], spacing=1e-4)
+        pn.add_model(propname='pore.test',
+                     model=op.models.misc.constant,
+                     value=1)
+        with pytest.raises(Exception):
+            pn.add_model(propname='pore.test2',
+                         model=op.models.misc.constant,
+                         value=np.array(1))
+
 
 if __name__ == '__main__':
 

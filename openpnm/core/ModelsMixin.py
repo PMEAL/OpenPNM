@@ -180,7 +180,6 @@ class ModelWrapper(dict):
         for arg in d.keys():
             if arg != 'model':
                 try:
-                    print(d[arg])
                     json.dumps(d[arg])
                 except TypeError:
                     raise Exception('The value provided for argument ' + arg +
