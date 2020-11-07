@@ -3,7 +3,7 @@ import openpnm.models.geometry as gmods
 from openpnm.geometry import GenericGeometry
 
 
-class PyramidsAndCuboids(GenericGeometry):
+class CubesAndCuboids(GenericGeometry):
     r"""
     Cubes and Cuboids subclass of GenericGeometry. This subclass is
     meant as a basic default geometry to get started quickly.
@@ -38,15 +38,15 @@ class PyramidsAndCuboids(GenericGeometry):
     >>> import numpy as np
     >>> import scipy as sp
     >>> import openpnm as op
-    >>> from openpnm.geometry import PymaridsAndCuboids
+    >>> from openpnm.geometry import CubesAndCuboids
     >>> import matplotlib.pyplot as plt
     >>> pn = op.network.CubicDual(shape=[5, 5, 5])
     >>> Ps = pn.pores('primary')
     >>> Ts = pn.throats('primary')
-    >>> geo1 = PyramidsAndCuboids(network=pn, pores=Ps, throats=Ts)
+    >>> geo1 = CubesAndCuboids(network=pn, pores=Ps, throats=Ts)
     >>> Ps = pn.pores('secondary')
     >>> Ts = pn.throats(['secondary', 'interconnect'])
-    >>> geo2 = PyramidsAndCuboids(network=pn, pores=Ps, throats=Ts)
+    >>> geo2 = CubesAndCuboids(network=pn, pores=Ps, throats=Ts)
 
     Now override the 'pore.diameter' values on the ``geo2`` object:
 
