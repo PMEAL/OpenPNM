@@ -21,19 +21,20 @@ def charge_conservation(target, phase, p_alg, e_alg, assumption):
 
     Parameters
     ----------
-    phase : OpenPNM Phase object
-            The phase on which the charge conservation equation is applied.
+    phase : str
+        The name of the phase on which the charge conservation equation
+        is to be applied.
 
-    p_alg : OpenPNM Algorithm object
-            The algorithm used to enforce charge conservation.
+    p_alg : str
+        The algorithm used to enforce charge conservation
 
-    e_alg : list of OpenPNM algorithms
-            The list of algorithms used to solve for transport of different
-            ionic species of the mixture phase.
+    e_alg : list of strs
+        List of algorithms used to solve for transport of different
+        ionic species of the mixture phase.
 
     assumption : string
-            A string correponding to the assumption adopted to enforce charge
-            conservation.
+        A string correponding to the assumption adopted to enforce charge
+        conservation.
 
     Returns
     -------
@@ -54,6 +55,9 @@ def charge_conservation(target, phase, p_alg, e_alg, assumption):
 
     """
     import scipy.sparse.csgraph as _spgr
+    phase = target.project[phase]
+    p_alg = target.project[p_alg]
+    e_alg = [target.project[e] for e in e_alg]
 
     F = 96485.3321233100184
     rhs = _np.zeros(shape=(p_alg.Np, ), dtype=float)

@@ -100,7 +100,8 @@ class IonicConduction(ReactiveTransport):
               * np.isnan(self['pore.bc_rate']))
         mod = gst.charge_conservation
         phys = self.project.find_physics(phase=phase)
+        e_alg = [e.name for e in e_alg]
         phys[0].add_model(propname='pore.charge_conservation', model=mod,
-                          phase=phase, p_alg=self, e_alg=e_alg,
+                          phase=phase.name, p_alg=self.name, e_alg=e_alg,
                           assumption=self.settings['charge_conservation'])
         self.set_source(propname='pore.charge_conservation', pores=Ps)
