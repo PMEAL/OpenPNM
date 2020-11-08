@@ -318,10 +318,11 @@ class GenericNetwork(Base, ModelsMixin):
         >>> am = pn.create_adjacency_matrix(weights=weights, fmt='csr')
 
         """
+        allowed_weights = [(self.Nt,), (2 * self.Nt,), (self.Nt, 2)]
         # Check if provided data is valid
         if weights is None:
             weights = np.ones((self.Nt,), dtype=int)
-        elif np.shape(weights) not in [self.Nt, 2 * self.Nt, (self.Nt, 2)]:
+        elif np.shape(weights) not in allowed_weights:
             raise Exception('Received weights are of incorrect length')
         weights = np.array(weights)
 
