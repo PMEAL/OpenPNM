@@ -1,10 +1,10 @@
 r"""
 Example: How to use OpenPNNM to simulating multiphase Fickian diffusion
 
-    1D network, the first half of the network is occupied by air and the next
-    half by water. A partition coefficient of 0.5 is assumed, meaning that the
-    concentration of the diffusing species in water "at the interface" is half
-    of that in air.
+1D network, the first half of the network is occupied by air and the next
+half by water. A partition coefficient of 0.5 is assumed, meaning that the
+concentration of the diffusing species in water "at the interface" is half
+of that in air.
 
 """
 import openpnm as op
