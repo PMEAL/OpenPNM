@@ -94,26 +94,14 @@ class BundleOfTubes(Project):
             psd_params['loc'] = spacing[0]/2
         if psd_params['scale'] is None:
             psd_params['scale'] = spacing[0]/10
-        if psd_params['distribution'] in ['norm', 'normal', 'gaussian']:
-            geom.add_model(propname='throat.size_distribution',
-                           seeds='throat.seed',
-                           model=mods.geometry.throat_size.normal,
-                           loc=psd_params['loc'], scale=psd_params['scale'])
-        elif psd_params['distribution'] in ['weibull']:
-            geom.add_model(propname='throat.size_distribution',
-                           seeds='throat.seed',
-                           model=mods.geometry.throat_size.weibull,
-                           loc=psd_params['loc'],
-                           scale=psd_params['scale'],
-                           shape=psd_params['shape'])
-        else:
-            temp = psd_params.copy()
-            func = getattr(spst, temp.pop('distribution'))
-            psd = func.freeze(**temp)
-            geom.add_model(propname='throat.size_distribution',
-                           seeds='throat.seed',
-                           model=mods.geometry.throat_size.generic_distribution,
-                           func=psd)
+
+        temp = psd_params.copy()
+        func = temp.pop('distribution')
+        geom.add_model(propname='throat.size_distribution',
+                       model=mods.geometry.throat_size.generic_distribution,
+                       seeds='throat.seed',
+                       func=func,
+                       **temp)
 
         if np.any(geom['throat.size_distribution'] < 0):
             logger.warning('Given size distribution produced negative '
