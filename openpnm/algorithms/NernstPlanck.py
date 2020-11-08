@@ -53,19 +53,16 @@ class NernstPlanck(ReactiveTransport):
         self.settings._update_settings_and_docs(NernstPlanckSettings())
         self.settings.update(settings)
         # Parse the given ion and append name to quantity and conductance
-        if ion:
-            if not type(ion) is str:  # Convert ion object to str
-                ion = ion.name
-            self.settings['ion'] = ion
+        self.settings['ion'] = ion.name
         quantity = self.settings['quantity']
-        if not quantity.endswith(ion):
+        if not quantity.endswith(ion.name):
             quantity = '.'.join(quantity.split('.')[:2])
-            quantity += ('.' + ion)  # Re-add ion name
+            quantity += ('.' + ion.name)  # Re-add ion name
             self.settings['quantity'] = quantity  # Add full value to settings
         conductance = self.settings['conductance']
-        if not conductance.endswith(ion):
+        if not conductance.endswith(ion.name):
             conductance = '.'.join(conductance.split('.')[:2])
-            conductance += ('.' + ion)  # Re-add ion name
+            conductance += ('.' + ion.name)  # Re-add ion name
             self.settings['conductance'] = conductance
 
     def setup(self, phase=None, quantity='', conductance='', ion='', **kwargs):
@@ -83,5 +80,5 @@ class NernstPlanck(ReactiveTransport):
         if conductance:
             self.settings['conductance'] = conductance
         if ion:
-            self.settings['quantity'] = quantity
+            self.settings['ion'] = ion.name
         super().setup(**kwargs)

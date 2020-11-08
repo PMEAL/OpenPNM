@@ -96,19 +96,19 @@ p.set_value_BC(pores=net.pores('left'), values=0.02)
 p.set_value_BC(pores=net.pores('right'), values=0.01)
 p.settings['charge_conservation'] = 'electroneutrality'
 
-eA = op.algorithms.NernstPlanck(network=net, phase=sw, ion=Na.name,
+eA = op.algorithms.NernstPlanck(network=net, phase=sw, ion=Na,
                                 settings=setts1)
 eA.set_value_BC(pores=net.pores('back'), values=20)
 eA.set_value_BC(pores=net.pores('front'), values=10)
 
-eB = op.algorithms.NernstPlanck(network=net, phase=sw, ion=Cl.name,
+eB = op.algorithms.NernstPlanck(network=net, phase=sw, ion=Cl,
                                 settings=setts1)
 eB.set_value_BC(pores=net.pores('back'), values=20)
 eB.set_value_BC(pores=net.pores('front'), values=10)
 
 pnp = op.algorithms.NernstPlanckMultiphysicsSolver(network=net, phase=sw,
                                                    settings=setts2)
-pnp.setup(potential_field=p.name, ions=[eA.name, eB.name])
+pnp.setup(potential_field=p.name, ions=[eA, eB])
 pnp.run()
 
 sw.update(sf.results())

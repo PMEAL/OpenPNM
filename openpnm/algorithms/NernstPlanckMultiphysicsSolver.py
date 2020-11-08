@@ -68,7 +68,7 @@ class NernstPlanckMultiphysicsSolver(GenericAlgorithm):
         if potential_field:
             self.settings['potential_field'] = potential_field
         if ions:
-            self.settings['ions'] = ions
+            self.settings['ions'] = [i.name for i in ions]
         if g_tol:
             self.settings['g_tol'] = g_tol
         if g_max_iter:
