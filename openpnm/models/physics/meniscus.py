@@ -99,7 +99,7 @@ def sinusoidal(target,
 def general_toroidal(target,
                      profile_equation='elliptical',
                      mode='max',
-                     target_Pc=None,
+                     target_Pc='menisci',
                      num_points=1e3,
                      throat_scale_a='throat.scale_a',
                      throat_scale_b='throat.scale_b',
@@ -125,7 +125,7 @@ def general_toroidal(target,
         'max' : the maximum capillary pressure along the throat axis
         'touch' : the maximum capillary pressure a meniscus can sustain before
                   touching a solid feature
-        None : return the meniscus info for a target pressure
+        'menisci' : return the meniscus info for a target pressure
 
     target_Pc : float
         The target capillary pressure to return data for when mode is 'men'
@@ -251,46 +251,47 @@ def general_toroidal(target,
         # Return the pressure at which a touch happens
         Pc_touch = Pc(x_touch, fa, fb, throatRad, contact, surface_tension)
         return Pc_touch
-    elif target_Pc is None:
-        logger.error(msg='Please supply a target capillary pressure'
-                     + ' when mode is "men", default to 1.0e-6')
-        target_Pc = 1.0e-6
-    if np.abs(target_Pc) < 1.0e-6:
-        logger.error(msg='Please supply a target capillary pressure'
-                     + ' with absolute value greater than 1.0e-6,'
-                     + ' default to 1.0e-6')
-        target_Pc = 1.0e-6
-    # Find the position in-between the minima and maxima corresponding to
-    # the target pressure
-    inds = np.indices(np.shape(t_Pc))
-    # Change values outside the range between minima and maxima to be those
-    # Values
-    mask = inds[0] < np.ones(len(pos))[:, np.newaxis]*a_min
-    t_Pc[mask] = (np.ones(len(pos))[:, np.newaxis]*Pc_min)[mask]
-    mask = inds[0] > np.ones(len(pos))[:, np.newaxis]*a_max
-    t_Pc[mask] = (np.ones(len(pos))[:, np.newaxis]*Pc_max)[mask]
-    # Find the argument at or above the target Pressure
-    mask = t_Pc >= target_Pc
-    arg_x = np.argmax(mask, axis=0)
-    # If outside range change to minima or maxima accordingly
-    arg_x[target_Pc < Pc_min] = a_min[target_Pc < Pc_min]
-    arg_x[target_Pc > Pc_max] = a_max[target_Pc > Pc_max]
-    xpos = pos[arg_x]*fa
-    xmin = pos[a_min]*fa
-    xmax = pos[a_max]*fa
-    # Output
-    men_data = {}
-    men_data['pos'] = xpos
-    men_data['rx'] = rx(xpos, fa, fb, throatRad)
-    men_data['alpha'] = fill_angle(xpos, fa, fb, throatRad)
-    men_data['alpha_min'] = fill_angle(xmin, fa, fb, throatRad)
-    men_data['alpha_max'] = fill_angle(xmax, fa, fb, throatRad)
-    men_data['c2x'] = c2x(xpos, fa, fb, throatRad, contact)
-    men_data['gamma'] = cap_angle(xpos, fa, fb, throatRad, contact)
-    men_data['radius'] = rad_curve(xpos, fa, fb, throatRad, contact)
-    # xpos is relative to the throat center
-    men_data['center'] = (xpos - men_data['c2x'])
-    men_data['men_max'] = men_data['center'] - men_data['radius']
+    elif mode == 'menisci':
+        if target_Pc is None:
+            logger.error(msg='Please supply a target capillary pressure'
+                         + ' when mode is "men", default to 1.0e-6')
+            target_Pc = 1.0e-6
+        if np.abs(target_Pc) < 1.0e-6:
+            logger.error(msg='Please supply a target capillary pressure'
+                         + ' with absolute value greater than 1.0e-6,'
+                         + ' default to 1.0e-6')
+            target_Pc = 1.0e-6
+        # Find the position in-between the minima and maxima corresponding to
+        # the target pressure
+        inds = np.indices(np.shape(t_Pc))
+        # Change values outside the range between minima and maxima to be those
+        # Values
+        mask = inds[0] < np.ones(len(pos))[:, np.newaxis]*a_min
+        t_Pc[mask] = (np.ones(len(pos))[:, np.newaxis]*Pc_min)[mask]
+        mask = inds[0] > np.ones(len(pos))[:, np.newaxis]*a_max
+        t_Pc[mask] = (np.ones(len(pos))[:, np.newaxis]*Pc_max)[mask]
+        # Find the argument at or above the target Pressure
+        mask = t_Pc >= target_Pc
+        arg_x = np.argmax(mask, axis=0)
+        # If outside range change to minima or maxima accordingly
+        arg_x[target_Pc < Pc_min] = a_min[target_Pc < Pc_min]
+        arg_x[target_Pc > Pc_max] = a_max[target_Pc > Pc_max]
+        xpos = pos[arg_x]*fa
+        xmin = pos[a_min]*fa
+        xmax = pos[a_max]*fa
+        # Output
+        men_data = {}
+        men_data['pos'] = xpos
+        men_data['rx'] = rx(xpos, fa, fb, throatRad)
+        men_data['alpha'] = fill_angle(xpos, fa, fb, throatRad)
+        men_data['alpha_min'] = fill_angle(xmin, fa, fb, throatRad)
+        men_data['alpha_max'] = fill_angle(xmax, fa, fb, throatRad)
+        men_data['c2x'] = c2x(xpos, fa, fb, throatRad, contact)
+        men_data['gamma'] = cap_angle(xpos, fa, fb, throatRad, contact)
+        men_data['radius'] = rad_curve(xpos, fa, fb, throatRad, contact)
+        # xpos is relative to the throat center
+        men_data['center'] = (xpos - men_data['c2x'])
+        men_data['men_max'] = men_data['center'] - men_data['radius']
 
-    logger.info(mode+' calculated for Pc: '+str(target_Pc))
-    return men_data
+        logger.info(mode+' calculated for Pc: '+str(target_Pc))
+        return men_data
