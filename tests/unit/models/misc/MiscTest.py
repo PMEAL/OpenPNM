@@ -43,7 +43,7 @@ class MiscTest:
     def test_generic_function(self):
         self.geo['pore.rand'] = np.random.rand(self.geo.Np)
         self.geo.add_model(model=mods.generic_function,
-                           func=np.clip,
+                           func="clip",
                            propname='pore.clipped',
                            prop='pore.rand',
                            a_min=0.2, a_max=0.8)
