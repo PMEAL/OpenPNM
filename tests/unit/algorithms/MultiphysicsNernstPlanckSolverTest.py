@@ -94,19 +94,19 @@ class MultiphysicsNernstPlanckSolverTest:
         self.p.settings['charge_conservation'] = 'electroneutrality'
 
         self.eA = op.algorithms.NernstPlanck(network=self.net, phase=self.sw,
-                                             ion=self.Na.name, settings=setts1)
+                                             ion=self.Na, settings=setts1)
         self.eA.set_value_BC(pores=self.net.pores('right'), values=20)
         self.eA.set_value_BC(pores=self.net.pores('left'), values=10)
 
         self.eB = op.algorithms.NernstPlanck(network=self.net, phase=self.sw,
-                                             ion=self.Cl.name, settings=setts1)
+                                             ion=self.Cl, settings=setts1)
         self.eB.set_value_BC(pores=self.net.pores('right'), values=20)
         self.eB.set_value_BC(pores=self.net.pores('left'), values=10)
 
         mnp = op.algorithms.NernstPlanckMultiphysicsSolver
         self.mnp = mnp(network=self.net, phase=self.sw, settings=setts2)
         self.mnp.setup(potential_field=self.p.name,
-                       ions=[self.eA.name, self.eB.name])
+                       ions=[self.eA, self.eB])
 
     def test_run_algs(self):
         self.sf.run()
