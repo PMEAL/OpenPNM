@@ -150,13 +150,13 @@ class MeniscusTest:
         phys.add_model(
             propname="throat.no_target_pressure",
             model=pm.meniscus.general_toroidal,
-            mode="men",
+            mode="menisci",
             num_points=1000,
         )
         phys.add_model(
             propname="throat.small_target_pressure",
             model=pm.meniscus.general_toroidal,
-            mode="men",
+            mode="menisci",
             target_Pc=1.0e-7,
             num_points=1000,
         )

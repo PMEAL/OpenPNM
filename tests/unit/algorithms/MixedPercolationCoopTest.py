@@ -87,7 +87,7 @@ class MixedPercolationCoopTest:
                        mode='max')
         phys.add_model(propname='throat.meniscus',
                        model=op.models.physics.meniscus.purcell,
-                       mode='men',
+                       mode='menisci',
                        r_toroid=r_tor,
                        target_Pc=5000)
         phys['pore.entry_pressure'] = 0.0
