@@ -33,11 +33,12 @@ class PoreSizeTest:
         del self.geo['pore.diameter']
 
     def test_generic_distribution(self):
-        func = spst.gamma(a=2, loc=0.001, scale=0.0001)
+        func = 'gamma'
         self.geo.add_model(propname='pore.diameter',
                            model=mods.generic_distribution,
                            func=func,
-                           seeds='pore.seed')
+                           seeds='pore.seed',
+                           a=2, loc=0.001, scale=0.0001)
         assert np.amin(self.geo['pore.diameter']) > 0.001
         del self.geo['pore.diameter']
 

@@ -44,8 +44,9 @@ def random(target, seed=None, num_range=[0, 1]):
 random.__doc__ = _misc.random.__doc__
 
 
-def generic_distribution(target, func, seeds='pore.seed'):
-    return _misc.generic_distribution(target=target, func=func, seeds=seeds)
+def generic_distribution(target, func, seeds='pore.seed', **kwargs):
+    return _misc.generic_distribution(target=target, func=func, seeds=seeds,
+                                      **kwargs)
 
 
 generic_distribution.__doc__ = _misc.generic_distribution.__doc__

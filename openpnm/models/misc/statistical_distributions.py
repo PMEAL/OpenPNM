@@ -7,6 +7,7 @@ r"""
 
 """
 import numpy as np
+from scipy import stats
 from openpnm.utils import logging
 logger = logging.getLogger(__name__)
 
@@ -147,12 +148,10 @@ def normal(target, seeds, scale, loc):
     return value
 
 
-def generic_distribution(target, seeds, func):
+def generic_distribution(target, seeds, func, **kwargs):
     r"""
-    Accepts an 'rv_frozen' object from the Scipy.stats submodule and returns
-    values from the distribution for the given seeds
-
-    This uses the ``ppf`` method of the stats object
+    Given the name of a ``scipy.stats`` distribution, uses the ``ppf`` method
+    to obtain values.
 
     Parameters
     ----------
@@ -162,17 +161,25 @@ def generic_distribution(target, seeds, func):
         necessary properties.
 
     seeds : string, optional
-        The dictionary key on the Geometry object containing random seed values
-        (between 0 and 1) to use in the statistical distribution.
+        The dictionary key containing random seed values (between 0 and 1)
+        to use in the statistical distribution.
 
-    func : object
-        An 'rv_frozen' object from the Scipy.stats library with all of the
-        parameters pre-specified.
+    func : str
+        The name of the desired ``scipy.stats`` function to use
+
+    keyword arguments
+        All additional arguments a passed directly to the ``func``.
 
     Returns
     -------
     values : NumPy ndarray
-        Array containing random numbers based on given ppf.
+        Array containing random numbers based on given ``ppf``
+
+    Notes
+    -----
+    The ``ppf`` is the reverse lookup of the cumulative density function so
+    specifying the y-axis (i.e. seeds between 0 and 1) allows for the reverse
+    lookup of the sizes from the x-axis.
 
     Examples
     --------
@@ -189,17 +196,18 @@ def generic_distribution(target, seeds, func):
 
     Now retrieve the stats distribution and add to ``geo`` as a model:
 
-    >>> stats_obj = scipy.stats.weibull_min(c=2, scale=.0001, loc=0)
     >>> geo.add_model(propname='pore.size',
     ...               model=op.models.geometry.pore_size.generic_distribution,
     ...               seeds='pore.seed',
-    ...               func=stats_obj)
+    ...               func='weibull_min',
+    ...               c=2, scale=0.0001, loc=0)
 
 
     >>> import matplotlib.pyplot as plt
     >>> fig = plt.hist(stats_obj.ppf(q=numpy.random.rand(1000)), bins=50)
 
     """
+    func = getattr(stats, func)
     seeds = target[seeds]
-    value = func.ppf(seeds)
-    return value
+    rv_frozen = func(**kwargs)
+    return rv_frozen.ppf(seeds)

@@ -27,8 +27,9 @@ def normal(target, scale, loc, seeds='throat.seed'):
 normal.__doc__ = _misc.normal.__doc__
 
 
-def generic_distribution(target, func, seeds='throat.seed'):
-    return _misc.generic_distribution(target=target, func=func, seeds=seeds)
+def generic_distribution(target, func, seeds='throat.seed', **kwargs):
+    return _misc.generic_distribution(target=target, func=func, seeds=seeds,
+                                      **kwargs)
 
 
 generic_distribution.__doc__ = _misc.generic_distribution.__doc__

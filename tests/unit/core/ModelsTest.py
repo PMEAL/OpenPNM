@@ -180,7 +180,7 @@ class ModelsTest:
     def test_regen_mode_default_value(self):
         pn = op.network.Cubic(shape=[3, 3, 3], spacing=1e-4)
         geo = op.geometry.StickAndBall(network=pn, pores=pn.Ps, throats=pn.Ts,
-                                        settings={'regen_mode': 'deferred'})
+                                       settings={'regen_mode': 'deferred'})
         assert len(geo.props()) == 0
         geo.regenerate_models()
         assert len(geo.props()) == 16
@@ -188,7 +188,7 @@ class ModelsTest:
     def test_automatic_running_on_models_when_missing_data(self):
         pn = op.network.Cubic(shape=[3, 3, 3], spacing=1e-4)
         geo = op.geometry.StickAndBall(network=pn, pores=pn.Ps, throats=pn.Ts,
-                                        settings={'regen_mode': 'deferred'})
+                                       settings={'regen_mode': 'deferred'})
         assert len(geo) == 2
         _ = geo['pore.seed']
         assert len(geo) == 3

@@ -42,11 +42,12 @@ class ThroatSizeTest:
         del self.geo['throat.diameter']
 
     def test_generic_distribution(self):
-        func = spst.gamma(a=2, loc=0.001, scale=0.0001)
+        func = 'gamma'
         self.geo.add_model(propname='throat.diameter',
                            model=gm.throat_size.generic_distribution,
                            func=func,
-                           seeds='throat.seed')
+                           seeds='throat.seed',
+                           a=2, loc=0.001, scale=0.0001)
         assert np.amin(self.geo['throat.diameter']) > 0.001
         del self.geo['throat.diameter']
 
