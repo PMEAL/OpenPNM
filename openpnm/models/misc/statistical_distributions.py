@@ -159,14 +159,11 @@ def generic_distribution(target, seeds, func, **kwargs):
         The object which this model is associated with. This controls the
         length of the calculated array, and also provides access to other
         necessary properties.
-
     seeds : string, optional
         The dictionary key containing random seed values (between 0 and 1)
         to use in the statistical distribution.
-
     func : str
         The name of the desired ``scipy.stats`` function to use
-
     keyword arguments
         All additional arguments a passed directly to the ``func``.
 
@@ -202,9 +199,6 @@ def generic_distribution(target, seeds, func, **kwargs):
     ...               func='weibull_min',
     ...               c=2, scale=0.0001, loc=0)
 
-
-    >>> import matplotlib.pyplot as plt
-    >>> fig = plt.hist(stats_obj.ppf(q=numpy.random.rand(1000)), bins=50)
 
     """
     func = getattr(stats, func)
