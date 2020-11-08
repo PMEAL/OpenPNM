@@ -28,8 +28,8 @@ def generic_function(target, prop, func, **kwargs):
     prop : string
         The dictionary key containing the array to be operated on
 
-    func : Numpy function
-        A handle to the function to apply
+    func : str
+        The name of the ``numpy`` function to apply
 
     kwargs : keyward arguments
         All arguments required by the specific Numpy function
@@ -51,10 +51,11 @@ def generic_function(target, prop, func, **kwargs):
     >>> geo['pore.rand'] = np.random.rand(geo.Np)
     >>> geo.add_model(propname='pore.cos',
     ...               model=op.models.misc.generic_function,
-    ...               func=np.cos,
+    ...               func='cos',
     ...               prop='pore.rand')
     """
     values = target[prop]
+    func = getattr(np, func)
     result = func(values, **kwargs)
     if not isinstance(result, np.ndarray):
         logger.warning('Given function must return a Numpy array')
