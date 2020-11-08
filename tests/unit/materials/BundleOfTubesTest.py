@@ -20,9 +20,9 @@ class BundleOfTubesTest:
             spacing=0.001,
             length=0.01,
             psd_params={
-                "distribution": "weibull",
+                "distribution": "weibull_min",
                 "scale": 0.0002,
-                "shape": 2,
+                "c": 2,
                 "loc": 1e-12,
             },
         )
@@ -51,7 +51,7 @@ class BundleOfTubesTest:
             shape=30,
             spacing=0.001,
             length=0.01,
-            psd_params={"distribution": "normal", "loc": 0.02, "scale": 2},
+            psd_params={"distribution": "norm", "loc": 0.02, "scale": 2},
             settings={"adjust_psd": "clip"},
         )
         assert geo["throat.size_distribution"].max() > geo["throat.diameter"].max()
@@ -69,7 +69,7 @@ class BundleOfTubesTest:
             shape=30,
             spacing=1.0,
             length=0.01,
-            psd_params={"distribution": "normal", "loc": 0.02, "scale": 0.001},
+            psd_params={"distribution": "norm", "loc": 0.02, "scale": 0.001},
             settings={"adjust_psd": None},
         )
         assert np.all(geo["throat.size_distribution"] == geo["throat.diameter"])
