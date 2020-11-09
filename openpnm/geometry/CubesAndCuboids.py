@@ -81,10 +81,6 @@ class CubesAndCuboids(GenericGeometry):
                        prop1='pore.max_size',
                        prop2='pore.seed')
 
-        self.add_model(propname='pore.cross_sectional_area',
-                       model=mods.geometry.pore_cross_sectional_area.cube,
-                       pore_diameter='pore.diameter')
-
         self.add_model(propname='pore.volume',
                        model=mods.geometry.pore_volume.cube,
                        pore_diameter='pore.diameter')
@@ -99,26 +95,26 @@ class CubesAndCuboids(GenericGeometry):
                        factor=0.5,
                        prop='throat.max_size')
 
-        self.add_model(propname='throat.surface_area',
-                       model=mods.geometry.throat_surface_area.cuboid,
-                       throat_diameter='throat.diameter',
-                       throat_length='throat.length')
+        self.add_model(propname='throat.length',
+                       model=mods.geometry.throat_length.cubes_and_cuboids,
+                       pore_diameter='pore.diameter',
+                       throat_diameter='throat.diameter')
+
+        self.add_model(propname='throat.cross_sectional_area',
+                       model=mods.geometry.throat_cross_sectional_area.cuboid,
+                       throat_diameter='throat.diameter')
 
         self.add_model(propname='throat.volume',
                        model=mods.geometry.throat_volume.cuboid,
                        throat_diameter='throat.diameter',
                        throat_length='throat.length')
 
-        self.add_model(propname='throat.cross_sectional_area',
-                       model=mods.geometry.throat_cross_sectional_area.cuboid,
-                       throat_diameter='throat.diameter')
-
         self.add_model(propname='throat.diffusive_size_factors',
                        model=gmods.diffusive_size_factors.cubes_and_cuboids,
                        pore_diameter="pore.diameter",
                        throat_diameter="throat.diameter")
 
-        self.add_model(propname='throat.diffusive_size_factors',
+        self.add_model(propname='throat.hydraulic_size_factors',
                        model=gmods.hydraulic_size_factors.cubes_and_cuboids,
                        pore_diameter="pore.diameter",
                        throat_diameter="throat.diameter")
