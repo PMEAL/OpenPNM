@@ -8,8 +8,6 @@ import openpnm.models.topology as tm
 logger = logging.getLogger(__name__)
 ws = Workspace()
 
-from openpnm.utils import tic, toc
-
 
 class GenericNetwork(Base, ModelsMixin):
     r"""
@@ -153,10 +151,10 @@ class GenericNetwork(Base, ModelsMixin):
         # Deal with special keys first
         if key.split('.')[-1] == self.name:
             element = key.split('.')[0]
-            return self[element+'.all']
+            return self[f"{element}.all"]
         if key.split('.')[-1] == '_id':
             self._gen_ids()
-            return self.get(element+'._id')
+            return self.get(f"{element}._id")
         vals = super().__getitem__(key)
         return vals
 
@@ -242,7 +240,7 @@ class GenericNetwork(Base, ModelsMixin):
             im = self._im[fmt]
         elif self._im.keys():
             im = self._im[list(self._im.keys())[0]]
-            tofmt = getattr(im, 'to'+fmt)
+            tofmt = getattr(im, f"to{fmt}")
             im = tofmt()
             self._im[fmt] = im
         else:
@@ -876,8 +874,7 @@ class GenericNetwork(Base, ModelsMixin):
             if len(Pn) == 0:  # Deal with no nearby neighbors
                 Pn = [np.array([], dtype=np.int64) for i in pores]
             else:
-                mask = np.zeros(shape=np.amax((Pn.max(), pores.max()))+1,
-                                dtype=bool)
+                mask = np.zeros(shape=np.amax((Pn.max(), pores.max())) + 1, dtype=bool)
                 mask[Pn] = True
                 temp = []
                 for item in Ps_within_r:
