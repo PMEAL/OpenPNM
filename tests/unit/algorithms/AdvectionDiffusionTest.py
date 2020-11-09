@@ -8,7 +8,7 @@ class AdvectionDiffusionTest:
 
     def setup_class(self):
         np.random.seed(0)
-        self.net = op.network.Cubic(shape=[4, 3, 1], spacing=1.0)
+        self.net = op.network.Cubic(shape=[4, 3, 1], spacing=1.)
         self.geo = op.geometry.GenericGeometry(network=self.net,
                                                pores=self.net.Ps,
                                                throats=self.net.Ts)
@@ -82,10 +82,12 @@ class AdvectionDiffusionTest:
         self.phys.regenerate_models()
         self.ad.setup(conductance='throat.ad_dif_conductance_powerlaw')
         self.ad.run()
-        x = [0., 0., 0.,
-             0.89653, 0.89653, 0.89653,
-             1.53924, 1.53924, 1.53924,
-             2., 2., 2.]
+        x = [
+            0., 0., 0.,
+            0.89653, 0.89653, 0.89653,
+            1.53924, 1.53924, 1.53924,
+            2., 2., 2.
+        ]
         y = self.ad['pore.concentration']
         assert_allclose(actual=y, desired=x, rtol=1e-5)
 
@@ -96,10 +98,12 @@ class AdvectionDiffusionTest:
         self.phys.regenerate_models()
         self.ad.setup(conductance='throat.ad_dif_conductance_upwind')
         self.ad.run()
-        x = [0., 0., 0.,
-             0.86486, 0.86486, 0.86486,
-             1.51351, 1.51351, 1.51351,
-             2., 2., 2.]
+        x = [
+            0., 0., 0.,
+            0.86486, 0.86486, 0.86486,
+            1.51351, 1.51351, 1.51351,
+            2., 2., 2.
+        ]
         y = self.ad['pore.concentration']
         assert_allclose(actual=y, desired=x, rtol=1e-5)
 
@@ -111,10 +115,12 @@ class AdvectionDiffusionTest:
 
         self.ad.setup(conductance='throat.ad_dif_conductance_hybrid')
         self.ad.run()
-        x = [0., 0., 0.,
-             0.89908, 0.89908, 0.89908,
-             1.54128, 1.54128, 1.54128,
-             2., 2., 2.]
+        x = [
+            0., 0., 0.,
+            0.89908, 0.89908, 0.89908,
+            1.54128, 1.54128, 1.54128,
+            2., 2., 2.
+        ]
         y = self.ad['pore.concentration']
         assert_allclose(actual=y, desired=x, rtol=1e-5)
 
@@ -126,10 +132,12 @@ class AdvectionDiffusionTest:
 
         self.ad.setup(conductance='throat.ad_dif_conductance_exponential')
         self.ad.run()
-        x = [0., 0., 0.,
-             0.89688173, 0.89688173, 0.89688173,
-             1.53952557, 1.53952557, 1.53952557,
-             2., 2., 2.]
+        x = [
+            0., 0., 0.,
+            0.89688173, 0.89688173, 0.89688173,
+            1.53952557, 1.53952557, 1.53952557,
+            2., 2., 2.
+        ]
         y = self.ad['pore.concentration']
         assert_allclose(actual=y, desired=x, rtol=1e-5)
 
@@ -137,13 +145,13 @@ class AdvectionDiffusionTest:
         ad = AdvectionDiffusion(network=self.net, phase=self.phase)
         ad.settings["cache_A"] = False
         ad.set_value_BC(pores=self.net.pores('right'), values=2)
-        ad.set_outflow_BC(pores=self.net.pores('left'))
 
         for s_scheme in ['upwind', 'hybrid', 'powerlaw', 'exponential']:
             ad.setup(
                 quantity='pore.concentration',
                 conductance=f'throat.ad_dif_conductance_{s_scheme}'
             )
+            ad.set_outflow_BC(pores=self.net.pores('left'))
             ad.run()
             y = ad[ad.settings['quantity']].mean()
             assert_allclose(actual=y, desired=2, rtol=1e-5)
