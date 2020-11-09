@@ -38,7 +38,7 @@ class PyramidsAndCuboids(GenericGeometry):
     >>> import numpy as np
     >>> import scipy as sp
     >>> import openpnm as op
-    >>> from openpnm.geometry import PymaridsAndCuboids
+    >>> from openpnm.geometry import PyramidsAndCuboids
     >>> import matplotlib.pyplot as plt
     >>> pn = op.network.CubicDual(shape=[5, 5, 5])
     >>> Ps = pn.pores('primary')
