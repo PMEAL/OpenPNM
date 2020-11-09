@@ -24,7 +24,7 @@ def generic_diffusive(
 
     Parameters
     ----------
-    target : _GenericPhysics
+    target : GenericPhysics
         Physics object with which this model is associated.
     pore_diffusivity : str
         Dictionary key of the pore diffusivity values.

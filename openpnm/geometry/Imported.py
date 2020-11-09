@@ -117,11 +117,10 @@ class Imported(GenericGeometry):
                     regen_mode="explicit"
                 )
 
-        # if 'pore.area' not in self.keys():
-        #     pore_shape = self.settings['pore_shape']
-        #     m = getattr(mods.geometry.pore_cross_sectional_area, pore_shape)
-        #     self.add_model(propname='pore.area',
-        #                    model=m)
+        if 'pore.area' not in self.keys():
+            pore_shape = self.settings['pore_shape']
+            model = getattr(mods.geometry.pore_cross_sectional_area, pore_shape)
+            self.add_model(propname='pore.area', model=model)
 
         if 'throat.diameter' not in self.keys():
             tdia = 'throat.' + self.settings['throat_diameter'].split('throat.')[-1]
