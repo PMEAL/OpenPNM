@@ -295,3 +295,5 @@ def general_toroidal(target,
 
         logger.info(mode+' calculated for Pc: '+str(target_Pc))
         return men_data
+    else:
+        raise Exception('Unrecognized mode ' + mode)
