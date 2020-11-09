@@ -13,27 +13,24 @@ class AdvectionDiffusionSettings(GenericSettings):
     Parameters
     ----------
     %(ReactiveTransportSettings.parameters)s
-    quantity : string (default = 'pore.concentration')
-        The name of the physical quantity to be calculated
-    conductance : string (default = 'throat.ad_dif_conductance')
+    quantity : str
+        The name of the physical quantity to be calculated. The default
+        value is 'pore.concentration'.
+    conductance : str
         The name of the advective-diffusive conductance model to use for
-        calculating the transport conductance used by the algorithm.
-    diffusive_conductance : string (default = 'throat.diffusive_conductance')
+        calculating the transport conductance used by the algorithm. The
+        default value is 'throat.ad_dif_conductance'.
+    diffusive_conductance : str
         The name of the diffusive conductance values to be used by the
-        specified ``'conductance'`` model to find the advective-diffusive
-        conductance.
-    hydraulic_conductance : string (default = 'throat.hydraulic_conductance')
+        specified ``conductance`` model to find the advective-diffusive
+        conductance. The default value is 'throat.diffusive_conductance'.
+    hydraulic_conductance : str, optional
         The name of the hydraulic conductance values to be used by the
-        specified ``'conductance'`` model to find the advective-diffusive
-        conductance.
-    pressure : string (default = 'pore.pressure')
+        specified ``conductance`` model to find the advective-diffusive
+        conductance. The default value is 'throat.hydraulic_conductance'.
+    pressure : str, optional
         The name of the pressure values calculated by the ``StokesFlow``
-        algorithm.
-
-    Other Parameters
-    ----------------
-    s_scheme : string {'exponential' (default), 'power law', 'hybrid', 'upwind'}
-        The spatial discretization used
+        algorithm. The default value is 'pore.pressure'.
 
     ----
 
@@ -54,7 +51,6 @@ class AdvectionDiffusionSettings(GenericSettings):
     diffusive_conductance = 'throat.diffusive_conductance'
     hydraulic_conductance = 'throat.hydraulic_conductance'
     pressure = 'pore.pressure'
-    s_scheme = 'exponential'
 
 
 class AdvectionDiffusion(ReactiveTransport):
@@ -67,9 +63,16 @@ class AdvectionDiffusion(ReactiveTransport):
         self.settings._update_settings_and_docs(AdvectionDiffusionSettings())
         self.settings.update(settings)
 
-    def setup(self, phase=None, quantity='', conductance='',
-              diffusive_conductance='', hydraulic_conductance='', pressure='',
-              s_scheme='', **kwargs):
+    def setup(
+            self,
+            phase=None,
+            quantity='',
+            conductance='',
+            diffusive_conductance='',
+            hydraulic_conductance='',
+            pressure='',
+            **kwargs
+    ):
         r"""
         Setup method for setting/modifying algorithm settings.
         """
@@ -85,8 +88,6 @@ class AdvectionDiffusion(ReactiveTransport):
             self.settings['hydraulic_conductance'] = hydraulic_conductance
         if pressure:
             self.settings['pressure'] = pressure
-        if s_scheme:
-            self.settings['s_scheme'] = s_scheme
         super().setup(**kwargs)
 
     def set_outflow_BC(self, pores, mode='merge'):
