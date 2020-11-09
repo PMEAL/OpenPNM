@@ -27,7 +27,7 @@ class ImportedSettings(GenericSettings):
     """
     pore_diameter = 'pore.extended_diameter'
     throat_diameter = 'throat.equivalent_diameter'
-    pore_shape = 'sphere'
+    pore_shape = 'cone'
     throat_shape = 'cylinder'
 
 
