@@ -12,16 +12,28 @@ class NernstPlanckSettings(GenericSettings):
     Parameters
     ----------
     %(ReactiveTransportSettings.parameters)s
-    quantity : string (default = 'pore.concentration')
-        The quantity to solve for.  Note that this will have the 'ion' name
-        appended to the end (i.e. ``'pore.concentration.Na'``)
-    conductance : string (default is 'throat.ad_dif_mig_conductance')
-        The conductance of the ion.
+    quantity : str, optional
+        The quantity to solve for. The default value is
+        'pore.concentration'. Note that this will have the 'ion' name
+        appended to the end (i.e. ``pore.concentration.Na``)
+    conductance : str, optional
+        The overall mass transfer conductance of the ion. The default
+        value is 'throat.ad_dif_mig_conductance'.
+    diffusive_conductance : str
+        The name of the diffusive conductance values. The default value is
+        'throat.diffusive_conductance'.
+    hydraulic_conductance : str, optional
+        The name of the hydraulic conductance values. The default value is
+        'throat.hydraulic_conductance'.
+    pressure : str, optional
+        The name of the pressure values calculated by the ``StokesFlow``
+        algorithm. The default value is 'pore.pressure'.
 
     Other Parameters
     ----------------
-    s_scheme : string (default = 'exponential')
-        ##
+    s_scheme : str
+        The discretization scheme for the advective terms. The default
+        value is 'powerlaw'.
 
     ----
 
@@ -39,13 +51,15 @@ class NernstPlanckSettings(GenericSettings):
     ion = ''
     quantity = 'pore.concentration'
     conductance = 'throat.ad_dif_mig_conductance'
+    hydraulic_conductance = 'throat.hydraulic_conductance'
     diffusive_conductance = 'throat.diffusive_conductance'
+    pressure = 'pore.pressure'
 
 
 class NernstPlanck(ReactiveTransport):
     r"""
-    A class to simulate transport of charged species (such as ions) in dilute
-    solutions.
+    A subclass of ``ReactiveTransport`` to simulate transport of charged
+    species (such as ions) in dilute solutions.
 
     """
 
@@ -117,11 +131,10 @@ class NernstPlanck(ReactiveTransport):
         phase = self.project.phases()[self.settings['phase']]
         throats = network.find_neighbor_throats(pores=pores)
         C12 = network.conns[throats]
-        gd = phase[self.settings['diffusive_conductance']][throats]
-        gt = phase[self.settings['conductance']][:, 0][throats]
-
-        # Remove the diffusion contribution (only keep advection and migration)
-        Q12 = gd - gt
+        P12 = phase[self.settings['pressure']][C12]
+        # Note: only keep the advection term when flow leaves the outflow pores
+        gh = phase[self.settings['hydraulic_conductance']][throats]
+        Q12 = -gh * np.diff(P12, axis=1).squeeze()
         Qp = np.zeros(self.Np)
         np.add.at(Qp, C12[:, 0], -Q12)
         np.add.at(Qp, C12[:, 1], Q12)
