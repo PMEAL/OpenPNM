@@ -10,6 +10,25 @@ import time as _time
 from collections import OrderedDict
 from docrep import DocstringProcessor
 
+__all__ = [
+    "Docorator",
+    "PrintableDict",
+    "PrintableList",
+    "NestedDict",
+    "SubDict",
+    "SettingsDict",
+    "GenericSettings",
+    "HealthDict",
+    "flat_list",
+    "sanitize_dict",
+    "unique_list",
+    "tic", "toc",
+    "is_symmetric",
+    "nbr_to_str",
+    "conduit_dict_to_array",
+    "conduit_array_to_dict"
+]
+
 
 class Docorator(DocstringProcessor):
 
@@ -638,7 +657,7 @@ def conduit_dict_to_array(d):
     return _np.vstack((d["pore1"], d["throat"], d["pore2"])).T
 
 
-def array_to_conduit_dict(arr):
+def conduit_array_to_dict(arr):
     r"""
     Converts a conduit array to a conduit dict.
 

@@ -17,7 +17,7 @@ __all__ = [
 def spheres_and_cylinders(
     target: _GenericGeometry,
     pore_diameter="pore.diameter",
-    throat_diameter="throat.diameter"
+    throat_diameter="throat.diameter",
 ):
     r"""
     Calculates conduit lengths in the network assuming pores are spheres
