@@ -1,7 +1,7 @@
 r"""
 
-.. autofunction:: openpnm.models.geometry.throat_area.cylinder
-.. autofunction:: openpnm.models.geometry.throat_area.cuboid
+.. autofunction:: openpnm.models.geometry.throat_cross_sectional_area.cylinder
+.. autofunction:: openpnm.models.geometry.throat_cross_sectional_area.cuboid
 
 """
 from numpy import pi as _pi
@@ -28,7 +28,7 @@ def cylinder(target, throat_diameter='throat.diameter'):
 
     """
     diams = target[throat_diameter]
-    value = _pi/4*(diams)**2
+    value = _pi / 4 * diams**2
     return value
 
 

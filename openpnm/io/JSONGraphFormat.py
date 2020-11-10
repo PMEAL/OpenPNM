@@ -84,7 +84,7 @@ class JSONGraphFormat(GenericIO):
             {
                 'id': str(ps),
                 'metadata': {
-                    'node_squared_radius': int(network['pore.diameter'][ps]/2)**2,
+                    'node_squared_radius': int(network['pore.diameter'][ps] / 2)**2,
                     'node_coordinates': {
                         'x': int(network['pore.coords'][ps, 0]),
                         'y': int(network['pore.coords'][ps, 1]),
@@ -101,7 +101,7 @@ class JSONGraphFormat(GenericIO):
                 'target': str(network['throat.conns'][ts, 1]),
                 'metadata': {
                     'link_length': float(network['throat.length'][ts]),
-                    'link_squared_radius': float(network['throat.diameter'][ts]/2)**2
+                    'link_squared_radius': float(network['throat.diameter'][ts] / 2)**2
                 }
             } for ts in network.Ts]
 
@@ -189,7 +189,7 @@ class JSONGraphFormat(GenericIO):
 
         # Define derived throat properties
         geom.add_model(propname='throat.area',
-                       model=gmods.throat_area.cylinder)
+                       model=gmods.throat_cross_sectional_area.cylinder)
         geom.add_model(propname='throat.volume',
                        model=gmods.throat_volume.cylinder)
         geom.add_model(propname='throat.perimeter',
@@ -199,7 +199,7 @@ class JSONGraphFormat(GenericIO):
 
         # Define derived pore properties
         geom.add_model(propname='pore.area',
-                       model=gmods.pore_area.sphere)
+                       model=gmods.pore_cross_sectional_area.sphere)
         geom.add_model(propname='pore.volume',
                        model=gmods.pore_volume.sphere)
 
