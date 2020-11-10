@@ -610,5 +610,5 @@ def nbr_to_str(nbr, t_precision):
     from decimal import Decimal as dc
     n = int(-dc(str(round(nbr, t_precision))).as_tuple().exponent
             * (round(nbr, t_precision) != int(nbr)))
-    nbr_str = (str(int(round(nbr, t_precision)*10**n)) + ('e-'+str(n))*(n != 0))
+    nbr_str = (str(int(round(nbr, t_precision) * 10**n)) + (f'e-{n}') * (n != 0))
     return nbr_str
