@@ -579,18 +579,21 @@
 <span class="sd">            -*&#39;all&#39;*: (default) Removes all boundary conditions</span>
 <span class="sd">            -*&#39;value&#39;*: Removes only value conditions</span>
 <span class="sd">            -*&#39;rate&#39;*: Removes only rate conditions</span>
+<span class="sd">            -*&#39;outflow&#39;*: Removes only outflow conditions</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">bctype</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="n">bctype</span> <span class="o">=</span> <span class="p">[</span><span class="n">bctype</span><span class="p">]</span>
         <span class="k">if</span> <span class="s1">&#39;all&#39;</span> <span class="ow">in</span> <span class="n">bctype</span><span class="p">:</span>
-            <span class="n">bctype</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">,</span> <span class="s1">&#39;rate&#39;</span><span class="p">]</span>
+            <span class="n">bctype</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">,</span> <span class="s1">&#39;rate&#39;</span><span class="p">,</span> <span class="s1">&#39;outflow&#39;</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">pores</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">pores</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Ps</span>
         <span class="k">if</span> <span class="p">(</span><span class="s1">&#39;pore.bc_value&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="ow">and</span> <span class="p">(</span><span class="s1">&#39;value&#39;</span> <span class="ow">in</span> <span class="n">bctype</span><span class="p">):</span>
             <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.bc_value&#39;</span><span class="p">][</span><span class="n">pores</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
         <span class="k">if</span> <span class="p">(</span><span class="s1">&#39;pore.bc_rate&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="ow">and</span> <span class="p">(</span><span class="s1">&#39;rate&#39;</span> <span class="ow">in</span> <span class="n">bctype</span><span class="p">):</span>
             <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.bc_rate&#39;</span><span class="p">][</span><span class="n">pores</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+        <span class="k">if</span> <span class="p">(</span><span class="s1">&#39;pore.bc_outflow&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="ow">and</span> <span class="p">(</span><span class="s1">&#39;outflow&#39;</span> <span class="ow">in</span> <span class="n">bctype</span><span class="p">):</span>
+            <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.bc_outflow&#39;</span><span class="p">][</span><span class="n">pores</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
 
 <div class="viewcode-block" id="GenericTransport._build_A"><a class="viewcode-back" href="../../../modules/algorithms/generic_transport.html#openpnm.algorithms.GenericTransport._build_A">[docs]</a>    <span class="k">def</span> <span class="nf">_build_A</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>

@@ -452,7 +452,7 @@ can also be done in a for-loop to remove a list of items.</p>
 <dt id="openpnm.core.Base.filter_by_label">
 <code class="sig-name descname">filter_by_label</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pores</span><span class="o">=</span><span class="default_value">[]</span></em>, <em class="sig-param"><span class="n">throats</span><span class="o">=</span><span class="default_value">[]</span></em>, <em class="sig-param"><span class="n">labels</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">mode</span><span class="o">=</span><span class="default_value">'or'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/core/Base.html#Base.filter_by_label"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.core.Base.filter_by_label" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns which of the supplied pores (or throats) has the specified
-label</p>
+label(s)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -551,23 +551,24 @@ when nans are inserted.</p>
 
 <dl class="py method">
 <dt id="openpnm.core.Base.interpolate_data">
-<code class="sig-name descname">interpolate_data</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">propname</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/core/Base.html#Base.interpolate_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.core.Base.interpolate_data" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">interpolate_data</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">propname</span></em>, <em class="sig-param"><span class="n">mode</span><span class="o">=</span><span class="default_value">'mean'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/core/Base.html#Base.interpolate_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.core.Base.interpolate_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Determines a pore (or throat) property as the average of it’s
 neighboring throats (or pores)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>propname</strong> (<em>string</em>) – The dictionary key to the values to be interpolated.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>propname</strong> (<em>string</em>) – The dictionary key to the values to be interpolated.</p></li>
+<li><p><strong>mode</strong> (<em>string</em>) – The method used for interpolation.  Options are ‘mean’ (default),
+‘min’, and ‘max’.</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p></p>
+<dd class="field-even"><p><strong>vals</strong> – An array containing interpolated pore (or throat) data</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>An array containing interpolated pore (or throat) data</p>
+<dd class="field-odd"><p>ND-array</p>
 </dd>
 </dl>
-<p class="rubric">Notes</p>
-<p>This uses an unweighted average, without attempting to account for
-distances or sizes of pores and throats.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">openpnm</span> <span class="k">as</span> <span class="nn">op</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">pn</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Cubic</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>

@@ -963,26 +963,14 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;&lt;</span><span class="si">{}</span><span class="s1">&gt; method not supported&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">method</span><span class="p">))</span>
 
-    <span class="c1"># Enter donor&#39;s pores into the Network</span>
-    <span class="n">extend</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">network</span><span class="p">,</span> <span class="n">coords</span><span class="o">=</span><span class="n">donor</span><span class="p">[</span><span class="s1">&#39;pore.coords&#39;</span><span class="p">])</span>
-
-    <span class="c1"># Enter donor&#39;s throats into the Network</span>
-    <span class="n">extend</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">network</span><span class="p">,</span> <span class="n">conns</span><span class="o">=</span><span class="n">donor</span><span class="p">[</span><span class="s1">&#39;throat.conns&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">N_init</span><span class="p">[</span><span class="s1">&#39;pore&#39;</span><span class="p">])</span>
-
-    <span class="c1"># Add donor labels to recipient network</span>
-    <span class="k">if</span> <span class="n">label_suffix</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">label_suffix</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
-            <span class="n">label_suffix</span> <span class="o">=</span> <span class="s1">&#39;_&#39;</span><span class="o">+</span><span class="n">label_suffix</span>
-        <span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="n">donor</span><span class="o">.</span><span class="n">labels</span><span class="p">():</span>
-            <span class="n">element</span> <span class="o">=</span> <span class="n">label</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="n">locations</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">network</span><span class="o">.</span><span class="n">_get_indices</span><span class="p">(</span><span class="n">element</span><span class="p">)</span>
-                                 <span class="o">&gt;=</span> <span class="n">N_init</span><span class="p">[</span><span class="n">element</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="k">if</span> <span class="n">label</span> <span class="o">+</span> <span class="n">label_suffix</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">network</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-                <span class="n">network</span><span class="p">[</span><span class="n">label</span> <span class="o">+</span> <span class="n">label_suffix</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
-            <span class="n">network</span><span class="p">[</span><span class="n">label</span><span class="o">+</span><span class="n">label_suffix</span><span class="p">][</span><span class="n">locations</span><span class="p">]</span> <span class="o">=</span> <span class="n">donor</span><span class="p">[</span><span class="n">label</span><span class="p">]</span>
+    <span class="n">merge_networks</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">donor</span><span class="p">)</span>
 
     <span class="c1"># Add the new stitch throats to the Network</span>
     <span class="n">extend</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">network</span><span class="p">,</span> <span class="n">throat_conns</span><span class="o">=</span><span class="n">conns</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="n">label_stitches</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">network</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">geometries</span><span class="p">())</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">conns</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">+</span> <span class="s1">&#39; newly created throats are not &#39;</span>
+                       <span class="o">+</span> <span class="s1">&#39;assigned to a geometry&#39;</span><span class="p">)</span>
 
     <span class="c1"># Remove donor from Workspace, if present</span>
     <span class="c1"># This check allows for the reuse of a donor Network multiple times</span>

@@ -416,108 +416,30 @@ If a pore property is given, it is interpolated to a throat list.</p></li>
 <div class="section" id="module-openpnm.models.physics.diffusive_conductance">
 <span id="diffusive-conductance"></span><h3><a class="toc-backref" href="#id13">Diffusive Conductance</a><a class="headerlink" href="#module-openpnm.models.physics.diffusive_conductance" title="Permalink to this headline">¶</a></h3>
 <dl class="py function">
-<dt id="openpnm.models.physics.diffusive_conductance.ordinary_diffusion">
-<code class="sig-prename descclassname">openpnm.models.physics.diffusive_conductance.</code><code class="sig-name descname">ordinary_diffusion</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">target</span></em>, <em class="sig-param"><span class="n">pore_area</span><span class="o">=</span><span class="default_value">'pore.area'</span></em>, <em class="sig-param"><span class="n">throat_area</span><span class="o">=</span><span class="default_value">'throat.area'</span></em>, <em class="sig-param"><span class="n">pore_diffusivity</span><span class="o">=</span><span class="default_value">'pore.diffusivity'</span></em>, <em class="sig-param"><span class="n">throat_diffusivity</span><span class="o">=</span><span class="default_value">'throat.diffusivity'</span></em>, <em class="sig-param"><span class="n">conduit_lengths</span><span class="o">=</span><span class="default_value">'throat.conduit_lengths'</span></em>, <em class="sig-param"><span class="n">conduit_shape_factors</span><span class="o">=</span><span class="default_value">'throat.poisson_shape_factors'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/physics/diffusive_conductance.html#ordinary_diffusion"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.models.physics.diffusive_conductance.ordinary_diffusion" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculate the diffusive conductance of conduits in network, where a
-conduit is ( 1/2 pore - full throat - 1/2 pore ). See the notes section.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>target</strong> (<em>OpenPNM Object</em>) – The object which this model is associated with. This controls the
-length of the calculated array, and also provides access to other
-necessary properties.</p></li>
-<li><p><strong>pore_area</strong> (<em>string</em>) – Dictionary key of the pore area values</p></li>
-<li><p><strong>throat_area</strong> (<em>string</em>) – Dictionary key of the throat area values</p></li>
-<li><p><strong>pore_diffusivity</strong> (<em>string</em>) – Dictionary key of the pore diffusivity values</p></li>
-<li><p><strong>throat_diffusivity</strong> (<em>string</em>) – Dictionary key of the throat diffusivity values</p></li>
-<li><p><strong>conduit_lengths</strong> (<em>string</em>) – Dictionary key of the conduit length values</p></li>
-<li><p><strong>conduit_shape_factors</strong> (<em>string</em>) – Dictionary key of the conduit DIFFUSION shape factor values</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>g</strong> – Array containing diffusive conductance values for conduits in the
-geometry attached to the given physics object.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>ndarray</p>
-</dd>
-</dl>
-<p class="rubric">Notes</p>
-<ul class="simple">
-<li><p>This function assumes cylindrical throats with constant cross-section</p></li>
-</ul>
-<p>area, and the pore area corresponds to the cross-sectional area at the
-largest opening of the pore. Corrections for different shapes and variable
-cross-section area can be imposed by passing the proper
-<code class="docutils literal notranslate"><span class="pre">conduit_shape_factors</span></code> argument.</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">conduit_shape_factor</span></code> depends on the physics of the problem,</p></li>
-</ul>
-<p>i.e. diffusion-like processes and fluid flow need different shape factors.</p>
-</dd></dl>
-
-<dl class="py function">
-<dt id="openpnm.models.physics.diffusive_conductance.ordinary_diffusion_2D">
-<code class="sig-prename descclassname">openpnm.models.physics.diffusive_conductance.</code><code class="sig-name descname">ordinary_diffusion_2D</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">target</span></em>, <em class="sig-param"><span class="n">pore_diameter</span><span class="o">=</span><span class="default_value">'pore.diameter'</span></em>, <em class="sig-param"><span class="n">throat_diameter</span><span class="o">=</span><span class="default_value">'throat.diameter'</span></em>, <em class="sig-param"><span class="n">pore_diffusivity</span><span class="o">=</span><span class="default_value">'pore.diffusivity'</span></em>, <em class="sig-param"><span class="n">throat_diffusivity</span><span class="o">=</span><span class="default_value">'throat.diffusivity'</span></em>, <em class="sig-param"><span class="n">conduit_lengths</span><span class="o">=</span><span class="default_value">'throat.conduit_lengths'</span></em>, <em class="sig-param"><span class="n">conduit_shape_factors</span><span class="o">=</span><span class="default_value">'throat.poisson_shape_factors'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/physics/diffusive_conductance.html#ordinary_diffusion_2D"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.models.physics.diffusive_conductance.ordinary_diffusion_2D" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculate the diffusive conductance of conduits in network, where a
-conduit is ( 1/2 pore - full throat - 1/2 pore ). The conduit consists of 2
-flate parallel plates. See the notes section.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>target</strong> (<em>OpenPNM Object</em>) – The object which this model is associated with. This controls the
-length of the calculated array, and also provides access to other
-necessary properties.</p></li>
-<li><p><strong>pore_diameter</strong> (<em>string</em>) – Dictionary key of the pore diameter values</p></li>
-<li><p><strong>throat_diameter</strong> (<em>string</em>) – Dictionary key of the throat diameter values</p></li>
-<li><p><strong>pore_diffusivity</strong> (<em>string</em>) – Dictionary key of the pore diffusivity values</p></li>
-<li><p><strong>throat_diffusivity</strong> (<em>string</em>) – Dictionary key of the throat diffusivity values</p></li>
-<li><p><strong>conduit_lengths</strong> (<em>string</em>) – Dictionary key of the conduit length values</p></li>
-<li><p><strong>conduit_shape_factors</strong> (<em>string</em>) – Dictionary key of the conduit DIFFUSION shape factor values</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>g</strong> – Array containing diffusive conductance values for conduits in the
-geometry attached to the given physics object.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>ndarray</p>
-</dd>
-</dl>
-<p class="rubric">Notes</p>
-<p>(1) This function requires that all the necessary phase properties already
-be calculated.</p>
-<p>(2) This function calculates the specified property for the <em>entire</em>
-network then extracts the values for the appropriate throats at the end.</p>
-<p>(3) This function assumes cylindrical throats with constant cross-section
-area. Corrections for different shapes and variable cross-section area can
-be imposed by passing the proper conduit_shape_factors argument.</p>
-<p>(4) shape_factor depends on the physics of the problem, i.e. diffusion-like
-processes and fluid flow need different shape factors.</p>
-</dd></dl>
-
-<dl class="py function">
 <dt id="openpnm.models.physics.diffusive_conductance.mixed_diffusion">
-<code class="sig-prename descclassname">openpnm.models.physics.diffusive_conductance.</code><code class="sig-name descname">mixed_diffusion</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">target</span></em>, <em class="sig-param"><span class="n">pore_area</span><span class="o">=</span><span class="default_value">'pore.area'</span></em>, <em class="sig-param"><span class="n">throat_area</span><span class="o">=</span><span class="default_value">'throat.area'</span></em>, <em class="sig-param"><span class="n">pore_diameter</span><span class="o">=</span><span class="default_value">'pore.diameter'</span></em>, <em class="sig-param"><span class="n">throat_diameter</span><span class="o">=</span><span class="default_value">'throat.diameter'</span></em>, <em class="sig-param"><span class="n">pore_diffusivity</span><span class="o">=</span><span class="default_value">'pore.diffusivity'</span></em>, <em class="sig-param"><span class="n">pore_temperature</span><span class="o">=</span><span class="default_value">'pore.temperature'</span></em>, <em class="sig-param"><span class="n">molecular_weight</span><span class="o">=</span><span class="default_value">'pore.molecular_weight'</span></em>, <em class="sig-param"><span class="n">throat_diffusivity</span><span class="o">=</span><span class="default_value">'throat.diffusivity'</span></em>, <em class="sig-param"><span class="n">conduit_lengths</span><span class="o">=</span><span class="default_value">'throat.conduit_lengths'</span></em>, <em class="sig-param"><span class="n">conduit_shape_factors</span><span class="o">=</span><span class="default_value">'throat.poisson_shape_factors'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/physics/diffusive_conductance.html#mixed_diffusion"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.models.physics.diffusive_conductance.mixed_diffusion" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculate the diffusive conductance of conduits in network, where a
-conduit is ( 1/2 pore - full throat - 1/2 pore ), assuming Knudsen
-diffusivity. See the notes section.</p>
+<code class="sig-prename descclassname">openpnm.models.physics.diffusive_conductance.</code><code class="sig-name descname">mixed_diffusion</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">target</span></em>, <em class="sig-param"><span class="n">pore_area</span><span class="o">=</span><span class="default_value">'pore.area'</span></em>, <em class="sig-param"><span class="n">throat_area</span><span class="o">=</span><span class="default_value">'throat.area'</span></em>, <em class="sig-param"><span class="n">pore_diameter</span><span class="o">=</span><span class="default_value">'pore.diameter'</span></em>, <em class="sig-param"><span class="n">throat_diameter</span><span class="o">=</span><span class="default_value">'throat.diameter'</span></em>, <em class="sig-param"><span class="n">pore_diffusivity</span><span class="o">=</span><span class="default_value">'pore.diffusivity'</span></em>, <em class="sig-param"><span class="n">throat_diffusivity</span><span class="o">=</span><span class="default_value">'throat.diffusivity'</span></em>, <em class="sig-param"><span class="n">pore_temperature</span><span class="o">=</span><span class="default_value">'pore.temperature'</span></em>, <em class="sig-param"><span class="n">molecular_weight</span><span class="o">=</span><span class="default_value">'pore.molecular_weight'</span></em>, <em class="sig-param"><span class="n">conduit_lengths</span><span class="o">=</span><span class="default_value">'throat.conduit_lengths'</span></em>, <em class="sig-param"><span class="n">conduit_shape_factors</span><span class="o">=</span><span class="default_value">'throat.poisson_shape_factors'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/physics/diffusive_conductance.html#mixed_diffusion"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.models.physics.diffusive_conductance.mixed_diffusion" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates the diffusive conductance of conduits in network with
+Knudsen correction.</p>
+<p>A conduit is defined as ( 1/2 pore - full throat - 1/2 pore ). See
+Notes section for the limitations of this method.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>target</strong> (<em>OpenPNM Object</em>) – The object which this model is associated with. This controls the
-length of the calculated array, and also provides access to other
-necessary properties.</p></li>
-<li><p><strong>pore_area</strong> (<em>string</em>) – Dictionary key of the pore area values</p></li>
-<li><p><strong>throat_area</strong> (<em>string</em>) – Dictionary key of the throat area values</p></li>
-<li><p><strong>pore_diffusivity</strong> (<em>string</em>) – Dictionary key of the pore diffusivity values</p></li>
-<li><p><strong>throat_diffusivity</strong> (<em>string</em>) – Dictionary key of the throat diffusivity values</p></li>
-<li><p><strong>conduit_lengths</strong> (<em>string</em>) – Dictionary key of the conduit length values</p></li>
-<li><p><strong>conduit_shape_factors</strong> (<em>string</em>) – Dictionary key of the conduit DIFFUSION shape factor values</p></li>
+<li><p><strong>target</strong> (<a class="reference internal" href="../physics/generic_physics.html#openpnm.physics.GenericPhysics" title="openpnm.physics.GenericPhysics"><em>GenericPhysics</em></a>) – Physics object with which this model is associated.</p></li>
+<li><p><strong>pore_area</strong> (<em>str</em>) – Dictionary key of the pore area values.</p></li>
+<li><p><strong>throat_area</strong> (<em>str</em>) – Dictionary key of the throat area values.</p></li>
+<li><p><strong>pore_diameter</strong> (<em>str</em>) – Dictionary key of the pore diameter values.</p></li>
+<li><p><strong>throat_diameter</strong> (<em>str</em>) – Dictionary key of the throat diameter values.</p></li>
+<li><p><strong>pore_diffusivity</strong> (<em>str</em>) – Dictionary key of the pore diffusivity values.</p></li>
+<li><p><strong>throat_diffusivity</strong> (<em>str</em>) – Dictionary key of the throat diffusivity values.</p></li>
+<li><p><strong>pore_temperature</strong> (<em>str</em>) – Dictionary key of the pore temperature values.</p></li>
+<li><p><strong>molecular_weigth</strong> (<em>str</em>) – Dictionary key of the pore molecular weight values.</p></li>
+<li><p><strong>conduit_lengths</strong> (<em>str</em>) – Dictionary key of the conduit lengths’ values.</p></li>
+<li><p><strong>conduit_shape_factors</strong> (<em>str</em>) – Dictionary key of the conduit diffusive shape factors’ values.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>g</strong> – Array containing diffusive conductance values for conduits in the
+<dd class="field-even"><p>Array containing diffusive conductance values for conduits in the
 geometry attached to the given physics object.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
@@ -525,75 +447,94 @@ geometry attached to the given physics object.</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>(0) This function is ONLY suitable for dilute mixtures and NOT those with
+<p>This function is ONLY suitable for dilute mixtures and NOT those with
 concentrated species.</p>
-<p>(1) This function requires that all the necessary phase properties already
+<p>This function requires that all the necessary phase properties already
 be calculated.</p>
-<p>(2) This function calculates the specified property for the <em>entire</em>
-network then extracts the values for the appropriate throats at the end.</p>
-<p>(3) This function assumes cylindrical throats with constant cross-section
-area. Corrections for different shapes and variable cross-section area can
-be imposed by passing the proper conduit_shape_factors argument.</p>
-<p>(4) shape_factor depends on the physics of the problem, i.e. diffusion-like
-processes and fluid flow need different shape factors.</p>
+<p>This function calculates the specified property for the <em>entire</em>
+network then extracts the values for the appropriate throats at the
+end.</p>
+<p>This function assumes cylindrical throats with constant cross-section
+area. Corrections for different shapes and variable cross-section area
+can be imposed by passing the proper conduit_shape_factors argument.</p>
+<p><code class="docutils literal notranslate"><span class="pre">conduit_shape_factors</span></code> depends on the physics of the problem, i.e.
+diffusion-like processes and fluid flow need different shape factors.</p>
 </dd></dl>
 
 <dl class="py function">
 <dt id="openpnm.models.physics.diffusive_conductance.taylor_aris_diffusion">
 <code class="sig-prename descclassname">openpnm.models.physics.diffusive_conductance.</code><code class="sig-name descname">taylor_aris_diffusion</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">target</span></em>, <em class="sig-param"><span class="n">pore_area</span><span class="o">=</span><span class="default_value">'pore.area'</span></em>, <em class="sig-param"><span class="n">throat_area</span><span class="o">=</span><span class="default_value">'throat.area'</span></em>, <em class="sig-param"><span class="n">pore_diffusivity</span><span class="o">=</span><span class="default_value">'pore.diffusivity'</span></em>, <em class="sig-param"><span class="n">pore_pressure</span><span class="o">=</span><span class="default_value">'pore.pressure'</span></em>, <em class="sig-param"><span class="n">throat_hydraulic_conductance</span><span class="o">=</span><span class="default_value">'throat.hydraulic_conductance'</span></em>, <em class="sig-param"><span class="n">throat_diffusivity</span><span class="o">=</span><span class="default_value">'throat.diffusivity'</span></em>, <em class="sig-param"><span class="n">conduit_lengths</span><span class="o">=</span><span class="default_value">'throat.conduit_lengths'</span></em>, <em class="sig-param"><span class="n">conduit_shape_factors</span><span class="o">=</span><span class="default_value">'throat.poisson_shape_factors'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/physics/diffusive_conductance.html#taylor_aris_diffusion"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.models.physics.diffusive_conductance.taylor_aris_diffusion" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculate the diffusive conductance of conduits in network considering the
-Taylor-Aris effect (effect of fluid flow on diffusion), where a
-conduit is ( 1/2 pore - full throat - 1/2 pore ). See the notes section.</p>
+<dd><p>Calculates the diffusive conductance of conduits in network
+considering the Taylor-Aris effect (effect of flow on diffusion).</p>
+<p>A conduit is defined as ( 1/2 pore - full throat - 1/2 pore )</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>target</strong> (<em>OpenPNM Object</em>) – The object which this model is associated with. This controls the
-length of the calculated array, and also provides access to other
-necessary properties.</p></li>
-<li><p><strong>pore_area</strong> (<em>string</em>) – Dictionary key of the pore area values</p></li>
-<li><p><strong>throat_area</strong> (<em>string</em>) – Dictionary key of the throat area values</p></li>
-<li><p><strong>pore_diffusivity</strong> (<em>string</em>) – Dictionary key of the pore diffusivity values</p></li>
-<li><p><strong>pore_pressure</strong> (<em>string</em>) – Dictionary key of the pore pressure values</p></li>
-<li><p><strong>throat_hydraulic_conductance</strong> (<em>string</em>) – Dictionary key of the throat hydraulic_conductance values</p></li>
-<li><p><strong>throat_diffusivity</strong> (<em>string</em>) – Dictionary key of the throat diffusivity values</p></li>
-<li><p><strong>conduit_lengths</strong> (<em>string</em>) – Dictionary key of the conduit length values</p></li>
-<li><p><strong>conduit_shape_factors</strong> (<em>string</em>) – Dictionary key of the conduit DIFFUSION shape factor values</p></li>
+<li><p><strong>target</strong> (<a class="reference internal" href="../physics/generic_physics.html#openpnm.physics.GenericPhysics" title="openpnm.physics.GenericPhysics"><em>GenericPhysics</em></a>) – Physics object with which this model is associated.</p></li>
+<li><p><strong>pore_area</strong> (<em>str</em>) – Dictionary key of the pore area values.</p></li>
+<li><p><strong>throat_area</strong> (<em>str</em>) – Dictionary key of the throat area values.</p></li>
+<li><p><strong>pore_diffusivity</strong> (<em>str</em>) – Dictionary key of the pore diffusivity values.</p></li>
+<li><p><strong>pore_pressure</strong> (<em>str</em>) – Dictionary key of the pore pressure values.</p></li>
+<li><p><strong>throat_hydraulic_conductance</strong> (<em>str</em>) – Dictionary key of the throat hydraulic_conductance values.</p></li>
+<li><p><strong>throat_diffusivity</strong> (<em>str</em>) – Dictionary key of the throat diffusivity values.</p></li>
+<li><p><strong>conduit_lengths</strong> (<em>str</em>) – Dictionary key of the conduit length values.</p></li>
+<li><p><strong>conduit_shape_factors</strong> (<em>str</em>) – Dictionary key of the conduit diffusive shape factors’ values.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>g</strong> – Array containing diffusive conductance values (with Taylor-Aris effect)
-for conduits in the geometry attached to the given physics object.</p>
+<dd class="field-even"><p>Array containing diffusive conductance values for conduits in the
+geometry attached to the given physics object.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>ndarray</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>(1) This function requires that all the necessary phase properties are
+<p>This function requires that all the necessary phase properties are
 already calculated.</p>
-<p>(2) This function calculates the specified property for the <em>entire</em>
-network then extracts the values for the appropriate throats at the end.</p>
-<p>(3) This function assumes cylindrical throats with constant cross-section
-area. Corrections for different shapes and variable cross-section area can
-be imposed by passing the proper conduit_shape_factors argument.</p>
-<p>(4) shape_factor depends on the physics of the problem, i.e. diffusion-like
-processes and fluid flow need different shape factors.</p>
+<p>This function calculates the specified property for the <em>entire</em>
+network then extracts the values for the appropriate throats at the
+end.</p>
+<p>This function assumes cylindrical throats with constant cross-section
+area. Corrections for different shapes and variable cross-section area
+can be imposed by passing the proper <code class="docutils literal notranslate"><span class="pre">conduit_shape_factors</span></code>
+argument.</p>
+<p><code class="docutils literal notranslate"><span class="pre">conduit_shape_factors</span></code> depends on the physics of the problem, i.e.
+diffusion-like processes and fluid flow need different shape factors.</p>
 </dd></dl>
 
 <dl class="py function">
 <dt id="openpnm.models.physics.diffusive_conductance.classic_ordinary_diffusion">
-<code class="sig-prename descclassname">openpnm.models.physics.diffusive_conductance.</code><code class="sig-name descname">classic_ordinary_diffusion</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">target</span></em>, <em class="sig-param"><span class="n">pore_molar_density</span><span class="o">=</span><span class="default_value">'pore.molar_density'</span></em>, <em class="sig-param"><span class="n">pore_diffusivity</span><span class="o">=</span><span class="default_value">'pore.diffusivity'</span></em>, <em class="sig-param"><span class="n">pore_area</span><span class="o">=</span><span class="default_value">'pore.area'</span></em>, <em class="sig-param"><span class="n">pore_diameter</span><span class="o">=</span><span class="default_value">'pore.diameter'</span></em>, <em class="sig-param"><span class="n">throat_area</span><span class="o">=</span><span class="default_value">'throat.area'</span></em>, <em class="sig-param"><span class="n">throat_length</span><span class="o">=</span><span class="default_value">'throat.length'</span></em>, <em class="sig-param"><span class="n">throat_diameter</span><span class="o">=</span><span class="default_value">'throat.diameter'</span></em>, <em class="sig-param"><span class="n">shape_factor</span><span class="o">=</span><span class="default_value">'throat.shape_factor'</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/physics/diffusive_conductance.html#classic_ordinary_diffusion"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.models.physics.diffusive_conductance.classic_ordinary_diffusion" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculate the diffusive conductance of conduits in network, where a
-conduit is ( 1/2 pore - full throat - 1/2 pore ) based on the areas
-:param network:
-:type network: OpenPNM Network Object
-:param phase: The phase of interest
-:type phase: OpenPNM Phase Object</p>
+<code class="sig-prename descclassname">openpnm.models.physics.diffusive_conductance.</code><code class="sig-name descname">classic_ordinary_diffusion</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">target</span></em>, <em class="sig-param"><span class="n">pore_molar_density</span><span class="o">=</span><span class="default_value">'pore.molar_density'</span></em>, <em class="sig-param"><span class="n">pore_diffusivity</span><span class="o">=</span><span class="default_value">'pore.diffusivity'</span></em>, <em class="sig-param"><span class="n">pore_diameter</span><span class="o">=</span><span class="default_value">'pore.diameter'</span></em>, <em class="sig-param"><span class="n">throat_diameter</span><span class="o">=</span><span class="default_value">'throat.diameter'</span></em>, <em class="sig-param"><span class="n">pore_area</span><span class="o">=</span><span class="default_value">'pore.area'</span></em>, <em class="sig-param"><span class="n">throat_area</span><span class="o">=</span><span class="default_value">'throat.area'</span></em>, <em class="sig-param"><span class="n">throat_length</span><span class="o">=</span><span class="default_value">'throat.length'</span></em>, <em class="sig-param"><span class="n">shape_factor</span><span class="o">=</span><span class="default_value">'throat.shape_factor'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/physics/diffusive_conductance.html#classic_ordinary_diffusion"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.models.physics.diffusive_conductance.classic_ordinary_diffusion" title="Permalink to this definition">¶</a></dt>
+<dd><p>Legacy method that calculates the diffusive conductance of conduits.</p>
+<p>A conduit is defined as ( 1/2 pore - full throat - 1/2 pore )</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>target</strong> (<a class="reference internal" href="../physics/generic_physics.html#openpnm.physics.GenericPhysics" title="openpnm.physics.GenericPhysics"><em>GenericPhysics</em></a>) – Physics object with which this model is associated.</p></li>
+<li><p><strong>pore_molar_density</strong> (<em>str</em>) – Dictionary key pointing to pore molar density values.</p></li>
+<li><p><strong>pore_diffusivity</strong> (<em>str</em>) – Dictionary key pointing to pore diffusivity values.</p></li>
+<li><p><strong>pore_diameter</strong> (<em>str</em>) – Dictionary key pointing to pore diameter values.</p></li>
+<li><p><strong>throat_diameter</strong> (<em>str</em>) – Dictionary key pointing to throat diameter values.</p></li>
+<li><p><strong>pore_area</strong> (<em>str</em>) – Dictionary key pointing to pore area values.</p></li>
+<li><p><strong>throat_area</strong> (<em>str</em>) – Dictionary key pointing to pore area values.</p></li>
+<li><p><strong>throat_length</strong> (<em>str</em>) – Dictionary key pointing to throat length values.</p></li>
+<li><p><strong>shape_factor</strong> (<em>str</em>) – Dictionary key pointing to shape factor values.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Array containing diffusive conductance values for conduits in the
+geometry attached to the given physics object.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>ndarray</p>
+</dd>
+</dl>
 <p class="rubric">Notes</p>
-<p>(1) This function requires that all the necessary phase properties already
-be calculated.
-(2) This function calculates the specified property for the <em>entire</em>
-network then extracts the values for the appropriate throats at the end.</p>
+<p>This method requires that all the necessary phase properties already
+be calculated.</p>
+<p>This method calculates the specified property for the <em>entire</em> network
+then extracts the values for the appropriate throats at the end.</p>
 </dd></dl>
 
 </div>
@@ -646,20 +587,18 @@ processes and fluid flow need different shape factors.</p>
 <dl class="py function">
 <dt id="openpnm.models.physics.hydraulic_conductance.hagen_poiseuille">
 <code class="sig-prename descclassname">openpnm.models.physics.hydraulic_conductance.</code><code class="sig-name descname">hagen_poiseuille</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">target</span></em>, <em class="sig-param"><span class="n">pore_area</span><span class="o">=</span><span class="default_value">'pore.area'</span></em>, <em class="sig-param"><span class="n">throat_area</span><span class="o">=</span><span class="default_value">'throat.area'</span></em>, <em class="sig-param"><span class="n">pore_viscosity</span><span class="o">=</span><span class="default_value">'pore.viscosity'</span></em>, <em class="sig-param"><span class="n">throat_viscosity</span><span class="o">=</span><span class="default_value">'throat.viscosity'</span></em>, <em class="sig-param"><span class="n">conduit_lengths</span><span class="o">=</span><span class="default_value">'throat.conduit_lengths'</span></em>, <em class="sig-param"><span class="n">conduit_shape_factors</span><span class="o">=</span><span class="default_value">'throat.flow_shape_factors'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/physics/hydraulic_conductance.html#hagen_poiseuille"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.models.physics.hydraulic_conductance.hagen_poiseuille" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculate the hydraulic conductance of conduits in network, where a
-conduit is ( 1/2 pore - full throat - 1/2 pore ). See the notes section.</p>
+<dd><p>Calculates the hydraulic conductance of conduits in network.</p>
+<p>A conduit is defined as ( 1/2 pore - full throat - 1/2 pore ).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>target</strong> (<em>OpenPNM Object</em>) – The object which this model is associated with. This controls the
-length of the calculated array, and also provides access to other
-necessary properties.</p></li>
-<li><p><strong>pore_area</strong> (<em>string</em>) – Dictionary key of the pore area values</p></li>
-<li><p><strong>throat_area</strong> (<em>string</em>) – Dictionary key of the throat area values</p></li>
-<li><p><strong>pore_viscosity</strong> (<em>string</em>) – Dictionary key of the pore viscosity values</p></li>
-<li><p><strong>throat_viscosity</strong> (<em>string</em>) – Dictionary key of the throat viscosity values</p></li>
-<li><p><strong>conduit_lengths</strong> (<em>string</em>) – Dictionary key of the conduit length values</p></li>
-<li><p><strong>conduit_shape_factors</strong> (<em>string</em>) – Dictionary key of the conduit DIFFUSION shape factor values</p></li>
+<li><p><strong>target</strong> (<em>_GenericPhysics</em>) – Physics object with which this model is associated.</p></li>
+<li><p><strong>pore_area</strong> (<em>str</em>) – Dictionary key of the pore area values.</p></li>
+<li><p><strong>throat_area</strong> (<em>str</em>) – Dictionary key of the throat area values.</p></li>
+<li><p><strong>pore_viscosity</strong> (<em>str</em>) – Dictionary key of the pore viscosity values.</p></li>
+<li><p><strong>throat_viscosity</strong> (<em>str</em>) – Dictionary key of the throat viscosity values.</p></li>
+<li><p><strong>conduit_lengths</strong> (<em>str</em>) – Dictionary key of the conduit length values.</p></li>
+<li><p><strong>conduit_shape_factors</strong> (<em>str</em>) – Dictionary key of the conduit hydraulic (flow) shape factor values.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -671,34 +610,33 @@ geometry attached to the given physics object.</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>(1) This function requires that all the necessary phase properties already
+<p>This function requires that all the necessary phase properties already
 be calculated.</p>
-<p>(2) This function calculates the specified property for the <em>entire</em>
-network then extracts the values for the appropriate throats at the end.</p>
-<p>(3) This function assumes cylindrical throats with constant cross-section
-area. Corrections for different shapes and variable cross-section area can
-be imposed by passing the proper conduit_shape_factors argument.</p>
-<p>(4) shape_factor depends on the physics of the problem, i.e. diffusion-like
-processes and fluid flow need different shape factors.</p>
+<p>This function calculates the specified property for the <em>entire</em>
+network then extracts the values for the appropriate throats at the
+end.</p>
+<p>This function assumes cylindrical throats with constant cross-section
+area. Corrections for different shapes and variable cross-section area
+can be imposed by passing the proper conduit_shape_factors argument.</p>
+<p><code class="docutils literal notranslate"><span class="pre">conduit_shape_factors</span></code> depends on the physics of the problem, i.e.
+diffusion-like processes and fluid flow need different shape factors.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="openpnm.models.physics.hydraulic_conductance.hagen_poiseuille_2D">
-<code class="sig-prename descclassname">openpnm.models.physics.hydraulic_conductance.</code><code class="sig-name descname">hagen_poiseuille_2D</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">target</span></em>, <em class="sig-param"><span class="n">pore_diameter</span><span class="o">=</span><span class="default_value">'pore.diameter'</span></em>, <em class="sig-param"><span class="n">throat_diameter</span><span class="o">=</span><span class="default_value">'throat.diameter'</span></em>, <em class="sig-param"><span class="n">pore_viscosity</span><span class="o">=</span><span class="default_value">'pore.viscosity'</span></em>, <em class="sig-param"><span class="n">throat_viscosity</span><span class="o">=</span><span class="default_value">'throat.viscosity'</span></em>, <em class="sig-param"><span class="n">conduit_lengths</span><span class="o">=</span><span class="default_value">'throat.conduit_lengths'</span></em>, <em class="sig-param"><span class="n">conduit_shape_factors</span><span class="o">=</span><span class="default_value">'throat.flow_shape_factors'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/physics/hydraulic_conductance.html#hagen_poiseuille_2D"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.models.physics.hydraulic_conductance.hagen_poiseuille_2D" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculate the hydraulic conductance of conduits in a 2D network, where a
-conduit is ( 1/2 pore - full throat - 1/2 pore ). See the notes section.</p>
+<dt id="openpnm.models.physics.hydraulic_conductance.hagen_poiseuille_2d">
+<code class="sig-prename descclassname">openpnm.models.physics.hydraulic_conductance.</code><code class="sig-name descname">hagen_poiseuille_2d</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">target</span></em>, <em class="sig-param"><span class="n">pore_diameter</span><span class="o">=</span><span class="default_value">'pore.diameter'</span></em>, <em class="sig-param"><span class="n">throat_diameter</span><span class="o">=</span><span class="default_value">'throat.diameter'</span></em>, <em class="sig-param"><span class="n">pore_viscosity</span><span class="o">=</span><span class="default_value">'pore.viscosity'</span></em>, <em class="sig-param"><span class="n">throat_viscosity</span><span class="o">=</span><span class="default_value">'throat.viscosity'</span></em>, <em class="sig-param"><span class="n">conduit_lengths</span><span class="o">=</span><span class="default_value">'throat.conduit_lengths'</span></em>, <em class="sig-param"><span class="n">conduit_shape_factors</span><span class="o">=</span><span class="default_value">'throat.flow_shape_factors'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/physics/hydraulic_conductance.html#hagen_poiseuille_2d"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.models.physics.hydraulic_conductance.hagen_poiseuille_2d" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates the hydraulic conductance of conduits in network.</p>
+<p>A conduit is defined as ( 1/2 pore - full throat - 1/2 pore ).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>target</strong> (<em>OpenPNM Object</em>) – The object which this model is associated with. This controls the
-length of the calculated array, and also provides access to other
-necessary properties.</p></li>
-<li><p><strong>pore_area</strong> (<em>string</em>) – Dictionary key of the pore area values</p></li>
-<li><p><strong>throat_area</strong> (<em>string</em>) – Dictionary key of the throat area values</p></li>
-<li><p><strong>pore_viscosity</strong> (<em>string</em>) – Dictionary key of the pore viscosity values</p></li>
-<li><p><strong>throat_viscosity</strong> (<em>string</em>) – Dictionary key of the throat viscosity values</p></li>
-<li><p><strong>conduit_lengths</strong> (<em>string</em>) – Dictionary key of the conduit length values</p></li>
-<li><p><strong>conduit_shape_factors</strong> (<em>string</em>) – Dictionary key of the conduit flow shape factor values</p></li>
+<li><p><strong>target</strong> (<em>_GenericPhysics</em>) – Physics object with which this model is associated.</p></li>
+<li><p><strong>pore_area</strong> (<em>str</em>) – Dictionary key of the pore area values.</p></li>
+<li><p><strong>throat_area</strong> (<em>str</em>) – Dictionary key of the throat area values.</p></li>
+<li><p><strong>pore_viscosity</strong> (<em>str</em>) – Dictionary key of the pore viscosity values.</p></li>
+<li><p><strong>throat_viscosity</strong> (<em>str</em>) – Dictionary key of the throat viscosity values.</p></li>
+<li><p><strong>conduit_lengths</strong> (<em>str</em>) – Dictionary key of the conduit lengths’ values.</p></li>
+<li><p><strong>conduit_shape_factors</strong> (<em>str</em>) – Dictionary key of the conduit flow shape factors’ values.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -710,40 +648,41 @@ geometry attached to the given physics object.</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>(1) This function requires that all the necessary phase properties already
+<p>This model should only be used for true 2D networks, i.e. with planar
+symmetry.</p>
+<p>This function requires that all the necessary phase properties already
 be calculated.</p>
-<p>(2) This function calculates the specified property for the <em>entire</em>
-network then extracts the values for the appropriate throats at the end.</p>
-<p>(3) This function assumes rectangular (2D) throats. Corrections for
-different shapes and variable cross-section area can be imposed by passing
-the proper flow_shape_factor argument.</p>
+<p>This function calculates the specified property for the <em>entire</em>
+network then extracts the values for the appropriate throats at the
+end.</p>
+<p>This function assumes rectangular (2D) throats. Corrections for
+different shapes and variable cross-section area can be imposed by
+passing the proper flow_shape_factor argument.</p>
 </dd></dl>
 
 <dl class="py function">
 <dt id="openpnm.models.physics.hydraulic_conductance.hagen_poiseuille_power_law">
 <code class="sig-prename descclassname">openpnm.models.physics.hydraulic_conductance.</code><code class="sig-name descname">hagen_poiseuille_power_law</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">target</span></em>, <em class="sig-param"><span class="n">pore_area</span><span class="o">=</span><span class="default_value">'pore.area'</span></em>, <em class="sig-param"><span class="n">throat_area</span><span class="o">=</span><span class="default_value">'throat.area'</span></em>, <em class="sig-param"><span class="n">pore_viscosity_min</span><span class="o">=</span><span class="default_value">'pore.viscosity_min'</span></em>, <em class="sig-param"><span class="n">throat_viscosity_min</span><span class="o">=</span><span class="default_value">'throat.viscosity_min'</span></em>, <em class="sig-param"><span class="n">pore_viscosity_max</span><span class="o">=</span><span class="default_value">'pore.viscosity_max'</span></em>, <em class="sig-param"><span class="n">throat_viscosity_max</span><span class="o">=</span><span class="default_value">'throat.viscosity_max'</span></em>, <em class="sig-param"><span class="n">conduit_lengths</span><span class="o">=</span><span class="default_value">'throat.conduit_lengths'</span></em>, <em class="sig-param"><span class="n">conduit_shape_factors</span><span class="o">=</span><span class="default_value">'throat.flow_shape_factors'</span></em>, <em class="sig-param"><span class="n">pore_consistency</span><span class="o">=</span><span class="default_value">'pore.consistency'</span></em>, <em class="sig-param"><span class="n">throat_consistency</span><span class="o">=</span><span class="default_value">'throat.consistency'</span></em>, <em class="sig-param"><span class="n">pore_flow_index</span><span class="o">=</span><span class="default_value">'pore.flow_index'</span></em>, <em class="sig-param"><span class="n">throat_flow_index</span><span class="o">=</span><span class="default_value">'throat.flow_index'</span></em>, <em class="sig-param"><span class="n">pore_pressure</span><span class="o">=</span><span class="default_value">'pore.pressure'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/physics/hydraulic_conductance.html#hagen_poiseuille_power_law"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.models.physics.hydraulic_conductance.hagen_poiseuille_power_law" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculate the hydraulic conductance of conduits in network (assuming a non
-Newtonian fluid whose viscosity obeys a power law), where a
-conduit is ( 1/2 pore - full throat - 1/2 pore ). See the notes section.</p>
+<dd><p>Calculates the hydraulic conductance of conduits in network, assuming
+a non Newtonian fluid whose viscosity obeys a power law.</p>
+<p>A conduit is defined as ( 1/2 pore - full throat - 1/2 pore ).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>target</strong> (<em>OpenPNM Object</em>) – The object which this model is associated with. This controls the
-length of the calculated array, and also provides access to other
-necessary properties.</p></li>
-<li><p><strong>pore_area</strong> (<em>string</em>) – Dictionary key of the pore area values</p></li>
-<li><p><strong>throat_area</strong> (<em>string</em>) – Dictionary key of the throat area values</p></li>
-<li><p><strong>pore_viscosity_min</strong> (<em>string</em>) – Dictionary key of the pore minimum viscosity values</p></li>
-<li><p><strong>throat_viscosity_min</strong> (<em>string</em>) – Dictionary key of the throat minimum viscosity values</p></li>
-<li><p><strong>pore_viscosity_max</strong> (<em>string</em>) – Dictionary key of the pore maximum viscosity values</p></li>
-<li><p><strong>throat_viscosity_max</strong> (<em>string</em>) – Dictionary key of the throat maximum viscosity values</p></li>
-<li><p><strong>conduit_lengths</strong> (<em>string</em>) – Dictionary key of the conduit length values</p></li>
-<li><p><strong>conduit_shape_factors</strong> (<em>string</em>) – Dictionary key of the conduit DIFFUSION shape factor values</p></li>
-<li><p><strong>pore_consistency</strong> (<em>string</em>) – Dictionary key of the pore fluid consistency values</p></li>
-<li><p><strong>throat_consistency</strong> (<em>string</em>) – Dictionary key of the throat fluid consistency values</p></li>
-<li><p><strong>pore_flow_index</strong> (<em>string</em>) – Dictionary key of the pore fluid flow index values</p></li>
-<li><p><strong>throat_flow_index</strong> (<em>string</em>) – Dictionary key of the throat fluid flow index values</p></li>
-<li><p><strong>pore_pressure</strong> (<em>string</em>) – Dictionary key of the pore pressure values</p></li>
+<li><p><strong>target</strong> (<em>_GenericPhysics</em>) – Physics object with which this model is associated.</p></li>
+<li><p><strong>pore_area</strong> (<em>str</em>) – Dictionary key of the pore area values.</p></li>
+<li><p><strong>throat_area</strong> (<em>str</em>) – Dictionary key of the throat area values.</p></li>
+<li><p><strong>pore_viscosity_min</strong> (<em>str</em>) – Dictionary key of the pore minimum viscosity values.</p></li>
+<li><p><strong>throat_viscosity_min</strong> (<em>str</em>) – Dictionary key of the throat minimum viscosity values.</p></li>
+<li><p><strong>pore_viscosity_max</strong> (<em>str</em>) – Dictionary key of the pore maximum viscosity values.</p></li>
+<li><p><strong>throat_viscosity_max</strong> (<em>str</em>) – Dictionary key of the throat maximum viscosity values.</p></li>
+<li><p><strong>conduit_lengths</strong> (<em>str</em>) – Dictionary key of the conduit lengths’ values.</p></li>
+<li><p><strong>conduit_shape_factors</strong> (<em>str</em>) – Dictionary key of the conduit flow shape factors’ values.</p></li>
+<li><p><strong>pore_consistency</strong> (<em>str</em>) – Dictionary key of the pore fluid consistency values.</p></li>
+<li><p><strong>throat_consistency</strong> (<em>str</em>) – Dictionary key of the throat fluid consistency values.</p></li>
+<li><p><strong>pore_flow_index</strong> (<em>str</em>) – Dictionary key of the pore fluid flow index values.</p></li>
+<li><p><strong>throat_flow_index</strong> (<em>str</em>) – Dictionary key of the throat fluid flow index values.</p></li>
+<li><p><strong>pore_pressure</strong> (<em>str</em>) – Dictionary key of the pore pressure values.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -755,15 +694,16 @@ geometry attached to the given physics object.</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>(1) This function requires that all the necessary phase properties already
+<p>This function requires that all the necessary phase properties already
 be calculated.</p>
-<p>(2) This function calculates the specified property for the <em>entire</em>
-network then extracts the values for the appropriate throats at the end.</p>
-<p>(3) This function assumes cylindrical throats with constant cross-section
-area. Corrections for different shapes and variable cross-section area can
-be imposed by passing the proper conduit_shape_factors argument.</p>
-<p>(4) shape_factor depends on the physics of the problem, i.e. diffusion-like
-processes and fluid flow need different shape factors.</p>
+<p>This function calculates the specified property for the <em>entire</em>
+network then extracts the values for the appropriate throats at the
+end.</p>
+<p>This function assumes cylindrical throats with constant cross-section
+area. Corrections for different shapes and variable cross-section area
+can be imposed by passing the proper conduit_shape_factors argument.</p>
+<p><code class="docutils literal notranslate"><span class="pre">conduit_shape_factors</span></code> depends on the physics of the problem, i.e.
+diffusion-like processes and fluid flow need different shape factors.</p>
 </dd></dl>
 
 </div>
@@ -893,154 +833,233 @@ increasing pressure.</p></li>
 </div>
 <div class="section" id="module-openpnm.models.physics.poisson_shape_factors">
 <span id="poisson-shape-factors"></span><h3><a class="toc-backref" href="#id18">Poisson Shape Factors</a><a class="headerlink" href="#module-openpnm.models.physics.poisson_shape_factors" title="Permalink to this headline">¶</a></h3>
+<p>Conduit shape factors’ models to correct for the deviation from cylinders
+in series assumption for Poisson-like physics such as mass diffusion or
+electrical conduction, etc. This submodule is deprecated and will be
+removed the near future. Use
+<cite>openpnm.models.geometry.diffusive_size_factors</cite> instead.</p>
 <dl class="py function">
 <dt id="openpnm.models.physics.poisson_shape_factors.ball_and_stick">
 <code class="sig-prename descclassname">openpnm.models.physics.poisson_shape_factors.</code><code class="sig-name descname">ball_and_stick</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">target</span></em>, <em class="sig-param"><span class="n">pore_area</span><span class="o">=</span><span class="default_value">'pore.area'</span></em>, <em class="sig-param"><span class="n">throat_area</span><span class="o">=</span><span class="default_value">'throat.area'</span></em>, <em class="sig-param"><span class="n">pore_diameter</span><span class="o">=</span><span class="default_value">'pore.diameter'</span></em>, <em class="sig-param"><span class="n">throat_diameter</span><span class="o">=</span><span class="default_value">'throat.diameter'</span></em>, <em class="sig-param"><span class="n">conduit_lengths</span><span class="o">=</span><span class="default_value">'throat.conduit_lengths'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/physics/poisson_shape_factors.html#ball_and_stick"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.models.physics.poisson_shape_factors.ball_and_stick" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculate conduit shape factors for throat conductance associated with
-diffusion-like physics (ex. thermal/diffusive/electrical conductance),
-assuming pores and throats are spheres (balls) and constant cross-section
-cylinders (sticks).</p>
+<dd><p>Calculates conduit shape factors for diffusive-like conductance.</p>
+<p>This model assumes pores and throats are spheres (balls) and constant
+cross-section cylinders (sticks). In addition to mass diffusion, this
+model can be used for other diffusion-like physics including thermal
+and electrical conductance.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>target</strong> (<em>OpenPNM Object</em>) – The object which this model is associated with. This controls the
-length of the calculated array, and also provides access to other
-necessary properties.</p></li>
-<li><p><strong>pore_area</strong> (<em>string</em>) – Dictionary key of the pore area values</p></li>
-<li><p><strong>throat_area</strong> (<em>string</em>) – Dictionary key of the throat area values</p></li>
-<li><p><strong>pore_diameter</strong> (<em>string</em>) – Dictionary key of the pore diameter values</p></li>
-<li><p><strong>throat_diameter</strong> (<em>string</em>) – Dictionary key of the throat diameter values</p></li>
-<li><p><strong>conduit_lengths</strong> (<em>string</em>) – Dictionary key of the conduit lengths’ values</p></li>
+<li><p><strong>target</strong> (<a class="reference internal" href="../geometry/generic_geometry.html#openpnm.geometry.GenericGeometry" title="openpnm.geometry.GenericGeometry"><em>GenericGeometry</em></a>) – Geometry object which this model is associated with. This controls
+the length of the calculated array, and also provides access to
+other necessary properties.</p></li>
+<li><p><strong>pore_area</strong> (<em>str</em>) – Dictionary key of the pore area values.</p></li>
+<li><p><strong>throat_area</strong> (<em>str</em>) – Dictionary key of the throat area values.</p></li>
+<li><p><strong>pore_diameter</strong> (<em>str</em>) – Dictionary key of the pore diameter values.</p></li>
+<li><p><strong>throat_diameter</strong> (<em>str</em>) – Dictionary key of the throat diameter values.</p></li>
+<li><p><strong>conduit_lengths</strong> (<em>str</em>) – Dictionary key of the conduit lengths’ values.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>SF</strong> – Dictionary containing conduit shape factors to be used in conductance
-models associated with diffusion-like physics. Shape factors are
-accessible via the keys: ‘pore1’, ‘pore2’ and ‘throat’.</p>
+<dd class="field-even"><p>Dictionary containing conduit shape factors. Shape factors are
+accessible via the keys: ‘pore1’, ‘throat’, and ‘pore2’.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>dictionary</p>
+<dd class="field-odd"><p>dict</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<ol class="arabic simple">
-<li><p>This model accounts for the variable cross-section area in spheres.</p></li>
-</ol>
-<p>(2) WARNING: This model could break if <cite>conduit_lengths</cite> does not
-correspond to an actual ball and stick! Example: pore length is greater
-than pore radius –&gt; :(</p>
+<p>This model accounts for the variable cross-sectional area in spheres.</p>
+<p>This model could break if <code class="docutils literal notranslate"><span class="pre">conduit_lengths</span></code> does not correspond to
+an actual ball and stick. Example: pore length is greater than pore
+radius.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="openpnm.models.physics.poisson_shape_factors.ball_and_stick_2d">
+<code class="sig-prename descclassname">openpnm.models.physics.poisson_shape_factors.</code><code class="sig-name descname">ball_and_stick_2d</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">target</span></em>, <em class="sig-param"><span class="n">pore_area</span><span class="o">=</span><span class="default_value">'pore.area'</span></em>, <em class="sig-param"><span class="n">throat_area</span><span class="o">=</span><span class="default_value">'throat.area'</span></em>, <em class="sig-param"><span class="n">pore_diameter</span><span class="o">=</span><span class="default_value">'pore.diameter'</span></em>, <em class="sig-param"><span class="n">throat_diameter</span><span class="o">=</span><span class="default_value">'throat.diameter'</span></em>, <em class="sig-param"><span class="n">conduit_lengths</span><span class="o">=</span><span class="default_value">'throat.conduit_lengths'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/physics/poisson_shape_factors.html#ball_and_stick_2d"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.models.physics.poisson_shape_factors.ball_and_stick_2d" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates conduit shape factors for diffusive-like conductance.</p>
+<p>This model assumes pores and throats are circles and rectangles. In
+addition to mass diffusion, this model can be used for other
+diffusion-like physics including thermal and electrical conductance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>target</strong> (<a class="reference internal" href="../geometry/generic_geometry.html#openpnm.geometry.GenericGeometry" title="openpnm.geometry.GenericGeometry"><em>GenericGeometry</em></a>) – Geometry object which this model is associated with. This controls
+the length of the calculated array, and also provides access to
+other necessary properties.</p></li>
+<li><p><strong>pore_area</strong> (<em>str</em>) – Dictionary key of the pore area values.</p></li>
+<li><p><strong>throat_area</strong> (<em>str</em>) – Dictionary key of the throat area values.</p></li>
+<li><p><strong>pore_diameter</strong> (<em>str</em>) – Dictionary key of the pore diameter values.</p></li>
+<li><p><strong>throat_diameter</strong> (<em>str</em>) – Dictionary key of the throat diameter values.</p></li>
+<li><p><strong>conduit_lengths</strong> (<em>str</em>) – Dictionary key of the conduit lengths’ values.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Dictionary containing conduit shape factors. Shape factors are
+accessible via the keys: ‘pore1’, ‘throat’, and ‘pore2’.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This model accounts for the variable cross-sectional area in circles.</p>
+<p>This model could break if <code class="docutils literal notranslate"><span class="pre">conduit_lengths</span></code> does not correspond to
+an actual ball and stick. Example: pore length is greater than pore
+radius.</p>
 </dd></dl>
 
 <dl class="py function">
 <dt id="openpnm.models.physics.poisson_shape_factors.conical_frustum_and_stick">
 <code class="sig-prename descclassname">openpnm.models.physics.poisson_shape_factors.</code><code class="sig-name descname">conical_frustum_and_stick</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">target</span></em>, <em class="sig-param"><span class="n">pore_area</span><span class="o">=</span><span class="default_value">'pore.area'</span></em>, <em class="sig-param"><span class="n">throat_area</span><span class="o">=</span><span class="default_value">'throat.area'</span></em>, <em class="sig-param"><span class="n">pore_diameter</span><span class="o">=</span><span class="default_value">'pore.diameter'</span></em>, <em class="sig-param"><span class="n">throat_diameter</span><span class="o">=</span><span class="default_value">'throat.diameter'</span></em>, <em class="sig-param"><span class="n">conduit_lengths</span><span class="o">=</span><span class="default_value">'throat.conduit_lengths'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/physics/poisson_shape_factors.html#conical_frustum_and_stick"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.models.physics.poisson_shape_factors.conical_frustum_and_stick" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculate conduit shape factors for throat conductance associated with
-diffusion-like physics (ex. thermal/diffusive/electrical conductance),
-assuming pores and throats are truncated pyramids (frustums) and constant
-cross-section cylinders (sticks).</p>
+<dd><p>Calculates conduit shape factors for diffusive-like conductance.</p>
+<p>This model assumes pores and throats are truncated pyramids (frustum)
+and constant cross-section cylinders (sticks). In addition to mass
+diffusion, this model can be used for other diffusion-like physics
+including thermal and electrical conductance.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>target</strong> (<em>OpenPNM Object</em>) – The object which this model is associated with. This controls the
-length of the calculated array, and also provides access to other
-necessary properties.</p></li>
-<li><p><strong>pore_area</strong> (<em>string</em>) – Dictionary key of the pore area values</p></li>
-<li><p><strong>throat_area</strong> (<em>string</em>) – Dictionary key of the throat area values</p></li>
-<li><p><strong>pore_diameter</strong> (<em>string</em>) – Dictionary key of the pore diameter values</p></li>
-<li><p><strong>throat_diameter</strong> (<em>string</em>) – Dictionary key of the throat diameter values</p></li>
-<li><p><strong>conduit_lengths</strong> (<em>string</em>) – Dictionary key of the conduit lengths’ values</p></li>
+<li><p><strong>target</strong> (<a class="reference internal" href="../geometry/generic_geometry.html#openpnm.geometry.GenericGeometry" title="openpnm.geometry.GenericGeometry"><em>GenericGeometry</em></a>) – Geometry object which this model is associated with. This controls
+the length of the calculated array, and also provides access to
+other necessary properties.</p></li>
+<li><p><strong>pore_area</strong> (<em>str</em>) – Dictionary key of the pore area values.</p></li>
+<li><p><strong>throat_area</strong> (<em>str</em>) – Dictionary key of the throat area values.</p></li>
+<li><p><strong>pore_diameter</strong> (<em>str</em>) – Dictionary key of the pore diameter values.</p></li>
+<li><p><strong>throat_diameter</strong> (<em>str</em>) – Dictionary key of the throat diameter values.</p></li>
+<li><p><strong>conduit_lengths</strong> (<em>str</em>) – Dictionary key of the conduit lengths’ values.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>SF</strong> – Dictionary containing conduit shape factors to be used in conductance
-models associated with diffusion-like physics. Shape factors are
-accessible via the keys: ‘pore1’, ‘pore2’ and ‘throat’.</p>
+<dd class="field-even"><p>Dictionary containing conduit shape factors. Shape factors are
+accessible via the keys: ‘pore1’, ‘throat’, and ‘pore2’.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>dictionary</p>
+<dd class="field-odd"><p>dict</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>This model accounts for the variable cross-section area in spheres.</p>
+<p>This model accounts for the variable cross-sectional area in pyramids.</p>
 </dd></dl>
 
 <p>—</p>
 </div>
 <div class="section" id="module-openpnm.models.physics.flow_shape_factors">
 <span id="flow-shape-factors"></span><h3><a class="toc-backref" href="#id19">Flow Shape Factors</a><a class="headerlink" href="#module-openpnm.models.physics.flow_shape_factors" title="Permalink to this headline">¶</a></h3>
+<p>Conduit shape factors’ models to correct for the deviation from cylinders
+in series assumption for fluid flow physics such as <cite>StokesFlow</cite>. This
+submodule is deprecated and will be removed the near future. Use
+<cite>openpnm.models.geometry.hydraulic_size_factors</cite> instead.</p>
 <dl class="py function">
 <dt id="openpnm.models.physics.flow_shape_factors.ball_and_stick">
 <code class="sig-prename descclassname">openpnm.models.physics.flow_shape_factors.</code><code class="sig-name descname">ball_and_stick</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">target</span></em>, <em class="sig-param"><span class="n">pore_area</span><span class="o">=</span><span class="default_value">'pore.area'</span></em>, <em class="sig-param"><span class="n">throat_area</span><span class="o">=</span><span class="default_value">'throat.area'</span></em>, <em class="sig-param"><span class="n">pore_diameter</span><span class="o">=</span><span class="default_value">'pore.diameter'</span></em>, <em class="sig-param"><span class="n">throat_diameter</span><span class="o">=</span><span class="default_value">'throat.diameter'</span></em>, <em class="sig-param"><span class="n">conduit_lengths</span><span class="o">=</span><span class="default_value">'throat.conduit_lengths'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/physics/flow_shape_factors.html#ball_and_stick"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.models.physics.flow_shape_factors.ball_and_stick" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculate conduit shape factors for hydraulic conductance, assuming
-pores and throats are spheres (balls) and constant cross-section
-cylinders (sticks).</p>
+<dd><p>Calculates conduit shape factors for hydraulic conductance.</p>
+<p>This model assumes pores and throats are spheres (balls) and constant
+cross-section cylinders (sticks).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>target</strong> (<em>OpenPNM Object</em>) – The object which this model is associated with. This controls the
-length of the calculated array, and also provides access to other
-necessary properties.</p></li>
-<li><p><strong>pore_area</strong> (<em>string</em>) – Dictionary key of the pore area values</p></li>
-<li><p><strong>throat_area</strong> (<em>string</em>) – Dictionary key of the throat area values</p></li>
-<li><p><strong>pore_diameter</strong> (<em>string</em>) – Dictionary key of the pore diameter values</p></li>
-<li><p><strong>throat_diameter</strong> (<em>string</em>) – Dictionary key of the throat diameter values</p></li>
-<li><p><strong>conduit_lengths</strong> (<em>string</em>) – Dictionary key of the conduit lengths’ values</p></li>
+<li><p><strong>target</strong> (<a class="reference internal" href="../geometry/generic_geometry.html#openpnm.geometry.GenericGeometry" title="openpnm.geometry.GenericGeometry"><em>GenericGeometry</em></a>) – Geometry object which this model is associated with. This controls
+the length of the calculated array, and also provides access to
+other necessary properties.</p></li>
+<li><p><strong>pore_area</strong> (<em>str</em>) – Dictionary key of the pore area values.</p></li>
+<li><p><strong>throat_area</strong> (<em>str</em>) – Dictionary key of the throat area values.</p></li>
+<li><p><strong>pore_diameter</strong> (<em>str</em>) – Dictionary key of the pore diameter values.</p></li>
+<li><p><strong>throat_diameter</strong> (<em>str</em>) – Dictionary key of the throat diameter values.</p></li>
+<li><p><strong>conduit_lengths</strong> (<em>str</em>) – Dictionary key of the conduit lengths’ values.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>SF</strong> – Dictionary containing conduit shape factors to be used in hagen-
-poiseuille hydraulic conductance model. Shape factors are accessible
-via the keys: ‘pore1’, ‘pore2’ and ‘throat’.</p>
+<dd class="field-even"><p>Dictionary containing conduit shape factors. Shape factors are
+accessible via the keys: ‘pore1’, ‘throat’, and ‘pore2’.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>dictionary</p>
+<dd class="field-odd"><p>dict</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<ol class="arabic simple">
-<li><p>This model accounts for the variable cross-section area in spheres.</p></li>
-</ol>
-<p>(2) WARNING: This model could break if <cite>conduit_lengths</cite> does not
-correspond to an actual ball and stick! Example: pore length is greater
-than pore radius –&gt; :(</p>
+<p>This model accounts for the variable cross-sectional area in spheres.</p>
+<p>This model could break if <code class="docutils literal notranslate"><span class="pre">conduit_lengths</span></code> does not correspond to
+an actual ball and stick. Example: pore length is greater than pore
+radius.</p>
 <p class="rubric">References</p>
-<p>Akbari, M., Sinton, D., &amp; Bahrami, M. (2011). Viscous flow in variable
-cross-section microchannels of arbitrary shapes. International Journal of
-Heat and Mass Transfer, 54(17-18), 3970-3978.</p>
+<p>[1] Akbari, M., Sinton, D., &amp; Bahrami, M. (2011). Viscous flow in
+variable cross-section microchannels of arbitrary shapes.
+International Journal of Heat and Mass Transfer, 54(17-18), 3970-3978.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="openpnm.models.physics.flow_shape_factors.ball_and_stick_2d">
+<code class="sig-prename descclassname">openpnm.models.physics.flow_shape_factors.</code><code class="sig-name descname">ball_and_stick_2d</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">target</span></em>, <em class="sig-param"><span class="n">pore_area</span><span class="o">=</span><span class="default_value">'pore.area'</span></em>, <em class="sig-param"><span class="n">throat_area</span><span class="o">=</span><span class="default_value">'throat.area'</span></em>, <em class="sig-param"><span class="n">pore_diameter</span><span class="o">=</span><span class="default_value">'pore.diameter'</span></em>, <em class="sig-param"><span class="n">throat_diameter</span><span class="o">=</span><span class="default_value">'throat.diameter'</span></em>, <em class="sig-param"><span class="n">conduit_lengths</span><span class="o">=</span><span class="default_value">'throat.conduit_lengths'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/physics/flow_shape_factors.html#ball_and_stick_2d"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.models.physics.flow_shape_factors.ball_and_stick_2d" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates conduit shape factors for hydraulic conductance.</p>
+<p>This model assumes pores and throats are circles and rectangles. In
+addition to mass diffusion, this model can be used for other
+diffusion-like physics including thermal and electrical conductance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>target</strong> (<a class="reference internal" href="../geometry/generic_geometry.html#openpnm.geometry.GenericGeometry" title="openpnm.geometry.GenericGeometry"><em>GenericGeometry</em></a>) – Geometry object which this model is associated with. This controls
+the length of the calculated array, and also provides access to
+other necessary properties.</p></li>
+<li><p><strong>pore_area</strong> (<em>str</em>) – Dictionary key of the pore area values.</p></li>
+<li><p><strong>throat_area</strong> (<em>str</em>) – Dictionary key of the throat area values.</p></li>
+<li><p><strong>pore_diameter</strong> (<em>str</em>) – Dictionary key of the pore diameter values.</p></li>
+<li><p><strong>throat_diameter</strong> (<em>str</em>) – Dictionary key of the throat diameter values.</p></li>
+<li><p><strong>conduit_lengths</strong> (<em>str</em>) – Dictionary key of the conduit lengths’ values.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Dictionary containing conduit shape factors. Shape factors are
+accessible via the keys: ‘pore1’, ‘throat’, and ‘pore2’.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This model accounts for the variable cross-sectional area in circles.</p>
+<p>This model could break if <code class="docutils literal notranslate"><span class="pre">conduit_lengths</span></code> does not correspond to
+an actual ball and stick. Example: pore length is greater than pore
+radius.</p>
+<p class="rubric">References</p>
+<p>[1] Akbari, M., Sinton, D., &amp; Bahrami, M. (2011). Viscous flow in
+variable cross-section microchannels of arbitrary shapes.
+International Journal of Heat and Mass Transfer, 54(17-18), 3970-3978.</p>
 </dd></dl>
 
 <dl class="py function">
 <dt id="openpnm.models.physics.flow_shape_factors.conical_frustum_and_stick">
 <code class="sig-prename descclassname">openpnm.models.physics.flow_shape_factors.</code><code class="sig-name descname">conical_frustum_and_stick</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">target</span></em>, <em class="sig-param"><span class="n">pore_area</span><span class="o">=</span><span class="default_value">'pore.area'</span></em>, <em class="sig-param"><span class="n">throat_area</span><span class="o">=</span><span class="default_value">'throat.area'</span></em>, <em class="sig-param"><span class="n">pore_diameter</span><span class="o">=</span><span class="default_value">'pore.diameter'</span></em>, <em class="sig-param"><span class="n">throat_diameter</span><span class="o">=</span><span class="default_value">'throat.diameter'</span></em>, <em class="sig-param"><span class="n">conduit_lengths</span><span class="o">=</span><span class="default_value">'throat.conduit_lengths'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/physics/flow_shape_factors.html#conical_frustum_and_stick"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.models.physics.flow_shape_factors.conical_frustum_and_stick" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculate conduit shape factors for hydraulic conductance, assuming
-pores and throats are truncated pyramids (frustums) and constant
-cross-section cylinders (sticks).</p>
+<dd><p>Calculates conduit shape factors for hydraulic conductance.</p>
+<p>This model assumes pores and throats are truncated pyramids (frustum)
+and constant cross-section cylinders (sticks).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>target</strong> (<em>OpenPNM Object</em>) – The object which this model is associated with. This controls the
-length of the calculated array, and also provides access to other
-necessary properties.</p></li>
-<li><p><strong>pore_area</strong> (<em>string</em>) – Dictionary key of the pore area values</p></li>
-<li><p><strong>throat_area</strong> (<em>string</em>) – Dictionary key of the throat area values</p></li>
-<li><p><strong>pore_diameter</strong> (<em>string</em>) – Dictionary key of the pore diameter values</p></li>
-<li><p><strong>throat_diameter</strong> (<em>string</em>) – Dictionary key of the throat diameter values</p></li>
-<li><p><strong>conduit_lengths</strong> (<em>string</em>) – Dictionary key of the conduit lengths’ values</p></li>
+<li><p><strong>target</strong> (<a class="reference internal" href="../geometry/generic_geometry.html#openpnm.geometry.GenericGeometry" title="openpnm.geometry.GenericGeometry"><em>GenericGeometry</em></a>) – Geometry object which this model is associated with. This controls
+the length of the calculated array, and also provides access to
+other necessary properties.</p></li>
+<li><p><strong>pore_area</strong> (<em>str</em>) – Dictionary key of the pore area values.</p></li>
+<li><p><strong>throat_area</strong> (<em>str</em>) – Dictionary key of the throat area values.</p></li>
+<li><p><strong>pore_diameter</strong> (<em>str</em>) – Dictionary key of the pore diameter values.</p></li>
+<li><p><strong>throat_diameter</strong> (<em>str</em>) – Dictionary key of the throat diameter values.</p></li>
+<li><p><strong>conduit_lengths</strong> (<em>str</em>) – Dictionary key of the conduit lengths’ values.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>SF</strong> – Dictionary containing conduit shape factors to be used in hagen-
-poiseuille hydraulic conductance model. Shape factors are accessible
-via the keys: ‘pore1’, ‘pore2’ and ‘throat’.</p>
+<dd class="field-even"><p>Dictionary containing conduit shape factors. Shape factors are
+accessible via the keys: ‘pore1’, ‘throat’, and ‘pore2’.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>dictionary</p>
+<dd class="field-odd"><p>dict</p>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<p>This model accounts for the variable cross-sectional area in pyramids.</p>
 <p class="rubric">References</p>
-<p>Akbari, M., Sinton, D., &amp; Bahrami, M. (2011). Viscous flow in variable
-cross-section microchannels of arbitrary shapes. International Journal of
-Heat and Mass Transfer, 54(17-18), 3970-3978.</p>
+<p>[1] Akbari, M., Sinton, D., &amp; Bahrami, M. (2011). Viscous flow in
+variable cross-section microchannels of arbitrary shapes.
+International Journal of Heat and Mass Transfer, 54(17-18), 3970-3978.</p>
 </dd></dl>
 
 <p>—</p>

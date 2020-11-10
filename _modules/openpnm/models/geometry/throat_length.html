@@ -168,20 +168,20 @@
 
 <div class="viewcode-block" id="ctc"><a class="viewcode-back" href="../../../../modules/models/geometry.html#openpnm.models.geometry.throat_length.ctc">[docs]</a><span class="k">def</span> <span class="nf">ctc</span><span class="p">(</span><span class="n">target</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Calculate throat length assuming point-like pores, i.e. center-to-center</span>
+<span class="sd">    Calculates throat length assuming point-like pores, i.e. center-to-center</span>
 <span class="sd">    distance between pores. Also, this model assumes that pores and throat</span>
 <span class="sd">    centroids are colinear.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    target : OpenPNM Object</span>
-<span class="sd">        The object which this model is associated with. This controls the</span>
+<span class="sd">    target : GenericGeometry</span>
+<span class="sd">        Geometry object which this model is associated with. This controls the</span>
 <span class="sd">        length of the calculated array, and also provides access to other</span>
 <span class="sd">        necessary properties.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    value : NumPy ndarray</span>
+<span class="sd">    value : ndarray</span>
 <span class="sd">        Array containing throat length values.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -194,22 +194,23 @@
     <span class="k">return</span> <span class="n">value</span></div>
 
 
-<div class="viewcode-block" id="piecewise"><a class="viewcode-back" href="../../../../modules/models/geometry.html#openpnm.models.geometry.throat_length.piecewise">[docs]</a><span class="k">def</span> <span class="nf">piecewise</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">throat_endpoints</span><span class="o">=</span><span class="s1">&#39;throat.endpoints&#39;</span><span class="p">,</span>
-              <span class="n">throat_centroid</span><span class="o">=</span><span class="s1">&#39;throat.centroid&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="piecewise"><a class="viewcode-back" href="../../../../modules/models/geometry.html#openpnm.models.geometry.throat_length.piecewise">[docs]</a><span class="k">def</span> <span class="nf">piecewise</span><span class="p">(</span>
+    <span class="n">target</span><span class="p">,</span>
+    <span class="n">throat_endpoints</span><span class="o">=</span><span class="s1">&#39;throat.endpoints&#39;</span><span class="p">,</span>
+    <span class="n">throat_centroid</span><span class="o">=</span><span class="s1">&#39;throat.centroid&#39;</span>
+<span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Calculate throat length from end points and optionally a centroid</span>
+<span class="sd">    Calculates throat length from end points and optionally a centroid</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    target : OpenPNM Object</span>
-<span class="sd">        The object which this model is associated with. This controls the</span>
+<span class="sd">    target : GenericGeometry</span>
+<span class="sd">        Geometry object which this model is associated with. This controls the</span>
 <span class="sd">        length of the calculated array, and also provides access to other</span>
 <span class="sd">        necessary properties.</span>
-
-<span class="sd">    throat_endpoints : string</span>
+<span class="sd">    throat_endpoints : str</span>
 <span class="sd">        Dictionary key of the throat endpoint values.</span>
-
-<span class="sd">    throat_centroid : string</span>
+<span class="sd">    throat_centroid : str</span>
 <span class="sd">        Dictionary key of the throat centroid values, optional.</span>
 
 <span class="sd">    Returns</span>
@@ -219,10 +220,10 @@
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
-<span class="sd">    (1) By default, the model assumes that the centroids of pores and the</span>
+<span class="sd">    By default, the model assumes that the centroids of pores and the</span>
 <span class="sd">    connecting throat in each conduit are colinear.</span>
 
-<span class="sd">    (2) If `throat_centroid` is passed, the model accounts for the extra</span>
+<span class="sd">    If `throat_centroid` is passed, the model accounts for the extra</span>
 <span class="sd">    length. This could be useful for Voronoi or extracted networks.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -242,24 +243,27 @@
     <span class="k">return</span> <span class="n">Lt</span></div>
 
 
-<div class="viewcode-block" id="conduit_lengths"><a class="viewcode-back" href="../../../../modules/models/geometry.html#openpnm.models.geometry.throat_length.conduit_lengths">[docs]</a><span class="k">def</span> <span class="nf">conduit_lengths</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">throat_endpoints</span><span class="o">=</span><span class="s1">&#39;throat.endpoints&#39;</span><span class="p">,</span>
-                    <span class="n">throat_length</span><span class="o">=</span><span class="s1">&#39;throat.length&#39;</span><span class="p">,</span>
-                    <span class="n">throat_centroid</span><span class="o">=</span><span class="s1">&#39;throat.centroid&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="conduit_lengths"><a class="viewcode-back" href="../../../../modules/models/geometry.html#openpnm.models.geometry.throat_length.conduit_lengths">[docs]</a><span class="k">def</span> <span class="nf">conduit_lengths</span><span class="p">(</span>
+    <span class="n">target</span><span class="p">,</span>
+    <span class="n">throat_endpoints</span><span class="o">=</span><span class="s1">&#39;throat.endpoints&#39;</span><span class="p">,</span>
+    <span class="n">throat_length</span><span class="o">=</span><span class="s1">&#39;throat.length&#39;</span><span class="p">,</span>
+    <span class="n">throat_centroid</span><span class="o">=</span><span class="s1">&#39;throat.centroid&#39;</span>
+<span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Calculate conduit lengths. A conduit is defined as half pore + throat</span>
+<span class="sd">    Calculates conduit lengths. A conduit is defined as half pore + throat</span>
 <span class="sd">    + half pore.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    target : OpenPNM Object</span>
-<span class="sd">        The object which this model is associated with. This controls the</span>
+<span class="sd">    target : GenericGeometry</span>
+<span class="sd">        Geometry object which this model is associated with. This controls the</span>
 <span class="sd">        length of the calculated array, and also provides access to other</span>
 <span class="sd">        necessary properties.</span>
 
-<span class="sd">    throat_endpoints : string</span>
+<span class="sd">    throat_endpoints : str</span>
 <span class="sd">        Dictionary key of the throat endpoint values.</span>
 
-<span class="sd">    throat_diameter : string</span>
+<span class="sd">    throat_diameter : str</span>
 <span class="sd">        Dictionary key of the throat length values.</span>
 
 <span class="sd">    throat_length : string (optional)</span>
@@ -290,29 +294,32 @@
     <span class="c1"># Calculate conduit lengths for pore 1 and pore 2</span>
     <span class="n">L1</span> <span class="o">=</span> <span class="n">_norm</span><span class="p">(</span><span class="n">C1</span> <span class="o">-</span> <span class="n">EP1</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
     <span class="n">L2</span> <span class="o">=</span> <span class="n">_norm</span><span class="p">(</span><span class="n">C2</span> <span class="o">-</span> <span class="n">EP2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">Lt</span> <span class="o">=</span> <span class="n">_np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">Lt</span><span class="p">,</span> <span class="mf">1e-15</span><span class="p">)</span>
+
     <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;pore1&#39;</span><span class="p">:</span> <span class="n">L1</span><span class="p">,</span> <span class="s1">&#39;throat&#39;</span><span class="p">:</span> <span class="n">Lt</span><span class="p">,</span> <span class="s1">&#39;pore2&#39;</span><span class="p">:</span> <span class="n">L2</span><span class="p">}</span></div>
 
 
 <span class="k">def</span> <span class="nf">classic</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">pore_diameter</span><span class="o">=</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Find throat length as the pore-to-pore center distance, less the radii of</span>
+<span class="sd">    Finds throat length as the pore-to-pore center distance, less the radii of</span>
 <span class="sd">    each pore.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    target : OpenPNM object</span>
-<span class="sd">        The object which this model is associated with. This controls the</span>
+<span class="sd">    target : GenericGeometry</span>
+<span class="sd">        Geometry object which this model is associated with. This controls the</span>
 <span class="sd">        length of the calculated array, and also provides access to other</span>
 <span class="sd">        necessary properties.</span>
 
-<span class="sd">    pore_diameter : string</span>
+<span class="sd">    pore_diameter : str</span>
 <span class="sd">        Dictionary key of the pore diameter values</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">network</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">network</span>
     <span class="n">throats</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">map_throats</span><span class="p">(</span><span class="n">throats</span><span class="o">=</span><span class="n">target</span><span class="o">.</span><span class="n">Ts</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="n">target</span><span class="p">)</span>
     <span class="n">cn</span> <span class="o">=</span> <span class="n">network</span><span class="p">[</span><span class="s1">&#39;throat.conns&#39;</span><span class="p">][</span><span class="n">throats</span><span class="p">]</span>
     <span class="n">ctc_dist</span> <span class="o">=</span> <span class="n">ctc</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
-    <span class="n">value</span> <span class="o">=</span> <span class="n">ctc_dist</span> <span class="o">-</span> <span class="n">network</span><span class="p">[</span><span class="n">pore_diameter</span><span class="p">][</span><span class="n">cn</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span>
+    <span class="n">value</span> <span class="o">=</span> <span class="n">ctc_dist</span> <span class="o">-</span> <span class="n">network</span><span class="p">[</span><span class="n">pore_diameter</span><span class="p">][</span><span class="n">cn</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
     <span class="k">return</span> <span class="n">value</span>
 </pre></div>
 

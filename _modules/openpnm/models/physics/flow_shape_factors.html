@@ -154,81 +154,84 @@
             
   <h1>Source code for openpnm.models.physics.flow_shape_factors</h1><div class="highlight"><pre>
 <span></span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Conduit shape factors&#39; models to correct for the deviation from cylinders</span>
+<span class="sd">in series assumption for fluid flow physics such as `StokesFlow`. This</span>
+<span class="sd">submodule is deprecated and will be removed the near future. Use</span>
+<span class="sd">`openpnm.models.geometry.hydraulic_size_factors` instead.</span>
 
 <span class="sd">.. autofunction:: openpnm.models.physics.flow_shape_factors.ball_and_stick</span>
+<span class="sd">.. autofunction:: openpnm.models.physics.flow_shape_factors.ball_and_stick_2d</span>
 <span class="sd">.. autofunction:: openpnm.models.physics.flow_shape_factors.conical_frustum_and_stick</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">pi</span> <span class="k">as</span> <span class="n">_pi</span>
-<span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">arctanh</span> <span class="k">as</span> <span class="n">_atanh</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">_np</span>
 
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;ball_and_stick&quot;</span><span class="p">,</span> <span class="s2">&quot;ball_and_stick_2d&quot;</span><span class="p">,</span> <span class="s2">&quot;conical_frustum_and_stick&quot;</span><span class="p">]</span>
 
-<div class="viewcode-block" id="ball_and_stick"><a class="viewcode-back" href="../../../../modules/models/physics.html#openpnm.models.physics.flow_shape_factors.ball_and_stick">[docs]</a><span class="k">def</span> <span class="nf">ball_and_stick</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">pore_area</span><span class="o">=</span><span class="s1">&#39;pore.area&#39;</span><span class="p">,</span>
-                   <span class="n">throat_area</span><span class="o">=</span><span class="s1">&#39;throat.area&#39;</span><span class="p">,</span>
-                   <span class="n">pore_diameter</span><span class="o">=</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">,</span>
-                   <span class="n">throat_diameter</span><span class="o">=</span><span class="s1">&#39;throat.diameter&#39;</span><span class="p">,</span>
-                   <span class="n">conduit_lengths</span><span class="o">=</span><span class="s1">&#39;throat.conduit_lengths&#39;</span><span class="p">):</span>
+
+<div class="viewcode-block" id="ball_and_stick"><a class="viewcode-back" href="../../../../modules/models/physics.html#openpnm.models.physics.flow_shape_factors.ball_and_stick">[docs]</a><span class="k">def</span> <span class="nf">ball_and_stick</span><span class="p">(</span>
+    <span class="n">target</span><span class="p">,</span>
+    <span class="n">pore_area</span><span class="o">=</span><span class="s2">&quot;pore.area&quot;</span><span class="p">,</span>
+    <span class="n">throat_area</span><span class="o">=</span><span class="s2">&quot;throat.area&quot;</span><span class="p">,</span>
+    <span class="n">pore_diameter</span><span class="o">=</span><span class="s2">&quot;pore.diameter&quot;</span><span class="p">,</span>
+    <span class="n">throat_diameter</span><span class="o">=</span><span class="s2">&quot;throat.diameter&quot;</span><span class="p">,</span>
+    <span class="n">conduit_lengths</span><span class="o">=</span><span class="s2">&quot;throat.conduit_lengths&quot;</span><span class="p">,</span>
+<span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Calculate conduit shape factors for hydraulic conductance, assuming</span>
-<span class="sd">    pores and throats are spheres (balls) and constant cross-section</span>
-<span class="sd">    cylinders (sticks).</span>
+<span class="sd">    Calculates conduit shape factors for hydraulic conductance.</span>
+
+<span class="sd">    This model assumes pores and throats are spheres (balls) and constant</span>
+<span class="sd">    cross-section cylinders (sticks).</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    target : OpenPNM Object</span>
-<span class="sd">        The object which this model is associated with. This controls the</span>
-<span class="sd">        length of the calculated array, and also provides access to other</span>
-<span class="sd">        necessary properties.</span>
-
-<span class="sd">    pore_area : string</span>
-<span class="sd">        Dictionary key of the pore area values</span>
-
-<span class="sd">    throat_area : string</span>
-<span class="sd">        Dictionary key of the throat area values</span>
-
-<span class="sd">    pore_diameter : string</span>
-<span class="sd">        Dictionary key of the pore diameter values</span>
-
-<span class="sd">    throat_diameter : string</span>
-<span class="sd">        Dictionary key of the throat diameter values</span>
-
-<span class="sd">    conduit_lengths : string</span>
-<span class="sd">        Dictionary key of the conduit lengths&#39; values</span>
+<span class="sd">    target : GenericGeometry</span>
+<span class="sd">        Geometry object which this model is associated with. This controls</span>
+<span class="sd">        the length of the calculated array, and also provides access to</span>
+<span class="sd">        other necessary properties.</span>
+<span class="sd">    pore_area : str</span>
+<span class="sd">        Dictionary key of the pore area values.</span>
+<span class="sd">    throat_area : str</span>
+<span class="sd">        Dictionary key of the throat area values.</span>
+<span class="sd">    pore_diameter : str</span>
+<span class="sd">        Dictionary key of the pore diameter values.</span>
+<span class="sd">    throat_diameter : str</span>
+<span class="sd">        Dictionary key of the throat diameter values.</span>
+<span class="sd">    conduit_lengths : str</span>
+<span class="sd">        Dictionary key of the conduit lengths&#39; values.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    SF : dictionary</span>
-<span class="sd">        Dictionary containing conduit shape factors to be used in hagen-</span>
-<span class="sd">        poiseuille hydraulic conductance model. Shape factors are accessible</span>
-<span class="sd">        via the keys: &#39;pore1&#39;, &#39;pore2&#39; and &#39;throat&#39;.</span>
+<span class="sd">    dict</span>
+<span class="sd">        Dictionary containing conduit shape factors. Shape factors are</span>
+<span class="sd">        accessible via the keys: &#39;pore1&#39;, &#39;throat&#39;, and &#39;pore2&#39;.</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
-<span class="sd">    (1) This model accounts for the variable cross-section area in spheres.</span>
+<span class="sd">    This model accounts for the variable cross-sectional area in spheres.</span>
 
-<span class="sd">    (2) WARNING: This model could break if `conduit_lengths` does not</span>
-<span class="sd">    correspond to an actual ball and stick! Example: pore length is greater</span>
-<span class="sd">    than pore radius --&gt; :(</span>
+<span class="sd">    This model could break if ``conduit_lengths`` does not correspond to</span>
+<span class="sd">    an actual ball and stick. Example: pore length is greater than pore</span>
+<span class="sd">    radius.</span>
 
 <span class="sd">    References</span>
 <span class="sd">    ----------</span>
-<span class="sd">    Akbari, M., Sinton, D., &amp; Bahrami, M. (2011). Viscous flow in variable</span>
-<span class="sd">    cross-section microchannels of arbitrary shapes. International Journal of</span>
-<span class="sd">    Heat and Mass Transfer, 54(17-18), 3970-3978.</span>
+<span class="sd">    [1] Akbari, M., Sinton, D., &amp; Bahrami, M. (2011). Viscous flow in</span>
+<span class="sd">    variable cross-section microchannels of arbitrary shapes.</span>
+<span class="sd">    International Journal of Heat and Mass Transfer, 54(17-18), 3970-3978.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">network</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">network</span>
     <span class="n">throats</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">map_throats</span><span class="p">(</span><span class="n">throats</span><span class="o">=</span><span class="n">target</span><span class="o">.</span><span class="n">Ts</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="n">target</span><span class="p">)</span>
-    <span class="n">cn</span> <span class="o">=</span> <span class="n">network</span><span class="p">[</span><span class="s1">&#39;throat.conns&#39;</span><span class="p">][</span><span class="n">throats</span><span class="p">]</span>
+    <span class="n">cn</span> <span class="o">=</span> <span class="n">network</span><span class="p">[</span><span class="s2">&quot;throat.conns&quot;</span><span class="p">][</span><span class="n">throats</span><span class="p">]</span>
     <span class="c1"># Get pore diameter</span>
     <span class="n">D1</span> <span class="o">=</span> <span class="n">network</span><span class="p">[</span><span class="n">pore_diameter</span><span class="p">][</span><span class="n">cn</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]]</span>
     <span class="n">D2</span> <span class="o">=</span> <span class="n">network</span><span class="p">[</span><span class="n">pore_diameter</span><span class="p">][</span><span class="n">cn</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]]</span>
     <span class="n">Dt</span> <span class="o">=</span> <span class="n">network</span><span class="p">[</span><span class="n">throat_diameter</span><span class="p">][</span><span class="n">throats</span><span class="p">]</span>
     <span class="c1"># Get conduit lengths</span>
-    <span class="n">L1</span> <span class="o">=</span> <span class="n">network</span><span class="p">[</span><span class="n">conduit_lengths</span> <span class="o">+</span> <span class="s1">&#39;.pore1&#39;</span><span class="p">][</span><span class="n">throats</span><span class="p">]</span>
-    <span class="n">L2</span> <span class="o">=</span> <span class="n">network</span><span class="p">[</span><span class="n">conduit_lengths</span> <span class="o">+</span> <span class="s1">&#39;.pore2&#39;</span><span class="p">][</span><span class="n">throats</span><span class="p">]</span>
-    <span class="n">Lt</span> <span class="o">=</span> <span class="n">network</span><span class="p">[</span><span class="n">conduit_lengths</span> <span class="o">+</span> <span class="s1">&#39;.throat&#39;</span><span class="p">][</span><span class="n">throats</span><span class="p">]</span>
+    <span class="n">L1</span> <span class="o">=</span> <span class="n">network</span><span class="p">[</span><span class="n">conduit_lengths</span> <span class="o">+</span> <span class="s2">&quot;.pore1&quot;</span><span class="p">][</span><span class="n">throats</span><span class="p">]</span>
+    <span class="n">L2</span> <span class="o">=</span> <span class="n">network</span><span class="p">[</span><span class="n">conduit_lengths</span> <span class="o">+</span> <span class="s2">&quot;.pore2&quot;</span><span class="p">][</span><span class="n">throats</span><span class="p">]</span>
+    <span class="n">Lt</span> <span class="o">=</span> <span class="n">network</span><span class="p">[</span><span class="n">conduit_lengths</span> <span class="o">+</span> <span class="s2">&quot;.throat&quot;</span><span class="p">][</span><span class="n">throats</span><span class="p">]</span>
     <span class="c1"># Get pore/throat baseline areas (the one used in generic conductance)</span>
     <span class="n">A1</span> <span class="o">=</span> <span class="n">network</span><span class="p">[</span><span class="n">pore_area</span><span class="p">][</span><span class="n">cn</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]]</span>
     <span class="n">A2</span> <span class="o">=</span> <span class="n">network</span><span class="p">[</span><span class="n">pore_area</span><span class="p">][</span><span class="n">cn</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]]</span>
@@ -241,75 +244,92 @@
     <span class="c1"># INFO: This is needed since area could also be zero, which confuses NumPy</span>
     <span class="n">m1</span><span class="p">,</span> <span class="n">m2</span><span class="p">,</span> <span class="n">mt</span> <span class="o">=</span> <span class="p">[</span><span class="n">Li</span> <span class="o">!=</span> <span class="mi">0</span> <span class="k">for</span> <span class="n">Li</span> <span class="ow">in</span> <span class="p">[</span><span class="n">L1</span><span class="p">,</span> <span class="n">L2</span><span class="p">,</span> <span class="n">Lt</span><span class="p">]]</span>
     <span class="n">SF1</span><span class="p">[</span><span class="o">~</span><span class="n">m1</span><span class="p">]</span> <span class="o">=</span> <span class="n">SF2</span><span class="p">[</span><span class="o">~</span><span class="n">m2</span><span class="p">]</span> <span class="o">=</span> <span class="n">SFt</span><span class="p">[</span><span class="o">~</span><span class="n">mt</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
-    <span class="k">if</span> <span class="p">((</span><span class="n">_np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">D1</span> <span class="o">&lt;=</span> <span class="mi">2</span><span class="o">*</span><span class="n">L1</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">_np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">D2</span> <span class="o">&lt;=</span> <span class="mi">2</span><span class="o">*</span><span class="n">L2</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)):</span>
-        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Some pores can not be modeled with ball_and_stick&#39;</span>
-                        <span class="o">+</span> <span class="s1">&#39; flow shape factor. Use another model for those pores&#39;</span>
-                        <span class="o">+</span> <span class="s1">&#39; with (D/L)&lt;=2&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">_np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">D1</span> <span class="o">&lt;=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">L1</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">_np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">D2</span> <span class="o">&lt;=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">L2</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span>
+            <span class="s2">&quot;Some pores can not be modeled with ball_and_stick&quot;</span>
+            <span class="o">+</span> <span class="s2">&quot; flow shape factor. Use another model for those pores&quot;</span>
+            <span class="o">+</span> <span class="s2">&quot; with (D/L)&lt;=2&quot;</span>
+        <span class="p">)</span>
     <span class="c1"># Handle the case where Dt &gt;= Dp</span>
     <span class="n">M1</span><span class="p">,</span> <span class="n">M2</span> <span class="o">=</span> <span class="p">[(</span><span class="n">Di</span> <span class="o">&lt;=</span> <span class="n">Dt</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">mi</span> <span class="k">for</span> <span class="n">Di</span><span class="p">,</span> <span class="n">mi</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">([</span><span class="n">D1</span><span class="p">,</span> <span class="n">D2</span><span class="p">],</span> <span class="p">[</span><span class="n">m1</span><span class="p">,</span> <span class="n">m2</span><span class="p">])]</span>
-    <span class="n">F1</span><span class="p">[</span><span class="n">M1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">16</span><span class="o">/</span><span class="mi">3</span> <span class="o">*</span> <span class="p">(</span><span class="n">L1</span><span class="o">*</span><span class="p">(</span><span class="n">D1</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">D1</span><span class="o">*</span><span class="n">Dt</span> <span class="o">+</span> <span class="n">Dt</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">D1</span><span class="o">**</span><span class="mi">3</span> <span class="o">*</span> <span class="n">Dt</span><span class="o">**</span><span class="mi">3</span> <span class="o">*</span> <span class="n">_pi</span><span class="o">**</span><span class="mi">2</span><span class="p">))[</span><span class="n">M1</span><span class="p">]</span>
-    <span class="n">F2</span><span class="p">[</span><span class="n">M2</span><span class="p">]</span> <span class="o">=</span> <span class="mi">16</span><span class="o">/</span><span class="mi">3</span> <span class="o">*</span> <span class="p">(</span><span class="n">L2</span><span class="o">*</span><span class="p">(</span><span class="n">D2</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">D2</span><span class="o">*</span><span class="n">Dt</span> <span class="o">+</span> <span class="n">Dt</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">D2</span><span class="o">**</span><span class="mi">3</span> <span class="o">*</span> <span class="n">Dt</span><span class="o">**</span><span class="mi">3</span> <span class="o">*</span> <span class="n">_pi</span><span class="o">**</span><span class="mi">2</span><span class="p">))[</span><span class="n">M2</span><span class="p">]</span>
+    <span class="n">F1</span><span class="p">[</span><span class="n">M1</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="mi">16</span> <span class="o">/</span> <span class="mi">3</span> <span class="o">*</span> <span class="p">(</span><span class="n">L1</span> <span class="o">*</span> <span class="p">(</span><span class="n">D1</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">D1</span> <span class="o">*</span> <span class="n">Dt</span> <span class="o">+</span> <span class="n">Dt</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">D1</span><span class="o">**</span><span class="mi">3</span> <span class="o">*</span> <span class="n">Dt</span><span class="o">**</span><span class="mi">3</span> <span class="o">*</span> <span class="n">_np</span><span class="o">.</span><span class="n">pi</span><span class="o">**</span><span class="mi">2</span><span class="p">))[</span><span class="n">M1</span><span class="p">]</span>
+    <span class="p">)</span>
+    <span class="n">F2</span><span class="p">[</span><span class="n">M2</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="mi">16</span> <span class="o">/</span> <span class="mi">3</span> <span class="o">*</span> <span class="p">(</span><span class="n">L2</span> <span class="o">*</span> <span class="p">(</span><span class="n">D2</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">D2</span> <span class="o">*</span> <span class="n">Dt</span> <span class="o">+</span> <span class="n">Dt</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">D2</span><span class="o">**</span><span class="mi">3</span> <span class="o">*</span> <span class="n">Dt</span><span class="o">**</span><span class="mi">3</span> <span class="o">*</span> <span class="n">_np</span><span class="o">.</span><span class="n">pi</span><span class="o">**</span><span class="mi">2</span><span class="p">))[</span><span class="n">M2</span><span class="p">]</span>
+    <span class="p">)</span>
     <span class="c1"># Handle the rest (true balls and sticks)</span>
     <span class="n">N1</span><span class="p">,</span> <span class="n">N2</span> <span class="o">=</span> <span class="p">[(</span><span class="n">Di</span> <span class="o">&gt;</span> <span class="n">Dt</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">mi</span> <span class="k">for</span> <span class="n">Di</span><span class="p">,</span> <span class="n">mi</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">([</span><span class="n">D1</span><span class="p">,</span> <span class="n">D2</span><span class="p">],</span> <span class="p">[</span><span class="n">m1</span><span class="p">,</span> <span class="n">m2</span><span class="p">])]</span>
-    <span class="n">F1</span><span class="p">[</span><span class="n">N1</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">4</span><span class="o">/</span><span class="p">(</span><span class="n">D1</span><span class="o">**</span><span class="mi">3</span><span class="o">*</span><span class="n">_pi</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="p">((</span><span class="mi">2</span><span class="o">*</span><span class="n">D1</span><span class="o">*</span><span class="n">L1</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">D1</span><span class="o">**</span><span class="mi">2</span><span class="o">-</span><span class="mi">4</span><span class="o">*</span><span class="n">L1</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="n">_atanh</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">L1</span><span class="o">/</span><span class="n">D1</span><span class="p">)))[</span><span class="n">N1</span><span class="p">]</span>
-    <span class="n">F2</span><span class="p">[</span><span class="n">N2</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">4</span><span class="o">/</span><span class="p">(</span><span class="n">D2</span><span class="o">**</span><span class="mi">3</span><span class="o">*</span><span class="n">_pi</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="p">((</span><span class="mi">2</span><span class="o">*</span><span class="n">D2</span><span class="o">*</span><span class="n">L2</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">D2</span><span class="o">**</span><span class="mi">2</span><span class="o">-</span><span class="mi">4</span><span class="o">*</span><span class="n">L2</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="n">_atanh</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">L2</span><span class="o">/</span><span class="n">D2</span><span class="p">)))[</span><span class="n">N2</span><span class="p">]</span>
-    <span class="n">Ft</span><span class="p">[</span><span class="n">mt</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">Lt</span> <span class="o">/</span> <span class="n">At</span><span class="o">**</span><span class="mi">2</span><span class="p">)[</span><span class="n">mt</span><span class="p">]</span>
+    <span class="n">F1</span><span class="p">[</span><span class="n">N1</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="mi">4</span> <span class="o">/</span> <span class="p">(</span><span class="n">D1</span><span class="o">**</span><span class="mi">3</span> <span class="o">*</span> <span class="n">_np</span><span class="o">.</span><span class="n">pi</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span>
+            <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">D1</span> <span class="o">*</span> <span class="n">L1</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">D1</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">L1</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="n">_np</span><span class="o">.</span><span class="n">arctanh</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">L1</span> <span class="o">/</span> <span class="n">D1</span><span class="p">)</span>
+        <span class="p">)</span>
+    <span class="p">)[</span><span class="n">N1</span><span class="p">]</span>
+    <span class="n">F2</span><span class="p">[</span><span class="n">N2</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="mi">4</span> <span class="o">/</span> <span class="p">(</span><span class="n">D2</span><span class="o">**</span><span class="mi">3</span> <span class="o">*</span> <span class="n">_np</span><span class="o">.</span><span class="n">pi</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span>
+            <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">D2</span> <span class="o">*</span> <span class="n">L2</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">D2</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">L2</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="n">_np</span><span class="o">.</span><span class="n">arctanh</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">L2</span> <span class="o">/</span> <span class="n">D2</span><span class="p">)</span>
+        <span class="p">)</span>
+    <span class="p">)[</span><span class="n">N2</span><span class="p">]</span>
+    <span class="n">Ft</span><span class="p">[</span><span class="n">mt</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">Lt</span> <span class="o">/</span> <span class="n">At</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)[</span><span class="n">mt</span><span class="p">]</span>
     <span class="c1"># Calculate conduit shape factors</span>
-    <span class="n">SF1</span><span class="p">[</span><span class="n">m1</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">L1</span> <span class="o">/</span> <span class="p">(</span><span class="n">A1</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="n">F1</span><span class="p">))[</span><span class="n">m1</span><span class="p">]</span>
-    <span class="n">SF2</span><span class="p">[</span><span class="n">m2</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">L2</span> <span class="o">/</span> <span class="p">(</span><span class="n">A2</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="n">F2</span><span class="p">))[</span><span class="n">m2</span><span class="p">]</span>
-    <span class="n">SFt</span><span class="p">[</span><span class="n">mt</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">Lt</span> <span class="o">/</span> <span class="p">(</span><span class="n">At</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="n">Ft</span><span class="p">))[</span><span class="n">mt</span><span class="p">]</span>
-    <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;pore1&#39;</span><span class="p">:</span> <span class="n">SF1</span><span class="p">,</span> <span class="s1">&#39;throat&#39;</span><span class="p">:</span> <span class="n">SFt</span><span class="p">,</span> <span class="s1">&#39;pore2&#39;</span><span class="p">:</span> <span class="n">SF2</span><span class="p">}</span></div>
+    <span class="n">SF1</span><span class="p">[</span><span class="n">m1</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">L1</span> <span class="o">/</span> <span class="p">(</span><span class="n">A1</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">F1</span><span class="p">))[</span><span class="n">m1</span><span class="p">]</span>
+    <span class="n">SF2</span><span class="p">[</span><span class="n">m2</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">L2</span> <span class="o">/</span> <span class="p">(</span><span class="n">A2</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">F2</span><span class="p">))[</span><span class="n">m2</span><span class="p">]</span>
+    <span class="n">SFt</span><span class="p">[</span><span class="n">mt</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">Lt</span> <span class="o">/</span> <span class="p">(</span><span class="n">At</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">Ft</span><span class="p">))[</span><span class="n">mt</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;pore1&quot;</span><span class="p">:</span> <span class="n">SF1</span><span class="p">,</span> <span class="s2">&quot;throat&quot;</span><span class="p">:</span> <span class="n">SFt</span><span class="p">,</span> <span class="s2">&quot;pore2&quot;</span><span class="p">:</span> <span class="n">SF2</span><span class="p">}</span></div>
 
 
-<div class="viewcode-block" id="conical_frustum_and_stick"><a class="viewcode-back" href="../../../../modules/models/physics.html#openpnm.models.physics.flow_shape_factors.conical_frustum_and_stick">[docs]</a><span class="k">def</span> <span class="nf">conical_frustum_and_stick</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">pore_area</span><span class="o">=</span><span class="s1">&#39;pore.area&#39;</span><span class="p">,</span>
-                              <span class="n">throat_area</span><span class="o">=</span><span class="s1">&#39;throat.area&#39;</span><span class="p">,</span>
-                              <span class="n">pore_diameter</span><span class="o">=</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">,</span>
-                              <span class="n">throat_diameter</span><span class="o">=</span><span class="s1">&#39;throat.diameter&#39;</span><span class="p">,</span>
-                              <span class="n">conduit_lengths</span><span class="o">=</span><span class="s1">&#39;throat.conduit_lengths&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="conical_frustum_and_stick"><a class="viewcode-back" href="../../../../modules/models/physics.html#openpnm.models.physics.flow_shape_factors.conical_frustum_and_stick">[docs]</a><span class="k">def</span> <span class="nf">conical_frustum_and_stick</span><span class="p">(</span>
+    <span class="n">target</span><span class="p">,</span>
+    <span class="n">pore_area</span><span class="o">=</span><span class="s2">&quot;pore.area&quot;</span><span class="p">,</span>
+    <span class="n">throat_area</span><span class="o">=</span><span class="s2">&quot;throat.area&quot;</span><span class="p">,</span>
+    <span class="n">pore_diameter</span><span class="o">=</span><span class="s2">&quot;pore.diameter&quot;</span><span class="p">,</span>
+    <span class="n">throat_diameter</span><span class="o">=</span><span class="s2">&quot;throat.diameter&quot;</span><span class="p">,</span>
+    <span class="n">conduit_lengths</span><span class="o">=</span><span class="s2">&quot;throat.conduit_lengths&quot;</span><span class="p">,</span>
+<span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Calculate conduit shape factors for hydraulic conductance, assuming</span>
-<span class="sd">    pores and throats are truncated pyramids (frustums) and constant</span>
-<span class="sd">    cross-section cylinders (sticks).</span>
+<span class="sd">    Calculates conduit shape factors for hydraulic conductance.</span>
+
+<span class="sd">    This model assumes pores and throats are truncated pyramids (frustum)</span>
+<span class="sd">    and constant cross-section cylinders (sticks).</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    target : OpenPNM Object</span>
-<span class="sd">        The object which this model is associated with. This controls the</span>
-<span class="sd">        length of the calculated array, and also provides access to other</span>
-<span class="sd">        necessary properties.</span>
-
-<span class="sd">    pore_area : string</span>
-<span class="sd">        Dictionary key of the pore area values</span>
-
-<span class="sd">    throat_area : string</span>
-<span class="sd">        Dictionary key of the throat area values</span>
-
-<span class="sd">    pore_diameter : string</span>
-<span class="sd">        Dictionary key of the pore diameter values</span>
-
-<span class="sd">    throat_diameter : string</span>
-<span class="sd">        Dictionary key of the throat diameter values</span>
-
-<span class="sd">    conduit_lengths : string</span>
-<span class="sd">        Dictionary key of the conduit lengths&#39; values</span>
+<span class="sd">    target : GenericGeometry</span>
+<span class="sd">        Geometry object which this model is associated with. This controls</span>
+<span class="sd">        the length of the calculated array, and also provides access to</span>
+<span class="sd">        other necessary properties.</span>
+<span class="sd">    pore_area : str</span>
+<span class="sd">        Dictionary key of the pore area values.</span>
+<span class="sd">    throat_area : str</span>
+<span class="sd">        Dictionary key of the throat area values.</span>
+<span class="sd">    pore_diameter : str</span>
+<span class="sd">        Dictionary key of the pore diameter values.</span>
+<span class="sd">    throat_diameter : str</span>
+<span class="sd">        Dictionary key of the throat diameter values.</span>
+<span class="sd">    conduit_lengths : str</span>
+<span class="sd">        Dictionary key of the conduit lengths&#39; values.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    SF : dictionary</span>
-<span class="sd">        Dictionary containing conduit shape factors to be used in hagen-</span>
-<span class="sd">        poiseuille hydraulic conductance model. Shape factors are accessible</span>
-<span class="sd">        via the keys: &#39;pore1&#39;, &#39;pore2&#39; and &#39;throat&#39;.</span>
+<span class="sd">    dict</span>
+<span class="sd">        Dictionary containing conduit shape factors. Shape factors are</span>
+<span class="sd">        accessible via the keys: &#39;pore1&#39;, &#39;throat&#39;, and &#39;pore2&#39;.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This model accounts for the variable cross-sectional area in pyramids.</span>
 
 <span class="sd">    References</span>
 <span class="sd">    ----------</span>
-<span class="sd">    Akbari, M., Sinton, D., &amp; Bahrami, M. (2011). Viscous flow in variable</span>
-<span class="sd">    cross-section microchannels of arbitrary shapes. International Journal of</span>
-<span class="sd">    Heat and Mass Transfer, 54(17-18), 3970-3978.</span>
+<span class="sd">    [1] Akbari, M., Sinton, D., &amp; Bahrami, M. (2011). Viscous flow in</span>
+<span class="sd">    variable cross-section microchannels of arbitrary shapes.</span>
+<span class="sd">    International Journal of Heat and Mass Transfer, 54(17-18), 3970-3978.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">network</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">network</span>
     <span class="n">throats</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">map_throats</span><span class="p">(</span><span class="n">throats</span><span class="o">=</span><span class="n">target</span><span class="o">.</span><span class="n">Ts</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="n">target</span><span class="p">)</span>
-    <span class="n">cn</span> <span class="o">=</span> <span class="n">network</span><span class="p">[</span><span class="s1">&#39;throat.conns&#39;</span><span class="p">][</span><span class="n">throats</span><span class="p">]</span>
+    <span class="n">cn</span> <span class="o">=</span> <span class="n">network</span><span class="p">[</span><span class="s2">&quot;throat.conns&quot;</span><span class="p">][</span><span class="n">throats</span><span class="p">]</span>
     <span class="c1"># Get pore diameter</span>
     <span class="n">D1</span> <span class="o">=</span> <span class="n">network</span><span class="p">[</span><span class="n">pore_diameter</span><span class="p">][</span><span class="n">cn</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]]</span>
     <span class="n">D2</span> <span class="o">=</span> <span class="n">network</span><span class="p">[</span><span class="n">pore_diameter</span><span class="p">][</span><span class="n">cn</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]]</span>
@@ -319,9 +339,9 @@
     <span class="n">A2</span> <span class="o">=</span> <span class="n">network</span><span class="p">[</span><span class="n">pore_area</span><span class="p">][</span><span class="n">cn</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]]</span>
     <span class="n">At</span> <span class="o">=</span> <span class="n">network</span><span class="p">[</span><span class="n">throat_area</span><span class="p">][</span><span class="n">throats</span><span class="p">]</span>
     <span class="c1"># Get conduit lengths</span>
-    <span class="n">L1</span> <span class="o">=</span> <span class="n">network</span><span class="p">[</span><span class="n">conduit_lengths</span> <span class="o">+</span> <span class="s1">&#39;.pore1&#39;</span><span class="p">][</span><span class="n">throats</span><span class="p">]</span>
-    <span class="n">L2</span> <span class="o">=</span> <span class="n">network</span><span class="p">[</span><span class="n">conduit_lengths</span> <span class="o">+</span> <span class="s1">&#39;.pore2&#39;</span><span class="p">][</span><span class="n">throats</span><span class="p">]</span>
-    <span class="n">Lt</span> <span class="o">=</span> <span class="n">network</span><span class="p">[</span><span class="n">conduit_lengths</span> <span class="o">+</span> <span class="s1">&#39;.throat&#39;</span><span class="p">][</span><span class="n">throats</span><span class="p">]</span>
+    <span class="n">L1</span> <span class="o">=</span> <span class="n">network</span><span class="p">[</span><span class="n">conduit_lengths</span> <span class="o">+</span> <span class="s2">&quot;.pore1&quot;</span><span class="p">][</span><span class="n">throats</span><span class="p">]</span>
+    <span class="n">L2</span> <span class="o">=</span> <span class="n">network</span><span class="p">[</span><span class="n">conduit_lengths</span> <span class="o">+</span> <span class="s2">&quot;.pore2&quot;</span><span class="p">][</span><span class="n">throats</span><span class="p">]</span>
+    <span class="n">Lt</span> <span class="o">=</span> <span class="n">network</span><span class="p">[</span><span class="n">conduit_lengths</span> <span class="o">+</span> <span class="s2">&quot;.throat&quot;</span><span class="p">][</span><span class="n">throats</span><span class="p">]</span>
     <span class="c1"># Preallocating F, SF</span>
     <span class="c1"># F is INTEGRAL(1/A^2) dx , x : 0 --&gt; L</span>
     <span class="n">F1</span><span class="p">,</span> <span class="n">F2</span><span class="p">,</span> <span class="n">Ft</span> <span class="o">=</span> <span class="n">_np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">Lt</span><span class="p">)))</span>
@@ -331,79 +351,84 @@
     <span class="n">m1</span><span class="p">,</span> <span class="n">m2</span><span class="p">,</span> <span class="n">mt</span> <span class="o">=</span> <span class="p">[</span><span class="n">Li</span> <span class="o">!=</span> <span class="mi">0</span> <span class="k">for</span> <span class="n">Li</span> <span class="ow">in</span> <span class="p">[</span><span class="n">L1</span><span class="p">,</span> <span class="n">L2</span><span class="p">,</span> <span class="n">Lt</span><span class="p">]]</span>
     <span class="n">SF1</span><span class="p">[</span><span class="o">~</span><span class="n">m1</span><span class="p">]</span> <span class="o">=</span> <span class="n">SF2</span><span class="p">[</span><span class="o">~</span><span class="n">m2</span><span class="p">]</span> <span class="o">=</span> <span class="n">SFt</span><span class="p">[</span><span class="o">~</span><span class="n">mt</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
     <span class="c1"># Calculate integral of 1/A^2</span>
-    <span class="n">F1</span><span class="p">[</span><span class="n">m1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">16</span><span class="o">/</span><span class="mi">3</span> <span class="o">*</span> <span class="p">(</span><span class="n">L1</span><span class="o">*</span><span class="p">(</span><span class="n">D1</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">D1</span><span class="o">*</span><span class="n">Dt</span> <span class="o">+</span> <span class="n">Dt</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">D1</span><span class="o">**</span><span class="mi">3</span> <span class="o">*</span> <span class="n">Dt</span><span class="o">**</span><span class="mi">3</span> <span class="o">*</span> <span class="n">_pi</span><span class="o">**</span><span class="mi">2</span><span class="p">))[</span><span class="n">m1</span><span class="p">]</span>
-    <span class="n">F2</span><span class="p">[</span><span class="n">m2</span><span class="p">]</span> <span class="o">=</span> <span class="mi">16</span><span class="o">/</span><span class="mi">3</span> <span class="o">*</span> <span class="p">(</span><span class="n">L2</span><span class="o">*</span><span class="p">(</span><span class="n">D2</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">D2</span><span class="o">*</span><span class="n">Dt</span> <span class="o">+</span> <span class="n">Dt</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">D2</span><span class="o">**</span><span class="mi">3</span> <span class="o">*</span> <span class="n">Dt</span><span class="o">**</span><span class="mi">3</span> <span class="o">*</span> <span class="n">_pi</span><span class="o">**</span><span class="mi">2</span><span class="p">))[</span><span class="n">m2</span><span class="p">]</span>
-    <span class="n">Ft</span><span class="p">[</span><span class="n">mt</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">Lt</span><span class="o">/</span><span class="n">At</span><span class="o">**</span><span class="mi">2</span><span class="p">)[</span><span class="n">mt</span><span class="p">]</span>
+    <span class="n">F1</span><span class="p">[</span><span class="n">m1</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="mi">16</span> <span class="o">/</span> <span class="mi">3</span> <span class="o">*</span> <span class="p">(</span><span class="n">L1</span> <span class="o">*</span> <span class="p">(</span><span class="n">D1</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">D1</span> <span class="o">*</span> <span class="n">Dt</span> <span class="o">+</span> <span class="n">Dt</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">D1</span><span class="o">**</span><span class="mi">3</span> <span class="o">*</span> <span class="n">Dt</span><span class="o">**</span><span class="mi">3</span> <span class="o">*</span> <span class="n">_np</span><span class="o">.</span><span class="n">pi</span><span class="o">**</span><span class="mi">2</span><span class="p">))[</span><span class="n">m1</span><span class="p">]</span>
+    <span class="p">)</span>
+    <span class="n">F2</span><span class="p">[</span><span class="n">m2</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="mi">16</span> <span class="o">/</span> <span class="mi">3</span> <span class="o">*</span> <span class="p">(</span><span class="n">L2</span> <span class="o">*</span> <span class="p">(</span><span class="n">D2</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">D2</span> <span class="o">*</span> <span class="n">Dt</span> <span class="o">+</span> <span class="n">Dt</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">D2</span><span class="o">**</span><span class="mi">3</span> <span class="o">*</span> <span class="n">Dt</span><span class="o">**</span><span class="mi">3</span> <span class="o">*</span> <span class="n">_np</span><span class="o">.</span><span class="n">pi</span><span class="o">**</span><span class="mi">2</span><span class="p">))[</span><span class="n">m2</span><span class="p">]</span>
+    <span class="p">)</span>
+    <span class="n">Ft</span><span class="p">[</span><span class="n">mt</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">Lt</span> <span class="o">/</span> <span class="n">At</span><span class="o">**</span><span class="mi">2</span><span class="p">)[</span><span class="n">mt</span><span class="p">]</span>
     <span class="c1"># Calculate conduit shape factors</span>
     <span class="n">SF1</span><span class="p">[</span><span class="n">m1</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">L1</span> <span class="o">/</span> <span class="p">(</span><span class="n">A1</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="n">F1</span><span class="p">))[</span><span class="n">m1</span><span class="p">]</span>
     <span class="n">SF2</span><span class="p">[</span><span class="n">m2</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">L2</span> <span class="o">/</span> <span class="p">(</span><span class="n">A2</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="n">F2</span><span class="p">))[</span><span class="n">m2</span><span class="p">]</span>
     <span class="n">SFt</span><span class="p">[</span><span class="n">mt</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">Lt</span> <span class="o">/</span> <span class="p">(</span><span class="n">At</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="n">Ft</span><span class="p">))[</span><span class="n">mt</span><span class="p">]</span>
-    <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;pore1&#39;</span><span class="p">:</span> <span class="n">SF1</span><span class="p">,</span> <span class="s1">&#39;throat&#39;</span><span class="p">:</span> <span class="n">SFt</span><span class="p">,</span> <span class="s1">&#39;pore2&#39;</span><span class="p">:</span> <span class="n">SF2</span><span class="p">}</span></div>
+
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;pore1&quot;</span><span class="p">:</span> <span class="n">SF1</span><span class="p">,</span> <span class="s2">&quot;throat&quot;</span><span class="p">:</span> <span class="n">SFt</span><span class="p">,</span> <span class="s2">&quot;pore2&quot;</span><span class="p">:</span> <span class="n">SF2</span><span class="p">}</span></div>
 
 
-<span class="k">def</span> <span class="nf">ball_and_stick_2D</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">pore_area</span><span class="o">=</span><span class="s1">&#39;pore.area&#39;</span><span class="p">,</span>
-                      <span class="n">throat_area</span><span class="o">=</span><span class="s1">&#39;throat.area&#39;</span><span class="p">,</span>
-                      <span class="n">pore_diameter</span><span class="o">=</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">,</span>
-                      <span class="n">throat_diameter</span><span class="o">=</span><span class="s1">&#39;throat.diameter&#39;</span><span class="p">,</span>
-                      <span class="n">conduit_lengths</span><span class="o">=</span><span class="s1">&#39;throat.conduit_lengths&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="ball_and_stick_2d"><a class="viewcode-back" href="../../../../modules/models/physics.html#openpnm.models.physics.flow_shape_factors.ball_and_stick_2d">[docs]</a><span class="k">def</span> <span class="nf">ball_and_stick_2d</span><span class="p">(</span>
+    <span class="n">target</span><span class="p">,</span>
+    <span class="n">pore_area</span><span class="o">=</span><span class="s2">&quot;pore.area&quot;</span><span class="p">,</span>
+    <span class="n">throat_area</span><span class="o">=</span><span class="s2">&quot;throat.area&quot;</span><span class="p">,</span>
+    <span class="n">pore_diameter</span><span class="o">=</span><span class="s2">&quot;pore.diameter&quot;</span><span class="p">,</span>
+    <span class="n">throat_diameter</span><span class="o">=</span><span class="s2">&quot;throat.diameter&quot;</span><span class="p">,</span>
+    <span class="n">conduit_lengths</span><span class="o">=</span><span class="s2">&quot;throat.conduit_lengths&quot;</span><span class="p">,</span>
+<span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Calculate conduit shape factors for hydraulic conductance, assuming</span>
-<span class="sd">    pores and throats are circles (balls) and rectangles (sticks).</span>
+<span class="sd">    Calculates conduit shape factors for hydraulic conductance.</span>
+
+<span class="sd">    This model assumes pores and throats are circles and rectangles. In</span>
+<span class="sd">    addition to mass diffusion, this model can be used for other</span>
+<span class="sd">    diffusion-like physics including thermal and electrical conductance.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    target : OpenPNM Object</span>
-<span class="sd">        The object which this model is associated with. This controls the</span>
-<span class="sd">        length of the calculated array, and also provides access to other</span>
-<span class="sd">        necessary properties.</span>
-
-<span class="sd">    pore_area : string</span>
-<span class="sd">        Dictionary key of the pore area values</span>
-
-<span class="sd">    throat_area : string</span>
-<span class="sd">        Dictionary key of the throat area values</span>
-
-<span class="sd">    pore_diameter : string</span>
-<span class="sd">        Dictionary key of the pore diameter values</span>
-
-<span class="sd">    throat_diameter : string</span>
-<span class="sd">        Dictionary key of the throat diameter values</span>
-
-<span class="sd">    conduit_lengths : string</span>
-<span class="sd">        Dictionary key of the conduit lengths&#39; values</span>
+<span class="sd">    target : GenericGeometry</span>
+<span class="sd">        Geometry object which this model is associated with. This controls</span>
+<span class="sd">        the length of the calculated array, and also provides access to</span>
+<span class="sd">        other necessary properties.</span>
+<span class="sd">    pore_area : str</span>
+<span class="sd">        Dictionary key of the pore area values.</span>
+<span class="sd">    throat_area : str</span>
+<span class="sd">        Dictionary key of the throat area values.</span>
+<span class="sd">    pore_diameter : str</span>
+<span class="sd">        Dictionary key of the pore diameter values.</span>
+<span class="sd">    throat_diameter : str</span>
+<span class="sd">        Dictionary key of the throat diameter values.</span>
+<span class="sd">    conduit_lengths : str</span>
+<span class="sd">        Dictionary key of the conduit lengths&#39; values.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    SF : dictionary</span>
-<span class="sd">        Dictionary containing conduit shape factors to be used in hagen-</span>
-<span class="sd">        poiseuille hydraulic conductance model. Shape factors are accessible</span>
-<span class="sd">        via the keys: &#39;pore1&#39;, &#39;pore2&#39; and &#39;throat&#39;.</span>
+<span class="sd">    dict</span>
+<span class="sd">        Dictionary containing conduit shape factors. Shape factors are</span>
+<span class="sd">        accessible via the keys: &#39;pore1&#39;, &#39;throat&#39;, and &#39;pore2&#39;.</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
-<span class="sd">    (1) This model accounts for the variable cross-section area in spheres.</span>
+<span class="sd">    This model accounts for the variable cross-sectional area in circles.</span>
 
-<span class="sd">    (2) WARNING: This model could break if `conduit_lengths` does not</span>
-<span class="sd">    correspond to an actual ball and stick! Example: pore length is greater</span>
-<span class="sd">    than pore radius --&gt; :(</span>
+<span class="sd">    This model could break if ``conduit_lengths`` does not correspond to</span>
+<span class="sd">    an actual ball and stick. Example: pore length is greater than pore</span>
+<span class="sd">    radius.</span>
 
 <span class="sd">    References</span>
 <span class="sd">    ----------</span>
-<span class="sd">    Akbari, M., Sinton, D., &amp; Bahrami, M. (2011). Viscous flow in variable</span>
-<span class="sd">    cross-section microchannels of arbitrary shapes. International Journal of</span>
-<span class="sd">    Heat and Mass Transfer, 54(17-18), 3970-3978.</span>
+<span class="sd">    [1] Akbari, M., Sinton, D., &amp; Bahrami, M. (2011). Viscous flow in</span>
+<span class="sd">    variable cross-section microchannels of arbitrary shapes.</span>
+<span class="sd">    International Journal of Heat and Mass Transfer, 54(17-18), 3970-3978.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">network</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">network</span>
     <span class="n">throats</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">map_throats</span><span class="p">(</span><span class="n">throats</span><span class="o">=</span><span class="n">target</span><span class="o">.</span><span class="n">Ts</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="n">target</span><span class="p">)</span>
-    <span class="n">cn</span> <span class="o">=</span> <span class="n">network</span><span class="p">[</span><span class="s1">&#39;throat.conns&#39;</span><span class="p">][</span><span class="n">throats</span><span class="p">]</span>
+    <span class="n">cn</span> <span class="o">=</span> <span class="n">network</span><span class="p">[</span><span class="s2">&quot;throat.conns&quot;</span><span class="p">][</span><span class="n">throats</span><span class="p">]</span>
     <span class="c1"># Get pore diameter</span>
     <span class="n">D1</span> <span class="o">=</span> <span class="n">network</span><span class="p">[</span><span class="n">pore_diameter</span><span class="p">][</span><span class="n">cn</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]]</span>
     <span class="n">D2</span> <span class="o">=</span> <span class="n">network</span><span class="p">[</span><span class="n">pore_diameter</span><span class="p">][</span><span class="n">cn</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]]</span>
     <span class="c1"># Get conduit lengths</span>
-    <span class="n">L1</span> <span class="o">=</span> <span class="n">network</span><span class="p">[</span><span class="n">conduit_lengths</span> <span class="o">+</span> <span class="s1">&#39;.pore1&#39;</span><span class="p">][</span><span class="n">throats</span><span class="p">]</span>
-    <span class="n">L2</span> <span class="o">=</span> <span class="n">network</span><span class="p">[</span><span class="n">conduit_lengths</span> <span class="o">+</span> <span class="s1">&#39;.pore2&#39;</span><span class="p">][</span><span class="n">throats</span><span class="p">]</span>
-    <span class="n">Lt</span> <span class="o">=</span> <span class="n">network</span><span class="p">[</span><span class="n">conduit_lengths</span> <span class="o">+</span> <span class="s1">&#39;.throat&#39;</span><span class="p">][</span><span class="n">throats</span><span class="p">]</span>
+    <span class="n">L1</span> <span class="o">=</span> <span class="n">network</span><span class="p">[</span><span class="n">conduit_lengths</span> <span class="o">+</span> <span class="s2">&quot;.pore1&quot;</span><span class="p">][</span><span class="n">throats</span><span class="p">]</span>
+    <span class="n">L2</span> <span class="o">=</span> <span class="n">network</span><span class="p">[</span><span class="n">conduit_lengths</span> <span class="o">+</span> <span class="s2">&quot;.pore2&quot;</span><span class="p">][</span><span class="n">throats</span><span class="p">]</span>
+    <span class="n">Lt</span> <span class="o">=</span> <span class="n">network</span><span class="p">[</span><span class="n">conduit_lengths</span> <span class="o">+</span> <span class="s2">&quot;.throat&quot;</span><span class="p">][</span><span class="n">throats</span><span class="p">]</span>
     <span class="c1"># Get pore/throat baseline areas (the one used in generic conductance)</span>
     <span class="n">A1</span> <span class="o">=</span> <span class="n">network</span><span class="p">[</span><span class="n">pore_area</span><span class="p">][</span><span class="n">cn</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]]</span>
     <span class="n">A2</span> <span class="o">=</span> <span class="n">network</span><span class="p">[</span><span class="n">pore_area</span><span class="p">][</span><span class="n">cn</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]]</span>
@@ -416,14 +441,15 @@
     <span class="c1"># INFO: This is needed since area could also be zero, which confuses NumPy</span>
     <span class="n">m1</span><span class="p">,</span> <span class="n">m2</span><span class="p">,</span> <span class="n">mt</span> <span class="o">=</span> <span class="p">[</span><span class="n">Li</span> <span class="o">!=</span> <span class="mi">0</span> <span class="k">for</span> <span class="n">Li</span> <span class="ow">in</span> <span class="p">[</span><span class="n">L1</span><span class="p">,</span> <span class="n">L2</span><span class="p">,</span> <span class="n">Lt</span><span class="p">]]</span>
     <span class="n">SF1</span><span class="p">[</span><span class="o">~</span><span class="n">m1</span><span class="p">]</span> <span class="o">=</span> <span class="n">SF2</span><span class="p">[</span><span class="o">~</span><span class="n">m2</span><span class="p">]</span> <span class="o">=</span> <span class="n">SFt</span><span class="p">[</span><span class="o">~</span><span class="n">mt</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
-    <span class="n">F1</span><span class="p">[</span><span class="n">m1</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">_atanh</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">L1</span><span class="o">/</span><span class="n">D1</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">D1</span><span class="p">))[</span><span class="n">m1</span><span class="p">]</span>
-    <span class="n">F2</span><span class="p">[</span><span class="n">m2</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">_atanh</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">L2</span><span class="o">/</span><span class="n">D2</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">D2</span><span class="p">))[</span><span class="n">m2</span><span class="p">]</span>
-    <span class="n">Ft</span><span class="p">[</span><span class="n">mt</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">Lt</span> <span class="o">/</span> <span class="n">At</span><span class="o">**</span><span class="mi">2</span><span class="p">)[</span><span class="n">mt</span><span class="p">]</span>
+    <span class="n">F1</span><span class="p">[</span><span class="n">m1</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">_np</span><span class="o">.</span><span class="n">arctanh</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">L1</span> <span class="o">/</span> <span class="n">D1</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">D1</span><span class="p">))[</span><span class="n">m1</span><span class="p">]</span>
+    <span class="n">F2</span><span class="p">[</span><span class="n">m2</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">_np</span><span class="o">.</span><span class="n">arctanh</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">L2</span> <span class="o">/</span> <span class="n">D2</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">D2</span><span class="p">))[</span><span class="n">m2</span><span class="p">]</span>
+    <span class="n">Ft</span><span class="p">[</span><span class="n">mt</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">Lt</span> <span class="o">/</span> <span class="n">At</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)[</span><span class="n">mt</span><span class="p">]</span>
     <span class="c1"># Calculate conduit shape factors</span>
     <span class="n">SF1</span><span class="p">[</span><span class="n">m1</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">L1</span> <span class="o">/</span> <span class="p">(</span><span class="n">A1</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="n">F1</span><span class="p">))[</span><span class="n">m1</span><span class="p">]</span>
     <span class="n">SF2</span><span class="p">[</span><span class="n">m2</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">L2</span> <span class="o">/</span> <span class="p">(</span><span class="n">A2</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="n">F2</span><span class="p">))[</span><span class="n">m2</span><span class="p">]</span>
     <span class="n">SFt</span><span class="p">[</span><span class="n">mt</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">Lt</span> <span class="o">/</span> <span class="p">(</span><span class="n">At</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="n">Ft</span><span class="p">))[</span><span class="n">mt</span><span class="p">]</span>
-    <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;pore1&#39;</span><span class="p">:</span> <span class="n">SF1</span><span class="p">,</span> <span class="s1">&#39;throat&#39;</span><span class="p">:</span> <span class="n">SFt</span><span class="p">,</span> <span class="s1">&#39;pore2&#39;</span><span class="p">:</span> <span class="n">SF2</span><span class="p">}</span>
+
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;pore1&quot;</span><span class="p">:</span> <span class="n">SF1</span><span class="p">,</span> <span class="s2">&quot;throat&quot;</span><span class="p">:</span> <span class="n">SFt</span><span class="p">,</span> <span class="s2">&quot;pore2&quot;</span><span class="p">:</span> <span class="n">SF2</span><span class="p">}</span></div>
 </pre></div>
 
            </div>

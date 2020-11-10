@@ -193,19 +193,19 @@ number of models added.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>network</strong> (<em>OpenPNM Network Object</em>) – The Network object to which this Geometry applies.</p></li>
+<li><p><strong>network</strong> (<a class="reference internal" href="../network/generic.html#openpnm.network.GenericNetwork" title="openpnm.network.GenericNetwork"><em>GenericNetwork</em></a>) – The Network object to which this Geometry applies.</p></li>
 <li><p><strong>pores</strong> (<em>array_like</em>) – The list of pores where this Geometry applies.</p></li>
 <li><p><strong>throats</strong> (<em>array_like</em>) – The list of throats where this Geometry applies.</p></li>
-<li><p><strong>name</strong> (<em>string</em>) – A unique name to apply to the object.  This name will also be used as a
+<li><p><strong>name</strong> (<em>str</em>) – A unique name to apply to the object.  This name will also be used as a
 label to identify where this Geometry applies.</p></li>
-<li><p><strong>project</strong> (<em>OpenPNM Project object</em><em> (</em><em>optional</em><em>)</em>) – A Project can be specified instead of <code class="docutils literal notranslate"><span class="pre">network</span></code>.</p></li>
+<li><p><strong>project</strong> (<a class="reference internal" href="../utils/project.html#openpnm.utils.Project" title="openpnm.utils.Project"><em>Project</em></a><em>, </em><em>optional</em>) – A Project can be specified instead of <code class="docutils literal notranslate"><span class="pre">network</span></code>.</p></li>
 </ul>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">openpnm</span> <span class="k">as</span> <span class="nn">op</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">pn</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Cubic</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">Ps</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;all&#39;</span><span class="p">)</span>  <span class="c1"># Get all pores</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Ps</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;all&#39;</span><span class="p">)</span>    <span class="c1"># Get all pores</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">Ts</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">throats</span><span class="p">(</span><span class="s1">&#39;all&#39;</span><span class="p">)</span>  <span class="c1"># Get all throats</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">geom</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">GenericGeometry</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">,</span> <span class="n">pores</span><span class="o">=</span><span class="n">Ps</span><span class="p">,</span> <span class="n">throats</span><span class="o">=</span><span class="n">Ts</span><span class="p">)</span>
 </pre></div>

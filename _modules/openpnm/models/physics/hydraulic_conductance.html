@@ -156,11 +156,19 @@
 <span></span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 
 <span class="sd">.. autofunction:: openpnm.models.physics.hydraulic_conductance.hagen_poiseuille</span>
-<span class="sd">.. autofunction:: openpnm.models.physics.hydraulic_conductance.hagen_poiseuille_2D</span>
+<span class="sd">.. autofunction:: openpnm.models.physics.hydraulic_conductance.hagen_poiseuille_2d</span>
 <span class="sd">.. autofunction:: openpnm.models.physics.hydraulic_conductance.hagen_poiseuille_power_law</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">_np</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;hagen_poiseuille&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;hagen_poiseuille_2d&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;hagen_poiseuille_power_law&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;valvatne_blunt&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;classic_hagen_poiseuille&quot;</span>
+<span class="p">]</span>
 
 
 <div class="viewcode-block" id="hagen_poiseuille"><a class="viewcode-back" href="../../../../modules/models/physics.html#openpnm.models.physics.hydraulic_conductance.hagen_poiseuille">[docs]</a><span class="k">def</span> <span class="nf">hagen_poiseuille</span><span class="p">(</span>
@@ -173,33 +181,26 @@
     <span class="n">conduit_shape_factors</span><span class="o">=</span><span class="s2">&quot;throat.flow_shape_factors&quot;</span>
 <span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Calculate the hydraulic conductance of conduits in network, where a</span>
-<span class="sd">    conduit is ( 1/2 pore - full throat - 1/2 pore ). See the notes section.</span>
+<span class="sd">    Calculates the hydraulic conductance of conduits in network.</span>
+
+<span class="sd">    A conduit is defined as ( 1/2 pore - full throat - 1/2 pore ).</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    target : OpenPNM Object</span>
-<span class="sd">        The object which this model is associated with. This controls the</span>
-<span class="sd">        length of the calculated array, and also provides access to other</span>
-<span class="sd">        necessary properties.</span>
-
-<span class="sd">    pore_area : string</span>
-<span class="sd">        Dictionary key of the pore area values</span>
-
-<span class="sd">    throat_area : string</span>
-<span class="sd">        Dictionary key of the throat area values</span>
-
-<span class="sd">    pore_viscosity : string</span>
-<span class="sd">        Dictionary key of the pore viscosity values</span>
-
-<span class="sd">    throat_viscosity : string</span>
-<span class="sd">        Dictionary key of the throat viscosity values</span>
-
-<span class="sd">    conduit_lengths : string</span>
-<span class="sd">        Dictionary key of the conduit length values</span>
-
-<span class="sd">    conduit_shape_factors : string</span>
-<span class="sd">        Dictionary key of the conduit DIFFUSION shape factor values</span>
+<span class="sd">    target : _GenericPhysics</span>
+<span class="sd">        Physics object with which this model is associated.</span>
+<span class="sd">    pore_area : str</span>
+<span class="sd">        Dictionary key of the pore area values.</span>
+<span class="sd">    throat_area : str</span>
+<span class="sd">        Dictionary key of the throat area values.</span>
+<span class="sd">    pore_viscosity : str</span>
+<span class="sd">        Dictionary key of the pore viscosity values.</span>
+<span class="sd">    throat_viscosity : str</span>
+<span class="sd">        Dictionary key of the throat viscosity values.</span>
+<span class="sd">    conduit_lengths : str</span>
+<span class="sd">        Dictionary key of the conduit length values.</span>
+<span class="sd">    conduit_shape_factors : str</span>
+<span class="sd">        Dictionary key of the conduit hydraulic (flow) shape factor values.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -209,18 +210,19 @@
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
-<span class="sd">    (1) This function requires that all the necessary phase properties already</span>
+<span class="sd">    This function requires that all the necessary phase properties already</span>
 <span class="sd">    be calculated.</span>
 
-<span class="sd">    (2) This function calculates the specified property for the *entire*</span>
-<span class="sd">    network then extracts the values for the appropriate throats at the end.</span>
+<span class="sd">    This function calculates the specified property for the *entire*</span>
+<span class="sd">    network then extracts the values for the appropriate throats at the</span>
+<span class="sd">    end.</span>
 
-<span class="sd">    (3) This function assumes cylindrical throats with constant cross-section</span>
-<span class="sd">    area. Corrections for different shapes and variable cross-section area can</span>
-<span class="sd">    be imposed by passing the proper conduit_shape_factors argument.</span>
+<span class="sd">    This function assumes cylindrical throats with constant cross-section</span>
+<span class="sd">    area. Corrections for different shapes and variable cross-section area</span>
+<span class="sd">    can be imposed by passing the proper conduit_shape_factors argument.</span>
 
-<span class="sd">    (4) shape_factor depends on the physics of the problem, i.e. diffusion-like</span>
-<span class="sd">    processes and fluid flow need different shape factors.</span>
+<span class="sd">    ``conduit_shape_factors`` depends on the physics of the problem, i.e.</span>
+<span class="sd">    diffusion-like processes and fluid flow need different shape factors.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">network</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">network</span>
@@ -255,10 +257,10 @@
     <span class="n">g2</span><span class="p">[</span><span class="n">m2</span><span class="p">]</span> <span class="o">=</span> <span class="n">A2</span><span class="p">[</span><span class="n">m2</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="p">(</span><span class="mi">8</span> <span class="o">*</span> <span class="n">_np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">D2</span> <span class="o">*</span> <span class="n">L2</span><span class="p">)[</span><span class="n">m2</span><span class="p">]</span>
     <span class="n">gt</span><span class="p">[</span><span class="n">mt</span><span class="p">]</span> <span class="o">=</span> <span class="n">At</span><span class="p">[</span><span class="n">mt</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="p">(</span><span class="mi">8</span> <span class="o">*</span> <span class="n">_np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">Dt</span> <span class="o">*</span> <span class="n">Lt</span><span class="p">)[</span><span class="n">mt</span><span class="p">]</span>
     <span class="c1"># Apply shape factors and calculate the final conductance</span>
-    <span class="k">return</span> <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="n">gt</span><span class="o">/</span><span class="n">SFt</span> <span class="o">+</span> <span class="mi">1</span><span class="o">/</span><span class="n">g1</span><span class="o">/</span><span class="n">SF1</span> <span class="o">+</span> <span class="mi">1</span><span class="o">/</span><span class="n">g2</span><span class="o">/</span><span class="n">SF2</span><span class="p">)</span> <span class="o">**</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="n">gt</span> <span class="o">/</span> <span class="n">SFt</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">g1</span> <span class="o">/</span> <span class="n">SF1</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">g2</span> <span class="o">/</span> <span class="n">SF2</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="hagen_poiseuille_2D"><a class="viewcode-back" href="../../../../modules/models/physics.html#openpnm.models.physics.hydraulic_conductance.hagen_poiseuille_2D">[docs]</a><span class="k">def</span> <span class="nf">hagen_poiseuille_2D</span><span class="p">(</span>
+<div class="viewcode-block" id="hagen_poiseuille_2d"><a class="viewcode-back" href="../../../../modules/models/physics.html#openpnm.models.physics.hydraulic_conductance.hagen_poiseuille_2d">[docs]</a><span class="k">def</span> <span class="nf">hagen_poiseuille_2d</span><span class="p">(</span>
     <span class="n">target</span><span class="p">,</span>
     <span class="n">pore_diameter</span><span class="o">=</span><span class="s2">&quot;pore.diameter&quot;</span><span class="p">,</span>
     <span class="n">throat_diameter</span><span class="o">=</span><span class="s2">&quot;throat.diameter&quot;</span><span class="p">,</span>
@@ -268,33 +270,26 @@
     <span class="n">conduit_shape_factors</span><span class="o">=</span><span class="s2">&quot;throat.flow_shape_factors&quot;</span><span class="p">,</span>
 <span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Calculate the hydraulic conductance of conduits in a 2D network, where a</span>
-<span class="sd">    conduit is ( 1/2 pore - full throat - 1/2 pore ). See the notes section.</span>
+<span class="sd">    Calculates the hydraulic conductance of conduits in network.</span>
+
+<span class="sd">    A conduit is defined as ( 1/2 pore - full throat - 1/2 pore ).</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    target : OpenPNM Object</span>
-<span class="sd">        The object which this model is associated with. This controls the</span>
-<span class="sd">        length of the calculated array, and also provides access to other</span>
-<span class="sd">        necessary properties.</span>
-
-<span class="sd">    pore_area : string</span>
-<span class="sd">        Dictionary key of the pore area values</span>
-
-<span class="sd">    throat_area : string</span>
-<span class="sd">        Dictionary key of the throat area values</span>
-
-<span class="sd">    pore_viscosity : string</span>
-<span class="sd">        Dictionary key of the pore viscosity values</span>
-
-<span class="sd">    throat_viscosity : string</span>
-<span class="sd">        Dictionary key of the throat viscosity values</span>
-
-<span class="sd">    conduit_lengths : string</span>
-<span class="sd">        Dictionary key of the conduit length values</span>
-
-<span class="sd">    conduit_shape_factors : string</span>
-<span class="sd">        Dictionary key of the conduit flow shape factor values</span>
+<span class="sd">    target : _GenericPhysics</span>
+<span class="sd">        Physics object with which this model is associated.</span>
+<span class="sd">    pore_area : str</span>
+<span class="sd">        Dictionary key of the pore area values.</span>
+<span class="sd">    throat_area : str</span>
+<span class="sd">        Dictionary key of the throat area values.</span>
+<span class="sd">    pore_viscosity : str</span>
+<span class="sd">        Dictionary key of the pore viscosity values.</span>
+<span class="sd">    throat_viscosity : str</span>
+<span class="sd">        Dictionary key of the throat viscosity values.</span>
+<span class="sd">    conduit_lengths : str</span>
+<span class="sd">        Dictionary key of the conduit lengths&#39; values.</span>
+<span class="sd">    conduit_shape_factors : str</span>
+<span class="sd">        Dictionary key of the conduit flow shape factors&#39; values.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -304,15 +299,19 @@
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
-<span class="sd">    (1) This function requires that all the necessary phase properties already</span>
+<span class="sd">    This model should only be used for true 2D networks, i.e. with planar</span>
+<span class="sd">    symmetry.</span>
+
+<span class="sd">    This function requires that all the necessary phase properties already</span>
 <span class="sd">    be calculated.</span>
 
-<span class="sd">    (2) This function calculates the specified property for the *entire*</span>
-<span class="sd">    network then extracts the values for the appropriate throats at the end.</span>
+<span class="sd">    This function calculates the specified property for the *entire*</span>
+<span class="sd">    network then extracts the values for the appropriate throats at the</span>
+<span class="sd">    end.</span>
 
-<span class="sd">    (3) This function assumes rectangular (2D) throats. Corrections for</span>
-<span class="sd">    different shapes and variable cross-section area can be imposed by passing</span>
-<span class="sd">    the proper flow_shape_factor argument.</span>
+<span class="sd">    This function assumes rectangular (2D) throats. Corrections for</span>
+<span class="sd">    different shapes and variable cross-section area can be imposed by</span>
+<span class="sd">    passing the proper flow_shape_factor argument.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">network</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">network</span>
@@ -342,7 +341,7 @@
     <span class="n">g2</span> <span class="o">=</span> <span class="n">D2</span> <span class="o">**</span> <span class="mi">3</span> <span class="o">/</span> <span class="p">(</span><span class="mi">12</span> <span class="o">*</span> <span class="n">mu2</span> <span class="o">*</span> <span class="n">L2</span><span class="p">)</span>
     <span class="n">gt</span> <span class="o">=</span> <span class="n">Dt</span> <span class="o">**</span> <span class="mi">3</span> <span class="o">/</span> <span class="p">(</span><span class="mi">12</span> <span class="o">*</span> <span class="n">mut</span> <span class="o">*</span> <span class="n">Lt</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="n">gt</span><span class="o">/</span><span class="n">SFt</span> <span class="o">+</span> <span class="mi">1</span><span class="o">/</span><span class="n">g1</span><span class="o">/</span><span class="n">SF1</span> <span class="o">+</span> <span class="mi">1</span><span class="o">/</span><span class="n">g2</span><span class="o">/</span><span class="n">SF2</span><span class="p">)</span> <span class="o">**</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="n">gt</span> <span class="o">/</span> <span class="n">SFt</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">g1</span> <span class="o">/</span> <span class="n">SF1</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">g2</span> <span class="o">/</span> <span class="n">SF2</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="hagen_poiseuille_power_law"><a class="viewcode-back" href="../../../../modules/models/physics.html#openpnm.models.physics.hydraulic_conductance.hagen_poiseuille_power_law">[docs]</a><span class="k">def</span> <span class="nf">hagen_poiseuille_power_law</span><span class="p">(</span>
@@ -362,55 +361,41 @@
     <span class="n">pore_pressure</span><span class="o">=</span><span class="s2">&quot;pore.pressure&quot;</span><span class="p">,</span>
 <span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Calculate the hydraulic conductance of conduits in network (assuming a non</span>
-<span class="sd">    Newtonian fluid whose viscosity obeys a power law), where a</span>
-<span class="sd">    conduit is ( 1/2 pore - full throat - 1/2 pore ). See the notes section.</span>
+<span class="sd">    Calculates the hydraulic conductance of conduits in network, assuming</span>
+<span class="sd">    a non Newtonian fluid whose viscosity obeys a power law.</span>
+
+<span class="sd">    A conduit is defined as ( 1/2 pore - full throat - 1/2 pore ).</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    target : OpenPNM Object</span>
-<span class="sd">        The object which this model is associated with. This controls the</span>
-<span class="sd">        length of the calculated array, and also provides access to other</span>
-<span class="sd">        necessary properties.</span>
-
-<span class="sd">    pore_area : string</span>
-<span class="sd">        Dictionary key of the pore area values</span>
-
-<span class="sd">    throat_area : string</span>
-<span class="sd">        Dictionary key of the throat area values</span>
-
-<span class="sd">    pore_viscosity_min : string</span>
-<span class="sd">        Dictionary key of the pore minimum viscosity values</span>
-
-<span class="sd">    throat_viscosity_min : string</span>
-<span class="sd">        Dictionary key of the throat minimum viscosity values</span>
-
-<span class="sd">    pore_viscosity_max : string</span>
-<span class="sd">        Dictionary key of the pore maximum viscosity values</span>
-
-<span class="sd">    throat_viscosity_max : string</span>
-<span class="sd">        Dictionary key of the throat maximum viscosity values</span>
-
-<span class="sd">    conduit_lengths : string</span>
-<span class="sd">        Dictionary key of the conduit length values</span>
-
-<span class="sd">    conduit_shape_factors : string</span>
-<span class="sd">        Dictionary key of the conduit DIFFUSION shape factor values</span>
-
-<span class="sd">    pore_consistency : string</span>
-<span class="sd">        Dictionary key of the pore fluid consistency values</span>
-
-<span class="sd">    throat_consistency : string</span>
-<span class="sd">        Dictionary key of the throat fluid consistency values</span>
-
-<span class="sd">    pore_flow_index : string</span>
-<span class="sd">        Dictionary key of the pore fluid flow index values</span>
-
-<span class="sd">    throat_flow_index : string</span>
-<span class="sd">        Dictionary key of the throat fluid flow index values</span>
-
-<span class="sd">    pore_pressure : string</span>
-<span class="sd">        Dictionary key of the pore pressure values</span>
+<span class="sd">    target : _GenericPhysics</span>
+<span class="sd">        Physics object with which this model is associated.</span>
+<span class="sd">    pore_area : str</span>
+<span class="sd">        Dictionary key of the pore area values.</span>
+<span class="sd">    throat_area : str</span>
+<span class="sd">        Dictionary key of the throat area values.</span>
+<span class="sd">    pore_viscosity_min : str</span>
+<span class="sd">        Dictionary key of the pore minimum viscosity values.</span>
+<span class="sd">    throat_viscosity_min : str</span>
+<span class="sd">        Dictionary key of the throat minimum viscosity values.</span>
+<span class="sd">    pore_viscosity_max : str</span>
+<span class="sd">        Dictionary key of the pore maximum viscosity values.</span>
+<span class="sd">    throat_viscosity_max : str</span>
+<span class="sd">        Dictionary key of the throat maximum viscosity values.</span>
+<span class="sd">    conduit_lengths : str</span>
+<span class="sd">        Dictionary key of the conduit lengths&#39; values.</span>
+<span class="sd">    conduit_shape_factors : str</span>
+<span class="sd">        Dictionary key of the conduit flow shape factors&#39; values.</span>
+<span class="sd">    pore_consistency : str</span>
+<span class="sd">        Dictionary key of the pore fluid consistency values.</span>
+<span class="sd">    throat_consistency : str</span>
+<span class="sd">        Dictionary key of the throat fluid consistency values.</span>
+<span class="sd">    pore_flow_index : str</span>
+<span class="sd">        Dictionary key of the pore fluid flow index values.</span>
+<span class="sd">    throat_flow_index : str</span>
+<span class="sd">        Dictionary key of the throat fluid flow index values.</span>
+<span class="sd">    pore_pressure : str</span>
+<span class="sd">        Dictionary key of the pore pressure values.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -420,18 +405,19 @@
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
-<span class="sd">    (1) This function requires that all the necessary phase properties already</span>
+<span class="sd">    This function requires that all the necessary phase properties already</span>
 <span class="sd">    be calculated.</span>
 
-<span class="sd">    (2) This function calculates the specified property for the *entire*</span>
-<span class="sd">    network then extracts the values for the appropriate throats at the end.</span>
+<span class="sd">    This function calculates the specified property for the *entire*</span>
+<span class="sd">    network then extracts the values for the appropriate throats at the</span>
+<span class="sd">    end.</span>
 
-<span class="sd">    (3) This function assumes cylindrical throats with constant cross-section</span>
-<span class="sd">    area. Corrections for different shapes and variable cross-section area can</span>
-<span class="sd">    be imposed by passing the proper conduit_shape_factors argument.</span>
+<span class="sd">    This function assumes cylindrical throats with constant cross-section</span>
+<span class="sd">    area. Corrections for different shapes and variable cross-section area</span>
+<span class="sd">    can be imposed by passing the proper conduit_shape_factors argument.</span>
 
-<span class="sd">    (4) shape_factor depends on the physics of the problem, i.e. diffusion-like</span>
-<span class="sd">    processes and fluid flow need different shape factors.</span>
+<span class="sd">    ``conduit_shape_factors`` depends on the physics of the problem, i.e.</span>
+<span class="sd">    diffusion-like processes and fluid flow need different shape factors.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">network</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">network</span>
@@ -554,7 +540,7 @@
     <span class="n">gt</span><span class="p">[</span><span class="n">mt</span><span class="p">]</span> <span class="o">=</span> <span class="n">At</span><span class="p">[</span><span class="n">mt</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="p">((</span><span class="mi">8</span> <span class="o">*</span> <span class="n">pi</span> <span class="o">*</span> <span class="n">Lt</span><span class="p">)</span> <span class="o">*</span> <span class="n">mut</span><span class="p">)[</span><span class="n">mt</span><span class="p">]</span>
 
     <span class="c1"># Apply shape factors and calculate the final conductance</span>
-    <span class="k">return</span> <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="n">gt</span><span class="o">/</span><span class="n">SFt</span> <span class="o">+</span> <span class="mi">1</span><span class="o">/</span><span class="n">g1</span><span class="o">/</span><span class="n">SF1</span> <span class="o">+</span> <span class="mi">1</span><span class="o">/</span><span class="n">g2</span><span class="o">/</span><span class="n">SF2</span><span class="p">)</span> <span class="o">**</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="n">gt</span> <span class="o">/</span> <span class="n">SFt</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">g1</span> <span class="o">/</span> <span class="n">SF1</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">g2</span> <span class="o">/</span> <span class="n">SF2</span><span class="p">)</span></div>
 
 
 <span class="k">def</span> <span class="nf">valvatne_blunt</span><span class="p">(</span>
@@ -577,41 +563,32 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    target : OpenPNM Object</span>
-<span class="sd">        The object which this model is associated with. This controls the</span>
-<span class="sd">        length of the calculated array, and also provides access to other</span>
-<span class="sd">        necessary properties.</span>
-
-<span class="sd">    pore_viscosity : string</span>
-<span class="sd">        Dictionary key of the pore viscosity values</span>
-
-<span class="sd">    throat_viscosity : string</span>
-<span class="sd">        Dictionary key of the throat viscosity values</span>
-
-<span class="sd">    pore_shape_factor : string</span>
-<span class="sd">        Dictionary key of the pore geometric shape factor values</span>
-
-<span class="sd">    throat_shape_factor : string</span>
-<span class="sd">        Dictionary key of the throat geometric shape factor values</span>
-
-<span class="sd">    pore_area : string</span>
-<span class="sd">        Dictionary key of the pore area values. The pore area is calculated</span>
-<span class="sd">        using following formula:</span>
+<span class="sd">    target : _GenericPhysics</span>
+<span class="sd">        Physics object with which this model is associated.</span>
+<span class="sd">    pore_viscosity : str</span>
+<span class="sd">        Dictionary key of the pore viscosity values.</span>
+<span class="sd">    throat_viscosity : str</span>
+<span class="sd">        Dictionary key of the throat viscosity values.</span>
+<span class="sd">    pore_shape_factor : str</span>
+<span class="sd">        Dictionary key of the pore geometric shape factor values.</span>
+<span class="sd">    throat_shape_factor : str</span>
+<span class="sd">        Dictionary key of the throat geometric shape factor values.</span>
+<span class="sd">    pore_area : str</span>
+<span class="sd">        Dictionary key of the pore area values. The pore area is</span>
+<span class="sd">        calculated using following formula:</span>
 <span class="sd">            pore_area = (pore_radius ** 2) / (4 * pore_shape_factor)</span>
 <span class="sd">        Where theoratical value of pore_shape_factor in circular tube is</span>
 <span class="sd">        calculated using following formula:</span>
 <span class="sd">            pore_shape_factor = pore_area / perimeter **2 = 1/4π</span>
-
-<span class="sd">    throat_area : string</span>
-<span class="sd">        Dictionary key of the throat area values. The throat area is calculated</span>
-<span class="sd">        using following formula:</span>
+<span class="sd">    throat_area : str</span>
+<span class="sd">        Dictionary key of the throat area values. The throat area is</span>
+<span class="sd">        calculated using following formula:</span>
 <span class="sd">            throat_area = (throat_radius ** 2) / (4 * throat_shape_factor)</span>
 <span class="sd">        Where theoratical value of throat_shape_factor in circular tube is</span>
 <span class="sd">        calculated using following formula:</span>
-<span class="sd">            throat_shape_factor = throat_area / perimeter **2 = 1/4π</span>
-
-<span class="sd">    conduit_lengths : string</span>
-<span class="sd">        Dictionary key of the throat conduit lengths</span>
+<span class="sd">            throat_shape_factor = throat_area / perimeter ** 2 = 1/4π</span>
+<span class="sd">    conduit_lengths : str</span>
+<span class="sd">        Dictionary key of the throat conduit lengths.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -621,12 +598,14 @@
 
 <span class="sd">    References</span>
 <span class="sd">    ----------</span>
-<span class="sd">    [1] Valvatne, Per H., and Martin J. Blunt. &quot;Predictive pore‐scale modeling</span>
-<span class="sd">    of two‐phase flow in mixed wet media.&quot; Water Resources Research 40,</span>
-<span class="sd">    no. 7 (2004).</span>
+<span class="sd">    [1] Valvatne, Per H., and Martin J. Blunt. &quot;Predictive pore‐scale</span>
+<span class="sd">    modeling of two‐phase flow in mixed wet media.&quot; Water Resources</span>
+<span class="sd">    Research 40, no. 7 (2004).</span>
+
 <span class="sd">    [2] Patzek, T. W., and D. B. Silin (2001), Shape factor and hydraulic</span>
 <span class="sd">    conductance in noncircular capillaries I. One-phase creeping flow,</span>
 <span class="sd">    J. Colloid Interface Sci., 236, 295–304.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">network</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">network</span>
     <span class="n">mu_p</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="n">pore_viscosity</span><span class="p">]</span>
@@ -672,21 +651,31 @@
 <span class="k">def</span> <span class="nf">classic_hagen_poiseuille</span><span class="p">(</span>
     <span class="n">target</span><span class="p">,</span>
     <span class="n">pore_diameter</span><span class="o">=</span><span class="s2">&quot;pore.diameter&quot;</span><span class="p">,</span>
-    <span class="n">pore_viscosity</span><span class="o">=</span><span class="s2">&quot;pore.viscosity&quot;</span><span class="p">,</span>
-    <span class="n">throat_length</span><span class="o">=</span><span class="s2">&quot;throat.length&quot;</span><span class="p">,</span>
     <span class="n">throat_diameter</span><span class="o">=</span><span class="s2">&quot;throat.diameter&quot;</span><span class="p">,</span>
+    <span class="n">throat_length</span><span class="o">=</span><span class="s2">&quot;throat.length&quot;</span><span class="p">,</span>
+    <span class="n">pore_viscosity</span><span class="o">=</span><span class="s2">&quot;pore.viscosity&quot;</span><span class="p">,</span>
     <span class="n">shape_factor</span><span class="o">=</span><span class="s2">&quot;throat.shape_factor&quot;</span><span class="p">,</span>
-    <span class="o">**</span><span class="n">kwargs</span>
 <span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Calculates the hydraulic conductivity of throat assuming cylindrical</span>
-<span class="sd">    geometry using the Hagen-Poiseuille model</span>
+<span class="sd">    Legacy method that calculates the hydraulic conductance of conduits</span>
+<span class="sd">    assuming pores and throats are cylinders in series.</span>
+
+<span class="sd">    This method is based on the Hagen-Poiseuille model.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    network : OpenPNM Network Object</span>
-
-<span class="sd">    phase : OpenPNM Phase Object</span>
+<span class="sd">    target : _GenericPhysics</span>
+<span class="sd">        Physics object with which this model is associated.</span>
+<span class="sd">    pore_diameter : str</span>
+<span class="sd">        Dictionary key of the pore diameter values.</span>
+<span class="sd">    throat_diameter : str</span>
+<span class="sd">        Dictionary key of the throat diameter values.</span>
+<span class="sd">    throat_length : str</span>
+<span class="sd">        Dictionary key of the throat length values.</span>
+<span class="sd">    pore_viscosity : str</span>
+<span class="sd">        Dictionary key of the pore viscosity values.</span>
+<span class="sd">    shape_factor: str</span>
+<span class="sd">        Dictionary key of the throat shape factor values.</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>

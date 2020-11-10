@@ -157,7 +157,6 @@
 <span class="kn">import</span> <span class="nn">uuid</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">namedtuple</span>
-<span class="kn">from</span> <span class="nn">openpnm.models.misc</span> <span class="kn">import</span> <span class="n">from_neighbor_throats</span><span class="p">,</span> <span class="n">from_neighbor_pores</span>
 <span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">Workspace</span><span class="p">,</span> <span class="n">logging</span>
 <span class="kn">from</span> <span class="nn">openpnm.utils.misc</span> <span class="kn">import</span> <span class="n">PrintableList</span><span class="p">,</span> <span class="n">SettingsDict</span><span class="p">,</span> <span class="n">Docorator</span>
 <span class="n">docstr</span> <span class="o">=</span> <span class="n">Docorator</span><span class="p">()</span>
@@ -1421,7 +1420,7 @@
 
         <span class="k">return</span> <span class="n">temp_arr</span></div>
 
-<div class="viewcode-block" id="Base.interpolate_data"><a class="viewcode-back" href="../../../modules/core/base.html#openpnm.core.Base.interpolate_data">[docs]</a>    <span class="k">def</span> <span class="nf">interpolate_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">propname</span><span class="p">):</span>
+<div class="viewcode-block" id="Base.interpolate_data"><a class="viewcode-back" href="../../../modules/core/base.html#openpnm.core.Base.interpolate_data">[docs]</a>    <span class="k">def</span> <span class="nf">interpolate_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">propname</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;mean&#39;</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Determines a pore (or throat) property as the average of it&#39;s</span>
 <span class="sd">        neighboring throats (or pores)</span>
@@ -1430,15 +1429,14 @@
 <span class="sd">        ----------</span>
 <span class="sd">        propname: string</span>
 <span class="sd">            The dictionary key to the values to be interpolated.</span>
+<span class="sd">        mode : string</span>
+<span class="sd">            The method used for interpolation.  Options are &#39;mean&#39; (default),</span>
+<span class="sd">            &#39;min&#39;, and &#39;max&#39;.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        An array containing interpolated pore (or throat) data</span>
-
-<span class="sd">        Notes</span>
-<span class="sd">        -----</span>
-<span class="sd">        This uses an unweighted average, without attempting to account for</span>
-<span class="sd">        distances or sizes of pores and throats.</span>
+<span class="sd">        vals : ND-array</span>
+<span class="sd">            An array containing interpolated pore (or throat) data</span>
 
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
@@ -1449,10 +1447,11 @@
 <span class="sd">        array([1.5, 2.5])</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span> <span class="nn">openpnm.models.misc</span> <span class="kn">import</span> <span class="n">from_neighbor_throats</span><span class="p">,</span> <span class="n">from_neighbor_pores</span>
         <span class="k">if</span> <span class="n">propname</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;throat&#39;</span><span class="p">):</span>
-            <span class="n">values</span> <span class="o">=</span> <span class="n">from_neighbor_throats</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">prop</span><span class="o">=</span><span class="n">propname</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;mean&#39;</span><span class="p">)</span>
+            <span class="n">values</span> <span class="o">=</span> <span class="n">from_neighbor_throats</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">prop</span><span class="o">=</span><span class="n">propname</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">propname</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;pore&#39;</span><span class="p">):</span>
-            <span class="n">values</span> <span class="o">=</span> <span class="n">from_neighbor_pores</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">prop</span><span class="o">=</span><span class="n">propname</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;mean&#39;</span><span class="p">)</span>
+            <span class="n">values</span> <span class="o">=</span> <span class="n">from_neighbor_pores</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">prop</span><span class="o">=</span><span class="n">propname</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="n">propname</span><span class="p">],</span> <span class="s1">&#39;units&#39;</span><span class="p">):</span>
             <span class="n">values</span> <span class="o">*=</span> <span class="bp">self</span><span class="p">[</span><span class="n">propname</span><span class="p">]</span><span class="o">.</span><span class="n">units</span>
         <span class="k">return</span> <span class="n">values</span></div>
@@ -1460,7 +1459,7 @@
 <div class="viewcode-block" id="Base.filter_by_label"><a class="viewcode-back" href="../../../modules/core/base.html#openpnm.core.Base.filter_by_label">[docs]</a>    <span class="k">def</span> <span class="nf">filter_by_label</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pores</span><span class="o">=</span><span class="p">[],</span> <span class="n">throats</span><span class="o">=</span><span class="p">[],</span> <span class="n">labels</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;or&#39;</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns which of the supplied pores (or throats) has the specified</span>
-<span class="sd">        label</span>
+<span class="sd">        label(s)</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
