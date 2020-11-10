@@ -8,11 +8,20 @@ r"""
 """
 import numpy as _np
 import scipy.constants as _const
-import openpnm.physics.GenericPhysics as _GenericPhysics
+
+__all__ = [
+    "generic_diffusive",
+    "ordinary_diffusion",
+    "ordinary_diffusion_2d",
+    "mixed_diffusion",
+    "taylor_aris_diffusion",
+    "classic_ordinary_diffusion",
+    "multiphase_diffusion"
+]
 
 
 def generic_diffusive(
-    target: _GenericPhysics,
+    target,
     pore_diffusivity="pore.diffusivity",
     throat_diffusivity="throat.diffusivity",
     size_factors="throat.diffusive_size_factors",
@@ -60,7 +69,7 @@ def generic_diffusive(
 
 
 def ordinary_diffusion(
-    target: _GenericPhysics,
+    target,
     pore_area="pore.area",
     throat_area="throat.area",
     pore_diffusivity="pore.diffusivity",
@@ -144,7 +153,7 @@ def ordinary_diffusion(
 
 
 def ordinary_diffusion_2d(
-    target: _GenericPhysics,
+    target,
     pore_diameter="pore.diameter",
     throat_diameter="throat.diameter",
     pore_diffusivity="pore.diffusivity",
@@ -214,7 +223,7 @@ def ordinary_diffusion_2d(
 
 
 def mixed_diffusion(
-    target: _GenericPhysics,
+    target,
     pore_area="pore.area",
     throat_area="throat.area",
     pore_diameter="pore.diameter",
@@ -332,7 +341,7 @@ def mixed_diffusion(
 
 
 def taylor_aris_diffusion(
-    target: _GenericPhysics,
+    target,
     pore_area="pore.area",
     throat_area="throat.area",
     pore_diffusivity="pore.diffusivity",
@@ -440,7 +449,7 @@ def taylor_aris_diffusion(
 
 
 def classic_ordinary_diffusion(
-    target: _GenericPhysics,
+    target,
     pore_molar_density="pore.molar_density",
     pore_diffusivity="pore.diffusivity",
     pore_diameter="pore.diameter",
@@ -536,7 +545,7 @@ def classic_ordinary_diffusion(
 
 
 def multiphase_diffusion(
-    target: _GenericPhysics,
+    target,
     pore_area="pore.area",
     throat_area="throat.area",
     pore_diffusivity="pore.diffusivity",

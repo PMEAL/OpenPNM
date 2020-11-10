@@ -41,7 +41,7 @@ def ctc(target: _GenericGeometry):
 
 
 def piecewise(
-    target: _GenericGeometry,
+    target,
     throat_endpoints='throat.endpoints',
     throat_centroid='throat.centroid'
 ):
@@ -66,9 +66,10 @@ def piecewise(
 
     Notes
     -----
-    (1) By default, the model assumes that the centroids of pores and the
+    By default, the model assumes that the centroids of pores and the
     connecting throat in each conduit are colinear.
-    (2) If `throat_centroid` is passed, the model accounts for the extra
+
+    If `throat_centroid` is passed, the model accounts for the extra
     length. This could be useful for Voronoi or extracted networks.
 
     """
@@ -89,7 +90,7 @@ def piecewise(
 
 
 def conduit_lengths(
-    target: _GenericGeometry,
+    target,
     throat_endpoints='throat.endpoints',
     throat_length='throat.length',
     throat_centroid='throat.centroid'

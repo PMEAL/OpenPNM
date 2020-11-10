@@ -17,7 +17,7 @@ __all__ = ["ball_and_stick", "ball_and_stick_2d", "conical_frustum_and_stick"]
 
 
 def ball_and_stick(
-    target: _GenericGeometry,
+    target,
     pore_area="pore.area",
     throat_area="throat.area",
     pore_diameter="pore.diameter",
@@ -111,7 +111,7 @@ def ball_and_stick(
 
 
 def conical_frustum_and_stick(
-    target: _GenericGeometry,
+    target,
     pore_area="pore.area",
     throat_area="throat.area",
     pore_diameter="pore.diameter",
@@ -190,7 +190,7 @@ def conical_frustum_and_stick(
 
 
 def ball_and_stick_2d(
-    target: _GenericGeometry,
+    target,
     pore_area="pore.area",
     throat_area="throat.area",
     pore_diameter="pore.diameter",

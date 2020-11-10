@@ -6,7 +6,6 @@ r"""
 
 """
 import numpy as _np
-import openpnm.physics.GenericPhysics as _GenericPhysics
 
 __all__ = [
     "generic_hydraulic",
@@ -19,7 +18,7 @@ __all__ = [
 
 
 def generic_hydraulic(
-        target: _GenericPhysics,
+        target,
         pore_viscosity='pore.viscosity',
         throat_viscosity='throat.viscosity',
         size_factors='throat.hydraulic_size_factors'
@@ -67,7 +66,7 @@ def generic_hydraulic(
 
 
 def hagen_poiseuille(
-    target: _GenericPhysics,
+    target,
     pore_area="pore.area",
     throat_area="throat.area",
     pore_viscosity="pore.viscosity",
@@ -156,7 +155,7 @@ def hagen_poiseuille(
 
 
 def hagen_poiseuille_2d(
-    target: _GenericPhysics,
+    target,
     pore_diameter="pore.diameter",
     throat_diameter="throat.diameter",
     pore_viscosity="pore.viscosity",
@@ -240,7 +239,7 @@ def hagen_poiseuille_2d(
 
 
 def hagen_poiseuille_power_law(
-    target: _GenericPhysics,
+    target,
     pore_area="pore.area",
     throat_area="throat.area",
     pore_viscosity_min="pore.viscosity_min",
@@ -439,7 +438,7 @@ def hagen_poiseuille_power_law(
 
 
 def valvatne_blunt(
-    target: _GenericPhysics,
+    target,
     pore_viscosity="pore.viscosity",
     throat_viscosity="throat.viscosity",
     pore_shape_factor="pore.shape_factor",
@@ -544,7 +543,7 @@ def valvatne_blunt(
 
 
 def classic_hagen_poiseuille(
-    target: _GenericPhysics,
+    target,
     pore_diameter="pore.diameter",
     throat_diameter="throat.diameter",
     throat_length="throat.length",

@@ -2,7 +2,7 @@ import numpy as np
 import openpnm as op
 
 
-class ThroatShapeFactorTest:
+class ThroatCapillaryShapeFactorTest:
 
     def setup_class(self):
         self.net = op.network.Cubic(shape=[5, 5, 5], spacing=1.0)
@@ -22,31 +22,31 @@ class ThroatShapeFactorTest:
 
     def test_mason_morrow(self):
         mod = op.models.geometry.throat_capillary_shape_factor.mason_morrow
-        self.geo.add_model(propname='throat.shape_factor',
+        self.geo.add_model(propname='throat.capillary_shape_factor',
                            model=mod,
                            throat_perimeter='throat.perimeter',
                            throat_area='throat.area',
                            regen_mode='normal')
-        a = np.unique(self.geo['throat.shape_factor'])
+        a = np.unique(self.geo['throat.capillary_shape_factor'])
         b = np.array(0.10132118, ndmin=1)
         assert np.allclose(a, b)
 
     def test_jenkins_rao(self):
         mod = op.models.geometry.throat_capillary_shape_factor.jenkins_rao
-        self.geo.add_model(propname='throat.shape_factor',
+        self.geo.add_model(propname='throat.capillary_shape_factor',
                            model=mod,
                            throat_perimeter='throat.perimeter',
                            throat_area='throat.area',
                            throat_diameter='throat.diameter',
                            regen_mode='normal')
-        a = np.unique(self.geo['throat.shape_factor'])
+        a = np.unique(self.geo['throat.capillary_shape_factor'])
         b = np.array(0.88622693, ndmin=1)
         assert np.allclose(a, b)
 
 
 if __name__ == '__main__':
 
-    t = ThroatShapeFactorTest()
+    t = ThroatCapillaryShapeFactorTest()
     self = t
     t.setup_class()
     for item in t.__dir__():
