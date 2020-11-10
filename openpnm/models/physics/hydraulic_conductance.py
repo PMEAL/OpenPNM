@@ -1,7 +1,7 @@
 r"""
 
 .. autofunction:: openpnm.models.physics.hydraulic_conductance.hagen_poiseuille
-.. autofunction:: openpnm.models.physics.hydraulic_conductance.hagen_poiseuille_2D
+.. autofunction:: openpnm.models.physics.hydraulic_conductance.hagen_poiseuille_2d
 .. autofunction:: openpnm.models.physics.hydraulic_conductance.hagen_poiseuille_power_law
 
 """
@@ -103,7 +103,7 @@ def hagen_poiseuille(
     return (1/gt/SFt + 1/g1/SF1 + 1/g2/SF2) ** (-1)
 
 
-def hagen_poiseuille_2D(
+def hagen_poiseuille_2d(
     target,
     pore_diameter="pore.diameter",
     throat_diameter="throat.diameter",

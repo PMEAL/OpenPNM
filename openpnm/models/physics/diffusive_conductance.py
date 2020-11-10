@@ -101,14 +101,14 @@ def ordinary_diffusion(
     return (1/gt/SFt + 1/g1/SF1 + 1/g2/SF2)**(-1)
 
 
-def ordinary_diffusion_2D(
+def ordinary_diffusion_2d(
     target,
-    pore_diameter='pore.diameter',
-    throat_diameter='throat.diameter',
-    pore_diffusivity='pore.diffusivity',
-    throat_diffusivity='throat.diffusivity',
-    conduit_lengths='throat.conduit_lengths',
-    conduit_shape_factors='throat.poisson_shape_factors'
+    pore_diameter="pore.diameter",
+    throat_diameter="throat.diameter",
+    pore_diffusivity="pore.diffusivity",
+    throat_diffusivity="throat.diffusivity",
+    conduit_lengths="throat.conduit_lengths",
+    conduit_shape_factors="throat.poisson_shape_factors",
 ):
     r"""
     Calculate the diffusive conductance of conduits in network, where a

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 ===============================================================================
 Boundary -- Subclass of GenericGeometry for Boundary Pores
@@ -11,7 +10,7 @@ from openpnm.models import misc as mm
 from openpnm.geometry import GenericGeometry
 
 
-class Boundary_2D(GenericGeometry):
+class Boundary2D(GenericGeometry):
     r"""
     Boundary subclass of GenericGeometry.
 
@@ -59,7 +58,7 @@ class Boundary_2D(GenericGeometry):
         super().__init__(**kwargs)
 
         self.add_model(propname='pore.area',
-                       model=gm.pore_area.circle)
+                       model=gm.pore_cross_sectional_area.circle)
 
         self.add_model(propname='pore.volume',
                        model=mm.constant, value=0.0)
@@ -88,7 +87,7 @@ class Boundary_2D(GenericGeometry):
                        model=gm.throat_length.conduit_lengths)
 
         self.add_model(propname='throat.area',
-                       model=gm.throat_area.rectangle)
+                       model=gm.throat_cross_sectional_area.rectangle)
 
         self.add_model(propname='pore.area',
                        model=mm.from_neighbor_throats,

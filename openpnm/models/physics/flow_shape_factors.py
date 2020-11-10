@@ -1,6 +1,7 @@
 r"""
 
 .. autofunction:: openpnm.models.physics.flow_shape_factors.ball_and_stick
+.. autofunction:: openpnm.models.physics.flow_shape_factors.ball_and_stick_2d
 .. autofunction:: openpnm.models.physics.flow_shape_factors.conical_frustum_and_stick
 
 """
@@ -186,11 +187,14 @@ def conical_frustum_and_stick(target, pore_area='pore.area',
     return {'pore1': SF1, 'throat': SFt, 'pore2': SF2}
 
 
-def ball_and_stick_2D(target, pore_area='pore.area',
-                      throat_area='throat.area',
-                      pore_diameter='pore.diameter',
-                      throat_diameter='throat.diameter',
-                      conduit_lengths='throat.conduit_lengths'):
+def ball_and_stick_2d(
+    target,
+    pore_area="pore.area",
+    throat_area="throat.area",
+    pore_diameter="pore.diameter",
+    throat_diameter="throat.diameter",
+    conduit_lengths="throat.conduit_lengths",
+):
     r"""
     Calculate conduit shape factors for hydraulic conductance, assuming
     pores and throats are circles (balls) and rectangles (sticks).
