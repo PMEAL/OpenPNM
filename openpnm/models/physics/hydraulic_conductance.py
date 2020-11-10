@@ -6,11 +6,10 @@ r"""
 
 """
 import numpy as _np
-import openpnm.physics.GenericPhysics as _GenericPhysics
 
 
 def hagen_poiseuille(
-    target: _GenericPhysics,
+    target,
     pore_area="pore.area",
     throat_area="throat.area",
     pore_viscosity="pore.viscosity",
@@ -105,7 +104,7 @@ def hagen_poiseuille(
 
 
 def hagen_poiseuille_2d(
-    target: _GenericPhysics,
+    target,
     pore_diameter="pore.diameter",
     throat_diameter="throat.diameter",
     pore_viscosity="pore.viscosity",
