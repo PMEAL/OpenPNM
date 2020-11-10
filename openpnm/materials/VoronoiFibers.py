@@ -210,7 +210,7 @@ class DelaunayGeometry(GenericGeometry):
             self["throat.conduit_lengths.throat"] = cen_lens[:, 1]
             self["throat.conduit_lengths.pore2"] = cen_lens[:, 2]
             # Configurable Models
-            mod = gm.throat_shape_factor.compactness
+            mod = gm.throat_capillary_shape_factor.compactness
             self.add_model(propname="throat.shape_factor", model=mod)
             mod = gm.pore_size.equivalent_diameter
             self.add_model(propname="pore.diameter", model=mod)
@@ -1194,7 +1194,7 @@ class VoronoiGeometry(GenericGeometry):
                            model=gm.throat_surface_area.cylinder,
                            regen_mode=rm)
             self.add_model(propname="throat.shape_factor",
-                           model=gm.throat_shape_factor.compactness,
+                           model=gm.throat_capillary_shape_factor.compactness,
                            regen_mode=rm)
             self.add_model(propname="throat.conduit_lengths",
                            model=gm.throat_length.conduit_lengths)
