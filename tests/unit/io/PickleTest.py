@@ -1,8 +1,8 @@
-import openpnm as op
-import pytest
-import py
 import os
+import py
+import pytest
 import pickle
+import openpnm as op
 
 
 class PickleTest:
@@ -75,6 +75,7 @@ class PickleTest:
                                             overwrite=False)
         assert len(ws.keys()) == 2
         assert isinstance(ws, op.Workspace)
+        os.remove("test.pkl")
 
     def test_load_workspace_from_poorly_made_dict(self):
         ws = op.Workspace()
@@ -83,6 +84,7 @@ class PickleTest:
         pickle.dump(pn, open('pn.pkl', 'wb'))
         with pytest.raises(Exception):
             ws = op.io.Pickle.load_workspace('pn.pkl')
+        os.remove("pn.pkl")
 
 
 if __name__ == '__main__':
