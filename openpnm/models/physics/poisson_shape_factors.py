@@ -10,7 +10,6 @@ import scipy as _sp
 from scipy import pi as _pi
 from numpy import arctanh as _atanh
 from numpy import sqrt as _sqrt
-import openpnm.geometry.GenericGeometry as _GenericGeometry
 
 
 def ball_and_stick(target, pore_area='pore.area',
@@ -185,7 +184,7 @@ def conical_frustum_and_stick(target, pore_area='pore.area',
 
 
 def ball_and_stick_2d(
-    target: _GenericGeometry,
+    target,
     pore_area="pore.area",
     throat_area="throat.area",
     pore_diameter="pore.diameter",
