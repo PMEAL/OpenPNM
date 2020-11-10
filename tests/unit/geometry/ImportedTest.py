@@ -1,5 +1,6 @@
 import openpnm as op
 import numpy as np
+import pytest
 ws = op.Workspace()
 ws.settings['loglevel'] = 50
 
@@ -23,17 +24,11 @@ class ImportedTest:
         net = op.network.Cubic(shape=[3, 3, 3])
         geo = op.geometry.Imported(network=net)
         assert 'throat.length' not in geo.keys()
-        assert 'throat.cross_sectional_area' not in geo.keys()
-        assert 'throat.diffusive_size_factors' not in geo.keys()
-        assert 'throat.hydraulic_size_factors' not in geo.keys()
-        # assert 'throat.endpoints' not in geo.keys()
-        # assert 'throat.conduit_lengths' not in geo.keys()
+        assert 'throat.endpoints' not in geo.keys()
+        assert 'throat.conduit_lengths' not in geo.keys()
         assert 'throat.length' in geo.models.keys()
-        assert 'throat.cross_sectional_area' in geo.models.keys()
-        assert 'throat.diffusive_size_factors' in geo.models.keys()
-        assert 'throat.hydraulic_size_factors' in geo.models.keys()
-        # assert 'throat.endpoints' in geo.models.keys()
-        # assert 'throat.conduit_lengths' in geo.models.keys()
+        assert 'throat.endpoints' in geo.models.keys()
+        assert 'throat.conduit_lengths' in geo.models.keys()
 
     def test_with_added_pores(self):
         net = op.network.Cubic(shape=[3, 3, 3])
@@ -63,5 +58,5 @@ if __name__ == '__main__':
     t.setup_class()
     for item in t.__dir__():
         if item.startswith('test'):
-            print(f"Running test: {item}")
+            print('running test: '+item)
             t.__getattribute__(item)()
