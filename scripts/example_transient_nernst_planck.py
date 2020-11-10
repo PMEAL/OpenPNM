@@ -1,20 +1,20 @@
+r"""
+Details about the continum and numerical model equations can be found on:
+Agnaou, M., Sadeghi, M. A., Tranter, T. G., & Gostick, J. (2020).
+
+Modeling transport of charged species in pore networks: solution of the
+Nernst-Planck equations coupled with fluid flow and charge conservation
+equations. Computers & Geosciences, 104505.
+
+"""
 import openpnm as op
 from openpnm.phases import mixtures
 import numpy as np
+
+
 ws = op.Workspace()
 proj = ws.new_project()
-# ws.settings['loglevel'] = 20
-
-
-"""
-    Details about the continum and numerical model equations can be found on:
-    Agnaou, M., Sadeghi, M. A., Tranter, T. G., & Gostick, J. (2020).
-    Modeling transport of charged species in pore networks: solution of the
-    Nernst-Planck equations coupled with fluid flow and charge conservation
-    equations.
-    Computers & Geosciences, 104505.
-"""
-
+export = False
 
 # network, geometry, phase
 np.random.seed(0)
@@ -117,4 +117,5 @@ sw.update(eA.results())
 sw.update(eB.results())
 
 # output results to a vtk file for visualization on Paraview
-# proj.export_data(phases=[sw], filename='OUT', filetype='xdmf')
+if export:
+    proj.export_data(phases=[sw], filename='out', filetype='xdmf')

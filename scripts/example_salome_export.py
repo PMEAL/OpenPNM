@@ -1,27 +1,29 @@
-import openpnm as op
+r"""
+In the example script a generic network is created then exported as a
+Salome Python script. The script should be executed from Salome with
+"load script". The geometry is then built. The geometry generation on
+Salome may take some time depending on the number of pores.
+
+"""
 import numpy as np
+import openpnm as op
 
 
-# In the example script a generic network is created then exported as a
-# Salome Python script. The script should be executed from Salome with
-# "load script". The geometry is then built. The geometry generation on
-# Salome may take some time depending on the number of pores.
-
-
-# work space and project
+# Workspace and project
 ws = op.Workspace()
-ws.settings["loglevel"] = 30
 proj = ws.new_project()
+export = False
 
-# network
+# Network
 np.random.seed(7)
 net = op.network.Cubic(shape=[4, 3, 3], spacing=1e-4, project=proj)
 
-# geometry
+# Geometry
 geo = op.geometry.StickAndBall(network=net, pores=net.Ps, throats=net.Ts)
 
-# phase
+# Phase
 phase = op.phases.Water(network=net)
 
-# export the network
-proj.export_data(phases=[phase], filename='OUT', filetype='Salome')
+# Export the network
+if export:
+    proj.export_data(phases=[phase], filename='out', filetype='Salome')

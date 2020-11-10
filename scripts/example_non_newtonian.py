@@ -1,9 +1,11 @@
-import openpnm as op
 import numpy as np
+import openpnm as op
 
-# work space and project
+
+# Workspace and project
 ws = op.Workspace()
 proj = ws.new_project()
+export = False
 
 # network and geometry
 np.random.seed(7)
@@ -55,4 +57,5 @@ Qt = np.abs(gh*np.diff(P[cn], axis=1).squeeze())
 Q = Qt/Qt_sf
 
 # output results to a vtk file
-# proj.export_data(phases=[phase], filename='OUT', filetype='XDMF')
+if export:
+    proj.export_data(phases=[phase], filename='out', filetype='XDMF')
