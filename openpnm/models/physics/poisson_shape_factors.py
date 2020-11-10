@@ -11,7 +11,6 @@ removed the near future. Use
 
 """
 import numpy as _np
-import openpnm.geometry.GenericGeometry as _GenericGeometry
 
 __all__ = ["ball_and_stick", "ball_and_stick_2d", "conical_frustum_and_stick"]
 

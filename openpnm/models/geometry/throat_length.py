@@ -8,11 +8,10 @@ r"""
 import numpy as _np
 from numpy.linalg import norm as _norm
 from openpnm.utils import logging as _logging
-import openpnm.geometry.GenericGeometry as _GenericGeometry
 _logger = _logging.getLogger(__name__)
 
 
-def ctc(target: _GenericGeometry):
+def ctc(target):
     r"""
     Calculates throat length assuming point-like pores, i.e. center-to-center
     distance between pores. Also, this model assumes that pores and throat
@@ -145,7 +144,7 @@ def conduit_lengths(
     return {'pore1': L1, 'throat': Lt, 'pore2': L2}
 
 
-def classic(target: _GenericGeometry, pore_diameter='pore.diameter'):
+def classic(target, pore_diameter='pore.diameter'):
     r"""
     Finds throat length as the pore-to-pore center distance, less the radii of
     each pore.
@@ -170,7 +169,7 @@ def classic(target: _GenericGeometry, pore_diameter='pore.diameter'):
 
 
 def spheres_and_cylinders(
-    target: _GenericGeometry,
+    target,
     pore_diameter='pore.diameter',
     throat_diameter='throat_diameter'
 ):
@@ -205,7 +204,7 @@ def spheres_and_cylinders(
 
 
 def circles_and_rectangles(
-    target: _GenericGeometry,
+    target,
     pore_diameter='pore.diameter',
     throat_diameter='throat_diameter'
 ):
@@ -240,7 +239,7 @@ def circles_and_rectangles(
 
 
 def cones_and_cylinders(
-    target: _GenericGeometry,
+    target,
     pore_diameter='pore.diameter',
     throat_diameter='throat_diameter'
 ):
@@ -275,7 +274,7 @@ def cones_and_cylinders(
 
 
 def trapezoids_and_rectangles(
-    target: _GenericGeometry,
+    target,
     pore_diameter='pore.diameter',
     throat_diameter='throat_diameter'
 ):
@@ -310,7 +309,7 @@ def trapezoids_and_rectangles(
 
 
 def pyramids_and_cuboids(
-    target: _GenericGeometry,
+    target,
     pore_diameter='pore.diameter',
     throat_diameter='throat_diameter'
 ):
@@ -345,7 +344,7 @@ def pyramids_and_cuboids(
 
 
 def cubes_and_cuboids(
-    target: _GenericGeometry,
+    target,
     pore_diameter='pore.diameter',
     throat_diameter='throat_diameter'
 ):
@@ -380,7 +379,7 @@ def cubes_and_cuboids(
 
 
 def squares_and_rectangles(
-    target: _GenericGeometry,
+    target,
     pore_diameter='pore.diameter',
     throat_diameter='throat_diameter'
 ):
