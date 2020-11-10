@@ -71,7 +71,7 @@ class ModelsTest:
                        regen_mode='deferred')
 
         geom.add_model(propname='pore.area',
-                       model=mods.geometry.pore_area.sphere,
+                       model=mods.geometry.pore_cross_sectional_area.sphere,
                        pore_diameter='pore.diameter',
                        regen_mode='deferred')
 

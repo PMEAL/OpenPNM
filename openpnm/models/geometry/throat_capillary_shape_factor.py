@@ -1,8 +1,8 @@
 r"""
 
-.. autofunction:: openpnm.models.geometry.throat_shape_factor.compactness
-.. autofunction:: openpnm.models.geometry.throat_shape_factor.mason_morrow
-.. autofunction:: openpnm.models.geometry.throat_shape_factor.jenkins_rao
+.. autofunction:: openpnm.models.geometry.throat_capillary_shape_factor.compactness
+.. autofunction:: openpnm.models.geometry.throat_capillary_shape_factor.mason_morrow
+.. autofunction:: openpnm.models.geometry.throat_capillary_shape_factor.jenkins_rao
 
 """
 import numpy as _np

@@ -17,7 +17,7 @@ class BaseTest:
                            model=op.models.geometry.pore_volume.sphere)
         self.geo['throat.diameter'] = np.random.rand(self.net.Nt)
         self.geo.add_model(propname='throat.area',
-                           model=op.models.geometry.throat_area.cylinder)
+                           model=op.models.geometry.throat_cross_sectional_area.cylinder)
         self.geo.regenerate_models()
         self.geo['throat.label1'] = False
         self.geo['throat.label2'] = False

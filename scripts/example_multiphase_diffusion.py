@@ -1,22 +1,22 @@
 r"""
 Example: Multiphase diffusion with heterogeneous reaction
 
-    2D network, consists of air and water. Air occupies the middle of the
-    network and is surrounded by two film-like regions of water at the top
-    and the bottom. The top and the bottom faces of the network is assumed
-    to be coated w/ a catalyst, and are therefore reactive.
+2D network, consists of air and water. Air occupies the middle of the
+network and is surrounded by two film-like regions of water at the top
+and the bottom. The top and the bottom faces of the network is assumed
+to be coated w/ a catalyst, and are therefore reactive.
 
-    The diffusing species diffuses through air, which is followed by mass
-    partitioning at the two air-water interfaces, then continues diffusing
-    through the water, and finally reacting at the two reacting plates at the
-    top and the bottom of the network.
+The diffusing species diffuses through air, which is followed by mass
+partitioning at the two air-water interfaces, then continues diffusing
+through the water, and finally reacting at the two reacting plates at the
+top and the bottom of the network.
 
 """
 import openpnm as op
 import numpy as np
 import matplotlib.pyplot as plt
 np.random.seed(10)
-
+export = False
 
 # Define network, geometry and constituent phases
 net = op.network.Cubic(shape=[100, 100, 1])
@@ -77,4 +77,5 @@ c2d = np.rot90(c.reshape(net._shape).squeeze())
 plt.imshow(c2d)
 plt.colorbar()
 
-op.io.XDMF.save(network=net, phases=mphase, filename="network")
+if export:
+    op.io.XDMF.save(network=net, phases=mphase, filename="network")

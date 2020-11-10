@@ -424,18 +424,21 @@ class GenericTransport(GenericAlgorithm):
             -*'all'*: (default) Removes all boundary conditions
             -*'value'*: Removes only value conditions
             -*'rate'*: Removes only rate conditions
+            -*'outflow'*: Removes only outflow conditions
 
         """
         if isinstance(bctype, str):
             bctype = [bctype]
         if 'all' in bctype:
-            bctype = ['value', 'rate']
+            bctype = ['value', 'rate', 'outflow']
         if pores is None:
             pores = self.Ps
         if ('pore.bc_value' in self.keys()) and ('value' in bctype):
             self['pore.bc_value'][pores] = np.nan
         if ('pore.bc_rate' in self.keys()) and ('rate' in bctype):
             self['pore.bc_rate'][pores] = np.nan
+        if ('pore.bc_outflow' in self.keys()) and ('outflow' in bctype):
+            self['pore.bc_outflow'][pores] = np.nan
 
     def _build_A(self):
         r"""

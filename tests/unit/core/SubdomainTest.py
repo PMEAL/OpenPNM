@@ -17,7 +17,7 @@ class SubdomainTest:
                            model=op.models.geometry.pore_volume.sphere)
         self.geo['throat.diameter'] = np.random.rand(self.net.Nt)
         self.geo.add_model(propname='throat.area',
-                           model=op.models.geometry.throat_area.cylinder)
+                           model=op.models.geometry.throat_cross_sectional_area.cylinder)
         self.geo.regenerate_models()
         self.phase1 = op.phases.GenericPhase(network=self.net)
         self.phase2 = op.phases.GenericPhase(network=self.net)
@@ -225,10 +225,8 @@ class SubdomainTest:
 
     def test_interleave_data_float_missing_physics(self):
         net = op.network.Cubic(shape=[4, 1, 1])
-        geo1 = op.geometry.GenericGeometry(network=net, pores=[0, 1],
-                                           throats=[0, 1])
-        geo2 = op.geometry.GenericGeometry(network=net, pores=[2, 3],
-                                           throats=[2])
+        geo1 = op.geometry.GenericGeometry(network=net, pores=[0, 1], throats=[0, 1])
+        op.geometry.GenericGeometry(network=net, pores=[2, 3], throats=[2])
         air = op.phases.Air(network=net)
         phys = op.physics.GenericPhysics(network=net, phase=air, geometry=geo1)
         phys['pore.blah'] = 1.0
@@ -236,10 +234,8 @@ class SubdomainTest:
 
     def test_interleave_data_int_missing_physics(self):
         net = op.network.Cubic(shape=[4, 1, 1])
-        geo1 = op.geometry.GenericGeometry(network=net, pores=[0, 1],
-                                           throats=[0, 1])
-        geo2 = op.geometry.GenericGeometry(network=net, pores=[2, 3],
-                                           throats=[2])
+        geo1 = op.geometry.GenericGeometry(network=net, pores=[0, 1], throats=[0, 1])
+        op.geometry.GenericGeometry(network=net, pores=[2, 3], throats=[2])
         air = op.phases.Air(network=net)
         phys = op.physics.GenericPhysics(network=net, phase=air, geometry=geo1)
         phys['pore.blah'] = 1
@@ -247,10 +243,8 @@ class SubdomainTest:
 
     def test_interleave_data_bool_missing_physics(self):
         net = op.network.Cubic(shape=[4, 1, 1])
-        geo1 = op.geometry.GenericGeometry(network=net, pores=[0, 1],
-                                           throats=[0, 1])
-        geo2 = op.geometry.GenericGeometry(network=net, pores=[2, 3],
-                                           throats=[2])
+        geo1 = op.geometry.GenericGeometry(network=net, pores=[0, 1], throats=[0, 1])
+        op.geometry.GenericGeometry(network=net, pores=[2, 3], throats=[2])
         air = op.phases.Air(network=net)
         phys = op.physics.GenericPhysics(network=net, phase=air, geometry=geo1)
         phys['pore.blah'] = True
@@ -315,5 +309,5 @@ if __name__ == '__main__':
     t.setup_class()
     for item in t.__dir__():
         if item.startswith('test'):
-            print('running test: '+item)
+            print(f'Running test: {item}')
             t.__getattribute__(item)()
