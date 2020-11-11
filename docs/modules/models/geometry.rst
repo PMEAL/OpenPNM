@@ -12,101 +12,115 @@ Overview of Submodule
 --------------------------------------------------------------------------------
 
 .. automodule:: openpnm.models.geometry
+    :members:
 
 --------------------------------------------------------------------------------
 Detailed Model Documentation
 --------------------------------------------------------------------------------
 
 ................................................................................
-Pore Size
+Pore size
 ................................................................................
 
 .. automodule:: openpnm.models.geometry.pore_size
+    :members:
 
 ----
 
 ................................................................................
-Pore Volume
+Pore volume
 ................................................................................
 
 .. automodule:: openpnm.models.geometry.pore_volume
+    :members:
 
 ----
 
 ................................................................................
-Pore Seed
+Pore seed
 ................................................................................
 
 .. automodule:: openpnm.models.geometry.pore_seed
+    :members:
 
 ----
 
 ................................................................................
-Pore Surface Area
+Pore surface area
 ................................................................................
 
 .. automodule:: openpnm.models.geometry.pore_surface_area
+    :members:
 
 ----
 
 ................................................................................
-Throat Area
+Throat cross sectional area
 ................................................................................
 
-.. automodule:: openpnm.models.geometry.throat_area
+.. automodule:: openpnm.models.geometry.throat_cross_sectional_area
+    :members:
 
 ----
 
 ................................................................................
-Throat Size
+Throat size
 ................................................................................
 
 .. automodule:: openpnm.models.geometry.throat_size
+    :members:
 
 ----
 
 ................................................................................
-Throat Length
+Throat length
 ................................................................................
 
 .. automodule:: openpnm.models.geometry.throat_length
+    :members:
 
 ----
 
 ................................................................................
-Throat Perimeter
+Throat perimeter
 ................................................................................
 
 .. automodule:: openpnm.models.geometry.throat_perimeter
+    :members:
 
 ----
 
 ................................................................................
-Throat Surface Area
+Throat surface area
 ................................................................................
 
 .. automodule:: openpnm.models.geometry.throat_surface_area
+    :members:
 
 ----
 
 ................................................................................
-Throat Vector
+Throat vector
 ................................................................................
 
 .. automodule:: openpnm.models.geometry.throat_vector
+    :members:
 
 ----
 
 ................................................................................
-Throat Volume
+Throat volume
 ................................................................................
 
 .. automodule:: openpnm.models.geometry.throat_volume
+    :members:
 
 ----
 
 ................................................................................
-Throat Shape Factor
+Throat capillary shape factor
 ................................................................................
 
-.. automodule:: openpnm.models.geometry.throat_shape_factor
+.. automodule:: openpnm.models.geometry.throat_capillary_shape_factor
+    :members:
+

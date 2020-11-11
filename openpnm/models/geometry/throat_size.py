@@ -1,12 +1,4 @@
 r"""
-
-.. autofunction:: openpnm.models.geometry.throat_size.weibull
-.. autofunction:: openpnm.models.geometry.throat_size.normal
-.. autofunction:: openpnm.models.geometry.throat_size.random
-.. autofunction:: openpnm.models.geometry.throat_size.generic_distribution
-.. autofunction:: openpnm.models.geometry.throat_size.from_neighbor_pores
-.. autofunction:: openpnm.models.geometry.throat_size.equivalent_diameter
-
 """
 from openpnm.models import misc as _misc
 import numpy as _np

@@ -1,10 +1,4 @@
 r"""
-
-.. autofunction:: openpnm.models.misc.statistical_distributions.random
-.. autofunction:: openpnm.models.misc.statistical_distributions.weibull
-.. autofunction:: openpnm.models.misc.statistical_distributions.normal
-.. autofunction:: openpnm.models.misc.statistical_distributions.generic_distribution
-
 """
 import numpy as np
 from openpnm.utils import logging

@@ -256,20 +256,20 @@ class InvasionPercolation(GenericAlgorithm):
     def apply_trapping(self, outlets):
         """
         Apply trapping based on algorithm described by Y. Masson [1].
-        It is applied as a post-process and runs the percolation algorithm in
-        reverse assessing the occupancy of pore neighbors. Consider the
+        It is applied as a post-process and runs the percolation algorithm
+        in reverse assessing the occupancy of pore neighbors. Consider the
         following scenario when running standard IP without trapping,
-        3 situations can happen after each invasion step:
+        three situations can happen after each invasion step:
 
-            * The number of defending clusters stays the same and clusters can
-            shrink
+            * The number of defending clusters stays the same and clusters
+              can shrink
             * A cluster of size one is suppressed
             * A cluster is split into multiple clusters
 
         In reverse the following opposite situations can happen:
 
-            * The number of defending clusters stays the same and clusters can
-            grow
+            * The number of defending clusters stays the same and clusters
+              can grow
             * A cluster of size one is created
             * Mutliple clusters merge into one cluster
 
@@ -303,6 +303,7 @@ class InvasionPercolation(GenericAlgorithm):
         dictionary. Any positive number is a trapped cluster
 
         Also creates 2 boolean arrays Np and Nt long called '<element>.trapped'
+
         """
         # First see if network is fully invaded
         net = self.project.network

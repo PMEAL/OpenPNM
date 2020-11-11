@@ -67,7 +67,7 @@ class ModelsDict(PrintableDict):
         To visualize the dependencies, the following NetworkX function and
         settings is helpful:
 
-        nx.draw_spectral(
+        >>> nx.draw_spectral(
             dtree,
             arrowsize=50,
             font_size=32,
@@ -386,8 +386,9 @@ class ModelsMixin:
         # Only regenerate model if regen_mode is correct
         if self.settings['freeze_models']:
             # Don't run ANY models if freeze_models is set to True
-            logger.warning(prop + ' was not run since freeze_models ' +
-                           'is set to True in object settings')
+            logger.warning(
+                f"{prop} was not run since freeze_models is set to True in obj. settings"
+            )
         elif regen_mode == 'constant':
             # Only regenerate if data not already in dictionary
             if prop not in self.keys():

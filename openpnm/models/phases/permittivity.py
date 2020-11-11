@@ -1,7 +1,4 @@
 r"""
-
-.. autofunction:: openpnm.models.phases.permittivity.water
-
 """
 
 

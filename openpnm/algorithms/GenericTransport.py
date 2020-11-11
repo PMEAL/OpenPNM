@@ -293,14 +293,14 @@ class GenericTransport(GenericAlgorithm):
         pores : array_like
             The pore indices where the condition should be applied
         rates : scalar or array_like, optional
-            The rates to apply in each pore.  If a scalar is supplied
-            that rate is assigned to all locations, and if a vector is
-            supplied it must be the same size as the indices given in ``pores`.
-        total_rate : scalar, optional
+            The rates to apply in each pore.  If a scalar is supplied that
+            rate is assigned to all locations, and if a vector is supplied
+            it must be the same size as the indices given in ``pores``.
+        total_rate : float, optional
             The total rate supplied to all pores.  The rate supplied by this
             argument is divided evenly among all pores. A scalar must be
             supplied! Total_rate cannot be specified if rate is specified.
-        mode : string, optional
+        mode : str, optional
             Controls how the boundary conditions are applied.  Options are:
 
             +-------------+--------------------------------------------------+

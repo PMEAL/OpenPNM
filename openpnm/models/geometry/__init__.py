@@ -1,11 +1,6 @@
 r"""
-
-**openpnm.models.geometry**
-
-----
-
-This submodule contains pore-scale models that calculate geometrical properties
-
+This submodule contains pore-scale models that calculate geometrical
+properties. These models are to be added to a Geometry object.
 """
 
 from . import pore_size
@@ -24,6 +19,7 @@ from . import throat_volume
 from . import throat_capillary_shape_factor
 from . import throat_centroid
 from . import throat_vector
+
 # Up for deprecation
 pore_area = pore_cross_sectional_area
 throat_area = throat_cross_sectional_area
