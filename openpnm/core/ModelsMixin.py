@@ -67,16 +67,21 @@ class ModelsDict(PrintableDict):
         To visualize the dependencies, the following NetworkX function and
         settings is helpful:
 
-        >>> nx.draw_spectral(
-            dtree,
-            arrowsize=50,
-            font_size=32,
-            with_labels=True,
-            node_size=2000,
-            width=3.0,
-            edge_color='lightgrey',
-            font_weight='bold'
-        )
+        >>> import openpnm as op
+        >>> net = op.network.Cubic(shape=[3, 3, 3])
+        >>> geo = op.geometry.StickAndBall(network=net,
+        ...                                pores=net.Ps,
+        ...                                throats=net.Ts)
+        >>> dtree = geo.dependency_graph()
+        >>> import networkx as nx
+        >>> nx.draw_spectral(dtree,
+        ...                  arrowsize=50,
+        ...                  font_size=32,
+        ...                  with_labels=True,
+        ...                  node_size=2000,
+        ...                  width=3.0,
+        ...                  edge_color='lightgrey',
+        ...                  font_weight='bold')
 
         """
         import networkx as nx
