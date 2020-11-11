@@ -87,9 +87,9 @@
             
             
               <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installing OpenPNM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../quick_start.html">Getting Started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../userguide.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../userguide.html">Examples’ Library</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../index.html"><strong>Module Reference</strong></a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../core/index.html">Core</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../network/index.html">Network</a></li>
@@ -122,6 +122,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../utils/index.html">Utilities</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../../citation.html">Citing</a></li>
 </ul>
 
             
@@ -196,23 +197,21 @@
 <em class="property">class </em><code class="sig-prename descclassname">openpnm.io.</code><code class="sig-name descname">VTK</code><a class="reference internal" href="../../_modules/openpnm/io/VTK.html#VTK"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.io.VTK" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">openpnm.io.GenericIO.GenericIO</span></code></p>
 <p>The Visualization Toolkit (VTK) format defined by Kitware and used by
-Paraview
-Because OpenPNM data is unstructured, the actual output format is VTP,
+Paraview.</p>
+<p class="rubric">Notes</p>
+<p>Because OpenPNM data is unstructured, the actual output format is VTP,
 not VTK.</p>
 <dl class="py method">
 <dt id="openpnm.io.VTK.export_data">
 <em class="property">classmethod </em><code class="sig-name descname">export_data</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">network</span></em>, <em class="sig-param"><span class="n">phases</span><span class="o">=</span><span class="default_value">[]</span></em>, <em class="sig-param"><span class="n">filename</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">delim</span><span class="o">=</span><span class="default_value">' | '</span></em>, <em class="sig-param"><span class="n">fill_nans</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">fill_infs</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/io/VTK.html#VTK.export_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.io.VTK.export_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Save network and phase data to a single vtp file for visualizing in
-Paraview
-:param network: The Network containing the data to be written
-:type network: OpenPNM Network Object
-:param phases: A list containing OpenPNM Phase object(s) containing data to be</p>
-<blockquote>
-<div><p>written</p>
-</div></blockquote>
+Paraview.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
+<li><p><strong>network</strong> (<em>OpenPNM Network Object</em>) – The Network containing the data to be written</p></li>
+<li><p><strong>phases</strong> (<em>list</em><em>, </em><em>optional</em>) – A list containing OpenPNM Phase object(s) containing data to be
+written</p></li>
 <li><p><strong>filename</strong> (<em>string</em><em>, </em><em>optional</em>) – Filename to write data.  If no name is given the file is named
 after the network</p></li>
 <li><p><strong>delim</strong> (<em>string</em>) – Specify which character is used to delimit the data names.  The
@@ -235,15 +234,15 @@ value is</p></li>
 <dl class="py method">
 <dt id="openpnm.io.VTK.import_data">
 <em class="property">classmethod </em><code class="sig-name descname">import_data</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">filename</span></em>, <em class="sig-param"><span class="n">project</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">delim</span><span class="o">=</span><span class="default_value">' | '</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/io/VTK.html#VTK.import_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.io.VTK.import_data" title="Permalink to this definition">¶</a></dt>
-<dd><p>Read in pore and throat data from a saved VTK file.
-:param filename: The name of the file containing the data to import.  The formatting</p>
-<blockquote>
-<div><p>of this file is outlined below.</p>
-</div></blockquote>
+<dd><p>Read in pore and throat data from a saved VTK file.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>project</strong> (<em>OpenPNM Project object</em>) – A GenericNetwork is created and added to the specified Project.
-If no Project is supplied then one will be created and returned.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filename</strong> (<em>string</em><em> (</em><em>optional</em><em>)</em>) – The name of the file containing the data to import. The formatting
+of this file is outlined below.</p></li>
+<li><p><strong>project</strong> (<em>OpenPNM Project object</em>) – A GenericNetwork is created and added to the specified Project.
+If no Project is supplied then one will be created and returned.</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>

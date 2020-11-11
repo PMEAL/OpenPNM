@@ -85,10 +85,11 @@
             
             
               <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installing OpenPNM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../quick_start.html">Getting Started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../userguide.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../userguide.html">Examples’ Library</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../modules/index.html"><strong>Module Reference</strong></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../citation.html">Citing</a></li>
 </ul>
 
             
@@ -154,11 +155,6 @@
             
   <h1>Source code for openpnm.models.geometry.throat_volume</h1><div class="highlight"><pre>
 <span></span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-
-<span class="sd">.. autofunction:: openpnm.models.geometry.throat_volume.cylinder</span>
-<span class="sd">.. autofunction:: openpnm.models.geometry.throat_volume.cuboid</span>
-<span class="sd">.. autofunction:: openpnm.models.geometry.throat_volume.extrusion</span>
-
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">_np</span>
 
@@ -263,7 +259,7 @@
     <span class="k">return</span> <span class="n">value</span></div>
 
 
-<span class="k">def</span> <span class="nf">rectangle</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">throat_length</span><span class="o">=</span><span class="s1">&#39;throat.length&#39;</span><span class="p">,</span>
+<div class="viewcode-block" id="rectangle"><a class="viewcode-back" href="../../../../modules/models/geometry.html#openpnm.models.geometry.throat_volume.rectangle">[docs]</a><span class="k">def</span> <span class="nf">rectangle</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">throat_length</span><span class="o">=</span><span class="s1">&#39;throat.length&#39;</span><span class="p">,</span>
               <span class="n">throat_diameter</span><span class="o">=</span><span class="s1">&#39;throat.diameter&#39;</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate throat volume assuing a rectangular shape</span>
@@ -284,10 +280,10 @@
 <span class="sd">    At present this models does NOT account for the volume reprsented by the</span>
 <span class="sd">    intersection of the throat with a spherical pore body.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">target</span><span class="p">[</span><span class="n">throat_length</span><span class="p">]</span> <span class="o">*</span> <span class="n">target</span><span class="p">[</span><span class="n">throat_diameter</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">target</span><span class="p">[</span><span class="n">throat_length</span><span class="p">]</span> <span class="o">*</span> <span class="n">target</span><span class="p">[</span><span class="n">throat_diameter</span><span class="p">]</span></div>
 
 
-<span class="k">def</span> <span class="nf">lens</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">throat_diameter</span><span class="o">=</span><span class="s1">&#39;throat.diameter&#39;</span><span class="p">,</span>
+<div class="viewcode-block" id="lens"><a class="viewcode-back" href="../../../../modules/models/geometry.html#openpnm.models.geometry.throat_volume.lens">[docs]</a><span class="k">def</span> <span class="nf">lens</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">throat_diameter</span><span class="o">=</span><span class="s1">&#39;throat.diameter&#39;</span><span class="p">,</span>
          <span class="n">pore_diameter</span><span class="o">=</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculates the volume residing the hemispherical caps formed by the</span>
@@ -330,10 +326,10 @@
     <span class="n">b</span> <span class="o">=</span> <span class="n">Rp</span><span class="p">[</span><span class="n">conns</span><span class="p">]</span><span class="o">*</span><span class="n">_np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">q</span><span class="p">)</span>
     <span class="n">h</span> <span class="o">=</span> <span class="n">Rp</span><span class="p">[</span><span class="n">conns</span><span class="p">]</span> <span class="o">-</span> <span class="n">b</span>
     <span class="n">V</span> <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="mi">6</span><span class="o">*</span><span class="n">_np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="n">h</span><span class="o">*</span><span class="p">(</span><span class="mi">3</span><span class="o">*</span><span class="n">a</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">h</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">_np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">V</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">_np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">V</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span></div>
 
 
-<span class="k">def</span> <span class="nf">pendular_ring</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">throat_diameter</span><span class="o">=</span><span class="s1">&#39;throat.diameter&#39;</span><span class="p">,</span>
+<div class="viewcode-block" id="pendular_ring"><a class="viewcode-back" href="../../../../modules/models/geometry.html#openpnm.models.geometry.throat_volume.pendular_ring">[docs]</a><span class="k">def</span> <span class="nf">pendular_ring</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">throat_diameter</span><span class="o">=</span><span class="s1">&#39;throat.diameter&#39;</span><span class="p">,</span>
                   <span class="n">pore_diameter</span><span class="o">=</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculates the volume of the pendular rings residing between the end of</span>
@@ -379,7 +375,7 @@
     <span class="n">Vlens</span> <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="mi">6</span><span class="o">*</span><span class="n">_np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="n">h</span><span class="o">*</span><span class="p">(</span><span class="mi">3</span><span class="o">*</span><span class="n">a</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">h</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
     <span class="n">Vcyl</span> <span class="o">=</span> <span class="n">_np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="p">(</span><span class="n">a</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="n">h</span>
     <span class="n">V</span> <span class="o">=</span> <span class="n">Vcyl</span> <span class="o">-</span> <span class="n">Vlens</span>
-    <span class="k">return</span> <span class="n">_np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">V</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">_np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">V</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span></div>
 </pre></div>
 
            </div>

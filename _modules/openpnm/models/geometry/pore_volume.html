@@ -85,10 +85,11 @@
             
             
               <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installing OpenPNM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../quick_start.html">Getting Started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../userguide.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../userguide.html">Examples’ Library</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../modules/index.html"><strong>Module Reference</strong></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../citation.html">Citing</a></li>
 </ul>
 
             
@@ -155,10 +156,6 @@
   <h1>Source code for openpnm.models.geometry.pore_volume</h1><div class="highlight"><pre>
 <span></span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">These models calculate pore volumes depending on the specified shape</span>
-
-<span class="sd">.. autofunction:: openpnm.models.geometry.pore_volume.sphere</span>
-<span class="sd">.. autofunction:: openpnm.models.geometry.pore_volume.cube</span>
-
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
@@ -211,7 +208,7 @@
     <span class="k">return</span> <span class="n">target</span><span class="p">[</span><span class="n">pore_diameter</span><span class="p">]</span><span class="o">**</span><span class="mi">3</span></div>
 
 
-<span class="k">def</span> <span class="nf">circle</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">pore_diameter</span><span class="o">=</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="circle"><a class="viewcode-back" href="../../../../modules/models/geometry.html#openpnm.models.geometry.pore_volume.circle">[docs]</a><span class="k">def</span> <span class="nf">circle</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">pore_diameter</span><span class="o">=</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate pore volume from diameter assuming a spherical pore body</span>
 
@@ -226,10 +223,10 @@
 <span class="sd">        The dictionary key of the pore diameter values</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">_pi</span><span class="o">/</span><span class="mi">4</span> <span class="o">*</span> <span class="n">target</span><span class="p">[</span><span class="n">pore_diameter</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span>
+    <span class="k">return</span> <span class="n">_pi</span><span class="o">/</span><span class="mi">4</span> <span class="o">*</span> <span class="n">target</span><span class="p">[</span><span class="n">pore_diameter</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span></div>
 
 
-<span class="k">def</span> <span class="nf">square</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">pore_diameter</span><span class="o">=</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="square"><a class="viewcode-back" href="../../../../modules/models/geometry.html#openpnm.models.geometry.pore_volume.square">[docs]</a><span class="k">def</span> <span class="nf">square</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">pore_diameter</span><span class="o">=</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate pore volume from diameter assuming a cubic pore body</span>
 
@@ -244,10 +241,10 @@
 <span class="sd">        The dictionary key of the pore diameter values</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">target</span><span class="p">[</span><span class="n">pore_diameter</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span>
+    <span class="k">return</span> <span class="n">target</span><span class="p">[</span><span class="n">pore_diameter</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span></div>
 
 
-<span class="k">def</span> <span class="nf">cylinder</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">pore_diameter</span><span class="o">=</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="cylinder"><a class="viewcode-back" href="../../../../modules/models/geometry.html#openpnm.models.geometry.pore_volume.cylinder">[docs]</a><span class="k">def</span> <span class="nf">cylinder</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">pore_diameter</span><span class="o">=</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate pore volume from diameter assuming a cylindrical pore body</span>
 <span class="sd">    with a height equal to its diameter.</span>
@@ -270,10 +267,10 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">diams</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="n">pore_diameter</span><span class="p">]</span>
     <span class="n">value</span> <span class="o">=</span> <span class="n">_pi</span><span class="o">/</span><span class="mi">4</span><span class="o">*</span><span class="n">diams</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="n">diams</span>
-    <span class="k">return</span> <span class="n">value</span>
+    <span class="k">return</span> <span class="n">value</span></div>
 
 
-<span class="k">def</span> <span class="nf">effective</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">pore_volume</span><span class="o">=</span><span class="s1">&#39;pore.volume&#39;</span><span class="p">,</span>
+<div class="viewcode-block" id="effective"><a class="viewcode-back" href="../../../../modules/models/geometry.html#openpnm.models.geometry.pore_volume.effective">[docs]</a><span class="k">def</span> <span class="nf">effective</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">pore_volume</span><span class="o">=</span><span class="s1">&#39;pore.volume&#39;</span><span class="p">,</span>
               <span class="n">throat_volume</span><span class="o">=</span><span class="s1">&#39;throat.volume&#39;</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate the effective pore volume for optional use in transient</span>
@@ -308,7 +305,7 @@
     <span class="n">np</span><span class="o">.</span><span class="n">add</span><span class="o">.</span><span class="n">at</span><span class="p">(</span><span class="n">eff_vol</span><span class="p">,</span> <span class="n">P2</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="o">*</span><span class="n">network</span><span class="p">[</span><span class="n">throat_volume</span><span class="p">])</span>
     <span class="n">pores</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">map_pores</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">target</span><span class="o">.</span><span class="n">Ps</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="n">target</span><span class="p">)</span>
     <span class="n">value</span> <span class="o">=</span> <span class="n">eff_vol</span><span class="p">[</span><span class="n">pores</span><span class="p">]</span>
-    <span class="k">return</span> <span class="n">value</span>
+    <span class="k">return</span> <span class="n">value</span></div>
 </pre></div>
 
            </div>

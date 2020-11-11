@@ -85,10 +85,11 @@
             
             
               <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installing OpenPNM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../quick_start.html">Getting Started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../userguide.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../userguide.html">Examples’ Library</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../modules/index.html"><strong>Module Reference</strong></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../citation.html">Citing</a></li>
 </ul>
 
             
@@ -411,20 +412,20 @@
 <div class="viewcode-block" id="InvasionPercolation.apply_trapping"><a class="viewcode-back" href="../../../modules/algorithms/invasion_percolation.html#openpnm.algorithms.InvasionPercolation.apply_trapping">[docs]</a>    <span class="k">def</span> <span class="nf">apply_trapping</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outlets</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Apply trapping based on algorithm described by Y. Masson [1].</span>
-<span class="sd">        It is applied as a post-process and runs the percolation algorithm in</span>
-<span class="sd">        reverse assessing the occupancy of pore neighbors. Consider the</span>
+<span class="sd">        It is applied as a post-process and runs the percolation algorithm</span>
+<span class="sd">        in reverse assessing the occupancy of pore neighbors. Consider the</span>
 <span class="sd">        following scenario when running standard IP without trapping,</span>
-<span class="sd">        3 situations can happen after each invasion step:</span>
+<span class="sd">        three situations can happen after each invasion step:</span>
 
-<span class="sd">            * The number of defending clusters stays the same and clusters can</span>
-<span class="sd">            shrink</span>
+<span class="sd">            * The number of defending clusters stays the same and clusters</span>
+<span class="sd">              can shrink</span>
 <span class="sd">            * A cluster of size one is suppressed</span>
 <span class="sd">            * A cluster is split into multiple clusters</span>
 
 <span class="sd">        In reverse the following opposite situations can happen:</span>
 
-<span class="sd">            * The number of defending clusters stays the same and clusters can</span>
-<span class="sd">            grow</span>
+<span class="sd">            * The number of defending clusters stays the same and clusters</span>
+<span class="sd">              can grow</span>
 <span class="sd">            * A cluster of size one is created</span>
 <span class="sd">            * Mutliple clusters merge into one cluster</span>
 
@@ -458,6 +459,7 @@
 <span class="sd">        dictionary. Any positive number is a trapped cluster</span>
 
 <span class="sd">        Also creates 2 boolean arrays Np and Nt long called &#39;&lt;element&gt;.trapped&#39;</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># First see if network is fully invaded</span>
         <span class="n">net</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">network</span>

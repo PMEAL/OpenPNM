@@ -87,9 +87,9 @@
             
             
               <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installing OpenPNM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../quick_start.html">Getting Started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../userguide.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../userguide.html">Examples’ Library</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../index.html"><strong>Module Reference</strong></a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../core/index.html">Core</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../network/index.html">Network</a></li>
@@ -117,6 +117,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../utils/index.html">Utilities</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../../citation.html">Citing</a></li>
 </ul>
 
             
@@ -247,10 +248,10 @@ happen on invasion without trapping:</p>
 <p>With trapping the reversed rules are adjusted so that:</p>
 <ul class="simple">
 <li><p>Only clusters that do not connect to a sink can grow and merge.</p></li>
-<li><p>At the point that a neighbor connected to a sink is touched, the</p></li>
+<li><p>At the point that a neighbor connected to a sink is touched, the
+trapped cluster stops growing as this is the point of trapping in
+forward invasion time.</p></li>
 </ul>
-<p>trapped cluster stops growing as this is the point of trapping in
-forward invasion time.</p>
 <p>Logger info displays the invasion Sequence and pore index and a message
 with condition number based on the modified trapping rules and the
 assignment of the pore to a given cluster.</p>

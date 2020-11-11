@@ -87,9 +87,9 @@
             
             
               <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installing OpenPNM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../quick_start.html">Getting Started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../userguide.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../userguide.html">Examples’ Library</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../index.html"><strong>Module Reference</strong></a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../core/index.html">Core</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../network/index.html">Network</a></li>
@@ -117,6 +117,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../utils/index.html">Utilities</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../../citation.html">Citing</a></li>
 </ul>
 
             
@@ -425,13 +426,13 @@ an array.</p>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>pores</strong> (<em>array_like</em>) – The pore indices where the condition should be applied</p></li>
-<li><p><strong>rates</strong> (<em>scalar</em><em> or </em><em>array_like</em><em>, </em><em>optional</em>) – The rates to apply in each pore.  If a scalar is supplied
-that rate is assigned to all locations, and if a vector is
-supplied it must be the same size as the indices given in <a href="#id1"><span class="problematic" id="id2">``</span></a>pores`.</p></li>
-<li><p><strong>total_rate</strong> (<em>scalar</em><em>, </em><em>optional</em>) – The total rate supplied to all pores.  The rate supplied by this
+<li><p><strong>rates</strong> (<em>scalar</em><em> or </em><em>array_like</em><em>, </em><em>optional</em>) – The rates to apply in each pore.  If a scalar is supplied that
+rate is assigned to all locations, and if a vector is supplied
+it must be the same size as the indices given in <code class="docutils literal notranslate"><span class="pre">pores</span></code>.</p></li>
+<li><p><strong>total_rate</strong> (<em>float</em><em>, </em><em>optional</em>) – The total rate supplied to all pores.  The rate supplied by this
 argument is divided evenly among all pores. A scalar must be
 supplied! Total_rate cannot be specified if rate is specified.</p></li>
-<li><p><strong>mode</strong> (<em>string</em><em>, </em><em>optional</em>) – <p>Controls how the boundary conditions are applied.  Options are:</p>
+<li><p><strong>mode</strong> (<em>str</em><em>, </em><em>optional</em>) – <p>Controls how the boundary conditions are applied.  Options are:</p>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 21%" />

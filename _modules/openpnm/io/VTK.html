@@ -85,10 +85,11 @@
             
             
               <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installing OpenPNM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../quick_start.html">Getting Started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../userguide.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../userguide.html">Examples’ Library</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../modules/index.html"><strong>Module Reference</strong></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../citation.html">Citing</a></li>
 </ul>
 
             
@@ -166,9 +167,13 @@
 <div class="viewcode-block" id="VTK"><a class="viewcode-back" href="../../../modules/io/VTK.html#openpnm.io.VTK">[docs]</a><span class="k">class</span> <span class="nc">VTK</span><span class="p">(</span><span class="n">GenericIO</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The Visualization Toolkit (VTK) format defined by Kitware and used by</span>
-<span class="sd">    Paraview</span>
+<span class="sd">    Paraview.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
 <span class="sd">    Because OpenPNM data is unstructured, the actual output format is VTP,</span>
 <span class="sd">    not VTK.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">_TEMPLATE</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
@@ -201,7 +206,8 @@
                     <span class="n">fill_nans</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fill_infs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Save network and phase data to a single vtp file for visualizing in</span>
-<span class="sd">        Paraview</span>
+<span class="sd">        Paraview.</span>
+
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        network : OpenPNM Network Object</span>
@@ -227,6 +233,7 @@
 <span class="sd">            which means that property arrays containing ``None`` will *not*</span>
 <span class="sd">            be written to the file, and a warning will be issued.  A useful</span>
 <span class="sd">            value is</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">project</span><span class="p">,</span> <span class="n">network</span><span class="p">,</span> <span class="n">phases</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_parse_args</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">network</span><span class="p">,</span> <span class="n">phases</span><span class="o">=</span><span class="n">phases</span><span class="p">)</span>
         <span class="c1"># Check if any of the phases has time series</span>
@@ -315,14 +322,16 @@
     <span class="k">def</span> <span class="nf">import_data</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">project</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">delim</span><span class="o">=</span><span class="s2">&quot; | &quot;</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Read in pore and throat data from a saved VTK file.</span>
+
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        filename : string (optional)</span>
-<span class="sd">            The name of the file containing the data to import.  The formatting</span>
+<span class="sd">            The name of the file containing the data to import. The formatting</span>
 <span class="sd">            of this file is outlined below.</span>
 <span class="sd">        project : OpenPNM Project object</span>
 <span class="sd">            A GenericNetwork is created and added to the specified Project.</span>
 <span class="sd">            If no Project is supplied then one will be created and returned.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">net</span> <span class="o">=</span> <span class="p">{}</span>
 

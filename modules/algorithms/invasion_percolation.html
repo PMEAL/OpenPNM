@@ -87,9 +87,9 @@
             
             
               <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installing OpenPNM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../quick_start.html">Getting Started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../userguide.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../userguide.html">Examples’ Library</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../index.html"><strong>Module Reference</strong></a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../core/index.html">Core</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../network/index.html">Network</a></li>
@@ -117,6 +117,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../utils/index.html">Utilities</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../../citation.html">Citing</a></li>
 </ul>
 
             
@@ -254,26 +255,26 @@ invasion sequence, and the water configuraiton at Snwp = 0.5.</p>
 <dt id="openpnm.algorithms.InvasionPercolation.apply_trapping">
 <code class="sig-name descname">apply_trapping</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">outlets</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/InvasionPercolation.html#InvasionPercolation.apply_trapping"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.algorithms.InvasionPercolation.apply_trapping" title="Permalink to this definition">¶</a></dt>
 <dd><p>Apply trapping based on algorithm described by Y. Masson [1].
-It is applied as a post-process and runs the percolation algorithm in
-reverse assessing the occupancy of pore neighbors. Consider the
+It is applied as a post-process and runs the percolation algorithm
+in reverse assessing the occupancy of pore neighbors. Consider the
 following scenario when running standard IP without trapping,
-3 situations can happen after each invasion step:</p>
+three situations can happen after each invasion step:</p>
 <blockquote>
 <div><ul class="simple">
-<li><p>The number of defending clusters stays the same and clusters can</p></li>
+<li><p>The number of defending clusters stays the same and clusters
+can shrink</p></li>
+<li><p>A cluster of size one is suppressed</p></li>
+<li><p>A cluster is split into multiple clusters</p></li>
 </ul>
-<p>shrink
-* A cluster of size one is suppressed
-* A cluster is split into multiple clusters</p>
 </div></blockquote>
 <p>In reverse the following opposite situations can happen:</p>
 <blockquote>
 <div><ul class="simple">
-<li><p>The number of defending clusters stays the same and clusters can</p></li>
+<li><p>The number of defending clusters stays the same and clusters
+can grow</p></li>
+<li><p>A cluster of size one is created</p></li>
+<li><p>Mutliple clusters merge into one cluster</p></li>
 </ul>
-<p>grow
-* A cluster of size one is created
-* Mutliple clusters merge into one cluster</p>
 </div></blockquote>
 <p>With trapping the reversed rules are adjusted so that only clusters
 that do not connect to a sink can grow and merge. At the point that a

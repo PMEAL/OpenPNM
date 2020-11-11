@@ -85,10 +85,11 @@
             
             
               <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installing OpenPNM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../quick_start.html">Getting Started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../userguide.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../userguide.html">Examples’ Library</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../modules/index.html"><strong>Module Reference</strong></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../citation.html">Citing</a></li>
 </ul>
 
             
@@ -222,7 +223,7 @@
 <span class="sd">        To visualize the dependencies, the following NetworkX function and</span>
 <span class="sd">        settings is helpful:</span>
 
-<span class="sd">        nx.draw_spectral(</span>
+<span class="sd">        &gt;&gt;&gt; nx.draw_spectral(</span>
 <span class="sd">            dtree,</span>
 <span class="sd">            arrowsize=50,</span>
 <span class="sd">            font_size=32,</span>
@@ -541,8 +542,9 @@
         <span class="c1"># Only regenerate model if regen_mode is correct</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;freeze_models&#39;</span><span class="p">]:</span>
             <span class="c1"># Don&#39;t run ANY models if freeze_models is set to True</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">prop</span> <span class="o">+</span> <span class="s1">&#39; was not run since freeze_models &#39;</span> <span class="o">+</span>
-                           <span class="s1">&#39;is set to True in object settings&#39;</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">prop</span><span class="si">}</span><span class="s2"> was not run since freeze_models is set to True in obj. settings&quot;</span>
+            <span class="p">)</span>
         <span class="k">elif</span> <span class="n">regen_mode</span> <span class="o">==</span> <span class="s1">&#39;constant&#39;</span><span class="p">:</span>
             <span class="c1"># Only regenerate if data not already in dictionary</span>
             <span class="k">if</span> <span class="n">prop</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>

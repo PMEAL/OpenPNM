@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>OpenPNM Documentation &mdash; OpenPNM</title>
+  <title>Pore-network modeling made easy &mdash; OpenPNM</title>
   
 
   
@@ -37,7 +37,7 @@
     
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Installing OpenPNM" href="installation.html" /> 
+    <link rel="next" title="Installation" href="installation.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -86,10 +86,11 @@
             
             
               <ul>
-<li class="toctree-l1"><a class="reference internal" href="installation.html">Installing OpenPNM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="quick_start.html">Getting Started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="userguide.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userguide.html">Examples’ Library</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules/index.html"><strong>Module Reference</strong></a></li>
+<li class="toctree-l1"><a class="reference internal" href="citation.html">Citing</a></li>
 </ul>
 
             
@@ -136,7 +137,7 @@
     
       <li><a href="#" class="icon icon-home"></a> &raquo;</li>
         
-      <li>OpenPNM Documentation</li>
+      <li>Pore-network modeling made easy</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -153,26 +154,32 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="openpnm-documentation">
-<span id="front-page"></span><h1>OpenPNM Documentation<a class="headerlink" href="#openpnm-documentation" title="Permalink to this headline">¶</a></h1>
-<p><em>OpenPNM</em> is an open source project to provide porous media researchers with a ready-made framework for performing a wide range of pore network simulations.</p>
+  <div class="section" id="pore-network-modeling-made-easy">
+<span id="front-page"></span><h1>Pore-network modeling made easy<a class="headerlink" href="#pore-network-modeling-made-easy" title="Permalink to this headline">¶</a></h1>
 <div class="sidebar">
 <p class="sidebar-title">Highlight</p>
 <p>The image below was extracted using the SNOW algorithm from PoreSpy, then
 imported into OpenPNM for use, then exported to Paraview for visualization.</p>
-<a class="reference internal image-reference" href="_images/extracted_berea.png"><img alt="_images/extracted_berea.png" class="align-center" src="_images/extracted_berea.png" style="width: 400px;" /></a>
+<a class="reference internal image-reference" href="_images/extracted_berea.png"><img alt="_images/extracted_berea.png" class="align-center" src="_images/extracted_berea.png" style="width: 600px;" /></a>
 </div>
+<p><em>OpenPNM</em> is an open source project to provide porous media researchers with a ready-made framework for performing a wide range of pore network simulations.</p>
+<div class="section" id="highly-customizable">
+<h2>Highly customizable<a class="headerlink" href="#highly-customizable" title="Permalink to this headline">¶</a></h2>
+<p><em>OpenPNM</em> is highly customizable, meaning that you can customize it almost at every level. Usually, it’s sufficient to use of our built-in classes, and customize it by adding your own models. However, if need be, you can write your own <em>Network</em>, <em>Geometry</em>, <em>Phase</em>, <em>Physics</em>, and <em>Algorithm</em> from scratch easily by using our generic classes.</p>
+</div>
+<div class="section" id="rich-io-ecosystem">
+<h2>Rich IO ecosystem<a class="headerlink" href="#rich-io-ecosystem" title="Permalink to this headline">¶</a></h2>
+<p>If you already have a network model in a typical file format, but want to use OpenPNM to perform simulations, that’s not a problem! OpenPNM supports a wide variety of file formats <a class="reference internal" href="modules/io/index.html#module-openpnm.io" title="openpnm.io"><code class="xref py py-mod docutils literal notranslate"><span class="pre">io</span></code></a> to import from and export to such as <a class="reference internal" href="modules/io/statoil.html#openpnm.io.Statoil" title="openpnm.io.Statoil"><code class="xref py py-class docutils literal notranslate"><span class="pre">Statoil</span></code></a>, <a class="reference internal" href="modules/io/networkx.html#openpnm.io.NetworkX" title="openpnm.io.NetworkX"><code class="xref py py-class docutils literal notranslate"><span class="pre">NetworkX</span></code></a>, etc.</p>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="installation.html">Installing OpenPNM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="quick_start.html">Getting Started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="userguide.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userguide.html">Examples’ Library</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules/index.html"><strong>Module Reference</strong></a></li>
+<li class="toctree-l1"><a class="reference internal" href="citation.html">Citing</a></li>
 </ul>
 </div>
-<ul class="simple">
-<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
-</ul>
+</div>
 </div>
 
 
@@ -183,7 +190,7 @@ imported into OpenPNM for use, then exported to Paraview for visualization.</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="installation.html" class="btn btn-neutral float-right" title="Installing OpenPNM" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="installation.html" class="btn btn-neutral float-right" title="Installation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
     </div>

@@ -87,9 +87,9 @@
             
             
               <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installing OpenPNM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../quick_start.html">Getting Started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../userguide.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../userguide.html">Examples’ Library</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../index.html"><strong>Module Reference</strong></a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../core/index.html">Core</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="index.html">Network</a><ul class="current">
@@ -120,6 +120,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../utils/index.html">Utilities</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../../citation.html">Citing</a></li>
 </ul>
 
             
@@ -234,12 +235,12 @@ bcc or ‘face_sites’ in fcc.  Throats are labelled by the which type of
 pores they connect, e.g. ‘throat.corner_to_body’.</p>
 <p>Limitations:</p>
 <ul class="simple">
-<li><p>Bravais lattice can also have a skew to them, but this is not implemented</p></li>
+<li><p>Bravais lattice can also have a skew to them, but this is not
+implemented yet.</p></li>
+<li><p>Support for 2D networks has not been added yet.</p></li>
+<li><p>Hexagonal Close Packed (hcp) has not been implemented yet, but is on
+the todo list.</p></li>
 </ul>
-<p>yet.
-* Support for 2D networks has not been added yet.
-* Hexagonal Close Packed (hcp) has not been implemented yet, but is on the
-todo list.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">openpnm</span> <span class="k">as</span> <span class="nn">op</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">sc</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Bravais</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;sc&#39;</span><span class="p">)</span>

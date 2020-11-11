@@ -85,10 +85,11 @@
             
             
               <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installing OpenPNM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../quick_start.html">Getting Started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../userguide.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../userguide.html">Examples’ Library</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../modules/index.html"><strong>Module Reference</strong></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../citation.html">Citing</a></li>
 </ul>
 
             
@@ -448,14 +449,14 @@
 <span class="sd">        pores : array_like</span>
 <span class="sd">            The pore indices where the condition should be applied</span>
 <span class="sd">        rates : scalar or array_like, optional</span>
-<span class="sd">            The rates to apply in each pore.  If a scalar is supplied</span>
-<span class="sd">            that rate is assigned to all locations, and if a vector is</span>
-<span class="sd">            supplied it must be the same size as the indices given in ``pores`.</span>
-<span class="sd">        total_rate : scalar, optional</span>
+<span class="sd">            The rates to apply in each pore.  If a scalar is supplied that</span>
+<span class="sd">            rate is assigned to all locations, and if a vector is supplied</span>
+<span class="sd">            it must be the same size as the indices given in ``pores``.</span>
+<span class="sd">        total_rate : float, optional</span>
 <span class="sd">            The total rate supplied to all pores.  The rate supplied by this</span>
 <span class="sd">            argument is divided evenly among all pores. A scalar must be</span>
 <span class="sd">            supplied! Total_rate cannot be specified if rate is specified.</span>
-<span class="sd">        mode : string, optional</span>
+<span class="sd">        mode : str, optional</span>
 <span class="sd">            Controls how the boundary conditions are applied.  Options are:</span>
 
 <span class="sd">            +-------------+--------------------------------------------------+</span>

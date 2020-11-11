@@ -1,7 +1,7 @@
 .. _user_guide:
 
-Examples
-########
+Examples' Library
+#################
 
 The best way to learn how to use OpenPNM, like anything, is by example.
 

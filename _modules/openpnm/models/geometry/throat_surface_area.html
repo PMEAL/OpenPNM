@@ -85,10 +85,11 @@
             
             
               <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installing OpenPNM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../quick_start.html">Getting Started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../userguide.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../userguide.html">Examples’ Library</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../modules/index.html"><strong>Module Reference</strong></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../citation.html">Citing</a></li>
 </ul>
 
             
@@ -154,11 +155,6 @@
             
   <h1>Source code for openpnm.models.geometry.throat_surface_area</h1><div class="highlight"><pre>
 <span></span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-
-<span class="sd">.. autofunction:: openpnm.models.geometry.throat_surface_area.cylinder</span>
-<span class="sd">.. autofunction:: openpnm.models.geometry.throat_surface_area.cuboid</span>
-<span class="sd">.. autofunction:: openpnm.models.geometry.throat_surface_area.extrusion</span>
-
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">_np</span>
 
@@ -248,7 +244,7 @@
     <span class="k">return</span> <span class="n">target</span><span class="p">[</span><span class="n">throat_perimeter</span><span class="p">]</span> <span class="o">*</span> <span class="n">target</span><span class="p">[</span><span class="n">throat_length</span><span class="p">]</span></div>
 
 
-<span class="k">def</span> <span class="nf">rectangle</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">throat_length</span><span class="o">=</span><span class="s1">&#39;throat.length&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="rectangle"><a class="viewcode-back" href="../../../../modules/models/geometry.html#openpnm.models.geometry.throat_surface_area.rectangle">[docs]</a><span class="k">def</span> <span class="nf">rectangle</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">throat_length</span><span class="o">=</span><span class="s1">&#39;throat.length&#39;</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate surface area for a rectangular throat</span>
 
@@ -265,7 +261,7 @@
 <span class="sd">        Dictionary key to the throat length array.  Default is &#39;throat.length&#39;.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">target</span><span class="p">[</span><span class="n">throat_length</span><span class="p">]</span>
+    <span class="k">return</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">target</span><span class="p">[</span><span class="n">throat_length</span><span class="p">]</span></div>
 </pre></div>
 
            </div>
