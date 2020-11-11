@@ -213,16 +213,21 @@ Default is False, i.e. only returns dependencies within the object.</p>
 <p class="rubric">Notes</p>
 <p>To visualize the dependencies, the following NetworkX function and
 settings is helpful:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">nx</span><span class="o">.</span><span class="n">draw_spectral</span><span class="p">(</span>
-<span class="go">    dtree,</span>
-<span class="go">    arrowsize=50,</span>
-<span class="go">    font_size=32,</span>
-<span class="go">    with_labels=True,</span>
-<span class="go">    node_size=2000,</span>
-<span class="go">    width=3.0,</span>
-<span class="go">    edge_color=&#39;lightgrey&#39;,</span>
-<span class="go">    font_weight=&#39;bold&#39;</span>
-<span class="go">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">openpnm</span> <span class="k">as</span> <span class="nn">op</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">net</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Cubic</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">geo</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">StickAndBall</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">net</span><span class="p">,</span>
+<span class="gp">... </span>                               <span class="n">pores</span><span class="o">=</span><span class="n">net</span><span class="o">.</span><span class="n">Ps</span><span class="p">,</span>
+<span class="gp">... </span>                               <span class="n">throats</span><span class="o">=</span><span class="n">net</span><span class="o">.</span><span class="n">Ts</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dtree</span> <span class="o">=</span> <span class="n">geo</span><span class="o">.</span><span class="n">dependency_graph</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">nx</span><span class="o">.</span><span class="n">draw_spectral</span><span class="p">(</span><span class="n">dtree</span><span class="p">,</span>
+<span class="gp">... </span>                 <span class="n">arrowsize</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>
+<span class="gp">... </span>                 <span class="n">font_size</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span>
+<span class="gp">... </span>                 <span class="n">with_labels</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="gp">... </span>                 <span class="n">node_size</span><span class="o">=</span><span class="mi">2000</span><span class="p">,</span>
+<span class="gp">... </span>                 <span class="n">width</span><span class="o">=</span><span class="mf">3.0</span><span class="p">,</span>
+<span class="gp">... </span>                 <span class="n">edge_color</span><span class="o">=</span><span class="s1">&#39;lightgrey&#39;</span><span class="p">,</span>
+<span class="gp">... </span>                 <span class="n">font_weight</span><span class="o">=</span><span class="s1">&#39;bold&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>

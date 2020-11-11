@@ -223,16 +223,21 @@
 <span class="sd">        To visualize the dependencies, the following NetworkX function and</span>
 <span class="sd">        settings is helpful:</span>
 
-<span class="sd">        &gt;&gt;&gt; nx.draw_spectral(</span>
-<span class="sd">            dtree,</span>
-<span class="sd">            arrowsize=50,</span>
-<span class="sd">            font_size=32,</span>
-<span class="sd">            with_labels=True,</span>
-<span class="sd">            node_size=2000,</span>
-<span class="sd">            width=3.0,</span>
-<span class="sd">            edge_color=&#39;lightgrey&#39;,</span>
-<span class="sd">            font_weight=&#39;bold&#39;</span>
-<span class="sd">        )</span>
+<span class="sd">        &gt;&gt;&gt; import openpnm as op</span>
+<span class="sd">        &gt;&gt;&gt; net = op.network.Cubic(shape=[3, 3, 3])</span>
+<span class="sd">        &gt;&gt;&gt; geo = op.geometry.StickAndBall(network=net,</span>
+<span class="sd">        ...                                pores=net.Ps,</span>
+<span class="sd">        ...                                throats=net.Ts)</span>
+<span class="sd">        &gt;&gt;&gt; dtree = geo.dependency_graph()</span>
+<span class="sd">        &gt;&gt;&gt; import networkx as nx</span>
+<span class="sd">        &gt;&gt;&gt; nx.draw_spectral(dtree,</span>
+<span class="sd">        ...                  arrowsize=50,</span>
+<span class="sd">        ...                  font_size=32,</span>
+<span class="sd">        ...                  with_labels=True,</span>
+<span class="sd">        ...                  node_size=2000,</span>
+<span class="sd">        ...                  width=3.0,</span>
+<span class="sd">        ...                  edge_color=&#39;lightgrey&#39;,</span>
+<span class="sd">        ...                  font_weight=&#39;bold&#39;)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
