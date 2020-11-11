@@ -26,6 +26,8 @@ class Statoil(GenericIO):
     @classmethod
     def export_data(cls, filename, network):
         dfp, dft = Pandas.to_dataframe(network=network, delim='.')
+
+        # Write Link 1 file
         dft_ind = DataFrame()
         dft_ind[0] = network.Ts + 1
         a = 'network.' + network.name + '.throat.conns[0]'
@@ -41,7 +43,50 @@ class Statoil(GenericIO):
         dft_temp.to_csv(filename + '_link1.dat', sep='\t',
                         header=False, index=False)
 
-        f = open(filename + '_link1.dat')
+        # Write Link 2 file
+        a = 'network.' + network.name + '.throat.conns[0]'
+        b = 'network.' + network.name + '.throat.conns[1]'
+        c = 'network.' + network.name + '.throat.conduit_lengths.pore1'
+        d = 'network.' + network.name + '.throat.conduit_lengths.pore2'
+        e = 'network.' + network.name + '.throat.conduit_lengths.throat'
+        f = 'network.' + network.name + '.throat.volume'
+        g = 'network.' + network.name + '.throat.clay_volume'
+        dft_temp = DataFrame()
+        dft_temp['index'] = network.Ts + 1
+        for item in [a, b, c, d, e, f, g]:
+            try:
+                dft_temp[item] = dft[item]
+            except KeyError:
+                dft_temp[item] = np.zeros_like(network.Ts)
+        dft_temp[c] = dft_temp[c]/2
+        dft_temp[d] = dft_temp[d]/2
+        dft_temp.to_csv(filename + '_link2.dat', sep='\t',
+                        header=False, index=False)
+
+        # Write Node 1 file
+        a = 'network.' + network.name + '.pore.coords[0]'
+        b = 'network.' + network.name + '.pore.coords[1]'
+        c = 'network.' + network.name + '.pore.coords[2]'
+        dfp_temp = dft_ind.join(dfp[[a, b, c]])
+        dfp_temp.to_csv(filename + '_node2.dat', sep='\t',
+                        header=False, index=False)
+
+        # Write Node 2 file
+        a = 'network.' + network.name + '.pore.volume'
+        b = 'network.' + network.name + '.pore.diameter'
+        c = 'network.' + network.name + '.pore.shape_factor'
+        d = 'network.' + network.name + '.pore.clay_volume'
+        dfp_temp = DataFrame()
+        dfp_temp['index'] = network.Ps + 1
+        for item in [a, b, c, d]:
+            try:
+                dfp_temp[item] = dfp[item][:network.Np]
+            except KeyError:
+                dfp_temp[item] = np.zeros_like(network.Ps)
+        dfp_temp[b] = dfp_temp[b]/2
+        dfp_temp.to_csv(filename + '_node2.dat', sep='\t',
+                        header=False, index=False)
+
 
     @classmethod
     def load(cls, *args, **kwargs):
