@@ -1,9 +1,4 @@
 r"""
-
-.. autofunction:: openpnm.models.geometry.throat_length.piecewise
-.. autofunction:: openpnm.models.geometry.throat_length.ctc
-.. autofunction:: openpnm.models.geometry.throat_length.conduit_lengths
-
 """
 import numpy as _np
 from numpy.linalg import norm as _norm

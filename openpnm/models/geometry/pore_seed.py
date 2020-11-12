@@ -1,12 +1,7 @@
 r"""
-
 Pore seed models are use to calculate random numbers for each pore, which can
 subsequently be used in statistical distributions to calculate actual pore
 sizes.
-
-.. autofunction:: openpnm.models.geometry.pore_seed.random
-.. autofunction:: openpnm.models.geometry.pore_seed.spatially_correlated
-
 """
 import numpy as _np
 import scipy as _sp

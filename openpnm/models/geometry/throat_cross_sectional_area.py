@@ -1,8 +1,4 @@
 r"""
-
-.. autofunction:: openpnm.models.geometry.throat_cross_sectional_area.cylinder
-.. autofunction:: openpnm.models.geometry.throat_cross_sectional_area.cuboid
-
 """
 from numpy import pi as _pi
 

@@ -1,7 +1,7 @@
 .. _user_guide:
 
-Examples
-########
+Examples' Library
+#################
 
 The best way to learn how to use OpenPNM, like anything, is by example.
 
@@ -17,7 +17,7 @@ How OpenPNM Works
 
 .. _A Series of Tutorials: https://github.com/PMEAL/OpenPNM/tree/dev/examples/tutorials
 
-.. |chalkboard| image:: /static/images/chalkboard.jpg
+.. |chalkboard| image:: /static/images/chalkboard.png
    :width: 300px
 
 Working with Networks
@@ -46,7 +46,6 @@ Working with Networks
 .. |netman| image:: /static/images/gabriel_network.png
    :width: 300px
 
-
 Generating Geometrical Properties
 =================================
 
@@ -58,7 +57,7 @@ Generating Geometrical Properties
 
 .. _Creating and Adjusting Geometry: https://github.com/PMEAL/OpenPNM/tree/dev/examples/geometry
 
-.. |histogram| image:: /static/images/histogram.jpg
+.. |histogram| image:: /static/images/histogram.png
    :width: 300px
 
 Computing Thermophysical Properties
@@ -72,7 +71,7 @@ Computing Thermophysical Properties
 
 .. _Defining Phases and Computing Properties: https://github.com/PMEAL/OpenPNM/tree/dev/examples/phases
 
-.. |droplet| image:: /static/images/droplet.jpg
+.. |droplet| image:: /static/images/droplet.png
    :width: 300px
 
 Performing Simulations
@@ -86,7 +85,7 @@ Performing Simulations
    |concdist|, `Single Phase Transport`_
    |reldiff|, `Multiphase Transport`_
    |reactdiff|, `Reactive Transport`_
-   |logo|, `Transient Transport`_
+   |transient|, `Transient Transport`_
    |dispersion|, `Multiphysics`_
    |gears|, `Solvers and Settings`_
 
@@ -117,11 +116,11 @@ Performing Simulations
 .. |reactdiff| image:: /static/images/reactive_diffusion.png
    :width: 300px
 
-.. |drainage| image:: /static/images/quick_start_drainage_curve.png
+.. |drainage| image:: /static/images/percolation.png
    :width: 300px
 
 .. |gears| image:: /static/images/gears.png
    :width: 300px
 
-.. |logo| image:: /static/logo.png
+.. |transient| image:: /static/images/transient.png
    :width: 300px

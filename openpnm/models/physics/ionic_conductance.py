@@ -1,13 +1,11 @@
 r"""
-
-.. autofunction:: openpnm.models.physics.ionic_conductance.poisson
-.. autofunction:: openpnm.models.physics.ionic_conductance.laplace
-.. autofunction:: openpnm.models.physics.ionic_conductance.electroneutrality
-
+Pore-scale models for calculating ionic conductance of conduits.
 """
 import numpy as _np
 from openpnm.utils import logging
 logger = logging.getLogger(__name__)
+
+__all__ = ["poisson", "laplace", "electroneutrality"]
 
 
 def poisson(target,

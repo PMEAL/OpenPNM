@@ -1,9 +1,5 @@
 r"""
-
-.. autofunction:: openpnm.models.physics.hydraulic_conductance.hagen_poiseuille
-.. autofunction:: openpnm.models.physics.hydraulic_conductance.hagen_poiseuille_2d
-.. autofunction:: openpnm.models.physics.hydraulic_conductance.hagen_poiseuille_power_law
-
+Pore-scale models for calculating hydraulic conductance of conduits.
 """
 import numpy as _np
 

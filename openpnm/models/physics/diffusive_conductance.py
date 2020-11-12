@@ -1,10 +1,5 @@
 r"""
-
-.. autofunction:: openpnm.models.physics.diffusive_conductance.generic_diffusive
-.. autofunction:: openpnm.models.physics.diffusive_conductance.mixed_diffusion
-.. autofunction:: openpnm.models.physics.diffusive_conductance.taylor_aris_diffusion
-.. autofunction:: openpnm.models.physics.diffusive_conductance.classic_ordinary_diffusion
-
+Pore-scale models for calculating the diffusive conductance of conduits.
 """
 import numpy as _np
 import scipy.constants as _const
