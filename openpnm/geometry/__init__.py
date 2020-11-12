@@ -5,7 +5,7 @@ r"""
 ----
 
 The ``geometry`` module contains the ``GenericGeometry`` class, and an
-assortment of subclasses that implement specific pore-scale geometrical models
+assortment of subclasses that implement specific pore-scale geometrical models.
 
 ----
 

@@ -1,9 +1,10 @@
 r"""
-
-.. autofunction:: openpnm.models.physics.ad_dif_mig_conductance.ad_dif_mig
-
+Pore-scale models for calculating the advective-diffusive-migrative
+conductance of conduits.
 """
 import numpy as _np
+
+__all__ = ["ad_dif_mig"]
 
 
 def ad_dif_mig(

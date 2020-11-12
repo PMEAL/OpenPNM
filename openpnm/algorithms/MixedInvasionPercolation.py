@@ -604,8 +604,8 @@ class MixedInvasionPercolation(GenericAlgorithm):
 
         * Only clusters that do not connect to a sink can grow and merge.
         * At the point that a neighbor connected to a sink is touched, the
-        trapped cluster stops growing as this is the point of trapping in
-        forward invasion time.
+          trapped cluster stops growing as this is the point of trapping in
+          forward invasion time.
 
         Logger info displays the invasion Sequence and pore index and a message
         with condition number based on the modified trapping rules and the

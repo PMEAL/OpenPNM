@@ -1,12 +1,4 @@
 r"""
-
-.. autofunction:: openpnm.models.misc.basic_math.constant
-.. autofunction:: openpnm.models.misc.basic_math.product
-.. autofunction:: openpnm.models.misc.basic_math.scaled
-.. autofunction:: openpnm.models.misc.basic_math.clip
-.. autofunction:: openpnm.models.misc.basic_math.normalize
-.. autofunction:: openpnm.models.misc.basic_math.blank
-
 """
 import numpy as np
 from openpnm.utils import logging

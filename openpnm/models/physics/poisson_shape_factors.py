@@ -1,14 +1,10 @@
 r"""
 Conduit shape factors' models to correct for the deviation from cylinders
 in series assumption for Poisson-like physics such as mass diffusion or
-electrical conduction, etc. This submodule is deprecated and will be
-removed the near future. Use
+electrical conduction, etc.
+
+This submodule is deprecated and will be removed the near future. Use
 `openpnm.models.geometry.diffusive_size_factors` instead.
-
-.. autofunction:: openpnm.models.physics.poisson_shape_factors.ball_and_stick
-.. autofunction:: openpnm.models.physics.poisson_shape_factors.ball_and_stick_2d
-.. autofunction:: openpnm.models.physics.poisson_shape_factors.conical_frustum_and_stick
-
 """
 import numpy as _np
 

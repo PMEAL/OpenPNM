@@ -60,11 +60,11 @@ class Bravais(GenericNetwork):
 
     Limitations:
 
-    * Bravais lattice can also have a skew to them, but this is not implemented
-    yet.
+    * Bravais lattice can also have a skew to them, but this is not
+      implemented yet.
     * Support for 2D networks has not been added yet.
-    * Hexagonal Close Packed (hcp) has not been implemented yet, but is on the
-    todo list.
+    * Hexagonal Close Packed (hcp) has not been implemented yet, but is on
+      the todo list.
 
     Examples
     --------

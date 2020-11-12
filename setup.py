@@ -95,7 +95,7 @@ setup(
     download_url='https://github.com/PMEAL/OpenPNM/',
     url='http://openpnm.org',
     project_urls={
-        'Documentation': 'https://openpnm.readthedocs.io/en/dev/',
+        'Documentation': 'https://pmeal.github.io/OpenPNM',
         'Source': 'https://github.com/PMEAL/OpenPNM',
         'Tracker': 'https://github.com/PMEAL/OpenPNM/issues',
     },

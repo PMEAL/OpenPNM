@@ -1,14 +1,12 @@
 r"""
-
-.. autofunction:: openpnm.models.physics.meniscus.sinusoidal
-.. autofunction:: openpnm.models.physics.meniscus.purcell
-.. autofunction:: openpnm.models.physics.meniscus.general_toroidal
-
+Pore-scale models related to the meniscus calculations in pore/throats.
 """
 import logging
 import numpy as np
 from openpnm.models.physics.capillary_pressure import _get_key_props
 logger = logging.getLogger(__name__)
+
+__all__ = ["purcell", "sinusoidal", "general_toroidal"]
 
 
 def purcell(target,

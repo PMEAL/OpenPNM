@@ -1,4 +1,4 @@
-name: Examples
+name: 💡 Examples
 
 on: [push]
 
@@ -37,7 +37,6 @@ jobs:
       - name: Set up conda
         uses: conda-incubator/setup-miniconda@v2
         with:
-          auto-update-conda: true
           python-version: ${{ matrix.python-version }}
           condarc-file: requirements/.condarc
           allow-softlinks: true

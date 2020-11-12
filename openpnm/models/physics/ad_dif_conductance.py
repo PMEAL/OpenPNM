@@ -1,9 +1,10 @@
 r"""
-
-.. autofunction:: openpnm.models.physics.ad_dif_conductance.ad_dif
-
+Pore-scale models for calculating the advective-diffusive conductance of
+conduits.
 """
 import numpy as _np
+
+__all__ = ["ad_dif"]
 
 
 def ad_dif(target,
