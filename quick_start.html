@@ -36,33 +36,47 @@
             
   <div class="section" id="getting-started">
 <span id="quick-start"></span><h1>Getting Started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h1>
-<p>It is relatively easy to get going with a quick simulation in OpenPNM.  In fact the following code block produces a mercury intrusion simulation in just 9 lines:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">openpnm</span> <span class="k">as</span> <span class="nn">op</span>
+<p>It is relatively easy to get going with a quick simulation in OpenPNM.
+In fact the following code block produces a mercury intrusion simulation in
+just 9 lines:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">openpnm</span> <span class="k">as</span> <span class="nn">op</span>
+
+<span class="c1"># Define geometrical parameters</span>
 <span class="n">Lc</span> <span class="o">=</span> <span class="mf">1e-4</span>
 <span class="n">Nx</span><span class="p">,</span> <span class="n">Ny</span><span class="p">,</span> <span class="n">Nz</span> <span class="o">=</span> <span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+
+<span class="c1"># Generate network, geometry, phase, and physics</span>
 <span class="n">pn</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Cubic</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="n">Nx</span><span class="p">,</span> <span class="n">Ny</span><span class="p">,</span> <span class="n">Nz</span><span class="p">],</span> <span class="n">spacing</span><span class="o">=</span><span class="n">Lc</span><span class="p">)</span>
-<span class="n">geo</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">StickAndBall</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">,</span> <span class="n">pores</span><span class="o">=</span><span class="n">pn</span><span class="o">.</span><span class="n">Ps</span><span class="p">,</span>  <span class="n">throats</span><span class="o">=</span><span class="n">pn</span><span class="o">.</span><span class="n">Ts</span><span class="p">)</span>
+<span class="n">geo</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">StickAndBall</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">,</span> <span class="n">pores</span><span class="o">=</span><span class="n">pn</span><span class="o">.</span><span class="n">Ps</span><span class="p">,</span> <span class="n">throats</span><span class="o">=</span><span class="n">pn</span><span class="o">.</span><span class="n">Ts</span><span class="p">)</span>
 <span class="n">Hg</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">phases</span><span class="o">.</span><span class="n">Mercury</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">)</span>
 <span class="n">phys</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">physics</span><span class="o">.</span><span class="n">Standard</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">,</span> <span class="n">phase</span><span class="o">=</span><span class="n">Hg</span><span class="p">,</span> <span class="n">geometry</span><span class="o">=</span><span class="n">geo</span><span class="p">)</span>
+
+<span class="c1"># Create algorithm and run simulation</span>
 <span class="n">mip</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">algorithms</span><span class="o">.</span><span class="n">Porosimetry</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">)</span>
 <span class="n">mip</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span><span class="n">phase</span><span class="o">=</span><span class="n">Hg</span><span class="p">)</span>
 <span class="n">mip</span><span class="o">.</span><span class="n">set_inlets</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">pn</span><span class="o">.</span><span class="n">pores</span><span class="p">([</span><span class="s1">&#39;left&#39;</span><span class="p">,</span> <span class="s1">&#39;right&#39;</span><span class="p">,</span> <span class="s1">&#39;top&#39;</span><span class="p">,</span> <span class="s1">&#39;bottom&#39;</span><span class="p">]))</span>
 <span class="n">mip</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
 </pre></div>
 </div>
-<p>The results can be visualized with The <code class="docutils literal notranslate"><span class="pre">mip.plot_intrusion_curve()</span></code> giving something like this:</p>
+<p>The results can be visualized with <code class="docutils literal notranslate"><span class="pre">mip.plot_intrusion_curve()</span></code> giving
+something like this:</p>
 <a class="reference internal image-reference" href="https://user-images.githubusercontent.com/14086031/77930201-96363b80-7278-11ea-95fd-4a55fb1d6148.png"><img alt="https://user-images.githubusercontent.com/14086031/77930201-96363b80-7278-11ea-95fd-4a55fb1d6148.png" src="https://user-images.githubusercontent.com/14086031/77930201-96363b80-7278-11ea-95fd-4a55fb1d6148.png" style="width: 800px;" /></a>
 <p>As another example, the permeability coefficient can be found as follows:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">water</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">phases</span><span class="o">.</span><span class="n">Water</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Generate phase and physics</span>
+<span class="n">water</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">phases</span><span class="o">.</span><span class="n">Water</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">)</span>
 <span class="n">phys</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">physics</span><span class="o">.</span><span class="n">Standard</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">,</span> <span class="n">phase</span><span class="o">=</span><span class="n">water</span><span class="p">,</span> <span class="n">geometry</span><span class="o">=</span><span class="n">geo</span><span class="p">)</span>
+
+<span class="c1"># Create algorithm, set boundary conditions and run simulation</span>
 <span class="n">sf</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">algorithms</span><span class="o">.</span><span class="n">StokesFlow</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">,</span> <span class="n">phase</span><span class="o">=</span><span class="n">water</span><span class="p">)</span>
-<span class="n">Pin</span><span class="p">,</span> <span class="n">Pout</span> <span class="o">=</span> <span class="p">(</span><span class="mi">200000</span><span class="p">,</span> <span class="mi">101325</span><span class="p">)</span>
+<span class="n">Pin</span><span class="p">,</span> <span class="n">Pout</span> <span class="o">=</span> <span class="p">(</span><span class="mi">200_000</span><span class="p">,</span> <span class="mi">101_325</span><span class="p">)</span>
 <span class="n">sf</span><span class="o">.</span><span class="n">set_value_BC</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">pn</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;left&#39;</span><span class="p">),</span> <span class="n">values</span><span class="o">=</span><span class="n">Pin</span><span class="p">)</span>
 <span class="n">sf</span><span class="o">.</span><span class="n">set_value_BC</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">pn</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;right&#39;</span><span class="p">),</span> <span class="n">values</span><span class="o">=</span><span class="n">Pout</span><span class="p">)</span>
 <span class="n">sf</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
 </pre></div>
 </div>
-<p>The total flow rate into the domain through the boundary pores can be found using <code class="docutils literal notranslate"><span class="pre">sf.rate(pores=pn.pores('left'))</span></code>.  The permeability coefficient can be found by inserting known values into Darcy’s law as follows:</p>
+<p>The total flow rate into the domain through the boundary pores can be found
+using <code class="docutils literal notranslate"><span class="pre">sf.rate(pores=pn.pores('left'))</span></code>. The permeability coefficient
+can be found by inserting known values into Darcy’s law as follows:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Q</span> <span class="o">=</span> <span class="n">sf</span><span class="o">.</span><span class="n">rate</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">pn</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;left&#39;</span><span class="p">))</span>
 <span class="n">A</span> <span class="o">=</span> <span class="n">Ny</span><span class="o">*</span><span class="n">Nz</span><span class="o">*</span><span class="n">Lc</span><span class="o">**</span><span class="mi">2</span>
 <span class="n">L</span> <span class="o">=</span> <span class="n">Nx</span><span class="o">*</span><span class="n">Lc</span>
@@ -70,15 +84,25 @@
 <span class="n">K</span> <span class="o">=</span> <span class="n">Q</span><span class="o">*</span><span class="n">mu</span><span class="o">*</span><span class="n">L</span><span class="o">/</span><span class="p">(</span><span class="n">A</span><span class="o">*</span><span class="p">(</span><span class="n">Pin</span><span class="o">-</span><span class="n">Pout</span><span class="p">))</span>
 </pre></div>
 </div>
-<p>It’s also worth explaining how to adjust the pore size distribution of the network, so that the capillary curve and permeability coefficient can be changed to match known values.  The <code class="docutils literal notranslate"><span class="pre">geo</span></code> object controls the geometric properties, and it possess models to calculate values on demand. Let’s change the pore size distribution to a Weibull distribution, but first let’s store the existing values in a dummy variable so we can compare later.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">geo</span><span class="p">[</span><span class="s1">&#39;pore.old_diameter&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">geo</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">)</span>
+<p>It’s also worth explaining how to adjust the pore size distribution of the
+network, so that the capillary curve and permeability coefficient can be
+changed to match known values. The <code class="docutils literal notranslate"><span class="pre">geo</span></code> object controls the geometric
+properties, and it possess models to calculate values on demand. Let’s
+change the pore size distribution to a Weibull distribution, but first
+let’s store the existing values in a dummy variable so we can compare
+later.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">op.models.geometry</span> <span class="k">as</span> <span class="nn">gmods</span>
+
+<span class="n">geo</span><span class="p">[</span><span class="s1">&#39;pore.old_diameter&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">geo</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">)</span>
 <span class="n">geo</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">,</span>
-              <span class="n">model</span><span class="o">=</span><span class="n">op</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">pore_size</span><span class="o">.</span><span class="n">weibull</span><span class="p">,</span>
+              <span class="n">model</span><span class="o">=</span><span class="n">gmods</span><span class="o">.</span><span class="n">pore_size</span><span class="o">.</span><span class="n">weibull</span><span class="p">,</span>
               <span class="n">shape</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">1e-5</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Now you can run <code class="docutils literal notranslate"><span class="pre">geo.show_hist(['pore.old_diameter',</span> <span class="pre">'pore.diameter'])</span></code> to get a quick glance at the histograms of the two distributions.</p>
-<p>More complex tasks are explained in the <a class="reference external" href="https://github.com/PMEAL/OpenPNM/tree/dev/examples">online examples</a>.</p>
+<p>Now you can run <code class="docutils literal notranslate"><span class="pre">geo.show_hist(['pore.old_diameter',</span> <span class="pre">'pore.diameter'])</span></code>
+to get a quick glance at the histograms of the two distributions.</p>
+<p>More complex tasks are explained in the
+<a class="reference external" href="https://github.com/PMEAL/OpenPNM/tree/dev/examples">online examples</a>.</p>
 </div>
 
 

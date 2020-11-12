@@ -46,7 +46,6 @@ Working with Networks
 .. |netman| image:: /static/images/gabriel_network.png
    :width: 300px
 
-
 Generating Geometrical Properties
 =================================
 
