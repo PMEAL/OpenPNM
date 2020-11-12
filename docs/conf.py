@@ -16,12 +16,16 @@ extensions = ['sphinx.ext.autodoc',
               'sphinx.ext.mathjax',
               'matplotlib.sphinxext.plot_directive']
 
-html_theme = 'sphinx_rtd_theme'
+# html_theme = 'sphinx_rtd_theme'
+
+html_theme = 'alabaster'
 
 # html_theme = 'basicstrap'
-# html_theme_options = {'inner_theme': True,
-#                       'inner_theme_name': 'bootswatch-spacelab',
-#                       'nosidebar': False}
+# html_theme_options = {
+#     'inner_theme': True,
+#     'inner_theme_name': 'bootswatch-spacelab',
+#     'nosidebar': False
+# }
 
 html_title = "OpenPNM"
 html_short_title = "OpenPNM: An open-source pore network modeling package"
