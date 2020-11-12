@@ -72,7 +72,7 @@ class ModelsDict(PrintableDict):
         >>> geo = op.geometry.StickAndBall(network=net,
         ...                                pores=net.Ps,
         ...                                throats=net.Ts)
-        >>> dtree = geo.dependency_graph()
+        >>> dtree = geo.models.dependency_graph()
         >>> import networkx as nx
         >>> nx.draw_spectral(dtree,
         ...                  arrowsize=50,
