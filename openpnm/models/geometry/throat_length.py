@@ -166,7 +166,7 @@ def classic(target, pore_diameter='pore.diameter'):
 def spheres_and_cylinders(
     target,
     pore_diameter='pore.diameter',
-    throat_diameter='throat_diameter'
+    throat_diameter='throat.diameter'
 ):
     r"""
     Finds throat length assuming pores are spheres and throats are
@@ -201,7 +201,7 @@ def spheres_and_cylinders(
 def circles_and_rectangles(
     target,
     pore_diameter='pore.diameter',
-    throat_diameter='throat_diameter'
+    throat_diameter='throat.diameter'
 ):
     r"""
     Finds throat length assuming pores are circles and throats are
@@ -236,7 +236,7 @@ def circles_and_rectangles(
 def cones_and_cylinders(
     target,
     pore_diameter='pore.diameter',
-    throat_diameter='throat_diameter'
+    throat_diameter='throat.diameter'
 ):
     r"""
     Finds throat length assuming pores are cones and throats are
@@ -271,7 +271,7 @@ def cones_and_cylinders(
 def trapezoids_and_rectangles(
     target,
     pore_diameter='pore.diameter',
-    throat_diameter='throat_diameter'
+    throat_diameter='throat.diameter'
 ):
     r"""
     Finds throat length assuming pores are trapezoids and throats are
@@ -306,7 +306,7 @@ def trapezoids_and_rectangles(
 def pyramids_and_cuboids(
     target,
     pore_diameter='pore.diameter',
-    throat_diameter='throat_diameter'
+    throat_diameter='throat.diameter'
 ):
     r"""
     Finds throat length assuming pores are pyramids and throats are
@@ -341,7 +341,7 @@ def pyramids_and_cuboids(
 def cubes_and_cuboids(
     target,
     pore_diameter='pore.diameter',
-    throat_diameter='throat_diameter'
+    throat_diameter='throat.diameter'
 ):
     r"""
     Finds throat length assuming pores are cubes and throats are
@@ -376,7 +376,7 @@ def cubes_and_cuboids(
 def squares_and_rectangles(
     target,
     pore_diameter='pore.diameter',
-    throat_diameter='throat_diameter'
+    throat_diameter='throat.diameter'
 ):
     r"""
     Finds throat length assuming pores are squares and throats are
