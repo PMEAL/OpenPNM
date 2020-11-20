@@ -371,7 +371,7 @@ def reduce_coordination(network, z):
     Notes
     -----
     This method first finds the minimum spanning tree of the network using
-    random weights on each throat, the assures that these throats are *not*
+    random weights on each throat, then assures that these throats are *not*
     deleted, in order to maintain network connectivity.
 
     """
