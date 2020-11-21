@@ -502,8 +502,11 @@ class TransientReactiveTransport(ReactiveTransport):
         """
         if self.settings['t_scheme'] == 'cranknicolson':
             f1 = 0.5
-        else:
+        elif self.settings['t_scheme'] == 'implicit':
             f1 = 1.0
+        else:
+            raise Exception('Unsupported transient scheme '
+                            + self.settings['t_scheme'])
         phase = self.project.phases()[self.settings['phase']]
         for item in self.settings['sources']:
             Ps = self.pores(item)
