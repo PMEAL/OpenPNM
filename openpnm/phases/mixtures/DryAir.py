@@ -14,6 +14,10 @@ class DryAir(IdealGas):
         N2 = species.gases.N2(network=network, name='N2_'+self.name)
         O2 = species.gases.O2(network=network, name='O2_'+self.name)
         self.set_component([O2, N2])
+        # Set standard conditions on the fluid to get started
+        self['pore.temperature'] = 298.0
+        self['pore.pressure'] = 101325.0
+        # Set specific properties of phase
         self.set_mole_fraction(component=N2, values=0.791)
         self.set_mole_fraction(component=O2, values=0.209)
         self.add_model(propname='pore.diffusivity.N2',

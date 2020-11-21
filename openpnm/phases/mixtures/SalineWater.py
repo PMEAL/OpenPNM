@@ -19,6 +19,10 @@ class SalineWater(GenericMixture):
         self.set_concentration(component=Na, values=0.0)
         self.set_concentration(component=Cl, values=0.0)
         self.update_mole_fractions()
+        # Set standard conditions on the fluid to get started
+        self['pore.temperature'] = 298.0
+        self['pore.pressure'] = 101325.0
+        # Set specific properties of phase
         self.add_model(propname='pore.salt_concentration',
                        model=mods.misc.summation,
                        props=['pore.concentration.Na_'+self.name,

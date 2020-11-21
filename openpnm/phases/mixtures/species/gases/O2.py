@@ -31,8 +31,6 @@ class O2(mixtures.GenericSpecies):
     """
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.pop('pore.temperature', None)
-        self.pop('pore.pressure', None)
 
         self['pore.molecular_weight'] = 0.032  # kg/mol
         self['pore.molar_diffusion_volume'] = 16.6  # ??

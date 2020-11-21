@@ -22,6 +22,11 @@ class IdealGas(GenericMixture):
         super().__init__(settings={'prefix': 'mix'}, **kwargs)
         self.settings.update(settings)
 
+        # Set standard conditions on the fluid to get started
+        self['pore.temperature'] = 298.0
+        self['pore.pressure'] = 101325.0
+
+        # Set specific properties of phase
         self.add_model(propname='pore.molar_density',
                        model=mods.phases.molar_density.ideal_gas,
                        regen_mode='deferred')

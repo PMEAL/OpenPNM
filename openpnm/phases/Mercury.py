@@ -110,6 +110,10 @@ class Mercury(GenericPhase):
     def __init__(self, name=None, **kwargs):
         super().__init__(name=name, **kwargs)
 
+        # Set standard conditions on the fluid to get started
+        self['pore.temperature'] = 298.0
+        self['pore.pressure'] = 101325.0
+        # Set specific properties of phase
         self['pore.molecular_weight'] = 0.2006
         self['pore.critical_pressure'] = 1.662E8
         self['pore.critical_temperature'] = 1733

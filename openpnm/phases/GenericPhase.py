@@ -74,10 +74,6 @@ class GenericPhase(Base, ModelsMixin):
             self['pore.all'] = ones((network.Np, ), dtype=bool)
             self['throat.all'] = ones((network.Nt, ), dtype=bool)
 
-        # Set standard conditions on the fluid to get started
-        self['pore.temperature'] = 298.0
-        self['pore.pressure'] = 101325.0
-
     def __getitem__(self, key):
         element, prop = key.split('.', 1)
         # Deal with special keys first
