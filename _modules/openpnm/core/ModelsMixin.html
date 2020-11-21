@@ -318,16 +318,20 @@
 <span class="sd">            Controls how/when the model is run (See Notes for more details).</span>
 <span class="sd">            Options are:</span>
 
-<span class="sd">            *&#39;normal&#39;* : (default) The model is run directly upon being</span>
+<span class="sd">            *&#39;normal&#39;* -  (default) The model is run directly upon being</span>
 <span class="sd">            assiged, and also run every time ``regenerate_models`` is called.</span>
 
-<span class="sd">            *&#39;constant&#39;* : The model is run directly upon being assigned, but</span>
+<span class="sd">            *&#39;constant&#39;* -  The model is run directly upon being assigned, but</span>
 <span class="sd">            is not called again, thus making it&#39;s data act like a constant.</span>
 <span class="sd">            If, however, the data is deleted from the object it will be</span>
 <span class="sd">            regenerated again.</span>
 
-<span class="sd">            *&#39;deferred&#39;* Is not run upon being assigned, but is run the first</span>
+<span class="sd">            *&#39;deferred&#39;* - Is not run upon being assigned, but is run the first</span>
 <span class="sd">            time that ``regenerate_models`` is called.</span>
+
+<span class="sd">            *&#39;explicit&#39;* - Is only run if the model name is explicitly passed</span>
+<span class="sd">            to the ``regenerate_models`` method.  This allows full control</span>
+<span class="sd">            of when the model is run.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">propname</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>  <span class="c1"># Prevent infinite loops of look-ups</span>

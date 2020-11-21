@@ -119,14 +119,17 @@ attribute:</p>
 <li><p><strong>model</strong> (<em>function</em>) – A reference (handle) to the function to be used.</p></li>
 <li><p><strong>regen_mode</strong> (<em>string</em>) – <p>Controls how/when the model is run (See Notes for more details).
 Options are:</p>
-<p><em>’normal’</em> : (default) The model is run directly upon being
+<p><em>’normal’</em> -  (default) The model is run directly upon being
 assiged, and also run every time <code class="docutils literal notranslate"><span class="pre">regenerate_models</span></code> is called.</p>
-<p><em>’constant’</em> : The model is run directly upon being assigned, but
+<p><em>’constant’</em> -  The model is run directly upon being assigned, but
 is not called again, thus making it’s data act like a constant.
 If, however, the data is deleted from the object it will be
 regenerated again.</p>
-<p><em>’deferred’</em> Is not run upon being assigned, but is run the first
+<p><em>’deferred’</em> - Is not run upon being assigned, but is run the first
 time that <code class="docutils literal notranslate"><span class="pre">regenerate_models</span></code> is called.</p>
+<p><em>’explicit’</em> - Is only run if the model name is explicitly passed
+to the <code class="docutils literal notranslate"><span class="pre">regenerate_models</span></code> method.  This allows full control
+of when the model is run.</p>
 </p></li>
 </ul>
 </dd>
