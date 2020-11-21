@@ -120,11 +120,11 @@ def plot_connections(network, throats=None, fig=None, size_by=None,
     if ThreeD:
         lc = Line3DCollection(throat_pos, colors=color, cmap=cmap,
                               linestyles=linestyle, linewidths=linewidth,
-                              antialiaseds=np.ones_like(network.Ts))
+                              antialiaseds=np.ones_like(network.Ts), **kwargs)
     else:
         lc = LineCollection(throat_pos, colors=color, cmap=cmap,
                             linestyles=linestyle, linewidths=linewidth,
-                            antialiaseds=np.ones_like(network.Ts))
+                            antialiaseds=np.ones_like(network.Ts), **kwargs)
     ax.add_collection(lc)
 
     _scale_3d_axes(ax=ax, X=X, Y=Y, Z=Z, dimen=ThreeD)
@@ -244,12 +244,12 @@ def plot_coordinates(network, pores=None, fig=None, size_by=None,
 
     if ThreeD:
         ax.scatter(X, Y, Z, c=color, s=markersize,
-                   marker=marker, alpha=alpha)
+                   marker=marker, alpha=alpha, **kwargs)
         _scale_3d_axes(ax=ax, X=Xl, Y=Yl, Z=Zl, dimen=ThreeD)
     else:
         X_temp, Y_temp = np.column_stack((X, Y, Z))[:, dim].T
         ax.scatter(X_temp, Y_temp, c=color, s=markersize,
-                   marker=marker, alpha=alpha)
+                   marker=marker, alpha=alpha, **kwargs)
         _scale_3d_axes(ax=ax, X=Xl, Y=Yl, Z=np.zeros_like(Yl), dimen=ThreeD)
 
     _label_axes(ax=ax, X=Xl, Y=Yl, Z=Zl)
