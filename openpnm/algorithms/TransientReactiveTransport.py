@@ -500,10 +500,7 @@ class TransientReactiveTransport(ReactiveTransport):
         Correction (built for transient simulations) depends on the time scheme
 
         """
-        if self.settings['t_scheme'] == 'cranknicolson':
-            f1 = 0.5
-        else:
-            f1 = 1.0
+        f1, f2, f3 = self._get_f1_f2_f3()
         phase = self.project.phases()[self.settings['phase']]
         for item in self.settings['sources']:
             Ps = self.pores(item)
