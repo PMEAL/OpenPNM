@@ -16,40 +16,38 @@ def plot_connections(network, throats=None, fig=None, size_by=None,
     ----------
     network : OpenPNM Network Object
         The network whose topological connections to plot
-
     throats : array_like (optional)
         The list of throats to plot if only a sub-sample is desired.  This is
         useful for inspecting a small region of the network.  If no throats are
         specified then all throats are shown.
-
-    fig : Matplotlib figure handle and line property arguments
+    fig : Matplotlib figure handle and line property arguments (optional)
         If a ``fig`` is supplied, then the topology will be overlaid on this
         plot.  This makes it possible to combine coordinates and connections,
-        and to color throats differently
-
-    size_by : array_like
+        and to color throats differently for instance.
+    size_by : array_like (optional)
         An ND-array of throat values (e.g. alg['throat.rate']).  These
-        values are normalized by scaled by ``markersize``.
-
-    color_by : str or array_like
+        values are used to scale the ``linewidth``, so if the lines are too
+        thin, then increase ``linewidth``.
+    color_by : str or array_like (optional)
         An ND-array of throat values (e.g. alg['throat.rate']).
-
-    cmap : str or cmap object
+    cmap : str or cmap object (optional)
         The matplotlib colormap to use if specfying a throat property
         for ``color_by``
-
-    color : str
+    color : str, optional (optional)
         A matplotlib named color (e.g. 'r' for red).
-
-    alpha : float
+    alpha : float (optional)
         The transparency of the lines, with 1 being solid and 0 being invisible
-
-    linestyle : str
-        Can be one of {'solid', 'dashed', 'dashdot', 'dotted'}
-
-    linewidth : float
+    linestyle : str (optional)
+        Can be one of {'solid', 'dashed', 'dashdot', 'dotted'}.  Default is
+        'solid'.
+    linewidth : float (optional)
         Controls the thickness of drawn lines.  Is used to scale the thickness
-        if ``size_by`` is given.
+        if ``size_by`` is given. Default is 1. If a value is provided for
+        ``size_by`` then they are used to scale the ``linewidth``.
+    **kwargs
+        All other keyword arguments are passed on to the ``Line3DCollection``
+        class of matplotlib, so check their documentation for additional
+        formatting options.
 
     Notes
     -----
@@ -74,7 +72,7 @@ def plot_connections(network, throats=None, fig=None, size_by=None,
     >>> Ts = pn.throats('*boundary')
     >>> # Pass existing fig back into function to plot additional throats
     >>> fig = op.topotools.plot_connections(network=pn, throats=Ts,
-    ...                                     fig=fig, colors='r')
+    ...                                     fig=fig, color='r')
 
     """
     import matplotlib.pyplot as plt
@@ -113,8 +111,6 @@ def plot_connections(network, throats=None, fig=None, size_by=None,
         color = cm.get_cmap(name=cmap)(color_by / color_by.max())
         color[:, 3] = alpha
     if size_by is not None:
-        if not size_by.startswith('throat.'):
-            size_by = 'throat.' + size_by
         linewidth = size_by / size_by.max() * linewidth
 
     if ThreeD:
@@ -143,41 +139,36 @@ def plot_coordinates(network, pores=None, fig=None, size_by=None,
     ----------
     network : OpenPNM Network Object
         The network whose topological connections to plot
-
     pores : array_like (optional)
         The list of pores to plot if only a sub-sample is desired.  This is
         useful for inspecting a small region of the network.  If no pores are
         specified then all are shown.
-
     fig : Matplotlib figure handle
         If a ``fig`` is supplied, then the coordinates will be overlaid.  This
         enables the plotting of multiple different sets of pores as well as
         throat connections from ``plot_connections``.
-
     size_by : str or array_like
         An ND-array of pore values (e.g. alg['pore.concentration']).  These
         values are normalized by scaled by ``markersize``.
-
     color_by : str or array_like
         An ND-array of pore values (e.g. alg['pore.concentration']).
-
     cmap : str or cmap object
         The matplotlib colormap to use if specfying a pore property
         for ``color_by``
-
     color : str
         A matplotlib named color (e.g. 'r' for red).
-
     alpha : float
         The transparency of the lines, with 1 being solid and 0 being invisible
-
     marker : 's'
         The marker to use.  The default is a circle.  Options are explained
         `here <https://matplotlib.org/3.2.1/api/markers_api.html>`_
-
     markersize : scalar
         Controls size of marker, default is 1.0.  This value is used to scale
         the ``size_by`` argument if given.
+    **kwargs
+        All other keyword arguments are passed on to the ``scatter``
+        function of matplotlib, so check their documentation for additional
+        formatting options.
 
     Notes
     -----
@@ -201,7 +192,7 @@ def plot_coordinates(network, pores=None, fig=None, size_by=None,
     >>> fig = op.topotools.plot_coordinates(pn, pores=Ps, c='b')
     >>> Ps = pn.pores('*boundary')
     >>> # Pass existing fig back into function to plot boundary pores
-    >>> fig = op.topotools.plot_coordinates(pn, pores=Ps, fig=fig, c='r')
+    >>> fig = op.topotools.plot_coordinates(pn, pores=Ps, fig=fig, color='r')
 
     """
     import matplotlib.pyplot as plt
@@ -232,7 +223,7 @@ def plot_coordinates(network, pores=None, fig=None, size_by=None,
     # overwriting figures' axes lim)
     Xl, Yl, Zl = network['pore.coords'].T
 
-    # Parse formating args
+    # Parse formatting kwargs
     if 'c' in kwargs.keys():
         color = kwargs.pop('c')
     if 's' in kwargs.keys():
