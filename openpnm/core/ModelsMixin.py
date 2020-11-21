@@ -283,16 +283,20 @@ class ModelsMixin:
             Controls how/when the model is run (See Notes for more details).
             Options are:
 
-            *'normal'* : (default) The model is run directly upon being
+            *'normal'* -  (default) The model is run directly upon being
             assiged, and also run every time ``regenerate_models`` is called.
 
-            *'constant'* : The model is run directly upon being assigned, but
+            *'constant'* -  The model is run directly upon being assigned, but
             is not called again, thus making it's data act like a constant.
             If, however, the data is deleted from the object it will be
             regenerated again.
 
-            *'deferred'* Is not run upon being assigned, but is run the first
+            *'deferred'* - Is not run upon being assigned, but is run the first
             time that ``regenerate_models`` is called.
+
+            *'explicit'* - Is only run if the model name is explicitly passed
+            to the ``regenerate_models`` method.  This allows full control
+            of when the model is run.
 
         """
         if propname in kwargs.values():  # Prevent infinite loops of look-ups
