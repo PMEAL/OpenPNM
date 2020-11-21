@@ -100,14 +100,9 @@ class Air(GenericPhase):
     Vol. 25, No. 1, January 2004, pp. 21-69
 
     """
-
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-        # Set standard conditions on the fluid to get started
-        self['pore.temperature'] = 298.0
-        self['pore.pressure'] = 101325.0
-        # Set specific properties of phase
         self['pore.molecular_weight'] = 0.0291
         self['pore.critical_pressure'] = 3.786E6
         self['pore.critical_temperature'] = 132.5

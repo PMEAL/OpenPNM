@@ -15,10 +15,6 @@ class HumidAir(IdealGas):
         O2 = species.gases.O2(network=network, name='O2_'+self.name)
         H2O = species.liquids.H2O(network=network, name='H2O_'+self.name)
         self.settings['components'] = [O2.name, N2.name, H2O.name]
-        # Set standard conditions on the fluid to get started
-        self['pore.temperature'] = 298.0
-        self['pore.pressure'] = 101325.0
-        # Set specific properties of phase
         self.set_mole_fraction(component=N2, values=0.791)
         self.set_mole_fraction(component=O2, values=0.209)
         self.set_mole_fraction(component=H2O, values=0.000)

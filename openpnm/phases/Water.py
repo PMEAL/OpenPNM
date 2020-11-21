@@ -86,10 +86,6 @@ class Water(GenericPhase):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-        # Set standard conditions on the fluid to get started
-        self['pore.temperature'] = 298.0
-        self['pore.pressure'] = 101325.0
-        # Set specific properties of phase
         self['pore.molecular_weight'] = 0.01802
         self['pore.critical_pressure'] = 2.2064E7
         self['pore.critical_temperature'] = 647.1
