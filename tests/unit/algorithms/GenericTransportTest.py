@@ -176,9 +176,9 @@ class GenericTransportTest:
         m.set_occupancy(phase=water, pores=[3, 4, 5])
         const = op.models.misc.constant
         K_water_air = 0.5
-        m.set_binary_partition_coef(propname="throat.partition_coef",
-                                    phases=[water, air],
-                                    model=const, value=K_water_air)
+        m.set_binary_partition_coef(
+            phases=[water, air], model=const, value=K_water_air
+        )
         m._set_automatic_throat_occupancy()
         _ = op.physics.Standard(network=net, phase=m, geometry=geom)
         alg = op.algorithms.GenericTransport(network=net, phase=m)

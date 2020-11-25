@@ -71,9 +71,9 @@ class DiffusiveConductanceTest:
         m.set_occupancy(phase=water, pores=[3, 4, 5])
         const = op.models.misc.constant
         K_water_air = 0.5
-        m.set_binary_partition_coef(propname="throat.partition_coef",
-                                    phases=[water, air],
-                                    model=const, value=K_water_air)
+        m.set_binary_partition_coef(
+            phases=[water, air], model=const, value=K_water_air
+        )
         m._set_automatic_throat_occupancy()
         phys = op.physics.GenericPhysics(network=net, phase=m, geometry=geom)
         mdiff = op.models.physics.diffusive_conductance.multiphase_diffusion
