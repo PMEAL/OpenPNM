@@ -403,14 +403,16 @@
 
     <span class="k">def</span> <span class="nf">_get_iterative_props</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Find and return properties that need to be iterated while running the</span>
-<span class="sd">        algorithm</span>
+<span class="sd">        Find and return properties that need to be iterated while running</span>
+<span class="sd">        the algorithm.</span>
 
 <span class="sd">        Notes</span>
 <span class="sd">        -----</span>
-<span class="sd">        This method was moved from ReactiveTransport class to GenericTransport</span>
-<span class="sd">        because source terms are not necessarily the only properties that need</span>
-<span class="sd">        iteration during an algorithm (ex. concentration-dependent conductance)</span>
+<span class="sd">        This method was moved from ReactiveTransport class to</span>
+<span class="sd">        GenericTransport because source terms are not necessarily the only</span>
+<span class="sd">        properties that need iteration during an algorithm (ex.</span>
+<span class="sd">        concentration-dependent conductance)</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
         <span class="n">phase</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">phases</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;phase&#39;</span><span class="p">])</span>
