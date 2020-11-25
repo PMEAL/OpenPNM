@@ -179,6 +179,13 @@ class TransientReactiveTransport(ReactiveTransport):
         if not quantity:
             raise Exception('"quantity" has not been defined on this algorithm')
         self[quantity] = values
+        # Pass initial condition to phase
+        phase = self.project.phases()[self.settings['phase']]
+        phase[quantity] = self[quantity]
+        # Regenerate physics using initial condition now in phase
+        physics = phase.find_physics(phase=phase)
+        for obj in physics:
+            obj.regenerate_models()
 
     def _get_f1_f2_f3(self):
         r"""
