@@ -79,10 +79,7 @@ class MultiPhase(GenericPhase):
         # propname as a keyword argument to this dummy model, so that our
         # dependency handler is notified of this dependency!
         partition_coef_global = self.settings['partition_coef_prefix'] + ".all"
-        self.add_model(
-            propname=partition_coef_global,
-            model=lambda target, **kwargs : self._assemble_partition_coef_global()
-        )
+        self.add_model(propname=partition_coef_global, model=_dummy)
 
         # Add supplied phases to phases dict and initialize occupancy to 0
         self.add_phases(phases)
@@ -191,6 +188,9 @@ class MultiPhase(GenericPhase):
         key = f"K_{phases[0].name}_{phases[1].name}"
         K_global_model[key] = propname
 
+        # Regenerate 'throat.parition_coef.all'
+        self.regenerate_models(partition_coef_global)
+
     def _add_interface_prop(self, propname, phases, model, **kwargs):
         r"""
         Helper method used to add interface models to the ``MultiPhase``
@@ -241,7 +241,7 @@ class MultiPhase(GenericPhase):
         >>> water = op.phases.Water(network=net, name='water')
         >>> mphase = op.phases.MultiPhase(network=net, phases=[air, water])
         >>> mphase._format_interface_prop(propname="throat.foo", phases=[air, water])
-        throat.foo.air:water
+        'throat.foo.air:water'
 
         """
         prefix = propname
@@ -450,3 +450,8 @@ class MultiPhase(GenericPhase):
             self.regenerate_models(propnames=f"throat.occupancy.{phase.name}")
 
         self._update_occupancy()
+
+
+def _dummy(target, **kwargs):
+    r"""Dummy model to store propnames as kwargs for dependency handling"""
+    return target._assemble_partition_coef_global()
