@@ -612,3 +612,12 @@ def nbr_to_str(nbr, t_precision):
             * (round(nbr, t_precision) != int(nbr)))
     nbr_str = (str(int(round(nbr, t_precision) * 10**n)) + (f'e-{n}') * (n != 0))
     return nbr_str
+
+
+def prettify_logger_message(msg):
+    r"""Prettifies logger messages by breaking them up into multi lines"""
+    from textwrap import wrap
+    linewidth = 75
+    indent = "\n" + " " * 13
+    temp = wrap(msg, width=linewidth)
+    return indent.join(temp)

@@ -368,14 +368,16 @@ class ReactiveTransport(GenericTransport):
 
     def _get_iterative_props(self):
         r"""
-        Find and return properties that need to be iterated while running the
-        algorithm
+        Find and return properties that need to be iterated while running
+        the algorithm.
 
         Notes
         -----
-        This method was moved from ReactiveTransport class to GenericTransport
-        because source terms are not necessarily the only properties that need
-        iteration during an algorithm (ex. concentration-dependent conductance)
+        This method was moved from ReactiveTransport class to
+        GenericTransport because source terms are not necessarily the only
+        properties that need iteration during an algorithm (ex.
+        concentration-dependent conductance)
+
         """
         import networkx as nx
         phase = self.project.phases(self.settings['phase'])

@@ -1,6 +1,7 @@
 import inspect
 from openpnm.utils import PrintableDict, logging, Workspace
 from openpnm.utils.misc import is_valid_propname
+from openpnm.utils import prettify_logger_message
 logger = logging.getLogger(__name__)
 ws = Workspace()
 
@@ -283,16 +284,20 @@ class ModelsMixin:
             Controls how/when the model is run (See Notes for more details).
             Options are:
 
-            *'normal'* : (default) The model is run directly upon being
+            *'normal'* -  (default) The model is run directly upon being
             assiged, and also run every time ``regenerate_models`` is called.
 
-            *'constant'* : The model is run directly upon being assigned, but
+            *'constant'* -  The model is run directly upon being assigned, but
             is not called again, thus making it's data act like a constant.
             If, however, the data is deleted from the object it will be
             regenerated again.
 
-            *'deferred'* Is not run upon being assigned, but is run the first
+            *'deferred'* - Is not run upon being assigned, but is run the first
             time that ``regenerate_models`` is called.
+
+            *'explicit'* - Is only run if the model name is explicitly passed
+            to the ``regenerate_models`` method.  This allows full control
+            of when the model is run.
 
         """
         if propname in kwargs.values():  # Prevent infinite loops of look-ups
@@ -391,9 +396,9 @@ class ModelsMixin:
         # Only regenerate model if regen_mode is correct
         if self.settings['freeze_models']:
             # Don't run ANY models if freeze_models is set to True
-            logger.warning(
-                f"{prop} was not run since freeze_models is set to True in obj. settings"
-            )
+            msg = (f"{prop} was not run since freeze_models is set to"
+                   " True in object settings.")
+            logger.warning(prettify_logger_message(msg))
         elif regen_mode == 'constant':
             # Only regenerate if data not already in dictionary
             if prop not in self.keys():
@@ -402,8 +407,9 @@ class ModelsMixin:
             try:
                 self[prop] = model(target=self, **kwargs)
             except KeyError as e:
-                logger.error(prop + ' was not run since the following '
-                             + 'property is missing: ' + e.__str__())
+                msg = (f"{prop} was not run since the following property"
+                       f" is missing: {e}")
+                logger.error(prettify_logger_message(msg))
                 self.models[prop]['regen_mode'] = 'deferred'
 
     def remove_model(self, propname=None, mode=['model', 'data']):

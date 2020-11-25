@@ -461,7 +461,10 @@ class GenericTransport(GenericAlgorithm):
             self._pure_A = None
         if self._pure_A is None:
             network = self.project.network
-            phase = self.project.phases()[self.settings['phase']]
+            try:
+                phase = self.project.phases()[self.settings['phase']]
+            except KeyError:
+                raise Exception('Phase has not been defined for algorithm')
             g = phase[gvals]
             am = network.create_adjacency_matrix(weights=g, fmt='coo')
             self._pure_A = spgr.laplacian(am,use_out_degree=True).astype(float)
