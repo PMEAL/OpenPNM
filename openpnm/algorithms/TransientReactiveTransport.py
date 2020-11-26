@@ -161,7 +161,9 @@ class TransientReactiveTransport(ReactiveTransport):
 
     def set_IC(self, values):
         r"""
-        A method to set simulation initial conditions
+        A method to set simulation initial conditions. The values for initial
+        condition get passed to phase object and are used to update physics
+        models automatically.
 
         Parameters
         ----------
