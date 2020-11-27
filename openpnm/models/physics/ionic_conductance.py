@@ -1,13 +1,11 @@
 r"""
-
-.. autofunction:: openpnm.models.physics.ionic_conductance.poisson
-.. autofunction:: openpnm.models.physics.ionic_conductance.laplace
-.. autofunction:: openpnm.models.physics.ionic_conductance.electroneutrality
-
+Pore-scale models for calculating ionic conductance of conduits.
 """
 import numpy as _np
 from openpnm.utils import logging
 logger = logging.getLogger(__name__)
+
+__all__ = ["poisson", "laplace", "electroneutrality"]
 
 
 def poisson(target,
@@ -137,7 +135,7 @@ def poisson(target,
     return g
 
 
-def poisson_2D(target,
+def poisson_2d(target,
                pore_diameter='pore.diameter',
                throat_diameter='throat.diameter',
                pore_diffusivity='pore.diffusivity',
@@ -333,7 +331,7 @@ def laplace(target,
                    conduit_shape_factors=conduit_shape_factors)
 
 
-def laplace_2D(target,
+def laplace_2d(target,
                pore_diameter='pore.diameter',
                throat_diameter='throat.diameter',
                pore_diffusivity='pore.diffusivity',
@@ -567,8 +565,8 @@ def electroneutrality(target,
             c1 = phase[pore_concentration+i][cn[:, 0]]
             c2 = phase[pore_concentration+i][cn[:, 1]]
         except KeyError:
-            c1 = _np.zeros((network.Nt))[cn[:, 0]]
-            c2 = _np.zeros((network.Nt))[cn[:, 1]]
+            c1 = _np.zeros((network.Np))[cn[:, 0]]
+            c2 = _np.zeros((network.Np))[cn[:, 1]]
         ct = (c1*Vol1 + c2*Vol2)/(Vol1 + Vol2)
         # Interpolate pore phase property values to throats
         try:
@@ -610,7 +608,7 @@ def electroneutrality(target,
     return g
 
 
-def electroneutrality_2D(target,
+def electroneutrality_2d(target,
                          pore_diameter='pore.diameter',
                          throat_diameter='throat.diameter',
                          pore_diffusivity='pore.diffusivity',

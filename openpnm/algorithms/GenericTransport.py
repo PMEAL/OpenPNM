@@ -293,14 +293,14 @@ class GenericTransport(GenericAlgorithm):
         pores : array_like
             The pore indices where the condition should be applied
         rates : scalar or array_like, optional
-            The rates to apply in each pore.  If a scalar is supplied
-            that rate is assigned to all locations, and if a vector is
-            supplied it must be the same size as the indices given in ``pores`.
-        total_rate : scalar, optional
+            The rates to apply in each pore.  If a scalar is supplied that
+            rate is assigned to all locations, and if a vector is supplied
+            it must be the same size as the indices given in ``pores``.
+        total_rate : float, optional
             The total rate supplied to all pores.  The rate supplied by this
             argument is divided evenly among all pores. A scalar must be
             supplied! Total_rate cannot be specified if rate is specified.
-        mode : string, optional
+        mode : str, optional
             Controls how the boundary conditions are applied.  Options are:
 
             +-------------+--------------------------------------------------+
@@ -424,18 +424,21 @@ class GenericTransport(GenericAlgorithm):
             -*'all'*: (default) Removes all boundary conditions
             -*'value'*: Removes only value conditions
             -*'rate'*: Removes only rate conditions
+            -*'outflow'*: Removes only outflow conditions
 
         """
         if isinstance(bctype, str):
             bctype = [bctype]
         if 'all' in bctype:
-            bctype = ['value', 'rate']
+            bctype = ['value', 'rate', 'outflow']
         if pores is None:
             pores = self.Ps
         if ('pore.bc_value' in self.keys()) and ('value' in bctype):
             self['pore.bc_value'][pores] = np.nan
         if ('pore.bc_rate' in self.keys()) and ('rate' in bctype):
             self['pore.bc_rate'][pores] = np.nan
+        if ('pore.bc_outflow' in self.keys()) and ('outflow' in bctype):
+            self['pore.bc_outflow'][pores] = np.nan
 
     def _build_A(self):
         r"""
@@ -458,7 +461,10 @@ class GenericTransport(GenericAlgorithm):
             self._pure_A = None
         if self._pure_A is None:
             network = self.project.network
-            phase = self.project.phases()[self.settings['phase']]
+            try:
+                phase = self.project.phases()[self.settings['phase']]
+            except KeyError:
+                raise Exception('Phase has not been defined for algorithm')
             g = phase[gvals]
             am = network.create_adjacency_matrix(weights=g, fmt='coo')
             self._pure_A = spgr.laplacian(am).astype(float)

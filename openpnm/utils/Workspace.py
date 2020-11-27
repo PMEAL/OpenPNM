@@ -188,7 +188,8 @@ class Workspace(dict):
 
         """
         from openpnm.io import PNM
-        PNM.load_project(filename=filename)
+        proj = PNM.load_project(filename=filename)
+        return proj
 
     def close_project(self, project):
         r"""

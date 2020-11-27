@@ -1,18 +1,26 @@
 r"""
-
-.. autofunction:: openpnm.models.physics.generic_source_term.charge_conservation
-.. autofunction:: openpnm.models.physics.generic_source_term.standard_kinetics
-.. autofunction:: openpnm.models.physics.generic_source_term.linear
-.. autofunction:: openpnm.models.physics.generic_source_term.power_law
-.. autofunction:: openpnm.models.physics.generic_source_term.exponential
-.. autofunction:: openpnm.models.physics.generic_source_term.natural_exponential
-.. autofunction:: openpnm.models.physics.generic_source_term.logarithm
-.. autofunction:: openpnm.models.physics.generic_source_term.natural_logarithm
-.. autofunction:: openpnm.models.physics.generic_source_term.general_symbolic
-
+Pore-scale models to be used as source term (e.g. reaction) in algorithms.
 """
 import numpy as _np
 import scipy as _sp
+
+__all__ = [
+    "charge_conservation",
+    "standard_kinetics",
+    "linear",
+    "power_law",
+    "exponential",
+    "natural_exponential",
+    "logarithm",
+    "natural_logarithm",
+    "linear_sym",
+    "power_law_sym",
+    "exponential_sym",
+    "natural_exponential_sym",
+    "logarithm_sym",
+    "natural_logarithm_sym",
+    "general_symbolic"
+]
 
 
 def charge_conservation(target, phase, p_alg, e_alg, assumption):

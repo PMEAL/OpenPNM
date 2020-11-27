@@ -2,7 +2,7 @@ import openpnm.models as mods
 from openpnm.geometry import GenericGeometry
 
 
-class StickAndBall_2D(GenericGeometry):
+class StickAndBall2D(GenericGeometry):
     r"""
     2D Stick and Ball subclass of GenericGeometry.  This subclass is meant as a
     basic default geometry to get started quickly.
@@ -45,10 +45,10 @@ class StickAndBall_2D(GenericGeometry):
     >>> pn = op.network.CubicDual(shape=[5, 5, 5])
     >>> Ps = pn.pores('primary')
     >>> Ts = pn.throats('primary')
-    >>> geo1 = op.geometry.StickAndBall_2D(network=pn, pores=Ps, throats=Ts)
+    >>> geo1 = op.geometry.StickAndBall2D(network=pn, pores=Ps, throats=Ts)
     >>> Ps = pn.pores('secondary')
     >>> Ts = pn.throats(['secondary', 'interconnect'])
-    >>> geo2 = op.geometry.StickAndBall_2D(network=pn, pores=Ps, throats=Ts)
+    >>> geo2 = op.geometry.StickAndBall2D(network=pn, pores=Ps, throats=Ts)
 
     Now override the 'pore.diameter' values on the ``geo2`` object:
 
@@ -188,7 +188,7 @@ class StickAndBall_2D(GenericGeometry):
                        prop2='pore.seed')
 
         self.add_model(propname='pore.area',
-                       model=mods.geometry.pore_area.circle,
+                       model=mods.geometry.pore_cross_sectional_area.circle,
                        pore_diameter='pore.diameter')
 
         self.add_model(propname='pore.volume',
@@ -198,7 +198,7 @@ class StickAndBall_2D(GenericGeometry):
         self.add_model(propname='throat.max_size',
                        model=mods.misc.from_neighbor_pores,
                        mode='min',
-                       pore_prop='pore.diameter')
+                       prop='pore.diameter')
 
         self.add_model(propname='throat.diameter',
                        model=mods.misc.scaled,
@@ -224,7 +224,7 @@ class StickAndBall_2D(GenericGeometry):
                        throat_length='throat.length')
 
         self.add_model(propname='throat.area',
-                       model=mods.geometry.throat_area.rectangle,
+                       model=mods.geometry.throat_cross_sectional_area.rectangle,
                        throat_diameter='throat.diameter')
 
         self.add_model(propname='throat.conduit_lengths',

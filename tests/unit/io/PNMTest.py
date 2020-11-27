@@ -2,7 +2,6 @@ import py
 import os
 import shutil
 import pytest
-from pathlib import Path
 import numpy as np
 import openpnm as op
 ws = op.Workspace()
@@ -18,7 +17,6 @@ class PNMTest:
         ws.clear()
 
     def test_save_and_reload(self):
-        f = Path(os.path.realpath(__file__),  '../test.pnm').resolve()
         f = 'test1.pnm'
         pn = op.network.Cubic(shape=[3, 3, 3])
         pn['pore.random'] = np.random.rand(pn.Np)
@@ -28,9 +26,9 @@ class PNMTest:
         net = proj.network
         assert np.all(net['pore.random'] == pn['pore.random'])
         shutil.rmtree(f, ignore_errors=True)
+        os.remove("test1.pnm")
 
     def test_save_and_load_with_models(self):
-        f = Path(os.path.realpath(__file__),  '../test.pnm').resolve()
         f = 'test2.pnm'
         pn = op.network.Cubic(shape=[3, 3, 3])
         op.io.PNM.save_project(project=pn.project, filename=f)
@@ -41,9 +39,9 @@ class PNMTest:
         assert 'pore.coordination_number' not in pn.keys()
         assert 'pore.coordination_number' in net.keys()
         shutil.rmtree(f, ignore_errors=True)
+        os.remove("test2.pnm")
 
     def test_save_and_load_with_local_custom_model(self):
-        f = Path(os.path.realpath(__file__),  '../test.pnm').resolve()
         f = 'test3.pnm'
 
         def test(target):
@@ -64,10 +62,10 @@ class PNMTest:
         with pytest.raises(Exception):
             assert np.all(net['pore.test'] == 1.0)
         shutil.rmtree(f, ignore_errors=True)
+        os.remove("test3.pnm")
 
     def test_save_and_load_with_imported_custom_model(self):
         from custom_code import test
-        f = Path(os.path.realpath(__file__),  '../test.pnm').resolve()
         f = 'test4.pnm'
         pn = op.network.Cubic(shape=[3, 3, 3])
         pn.add_model(propname='pore.test', model=test)
@@ -83,6 +81,7 @@ class PNMTest:
         net.regenerate_models()
         assert np.all(net['pore.test'] == 1.0)
         shutil.rmtree(f, ignore_errors=True)
+        os.remove("test4.pnm")
 
 
 if __name__ == '__main__':
@@ -92,7 +91,7 @@ if __name__ == '__main__':
     t.setup_class()
     for item in t.__dir__():
         if item.startswith('test'):
-            print('running test: '+item)
+            print(f'Running test: {item}')
             try:
                 t.__getattribute__(item)()
             except TypeError:

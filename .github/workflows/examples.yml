@@ -1,4 +1,4 @@
-name: Examples
+name: 💡 Examples
 
 on: [push]
 
@@ -16,7 +16,7 @@ jobs:
     strategy:
       max-parallel: 4
       matrix:
-        python-version: [3.7]
+        python-version: [3.8]
         operating-system: [ubuntu-latest]
 
     steps:
@@ -35,9 +35,8 @@ jobs:
           key: ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-${{ hashFiles('**/conda_requirements.txt') }}
 
       - name: Set up conda
-        uses: goanpeca/setup-miniconda@v1
+        uses: conda-incubator/setup-miniconda@v2
         with:
-          auto-update-conda: true
           python-version: ${{ matrix.python-version }}
           condarc-file: requirements/.condarc
           allow-softlinks: true

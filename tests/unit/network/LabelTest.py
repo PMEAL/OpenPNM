@@ -30,7 +30,7 @@ class LabelTest:
         assert net.num_pores('left') == 16
         assert net.num_pores(['left', 'top'], mode='xnor') == 4
 
-    def test_cubic_2D(self):
+    def test_cubic_2d(self):
         net = op.network.Cubic(shape=[5, 5, 1])
         assert 'pore.top' not in net.labels()
         assert 'pore.bottom' not in net.labels()
@@ -52,5 +52,5 @@ if __name__ == '__main__':
     self = t
     for item in t.__dir__():
         if item.startswith('test'):
-            print('running test: '+item)
+            print(f'Running test: {item}')
             t.__getattribute__(item)()

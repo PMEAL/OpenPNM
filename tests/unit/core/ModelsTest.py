@@ -22,7 +22,7 @@ class ModelsTest:
         geo = op.geometry.StickAndBall(network=net, pores=net.Ps,
                                        throats=net.Ts)
         s = geo.models.__str__().split('\n')
-        assert len(s) == 70
+        assert len(s) == 69
         assert s.count('―'*85) == 15
 
     def test_regenerate_models(self):
@@ -71,7 +71,7 @@ class ModelsTest:
                        regen_mode='deferred')
 
         geom.add_model(propname='pore.area',
-                       model=mods.geometry.pore_area.sphere,
+                       model=mods.geometry.pore_cross_sectional_area.sphere,
                        pore_diameter='pore.diameter',
                        regen_mode='deferred')
 

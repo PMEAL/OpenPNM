@@ -17,7 +17,7 @@ class SubdomainTest:
                            model=op.models.geometry.pore_volume.sphere)
         self.geo['throat.diameter'] = np.random.rand(self.net.Nt)
         self.geo.add_model(propname='throat.area',
-                           model=op.models.geometry.throat_area.cylinder)
+                           model=op.models.geometry.throat_cross_sectional_area.cylinder)
         self.geo.regenerate_models()
         self.phase1 = op.phases.GenericPhase(network=self.net)
         self.phase2 = op.phases.GenericPhase(network=self.net)
@@ -37,42 +37,15 @@ class SubdomainTest:
     def test_drop_locations_from_geom_successively_with_single_geometry(self):
         assert self.geo.Np == 27
         assert self.geo.Nt == 54
-        self.geo._drop_locations(pores=[0, 1, 2], throats=[0, 1, 2])
+        self.geo.drop_locations(pores=[0, 1, 2], throats=[0, 1, 2])
         assert self.geo.Np == 24
         assert self.geo.Nt == 51
-        self.geo._drop_locations(pores=[3, 4], throats=[3, 4])
+        self.geo.drop_locations(pores=[3, 4], throats=[3, 4])
         assert self.geo.Np == 22
         assert self.geo.Nt == 49
-        self.geo._add_locations(pores=[0, 1, 2, 3, 4], throats=[0, 1, 2, 3, 4])
+        self.geo.add_locations(pores=[0, 1, 2, 3, 4], throats=[0, 1, 2, 3, 4])
         assert self.geo.Np == 27
         assert self.geo.Nt == 54
-
-    def test_drop_locations_from_physics_successively_with_two_physics(self):
-        assert self.phys1.Np == 27
-        assert self.phys1.Nt == 54
-        self.phys1._drop_locations(pores=[0, 1], throats=[0, 1])
-        assert self.phys1.Np == 25
-        assert self.phys1.Nt == 52
-        self.phys1._drop_locations(pores=[3, 4], throats=[3, 4])
-        assert self.phys1.Np == 23
-        assert self.phys1.Nt == 50
-        self.phys1._add_locations(pores=[0, 1, 3, 4], throats=[0, 1, 3, 4])
-        assert self.phys1.Np == 27
-        assert self.phys1.Nt == 54
-
-    def test_drop_locations_all_but_not_complete(self):
-        assert self.phys1.Np == 27
-        assert self.phys1.Nt == 54
-        assert 'pore.'+self.phys1.name in self.phase1.keys()
-        assert 'throat.'+self.phys1.name in self.phase1.keys()
-        self.phys1._drop_locations(pores=self.net.Ps)
-        assert 'pore.'+self.phys1.name in self.phase1.keys()
-        assert self.phase1.num_pores(self.phys1.name) == 0
-        assert 'throat.'+self.phys1.name in self.phase1.keys()
-        self.phys1._drop_locations(throats=self.net.Ts)
-        assert 'throat.'+self.phys1.name in self.phase1.keys()
-        assert self.phase1.num_throats(self.phys1.name) == 0
-        self.phys1._add_locations(pores=self.net.Ps, throats=self.net.Ts)
 
     def test_interleaving_missing_objects(self):
         pn = op.network.Cubic(shape=[3, 1, 1])
@@ -226,11 +199,11 @@ class SubdomainTest:
         Ps = net.pores('bottom')
         geom2 = op.geometry.GenericGeometry(network=net, pores=Ps)
         with pytest.raises(KeyError):
-            net['pore.blah']
+            _ = net['pore.blah']
         with pytest.raises(KeyError):
-            geom1['pore.blah']
+            _ = geom1['pore.blah']
         with pytest.raises(KeyError):
-            geom2['pore.blah']
+            _ = geom2['pore.blah']
 
     def test_interleave_data_float_missing_geometry(self):
         net = op.network.Cubic(shape=[2, 2, 2])
@@ -252,10 +225,8 @@ class SubdomainTest:
 
     def test_interleave_data_float_missing_physics(self):
         net = op.network.Cubic(shape=[4, 1, 1])
-        geo1 = op.geometry.GenericGeometry(network=net, pores=[0, 1],
-                                           throats=[0, 1])
-        geo2 = op.geometry.GenericGeometry(network=net, pores=[2, 3],
-                                           throats=[2])
+        geo1 = op.geometry.GenericGeometry(network=net, pores=[0, 1], throats=[0, 1])
+        op.geometry.GenericGeometry(network=net, pores=[2, 3], throats=[2])
         air = op.phases.Air(network=net)
         phys = op.physics.GenericPhysics(network=net, phase=air, geometry=geo1)
         phys['pore.blah'] = 1.0
@@ -263,10 +234,8 @@ class SubdomainTest:
 
     def test_interleave_data_int_missing_physics(self):
         net = op.network.Cubic(shape=[4, 1, 1])
-        geo1 = op.geometry.GenericGeometry(network=net, pores=[0, 1],
-                                           throats=[0, 1])
-        geo2 = op.geometry.GenericGeometry(network=net, pores=[2, 3],
-                                           throats=[2])
+        geo1 = op.geometry.GenericGeometry(network=net, pores=[0, 1], throats=[0, 1])
+        op.geometry.GenericGeometry(network=net, pores=[2, 3], throats=[2])
         air = op.phases.Air(network=net)
         phys = op.physics.GenericPhysics(network=net, phase=air, geometry=geo1)
         phys['pore.blah'] = 1
@@ -274,16 +243,14 @@ class SubdomainTest:
 
     def test_interleave_data_bool_missing_physics(self):
         net = op.network.Cubic(shape=[4, 1, 1])
-        geo1 = op.geometry.GenericGeometry(network=net, pores=[0, 1],
-                                           throats=[0, 1])
-        geo2 = op.geometry.GenericGeometry(network=net, pores=[2, 3],
-                                           throats=[2])
+        geo1 = op.geometry.GenericGeometry(network=net, pores=[0, 1], throats=[0, 1])
+        op.geometry.GenericGeometry(network=net, pores=[2, 3], throats=[2])
         air = op.phases.Air(network=net)
         phys = op.physics.GenericPhysics(network=net, phase=air, geometry=geo1)
         phys['pore.blah'] = True
         assert np.sum(air['pore.blah']) == phys.Np
 
-    def test_writting_subdict_names_across_subdomains(self):
+    def test_writing_subdict_names_across_subdomains(self):
         ws = op.Workspace()
         proj = ws.new_project()
 
@@ -342,5 +309,5 @@ if __name__ == '__main__':
     t.setup_class()
     for item in t.__dir__():
         if item.startswith('test'):
-            print('running test: '+item)
+            print(f'Running test: {item}')
             t.__getattribute__(item)()

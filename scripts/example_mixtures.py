@@ -1,5 +1,7 @@
 import openpnm as op
 from openpnm.phases import mixtures
+
+
 ws = op.Workspace()
 proj = ws.new_project()
 
@@ -25,7 +27,7 @@ phys.add_model(propname='throat.diffusive_conductance',
                throat_diffusivity='throat.diffusivity.pure_O2',
                model=op.models.physics.diffusive_conductance.ordinary_diffusion)
 phys.add_model(propname='throat.hydraulic_conductance',
-               pore_diffusivity='pore.viscosity',
+               pore_viscosity='pore.viscosity',
                model=op.models.physics.hydraulic_conductance.classic_hagen_poiseuille)
 
 sf = op.algorithms.StokesFlow(network=pn, phase=air)

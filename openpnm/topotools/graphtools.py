@@ -72,6 +72,8 @@ def find_neighbor_sites(sites, am, flatten=True, include_input=False,
     if am.format != 'lil':
         am = am.tolil(copy=False)
     sites = np.array(sites, ndmin=1)
+    if len(sites) == 0:
+        return []
     am_coo = am.tocoo()
     n_sites = am.shape[0]
     rows = am.rows[sites].tolist()
@@ -182,7 +184,7 @@ def find_neighbor_bonds(sites, im=None, am=None, flatten=True, logic='or'):
         if len(rows) == 0:
             return []
         neighbors = np.hstack(rows).astype(np.int64)
-        n_bonds = int(im.nnz/2)
+        n_bonds = int(im.nnz / 2)
         if logic in ['or', 'union', 'any']:
             neighbors = np.unique(neighbors)
         elif logic in ['xor', 'exclusive_or']:
@@ -229,8 +231,7 @@ def find_neighbor_bonds(sites, im=None, am=None, flatten=True, logic='or'):
         neighbors = np.where(neighbors)[0]
         return neighbors
     else:
-        raise Exception('Either the incidence or the adjacency matrix must '
-                        + 'must be specified')
+        raise Exception('Either the incidence or the adjacency matrix must be specified')
 
 
 def find_connected_sites(bonds, am, flatten=True, logic='or'):
@@ -313,7 +314,7 @@ def find_connected_sites(bonds, am, flatten=True, logic='or'):
         raise Exception('Specified logic is not implemented')
     if flatten is False:
         if neighbors.size:
-            mask = np.zeros(shape=n_sites+1, dtype=bool)
+            mask = np.zeros(shape=n_sites + 1, dtype=bool)
             mask[neighbors] = True
             temp = np.hstack((am.row[bonds], am.col[bonds])).astype(np.int64)
             temp[~mask[temp]] = -1
@@ -400,7 +401,7 @@ def find_complement(am, sites=None, bonds=None, asmask=False):
         N = am.shape[0]
     elif (bonds is not None) and (sites is None):
         inds = np.unique(bonds)
-        N = int(am.nnz/2)
+        N = int(am.nnz / 2)
     elif (bonds is not None) and (sites is not None):
         raise Exception('Only one of sites or bonds can be specified')
     else:
@@ -480,7 +481,7 @@ def _am_to_im(am):
         row = np.append(row, conn[:, 1])
         data = np.append(data, data)
         col = np.append(col, col)
-    im = sprs.coo.coo_matrix((data, (row, col)), (row.max()+1, col.max()+1))
+    im = sprs.coo.coo_matrix((data, (row, col)), (row.max() + 1, col.max() + 1))
     return im
 
 
@@ -518,7 +519,7 @@ def tri_to_am(tri):
     # Scan through Delaunay triangulation to retrieve pairs
     indices, indptr = tri.vertex_neighbor_vertices
     for k in range(tri.npoints):
-        lil.rows[k] = indptr[indices[k]:indices[k+1]]
+        lil.rows[k] = indptr[indices[k]:indices[k + 1]]
     # Convert to coo format
     lil.data = lil.rows  # Just a dummy array to make things work properly
     coo = lil.tocoo()

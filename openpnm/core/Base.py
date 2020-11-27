@@ -2,7 +2,6 @@ import warnings
 import uuid
 import numpy as np
 from collections import namedtuple
-from openpnm.models.misc import from_neighbor_throats, from_neighbor_pores
 from openpnm.utils import Workspace, logging
 from openpnm.utils.misc import PrintableList, SettingsDict, Docorator
 docstr = Docorator()
@@ -395,7 +394,7 @@ class Base(dict):
     def keys(self, element=None, mode=None, deep=False):
         r"""
         This subclass works exactly like ``keys`` when no arguments are passed,
-        but optionally accepts an ``element`` and/or a ``mode``, which filters
+        but optionally accepts an ``element`` and a ``mode``, which filters
         the output to only the requested keys.
 
         The default behavior is exactly equivalent to the normal ``keys``
@@ -1266,7 +1265,7 @@ class Base(dict):
 
         return temp_arr
 
-    def interpolate_data(self, propname):
+    def interpolate_data(self, propname, mode='mean'):
         r"""
         Determines a pore (or throat) property as the average of it's
         neighboring throats (or pores)
@@ -1275,15 +1274,14 @@ class Base(dict):
         ----------
         propname: string
             The dictionary key to the values to be interpolated.
+        mode : string
+            The method used for interpolation.  Options are 'mean' (default),
+            'min', and 'max'.
 
         Returns
         -------
-        An array containing interpolated pore (or throat) data
-
-        Notes
-        -----
-        This uses an unweighted average, without attempting to account for
-        distances or sizes of pores and throats.
+        vals : ND-array
+            An array containing interpolated pore (or throat) data
 
         Examples
         --------
@@ -1294,10 +1292,11 @@ class Base(dict):
         array([1.5, 2.5])
 
         """
+        from openpnm.models.misc import from_neighbor_throats, from_neighbor_pores
         if propname.startswith('throat'):
-            values = from_neighbor_throats(target=self, prop=propname, mode='mean')
+            values = from_neighbor_throats(target=self, prop=propname, mode=mode)
         elif propname.startswith('pore'):
-            values = from_neighbor_pores(target=self, prop=propname, mode='mean')
+            values = from_neighbor_pores(target=self, prop=propname, mode=mode)
         if hasattr(self[propname], 'units'):
             values *= self[propname].units
         return values
@@ -1305,7 +1304,7 @@ class Base(dict):
     def filter_by_label(self, pores=[], throats=[], labels=None, mode='or'):
         r"""
         Returns which of the supplied pores (or throats) has the specified
-        label
+        label(s)
 
         Parameters
         ----------

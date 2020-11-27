@@ -1,17 +1,11 @@
 r"""
-
-.. autofunction:: openpnm.models.misc.neighbor_lookups.from_neighbor_throats
-.. autofunction:: openpnm.models.misc.neighbor_lookups.from_neighbor_pores
-
 """
-
 import numpy as np
 from openpnm.utils import logging
 logger = logging.getLogger(__name__)
 
 
-def from_neighbor_throats(target, prop=None, throat_prop='pore.seed',
-                          mode='min', ignore_nans=True):
+def from_neighbor_throats(target, prop, mode='min', ignore_nans=True):
     r"""
     Adopt a value from the values found in neighboring throats
 
@@ -23,9 +17,7 @@ def from_neighbor_throats(target, prop=None, throat_prop='pore.seed',
         necessary properties.
     prop : string
         The dictionary key of the array containing the throat property to be
-        used in the calculation.  The default is 'throat.seed'.
-    throat_prop : string
-        Same as ``prop``, but will be deprecated.
+        used in the calculation.
     mode : string
         Controls how the pore property is calculated.  Options are 'min',
         'max' and 'mean'.
@@ -39,9 +31,7 @@ def from_neighbor_throats(target, prop=None, throat_prop='pore.seed',
     prj = target.project
     network = prj.network
     boss = prj.find_full_domain(target)
-    if prop is not None:
-        throat_prop = prop
-    data = boss[throat_prop]
+    data = boss[prop]
     nans = np.isnan(data)
     im = network.create_incidence_matrix()
     if mode == 'min':
@@ -68,8 +58,7 @@ def from_neighbor_throats(target, prop=None, throat_prop='pore.seed',
     return np.array(values)[Ps]
 
 
-def from_neighbor_pores(target, prop=None, pore_prop='pore.seed', mode='min',
-                        ignore_nans=True):
+def from_neighbor_pores(target, prop, mode='min', ignore_nans=True):
     r"""
     Adopt a value based on the values in neighboring pores
 
@@ -81,9 +70,7 @@ def from_neighbor_pores(target, prop=None, pore_prop='pore.seed', mode='min',
         necessary properties.
     prop : string
         The dictionary key to the array containing the pore property to be
-        used in the calculation.  Default is 'pore.seed'.
-    pore_prop : string
-        Same as ``prop`` but will be deprecated.
+        used in the calculation.
     mode : string
         Controls how the throat property is calculated.  Options are 'min',
         'max' and 'mean'.
@@ -101,9 +88,7 @@ def from_neighbor_pores(target, prop=None, pore_prop='pore.seed', mode='min',
     network = prj.network
     throats = network.map_throats(target.throats(), target)
     P12 = network.find_connected_pores(throats)
-    if prop is not None:
-        pore_prop = prop
-    pvalues = lookup[pore_prop][P12]
+    pvalues = lookup[prop][P12]
     if ignore_nans:
         pvalues = np.ma.MaskedArray(data=pvalues, mask=np.isnan(pvalues))
     try:  # If pvalues is not empty

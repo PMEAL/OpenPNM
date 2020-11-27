@@ -1,11 +1,4 @@
 r"""
-
-.. autofunction:: openpnm.models.phases.diffusivity.fuller
-.. autofunction:: openpnm.models.phases.diffusivity.fuller_scaling
-.. autofunction:: openpnm.models.phases.diffusivity.tyn_calus
-.. autofunction:: openpnm.models.phases.diffusivity.tyn_calus_scaling
-.. autofunction:: openpnm.models.phases.diffusivity.chapman_enskog
-
 """
 
 

@@ -48,7 +48,7 @@ parameters.
 | STL      | The STL Format is a Standard Triangle (or Tessellation) Language |
 |          | supported by many CAD packages and used for 3D printing          |
 +----------+------------------------------------------------------------------+
-| Salome   | A *.py instruction file to be read by Salome to build a geomertry|
+| Salome   | A .py instruction file to be read by Salome to build a geomertry |
 +----------+------------------------------------------------------------------+
 | PerGeos  | The PerGeos format is used by the commercial software Avizo      |
 +----------+------------------------------------------------------------------+
