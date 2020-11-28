@@ -27,8 +27,10 @@ function filter_commits_by_label {
     local temp
     local commits=$1    # fetch the first argument
     shift               # removes first arg from list of input args
-    temp=$(echo "$commits" | grep -E --ignore-case $(parse_args "$@"))
-    temp=$(echo "${temp}" | sed 's/^[ \t]*//; s/[ \t]*$//')
+    temp=$(echo "${commits}" | grep -E --ignore-case "$@")
+    # Strip empty lines (that might include tabs, spaces, etc.)
+    temp=$(echo "${temp}" | sed -r '/^\s*$/d')
+    # Make each line a bullet point by appending "- " to lines
     temp=$(echo "${temp}" | sed -e 's/^/- /')
     echo "$temp"
 }
@@ -38,7 +40,7 @@ function filter_commits_exclude_label {
     local commits=$1    # fetch the first argument
     shift               # removes first arg from list of input args
     # Reverse filter commits by the given labels (i.e. exclude labels)
-    temp=$(echo "$commits" | grep -v -E --ignore-case $(parse_args "$@"))
+    temp=$(echo "$commits" | grep -v -E --ignore-case "$@")
     # Strip empty lines (that might include tabs, spaces, etc.)
     temp=$(echo "${temp}" | sed -r '/^\s*$/d')
     # Make each line a bullet point by appending "- " to lines
@@ -73,14 +75,17 @@ tag_new=$(get_nth_recent_tag 1)
 tag_date=$(git show "$tag_new" --format="%cs")
 merge_commits=$(filter_commits_by_tag_interval $tag_old $tag_new)
 
-# Fetching new features/changed API/bugfixes
+# Fetching new features/enhancements/maintenance/api change/bug fixes/documentation
 features=$(filter_commits_by_label "$merge_commits" "new")
 enhancements=$(filter_commits_by_label "$merge_commits" "enh")
 maintenance=$(filter_commits_by_label "$merge_commits" "maint")
 changes=$(filter_commits_by_label "$merge_commits" "api")
 fixes=$(filter_commits_by_label "$merge_commits" "bug")
 documentation=$(filter_commits_by_label "$merge_commits" "doc")
-uncategorized=$(filter_commits_exclude_label "$merge_commits" "new" "enh" "maint" "api" "bug" "doc")
+
+# Fetching uncategorized merge commits (those w/o keywords)
+all_keywords=$(join_by "|" new enh maint api bug doc)
+uncategorized=$(filter_commits_exclude_label "$merge_commits" "$all_keywords")
 
 # Delete "entry" file if already exists
 if test -f entry; then
