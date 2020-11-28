@@ -566,8 +566,9 @@ def multiphase_diffusion(
         gi[Li == 0] = _np.inf
 
     # Apply Henry's partitioning coefficient
+    # Note 1: m12 = G21*c1 - G12*c2
     K12 = phase[partition_coef_global][throats]
-    G12 = K12 * (1.0 / g1 + 0.5 / gt + K12 * (1.0 / g2 + 0.5 / gt)) ** (-1)
-    G21 = 1.0 / K12 * (1.0 / g2 + 0.5 / gt + 1.0 / K12 * (1.0 / g1 + 0.5 / gt)) ** (-1)
+    G21 = (1/g1 + 0.5/gt + K12 * (1/g2 + 0.5/gt)) ** (-1)
+    G12 = K12 * G21
 
     return _np.vstack((G12, G21)).T
