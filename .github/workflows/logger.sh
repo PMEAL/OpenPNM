@@ -51,8 +51,8 @@ function filter_commits_exclude_label {
 function filter_commits_by_tag_interval {
     local temp
     # --format=%B only outputs commit messages (excluding committer, date, etc.)
-    # --first-parent dev excludes merge commits into the topic branch, ex. dev -> feature
-    temp=$(git log --merges "${1}..${2}" --format=%B --first-parent dev)
+    # --first-parent excludes merge commits into the topic branch, ex. dev -> feature
+    temp=$(git log --merges "${1}..${2}" --format=%B --first-parent)
     echo "$temp"
 }
 
