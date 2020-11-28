@@ -163,6 +163,7 @@ class AdvectionDiffusionTest:
         with pytest.raises(Exception):
             ad.set_outflow_BC(pores=[0, 1])
         ad.set_outflow_BC(pores=[2, 3])
+        assert not np.all(np.isnan(ad['pore.bc_outflow']))
 
     def test_add_outflow_fails_when_value_BC_present(self):
         ad = AdvectionDiffusion(network=self.net, phase=self.phase)
@@ -170,6 +171,7 @@ class AdvectionDiffusionTest:
         with pytest.raises(Exception):
             ad.set_outflow_BC(pores=[0, 1])
         ad.set_outflow_BC(pores=[2, 3])
+        assert not np.all(np.isnan(ad['pore.bc_outflow']))
 
     def test_add_rate_BC_fails_when_outflow_BC_present(self):
         ad = AdvectionDiffusion(network=self.net, phase=self.phase)
@@ -177,6 +179,7 @@ class AdvectionDiffusionTest:
         with pytest.raises(Exception):
             ad.set_rate_BC(pores=[0, 1], total_rate=1)
         ad.set_rate_BC(pores=[2, 3], total_rate=1)
+        assert np.all(ad['pore.bc_rate'][[2, 3]] == 0.5)
 
     def test_outflow_BC_rigorous(self):
         ad = AdvectionDiffusion(network=self.net, phase=self.phase)
