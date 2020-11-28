@@ -2,6 +2,7 @@ import numpy as np
 import openpnm as op
 from numpy.testing import assert_allclose
 from openpnm.algorithms import AdvectionDiffusion, StokesFlow
+import pytest
 
 
 class AdvectionDiffusionTest:
@@ -155,6 +156,24 @@ class AdvectionDiffusionTest:
             ad.run()
             y = ad[ad.settings['quantity']].mean()
             assert_allclose(actual=y, desired=2, rtol=1e-5)
+
+    def test_add_outflow_when_rate_BC_present(self):
+        ad = AdvectionDiffusion(network=self.net, phase=self.phase)
+        ad.set_rate_BC(pores=[0, 1], total_rate=1)
+        with pytest.raises(Exception):
+            ad.set_outflow_BC(pores=[0, 1])
+
+    def test_add_outflow_when_value_BC_present(self):
+        ad = AdvectionDiffusion(network=self.net, phase=self.phase)
+        ad.set_value_BC(pores=[0, 1], values=1)
+        with pytest.raises(Exception):
+            ad.set_outflow_BC(pores=[0, 1])
+
+    def test_add_rate_BE_when_outflow_BC_present(self):
+        ad = AdvectionDiffusion(network=self.net, phase=self.phase)
+        ad.set_outflow_BC(pores=[0, 1])
+        with pytest.raises(Exception):
+            ad.set_rate_BC(pores=[0, 1], total_rate=1)
 
     def test_outflow_BC_rigorous(self):
         ad = AdvectionDiffusion(network=self.net, phase=self.phase)

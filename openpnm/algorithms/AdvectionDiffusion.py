@@ -117,6 +117,17 @@ class AdvectionDiffusion(ReactiveTransport):
         np.add.at(Qp, C12[:, 0], -Q12)
         np.add.at(Qp, C12[:, 1], Q12)
 
+        # Ensure other BCs are not already applied at given pores
+        hits = ~np.isnan(self['pore.bc_rate'][pores])
+        if np.any(hits):
+            raise Exception('Cannot apply outflow BCs to the following '
+                            + 'pores which already have a rate BC '
+                            + 'specified', pores[np.where(hits)])
+        hits = ~np.isnan(self['pore.bc_value'][pores])
+        if np.any(hits):
+            raise Exception('Cannot apply outflow BCs to the following '
+                            + 'pores which already have a value BC '
+                            + 'specified', pores[np.where(hits)])
         # Store boundary values
         if ('pore.bc_outflow' not in self.keys()) or (mode == 'overwrite'):
             self['pore.bc_outflow'] = np.nan
@@ -135,3 +146,14 @@ class AdvectionDiffusion(ReactiveTransport):
         ind = np.isfinite(self['pore.bc_outflow'])
         diag[ind] += self['pore.bc_outflow'][ind]
         self.A.setdiag(diag)
+
+    def _set_BC(self, pores, bctype, bcvalues=None, mode='merge'):
+        # First check that given pores outflow BCs already applied
+        if 'pore.bc_outflow' in self.keys():
+            hits = ~np.isnan(self['pore.bc_outflow'][pores])
+            if np.any(hits):
+                raise Exception('Cannot apply BCs to the following pores '
+                                + 'which already have an outflow BC '
+                                + 'specified', pores[np.where(hits)])
+        # Then call parent class function if above check passes
+        super()._set_BC(pores=pores, bctype=bctype, bcvalues=bcvalues, mode=mode)
