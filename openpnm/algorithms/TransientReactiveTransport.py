@@ -172,17 +172,30 @@ class TransientReactiveTransport(ReactiveTransport):
 
         """
         quantity = self.settings['quantity']
-        values = np.array(values) * 1.0
+        values = np.ones([self.Np, ]) * values
         if values.size > 1 and values.size != self.Np:
             raise Exception('The number of initial values must be either 1 or Np')
-        self['pore.ic'] = values
         if not quantity:
             raise Exception('"quantity" has not been defined on this algorithm')
+        # Ensure the given initial conditions have any value BC inserted
+        inds = ~np.isnan(self['pore.bc_value'])
+        values[inds] = self['pore.bc_value'][inds]
+        # Write values to self to to quantity, ic and t=0 array
         self[quantity] = values
-        phase = self.project[self.settings['phase']]
-        phase[quantity] = values
+        self['pore.ic'] = values
         t_str = self._nbr_to_str(self.settings['t_initial'])
         self[quantity + '@' + t_str] = values
+        # Write initial conditions to phase so iterative properties can use it
+        phase = self.project[self.settings['phase']]
+        phase[quantity] = values
+
+    def set_value_BC(self, pores, values, mode='merge'):
+        pores = self._parse_indices(pores)
+        super().set_value_BC(pores=pores, values=values, mode=mode)
+        quantity = self.settings['quantity']
+        # Over-write initial conditions if present
+        if quantity in self.keys():
+            self[quantity][pores] = values
 
     def _get_f1_f2_f3(self):
         r"""
