@@ -67,8 +67,8 @@ if __name__ == '__main__':
 
     t = TransientAdvectionDiffusionTest()
     t.setup_class()
+    self = t
     for item in t.__dir__():
         if item.startswith('test'):
             print('running test: '+item)
             t.__getattribute__(item)()
-    self = t
