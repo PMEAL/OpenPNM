@@ -239,21 +239,20 @@ class ReactiveTransport(GenericTransport):
         This method was implemented relaxing one of the OpenPNM rules of
         algorithms not being able to write into phases.
         """
-        if (len(self.settings['variable_props']) == 0) and \
-                (len(self.settings['sources']) == 0):
-            return
         phase = self.project.phases()[self.settings['phase']]
         physics = self.project.find_physics(phase=phase)
         geometries = self.project.geometries().values()
-        # Put quantity on phase so physics finds it when regenerating
-        phase.update(self.results())
         # Regenerate iterative props with new guess
         iterative_props = self._get_iterative_props()
-        phase.regenerate_models(propnames=iterative_props)
-        for geometry in geometries:
-            geometry.regenerate_models(iterative_props)
-        for phys in physics:
-            phys.regenerate_models(iterative_props)
+        if len(iterative_props) > 0:
+            # Put quantity on phase so physics finds it when regenerating
+            key = self.settings['quantity']
+            phase[key] = self[key]
+            phase.regenerate_models(propnames=iterative_props)
+            for geometry in geometries:
+                geometry.regenerate_models(iterative_props)
+            for phys in physics:
+                phys.regenerate_models(iterative_props)
 
     def _apply_sources(self):
         """r
@@ -401,7 +400,10 @@ class ReactiveTransport(GenericTransport):
             return []
         iterative_props = list(nx.dag.lexicographical_topological_sort(dg))
         # "quantity" shouldn't be in the returned list but "variable_props" should
-        iterative_props.remove(self.settings["quantity"])
+        try:
+            iterative_props.remove(self.settings["quantity"])
+        except ValueError:
+            pass
         return iterative_props
 
     @docstr.dedent
