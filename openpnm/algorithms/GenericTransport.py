@@ -634,6 +634,11 @@ class GenericTransport(GenericAlgorithm):
         """
         # SciPy
         if self.settings['solver_family'] == 'scipy':
+            if self.Np > 8000:
+                logger.warning('The default scipy solver will be very slow '
+                               + 'on a network this large. We strongly '
+                               + 'recommend using pardiso.')
+
             def solver(A, b, atol=None, rtol=None, max_it=None, x0=None):
                 r"""
                 Wrapper method for scipy sparse linear solvers.
@@ -672,11 +677,15 @@ class GenericTransport(GenericAlgorithm):
             try:
                 import pypardiso
             except ModuleNotFoundError:
-                logger.critical("Pardiso not found, reverting to much "
-                                + "slower spsolve.  Install pardiso with: "
-                                + "conda install -c conda-forge pardiso4py")
-                self.settings['solver_family'] = 'scipy'
-                return self._get_solver()
+                if self.Np <= 8000:
+                    logger.critical("Pardiso not found, reverting to much "
+                                    + "slower spsolve.  Install pardiso with: "
+                                    + "conda install -c conda-forge pardiso4py")
+                    self.settings['solver_family'] = 'scipy'
+                    return self._get_solver()
+                else:
+                    raise Exception("Pardiso not found. Install it with: "
+                                    + "conda install -c conda-forge pardiso4py")
 
             def solver(A, b, **kwargs):
                 r"""
