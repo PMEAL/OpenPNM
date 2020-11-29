@@ -179,6 +179,8 @@ class TransientReactiveTransport(ReactiveTransport):
         if not quantity:
             raise Exception('"quantity" has not been defined on this algorithm')
         self[quantity] = values
+        phase = self.project[self.settings['phase']]
+        phase[quantity] = values
         t_str = self._nbr_to_str(self.settings['t_initial'])
         self[quantity + '@' + t_str] = values
 
@@ -271,7 +273,6 @@ class TransientReactiveTransport(ReactiveTransport):
         self._b_t = self._b.copy()
         if t is None:
             t = self.settings['t_initial']
-        # Create S1 & S2 for 1st Picard's iteration
         self._update_iterative_props()
         self._run_transient(t=t)
 

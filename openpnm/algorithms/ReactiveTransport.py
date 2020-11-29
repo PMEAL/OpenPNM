@@ -239,6 +239,9 @@ class ReactiveTransport(GenericTransport):
         This method was implemented relaxing one of the OpenPNM rules of
         algorithms not being able to write into phases.
         """
+        if (len(self.settings['variable_props']) == 0) and \
+                (len(self.settings['sources']) == 0):
+            return
         phase = self.project.phases()[self.settings['phase']]
         physics = self.project.find_physics(phase=phase)
         geometries = self.project.geometries().values()
