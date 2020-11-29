@@ -179,6 +179,8 @@ class TransientReactiveTransport(ReactiveTransport):
         if not quantity:
             raise Exception('"quantity" has not been defined on this algorithm')
         self[quantity] = values
+        t_str = self._nbr_to_str(self.settings['t_initial'])
+        self[quantity + '@' + t_str] = values
 
     def _get_f1_f2_f3(self):
         r"""
