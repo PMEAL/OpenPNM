@@ -173,7 +173,7 @@ class GenericTransportTest:
         alg.settings['conductance'] = 'throat.diffusive_conductance'
         alg.settings['quantity'] = 'pore.mole_fraction'
         alg.set_rate_BC(pores=[0, 1, 2, 3], values=1.235)
-        alg.set_rate_BC(pores=[5, 6, 19, 35, 0], values=3.455)
+        alg.set_rate_BC(pores=[5, 6, 19, 35, 0], values=3.455, mode='insert')
         # Pore 0 is assigned two rate BCs, only the most recent will be kept
         alg.set_value_BC(pores=[50, 51, 52, 53], values=0.0)
         alg.run()
