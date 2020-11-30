@@ -108,17 +108,6 @@ class GenericTransportTest:
         assert np.isfinite(alg['pore.bc_rate']).sum() == 2
         assert np.isfinite(alg['pore.bc_value']).sum() == 1
 
-    def test_set_value_bc_where_rate_is_already_set_mode_insert(self):
-        alg = op.algorithms.GenericTransport(network=self.net,
-                                             phase=self.phase)
-        alg.settings['conductance'] = 'throat.diffusive_conductance'
-        alg.settings['quantity'] = 'pore.mole_fraction'
-        alg.set_rate_BC(pores=[0, 1], values=1, mode='merge')
-        alg.set_value_BC(pores=[2, 3, 4], values=0)
-        alg.set_value_BC(pores=[1, 2], values=0)
-        assert np.isfinite(alg['pore.bc_rate']).sum() == 2
-        assert np.isfinite(alg['pore.bc_value']).sum() == 3
-
     def test_set_value_bc_where_rate_is_already_set_mode_overwrite(self):
         alg = op.algorithms.GenericTransport(network=self.net,
                                              phase=self.phase)
