@@ -266,13 +266,16 @@ class GenericTransport(GenericAlgorithm):
         mode : string, optional
             Controls how the boundary conditions are applied.  Options are:
 
-            +-------------+--------------------------------------------------+
-            | 'merge'     | (Default) Adds supplied boundary conditions to   |
-            |             | already existing conditions                      |
-            +-------------+--------------------------------------------------+
-            | 'overwrite' | Deletes all boundary condition on object then    |
-            |             | adds the given ones                              |
-            +-------------+--------------------------------------------------+
+            'merge' - (Default) Adds supplied boundary conditions to already
+            existing conditions, but does not overwrite any existing values.
+            If BCs of either type already exist in the given locations, these
+            values are kept.
+            'overwrite' - Deletes all boundary conditions of the given type
+            then adds the specified new ones (unless locations already have
+            BCs of the other type).
+            'insert' - Writes all specified values to given locations.  If
+            BCs are already specified in those locations for the other type
+            those values are kept.
 
         Notes
         -----
@@ -303,13 +306,16 @@ class GenericTransport(GenericAlgorithm):
         mode : str, optional
             Controls how the boundary conditions are applied.  Options are:
 
-            +-------------+--------------------------------------------------+
-            | 'merge'     | (Default) Adds supplied boundary conditions to   |
-            |             | already existing conditions                      |
-            +-------------+--------------------------------------------------+
-            | 'overwrite' | Deletes all boundary condition on object then    |
-            |             | adds the given ones                              |
-            +-------------+--------------------------------------------------+
+            'merge' - (Default) Adds supplied boundary conditions to already
+            existing conditions, but does not overwrite any existing values.
+            If BCs of either type already exist in the given locations, these
+            values are kept.
+            'overwrite' - Deletes all boundary conditions of the given type
+            then adds the specified new ones (unless locations already have
+            BCs of the other type).
+            'insert' - Writes all specified values to given locations.  If
+            BCs are already specified in those locations for the other type
+            those values are kept.
 
         Notes
         -----
@@ -349,12 +355,8 @@ class GenericTransport(GenericAlgorithm):
             Specifies the type or the name of boundary condition to apply. The
             types can be one one of the following:
 
-            +-------------+--------------------------------------------------+
-            | 'value'     | Specify the value of the quantity in each        |
-            |             | location                                         |
-            +-------------+--------------------------------------------------+
-            | 'rate'      | Specify the flow rate into each location         |
-            +-------------+--------------------------------------------------+
+            'value' - Specify the value of the quantity in each location
+            'rate' - Specify the flow rate into each location
 
         bcvalues : int or array_like
             The boundary value to apply, such as concentration or rate.  If
@@ -366,13 +368,16 @@ class GenericTransport(GenericAlgorithm):
         mode : string, optional
             Controls how the boundary conditions are applied.  Options are:
 
-            +-------------+--------------------------------------------------+
-            | 'merge'     | (Default) Adds supplied boundary conditions to   |
-            |             | already existing conditions                      |
-            +-------------+--------------------------------------------------+
-            | 'overwrite' | Deletes all boundary condition on object then    |
-            |             | adds the given ones                              |
-            +-------------+--------------------------------------------------+
+            'merge' - (Default) Adds supplied boundary conditions to already
+            existing conditions, but does not overwrite any existing values.
+            If BCs of either type already exist in the given locations, these
+            values are kept.
+            'overwrite' - Deletes all boundary conditions of the given type
+            then adds the specified new ones (unless locations already have
+            BCs of the other type).
+            'insert' - Writes all specified values to given locations.  If
+            BCs are already specified in those locations for the other type
+            those values are kept.
 
         Notes
         -----
@@ -385,6 +390,7 @@ class GenericTransport(GenericAlgorithm):
         # Hijack the parse_mode function to verify bctype argument
         bctype = self._parse_mode(bctype, allowed=['value', 'rate'],
                                   single=True)
+        othertype = list(set(['value', 'rate']).difference(set([bctype])))[0]
         mode = self._parse_mode(mode, allowed=['merge', 'overwrite'],
                                 single=True)
         pores = self._parse_indices(pores)
@@ -394,16 +400,29 @@ class GenericTransport(GenericAlgorithm):
             raise Exception('The number of boundary values must match the '
                             + 'number of locations')
 
-        # Warn the user that another boundary condition already exists
-        value_BC_mask = np.isfinite(self["pore.bc_value"])
-        rate_BC_mask = np.isfinite(self["pore.bc_rate"])
-        BC_locs = self.Ps[rate_BC_mask + value_BC_mask]
-        if np.intersect1d(pores, BC_locs).size:
-            logger.info('Another boundary condition detected in some locations!')
-
-        # Clear old boundary values if needed
-        if ('pore.bc_' + bctype not in self.keys()) or (mode == 'overwrite'):
+        # Create boundary array if needed (though these are created on init)
+        if 'pore.bc_' + bctype not in self.keys():
             self['pore.bc_' + bctype] = np.nan
+
+        # Catch pores with existing BCs
+        if mode == 'merge':  # remove offenders, and warn user
+            existing_bcs = np.isfinite(self["pore.bc_rate"]) + \
+                           np.isfinite(self["pore.bc_value"])
+            inds = np.where(existing_bcs[pores])[0]
+        elif mode == 'overwrite':  # Remove existing BCs and write new ones
+            self['pore.bc_' + bctype] = np.nan
+            existing_bcs = np.isfinite(self["pore.bc_" + othertype])
+            inds = np.where(existing_bcs[pores])[0]
+        elif mode == 'insert':
+            existing_bcs = np.isfinite(self["pore.bc_" + othertype])
+            inds = np.where(existing_bcs[pores])[0]
+        # Now drop any pore indices with have BCs that should be kept
+        if len(inds) > 0:
+            msg = r'Boundary conditions are already specified in ' + \
+                  r'the following given pores, so these will be skipped: '
+            msg = '\n'.join((msg, inds.__repr__()))
+            logger.warning(msg)
+            pores = np.array(list(set(pores).difference(set(inds))), dtype=int)
 
         # Store boundary values
         self['pore.bc_' + bctype][pores] = values
