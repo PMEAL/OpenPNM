@@ -56,7 +56,7 @@ class TransientImplicitReactiveTransportTest:
              2, 0.94663043, 0.39438009,
              2, 0.94663043, 0.39438009]
         y = self.alg["pore.concentration"]
-        # nt.assert_allclose(y, x, rtol=1e-5)
+        nt.assert_allclose(y, x, rtol=1e-5)
 
     def test_transient_reactive_transport_output_times(self):
         self.alg.setup(t_output=[0, 0.5, 0.7, 1])
