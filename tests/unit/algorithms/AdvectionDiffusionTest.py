@@ -62,7 +62,7 @@ class AdvectionDiffusionTest:
                             model=mod, s_scheme='powerlaw')
         g_old = self.phys["throat.ad_dif_conductance"]
         # Run StokesFlow with a different BC to change pressure field
-        self.sf.set_value_BC(pores=self.net.pores('right'), values=1.5, mode='insert')
+        self.sf.set_value_BC(pores=self.net.pores('right'), values=1.5)
         # Running the next line should update "throat.ad_dif_conductance"
         self.sf.run()
         self.phase.update(self.sf.results())
@@ -73,7 +73,7 @@ class AdvectionDiffusionTest:
         assert g_old.mean() != g_updated.mean()
         assert_allclose(g_updated.mean(), 1.01258990e-15)
         # Reset BCs for other tests to run properly
-        self.sf.set_value_BC(pores=self.net.pores('right'), values=1, mode='insert')
+        self.sf.set_value_BC(pores=self.net.pores('right'), values=1)
         self.sf.run()
 
     def test_powerlaw_advection_diffusion(self):

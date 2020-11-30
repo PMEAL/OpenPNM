@@ -267,15 +267,12 @@ class GenericTransport(GenericAlgorithm):
             Controls how the boundary conditions are applied.  Options are:
 
             'merge' - (Default) Adds supplied boundary conditions to already
-            existing conditions, but does not overwrite any existing values.
-            If BCs of either type already exist in the given locations, these
-            values are kept.
+            existing conditions, and also overwrites any existing values.
+            If BCs of the complementary type already exist in the given
+            locations, these values are kept.
             'overwrite' - Deletes all boundary conditions of the given type
             then adds the specified new ones (unless locations already have
             BCs of the other type).
-            'insert' - Writes all specified values to given locations.  If
-            BCs are already specified in those locations for the other type
-            those values are kept.
 
         Notes
         -----
@@ -306,15 +303,12 @@ class GenericTransport(GenericAlgorithm):
             Controls how the boundary conditions are applied.  Options are:
 
             'merge' - (Default) Adds supplied boundary conditions to already
-            existing conditions, but does not overwrite any existing values.
-            If BCs of either type already exist in the given locations, these
-            values are kept.
+            existing conditions, and also overwrites any existing values.
+            If BCs of the complementary type already exist in the given
+            locations, these values are kept.
             'overwrite' - Deletes all boundary conditions of the given type
             then adds the specified new ones (unless locations already have
             BCs of the other type).
-            'insert' - Writes all specified values to given locations.  If
-            BCs are already specified in those locations for the other type
-            those values are kept.
 
         Notes
         -----
@@ -367,15 +361,12 @@ class GenericTransport(GenericAlgorithm):
             Controls how the boundary conditions are applied.  Options are:
 
             'merge' - (Default) Adds supplied boundary conditions to already
-            existing conditions, but does not overwrite any existing values.
-            If BCs of either type already exist in the given locations, these
-            values are kept.
+            existing conditions, and also overwrites any existing values.
+            If BCs of the complementary type already exist in the given
+            locations, these values are kept.
             'overwrite' - Deletes all boundary conditions of the given type
             then adds the specified new ones (unless locations already have
             BCs of the other type).
-            'insert' - Writes all specified values to given locations.  If
-            BCs are already specified in those locations for the other type
-            those values are kept.
 
         Notes
         -----
@@ -389,7 +380,7 @@ class GenericTransport(GenericAlgorithm):
         bctype = self._parse_mode(bctype, allowed=['value', 'rate'],
                                   single=True)
         othertype = list(set(['value', 'rate']).difference(set([bctype])))[0]
-        mode = self._parse_mode(mode, allowed=['merge', 'overwrite', 'insert'],
+        mode = self._parse_mode(mode, allowed=['merge', 'overwrite'],
                                 single=True)
         pores = self._parse_indices(pores)
 
@@ -404,17 +395,13 @@ class GenericTransport(GenericAlgorithm):
 
         # Catch pores with existing BCs
         if mode == 'merge':  # remove offenders, and warn user
-            existing_bcs = np.isfinite(self["pore.bc_rate"]) + \
-                           np.isfinite(self["pore.bc_value"])
+            existing_bcs = np.isfinite(self["pore.bc_" + othertype])
             inds = pores[existing_bcs[pores]]
         elif mode == 'overwrite':  # Remove existing BCs and write new ones
             self['pore.bc_' + bctype] = np.nan
             existing_bcs = np.isfinite(self["pore.bc_" + othertype])
             inds = pores[existing_bcs[pores]]
-        elif mode == 'insert':
-            existing_bcs = np.isfinite(self["pore.bc_" + othertype])
-            inds = pores[existing_bcs[pores]]
-        # Now drop any pore indices with have BCs that should be kept
+        # Now drop any pore indices which have BCs that should be kept
         if len(inds) > 0:
             msg = r'Boundary conditions are already specified in ' + \
                   r'the following given pores, so these will be skipped: '

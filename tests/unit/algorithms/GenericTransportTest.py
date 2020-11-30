@@ -114,8 +114,8 @@ class GenericTransportTest:
         alg.settings['conductance'] = 'throat.diffusive_conductance'
         alg.settings['quantity'] = 'pore.mole_fraction'
         alg.set_rate_BC(pores=[0, 1], values=1, mode='merge')
-        alg.set_value_BC(pores=[2, 3, 4], values=0, mode='insert')
-        alg.set_value_BC(pores=[1, 2], values=0, mode='insert')
+        alg.set_value_BC(pores=[2, 3, 4], values=0)
+        alg.set_value_BC(pores=[1, 2], values=0)
         assert np.isfinite(alg['pore.bc_rate']).sum() == 2
         assert np.isfinite(alg['pore.bc_value']).sum() == 3
 
@@ -173,7 +173,7 @@ class GenericTransportTest:
         alg.settings['conductance'] = 'throat.diffusive_conductance'
         alg.settings['quantity'] = 'pore.mole_fraction'
         alg.set_rate_BC(pores=[0, 1, 2, 3], values=1.235)
-        alg.set_rate_BC(pores=[5, 6, 19, 35, 0], values=3.455, mode='insert')
+        alg.set_rate_BC(pores=[5, 6, 19, 35, 0], values=3.455)
         # Pore 0 is assigned two rate BCs, only the most recent will be kept
         alg.set_value_BC(pores=[50, 51, 52, 53], values=0.0)
         alg.run()
