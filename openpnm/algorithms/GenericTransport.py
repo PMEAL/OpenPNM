@@ -283,7 +283,6 @@ class GenericTransport(GenericAlgorithm):
         ``settings``, e.g. ``alg.settings['quantity'] = 'pore.pressure'``.
 
         """
-        mode = self._parse_mode(mode, allowed=['merge', 'overwrite'], single=True)
         self._set_BC(pores=pores, bctype='value', bcvalues=values, mode=mode)
 
     def set_rate_BC(self, pores, rates=None, total_rate=None, mode='merge',
@@ -337,7 +336,6 @@ class GenericTransport(GenericAlgorithm):
                                 + 'total_rate')
             pores = self._parse_indices(pores)
             rates = total_rate/pores.size
-        mode = self._parse_mode(mode, allowed=['merge', 'overwrite'], single=True)
         self._set_BC(pores=pores, bctype='rate', bcvalues=rates, mode=mode)
 
     @docstr.get_sectionsf(base='GenericTransport._set_BC',
@@ -391,7 +389,7 @@ class GenericTransport(GenericAlgorithm):
         bctype = self._parse_mode(bctype, allowed=['value', 'rate'],
                                   single=True)
         othertype = list(set(['value', 'rate']).difference(set([bctype])))[0]
-        mode = self._parse_mode(mode, allowed=['merge', 'overwrite'],
+        mode = self._parse_mode(mode, allowed=['merge', 'overwrite', 'insert'],
                                 single=True)
         pores = self._parse_indices(pores)
 
@@ -408,14 +406,14 @@ class GenericTransport(GenericAlgorithm):
         if mode == 'merge':  # remove offenders, and warn user
             existing_bcs = np.isfinite(self["pore.bc_rate"]) + \
                            np.isfinite(self["pore.bc_value"])
-            inds = np.where(existing_bcs[pores])[0]
+            inds = pores[existing_bcs[pores]]
         elif mode == 'overwrite':  # Remove existing BCs and write new ones
             self['pore.bc_' + bctype] = np.nan
             existing_bcs = np.isfinite(self["pore.bc_" + othertype])
-            inds = np.where(existing_bcs[pores])[0]
+            inds = pores[existing_bcs[pores]]
         elif mode == 'insert':
             existing_bcs = np.isfinite(self["pore.bc_" + othertype])
-            inds = np.where(existing_bcs[pores])[0]
+            inds = pores[existing_bcs[pores]]
         # Now drop any pore indices with have BCs that should be kept
         if len(inds) > 0:
             msg = r'Boundary conditions are already specified in ' + \
