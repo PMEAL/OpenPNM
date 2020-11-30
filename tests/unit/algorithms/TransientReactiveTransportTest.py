@@ -52,9 +52,9 @@ class TransientImplicitReactiveTransportTest:
     def test_transient_cranknicolson_reactive_transport(self):
         self.alg.setup(t_scheme='cranknicolson')
         self.alg.run()
-        x = [2, 0.94663043, 0.39438009,
-             2, 0.94663043, 0.39438009,
-             2, 0.94663043, 0.39438009]
+        x = [2., 0.97167537, 0.4209642,
+             2., 0.97167537, 0.4209642,
+             2., 0.97167537, 0.4209642]
         y = self.alg["pore.concentration"]
         nt.assert_allclose(y, x, rtol=1e-5)
 
