@@ -152,6 +152,7 @@ class ReactiveTransport(GenericTransport):
         x0 : ND-array
             Initial guess of unknown variable
         """
+        self._validate_settings()
         quantity = self.settings['quantity']
         logger.info('Running ReactiveTransport')
         x0 = np.zeros(self.Np, dtype=float) if x0 is None else x0
