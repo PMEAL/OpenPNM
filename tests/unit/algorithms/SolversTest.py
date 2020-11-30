@@ -23,7 +23,7 @@ class SolversTest:
                                  conductance='throat.conductance')
         self.alg.setup(phase=self.phase)
         self.alg.set_value_BC(pores=self.net.pores('back'), values=1.0)
-        self.alg.set_value_BC(pores=self.net.pores('bottom'), values=0.0)
+        self.alg.set_value_BC(pores=self.net.pores('bottom'), values=0.0, mode='insert')
 
     def test_solver_not_available(self):
         self.alg.settings['solver_family'] = 'not_supported_solver'
@@ -145,8 +145,8 @@ class SolversTest:
 if __name__ == '__main__':
     t = SolversTest()
     t.setup_class()
+    self = t
     for item in t.__dir__():
         if item.startswith('test'):
             print('running test: '+item)
             t.__getattribute__(item)()
-    self = t
