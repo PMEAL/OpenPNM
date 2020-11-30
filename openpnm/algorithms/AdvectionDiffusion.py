@@ -133,6 +133,16 @@ class AdvectionDiffusion(ReactiveTransport):
             self['pore.bc_outflow'] = np.nan
         self['pore.bc_outflow'][pores] = Qp[pores]
 
+    def remove_BC(self, pores=None, bctype='all'):
+        # parse bctype argument
+        if isinstance(bctype, str):
+            bctype = [bctype]
+        if 'all' in bctype:
+            bctype = ['value', 'rate', 'outflow']
+        if ('pore.bc_outflow' in self.keys()) and ('outflow' in bctype):
+            self['pore.bc_outflow'][pores] = np.nan
+        super().remove_BC(pores=pores, bctype=bctype)
+
     def _apply_BCs(self):
         r"""
         Applies Dirichlet, Neumann, and outflow BCs in order
