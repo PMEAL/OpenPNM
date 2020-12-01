@@ -1608,6 +1608,9 @@ class Base(dict):
                 axs[i].set_xlabel(props[i])
             except KeyError:
                 pass
+        # Hide unpopulated subplots from the grid
+        for j in range(i+1, len(axs)):
+            axs[j].set_axis_off()
         plt.rcParams['font.size'] = temp
         plt.tight_layout(h_pad=0.9, w_pad=0.9)
 
