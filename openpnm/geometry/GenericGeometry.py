@@ -68,6 +68,10 @@ class GenericGeometry(Subdomain, ModelsMixin):
 
     def __init__(self, network=None, project=None, pores=[], throats=[],
                  settings={}, **kwargs):
+        # Make sure at least one of [pores, throats] is not empty
+        if len(pores) == 0 and len(throats) == 0:
+            raise Exception("'pores' and 'throats' can't be both empty.")
+
         # Define some default settings
         self.settings.update({'prefix': 'geo'})
         # Overwrite with user supplied settings, if any
