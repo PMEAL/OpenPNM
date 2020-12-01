@@ -37,7 +37,8 @@ class TransientImplicitReactiveTransportTest:
                        t_initial=0, t_final=1, t_step=0.1, t_tolerance=1e-7,
                        t_precision=10, rxn_tolerance=1e-6)
         self.alg.set_value_BC(pores=self.net.pores('back'), values=2)
-        self.alg.set_source(propname='pore.reaction', pores=self.net.pores('front'))
+        self.alg.set_source(propname='pore.reaction',
+                            pores=self.net.pores('front'))
         self.alg.set_IC(0)
 
     def test_transient_implicit_reactive_transport(self):
@@ -109,33 +110,20 @@ class TransientImplicitReactiveTransportTest:
 
     def test_adding_sources_over_bc(self):
         with pytest.raises(Exception):
-            self.alg.set_source(propname='pore.reaction', pores=self.net.pores('left'))
+            self.alg.set_source(propname='pore.reaction',
+                                pores=self.net.pores('left'))
 
-    def test_set_IC_exception_if_quantity_not_specified(self):
+    def test_ensure_settings_are_valid(self):
         alg = op.algorithms.TransientReactiveTransport(network=self.net,
                                                        phase=self.phase)
+        with pytest.raises(Exception, match=r".*quantity.*"):
+            alg.run()
+        alg.settings['quantity'] = 'pore.concentration'
+        with pytest.raises(Exception, match=r".*conductance.*"):
+            alg.run()
+        alg.settings['conductance'] = 'throat.conductance'
         with pytest.raises(Exception):
-            alg.set_IC(0)
-
-    def test_IC_does_not_overwrite_value_BCs(self):
-        alg = op.algorithms.TransientReactiveTransport(network=self.net,
-                                                       phase=self.phase)
-        alg.settings['quantity'] = 'pore.quantity'
-        alg.set_value_BC(pores=[0, 1], values=1)
-        alg.set_IC(0.5)
-        x = [1.0, 1.0, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5]
-        y = alg['pore.ic']
-        assert np.all(x == y)
-
-    def test_value_BC_overwrites_ICs(self):
-        alg = op.algorithms.TransientReactiveTransport(network=self.net,
-                                                       phase=self.phase)
-        alg.settings['quantity'] = 'pore.quantity'
-        alg.set_IC(0.5)
-        alg.set_value_BC(pores=[0, 1], values=1)
-        x = [1.0, 1.0, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5]
-        y = alg['pore.ic']
-        assert np.all(x == y)
+            alg.run()
 
     def teardown_class(self):
         ws = op.Workspace()

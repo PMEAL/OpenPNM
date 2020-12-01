@@ -226,6 +226,18 @@ class ReactiveTransportTest:
         self.alg.reset(variable_props=True)
         assert not self.alg.settings["variable_props"]
 
+    def test_ensure_settings_are_valid(self):
+        alg = op.algorithms.ReactiveTransport(network=self.net,
+                                              phase=self.phase)
+        with pytest.raises(Exception, match=r".*quantity.*"):
+            alg.run()
+        alg.settings['quantity'] = 'pore.concentration'
+        with pytest.raises(Exception, match=r".*conductance.*"):
+            alg.run()
+        alg.settings['conductance'] = 'throat.conductance'
+        with pytest.raises(Exception):
+            alg.run()
+
     def teardown_class(self):
         ws = op.Workspace()
         ws.clear()
