@@ -54,18 +54,19 @@ For our changelog generator to work well, the only thing you need to remember is
 
 When merging your branch onto `dev`, as the merge message, describe what your pull request does concisely and preferably in a single sentence plus one of the following "standard" keywords:
 
-| Change type  | Standard keywords * | Magical keywords **                                   |
-|:-------------|:--------------------|:------------------------------------------------------|
-| New feature  | `new`               | `feature` , `added`                                   |
-| Enhancement  | `enh`               | `revamped` , `improved` , `enhanced` , `optimized`    |
-| Maintenance  | `maint`             | `backend`                                             |
-| API change   | `api`               | `deprecated` , `changed` , `removed` , `modified`     |
-| Bug fix      | `bug`               | `bugfix` , `hotfix` , `fixed`                         |
+| Change type  | Standard keywords *  | Magical keywords **                                   |
+|:-------------|:---------------------|:------------------------------------------------------|
+| New feature  | `#new`               | `feature` , `added`                                   |
+| Enhancement  | `#enh`               | `revamped` , `improved` , `enhanced` , `optimized`    |
+| Maintenance  | `#maint`             | `backend`                                             |
+| API change   | `#api`               | `deprecated` , `changed` , `removed` , `modified`     |
+| Bug fix      | `#bug`               | `bugfix` , `hotfix` , `fixed`                         |
+| Documentation| `#doc`               | `documentation` , `docstring`                         |
 
 \* **Standard keywords**: For consistency, make sure you always use these. Example merge commit message:
 
 ```
-`topotools.plot_connections` no longer accepts list of pores [api].
+`topotools.plot_connections` no longer accepts list of pores [#api].
 ```
 
 \** **Magical keywords**: For ease of use - and also in case you forget to use standard keywords -, feel free to use these in your merge commit message, they will automatically get caught. Example merge commit message:
@@ -74,7 +75,9 @@ When merging your branch onto `dev`, as the merge message, describe what your pu
 Optimized `topotools.find_neighbor_pores` which is now ~10X faster.
 ```
 
-**Note**: You can use multiple keywords in case your pull request is doing multiple things (e.g. fixes a bug + deprecates a method), although this is discouraged. Please make a separate pull request for every change.
+**Note 1**: You can use multiple keywords in case your pull request is doing multiple things (e.g. fixes a bug + deprecates a method), although this is discouraged. Please make a separate pull request for every change.
+
+**Note 2**: We're deprecating the magical keywords from `v2.6.0`, so only use the special keywords.
 
 ### Merging `dev` onto `release`
 Finally, if we're ready to publish a new release to PyPI and `conda`, you should create a pull request, asking to merge the `dev` branch onto the `release` branch. Again, this process is automated so that the version number gets bumped accordingly.  The only thing you need to remember is to use the proper keyword, so that our automated workflow knows how to bump the version number. Please use the following keywords:
