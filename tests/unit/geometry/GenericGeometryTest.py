@@ -1,3 +1,4 @@
+import pytest
 import openpnm as op
 
 
@@ -21,6 +22,10 @@ class GenericGeometryTest:
         self.geo.show_hist(props=['pore.diameter', 'pore.volume',
                                   'throat.length', 'throat.diameter',
                                   'pore.seed'])
+
+    def test_instantiate_with_no_pores_and_throats_raises_exception(self):
+        with pytest.raises(Exception):
+            op.geometry.GenericGeometry(network=self.net)
 
 
 if __name__ == '__main__':
