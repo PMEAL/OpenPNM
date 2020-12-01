@@ -103,11 +103,10 @@ class AdvectionDiffusion(ReactiveTransport):
 
             'merge' - (Default) Adds supplied boundary conditions to already
             existing conditions, and also overwrites any existing values.
-            If BCs of the complementary type already exist in the given
-            locations, these values are kept.
+            If at rate or value BC exists at the given locations, these
+            are deleted, and outflow conditions are given priority.
             'overwrite' - Deletes all boundary conditions of the given type
-            then adds the specified new ones (unless locations already have
-            BCs of the other type).
+            then adds the specified new ones.
 
         Notes
         -----

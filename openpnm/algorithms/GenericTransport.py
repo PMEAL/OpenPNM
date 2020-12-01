@@ -269,7 +269,7 @@ class GenericTransport(GenericAlgorithm):
             'merge' - (Default) Adds supplied boundary conditions to already
             existing conditions, and also overwrites any existing values.
             If BCs of the complementary type already exist in the given
-            locations, these values are kept.
+            locations, those values are kept.
             'overwrite' - Deletes all boundary conditions of the given type
             then adds the specified new ones (unless locations already have
             BCs of the other type).
