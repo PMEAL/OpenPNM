@@ -15,12 +15,29 @@ class GenericGeometryTest:
         mgr.clear()
 
     def test_plot_histogram(self):
+        # Test default args
         self.geo.show_hist()
-        self.geo.show_hist(props=['pore.diameter', 'pore.volume',
-                                  'throat.length'])
-        self.geo.show_hist(props=['pore.diameter', 'pore.volume',
-                                  'throat.length', 'throat.diameter',
-                                  'pore.seed'])
+        # Test with non-default args
+        self.geo.show_hist(props=['pore.diameter', 'pore.volume', 'throat.length'])
+        # Test layout when num_props = 4 => should be 2 by 2
+        self.geo.show_hist(
+            props=[
+                'pore.diameter',
+                'throat.diameter',
+                'pore.volume',
+                'throat.length'
+            ]
+        )
+        # Test layout when num_props > 4 => should be nrows by 3
+        self.geo.show_hist(
+            props=[
+                'pore.diameter',
+                'pore.volume',
+                'throat.length',
+                'throat.diameter',
+                'pore.seed'
+            ]
+        )
 
 
 if __name__ == '__main__':
