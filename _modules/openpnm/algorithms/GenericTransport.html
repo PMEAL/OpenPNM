@@ -301,13 +301,13 @@
 <span class="sd">        mode : string, optional</span>
 <span class="sd">            Controls how the boundary conditions are applied.  Options are:</span>
 
-<span class="sd">            +-------------+--------------------------------------------------+</span>
-<span class="sd">            | &#39;merge&#39;     | (Default) Adds supplied boundary conditions to   |</span>
-<span class="sd">            |             | already existing conditions                      |</span>
-<span class="sd">            +-------------+--------------------------------------------------+</span>
-<span class="sd">            | &#39;overwrite&#39; | Deletes all boundary condition on object then    |</span>
-<span class="sd">            |             | adds the given ones                              |</span>
-<span class="sd">            +-------------+--------------------------------------------------+</span>
+<span class="sd">            &#39;merge&#39; - (Default) Adds supplied boundary conditions to already</span>
+<span class="sd">            existing conditions, and also overwrites any existing values.</span>
+<span class="sd">            If BCs of the complementary type already exist in the given</span>
+<span class="sd">            locations, those values are kept.</span>
+<span class="sd">            &#39;overwrite&#39; - Deletes all boundary conditions of the given type</span>
+<span class="sd">            then adds the specified new ones (unless locations already have</span>
+<span class="sd">            BCs of the other type).</span>
 
 <span class="sd">        Notes</span>
 <span class="sd">        -----</span>
@@ -315,7 +315,6 @@
 <span class="sd">        ``settings``, e.g. ``alg.settings[&#39;quantity&#39;] = &#39;pore.pressure&#39;``.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">mode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_mode</span><span class="p">(</span><span class="n">mode</span><span class="p">,</span> <span class="n">allowed</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;merge&#39;</span><span class="p">,</span> <span class="s1">&#39;overwrite&#39;</span><span class="p">],</span> <span class="n">single</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_set_BC</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">pores</span><span class="p">,</span> <span class="n">bctype</span><span class="o">=</span><span class="s1">&#39;value&#39;</span><span class="p">,</span> <span class="n">bcvalues</span><span class="o">=</span><span class="n">values</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="GenericTransport.set_rate_BC"><a class="viewcode-back" href="../../../modules/algorithms/generic_transport.html#openpnm.algorithms.GenericTransport.set_rate_BC">[docs]</a>    <span class="k">def</span> <span class="nf">set_rate_BC</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pores</span><span class="p">,</span> <span class="n">rates</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">total_rate</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;merge&#39;</span><span class="p">,</span>
@@ -338,13 +337,13 @@
 <span class="sd">        mode : str, optional</span>
 <span class="sd">            Controls how the boundary conditions are applied.  Options are:</span>
 
-<span class="sd">            +-------------+--------------------------------------------------+</span>
-<span class="sd">            | &#39;merge&#39;     | (Default) Adds supplied boundary conditions to   |</span>
-<span class="sd">            |             | already existing conditions                      |</span>
-<span class="sd">            +-------------+--------------------------------------------------+</span>
-<span class="sd">            | &#39;overwrite&#39; | Deletes all boundary condition on object then    |</span>
-<span class="sd">            |             | adds the given ones                              |</span>
-<span class="sd">            +-------------+--------------------------------------------------+</span>
+<span class="sd">            &#39;merge&#39; - (Default) Adds supplied boundary conditions to already</span>
+<span class="sd">            existing conditions, and also overwrites any existing values.</span>
+<span class="sd">            If BCs of the complementary type already exist in the given</span>
+<span class="sd">            locations, these values are kept.</span>
+<span class="sd">            &#39;overwrite&#39; - Deletes all boundary conditions of the given type</span>
+<span class="sd">            then adds the specified new ones (unless locations already have</span>
+<span class="sd">            BCs of the other type).</span>
 
 <span class="sd">        Notes</span>
 <span class="sd">        -----</span>
@@ -366,7 +365,6 @@
                                 <span class="o">+</span> <span class="s1">&#39;total_rate&#39;</span><span class="p">)</span>
             <span class="n">pores</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_indices</span><span class="p">(</span><span class="n">pores</span><span class="p">)</span>
             <span class="n">rates</span> <span class="o">=</span> <span class="n">total_rate</span><span class="o">/</span><span class="n">pores</span><span class="o">.</span><span class="n">size</span>
-        <span class="n">mode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_mode</span><span class="p">(</span><span class="n">mode</span><span class="p">,</span> <span class="n">allowed</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;merge&#39;</span><span class="p">,</span> <span class="s1">&#39;overwrite&#39;</span><span class="p">],</span> <span class="n">single</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_set_BC</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">pores</span><span class="p">,</span> <span class="n">bctype</span><span class="o">=</span><span class="s1">&#39;rate&#39;</span><span class="p">,</span> <span class="n">bcvalues</span><span class="o">=</span><span class="n">rates</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">)</span></div>
 
     <span class="nd">@docstr</span><span class="o">.</span><span class="n">get_sectionsf</span><span class="p">(</span><span class="n">base</span><span class="o">=</span><span class="s1">&#39;GenericTransport._set_BC&#39;</span><span class="p">,</span>
@@ -384,12 +382,8 @@
 <span class="sd">            Specifies the type or the name of boundary condition to apply. The</span>
 <span class="sd">            types can be one one of the following:</span>
 
-<span class="sd">            +-------------+--------------------------------------------------+</span>
-<span class="sd">            | &#39;value&#39;     | Specify the value of the quantity in each        |</span>
-<span class="sd">            |             | location                                         |</span>
-<span class="sd">            +-------------+--------------------------------------------------+</span>
-<span class="sd">            | &#39;rate&#39;      | Specify the flow rate into each location         |</span>
-<span class="sd">            +-------------+--------------------------------------------------+</span>
+<span class="sd">            &#39;value&#39; - Specify the value of the quantity in each location</span>
+<span class="sd">            &#39;rate&#39; - Specify the flow rate into each location</span>
 
 <span class="sd">        bcvalues : int or array_like</span>
 <span class="sd">            The boundary value to apply, such as concentration or rate.  If</span>
@@ -401,13 +395,13 @@
 <span class="sd">        mode : string, optional</span>
 <span class="sd">            Controls how the boundary conditions are applied.  Options are:</span>
 
-<span class="sd">            +-------------+--------------------------------------------------+</span>
-<span class="sd">            | &#39;merge&#39;     | (Default) Adds supplied boundary conditions to   |</span>
-<span class="sd">            |             | already existing conditions                      |</span>
-<span class="sd">            +-------------+--------------------------------------------------+</span>
-<span class="sd">            | &#39;overwrite&#39; | Deletes all boundary condition on object then    |</span>
-<span class="sd">            |             | adds the given ones                              |</span>
-<span class="sd">            +-------------+--------------------------------------------------+</span>
+<span class="sd">            &#39;merge&#39; - (Default) Adds supplied boundary conditions to already</span>
+<span class="sd">            existing conditions, and also overwrites any existing values.</span>
+<span class="sd">            If BCs of the complementary type already exist in the given</span>
+<span class="sd">            locations, these values are kept.</span>
+<span class="sd">            &#39;overwrite&#39; - Deletes all boundary conditions of the given type</span>
+<span class="sd">            then adds the specified new ones (unless locations already have</span>
+<span class="sd">            BCs of the other type).</span>
 
 <span class="sd">        Notes</span>
 <span class="sd">        -----</span>
@@ -420,6 +414,7 @@
         <span class="c1"># Hijack the parse_mode function to verify bctype argument</span>
         <span class="n">bctype</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_mode</span><span class="p">(</span><span class="n">bctype</span><span class="p">,</span> <span class="n">allowed</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">,</span> <span class="s1">&#39;rate&#39;</span><span class="p">],</span>
                                   <span class="n">single</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">othertype</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">([</span><span class="s1">&#39;value&#39;</span><span class="p">,</span> <span class="s1">&#39;rate&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="nb">set</span><span class="p">([</span><span class="n">bctype</span><span class="p">])))[</span><span class="mi">0</span><span class="p">]</span>
         <span class="n">mode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_mode</span><span class="p">(</span><span class="n">mode</span><span class="p">,</span> <span class="n">allowed</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;merge&#39;</span><span class="p">,</span> <span class="s1">&#39;overwrite&#39;</span><span class="p">],</span>
                                 <span class="n">single</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">pores</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_indices</span><span class="p">(</span><span class="n">pores</span><span class="p">)</span>
@@ -429,16 +424,25 @@
             <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;The number of boundary values must match the &#39;</span>
                             <span class="o">+</span> <span class="s1">&#39;number of locations&#39;</span><span class="p">)</span>
 
-        <span class="c1"># Warn the user that another boundary condition already exists</span>
-        <span class="n">value_BC_mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="s2">&quot;pore.bc_value&quot;</span><span class="p">])</span>
-        <span class="n">rate_BC_mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="s2">&quot;pore.bc_rate&quot;</span><span class="p">])</span>
-        <span class="n">BC_locs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Ps</span><span class="p">[</span><span class="n">rate_BC_mask</span> <span class="o">+</span> <span class="n">value_BC_mask</span><span class="p">]</span>
-        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">intersect1d</span><span class="p">(</span><span class="n">pores</span><span class="p">,</span> <span class="n">BC_locs</span><span class="p">)</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Another boundary condition detected in some locations!&#39;</span><span class="p">)</span>
-
-        <span class="c1"># Clear old boundary values if needed</span>
-        <span class="k">if</span> <span class="p">(</span><span class="s1">&#39;pore.bc_&#39;</span> <span class="o">+</span> <span class="n">bctype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="ow">or</span> <span class="p">(</span><span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;overwrite&#39;</span><span class="p">):</span>
+        <span class="c1"># Create boundary array if needed (though these are created on init)</span>
+        <span class="k">if</span> <span class="s1">&#39;pore.bc_&#39;</span> <span class="o">+</span> <span class="n">bctype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
             <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.bc_&#39;</span> <span class="o">+</span> <span class="n">bctype</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+
+        <span class="c1"># Catch pores with existing BCs</span>
+        <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;merge&#39;</span><span class="p">:</span>  <span class="c1"># remove offenders, and warn user</span>
+            <span class="n">existing_bcs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="s2">&quot;pore.bc_&quot;</span> <span class="o">+</span> <span class="n">othertype</span><span class="p">])</span>
+            <span class="n">inds</span> <span class="o">=</span> <span class="n">pores</span><span class="p">[</span><span class="n">existing_bcs</span><span class="p">[</span><span class="n">pores</span><span class="p">]]</span>
+        <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;overwrite&#39;</span><span class="p">:</span>  <span class="c1"># Remove existing BCs and write new ones</span>
+            <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.bc_&#39;</span> <span class="o">+</span> <span class="n">bctype</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+            <span class="n">existing_bcs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="s2">&quot;pore.bc_&quot;</span> <span class="o">+</span> <span class="n">othertype</span><span class="p">])</span>
+            <span class="n">inds</span> <span class="o">=</span> <span class="n">pores</span><span class="p">[</span><span class="n">existing_bcs</span><span class="p">[</span><span class="n">pores</span><span class="p">]]</span>
+        <span class="c1"># Now drop any pore indices which have BCs that should be kept</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">inds</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="sa">r</span><span class="s1">&#39;Boundary conditions are already specified in &#39;</span> <span class="o">+</span> \
+                  <span class="sa">r</span><span class="s1">&#39;the following given pores, so these will be skipped: &#39;</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">((</span><span class="n">msg</span><span class="p">,</span> <span class="n">inds</span><span class="o">.</span><span class="fm">__repr__</span><span class="p">()))</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="n">pores</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">pores</span><span class="p">)</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">inds</span><span class="p">))),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
 
         <span class="c1"># Store boundary values</span>
         <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.bc_&#39;</span> <span class="o">+</span> <span class="n">bctype</span><span class="p">][</span><span class="n">pores</span><span class="p">]</span> <span class="o">=</span> <span class="n">values</span>
@@ -459,21 +463,18 @@
 <span class="sd">            -*&#39;all&#39;*: (default) Removes all boundary conditions</span>
 <span class="sd">            -*&#39;value&#39;*: Removes only value conditions</span>
 <span class="sd">            -*&#39;rate&#39;*: Removes only rate conditions</span>
-<span class="sd">            -*&#39;outflow&#39;*: Removes only outflow conditions</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">bctype</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="n">bctype</span> <span class="o">=</span> <span class="p">[</span><span class="n">bctype</span><span class="p">]</span>
         <span class="k">if</span> <span class="s1">&#39;all&#39;</span> <span class="ow">in</span> <span class="n">bctype</span><span class="p">:</span>
-            <span class="n">bctype</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">,</span> <span class="s1">&#39;rate&#39;</span><span class="p">,</span> <span class="s1">&#39;outflow&#39;</span><span class="p">]</span>
+            <span class="n">bctype</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">,</span> <span class="s1">&#39;rate&#39;</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">pores</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">pores</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Ps</span>
         <span class="k">if</span> <span class="p">(</span><span class="s1">&#39;pore.bc_value&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="ow">and</span> <span class="p">(</span><span class="s1">&#39;value&#39;</span> <span class="ow">in</span> <span class="n">bctype</span><span class="p">):</span>
             <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.bc_value&#39;</span><span class="p">][</span><span class="n">pores</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
         <span class="k">if</span> <span class="p">(</span><span class="s1">&#39;pore.bc_rate&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="ow">and</span> <span class="p">(</span><span class="s1">&#39;rate&#39;</span> <span class="ow">in</span> <span class="n">bctype</span><span class="p">):</span>
             <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.bc_rate&#39;</span><span class="p">][</span><span class="n">pores</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
-        <span class="k">if</span> <span class="p">(</span><span class="s1">&#39;pore.bc_outflow&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="ow">and</span> <span class="p">(</span><span class="s1">&#39;outflow&#39;</span> <span class="ow">in</span> <span class="n">bctype</span><span class="p">):</span>
-            <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.bc_outflow&#39;</span><span class="p">][</span><span class="n">pores</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
 
 <div class="viewcode-block" id="GenericTransport._build_A"><a class="viewcode-back" href="../../../modules/algorithms/generic_transport.html#openpnm.algorithms.GenericTransport._build_A">[docs]</a>    <span class="k">def</span> <span class="nf">_build_A</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>

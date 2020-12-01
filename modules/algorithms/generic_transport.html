@@ -282,22 +282,13 @@ it must be the same size as the indices given in <code class="docutils literal n
 argument is divided evenly among all pores. A scalar must be
 supplied! Total_rate cannot be specified if rate is specified.</p></li>
 <li><p><strong>mode</strong> (<em>str</em><em>, </em><em>optional</em>) – <p>Controls how the boundary conditions are applied.  Options are:</p>
-<table class="docutils align-default">
-<colgroup>
-<col style="width: 21%" />
-<col style="width: 79%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><p>’merge’</p></td>
-<td><p>(Default) Adds supplied boundary conditions to
-already existing conditions</p></td>
-</tr>
-<tr class="row-even"><td><p>’overwrite’</p></td>
-<td><p>Deletes all boundary condition on object then
-adds the given ones</p></td>
-</tr>
-</tbody>
-</table>
+<p>’merge’ - (Default) Adds supplied boundary conditions to already
+existing conditions, and also overwrites any existing values.
+If BCs of the complementary type already exist in the given
+locations, these values are kept.
+‘overwrite’ - Deletes all boundary conditions of the given type
+then adds the specified new ones (unless locations already have
+BCs of the other type).</p>
 </p></li>
 </ul>
 </dd>
@@ -320,22 +311,13 @@ adds the given ones</p></td>
 it is assigne to all locations, and if a vector is applied is
 must be the same size as the indices given in <code class="docutils literal notranslate"><span class="pre">pores</span></code>.</p></li>
 <li><p><strong>mode</strong> (<em>string</em><em>, </em><em>optional</em>) – <p>Controls how the boundary conditions are applied.  Options are:</p>
-<table class="docutils align-default">
-<colgroup>
-<col style="width: 21%" />
-<col style="width: 79%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><p>’merge’</p></td>
-<td><p>(Default) Adds supplied boundary conditions to
-already existing conditions</p></td>
-</tr>
-<tr class="row-even"><td><p>’overwrite’</p></td>
-<td><p>Deletes all boundary condition on object then
-adds the given ones</p></td>
-</tr>
-</tbody>
-</table>
+<p>’merge’ - (Default) Adds supplied boundary conditions to already
+existing conditions, and also overwrites any existing values.
+If BCs of the complementary type already exist in the given
+locations, those values are kept.
+‘overwrite’ - Deletes all boundary conditions of the given type
+then adds the specified new ones (unless locations already have
+BCs of the other type).</p>
 </p></li>
 </ul>
 </dd>
