@@ -1589,29 +1589,27 @@ class Base(dict):
             props = [props]
         N = len(props)
         color = plt.cm.tab10(range(10))
-        if N == 1:
-            r = 1
-            c = 1
-        elif N < 4:
-            r = 1
-            c = N
+        if N <= 3:
+            r, c = 1, N
+        elif N == 4:
+            r, c = 2, 2
         else:
-            r = int(np.ceil(N**0.5))
-            c = int(np.floor(N**0.5))
-        plt.figure()
+            r, c = N // 3 + 1, 3
+        fig, ax = plt.subplots(r, c, figsize=(3*c, 3*r))
+        axs = np.array(ax).flatten()
         for i, _ in enumerate(props):
-            plt.subplot(r, c, i+1)
             try:
                 # Update kwargs with some default values
                 if 'edgecolor' not in kwargs.keys():
                     kwargs.update({'edgecolor': 'k'})
                 if 'facecolor' not in kwargs:
                     kwargs.update({'facecolor': color[np.mod(i, 10)]})
-                plt.hist(self[props[i]], bins=bins, **kwargs)
+                axs[i].hist(self[props[i]], bins=bins, **kwargs)
+                axs[i].set_xlabel(props[i])
             except KeyError:
                 pass
-            plt.xlabel(props[i])
         plt.rcParams['font.size'] = temp
+        plt.tight_layout(h_pad=0.9, w_pad=0.9)
 
     def check_data_health(self):
         r"""
