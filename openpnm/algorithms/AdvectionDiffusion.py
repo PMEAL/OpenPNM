@@ -172,6 +172,7 @@ class AdvectionDiffusion(ReactiveTransport):
         self.A.setdiag(diag)
 
     def _set_BC(self, pores, bctype, bcvalues=None, mode='merge'):
+        pores = self._parse_indices(pores)
         # First check that given pores outflow BCs already applied
         if 'pore.bc_outflow' in self.keys():
             hits = ~np.isnan(self['pore.bc_outflow'][pores])

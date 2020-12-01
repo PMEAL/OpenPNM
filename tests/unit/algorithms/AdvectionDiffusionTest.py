@@ -167,13 +167,11 @@ class AdvectionDiffusionTest:
         assert np.sum(np.isfinite(ad['pore.bc_rate'])) == 0
         assert np.sum(np.isfinite(ad['pore.bc_value'])) == 0
 
-    def test_add_outflow_fails_when_value_BC_present(self):
+    def test_value_BC_does_not_overwrite_outflow(self):
         ad = AdvectionDiffusion(network=self.net, phase=self.phase)
-        ad.set_value_BC(pores=[0, 1], values=1)
+        ad.set_outflow_BC(pores=[0, 1])
         with pytest.raises(Exception):
-            ad.set_outflow_BC(pores=[0, 1])
-        ad.set_outflow_BC(pores=[2, 3])
-        assert not np.all(np.isnan(ad['pore.bc_outflow']))
+            ad.set_value_BC(pores=[0, 1], values=1)
 
     def test_add_rate_BC_fails_when_outflow_BC_present(self):
         ad = AdvectionDiffusion(network=self.net, phase=self.phase)
