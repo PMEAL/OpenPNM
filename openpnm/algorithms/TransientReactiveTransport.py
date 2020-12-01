@@ -185,14 +185,6 @@ class TransientReactiveTransport(ReactiveTransport):
         quantity = self.settings['quantity']
         self[quantity] = ic_vals
 
-    def set_value_BC(self, pores, values, mode='merge'):
-        pores = self._parse_indices(pores)
-        super().set_value_BC(pores=pores, values=values, mode=mode)
-        quantity = self.settings['quantity']
-        # Over-write initial conditions if present
-        if quantity in self.keys():
-            self[quantity][pores] = values
-
     def _get_f1_f2_f3(self):
         r"""
         Helper method: returns f1, f2, and f3 for _t_update_A and _t_update_b methods.
