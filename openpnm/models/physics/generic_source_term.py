@@ -79,14 +79,14 @@ def charge_conservation(target, phase, p_alg, e_alg, assumption):
     elif assumption in ['electroneutrality', 'electroneutrality_2D']:
         for e in e_alg:
             try:
-                c = e[e.settings['quantity']]
+                C = e[e.settings['quantity']]
             except KeyError:
-                c = _np.zeros(shape=(e.Np, ), dtype=float)
+                C = _np.zeros(shape=(e.Np, ), dtype=float)
             network = e.project.network
             g = phase['throat.diffusive_conductance.'+e.settings['ion']]
             am = network.create_adjacency_matrix(weights=g, fmt='coo')
             A = _spgr.laplacian(am)
-            rhs += - F * phase['pore.valence.'+e.settings['ion']] * (A * c)
+            rhs += - F * phase['pore.valence.'+e.settings['ion']] * (A * C)
     elif assumption in ['laplace', 'laplace_2D']:
         pass  # rhs should remain 0
     else:
