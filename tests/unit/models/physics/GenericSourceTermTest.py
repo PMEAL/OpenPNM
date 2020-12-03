@@ -335,16 +335,17 @@ class GenericSourceTermTest:
             "alpha_cathode": 0.6
         }
         self.phys.add_model(propname='pore.rxn_BV_c',
-                            model=pm.generic_source_term.butler_volmer_c,
+                            model=pm.generic_source_term.butler_volmer_conc,
                             X="pore.electrolyte_concentration", **BV_params)
         self.phys.add_model(propname='pore.rxn_BV_v',
-                            model=pm.generic_source_term.butler_volmer_v,
+                            model=pm.generic_source_term.butler_volmer_voltage,
                             X="pore.electrolyte_voltage", **BV_params)
         # Check Butler-Volmer model (concentration)
         S1_BV_c = self.phys["pore.rxn_BV_c.S1"]
         S2_BV_c = self.phys["pore.rxn_BV_c.S2"]
         rate_BV_c = self.phys["pore.rxn_BV_c.rate"]
-        assert_allclose(S2_BV_c.mean(), 0)
+        eps = np.finfo(float).eps * np.abs(rate_BV_c).max()
+        assert_allclose(S2_BV_c.mean(), 0, atol=eps)
         assert_allclose(S1_BV_c.mean(), -0.06977055)
         assert_allclose(rate_BV_c.mean(), -0.03541646)
         # Check Butler-Volmer model (voltage)
