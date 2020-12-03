@@ -86,6 +86,7 @@ class TransientReactiveTransportSettings(GenericSettings):
     t_precision = 12
     t_scheme = 'implicit'
     pore_volume = 'pore.volume'
+    t_solns = []
 
 
 class TransientReactiveTransport(ReactiveTransport):
@@ -353,6 +354,7 @@ class TransientReactiveTransport(ReactiveTransport):
                     if round(time, t_pre) in out:
                         t_str = self._nbr_to_str(time)
                         self[quantity + '@' + t_str] = x_new
+                        self.settings['t_solns'].append(t_str)
                         logger.info(f'        Exporting time step: {time} s')
                 else:
                     # Output steady state solution
