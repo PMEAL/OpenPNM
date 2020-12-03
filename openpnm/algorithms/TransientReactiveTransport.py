@@ -47,9 +47,9 @@ class TransientReactiveTransportSettings(GenericSettings):
         is not a multiple of 't_step', 't_output' will be approximated.
         When 't_output' is a list or ND-array, transient solutions
         corresponding to this list or array will be stored.
-    output_times : list
-        List of output times. The values in the list must be multiples of
-        the time step 't_step'.
+    t_solns : list
+        List of output times at which a solution was written to the
+        dictionary.  Can be used to iterate over the results.
     t_tolerance : scalar
         Transient solver tolerance. The simulation stops (before reaching
         't_final') when the residual falls below 't_tolerance'. The
@@ -176,6 +176,10 @@ class TransientReactiveTransport(ReactiveTransport):
         if values.size > 1 and values.size != self.Np:
             raise Exception('The number of initial values must be either 1 or Np')
         self['pore.ic'] = values
+        quantity = self.settings['quantity']
+        if not quantity:
+            raise Exception('"quantity" has not been defined on this algorithm')
+        self[quantity] = values
 
     def _overwrite_ICs_with_value_BCs(self):
         ic_vals = self['pore.ic']
