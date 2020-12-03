@@ -82,9 +82,9 @@
 <span class="sd">        is not a multiple of &#39;t_step&#39;, &#39;t_output&#39; will be approximated.</span>
 <span class="sd">        When &#39;t_output&#39; is a list or ND-array, transient solutions</span>
 <span class="sd">        corresponding to this list or array will be stored.</span>
-<span class="sd">    output_times : list</span>
-<span class="sd">        List of output times. The values in the list must be multiples of</span>
-<span class="sd">        the time step &#39;t_step&#39;.</span>
+<span class="sd">    t_solns : list</span>
+<span class="sd">        List of output times at which a solution was written to the</span>
+<span class="sd">        dictionary.  Can be used to iterate over the results.</span>
 <span class="sd">    t_tolerance : scalar</span>
 <span class="sd">        Transient solver tolerance. The simulation stops (before reaching</span>
 <span class="sd">        &#39;t_final&#39;) when the residual falls below &#39;t_tolerance&#39;. The</span>
@@ -207,14 +207,23 @@
 <span class="sd">            imposed to all pores.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">quantity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;quantity&#39;</span><span class="p">]</span>
-        <span class="n">values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">values</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1.0</span>
+        <span class="n">values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">Np</span><span class="p">,</span> <span class="p">])</span> <span class="o">*</span> <span class="n">values</span>
         <span class="k">if</span> <span class="n">values</span><span class="o">.</span><span class="n">size</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">values</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Np</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;The number of initial values must be either 1 or Np&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.ic&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">values</span>
+        <span class="n">quantity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;quantity&#39;</span><span class="p">]</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">quantity</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;&quot;quantity&quot; has not been defined on this algorithm&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="p">[</span><span class="n">quantity</span><span class="p">]</span> <span class="o">=</span> <span class="n">values</span></div>
+
+    <span class="k">def</span> <span class="nf">_overwrite_ICs_with_value_BCs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">ic_vals</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.ic&#39;</span><span class="p">]</span>
+        <span class="c1"># Ensure the given initial conditions have any value BC inserted</span>
+        <span class="n">bc_pores</span> <span class="o">=</span> <span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.bc_value&#39;</span><span class="p">])</span>
+        <span class="n">ic_vals</span><span class="p">[</span><span class="n">bc_pores</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.bc_value&#39;</span><span class="p">][</span><span class="n">bc_pores</span><span class="p">]</span>
+        <span class="c1"># Write values to self to to quantity, ic and t=0 array</span>
+        <span class="n">quantity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;quantity&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="p">[</span><span class="n">quantity</span><span class="p">]</span> <span class="o">=</span> <span class="n">ic_vals</span>
 
     <span class="k">def</span> <span class="nf">_get_f1_f2_f3</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -289,9 +298,11 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;―&#39;</span> <span class="o">*</span> <span class="mi">80</span><span class="p">)</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Running TransientTransport&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_validate_settings</span><span class="p">()</span>
         <span class="c1"># If ICs are not defined, assume zero</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="s2">&quot;pore.ic&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">set_IC</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_overwrite_ICs_with_value_BCs</span><span class="p">()</span>
         <span class="c1"># Make sure _A is None to force _build_A, otherwise _A_steady might be wrong</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_A</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="c1"># Save A matrix of the steady state problem (without BCs applied)</span>
@@ -305,7 +316,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_b_t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_b</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">t</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;t_initial&#39;</span><span class="p">]</span>
-        <span class="c1"># Create S1 &amp; S2 for 1st Picard&#39;s iteration</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_update_iterative_props</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_run_transient</span><span class="p">(</span><span class="n">t</span><span class="o">=</span><span class="n">t</span><span class="p">)</span></div>
 

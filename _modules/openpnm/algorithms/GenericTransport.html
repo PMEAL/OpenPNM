@@ -586,6 +586,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;―&#39;</span> <span class="o">*</span> <span class="mi">80</span><span class="p">)</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Running GenericTransport&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_validate_settings</span><span class="p">()</span>
         <span class="n">x0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="p">)</span> <span class="k">if</span> <span class="n">x0</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">x0</span>
         <span class="bp">self</span><span class="p">[</span><span class="s2">&quot;pore.initial_guess&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">x0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_run_generic</span><span class="p">(</span><span class="n">x0</span><span class="p">)</span>
@@ -787,6 +788,12 @@
         <span class="n">res_tol</span> <span class="o">=</span> <span class="n">norm</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="p">)</span> <span class="o">*</span> <span class="n">tol</span>
         <span class="n">flag_converged</span> <span class="o">=</span> <span class="kc">True</span> <span class="k">if</span> <span class="n">res</span> <span class="o">&lt;=</span> <span class="n">res_tol</span> <span class="k">else</span> <span class="kc">False</span>
         <span class="k">return</span> <span class="n">flag_converged</span>
+
+    <span class="k">def</span> <span class="nf">_validate_settings</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;quantity&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;&quot;quantity&quot; has not been defined on this algorithm&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;conductance&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;&quot;conductance&quot; has not been defined on this algorithm&#39;</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_validate_data_health</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
