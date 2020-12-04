@@ -551,6 +551,7 @@ class GenericTransport(GenericAlgorithm):
         """
         logger.info('―' * 80)
         logger.info('Running GenericTransport')
+        self._validate_settings()
         x0 = np.zeros_like(self.b) if x0 is None else x0
         self["pore.initial_guess"] = x0
         self._run_generic(x0)
@@ -752,6 +753,12 @@ class GenericTransport(GenericAlgorithm):
         res_tol = norm(self.b) * tol
         flag_converged = True if res <= res_tol else False
         return flag_converged
+
+    def _validate_settings(self):
+        if self.settings['quantity'] is None:
+            raise Exception('"quantity" has not been defined on this algorithm')
+        if self.settings['conductance'] is None:
+            raise Exception('"conductance" has not been defined on this algorithm')
 
     def _validate_data_health(self):
         r"""
