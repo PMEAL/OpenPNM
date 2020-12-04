@@ -932,10 +932,10 @@ def butler_volmer_conc(
     where:
 
         .. math::
-            \eta = V_s - V_{\ell} - V_{OC}
+            \eta = V_s - V_{\ell} - V_{oc}
 
-    where ``Vs`` is the solid voltage, ``Vl`` is the electrolyte voltage,
-    and ``Voc`` is the open-circuit voltage.
+    where ``V_s`` is the solid voltage, ``V_l`` is the electrolyte voltage,
+    and ``V_oc`` is the open-circuit voltage.
 
     The slope and intercept provide a linearized source term equation
     about the current value of X as follow:
@@ -1050,17 +1050,16 @@ def butler_volmer_voltage(
     where:
 
         .. math::
-            \eta = V_s - V_{\ell} - V_{OC}
+            \eta = V_s - X - V_{oc}
 
-    where ``Vs`` is the solid voltage, ``Vl`` is the electrolyte voltage,
-    and ``Voc`` is the open-circuit voltage.
+    where ``V_s`` is the solid voltage, ``X`` is the electrolyte voltage,
+    and ``V_oc`` is the open-circuit voltage.
 
     The slope and intercept provide a linearized source term equation
     about the current value of X as follow:
 
         .. math::
             rate = S_{1} X + S_{2}
-
 
     Parameters
     ----------
