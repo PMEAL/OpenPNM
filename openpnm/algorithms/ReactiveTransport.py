@@ -153,6 +153,8 @@ class ReactiveTransport(GenericTransport):
             Initial guess of unknown variable
         """
         self._validate_settings()
+        # Check if A and b are well-defined
+        self._validate_data_health()
         quantity = self.settings['quantity']
         logger.info('Running ReactiveTransport')
         x0 = np.zeros(self.Np, dtype=float) if x0 is None else x0

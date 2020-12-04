@@ -264,6 +264,8 @@ class TransientReactiveTransport(ReactiveTransport):
         logger.info('―' * 80)
         logger.info('Running TransientTransport')
         self._validate_settings()
+        # Check if A and b are well-defined
+        self._validate_data_health()
         # If ICs are not defined, assume zero
         if not np.isfinite(self["pore.ic"]).all():
             self.set_IC(0)

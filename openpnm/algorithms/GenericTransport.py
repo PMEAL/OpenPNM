@@ -552,6 +552,8 @@ class GenericTransport(GenericAlgorithm):
         logger.info('―' * 80)
         logger.info('Running GenericTransport')
         self._validate_settings()
+        # Check if A and b are well-defined
+        self._validate_data_health()
         x0 = np.zeros_like(self.b) if x0 is None else x0
         self["pore.initial_guess"] = x0
         self._run_generic(x0)
@@ -601,7 +603,7 @@ class GenericTransport(GenericAlgorithm):
             raise Exception('The A matrix or the b vector not yet built.')
         A = A.tocsr()
 
-        # Check if A and b are well-defined
+        # Check if A and b are STILL well-defined
         self._validate_data_health()
 
         # Check if A is symmetric
