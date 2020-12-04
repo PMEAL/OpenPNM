@@ -1,15 +1,12 @@
 r"""
-
-.. autofunction:: openpnm.models.misc.basic_math.constant
-.. autofunction:: openpnm.models.misc.basic_math.product
-.. autofunction:: openpnm.models.misc.basic_math.scaled
-.. autofunction:: openpnm.models.misc.basic_math.clip
-.. autofunction:: openpnm.models.misc.basic_math.normalize
-
 """
 import numpy as np
 from openpnm.utils import logging
 logger = logging.getLogger(__name__)
+
+
+def blank(target):
+    pass
 
 
 def invert(target, prop):

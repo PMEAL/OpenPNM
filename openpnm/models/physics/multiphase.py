@@ -1,11 +1,10 @@
 r"""
-
-.. autofunction:: openpnm.models.physics.multiphase.conduit_conductance
-.. autofunction:: openpnm.models.physics.multiphase.late_filling
-
+Pore-scale models relevant to multiphase simulations.
 """
 import numpy as np
 import scipy as sp
+
+__all__ = ["conduit_conductance", "late_filling"]
 
 
 def conduit_conductance(target, throat_conductance,

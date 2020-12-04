@@ -1,10 +1,9 @@
 r"""
-
-.. autofunction:: openpnm.models.physics.dispersive_conductance.dispersion
-
+Pore-scale models for calculating the dispersive conductance of conduits.
 """
-
 from .ad_dif_conductance import ad_dif
+
+__all__ = ["dispersion"]
 
 
 def dispersion(target,

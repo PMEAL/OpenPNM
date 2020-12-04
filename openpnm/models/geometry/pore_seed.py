@@ -1,16 +1,10 @@
 r"""
-
 Pore seed models are use to calculate random numbers for each pore, which can
 subsequently be used in statistical distributions to calculate actual pore
 sizes.
-
-.. autofunction:: openpnm.models.geometry.pore_seed.random
-.. autofunction:: openpnm.models.geometry.pore_seed.spatially_correlated
-
 """
 import numpy as _np
 import scipy as _sp
-from scipy import special
 from openpnm.models import misc as _misc
 from openpnm.utils import logging as _logging
 _logger = _logging.getLogger(__name__)
@@ -89,9 +83,7 @@ def spatially_correlated(target, weights=None, strel=None):
     import scipy.ndimage as spim
     network = target.project.network
     # The following will only work on Cubic networks
-    x = network._shape[0]
-    y = network._shape[1]
-    z = network._shape[2]
+    x, y, z = network.settings['shape']
     im = _np.random.rand(x, y, z)
     if strel is None:  # Then generate a strel
         if sum(weights) == 0:

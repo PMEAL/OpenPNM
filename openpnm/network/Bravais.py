@@ -60,11 +60,11 @@ class Bravais(GenericNetwork):
 
     Limitations:
 
-    * Bravais lattice can also have a skew to them, but this is not implemented
-    yet.
+    * Bravais lattice can also have a skew to them, but this is not
+      implemented yet.
     * Support for 2D networks has not been added yet.
-    * Hexagonal Close Packed (hcp) has not been implemented yet, but is on the
-    todo list.
+    * Hexagonal Close Packed (hcp) has not been implemented yet, but is on
+      the todo list.
 
     Examples
     --------
@@ -101,7 +101,8 @@ class Bravais(GenericNetwork):
     <http://www.paraview.org>`_.
 
     """
-    def __init__(self, shape, mode, spacing=1, **kwargs):
+
+    def __init__(self, shape, mode='sc', spacing=1, **kwargs):
         super().__init__(**kwargs)
         shape = np.array(shape)
         if np.any(shape < 2):

@@ -1,9 +1,4 @@
 r"""
-
-.. autofunction:: openpnm.models.phases.molar_density.standard
-.. autofunction:: openpnm.models.phases.molar_density.ideal_gas
-.. autofunction:: openpnm.models.phases.molar_density.vanderwaals
-
 """
 import numpy as np
 

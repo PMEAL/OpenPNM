@@ -1,10 +1,7 @@
 r"""
-
-.. autofunction:: openpnm.models.topology.coordination_number
-
+Pore-scale models related to topology of the network.
 """
-from openpnm.utils import logging
-logger = logging.getLogger(__name__)
+__all__ = ["coordination_number"]
 
 
 def coordination_number(target):

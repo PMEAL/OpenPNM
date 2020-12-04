@@ -16,17 +16,22 @@ extensions = ['sphinx.ext.autodoc',
               'sphinx.ext.mathjax',
               'matplotlib.sphinxext.plot_directive']
 
-html_theme = 'sphinx_rtd_theme'
+# html_theme = 'sphinx_rtd_theme'
+
+html_theme = 'alabaster'
 
 # html_theme = 'basicstrap'
-# html_theme_options = {'inner_theme': True,
-#                       'inner_theme_name': 'bootswatch-spacelab',
-#                       'nosidebar': False}
+# html_theme_options = {
+#     'inner_theme': True,
+#     'inner_theme_name': 'bootswatch-spacelab',
+#     'nosidebar': False
+# }
 
 html_title = "OpenPNM"
 html_short_title = "OpenPNM: An open-source pore network modeling package"
 html_logo = 'static/logo.png'
 html_static_path = ['static']
+html_scaled_image_link = False  # This makes images not clickable
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = []
@@ -59,7 +64,7 @@ today_fmt = '%B %d, %Y'
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
-exclude_patterns = ['_build']
+exclude_patterns = ['_build', 'userguide']
 
 # The reST default role (used for the markup: `text`) to use for all documents.
 # default_role = None
@@ -105,7 +110,7 @@ html_domain_indices = True
 html_use_index = True
 
 # If true, the index is split into individual pages for each letter.
-html_split_index = True
+html_split_index = False
 
 # If true, links to the reST sources are added to the pages.
 html_show_sourcelink = False

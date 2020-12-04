@@ -4,7 +4,6 @@ import copy
 import json
 import pytest
 import numpy as np
-import scipy as sp
 import openpnm as op
 from pathlib import Path
 
@@ -151,17 +150,12 @@ class JSONGraphFormatTest:
                     '../../../fixtures/JSONGraphFormat')
         filename = Path(path.resolve(), 'valid.json')
         project = op.io.JSONGraphFormat.load(filename)
-        assert len(project) == 1
+        assert len(project) == 2
 
         # Ensure overal network properties
         net = project.network
         assert net.Np == 2
         assert net.Nt == 1
-
-        # Ensure existence of pore properties
-        pore_props = {'pore.index', 'pore.coords', 'pore.diameter',
-                      'pore.area', 'pore.volume'}
-        assert pore_props.issubset(net.props())
 
         # Ensure correctness of pore properties
         assert np.array_equal(net['pore.area'], np.array([0, 0]))
@@ -170,12 +164,6 @@ class JSONGraphFormatTest:
         assert np.array_equal(net['pore.diameter'], np.array([0, 0]))
         assert np.array_equal(net['pore.coords'][0], np.array([0, 0, 0]))
         assert np.array_equal(net['pore.coords'][1], np.array([1, 1, 1]))
-
-        # Ensure existence of throat properties
-        throat_props = {'throat.length', 'throat.conns', 'throat.diameter',
-                        'throat.area', 'throat.volume', 'throat.perimeter',
-                        'throat.surface_area'}
-        assert throat_props.issubset(net.props())
 
         # Ensure correctness of throat properties
         length = 1.73205080757
@@ -198,7 +186,7 @@ if __name__ == '__main__':
     t.setup_class()
     for item in t.__dir__():
         if item.startswith('test'):
-            print('running test: '+item)
+            print(f'Running test: {item}')
             try:
                 t.__getattribute__(item)()
             except TypeError:

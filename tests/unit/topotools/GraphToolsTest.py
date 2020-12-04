@@ -80,6 +80,16 @@ class GraphToolsTest:
         Ps = topotools.find_connected_sites(bonds=[6], am=am, flatten=True)
         assert np.all(Ps == [4, 5])
 
+    def test_find_connected_sites_unflattened(self):
+        am = self.net.create_adjacency_matrix(weights=self.net.Ts, fmt='coo')
+        Ps = topotools.find_connected_sites(bonds=[0, 5], am=am, flatten=False,
+                                            logic="xnor")
+        x = np.array([[np.nan, 1], [1, np.nan]])
+        assert ((x == Ps) | (np.isnan(x) & np.isnan(Ps))).all()
+        Ps = topotools.find_connected_sites(bonds=[0, 1, 5], am=am, logic="and",
+                                            flatten=False)
+        assert np.allclose(Ps, [np.array([], dtype="int64")] * 3)
+
     def test_find_connected_sites_from_lil_format(self):
         pn = op.network.Cubic(shape=[5, 1, 1], spacing=1e-4)
         am = pn.create_adjacency_matrix(weights=pn.Ts, fmt='lil')
@@ -196,6 +206,26 @@ class GraphToolsTest:
         assert np.all(Ts == [4, 5, 6])
         Ts = topotools.find_neighbor_bonds(sites=[5], im=im)
         assert np.all(Ts == [6])
+        Ts = topotools.find_neighbor_bonds(sites=[], im=im)
+        assert Ts == []
+
+    def test_find_neighbr_bonds_unflattened(self):
+        im = self.net.create_incidence_matrix(fmt='lil')
+        Ts = topotools.find_neighbor_bonds(sites=[0, 1, 5], logic="and", im=im,
+                                           flatten=False)
+        assert np.allclose(Ts, [np.array([], dtype="int64")] * 3)
+
+    def test_find_neighbor_bonds_given_am(self):
+        am = self.net.create_adjacency_matrix(fmt='lil')
+        Ts = topotools.find_neighbor_bonds(sites=[0], am=am)
+        assert np.all(Ts == [0, 1])
+        with pytest.raises(Exception):
+            _ = topotools.find_neighbor_bonds(sites=[0], am=am,
+                                              logic="unsupported_logic")
+
+    def test_find_neighbor_bonds_missing_both_am_and_im(self):
+        with pytest.raises(Exception):
+            _ = topotools.find_neighbor_bonds(sites=[0])
 
     def test_find_neighbor_bonds_single(self):
         im = self.net.create_incidence_matrix(fmt='lil')
@@ -275,6 +305,14 @@ class GraphToolsTest:
         assert np.all(Ps == [1, 3, 5])
         Ps = topotools.find_neighbor_sites(sites=[5], am=am)
         assert np.all(Ps == [4])
+        Ps = topotools.find_neighbor_sites(sites=[], am=am)
+        assert Ps == []
+
+    def test_find_neighbor_sites_unsupported_logic(self):
+        am = self.net.create_adjacency_matrix(fmt='lil')
+        with pytest.raises(Exception):
+            _ = topotools.find_neighbor_sites(sites=[0], am=am,
+                                              logic="unsupported_logic")
 
     def test_find_neighbor_sites_single(self):
         am = self.net.create_adjacency_matrix(fmt='lil')
@@ -448,15 +486,22 @@ class GraphToolsTest:
         am = am.T
         assert not topotools.issymmetric(am)
         # Now test non-coo AM's
-        am = net.create_adjacency_matrix(triu=False)
+        am = net.create_adjacency_matrix(triu=False, fmt="lil")
         assert topotools.issymmetric(am)
-        am = net.create_adjacency_matrix(triu=True)
+        am = net.create_adjacency_matrix(triu=True, fmt="lil")
         assert not topotools.issymmetric(am)
         am = am.T
         assert not topotools.issymmetric(am)
         # Now test non-triangular AM
         im = net.create_incidence_matrix()
         assert not topotools.issymmetric(im)
+
+    def test_am_to_im(self):
+        net = op.network.Cubic(shape=[2, 2, 2])
+        x = net.create_adjacency_matrix(triu=True)
+        y = net.create_incidence_matrix()
+        im = op.topotools._am_to_im(x)
+        assert np.allclose(im.toarray(), y.toarray())
 
     def test_find_clusters_sites(self):
         net = op.network.Cubic(shape=[10, 10, 10])
@@ -503,5 +548,5 @@ if __name__ == '__main__':
     t.setup_class()
     for item in t.__dir__():
         if item.startswith('test'):
-            print('running test: '+item)
+            print(f'Running test: {item}')
             t.__getattribute__(item)()

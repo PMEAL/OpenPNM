@@ -9,8 +9,8 @@ def random(target, seed=None, num_range=[0, 1]):
 random.__doc__ = _misc.random.__doc__
 
 
-def from_neighbor_pores(target, pore_prop='pore.seed', mode='min'):
-    return _misc.from_neighbor_pores(target=target, pore_prop=pore_prop,
+def from_neighbor_pores(target, prop='pore.seed', mode='min'):
+    return _misc.from_neighbor_pores(target=target, prop=prop,
                                      mode=mode)
 
 

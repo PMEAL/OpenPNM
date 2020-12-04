@@ -1,9 +1,4 @@
 r"""
-
-.. autofunction:: openpnm.models.phases.density.water
-.. autofunction:: openpnm.models.phases.density.standard
-.. autofunction:: openpnm.models.phases.density.ideal_gas
-
 """
 
 

@@ -4,7 +4,10 @@
 **Module Reference**
 ###############################################################################
 
-Contents:
+*OpenPNM* is consisted of several key modules. Each module is consisted of
+several classes and each class is consisted of a few methods. Here, you'll
+find a comprehensive documentation of the modules, classes, and finally the
+methods, occasionally with basic embedded examples on how to use them.
 
 .. toctree::
    :maxdepth: 1
@@ -16,6 +19,7 @@ Contents:
    physics/index.rst
    materials/index.rst
    algorithms/index.rst
+   algorithms/metrics/index.rst
    topotools/index.rst
    models/index.rst
    io/index.rst

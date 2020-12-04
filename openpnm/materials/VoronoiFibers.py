@@ -94,17 +94,16 @@ class VoronoiFibers(Project):
     ...                                  resolution=2e-6)
     """
 
-    def __init__(
-        self,
-        num_points=None,
-        points=None,
-        shape=[1, 1, 1],
-        fiber_rad=None,
-        resolution=1e-2,
-        name=None,
-        linear_scale=None,
-        **kwargs
-    ):
+    def __init__(self,
+                 num_points=None,
+                 points=None,
+                 fiber_rad=10,
+                 resolution=1e-2,
+                 shape=[1, 1, 1],
+                 linear_scale=None,
+                 name=None,
+                 **kwargs):
+
         super().__init__(name=name)
         shape = np.array(shape)
         scale_applied = False
@@ -123,33 +122,28 @@ class VoronoiFibers(Project):
         if fiber_rad is None:
             logger.exception(msg="Please initialize class with a fiber_rad")
 
-        net = DelaunayVoronoiDual(
-            project=self,
-            num_points=num_points,
-            points=points,
-            shape=shape,
-            name=self.name + "_net",
-            **kwargs
-        )
+        net = DelaunayVoronoiDual(project=self,
+                                  num_points=num_points,
+                                  points=points,
+                                  shape=shape,
+                                  name=self.name + "_net",
+                                  **kwargs)
         if scale_applied:
             net["pore.coords"] /= ls
         net.fiber_rad = fiber_rad
         net.resolution = resolution
-        del_geom = DelaunayGeometry(
-            project=self,
-            network=net,
-            pores=net.pores("delaunay"),
-            throats=net.throats("delaunay"),
-            name=self.name + "_del",
-        )
+        del_geom = DelaunayGeometry(project=self,
+                                    network=net,
+                                    pores=net.pores("delaunay"),
+                                    throats=net.throats("delaunay"),
+                                    name=self.name + "_del")
 
-        VoronoiGeometry(
-            project=self,
-            network=net,
-            pores=net.pores("voronoi"),
-            throats=net.throats("voronoi"),
-            name=self.name + "_vor",
-        )
+        VoronoiGeometry(project=self,
+                        network=net,
+                        pores=net.pores("voronoi"),
+                        throats=net.throats("voronoi"),
+                        name=self.name + "_vor")
+
         # Tidy up network
         h = net.check_network_health()
         if len(h["trim_pores"]) > 0:
@@ -181,58 +175,54 @@ class DelaunayGeometry(GenericGeometry):
         A unique name for the network
     """
 
-    def __init__(self, network, **kwargs):
+    def __init__(self, network=None, **kwargs):
         super().__init__(network=network, **kwargs)
-        # Set all the required models
-        vertices = network.find_pore_hulls()
-        p_coords = np.array(
-            [network["pore.coords"][list(p)] for p in vertices], dtype=object
-        )
-        self["pore.vertices"] = p_coords
-        vertices = network.find_throat_facets()
-        t_coords = np.array(
-            [network["pore.coords"][list(t)] for t in vertices], dtype=object
-        )
-        self["throat.vertices"] = t_coords
+        if network is not None:
+            # Set all the required models
+            vertices = network.find_pore_hulls()
+            p_coords = np.array(
+                [network["pore.coords"][list(p)] for p in vertices], dtype=object
+            )
+            self["pore.vertices"] = p_coords
+            vertices = network.find_throat_facets()
+            t_coords = np.array(
+                [network["pore.coords"][list(t)] for t in vertices], dtype=object
+            )
+            self["throat.vertices"] = t_coords
 
-        self.in_hull_volume()
-        self["throat.normal"] = self._t_normals()
-        self["throat.centroid"] = self._centroids(verts=t_coords)
-        self["pore.centroid"] = self._centroids(verts=p_coords)
-        (
-            self["pore.indiameter"],
-            self["pore.incenter"],
-        ) = self._indiameter_from_fibers()
-        self._throat_props()
-        topotools.trim_occluded_throats(network=network, mask=self.name)
-        self["throat.volume"] = np.zeros(1, dtype=float)
-        self["throat.length"] = np.ones(1, dtype=float)
-        self["throat.length"] *= self.network.fiber_rad * 2
-        cen_lens = self._throat_c2c()
-        self["throat.c2c"] = np.sum(cen_lens, axis=1)
-        cen_lens[cen_lens <= 0.0] = 1e-12
-        self["throat.conduit_lengths.pore1"] = cen_lens[:, 0]
-        self["throat.conduit_lengths.throat"] = cen_lens[:, 1]
-        self["throat.conduit_lengths.pore2"] = cen_lens[:, 2]
-        # Configurable Models
-        self.add_model(
-            propname="throat.shape_factor", model=gm.throat_shape_factor.compactness
-        )
-        self.add_model(propname="pore.diameter", model=gm.pore_size.equivalent_diameter)
-        self.add_model(
-            propname="pore.area",
-            model=gm.pore_area.sphere,
-            pore_diameter="pore.diameter",
-        )
-        self.add_model(
-            propname="throat.surface_area", model=gm.throat_surface_area.extrusion
-        )
-        self.add_model(
-            propname="throat.endpoints",
-            model=gm.throat_endpoints.straight_throat,
-            throat_vector="throat.normal",
-        )
-        self.regenerate_models()
+            self.in_hull_volume()
+            self["throat.normal"] = self._t_normals()
+            self["throat.centroid"] = self._centroids(verts=t_coords)
+            self["pore.centroid"] = self._centroids(verts=p_coords)
+            (
+                self["pore.indiameter"],
+                self["pore.incenter"],
+            ) = self._indiameter_from_fibers()
+            self._throat_props()
+            topotools.trim_occluded_throats(network=network, mask=self.name)
+            self["throat.volume"] = np.zeros(1, dtype=float)
+            self["throat.length"] = np.ones(1, dtype=float)
+            self["throat.length"] *= self.network.fiber_rad * 2
+            cen_lens = self._throat_c2c()
+            self["throat.c2c"] = np.sum(cen_lens, axis=1)
+            cen_lens[cen_lens <= 0.0] = 1e-12
+            self["throat.conduit_lengths.pore1"] = cen_lens[:, 0]
+            self["throat.conduit_lengths.throat"] = cen_lens[:, 1]
+            self["throat.conduit_lengths.pore2"] = cen_lens[:, 2]
+            # Configurable Models
+            mod = gm.throat_capillary_shape_factor.compactness
+            self.add_model(propname="throat.shape_factor", model=mod)
+            mod = gm.pore_size.equivalent_diameter
+            self.add_model(propname="pore.diameter", model=mod)
+            self.add_model(propname="pore.area",
+                           model=gm.pore_cross_sectional_area.sphere,
+                           pore_diameter="pore.diameter")
+            mod = gm.throat_surface_area.extrusion
+            self.add_model(propname="throat.surface_area", model=mod)
+            self.add_model(propname="throat.endpoints",
+                           model=gm.throat_endpoints.straight_throat,
+                           throat_vector="throat.normal")
+            self.regenerate_models()
 
     def _t_normals(self):
         r"""
@@ -240,7 +230,7 @@ class DelaunayGeometry(GenericGeometry):
         """
         verts = self["throat.vertices"]
         value = np.zeros([len(verts), 3])
-        for i in range(len(verts)):
+        for i, _ in enumerate(verts):
             if len(np.unique(verts[i][:, 0])) == 1:
                 verts_2d = np.vstack((verts[i][:, 1], verts[i][:, 2])).T
             elif len(np.unique(verts[i][:, 1])) == 1:
@@ -386,7 +376,7 @@ class DelaunayGeometry(GenericGeometry):
                     img[pt[0]][pt[1]] = 1
                 # Pad with zeros all the way around the edges
                 img_pad = np.zeros([np.shape(img)[0] + 2, np.shape(img)[1] + 2])
-                img_pad[1 : np.shape(img)[0] + 1, 1 : np.shape(img)[1] + 1] = img
+                img_pad[1: np.shape(img)[0] + 1, 1: np.shape(img)[1] + 1] = img
                 # All points should lie on this plane but could be some
                 # rounding errors so use the order parameter
                 z_plane = np.unique(np.around(z.astype(float), order + 1))
@@ -395,7 +385,7 @@ class DelaunayGeometry(GenericGeometry):
                     temp_arr = np.ones(1)
                     temp_arr.fill(np.mean(z_plane))
                     z_plane = temp_arr
-                "Fill in the convex hull polygon"
+                # Fill in the convex hull polygon
                 convhullimg = convex_hull_image(img_pad)
                 # Perform a Distance Transform and black out points less than r
                 # to create binary erosion. This is faster than performing an
@@ -407,9 +397,8 @@ class DelaunayGeometry(GenericGeometry):
                 # throat is fully occluded
                 if np.sum(eroded) >= 3:
                     # Do some image analysis to extract the key properties
-                    cropped = eroded[
-                        1 : np.shape(img)[0] + 1, 1 : np.shape(img)[1] + 1
-                    ].astype(int)
+                    cropped = eroded[1: np.shape(img)[0] + 1,
+                                     1: np.shape(img)[1] + 1].astype(int)
                     regions = regionprops(cropped)
                     # Change this to cope with genuine multi-region throats
                     if len(regions) == 1:
@@ -534,7 +523,7 @@ class DelaunayGeometry(GenericGeometry):
         nrmls[k] = -nrmls[k]
         # Now we want to test whether dot(x,N) >= dot(a,N)
         aN = np.sum(nrmls * a, axis=-1)
-        for plane_index in range(len(a)):
+        for plane_index, _ in enumerate(a):
             eqx = nrmls[plane_index][0] * (indx)
             eqy = nrmls[plane_index][1] * (indy)
             eqz = nrmls[plane_index][2] * (indz)
@@ -544,9 +533,9 @@ class DelaunayGeometry(GenericGeometry):
         dom[dom == len(a)] = 1
         ds = np.shape(dom)
         temp_arr = np.zeros_like(self._hull_image, dtype=bool)
-        temp_arr[
-            si[0] : si[0] + ds[0], si[1] : si[1] + ds[1], si[2] : si[2] + ds[2]
-        ] = dom
+        temp_arr[si[0]: si[0] + ds[0],
+                 si[1]: si[1] + ds[1],
+                 si[2]: si[2] + ds[2]] = dom
         self._hull_image[temp_arr] = pore
         del temp_arr
 
@@ -620,7 +609,7 @@ class DelaunayGeometry(GenericGeometry):
                 f2d = np.vstack((fx, fy)).T
             hull = sptl.ConvexHull(f2d, qhull_options="QJ Pp")
             face = np.around(face[hull.vertices].astype(float), 6)
-            for i in range(len(face)):
+            for i, _ in enumerate(face):
                 vec = face[i] - face[i - 1]
                 vec_length = np.linalg.norm(vec)
                 increments = np.int(np.ceil(vec_length / dx))
@@ -647,7 +636,7 @@ class DelaunayGeometry(GenericGeometry):
             face1=self.pores(), parm="minmax"
         )
         # Translate vertices so that minimum occurs at the origin
-        for index in range(len(verts)):
+        for index, _ in enumerate(verts):
             verts[index] -= np.array([vxmin, vymin, vzmin])
         # Find new size of image array
         cdomain = np.around(
@@ -855,9 +844,12 @@ class DelaunayGeometry(GenericGeometry):
             fig = plt.figure()
         ax = fig.gca()
         plots = []
-        plots.append(plt.plot(np.arange(im_shape[0]) / im_shape[0], px, "r", label="x"))
-        plots.append(plt.plot(np.arange(im_shape[1]) / im_shape[1], py, "g", label="y"))
-        plots.append(plt.plot(np.arange(im_shape[2]) / im_shape[2], pz, "b", label="z"))
+        plots.append(plt.plot(np.arange(im_shape[0]) / im_shape[0],
+                              px, "r", label="x"))
+        plots.append(plt.plot(np.arange(im_shape[1]) / im_shape[1],
+                              py, "g", label="y"))
+        plots.append(plt.plot(np.arange(im_shape[2]) / im_shape[2],
+                              pz, "b", label="z"))
         plt.xlabel("Normalized Distance")
         plt.ylabel("Porosity")
         handles, labels = ax.get_legend_handles_labels()
@@ -891,7 +883,7 @@ class DelaunayGeometry(GenericGeometry):
             incentre = self["throat.incenter"][throat_list]
             inradius = 0.5 * self["throat.indiameter"][throat_list]
             row_col = int(np.ceil(np.sqrt(len(throat_list))))
-            for i in range(len(throat_list)):
+            for i, _ in enumerate(throat_list):
                 if fig is None:
                     fig = plt.figure()
                 ax = fig.add_subplot(row_col, row_col, i + 1)
@@ -905,9 +897,9 @@ class DelaunayGeometry(GenericGeometry):
                 offset_2D = self._rotate_and_chop(offsets[i], normals[i], [0, 0, 1])
                 offset_hull = ConvexHull(offset_2D, qhull_options="QJ Pp")
                 for simplex in offset_hull.simplices:
-                    plt.plot(
-                        offset_2D[simplex, 0], offset_2D[simplex, 1], "g-", linewidth=2
-                    )
+                    plt.plot(offset_2D[simplex, 0],
+                             offset_2D[simplex, 1],
+                             "g-", linewidth=2)
                 plt.scatter(offset_2D[:, 0], offset_2D[:, 1])
                 # Make sure the plot looks nice by finding the greatest
                 # range of points and setting the plot to look square
@@ -925,7 +917,8 @@ class DelaunayGeometry(GenericGeometry):
                 upper_bound_x = xmin + my_range * 1.5
                 lower_bound_y = ymin - my_range * 0.5
                 upper_bound_y = ymin + my_range * 1.5
-                plt.axis((lower_bound_x, upper_bound_x, lower_bound_y, upper_bound_y))
+                plt.axis((lower_bound_x, upper_bound_x,
+                          lower_bound_y, upper_bound_y))
                 plt.grid(b=True, which="major", color="b", linestyle="-")
                 centroid = self._rotate_and_chop(coms[i], normals[i], [0, 0, 1])
                 incent = self._rotate_and_chop(incentre[i], normals[i], [0, 0, 1])
@@ -974,14 +967,16 @@ class DelaunayGeometry(GenericGeometry):
                 normals = self["throat.normal"][throats]
                 # Get verts in hull order
                 ordered_verts = []
-                for i in range(len(verts)):
+                for i, _ in enumerate(verts):
                     vert_2D = self._rotate_and_chop(verts[i], normals[i], [0, 0, 1])
                     hull = ConvexHull(vert_2D, qhull_options="QJ Pp")
                     ordered_verts.append(verts[i][hull.vertices])
                 offsets = self["throat.offset_vertices"][throats]
                 ordered_offs = []
-                for i in range(len(offsets)):
-                    offs_2D = self._rotate_and_chop(offsets[i], normals[i], [0, 0, 1])
+                for i, _ in enumerate(offsets):
+                    offs_2D = self._rotate_and_chop(offsets[i],
+                                                    normals[i],
+                                                    [0, 0, 1])
                     offs_hull = ConvexHull(offs_2D, qhull_options="QJ Pp")
                     ordered_offs.append(offsets[i][offs_hull.vertices])
                 # Get domain extents for setting axis
@@ -1010,10 +1005,14 @@ class DelaunayGeometry(GenericGeometry):
                 ax.set_ylim(ymin, ymax)
                 ax.set_zlim(zmin, zmax)
                 if include_points:
-                    ax.scatter(centroids[:, 0], centroids[:, 1], centroids[:, 2], c="y")
-                    ax.scatter(
-                        tcentroids[:, 0], tcentroids[:, 1], tcentroids[:, 2], c="r"
-                    )
+                    ax.scatter(centroids[:, 0],
+                               centroids[:, 1],
+                               centroids[:, 2],
+                               c="y")
+                    ax.scatter(tcentroids[:, 0],
+                               tcentroids[:, 1],
+                               tcentroids[:, 2],
+                               c="r")
                     ax.scatter(coords[:, 0], coords[:, 1], coords[:, 2], c="b")
                 ax.ticklabel_format(style="sci", scilimits=(0, 0))
             else:
@@ -1038,9 +1037,8 @@ class DelaunayGeometry(GenericGeometry):
             # We are already aligned
             facet = verts
         else:
-            M = tr.rotation_matrix(
-                tr.angle_between_vectors(normal, axis), tr.vector_product(normal, axis)
-            )
+            M = tr.rotation_matrix(tr.angle_between_vectors(normal, axis),
+                                   tr.vector_product(normal, axis))
             try:
                 facet = np.dot(verts, M[:3, :3].T)
             except ValueError:
@@ -1158,54 +1156,48 @@ class VoronoiGeometry(GenericGeometry):
         A unique name for the network
     """
 
-    def __init__(self, network, **kwargs):
+    def __init__(self, network=None, **kwargs):
         super().__init__(network=network, **kwargs)
-        rm = "normal"
-        net_Ps = network.pores(self.name)
-        self["pore.diameter"] = np.ones(self.Np) * network.fiber_rad * 2
-        self["pore.indiameter"] = self["pore.diameter"]
-        self["pore.incenter"] = network["pore.coords"][net_Ps]
-        self["pore.centroid"] = network["pore.coords"][net_Ps]
-        self._throat_props()
-        self.add_model(
-            propname="pore.volume", model=gm.pore_volume.sphere, regen_mode=rm
-        )
-        self.add_model(propname="pore.area", model=gm.pore_area.sphere, regen_mode=rm)
-        self["throat.diameter"] = np.ones(self.Nt) * network.fiber_rad * 2
-        self["throat.indiameter"] = self["throat.diameter"]
-        self.add_model(
-            propname="throat.endpoints",
-            model=gm.throat_endpoints.spherical_pores,
-            regen_mode=rm,
-        )
-        self.add_model(
-            propname="throat.area", model=gm.throat_area.cylinder, regen_mode=rm
-        )
-        self.add_model(
-            propname="throat.length", model=gm.throat_length.piecewise, regen_mode=rm
-        )
-        self["throat.c2c"] = self["throat.length"] + network.fiber_rad * 2
-        self.add_model(
-            propname="throat.volume", model=gm.throat_volume.cylinder, regen_mode=rm
-        )
-        self.add_model(
-            propname="throat.perimeter",
-            model=gm.throat_perimeter.cylinder,
-            regen_mode=rm,
-        )
-        self.add_model(
-            propname="throat.surface_area",
-            model=gm.throat_surface_area.cylinder,
-            regen_mode=rm,
-        )
-        self.add_model(
-            propname="throat.shape_factor",
-            model=gm.throat_shape_factor.compactness,
-            regen_mode=rm,
-        )
-        self.add_model(
-            propname="throat.conduit_lengths", model=gm.throat_length.conduit_lengths
-        )
+        if network is not None:
+            rm = "normal"
+            net_Ps = network.pores(self.name)
+            self["pore.diameter"] = np.ones(self.Np) * network.fiber_rad * 2
+            self["pore.indiameter"] = self["pore.diameter"]
+            self["pore.incenter"] = network["pore.coords"][net_Ps]
+            self["pore.centroid"] = network["pore.coords"][net_Ps]
+            self._throat_props()
+            self.add_model(
+                propname="pore.volume", model=gm.pore_volume.sphere, regen_mode=rm
+            )
+            self.add_model(propname="pore.area",
+                           model=gm.pore_cross_sectional_area.sphere,
+                           regen_mode=rm)
+            self["throat.diameter"] = np.ones(self.Nt) * network.fiber_rad * 2
+            self["throat.indiameter"] = self["throat.diameter"]
+            self.add_model(propname="throat.endpoints",
+                           model=gm.throat_endpoints.spherical_pores,
+                           regen_mode=rm)
+            self.add_model(propname="throat.area",
+                           model=gm.throat_cross_sectional_area.cylinder,
+                           regen_mode=rm)
+            self.add_model(propname="throat.length",
+                           model=gm.throat_length.piecewise,
+                           regen_mode=rm)
+            self["throat.c2c"] = self["throat.length"] + network.fiber_rad * 2
+            self.add_model(propname="throat.volume",
+                           model=gm.throat_volume.cylinder,
+                           regen_mode=rm)
+            self.add_model(propname="throat.perimeter",
+                           model=gm.throat_perimeter.cylinder,
+                           regen_mode=rm)
+            self.add_model(propname="throat.surface_area",
+                           model=gm.throat_surface_area.cylinder,
+                           regen_mode=rm)
+            self.add_model(propname="throat.shape_factor",
+                           model=gm.throat_capillary_shape_factor.compactness,
+                           regen_mode=rm)
+            self.add_model(propname="throat.conduit_lengths",
+                           model=gm.throat_length.conduit_lengths)
 
     def _throat_props(self):
         r"""

@@ -83,9 +83,9 @@ class GenericPhase(Base, ModelsMixin):
         # Deal with special keys first
         if prop == '_id':
             net = self.project.network
-            return net[element+'._id']
+            return net[f"{element}._id"]
         if prop == self.name:
-            return self[element+'.all']
+            return self[f"{element}.all"]
         # An attempt at automatic interpolation if key not found
         if key not in self.keys():
             not_el = list(set(['pore', 'throat']).difference(set([element])))[0]

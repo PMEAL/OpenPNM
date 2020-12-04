@@ -11,9 +11,13 @@ ws = Workspace()
 class VTK(GenericIO):
     r"""
     The Visualization Toolkit (VTK) format defined by Kitware and used by
-    Paraview
+    Paraview.
+
+    Notes
+    -----
     Because OpenPNM data is unstructured, the actual output format is VTP,
     not VTK.
+
     """
 
     _TEMPLATE = """
@@ -35,18 +39,19 @@ class VTK(GenericIO):
     """.strip()
 
     @classmethod
-    def save(
-        cls,
-        network,
-        phases=[],
-        filename="",
-        delim=" | ",
-        fill_nans=None,
-        fill_infs=None,
-    ):
+    def save(cls, *args, **kwargs):
+        r"""
+        This method is being deprecated.  Use ``export_data`` instead.
+        """
+        cls.export_data(*args, **kwargs)
+
+    @classmethod
+    def export_data(cls, network, phases=[], filename="", delim=" | ",
+                    fill_nans=None, fill_infs=None):
         r"""
         Save network and phase data to a single vtp file for visualizing in
-        Paraview
+        Paraview.
+
         Parameters
         ----------
         network : OpenPNM Network Object
@@ -72,10 +77,11 @@ class VTK(GenericIO):
             which means that property arrays containing ``None`` will *not*
             be written to the file, and a warning will be issued.  A useful
             value is
+
         """
         project, network, phases = cls._parse_args(network=network, phases=phases)
         # Check if any of the phases has time series
-        transient = GenericIO.is_transient(phases=phases)
+        transient = GenericIO._is_transient(phases=phases)
         if transient:
             logger.warning(
                 "vtp format does not support transient data, " + "use xdmf instead"
@@ -150,17 +156,26 @@ class VTK(GenericIO):
             f.write(string)
 
     @classmethod
-    def load(cls, filename, project=None, delim=" | "):
+    def load(cls, *args, **kwargs):
+        r"""
+        This method is being deprecated.  Use ``import_data`` instead.
+        """
+        return cls.import_data(*args, **kwargs)
+
+    @classmethod
+    def import_data(cls, filename, project=None, delim=" | "):
         r"""
         Read in pore and throat data from a saved VTK file.
+
         Parameters
         ----------
         filename : string (optional)
-            The name of the file containing the data to import.  The formatting
+            The name of the file containing the data to import. The formatting
             of this file is outlined below.
         project : OpenPNM Project object
             A GenericNetwork is created and added to the specified Project.
             If no Project is supplied then one will be created and returned.
+
         """
         net = {}
 

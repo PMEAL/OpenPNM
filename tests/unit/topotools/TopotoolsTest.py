@@ -147,6 +147,13 @@ class TopotoolsTest:
         assert net.Np == 150
         assert net.Nt == 300
 
+    def test_clone_pores_with_labels(self):
+        net = op.network.Cubic(shape=[5, 5, 5])
+        topotools.clone_pores(network=net, pores=net.pores('left'),
+                              labels=['test1', 'test2'])
+        assert net.num_pores('test1') == 25
+        assert net.num_pores('test2') == 25
+
     def test_merge_networks(self):
         net1 = op.network.Cubic(shape=[3, 3, 3])
         net2 = op.network.Cubic(shape=[3, 3, 3])
@@ -170,14 +177,14 @@ class TopotoolsTest:
         pn2['pore.coords'] += [0, 0, 3]
         pn2['pore.net_02'] = True
         pn2['throat.net_02'] = True
-        geo = op.geometry.StickAndBall(network=pn, pores=pn.Ps, throats=pn.Ts)
+        op.geometry.StickAndBall(network=pn, pores=pn.Ps, throats=pn.Ts)
         geo2 = op.geometry.StickAndBall(network=pn2, pores=pn2.Ps, throats=pn2.Ts)
         geo2['pore.test_vals'] = 1.5
         op.topotools.merge_networks(network=pn, donor=pn2)
         assert isinstance(pn['pore.test_vals'], np.ndarray)
         assert ('pore.' + geo2.name) in pn.keys()
 
-    def test_subdivide_3D(self):
+    def test_subdivide_3d(self):
         net = op.network.Cubic(shape=[3, 3, 3])
         assert net.Np == 27
         assert net.Nt == 54
@@ -187,7 +194,7 @@ class TopotoolsTest:
         assert net.Np == 27 - 1 + 125
         assert net.Nt == 54 - 6 + 300 + 25 * 6
 
-    def test_subdivide_2D(self):
+    def test_subdivide_2d(self):
         net = op.network.Cubic(shape=[1, 3, 3])
         assert net.Np == 9
         assert net.Nt == 12
@@ -314,7 +321,7 @@ class TopotoolsTest:
         pn['pore.test_float'] = 1.0
         pn['pore.test_int'] = 1
         pn['pore.test_bool'] = True
-        op.topotools.extend(network=pn, pore_coords=[[3, 3, 3], [3, 3, 4]])
+        op.topotools.extend(network=pn, coords=[[3, 3, 3], [3, 3, 4]])
         assert np.any(np.isnan(pn['pore.test_float']))
         assert np.any(np.isnan(pn['pore.test_int']))
         assert pn['pore.test_bool'].sum() < pn['pore.test_bool'].size
@@ -336,38 +343,42 @@ class TopotoolsTest:
         air['pore.test_float'] = 1.0
         air['pore.test_int'] = 1
         air['pore.test_bool'] = True
-        with pytest.raises(Exception):
-            op.topotools.extend(network=pn, pore_coords=[[3, 3, 3], [3, 3, 4]])
+        Np = air.Np
+        Nt = air.Nt
+        op.topotools.extend(network=pn, coords=[[3, 3, 3], [3, 3, 4]])
+        assert air.Np == (Np + 2)
+        op.topotools.extend(network=pn, conns=[[0, 4], [1, 5]])
+        assert air.Nt == (Nt + 2)
 
     def test_stitch_radius_no_connections(self):
         Nx, Ny, Nz = (10, 10, 1)
         Lc = 1e-4
         pn = op.network.Cubic(shape=[Nx, Ny, Nz], spacing=Lc)
         pn2 = op.network.Cubic(shape=[Nx, Ny, Nz], spacing=Lc)
-        pn2['pore.coords'] += [Lc*Nx, 0, 0]
+        pn2['pore.coords'] += [Lc * Nx, 0, 0]
         op.topotools.stitch(network=pn, donor=pn2,
                             P_network=pn.pores('back'), P_donor=pn2.pores('front'),
                             method='radius', len_max=0,
                             label_stitches=['test', 'test2'])
-        assert pn.Nt == (pn2.Nt*2)
+        assert pn.Nt == (pn2.Nt * 2)
 
     def test_stitch_10_connections(self):
         Nx, Ny, Nz = (10, 10, 1)
         Lc = 1e-4
         pn = op.network.Cubic(shape=[Nx, Ny, Nz], spacing=Lc)
         pn2 = op.network.Cubic(shape=[Nx, Ny, Nz], spacing=Lc)
-        pn2['pore.coords'] += [Lc*Nx, 0, 0]
+        pn2['pore.coords'] += [Lc * Nx, 0, 0]
         op.topotools.stitch(network=pn, donor=pn2,
                             P_network=pn.pores('back'), P_donor=pn2.pores('front'),
                             label_stitches=['test', 'test2'])
-        assert pn.Nt == (pn2.Nt*2 + 10)
+        assert pn.Nt == (pn2.Nt * 2 + 10)
 
     def test_stitch_with_multiple_labels(self):
         Nx, Ny, Nz = (10, 10, 1)
         Lc = 1e-4
         pn = op.network.Cubic(shape=[Nx, Ny, Nz], spacing=Lc)
         pn2 = op.network.Cubic(shape=[Nx, Ny, Nz], spacing=Lc)
-        pn2['pore.coords'] += [Lc*Nx, 0, 0]
+        pn2['pore.coords'] += [Lc * Nx, 0, 0]
         op.topotools.stitch(network=pn, donor=pn2,
                             P_network=pn.pores('back'), P_donor=pn2.pores('front'),
                             label_stitches=['test', 'test2'])
@@ -377,16 +388,16 @@ class TopotoolsTest:
     def test_stitch_repeatedly(self):
         pn = op.network.Cubic(shape=[10, 10, 1], spacing=1e-4)
         pn2 = op.network.Cubic(shape=[10, 10, 1], spacing=1e-4)
-        pn2['pore.coords'] += [1e-4*10, 0, 0]
+        pn2['pore.coords'] += [1e-4 * 10, 0, 0]
         pn3 = op.network.Cubic(shape=[10, 10, 1], spacing=1e-4)
-        pn3['pore.coords'] += [1e-4*20, 0, 0]
+        pn3['pore.coords'] += [1e-4 * 20, 0, 0]
         op.topotools.stitch(network=pn, donor=pn2,
                             P_network=pn.pores('back'), P_donor=pn2.pores('front'),
                             method='nearest')
         op.topotools.stitch(network=pn, donor=pn3,
                             P_network=pn.pores('back'), P_donor=pn2.pores('front'),
                             method='nearest')
-        assert pn.Nt == (pn2.Nt*3 + 20)
+        assert pn.Nt == (pn2.Nt * 3 + 20)
 
     def test_dimensionality(self):
         # 3D network
@@ -398,9 +409,32 @@ class TopotoolsTest:
         dims = op.topotools.dimensionality(pn)
         assert np.allclose(dims, np.array([True, False, True]))
         # 1D network
-        pn = op.network.Cubic(shape=[1, 1, 5])
+        pn = op.network.Cubic(shape=[1, 1, 5], spacing=1.2345e-30)
+        pn["pore.coords"][0, 0] = pn["pore.coords"][0, :].mean()
         dims = op.topotools.dimensionality(pn)
         assert np.allclose(dims, np.array([False, False, True]))
+
+    def test_stitch_pores(self):
+        np.random.seed(0)
+        pts = np.random.rand(100, 3)
+        pn = op.network.Delaunay(points=pts)
+        Ps = (pn.coords[:, 0] > 0.3) * (pn.coords[:, 0] < 0.6)
+        assert pn.Np == 100
+        op.topotools.trim(network=pn, pores=Ps)
+        assert pn.Np == 73
+        pores1 = pn.coords[:, 0] < 0.3
+        pores2 = pn.coords[:, 0] > 0.6
+        assert pn.Nt == 352
+        op.topotools.stitch_pores(network=pn,
+                                  pores1=pores1,
+                                  pores2=pores2, mode='gabriel')
+        assert pn.Nt == 373
+        op.topotools.trim(network=pn, throats=pn.throats('stitched'))
+        assert pn.Nt == 352
+        op.topotools.stitch_pores(network=pn,
+                                  pores1=pores1,
+                                  pores2=pores2, mode='delaunay')
+        assert pn.Nt == 436
 
 
 if __name__ == '__main__':

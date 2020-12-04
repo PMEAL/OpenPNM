@@ -98,6 +98,27 @@ class GenericTransportTest:
         y = np.unique(np.around(alg['pore.mole_fraction'], decimals=3))
         assert np.all(x == y)
 
+    def test_set_value_bc_where_rate_is_already_set_mode_merge(self):
+        alg = op.algorithms.GenericTransport(network=self.net,
+                                             phase=self.phase)
+        alg.settings['conductance'] = 'throat.diffusive_conductance'
+        alg.settings['quantity'] = 'pore.mole_fraction'
+        alg.set_rate_BC(pores=[0, 1], values=1, mode='merge')
+        alg.set_value_BC(pores=[1, 2], values=0, mode='merge')
+        assert np.isfinite(alg['pore.bc_rate']).sum() == 2
+        assert np.isfinite(alg['pore.bc_value']).sum() == 1
+
+    def test_set_value_bc_where_rate_is_already_set_mode_overwrite(self):
+        alg = op.algorithms.GenericTransport(network=self.net,
+                                             phase=self.phase)
+        alg.settings['conductance'] = 'throat.diffusive_conductance'
+        alg.settings['quantity'] = 'pore.mole_fraction'
+        alg.set_rate_BC(pores=[0, 1], values=1, mode='merge')
+        alg.set_value_BC(pores=[2, 3, 4], values=0, mode='merge')
+        alg.set_value_BC(pores=[1, 2], values=0, mode='overwrite')
+        assert np.isfinite(alg['pore.bc_rate']).sum() == 2
+        assert np.isfinite(alg['pore.bc_value']).sum() == 1
+
     def test_cache_A(self):
         alg = op.algorithms.GenericTransport(network=self.net,
                                              phase=self.phase)
@@ -126,7 +147,8 @@ class GenericTransportTest:
                                               phase=self.phase)
         alg.settings['conductance'] = 'throat.diffusive_conductance'
         alg.settings['quantity'] = 'pore.mole_fraction'
-        alg.set_rate_BC(pores=self.net.pores("left"), values=1.235)
+        pores = self.net.pores("left")
+        alg.set_rate_BC(pores=pores, values=1.235*np.ones(pores.size))
         alg.set_value_BC(pores=self.net.pores("right"), values=0.0)
         alg.run()
         rate = alg.rate(pores=self.net.pores("right"))[0]
@@ -152,7 +174,7 @@ class GenericTransportTest:
 
     def test_rate_multiple_values(self):
         alg = op.algorithms.GenericTransport(network=self.net,
-                                              phase=self.phase)
+                                             phase=self.phase)
         alg.settings['conductance'] = 'throat.diffusive_conductance'
         alg.settings['quantity'] = 'pore.mole_fraction'
         alg.set_rate_BC(pores=[0, 1, 2, 3], values=[0, 3.5, 0.4, -12])
@@ -165,7 +187,9 @@ class GenericTransportTest:
 
     def test_rate_Nt_by_2_conductance(self):
         net = op.network.Cubic(shape=[1, 6, 1])
-        geom = op.geometry.StickAndBall(network=net)
+        geom = op.geometry.StickAndBall(network=net,
+                                        pores=net.Ps,
+                                        throats=net.Ts)
         air = op.phases.Air(network=net)
         water = op.phases.Water(network=net)
         m = op.phases.MultiPhase(phases=[air, water], project=net.project)
@@ -173,9 +197,9 @@ class GenericTransportTest:
         m.set_occupancy(phase=water, pores=[3, 4, 5])
         const = op.models.misc.constant
         K_water_air = 0.5
-        m.set_binary_partition_coef(propname="throat.partition_coef",
-                                    phases=[water, air],
-                                    model=const, value=K_water_air)
+        m.set_binary_partition_coef(
+            phases=[water, air], model=const, value=K_water_air
+        )
         m._set_automatic_throat_occupancy()
         _ = op.physics.Standard(network=net, phase=m, geometry=geom)
         alg = op.algorithms.GenericTransport(network=net, phase=m)
@@ -262,7 +286,7 @@ class GenericTransportTest:
         mod = op.models.misc.from_neighbor_pores
         self.phase["pore.seed"] = np.nan
         self.phys.add_model(propname="throat.diffusive_conductance", model=mod,
-                            pore_prop="pore.seed", ignore_nans=False)
+                            prop="pore.seed", ignore_nans=False)
         with pytest.raises(Exception):
             alg.run()
         self.phase["pore.seed"] = 1
@@ -274,6 +298,26 @@ class GenericTransportTest:
             alg.run()
         # Reset network back to original
         self.setup_class()
+
+    def test_total_rate(self):
+        alg = op.algorithms.GenericTransport(network=self.net,
+                                             phase=self.phase)
+        h = self.net.check_network_health()
+        op.topotools.trim(self.net, pores=h['trim_pores'])
+        alg.settings['conductance'] = 'throat.diffusive_conductance'
+        alg.settings['quantity'] = 'pore.mole_fraction'
+        alg.set_rate_BC(pores=[0, 1, 2, 3], total_rate=1)
+        alg.set_value_BC(pores=[50, 51, 52, 53], values=0.0)
+        alg.run()
+        rate_individual = alg.rate(pores=[0, 1, 2, 3], mode='single')
+        nt.assert_allclose(rate_individual, [0.25, 0.25, 0.25, 0.25],
+                           atol=1e-10)
+        # test exceptions that come from adding total_rate feature
+        with pytest.raises(Exception):
+            alg.set_rate_BC(pores=[0, 1, 2, 3],
+                            total_rate=[0.25, 0.25, 0.25, 0.25])
+        with pytest.raises(Exception):
+            alg.set_rate_BC(pores=[0, 1, 2, 3], rates=1, total_rate=1)
 
     def teardown_class(self):
         ws = op.Workspace()

@@ -1,12 +1,4 @@
 r"""
-
-.. autofunction:: openpnm.models.geometry.throat_size.weibull
-.. autofunction:: openpnm.models.geometry.throat_size.normal
-.. autofunction:: openpnm.models.geometry.throat_size.random
-.. autofunction:: openpnm.models.geometry.throat_size.generic_distribution
-.. autofunction:: openpnm.models.geometry.throat_size.from_neighbor_pores
-.. autofunction:: openpnm.models.geometry.throat_size.equivalent_diameter
-
 """
 from openpnm.models import misc as _misc
 import numpy as _np
@@ -42,8 +34,8 @@ def random(target, seed=None, num_range=[0, 1]):
 random.__doc__ = _misc.random.__doc__
 
 
-def from_neighbor_pores(target, pore_prop='pore.diameter', mode='min'):
-    return _misc.from_neighbor_pores(target=target, pore_prop=pore_prop,
+def from_neighbor_pores(target, prop='pore.diameter', mode='min'):
+    return _misc.from_neighbor_pores(target=target, prop=prop,
                                      mode=mode)
 
 

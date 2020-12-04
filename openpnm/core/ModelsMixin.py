@@ -1,6 +1,7 @@
 import inspect
 from openpnm.utils import PrintableDict, logging, Workspace
 from openpnm.utils.misc import is_valid_propname
+from openpnm.utils import prettify_logger_message
 logger = logging.getLogger(__name__)
 ws = Workspace()
 
@@ -17,6 +18,7 @@ class ModelsDict(PrintableDict):
     ``dependency_graph``, and ``dependency_map``.
 
     """
+
     def dependency_list(self):
         r"""
         Returns a list of dependencies in the order with which they should be
@@ -66,16 +68,21 @@ class ModelsDict(PrintableDict):
         To visualize the dependencies, the following NetworkX function and
         settings is helpful:
 
-        nx.draw_spectral(
-            dtree,
-            arrowsize=50,
-            font_size=32,
-            with_labels=True,
-            node_size=2000,
-            width=3.0,
-            edge_color='lightgrey',
-            font_weight='bold'
-        )
+        >>> import openpnm as op
+        >>> net = op.network.Cubic(shape=[3, 3, 3])
+        >>> geo = op.geometry.StickAndBall(network=net,
+        ...                                pores=net.Ps,
+        ...                                throats=net.Ts)
+        >>> dtree = geo.models.dependency_graph()
+        >>> import networkx as nx
+        >>> nx.draw_spectral(dtree,
+        ...                  arrowsize=50,
+        ...                  font_size=32,
+        ...                  with_labels=True,
+        ...                  node_size=2000,
+        ...                  width=3.0,
+        ...                  edge_color='lightgrey',
+        ...                  font_weight='bold')
 
         """
         import networkx as nx
@@ -100,7 +107,7 @@ class ModelsDict(PrintableDict):
 
         return dtree
 
-    def dependency_map(self, ax=None, figsize=None):
+    def dependency_map(self, ax=None, figsize=None, deep=False, style='shell'):
         r"""
         Create a graph of the dependency graph in a decent format
 
@@ -121,7 +128,7 @@ class ModelsDict(PrintableDict):
         import networkx as nx
         import matplotlib.pyplot as plt
 
-        dtree = self.dependency_graph()
+        dtree = self.dependency_graph(deep=deep)
         labels = {}
         for node in dtree.nodes:
             if node.startswith("pore."):
@@ -132,16 +139,17 @@ class ModelsDict(PrintableDict):
 
         if ax is None:
             fig, ax = plt.subplots()
-        fig.set_size_inches(figsize)
+        if figsize is not None:
+            fig.set_size_inches(figsize)
 
-        nx.draw_shell(
-            dtree,
-            labels=labels,
-            with_labels=True,
-            edge_color='lightgrey',
-            font_size=12,
-            width=3.0,
-        )
+        style = style.replace('draw_', '')
+        method = getattr(nx, 'draw_' + style)
+        method(dtree,
+               labels=labels,
+               with_labels=True,
+               edge_color='lightgrey',
+               font_size=12,
+               width=3.0)
 
         ax = plt.gca()
         ax.margins(x=0.2, y=0.02)
@@ -183,7 +191,7 @@ class ModelWrapper(dict):
     def __str__(self):
         horizontal_rule = '―' * 78
         lines = [horizontal_rule]
-        strg = '{0:<25s} {2:<25s} {2}'
+        strg = '{0:<25s} {1:<25s} {2}'
         lines.append(strg.format('Property Name', 'Parameter', 'Value'))
         lines.append(horizontal_rule)
         temp = self.copy()
@@ -276,16 +284,20 @@ class ModelsMixin:
             Controls how/when the model is run (See Notes for more details).
             Options are:
 
-            *'normal'* : (default) The model is run directly upon being
+            *'normal'* -  (default) The model is run directly upon being
             assiged, and also run every time ``regenerate_models`` is called.
 
-            *'constant'* : The model is run directly upon being assigned, but
+            *'constant'* -  The model is run directly upon being assigned, but
             is not called again, thus making it's data act like a constant.
             If, however, the data is deleted from the object it will be
             regenerated again.
 
-            *'deferred'* Is not run upon being assigned, but is run the first
+            *'deferred'* - Is not run upon being assigned, but is run the first
             time that ``regenerate_models`` is called.
+
+            *'explicit'* - Is only run if the model name is explicitly passed
+            to the ``regenerate_models`` method.  This allows full control
+            of when the model is run.
 
         """
         if propname in kwargs.values():  # Prevent infinite loops of look-ups
@@ -335,9 +347,9 @@ class ModelsMixin:
 
         """
         # If empty list of propnames was given, do nothing and return
-        if type(propnames) is list and len(propnames) == 0:
+        if isinstance(propnames, list) and len(propnames) == 0:
             return
-        if type(propnames) is str:  # Convert string to list if necessary
+        if isinstance(propnames, str):  # Convert string to list if necessary
             propnames = [propnames]
         if propnames is None:  # If no props given, then regenerate them all
             propnames = self.models.dependency_list()
@@ -384,7 +396,9 @@ class ModelsMixin:
         # Only regenerate model if regen_mode is correct
         if self.settings['freeze_models']:
             # Don't run ANY models if freeze_models is set to True
-            pass
+            msg = (f"{prop} was not run since freeze_models is set to"
+                   " True in object settings.")
+            logger.warning(prettify_logger_message(msg))
         elif regen_mode == 'constant':
             # Only regenerate if data not already in dictionary
             if prop not in self.keys():
@@ -393,8 +407,9 @@ class ModelsMixin:
             try:
                 self[prop] = model(target=self, **kwargs)
             except KeyError as e:
-                logger.error(prop + ' was not run since the following '
-                             + 'property is missing: ' + e.__str__())
+                msg = (f"{prop} was not run since the following property"
+                       f" is missing: {e}")
+                logger.error(prettify_logger_message(msg))
                 self.models[prop]['regen_mode'] = 'deferred'
 
     def remove_model(self, propname=None, mode=['model', 'data']):
@@ -417,7 +432,7 @@ class ModelsMixin:
         The default is both.
 
         """
-        if type(propname) is str:
+        if isinstance(propname, str):
             propname = [propname]
         for item in propname:
             if 'model' in mode:

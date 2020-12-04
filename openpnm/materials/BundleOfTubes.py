@@ -153,16 +153,16 @@ class BundleOfTubes(Project):
 
         geom.add_model(propname='pore.diameter',
                        model=mods.geometry.pore_size.from_neighbor_throats,
-                       throat_prop='throat.diameter', mode='max')
+                       prop='throat.diameter', mode='max')
         geom.add_model(propname='pore.diameter',
                        model=mods.misc.constant, value=0.0)
         geom.add_model(propname='throat.length',
                        model=mods.geometry.throat_length.ctc)
         geom.add_model(propname='throat.area',
-                       model=mods.geometry.throat_area.cylinder)
+                       model=mods.geometry.throat_cross_sectional_area.cylinder)
         geom.add_model(propname='pore.area',
                        model=mods.misc.from_neighbor_throats,
-                       throat_prop='throat.area')
+                       prop='throat.area')
         geom.add_model(propname='pore.volume',
                        model=mods.misc.constant, value=0.0)
         geom.add_model(propname='throat.volume',

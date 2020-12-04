@@ -1,6 +1,6 @@
 import warnings
+import uuid
 import numpy as np
-import scipy as sp
 from collections import namedtuple
 from openpnm.utils import Workspace, logging
 from openpnm.utils.misc import PrintableList, SettingsDict, Docorator
@@ -142,17 +142,21 @@ class Base(dict):
         # It is necessary to set the SettingsDict here since some classes
         # use it before calling super.__init__()
         instance.settings = SettingsDict()
+        instance.settings['name'] = None
+        instance.settings['_uuid'] = str(uuid.uuid4())
         return instance
 
-    def __init__(self, Np=0, Nt=0, name=None, project=None):
+    def __init__(self, Np=0, Nt=0, name=None, project=None, settings={}):
         self.settings.setdefault('prefix', 'base')
+        self.settings.update(settings)
         super().__init__()
         if project is None:
             project = ws.new_project()
         if name is None:
             name = project._generate_name(self)
+        project._validate_name(name)
         project.extend(self)
-        self.name = name
+        self.settings['name'] = name
         self.update({'pore.all': np.ones(shape=(Np, ), dtype=bool)})
         self.update({'throat.all': np.ones(shape=(Nt, ), dtype=bool)})
 
@@ -160,10 +164,7 @@ class Base(dict):
         return '<%s object at %s>' % (self.__class__.__module__, hex(id(self)))
 
     def __eq__(self, other):
-        if hex(id(self)) == hex(id(other)):
-            return True
-        else:
-            return False
+        return hex(id(self)) == hex(id(other))
 
     def __setitem__(self, key, value):
         r"""
@@ -174,6 +175,8 @@ class Base(dict):
         'throat.***'.  Also, any scalars are cast into full length vectors.
 
         """
+        if value is None:
+            return
         # Check 1: If value is a dictionary, break it into constituent arrays
         # and recursively call __setitem__ on each
         if hasattr(value, 'keys'):
@@ -266,38 +269,32 @@ class Base(dict):
             keys = self.keys(mode='all', deep=True)
             vals.update({k: self.interleave_data(k) for k in keys
                          if k.startswith(key + '.')})
-        # The following code, if activated, attempts to run models when
-        # missing data is requested from the dictionary.  The works fine,
-        # but breaks the general way openpnm behaviors.
-        # elif hasattr(self, 'models') and key in self.models:
-        #     self.regenerate_models(key)
-        #     vals = super().__getitem__(key)
+        # Attempt to run model when missing data.
+        elif hasattr(self, 'models') and key in self.models:
+            self.regenerate_models(key)
+            vals = super().__getitem__(key)
         else:
             raise KeyError(key)
         return vals
 
     def _set_name(self, name, validate=True):
-        if not hasattr(self, '_name'):
-            self._name = None
+        old_name = self.settings['name']
+        if name == old_name:
+            return
         if name is None:
             name = self.project._generate_name(self)
-        if self.name == name:
-            return
         if validate:
             self.project._validate_name(name)
-        if self._name is not None:
-            # Rename any label arrays in other objects
-            for item in self.project:
-                if 'pore.'+self.name in item.keys():
-                    item['pore.'+name] = item.pop('pore.'+self.name)
-                if 'throat.'+self.name in item.keys():
-                    item['throat.'+name] = item.pop('throat.'+self.name)
-        self._name = name
+        self.settings['name'] = name
+        # Rename any label arrays in other objects
+        for item in self.project:
+            if 'pore.' + old_name in item.keys():
+                item['pore.'+name] = item.pop('pore.' + old_name)
+            if 'throat.' + old_name in item.keys():
+                item['throat.' + name] = item.pop('throat.' + old_name)
 
     def _get_name(self):
-        if not hasattr(self, '_name'):
-            self._name = None
-        return self._name
+        return self.settings['name']
 
     name = property(_get_name, _set_name)
 
@@ -397,7 +394,7 @@ class Base(dict):
     def keys(self, element=None, mode=None, deep=False):
         r"""
         This subclass works exactly like ``keys`` when no arguments are passed,
-        but optionally accepts an ``element`` and/or a ``mode``, which filters
+        but optionally accepts an ``element`` and a ``mode``, which filters
         the output to only the requested keys.
 
         The default behavior is exactly equivalent to the normal ``keys``
@@ -654,7 +651,7 @@ class Base(dict):
         >>> import openpnm as op
         >>> pn = op.network.Cubic(shape=[5, 5, 5])
         >>> pn.labels(pores=[11, 12])
-        ['pore.all', 'pore.front', 'pore.internal', 'pore.surface']
+        ['pore.all', 'pore.internal', 'pore.left', 'pore.surface']
         """
         # Short-circuit query when no pores or throats are given
         if (np.size(pores) == 0) and (np.size(throats) == 0):
@@ -850,9 +847,9 @@ class Base(dict):
         >>> pn = op.network.Cubic(shape=[5, 5, 5])
         >>> Ps = pn.pores(labels=['top', 'front'], mode='union')
         >>> Ps[:5]  # Look at first 5 pore indices
-        array([0, 1, 2, 3, 4])
+        array([ 4,  9, 14, 19, 20])
         >>> pn.pores(labels=['top', 'front'], mode='xnor')
-        array([ 4,  9, 14, 19, 24])
+        array([ 24,  49,  74,  99, 124])
         """
         ind = self._get_indices(element='pore', labels=labels, mode=mode)
         if target is not None:
@@ -960,9 +957,8 @@ class Base(dict):
         ind[self_in_ids] = locations[ids_in_self]
         if filtered:
             return ind[mask]
-        else:
-            t = namedtuple('index_map', ('indices', 'mask'))
-            return t(ind, mask)
+        t = namedtuple('index_map', ('indices', 'mask'))
+        return t(ind, mask)
 
     def map_pores(self, pores, origin, filtered=True):
         r"""
@@ -1195,7 +1191,6 @@ class Base(dict):
         if np.all([item is None for item in arrs]):  # prop not found anywhere
             raise KeyError(prop)
 
-        # --------------------------------------------------------------------
         # Let's start by handling the easy cases first
         if not any([a is None for a in arrs]):
             # All objs present and array found on all objs
@@ -1208,14 +1203,13 @@ class Base(dict):
                 for vals, inds in zip(arrs, locs):
                     temp_arr[inds] = vals
                 return temp_arr  # Return early because it's just easier
-            elif all([a.dtype in [float, int, bool] for a in arrs]):
+            if all([a.dtype in [float, int, bool] for a in arrs]):
                 # All types are numeric, make float
                 temp_arr = np.ones(shape, dtype=float)
                 for vals, inds in zip(arrs, locs):
                     temp_arr[inds] = vals
                 return temp_arr  # Return early because it's just easier
 
-        # ---------------------------------------------------------------------
         # Now handle the complicated cases
         # Check the general type of each array
         atype = []
@@ -1230,8 +1224,7 @@ class Base(dict):
                     atype.append('other')
         if not all([item == atype[0] for item in atype]):
             raise Exception('The array types are not compatible')
-        else:
-            dummy_val = {'numeric': np.nan, 'boolean': False, 'other': None}
+        dummy_val = {'numeric': np.nan, 'boolean': False, 'other': None}
 
         # Create an empty array of the right type and shape
         for item in arrs:
@@ -1272,7 +1265,7 @@ class Base(dict):
 
         return temp_arr
 
-    def interpolate_data(self, propname):
+    def interpolate_data(self, propname, mode='mean'):
         r"""
         Determines a pore (or throat) property as the average of it's
         neighboring throats (or pores)
@@ -1281,15 +1274,14 @@ class Base(dict):
         ----------
         propname: string
             The dictionary key to the values to be interpolated.
+        mode : string
+            The method used for interpolation.  Options are 'mean' (default),
+            'min', and 'max'.
 
         Returns
         -------
-        An array containing interpolated pore (or throat) data
-
-        Notes
-        -----
-        This uses an unweighted average, without attempting to account for
-        distances or sizes of pores and throats.
+        vals : ND-array
+            An array containing interpolated pore (or throat) data
 
         Examples
         --------
@@ -1300,34 +1292,11 @@ class Base(dict):
         array([1.5, 2.5])
 
         """
-        boss = self.project.find_full_domain(self)
-        net = self.project.network
-        if boss is self:
-            Ts = boss.throats()
-            Ps = boss.pores()
-            label = 'all'
-        else:
-            Ts = boss.throats(self.name)
-            Ps = boss.pores(self.name)
-            label = self.name
+        from openpnm.models.misc import from_neighbor_throats, from_neighbor_pores
         if propname.startswith('throat'):
-            # Upcast data to full network size
-            temp = np.ones((boss.Nt,))*np.nan
-            temp[Ts] = self[propname]
-            data = temp
-            temp = np.ones((boss.Np,))*np.nan
-            for pore in Ps:
-                neighborTs = net.find_neighbor_throats(pore)
-                neighborTs = net.filter_by_label(throats=neighborTs,
-                                                 labels=label)
-                temp[pore] = np.mean(data[neighborTs])
-            values = temp[Ps]
+            values = from_neighbor_throats(target=self, prop=propname, mode=mode)
         elif propname.startswith('pore'):
-            # Upcast data to full network size
-            data = np.ones((net.Np, ))*np.nan
-            data[Ps] = self[propname]
-            Ps12 = net['throat.conns'][Ts]
-            values = np.mean(data[Ps12], axis=1)
+            values = from_neighbor_pores(target=self, prop=propname, mode=mode)
         if hasattr(self[propname], 'units'):
             values *= self[propname].units
         return values
@@ -1335,7 +1304,7 @@ class Base(dict):
     def filter_by_label(self, pores=[], throats=[], labels=None, mode='or'):
         r"""
         Returns which of the supplied pores (or throats) has the specified
-        label
+        label(s)
 
         Parameters
         ----------
@@ -1382,12 +1351,12 @@ class Base(dict):
         --------
         >>> import openpnm as op
         >>> pn = op.network.Cubic(shape=[5, 5, 5])
-        >>> pn.filter_by_label(pores=[0, 1, 5, 6], labels='left')
+        >>> pn.filter_by_label(pores=[0, 1, 25, 32], labels='left')
         array([0, 1])
         >>> Ps = pn.pores(['top', 'bottom', 'front'], mode='or')
         >>> pn.filter_by_label(pores=Ps, labels=['top', 'front'],
         ...                    mode='and')
-        array([ 4,  9, 14, 19, 24])
+        array([ 24,  49,  74,  99, 124])
         """
         # Convert inputs to locations and element
         if (np.size(throats) > 0) and (np.size(pores) > 0):
@@ -1616,33 +1585,34 @@ class Base(dict):
         import matplotlib.pyplot as plt
         temp = plt.rcParams['font.size']
         plt.rcParams['font.size'] = fontsize
-        if type(props) is str:
+        if isinstance(props, str):
             props = [props]
         N = len(props)
         color = plt.cm.tab10(range(10))
-        if N == 1:
-            r = 1
-            c = 1
-        elif N < 4:
-            r = 1
-            c = N
+        if N <= 3:
+            r, c = 1, N
+        elif N == 4:
+            r, c = 2, 2
         else:
-            r = int(np.ceil(N**0.5))
-            c = int(np.floor(N**0.5))
-        plt.figure()
-        for i in range(len(props)):
-            plt.subplot(r, c, i+1)
+            r, c = N // 3 + 1, 3
+        fig, ax = plt.subplots(r, c, figsize=(3*c, 3*r))
+        axs = np.array(ax).flatten()
+        for i, _ in enumerate(props):
             try:
                 # Update kwargs with some default values
                 if 'edgecolor' not in kwargs.keys():
                     kwargs.update({'edgecolor': 'k'})
                 if 'facecolor' not in kwargs:
                     kwargs.update({'facecolor': color[np.mod(i, 10)]})
-                plt.hist(self[props[i]], bins=bins, **kwargs)
+                axs[i].hist(self[props[i]], bins=bins, **kwargs)
+                axs[i].set_xlabel(props[i])
             except KeyError:
                 pass
-            plt.xlabel(props[i])
+        # Hide unpopulated subplots from the grid
+        for j in range(i+1, len(axs)):
+            axs[j].set_axis_off()
         plt.rcParams['font.size'] = temp
+        plt.tight_layout(h_pad=0.9, w_pad=0.9)
 
     def check_data_health(self):
         r"""
@@ -1650,9 +1620,10 @@ class Base(dict):
 
         Returns
         -------
-        Returns a HealthDict object which a basic dictionary with an added
-        ``health`` attribute that is True is all entries in the dict are
-        deemed healthy (empty lists), or False otherwise.
+        health: HealthDict object
+            A  basic dictionary with an added ``health`` attribute that is
+            ``True`` if all entries in the dict are deemed healthy
+            (empty lists), or ``False`` otherwise.
 
         Examples
         --------
@@ -1724,7 +1695,7 @@ class Base(dict):
         if element is None:
             element = ['pore', 'throat']
         # Convert element to a list for subsequent processing
-        if type(element) is str:
+        if isinstance(element, str):
             element = [element]
         # Convert 'pore.prop' and 'throat.prop' into just 'pore' and 'throat'
         element = [item.split('.')[0] for item in element]
@@ -1736,13 +1707,12 @@ class Base(dict):
             if item not in ['pore', 'throat']:
                 raise Exception('All keys must start with either pore or throat')
         # Remove duplicates if any
-        [element.remove(L) for L in element if element.count(L) > 1]
+        _ = [element.remove(L) for L in element if element.count(L) > 1]
         if single:
             if len(element) > 1:
                 raise Exception('Both elements recieved when single element '
                                 + 'allowed')
-            else:
-                element = element[0]
+            element = element[0]
         return element
 
     def _parse_labels(self, labels, element):
@@ -1763,7 +1733,7 @@ class Base(dict):
         """
         if labels is None:
             raise Exception('Labels cannot be None')
-        if type(labels) is str:
+        if isinstance(labels, str):
             labels = [labels]
         # Parse the labels list
         parsed_labels = []
@@ -1785,8 +1755,8 @@ class Base(dict):
                 temp = [element+'.'+label]
             parsed_labels.extend(temp)
             # Remove duplicates if any
-            [parsed_labels.remove(L) for L in parsed_labels
-             if parsed_labels.count(L) > 1]
+            _ = [parsed_labels.remove(L) for L in parsed_labels
+                 if parsed_labels.count(L) > 1]
         return parsed_labels
 
     def _parse_mode(self, mode, allowed=None, single=False):
@@ -1815,20 +1785,19 @@ class Base(dict):
         are all within the allowed set (if provoided).  Also, if the ``single``
         argument was True, then a string is returned.
         """
-        if type(mode) is str:
+        if isinstance(mode, str):
             mode = [mode]
         for item in mode:
             if (allowed is not None) and (item not in allowed):
                 raise Exception('\'mode\' must be one of the following: '
                                 + allowed.__str__())
         # Remove duplicates, if any
-        [mode.remove(L) for L in mode if mode.count(L) > 1]
+        _ = [mode.remove(L) for L in mode if mode.count(L) > 1]
         if single:
             if len(mode) > 1:
                 raise Exception('Multiple modes received when only one mode '
                                 + 'is allowed by this method')
-            else:
-                mode = mode[0]
+            mode = mode[0]
         return mode
 
     def _parse_prop(self, propname, element):
@@ -1898,12 +1867,11 @@ class Base(dict):
             elif 'GenericAlgorithm' in self._mro():
                 prefix = 'algorithm'
             return prefix
-        else:
-            mro = [s.lower() for s in self._mro()]
-            temp = [s.replace('generic', '') for s in mro
-                    if s.startswith('generic')]
-            mro.extend(temp)
-            flag = False
-            if obj_type.lower() in mro:
-                flag = True
-            return flag
+        mro = [s.lower() for s in self._mro()]
+        temp = [s.replace('generic', '') for s in mro
+                if s.startswith('generic')]
+        mro.extend(temp)
+        flag = False
+        if obj_type.lower() in mro:
+            flag = True
+        return flag

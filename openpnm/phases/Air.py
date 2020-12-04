@@ -100,6 +100,7 @@ class Air(GenericPhase):
     Vol. 25, No. 1, January 2004, pp. 21-69
 
     """
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 

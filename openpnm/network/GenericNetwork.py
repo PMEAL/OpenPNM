@@ -8,8 +8,6 @@ import openpnm.models.topology as tm
 logger = logging.getLogger(__name__)
 ws = Workspace()
 
-from openpnm.utils import tic, toc
-
 
 class GenericNetwork(Base, ModelsMixin):
     r"""
@@ -113,6 +111,13 @@ class GenericNetwork(Base, ModelsMixin):
     future use to save construction time.
 
     """
+    def __new__(cls, *args, **kwargs):
+        instance = super(GenericNetwork, cls).__new__(cls, *args, **kwargs)
+        # Initialize adjacency and incidence matrix dictionaries
+        instance._im = {}
+        instance._am = {}
+        return instance
+
     def __init__(self, conns=None, coords=None, project=None, settings={},
                  **kwargs):
         self.settings.setdefault('prefix', 'net')
@@ -126,9 +131,6 @@ class GenericNetwork(Base, ModelsMixin):
             Nt = np.shape(conns)[0]
             self['throat.all'] = np.ones(Nt, dtype=bool)
             self['throat.conns'] = np.array(conns)
-        # Initialize adjacency and incidence matrix dictionaries
-        self._im = {}
-        self._am = {}
         self.add_model(propname='pore.coordination_number',
                        model=tm.coordination_number,
                        regen_mode='explicit')
@@ -149,10 +151,10 @@ class GenericNetwork(Base, ModelsMixin):
         # Deal with special keys first
         if key.split('.')[-1] == self.name:
             element = key.split('.')[0]
-            return self[element+'.all']
+            return self[f"{element}.all"]
         if key.split('.')[-1] == '_id':
             self._gen_ids()
-            return self.get(element+'._id')
+            return self.get(f"{element}._id")
         vals = super().__getitem__(key)
         return vals
 
@@ -238,7 +240,7 @@ class GenericNetwork(Base, ModelsMixin):
             im = self._im[fmt]
         elif self._im.keys():
             im = self._im[list(self._im.keys())[0]]
-            tofmt = getattr(im, 'to'+fmt)
+            tofmt = getattr(im, f"to{fmt}")
             im = tofmt()
             self._im[fmt] = im
         else:
@@ -314,24 +316,29 @@ class GenericNetwork(Base, ModelsMixin):
         >>> am = pn.create_adjacency_matrix(weights=weights, fmt='csr')
 
         """
+        allowed_weights = [(self.Nt,), (2 * self.Nt,), (self.Nt, 2)]
         # Check if provided data is valid
         if weights is None:
             weights = np.ones((self.Nt,), dtype=int)
-        elif np.shape(weights)[0] not in [self.Nt, 2*self.Nt, (self.Nt, 2)]:
+        elif np.shape(weights) not in allowed_weights:
             raise Exception('Received weights are of incorrect length')
+        weights = np.array(weights)
 
         # Append row & col to each other, and data to itself
         conn = self['throat.conns']
         row = conn[:, 0]
         col = conn[:, 1]
-        if weights.shape == (2*self.Nt,):
+        if weights.shape == (2 * self.Nt):
+            # The flip is necessary since we want [conns.T, reverse(conns).T].T
             row = np.append(row, conn[:, 1])
             col = np.append(col, conn[:, 0])
         elif weights.shape == (self.Nt, 2):
+            # The flip is necessary since we want [conns.T, reverse(conns).T].T
             row = np.append(row, conn[:, 1])
             col = np.append(col, conn[:, 0])
             weights = weights.flatten(order='F')
         elif not triu:
+            # The flip is necessary since we want [conns.T, reverse(conns).T].T
             row = np.append(row, conn[:, 1])
             col = np.append(col, conn[:, 0])
             weights = np.append(weights, weights)
@@ -854,7 +861,7 @@ class GenericNetwork(Base, ModelsMixin):
         # Perform search
         Ps_within_r = kd_pores.query_ball_tree(kd, r=r)
         # Remove self from each list
-        for i in range(len(Ps_within_r)):
+        for i, P in enumerate(Ps_within_r):
             Ps_within_r[i].remove(pores[i])
         # Convert to flattened list by default
         temp = np.concatenate((Ps_within_r))
@@ -867,8 +874,7 @@ class GenericNetwork(Base, ModelsMixin):
             if len(Pn) == 0:  # Deal with no nearby neighbors
                 Pn = [np.array([], dtype=np.int64) for i in pores]
             else:
-                mask = np.zeros(shape=np.amax((Pn.max(), pores.max()))+1,
-                                dtype=bool)
+                mask = np.zeros(shape=np.amax((Pn.max(), pores.max())) + 1, dtype=bool)
                 mask[Pn] = True
                 temp = []
                 for item in Ps_within_r:

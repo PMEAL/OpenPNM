@@ -27,7 +27,7 @@ water.update(perm.results())
 # print(perm.calc_effective_permeability())
 
 # Add reaction term to phys_air
-mod = op.models.physics.generic_source_term.standard_kinetics
+mod = op.models.physics.source_terms.standard_kinetics
 phys_air['pore.n'] = 2
 phys_air['pore.A'] = -1e-5
 phys_air.add_model(propname='pore.2nd_order_rxn', model=mod,

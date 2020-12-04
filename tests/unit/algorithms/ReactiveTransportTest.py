@@ -26,6 +26,22 @@ class ReactiveTransportTest:
         self.alg = op.algorithms.ReactiveTransport(network=self.net,
                                                    phase=self.phase)
 
+    def test_setup(self):
+        temp = self.alg.settings.copy()
+        self.alg.setup(
+            conductance="throat.cond",
+            quantity="pore.test",
+            nlin_max_iter=123,
+            relaxation_source=1.23,
+            relaxation_quantity=3.21
+        )
+        assert self.alg.settings["conductance"] == "throat.cond"
+        assert self.alg.settings["quantity"] == "pore.test"
+        assert self.alg.settings["nlin_max_iter"] == 123
+        assert self.alg.settings["relaxation_source"] == 1.23
+        assert self.alg.settings["relaxation_quantity"] == 3.21
+        self.alg.settings = temp
+
     def test_set_variable_props(self):
         assert len(self.alg.settings["variable_props"]) == 0
         self.alg._set_variable_props(propnames="pore.pressure")
@@ -160,6 +176,19 @@ class ReactiveTransportTest:
         with pytest.raises(Exception):
             self.alg.run()
 
+    def test_check_divergence_if_maxiter_reached(self):
+        self.alg.reset(bcs=True, source_terms=True)
+        self.alg.setup(nlin_max_iter=2)
+        self.alg.settings.update({'conductance': 'throat.diffusive_conductance',
+                                  'quantity': 'pore.concentration'})
+        self.alg.set_source(pores=self.net.pores('bottom'), propname='pore.reaction')
+        self.alg.set_value_BC(pores=self.net.pores('top'), values=1.0)
+        self.alg.settings['relaxation_quantity'] = 1.0
+        self.alg.settings['relaxation_source'] = 1.0
+        with pytest.raises(Exception):
+            self.alg.run()
+        self.alg.setup(nlin_max_iter=5000)
+
     def test_variable_conductance(self):
         self.alg.reset(bcs=True, source_terms=True, variable_props=True)
 
@@ -178,8 +207,8 @@ class ReactiveTransportTest:
                              model=variable_diffusivity)
         self.phys.add_model(propname="throat.diffusive_conductance",
                             model=variable_conductance)
-        self.alg.set_value_BC(pores=self.net.pores("left"), values=10.0)
-        self.alg.set_value_BC(pores=self.net.pores("right"), values=0.0)
+        self.alg.set_value_BC(pores=self.net.pores("back"), values=10.0)
+        self.alg.set_value_BC(pores=self.net.pores("front"), values=0.0)
         self.alg.run()
         c_avg = self.alg["pore.concentration"].reshape(self.net.shape).mean(axis=(0, 2))
         desired = [10.0, 8.18175755, 5.42194391, 0.0]
@@ -196,6 +225,18 @@ class ReactiveTransportTest:
         assert len(self.alg.settings["variable_props"]) == 2
         self.alg.reset(variable_props=True)
         assert not self.alg.settings["variable_props"]
+
+    def test_ensure_settings_are_valid(self):
+        alg = op.algorithms.ReactiveTransport(network=self.net,
+                                              phase=self.phase)
+        with pytest.raises(Exception, match=r".*quantity.*"):
+            alg.run()
+        alg.settings['quantity'] = 'pore.concentration'
+        with pytest.raises(Exception, match=r".*conductance.*"):
+            alg.run()
+        alg.settings['conductance'] = 'throat.conductance'
+        with pytest.raises(Exception):
+            alg.run()
 
     def teardown_class(self):
         ws = op.Workspace()

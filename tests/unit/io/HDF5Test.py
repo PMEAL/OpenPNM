@@ -72,10 +72,6 @@ class HDF5Test:
         f.close()
         os.remove(filename)
 
-    def test_from_hdf5(self):
-        with pytest.raises(NotImplementedError):
-            op.io.HDF5.from_hdf5()
-
     def test_print(self, tmpdir):
         fname = tmpdir.join(self.net.project.name)
         f = op.io.HDF5.to_hdf5(network=[self.net], filename=fname,

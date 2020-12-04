@@ -3,7 +3,7 @@
 [![](https://github.com/PMEAL/OpenPNM/workflows/Windows/badge.svg)](https://github.com/PMEAL/OpenPNM/actions)
 [![](https://github.com/PMEAL/OpenPNM/workflows/Examples/badge.svg)](https://github.com/PMEAL/OpenPNM/actions) <br>
 [![](https://codecov.io/gh/PMEAL/OpenPNM/branch/dev/graph/badge.svg)](https://codecov.io/gh/PMEAL/OpenPNM)
-[![](https://img.shields.io/badge/ReadTheDocs-GO-blue.svg)](http://openpnm.readthedocs.io/en/dev/)
+[![](https://img.shields.io/badge/ReadTheDocs-GO-blue.svg)](https://pmeal.github.io/OpenPNM/)
 [![](https://badge.fury.io/py/openpnm.svg)](https://pypi.python.org/pypi/openpnm)
 [![](https://anaconda.org/conda-forge/openpnm/badges/installer/conda.svg)](https://anaconda.org/conda-forge/openpnm)
 
@@ -18,7 +18,9 @@
 
 *OpenPNM* is a comprehensive framework for performing pore network simulations of porous materials.
 
-For more details about the package can be found in the [on-line documentation](https://openpnm.readthedocs.io/en/dev/index.html)
+For more details about the package can be found in the [on-line documentation](https://pmeal.github.io/OpenPNM)
+
+To be notified of new releases click the `Watch` button on the Github repo page.  To show your support for this project click the `Star` button, as we use this as a proxy for the size of our userbase when applying for funding.
 
 ## Installation and Requirements
 

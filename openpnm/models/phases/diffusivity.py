@@ -1,10 +1,4 @@
 r"""
-
-.. autofunction:: openpnm.models.phases.diffusivity.fuller
-.. autofunction:: openpnm.models.phases.diffusivity.fuller_scaling
-.. autofunction:: openpnm.models.phases.diffusivity.tyn_calus
-.. autofunction:: openpnm.models.phases.diffusivity.tyn_calus_scaling
-
 """
 
 
@@ -172,3 +166,32 @@ def tyn_calus_scaling(target, DABo, To, mu_o, viscosity='pore.viscosity',
     mu_i = target[viscosity]
     value = DABo*(Ti/To)*(mu_o/mu_i)
     return value
+
+
+def chapman_enskog(target, MA, MB, sigma_AB, omega_AB,
+                   temperature='pore.temperature',
+                   pressure='pore.pressure'):
+    r"""
+    Calculate gas phase diffusion coefficient using Chapman-Enskog equation.
+
+    Parameters
+    ----------
+    target : OpenPNM Object
+        The object for which these values are being calculated.  This
+        controls the length of the calculated array, and also provides
+        access to other necessary thermofluid properties.
+    MA, MB : scalar
+        The molecular mass of species A and B in units of kg/mol
+    sigma_AB : scalar
+        The collision diameter in units of Angstroms
+    omega_AB : scalar
+        The collision integral
+    temperature : str
+        Dictionary key to the phase temperature in K (default = 'pore.temperature')
+    pressure : str
+        Dictionary key to the phase pressure in Pa (default = 'pore.pressure')
+    """
+    T = target[temperature]
+    P = target[pressure]
+    DAB = 1.858e-3*(T**3*(0.001/MA + 0.001/MB))**0.5/(P*101325*sigma_AB**2*omega_AB)
+    return DAB
