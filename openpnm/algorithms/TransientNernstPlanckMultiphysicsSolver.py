@@ -103,7 +103,11 @@ class TransientNernstPlanckMultiphysicsSolver(NernstPlanckMultiphysicsSolver):
                     alg.set_IC(phase[alg.settings['quantity']])
                 except KeyError:
                     alg.set_IC(0)
-
+                    
+        # Start algorithm physics with correct ICs and value BCs
+        for alg in np.flip(algs): # flip to update e_algs first
+            alg._overwrite_ICs_with_value_BCs() 
+        
         for e in e_alg:
             # Save A matrix of the steady sys of eqs (WITHOUT BCs applied)
             e._build_A()
