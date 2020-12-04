@@ -37,7 +37,7 @@ class GenericSourceTermTest:
         self.phase['pore.mole_fraction'] = 0.1
         for source in sources:
             self.phys.add_model(propname="pore.source_term",
-                                model=getattr(pm.generic_source_term, source),
+                                model=getattr(pm.source_terms, source),
                                 X="pore.mole_fraction")
             assert self.phys["pore.source_term.rate"].mean() == 0
             assert self.phys["pore.source_term.S1"].mean() == 0
@@ -47,13 +47,13 @@ class GenericSourceTermTest:
         self.phys['pore.item1'] = 0.5e-11
         self.phys['pore.item2'] = 1.5e-12
         self.phys.add_model(propname='pore.source1',
-                            model=pm.generic_source_term.linear,
+                            model=pm.source_terms.linear,
                             A1='pore.item1',
                             A2='pore.item2',
                             X='pore.mole_fraction',
                             regen_mode='normal')
         self.phys.add_model(propname='pore.source2',
-                            model=pm.generic_source_term.linear_sym,
+                            model=pm.source_terms.linear_sym,
                             A1='pore.item1',
                             A2='pore.item2',
                             X='pore.mole_fraction',
@@ -81,14 +81,14 @@ class GenericSourceTermTest:
         self.phys['pore.item2'] = 2.5
         self.phys['pore.item3'] = -1.4e-11
         self.phys.add_model(propname='pore.source1',
-                            model=pm.generic_source_term.power_law,
+                            model=pm.source_terms.power_law,
                             A1='pore.item1',
                             A2='pore.item2',
                             A3='pore.item3',
                             X='pore.mole_fraction',
                             regen_mode='normal')
         self.phys.add_model(propname='pore.source2',
-                            model=pm.generic_source_term.power_law_sym,
+                            model=pm.source_terms.power_law_sym,
                             A1='pore.item1',
                             A2='pore.item2',
                             A3='pore.item3',
@@ -120,7 +120,7 @@ class GenericSourceTermTest:
         self.phys['pore.item5'] = -0.34
         self.phys['pore.item6'] = 2e-14
         self.phys.add_model(propname='pore.source1',
-                            model=pm.generic_source_term.exponential,
+                            model=pm.source_terms.exponential,
                             A1='pore.item1',
                             A2='pore.item2',
                             A3='pore.item3',
@@ -130,7 +130,7 @@ class GenericSourceTermTest:
                             X='pore.mole_fraction',
                             regen_mode='normal')
         self.phys.add_model(propname='pore.source2',
-                            model=pm.generic_source_term.exponential_sym,
+                            model=pm.source_terms.exponential_sym,
                             A1='pore.item1',
                             A2='pore.item2',
                             A3='pore.item3',
@@ -164,7 +164,7 @@ class GenericSourceTermTest:
         self.phys['pore.item4'] = -0.34
         self.phys['pore.item5'] = 2e-14
         self.phys.add_model(propname='pore.source1',
-                            model=pm.generic_source_term.natural_exponential,
+                            model=pm.source_terms.natural_exponential,
                             A1='pore.item1',
                             A2='pore.item2',
                             A3='pore.item3',
@@ -173,7 +173,7 @@ class GenericSourceTermTest:
                             X='pore.mole_fraction',
                             regen_mode='normal')
         self.phys.add_model(propname='pore.source2',
-                            model=pm.generic_source_term.natural_exponential_sym,
+                            model=pm.source_terms.natural_exponential_sym,
                             A1='pore.item1',
                             A2='pore.item2',
                             A3='pore.item3',
@@ -207,7 +207,7 @@ class GenericSourceTermTest:
         self.phys['pore.item5'] = 0.133
         self.phys['pore.item6'] = -5.1e-13
         self.phys.add_model(propname='pore.source1',
-                            model=pm.generic_source_term.logarithm,
+                            model=pm.source_terms.logarithm,
                             A1='pore.item1',
                             A2='pore.item2',
                             A3='pore.item3',
@@ -217,7 +217,7 @@ class GenericSourceTermTest:
                             X='pore.mole_fraction',
                             regen_mode='normal')
         self.phys.add_model(propname='pore.source2',
-                            model=pm.generic_source_term.logarithm_sym,
+                            model=pm.source_terms.logarithm_sym,
                             A1='pore.item1',
                             A2='pore.item2',
                             A3='pore.item3',
@@ -252,7 +252,7 @@ class GenericSourceTermTest:
         self.phys['pore.item4'] = 0.133
         self.phys['pore.item5'] = -5.1e-14
         self.phys.add_model(propname='pore.source1',
-                            model=pm.generic_source_term.natural_logarithm,
+                            model=pm.source_terms.natural_logarithm,
                             A1='pore.item1',
                             A2='pore.item2',
                             A3='pore.item3',
@@ -261,7 +261,7 @@ class GenericSourceTermTest:
                             X='pore.mole_fraction',
                             regen_mode='on_demand')
         self.phys.add_model(propname='pore.source2',
-                            model=pm.generic_source_term.natural_logarithm_sym,
+                            model=pm.source_terms.natural_logarithm_sym,
                             A1='pore.item1',
                             A2='pore.item2',
                             A3='pore.item3',
@@ -298,7 +298,7 @@ class GenericSourceTermTest:
         phys['pore.item4'] = 0.133
         phys['pore.item5'] = -5.1e-14
         phys.add_model(propname='pore.source1',
-                       model=pm.generic_source_term.natural_logarithm,
+                       model=pm.source_terms.natural_logarithm,
                        A1='pore.item1',
                        A2='pore.item2',
                        A3='pore.item3',
@@ -313,7 +313,7 @@ class GenericSourceTermTest:
                                          ('e', 'pore.item5'),
                                          ('x', 'pore.mole_fraction')])
         phys.add_model(propname='pore.general',
-                       model=op.models.physics.generic_source_term.general_symbolic,
+                       model=op.models.physics.source_terms.general_symbolic,
                        eqn=y, arg_map=arg_map,
                        regen_mode='normal')
         assert np.allclose(phys['pore.source1.rate'], phys['pore.general.rate'])
@@ -335,10 +335,10 @@ class GenericSourceTermTest:
             "alpha_cathode": 0.6
         }
         self.phys.add_model(propname='pore.rxn_BV_c',
-                            model=pm.generic_source_term.butler_volmer_conc,
+                            model=pm.source_terms.butler_volmer_conc,
                             X="pore.electrolyte_concentration", **BV_params)
         self.phys.add_model(propname='pore.rxn_BV_v',
-                            model=pm.generic_source_term.butler_volmer_voltage,
+                            model=pm.source_terms.butler_volmer_voltage,
                             X="pore.electrolyte_voltage", **BV_params)
         # Check Butler-Volmer model (concentration)
         S1_BV_c = self.phys["pore.rxn_BV_c.S1"]

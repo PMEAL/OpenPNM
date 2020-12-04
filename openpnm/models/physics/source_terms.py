@@ -929,6 +929,14 @@ def butler_volmer_conc(
               - \exp( -\frac{\alpha_c z F}{RT} \eta )
             \Big)
 
+    where:
+
+        .. math::
+            \eta = V_s - V_{\ell} - V_{OC}
+
+    where ``Vs`` is the solid voltage, ``Vl`` is the electrolyte voltage,
+    and ``Voc`` is the open-circuit voltage.
+
     The slope and intercept provide a linearized source term equation
     about the current value of X as follow:
 
@@ -952,7 +960,7 @@ def butler_volmer_conc(
         Anodic transfer coefficient.
     alpha_cathode : float
         Cathodic transfer coefficient.
-    reaction_order: float
+    reaction_order : float
         Reaction order, i.e. the exponent of the concentration term
     solid_voltage : str
         The dictionary key of solid phase voltages [V].
@@ -1073,7 +1081,7 @@ def butler_volmer_voltage(
         Cathodic transfer coefficient.
     electrolyte_concentration : str
         The dictionary key of the electrolyte concentrations [mol/m^3].
-    reaction_order: float
+    reaction_order : float
         Reaction order, i.e. the exponent of the concentration term
     solid_voltage : str
         The dictionary key of solid phase voltages [V].
