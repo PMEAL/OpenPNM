@@ -189,6 +189,8 @@ class TransientReactiveTransport(ReactiveTransport):
         # Write values to self to to quantity, ic and t=0 array
         quantity = self.settings['quantity']
         self[quantity] = ic_vals
+        # update physics models dependent on quantity
+        self._update_iterative_props()
 
     def _get_f1_f2_f3(self):
         r"""
