@@ -299,6 +299,8 @@
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;―&#39;</span> <span class="o">*</span> <span class="mi">80</span><span class="p">)</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Running TransientTransport&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_validate_settings</span><span class="p">()</span>
+        <span class="c1"># Check if A and b are well-defined</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_validate_data_health</span><span class="p">()</span>
         <span class="c1"># If ICs are not defined, assume zero</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="s2">&quot;pore.ic&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">set_IC</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>

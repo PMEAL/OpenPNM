@@ -587,6 +587,8 @@
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;―&#39;</span> <span class="o">*</span> <span class="mi">80</span><span class="p">)</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Running GenericTransport&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_validate_settings</span><span class="p">()</span>
+        <span class="c1"># Check if A and b are well-defined</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_validate_data_health</span><span class="p">()</span>
         <span class="n">x0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="p">)</span> <span class="k">if</span> <span class="n">x0</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">x0</span>
         <span class="bp">self</span><span class="p">[</span><span class="s2">&quot;pore.initial_guess&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">x0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_run_generic</span><span class="p">(</span><span class="n">x0</span><span class="p">)</span>
@@ -636,7 +638,7 @@
             <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;The A matrix or the b vector not yet built.&#39;</span><span class="p">)</span>
         <span class="n">A</span> <span class="o">=</span> <span class="n">A</span><span class="o">.</span><span class="n">tocsr</span><span class="p">()</span>
 
-        <span class="c1"># Check if A and b are well-defined</span>
+        <span class="c1"># Check if A and b are STILL well-defined</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_validate_data_health</span><span class="p">()</span>
 
         <span class="c1"># Check if A is symmetric</span>
