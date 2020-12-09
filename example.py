@@ -49,5 +49,5 @@ fd.set_value_BC(pores=pn.pores('right'), values=0)
 fd.run()
 fd.calc_effective_diffusivity()
 
-# Output network and phases to a VTP file for visualization in Paraview
+# Output network and the phases to a VTP file for visualization in Paraview
 # proj.export_data(network=pn, phases=[hg, air, water], filename='output.vtp')
