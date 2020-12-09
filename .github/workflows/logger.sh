@@ -52,7 +52,7 @@ function filter_commits_by_tag_interval {
     local temp
     # --format=%B only outputs commit messages (excluding committer, date, etc.)
     # --first-parent excludes merge commits into the topic branch, ex. dev -> feature
-    temp=$(git log --merges "${1}..${2}" --format=%B --first-parent)
+    temp=$(git log --merges "${1}..${2}" --format=%B --first-parent dev)
     echo "$temp"
 }
 
@@ -76,15 +76,16 @@ tag_date=$(git show "$tag_new" --format="%cs")
 merge_commits=$(filter_commits_by_tag_interval $tag_old $tag_new)
 
 # Fetching new features/enhancements/maintenance/api change/bug fixes/documentation
-features=$(filter_commits_by_label "$merge_commits" "new")
-enhancements=$(filter_commits_by_label "$merge_commits" "enh")
-maintenance=$(filter_commits_by_label "$merge_commits" "maint")
-changes=$(filter_commits_by_label "$merge_commits" "api")
-fixes=$(filter_commits_by_label "$merge_commits" "bug")
-documentation=$(filter_commits_by_label "$merge_commits" "doc")
+features=$(filter_commits_by_label "$merge_commits" "#new")
+enhancements=$(filter_commits_by_label "$merge_commits" "#enh")
+maintenance=$(filter_commits_by_label "$merge_commits" "#maint")
+changes=$(filter_commits_by_label "$merge_commits" "#api")
+fixes=$(filter_commits_by_label "$merge_commits" "#bug")
+documentation=$(filter_commits_by_label "$merge_commits" "#doc")
 
 # Fetching uncategorized merge commits (those w/o keywords)
-all_keywords=$(join_by "|" new enh maint api bug doc)
+all_keywords=$(join_by "|" "#new #enh #maint #api #bug #doc")
+echo $all_keywords
 uncategorized=$(filter_commits_exclude_label "$merge_commits" "$all_keywords")
 
 # Delete "entry" file if already exists
