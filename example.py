@@ -1,6 +1,7 @@
 import openpnm as op
 ws = op.Workspace()
 proj = ws.new_project()
+export = False
 
 pn = op.network.Cubic(shape=[10, 10, 10], spacing=1e-4, project=proj)
 geo = op.geometry.StickAndBall(network=pn, pores=pn.Ps, throats=pn.Ts)
@@ -26,7 +27,7 @@ perm.run()
 water.update(perm.results())
 # print(perm.calc_effective_permeability())
 
-# Add reaction term to phys_air
+# Add reaction to phys_air
 mod = op.models.physics.source_terms.standard_kinetics
 phys_air['pore.n'] = 2
 phys_air['pore.A'] = -1e-5
@@ -50,4 +51,5 @@ fd.run()
 fd.calc_effective_diffusivity()
 
 # Output network and the phases to a VTP file for visualization in Paraview
-# proj.export_data(network=pn, phases=[hg, air, water], filename='output.vtp')
+if export:
+    proj.export_data(network=pn, phases=[hg, air, water], filename='output.vtp')
