@@ -124,13 +124,24 @@ class Statoil(GenericIO):
                 s = ''
                 for col in dfp_temp.keys():
                     val = dfp_temp[col][row]
+                    if col == 'index':
+                        # Original file has 6 spaces for index, but this is
+                        # not enough for networks with > 1 million pores so
+                        # I have bumped it to 9.  I'm not sure if this will
+                        # still work with the ICL binaries.
+                        s = s + '{:>9}'.format(str(val))
+                        continue
                     if isinstance(val, float):
                         val = np.format_float_scientific(val, precision=6,
                                                          exp_digits=3,
                                                          trim='k',
                                                          unique=False)
-                    s = s + str(val) + '\t'
-                s = s[:-1] + '\n'  # Remove trailing tab and a new line
+                        # The original file has a spacing of 14, but this
+                        # does not leave room for negative numbers, so I
+                        # have bumped it by 1.  I'm not sure if this will
+                        # still work with the ICL binaries.
+                        s = s + '{:>15}'.format(str(val))
+                s = s + '\n'  # Remove trailing tab and a new line
                 f.write(s)
 
     @classmethod
