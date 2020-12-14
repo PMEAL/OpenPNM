@@ -45,8 +45,12 @@ class Statoil(GenericIO):
             for row in network.Ts:
                 s = ''
                 for col in dft_temp.keys():
-                    s = s + str(dft_temp[col][row]) + '\t'
-                s += '\n'
+                    val = dft_temp[col][row]
+                    if isinstance(val, float):
+                        val = np.format_float_scientific(val, precision=6,
+                                                         exp_digits=3)
+                    s = s + str(val) + '\t'
+                s = s[:-1] + '\n'
                 f.write(s)
 
         # Write Link 2 file
