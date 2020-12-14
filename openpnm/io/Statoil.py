@@ -70,8 +70,17 @@ class Statoil(GenericIO):
                 dft_temp[item] = np.zeros_like(network.Ts)
         dft_temp[c] = dft_temp[c]/2
         dft_temp[d] = dft_temp[d]/2
-        dft_temp.to_csv(filename + '_link2.dat', sep='\t',
-                        header=False, index=False)
+        with open(filename + '_link2.dat', 'wt') as f:
+            for row in network.Ts:
+                s = ''
+                for col in dft_temp.keys():
+                    val = dft_temp[col][row]
+                    if isinstance(val, float):
+                        val = np.format_float_scientific(val, precision=6,
+                                                         exp_digits=3)
+                    s = s + str(val) + '\t'
+                s = s[:-1] + '\n'
+                f.write(s)
 
         # Write Node 1 file
         a = 'network.' + network.name + '.pore.coords[0]'
