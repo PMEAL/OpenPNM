@@ -40,6 +40,13 @@ class Statoil(GenericIO):
         temp.insert(0, 'top row', network.Nt)
         dft_temp = temp.T
         dft_temp = dft_temp.astype({a: int, b: int, 0: int})
+        with open(filename + '_link1.dat', 'w') as f:
+            for row in network.Ts:
+                s = ''
+                for col in dft_temp.keys():
+                    s.join(('/t', str(dft_temp[col][0])))
+                s.append('/n')
+                f.write(s)
         dft_temp.to_csv(filename + '_link1.dat', sep='\t',
                         header=False, index=False)
 
@@ -86,6 +93,9 @@ class Statoil(GenericIO):
         dfp_temp[b] = dfp_temp[b]/2
         dfp_temp.to_csv(filename + '_node2.dat', sep='\t',
                         header=False, index=False)
+
+        # with open(filename + '_node1.dat', 'w') as f:
+        #     f.write(
 
 
     @classmethod
