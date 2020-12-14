@@ -371,7 +371,7 @@ def reduce_coordination(network, z):
     Notes
     -----
     This method first finds the minimum spanning tree of the network using
-    random weights on each throat, the assures that these throats are *not*
+    random weights on each throat, then assures that these throats are *not*
     deleted, in order to maintain network connectivity.
 
     """
@@ -808,26 +808,14 @@ def stitch(network, donor, P_network, P_donor, method='nearest',
     else:
         raise Exception('<{}> method not supported'.format(method))
 
-    # Enter donor's pores into the Network
-    extend(network=network, coords=donor['pore.coords'])
-
-    # Enter donor's throats into the Network
-    extend(network=network, conns=donor['throat.conns'] + N_init['pore'])
-
-    # Add donor labels to recipient network
-    if label_suffix is not None:
-        if label_suffix != '':
-            label_suffix = '_'+label_suffix
-        for label in donor.labels():
-            element = label.split('.')[0]
-            locations = np.where(network._get_indices(element)
-                                 >= N_init[element])[0]
-            if label + label_suffix not in network.keys():
-                network[label + label_suffix] = False
-            network[label+label_suffix][locations] = donor[label]
+    merge_networks(network, donor)
 
     # Add the new stitch throats to the Network
     extend(network=network, throat_conns=conns, labels=label_stitches)
+
+    if len(network.project.geometries()) > 0:
+        logger.warning(str(conns.shape[0]) + ' newly created throats are not '
+                       + 'assigned to a geometry')
 
     # Remove donor from Workspace, if present
     # This check allows for the reuse of a donor Network multiple times

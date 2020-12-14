@@ -1,9 +1,9 @@
 r"""
-
-.. autofunction:: openpnm.models.physics.thermal_conductance.series_resistors
-
+Pore-scale models for calculating the thermal conductance of conduits.
 """
 import numpy as _np
+
+__all__ = ["series_resistors"]
 
 
 def series_resistors(target,

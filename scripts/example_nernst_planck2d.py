@@ -1,20 +1,20 @@
+r"""
+Details about the continum and numerical model equations can be found on:
+Agnaou, M., Sadeghi, M. A., Tranter, T. G., & Gostick, J. (2020).
+
+Modeling transport of charged species in pore networks: solution of the
+Nernst-Planck equations coupled with fluid flow and charge conservation
+equations. Computers & Geosciences, 104505.
+
+"""
 import openpnm as op
 from openpnm.phases import mixtures
 import numpy as np
+
+
 ws = op.Workspace()
 proj = ws.new_project()
-# ws.settings['loglevel'] = 20
-
-
-"""
-    Details about the continum and numerical model equations can be found on:
-    Agnaou, M., Sadeghi, M. A., Tranter, T. G., & Gostick, J. (2020).
-    Modeling transport of charged species in pore networks: solution of the
-    Nernst-Planck equations coupled with fluid flow and charge conservation
-    equations.
-    Computers & Geosciences, 104505.
-"""
-
+export = False
 
 # network, geometry, phase
 np.random.seed(0)
@@ -46,23 +46,23 @@ H2O = sw.components['H2O_' + sw.name]
 # physics
 phys = op.physics.GenericPhysics(network=net, phase=sw, geometry=geo)
 
-flow = op.models.physics.hydraulic_conductance.hagen_poiseuille
+flow = op.models.physics.hydraulic_conductance.hagen_poiseuille_2d
 phys.add_model(propname='throat.hydraulic_conductance',
                pore_viscosity='pore.viscosity',
                throat_viscosity='throat.viscosity',
                model=flow, regen_mode='normal')
 
-current = op.models.physics.ionic_conductance.electroneutrality
+current = op.models.physics.ionic_conductance.electroneutrality_2d
 phys.add_model(propname='throat.ionic_conductance', ions=[Na.name, Cl.name],
                model=current, regen_mode='normal')
 
-eA_dif = op.models.physics.diffusive_conductance.ordinary_diffusion
+eA_dif = op.models.physics.diffusive_conductance.ordinary_diffusion_2d
 phys.add_model(propname='throat.diffusive_conductance.' + Na.name,
                pore_diffusivity='pore.diffusivity.' + Na.name,
                throat_diffusivity='throat.diffusivity.' + Na.name,
                model=eA_dif, regen_mode='normal')
 
-eB_dif = op.models.physics.diffusive_conductance.ordinary_diffusion
+eB_dif = op.models.physics.diffusive_conductance.ordinary_diffusion_2d
 phys.add_model(propname='throat.diffusive_conductance.' + Cl.name,
                pore_diffusivity='pore.diffusivity.' + Cl.name,
                throat_diffusivity='throat.diffusivity.' + Cl.name,
@@ -94,7 +94,7 @@ sw.update(sf.results())
 p = op.algorithms.IonicConduction(network=net, phase=sw, settings=setts1)
 p.set_value_BC(pores=net.pores('left'), values=0.02)
 p.set_value_BC(pores=net.pores('right'), values=0.01)
-p.settings['charge_conservation'] = 'electroneutrality'
+p.settings['charge_conservation'] = 'electroneutrality_2D'
 
 eA = op.algorithms.NernstPlanck(network=net, phase=sw, ion=Na.name,
                                 settings=setts1)
@@ -117,4 +117,5 @@ sw.update(eA.results())
 sw.update(eB.results())
 
 # output data to Paraview
-# proj.export_data(phases=[sw], filename='OUT', filetype='xdmf')
+if export:
+    proj.export_data(phases=[sw], filename='out', filetype='xdmf')

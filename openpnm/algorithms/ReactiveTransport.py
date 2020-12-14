@@ -152,6 +152,9 @@ class ReactiveTransport(GenericTransport):
         x0 : ND-array
             Initial guess of unknown variable
         """
+        self._validate_settings()
+        # Check if A and b are well-defined
+        self._validate_data_health()
         quantity = self.settings['quantity']
         logger.info('Running ReactiveTransport')
         x0 = np.zeros(self.Np, dtype=float) if x0 is None else x0
@@ -242,15 +245,17 @@ class ReactiveTransport(GenericTransport):
         phase = self.project.phases()[self.settings['phase']]
         physics = self.project.find_physics(phase=phase)
         geometries = self.project.geometries().values()
-        # Put quantity on phase so physics finds it when regenerating
-        phase.update(self.results())
         # Regenerate iterative props with new guess
         iterative_props = self._get_iterative_props()
-        phase.regenerate_models(propnames=iterative_props)
-        for geometry in geometries:
-            geometry.regenerate_models(iterative_props)
-        for phys in physics:
-            phys.regenerate_models(iterative_props)
+        if len(iterative_props) > 0:
+            # Put quantity on phase so physics finds it when regenerating
+            key = self.settings['quantity']
+            phase[key] = self[key]
+            phase.regenerate_models(propnames=iterative_props)
+            for geometry in geometries:
+                geometry.regenerate_models(iterative_props)
+            for phys in physics:
+                phys.regenerate_models(iterative_props)
 
     def _apply_sources(self):
         """r
@@ -368,14 +373,16 @@ class ReactiveTransport(GenericTransport):
 
     def _get_iterative_props(self):
         r"""
-        Find and return properties that need to be iterated while running the
-        algorithm
+        Find and return properties that need to be iterated while running
+        the algorithm.
 
         Notes
         -----
-        This method was moved from ReactiveTransport class to GenericTransport
-        because source terms are not necessarily the only properties that need
-        iteration during an algorithm (ex. concentration-dependent conductance)
+        This method was moved from ReactiveTransport class to
+        GenericTransport because source terms are not necessarily the only
+        properties that need iteration during an algorithm (ex.
+        concentration-dependent conductance)
+
         """
         import networkx as nx
         phase = self.project.phases(self.settings['phase'])
@@ -396,7 +403,10 @@ class ReactiveTransport(GenericTransport):
             return []
         iterative_props = list(nx.dag.lexicographical_topological_sort(dg))
         # "quantity" shouldn't be in the returned list but "variable_props" should
-        iterative_props.remove(self.settings["quantity"])
+        try:
+            iterative_props.remove(self.settings["quantity"])
+        except ValueError:
+            pass
         return iterative_props
 
     @docstr.dedent

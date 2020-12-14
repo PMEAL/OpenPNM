@@ -2,7 +2,6 @@ import warnings
 import uuid
 import numpy as np
 from collections import namedtuple
-from openpnm.models.misc import from_neighbor_throats, from_neighbor_pores
 from openpnm.utils import Workspace, logging
 from openpnm.utils.misc import PrintableList, SettingsDict, Docorator
 docstr = Docorator()
@@ -1266,7 +1265,7 @@ class Base(dict):
 
         return temp_arr
 
-    def interpolate_data(self, propname):
+    def interpolate_data(self, propname, mode='mean'):
         r"""
         Determines a pore (or throat) property as the average of it's
         neighboring throats (or pores)
@@ -1275,15 +1274,14 @@ class Base(dict):
         ----------
         propname: string
             The dictionary key to the values to be interpolated.
+        mode : string
+            The method used for interpolation.  Options are 'mean' (default),
+            'min', and 'max'.
 
         Returns
         -------
-        An array containing interpolated pore (or throat) data
-
-        Notes
-        -----
-        This uses an unweighted average, without attempting to account for
-        distances or sizes of pores and throats.
+        vals : ND-array
+            An array containing interpolated pore (or throat) data
 
         Examples
         --------
@@ -1294,10 +1292,11 @@ class Base(dict):
         array([1.5, 2.5])
 
         """
+        from openpnm.models.misc import from_neighbor_throats, from_neighbor_pores
         if propname.startswith('throat'):
-            values = from_neighbor_throats(target=self, prop=propname, mode='mean')
+            values = from_neighbor_throats(target=self, prop=propname, mode=mode)
         elif propname.startswith('pore'):
-            values = from_neighbor_pores(target=self, prop=propname, mode='mean')
+            values = from_neighbor_pores(target=self, prop=propname, mode=mode)
         if hasattr(self[propname], 'units'):
             values *= self[propname].units
         return values
@@ -1305,7 +1304,7 @@ class Base(dict):
     def filter_by_label(self, pores=[], throats=[], labels=None, mode='or'):
         r"""
         Returns which of the supplied pores (or throats) has the specified
-        label
+        label(s)
 
         Parameters
         ----------
@@ -1590,29 +1589,30 @@ class Base(dict):
             props = [props]
         N = len(props)
         color = plt.cm.tab10(range(10))
-        if N == 1:
-            r = 1
-            c = 1
-        elif N < 4:
-            r = 1
-            c = N
+        if N <= 3:
+            r, c = 1, N
+        elif N == 4:
+            r, c = 2, 2
         else:
-            r = int(np.ceil(N**0.5))
-            c = int(np.floor(N**0.5))
-        plt.figure()
+            r, c = N // 3 + 1, 3
+        fig, ax = plt.subplots(r, c, figsize=(3*c, 3*r))
+        axs = np.array(ax).flatten()
         for i, _ in enumerate(props):
-            plt.subplot(r, c, i+1)
             try:
                 # Update kwargs with some default values
                 if 'edgecolor' not in kwargs.keys():
                     kwargs.update({'edgecolor': 'k'})
                 if 'facecolor' not in kwargs:
                     kwargs.update({'facecolor': color[np.mod(i, 10)]})
-                plt.hist(self[props[i]], bins=bins, **kwargs)
+                axs[i].hist(self[props[i]], bins=bins, **kwargs)
+                axs[i].set_xlabel(props[i])
             except KeyError:
                 pass
-            plt.xlabel(props[i])
+        # Hide unpopulated subplots from the grid
+        for j in range(i+1, len(axs)):
+            axs[j].set_axis_off()
         plt.rcParams['font.size'] = temp
+        plt.tight_layout(h_pad=0.9, w_pad=0.9)
 
     def check_data_health(self):
         r"""

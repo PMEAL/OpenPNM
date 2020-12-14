@@ -266,13 +266,13 @@ class GenericTransport(GenericAlgorithm):
         mode : string, optional
             Controls how the boundary conditions are applied.  Options are:
 
-            +-------------+--------------------------------------------------+
-            | 'merge'     | (Default) Adds supplied boundary conditions to   |
-            |             | already existing conditions                      |
-            +-------------+--------------------------------------------------+
-            | 'overwrite' | Deletes all boundary condition on object then    |
-            |             | adds the given ones                              |
-            +-------------+--------------------------------------------------+
+            'merge' - (Default) Adds supplied boundary conditions to already
+            existing conditions, and also overwrites any existing values.
+            If BCs of the complementary type already exist in the given
+            locations, those values are kept.
+            'overwrite' - Deletes all boundary conditions of the given type
+            then adds the specified new ones (unless locations already have
+            BCs of the other type).
 
         Notes
         -----
@@ -280,7 +280,6 @@ class GenericTransport(GenericAlgorithm):
         ``settings``, e.g. ``alg.settings['quantity'] = 'pore.pressure'``.
 
         """
-        mode = self._parse_mode(mode, allowed=['merge', 'overwrite'], single=True)
         self._set_BC(pores=pores, bctype='value', bcvalues=values, mode=mode)
 
     def set_rate_BC(self, pores, rates=None, total_rate=None, mode='merge',
@@ -293,23 +292,23 @@ class GenericTransport(GenericAlgorithm):
         pores : array_like
             The pore indices where the condition should be applied
         rates : scalar or array_like, optional
-            The rates to apply in each pore.  If a scalar is supplied
-            that rate is assigned to all locations, and if a vector is
-            supplied it must be the same size as the indices given in ``pores`.
-        total_rate : scalar, optional
+            The rates to apply in each pore.  If a scalar is supplied that
+            rate is assigned to all locations, and if a vector is supplied
+            it must be the same size as the indices given in ``pores``.
+        total_rate : float, optional
             The total rate supplied to all pores.  The rate supplied by this
             argument is divided evenly among all pores. A scalar must be
             supplied! Total_rate cannot be specified if rate is specified.
-        mode : string, optional
+        mode : str, optional
             Controls how the boundary conditions are applied.  Options are:
 
-            +-------------+--------------------------------------------------+
-            | 'merge'     | (Default) Adds supplied boundary conditions to   |
-            |             | already existing conditions                      |
-            +-------------+--------------------------------------------------+
-            | 'overwrite' | Deletes all boundary condition on object then    |
-            |             | adds the given ones                              |
-            +-------------+--------------------------------------------------+
+            'merge' - (Default) Adds supplied boundary conditions to already
+            existing conditions, and also overwrites any existing values.
+            If BCs of the complementary type already exist in the given
+            locations, these values are kept.
+            'overwrite' - Deletes all boundary conditions of the given type
+            then adds the specified new ones (unless locations already have
+            BCs of the other type).
 
         Notes
         -----
@@ -331,7 +330,6 @@ class GenericTransport(GenericAlgorithm):
                                 + 'total_rate')
             pores = self._parse_indices(pores)
             rates = total_rate/pores.size
-        mode = self._parse_mode(mode, allowed=['merge', 'overwrite'], single=True)
         self._set_BC(pores=pores, bctype='rate', bcvalues=rates, mode=mode)
 
     @docstr.get_sectionsf(base='GenericTransport._set_BC',
@@ -349,12 +347,8 @@ class GenericTransport(GenericAlgorithm):
             Specifies the type or the name of boundary condition to apply. The
             types can be one one of the following:
 
-            +-------------+--------------------------------------------------+
-            | 'value'     | Specify the value of the quantity in each        |
-            |             | location                                         |
-            +-------------+--------------------------------------------------+
-            | 'rate'      | Specify the flow rate into each location         |
-            +-------------+--------------------------------------------------+
+            'value' - Specify the value of the quantity in each location
+            'rate' - Specify the flow rate into each location
 
         bcvalues : int or array_like
             The boundary value to apply, such as concentration or rate.  If
@@ -366,13 +360,13 @@ class GenericTransport(GenericAlgorithm):
         mode : string, optional
             Controls how the boundary conditions are applied.  Options are:
 
-            +-------------+--------------------------------------------------+
-            | 'merge'     | (Default) Adds supplied boundary conditions to   |
-            |             | already existing conditions                      |
-            +-------------+--------------------------------------------------+
-            | 'overwrite' | Deletes all boundary condition on object then    |
-            |             | adds the given ones                              |
-            +-------------+--------------------------------------------------+
+            'merge' - (Default) Adds supplied boundary conditions to already
+            existing conditions, and also overwrites any existing values.
+            If BCs of the complementary type already exist in the given
+            locations, these values are kept.
+            'overwrite' - Deletes all boundary conditions of the given type
+            then adds the specified new ones (unless locations already have
+            BCs of the other type).
 
         Notes
         -----
@@ -385,6 +379,7 @@ class GenericTransport(GenericAlgorithm):
         # Hijack the parse_mode function to verify bctype argument
         bctype = self._parse_mode(bctype, allowed=['value', 'rate'],
                                   single=True)
+        othertype = list(set(['value', 'rate']).difference(set([bctype])))[0]
         mode = self._parse_mode(mode, allowed=['merge', 'overwrite'],
                                 single=True)
         pores = self._parse_indices(pores)
@@ -394,16 +389,25 @@ class GenericTransport(GenericAlgorithm):
             raise Exception('The number of boundary values must match the '
                             + 'number of locations')
 
-        # Warn the user that another boundary condition already exists
-        value_BC_mask = np.isfinite(self["pore.bc_value"])
-        rate_BC_mask = np.isfinite(self["pore.bc_rate"])
-        BC_locs = self.Ps[rate_BC_mask + value_BC_mask]
-        if np.intersect1d(pores, BC_locs).size:
-            logger.info('Another boundary condition detected in some locations!')
-
-        # Clear old boundary values if needed
-        if ('pore.bc_' + bctype not in self.keys()) or (mode == 'overwrite'):
+        # Create boundary array if needed (though these are created on init)
+        if 'pore.bc_' + bctype not in self.keys():
             self['pore.bc_' + bctype] = np.nan
+
+        # Catch pores with existing BCs
+        if mode == 'merge':  # remove offenders, and warn user
+            existing_bcs = np.isfinite(self["pore.bc_" + othertype])
+            inds = pores[existing_bcs[pores]]
+        elif mode == 'overwrite':  # Remove existing BCs and write new ones
+            self['pore.bc_' + bctype] = np.nan
+            existing_bcs = np.isfinite(self["pore.bc_" + othertype])
+            inds = pores[existing_bcs[pores]]
+        # Now drop any pore indices which have BCs that should be kept
+        if len(inds) > 0:
+            msg = r'Boundary conditions are already specified in ' + \
+                  r'the following given pores, so these will be skipped: '
+            msg = '\n'.join((msg, inds.__repr__()))
+            logger.warning(msg)
+            pores = np.array(list(set(pores).difference(set(inds))), dtype=int)
 
         # Store boundary values
         self['pore.bc_' + bctype][pores] = values
@@ -458,7 +462,10 @@ class GenericTransport(GenericAlgorithm):
             self._pure_A = None
         if self._pure_A is None:
             network = self.project.network
-            phase = self.project.phases()[self.settings['phase']]
+            try:
+                phase = self.project.phases()[self.settings['phase']]
+            except KeyError:
+                raise Exception('Phase has not been defined for algorithm')
             g = phase[gvals]
             am = network.create_adjacency_matrix(weights=g, fmt='coo')
             self._pure_A = spgr.laplacian(am).astype(float)
@@ -544,6 +551,9 @@ class GenericTransport(GenericAlgorithm):
         """
         logger.info('―' * 80)
         logger.info('Running GenericTransport')
+        self._validate_settings()
+        # Check if A and b are well-defined
+        self._validate_data_health()
         x0 = np.zeros_like(self.b) if x0 is None else x0
         self["pore.initial_guess"] = x0
         self._run_generic(x0)
@@ -593,7 +603,7 @@ class GenericTransport(GenericAlgorithm):
             raise Exception('The A matrix or the b vector not yet built.')
         A = A.tocsr()
 
-        # Check if A and b are well-defined
+        # Check if A and b are STILL well-defined
         self._validate_data_health()
 
         # Check if A is symmetric
@@ -663,11 +673,23 @@ class GenericTransport(GenericAlgorithm):
                 return x
         # PyPardiso
         elif self.settings['solver_family'] == 'pypardiso':
+            try:
+                import pypardiso
+            except ModuleNotFoundError:
+                if self.Np <= 8000:
+                    logger.critical("Pardiso not found, reverting to much "
+                                    + "slower spsolve.  Install pardiso with: "
+                                    + "conda install -c conda-forge pardiso4py")
+                    self.settings['solver_family'] = 'scipy'
+                    return self._get_solver()
+                else:
+                    raise Exception("Pardiso not found. Install it with: "
+                                    + "conda install -c conda-forge pardiso4py")
+
             def solver(A, b, **kwargs):
                 r"""
                 Wrapper method for PyPardiso sparse linear solver.
                 """
-                import pypardiso
                 x = pypardiso.spsolve(A=A, b=b)
                 return x
         else:
@@ -733,6 +755,12 @@ class GenericTransport(GenericAlgorithm):
         res_tol = norm(self.b) * tol
         flag_converged = True if res <= res_tol else False
         return flag_converged
+
+    def _validate_settings(self):
+        if self.settings['quantity'] is None:
+            raise Exception('"quantity" has not been defined on this algorithm')
+        if self.settings['conductance'] is None:
+            raise Exception('"conductance" has not been defined on this algorithm')
 
     def _validate_data_health(self):
         r"""

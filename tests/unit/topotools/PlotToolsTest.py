@@ -2,7 +2,6 @@ import pytest
 import numpy as np
 import openpnm as op
 import matplotlib.pyplot as plt
-from numpy.testing import assert_allclose
 from openpnm import topotools
 
 
@@ -13,17 +12,17 @@ class PlotToolsTest:
 
     def test_plot_tutorial(self):
         pn = op.network.Cubic(shape=[4, 4, 1])
-        g = topotools.plot_tutorial(pn)
+        topotools.plot_tutorial(pn)
         plt.close()
 
     def test_plot_networkx_var_spacing(self):
         for i in range(3):
             shape = np.ones(3, dtype=int)
             shape[np.arange(3) != i] = [5, 8]
-            spacing= np.ones(3, dtype=float)
+            spacing = np.ones(3, dtype=float)
             spacing[np.arange(3) != i] = [0.01, 0.6]
             pn = op.network.Cubic(shape=shape)
-            dims=op.topotools.dimensionality(pn)
+            dims = op.topotools.dimensionality(pn)
             x, y = pn["pore.coords"].T[dims]
             fig, ax = plt.subplots()
             m = op.topotools.plot_networkx(pn, ax=ax)
@@ -70,5 +69,5 @@ if __name__ == '__main__':
     t.setup_class()
     for item in t.__dir__():
         if item.startswith('test'):
-            print('running test: ' + item)
+            print(f'Running test: {item}')
             t.__getattribute__(item)()

@@ -1,10 +1,5 @@
 r"""
-
-.. autofunction:: openpnm.models.misc.neighbor_lookups.from_neighbor_throats
-.. autofunction:: openpnm.models.misc.neighbor_lookups.from_neighbor_pores
-
 """
-
 import numpy as np
 from openpnm.utils import logging
 logger = logging.getLogger(__name__)

@@ -47,9 +47,9 @@ class TransientReactiveTransportSettings(GenericSettings):
         is not a multiple of 't_step', 't_output' will be approximated.
         When 't_output' is a list or ND-array, transient solutions
         corresponding to this list or array will be stored.
-    output_times : list
-        List of output times. The values in the list must be multiples of
-        the time step 't_step'.
+    t_solns : list
+        List of output times at which a solution was written to the
+        dictionary.  Can be used to iterate over the results.
     t_tolerance : scalar
         Transient solver tolerance. The simulation stops (before reaching
         't_final') when the residual falls below 't_tolerance'. The
@@ -86,6 +86,7 @@ class TransientReactiveTransportSettings(GenericSettings):
     t_precision = 12
     t_scheme = 'implicit'
     pore_volume = 'pore.volume'
+    t_solns = []
 
 
 class TransientReactiveTransport(ReactiveTransport):
@@ -171,14 +172,23 @@ class TransientReactiveTransport(ReactiveTransport):
             imposed to all pores.
 
         """
-        quantity = self.settings['quantity']
-        values = np.array(values) * 1.0
+        values = np.ones([self.Np, ]) * values
         if values.size > 1 and values.size != self.Np:
             raise Exception('The number of initial values must be either 1 or Np')
         self['pore.ic'] = values
+        quantity = self.settings['quantity']
         if not quantity:
             raise Exception('"quantity" has not been defined on this algorithm')
         self[quantity] = values
+
+    def _overwrite_ICs_with_value_BCs(self):
+        ic_vals = self['pore.ic']
+        # Ensure the given initial conditions have any value BC inserted
+        bc_pores = ~np.isnan(self['pore.bc_value'])
+        ic_vals[bc_pores] = self['pore.bc_value'][bc_pores]
+        # Write values to self to to quantity, ic and t=0 array
+        quantity = self.settings['quantity']
+        self[quantity] = ic_vals
 
     def _get_f1_f2_f3(self):
         r"""
@@ -253,9 +263,13 @@ class TransientReactiveTransport(ReactiveTransport):
         """
         logger.info('―' * 80)
         logger.info('Running TransientTransport')
+        self._validate_settings()
+        # Check if A and b are well-defined
+        self._validate_data_health()
         # If ICs are not defined, assume zero
         if not np.isfinite(self["pore.ic"]).all():
             self.set_IC(0)
+        self._overwrite_ICs_with_value_BCs()
         # Make sure _A is None to force _build_A, otherwise _A_steady might be wrong
         self._A = None
         # Save A matrix of the steady state problem (without BCs applied)
@@ -269,7 +283,6 @@ class TransientReactiveTransport(ReactiveTransport):
         self._b_t = self._b.copy()
         if t is None:
             t = self.settings['t_initial']
-        # Create S1 & S2 for 1st Picard's iteration
         self._update_iterative_props()
         self._run_transient(t=t)
 
@@ -353,6 +366,7 @@ class TransientReactiveTransport(ReactiveTransport):
                     if round(time, t_pre) in out:
                         t_str = self._nbr_to_str(time)
                         self[quantity + '@' + t_str] = x_new
+                        self.settings['t_solns'].append(t_str)
                         logger.info(f'        Exporting time step: {time} s')
                 else:
                     # Output steady state solution
@@ -500,10 +514,7 @@ class TransientReactiveTransport(ReactiveTransport):
         Correction (built for transient simulations) depends on the time scheme
 
         """
-        if self.settings['t_scheme'] == 'cranknicolson':
-            f1 = 0.5
-        else:
-            f1 = 1.0
+        f1, f2, f3 = self._get_f1_f2_f3()
         phase = self.project.phases()[self.settings['phase']]
         for item in self.settings['sources']:
             Ps = self.pores(item)

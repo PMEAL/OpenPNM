@@ -184,7 +184,7 @@ class TopotoolsTest:
         assert isinstance(pn['pore.test_vals'], np.ndarray)
         assert ('pore.' + geo2.name) in pn.keys()
 
-    def test_subdivide_3D(self):
+    def test_subdivide_3d(self):
         net = op.network.Cubic(shape=[3, 3, 3])
         assert net.Np == 27
         assert net.Nt == 54
@@ -194,7 +194,7 @@ class TopotoolsTest:
         assert net.Np == 27 - 1 + 125
         assert net.Nt == 54 - 6 + 300 + 25 * 6
 
-    def test_subdivide_2D(self):
+    def test_subdivide_2d(self):
         net = op.network.Cubic(shape=[1, 3, 3])
         assert net.Np == 9
         assert net.Nt == 12

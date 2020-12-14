@@ -65,7 +65,12 @@ class PNM(GenericIO):
                             temp['model'] = a.__module__ + '|' + \
                                 a.__code__.co_name
                         obj_models[model] = temp
-                    item.attrs['models'] = json.dumps(obj_models)
+                    try:
+                        item.attrs['models'] = json.dumps(obj_models)
+                    except TypeError:
+                        logger.critical('The model ' + model + ' and it\'s '
+                                        + 'parameters could not be written '
+                                        + 'to file')
                 item.attrs['class'] = str(obj.__class__)
 
     @classmethod

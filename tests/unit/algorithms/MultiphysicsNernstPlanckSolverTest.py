@@ -91,7 +91,7 @@ class MultiphysicsNernstPlanckSolverTest:
                                                settings=setts1)
         self.p.set_value_BC(pores=self.net.pores('back'), values=0.02)
         self.p.set_value_BC(pores=self.net.pores('front'), values=0.01)
-        self.p.settings['charge_conservation'] = 'electroneutrality'
+        self.p.settings['charge_conservation'] = 'laplace'
 
         self.eA = op.algorithms.NernstPlanck(network=self.net, phase=self.sw,
                                              ion=self.Na.name, settings=setts1)
@@ -155,7 +155,63 @@ class MultiphysicsNernstPlanckSolverTest:
     def teardown_class(self):
         ws = op.Workspace()
         ws.clear()
-
+    
+    def test_charge_conservation_electroneutrality(self):
+        model = op.models.physics.generic_source_term.charge_conservation
+        self.phys.add_model(propname='pore.charge_conservation',
+                       model=model,
+                       phase=self.sw,
+                       p_alg=self.p,
+                       e_alg=[self.eA, self.eB],
+                       assumption='electroneutrality')
+        x=[-2.24609335e-11, -4.86675995e-12, -2.00155305e-12,  5.17199639e-12,
+          9.83787767e-12,  9.51427697e-14,  9.68585899e-14,  2.90865203e-14,
+         -5.08595201e-14, -1.75206280e-11,  2.72090557e-11, -1.64924728e-13,
+         -8.86829423e-15, -1.08748665e-13, -5.41010482e-14, -4.43723556e-12,
+          8.16466658e-12, -4.01358941e-14, -1.27058643e-14, -5.93906159e-14,
+          6.65433344e-14, -4.29943549e-11,  2.86333670e-11, -1.29223441e-13,
+          2.90086871e-13, -3.21177535e-14, -1.23355336e-13, -8.68490251e-12,
+         -3.95913957e-12,  3.01316467e-12,  1.28504967e-11,  1.22515955e-11]
+        x = np.around(x, decimals=5)
+        y = np.around(self.phys['pore.charge_conservation.rate'], decimals=5)
+        assert_allclose(actual=y, desired=x)
+        
+    def test_charge_conservation_poisson(self):
+        model = op.models.physics.generic_source_term.charge_conservation
+        self.phys.add_model(propname='pore.charge_conservation',
+                       model=model,
+                       phase=self.sw,
+                       p_alg=self.p,
+                       e_alg=[self.eA, self.eB],
+                       assumption='poisson')
+        x=[-1.26217745e-29, -1.26217745e-29, -1.26217745e-29, -1.26217745e-29,
+         -8.92959041e-15, -9.69825374e-15,  4.69293590e-16,  7.58658706e-15,
+          1.49936602e-14,  9.20367258e-15, -4.47588842e-14, -9.10700568e-15,
+         -1.28359063e-15,  9.93231999e-15,  1.31260953e-15,  3.03490459e-15,
+         -2.28120674e-15, -1.46871791e-14, -1.02469014e-15,  1.48038702e-14,
+          4.62126084e-14,  5.36985074e-14, -1.83813160e-14, -1.65456504e-14,
+         -2.25583527e-16,  6.19002886e-15,  2.10179612e-15,  6.63622097e-14,
+         -1.26217745e-29, -1.26217745e-29, -1.26217745e-29, -5.04870979e-29]
+        x = np.around(x, decimals=5)
+        y = np.around(self.phys['pore.charge_conservation.rate'], decimals=5)
+        assert_allclose(actual=y, desired=x)
+        self.phys.add_model(propname='pore.charge_conservation',
+                       model=model,
+                       phase=self.sw,
+                       p_alg=self.p,
+                       e_alg=[self.eA, self.eB],
+                       assumption='poisson_2D')
+        x=[-2.64697796e-23, -5.29395592e-23, -2.64697796e-23, -2.64697796e-23,
+         -3.25242702e-08, -2.78180753e-08,  1.68087663e-09,  1.76190098e-08,
+          3.29854138e-08,  3.52432404e-08, -1.12674189e-07, -2.94123872e-08,
+         -3.97788700e-09,  2.24781499e-08,  8.35993025e-09,  1.86905484e-08,
+         -1.62858653e-08, -3.57462500e-08, -2.60922022e-09,  3.49694375e-08,
+          1.00562876e-07,  1.34340467e-07, -6.40107592e-08, -4.20463571e-08,
+         -1.30577653e-09,  1.78572086e-08,  1.16045831e-08,  1.48056244e-07,
+         -5.29395592e-23,  0.00000000e+00, -2.64697796e-23, -1.05879118e-22,]
+        x = np.around(x, decimals=5)
+        y = np.around(self.phys['pore.charge_conservation.rate'], decimals=5)
+        assert_allclose(actual=y, desired=x)
 
 if __name__ == '__main__':
     t = MultiphysicsNernstPlanckSolverTest()

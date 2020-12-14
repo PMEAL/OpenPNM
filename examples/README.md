@@ -124,7 +124,7 @@ This page links to examples in the Github repo at [github.com/PMEAL/OpenPNM/exam
 | [Transient Fickian Diffusion with Reaction](/examples/notebooks/algorithms/transient/transient_fickian_diffusion_with_reaction.ipynb) | OpenPNM supports adding reaction terms to both steady state and transient simulations. OpenPNM already includes many different source term models that can be added to simulate a reaction. In this example, we show how to add a powerlaw source term model to a transient fickian diffusion simulation. |
 | [Transient Advection-Diffusion](/examples/notebooks/algorithms/transient/transient_advection_diffusion.ipynb) | Transient advection-diffusion simulations can be used to model elution curves.  This example shows how to fit the concentration profile at the outlet to determine the dispersion coefficient of a network. |
 
-#### [Solvers and Settings](/examples/notebooks/algorithms/general)
+#### [General Info](/examples/notebooks/algorithms/general)
 
 | Link | Description |
 |:-----|:------------|
@@ -133,6 +133,7 @@ This page links to examples in the Github repo at [github.com/PMEAL/OpenPNM/exam
 | [Understanding Transient Solver Settings](/examples/notebooks/algorithms/general/understanding_transient_transport_settings.ipynb) | `in progress` |
 | [Comparison of Available Matrix Solvers](/examples/notebooks/algorithms/general/available_matrix_solvers.ipynb) | `in progress` |
 | [Overview of Algorithm Inheritance](/examples/notebooks/algorithms/general/overview_of_inheritance.ipynb) | `in progress` |
+| [Issue with Domain Area and Length](/examples/notebooks/algorithms/general/the_problem_with_domain_length_and_area) | Automatically determining the length and area of a domain is more difficult that it seems, as illustrated in this notebook. |
 
 ### [Import, Export and Visualization](/examples/notebooks/io)
 
