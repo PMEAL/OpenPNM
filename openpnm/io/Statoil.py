@@ -17,7 +17,7 @@ class Statoil(GenericIO):
     datasets are available for download from the group's
     `website <http://tinyurl.com/zurko4q>`_.
 
-    The so-called 'Statoil' format consists of 4 different files in a single
+    The 'Statoil' format consists of 4 different files in a single
     folder. The data is stored in columns with each corresponding to a
     specific property. Headers are not provided in the files, so one must
     refer to various theses and documents to interpret their meaning.
@@ -48,7 +48,9 @@ class Statoil(GenericIO):
                     val = dft_temp[col][row]
                     if isinstance(val, float):
                         val = np.format_float_scientific(val, precision=6,
-                                                         exp_digits=3)
+                                                         exp_digits=3,
+                                                         trim='k',
+                                                         unique=False)
                     s = s + str(val) + '\t'
                 s = s[:-1] + '\n'  # Remove trailing tab and a new line
                 f.write(s)
@@ -77,7 +79,9 @@ class Statoil(GenericIO):
                     val = dft_temp[col][row]
                     if isinstance(val, float):
                         val = np.format_float_scientific(val, precision=6,
-                                                         exp_digits=3)
+                                                         exp_digits=3,
+                                                         trim='k',
+                                                         unique=False)
                     s = s + str(val) + '\t'
                 s = s[:-1] + '\n'  # Remove trailing tab and a new line
                 f.write(s)
@@ -95,7 +99,9 @@ class Statoil(GenericIO):
                     val = dfp_temp[col][row]
                     if isinstance(val, float):
                         val = np.format_float_scientific(val, precision=6,
-                                                         exp_digits=3)
+                                                         exp_digits=3,
+                                                         trim='k',
+                                                         unique=False)
                     s = s + str(val) + '\t'
                 s = s[:-1] + '\n'  # Remove trailing tab and a new line
                 f.write(s)
@@ -111,7 +117,7 @@ class Statoil(GenericIO):
             try:
                 dfp_temp[item] = dfp[item][:network.Np]
             except KeyError:
-                dfp_temp[item] = np.zeros_like(network.Ps)
+                dfp_temp[item] = np.zeros([network.Np, ])
         dfp_temp[b] = dfp_temp[b]/2
         with open(filename + '_node2.dat', 'wt') as f:
             for row in network.Ps:
@@ -120,7 +126,9 @@ class Statoil(GenericIO):
                     val = dfp_temp[col][row]
                     if isinstance(val, float):
                         val = np.format_float_scientific(val, precision=6,
-                                                         exp_digits=3)
+                                                         exp_digits=3,
+                                                         trim='k',
+                                                         unique=False)
                     s = s + str(val) + '\t'
                 s = s[:-1] + '\n'  # Remove trailing tab and a new line
                 f.write(s)
@@ -260,3 +268,20 @@ class Statoil(GenericIO):
         trim(network=network, throats=to_trim)
 
         return network.project
+
+
+def get_domain_shape(network, pore_diameter='pore.diameter'):
+    xmin, ymin, zmin = np.amin(network['pore.coords'], axis=0)
+    xmax, ymax, zmax = np.amax(network['pore.coords'], axis=0)
+    mins = []
+    for axis, val in enumerate([xmin, ymin, zmin]):
+        inds = np.where(network['pore.coords'][:, axis] == val)
+        Rp = np.amax(network[pore_diameter][inds])/2
+        mins.append(val - Rp)
+    maxes = []
+    for axis, val in enumerate([xmax, ymax, zmax]):
+        inds = np.where(network['pore.coords'][:, axis] == val)
+        Rp = np.amax(network[pore_diameter][inds])/2
+        maxes.append(val + Rp)
+    shape = np.array(maxes) - np.array(mins)
+    return shape
