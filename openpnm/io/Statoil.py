@@ -50,7 +50,7 @@ class Statoil(GenericIO):
                         val = np.format_float_scientific(val, precision=6,
                                                          exp_digits=3)
                     s = s + str(val) + '\t'
-                s = s[:-1] + '\n'
+                s = s[:-1] + '\n'  # Remove trailing tab and a new line
                 f.write(s)
 
         # Write Link 2 file
@@ -79,7 +79,7 @@ class Statoil(GenericIO):
                         val = np.format_float_scientific(val, precision=6,
                                                          exp_digits=3)
                     s = s + str(val) + '\t'
-                s = s[:-1] + '\n'
+                s = s[:-1] + '\n'  # Remove trailing tab and a new line
                 f.write(s)
 
         # Write Node 1 file
@@ -87,8 +87,18 @@ class Statoil(GenericIO):
         b = 'network.' + network.name + '.pore.coords[1]'
         c = 'network.' + network.name + '.pore.coords[2]'
         dfp_temp = dft_ind.join(dfp[[a, b, c]])
-        dfp_temp.to_csv(filename + '_node2.dat', sep='\t',
-                        header=False, index=False)
+        with open(filename + '_node1.dat', 'wt') as f:
+            f.write(str(network.Np) + '\n')
+            for row in network.Ps:
+                s = ''
+                for col in dfp_temp.keys():
+                    val = dfp_temp[col][row]
+                    if isinstance(val, float):
+                        val = np.format_float_scientific(val, precision=6,
+                                                         exp_digits=3)
+                    s = s + str(val) + '\t'
+                s = s[:-1] + '\n'  # Remove trailing tab and a new line
+                f.write(s)
 
         # Write Node 2 file
         a = 'network.' + network.name + '.pore.volume'
@@ -103,12 +113,17 @@ class Statoil(GenericIO):
             except KeyError:
                 dfp_temp[item] = np.zeros_like(network.Ps)
         dfp_temp[b] = dfp_temp[b]/2
-        dfp_temp.to_csv(filename + '_node2.dat', sep='\t',
-                        header=False, index=False)
-
-        # with open(filename + '_node1.dat', 'w') as f:
-        #     f.write(
-
+        with open(filename + '_node2.dat', 'wt') as f:
+            for row in network.Ps:
+                s = ''
+                for col in dfp_temp.keys():
+                    val = dfp_temp[col][row]
+                    if isinstance(val, float):
+                        val = np.format_float_scientific(val, precision=6,
+                                                         exp_digits=3)
+                    s = s + str(val) + '\t'
+                s = s[:-1] + '\n'  # Remove trailing tab and a new line
+                f.write(s)
 
     @classmethod
     def load(cls, *args, **kwargs):
