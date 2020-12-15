@@ -83,6 +83,10 @@ The drainage curve can be visualized with `mip.plot_intrusion_curve()` giving so
 
 A collection of examples is available in the *examples* folder of this repository: [Examples](https://www.github.com/PMEAL/OpenPNM/tree/dev/examples)
 
+## Asking Questions and Getting Help
+
+Github now has a [Discussions](https://github.com/PMEAL/OpenPNM/discussions) function, which works similarly to [stack overflow](https://www.stackoverflow.com).  Please post your question in the [Q&A category](https://github.com/PMEAL/OpenPNM/discussions?discussions_q=category%3AQ%26A) so devs or users can provide answers, vote on accepted answers, improve on each other's answers, and generally discuss things. Most importantly, all answers are searchable so eventually, once enough questions have been posted and answered, you can find what you're looking for with a simple search.  
+
 ## Contact
 
 OpenPNM is developed by the Porous Materials Engineering and Analysis Lab [(PMEAL)](http://pmeal.com), in the [Department of Chemical Engineering](https://uwaterloo.ca/chemical-engineering/) at the [University of Waterloo](https://uwaterloo.ca/) in Waterloo, Ontario, Canada.
