@@ -29,30 +29,40 @@ class Statoil(GenericIO):
 
         # Write Link 1 file
         dft_ind = DataFrame()
-        dft_ind[0] = network.Ts + 1
+        dft_ind['index'] = network.Ts + 1
         a = 'network.' + network.name + '.throat.conns[0]'
         b = 'network.' + network.name + '.throat.conns[1]'
         c = 'network.' + network.name + '.throat.diameter'
         d = 'network.' + network.name + '.throat.shape_factor'
         e = 'network.' + network.name + '.throat.length'
         dft_temp = dft_ind.join(dft[[a, b, c, e]])
-        temp = dft_temp.T
-        temp.insert(0, 'top row', network.Nt)
-        dft_temp = temp.T
-        dft_temp = dft_temp.astype({a: int, b: int, 0: int})
         with open(filename + '_link1.dat', 'wt') as f:
             f.write(str(network.Nt) + '\n')
             for row in network.Ts:
                 s = ''
                 for col in dft_temp.keys():
                     val = dft_temp[col][row]
+                    if col == 'index':
+                        # Original file has 6 spaces for index, but this is
+                        # not enough for networks with > 1 million pores so
+                        # I have bumped it to 9.  I'm not sure if this will
+                        # still work with the ICL binaries.
+                        s = s + '{:>9}'.format(str(val))
+                        continue
+                    if 'throat.conns[' in col:
+                        # Original file has 7 spaces for pore indices, but
+                        # this is not enough for networks with > 10 million
+                        # pores so  I have bumped it to 9.  I'm not sure if
+                        # this will still work with the ICL binaries.
+                        s = s + '{:>9}'.format(str(val))
+                        continue
                     if isinstance(val, float):
                         val = np.format_float_scientific(val, precision=6,
                                                          exp_digits=3,
                                                          trim='k',
                                                          unique=False)
-                    s = s + str(val) + '\t'
-                s = s[:-1] + '\n'  # Remove trailing tab and a new line
+                    s = s + '{:>15}'.format(str(val))
+                s = s + '\n'  # Remove trailing tab and a new line
                 f.write(s)
 
         # Write Link 2 file
@@ -85,8 +95,8 @@ class Statoil(GenericIO):
                         s = s + '{:>9}'.format(str(val))
                         continue
                     if 'throat.conns[' in col:
-                        # Original file has 7 spaces for pore indicdes, but
-                        # this is not enough for networks with > 1 million
+                        # Original file has 7 spaces for pore indices, but
+                        # this is not enough for networks with > 10 million
                         # pores so  I have bumped it to 9.  I'm not sure if
                         # this will still work with the ICL binaries.
                         s = s + '{:>9}'.format(str(val))
