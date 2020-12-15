@@ -24,16 +24,7 @@ class Statoil(GenericIO):
     """
 
     @classmethod
-    def export_data(cls, filename, network, inlets=None, outlets=None):
-
-        # if inlets is not None:
-        #     coords = network['pore.coords'][network.pores(inlets), :]
-        #     c_norm = coords/network['pore.coords'].max(axis=0)
-        #     diffs = np.amax(c_norm - np.average(c_norm, axis=0), axis=0)
-        #     ax = np.where(diffs == diffs.min())[0][0]
-        #     extend(network=network, coords=[[0, 0, 0]])
-        #     conns = [[P, network.Np] for P in network.pores(inlets)]
-        #     extend(network=network, conns=conns)
+    def export_data(cls, filename, network, inlet=None, outlet=None):
 
         dfp, dft = Pandas.to_dataframe(network=network, delim='.')
         dft['network.' + network.name + '.throat.conns[0]'] += 1
@@ -151,8 +142,8 @@ class Statoil(GenericIO):
                 s = s + '{:>9}'.format(str(network.num_neighbors(row)[0]))
                 for n in network.find_neighbor_pores(row):
                     s = s + '{:>9}'.format(str(n))
-                s = s + '{:>9}'.format(str(int(network['pore.'+inlets][row])))
-                s = s + '{:>9}'.format(str(int(network['pore.'+outlets][row])))
+                s = s + '{:>9}'.format(str(int(network[inlets][row])))
+                s = s + '{:>9}'.format(str(int(network[outlets][row])))
                 for n in network.find_neighbor_throats(row):
                     s = s + '{:>9}'.format(str(n))
                 s = s + '\n'  # Remove trailing tab and a new line
@@ -331,6 +322,32 @@ class Statoil(GenericIO):
         trim(network=network, throats=to_trim)
 
         return network.project
+
+
+def add_reservoir_pore(network, pores, offset=0.1):
+    # Check if a label was given and fetch actual indices
+    if isinstance(pores, str):
+        # Convert 'face' into 'pore.face' if necessary
+        if not pores.startswith('pore.'):
+            pores = 'pore.' + pores
+        pores = network.pores(pores)
+    # Find coordinates of pores on given face
+    coords = network['pore.coords'][pores]
+    # Normalize the coordinates based on full network size
+    c_norm = coords/network['pore.coords'].max(axis=0)
+    # Identify axis of face by looking for dim with smallest delta
+    diffs = np.amax(c_norm - np.average(c_norm, axis=0), axis=0)
+    ax = np.where(diffs == diffs.min())[0][0]
+    # Add new pore at center of domain
+    new_coord = network['pore.coords'].mean(axis=0)
+    domain_half_length = np.ptp(network['pore.coords'][:, ax])/2
+    if coords[:, ax].mean() < network['pore.coords'][:, ax].mean():
+        new_coord[ax] = new_coord[ax] - domain_half_length*(1 + offset)
+    if coords[:, ax].mean() > network['pore.coords'][:, ax].mean():
+        new_coord[ax] = new_coord[ax] + domain_half_length*(1 + offset)
+    extend(network=network, coords=[new_coord])
+    conns = [[P, network.Np] for P in pores]
+    extend(network=network, conns=conns)
 
 
 def get_domain_shape(network, pore_diameter='pore.diameter'):
