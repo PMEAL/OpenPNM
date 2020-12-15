@@ -1,5 +1,5 @@
 import numpy as np
-from openpnm.topotools import trim
+from openpnm.topotools import trim, extend
 from openpnm.utils import logging
 from openpnm.io import GenericIO, Pandas
 from openpnm.network import GenericNetwork
@@ -24,10 +24,22 @@ class Statoil(GenericIO):
     """
 
     @classmethod
-    def export_data(cls, filename, network):
-        dfp, dft = Pandas.to_dataframe(network=network, delim='.')
+    def export_data(cls, filename, network, inlets=None, outlets=None):
 
-        # Write Link 1 file
+        # if inlets is not None:
+        #     coords = network['pore.coords'][network.pores(inlets), :]
+        #     c_norm = coords/network['pore.coords'].max(axis=0)
+        #     diffs = np.amax(c_norm - np.average(c_norm, axis=0), axis=0)
+        #     ax = np.where(diffs == diffs.min())[0][0]
+        #     extend(network=network, coords=[[0, 0, 0]])
+        #     conns = [[P, network.Np] for P in network.pores(inlets)]
+        #     extend(network=network, conns=conns)
+
+        dfp, dft = Pandas.to_dataframe(network=network, delim='.')
+        dft['network.' + network.name + '.throat.conns[0]'] += 1
+        dft['network.' + network.name + '.throat.conns[1]'] += 1
+
+        # Write link 1 file
         dft_ind = DataFrame()
         dft_ind['index'] = network.Ts + 1
         a = 'network.' + network.name + '.throat.conns[0]'
@@ -134,6 +146,15 @@ class Statoil(GenericIO):
                                                          trim='k',
                                                          unique=False)
                     s = s + '{:>15}'.format(str(val))
+                # The following lines use 9 spacing, but should be 7 to match
+                # the file format exactly
+                s = s + '{:>9}'.format(str(network.num_neighbors(row)[0]))
+                for n in network.find_neighbor_pores(row):
+                    s = s + '{:>9}'.format(str(n))
+                s = s + '{:>9}'.format(str(int(network['pore.'+inlets][row])))
+                s = s + '{:>9}'.format(str(int(network['pore.'+outlets][row])))
+                for n in network.find_neighbor_throats(row):
+                    s = s + '{:>9}'.format(str(n))
                 s = s + '\n'  # Remove trailing tab and a new line
                 f.write(s)
 
