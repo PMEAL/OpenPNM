@@ -1,19 +1,3 @@
----
-name: Question
-about: Ask OpenPNM devs on how the package works
-title: Concise description of your question
-labels: question, triage
-assignees: ''
+# Questions and Help
 
----
-
-_(Note, you don't have to fill out every section here. They're just here for guidance. That said, nicely detailed feature requests are more likely to get dev attention sooner)_
-
-**Describe your question**
-Explain in detail what is it you're want to achieve or implement using OpenPNM.
-
-**If applicable, code snippets**
-Share any code snippets that you've developed so far regarding your question. This helps OpenPNM devs to build on your code rather than from scratch.
-```python
-share your code here
-```
+Github now has a [Discussions](https://github.com/PMEAL/OpenPNM/discussions) function, which works similarly to [stack overflow](https://www.stackoverflow.com).  Please post your question in the [Q&A category](https://github.com/PMEAL/OpenPNM/discussions?discussions_q=category%3AQ%26A) so devs or users can provide answers, vote on accepted answers, improve on each other's answers, and generally discuss things. Most importantly, all answers are searchable so eventually, once enough questions have been posted and answered, you can find what you're looking for with a simple search.  
