@@ -24,11 +24,42 @@ class Statoil(GenericIO):
     """
 
     @classmethod
-    def export_data(cls, filename, network, inlet=None, outlet=None):
+    def export_data(cls, filename, network, shape, inlet=None, outlet=None):
+        r"""
+
+        Parameters
+        ----------
+        filename : str or path object
+            The filename to use
+        network : OpenPNM Network object
+            The network
+        shape : array_like
+            An ndim-by-1 array or list containing the network dimensions
+            in physical units (i.e. um)
+        inlet and outlet : scalar, int (optional)
+            The pore index of the inlet and outlet reservoir pores. If not
+            provided that it is assumed they are the second last and last
+            pores in the network, respectively.  This would be the case if
+            the ``add_reservoir_pore`` function had been called just prior
+            to exporting.
+        """
 
         dfp, dft = Pandas.to_dataframe(network=network, delim='.')
+        # Increment conns to 1-based indexing
         dft['network.' + network.name + '.throat.conns[0]'] += 1
         dft['network.' + network.name + '.throat.conns[1]'] += 1
+
+        # Deal with reservoir pores
+        if inlet is None:
+            inlet = network.Np - 2
+        if outlet is None:
+            outlet = network.Np - 1
+        Pin = network.find_neighbor_pores(pores=inlet)
+        inlets = np.zeros_like(network.Ps, dtype=bool)
+        inlets[Pin] = True
+        Pout = network.find_neighbor_pores(pores=outlet)
+        outlets = np.zeros_like(network.Ps, dtype=bool)
+        outlets[Pout] = True
 
         # Write link 1 file
         dft_ind = DataFrame()
@@ -119,8 +150,17 @@ class Statoil(GenericIO):
         c = 'network.' + network.name + '.pore.coords[2]'
         dfp_temp = dft_ind.join(dfp[[a, b, c]])
         with open(filename + '_node1.dat', 'wt') as f:
-            f.write(str(network.Np) + '\n')
+            s = ''
+            s = s + str(network.Np)
+            for d in shape:
+                val = np.format_float_scientific(d, precision=6, exp_digits=3,
+                                                 trim='k', unique=False)
+                s = s + '{:>17}'.format(str(val))
+            s = s + '\n'
+            f.write(s)
             for row in network.Ps:
+                if row in [inlet, outlet]:
+                    continue
                 s = ''
                 for col in dfp_temp.keys():
                     val = dfp_temp[col][row]
@@ -141,11 +181,17 @@ class Statoil(GenericIO):
                 # the file format exactly
                 s = s + '{:>9}'.format(str(network.num_neighbors(row)[0]))
                 for n in network.find_neighbor_pores(row):
+                    if n == inlet:
+                        n = 0
+                    elif n == outlet:
+                        n = -1
+                    else:
+                        n = n + 1
                     s = s + '{:>9}'.format(str(n))
-                s = s + '{:>9}'.format(str(int(network[inlets][row])))
-                s = s + '{:>9}'.format(str(int(network[outlets][row])))
+                s = s + '{:>9}'.format(str(int(inlets[row])))
+                s = s + '{:>9}'.format(str(int(outlets[row])))
                 for n in network.find_neighbor_throats(row):
-                    s = s + '{:>9}'.format(str(n))
+                    s = s + '{:>9}'.format(str(n + 1))
                 s = s + '\n'  # Remove trailing tab and a new line
                 f.write(s)
 
@@ -370,11 +416,11 @@ def get_domain_shape(network, pore_diameter='pore.diameter'):
     for axis, val in enumerate([xmin, ymin, zmin]):
         inds = np.where(network['pore.coords'][:, axis] == val)
         Rp = np.amax(network[pore_diameter][inds])/2
-        mins.append(val - Rp)
+        mins.append(val - max(0, Rp))
     maxes = []
     for axis, val in enumerate([xmax, ymax, zmax]):
         inds = np.where(network['pore.coords'][:, axis] == val)
         Rp = np.amax(network[pore_diameter][inds])/2
-        maxes.append(val + Rp)
+        maxes.append(val + max(0, Rp))
     shape = np.array(maxes) - np.array(mins)
     return shape
