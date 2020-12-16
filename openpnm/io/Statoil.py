@@ -325,6 +325,19 @@ class Statoil(GenericIO):
 
 
 def add_reservoir_pore(network, pores, offset=0.1):
+    r"""
+
+    Parameters
+    ----------
+    network : OpenPNM Network object
+        The network to which the reservoir pore should be added
+    pores : array_like
+        The pores to which the reservoir pore should be connected to
+    offset : scalar
+        Controls the distance which the reservoir is offset from the given
+        ``pores``.  The total displacement is found from the network dimension
+        normal to given ``pores``, multiplied by ``offset``.
+    """
     # Check if a label was given and fetch actual indices
     if isinstance(pores, str):
         # Convert 'face' into 'pore.face' if necessary
@@ -346,7 +359,7 @@ def add_reservoir_pore(network, pores, offset=0.1):
     if coords[:, ax].mean() > network['pore.coords'][:, ax].mean():
         new_coord[ax] = new_coord[ax] + domain_half_length*(1 + offset)
     extend(network=network, coords=[new_coord])
-    conns = [[P, network.Np] for P in pores]
+    conns = [[P, network.Np-1] for P in pores]
     extend(network=network, conns=conns)
 
 
