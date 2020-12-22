@@ -11,7 +11,10 @@ __all__ = [
     "taylor_aris_diffusion",
     "classic_ordinary_diffusion",
     "multiphase_diffusion",
-    "mixed_multiphase_diffusion"
+    "mixed_multiphase_diffusion",
+    "mixed_multiphase_diffusion_MW",
+    "mixed_multiphase_diffusion_Kn_FD"
+    
 ]
 
 
