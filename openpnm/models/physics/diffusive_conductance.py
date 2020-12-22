@@ -10,7 +10,8 @@ __all__ = [
     "mixed_diffusion",
     "taylor_aris_diffusion",
     "classic_ordinary_diffusion",
-    "multiphase_diffusion"
+    "multiphase_diffusion",
+    "mixed_multiphase_diffusion"
 ]
 
 
@@ -572,3 +573,117 @@ def multiphase_diffusion(
     G12 = K12 * G21
 
     return _np.vstack((G12, G21)).T
+
+
+def mixed_multiphase_diffusion(
+    target,
+    pore_area="pore.area",
+    throat_area="throat.area",
+    pore_diameter="pore.diameter",
+    throat_diameter="throat.diameter",
+    pore_diffusivity="pore.diffusivity",
+    throat_diffusivity="throat.diffusivity",
+    pore_temperature="pore.temperature",
+    molecular_weight="pore.molecular_weight",
+    conduit_lengths="throat.conduit_lengths",
+    conduit_shape_factors="throat.poisson_shape_factors",
+    partition_coef_global="throat.partition_coef.all"
+):
+    r"""
+    Calculates the diffusive conductance of conduits in network with
+    Knudsen correction and dissolution of gas species in multiphase
+   (Henry's partitioning law)
+
+    Notes section in mixed_diffusion for the limitations of this method.
+
+    Parameters
+    ----------
+    target : GenericPhysics
+        Physics object with which this model is associated.
+    pore_area : str
+        Dictionary key of the pore area values.
+    throat_area : str
+        Dictionary key of the throat area values.
+    pore_diameter : str
+        Dictionary key of the pore diameter values.
+    throat_diameter : str
+        Dictionary key of the throat diameter values.
+    pore_diffusivity : str
+        Dictionary key of the pore diffusivity values.
+    throat_diffusivity : str
+        Dictionary key of the throat diffusivity values.
+    pore_temperature : str
+        Dictionary key of the pore temperature values.
+    molecular_weigth : str
+        Dictionary key of the pore molecular weight values.
+    conduit_lengths : str
+        Dictionary key of the conduit lengths' values.
+    conduit_shape_factors : str
+        Dictionary key of the conduit diffusive shape factors' values.
+    partition_coef_global: str
+        Dictionary key of the throat's dimensionless Henry's constant values.
+
+    Returns
+    -------
+    ndarray
+        Array (Nt by 2) containing diffusive conductance values for
+        conduits in the geometry attached to the given physics object.
+
+    Notes
+    -----
+    This method assumes that phase["partition_coef"] contains information on
+    binary phase partitioning. See ``MultiPhase`` class documentation for more
+    information.
+
+    """
+    network = target.project.network
+    throats = network.map_throats(throats=target.Ts, origin=target)
+    phase = target.project.find_phase(target)
+    cn = network["throat.conns"][throats]
+    # Getting equivalent areas
+    A1, A2 = network[pore_area][cn].T
+    At = network[throat_area][throats]
+    # Getting conduit lengths
+    L1 = network[conduit_lengths + ".pore1"][throats]
+    Lt = network[conduit_lengths + ".throat"][throats]
+    L2 = network[conduit_lengths + ".pore2"][throats]
+    # Getting shape factors
+    try:
+        SF1 = phase[conduit_shape_factors + ".pore1"][throats]
+        SFt = phase[conduit_shape_factors + ".throat"][throats]
+        SF2 = phase[conduit_shape_factors + ".pore2"][throats]
+    except KeyError:
+        SF1 = SF2 = SFt = 1.0
+    # Interpolate pore phase property values to throats
+    D1, D2 = phase[pore_diffusivity][cn].T
+    Dt = phase.interpolate_data(propname=pore_diffusivity)[throats]
+    # Calculating Knudsen diffusivity
+    d1, d2 = network[pore_diameter][cn].T
+    dt = network[throat_diameter][throats]
+    MW1, MW2 = phase[molecular_weight][cn].T
+    MWt = phase.interpolate_data(propname=molecular_weight)[throats]
+    T1, T2 = phase[pore_temperature][cn].T
+    Tt = phase.interpolate_data(propname=pore_temperature)[throats]
+    DK1 = d1 / 3 * (8 * _const.R * T1 / _const.pi / MW1) ** 0.5
+    DK2 = d2 / 3 * (8 * _const.R * T2 / _const.pi / MW2) ** 0.5
+    DKt = dt / 3 * (8 * _const.R * Tt / _const.pi / MWt) ** 0.5
+    # Calculate mixed diffusivity
+    D1e = (1 / DK1 + 1 / D1) ** (-1)
+    D2e = (1 / DK2 + 1 / D2) ** (-1)
+    Dte = (1 / DKt + 1 / Dt) ** (-1)
+    # Find g for half of pore 1, throat, and half of pore 2 + apply shape factors
+    g1 = (D1e * A1) / L1 * SF1
+    g2 = (D2e * A2) / L2 * SF2
+    gt = (Dte * At) / Lt * SFt
+
+    # Ensure infinite conductance for elements with zero length
+    for gi, Li in zip([g1, gt, g2], [L1, Lt, L2]):
+        gi[Li == 0] = _np.inf
+    # Apply Henry's partitioning coefficient
+    # Note 1: m12 = G21*c1 - G12*c2
+    K12 = phase[partition_coef_global][throats]
+    G21 = (1/g1 + 0.5/gt + K12 * (1/g2 + 0.5/gt)) ** (-1)
+    G12 = K12 * G21
+
+    return _np.vstack((G12, G21)).T
+
