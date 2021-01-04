@@ -44,11 +44,6 @@ class Statoil(GenericIO):
             to exporting.
         """
 
-        dfp, dft = Pandas.to_dataframe(network=network, delim='.')
-        # Increment conns to 1-based indexing
-        dft['network.' + network.name + '.throat.conns[0]'] += 1
-        dft['network.' + network.name + '.throat.conns[1]'] += 1
-
         # Deal with reservoir pores
         if inlet is None:
             inlet = network.Np - 2
@@ -62,33 +57,29 @@ class Statoil(GenericIO):
         outlets[Pout] = True
 
         # Write link 1 file
-        dft_ind = DataFrame()
-        dft_ind['index'] = network.Ts + 1
-        a = 'network.' + network.name + '.throat.conns[0]'
-        b = 'network.' + network.name + '.throat.conns[1]'
-        c = 'network.' + network.name + '.throat.diameter'
-        d = 'network.' + network.name + '.throat.shape_factor'
-        e = 'network.' + network.name + '.throat.length'
-        dft_temp = dft_ind.join(dft[[a, b, c, e]])
+        props = ['throat.diameter', 'throat.length', 'throat.shape_factor'
+                 'throat.conns']
         with open(filename + '_link1.dat', 'wt') as f:
             f.write(str(network.Nt) + '\n')
             for row in network.Ts:
                 s = ''
-                for col in dft_temp.keys():
-                    val = dft_temp[col][row]
-                    if col == 'index':
-                        # Original file has 6 spaces for index, but this is
-                        # not enough for networks with > 1 million pores so
-                        # I have bumped it to 9.  I'm not sure if this will
-                        # still work with the ICL binaries.
-                        s = s + '{:>9}'.format(str(val))
-                        continue
-                    if 'throat.conns[' in col:
+                # Original file has 6 spaces for index, but this is
+                # not enough for networks with > 1 million pores so
+                # I have bumped it to 9.  I'm not sure if this will
+                # still work with the ICL binaries.
+                s = s + '{:>9}'.format(str(row+1))
+                for col in props:
+                    try:
+                        val = network[col][row]
+                    except KeyError:
+                        val = 0
+                    if col == 'throat.conns':
                         # Original file has 7 spaces for pore indices, but
                         # this is not enough for networks with > 10 million
                         # pores so  I have bumped it to 9.  I'm not sure if
                         # this will still work with the ICL binaries.
-                        s = s + '{:>9}'.format(str(val))
+                        s = s + '{:>9}'.format(str(val[0] + 1))
+                        s = s + '{:>9}'.format(str(val[1] + 1))
                         continue
                     if isinstance(val, float):
                         val = np.format_float_scientific(val, precision=6,
@@ -100,40 +91,32 @@ class Statoil(GenericIO):
                 f.write(s)
 
         # Write Link 2 file
-        a = 'network.' + network.name + '.throat.conns[0]'
-        b = 'network.' + network.name + '.throat.conns[1]'
-        c = 'network.' + network.name + '.throat.conduit_lengths.pore1'
-        d = 'network.' + network.name + '.throat.conduit_lengths.pore2'
-        e = 'network.' + network.name + '.throat.conduit_lengths.throat'
-        f = 'network.' + network.name + '.throat.volume'
-        g = 'network.' + network.name + '.throat.clay_volume'
-        dft_temp = DataFrame()
-        dft_temp['index'] = network.Ts + 1
-        for item in [a, b, c, d, e, f, g]:
-            try:
-                dft_temp[item] = dft[item]
-            except KeyError:
-                dft_temp[item] = np.zeros([network.Nt, ])
-        dft_temp[c] = dft_temp[c]/2
-        dft_temp[d] = dft_temp[d]/2
+        props = ['throat.conns',
+                 'throat.conduit_lengths.pore1',
+                 'throat.conduit_lengths.pore2',
+                 'throat.conduit_lengths.throat',
+                 'throat.volume',
+                 'throat.clay_volume']
         with open(filename + '_link2.dat', 'wt') as f:
             for row in network.Ts:
                 s = ''
-                for col in dft_temp.keys():
-                    val = dft_temp[col][row]
-                    if col == 'index':
-                        # Original file has 6 spaces for index, but this is
-                        # not enough for networks with > 1 million pores so
-                        # I have bumped it to 9.  I'm not sure if this will
-                        # still work with the ICL binaries.
-                        s = s + '{:>9}'.format(str(val))
-                        continue
-                    if 'throat.conns[' in col:
+                # Original file has 6 spaces for index, but this is
+                # not enough for networks with > 1 million pores so
+                # I have bumped it to 9. I'm not sure if this will
+                # still work with the ICL binaries.
+                s = s + '{:>9}'.format(str(row+1))
+                for col in props:
+                    try:
+                        val = network[col][row]
+                    except KeyError:
+                        val = 0
+                    if col == 'throat.conns':
                         # Original file has 7 spaces for pore indices, but
                         # this is not enough for networks with > 10 million
-                        # pores so  I have bumped it to 9.  I'm not sure if
+                        # pores so I have bumped it to 9. I'm not sure if
                         # this will still work with the ICL binaries.
-                        s = s + '{:>9}'.format(str(val))
+                        s = s + '{:>9}'.format(str(val[0] + 1))
+                        s = s + '{:>9}'.format(str(val[1] + 1))
                         continue
                     if isinstance(val, float):
                         val = np.format_float_scientific(val, precision=6,
@@ -145,10 +128,6 @@ class Statoil(GenericIO):
                 f.write(s)
 
         # Write Node 1 file
-        a = 'network.' + network.name + '.pore.coords[0]'
-        b = 'network.' + network.name + '.pore.coords[1]'
-        c = 'network.' + network.name + '.pore.coords[2]'
-        dfp_temp = dft_ind.join(dfp[[a, b, c]])
         with open(filename + '_node1.dat', 'wt') as f:
             s = ''
             s = s + str(network.Np)
@@ -162,21 +141,17 @@ class Statoil(GenericIO):
                 if row in [inlet, outlet]:
                     continue
                 s = ''
-                for col in dfp_temp.keys():
-                    val = dfp_temp[col][row]
-                    if col == 'index':
-                        # Original file has 6 spaces for index, but this is
-                        # not enough for networks with > 1 million pores so
-                        # I have bumped it to 9.  I'm not sure if this will
-                        # still work with the ICL binaries.
-                        s = s + '{:>9}'.format(str(val))
-                        continue
-                    if isinstance(val, float):
-                        val = np.format_float_scientific(val, precision=6,
-                                                         exp_digits=3,
-                                                         trim='k',
-                                                         unique=False)
-                    s = s + '{:>15}'.format(str(val))
+                # Original file has 6 spaces for index, but this is
+                # not enough for networks with > 1 million pores so
+                # I have bumped it to 9.  I'm not sure if this will
+                # still work with the ICL binaries.
+                s = s + '{:>9}'.format(str(val))
+                if isinstance(val, float):
+                    val = np.format_float_scientific(val, precision=6,
+                                                     exp_digits=3,
+                                                     trim='k',
+                                                     unique=False)
+                s = s + '{:>15}'.format(str(val))
                 # The following lines use 9 spacing, but should be 7 to match
                 # the file format exactly
                 s = s + '{:>9}'.format(str(network.num_neighbors(row)[0]))
@@ -196,30 +171,21 @@ class Statoil(GenericIO):
                 f.write(s)
 
         # Write Node 2 file
-        a = 'network.' + network.name + '.pore.volume'
-        b = 'network.' + network.name + '.pore.diameter'
-        c = 'network.' + network.name + '.pore.shape_factor'
-        d = 'network.' + network.name + '.pore.clay_volume'
-        dfp_temp = DataFrame()
-        dfp_temp['index'] = network.Ps + 1
-        for item in [a, b, c, d]:
-            try:
-                dfp_temp[item] = dfp[item][:network.Np]
-            except KeyError:
-                dfp_temp[item] = np.zeros([network.Np, ])
-        dfp_temp[b] = dfp_temp[b]/2
+        props = ['pore.volume', 'pore.diameter',
+                 'pore.shape_factor', 'pore.clay_volume']
         with open(filename + '_node2.dat', 'wt') as f:
             for row in network.Ps:
                 s = ''
-                for col in dfp_temp.keys():
-                    val = dfp_temp[col][row]
-                    if col == 'index':
-                        # Original file has 6 spaces for index, but this is
-                        # not enough for networks with > 1 million pores so
-                        # I have bumped it to 9.  I'm not sure if this will
-                        # still work with the ICL binaries.
-                        s = s + '{:>9}'.format(str(val))
-                        continue
+                # Original file has 6 spaces for index, but this is
+                # not enough for networks with > 1 million pores so
+                # I have bumped it to 9. I'm not sure if this will
+                # still work with the ICL binaries.
+                s = s + '{:>9}'.format(str(val))
+                for col in props:
+                    try:
+                        val = network[col][row]
+                    except KeyError:
+                        val = 0
                     if isinstance(val, float):
                         val = np.format_float_scientific(val, precision=6,
                                                          exp_digits=3,
