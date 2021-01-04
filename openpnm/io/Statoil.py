@@ -57,8 +57,10 @@ class Statoil(GenericIO):
         outlets[Pout] = True
 
         # Write link 1 file
-        props = ['throat.diameter', 'throat.length', 'throat.shape_factor'
-                 'throat.conns']
+        props = ['throat.conns',
+                 'throat.diameter',
+                 'throat.shape_factor',
+                 'throat.length']
         with open(filename + '_link1.dat', 'wt') as f:
             f.write(str(network.Nt) + '\n')
             for row in network.Ts:
@@ -72,7 +74,7 @@ class Statoil(GenericIO):
                     try:
                         val = network[col][row]
                     except KeyError:
-                        val = 0
+                        val = 0.0
                     if col == 'throat.conns':
                         # Original file has 7 spaces for pore indices, but
                         # this is not enough for networks with > 10 million
@@ -82,6 +84,8 @@ class Statoil(GenericIO):
                         s = s + '{:>9}'.format(str(val[1] + 1))
                         continue
                     if isinstance(val, float):
+                        if 'diameter' in col:  # Convert to radius
+                            val = val/2
                         val = np.format_float_scientific(val, precision=6,
                                                          exp_digits=3,
                                                          trim='k',
@@ -109,7 +113,7 @@ class Statoil(GenericIO):
                     try:
                         val = network[col][row]
                     except KeyError:
-                        val = 0
+                        val = 0.0
                     if col == 'throat.conns':
                         # Original file has 7 spaces for pore indices, but
                         # this is not enough for networks with > 10 million
@@ -145,7 +149,7 @@ class Statoil(GenericIO):
                 # not enough for networks with > 1 million pores so
                 # I have bumped it to 9.  I'm not sure if this will
                 # still work with the ICL binaries.
-                s = s + '{:>9}'.format(str(val))
+                s = s + '{:>9}'.format(str(row+1))
                 if isinstance(val, float):
                     val = np.format_float_scientific(val, precision=6,
                                                      exp_digits=3,
@@ -171,8 +175,10 @@ class Statoil(GenericIO):
                 f.write(s)
 
         # Write Node 2 file
-        props = ['pore.volume', 'pore.diameter',
-                 'pore.shape_factor', 'pore.clay_volume']
+        props = ['pore.volume',
+                 'pore.diameter',
+                 'pore.shape_factor',
+                 'pore.clay_volume']
         with open(filename + '_node2.dat', 'wt') as f:
             for row in network.Ps:
                 s = ''
@@ -180,13 +186,15 @@ class Statoil(GenericIO):
                 # not enough for networks with > 1 million pores so
                 # I have bumped it to 9. I'm not sure if this will
                 # still work with the ICL binaries.
-                s = s + '{:>9}'.format(str(val))
+                s = s + '{:>9}'.format(str(row+1))
                 for col in props:
                     try:
                         val = network[col][row]
                     except KeyError:
-                        val = 0
+                        val = 0.0
                     if isinstance(val, float):
+                        if 'diameter' in col:
+                            val = val/2
                         val = np.format_float_scientific(val, precision=6,
                                                          exp_digits=3,
                                                          trim='k',
