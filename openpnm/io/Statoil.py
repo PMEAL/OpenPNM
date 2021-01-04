@@ -63,7 +63,7 @@ class Statoil(GenericIO):
                  'throat.length']
         with open(filename + '_link1.dat', 'wt') as f:
             f.write(str(network.Nt) + '\n')
-            for row in network.Ts:
+            for row in network.throats('reservoir', mode='not'):
                 s = ''
                 # Original file has 6 spaces for index, but this is
                 # not enough for networks with > 1 million pores so
@@ -102,7 +102,7 @@ class Statoil(GenericIO):
                  'throat.volume',
                  'throat.clay_volume']
         with open(filename + '_link2.dat', 'wt') as f:
-            for row in network.Ts:
+            for row in network.throats('reservoir', mode='not'):
                 s = ''
                 # Original file has 6 spaces for index, but this is
                 # not enough for networks with > 1 million pores so
@@ -141,7 +141,7 @@ class Statoil(GenericIO):
                 s = s + '{:>17}'.format(str(val))
             s = s + '\n'
             f.write(s)
-            for row in network.Ps:
+            for row in network.pores('reservoir', mode='not'):
                 if row in [inlet, outlet]:
                     continue
                 s = ''
@@ -181,7 +181,7 @@ class Statoil(GenericIO):
                  'pore.shape_factor',
                  'pore.clay_volume']
         with open(filename + '_node2.dat', 'wt') as f:
-            for row in network.Ps:
+            for row in network.pores('reservoir', mode='not'):
                 s = ''
                 # Original file has 6 spaces for index, but this is
                 # not enough for networks with > 1 million pores so
