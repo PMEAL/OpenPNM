@@ -150,12 +150,13 @@ class Statoil(GenericIO):
                 # I have bumped it to 9.  I'm not sure if this will
                 # still work with the ICL binaries.
                 s = s + '{:>9}'.format(str(row+1))
-                if isinstance(val, float):
-                    val = np.format_float_scientific(val, precision=6,
-                                                     exp_digits=3,
-                                                     trim='k',
-                                                     unique=False)
-                s = s + '{:>15}'.format(str(val))
+                for c in network['pore.coords'][row]:
+                    if isinstance(c, float):
+                        c = np.format_float_scientific(c, precision=6,
+                                                       exp_digits=3,
+                                                       trim='k',
+                                                       unique=False)
+                    s = s + '{:>15}'.format(str(c))
                 # The following lines use 9 spacing, but should be 7 to match
                 # the file format exactly
                 s = s + '{:>9}'.format(str(network.num_neighbors(row)[0]))
@@ -343,44 +344,44 @@ class Statoil(GenericIO):
 
         return network.project
 
+    @classmethod
+    def add_reservoir_pore(cls, network, pores, offset=0.1):
+        r"""
 
-def add_reservoir_pore(network, pores, offset=0.1):
-    r"""
-
-    Parameters
-    ----------
-    network : OpenPNM Network object
-        The network to which the reservoir pore should be added
-    pores : array_like
-        The pores to which the reservoir pore should be connected to
-    offset : scalar
-        Controls the distance which the reservoir is offset from the given
-        ``pores``.  The total displacement is found from the network dimension
-        normal to given ``pores``, multiplied by ``offset``.
-    """
-    # Check if a label was given and fetch actual indices
-    if isinstance(pores, str):
-        # Convert 'face' into 'pore.face' if necessary
-        if not pores.startswith('pore.'):
-            pores = 'pore.' + pores
-        pores = network.pores(pores)
-    # Find coordinates of pores on given face
-    coords = network['pore.coords'][pores]
-    # Normalize the coordinates based on full network size
-    c_norm = coords/network['pore.coords'].max(axis=0)
-    # Identify axis of face by looking for dim with smallest delta
-    diffs = np.amax(c_norm - np.average(c_norm, axis=0), axis=0)
-    ax = np.where(diffs == diffs.min())[0][0]
-    # Add new pore at center of domain
-    new_coord = network['pore.coords'].mean(axis=0)
-    domain_half_length = np.ptp(network['pore.coords'][:, ax])/2
-    if coords[:, ax].mean() < network['pore.coords'][:, ax].mean():
-        new_coord[ax] = new_coord[ax] - domain_half_length*(1 + offset)
-    if coords[:, ax].mean() > network['pore.coords'][:, ax].mean():
-        new_coord[ax] = new_coord[ax] + domain_half_length*(1 + offset)
-    extend(network=network, coords=[new_coord])
-    conns = [[P, network.Np-1] for P in pores]
-    extend(network=network, conns=conns)
+        Parameters
+        ----------
+        network : OpenPNM Network object
+            The network to which the reservoir pore should be added
+        pores : array_like
+            The pores to which the reservoir pore should be connected to
+        offset : scalar
+            Controls the distance which the reservoir is offset from the given
+            ``pores``.  The total displacement is found from the network dimension
+            normal to given ``pores``, multiplied by ``offset``.
+        """
+        # Check if a label was given and fetch actual indices
+        if isinstance(pores, str):
+            # Convert 'face' into 'pore.face' if necessary
+            if not pores.startswith('pore.'):
+                pores = 'pore.' + pores
+            pores = network.pores(pores)
+        # Find coordinates of pores on given face
+        coords = network['pore.coords'][pores]
+        # Normalize the coordinates based on full network size
+        c_norm = coords/network['pore.coords'].max(axis=0)
+        # Identify axis of face by looking for dim with smallest delta
+        diffs = np.amax(c_norm - np.average(c_norm, axis=0), axis=0)
+        ax = np.where(diffs == diffs.min())[0][0]
+        # Add new pore at center of domain
+        new_coord = network['pore.coords'].mean(axis=0)
+        domain_half_length = np.ptp(network['pore.coords'][:, ax])/2
+        if coords[:, ax].mean() < network['pore.coords'][:, ax].mean():
+            new_coord[ax] = new_coord[ax] - domain_half_length*(1 + offset)
+        if coords[:, ax].mean() > network['pore.coords'][:, ax].mean():
+            new_coord[ax] = new_coord[ax] + domain_half_length*(1 + offset)
+        extend(network=network, coords=[new_coord], labels=['reservoir'])
+        conns = [[P, network.Np-1] for P in pores]
+        extend(network=network, conns=conns, labels=['reservoir'])
 
 
 def get_domain_shape(network, pore_diameter='pore.diameter'):
