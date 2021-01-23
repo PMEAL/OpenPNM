@@ -993,6 +993,32 @@ def find_pore_to_pore_distance(network, pores1=None, pores2=None):
     return cdist(coords[p1], coords[p2])
 
 
+def filter_pores_by_z(network, pores, z=1):
+    r"""
+    Find pores with a given number of neighbors
+
+    Parameters
+    ----------
+    network : OpenPNM Network object
+        The network on which the query is to be performed
+    pores : array_like
+        The pores to be filtered
+    z : int
+        The coordination number to filter by
+
+    Returns
+    -------
+    pores : array_like
+        The pores which have the specified coordination number
+
+    """
+    pores = network._parse_indices(pores)
+    Nz = network.num_neighbors(pores=pores)
+    orphans = np.where(Nz == z)[0]
+    hits = pores[orphans]
+    return hits
+
+
 def subdivide(network, pores, shape, labels=[]):
     r'''
     It trim the pores and replace them by cubic networks with the sent shape.
