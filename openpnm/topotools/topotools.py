@@ -2,7 +2,7 @@ import numpy as np
 import scipy as sp
 import scipy.ndimage as spim
 from scipy.sparse import csgraph
-from scipy.spatial import ConvexHull, delaunay_plot_2d
+from scipy.spatial import ConvexHull
 from openpnm.utils import logging, Workspace
 logger = logging.getLogger(__name__)
 ws = Workspace()
