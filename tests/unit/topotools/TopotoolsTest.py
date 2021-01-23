@@ -436,6 +436,19 @@ class TopotoolsTest:
                                   pores2=pores2, mode='delaunay')
         assert pn.Nt == 436
 
+    def test_filter_pores_by_z(self):
+        pn = op.network.Cubic(shape=[4, 4, 1])
+        Ps = op.topotools.filter_pores_by_z(network=pn, pores=0, z=1)
+        assert_allclose(Ps, [])
+        Ps = op.topotools.filter_pores_by_z(network=pn, pores=0, z=2)
+        assert_allclose(Ps, [0])
+        Ps = op.topotools.filter_pores_by_z(network=pn, pores=[0, 1], z=1)
+        assert_allclose(Ps, [])
+        Ps = op.topotools.filter_pores_by_z(network=pn, pores=[0, 1], z=2)
+        assert_allclose(Ps, [0])
+        Ps = op.topotools.filter_pores_by_z(network=pn, pores=pn.Ps, z=4)
+        assert_allclose(Ps, [5, 6, 9, 10])
+
 
 if __name__ == '__main__':
 
