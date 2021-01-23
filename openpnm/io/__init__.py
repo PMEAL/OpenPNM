@@ -87,3 +87,4 @@ from .STL import STL
 from .COMSOL import COMSOL
 from .Salome import Salome
 from .PNM import PNM
+from .Paraview import *
